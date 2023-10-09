@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Security.AccessControl;
+
+using System.Security.User;
+using System.TestLibraries.Security.AccessControl;
+using System.Security.AccessControl;
+using System.TestLibraries.Utilities;
+
 codeunit 130044 "User Login Time Tracker Test"
 {
     // Tests for the User Login Time Tracker codeunit
@@ -231,7 +238,8 @@ codeunit 130044 "User Login Time Tracker Test"
 
         PermissionsMock.Set('User Login View');
 
-        // [WHEN] Calling CreateOrUpdateLoginInfo
+        // [WHEN] Calling CreateEnvironmentLoginInfo and CreateOrUpdateLoginInfo
+        UserLoginTimeTracker.CreateEnvironmentLoginInfo();
         UserLoginTimeTracker.CreateOrUpdateLoginInfo();
 
         // [THEN] The User Login table should contain a single record (the one for the current test user)
@@ -256,7 +264,8 @@ codeunit 130044 "User Login Time Tracker Test"
         UserLogin.Modify();
         ExpectedPenultimateDateTime := UserLogin."Last Login Date";
 
-        // [WHEN] Calling CreateOrUpdateLoginInfo
+        // [WHEN] Calling CreateEnvironmentLoginInfo and CreateOrUpdateLoginInfo
+        UserLoginTimeTracker.CreateEnvironmentLoginInfo();
         UserLoginTimeTracker.CreateOrUpdateLoginInfo();
 
         // [THEN] The User Login table should still contain a single record

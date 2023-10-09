@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
 /// <summary>
 /// ListPart for viewing the permissions of a metadata permission set.
 /// </summary>
@@ -134,7 +136,7 @@ page 9856 "Metadata Permission Subform"
         PermissionImpl: Codeunit "Permission Impl.";
     begin
         IsTableData := Rec."Object Type" = Rec."Object Type"::"Table Data";
-        PermissionImpl.GetObjectionCaptionAndName(Rec, ObjectCaption, ObjectName);
+        PermissionImpl.GetObjectCaptionAndName(Rec, ObjectCaption, ObjectName);
         if not IsNewRecord then begin
             MetadataPermission := Rec;
             PermissionRecExists := not MetadataPermission.IsEmpty();
@@ -147,13 +149,12 @@ page 9856 "Metadata Permission Subform"
     var
         PermissionImpl: Codeunit "Permission Impl.";
     begin
-        PermissionImpl.GetObjectionCaptionAndName(Rec, ObjectCaption, ObjectName);
+        PermissionImpl.GetObjectCaptionAndName(Rec, ObjectCaption, ObjectName);
         ZeroObjStyleExpr := Rec."Object ID" = 0;
         IsNewRecord := false;
     end;
 
     var
-        [InDataSet]
         IsTableData: Boolean;
         IsNewRecord: Boolean;
         PermissionRecExists: Boolean;

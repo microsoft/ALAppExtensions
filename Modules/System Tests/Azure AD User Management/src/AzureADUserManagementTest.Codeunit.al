@@ -3,6 +3,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Azure.ActiveDirectory;
+
+using System.Security.AccessControl;
+using System.TestLibraries.Environment;
+using System.TestLibraries.Azure.ActiveDirectory;
+using System.TestLibraries.Mocking;
+using System.Azure.Identity;
+using System.TestLibraries.Security.AccessControl;
+using System.TestLibraries.Utilities;
+
 codeunit 132909 "Azure AD User Management Test"
 {
     Permissions = TableData "User Property" = rimd,

@@ -1,3 +1,5 @@
+namespace Microsoft.Bank.StatementImport.Yodlee;
+
 page 1458 "MS - Yodlee Access Consent"
 {
     Caption = ' ';
@@ -49,11 +51,11 @@ page 1458 "MS - Yodlee Access Consent"
         Data: Text;
         ErrorText: Text;
     begin
-        IF NOT MSYodleeServiceMgt.GetFastlinkDataForAccessConsent("Online Bank ID", CallbackUrl, Data, ErrorText) THEN BEGIN
+        if not MSYodleeServiceMgt.GetFastlinkDataForAccessConsent(Rec."Online Bank ID", CallbackUrl, Data, ErrorText) then begin
             MESSAGE(ErrorText);
             CurrPage.CLOSE();
-            EXIT;
-        END;
+            exit;
+        end;
 
         CurrPage.WebPageViewer.Navigate(MSYodleeServiceMgt.GetYodleeFastlinkUrl(), 'POST', Data);
     end;

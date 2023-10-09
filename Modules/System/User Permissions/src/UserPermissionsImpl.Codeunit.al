@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.User;
+
+using System;
+
+using System.Environment;
+using System.Security.AccessControl;
+
 /// <summary>
 /// </summary>
 codeunit 153 "User Permissions Impl."
@@ -93,6 +100,11 @@ codeunit 153 "User Permissions Impl."
     local procedure CheckSuperPermissionsBeforeModifyUser(var Rec: Record User; var xRec: Record User; RunTrigger: Boolean)
     begin
         if Rec.IsTemporary() then
+            exit;
+
+        // First check if the record is potentially being disabled (we only want to prevent disabling the last SUPER user)
+        // This prevents slow database calls in many cases such as user login.
+        if (Rec.State <> Rec.State::Disabled) then
             exit;
 
         if not IsSuper(Rec."User Security ID") then

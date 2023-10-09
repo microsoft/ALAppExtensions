@@ -1,3 +1,20 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Warehouse.GateEntry;
+
+using Microsoft.Purchases.Posting;
+using Microsoft.Sales.Posting;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Finance.GST.Sales;
+using Microsoft.Inventory.Setup;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Document;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Document;
+
 codeunit 18604 "Gate Entry Subscribers"
 {
     var

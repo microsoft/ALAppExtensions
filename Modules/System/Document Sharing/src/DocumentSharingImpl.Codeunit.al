@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration;
+
+using System.Telemetry;
+using System.Globalization;
+using System.Azure.Identity;
+using System.Environment;
+
 /// <summary>
 /// Codeunit that contains the implementation for document sharing.
 /// </summary>
@@ -100,37 +107,40 @@ codeunit 9561 "Document Sharing Impl."
     var
         DocumentSharingCodeunit: Codeunit "Document Sharing";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        Language: Codeunit Language;
+        DocumentSharingIntentTxt: Text;
         Handled: Boolean;
     begin
+        DocumentSharingIntentTxt := Language.ToDefaultLanguage(DocumentSharing."Document Sharing Intent");
         // Perform intent
         case DocumentSharing."Document Sharing Intent" of
             DocumentSharing."Document Sharing Intent"::Open:
                 begin
-                    FeatureTelemetry.LogUsage('0000HUK', OneDriveFeatureNameTelemetryTxt, StrSubstNo(OneDriveExecuteIntentEventTelemetryTxt, DocumentSharing."Document Sharing Intent"));
+                    FeatureTelemetry.LogUsage('0000HUK', OneDriveFeatureNameTelemetryTxt, StrSubstNo(OneDriveExecuteIntentEventTelemetryTxt, DocumentSharingIntentTxt));
                     OpenDocument(DocumentSharing);
                 end;
             DocumentSharing."Document Sharing Intent"::Share:
                 begin
-                    FeatureTelemetry.LogUsage('0000HUL', OneDriveFeatureNameTelemetryTxt, StrSubstNo(OneDriveExecuteIntentEventTelemetryTxt, DocumentSharing."Document Sharing Intent"));
+                    FeatureTelemetry.LogUsage('0000HUL', OneDriveFeatureNameTelemetryTxt, StrSubstNo(OneDriveExecuteIntentEventTelemetryTxt, DocumentSharingIntentTxt));
                     OpenShare(DocumentSharing);
                 end;
             DocumentSharing."Document Sharing Intent"::Edit:
                 begin
-                    FeatureTelemetry.LogUsage('0000J1A', OneDriveFeatureNameTelemetryTxt, StrSubstNo(OneDriveExecuteIntentEventTelemetryTxt, DocumentSharing."Document Sharing Intent"));
+                    FeatureTelemetry.LogUsage('0000J1A', OneDriveFeatureNameTelemetryTxt, StrSubstNo(OneDriveExecuteIntentEventTelemetryTxt, DocumentSharingIntentTxt));
                     OpenDocument(DocumentSharing);
 
                     // Downloads file into DocumentSharing.Data, otherwise uploaded file is in DocumentSharing.Data
                     if Dialog.Confirm(FinishedEditingDocumentLbl, true) then begin
+                        Handled := false;
                         Sleep(2000); // This sleep is to ensure the OneDrive clears the lock on the file after the user saves and closes.
-                        Handled := False;
                         DocumentSharingCodeunit.OnGetFileContents(DocumentSharing, Handled);
                     end;
 
-                    Handled := False;
+                    Handled := false;
                     DocumentSharingCodeunit.OnDeleteDocument(DocumentSharing, Handled);
                 end;
             else begin
-                Session.LogMessage('0000GGL', StrSubstNo(DocumentSharingIntentTelemetryTxt, DocumentSharing."Document Sharing Intent", CanShare, CanOpen), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', DocumentSharingCategoryLbl);
+                Session.LogMessage('0000GGL', StrSubstNo(DocumentSharingIntentTelemetryTxt, DocumentSharingIntentTxt, CanShare, CanOpen), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', DocumentSharingCategoryLbl);
                 Error(NoDocUploadedErr);
             end;
         end;

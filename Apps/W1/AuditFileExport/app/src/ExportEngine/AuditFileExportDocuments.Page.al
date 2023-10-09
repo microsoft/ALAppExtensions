@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using System.Telemetry;
+
 page 5266 "Audit File Export Documents"
 {
     PageType = List;
@@ -15,6 +23,11 @@ page 5266 "Audit File Export Documents"
         {
             repeater(General)
             {
+                field(DocumentId; Rec.ID)
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the unique identifier of the audit file export document.';
+                }
                 field(GLAccountMappingCode; Rec."G/L Account Mapping Code")
                 {
                     ApplicationArea = Basic, Suite;

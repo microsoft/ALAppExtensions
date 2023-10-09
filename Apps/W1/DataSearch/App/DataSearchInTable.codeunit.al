@@ -1,3 +1,11 @@
+namespace Microsoft.Foundation.DataSearch;
+
+using System.Reflection;
+using Microsoft.Sales.Document;
+using Microsoft.Purchases.Document;
+using Microsoft.Service.Document;
+using Microsoft.Service.Contract;
+
 codeunit 2680 "Data Search in Table"
 {
     var

@@ -36,7 +36,7 @@ codeunit 11023 "Elster Management"
         SalesVATAdvanceNotif."XML Submission Document".CreateInStream(XmlInStream, TextEncoding::UTF8);
         TempXMLBuffer.LoadFromStream(XmlInStream);
         if not TempXMLBuffer.FindNodesByXPath(
-            TempXMLBuffer, '/Elster/DatenTeil/Nutzdatenblock/Nutzdaten/Anmeldungssteuern/Steuerfall/Umsatzsteuervoranmeldung/Kz*')
+            TempXMLBuffer, '/Anmeldungssteuern/Steuerfall/Umsatzsteuervoranmeldung/Kz*')
         then
             error(CannotIdentifyAmountsErr);
         TempXMLBuffer.FindSet();
@@ -51,13 +51,15 @@ codeunit 11023 "Elster Management"
         Page.Run(0, TempElecVATDeclBuffer);
     end;
 
-    local procedure FormatDecimal(DecimalStr: Text) : Decimal
-    var 
+    local procedure FormatDecimal(DecimalStr: Text): Decimal
+    var
         Value: Decimal;
     begin
-        case CopyStr(FORMAT(1 / 2),2,1) of
-            '.': Evaluate(Value, ConvertStr(DecimalStr, ',', '.'));
-            ',': Evaluate(Value, ConvertStr(DecimalStr, '.', ','));
+        case CopyStr(FORMAT(1 / 2), 2, 1) of
+            '.':
+                Evaluate(Value, ConvertStr(DecimalStr, ',', '.'));
+            ',':
+                Evaluate(Value, ConvertStr(DecimalStr, '.', ','));
         end;
         exit(Value);
     end;

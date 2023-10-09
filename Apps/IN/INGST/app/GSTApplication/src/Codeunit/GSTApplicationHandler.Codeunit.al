@@ -1,3 +1,34 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Application;
+
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Preview;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.GST.Subcontracting;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Ledger;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Inventory.Costing;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Posting;
+using Microsoft.Manufacturing.Document;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+
 codeunit 18430 "GST Application Handler"
 {
     var
@@ -433,7 +464,12 @@ codeunit 18430 "GST Application Handler"
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         ApplyingVendorLedgerEntry: Record "Vendor Ledger Entry";
         TransactionType: Enum "Detail Ledger Transaction Type";
+        IsHandled: Boolean;
     begin
+        OnBeforePostGSTWithNormalPaymentOffline(GenJournalLine, AmountToApply, IsHandled);
+        if IsHandled then
+            exit;
+
         if not ApplyingVendorLedgerEntry.Get(OldCVLedgerEntryBuffer."Entry No.") then
             exit;
 
@@ -526,7 +562,12 @@ codeunit 18430 "GST Application Handler"
         ApplyingVendorLedgerEntry: Record "Vendor Ledger Entry";
         TransactionType: Enum "Detail Ledger Transaction Type";
         TotalTDSInclSHECessAmount: Decimal;
+        IsHandled: Boolean;
     begin
+        OnBeforePostGSTWithNormalPaymentOnline(GenJournalLine, AmountToApply, IsHandled);
+        if IsHandled then
+            exit;
+
         if not ApplyingVendorLedgerEntry.Get(OldCVLedgerEntryBuffer."Entry No.") then
             exit;
 
@@ -671,12 +712,14 @@ codeunit 18430 "GST Application Handler"
                             then
                                 ApplicationRatio := PaymentOriginalAmountLCY / Round(GSTApplicationBuffer."Amt to Apply" / GSTApplicationBuffer."Currency Factor");
 
+                            OnBeforeCalculateGSTAppliedAmount(PaymentCurrencyFactor, DetailedGSTLedgerEntry, DetailedGSTLedgerEntryInfo, ApplicationRatio, RemainingBase, RemainingAmount, AppliedBase, AppliedAmount);
                             GSTApplicationLibrary.GetAppliedAmount(
                                 Abs(RemainingBase),
                                 Abs(RemainingAmount),
                                 Abs(DetailedGSTLedgerEntry."Remaining Base Amount" * ApplicationRatio),
                                 Abs(DetailedGSTLedgerEntry."Remaining GST Amount" * ApplicationRatio), AppliedBase, AppliedAmount);
 
+                            OnAfterCalculateGSTApplicationAmount(DetailedGSTLedgerEntry, DetailedGSTLedgerEntryInfo, ApplicationRatio, RemainingBase, RemainingAmount);
                             CreateDetailedGSTApplicationEntry(
                                 ApplyDetailedGSTLedgerEntry,
                                 DetailedGSTLedgerEntry,
@@ -1087,6 +1130,8 @@ codeunit 18430 "GST Application Handler"
                             GSTGLAccountType::"Payables Account (Interim)",
                             DetailedGSTLedgerEntryInfo."Location State Code",
                             GSTPostingBuffer."GST Component Code");
+
+                        OnAfterGetHigherExcRateGSTGLAccounts(GSTPostingBuffer, AccountNo, BalanceAccountNo);
                     end else begin
                         AccountNo := GSTApplicationLibrary.GetGSTGLAccountNo(
                             GSTGLAccountType::"Payable Account",
@@ -1097,6 +1142,8 @@ codeunit 18430 "GST Application Handler"
                             GSTGLAccountType::"Receivable Account",
                             DetailedGSTLedgerEntryInfo."Location State Code",
                             GSTPostingBuffer."GST Component Code");
+
+                        OnAfterGetLessExcRateGSTGLAccounts(GSTPostingBuffer, AccountNo, BalanceAccountNo);
                     end;
             end else
             case GSTPostingBuffer."Forex Fluctuation" of
@@ -1109,6 +1156,7 @@ codeunit 18430 "GST Application Handler"
                             if GSTPostingBuffer.Type in [GSTPostingBuffer.Type::"G/L Account", GSTPostingBuffer.Type::"Fixed Asset"] then
                                 AccountNo := GSTPostingBuffer."Account No.";
 
+                        OnAfterGetGLGSTPostingAccountNo(DetailedGSTLedgerEntryInfo, GSTPostingBuffer, AccountNo);
                         BalanceAccountNo := GSTApplicationLibrary.GetGSTGLAccountNo(
                             GSTGLAccountType::"Payables Account (Interim)",
                             DetailedGSTLedgerEntryInfo."Location State Code",
@@ -1125,6 +1173,7 @@ codeunit 18430 "GST Application Handler"
                             DetailedGSTLedgerEntryInfo."Location State Code",
                             GSTPostingBuffer."GST Component Code");
 
+                        OnAfterGetGSTGLAccountNoForLowerExchRate(DetailedGSTLedgerEntryInfo, GSTPostingBuffer, AccountNo);
                         if GSTPostingBuffer.Type = GSTPostingBuffer.Type::Item then begin
                             GeneralPostingSetup.Get(GSTPostingBuffer."Gen. Bus. Posting Group", GSTPostingBuffer."Gen. Prod. Posting Group");
                             BalanceAccountNo := GeneralPostingSetup."Purch. Account";
@@ -1132,6 +1181,7 @@ codeunit 18430 "GST Application Handler"
                             if GSTPostingBuffer.Type in [GSTPostingBuffer.Type::"G/L Account", GSTPostingBuffer.Type::"Fixed Asset"] then
                                 BalanceAccountNo := GSTPostingBuffer."Account No.";
 
+                        OnAfterGetGSTGLBalAccountNoForLowerExchRate(DetailedGSTLedgerEntryInfo, GSTPostingBuffer, BalanceAccountNo);
                         if GSTPostingBuffer.Type = GSTPostingBuffer.Type::Item then
                             PostRevaluationEntry(GSTPostingBuffer, DetailedGSTLedgerEntry."Document No.", false, false)
                         else
@@ -2984,6 +3034,64 @@ codeunit 18430 "GST Application Handler"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeSetPostApplication(Vendor: Record Vendor; GenJnlLine: Record "Gen. Journal Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCalculateGSTApplicationAmount(
+        DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
+        DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info";
+        var ApplicationRatio: Decimal;
+        var RemainingBase: Decimal;
+        var RemainingAmount: Decimal);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetHigherExcRateGSTGLAccounts(GSTPostingBuffer: Record "GST Posting Buffer"; var AccountNo: Code[20]; var BalanceAccountNo: Code[20])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetLessExcRateGSTGLAccounts(GSTPostingBuffer: Record "GST Posting Buffer"; var AccountNo: Code[20]; var BalanceAccountNo: Code[20])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetGLGSTPostingAccountNo(DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info"; GSTPostingBuffer: Record "GST Posting Buffer"; var AccountNo: Code[20])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetGSTGLAccountNoForLowerExchRate(DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info"; GSTPostingBuffer: Record "GST Posting Buffer"; var AccountNo: Code[20])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetGSTGLBalAccountNoForLowerExchRate(DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info"; GSTPostingBuffer: Record "GST Posting Buffer"; var BalanceAccountNo: Code[20])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCalculateGSTAppliedAmount(
+        PaymentCurrencyFactor: Decimal;
+        DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
+        DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info";
+        var ApplicationRatio: Decimal;
+        var RemainingBase: Decimal;
+        var RemainingAmount: Decimal;
+        var AppliedBase: Decimal;
+        var AppliedAmount: Decimal)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostGSTWithNormalPaymentOnline(var GenJournalLine: Record "Gen. Journal Line"; var AmountToApply: Decimal; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostGSTWithNormalPaymentOffline(var GenJournalLine: Record "Gen. Journal Line"; var AmountToApply: Decimal; var IsHandled: Boolean)
     begin
     end;
 }

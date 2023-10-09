@@ -3,14 +3,20 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Media;
+
+using System.Apps;
+
 table 1470 "Product Video Buffer"
 {
     Access = Internal;
     Extensible = false;
     Caption = 'Product Video Buffer';
     ReplicateData = false;
-    InherentEntitlements = X;
-    InherentPermissions = X;
+#pragma warning disable AS0034
+    InherentEntitlements = rX;
+    InherentPermissions = rX;
+#pragma warning restore AS0034
     //TableType = Temporary; // need to fix AS0034 and AS0039 first
 
     fields
@@ -70,7 +76,7 @@ table 1470 "Product Video Buffer"
         {
             Caption = 'Extension Name';
             FieldClass = FlowField;
-            CalcFormula = Lookup("Published Application".Name where(ID = FIELD("App ID"), "Tenant Visible" = CONST(true)));
+            CalcFormula = lookup("Published Application".Name where(ID = field("App ID"), "Tenant Visible" = const(true)));
             Editable = false;
         }
         field(10; Category; Enum "Video Category")

@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 codeunit 40018 "Fix Data OnRun Completed"
 {
     TableNo = "Replication Run Completed Arg";

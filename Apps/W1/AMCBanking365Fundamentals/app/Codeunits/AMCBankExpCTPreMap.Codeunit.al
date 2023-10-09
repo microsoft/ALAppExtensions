@@ -1,3 +1,25 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Setup;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using Microsoft.HumanResources.Employee;
+using Microsoft.HumanResources.Payables;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+using System.IO;
+
 codeunit 20112 "AMC Bank Exp. CT Pre-Map"
 {
     Permissions = TableData "Payment Export Data" = rimd;
@@ -323,7 +345,7 @@ codeunit 20112 "AMC Bank Exp. CT Pre-Map"
         Clear(Currency);
         if (PaymentExportData."AMC Recip. Bank Acc. Currency" <> '') then
             if (Currency.get(PaymentExportData."AMC Recip. Bank Acc. Currency")) then
-                PaymentExportData."Sender Bank Account Currency" := Currency."ISO Code";
+                PaymentExportData."AMC Recip. Bank Acc. Currency" := Currency."ISO Code";
 
 
         Clear(CountryRegion);

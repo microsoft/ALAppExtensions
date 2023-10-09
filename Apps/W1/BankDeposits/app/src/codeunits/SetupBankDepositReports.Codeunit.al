@@ -2,6 +2,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Deposit;
+
+using System.Telemetry;
+using Microsoft.Sales.Setup;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.Reporting;
+
 codeunit 1697 "Setup Bank Deposit Reports"
 {
     local procedure IsSetupCompleted(): Boolean

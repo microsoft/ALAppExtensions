@@ -2,6 +2,14 @@ pageextension 31146 "FA Depr. Books Subform CZF" extends "FA Depreciation Books 
 {
     layout
     {
+        modify("FA Posting Group")
+        {
+            trigger OnBeforeValidate()
+            begin
+                if Rec."FA Posting Group" <> xRec."FA Posting Group" then
+                    Rec.CheckDefaultFAPostingGroupCZF();
+            end;
+        }
         addafter("FA Posting Group")
         {
             field("Tax Deprec. Group Code CZF"; Rec."Tax Deprec. Group Code CZF")

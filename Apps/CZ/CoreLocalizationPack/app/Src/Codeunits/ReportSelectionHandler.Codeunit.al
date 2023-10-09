@@ -7,6 +7,7 @@ codeunit 31411 "Report Selection Handler CZL"
         InsertRepSelection(Enum::"Report Selection Usage"::"Inventory Shipment", '1', Report::"Inventory Document CZL");
         InsertRepSelection(Enum::"Report Selection Usage"::"P.Inventory Receipt", '1', Report::"Posted Inventory Receipt CZL");
         InsertRepSelection(Enum::"Report Selection Usage"::"P.Inventory Shipment", '1', Report::"Posted Inventory Shipment CZL");
+        InsertRepSelection(Enum::"Report Selection Usage"::"P.Direct Transfer", '1', Report::"Posted Direct Transfer CZL");
     end;
 
     local procedure InsertRepSelection(ReportUsage: Enum "Report Selection Usage"; Sequence: Code[10]; ReportID: Integer)

@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Sharepoint;
+
+using System.Utilities;
+
 codeunit 9101 "SharePoint Client Impl."
 {
     Access = Internal;
@@ -458,7 +462,7 @@ codeunit 9101 "SharePoint Client Impl."
         exit(true);
     end;
 
-    procedure GetFolderFilesByServerRelativeUrl(ServerRelativeUrl: Text; var SharePointFile: Record "SharePoint File" temporary): Boolean
+    procedure GetFolderFilesByServerRelativeUrl(ServerRelativeUrl: Text; var SharePointFile: Record "SharePoint File" temporary; ListAllFields: Boolean): Boolean
     var
         SharePointFileParser: Codeunit "SharePoint File";
         Result: Text;
@@ -466,6 +470,8 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointUriBuilder.ResetPath();
         SharePointUriBuilder.SetMethod('GetFolderByServerRelativeUrl', ServerRelativeUrl);
         SharePointUriBuilder.SetObject('Files');
+        if ListAllFields then
+            SharePointUriBuilder.AddQueryParameter('$expand', 'ListItemAllFields');
 
         SharePointRequestHelper.SetAuthorization(Authorization);
         SharePointOperationResponse := SharePointRequestHelper.Get(SharePointUriBuilder);
@@ -477,11 +483,9 @@ codeunit 9101 "SharePoint Client Impl."
         exit(true);
     end;
 
-    procedure DownloadFileContent(OdataId: Text; FileName: Text): Boolean
-    var
-        FileInStream: InStream;
+    procedure DownloadFileContent(OdataId: Text; var FileInStream: InStream): Boolean
     begin
-        //GET https://{site_url}/_api/web/lists/getbytitle('{list_title}')/items({item_id})/AttachmentFiles('{file_name}')/$value
+        //GET https://{site_url}/_api/web/GetFileByServerRelativeUrl('/Folder Name/{file_name}')/$value
         SharePointUriBuilder.ResetPath(OdataId);
         SharePointUriBuilder.SetObject('$value');
 
@@ -491,8 +495,95 @@ codeunit 9101 "SharePoint Client Impl."
             exit(false);
 
         SharePointOperationResponse.GetResultAsStream(FileInStream);
+        exit(true);
+    end;
+
+    procedure DownloadFileContent(OdataId: Text; FileName: Text): Boolean
+    var
+        FileInStream: InStream;
+    begin
+        if not DownloadFileContent(OdataId, FileInStream) then
+            exit(false);
 
         DownloadFromStream(FileInStream, '', '', '', FileName);
+        exit(true);
+    end;
+
+    procedure DownloadFileContent(OdataId: Text; var TempBlob: Codeunit "Temp Blob"): Boolean
+    var
+        FileInStream: InStream;
+        FileOutStream: OutStream;
+    begin
+        if not DownloadFileContent(OdataId, FileInStream) then
+            exit(false);
+        TempBlob.CreateOutStream(FileOutStream);
+        CopyStream(FileOutStream, FileInStream);
+        exit(true);
+    end;
+
+    procedure DownloadFileContentByServerRelativeUrl(ServerRelativeUrl: Text; var FileInStream: InStream): Boolean
+    begin
+        //GET https://{site_url}/_api/web/GetFileByServerRelativeUrl('/Folder Name/{file_name}')/$value
+        SharePointUriBuilder.ResetPath();
+        SharePointUriBuilder.SetMethod('GetFileByServerRelativeUrl', ServerRelativeUrl);
+        SharePointUriBuilder.SetObject('$value');
+
+        SharePointRequestHelper.SetAuthorization(Authorization);
+        SharePointOperationResponse := SharePointRequestHelper.Get(SharePointUriBuilder);
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
+            exit(false);
+
+        SharePointOperationResponse.GetResultAsStream(FileInStream);
+        exit(true);
+    end;
+
+    procedure DownloadFileContentByServerRelativeUrl(ServerRelativeUrl: Text; FileName: Text): Boolean
+    var
+        FileInStream: InStream;
+    begin
+        if not DownloadFileContentByServerRelativeUrl(ServerRelativeUrl, FileInStream) then
+            exit(false);
+
+        DownloadFromStream(FileInStream, '', '', '', FileName);
+        exit(true);
+    end;
+
+    procedure DownloadFileContentByServerRelativeUrl(ServerRelativeUrl: Text; var TempBlob: Codeunit "Temp Blob"): Boolean
+    var
+        FileInStream: InStream;
+        FileOutStream: OutStream;
+    begin
+        if not DownloadFileContentByServerRelativeUrl(ServerRelativeUrl, FileInStream) then
+            exit(false);
+        TempBlob.CreateOutStream(FileOutStream);
+        CopyStream(FileOutStream, FileInStream);
+        exit(true);
+    end;
+
+    procedure DeleteFile(OdataId: Text): Boolean
+    begin
+        //DELETE https://{site_url}/_api/web/GetFileByServerRelativeUrl('/Folder Name/{file_name}')
+        SharePointUriBuilder.ResetPath(OdataId);
+
+        SharePointRequestHelper.SetAuthorization(Authorization);
+        SharePointOperationResponse := SharePointRequestHelper.Delete(SharePointUriBuilder);
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
+            exit(false);
+
+        exit(true);
+    end;
+
+    procedure DeleteFileByServerRelativeUrl(ServerRelativeUrl: Text): Boolean
+    begin
+        //DELETE https://{site_url}/_api/web/GetFileByServerRelativeUrl('/Folder Name/{file_name}')
+        SharePointUriBuilder.ResetPath();
+        SharePointUriBuilder.SetMethod('GetFileByServerRelativeUrl', ServerRelativeUrl);
+
+        SharePointRequestHelper.SetAuthorization(Authorization);
+        SharePointOperationResponse := SharePointRequestHelper.Delete(SharePointUriBuilder);
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
+            exit(false);
+
         exit(true);
     end;
 
@@ -541,7 +632,34 @@ codeunit 9101 "SharePoint Client Impl."
         exit(true);
     end;
 
-    procedure AddFileToFolder(ServerRelativeUrl: Text; var SharePointFile: Record "SharePoint File" temporary): Boolean
+    procedure DeleteFolder(OdataId: Text): Boolean
+    begin
+        //DELETE https://{site_url}/_api/web/GetFolderByServerRelativeUrl('{folder_name}')
+        SharePointUriBuilder.ResetPath(OdataId);
+
+        SharePointRequestHelper.SetAuthorization(Authorization);
+        SharePointOperationResponse := SharePointRequestHelper.Delete(SharePointUriBuilder);
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
+            exit(false);
+
+        exit(true);
+    end;
+
+    procedure DeleteFolderByServerRelativeUrl(ServerRelativeUrl: Text): Boolean
+    begin
+        //DELETE https://{site_url}/_api/web/GetFolderByServerRelativeUrl('{folder_name}')
+        SharePointUriBuilder.ResetPath();
+        SharePointUriBuilder.SetMethod('GetFolderByServerRelativeUrl', ServerRelativeUrl);
+
+        SharePointRequestHelper.SetAuthorization(Authorization);
+        SharePointOperationResponse := SharePointRequestHelper.Delete(SharePointUriBuilder);
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
+            exit(false);
+
+        exit(true);
+    end;
+
+    procedure AddFileToFolder(ServerRelativeUrl: Text; var SharePointFile: Record "SharePoint File" temporary; ListAllFields: Boolean): Boolean
     var
         SharePointFileParser: Codeunit "SharePoint File";
         SharePointHttpContent: Codeunit "SharePoint Http Content";
@@ -557,6 +675,8 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointUriBuilder.SetMethod('GetFolderByServerRelativeUrl', ServerRelativeUrl);
         SharePointUriBuilder.SetObject('Files');
         SharePointUriBuilder.SetMethod('add', 'url', '''' + FileName + '''');
+        if ListAllFields then
+            SharePointUriBuilder.AddQueryParameter('$expand', 'ListItemAllFields');
 
         SharePointHttpContent.FromFileInStream(FileInStream);
         SharePointRequestHelper.SetAuthorization(Authorization);
@@ -569,7 +689,7 @@ codeunit 9101 "SharePoint Client Impl."
         exit(true);
     end;
 
-    procedure AddFileToFolder(ServerRelativeUrl: Text; FileName: Text; var FileInStream: InStream; var SharePointFile: Record "SharePoint File" temporary): Boolean
+    procedure AddFileToFolder(ServerRelativeUrl: Text; FileName: Text; var FileInStream: InStream; var SharePointFile: Record "SharePoint File" temporary; ListAllFields: Boolean): Boolean
     var
         SharePointFileParser: Codeunit "SharePoint File";
         SharePointHttpContent: Codeunit "SharePoint Http Content";
@@ -580,6 +700,8 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointUriBuilder.SetMethod('GetFolderByServerRelativeUrl', ServerRelativeUrl);
         SharePointUriBuilder.SetObject('Files');
         SharePointUriBuilder.SetMethod('add', 'url', '''' + FileName + '''');
+        if ListAllFields then
+            SharePointUriBuilder.AddQueryParameter('$expand', 'ListItemAllFields');
 
         SharePointHttpContent.FromFileInStream(FileInStream);
         SharePointRequestHelper.SetAuthorization(Authorization);
@@ -591,6 +713,67 @@ codeunit 9101 "SharePoint Client Impl."
         SharePointFileParser.ParseSingleReturnValue(Result, SharePointFile);
         exit(true);
     end;
-    #endregion
 
+    procedure UpdateListItemMetaDataField(ListTitle: Text; ItemId: Integer; ListItemEntityTypeFullName: Text; FieldName: Text; FieldValue: Text): Boolean
+    var
+        SharePointHttpContent: Codeunit "SharePoint Http Content";
+        Metadata, Payload : JsonObject;
+        Txt: Text;
+    begin
+        SharePointUriBuilder.ResetPath();
+        SharePointUriBuilder.SetObject('lists');
+        SharePointUriBuilder.SetMethod('GetByTitle', ListTitle);
+        SharePointUriBuilder.SetMethod('items', ItemId);
+
+        Metadata.Add('type', ListItemEntityTypeFullName);
+        Payload.Add('__metadata', Metadata);
+        Payload.Add(FieldName, FieldValue);
+
+        SharePointHttpContent.FromJson(Payload);
+
+        SharePointHttpContent.GetContent().ReadAs(Txt);
+
+        SharePointHttpContent.SetRequestDigest(GetRequestDigest(SharePointUriBuilder.GetHost()));
+        SharePointHttpContent.SetXHttpMethod('MERGE');
+        SharePointHttpContent.SetIfMatch('*');
+
+        SharePointOperationResponse := SharePointRequestHelper.Patch(SharePointUriBuilder, SharePointHttpContent);
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
+            exit(false);
+
+        SharePointOperationResponse.GetResultAsText(Txt);
+        Message(Txt);
+        exit(true);
+    end;
+
+    procedure UpdateListItemMetaDataField(ListId: Guid; ItemId: Integer; ListItemEntityTypeFullName: Text; FieldName: Text; FieldValue: Text): Boolean
+    var
+        SharePointHttpContent: Codeunit "SharePoint Http Content";
+        Metadata, Payload : JsonObject;
+        Txt: Text;
+    begin
+        SharePointUriBuilder.ResetPath();
+        SharePointUriBuilder.SetMethod('Lists', ListId);
+        SharePointUriBuilder.SetMethod('items', ItemId);
+
+        Metadata.Add('type', ListItemEntityTypeFullName);
+        Payload.Add('__metadata', Metadata);
+        Payload.Add(FieldName, FieldValue);
+
+        SharePointHttpContent.FromJson(Payload);
+
+        SharePointHttpContent.GetContent().ReadAs(Txt);
+
+        SharePointHttpContent.SetRequestDigest(GetRequestDigest(SharePointUriBuilder.GetHost()));
+        SharePointHttpContent.SetXHttpMethod('MERGE');
+        SharePointHttpContent.SetIfMatch('*');
+
+        SharePointOperationResponse := SharePointRequestHelper.Patch(SharePointUriBuilder, SharePointHttpContent);
+        if not SharePointOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
+            exit(false);
+
+        SharePointOperationResponse.GetResultAsText(Txt);
+        exit(true);
+    end;
+    #endregion
 }

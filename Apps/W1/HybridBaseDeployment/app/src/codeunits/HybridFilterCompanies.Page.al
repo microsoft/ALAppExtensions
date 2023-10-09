@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration;
+
+using Microsoft.Utilities;
+
 page 40039 "Hybrid Filter Companies"
 {
     PageType = StandardDialog;

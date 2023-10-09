@@ -1,4 +1,12 @@
-﻿page 40063 "Cloud Migration Management"
+﻿namespace Microsoft.DataMigration;
+
+using System.Integration;
+using System.Environment;
+using System.Telemetry;
+using System.Security.AccessControl;
+using System.Security.User;
+
+page 40063 "Cloud Migration Management"
 {
     Caption = 'Cloud Migration Management';
     PageType = ListPlus;
@@ -537,6 +545,23 @@
                         end;
                 end;
             }
+
+            action(SkipRemovingPemissionsFromUsers)
+            {
+                Enabled = IsSuper;
+                Visible = not IsOnPrem;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Enable/Disable Removing Permissions from Users';
+                ToolTip = 'Allows change the behavior if user permissions should be removed when the cloud migration is setup.';
+                Image = ChangeLog;
+
+                trigger OnAction()
+                var
+                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+                begin
+                    HybridCloudManagement.ChangeRemovePermissionsFromUsers();
+                end;
+            }
         }
 
         area(Promoted)
@@ -598,13 +623,14 @@
         PermissionManager: Codeunit "Permission Manager";
         UserPermissions: Codeunit "User Permissions";
     begin
+        CheckNewUISupported();
         FeatureTelemetry.LogUptake('0000JMI', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
         IsSuper := UserPermissions.IsSuper(UserSecurityId());
         if not IsSuper then
             SendUserIsNotSuperNotification();
 
         SendRepairDataNotification();
-        IsOnPrem := NOT EnvironmentInformation.IsSaaS();
+        IsOnPrem := not EnvironmentInformation.IsSaaS();
 
         if (not PermissionManager.IsIntelligentCloud()) and (not IsOnPrem) then
             SendSetupIntelligentCloudNotification();
@@ -671,7 +697,7 @@
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         PermissionManager: Codeunit "Permission Manager";
     begin
-        IsSetupComplete := PermissionManager.IsIntelligentCloud() OR (IsOnPrem AND NOT IntelligentCloudStatus.IsEmpty());
+        IsSetupComplete := PermissionManager.IsIntelligentCloud() or (IsOnPrem and not IntelligentCloudStatus.IsEmpty());
         IsMigratedCompany := HybridCompany.Get(CompanyName()) and HybridCompany.Replicate;
         AdlSetupEnabled := HybridCloudManagement.CanSetupAdlMigration();
 
@@ -804,6 +830,11 @@
 
     [IntegrationEvent(false, false)]
     local procedure CanMapCustomTables(var Enabled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure CheckNewUISupported()
     begin
     end;
 

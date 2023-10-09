@@ -122,15 +122,26 @@ report 31189 "Sales Invoice CZL"
             column(VATLbl; VATLbl)
             {
             }
+#if not CLEAN22
             column(PrepayedLbl; PrepayedLbl)
             {
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The advance letters are not supported in this report any more. For invoice with advance letter use report 31018 from "Advance Payments Localization for Czech" app.';
+                ObsoleteTag = '22.0';
             }
             column(TotalAfterPrepayedLbl; TotalAfterPrepayedLbl)
             {
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The advance letters are not supported in this report any more. For invoice with advance letter use report 31018 from "Advance Payments Localization for Czech" app.';
+                ObsoleteTag = '22.0';
             }
             column(PaymentsLbl; PaymentsLbl)
             {
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The advance letters are not supported in this report any more. For invoice with advance letter use report 31018 from "Advance Payments Localization for Czech" app.';
+                ObsoleteTag = '22.0';
             }
+#endif
             column(DisplayAdditionalFeeNote; DisplayAdditionalFeeNote)
             {
             }
@@ -324,7 +335,7 @@ report 31189 "Sales Invoice CZL"
                 {
                     DataItemLink = "Document No." = field("No.");
                     DataItemLinkReference = "Sales Invoice Header";
-                    DataItemTableView = sorting("Document No.", "Line No.") WHERE("Prepayment Line" = CONST(false));
+                    DataItemTableView = sorting("Document No.", "Line No.");
                     column(LineNo_SalesInvoiceLine; "Line No.")
                     {
                     }
@@ -481,7 +492,7 @@ report 31189 "Sales Invoice CZL"
                 }
                 dataitem(LineFee; "Integer")
                 {
-                    DataItemTableView = sorting(Number) ORDER(Ascending) WHERE(Number = FILTER(1 ..));
+                    DataItemTableView = sorting(Number) order(ascending) where(Number = filter(1 ..));
                     column(LineFeeCaptionLbl; TempLineFeeNoteonReportHist.ReportText)
                     {
                     }
@@ -541,7 +552,8 @@ report 31189 "Sales Invoice CZL"
             var
                 SalesInvLine: Record "Sales Invoice Line";
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
                 FormatAddressFields("Sales Invoice Header");
                 FormatDocumentFields("Sales Invoice Header");
@@ -653,12 +665,14 @@ report 31189 "Sales Invoice CZL"
         Currency: Record Currency;
         CurrencyExchangeRate: Record "Currency Exchange Rate";
         VATClause: Record "VAT Clause";
-        Language: Codeunit Language;
+        LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
 #if not CLEAN22
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
 #endif
         SegManagement: Codeunit SegManagement;
         ExchRateText: Text[50];
@@ -695,21 +709,22 @@ report 31189 "Sales Invoice CZL"
         VATAmtLbl: Label 'VAT Amount';
         TotalLbl: Label 'total';
         VATLbl: Label 'VAT';
+#if not CLEAN22
         PrepayedLbl: Label 'Prepayed Advances';
         TotalAfterPrepayedLbl: Label 'Total after Prepayed Advances';
         PaymentsLbl: Label 'Payments List';
+#endif
         UnitPriceExclVATLbl: Label 'Unit Price Excl. VAT';
         GreetingLbl: Label 'Hello';
         ClosingLbl: Label 'Sincerely';
         BodyLbl: Label 'Thank you for your business. Your invoice is attached to this message.';
         DocumentNoLbl: Label 'No.';
-        [InDataSet]
         LogInteractionEnable: Boolean;
         DisplayAdditionalFeeNote: Boolean;
 
     procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractionTemplateCode(4) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(Enum::"Interaction Log Entry Document Type"::"Sales Inv.") <> '';
     end;
 
     local procedure GetLineFeeNoteOnReportHist(SalesInvoiceHeaderNo: Code[20])
@@ -735,7 +750,7 @@ report 31189 "Sales Invoice CZL"
                 TempLineFeeNoteonReportHist.Insert();
             until LineFeeNoteonReportHist.Next() = 0
         else begin
-            LineFeeNoteonReportHist.SetRange("Language Code", Language.GetUserLanguageCode());
+            LineFeeNoteonReportHist.SetRange("Language Code", LanguageMgt.GetUserLanguageCode());
             if LineFeeNoteonReportHist.FindSet() then
                 repeat
                     TempLineFeeNoteonReportHist.Init();

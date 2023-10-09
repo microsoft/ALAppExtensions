@@ -8,22 +8,6 @@ pageextension 11733 "Posted Sales Invoice CZL" extends "Posted Sales Invoice"
             Visible = ReplaceVATDateEnabled and VATDateEnabled;
         }
 #endif
-#if not CLEAN20
-#pragma warning disable AL0432
-        movelast(General; "Posting Description")
-#pragma warning restore AL0432
-#else
-        addlast(General)
-        {
-            field("Posting Description"; Rec."Posting Description")
-            {
-                ApplicationArea = Basic, Suite;
-                Editable = false;
-                ToolTip = 'Specifies a description of the document. The posting description also appers on customer and G/L entries.';
-                Visible = false;
-            }
-        }
-#endif
         addbefore("Location Code")
         {
             field("Reason Code CZL"; Rec."Reason Code")
@@ -141,12 +125,18 @@ pageextension 11733 "Posted Sales Invoice CZL" extends "Posted Sales Invoice"
                 Editable = false;
                 ToolTip = 'Specifies when the sales header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
             }
+#if not CLEAN22
             field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Exclude (Obsolete)';
                 Editable = false;
                 ToolTip = 'Specifies that entry will be excluded from intrastat.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
             }
+#endif
         }
         addafter("Foreign Trade")
         {
@@ -231,7 +221,9 @@ pageextension 11733 "Posted Sales Invoice CZL" extends "Posted Sales Invoice"
     end;
 
     var
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         ReplaceVATDateEnabled: Boolean;
         VATDateEnabled: Boolean;

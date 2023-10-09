@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using System.IO;
+using System.Reflection;
+
 codeunit 5262 "Import Audit Data Mgt."
 {
     TableNo = "G/L Account Mapping Header";
@@ -19,9 +28,9 @@ codeunit 5262 "Import Audit Data Mgt."
         StandardAccount: Record "Standard Account";
         StandardAccNo: Code[20];
     begin
+        if not TempXMLBuffer.HasChildNodes() then
+            Error(NotPossibleToParseMappingXMLFileErr, StandardAccountsTxt);
         repeat
-            if not TempXMLBuffer.HasChildNodes() then
-                Error(NotPossibleToParseMappingXMLFileErr, StandardAccountsTxt);
             TempXMLBuffer.FindChildElements(TempChildXMLBuffer);
             StandardAccNo := CopyStr(TempChildXMLBuffer.Value, 1, MaxStrLen(StandardAccount."No."));
             StandardAccount.Init();

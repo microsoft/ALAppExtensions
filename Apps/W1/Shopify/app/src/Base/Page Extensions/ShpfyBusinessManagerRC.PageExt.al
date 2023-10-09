@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Finance.RoleCenters;
+
 /// <summary>
 /// PageExtension Shpfy Business Manager RC (ID 30101) extends Record Business Manager Role Center.
 /// </summary>
@@ -54,6 +58,23 @@ pageextension 30101 "Shpfy Business Manager RC" extends "Business Manager Role C
                     RunObject = page "Shpfy Orders";
                     RunPageView = where(Closed = const(false));
                     ToolTip = 'View your Shopify agreements with customers to sell certain products on certain delivery and payment terms.';
+                }
+                action(Refunds)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Refunds';
+                    Image = OrderList;
+                    RunObject = page "Shpfy Refunds";
+                    ToolTip = 'View your Shopify refunds.';
+
+                }
+                action(Returns)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Returns';
+                    Image = OrderList;
+                    RunObject = page "Shpfy Returns";
+                    ToolTip = 'View your Shopify returns.';
                 }
                 action(ShpfyGiftCards)
                 {

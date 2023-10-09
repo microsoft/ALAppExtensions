@@ -10,17 +10,17 @@ codeunit 11755 "Registration Log Mgt. CZL"
 
     procedure LogCustomer(Customer: Record Customer)
     begin
-        InsertLogRegistration(Customer."Registration No. CZL", Enum::"Reg. Log Account Type CZL"::Customer, Customer."No.");
+        InsertLogRegistration(Customer.GetRegistrationNoTrimmedCZL(), Enum::"Reg. Log Account Type CZL"::Customer, Customer."No.");
     end;
 
     procedure LogVendor(Vendor: Record Vendor)
     begin
-        InsertLogRegistration(Vendor."Registration No. CZL", Enum::"Reg. Log Account Type CZL"::Vendor, Vendor."No.");
+        InsertLogRegistration(Vendor.GetRegistrationNoTrimmedCZL(), Enum::"Reg. Log Account Type CZL"::Vendor, Vendor."No.");
     end;
 
     procedure LogContact(Contact: Record Contact)
     begin
-        InsertLogRegistration(Contact."Registration No. CZL", Enum::"Reg. Log Account Type CZL"::Contact, Contact."No.");
+        InsertLogRegistration(Contact.GetRegistrationNoTrimmedCZL(), Enum::"Reg. Log Account Type CZL"::Contact, Contact."No.");
     end;
 
     local procedure InsertLogRegistration(RegNo: Text[20]; AccType: Enum "Reg. Log Account Type CZL"; AccNo: Code[20])
@@ -35,6 +35,105 @@ codeunit 11755 "Registration Log Mgt. CZL"
         NewRegistrationLogCZL.Insert(true);
     end;
 
+    procedure LogError(var NewRegistrationLogCZL: Record "Registration Log CZL"; JsonObject: JsonObject)
+    var
+        ErrorDescription: Text;
+        ErrorDescriptionKeyTok: Label 'popis', Locked = true;
+    begin
+        NewRegistrationLogCZL."Entry No." := 0;
+        NewRegistrationLogCZL."Verified Date" := CurrentDateTime;
+        NewRegistrationLogCZL.Status := NewRegistrationLogCZL.Status::Invalid;
+        NewRegistrationLogCZL."User ID" := CopyStr(UserId(), 1, MaxStrLen(NewRegistrationLogCZL."User ID"));
+        if GetValue(JsonObject, ErrorDescriptionKeyTok, ErrorDescription) then
+            NewRegistrationLogCZL."Verified Result" := CopyStr(ErrorDescription, 1, MaxStrLen(NewRegistrationLogCZL."Verified Result"));
+        NewRegistrationLogCZL."Verified Name" := '';
+        NewRegistrationLogCZL."Verified Address" := '';
+        NewRegistrationLogCZL."Verified City" := '';
+        NewRegistrationLogCZL."Verified Post Code" := '';
+        NewRegistrationLogCZL."Verified VAT Registration No." := '';
+        NewRegistrationLogCZL.Insert(true);
+    end;
+
+    procedure LogVerification(var NewRegistrationLogCZL: Record "Registration Log CZL"; ResponseObject: JsonObject)
+    var
+        AddressObject: JsonObject;
+        ResourceStatusObject: JsonObject;
+        Address: array[10] of Text;
+        AddressText: Text;
+        Value: Text;
+        VATSourceStatus: Text;
+        CZCodeTok: Label 'CZ', Locked = true;
+        VATRegistrationNoKeyTok: Label 'dic', Locked = true;
+        NameKeyTok: Label 'obchodniJmeno', Locked = true;
+        AddressKeyTok: Label 'sidlo', Locked = true;
+        CityKeyTok: Label 'nazevObce', Locked = true;
+        PostCodeKeyTok: Label 'psc', Locked = true;
+        StreetKeyTok: Label 'nazevUlice', Locked = true;
+        QuarterKeyTok: Label 'nazevCastiObce', Locked = true;
+        HouseNoKeyTok: Label 'cisloDomovni', Locked = true;
+        OrientationNoNoKeyTok: Label 'cisloOrientacni', Locked = true;
+        AddressTextKeyTok: Label 'textovaAdresa', Locked = true;
+        RegistrationListKeyTok: Label 'seznamRegistraci', Locked = true;
+        VATSourceStatusKeyTok: Label 'stavZdrojeDph', Locked = true;
+        ActiveSourceKeyTok: Label 'AKTIVNI', Locked = true;
+    begin
+        NewRegistrationLogCZL."Entry No." := 0;
+        NewRegistrationLogCZL.Status := NewRegistrationLogCZL.Status::Valid;
+        NewRegistrationLogCZL."Verified Date" := CurrentDateTime;
+        NewRegistrationLogCZL."User ID" := CopyStr(UserId(), 1, MaxStrLen(NewRegistrationLogCZL."User ID"));
+
+        // VAT Source Status
+        if GetValue(ResponseObject, RegistrationListKeyTok, ResourceStatusObject) then
+            GetValue(ResourceStatusObject, VATSourceStatusKeyTok, VATSourceStatus);
+
+        // VAT Registration No.
+        if VATSourceStatus = ActiveSourceKeyTok then
+            if GetValue(ResponseObject, VATRegistrationNoKeyTok, Value) then begin
+                if CopyStr(Value, 1, 2) <> CZCodeTok then
+                    Value := CZCodeTok + Value;
+                NewRegistrationLogCZL."Verified VAT Registration No." :=
+                    CopyStr(Value, 1, MaxStrLen(NewRegistrationLogCZL."Verified VAT Registration No."))
+            end;
+
+        // Name
+        if GetValue(ResponseObject, NameKeyTok, Value) then
+            NewRegistrationLogCZL."Verified Name" :=
+              CopyStr(Value, 1, MaxStrLen(NewRegistrationLogCZL."Verified Name"));
+
+        // Address information
+        if GetValue(ResponseObject, AddressKeyTok, AddressObject) then begin
+            // City
+            if GetValue(AddressObject, CityKeyTok, Value) then
+                NewRegistrationLogCZL."Verified City" :=
+                  CopyStr(Value, 1, MaxStrLen(NewRegistrationLogCZL."Verified City"));
+
+            // Post Code
+            if GetValue(AddressObject, PostCodeKeyTok, Value) then
+                NewRegistrationLogCZL."Verified Post Code" :=
+                  CopyStr(Value, 1, MaxStrLen(NewRegistrationLogCZL."Verified Post Code"));
+
+            if GetValue(AddressObject, StreetKeyTok, Value) then
+                Address[1] := Value;  // Street
+            if GetValue(AddressObject, QuarterKeyTok, Value) then
+                Address[2] := Value;  // Quarter
+            if GetValue(AddressObject, HouseNoKeyTok, Value) then
+                Address[3] := Value;  // House No.
+            if GetValue(AddressObject, OrientationNoNoKeyTok, Value) then
+                Address[4] := Value;  // Orientation No.
+            if GetValue(AddressObject, AddressTextKeyTok, Value) then
+                AddressText := Value;  // Address Text
+        end;
+
+        NewRegistrationLogCZL."Verified Address" := CopyStr(FormatAddress(Address), 1, MaxStrLen(NewRegistrationLogCZL."Verified Address"));
+        if NewRegistrationLogCZL."Verified Address" = '' then
+            NewRegistrationLogCZL."Verified Address" := CopyStr(AddressText, 1, MaxStrLen(NewRegistrationLogCZL."Verified Address"));
+        NewRegistrationLogCZL.Insert(true);
+
+        if NewRegistrationLogCZL.LogDetails() then
+            NewRegistrationLogCZL.Modify();
+    end;
+#if not CLEAN23
+    [Obsolete('Replaced by LogVerification and LogError functions with JsonObject parameter.', '23.0')]
     procedure LogVerification(var NewRegistrationLogCZL: Record "Registration Log CZL"; XmlDoc: XmlDocument; Namespace: Text)
     var
         Address: array[10] of Text;
@@ -96,6 +195,7 @@ codeunit 11755 "Registration Log Mgt. CZL"
             NewRegistrationLogCZL.Insert(true);
         end;
     end;
+#endif
 
     local procedure FormatAddress(Address: array[10] of Text): Text
     var
@@ -135,19 +235,19 @@ codeunit 11755 "Registration Log Mgt. CZL"
         case AccountType of
             AccountType::Customer:
                 if Customer.Get(AccountNo) then begin
-                    NewRegistrationLogCZL.SetRange("Registration No.", Customer."Registration No. CZL");
+                    NewRegistrationLogCZL.SetRange("Registration No.", Customer."Registration Number");
                     if NewRegistrationLogCZL.IsEmpty() then
                         LogCustomer(Customer);
                 end;
             AccountType::Vendor:
                 if Vendor.Get(AccountNo) then begin
-                    NewRegistrationLogCZL.SetRange("Registration No.", Vendor."Registration No. CZL");
+                    NewRegistrationLogCZL.SetRange("Registration No.", Vendor."Registration Number");
                     if NewRegistrationLogCZL.IsEmpty() then
                         LogVendor(Vendor);
                 end;
             AccountType::Contact:
                 if Contact.Get(AccountNo) then begin
-                    NewRegistrationLogCZL.SetRange("Registration No.", Contact."Registration No. CZL");
+                    NewRegistrationLogCZL.SetRange("Registration No.", Contact."Registration Number");
                     if NewRegistrationLogCZL.IsEmpty() then
                         LogContact(Contact);
                 end;
@@ -224,7 +324,7 @@ codeunit 11755 "Registration Log Mgt. CZL"
             exit;
         InitServiceSetup();
     end;
-
+#if not CLEAN23
     local procedure ExtractValue(Xpath: Text; XMLDoc: XmlDocument; Namespace: Text): Text
     var
         XMLNamespaceManager: XmlNamespaceManager;
@@ -233,6 +333,51 @@ codeunit 11755 "Registration Log Mgt. CZL"
         XmlNamespaceManager.AddNamespace('D', Namespace);
         if XmlDoc.SelectSingleNode(XPath, XmlNamespaceManager, FoundXMLNode) then
             exit(FoundXMLNode.AsXmlElement().InnerText());
+    end;
+#endif
+
+    local procedure GetValue(JsonObject: JsonObject; JsonKey: Text; var Result: Text): Boolean
+    var
+        JsonToken: JsonToken;
+    begin
+        if not JsonObject.Get(JsonKey, JsonToken) then
+            exit(false);
+
+        exit(GetValue(JsonToken, Result));
+    end;
+
+    local procedure GetValue(JsonObject: JsonObject; JsonKey: Text; var Result: JsonObject): Boolean
+    var
+        JsonToken: JsonToken;
+    begin
+        if not JsonObject.Get(JsonKey, JsonToken) then
+            exit(false);
+
+        exit(GetValue(JsonToken, Result));
+    end;
+
+    local procedure GetValue(JsonToken: JsonToken; var Result: Text): Boolean
+    var
+        JsonValue: JsonValue;
+    begin
+        if not JsonToken.IsValue() then
+            exit(false);
+
+        JsonValue := JsonToken.AsValue();
+        if JsonValue.IsUndefined() or JsonValue.IsNull() then
+            exit(false);
+
+        Result := JsonValue.AsText();
+        exit(true);
+    end;
+
+    local procedure GetValue(JsonToken: JsonToken; var Result: JsonObject): Boolean
+    begin
+        if not JsonToken.IsObject() then
+            exit(false);
+
+        Result := JsonToken.AsObject();
+        exit(true);
     end;
 
     procedure CheckARESForRegNo(var RecordRef: RecordRef; var RegistrationLogCZL: Record "Registration Log CZL"; RecordVariant: Variant; EntryNo: Code[20]; AccountType: Enum "Reg. Log Account Type CZL")
@@ -245,7 +390,7 @@ codeunit 11755 "Registration Log Mgt. CZL"
     begin
         DataTypeManagement.GetRecordRef(RecordVariant, RecordRef);
         if RegNoServiceConfigCZL.RegNoSrvIsEnabled() then begin
-            if not DataTypeManagement.FindFieldByName(RecordRef, RegNoFieldRef, Contact.FieldName("Registration No. CZL")) then
+            if not DataTypeManagement.FindFieldByName(RecordRef, RegNoFieldRef, Contact.FieldName("Registration Number")) then
                 exit;
             RegNo := RegNoFieldRef.Value;
             RegistrationLogCZL.InitRegLog(RegistrationLogCZL, AccountType, EntryNo, RegNo);
@@ -305,8 +450,14 @@ codeunit 11755 "Registration Log Mgt. CZL"
         RegistrationNoCheck.GetRecordRef(ResultRecord);
     end;
 
+#if not CLEAN21
+#pragma warning disable AL0432
+#endif
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]
     local procedure HandleAresRegisterServiceConnection(var ServiceConnection: Record "Service Connection")
+#if not CLEAN21
+#pragma warning restore AL0432
+#endif
     var
         RegNoServiceConfigCZL: Record "Reg. No. Service Config CZL";
         ServiceConfigRecordRef: RecordRef;

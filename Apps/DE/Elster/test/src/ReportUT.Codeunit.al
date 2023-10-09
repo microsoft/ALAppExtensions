@@ -173,16 +173,15 @@ codeunit 148164 "Elster Report UT"
         LoadXMLFromSalesVATAdvanceNotif(SalesVATAdvanceNotif);
         Assert.AreEqual(
             Format(VATEntry.Amount, 0, '<precision,2:2><Sign><Integer><Decimals><comma,.>'),
-            LibraryXPathXMLReader.GetXmlElementValue('//ns:Anmeldungssteuern/ns:Steuerfall/ns:Umsatzsteuervoranmeldung/ns:Kz37'),
+            LibraryXPathXMLReader.GetXmlElementValue('//ns:Steuerfall/ns:Umsatzsteuervoranmeldung/ns:Kz37'),
             'Kz37');
         Assert.AreEqual(
             Format(VATEntry.Base, 0, '<Sign><Integer>'),
-            LibraryXPathXMLReader.GetXmlElementValue('//ns:Anmeldungssteuern/ns:Steuerfall/ns:Umsatzsteuervoranmeldung/ns:Kz50'),
+            LibraryXPathXMLReader.GetXmlElementValue('//ns:Steuerfall/ns:Umsatzsteuervoranmeldung/ns:Kz50'),
             'Kz50');
 
         // Tear down
         VATStatementName.Delete(true);
-
     end;
 
     [Test]
@@ -291,6 +290,82 @@ codeunit 148164 "Elster Report UT"
         VATStatementName.Delete(true);
     end;
 
+    [Test]
+    [HandlerFunctions('MessageHandler')]
+    procedure CreateXMLFile_Kz87()
+    var
+        VATEntry: Record "VAT Entry";
+        VATStatementName: Record "VAT Statement Name";
+        VATStatementLine: Record "VAT Statement Line";
+        SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.";
+        VATProdPostingGroup: Code[20];
+    begin
+        // [SCENARIO 468885] Report 11016 "Create XML-File VAT Adv.Notif." exports "Kz87" (VAT Base type)
+        Initialize();
+
+        // [GIVEN] VAT Statement setup for "Kz87" (VAT Base type)
+        VATProdPostingGroup := LibraryUtility.GenerateGUID();
+        CreateVATStatementName(VATStatementName);
+        CreateVATStatementLine(VATStatementName, '87', VATStatementLine."Amount Type"::Base, VATProdPostingGroup);
+
+        // [GIVEN] Posted VAT Entry with Base "A"
+        MockVATEntry(VATEntry, VATProdPostingGroup);
+
+        // [GIVEN] Sales VAT Advance notification entry
+        CreateSalesVATAdvanceNotif(SalesVATAdvanceNotif, SalesVATAdvanceNotif.Period::Month, VATStatementName.Name);
+
+        // [WHEN] Run "Create XML File" action from sales VAT advance notification
+        Report.Run(Report::"Create XML-File VAT Adv.Notif.", false, false, SalesVATAdvanceNotif);
+
+        // [THEN] XML file has been generated with the following node: "Anmeldungssteuern/Steuerfall/Umsatzsteuervoranmeldung/Kz87" = "A"
+        LoadXMLFromSalesVATAdvanceNotif(SalesVATAdvanceNotif);
+        Assert.AreEqual(
+            Format(VATEntry.Base, 0, '<Sign><Integer>'),
+            LibraryXPathXMLReader.GetXmlElementValue('//ns:Steuerfall/ns:Umsatzsteuervoranmeldung/ns:Kz87'),
+            'Kz87');
+
+        // Tear down
+        VATStatementName.Delete(true);
+    end;
+
+    [Test]
+    [HandlerFunctions('MessageHandler')]
+    procedure CreateXMLFile_Kz90()
+    var
+        VATEntry: Record "VAT Entry";
+        VATStatementName: Record "VAT Statement Name";
+        VATStatementLine: Record "VAT Statement Line";
+        SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.";
+        VATProdPostingGroup: Code[20];
+    begin
+        // [SCENARIO 468885] Report 11016 "Create XML-File VAT Adv.Notif." exports "Kz90" (VAT Base type)
+        Initialize();
+
+        // [GIVEN] VAT Statement setup for "Kz90" (VAT Base type)
+        VATProdPostingGroup := LibraryUtility.GenerateGUID();
+        CreateVATStatementName(VATStatementName);
+        CreateVATStatementLine(VATStatementName, '90', VATStatementLine."Amount Type"::Base, VATProdPostingGroup);
+
+        // [GIVEN] Posted VAT Entry with Base "A"
+        MockVATEntry(VATEntry, VATProdPostingGroup);
+
+        // [GIVEN] Sales VAT Advance notification entry
+        CreateSalesVATAdvanceNotif(SalesVATAdvanceNotif, SalesVATAdvanceNotif.Period::Month, VATStatementName.Name);
+
+        // [WHEN] Run "Create XML File" action from sales VAT advance notification
+        Report.Run(Report::"Create XML-File VAT Adv.Notif.", false, false, SalesVATAdvanceNotif);
+
+        // [THEN] XML file has been generated with the following node: "Anmeldungssteuern/Steuerfall/Umsatzsteuervoranmeldung/Kz90" = "A"
+        LoadXMLFromSalesVATAdvanceNotif(SalesVATAdvanceNotif);
+        Assert.AreEqual(
+            Format(VATEntry.Base, 0, '<Sign><Integer>'),
+            LibraryXPathXMLReader.GetXmlElementValue('//ns:Steuerfall/ns:Umsatzsteuervoranmeldung/ns:Kz90'),
+            'Kz90');
+
+        // Tear down
+        VATStatementName.Delete(true);
+    end;
+
     local procedure Initialize()
     var
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
@@ -388,8 +463,6 @@ codeunit 148164 "Elster Report UT"
         SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.";
     begin
         SalesVATAdvanceNotif.Get(SalesVATAdvanceNotifNo);
-        SalesVATAdvanceNotif.TestField("XML-File Creation Date", Today());
-        SalesVATAdvanceNotif.TestField("XSL-Filename", '');
         SalesVATAdvanceNotif.TestField(Period, Period);
         SalesVATAdvanceNotif.TestField("Statement Name", StatementName);
     end;
@@ -415,7 +488,7 @@ codeunit 148164 "Elster Report UT"
     begin
         SalesVATAdvanceNotif.CalcFields("XML Submission Document");
         TempBlob.FromRecord(SalesVATAdvanceNotif, SalesVATAdvanceNotif.FieldNo("XML Submission Document"));
-        LibraryXPathXMLReader.InitializeXml(TempBlob, 'ns', 'http://finkonsens.de/elster/elsteranmeldung/ustva/v2021');
+        LibraryXPathXMLReader.InitializeXml(TempBlob, 'ns', 'http://finkonsens.de/elster/elsteranmeldung/ustva/v2023');
     end;
 
     [RequestPageHandler]

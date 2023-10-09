@@ -1,3 +1,7 @@
+namespace Microsoft.Payroll.Ceridian;
+
+using System.Security.Encryption;
+
 page 1665 "MS - Ceridian Payroll Setup"
 {
     PageType = Card;
@@ -10,13 +14,13 @@ page 1665 "MS - Ceridian Payroll Setup"
             group(General)
             {
                 Caption = 'General';
-                field("Service URL"; "Service URL")
+                field("Service URL"; Rec."Service URL")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'SFTP Server';
                     ToolTip = 'Specifies the URL address of the Ceridian Payroll.';
                 }
-                field("User Name"; "User Name")
+                field("User Name"; Rec."User Name")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the name of the user.';
@@ -29,8 +33,8 @@ page 1665 "MS - Ceridian Payroll Setup"
 
                     trigger OnValidate();
                     begin
-                        SavePassword("Password Key", Password);
-                        IF Password <> '' THEN
+                        Rec.SavePassword(Rec."Password Key", Password);
+                        if Password <> '' then
                             CheckEncryption();
                     end;
                 }
@@ -44,16 +48,16 @@ page 1665 "MS - Ceridian Payroll Setup"
 
     trigger OnAfterGetCurrRecord();
     begin
-        UpdateEncryptedField("Password Key", Password);
+        UpdateEncryptedField(Rec."Password Key", Password);
     end;
 
     trigger OnOpenPage();
     begin
-        RESET();
-        IF NOT GET() THEN BEGIN
-            INIT();
-            INSERT(TRUE);
-        END;
+        Rec.Reset();
+        if not Rec.Get() then begin
+            Rec.Init();
+            Rec.Insert(true);
+        end;
     end;
 
     var
@@ -63,18 +67,17 @@ page 1665 "MS - Ceridian Payroll Setup"
 
     local procedure CheckEncryption();
     begin
-        IF NOT ENCRYPTIONENABLED() THEN
-            IF NOT ENCRYPTIONENABLED() THEN
-                IF CONFIRM(EncryptionIsNotActivatedQst) THEN
+        if not ENCRYPTIONENABLED() then
+            if not ENCRYPTIONENABLED() then
+                if CONFIRM(EncryptionIsNotActivatedQst) then
                     PAGE.RUN(PAGE::"Data Encryption Management");
     end;
 
     local procedure UpdateEncryptedField(InputGUID: Guid; var Text: Text[50]);
     begin
-        IF ISNULLGUID(InputGUID) THEN
+        if ISNULLGUID(InputGUID) then
             Text := ''
-        ELSE
+        else
             Text := '*************';
     end;
 }
-

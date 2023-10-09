@@ -1,3 +1,9 @@
+namespace Microsoft.Bank.Deposit;
+
+using Microsoft.Foundation.Navigate;
+using Microsoft.Foundation.Reporting;
+using Microsoft.Finance.GeneralLedger.Ledger;
+
 page 1694 "Posted Bank Deposit"
 {
     Caption = 'Posted Bank Deposit';
@@ -39,7 +45,7 @@ page 1694 "Posted Bank Deposit"
                 field(Difference; GetDifference())
                 {
                     ApplicationArea = Basic, Suite;
-                    AutoFormatExpression = "Currency Code";
+                    AutoFormatExpression = Rec."Currency Code";
                     AutoFormatType = 1;
                     Caption = 'Difference';
                     Editable = false;
@@ -86,7 +92,7 @@ page 1694 "Posted Bank Deposit"
             part(Subform; "Posted Bank Deposit Subform")
             {
                 ApplicationArea = Basic, Suite;
-                SubPageLink = "Bank Deposit No." = FIELD("No.");
+                SubPageLink = "Bank Deposit No." = field("No.");
             }
         }
         area(factboxes)
@@ -116,9 +122,9 @@ page 1694 "Posted Bank Deposit"
                     PromotedCategory = Category4;
                     PromotedIsBig = true;
                     RunObject = Page "Bank Acc. Comment Sheet";
-                    RunPageLink = "Bank Account No." = FIELD("Bank Account No."),
-                                  "No." = FIELD("No.");
-                    RunPageView = WHERE("Table Name" = CONST("Posted Bank Deposit Header"));
+                    RunPageLink = "Bank Account No." = field("Bank Account No."),
+                                  "No." = field("No.");
+                    RunPageView = where("Table Name" = const("Posted Bank Deposit Header"));
                     ToolTip = 'View deposit comments that apply.';
                 }
                 action(Dimensions)
@@ -247,8 +253,8 @@ page 1694 "Posted Bank Deposit"
 
     local procedure GetDifference(): Decimal
     begin
-        CalcFields("Total Deposit Lines");
-        exit("Total Deposit Amount" - "Total Deposit Lines");
+        Rec.CalcFields("Total Deposit Lines");
+        exit(Rec."Total Deposit Amount" - Rec."Total Deposit Lines");
     end;
 
     [IntegrationEvent(false, false)]
@@ -256,4 +262,6 @@ page 1694 "Posted Bank Deposit"
     begin
     end;
 }
+
+
 

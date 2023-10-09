@@ -1,7 +1,9 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Privacy;
 
 /// <summary>
 /// Exposes functionality that allows users to classify their data.
@@ -73,7 +75,7 @@ page 1752 "Data Classification Wizard"
                     Editable = false;
                     ShowCaption = false;
                     Style = StandardAccent;
-                    StyleExpr = TRUE;
+                    StyleExpr = true;
 
                     trigger OnDrillDown()
                     begin
@@ -264,12 +266,12 @@ page 1752 "Data Classification Wizard"
                     repeater(Control20)
                     {
                         ShowCaption = false;
-                        field(Include; Include)
+                        field(Include; Rec.Include)
                         {
                             ApplicationArea = All;
                             ToolTip = 'Specifies whether to apply the classification to the type of data subjects.';
                         }
-                        field(Entity; "Table Caption")
+                        field(Entity; Rec."Table Caption")
                         {
                             ApplicationArea = All;
                             Caption = 'Data Subject';
@@ -277,7 +279,7 @@ page 1752 "Data Classification Wizard"
                             Editable = false;
                             ToolTip = 'Specifies the type of data subjects to apply the data classification to.';
                         }
-                        field("Default Data Sensitivity"; "Default Data Sensitivity")
+                        field("Default Data Sensitivity"; Rec."Default Data Sensitivity")
                         {
                             ApplicationArea = All;
                             ToolTip = 'Specifies the sensitivity classification to apply to the type of data subjects.';
@@ -301,7 +303,7 @@ page 1752 "Data Classification Wizard"
                 repeater(Control25)
                 {
                     ShowCaption = false;
-                    field("Entity 2"; "Table Caption")
+                    field("Entity 2"; Rec."Table Caption")
                     {
                         ApplicationArea = All;
                         Caption = 'Data Subject';
@@ -309,7 +311,7 @@ page 1752 "Data Classification Wizard"
                         Editable = false;
                         ToolTip = 'Specifies the type of data subjects to apply the data classification to.';
                     }
-                    field("Fields"; Fields)
+                    field("Fields"; Rec.Fields)
                     {
                         ApplicationArea = All;
                         Editable = false;
@@ -322,7 +324,7 @@ page 1752 "Data Classification Wizard"
                             RunDataClassificationWorksheetForTable();
                         end;
                     }
-                    field(Status; Status)
+                    field(Status; Rec.Status)
                     {
                         ApplicationArea = All;
                         Editable = false;
@@ -348,7 +350,7 @@ page 1752 "Data Classification Wizard"
                 repeater(Control52)
                 {
                     ShowCaption = false;
-                    field("Similar Fields Label"; "Similar Fields Label")
+                    field("Similar Fields Label"; Rec."Similar Fields Label")
                     {
                         ApplicationArea = All;
                         Caption = 'Fields';
@@ -360,7 +362,7 @@ page 1752 "Data Classification Wizard"
                             RunDataClassificationWorksheetForPersonalAndSensitiveDataInTable();
                         end;
                     }
-                    field("Status 2"; "Status 2")
+                    field("Status 2"; Rec."Status 2")
                     {
                         ApplicationArea = All;
                         Caption = 'Status';
@@ -378,7 +380,7 @@ page 1752 "Data Classification Wizard"
             group(FinishPage)
             {
                 ShowCaption = false;
-                Visible = (Step = Step::Finish) AND NOT IsExportModeSelectedValue;
+                Visible = (Step = Step::Finish) and not IsExportModeSelectedValue;
                 group("That's it")
                 {
                     Caption = 'That''s it';
@@ -394,7 +396,7 @@ page 1752 "Data Classification Wizard"
             group(FinishPageForExportMode)
             {
                 ShowCaption = false;
-                Visible = (Step = Step::Finish) AND IsExportModeSelectedValue;
+                Visible = (Step = Step::Finish) and IsExportModeSelectedValue;
                 group(Control46)
                 {
                     Caption = 'That''s it';
@@ -420,7 +422,7 @@ page 1752 "Data Classification Wizard"
                 trigger OnAction()
                 begin
                     if Step = Step::Verify then
-                        Reset();
+                        Rec.Reset();
                     NextStep(true);
                 end;
             }
@@ -445,12 +447,12 @@ page 1752 "Data Classification Wizard"
 
     trigger OnAfterGetRecord()
     begin
-        if Status = Status::"Review Needed" then
+        if Rec.Status = Rec.Status::"Review Needed" then
             StatusStyle := 'UnFavorable'
         else
             StatusStyle := 'Favorable';
 
-        if "Status 2" = "Status 2"::"Review Needed" then
+        if Rec."Status 2" = Rec."Status 2"::"Review Needed" then
             SimilarFieldsStatusStyle := 'UnFavorable'
         else
             SimilarFieldsStatusStyle := 'Favorable';
@@ -497,9 +499,9 @@ page 1752 "Data Classification Wizard"
         BackEnabled := true;
         NextEnabled := true;
         FinishEnabled := false;
-        Reset();
+        Rec.Reset();
 
-        if IsEmpty() then
+        if Rec.IsEmpty() then
             DataClassificationMgt.RaiseOnGetDataPrivacyEntities(Rec);
 
         case Step of
@@ -509,7 +511,7 @@ page 1752 "Data Classification Wizard"
                 NextEnabled := ShouldEnableNext();
             Step::Verify,
           Step::"Verify Related Fields":
-                SetRange(Include, true);
+                Rec.SetRange(Include, true);
             Step::Finish:
                 begin
                     FinishEnabled := true;
@@ -522,10 +524,10 @@ page 1752 "Data Classification Wizard"
     var
         DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
     begin
-        DataClassificationMgtImpl.RunDataClassificationWorksheetForTable("Table No.");
+        DataClassificationMgtImpl.RunDataClassificationWorksheetForTable(Rec."Table No.");
 
-        Reviewed := true;
-        Status := Status::Reviewed;
+        Rec.Reviewed := true;
+        Rec.Status := Rec.Status::Reviewed;
         CurrPage.Update();
     end;
 
@@ -533,10 +535,10 @@ page 1752 "Data Classification Wizard"
     var
         DataClassificationMgtImpl: Codeunit "Data Classification Mgt. Impl.";
     begin
-        DataClassificationMgtImpl.RunDataClassificationWorksheetForPersonalAndSensitiveDataInTable("Table No.");
+        DataClassificationMgtImpl.RunDataClassificationWorksheetForPersonalAndSensitiveDataInTable(Rec."Table No.");
 
-        "Similar Fields Reviewed" := true;
-        "Status 2" := "Status 2"::Reviewed;
+        Rec."Similar Fields Reviewed" := true;
+        Rec."Status 2" := Rec."Status 2"::Reviewed;
         CurrPage.Update();
     end;
 
@@ -601,13 +603,13 @@ page 1752 "Data Classification Wizard"
     procedure CheckMandatoryActions()
     begin
         if Step = Step::"Verify Related Fields" then begin
-            SetRange("Similar Fields Reviewed", false);
-            if FindFirst() then
+            Rec.SetRange("Similar Fields Reviewed", false);
+            if Rec.FindFirst() then
                 Error(ReviewSimilarFieldsErr);
         end;
         if Step = Step::Verify then begin
-            SetRange(Reviewed, false);
-            if FindFirst() then
+            Rec.SetRange(Reviewed, false);
+            if Rec.FindFirst() then
                 Error(ReviewFieldsErr);
         end;
     end;
@@ -693,4 +695,5 @@ page 1752 "Data Classification Wizard"
         exit(SetupTablesDefaultClassifications);
     end;
 }
+
 

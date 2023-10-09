@@ -2,8 +2,8 @@ table 11793 "Company Official CZL"
 {
     Caption = 'Company Official';
     DataCaptionFields = "No.";
-    DrillDownPageID = "Company Official List CZL";
-    LookupPageID = "Company Official List CZL";
+    DrillDownPageId = "Company Official List CZL";
+    LookupPageId = "Company Official List CZL";
 
     fields
     {

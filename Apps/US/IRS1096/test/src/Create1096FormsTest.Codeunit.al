@@ -12,7 +12,7 @@ codeunit 144041 "Create 1096 Forms Test"
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         Assert: Codeunit Assert;
         DivCodeTok: Label 'DIV', Locked = true;
-        MiscCodeTok: Label 'DIV', Locked = true;
+        MiscCodeTok: Label 'MISC', Locked = true;
         Div01CodeTok: Label 'DIV-01', Locked = true;
         IsInitialized: Boolean;
         FormsCreatedMsg: Label 'IRS 1096 forms have been created';
@@ -136,7 +136,7 @@ codeunit 144041 "Create 1096 Forms Test"
         // [WHEN] Stan runs the "Create Forms" batch job for period from 01.01.2023 to 01.01.2023
         IRS1096FormMgt.CreateForms(PostingDate, PostingDate, false);
 
-        // [THEN] IRS 1096 form has not been created
+        // [THEN] IRS 1096 form has been created
         IRS1096Header.SetRange("Starting Date", PostingDate);
         IRS1096Header.SetRange("Ending Date", PostingDate);
         IRS1096Header.SetRange("IRS Code", DivCodeTok);
@@ -188,7 +188,7 @@ codeunit 144041 "Create 1096 Forms Test"
         // [WHEN] Stan runs the "Create Forms" batch job for period from 01.01.2023 to 01.01.2023
         IRS1096FormMgt.CreateForms(PostingDate, PostingDate, false);
 
-        // [THEN] IRS 1096 form has not been created
+        // [THEN] IRS 1096 form has been created
         IRS1096Header.SetRange("Starting Date", PostingDate);
         IRS1096Header.SetRange("Ending Date", PostingDate);
         IRS1096Header.SetRange("IRS Code", DivCodeTok);
@@ -305,7 +305,7 @@ codeunit 144041 "Create 1096 Forms Test"
         // [WHEN] Stan runs the "Create Forms" batch job for period from 01.01.2023 to 01.01.2023
         IRS1096FormMgt.CreateForms(PostingDate, PostingDate, false);
 
-        // [THEN] IRS 1096 form has not been created
+        // [THEN] IRS 1096 form has been created
         IRS1096Header.SetRange("Starting Date", PostingDate);
         IRS1096Header.SetRange("Ending Date", PostingDate);
         IRS1096Header.SetRange("IRS Code", DivCodeTok);
@@ -352,7 +352,7 @@ codeunit 144041 "Create 1096 Forms Test"
         // [WHEN] Stan runs the "Create Forms" batch job for period from 01.01.2023 to 01.01.2023
         IRS1096FormMgt.CreateForms(PostingDate, PostingDate, false);
 
-        // [THEN] IRS 1096 form has not been created
+        // [THEN] IRS 1096 form has been created
         IRS1096Header.SetRange("Starting Date", PostingDate);
         IRS1096Header.SetRange("Ending Date", PostingDate);
         IRS1096Header.SetRange("IRS Code", DivCodeTok);
@@ -497,14 +497,133 @@ codeunit 144041 "Create 1096 Forms Test"
         LibraryVariableStorage.AssertEmpty();
     end;
 
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [HandlerFunctions('MessageHandler')]
+    procedure EntriesBelowMinimumReportableAmountDoesNotAffectTotals()
+    var
+        DtldVendLedgEntry: Record "Detailed Vendor Ledg. Entry";
+        IRS1096Header: Record "IRS 1096 Form Header";
+        IRS1096Line: Record "IRS 1096 Form Line";
+        IRS1096FormLineRelation: Record "IRS 1096 Form Line Relation";
+        IRS1096FormMgt: Codeunit "IRS 1096 Form Mgt.";
+        VendNo: array[2] of Code[20];
+        IRSCode: Code[10];
+        PostingDate: Date;
+        MinimumReportableAmount: Decimal;
+        EntryAmount: Decimal;
+        i: Integer;
+    begin
+        // [FEAUTURE] [Minimum Reportable Amount]
+        // [SCENARIO 478509] The vendor ledger entries with IRS 1099 amount below "Minimum Reportable Amount" do not affect 1096 totals
+
+        Initialize();
+        MinimumReportableAmount := LibraryRandom.RandDec(100, 2);
+        // [GIVEN] IRS code "DIV-01" with "Minimum Reportable Amount" = 100
+        IRSCode := InitializeDIV01Code(MinimumReportableAmount);
+        VendNo[1] := LibraryPurchase.CreateVendorNo();
+        PostingDate := CalcDate('<1Y>', WorkDate());
+        // [GIVEN] Invoice "A applied to payment with "Vendor No." = "X", "Posting Date" = 01.01.2023 "IRS Code" = "DIV-01" and Amount = 50
+        // [GIVEN] Invoice "B" applied to payment with "Vendor No." = "Y", "Posting Date" = 01.01.2023 "IRS Code" = "DIV-01" and Amount = 100
+        EntryAmount := MinimumReportableAmount / 2;
+        for i := 1 to ArrayLen(VendNo) do begin
+            MockVendorLedgerEntry(DtldVendLedgEntry, VendNo[i], PostingDate, IRSCode, EntryAmount);
+            EntryAmount += MinimumReportableAmount;
+        end;
+        EntryAmount := DtldVendLedgEntry."Amount (LCY)";
+        LibraryVariableStorage.Enqueue(FormsCreatedMsg);
+
+        // [WHEN] Stan runs the "Create Forms" batch job for period from 01.01.2023 to 01.01.2023
+        IRS1096FormMgt.CreateForms(PostingDate, PostingDate, false);
+
+        // [THEN] IRS 1096 form has been created
+        IRS1096Header.SetRange("Starting Date", PostingDate);
+        IRS1096Header.SetRange("Ending Date", PostingDate);
+        IRS1096Header.SetRange("IRS Code", DivCodeTok);
+        Assert.RecordCount(IRS1096Header, 1);
+        IRS1096Header.FindFirst();
+        IRS1096Header.TestField("Calc. Amount", EntryAmount);
+        IRS1096Header.TestField("Total Amount To Report", EntryAmount);
+        IRS1096Header.TestField("Calc. Total Number Of Forms", 1);
+        IRS1096Header.TestField("Total Number Of Forms", 1);
+
+        // [THEN] IRS 1096 form has one line with the following details: "Vendor No." = "Y", "IRS Code" = "DIV-01" and "Calculated Amount" = 100
+        IRS1096Line.SetRange("Form No.", IRS1096Header."No.");
+        Assert.RecordCount(IRS1096Line, 1);
+        IRS1096Line.FindFirst();
+        IRS1096Line.TestField("Vendor No.", VendNo[2]);
+        IRS1096Line.TestField("IRS Code", IRSCode);
+        IRS1096Line.TestField("Calculated Amount", EntryAmount);
+
+        // [THEN] One "IRS 1096 Form Line Relation" is created for the 1096 forn
+        IRS1096FormLineRelation.SetRange("Form No.", IRS1096Header."No.");
+        Assert.RecordCount(IRS1096FormLineRelation, 1);
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    [HandlerFunctions('MessageHandler')]
+    procedure TotalsOfTwoFormsCreatedSimultaneouslyIsCorrect()
+    var
+        DtldVendLedgEntry: Record "Detailed Vendor Ledg. Entry";
+        IRS1096Header: Record "IRS 1096 Form Header";
+        IRS1096FormMgt: Codeunit "IRS 1096 Form Mgt.";
+        VendNo: array[2] of Code[20];
+        IRSCode: array[2] of Code[10];
+        PostingDate: Date;
+        MinimumReportableAmount: Decimal;
+        TotalAmount: array[2] of Decimal;
+        i: Integer;
+    begin
+        // [SCENARIO 480319] The total amount of two forms created simultaneously is correct
+
+        Initialize();
+        MinimumReportableAmount := LibraryRandom.RandDec(100, 2);
+        // [GIVEN] IRS code "DIV-01"
+        IRSCode[1] := InitializeDIV01Code(0);
+        VendNo[1] := LibraryPurchase.CreateVendorNo();
+        // [GIVEN] IRS code "MISC-01"
+        IRSCode[2] := InitializeMISCCode();
+        VendNo[2] := LibraryPurchase.CreateVendorNo();
+
+        PostingDate := CalcDate('<1Y>', WorkDate());
+        // [GIVEN] Invoice applied to payment with "IRS Code" = "DIV-01" and Amount = 75
+        // [GIVEN] Invoice applied to payment with "IRS Code" = "MISC-01" and Amount = 25
+        for i := 1 to ArrayLen(IRSCode) do begin
+            MockVendorLedgerEntry(DtldVendLedgEntry, VendNo[i], PostingDate, IRSCode[i], MinimumReportableAmount / 2);
+            TotalAmount[i] += DtldVendLedgEntry.Amount;
+        end;
+
+        LibraryVariableStorage.Enqueue(FormsCreatedMsg);
+
+        // [WHEN] Stan runs the "Create Forms" batch job for period from 01.01.2023 to 01.01.2023
+        IRS1096FormMgt.CreateForms(PostingDate, PostingDate, false);
+
+        // [THEN] Two IRS 1096 forms have been created
+        IRS1096Header.SetRange("Starting Date", PostingDate);
+        IRS1096Header.SetRange("Ending Date", PostingDate);
+        Assert.RecordCount(IRS1096Header, ArrayLen(IRSCode));
+        IRS1096Header.FindSet();
+
+        // [THEN] IRS 1096 form for "DIV-01" has total amount of 75
+        // [THEN] IRS 1096 form for "MISC-01" has total amount of 25
+        i := 1;
+        repeat
+            IRS1096Header.TestField("Total Amount To Report", TotalAmount[i]);
+            IRS1096Header.TestField("Calc. Amount", TotalAmount[i]);
+            i += 1;
+        until IRS1096Header.Next() = 0;
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
     local procedure Initialize()
     begin
+        SetupIRS1096Feature();
         LibraryTestInitialize.OnTestInitialize(CODEUNIT::"Create 1096 Forms Test");
         if IsInitialized then
             exit;
 
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(CODEUNIT::"Create 1096 Forms Test");
-        SetupIRS1096Feature();
         IsInitialized := true;
         LibraryTestInitialize.OnAfterTestSuiteInitialize(CODEUNIT::"Create 1096 Forms Test");
     end;
@@ -575,7 +694,7 @@ codeunit 144041 "Create 1096 Forms Test"
 
     local procedure InitializeMISCCode(): Code[10]
     begin
-        InitializeCode(DivCodeTok);
+        InitializeCode(MiscCodeTok);
         exit(MiscCodeTok);
     end;
 

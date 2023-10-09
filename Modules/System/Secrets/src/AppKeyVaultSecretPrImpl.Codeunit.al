@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security;
+
 codeunit 3801 "App Key Vault Secret Pr. Impl."
 {
     Access = Internal;

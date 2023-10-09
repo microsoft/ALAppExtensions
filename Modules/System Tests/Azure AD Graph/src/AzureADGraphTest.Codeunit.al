@@ -3,6 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Azure.ActiveDirectory;
+
+using System.TestLibraries.Azure.ActiveDirectory;
+using System.TestLibraries.Mocking;
+using System.Azure.Identity;
+using System.TestLibraries.Environment;
+using System;
+using System.TestLibraries.Utilities;
+
 codeunit 139087 "Azure AD Graph Test"
 {
     Subtype = Test;

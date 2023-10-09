@@ -1,3 +1,7 @@
+namespace Microsoft.API.FinancialManagement;
+
+using Microsoft.Finance.GeneralLedger.Ledger;
+
 query 30300 "API Finance - GL Entry"
 {
     QueryType = API;
@@ -45,7 +49,7 @@ query 30300 "API Finance - GL Entry"
             {
                 Caption = 'Document Number';
             }
-            column(externalDocumentNumber; "Document No.")
+            column(externalDocumentNumber; "External Document No.")
             {
                 Caption = 'External Document Number';
             }

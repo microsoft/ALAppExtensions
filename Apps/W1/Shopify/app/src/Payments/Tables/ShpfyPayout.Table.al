@@ -1,9 +1,10 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Table Shopify Payout (ID 30125).
 /// </summary>
 table 30125 "Shpfy Payout"
 {
-    Access = Internal;
     Caption = 'Shopify Payout';
     DataClassification = CustomerContent;
 

@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.VoucherInterface;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Company;
+using System.Utilities;
+
 report 18931 "Cash Book"
 {
     DefaultLayout = RDLC;
@@ -336,10 +348,10 @@ report 18931 "Cash Book"
                     GLEntry2."Global Dimension 2 Code", GLEntry2."Close Income Statement Dim. ID", GLEntry2."Posting Date");
                     GLEntry2.SetRange(GLEntry2."G/L Account No.", "G/L Account"."No.");
                     GLEntry2.SetFilter(GLEntry2."Posting Date", '%1..%2', 0D, NormalDate(GetRangeMin("Date Filter")) - 1);
-                    if "Global Dimension 1 Filter" <> '' then
-                        GLEntry2.SetFilter("Global Dimension 1 Code", "Global Dimension 1 Filter");
-                    if "Global Dimension 2 Filter" <> '' then
-                        GLEntry2.SetFilter("Global Dimension 2 Code", "Global Dimension 2 Filter");
+                    if GetFilter("Global Dimension 1 Filter") <> '' then
+                        GLEntry2.SetFilter("Global Dimension 1 Code", GetFilter("Global Dimension 1 Filter"));
+                    if GetFilter("Global Dimension 2 Filter") <> '' then
+                        GLEntry2.SetFilter("Global Dimension 2 Code", GetFilter("Global Dimension 2 Filter"));
 
                     GLEntry2.CalcSums(Amount);
                     if GLEntry2.Amount > 0 then

@@ -2,6 +2,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved. 
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
+namespace Microsoft.Utility.ImageAnalysis;
+
+using Microsoft.Foundation.Company;
+using System.AI;
+using System.Environment;
+using System.Privacy;
 
 codeunit 2029 "Image Analysis Install"
 {

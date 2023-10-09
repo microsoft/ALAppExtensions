@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxBase;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+
 codeunit 18547 "Calculate Statistics"
 {
     procedure GetPurchaseStatisticsAmount(
@@ -22,7 +34,7 @@ codeunit 18547 "Calculate Statistics"
         OnGetPurchaseHeaderGSTAmount(PurchaseHeader, GSTAmount);
         OnGetPurchaseHeaderTDSAmount(PurchaseHeader, TDSAmount);
 
-        TotalInclTaxAmount := TotalInclTaxAmount + GSTAmount - TDSAmount;
+        TotalInclTaxAmount := RoundInvoicePrecision((TotalInclTaxAmount + GSTAmount - TDSAmount));
     end;
 
     procedure GetPostedPurchInvStatisticsAmount(
@@ -145,6 +157,33 @@ codeunit 18547 "Calculate Statistics"
         OnGetSalesCrMemoHeaderTCSAmount(SalesCrMemoHeader, TCSAmount);
 
         TotalInclTaxAmount := TotalInclTaxAmount + GSTAmount + TCSAmount;
+    end;
+
+    local procedure RoundInvoicePrecision(InvoiceAmount: Decimal): Decimal
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        InvRoundingDirection: Text[1];
+        InvRoundingPrecision: Decimal;
+    begin
+        if InvoiceAmount = 0 then
+            exit(0);
+
+        GeneralLedgerSetup.Get();
+        if GeneralLedgerSetup."Inv. Rounding Precision (LCY)" = 0 then
+            exit;
+
+        case GeneralLedgerSetup."Inv. Rounding Type (LCY)" of
+            GeneralLedgerSetup."Inv. Rounding Type (LCY)"::Nearest:
+                InvRoundingDirection := '=';
+            GeneralLedgerSetup."Inv. Rounding Type (LCY)"::Up:
+                InvRoundingDirection := '>';
+            GeneralLedgerSetup."Inv. Rounding Type (LCY)"::Down:
+                InvRoundingDirection := '<';
+        end;
+
+        InvRoundingPrecision := GeneralLedgerSetup."Inv. Rounding Precision (LCY)";
+
+        exit(Round(InvoiceAmount, InvRoundingPrecision, InvRoundingDirection));
     end;
 
     [IntegrationEvent(false, false)]

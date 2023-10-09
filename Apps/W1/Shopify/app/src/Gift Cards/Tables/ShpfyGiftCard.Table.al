@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Table Shpfy Gift Card (ID 30110).
 /// </summary>
@@ -22,6 +24,11 @@ table 30110 "Shpfy Gift Card"
         field(3; Amount; Decimal)
         {
             Caption = 'Amount';
+            DataClassification = SystemMetadata;
+        }
+        field(4; "Order Line Id"; BigInteger)
+        {
+            Caption = 'Order Line Id';
             DataClassification = SystemMetadata;
         }
         field(101; "Known Used Amount"; Decimal)

@@ -51,6 +51,11 @@ page 31198 "User Setup Card CZL"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies whether is allowed to close the Project.';
                 }
+                field("Allow VAT Date Changing CZL"; Rec."Allow VAT Date Changing CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies whether is allowed to change the VAT Date.';
+                }
             }
             group(Posting)
             {
@@ -125,8 +130,8 @@ page 31198 "User Setup Card CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Lines';
                     Image = SocialSecurityLines;
-                    RunObject = Page "User Setup Lines CZL";
-                    RunPageLink = "User ID" = FIELD("User ID");
+                    RunObject = page "User Setup Lines CZL";
+                    RunPageLink = "User ID" = field("User ID");
                     ToolTip = 'Specifies the lines for another user setup.';
                 }
                 action(Dimensions)
@@ -134,7 +139,7 @@ page 31198 "User Setup Card CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Dimensions';
                     Image = Dimensions;
-                    ShortCutKey = 'Shift+Ctrl+D';
+                    ShortcutKey = 'Shift+Ctrl+D';
                     ToolTip = 'Specifies the dimensions related to the user.';
 
                     trigger OnAction()

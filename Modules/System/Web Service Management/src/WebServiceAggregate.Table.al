@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration;
+
+using System.Reflection;
+
 /// <summary>
 /// Contains web services aggregated from Web Services and Tenant Web Services.
 /// </summary>
@@ -18,17 +22,20 @@ table 9900 "Web Service Aggregate"
     {
         field(3; "Object Type"; Option)
         {
+            DataClassification = SystemMetadata;
             Caption = 'Object Type';
             OptionCaption = ',,,,,Codeunit,,,Page,Query';
             OptionMembers = ,,,,,"Codeunit",,,"Page","Query";
         }
         field(6; "Object ID"; Integer)
         {
+            DataClassification = SystemMetadata;
             Caption = 'Object ID';
-            TableRelation = AllObjWithCaption."Object ID" WHERE("Object Type" = FIELD("Object Type"));
+            TableRelation = AllObjWithCaption."Object ID" where("Object Type" = field("Object Type"));
         }
         field(9; "Service Name"; Text[240])
         {
+            DataClassification = CustomerContent;
             Caption = 'Service Name';
 
             trigger OnValidate()
@@ -40,18 +47,22 @@ table 9900 "Web Service Aggregate"
         }
         field(12; Published; Boolean)
         {
+            DataClassification = SystemMetadata;
             Caption = 'Published';
         }
         field(13; ExcludeFieldsOutsideRepeater; Boolean)
         {
+            DataClassification = SystemMetadata;
             Caption = 'Exclude Fields Outside of the Repeater';
         }
         field(14; ExcludeNonEditableFlowFields; Boolean)
         {
+            DataClassification = SystemMetadata;
             Caption = 'Exclude Non-Editable FlowFields';
         }
         field(15; "All Tenants"; Boolean)
         {
+            DataClassification = SystemMetadata;
             Caption = 'All Tenants';
         }
     }

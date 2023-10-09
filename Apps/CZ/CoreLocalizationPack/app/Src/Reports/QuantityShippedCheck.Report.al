@@ -10,7 +10,7 @@ report 11718 "Quantity Shipped Check CZL"
     {
         dataitem(Header; "Integer")
         {
-            DataItemTableView = sorting(Number) WHERE(Number = CONST(1));
+            DataItemTableView = sorting(Number) where(Number = const(1));
             column(FORMAT_TODAY_0_4_; Format(Today, 0, 4))
             {
             }
@@ -98,7 +98,7 @@ report 11718 "Quantity Shipped Check CZL"
             dataitem("Sales Shipment Line"; "Sales Shipment Line")
             {
                 DataItemLink = "Document No." = field("No.");
-                DataItemTableView = sorting("Document No.", "Line No.") WHERE(Correction = CONST(false));
+                DataItemTableView = sorting("Document No.", "Line No.") where(Correction = const(false));
                 column(Sales_Shipment_Line__No__; "No.")
                 {
                 }
@@ -209,7 +209,7 @@ report 11718 "Quantity Shipped Check CZL"
             dataitem("Return Receipt Line"; "Return Receipt Line")
             {
                 DataItemLink = "Document No." = field("No.");
-                DataItemTableView = sorting("Document No.", "Line No.") WHERE(Correction = CONST(false));
+                DataItemTableView = sorting("Document No.", "Line No.") where(Correction = const(false));
                 column(Return_Receipt_Line__No__; "No.")
                 {
                 }

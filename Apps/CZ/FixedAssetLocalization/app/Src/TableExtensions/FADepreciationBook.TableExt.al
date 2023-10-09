@@ -140,4 +140,22 @@ tableextension 31247 "FA Depreciation Book CZF" extends "FA Depreciation Book"
         if Depreciation <> 0 then
             Error(DepreciationsExistErr, "FA No.");
     end;
+
+    procedure CheckDefaultFAPostingGroupCZF()
+    var
+        FixedAsset: Record "Fixed Asset";
+        FASubclass: Record "FA Subclass";
+        FAPostingGroupMustBeSameErr: Label '%1 must be the same as the %2 in %3 ''%4''.', Comment = '%1 = field caption, %2 = field caption, %3 = table caption, %4 = fa subclass code';
+    begin
+        if Rec."FA No." = '' then
+            exit;
+        if not FixedAsset.Get(Rec."FA No.") or not (FixedAsset."FA Subclass Code" <> '') then
+            exit;
+        if not FASubclass.Get(FixedAsset."FA Subclass Code") or not (FASubclass."Default FA Posting Group" <> '') then
+            exit;
+        if Rec."FA Posting Group" <> FASubclass."Default FA Posting Group" then
+            Error(FAPostingGroupMustBeSameErr,
+                Rec.FieldCaption("FA Posting Group"), FASubclass.FieldCaption("Default FA Posting Group"),
+                FASubclass.TableCaption(), FASubclass.Code);
+    end;
 }

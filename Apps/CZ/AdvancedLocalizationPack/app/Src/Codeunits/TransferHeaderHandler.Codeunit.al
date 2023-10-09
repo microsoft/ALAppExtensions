@@ -24,4 +24,16 @@ codeunit 31227 "Transfer Header Handler CZA"
                 TransferLine.Validate("Gen.Bus.Post.Group Receive CZA", TransferHeader."Gen.Bus.Post.Group Receive CZA");
         end;
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Transfer Header", 'OnValidateDirectTransferOnBeforeValidateInTransitCode', '', false, false)]
+    local procedure OnValidateDirectTransferOnBeforeValidateInTransitCode(var TransferHeader: Record "Transfer Header")
+    var
+        InventorySetup: Record "Inventory Setup";
+    begin
+        InventorySetup.Get();
+        if InventorySetup."Def.G.Bus.P.Gr.-Dir.Trans. CZA" = '' then
+            exit;
+        TransferHeader.Validate("Gen.Bus.Post.Group Ship CZA", InventorySetup."Def.G.Bus.P.Gr.-Dir.Trans. CZA");
+        TransferHeader.Validate("Gen.Bus.Post.Group Receive CZA", InventorySetup."Def.G.Bus.P.Gr.-Dir.Trans. CZA");
+    end;
 }

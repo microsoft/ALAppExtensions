@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace System.Environment.Configuration;
+
 codeunit 20602 "Experience Tier BF"
 {
     Access = Internal;
@@ -42,7 +48,6 @@ codeunit 20602 "Experience Tier BF"
         TempApplicationAreaSetup.Planning := true;
         TempApplicationAreaSetup.Dimensions := true;
         TempApplicationAreaSetup.Prepayments := true;
-        TempApplicationAreaSetup.XBRL := true;
         TempApplicationAreaSetup.Comments := true;
         TempApplicationAreaSetup."Record Links" := true;
         TempApplicationAreaSetup.Notes := true;

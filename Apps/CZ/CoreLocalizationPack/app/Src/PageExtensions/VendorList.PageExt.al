@@ -7,13 +7,25 @@ pageextension 11768 "Vendor List CZL" extends "Vendor List"
             field("VAT Registration No."; Rec."VAT Registration No.")
             {
                 ApplicationArea = VAT;
-                ToolTip = 'Specifies the customer''s VAT registration number for customers in EU countries/regions.';
+                ToolTip = 'Specifies the vendor''s VAT registration number for vendors in EU countries/regions.';
             }
-            field("Registration No. CZL"; Rec."Registration No. CZL")
+            field("Registration Number CZL"; Rec."Registration Number")
             {
                 ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the registration number of customer.';
+                ToolTip = 'Specifies the registration number of vendor.';
             }
+#if not CLEAN23
+            field("Registration No. CZL"; Rec."Registration No. CZL")
+            {
+                Caption = 'Registration No. (Obsolete)';
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the registration number of vendor.';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '23.0';
+                ObsoleteReason = 'Replaced by standard "Registration Number" field.';
+            }
+#endif
         }
     }
 
@@ -49,7 +61,7 @@ pageextension 11768 "Vendor List CZL" extends "Vendor List"
                 ApplicationArea = Basic, Suite;
                 Caption = 'All Payments on Hold';
                 Image = Report;
-                RunObject = Report "All Payments on Hold CZL";
+                RunObject = report "All Payments on Hold CZL";
                 ToolTip = 'View a list of all vendor ledger entries on which the On Hold field is marked. ';
             }
         }
@@ -62,7 +74,7 @@ pageextension 11768 "Vendor List CZL" extends "Vendor List"
                 Image = Balance;
                 Promoted = true;
                 PromotedCategory = "Report";
-                RunObject = Report "Vendor-Bal. Reconciliation CZL";
+                RunObject = report "Vendor-Bal. Reconciliation CZL";
                 ToolTip = 'Open the report for vendor''s balance reconciliation.';
             }
         }

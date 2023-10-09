@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Globalization;
+
+using System;
+using System.Environment.Configuration;
+using System.Environment;
+
 codeunit 54 "Language Impl."
 {
     Access = Internal;
@@ -11,7 +17,8 @@ codeunit 54 "Language Impl."
     InherentPermissions = X;
     Permissions = tabledata Language = rimd,
                   tabledata "User Personalization" = rm,
-                  tabledata "Windows Language" = r;
+                  tabledata "Windows Language" = r,
+                  tabledata "Language Selection" = r;
 
     var
         LanguageNotFoundErr: Label 'The language %1 could not be found.', Comment = '%1 = Language ID';
@@ -37,6 +44,25 @@ codeunit 54 "Language Impl."
             LanguageId := GlobalLanguage();
 
         exit(LanguageId);
+    end;
+
+    procedure GetFormatRegionOrDefault(FormatRegion: Text[80]): Text[80]
+    var
+        LanguageSelection: Record "Language Selection";
+        UserSessionSettings: SessionSettings;
+        LocalId: Integer;
+    begin
+        if FormatRegion <> '' then
+            exit(FormatRegion);
+
+        // Lookup based on locale in user session
+        UserSessionSettings.Init();
+        LocalId := UserSessionSettings.LocaleId();
+        LanguageSelection.SetRange("Language ID", LocalId);
+        if LanguageSelection.FindFirst() then
+            exit(LanguageSelection."Language Tag");
+
+        exit('en-US');
     end;
 
     procedure GetLanguageId(LanguageCode: Code[10]): Integer
@@ -107,6 +133,36 @@ codeunit 54 "Language Impl."
     procedure GetDefaultApplicationLanguageId(): Integer
     begin
         exit(1033); // en-US
+    end;
+
+    procedure ToDefaultLanguage(ValueVariant: Variant): Text
+    var
+        Result: Text;
+        CurrentLanguage: Integer;
+        DummyBoolean: Boolean;
+    begin
+        case true of
+            // Handle specific data types in case the function is being called within a report that uses local language.
+            // In that case the current local language takes priority and the default case logic won't work.
+            ValueVariant.IsBoolean:
+                begin
+                    DummyBoolean := ValueVariant;
+                    if DummyBoolean then
+                        Result := 'Yes'
+                    else
+                        Result := 'No';
+                end;
+            else begin
+                CurrentLanguage := GlobalLanguage();
+                GlobalLanguage(GetDefaultApplicationLanguageId());
+
+                Result := Format(ValueVariant);
+
+                GlobalLanguage(CurrentLanguage);
+            end;
+        end;
+
+        exit(Result);
     end;
 
     procedure ValidateApplicationLanguageId(LanguageId: Integer)
@@ -187,6 +243,9 @@ codeunit 54 "Language Impl."
     var
         UserPersonalization: Record "User Personalization";
     begin
+        if not UserPersonalization.ReadPermission() then
+            exit;
+
         if not UserPersonalization.Get(UserSecID) then
             exit;
 

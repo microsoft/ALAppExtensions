@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration;
+
+using System.Integration;
+using System.Reflection;
+
 codeunit 40029 "Hybrid Replication Statistics"
 {
     Permissions = tabledata "Intelligent Cloud Status" = r;

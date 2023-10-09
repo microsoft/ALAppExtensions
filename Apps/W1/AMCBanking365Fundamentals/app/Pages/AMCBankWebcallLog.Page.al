@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Utilities;
+using System.Reflection;
+
 page 20107 "AMC Bank Webcall Log"
 {
     Caption = 'AMC Banking 365 Webservice Log';

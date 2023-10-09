@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 page 41020 "Hist. Migration Step Status"
 {
     ApplicationArea = All;

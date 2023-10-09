@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Bank.Statement;
+using System.IO;
+
 pageextension 20110 "AMC Bank Stmt Line Det. Ext" extends "Bank Statement Line Details"
 {
 
@@ -5,14 +14,14 @@ pageextension 20110 "AMC Bank Stmt Line Det. Ext" extends "Bank Statement Line D
     {
         modify(Name)
         {
-            Visible = false;
+            Visible = (not IsAMCFundamentalsEnabled);
         }
 
         addbefore(Value)
         {
             field(NameAMC; NameFldAMC)
             {
-                Visible = true;
+                Visible = IsAMCFundamentalsEnabled;
                 Enabled = false;
                 Caption = 'Name xPath';
                 ToolTip = 'Specifies the name of a column in the imported bank file.';
@@ -22,10 +31,13 @@ pageextension 20110 "AMC Bank Stmt Line Det. Ext" extends "Bank Statement Line D
     }
 
     var
+        AMCBankingMgt: Codeunit "AMC Banking Mgt.";
+        IsAMCFundamentalsEnabled: Boolean;
         NameFldAMC: Text;
 
     trigger OnOpenPage()
     begin
+        IsAMCFundamentalsEnabled := AMCBankingMgt.IsAMCFundamentalsEnabled();
         SetCurrentKey("Data Exch. No.", "Line No.", "Column No.", "Node ID");
     end;
 

@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.BankAccount;
+
+using Microsoft.Bank.Payment;
+
 tableextension 11512 "Swiss QR-Bill Payment Method" extends "Payment Method"
 {
     fields

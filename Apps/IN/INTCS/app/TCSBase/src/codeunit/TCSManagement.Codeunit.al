@@ -1,3 +1,21 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TCS.TCSBase;
+
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Location;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.TaxEngine.PostingHandler;
+
 codeunit 18807 "TCS Management"
 {
     var
@@ -175,6 +193,25 @@ codeunit 18807 "TCS Management"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Base Subscribers", 'OnAfterGetAmountFromDocumentNoForEInv', '', false, false)]
+    local procedure OnAfterGetAmountFromDocumentNoForEInv(DocumentNo: Code[20]; var Amount: Decimal)
+    begin
+        GetAmountFromDocumentNoForEInv(DocumentNo, Amount);
+    end;
+
+    local procedure GetAmountFromDocumentNoForEInv(DocumentNo: Code[20]; var Amount: Decimal)
+    var
+        TCSEntry: Record "TCS Entry";
+    begin
+        OnBeforeFilterGetAmtFromDocumentNoForEInv(TCSEntry, DocumentNo);
+
+        TCSEntry.SetRange("Document No.", DocumentNo);
+        if TCSEntry.FindFirst() then
+            Amount := (TCSEntry."TCS Amount" + TCSEntry."eCESS Amount" + TCSEntry."SHE Cess Amount" + TCSEntry."Surcharge Amount");
+
+        OnAfterGetAmtFromDocumentNoForEInv(TCSEntry, Amount, DocumentNo);
+    end;
+
     local procedure CheckPANValidatins(GenJournalLine: Record "Gen. Journal Line")
     var
         Customer: Record Customer;
@@ -281,5 +318,15 @@ codeunit 18807 "TCS Management"
                 Rec."TCS Nature of Collection" := TCSEntry."TCS Nature of Collection";
             Rec.Modify();
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeFilterGetAmtFromDocumentNoForEInv(var TCSEntry: Record "TCS Entry"; DocumentNo: Code[20])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetAmtFromDocumentNoForEInv(TCSEntry: Record "TCS Entry"; var Amount: Decimal; DocumentNo: code[20])
+    begin
     end;
 }

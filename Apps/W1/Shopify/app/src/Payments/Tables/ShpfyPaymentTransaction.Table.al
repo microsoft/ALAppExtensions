@@ -1,9 +1,12 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.History;
+
 /// <summary>
 /// Table Shpfy Payment Transaction (ID 30124).
 /// </summary>
 table 30124 "Shpfy Payment Transaction"
 {
-    Access = Internal;
     Caption = 'Shopify Payment Transaction';
     DataClassification = CustomerContent;
 

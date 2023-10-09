@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Document;
+
+using Microsoft.Finance.GST.Sales;
+using Microsoft.Finance.TaxBase;
+
 pageextension 18160 "GST Blanket Sales ord Sub" extends "Blanket Sales Order Subform"
 {
     layout
@@ -110,6 +119,20 @@ pageextension 18160 "GST Blanket Sales ord Sub" extends "Blanket Sales Order Sub
                 begin
                     CurrPage.SaveRecord();
                     CalculateTax.CallTaxEngineOnSalesLine(Rec, xRec);
+                end;
+            }
+        }
+        addafter("Line Discount %")
+        {
+            field(FOC; Rec.FOC)
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if FOC is applicable on Current Line.';
+
+                trigger OnValidate()
+                begin
+                    if Rec.FOC then
+                        Rec.Validate("Line Discount %", 100);
                 end;
             }
         }

@@ -1,3 +1,8 @@
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
+using Microsoft.Finance.GeneralLedger.Reversal;
+using System.Telemetry;
+
 codeunit 2630 "Stat. Acc. Reverse Entry"
 {
     [EventSubscriber(ObjectType::Table, Database::"Reversal Entry", 'OnBeforeReverseEntries', '', false, false)]
@@ -16,8 +21,11 @@ codeunit 2630 "Stat. Acc. Reverse Entry"
 
         InsertReversalEntry(Number, TempReversalEntry, RevType);
         TempReversalEntry.SetCurrentKey("Document No.", "Posting Date", "Entry Type", "Entry No.");
-        StatAccReverseEntries.SetReversalEntries(TempReversalEntry);
-        StatAccReverseEntries.RunModal();
+        if not HideDialog then begin
+            StatAccReverseEntries.SetReversalEntries(TempReversalEntry);
+            StatAccReverseEntries.RunModal();
+        end else
+            PostReversal(TempReversalEntry);
     end;
 
     internal procedure PostReversal(ReversalEntry: Record "Reversal Entry")
@@ -25,6 +33,8 @@ codeunit 2630 "Stat. Acc. Reverse Entry"
         StatisticalLedgerEntry: Record "Statistical Ledger Entry";
         LastStatisticalLedgerEntry: Record "Statistical Ledger Entry";
         ReversedStatisticalLedgerEntry: Record "Statistical Ledger Entry";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
         TransactionNumber: Integer;
         NextEntryNo: Integer;
     begin
@@ -36,6 +46,9 @@ codeunit 2630 "Stat. Acc. Reverse Entry"
             TransactionNumber := LastStatisticalLedgerEntry."Transaction No." + 1;
             NextEntryNo := LastStatisticalLedgerEntry."Entry No." + 1;
         end;
+
+        FeatureTelemetry.LogUptake('0000KE2', StatAccTelemetry.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000KE3', StatAccTelemetry.GetFeatureTelemetryName(), 'Posting reverse transaction for Statistical Accounts');
 
         StatisticalLedgerEntry.SetRange("Transaction No.", ReversalEntry."Transaction No.");
         if StatisticalLedgerEntry.FindSet() then

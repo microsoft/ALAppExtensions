@@ -3,7 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-PermissionSet 8902 "Email - Admin"
+namespace System.Email;
+
+permissionset 8902 "Email - Admin"
 {
     Access = Public;
     Assignable = true;

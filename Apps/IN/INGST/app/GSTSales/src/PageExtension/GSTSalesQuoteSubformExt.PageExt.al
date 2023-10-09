@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Document;
+
+using Microsoft.Finance.GST.Sales;
+using Microsoft.Finance.TaxBase;
+
 pageextension 18154 "GST Sales Quote Subform Ext" extends "Sales Quote Subform"
 {
     layout
@@ -130,6 +139,20 @@ pageextension 18154 "GST Sales Quote Subform Ext" extends "Sales Quote Subform"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies if the GST group is assigned for goods or service.';
+            }
+        }
+        addafter("Line Discount %")
+        {
+            field(FOC; Rec.FOC)
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if FOC is applicable on Current Line.';
+
+                trigger OnValidate()
+                begin
+                    if Rec.FOC then
+                        Rec.Validate("Line Discount %", 100);
+                end;
             }
         }
     }

@@ -1,7 +1,11 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.TestLibraries.Globalization;
+
+using System.Globalization;
 
 page 137121 "Translation Test Page"
 {
@@ -14,7 +18,7 @@ page 137121 "Translation Test Page"
         {
             group(General)
             {
-                field(PK; PK)
+                field(PK; Rec.PK)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the primary key.';
@@ -23,11 +27,11 @@ page 137121 "Translation Test Page"
                 {
                     ApplicationArea = All;
                     Caption = 'Text field';
-                    ToolTip = 'Specified the translated value.';
+                    ToolTip = 'Specifies the translated value.';
 
                     trigger OnAssistEdit()
                     begin
-                        Translation.Show(Rec, FieldNo(TextField));
+                        Translation.Show(Rec, Rec.FieldNo(TextField));
                     end;
                 }
             }
@@ -36,11 +40,12 @@ page 137121 "Translation Test Page"
 
     trigger OnAfterGetRecord()
     begin
-        TranslatedTextField := Translation.Get(Rec, FieldNo(TextField));
+        TranslatedTextField := Translation.Get(Rec, Rec.FieldNo(TextField));
     end;
 
     var
         Translation: Codeunit Translation;
         TranslatedTextField: Text;
 }
+
 

@@ -1,3 +1,7 @@
+namespace Microsoft.API.V1;
+
+using Microsoft.Finance.Dimension;
+
 page 20053 "APIV1 Dimension Values Entity"
 {
     APIVersion = 'v1.0';
@@ -25,15 +29,15 @@ page 20053 "APIV1 Dimension Values Entity"
                     Editable = false;
                 }
 
-                field("code"; Code)
+                field("code"; Rec.Code)
                 {
                     Caption = 'Code', Locked = true;
                 }
-                field(displayName; Name)
+                field(displayName; Rec.Name)
                 {
                     Caption = 'DisplayName', Locked = true;
                 }
-                field(lastModifiedDateTime; "Last Modified Date Time")
+                field(lastModifiedDateTime; Rec."Last Modified Date Time")
                 {
                     Caption = 'LastModifiedDateTime', Locked = true;
                 }

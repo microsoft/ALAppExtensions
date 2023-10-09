@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Journal;
+using System;
+using System.IO;
+using System.Utilities;
+
 codeunit 20113 "AMC Bank Exp. CT Hndl"
 {
     Permissions = TableData "Data Exch." = rimd,
@@ -125,6 +137,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
     local procedure DisplayErrorFromResponse(PaymentFileTempBlob: Codeunit "Temp Blob"; DataExchEntryNo: Integer)
     var
         GenJournalLine: Record "Gen. Journal Line";
+        GenJournalLineCopy: Record "Gen. Journal Line";
         ResponseXmlDoc: XmlDocument;
         DataInStream: InStream;
         SysLogXMLNodeList: XmlNodeList;
@@ -144,7 +157,10 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
             end;
             GenJournalLine.SetRange("Data Exch. Entry No.", DataExchEntryNo);
             GenJournalLine.FindFirst();
-            if GenJournalLine.HasPaymentFileErrorsInBatch() then begin
+            GenJournalLineCopy."Journal Template Name" := GenJournalLine."Journal Template Name";
+            GenJournalLineCopy."Journal Batch Name" := GenJournalLine."Journal Batch Name";
+
+            if GenJournalLineCopy.HasPaymentFileErrorsInBatch() then begin
                 Commit();
                 Error(HasErrorsErr);
             end;

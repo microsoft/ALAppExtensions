@@ -30,10 +30,12 @@ codeunit 148089 "Check User Setup Dim. CZL"
         SalesHeader: Record "Sales Header";
         DimensionValue: array[2] of Record "Dimension Value";
         UserSetup: Record "User Setup";
+        ErrorMessage: Record "Error Message";
         ErrorMessagesPage: TestPage "Error Messages";
         UserSetupPage: TestPage "User Setup";
         CustomerNo: Code[20];
         ExpectedErrorMessage: array[10] of Text;
+        ErrCreationDateTime: DateTime;
     begin
         // [FEATURE] [Sales] [UI]
         // [SCENARIO] Failed posting opens "Error Messages" page that contains two lines for missed selected dimension.
@@ -49,15 +51,15 @@ codeunit 148089 "Check User Setup Dim. CZL"
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, CustomerNo);
 
         // [WHEN] Post Sales Order '1002'
+        ErrCreationDateTime := CurrentDateTime();
         PostSalesDocument(SalesHeader, Codeunit::"Sales-Post");
 
         // [THEN] Opened page "Error Messages" with two lines, where "Error Message" are:
         // [THEN] 'You must enter dimension Department' and 'Dimension Value Code Department must match the filter X.'
         // [THEN] "Context" is 'Sales Header: Order, 1002'; "Source" is 'User Setup: USERID', "Field Name" is 'Check Dimension Values'
-        VerifyHeaderDimError(SalesHeader.RecordId, UserSetup.RecordId, ExpectedErrorMessage);
+        VerifyHeaderDimError(SalesHeader.RecordId, UserSetup.RecordId, ExpectedErrorMessage, ErrCreationDateTime);
         LibraryErrorMessage.GetTestPage(ErrorMessagesPage);
         ErrorMessagesPage.First();
-        ErrorMessagesPage."Field Name".AssertEquals(UserSetup.FieldCaption("Check Dimension Values CZL"));
 
         // [WHEN] Run action "Open Related Record"
         UserSetupPage.Trap();
@@ -66,12 +68,15 @@ codeunit 148089 "Check User Setup Dim. CZL"
         UserSetupPage."User ID".AssertEquals(UserId);
 
         // [WHEN] DrillDown on 'Source'
-        ErrorMessagesPage.Source.DrillDown(); // handled by  SelectedDimModalPageHandler
+        FindRegisteredErrorMessage(ErrorMessage, ErrorMessagesPage, ErrCreationDateTime);
+        ErrorMessage.HandleDrillDown(ErrorMessage.FieldNo("Record ID")); // handled by SelectedDimModalPageHandler
+
         // [THEN] Opened page "Dimension Selection-Change", where Dimension 'Department' has "Selected" set to 'Yes'
         Assert.AreEqual(DimensionValue[1]."Dimension Code", LibraryVariableStorage.DequeueText(), 'Dim Code from pag567');
 
         // [WHEN] DrillDown on 'Context'
-        ErrorMessagesPage.Context.DrillDown();
+        ErrorMessage.HandleDrillDown(ErrorMessage.FieldNo("Context Record ID")); // handled by EditDimensionSetEntriesModalPageHandler
+
         // [THEN] Opened page "Edit Dimension Set Entries" for Sales Order header
         Assert.AreEqual(
           Format(SalesHeader."Dimension Set ID"),
@@ -85,10 +90,12 @@ codeunit 148089 "Check User Setup Dim. CZL"
         PurchaseHeader: Record "Purchase Header";
         DimensionValue: array[2] of Record "Dimension Value";
         UserSetup: Record "User Setup";
+        ErrorMessage: Record "Error Message";
         ErrorMessagesPage: TestPage "Error Messages";
         UserSetupPage: TestPage "User Setup";
         VendorNo: Code[20];
         ExpectedErrorMessage: array[10] of Text;
+        ErrCreationDateTime: DateTime;
     begin
         // [FEATURE] [Purchase] [UI]
         // [SCENARIO] Failed posting opens "Error Messages" page that contains two lines for missed selected dimension.
@@ -104,15 +111,15 @@ codeunit 148089 "Check User Setup Dim. CZL"
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, VendorNo);
 
         // [WHEN] Post Purchase Order '1002'
+        ErrCreationDateTime := CurrentDateTime();
         PostPurchDocument(PurchaseHeader, Codeunit::"Purch.-Post");
 
         // [THEN] Opened page "Error Messages" with two lines, where "Error Message" are:
         // [THEN] 'You must enter dimension Department' and 'Dimension Value Code Department must match the filter X.'
         // [THEN] "Context" is 'Purchase Header: Order, 1002'; "Source" is 'User Setup: USERID', "Field Name" is 'Check Dimension Values'
-        VerifyHeaderDimError(PurchaseHeader.RecordId, UserSetup.RecordId, ExpectedErrorMessage);
+        VerifyHeaderDimError(PurchaseHeader.RecordId, UserSetup.RecordId, ExpectedErrorMessage, ErrCreationDateTime);
         LibraryErrorMessage.GetTestPage(ErrorMessagesPage);
         ErrorMessagesPage.First();
-        ErrorMessagesPage."Field Name".AssertEquals(UserSetup.FieldCaption("Check Dimension Values CZL"));
 
         // [WHEN] Run action "Open Related Record"
         UserSetupPage.Trap();
@@ -121,12 +128,14 @@ codeunit 148089 "Check User Setup Dim. CZL"
         UserSetupPage."User ID".AssertEquals(UserId);
 
         // [WHEN] DrillDown on 'Source'
-        ErrorMessagesPage.Source.DrillDown(); // handled by  SelectedDimModalPageHandler
+        FindRegisteredErrorMessage(ErrorMessage, ErrorMessagesPage, ErrCreationDateTime);
+        ErrorMessage.HandleDrillDown(ErrorMessage.FieldNo("Record ID")); // handled by SelectedDimModalPageHandler
         // [THEN] Opened page "Dimension Selection-Change", where Dimension 'Department' has "Selected" set to 'Yes'
         Assert.AreEqual(DimensionValue[1]."Dimension Code", LibraryVariableStorage.DequeueText(), 'Dim Code from pag567');
 
         // [WHEN] DrillDown on 'Context'
-        ErrorMessagesPage.Context.DrillDown();
+        ErrorMessage.HandleDrillDown(ErrorMessage.FieldNo("Context Record ID")); // handled by EditDimensionSetEntriesModalPageHandler
+
         // [THEN] Opened page "Edit Dimension Set Entries" for Sales Order header
         Assert.AreEqual(
           Format(PurchaseHeader."Dimension Set ID"),
@@ -224,26 +233,45 @@ codeunit 148089 "Check User Setup Dim. CZL"
         Commit();
     end;
 
-    local procedure VerifyHeaderDimError(ContextRecID: RecordID; SourceRecID: RecordID; ExpectedErrorMessage: array[10] of Text)
+    local procedure VerifyHeaderDimError(ContextRecID: RecordID; SourceRecID: RecordID; ExpectedErrorMessage: array[10] of Text; ErrCreatedDateTime: DateTime)
     var
-        TempErrorMessage: Record "Error Message" temporary;
+        ErrorMessage: Record "Error Message";
+        UserSetup: Record "User Setup";
+        ErrorMessagesTestPage: TestPage "Error Messages";
     begin
-        LibraryErrorMessage.GetErrorMessages(TempErrorMessage);
-        Assert.RecordCount(TempErrorMessage, 3);
-        TempErrorMessage.FindFirst();
-        TempErrorMessage.TestField("Message Type", TempErrorMessage."Message Type"::Error);
-        TempErrorMessage.TestField("Message", ExpectedErrorMessage[1]);
-        TempErrorMessage.TestField("Context Record ID", ContextRecID);
-        TempErrorMessage.TestField("Record ID", SourceRecID);
+        LibraryErrorMessage.GetTestPage(ErrorMessagesTestPage);
+
+        // first line
+        ErrorMessagesTestPage.First();
+        FindRegisteredErrorMessage(ErrorMessage, ErrorMessagesTestPage, ErrCreatedDateTime);
+        ErrorMessage.TestField("Message Type", ErrorMessage."Message Type"::Error);
+        ErrorMessage.TestField("Message", ExpectedErrorMessage[1]);
+        ErrorMessage.TestField("Context Record ID", ContextRecID);
+        ErrorMessage.TestField("Record ID", SourceRecID);
+        ErrorMessage.CalcFields("Field Name");
+        ErrorMessage.TestField("Field Name", UserSetup.FieldCaption("Check Dimension Values CZL"));
+
         // second line
-        TempErrorMessage.Next();
-        TempErrorMessage.TestField("Message Type", TempErrorMessage."Message Type"::Error);
-        TempErrorMessage.TestField("Message", ExpectedErrorMessage[2]);
-        TempErrorMessage.TestField("Context Record ID", ContextRecID);
-        TempErrorMessage.TestField("Record ID", SourceRecID);
+        ErrorMessagesTestPage.Next();
+        FindRegisteredErrorMessage(ErrorMessage, ErrorMessagesTestPage, ErrCreatedDateTime);
+        ErrorMessage.TestField("Message Type", ErrorMessage."Message Type"::Error);
+        ErrorMessage.TestField("Message", ExpectedErrorMessage[2]);
+        ErrorMessage.TestField("Context Record ID", ContextRecID);
+        ErrorMessage.TestField("Record ID", SourceRecID);
+
         // the last error is "There is nothing to post."
-        TempErrorMessage.FindLast();
-        TempErrorMessage.TestField("Message", DocumentErrorsMgt.GetNothingToPostErrorMsg());
+        ErrorMessagesTestPage.Next();
+        FindRegisteredErrorMessage(ErrorMessage, ErrorMessagesTestPage, ErrCreatedDateTime);
+        ErrorMessage.TestField("Message", DocumentErrorsMgt.GetNothingToPostErrorMsg());
+
+        Assert.IsFalse(ErrorMessagesTestPage.Next(), 'There are more error messages than expected');
+    end;
+
+    local procedure FindRegisteredErrorMessage(var ErrorMessage: Record "Error Message"; ErrorMessagesTestPage: TestPage "Error Messages"; CreatedDateTime: DateTime)
+    begin
+        ErrorMessage.SetRange(Message, ErrorMessagesTestPage.Description.Value);
+        ErrorMessage.SetRange("Created On", CreatedDateTime, CurrentDateTime);
+        ErrorMessage.FindFirst();
     end;
 
     [ModalPageHandler]

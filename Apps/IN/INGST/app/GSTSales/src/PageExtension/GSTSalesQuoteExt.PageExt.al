@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Document;
+
+using Microsoft.Finance.GST.Sales;
+using Microsoft.Finance.TaxBase;
+
 pageextension 18153 "GST Sales Quote Ext" extends "Sales Quote"
 {
     layout
@@ -101,6 +110,7 @@ pageextension 18153 "GST Sales Quote Ext" extends "Sales Quote"
                 var
                     GSTSalesValidation: Codeunit "GST Sales Validation";
                 begin
+                    CurrPage.SaveRecord();
                     GSTSalesValidation.CallTaxEngineOnSalesHeader(Rec);
                 end;
             }
@@ -150,7 +160,7 @@ pageextension 18153 "GST Sales Quote Ext" extends "Sales Quote"
 
     var
 #if not CLEAN23
-        UnusedFieldLbl: Label 'This field has been marked as obsolete and will be removed from version 23.0. Instead of this field use ‘E-Comm. Merchant Id’';
+        UnusedFieldLbl: Label 'This field has been marked as obsolete and will be removed from version 23.0. Instead of this field use â€˜E-Comm. Merchant Idâ€™';
 #endif
 }
 

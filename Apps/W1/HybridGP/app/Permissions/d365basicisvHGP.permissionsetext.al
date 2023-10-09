@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using System.Security.AccessControl;
+
 permissionsetextension 4026 "D365 BASIC ISV - HGP" extends "D365 BASIC ISV"
 {
     Permissions = tabledata "GP Account" = RIMD,
@@ -103,5 +107,9 @@ permissionsetextension 4026 "D365 BASIC ISV - HGP" extends "D365 BASIC ISV"
                   tabledata "GP Hist. Source Progress" = RIMD,
                   tabledata "GP Hist. Source Error" = RIMD,
                   tabledata "GP POP10100" = RIMD,
-                  tabledata "GP POP10110" = RIMD;
+                  tabledata "GP POP10110" = RIMD,
+                  tabledata "GP PM00204" = RIMD,
+                  tabledata "GP Upgrade Settings" = RIMD,
+                  tabledata "GP Migration Error Overview" = RIMD,
+                  tabledata "GP Known Countries" = RIMD;
 }

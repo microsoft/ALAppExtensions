@@ -15,6 +15,8 @@ codeunit 31252 "Data Class. Eval. Handler CZA"
         CapacityLedgerEntry: Record "Capacity Ledger Entry";
         DataExchFieldMapping: Record "Data Exch. Field Mapping";
         DefaultDimension: Record "Default Dimension";
+        DirectTransHeader: Record "Direct Trans. Header";
+        DirectTransLine: Record "Direct Trans. Line";
         GLEntry: Record "G/L Entry";
         InventorySetup: Record "Inventory Setup";
         ItemEntryRelation: Record "Item Entry Relation";
@@ -49,6 +51,8 @@ codeunit 31252 "Data Class. Eval. Handler CZA"
         DataClassificationMgt.SetFieldToNormal(Database::"Default Dimension", DefaultDimension.FieldNo("Dim. Description Format CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Default Dimension", DefaultDimension.FieldNo("Dim. Description Update CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Default Dimension", DefaultDimension.FieldNo("Auto. Create Value Posting CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Direct Trans. Header", DirectTransHeader.FieldNo("Gen. Bus. Posting Group CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Direct Trans. Line", DirectTransLine.FieldNo("Gen. Bus. Posting Group CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"G/L Entry", GLEntry.FieldNo("Closed at Date CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"G/L Entry", GLEntry.FieldNo("Applies-to ID CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"G/L Entry", GLEntry.FieldNo("Amount to Apply CZA"));
@@ -57,6 +61,7 @@ codeunit 31252 "Data Class. Eval. Handler CZA"
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Use GPPG from SKU CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Skip Update SKU on Posting CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Exact Cost Revers. Mandat. CZA"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Inventory Setup", InventorySetup.FieldNo("Def.G.Bus.P.Gr.-Dir.Trans. CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Item Entry Relation", ItemEntryRelation.FieldNo("Undo CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Item Journal Line", ItemJournalLine.FieldNo("Delivery-to Source No. CZA"));
         DataClassificationMgt.SetFieldToNormal(Database::"Item Journal Line", ItemJournalLine.FieldNo("Currency Code CZA"));

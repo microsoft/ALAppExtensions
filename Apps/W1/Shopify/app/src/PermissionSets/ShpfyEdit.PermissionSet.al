@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Shpfy - Edit Permissions (ID 30102).
 /// </summary>
@@ -11,12 +13,14 @@ permissionset 30102 "Shpfy - Edit"
         "Shpfy Indirect Perm";
 
     Permissions =
+        tabledata "Shpfy Bulk Operation" = IMD,
         tabledata "Shpfy Credit Card Company" = IMD,
         tabledata "Shpfy Cue" = IMD,
         tabledata "Shpfy Customer" = IMD,
         tabledata "Shpfy Customer Address" = IMD,
         tabledata "Shpfy Customer Template" = IMD,
         tabledata "Shpfy Data Capture" = IMD,
+        tabledata "Shpfy Doc. Link To Doc." = IMD,
         tabledata "Shpfy Fulfillment Line" = IMD,
         tabledata "Shpfy FulFillment Order Header" = IMD,
         tabledata "Shpfy FulFillment Order Line" = IMD,
@@ -25,11 +29,16 @@ permissionset 30102 "Shpfy - Edit"
         tabledata "Shpfy Inventory Item" = IMD,
         tabledata "Shpfy Log Entry" = IMD,
         tabledata "Shpfy Metafield" = IMD,
+        tabledata "Shpfy Refund Header" = IMD,
+        tabledata "Shpfy Refund Line" = IMD,
+        tabledata "Shpfy Return Header" = IMD,
+        tabledata "Shpfy Return Line" = IMD,
         tabledata "Shpfy Order Attribute" = IMD,
         tabledata "Shpfy Order Disc.Appl." = IMD,
         tabledata "Shpfy Order Fulfillment" = IMD,
         tabledata "Shpfy Order Header" = IMD,
         tabledata "Shpfy Order Line" = IMD,
+        tabledata "Shpfy Order Line Attribute" = IMD,
         tabledata "Shpfy Order Payment Gateway" = IMD,
         tabledata "Shpfy Order Risk" = IMD,
         tabledata "Shpfy Order Shipping Charges" = IMD,

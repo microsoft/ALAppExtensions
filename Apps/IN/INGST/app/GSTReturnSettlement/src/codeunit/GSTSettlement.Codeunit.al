@@ -1,3 +1,27 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.ReturnSettlement;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.GST.Distribution;
+using Microsoft.Finance.GST.Payments;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Posting;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Setup;
+
 codeunit 18318 "GST Settlement"
 {
     var
@@ -1597,6 +1621,7 @@ codeunit 18318 "GST Settlement"
         TotalInvoiceAmount: Decimal;
         Sign: Integer;
         GSTExempted: Boolean;
+        IsHandled: Boolean;
     begin
         GSTLiabilityBuffer.SetRange("Transaction Type", GSTLiabilityBuffer."Transaction Type"::Purchase);
         GSTLiabilityBuffer.SetRange("Account No.", VendNo);
@@ -1613,19 +1638,22 @@ codeunit 18318 "GST Settlement"
                     RemainingAmount := (Abs(RemainingAmount) - Abs(AppliedAmount)) * Sign;
                 end;
 
-                if Abs(TotalInvoiceAmount) > Abs(RemainingAmount) then begin
-                    GSTLiabilityBuffer."Applied Base Amount" := Round(GSTLiabilityBuffer."GST Base Amount" * Abs(RemainingAmount) / TotalInvoiceAmount, 0.01);
-                    GSTLiabilityBuffer."Applied Amount" := GSTLiabilityBuffer."GST Amount" * Abs(RemainingAmount) / TotalInvoiceAmount;
-                    if GSTLiabilityBuffer."GST Credit" = "GST Credit"::Availment then
-                        GSTLiabilityBuffer."Credit Amount" := GSTLiabilityBuffer."Applied Amount"
-                end else begin
-                    GSTLiabilityBuffer."Applied Base Amount" :=
-                      Round(GetInvoiceGSTComponentWise(GSTLiabilityBuffer, GSTLiabilityBuffer."Original Document Type"::Invoice, DocumentNo, true), 0.01);
-                    GSTLiabilityBuffer."Applied Amount" := GSTLiabilityBuffer."GST Amount";
-                    if GSTLiabilityBuffer."GST Credit" = "GST Credit"::Availment then
-                        GSTLiabilityBuffer."Credit Amount" := GSTLiabilityBuffer."Applied Amount";
-                end;
+                OnBeforeAllocateGstAppliedAmounts(TotalInvoiceAmount, RemainingAmount, GSTLiabilityBuffer, IsHandled);
+                if not IsHandled then
+                    if Abs(TotalInvoiceAmount) > Abs(RemainingAmount) then begin
+                        GSTLiabilityBuffer."Applied Base Amount" := Round(GSTLiabilityBuffer."GST Base Amount" * Abs(RemainingAmount) / TotalInvoiceAmount, 0.01);
+                        GSTLiabilityBuffer."Applied Amount" := GSTLiabilityBuffer."GST Amount" * Abs(RemainingAmount) / TotalInvoiceAmount;
+                        if GSTLiabilityBuffer."GST Credit" = "GST Credit"::Availment then
+                            GSTLiabilityBuffer."Credit Amount" := GSTLiabilityBuffer."Applied Amount"
+                    end else begin
+                        GSTLiabilityBuffer."Applied Base Amount" :=
+                          Round(GetInvoiceGSTComponentWise(GSTLiabilityBuffer, GSTLiabilityBuffer."Original Document Type"::Invoice, DocumentNo, true), 0.01);
+                        GSTLiabilityBuffer."Applied Amount" := GSTLiabilityBuffer."GST Amount";
+                        if GSTLiabilityBuffer."GST Credit" = "GST Credit"::Availment then
+                            GSTLiabilityBuffer."Credit Amount" := GSTLiabilityBuffer."Applied Amount";
+                    end;
 
+                OnAfterAllocateGstAppliedAmount(TotalInvoiceAmount, RemainingAmount, GSTLiabilityBuffer, DocumentNo);
                 GSTLiabilityBuffer.Modify(true);
                 GSTGroupCode := GSTLiabilityBuffer."GST Group Code";
                 GSTExempted := GSTLiabilityBuffer.Exempted;
@@ -3094,4 +3122,13 @@ codeunit 18318 "GST Settlement"
             Until GSTPaymentBuffer.Next() = 0;
     end;
 
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeAllocateGstAppliedAmounts(TotalInvoiceAmount: Decimal; RemainingAmount: Decimal; var GSTLiabilityBuffer: Record "GST Liability Buffer"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterAllocateGstAppliedAmount(TotalInvoiceAmount: Decimal; RemainingAmount: Decimal; var GSTLiabilityBuffer: Record "GST Liability Buffer"; DocumentNo: Code[20])
+    begin
+    end;
 }

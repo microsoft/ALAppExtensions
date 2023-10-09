@@ -1,4 +1,15 @@
-﻿pageextension 18941 "Bank Payment Voucher" extends "Bank Payment Voucher"
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxBase;
+
+using Microsoft.Bank.VoucherInterface;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Reporting;
+
+pageextension 18941 "Bank Payment Voucher" extends "Bank Payment Voucher"
 {
     layout
     {

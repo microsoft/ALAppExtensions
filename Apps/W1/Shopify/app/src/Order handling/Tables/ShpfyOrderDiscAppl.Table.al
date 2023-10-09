@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Table Shpfy Order Disc.Appl. (ID 30117).
 /// </summary>

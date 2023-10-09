@@ -140,14 +140,6 @@ codeunit 31326 "Acc. Sched. Extension Mgt. CZL"
             CustLedgerEntry.SetFilter("Document Type", AccScheduleExtensionCZL."Document Type Filter");
         if AccScheduleExtensionCZL."Posting Group Filter" <> '' then
             CustLedgerEntry.SetFilter("Customer Posting Group", AccScheduleExtensionCZL."Posting Group Filter");
-#if not CLEAN20
-#pragma warning disable AL0432
-        if AccScheduleExtensionCZL.Prepayment = AccScheduleExtensionCZL.Prepayment::Yes then
-            CustLedgerEntry.SetRange(Prepayment, true);
-        if AccScheduleExtensionCZL.Prepayment = AccScheduleExtensionCZL.Prepayment::No then
-            CustLedgerEntry.SetRange(Prepayment, false);
-#pragma warning restore AL0432
-#endif
         OnAfterSetCustLedgEntryFilters(AccScheduleExtensionCZL, CustLedgerEntry);
     end;
 
@@ -166,14 +158,6 @@ codeunit 31326 "Acc. Sched. Extension Mgt. CZL"
             VendorLedgerEntry.SetFilter("Document Type", AccScheduleExtensionCZL."Document Type Filter");
         if AccScheduleExtensionCZL."Posting Group Filter" <> '' then
             VendorLedgerEntry.SetFilter("Vendor Posting Group", AccScheduleExtensionCZL."Posting Group Filter");
-#if not CLEAN20
-#pragma warning disable AL0432
-        if AccScheduleExtensionCZL.Prepayment = AccScheduleExtensionCZL.Prepayment::Yes then
-            VendorLedgerEntry.SetRange(Prepayment, true);
-        if AccScheduleExtensionCZL.Prepayment = AccScheduleExtensionCZL.Prepayment::No then
-            VendorLedgerEntry.SetRange(Prepayment, false);
-#pragma warning restore AL0432
-#endif            
         OnAfterSetVendLedgEntryFilters(AccScheduleExtensionCZL, VendorLedgerEntry);
     end;
 

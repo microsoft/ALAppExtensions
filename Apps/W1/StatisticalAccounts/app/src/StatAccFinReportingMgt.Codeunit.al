@@ -1,3 +1,11 @@
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
+using Microsoft.Finance.FinancialReports;
+using Microsoft.Finance.Analysis;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Period;
+
 codeunit 2622 "Stat. Acc. Fin Reporting Mgt"
 {
     [EventSubscriber(ObjectType::Table, Database::"Acc. Schedule Line", 'OnBeforeLookupTotaling', '', false, false)]
@@ -59,6 +67,7 @@ codeunit 2622 "Stat. Acc. Fin Reporting Mgt"
     local procedure OnAfterCalcCellValue(sender: Codeunit AccSchedManagement; var AccSchedLine: Record "Acc. Schedule Line"; var ColumnLayout: Record "Column Layout"; var GLAcc: Record "G/L Account"; var Result: Decimal; var SourceAccScheduleLine: Record "Acc. Schedule Line")
     var
         StatisticalAccount: Record "Statistical Account";
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
     begin
         if AccSchedLine."Totaling Type" <> AccSchedLine."Totaling Type"::"Statistical Account" then
             exit;
@@ -69,6 +78,7 @@ codeunit 2622 "Stat. Acc. Fin Reporting Mgt"
             exit;
         end;
 
+        StatAccTelemetry.LogFinancialReportUsage();
         SetStatAccColumnFilters(sender, StatisticalAccount, AccSchedLine, ColumnLayout);
         Result := Result + CalcStatisticalAccount(StatisticalAccount, AccSchedLine, SourceAccScheduleLine, ColumnLayout, sender);
     end;
@@ -91,12 +101,13 @@ codeunit 2622 "Stat. Acc. Fin Reporting Mgt"
         if ColumnLayout."Column Type" = ColumnLayout."Column Type"::Formula then
             exit(ColValue);
 
+        AccSchedLine.CopyFilters(SourceAccScheduleLine);
         if AccSchedName."Analysis View Name" = '' then begin
-            SetStatisticalAccountsLedgerEntryFilters(StatisticalAccount, StatisticalLedgerEntry, SourceAccScheduleLine, ColumnLayout, sender);
+            SetStatisticalAccountsLedgerEntryFilters(StatisticalAccount, StatisticalLedgerEntry, AccSchedLine, ColumnLayout, sender);
             StatisticalLedgerEntry.CalcSums(Amount);
             ColValue := StatisticalLedgerEntry.Amount;
         end else begin
-            SetStatisticalAccountAnalysisViewEntryFilters(StatisticalAccount, AnalysisViewEntry, SourceAccScheduleLine, ColumnLayout, AccSchedName);
+            SetStatisticalAccountAnalysisViewEntryFilters(StatisticalAccount, AnalysisViewEntry, AccSchedLine, ColumnLayout, AccSchedName);
             AnalysisViewEntry.CalcSums(Amount);
             ColValue := AnalysisViewEntry.Amount;
         end;

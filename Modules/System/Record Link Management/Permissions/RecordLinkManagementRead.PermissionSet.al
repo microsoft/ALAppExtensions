@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Utilities;
+
+using System.Environment.Configuration;
+
 permissionset 447 "Record Link Management - Read"
 {
     Assignable = false;

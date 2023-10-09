@@ -1,3 +1,22 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TDS.TDSOnPayments;
+
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Foundation.Navigate;
+using Microsoft.Finance.GeneralLedger.Reversal;
+using System.Utilities;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Finance.Currency;
+
 codeunit 18768 "Provisional Entry Handler"
 {
     procedure ReverseProvisionalEntries(Number: Integer)

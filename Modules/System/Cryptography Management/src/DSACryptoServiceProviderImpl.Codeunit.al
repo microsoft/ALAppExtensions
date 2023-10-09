@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.Encryption;
+
+using System;
+
 codeunit 1448 "DSACryptoServiceProvider Impl." implements SignatureAlgorithm
 {
     Access = Internal;

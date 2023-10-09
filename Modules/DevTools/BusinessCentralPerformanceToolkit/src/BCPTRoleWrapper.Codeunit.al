@@ -2,6 +2,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Tooling;
+
+using System.TestTools.TestRunner;
+
 codeunit 149002 "BCPT Role Wrapper"
 {
     TableNo = "BCPT Line";

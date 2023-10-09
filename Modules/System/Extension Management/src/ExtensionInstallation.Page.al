@@ -1,7 +1,11 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Apps;
+
+using System;
 
 /// <summary>
 /// Installs the selected extension.
@@ -43,8 +47,8 @@ page 2503 "Extension Installation"
         MarketplaceExtnDeployment.SetAppID(Rec.ID);
         MarketplaceExtnDeployment.RunModal();
         if MarketplaceExtnDeployment.GetInstalledSelected() then
-            if NOT IsNullGuid(ID) then
-                ExtensionMarketplace.InstallMarketplaceExtension(ID, ResponseURL, MarketplaceExtnDeployment.GetLanguageId());
+            if not IsNullGuid(Rec.ID) then
+                ExtensionMarketplace.InstallMarketplaceExtension(Rec.ID, Rec.ResponseURL, MarketplaceExtnDeployment.GetLanguageId());
         CurrPage.Close();
     end;
 
@@ -78,4 +82,5 @@ page 2503 "Extension Installation"
             FieldRef.Value(Filter);
     end;
 }
+
 

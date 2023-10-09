@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Functions;
+
 /// <summary>
 /// Holder object for holding for Azure Function request result.
 /// </summary>
@@ -35,6 +37,15 @@ codeunit 7805 "Azure Functions Response"
             exit(ResponseError)
         else
             exit(ResponseMessage.ReasonPhrase);
+    end;
+
+    /// <summary>
+    /// Gets the error content
+    /// </summary>
+    /// <returns>Text representation of the detailed error message.</returns>
+    procedure GetError(var ErrorContent: Text)
+    begin
+        ResponseMessage.Content.ReadAs(ErrorContent);
     end;
 
     internal procedure SetError(Error: Text)

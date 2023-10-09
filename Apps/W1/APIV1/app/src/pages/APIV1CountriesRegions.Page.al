@@ -1,3 +1,8 @@
+namespace Microsoft.API.V1;
+
+using Microsoft.Foundation.Address;
+using Microsoft.Integration.Graph;
+
 page 20027 "APIV1 - Countries/Regions"
 {
     APIVersion = 'v1.0';
@@ -16,40 +21,40 @@ page 20027 "APIV1 - Countries/Regions"
         {
             repeater(Group)
             {
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'id', Locked = true;
                     Editable = false;
                 }
-                field("code"; Code)
+                field("code"; Rec.Code)
                 {
                     Caption = 'code', Locked = true;
                     ShowMandatory = true;
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FIELDNO(Code));
+                        RegisterFieldSet(Rec.FieldNo(Code));
                     end;
                 }
-                field(displayName; Name)
+                field(displayName; Rec.Name)
                 {
                     Caption = 'name', Locked = true;
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FIELDNO(Name));
+                        RegisterFieldSet(Rec.FieldNo(Name));
                     end;
                 }
-                field(addressFormat; "Address Format")
+                field(addressFormat; Rec."Address Format")
                 {
                     Caption = 'addressFormat', Locked = true;
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FIELDNO("Address Format"));
+                        RegisterFieldSet(Rec.FieldNo("Address Format"));
                     end;
                 }
-                field(lastModifiedDateTime; "Last Modified Date Time")
+                field(lastModifiedDateTime; Rec."Last Modified Date Time")
                 {
                     Caption = 'lastModifiedDateTime', Locked = true;
                 }
@@ -67,33 +72,33 @@ page 20027 "APIV1 - Countries/Regions"
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
         RecordRef: RecordRef;
     begin
-        CountryRegion.SETRANGE(Code, Code);
-        IF NOT CountryRegion.ISEMPTY() THEN
-            INSERT();
+        CountryRegion.SetRange(Code, Rec.Code);
+        if not CountryRegion.IsEmpty() then
+            Rec.insert();
 
-        INSERT(TRUE);
+        Rec.insert(true);
 
-        RecordRef.GETTABLE(Rec);
+        RecordRef.GetTable(Rec);
         GraphMgtGeneralTools.ProcessNewRecordFromAPI(RecordRef, TempFieldSet, CURRENTDATETIME());
-        RecordRef.SETTABLE(Rec);
+        RecordRef.SetTable(Rec);
 
-        MODIFY(TRUE);
-        EXIT(FALSE);
+        Rec.Modify(true);
+        exit(false);
     end;
 
     trigger OnModifyRecord(): Boolean
     var
         CountryRegion: Record "Country/Region";
     begin
-        CountryRegion.GetBySystemId(SystemId);
+        CountryRegion.GetBySystemId(Rec.SystemId);
 
-        IF Code = CountryRegion.Code THEN
-            MODIFY(TRUE)
-        ELSE BEGIN
-            CountryRegion.TRANSFERFIELDS(Rec, FALSE);
-            CountryRegion.RENAME(Code);
-            TRANSFERFIELDS(CountryRegion);
-        END;
+        if Rec.Code = CountryRegion.Code then
+            Rec.Modify(true)
+        else begin
+            CountryRegion.TransferFields(Rec, false);
+            CountryRegion.Rename(Rec.Code);
+            Rec.TransferFields(CountryRegion);
+        end;
     end;
 
     var
@@ -101,15 +106,16 @@ page 20027 "APIV1 - Countries/Regions"
 
     local procedure RegisterFieldSet(FieldNo: Integer)
     begin
-        IF TempFieldSet.GET(DATABASE::"Country/Region", FieldNo) THEN
-            EXIT;
+        if TempFieldSet.Get(Database::"Country/Region", FieldNo) then
+            exit;
 
         TempFieldSet.INIT();
         TempFieldSet.TableNo := DATABASE::"Country/Region";
-        TempFieldSet.VALIDATE("No.", FieldNo);
-        TempFieldSet.INSERT(TRUE);
+        TempFieldSet.Validate("No.", FieldNo);
+        TempFieldSet.Insert(true);
     end;
 }
+
 
 
 

@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Security;
+
+using System.Security;
+using System.TestLibraries.Utilities;
+
 codeunit 135213 "App Key Vault Secret Pro. Test"
 {
     Subtype = Test;

@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Integration.Word;
+
 table 130444 "Word Templates Test Table 2"
 {
     DataClassification = SystemMetadata;
@@ -36,6 +38,12 @@ table 130444 "Word Templates Test Table 2"
         field(7; "Value 4"; Text[100])
         {
             Caption = 'Value';
+        }
+#pragma warning disable AL0468
+        field(8; "Word Templates Test Table 2 Field"; Text[100]) // Field name and caption exceeeds 30 characters for test purpose
+#pragma warning restore AL0468
+        {
+            Caption = 'Word Templates Test Table 2 Field';
         }
     }
 

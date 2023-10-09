@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 permissionset 40900 "GP Historical Trx."
 {
     Assignable = true;

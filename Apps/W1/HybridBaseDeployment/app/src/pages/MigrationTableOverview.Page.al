@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration;
+
+using System.Reflection;
+
 page 40034 "Migration Table Overview"
 {
     PageType = Worksheet;

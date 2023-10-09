@@ -1,3 +1,13 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.DataMigration;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Inventory.Item;
+using Microsoft.Sales.Customer;
+using Microsoft.Utilities;
+using System.Integration;
+
 codeunit 4025 "GP Cloud Migration"
 {
     TableNo = "Hybrid Replication Summary";
@@ -114,7 +124,7 @@ codeunit 4025 "GP Cloud Migration"
         CreateConfiguredDataMigrationStatusRecords();
 
         Session.LogMessage('0000BBI', StartMigrationMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetTelemetryCategory());
-        DataMigrationFacade.StartMigration(HelperFunctions.GetMigrationTypeTxt(), FALSE);
+        DataMigrationFacade.StartMigration(HelperFunctions.GetMigrationTypeTxt(), false);
     end;
 
     local procedure CreateDataMigrationStatusRecords(DestinationTableID: Integer; NumberOfRecords: Integer; StagingTableID: Integer; CodeunitToRun: Integer)
@@ -213,6 +223,7 @@ codeunit 4025 "GP Cloud Migration"
         UpdateOrInsertRecord(Database::"GP PM00100", 'PM00100');
         UpdateOrInsertRecord(Database::"GP PM00200", 'PM00200');
         UpdateOrInsertRecord(Database::"GP PM00201", 'PM00201');
+        UpdateOrInsertRecord(Database::"GP PM00204", 'PM00204');
         UpdateOrInsertRecord(Database::"GP Vendor Address", 'PM00300');
         UpdateOrInsertRecord(Database::"GP PM20000", 'PM20000');
         UpdateOrInsertRecord(Database::GPPMHist, 'PM30200');

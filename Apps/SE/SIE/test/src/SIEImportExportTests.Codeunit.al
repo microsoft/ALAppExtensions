@@ -348,9 +348,117 @@ codeunit 148015 "SIE Import Export Tests"
             GenJournalTemplate.Name, GenJournalBatch.Name, GenJournalLine."Account No.", PostingDate, PostingDate, PostingDate);
     end;
 
+    [Test]
+    procedure SIEExportStartingDateBeforeAccountingPeriod()
+    var
+        GLAccountMappingLine: Record "G/L Account Mapping Line";
+        AuditFileExportHeader: Record "Audit File Export Header";
+        GenJournalLine: Record "Gen. Journal Line";
+        AccountingPeriod: Record "Accounting Period";
+        AuditFileExportMgt: Codeunit "Audit File Export Mgt.";
+        StartingDate: Date;
+    begin
+        // [FEATURE] [Export]
+        // [SCENARIO 463103] Start export when Starting Date is less than the starting date of the first accounting period.
+        Initialize();
+        SIETestHelper.CreateGLAccMappingWithLine(GLAccountMappingLine);
+
+        // [GIVEN] Audit File Export Document with Starting Date 01.01.2010, which is less than the starting date of the first accounting period.
+        AccountingPeriod.SetRange("New Fiscal Year", true);
+        AccountingPeriod.FindFirst();
+        StartingDate := CalcDate('<-1Y>', AccountingPeriod."Starting Date");
+        SIETestHelper.CreateAuditFileExportDoc(
+            AuditFileExportHeader, StartingDate, WorkDate(), "File Type SIE"::"4. Transactions",
+            StrSubstNo(GLAccountNoFilterTxt, GenJournalLine."Account No."));
+
+        // [WHEN] Run SIE Export report
+        asserterror AuditFileExportMgt.StartExport(AuditFileExportHeader);
+
+        // [THEN] Error message is shown.
+        Assert.ExpectedError(StrSubstNo('The starting date %1 must be within the existing accounting period.', StartingDate));
+        Assert.ExpectedErrorCode('Dialog');
+    end;
+
+    [Test]
+    procedure SIEExportStartingDateAfterAccountingPeriod()
+    var
+        GLAccountMappingLine: Record "G/L Account Mapping Line";
+        AuditFileExportHeader: Record "Audit File Export Header";
+        GenJournalLine: Record "Gen. Journal Line";
+        AccountingPeriod: Record "Accounting Period";
+        AuditFileExportMgt: Codeunit "Audit File Export Mgt.";
+        StartingDate: Date;
+    begin
+        // [FEATURE] [Export]
+        // [SCENARIO 463103] Start export when Starting Date is greater than the starting date of the last accounting period.
+        Initialize();
+        SIETestHelper.CreateGLAccMappingWithLine(GLAccountMappingLine);
+
+        // [GIVEN] Audit File Export Document with Starting Date 01.01.2030, which is greater than the starting date of the last accounting period.
+        AccountingPeriod.SetRange("New Fiscal Year", true);
+        AccountingPeriod.FindLast();
+        StartingDate := CalcDate('<1Y>', AccountingPeriod."Starting Date");
+        SIETestHelper.CreateAuditFileExportDoc(
+            AuditFileExportHeader, StartingDate, WorkDate(), "File Type SIE"::"4. Transactions",
+            StrSubstNo(GLAccountNoFilterTxt, GenJournalLine."Account No."));
+
+        // [WHEN] Run SIE Export report.
+        asserterror AuditFileExportMgt.StartExport(AuditFileExportHeader);
+
+        // [THEN] Error message is shown.
+        Assert.ExpectedError(StrSubstNo('There must be the accounting period next to the accounting period %1.', AccountingPeriod."Starting Date"));
+        Assert.ExpectedErrorCode('Dialog');
+    end;
+
+    [Test]
+    procedure SetSIEFormatToDocumentWhenSetupNotExist()
+    var
+        AuditFileExportHeader: Record "Audit File Export Header";
+        AuditFileExportFormatSetup: Record "Audit File Export Format Setup";
+        SIEManagement: Codeunit "SIE Management";
+    begin
+        // [FEATURE] [Export]
+        // [SCENARIO 463103] Set export format to SIE for Audit Document when Export Format Setup for SIE does not exist.
+        Initialize();
+
+        // [GIVEN] There is no Audit File Export Setup for SIE format.
+        AuditFileExportFormatSetup.SetRange("Audit File Export Format", "Audit File Export Format"::SIE);
+        AuditFileExportFormatSetup.DeleteAll();
+
+        // [WHEN] Set Export Format SIE to Audit File Export Document.
+        asserterror AuditFileExportHeader.Validate("Audit File Export Format", "Audit File Export Format"::SIE);
+
+        // [THEN] Error message is shown.
+        Assert.ExpectedError('Audit File Export Format Setup does not exist for the SIE export format.');
+        Assert.ExpectedErrorCode('Dialog');
+
+        // restore setup
+        AuditFileExportFormatSetup.InitSetup("Audit File Export Format"::SIE, SIEManagement.GetAuditFileName(), false);
+    end;
+
+    [Test]
+    procedure DefaultMappingSIEWhenOpenWizard()
+    var
+        GLAccountMappingHeader: Record "G/L Account Mapping Header";
+        SIESetupWizard: TestPage "SIE Setup Wizard";
+    begin
+        // [FEATURE] [Export]
+        // [SCENARIO 463103] Code for default Mapping SIE when SIE wizard page is opened.
+        Initialize();
+
+        // [WHEN] Open SIE wizard page.
+        SIESetupWizard.OpenEdit();
+
+        // [THEN] Mapping Header with code "DEFAULT SIE" is created.
+        GLAccountMappingHeader.SetRange("Audit File Export Format", "Audit File Export Format"::SIE);
+        GLAccountMappingHeader.FindFirst();
+        Assert.AreEqual('DEFAULT SIE', GLAccountMappingHeader.Code, '');
+    end;
+
     local procedure Initialize()
     begin
         LibraryVariableStorage.Clear();
+        DeleteDocumentsAndMapping();
 
         if IsInitialized then
             exit;
@@ -442,6 +550,22 @@ codeunit 148015 "SIE Import Export Tests"
             exit(AccountingPeriod."Starting Date");
 
         exit(CalcDate('<-CY>', WorkDate()));
+    end;
+
+    local procedure DeleteDocumentsAndMapping()
+    var
+        AuditFileExportHeader: Record "Audit File Export Header";
+        AuditFileExportLine: Record "Audit File Export Line";
+        AuditFile: Record "Audit File";
+        GLAccountMappingHeader: Record "G/L Account Mapping Header";
+        GLAccountMappingLine: Record "G/L Account Mapping Line";
+    begin
+        AuditFile.DeleteAll();
+        AuditFileExportLine.DeleteAll(true);
+        AuditFileExportHeader.DeleteAll();
+
+        GLAccountMappingLine.DeleteAll();
+        GLAccountMappingHeader.DeleteAll();
     end;
 
     local procedure RunSIEExport(var AuditFile: Record "Audit File"; GLAccountNo: Code[20]; StartDate: Date; EndDate: Date)

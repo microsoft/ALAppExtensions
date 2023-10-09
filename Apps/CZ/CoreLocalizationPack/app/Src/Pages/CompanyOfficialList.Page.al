@@ -2,7 +2,7 @@ page 11765 "Company Official List CZL"
 {
     ApplicationArea = Basic, Suite;
     Caption = 'Company Officials';
-    CardPageID = "Company Official Card CZL";
+    CardPageId = "Company Official Card CZL";
     Editable = false;
     PageType = List;
     SourceTable = "Company Official CZL";

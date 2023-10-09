@@ -1,3 +1,9 @@
+namespace Microsoft.DataMigration;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Sales.Receivables;
+using Microsoft.Purchases.Payables;
+
 codeunit 4010 CalculateAmounts
 {
     trigger OnRun()
@@ -77,11 +83,11 @@ codeunit 4010 CalculateAmounts
         CustLedgerEntry: Record "Cust. Ledger Entry";
     begin
         CustLedgerEntry.SETRANGE("Document Type", CustLedgerEntry."Document Type"::Invoice);
-        CustLedgerEntry.SETRANGE(Open, TRUE);
+        CustLedgerEntry.SETRANGE(Open, true);
         CustLedgerEntry.SETFILTER("Due Date", '<%1', workdate());
         CustLedgerEntry.SETFILTER("Remaining Amt. (LCY)", '<>0');
         CustLedgerEntry.SETCURRENTKEY("Remaining Amt. (LCY)");
-        CustLedgerEntry.ASCENDING := FALSE;
+        CustLedgerEntry.Ascending := false;
         PAGE.RUN(PAGE::"Customer Ledger Entries", CustLedgerEntry);
     end;
 
@@ -101,11 +107,11 @@ codeunit 4010 CalculateAmounts
         CustLedgerEntry: Record "Cust. Ledger Entry";
     begin
         CustLedgerEntry.SETRANGE("Document Type", CustLedgerEntry."Document Type"::Invoice);
-        CustLedgerEntry.SETRANGE(Open, TRUE);
+        CustLedgerEntry.SETRANGE(Open, true);
         CustLedgerEntry.SetFilter("Due Date", '%1..%2', CALCDATE('<0D>', WorkDate()), CALCDATE('<6D>', workdate()));
         CustLedgerEntry.SETFILTER("Remaining Amt. (LCY)", '<>0');
         CustLedgerEntry.SETCURRENTKEY("Remaining Amt. (LCY)");
-        CustLedgerEntry.ASCENDING := FALSE;
+        CustLedgerEntry.Ascending := false;
         PAGE.RUN(PAGE::"Customer Ledger Entries", CustLedgerEntry);
     end;
 
@@ -127,7 +133,7 @@ codeunit 4010 CalculateAmounts
         VendorLedgerEntry.SetFilter("Due Date", '%1..%2', CALCDATE('<0D>', WorkDate()), CALCDATE('<6D>', workdate()));
         VendorLedgerEntry.SETFILTER("Remaining Amt. (LCY)", '<>0');
         VendorLedgerEntry.SETCURRENTKEY("Remaining Amt. (LCY)");
-        VendorLedgerEntry.ASCENDING := TRUE;
+        VendorLedgerEntry.Ascending := true;
         PAGE.RUN(PAGE::"Vendor Ledger Entries", VendorLedgerEntry);
     end;
 
@@ -149,7 +155,7 @@ codeunit 4010 CalculateAmounts
         VendorLedgerEntry.SetFilter("Due Date", '<%1', WorkDate());
         VendorLedgerEntry.SETFILTER("Remaining Amt. (LCY)", '<>0');
         VendorLedgerEntry.SETCURRENTKEY("Remaining Amt. (LCY)");
-        VendorLedgerEntry.ASCENDING := TRUE;
+        VendorLedgerEntry.Ascending := true;
         PAGE.RUN(PAGE::"Vendor Ledger Entries", VendorLedgerEntry);
     end;
 }

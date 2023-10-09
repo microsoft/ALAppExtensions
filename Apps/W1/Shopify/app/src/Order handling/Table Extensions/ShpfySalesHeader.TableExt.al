@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Document;
+
 /// <summary>
 /// TableExtension Shpfy Sales Header (ID 30101) extends Record Sales Header.
 /// </summary>
@@ -24,6 +28,12 @@ tableextension 30101 "Shpfy Sales Header" extends "Sales Header"
             Caption = 'Risk Level';
             FieldClass = FlowField;
             CalcFormula = lookup("Shpfy Order Header"."Risk Level" where("Shopify Order Id" = field("Shpfy Order Id")));
+        }
+        field(30103; "Shpfy Refund Id"; BigInteger)
+        {
+            Caption = 'Shopify Refund Id';
+            DataClassification = CustomerContent;
+            Editable = false;
         }
     }
 }

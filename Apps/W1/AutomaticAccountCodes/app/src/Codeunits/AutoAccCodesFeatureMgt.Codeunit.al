@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AutomaticAccounts;
+
+using System.Environment;
+using System.Environment.Configuration;
+
 #if not CLEAN22
 codeunit 4853 "Auto. Acc. Codes Feature Mgt."
 {
@@ -46,29 +55,6 @@ codeunit 4853 "Auto. Acc. Codes Feature Mgt."
     [IntegrationEvent(false, false)]
     local procedure OnBeforeIsEnabled(var Result: Boolean; var IsHandled: Boolean)
     begin
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Feature Management Facade", 'OnInitializeFeatureDataUpdateStatus', '', false, false)]
-    local procedure HandleOnInitializeFeatureDataUpdateStatus(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; var InitializeHandled: Boolean)
-    var
-        FeatureKey: Record "Feature Key";
-    begin
-        if InitializeHandled then
-            exit;
-
-        if FeatureDataUpdateStatus."Feature Key" <> GetFeatureKeyId() then
-            exit;
-
-        if FeatureDataUpdateStatus."Company Name" <> CopyStr(CompanyName(), 1, MaxStrLen(FeatureDataUpdateStatus."Company Name")) then
-            exit;
-
-        FeatureDataUpdateStatus."Feature Status" := FeatureDataUpdateStatus."Feature Status"::Disabled;
-        if FeatureKey.WritePermission() then begin
-            FeatureKey.Get(FeatureDataUpdateStatus."Feature Key");
-            FeatureKey.Enabled := FeatureKey.Enabled::None;
-            FeatureKey.Modify();
-        end;
-        InitializeHandled := true;
     end;
 
     var

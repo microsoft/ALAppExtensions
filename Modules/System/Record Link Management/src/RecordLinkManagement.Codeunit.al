@@ -1,7 +1,11 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Utilities;
+
+using System.Environment.Configuration;
 
 /// <summary>
 /// Exposes functionality to administer record links related to table records.
@@ -62,16 +66,19 @@ codeunit 447 "Record Link Management"
         RecordLinkImpl.RemoveOrphanedLinks();
     end;
 
+#if not CLEAN23
     /// <summary>
     /// Integration event for before copying links.
     /// </summary>
     /// <param name="FromRecord">The source record from which links are copied.</param>
     /// <param name="ToRecord">The destination record to which links are copied.</param>
-    /// <param name="SkipReset">Out parameter to set if reset of Notify field should be skipped.</param>
+    /// <param name="SkipReset">Out parameter not used anymore. Obsolete.</param>
+    [Obsolete('Not used anymore.', '23.0')]
     [IntegrationEvent(false, false)]
     internal procedure OnBeforeCopyLinks(FromRecord: Variant; ToRecord: Variant; var SkipReset: Boolean)
     begin
     end;
+#endif
 
     /// <summary>
     /// Integration event for after copying links from one record to the other.

@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.UseCaseBuilder;
+
+using Microsoft.Finance.TaxEngine.Core;
+
 codeunit 20296 "Use Case Serialization"
 {
     procedure TableRelationToString(CaseID: Guid; ID: Guid): Text;
@@ -117,14 +125,14 @@ codeunit 20296 "Use Case Serialization"
             ScriptSymbolLookup."Source Type"::"Attribute Table":
                 SerializedText := AttributeTableToString(ScriptSymbolLookup);
             else begin
-                    TableFieldName := ScriptSymbolsMgmt.GetSymbolName(
-                        ScriptSymbolLookup."Source Type",
-                        ScriptSymbolLookup."Source Field ID");
-                    SerializedText := StrSubstNo(
-                        SymbolFormatTxt,
-                        ScriptSymbolLookup."Source Type",
-                        VariableToString(TableFieldName));
-                end;
+                TableFieldName := ScriptSymbolsMgmt.GetSymbolName(
+                    ScriptSymbolLookup."Source Type",
+                    ScriptSymbolLookup."Source Field ID");
+                SerializedText := StrSubstNo(
+                    SymbolFormatTxt,
+                    ScriptSymbolLookup."Source Type",
+                    VariableToString(TableFieldName));
+            end;
         end;
 
     end;

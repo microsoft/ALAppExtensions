@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Tooling;
+
+using System.Visualization;
+
 codeunit 1926 "Profiling Chart Helper"
 {
     Access = Internal;

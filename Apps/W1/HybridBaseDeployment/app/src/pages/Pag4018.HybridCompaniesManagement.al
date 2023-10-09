@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 page 4018 "Hybrid Companies Management"
 {
     PageType = NavigatePage;

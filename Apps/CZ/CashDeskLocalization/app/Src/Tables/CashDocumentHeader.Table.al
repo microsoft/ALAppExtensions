@@ -22,7 +22,7 @@ table 11732 "Cash Document Header CZP"
                 GetCashDeskCZP("Cash Desk No.");
                 CashDeskCZP.TestField(Blocked, false);
 
-                CreateDimFromDefaultDim(Rec.FieldNo("Partner No."));
+                CreateDimFromDefaultDim(Rec.FieldNo("Cash Desk No."));
             end;
         }
         field(2; "No."; Code[20])
@@ -443,7 +443,7 @@ table 11732 "Cash Document Header CZP"
                                         "Paid To" := Customer.Name;
                                 end;
                                 "VAT Registration No." := Customer."VAT Registration No.";
-                                "Registration No." := Customer."Registration No. CZL";
+                                "Registration No." := Customer.GetRegistrationNoTrimmedCZL();
                             end;
                         "Partner Type"::Vendor:
                             begin
@@ -455,7 +455,7 @@ table 11732 "Cash Document Header CZP"
                                         "Paid To" := Vendor.Name;
                                 end;
                                 "VAT Registration No." := Vendor."VAT Registration No.";
-                                "Registration No." := Vendor."Registration No. CZL";
+                                "Registration No." := Vendor.GetRegistrationNoTrimmedCZL();
                             end;
                         "Partner Type"::Contact:
                             begin
@@ -467,7 +467,7 @@ table 11732 "Cash Document Header CZP"
                                         "Paid To" := Contact.Name;
                                 end;
                                 "VAT Registration No." := Contact."VAT Registration No.";
-                                "Registration No." := Contact."Registration No. CZL";
+                                "Registration No." := Contact.GetRegistrationNoTrimmedCZL();
                             end;
                         "Partner Type"::"Salesperson/Purchaser":
                             begin
@@ -629,6 +629,7 @@ table 11732 "Cash Document Header CZP"
         "Amounts Including VAT" := CashDeskCZP."Amounts Including VAT";
         "Reason Code" := CashDeskCZP."Reason Code";
         Validate("Currency Code", CashDeskCZP."Currency Code");
+        CreateDimFromDefaultDim(0);
 
         if CashDeskUserCZP.Get("Cash Desk No.", UserId()) then
             case "Document Type" of
@@ -733,29 +734,25 @@ table 11732 "Cash Document Header CZP"
     end;
 
 #if not CLEAN21
-#pragma warning disable AL0432
+#pragma warning disable AL0432,AS0072
+    [Obsolete('Use procedure CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]) instead', '21.0')]
     procedure CreateDim(Type1: Integer; No1: Code[20]; Type2: Integer; No2: Code[20]; Type3: Integer; No3: Code[20]; Type4: Integer; No4: Code[20])
     var
         SourceCodeSetup: Record "Source Code Setup";
-        TableID: array[10] of Integer;
-        No: array[10] of Code[20];
+        DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
         OldDimSetID: Integer;
     begin
         SourceCodeSetup.Get();
-        TableID[1] := Type1;
-        No[1] := No1;
-        TableID[2] := Type2;
-        No[2] := No2;
-        TableID[3] := Type3;
-        No[3] := No3;
-        TableID[4] := Type4;
-        No[4] := No4;
+        DimensionManagement.AddDimSource(DefaultDimSource, Type1, No1);
+        DimensionManagement.AddDimSource(DefaultDimSource, Type2, No2);
+        DimensionManagement.AddDimSource(DefaultDimSource, Type3, No3);
+        DimensionManagement.AddDimSource(DefaultDimSource, Type4, No4);
         "Shortcut Dimension 1 Code" := '';
         "Shortcut Dimension 2 Code" := '';
         OldDimSetID := "Dimension Set ID";
         "Dimension Set ID" :=
           DimensionManagement.GetRecDefaultDimID(
-            Rec, CurrFieldNo, TableID, No, SourceCodeSetup."Cash Desk CZP",
+            Rec, CurrFieldNo, DefaultDimSource, SourceCodeSetup."Cash Desk CZP",
             "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
 
         if (OldDimSetID <> "Dimension Set ID") and CashDocLinesExist() then begin
@@ -763,7 +760,7 @@ table 11732 "Cash Document Header CZP"
             UpdateAllLineDim("Dimension Set ID", OldDimSetID);
         end;
     end;
-#pragma warning disable AL0432
+#pragma warning restore AL0432,AS0072
 #endif
 
     procedure CreateDimFromDefaultDim(FieldNo: Integer)

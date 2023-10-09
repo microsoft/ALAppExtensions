@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
 /// <summary>
 /// Provides information about the status of the emails.
 /// </summary>
@@ -24,7 +26,7 @@ page 8885 "Email Activities"
                     ApplicationArea = Basic, Suite;
                     StyleExpr = OutboxCueStyle;
                     Caption = 'Failed Emails in Outbox';
-                    ToolTip = 'View all emails that were not successfully sent.';
+                    ToolTip = 'Specifies the emails that were not successfully sent.';
 
 
                     trigger OnDrillDown()
@@ -40,7 +42,7 @@ page 8885 "Email Activities"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Draft Emails in Outbox';
-                    ToolTip = 'View all emails that are saved as drafts.';
+                    ToolTip = 'Specifies the emails that are saved as drafts.';
 
 
                     trigger OnDrillDown()
@@ -56,7 +58,7 @@ page 8885 "Email Activities"
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Sent Emails Last 30 Days';
-                    ToolTip = 'Sent Emails Last 30 Days';
+                    ToolTip = 'Specifies Sent Emails in the Last 30 Days';
 
                     trigger OnDrillDown()
                     var

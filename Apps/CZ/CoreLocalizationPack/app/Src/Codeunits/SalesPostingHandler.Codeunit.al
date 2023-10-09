@@ -1,7 +1,6 @@
 codeunit 31038 "Sales Posting Handler CZL"
 {
     var
-        VATPostingSetup: Record "VAT Posting Setup";
         SourceCodeSetup: Record "Source Code Setup";
         GLEntry: Record "G/L Entry";
         Currency: Record Currency;
@@ -9,11 +8,12 @@ codeunit 31038 "Sales Posting Handler CZL"
         ReverseChargeCheckCZL: Enum "Reverse Charge Check CZL";
         VATCalcTypeErr: Label 'Relation Exch. Rate Amount for the Currency Code and for the VAT Currency Code must be the same if Normal VAT is used.';
 
-#if not CLEAN20
+#if not CLEAN23
 #pragma warning disable AL0432
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterPostInvPostBuffer', '', false, false)]
     local procedure SalesPostVATCurrencyFactorOnAfterPostInvPostBuffer(var GenJnlLine: Record "Gen. Journal Line"; var InvoicePostBuffer: Record "Invoice Post. Buffer"; var SalesHeader: Record "Sales Header"; GLEntryNo: Integer; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     var
+        VATPostingSetup: Record "VAT Posting Setup";
         VATCurrFactor: Decimal;
     begin
         if SalesHeader."Currency Factor" <> SalesHeader."VAT Currency Factor CZL" then begin
@@ -111,6 +111,7 @@ codeunit 31038 "Sales Posting Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnPostLinesOnAfterGenJnlLinePost', '', false, false)]
     local procedure SalesPostVATCurrencyFactorOnPostLinesOnAfterGenJnlLinePost(var GenJnlLine: Record "Gen. Journal Line"; TempInvoicePostingBuffer: Record "Invoice Posting Buffer"; SalesHeader: Record "Sales Header"; GLEntryNo: Integer; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
     var
+        VATPostingSetup: Record "VAT Posting Setup";
         VATCurrFactor: Decimal;
     begin
         if SalesHeader."Currency Factor" <> SalesHeader."VAT Currency Factor CZL" then begin
@@ -218,11 +219,15 @@ codeunit 31038 "Sales Posting Handler CZL"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterCheckSalesDoc', '', false, false)]
-    local procedure CheckIntrastatAndVatDateOnAfterCheckSalesDoc(var SalesHeader: Record "Sales Header")
+    local procedure CheckVatDateOnAfterCheckSalesDoc(var SalesHeader: Record "Sales Header")
     var
         VATDateHandlerCZL: Codeunit "VAT Date Handler CZL";
     begin
+#if not CLEAN22
+#pragma warning disable AL0432
         SalesHeader.CheckIntrastatMandatoryFieldsCZL();
+#pragma warning restore AL0432
+#endif
         VATDateHandlerCZL.CheckVATDateCZL(SalesHeader);
     end;
 
@@ -243,6 +248,7 @@ codeunit 31038 "Sales Posting Handler CZL"
         Temp1InventoryBuffer: Record "Inventory Buffer" temporary;
         Temp2InventoryBuffer: Record "Inventory Buffer" temporary;
         CurrencyExchangeRate: Record "Currency Exchange Rate";
+        VATPostingSetup: Record "VAT Posting Setup";
         ConfirmManagement: Codeunit "Confirm Management";
         AmountToCheckLimit: Decimal;
         LineAmount: Decimal;
@@ -269,7 +275,7 @@ codeunit 31038 "Sales Posting Handler CZL"
 
         SalesLine.SetRange("Document Type", SalesHeader."Document Type");
         SalesLine.SetRange("Document No.", SalesHeader."No.");
-        if SalesLine.FindSet(false, false) then
+        if SalesLine.FindSet(false) then
             repeat
                 QtyToInvoice := GetQtyToInvoice(SalesLine, SalesHeader.Ship);
 
@@ -312,7 +318,7 @@ codeunit 31038 "Sales Posting Handler CZL"
                                 Temp1InventoryBuffer.Insert();
                             end;
 
-                            LineAmount := SalesLine."Line Amount";
+                            LineAmount := SalesLine."Unit Price" * QtyToInvoice;
                             if SalesHeader."Currency Code" <> '' then
                                 LineAmount :=
                                   CurrencyExchangeRate.ExchangeAmtFCYToLCY(
@@ -405,7 +411,7 @@ codeunit 31038 "Sales Posting Handler CZL"
         exit(ItemNoText);
     end;
 
-#if not CLEAN20
+#if not CLEAN23
 #pragma warning disable AL0432
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforePostCustomerEntry', '', false, false)]
     local procedure UpdateSymbolsAndBankAccountOnBeforePostCustomerEntry(var GenJnlLine: Record "Gen. Journal Line"; var SalesHeader: Record "Sales Header")
@@ -454,13 +460,14 @@ codeunit 31038 "Sales Posting Handler CZL"
         if SalesCrMemoHeader."Variable Symbol CZL" = '' then
             SalesCrMemoHeader."Variable Symbol CZL" := BankOperationsFunctionsCZL.CreateVariableSymbol(SalesCrMemoHeader."No.");
     end;
+#if not CLEAN22
+#pragma warning disable AL0432
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterTestSalesLine', '', false, false)]
     local procedure CheckIntrastatOnAfterTestSalesLine(SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")
     begin
         SalesLine.CheckIntrastatMandatoryFieldsCZL(SalesHeader);
     end;
-
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterInitAssocItemJnlLine', '', false, false)]
     local procedure CopyFieldsOnAfterInitAssocItemJnlLine(var ItemJournalLine: Record "Item Journal Line"; PurchaseHeader: Record "Purchase Header"; PurchaseLine: Record "Purchase Line")
@@ -485,8 +492,6 @@ codeunit 31038 "Sales Posting Handler CZL"
         ItemJournalLine."Incl. in Intrastat Amount CZL" := TempItemChargeAssignmentSales."Incl. in Intrastat Amount CZL";
         ItemJournalLine."Incl. in Intrastat S.Value CZL" := TempItemChargeAssignmentSales."Incl. in Intrastat S.Value CZL";
     end;
-#if not CLEAN22
-#pragma warning disable AL0432
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterValidatePostingAndDocumentDate', '', false, false)]
     local procedure ValidateVATDateOnAfterValidatePostingAndDocumentDate(var SalesHeader: Record "Sales Header")
@@ -538,6 +543,7 @@ codeunit 31038 "Sales Posting Handler CZL"
     begin
         ItemJournalLine."G/L Correction CZL" := SalesHeader.Correction xor SalesLine."Negative CZL";
     end;
+#if not CLEAN22
 
     [EventSubscriber(ObjectType::Report, Report::"Sales Document - Test", 'OnAfterCheckSalesDoc', '', false, false)]
     local procedure CheckIntrastatMandatoryFieldsOnAfterCheckSalesDoc(SalesHeader: Record "Sales Header"; var ErrorCounter: Integer; var ErrorText: array[99] of Text[250])
@@ -549,6 +555,7 @@ codeunit 31038 "Sales Posting Handler CZL"
             exit;
         if SalesHeader.IsIntrastatTransactionCZL() and SalesHeader.ShipOrReceiveInventoriableTypeItemsCZL() then begin
             StatutoryReportingSetupCZL.Get();
+#pragma warning disable AL0432
             if StatutoryReportingSetupCZL."Transaction Type Mandatory" then
                 if SalesHeader."Transaction Type" = '' then
                     AddError(StrSubstNo(MustBeSpecifiedLbl, SalesHeader.FieldCaption("Transaction Type")), ErrorCounter, ErrorText);
@@ -561,6 +568,7 @@ codeunit 31038 "Sales Posting Handler CZL"
             if StatutoryReportingSetupCZL."Shipment Method Mandatory" then
                 if SalesHeader."Shipment Method Code" = '' then
                     AddError(StrSubstNo(MustBeSpecifiedLbl, SalesHeader.FieldCaption("Shipment Method Code")), ErrorCounter, ErrorText);
+#pragma warning restore AL0432            
         end;
     end;
 
@@ -569,6 +577,7 @@ codeunit 31038 "Sales Posting Handler CZL"
         ErrorCounter += 1;
         ErrorText[ErrorCounter] := Text;
     end;
+#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCheckTariffNo(SalesHeader: Record "Sales Header"; var IsHandled: Boolean);

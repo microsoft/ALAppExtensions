@@ -8,22 +8,6 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
             Visible = ReplaceVATDateEnabled and VATDateEnabled;
         }
 #endif
-#if not CLEAN20
-#pragma warning disable AL0432
-        movelast(General; "Posting Description")
-#pragma warning restore AL0432
-#else
-        addlast(General)
-        {
-            field("Posting Description"; Rec."Posting Description")
-            {
-                ApplicationArea = Basic, Suite;
-                Editable = false;
-                ToolTip = 'Specifies a description of the document. The posting description also appers on customer and G/L entries.';
-                Visible = false;
-            }
-        }
-#endif
         addlast(General)
         {
             field("Credit Memo Type CZL"; Rec."Credit Memo Type CZL")
@@ -152,18 +136,28 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
                     Editable = false;
                     ToolTip = 'Specifies whether the invoice was part of an EU 3-party trade transaction.';
                 }
+#if not CLEAN22
                 field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
                 {
                     ApplicationArea = Basic, Suite;
+                    Caption = 'Intrastat Exclude (Obsolete)';
                     Editable = false;
                     ToolTip = 'Specifies that entry will be excluded from intrastat.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
+                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
                 }
                 field("Physical Transfer CZL"; Rec."Physical Transfer CZL")
                 {
                     ApplicationArea = SalesReturnOrder;
-                    Editable = false;
+                    Caption = 'Physical Transfer (Obsolete)';
                     ToolTip = 'Specifies if there is physical transfer of the item.';
+                    Editable = false;
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
+                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
                 }
+#endif
                 field("Transaction Type CZL"; Rec."Transaction Type")
                 {
                     ApplicationArea = BasicEU;
@@ -269,7 +263,9 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
     end;
 
     var
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         ReplaceVATDateEnabled: Boolean;
         VATDateEnabled: Boolean;

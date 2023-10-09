@@ -28,7 +28,6 @@ codeunit 148093 "Swiss QR-Bill Test Misc"
         with SwissQRBillSetup do begin
             OpenEdit();
             Assert.IsTrue("Address Type".Visible(), '');
-            Assert.IsTrue(UmlautCharsEncodeMode.Visible(), '');
             Assert.IsTrue(DefaultQRBillLayout.Visible(), '');
             Assert.IsTrue(LastUsedReferenceNo.Visible(), '');
             Assert.IsTrue(QRIBAN.Visible(), '');
@@ -46,7 +45,6 @@ codeunit 148093 "Swiss QR-Bill Test Misc"
             Assert.IsTrue(SEPACAMT.Visible(), '');
 
             Assert.IsTrue("Address Type".Editable(), '');
-            Assert.IsTrue(UmlautCharsEncodeMode.Editable(), '');
             Assert.IsTrue(DefaultQRBillLayout.Editable(), '');
             Assert.IsFalse(LastUsedReferenceNo.Editable(), '');
             Assert.IsFalse(QRIBAN.Editable(), '');

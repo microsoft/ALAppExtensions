@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Reporting;
+
+using System.Utilities;
+
 table 27030 "DIOT Concept"
 {
     Caption = 'DIOT Concept';
@@ -72,7 +80,7 @@ table 27030 "DIOT Concept"
         {
             Caption = 'VAT Links Count';
             FieldClass = FlowField;
-            CalcFormula = Count ("DIOT Concept Link" WHERE("DIOT Concept No." = FIELD("Concept No.")));
+            CalcFormula = Count("DIOT Concept Link" WHERE("DIOT Concept No." = FIELD("Concept No.")));
         }
     }
 

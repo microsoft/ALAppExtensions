@@ -99,7 +99,7 @@ report 11703 "Accounting Sheets CZL"
             }
             dataitem(SalesInvoiceBufferedEntry; "Integer")
             {
-                DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
+                DataItemTableView = sorting(Number) where(Number = filter(1 ..));
                 column(SalesInvoiceEntry_CreditAmount; TempGLEntry."Credit Amount")
                 {
                 }
@@ -209,7 +209,7 @@ report 11703 "Accounting Sheets CZL"
             }
             dataitem(SalesCrMemoBufferedEntry; "Integer")
             {
-                DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
+                DataItemTableView = sorting(Number) where(Number = filter(1 ..));
                 column(SalesCrMemoEntry_CreditAmount; TempGLEntry."Credit Amount")
                 {
                 }
@@ -322,7 +322,7 @@ report 11703 "Accounting Sheets CZL"
             }
             dataitem(PurchInvBufferedEntry; "Integer")
             {
-                DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
+                DataItemTableView = sorting(Number) where(Number = filter(1 ..));
                 column(PurchInvEntry_CreditAmount; TempGLEntry."Credit Amount")
                 {
                 }
@@ -435,7 +435,7 @@ report 11703 "Accounting Sheets CZL"
             }
             dataitem(PurchCrMemoBufferedEntry; "Integer")
             {
-                DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
+                DataItemTableView = sorting(Number) where(Number = filter(1 ..));
                 column(PurchCrMemoEntry_CreditAmount; TempGLEntry."Credit Amount")
                 {
                 }
@@ -520,7 +520,7 @@ report 11703 "Accounting Sheets CZL"
             }
             dataitem(GeneralDocBufferedEntry; "Integer")
             {
-                DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
+                DataItemTableView = sorting(Number) where(Number = filter(1 ..));
                 column(GeneralDocEntry_CreditAmount; TempGLEntry."Credit Amount")
                 {
                 }
@@ -659,7 +659,9 @@ report 11703 "Accounting Sheets CZL"
         TempGLEntry: Record "G/L Entry" temporary;
         GLEntry: Record "G/L Entry";
 #if not CLEAN22
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
 #endif
         LastDocNo: Code[20];
         FCYRate: Decimal;

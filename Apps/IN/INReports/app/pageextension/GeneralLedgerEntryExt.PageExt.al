@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GeneralLedger.Ledger;
+
+using Microsoft.Finance.Reports;
+
 pageextension 18049 "General Ledger Entry Ext" extends "General Ledger Entries"
 {
     actions

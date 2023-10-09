@@ -1,3 +1,24 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Payments;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.FixedAssets.Journal;
+using Microsoft.FixedAssets.Ledger;
+using Microsoft.FixedAssets.Posting;
+using Microsoft.Inventory.Journal;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Vendor;
+
 codeunit 18253 "GST Purch CustomDuty Availment"
 {
     var
@@ -9,34 +30,40 @@ codeunit 18253 "GST Purch CustomDuty Availment"
         GSTNonAvailmentSessionMgt.SetQtyToBeInvoiced(QtyToBeInvoiced);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostItemJnlLineOnAfterPrepareItemJnlLine', '', false, false)]
-    local procedure LoadGSTUnitCost(PurchaseHeader: Record "Purchase Header"; PurchaseLine: Record "Purchase Line"; var ItemJournalLine: Record "Item Journal Line")
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostItemJnlLineOnBeforeItemJnlPostLineRunWithCheck', '', false, false)]
+    local procedure LoadGSTUnitCost(PurchaseHeader: Record "Purchase Header"; PurchaseLine: Record "Purchase Line"; var ItemJnlLine: Record "Item Journal Line"; QtyToBeInvoiced: Decimal)
     var
-        QtytoBeInvoiced: Decimal;
         QtyFactor: Decimal;
-        CustomDutyLoaded: Decimal;
+        CustomDutyAmount: Decimal;
     begin
         if PurchaseLine."GST Credit" <> PurchaseLine."GST Credit"::Availment then
             exit;
 
-        CustomDutyLoaded := GSTNonAvailmentSessionMgt.GetCustomDutyAmount();
-        QtytoBeInvoiced := GSTNonAvailmentSessionMgt.GetQtyToBeInvoiced();
-        if CustomDutyLoaded = 0 then
+        if PurchaseLine."Custom Duty Amount" = 0 then
             exit;
 
         if PurchaseLine."Qty. to Invoice" <> 0 then
-            QtyFactor := QtytoBeInvoiced / PurchaseLine."Qty. to Invoice";
+            QtyFactor := QtyToBeInvoiced / PurchaseLine."Qty. to Invoice";
+
+        if PurchaseHeader."Currency Code" <> '' then
+            CustomDutyAmount := ConvertCustomDutyAmountToLCY(
+                            PurchaseHeader."Currency Code",
+                            PurchaseLine."Custom Duty Amount",
+                            PurchaseHeader."Currency Factor",
+                            PurchaseHeader."Posting Date")
+        else
+            CustomDutyAmount := PurchaseLine."Custom Duty Amount";
 
         if (PurchaseHeader."GST Vendor Type" in
             [PurchaseHeader."GST Vendor Type"::SEZ, PurchaseHeader."GST Vendor Type"::Import]) and
-            (CustomDutyLoaded <> 0) and (PurchaseLine."Qty. to Invoice" <> 0) then
-            ItemJournalLine.Amount := ItemJournalLine.Amount + CustomDutyLoaded / PurchaseLine."Qty. to Invoice" * ItemJournalLine."Invoiced Quantity";
+            (CustomDutyAmount <> 0) and (PurchaseLine."Qty. to Invoice" <> 0) then
+            ItemJnlLine.Amount := ItemJnlLine.Amount + CustomDutyAmount / PurchaseLine."Qty. to Invoice" * ItemJnlLine."Invoiced Quantity";
 
         if QtyToBeInvoiced <> 0 then
-            ItemJournalLine."Unit Cost" := ItemJournalLine."Unit Cost" + ((CustomDutyLoaded) * QtyFactor / QtyToBeInvoiced)
+            ItemJnlLine."Unit Cost" := ItemJnlLine."Unit Cost" + ((CustomDutyAmount) * QtyFactor / QtyToBeInvoiced)
         else
             if (PurchaseLine."Qty. to Receive" > PurchaseLine."Qty. to Invoice") and (PurchaseLine."Qty. to Invoice" <> 0) and PurchaseHeader.Invoice then
-                ItemJournalLine."Unit Cost" := ItemJournalLine."Unit Cost" + ((CustomDutyLoaded) * QtyFactor / PurchaseLine."Qty. to Invoice");
+                ItemJnlLine."Unit Cost" := ItemJnlLine."Unit Cost" + ((CustomDutyAmount) * QtyFactor / PurchaseLine."Qty. to Invoice");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostPurchLineOnAfterSetEverythingInvoiced', '', false, false)]
@@ -53,7 +80,7 @@ codeunit 18253 "GST Purch CustomDuty Availment"
         GSTCalculatedAmount(PurchaseLine);
     end;
 
-#if not CLEAN20
+#if not CLEAN23
     [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterInvPostBufferPreparePurchase', '', false, false)]
     local procedure FillInvoicePostingBufferNonAvailmentFA(var InvoicePostBuffer: Record "Invoice Post. Buffer"; var PurchaseLine: Record "Purchase Line")
     var

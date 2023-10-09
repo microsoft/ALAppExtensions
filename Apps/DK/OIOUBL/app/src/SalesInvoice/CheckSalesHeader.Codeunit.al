@@ -1,7 +1,14 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+namespace Microsoft.EServices.EDocument;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Company;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Setup;
 
 codeunit 13629 "OIOUBL-Check Sales Header"
 {
@@ -46,9 +53,10 @@ codeunit 13629 "OIOUBL-Check Sales Header"
         TESTFIELD("Sell-to Contact");
         TESTFIELD("VAT Registration No.");
         OIOUBLDocumentEncode.IsValidCountryCode("Sell-to Country/Region Code");
-        OIOUBLDocumentEncode.GetOIOUBLCountryRegionCode("Bill-to Country/Region Code");
-        OIOUBLDocumentEncode.GetOIOUBLCountryRegionCode(CompanyInfo."Country/Region Code");
-
+        if Invoice = true then begin
+            OIOUBLDocumentEncode.GetOIOUBLCountryRegionCode("Bill-to Country/Region Code");
+            OIOUBLDocumentEncode.GetOIOUBLCountryRegionCode(CompanyInfo."Country/Region Code");
+        end;
         OIOUBLDocumentEncode.GetOIOUBLCurrencyCode("Currency Code");
         CheckSalesLines(Rec);
     end;

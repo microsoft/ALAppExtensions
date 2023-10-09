@@ -10,8 +10,8 @@ codeunit 20352 "Connectivity App Definitions"
 
     var
         TempConnectivityApp: Record "Connectivity App" temporary;
-        TempApprovedConnectivityAppCountry: Record "Connectivity App Country" temporary;
-        TempWorksOnConnectivityAppCountry: Record "Connectivity App Country" temporary;
+        TempApprovedConnectivityAppCountryOrRegion: Record "Conn. App Country/Region" temporary;
+        TempWorksOnConnectivityAppLocalization: Record "Conn. App Country/Region" temporary;
         TempConnectivityAppDescription: Record "Connectivity App Description" temporary;
         UserPersonalization: Record "User Personalization";
 
@@ -25,7 +25,9 @@ codeunit 20352 "Connectivity App Definitions"
         RegisterIQBanking();
         RegisterWiseBanking();
         RegisterDirectBankingNL();
+        RegisterDirectBankingBE();
         RegisterSofteraBankfeed();
+        RegisterSUManGOAutoBank();
     end;
 
     local procedure RegisterAppBankingNL()
@@ -244,13 +246,44 @@ codeunit 20352 "Connectivity App Definitions"
         AppId := '7d5b57c9-71d8-47f0-85b8-7a08066f7d2b';
         AppName := 'Direct Banking NL';
         AppPublisher := 'IDYN B.V.';
-        AppDescription := 'Integrate ABN, Rabo, ING, Triodos, Knab, ASN, SNS, etc. with Microsoft Dynamics 365 Business Central.';
+        AppDescription := 'Automate your banking process in Business Central, no file exchange needed. Streamline bank transactions including matching for your bank accounts, and initiate payment from Business Central.';
         AppProviderSupportURL := 'https://help.idyn.nl/directbanking/bc/en/topic/about-directbanking';
         AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.idynbv%7CAID.bcbanking_nl%7CPAPPID.7d5b57c9-71d8-47f0-85b8-7a08066f7d2b';
         AppApprovedFor := 'NL';
         AppWorksOn := 'NL';
 
-        AddDescriptionTranslation(AppId, 'Integreer ABN, Rabo, ING, Triodos, Knab, ASN, SNS etc. met Microsoft Dynamics 365 Business Central.', 1043);
+        AddDescriptionTranslation(AppId, 'Automatiseer uw bankprocessen in Business Central, zonder uitwisseling van bestanden. Stroomlijn uw banktransacties inclusief matching voor uw bankrekeningen en initieer betalingen vanuit Business Central.', 1043);
+        RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
+    end;
+
+    local procedure RegisterDirectBankingBE()
+    var
+        AppId: Text[250];
+        AppName: Text[1024];
+        AppPublisher: Text[250];
+        AppDescription: Text[2048];
+        AppProviderSupportURL: Text[250];
+        AppSourceURL: Text[250];
+        AppWorksOn: Text;
+        AppApprovedFor: Text;
+    begin
+        /***************************************************
+            Add app 'Direct Banking' to BE
+        ***************************************************/
+
+        AppId := '1b3790da-e8ba-4a11-92a9-c70e37b4f831';
+        AppName := 'Direct Banking';
+        AppPublisher := 'IDYN B.V.';
+        AppDescription := 'Automate your banking process in Business Central, no file exchange needed. Streamline bank transactions including matching for your bank accounts, and initiate payment from Business Central.';
+        AppProviderSupportURL := 'https://help.idyn.nl/directbanking/bc/en/topic/about-directbanking';
+        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.idynbv%7CAID.bcbanking%7CPAPPID.1b3790da-e8ba-4a11-92a9-c70e37b4f831';
+        AppApprovedFor := 'BE';
+        AppWorksOn := 'BE';
+
+        AddDescriptionTranslation(AppId, 'Automatiseer uw bankprocessen in Business Central, zonder uitwisseling van bestanden. Stroomlijn uw banktransacties inclusief matching voor uw bankrekeningen en initieer betalingen vanuit Business Central.', 1043);
+        AddDescriptionTranslation(AppId, 'Automatiseer uw bankprocessen in Business Central, zonder uitwisseling van bestanden. Stroomlijn uw banktransacties inclusief matching voor uw bankrekeningen en initieer betalingen vanuit Business Central.', 2067);
+        AddDescriptionTranslation(AppId, 'Automatisez votre processus bancaire dans Business Central, sans échange de fichiers. Rationalisez les transactions bancaires, y compris l''appariement de vos comptes bancaires, et initiez des paiements à partir de Business Central.', 2060);
+        AddDescriptionTranslation(AppId, 'Automatisez votre processus bancaire dans Business Central, sans échange de fichiers. Rationalisez les transactions bancaires, y compris l''appariement de vos comptes bancaires, et initiez des paiements à partir de Business Central.', 1036);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
@@ -266,7 +299,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppApprovedFor: Text;
     begin
         /***************************************************
-            Add app 'Bankfeed - Bank Statement Import & Reconciliation' to LT, DK, HU
+            Add app 'Bankfeed - Bank Statement Import & Reconciliation' to LT, DK, HU, GB
         ***************************************************/
 
         AppId := '8051ee19-8246-489f-9f2c-4d89e1710f7e';
@@ -275,76 +308,105 @@ codeunit 20352 "Connectivity App Definitions"
         AppDescription := 'Bank statement import & reconciliation.';
         AppProviderSupportURL := 'https://www.softera.lt/en/supported-banks-softera-bankfeed/';
         AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.softera_baltic%7CAID.softeradokubank%7CPAPPID.8051ee19-8246-489f-9f2c-4d89e1710f7e';
-        AppApprovedFor := 'LT,DK,HU';
-        AppWorksOn := 'LT,DK,HU';
+        AppApprovedFor := 'LT,DK,HU,GB';
+        AppWorksOn := 'W1,DK,GB';
 
         AddDescriptionTranslation(AppId, 'Banko išrašo importas ir suderinimas.', 1063);
-		AddDescriptionTranslation(AppId, 'Kontoudtog import & afstemning.', 1030);
-		AddDescriptionTranslation(AppId, 'Banki kivonat importálása és egyeztetése.', 1038);
+        AddDescriptionTranslation(AppId, 'Kontoudtog import & afstemning.', 1030);
+        AddDescriptionTranslation(AppId, 'Banki kivonat importálása és egyeztetése.', 1038);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
-    internal procedure GetConnectivityAppDefinitions(var ConnectivityApps: Record "Connectivity App"; var ApprovedConnectivityAppCountry: Record "Connectivity App Country"; var WorksOnConnectivityAppCountry: Record "Connectivity App Country")
+    local procedure RegisterSUManGOAutoBank()
+    var
+        AppId: Text[250];
+        AppName: Text[1024];
+        AppPublisher: Text[250];
+        AppDescription: Text[2048];
+        AppProviderSupportURL: Text[250];
+        AppSourceURL: Text[250];
+        AppWorksOn: Text;
+        AppApprovedFor: Text;
+    begin
+        /***************************************************
+            Add app 'Sumango AutoBank' to NO, SE
+        ***************************************************/
+
+        AppId := '52508c8d-fb2b-49da-9657-f49859fd43cc';
+        AppName := 'Sumango AutoBank';
+        AppPublisher := 'Sumango AS';
+        AppDescription := 'AutoBank manage payments, recivables, refunds and reconciliation in all currencies directly from Business Central. Streamlines, simplifies and expands bank functionality without leaving your Business Central environment. Sumango AutoBank support banks in Norway, Sweden, Denmark, Finland, Germany, Portugal, United Kingdom and United States. Visit www.sumango.no for more information.';
+        AppProviderSupportURL := 'https://oseberg.atlassian.net/wiki/spaces/Autobank/pages/2342191252/Integrated+banks';
+        AppSourceUrl := 'https://www.sumango.no';
+        AppApprovedFor := 'NO,SE';
+        AppWorksOn := 'NO,SE';
+
+        AddDescriptionTranslation(AppId, 'AutoBank har som hovedfokus å effektivisere, forenkle og utvide funksjonalitet rundt betaling, innbetalinger, refusjoner og avstemming av banktransaksjoner i alle valutaer. Du kan nå trygt integrere banken din direkte i Business Central uten filhåndtering. AutoBank støtter alle banker i Norge, samt utvalgte banker i Sverige, Danmark, Finland, Tyskland, Portugal, England og USA. (www.sumango.no)', 1044);
+        AddDescriptionTranslation(AppId, 'AutoBanks huvudfokus är att effektivisera, förenkla och utöka funktionaliteten kring leverantör betalningar, kund betalningar, återbetalning och avstämning av banktransaktioner i alla valutor. Du kan nu säkert integrera din bank direkt i Business Central utan filhantering. AutoBank stödjer följande bankar Handelsbanken, SEB, Nordea, Danske Bank, och DNB.', 1053);
+        RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
+    end;
+
+    internal procedure GetConnectivityAppDefinitions(var ConnectivityApps: Record "Connectivity App"; var ApprovedConnectivityAppCountry: Record "Conn. App Country/Region"; var WorksOnConnectivityAppCountry: Record "Conn. App Country/Region")
     begin
         LoadData();
         ConnectivityApps.Copy(TempConnectivityApp, true);
-        ApprovedConnectivityAppCountry.Copy(TempApprovedConnectivityAppCountry, true);
-        WorksOnConnectivityAppCountry.Copy(TempWorksOnConnectivityAppCountry, true);
+        ApprovedConnectivityAppCountry.Copy(TempApprovedConnectivityAppCountryOrRegion, true);
+        WorksOnConnectivityAppCountry.Copy(TempWorksOnConnectivityAppLocalization, true);
     end;
 
-    internal procedure ApprovedConnectivityAppsForCurrentCountryExists(ApprovedConnectivityAppCountry: Enum "Conn. Apps Supported Country"; WorksOnConnectivityAppCountry: Enum "Conn. Apps Supported Country") Exists: Boolean
+    internal procedure ApprovedConnectivityAppsForCurrentCountryExists(CurrentCountryOrRegion: Enum "Conn. Apps Country/Region"; CurrentLocalization: Enum "Connectivity Apps Localization") Exists: Boolean
     var
         IdFilter: Text;
     begin
         LoadData();
-        TempWorksOnConnectivityAppCountry.SetRange(Country, WorksOnConnectivityAppCountry);
-        TempWorksOnConnectivityAppCountry.FindSet();
-        repeat
-            IdFilter += TempWorksOnConnectivityAppCountry."App Id" + '|';
-        until TempWorksOnConnectivityAppCountry.Next() = 0;
+        TempWorksOnConnectivityAppLocalization.SetRange(Localization, CurrentLocalization);
+        if TempWorksOnConnectivityAppLocalization.FindSet() then
+            repeat
+                IdFilter += TempWorksOnConnectivityAppLocalization."App Id" + '|';
+            until TempWorksOnConnectivityAppLocalization.Next() = 0;
         IdFilter := IdFilter.TrimEnd('|');
 
-        TempApprovedConnectivityAppCountry.SetRange(Country, ApprovedConnectivityAppCountry);
-        TempApprovedConnectivityAppCountry.SetFilter("App Id", IdFilter);
-        Exists := not TempApprovedConnectivityAppCountry.IsEmpty();
-        TempApprovedConnectivityAppCountry.Reset();
+        TempApprovedConnectivityAppCountryOrRegion.SetRange("Country/Region", CurrentCountryOrRegion);
+        TempApprovedConnectivityAppCountryOrRegion.SetFilter("App Id", IdFilter);
+        Exists := not TempApprovedConnectivityAppCountryOrRegion.IsEmpty();
+        TempApprovedConnectivityAppCountryOrRegion.Reset();
     end;
 
-    internal procedure ApprovedConnectivityAppsForCurrentCountryExists(ApprovedConnectivityAppCountry: Enum "Conn. Apps Supported Country"; WorksOnConnectivityAppCountry: Enum "Conn. Apps Supported Country"; ConnectivityAppCategory: Enum "Connectivity Apps Category") Exists: Boolean
+    internal procedure ApprovedConnectivityAppsForCurrentCountryExists(CurrentCountryOrRegion: Enum "Conn. Apps Country/Region"; CurrentLocalization: Enum "Connectivity Apps Localization"; ConnectivityAppCategory: Enum "Connectivity Apps Category") Exists: Boolean
     var
         IdFilter: Text;
     begin
         LoadData();
-        TempWorksOnConnectivityAppCountry.SetRange(Country, WorksOnConnectivityAppCountry);
-        TempWorksOnConnectivityAppCountry.SetRange(Category, ConnectivityAppCategory);
-        TempWorksOnConnectivityAppCountry.FindSet();
-        repeat
-            IdFilter += TempWorksOnConnectivityAppCountry."App Id" + '|';
-        until TempWorksOnConnectivityAppCountry.Next() = 0;
+        TempWorksOnConnectivityAppLocalization.SetRange(Localization, CurrentLocalization);
+        TempWorksOnConnectivityAppLocalization.SetRange(Category, ConnectivityAppCategory);
+        if TempWorksOnConnectivityAppLocalization.FindSet() then
+            repeat
+                IdFilter += TempWorksOnConnectivityAppLocalization."App Id" + '|';
+            until TempWorksOnConnectivityAppLocalization.Next() = 0;
         IdFilter := IdFilter.TrimEnd('|');
 
-        TempApprovedConnectivityAppCountry.SetRange(Country, ApprovedConnectivityAppCountry);
-        TempApprovedConnectivityAppCountry.SetRange(Category, ConnectivityAppCategory);
-        TempApprovedConnectivityAppCountry.SetFilter("App Id", IdFilter);
-        Exists := not TempApprovedConnectivityAppCountry.IsEmpty();
-        TempApprovedConnectivityAppCountry.Reset();
+        TempApprovedConnectivityAppCountryOrRegion.SetRange("Country/Region", CurrentCountryOrRegion);
+        TempApprovedConnectivityAppCountryOrRegion.SetRange(Category, ConnectivityAppCategory);
+        TempApprovedConnectivityAppCountryOrRegion.SetFilter("App Id", IdFilter);
+        Exists := not TempApprovedConnectivityAppCountryOrRegion.IsEmpty();
+        TempApprovedConnectivityAppCountryOrRegion.Reset();
     end;
 
-    internal procedure WorksOnConnectivityAppForCurrentCountryExists(ConnectivityAppCountry: Enum "Conn. Apps Supported Country") Exists: Boolean
+    internal procedure WorksOnConnectivityAppForCurrentLocalizationExists(ConnectivityAppLocalization: Enum "Connectivity Apps Localization") Exists: Boolean
     begin
         LoadData();
-        TempWorksOnConnectivityAppCountry.SetRange(Country, ConnectivityAppCountry);
-        Exists := not TempWorksOnConnectivityAppCountry.IsEmpty();
-        TempWorksOnConnectivityAppCountry.Reset();
+        TempWorksOnConnectivityAppLocalization.SetRange(Localization, ConnectivityAppLocalization);
+        Exists := not TempWorksOnConnectivityAppLocalization.IsEmpty();
+        TempWorksOnConnectivityAppLocalization.Reset();
     end;
 
-    internal procedure WorksOnConnectivityAppForCurrentCountryExists(ConnectivityAppCountry: Enum "Conn. Apps Supported Country"; ConnectivityAppCategory: Enum "Connectivity Apps Category") Exists: Boolean
+    internal procedure WorksOnConnectivityAppForCurrentLocalizationExists(ConnectivityAppLocalization: Enum "Connectivity Apps Localization"; ConnectivityAppCategory: Enum "Connectivity Apps Category") Exists: Boolean
     begin
         LoadData();
-        TempWorksOnConnectivityAppCountry.SetRange(Country, ConnectivityAppCountry);
-        TempWorksOnConnectivityAppCountry.SetRange(Category, ConnectivityAppCategory);
-        Exists := not TempWorksOnConnectivityAppCountry.IsEmpty();
-        TempWorksOnConnectivityAppCountry.Reset();
+        TempWorksOnConnectivityAppLocalization.SetRange(Localization, ConnectivityAppLocalization);
+        TempWorksOnConnectivityAppLocalization.SetRange(Category, ConnectivityAppCategory);
+        Exists := not TempWorksOnConnectivityAppLocalization.IsEmpty();
+        TempWorksOnConnectivityAppLocalization.Reset();
     end;
 
     local procedure AddDescriptionTranslation(AppIdText: Text[250]; AppDescription: Text[2048]; LanguageId: Integer)
@@ -372,11 +434,11 @@ codeunit 20352 "Connectivity App Definitions"
         LoadBankingAppsData();
     end;
 
-    local procedure RegisterApp(AppIdText: Text[250]; AppName: Text[1024]; AppPublisher: Text[250]; AppDescription: Text[2048]; AppProviderSupportURL: Text[250]; AppSourceUrl: Text[250]; AppApprovedForCountries: Text; AppWorksOnCountries: Text; AppCategory: Enum "Connectivity Apps Category")
+    local procedure RegisterApp(AppIdText: Text[250]; AppName: Text[1024]; AppPublisher: Text[250]; AppDescription: Text[2048]; AppProviderSupportURL: Text[250]; AppSourceUrl: Text[250]; AppApprovedForCountriesOrRegions: Text; AppWorksOnCountriesOrRegions: Text; AppCategory: Enum "Connectivity Apps Category")
     var
         AppId: Guid;
-        CountryList: List of [Text];
-        Country: Text;
+        CountryOrRegionList, LocalizationList : List of [Text];
+        CountryOrRegion, Localization : Text;
     begin
         Evaluate(AppId, AppIdText);
         TempConnectivityApp.Init();
@@ -388,23 +450,24 @@ codeunit 20352 "Connectivity App Definitions"
         TempConnectivityApp."AppSource URL" := AppSourceUrl;
         TempConnectivityApp.Category := AppCategory;
 
-        if TempConnectivityApp.Insert() then;
+        TempConnectivityApp.Insert();
 
-        CountryList := AppApprovedForCountries.Split(',');
-        foreach Country in CountryList do begin
-            TempApprovedConnectivityAppCountry.Init();
-            TempApprovedConnectivityAppCountry."App Id" := AppId;
-            Evaluate(TempApprovedConnectivityAppCountry.Country, Country);
-            TempApprovedConnectivityAppCountry.Category := AppCategory;
-            if TempApprovedConnectivityAppCountry.Insert() then;
+        CountryOrRegionList := AppApprovedForCountriesOrRegions.Split(',');
+        foreach CountryOrRegion in CountryOrRegionList do begin
+            TempApprovedConnectivityAppCountryOrRegion.Init();
+            TempApprovedConnectivityAppCountryOrRegion."App Id" := AppId;
+            Evaluate(TempApprovedConnectivityAppCountryOrRegion."Country/Region", CountryOrRegion);
+            TempApprovedConnectivityAppCountryOrRegion.Category := AppCategory;
+            TempApprovedConnectivityAppCountryOrRegion.Insert();
         end;
-        CountryList := AppWorksOnCountries.Split(',');
-        foreach Country in CountryList do begin
-            TempWorksOnConnectivityAppCountry.Init();
-            TempWorksOnConnectivityAppCountry."App Id" := AppId;
-            Evaluate(TempWorksOnConnectivityAppCountry.Country, Country);
-            TempWorksOnConnectivityAppCountry.Category := AppCategory;
-            if TempWorksOnConnectivityAppCountry.Insert() then;
+
+        LocalizationList := AppWorksOnCountriesOrRegions.Split(',');
+        foreach Localization in LocalizationList do begin
+            TempWorksOnConnectivityAppLocalization.Init();
+            TempWorksOnConnectivityAppLocalization."App Id" := AppId;
+            Evaluate(TempWorksOnConnectivityAppLocalization.Localization, Localization);
+            TempWorksOnConnectivityAppLocalization.Category := AppCategory;
+            if TempWorksOnConnectivityAppLocalization.Insert() then; // this is needed because of the default value of the enum
         end;
     end;
 
@@ -421,18 +484,18 @@ codeunit 20352 "Connectivity App Definitions"
     end;
 
     // Methods to help override the default definitions during tests
-    internal procedure SetConnectivityAppDefinitions(var ConnectivityApps: Record "Connectivity App"; var ApprovedConnectivityAppCountry: Record "Connectivity App Country"; var WorksOnConnectivityAppCountry: Record "Connectivity App Country")
+    internal procedure SetConnectivityAppDefinitions(var ConnectivityApps: Record "Connectivity App"; var ApprovedConnectivityAppCountryOrRegion: Record "Conn. App Country/Region"; var WorksOnConnectivityAppCountryOrRegion: Record "Conn. App Country/Region")
     begin
         TempConnectivityApp.Copy(ConnectivityApps, true);
-        TempApprovedConnectivityAppCountry.Copy(ApprovedConnectivityAppCountry, true);
-        TempWorksOnConnectivityAppCountry.Copy(WorksOnConnectivityAppCountry, true);
+        TempApprovedConnectivityAppCountryOrRegion.Copy(ApprovedConnectivityAppCountryOrRegion, true);
+        TempWorksOnConnectivityAppLocalization.Copy(WorksOnConnectivityAppCountryOrRegion, true);
     end;
 
     internal procedure ClearConnectivityAppDefinitions()
     begin
         TempConnectivityApp.DeleteAll();
         TempConnectivityAppDescription.DeleteAll();
-        TempApprovedConnectivityAppCountry.DeleteAll();
-        TempWorksOnConnectivityAppCountry.DeleteAll();
+        TempApprovedConnectivityAppCountryOrRegion.DeleteAll();
+        TempWorksOnConnectivityAppLocalization.DeleteAll();
     end;
 }

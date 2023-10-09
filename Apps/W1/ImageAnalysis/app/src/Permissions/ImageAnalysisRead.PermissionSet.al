@@ -1,3 +1,6 @@
+namespace System.Security.AccessControl;
+
+using Microsoft.Utility.ImageAnalysis;
 permissionset 4212 "ImageAnalysis - Read"
 {
     Assignable = false;

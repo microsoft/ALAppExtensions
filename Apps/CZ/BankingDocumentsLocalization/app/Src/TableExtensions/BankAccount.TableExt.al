@@ -94,7 +94,7 @@ tableextension 31286 "Bank Account CZB" extends "Bank Account"
         }
         field(11075; "Payment Jnl. Template Name CZB"; Code[10])
         {
-            Caption = 'Payment Jnl. Template Name';
+            Caption = 'Payment Jnl. Template Name - Statement';
             TableRelation = "Gen. Journal Template" where(Type = const(Payments));
             DataClassification = CustomerContent;
 
@@ -106,7 +106,7 @@ tableextension 31286 "Bank Account CZB" extends "Bank Account"
         }
         field(11076; "Payment Jnl. Batch Name CZB"; Code[10])
         {
-            Caption = 'Payment Jnl. Batch Name';
+            Caption = 'Payment Jnl. Batch Name - Statement';
             TableRelation = "Gen. Journal Batch".Name where("Journal Template Name" = field("Payment Jnl. Template Name CZB"),
                                                              "Bal. Account Type" = const("Bank Account"),
                                                              "Bal. Account No." = field("No."),
@@ -125,6 +125,7 @@ tableextension 31286 "Bank Account CZB" extends "Bank Account"
             TableRelation = "Bank Export/Import Setup".Code where(Direction = const(Import));
             DataClassification = CustomerContent;
         }
+
         field(11790; "Payment Order Nos. CZB"; Code[20])
         {
             Caption = 'Payment Order Nos.';
@@ -153,6 +154,27 @@ tableextension 31286 "Bank Account CZB" extends "Bank Account"
         {
             Caption = 'Search Rule Code';
             TableRelation = "Search Rule CZB";
+            DataClassification = CustomerContent;
+        }
+        field(11796; "Pmt.Jnl. Templ. Name Order CZB"; Code[10])
+        {
+            Caption = 'Payment Jnl. Template Name - Order';
+            TableRelation = "Gen. Journal Template" where(Type = const(Payments));
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if "Pmt.Jnl. Templ. Name Order CZB" <> xRec."Pmt.Jnl. Templ. Name Order CZB" then
+                    "Pmt. Jnl. Batch Name Order CZB" := '';
+            end;
+        }
+        field(11797; "Pmt. Jnl. Batch Name Order CZB"; Code[10])
+        {
+            Caption = 'Payment Jnl. Batch Name - Order';
+            TableRelation = "Gen. Journal Batch".Name where("Journal Template Name" = field("Pmt.Jnl. Templ. Name Order CZB"),
+                                                             "Bal. Account Type" = const("Bank Account"),
+                                                             "Bal. Account No." = field("No."),
+                                                             "Allow Payment Export" = const(true));
             DataClassification = CustomerContent;
         }
     }

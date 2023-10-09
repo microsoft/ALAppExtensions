@@ -1,3 +1,5 @@
+namespace Microsoft.Foundation.DataSearch;
+
 codeunit 2682 "Data Search Events"
 {
     SingleInstance = true;
@@ -63,6 +65,16 @@ codeunit 2682 "Data Search Events"
     /// <param name="ListOfTableNumbers">List of integer. Already filled with standard tables.</param>
     [IntegrationEvent(false, false)]
     procedure OnAfterGetRolecCenterTableList(RoleCenterID: Integer; var ListOfTableNumbers: List of [Integer])
+    begin
+    end;
+
+    /// <summary>
+    /// Enables adding and removing tables from the default initial setup for tables to search.
+    /// </summary>
+    /// <param name="TableNo">The table no. of the table that is being set up.</param>
+    /// <param name="ListOfFieldNumbers">List of integer. You can specifify additional fields for a table here or remove unwanted.</param>
+    [IntegrationEvent(false, false)]
+    procedure OnAfterGetFieldListForTable(TableNo: Integer; var ListOfFieldNumbers: List of [Integer])
     begin
     end;
 

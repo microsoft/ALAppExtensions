@@ -1,3 +1,5 @@
+namespace Microsoft.Bank.StatementImport.Yodlee;
+
 codeunit 1458 "Yodlee API Strings"
 {
     var
@@ -136,13 +138,13 @@ codeunit 1458 "Yodlee API Strings"
     [Scope('OnPrem')]
     procedure StartSiteRefreshURL(): Text;
     begin
-        EXIT(GetFullURL('/jsonsdk/Refresh/startSiteRefresh'));
+        exit(GetFullURL('/jsonsdk/Refresh/startSiteRefresh'));
     end;
 
     [Scope('OnPrem')]
     procedure GetSiteRefreshURL(): Text;
     begin
-        EXIT(GetFullURL('/jsonsdk/Refresh/getSiteRefreshInfo'));
+        exit(GetFullURL('/jsonsdk/Refresh/getSiteRefreshInfo'));
     end;
 
     [Scope('OnPrem')]
@@ -247,7 +249,7 @@ codeunit 1458 "Yodlee API Strings"
 
     procedure GetRootXPath(): Text;
     begin
-        EXIT('/');
+        exit('/');
     end;
 
     [Scope('OnPrem')]
@@ -311,27 +313,27 @@ codeunit 1458 "Yodlee API Strings"
 
     procedure GetErrorDetailXPath(): Text;
     begin
-        EXIT('//errorDetail');
+        exit('//errorDetail');
     end;
 
     procedure GetExceptionXPath(): Text;
     begin
-        EXIT('//exceptionType');
+        exit('//exceptionType');
     end;
 
     procedure GetErrorOccurredXPath(): Text;
     begin
-        EXIT('//errorOccurred');
+        exit('//errorOccurred');
     end;
 
     procedure GetErrorCodeXPath(): Text;
     begin
-        EXIT('//errorCode');
+        exit('//errorCode');
     end;
 
     procedure GetDetailedMessageXPath(): Text;
     begin
-        EXIT('//detailedMessage');
+        exit('//detailedMessage');
     end;
 
     [Scope('OnPrem')]

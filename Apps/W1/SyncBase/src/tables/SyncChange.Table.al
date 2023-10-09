@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.SyncBase;
+
 table 2401 "Sync Change"
 {
     Caption = 'Sync Change';

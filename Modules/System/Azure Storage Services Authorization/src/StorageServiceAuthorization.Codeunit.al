@@ -3,12 +3,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Storage;
+
 /// <summary>
 /// Exposes methods to create different kinds of authorizations for HTTP Request made to Azure Storage Services.
 /// </summary>
 codeunit 9062 "Storage Service Authorization"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Creates an account SAS (Shared Access Signature) for authorizing HTTP request to Azure Storage Services.
@@ -78,6 +82,20 @@ codeunit 9062 "Storage Service Authorization"
         StorServAuthImpl: Codeunit "Stor. Serv. Auth. Impl.";
     begin
         exit(StorServAuthImpl.SharedKey(SharedKey, ApiVersion));
+    end;
+
+    /// <summary>
+    /// Uses a pre-generated account SAS (Shared Access Signature) for authorizing HTTP request to Azure Storage Services.
+    /// see: https://go.microsoft.com/fwlink/?linkid=2210398
+    /// </summary>
+    /// <param name="SASToken">A pre-generated SAS token.</param>
+    /// <returns>An account SAS authorization.</returns>
+    [NonDebuggable]
+    procedure UseReadySAS(SASToken: Text): Interface "Storage Service Authorization"
+    var
+        StorServAuthImpl: Codeunit "Stor. Serv. Auth. Impl.";
+    begin
+        exit(StorServAuthImpl.ReadySAS(SASToken));
     end;
 
     /// <summary>

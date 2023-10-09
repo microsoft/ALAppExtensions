@@ -1,3 +1,16 @@
+namespace Microsoft.Inventory.InventoryForecast;
+
+using System.TestLibraries.Utilities;
+using System.AI;
+using Microsoft.Foundation.Period;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Inventory.Item;
+using Microsoft.Sales.Setup;
+using System.Environment.Configuration;
+using System.Threading;
+using System.Privacy;
+
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -194,6 +207,7 @@ codeunit 139540 "Sales Forecast Tests"
     end;
 
     [Test]
+    [HandlerFunctions('CustomerConsentPageHandler')]
     procedure TestNotEnoughHistoricalData();
     var
         Item: Record Item;
@@ -259,6 +273,7 @@ codeunit 139540 "Sales Forecast Tests"
     end;
 
     [Test]
+    [HandlerFunctions('CustomerConsentPageHandler')]
     procedure TestMissingApiUriOpenSetup();
     var
         Item: Record Item;
@@ -401,6 +416,7 @@ codeunit 139540 "Sales Forecast Tests"
     end;
 
     [Test]
+    [HandlerFunctions('CustomerConsentPageHandler')]
     procedure TestKeyNeededBeforeScheduledExecution();
     var
         LibraryPermissions: Codeunit "Library - Permissions";
@@ -423,7 +439,7 @@ codeunit 139540 "Sales Forecast Tests"
     end;
 
     [Test]
-    [HandlerFunctions('JobQueueEntryCardPageHandler')]
+    [HandlerFunctions('JobQueueEntryCardPageHandler,CustomerConsentPageHandler')]
     procedure TestSetupScheduledExecution();
     var
         JobQueueEntry: Record "Job Queue Entry";
@@ -447,6 +463,7 @@ codeunit 139540 "Sales Forecast Tests"
     end;
 
     [Test]
+    [HandlerFunctions('CustomerConsentPageHandler')]
     procedure TestUpdateForecastActionThrowsErrorIfForecastingNotSetup();
     var
         LibraryPermissions: Codeunit "Library - Permissions";
@@ -742,6 +759,7 @@ codeunit 139540 "Sales Forecast Tests"
     end;
 
     [Test]
+    [HandlerFunctions('CustomerConsentPageHandler')]
     procedure TestSaaSUserDefinedAPI();
     var
         Item: Record Item;
@@ -1107,6 +1125,12 @@ codeunit 139540 "Sales Forecast Tests"
     procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean);
     begin
         Reply := true;
+    end;
+
+    [ModalPageHandler]
+    procedure CustomerConsentPageHandler(var ConsentMicrosoftConfirm: TestPage "Consent Microsoft Confirm")
+    begin
+        ConsentMicrosoftConfirm.Accept.Invoke();
     end;
 }
 

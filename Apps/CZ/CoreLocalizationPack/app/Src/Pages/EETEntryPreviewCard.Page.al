@@ -227,7 +227,6 @@ page 31147 "EET Entry Preview Card CZL"
         TempEETEntryStatusLogCZL: Record "EET Entry Status Log CZL" temporary;
         TempErrorMessage: Record "Error Message" temporary;
         SignatureCode: Text;
-        [InDataSet]
         StatusStyleExpr: Text;
 
     procedure Set(var NewTempEETEntryCZL: Record "EET Entry CZL" temporary; var NewTempEETEntryStatusLogCZL: Record "EET Entry Status Log CZL" temporary; var NewTempErrorMessage: Record "Error Message" temporary)

@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Reports;
+
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
+
 query 18031 GSTR1NonGSTExemp
 {
     QueryType = Normal;
@@ -16,7 +25,7 @@ query 18031 GSTR1NonGSTExemp
             {
                 SqlJoinType = InnerJoin;
                 DataItemLink = "Document No." = Sales_Invoice_Header."No.";
-                DataItemTableFilter = "Line No." = filter(= 10000);
+                DataItemTableFilter = "GST Group Code" = filter(= '');
 
                 column(GST_Group_Code; "GST Group Code")
                 {

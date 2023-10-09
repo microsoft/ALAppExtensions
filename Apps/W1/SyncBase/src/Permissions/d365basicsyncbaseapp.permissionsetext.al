@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.SyncBase;
+
+using System.Security.AccessControl;
+
 permissionsetextension 12127 "D365 BASIC - SyncBaseApp" extends "D365 BASIC"
 {
     Permissions = tabledata "Sync Change" = R,

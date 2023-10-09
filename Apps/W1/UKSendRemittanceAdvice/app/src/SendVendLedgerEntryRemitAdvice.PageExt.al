@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.Purchases.Vendor.RemittanceAdvice;
+
+using Microsoft.Purchases.Payables;
+using Microsoft.Foundation.Reporting;
+
 pageextension 4023 SendVendLedgerEntryRemitAdvice extends "Vendor Ledger Entries"
 {
     layout
@@ -40,14 +45,14 @@ pageextension 4023 SendVendLedgerEntryRemitAdvice extends "Vendor Ledger Entries
         DummyReportSelections: Record "Report Selections";
         ReportSelectionInteger: Integer;
     begin
-        IF NOT VendorLedgerEntry.FindSet() THEN
-            EXIT;
+        if not VendorLedgerEntry.FindSet() then
+            exit;
 
         DummyReportSelections.Usage := DummyReportSelections.Usage::"P.V.Remit.";
         ReportSelectionInteger := DummyReportSelections.Usage.AsInteger();
 
         DocumentSendingProfile.SendVendorRecords(
-            ReportSelectionInteger, VendorLedgerEntry, RemittanceAdviceTxt, "Vendor No.", "Document No.",
+            ReportSelectionInteger, VendorLedgerEntry, RemittanceAdviceTxt, Rec."Vendor No.", Rec."Document No.",
             VendorLedgerEntry.FIELDNO("Vendor No."), VendorLedgerEntry.FIELDNO("Document No."));
     end;
 

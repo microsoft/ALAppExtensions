@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Visualization;
+
 permissionset 9704 "Cues and KPIs - Objects"
 {
     Access = Internal;

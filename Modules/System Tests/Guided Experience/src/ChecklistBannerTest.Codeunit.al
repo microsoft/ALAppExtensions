@@ -3,6 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Environment.Configuration;
+
+using System.Reflection;
+using System.Environment.Configuration;
+using System.Environment;
+using System.Media;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 132605 "Checklist Banner Test"
 {
     Subtype = Test;
@@ -545,7 +554,7 @@ codeunit 132605 "Checklist Banner Test"
 
     local procedure SwitchToSecondProfile(var ChecklistBannerContainer: TestPage "Checklist Banner Container")
     var
-        ChecklistBanner: Codeunit "Checklist Banner";
+        ChecklistBannerImpl: Codeunit "Checklist Banner Impl.";
         PartID: Integer;
     begin
         // [GIVEN] The current profile is switched to ProfileID2
@@ -553,7 +562,7 @@ codeunit 132605 "Checklist Banner Test"
 
         // [GIVEN] The event subscriber to GetRoleCenterBannerPartID is invoked 
         // in order to update the user checklist statuses for the 2 profiles
-        ChecklistBanner.GetRoleCenterBannerPartID(PartID);
+        ChecklistBannerImpl.GetRoleCenterBannerPartID(PartID);
 
         // [WHEN] The checklist banner is closed and reopened to reflect the change in profiles
         ChecklistBannerContainer.Close();

@@ -1,7 +1,12 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+namespace Microsoft.EServices.EDocument;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Company;
+using Microsoft.Sales.Reminder;
 
 codeunit 13631 "OIOUBL-Check Reminder"
 {
@@ -79,9 +84,10 @@ codeunit 13631 "OIOUBL-Check Reminder"
                     if Description = '' then
                         if (Type <> Type::" ") AND ("No." <> '') then
                             ERROR(EmptyDescriptionErr, "Reminder No.");
-                    if (Type = Type::" ") OR ("No." = '')
-                    then
-                        EmptyLineFound := TRUE;
+                    if Type = Type::" " then
+                        EmptyLineFound := true;
+                    if (Type = Type::"G/L Account") and ("No." = '') then
+                        EmptyLineFound := true;
                 until (NEXT() = 0);
 
             if EmptyLineFound then

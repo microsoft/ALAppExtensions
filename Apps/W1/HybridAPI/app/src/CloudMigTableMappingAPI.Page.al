@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.API;
+
+using Microsoft.DataMigration;
+
 page 40022 "Cloud Mig Table Mapping API"
 {
     PageType = API;

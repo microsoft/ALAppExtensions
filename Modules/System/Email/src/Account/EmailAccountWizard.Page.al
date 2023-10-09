@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Telemetry;
+using System.Environment;
+using System.Apps;
+
 /// <summary>
 /// Step by step guide for adding a new email account in Business Central
 /// </summary>
@@ -258,7 +264,7 @@ page 8886 "Email Account Wizard"
                         Editable = true;
                         Enabled = true;
                         Caption = 'Set as default';
-                        ToolTip = 'Use this account for all scenarios for which an account is not specified. Scenarios are processes that involve sending documents or notifications by email.';
+                        ToolTip = 'Specifies the Account is the default. Use this account for all scenarios for which an account is not specified. Scenarios are processes that involve sending documents or notifications by email.';
                     }
                 }
 
@@ -367,6 +373,7 @@ page 8886 "Email Account Wizard"
                 Caption = 'Send Test Email';
                 ToolTip = 'Send Test Email';
                 InFooterBar = true;
+                Image = Action;
 
                 trigger OnAction()
                 begin
@@ -388,7 +395,7 @@ page 8886 "Email Account Wizard"
     begin
         DurationAsInt := CurrentDateTime() - StartTime;
         if Step = Step::Done then
-            Session.LogMessage('0000CTK', StrSubstNo(AccountCreationSuccessfullyCompletedDurationLbl, DurationAsInt), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl)
+            Session.LogMessage('0000K8Q', StrSubstNo(AccountCreationSuccessfullyCompletedDurationLbl, DurationAsInt), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl)
         else
             Session.LogMessage('0000CTL', StrSubstNo(AccountCreationFailureDurationLbl, DurationAsInt), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
     end;
@@ -474,7 +481,9 @@ page 8886 "Email Account Wizard"
             Session.LogMessage('0000CTH', Format(Rec.Connector) + ' account has been setup.', Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
             NextStep(false);
         end else begin
+#pragma warning disable AA0217
             Session.LogMessage('0000CTI', StrSubstNo(Format(Rec.Connector) + ' account has failed to setup. Error: %1', GetLastErrorCallStack()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
+#pragma warning restore AA0217
             NextStep(true);
         end;
 
@@ -553,9 +562,7 @@ page 8886 "Email Account Wizard"
         AccountCreationSuccessfullyCompletedDurationLbl: Label 'Successful creation of account completed. Duration: %1 milliseconds.', Comment = '%1 - Duration', Locked = true;
         AccountCreationFailureDurationLbl: Label 'Creation of account failed. Duration: %1 milliseconds.', Comment = '%1 - Duration', Locked = true;
         EmailConnectorHasBeenUninstalledMsg: Label 'The selected email extension has been uninstalled. You must reinstall the extension to add an account with it.';
-        [InDataSet]
         AppSourceAvailable: Boolean;
-        [InDataSet]
         TopBannerVisible: Boolean;
         BackActionVisible: Boolean;
         BackActionEnabled: Boolean;

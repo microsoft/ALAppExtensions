@@ -1,3 +1,5 @@
+namespace System.DataAdministration;
+
 permissionset 633 "DataArchive - Objects"
 {
     Assignable = false;

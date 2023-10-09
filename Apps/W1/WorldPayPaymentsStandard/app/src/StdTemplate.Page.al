@@ -1,3 +1,4 @@
+#if not CLEAN23
 page 1361 "MS - WorldPay Std. Template"
 {
     Caption = 'WorldPay Payments Standard Template';
@@ -6,6 +7,9 @@ page 1361 "MS - WorldPay Std. Template"
     PageType = Card;
     ShowFilter = false;
     SourceTable = "MS - WorldPay Std. Template";
+    ObsoleteReason = 'WorldPay Payments Standard extension is discontinued';
+    ObsoleteState = Pending;
+    ObsoleteTag = '23.0';
 
     layout
     {
@@ -120,3 +124,4 @@ page 1361 "MS - WorldPay Std. Template"
         SetToDefaultMsg: Label 'Settings have been set to default.';
 }
 
+#endif

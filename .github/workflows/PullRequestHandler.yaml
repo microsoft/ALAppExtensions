@@ -1,9 +1,7 @@
 name: 'Pull Request Build'
 
 on:
-  pull_request_target:
-    paths-ignore:
-      - '**.md'
+  pull_request:
     branches: [ 'main' ]
 
 concurrency:
@@ -26,19 +24,10 @@ env:
 
 jobs:
   PregateCheck:
-    if: github.event.pull_request.base.repo.full_name != github.event.pull_request.head.repo.full_name
+    if: (github.event.pull_request.base.repo.full_name != github.event.pull_request.head.repo.full_name) && (github.event_name != 'pull_request')
     runs-on: [ windows-latest ]
     steps:
-      - uses: actions/checkout@v3
-        with:
-          lfs: true
-          ref: refs/pull/${{ github.event.number }}/merge
-
-      - uses: microsoft/AL-Go-Actions/VerifyPRChanges@preview
-        with:
-          baseSHA: ${{ github.event.pull_request.base.sha }}
-          headSHA: ${{ github.event.pull_request.head.sha }}
-          prbaseRepository: ${{ github.event.pull_request.base.repo.full_name }}
+      - uses: microsoft/AL-Go/Actions/VerifyPRChanges@6bbfb2b86c33a979e556a96d1510e8e17dbb8ec3
 
   Initialization:
     needs: [ PregateCheck ]
@@ -46,12 +35,12 @@ jobs:
     runs-on: [ windows-latest ]
     outputs:
       telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
-      settings: ${{ steps.ReadSettings.outputs.SettingsJson }}
       githubRunner: ${{ steps.ReadSettings.outputs.GitHubRunnerJson }}
       githubRunnerShell: ${{ steps.ReadSettings.outputs.GitHubRunnerShell }}
       projects: ${{ steps.determineProjectsToBuild.outputs.ProjectsJson }}
       projectDependenciesJson: ${{ steps.determineProjectsToBuild.outputs.ProjectDependenciesJson }}
       buildOrderJson: ${{ steps.determineProjectsToBuild.outputs.BuildOrderJson }}
+      workflowDepth: ${{ steps.DetermineWorkflowDepth.outputs.WorkflowDepth }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -61,22 +50,25 @@ jobs:
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go-Actions/WorkflowInitialize@preview
+        uses: microsoft/AL-Go/Actions/WorkflowInitialize@6bbfb2b86c33a979e556a96d1510e8e17dbb8ec3
         with:
           shell: powershell
           eventId: "DO0104"
 
       - name: Read settings
         id: ReadSettings
-        uses: microsoft/AL-Go-Actions/ReadSettings@preview
+        uses: microsoft/AL-Go/Actions/ReadSettings@6bbfb2b86c33a979e556a96d1510e8e17dbb8ec3
         with:
           shell: powershell
-          parentTelemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
-          getEnvironments: '*'
-          
+
+      - name: Determine Workflow Depth
+        id: DetermineWorkflowDepth
+        run: |
+          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "WorkflowDepth=$($env:workflowDepth)"
+
       - name: Determine Projects To Build
         id: determineProjectsToBuild
-        uses: microsoft/AL-Go-Actions/DetermineProjectsToBuild@preview
+        uses: microsoft/AL-Go/Actions/DetermineProjectsToBuild@6bbfb2b86c33a979e556a96d1510e8e17dbb8ec3
         with:
           shell: powershell
           maxBuildDepth: ${{ env.workflowDepth }}
@@ -84,330 +76,57 @@ jobs:
   Build1:
     needs: [ Initialization ]
     if: (!failure()) && (!cancelled()) && fromJson(needs.Initialization.outputs.buildOrderJson)[0].projectsCount > 0
-    runs-on: ${{ fromJson(needs.Initialization.outputs.githubRunner) }}
-    defaults:
-      run:
-        shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
     strategy:
       matrix:
         include: ${{ fromJson(needs.Initialization.outputs.buildOrderJson)[0].buildDimensions }}
       fail-fast: false
-    name: Build ${{ matrix.project }} - ${{ matrix.buildMode }}
-    outputs:
-      AppsArtifactsName: ${{ steps.calculateArtifactNames.outputs.AppsArtifactsName }}
-      TestAppsArtifactsName: ${{ steps.calculateArtifactNames.outputs.TestAppsArtifactsName }}
-      TestResultsArtifactsName: ${{ steps.calculateArtifactNames.outputs.TestResultsArtifactsName }}
-      BcptTestResultsArtifactsName: ${{ steps.calculateArtifactNames.outputs.BcptTestResultsArtifactsName }}
-      BuildOutputArtifactsName: ${{ steps.calculateArtifactNames.outputs.BuildOutputArtifactsName }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          lfs: true
-          ref: refs/pull/${{ github.event.number }}/merge
-
-      - name: Download thisbuild artifacts
-        if: env.workflowDepth > 1
-        uses: actions/download-artifact@v3
-        with:
-          path: '.dependencies'
-
-      - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@preview
-        with:
-          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          project: ${{ matrix.project }}
-
-      - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
-        env:
-          secrets: ${{ toJson(secrets) }}
-        with:
-          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          settingsJson: ${{ env.Settings }}
-          secrets: 'licenseFileUrl,insiderSasToken,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext'
-
-      - name: Determine ArtifactUrl
-        uses: microsoft/AL-Go-Actions/DetermineArtifactUrl@preview
-        id: determineArtifactUrl
-        with:
-          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          settingsJson: ${{ env.Settings }}
-          secretsJson: ${{ env.RepoSecrets }}
-
-      - name: Cache Business Central Artifacts
-        if: env.useCompilerFolder == 'True' && steps.determineArtifactUrl.outputs.ArtifactUrl && !contains(env.artifact,'INSIDERSASTOKEN')
-        uses: actions/cache@v3
-        with:
-          path: .artifactcache
-          key: ${{ steps.determineArtifactUrl.outputs.ArtifactUrl }}
-
-      - name: Run pipeline
-        id: RunPipeline
-        uses: microsoft/AL-Go-Actions/RunPipeline@preview
-        env:
-          BuildMode: ${{ matrix.buildMode }}
-        with:
-          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          project: ${{ matrix.project }}
-          projectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
-          settingsJson: ${{ env.Settings }}
-          secretsJson: ${{ env.RepoSecrets }}
-          buildMode: ${{ matrix.buildMode }}
-
-      - name: Calculate Artifact names
-        id: calculateArtifactsNames
-        uses: microsoft/AL-Go-Actions/CalculateArtifactNames@preview
-        if: success() || failure()
-        with:
-          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-          settingsJson: ${{ env.Settings }}
-          project: ${{ matrix.project }}
-          buildMode: ${{ matrix.buildMode }}
-          branchName: ${{ github.ref_name }}
-
-      - name: Upload thisbuild artifacts - apps
-        if: env.workflowDepth > 1
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildAppsArtifactsName }}
-          path: '${{ matrix.project }}/.buildartifacts/Apps/'
-          if-no-files-found: ignore
-          retention-days: 1
-
-      - name: Upload thisbuild artifacts - test apps
-        if: env.workflowDepth > 1
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildTestAppsArtifactsName }}
-          path: '${{ matrix.project }}/.buildartifacts/TestApps/'
-          if-no-files-found: ignore
-          retention-days: 1
-
-      - name: Publish artifacts - build output
-        uses: actions/upload-artifact@v3
-        if: (success() || failure()) && (hashFiles(format('{0}/BuildOutput.txt',matrix.project)) != '')
-        with:
-          name: ${{ env.BuildOutputArtifactsName }}
-          path: '${{ matrix.project }}/BuildOutput.txt'
-          if-no-files-found: ignore
-
-      - name: Publish artifacts - container event log
-        uses: actions/upload-artifact@v3
-        if: (failure()) && (hashFiles(format('{0}/ContainerEventLog.evtx',matrix.project)) != '')
-        with:
-          name: ${{ env.ContainerEventLogArtifactsName }}
-          path: '${{ matrix.project }}/ContainerEventLog.evtx'
-          if-no-files-found: ignore
-
-      - name: Publish artifacts - test results
-        uses: actions/upload-artifact@v3
-        if: (success() || failure()) && (hashFiles(format('{0}/TestResults.xml',matrix.project)) != '')
-        with:
-          name: ${{ env.TestResultsArtifactsName }}
-          path: '${{ matrix.project }}/TestResults.xml'
-          if-no-files-found: ignore
-
-      - name: Publish artifacts - bcpt test results
-        uses: actions/upload-artifact@v3
-        if: (success() || failure()) && (hashFiles(format('{0}/bcptTestResults.json',matrix.project)) != '')
-        with:
-          name: ${{ env.BcptTestResultsArtifactsName }}
-          path: '${{ matrix.project }}/bcptTestResults.json'
-          if-no-files-found: ignore
-
-      - name: Analyze Test Results
-        id: analyzeTestResults
-        if: success() || failure()
-        uses: microsoft/AL-Go-Actions/AnalyzeTests@preview
-        with:
-          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          Project: ${{ matrix.project }}
-
-      - name: Cleanup
-        if: always()
-        uses: microsoft/AL-Go-Actions/PipelineCleanup@preview
-        with:
-          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          Project: ${{ matrix.project }}
+    name: Build ${{ matrix.projectName }} (${{ matrix.buildMode }})
+    uses: ./.github/workflows/_BuildALGoProject.yaml
+    secrets: inherit
+    with:
+      shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
+      runsOn: ${{ needs.Initialization.outputs.githubRunner }}
+      checkoutRef: refs/pull/${{ github.event.number }}/merge
+      parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+      project: ${{ matrix.project }}
+      projectName: ${{ matrix.projectName }}
+      buildMode: ${{ matrix.buildMode }}
+      projectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
+      secrets: 'licenseFileUrl,keyVaultCertificateUrl,*keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext,applicationInsightsConnectionString'
+      publishThisBuildArtifacts: ${{ needs.Initialization.outputs.workflowDepth > 1 }}
 
   Build:
     needs: [ Initialization, Build1 ]
     if: (!failure()) && (!cancelled()) && (needs.Build1.result == 'success' || needs.Build1.result == 'skipped') && fromJson(needs.Initialization.outputs.buildOrderJson)[1].projectsCount > 0
-    runs-on: ${{ fromJson(needs.Initialization.outputs.githubRunner) }}
-    defaults:
-      run:
-        shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
     strategy:
       matrix:
         include: ${{ fromJson(needs.Initialization.outputs.buildOrderJson)[1].buildDimensions }}
       fail-fast: false
-    name: Build ${{ matrix.project }} - ${{ matrix.buildMode }}
-    outputs:
-      AppsArtifactsName: ${{ steps.calculateArtifactNames.outputs.AppsArtifactsName }}
-      TestAppsArtifactsName: ${{ steps.calculateArtifactNames.outputs.TestAppsArtifactsName }}
-      TestResultsArtifactsName: ${{ steps.calculateArtifactNames.outputs.TestResultsArtifactsName }}
-      BcptTestResultsArtifactsName: ${{ steps.calculateArtifactNames.outputs.BcptTestResultsArtifactsName }}
-      BuildOutputArtifactsName: ${{ steps.calculateArtifactNames.outputs.BuildOutputArtifactsName }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          lfs: true
-          ref: refs/pull/${{ github.event.number }}/merge
+    name: Build ${{ matrix.projectName }} (${{ matrix.buildMode }})
+    uses: ./.github/workflows/_BuildALGoProject.yaml
+    secrets: inherit
+    with:
+      shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
+      runsOn: ${{ needs.Initialization.outputs.githubRunner }}
+      checkoutRef: refs/pull/${{ github.event.number }}/merge
+      parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
+      project: ${{ matrix.project }}
+      projectName: ${{ matrix.projectName }}
+      buildMode: ${{ matrix.buildMode }}
+      projectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
+      secrets: 'licenseFileUrl,keyVaultCertificateUrl,*keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext,applicationInsightsConnectionString'
+      publishThisBuildArtifacts: ${{ needs.Initialization.outputs.workflowDepth > 1 }}
 
-      - name: Download thisbuild artifacts
-        if: env.workflowDepth > 1
-        uses: actions/download-artifact@v3
-        with:
-          path: '.dependencies'
-
-      - name: Read settings
-        uses: microsoft/AL-Go-Actions/ReadSettings@preview
-        with:
-          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          project: ${{ matrix.project }}
-
-      - name: Read secrets
-        uses: microsoft/AL-Go-Actions/ReadSecrets@preview
-        env:
-          secrets: ${{ toJson(secrets) }}
-        with:
-          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          settingsJson: ${{ env.Settings }}
-          secrets: 'licenseFileUrl,insiderSasToken,keyVaultCertificateUrl,keyVaultCertificatePassword,keyVaultClientId,gitHubPackagesContext'
-
-      - name: Determine ArtifactUrl
-        uses: microsoft/AL-Go-Actions/DetermineArtifactUrl@preview
-        id: determineArtifactUrl
-        with:
-          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          settingsJson: ${{ env.Settings }}
-          secretsJson: ${{ env.RepoSecrets }}
-
-      - name: Cache Business Central Artifacts
-        if: env.useCompilerFolder == 'True' && steps.determineArtifactUrl.outputs.ArtifactUrl && !contains(env.artifact,'INSIDERSASTOKEN')
-        uses: actions/cache@v3
-        with:
-          path: .artifactcache
-          key: ${{ steps.determineArtifactUrl.outputs.ArtifactUrl }}
-
-      - name: Run pipeline
-        id: RunPipeline
-        uses: microsoft/AL-Go-Actions/RunPipeline@preview
-        env:
-          BuildMode: ${{ matrix.buildMode }}
-        with:
-          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          project: ${{ matrix.project }}
-          projectDependenciesJson: ${{ needs.Initialization.outputs.projectDependenciesJson }}
-          settingsJson: ${{ env.Settings }}
-          secretsJson: ${{ env.RepoSecrets }}
-          buildMode: ${{ matrix.buildMode }}
-
-      - name: Calculate Artifact names
-        id: calculateArtifactsNames
-        uses: microsoft/AL-Go-Actions/CalculateArtifactNames@preview
-        if: success() || failure()
-        with:
-          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-          settingsJson: ${{ env.Settings }}
-          project: ${{ matrix.project }}
-          buildMode: ${{ matrix.buildMode }}
-          branchName: ${{ github.ref_name }}
-
-      - name: Upload thisbuild artifacts - apps
-        if: env.workflowDepth > 1
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildAppsArtifactsName }}
-          path: '${{ matrix.project }}/.buildartifacts/Apps/'
-          if-no-files-found: ignore
-          retention-days: 1
-
-      - name: Upload thisbuild artifacts - test apps
-        if: env.workflowDepth > 1
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildTestAppsArtifactsName }}
-          path: '${{ matrix.project }}/.buildartifacts/TestApps/'
-          if-no-files-found: ignore
-          retention-days: 1
-
-      - name: Publish artifacts - build output
-        uses: actions/upload-artifact@v3
-        if: (success() || failure()) && (hashFiles(format('{0}/BuildOutput.txt',matrix.project)) != '')
-        with:
-          name: ${{ env.BuildOutputArtifactsName }}
-          path: '${{ matrix.project }}/BuildOutput.txt'
-          if-no-files-found: ignore
-
-      - name: Publish artifacts - container event log
-        uses: actions/upload-artifact@v3
-        if: (failure()) && (hashFiles(format('{0}/ContainerEventLog.evtx',matrix.project)) != '')
-        with:
-          name: ${{ env.ContainerEventLogArtifactsName }}
-          path: '${{ matrix.project }}/ContainerEventLog.evtx'
-          if-no-files-found: ignore
-
-      - name: Publish artifacts - test results
-        uses: actions/upload-artifact@v3
-        if: (success() || failure()) && (hashFiles(format('{0}/TestResults.xml',matrix.project)) != '')
-        with:
-          name: ${{ env.TestResultsArtifactsName }}
-          path: '${{ matrix.project }}/TestResults.xml'
-          if-no-files-found: ignore
-
-      - name: Publish artifacts - bcpt test results
-        uses: actions/upload-artifact@v3
-        if: (success() || failure()) && (hashFiles(format('{0}/bcptTestResults.json',matrix.project)) != '')
-        with:
-          name: ${{ env.BcptTestResultsArtifactsName }}
-          path: '${{ matrix.project }}/bcptTestResults.json'
-          if-no-files-found: ignore
-
-      - name: Analyze Test Results
-        id: analyzeTestResults
-        if: success() || failure()
-        uses: microsoft/AL-Go-Actions/AnalyzeTests@preview
-        with:
-          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          Project: ${{ matrix.project }}
-
-      - name: Cleanup
-        if: always()
-        uses: microsoft/AL-Go-Actions/PipelineCleanup@preview
-        with:
-          shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
-          Project: ${{ matrix.project }}
-
-  PostProcess:
+  StatusCheck:
     runs-on: [ windows-latest ]
     needs: [ Initialization, Build ]
     if: (!cancelled())
+    name: Pull Request Status Check
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          lfs: true
-          ref: refs/pull/${{ github.event.number }}/merge
-
-      - name: Finalize the workflow
-        id: PostProcess
-        uses: microsoft/AL-Go-Actions/WorkflowPostProcess@preview
+      - name: Pull Request Status Check
+        id: PullRequestStatusCheck
+        uses: microsoft/AL-Go/Actions/PullRequestStatusCheck@6bbfb2b86c33a979e556a96d1510e8e17dbb8ec3
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         with:
           shell: powershell
-          eventId: "DO0104"
-          telemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}

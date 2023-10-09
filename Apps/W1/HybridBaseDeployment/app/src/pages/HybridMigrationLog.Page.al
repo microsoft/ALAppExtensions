@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 page 40033 "Hybrid Migration Log"
 {
     PageType = ListPart;
@@ -116,7 +118,7 @@ page 40033 "Hybrid Migration Log"
 
     local procedure UpdateCalculatedValuesForMigrationLogs()
     begin
-        CalcFields(Rec.Details, Rec."Tables Failed");
+        Rec.CalcFields(Rec.Details, Rec."Tables Failed");
         DetailsValue := Rec.GetDetails();
 
         StatusDisplayName := Format(Rec.Status);

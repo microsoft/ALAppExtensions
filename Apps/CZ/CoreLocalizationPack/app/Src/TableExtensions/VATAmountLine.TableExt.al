@@ -168,9 +168,9 @@ tableextension 11793 "VAT Amount Line CZL" extends "VAT Amount Line"
                         0);
                 end;
             else begin
-                    IsHandled := false;
-                    OnGetDocumentVATEntryBufferPerDocumentTypeCZL(DocRecordRef, DocumentType, DocumentNo, PostingDate, SourceCode, Sign, VATCurrFactor, TransactionNo, IsHandled);
-                end;
+                IsHandled := false;
+                OnGetDocumentVATEntryBufferPerDocumentTypeCZL(DocRecordRef, DocumentType, DocumentNo, PostingDate, SourceCode, Sign, VATCurrFactor, TransactionNo, IsHandled);
+            end;
         end;
 
         CopyDocumentVATEntriesToBuffer(TempVATEntry);

@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 4069 "GPSOPDepositHist"
 {
     DataClassification = CustomerContent;

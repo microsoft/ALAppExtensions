@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
 /// <summary>
 /// Provides functionality to work with email accounts.
 /// </summary>
@@ -36,6 +38,28 @@ codeunit 8894 "Email Account"
     procedure IsAnyAccountRegistered(): Boolean
     begin
         exit(EmailAccountImpl.IsAnyAccountRegistered());
+    end;
+
+    /// <summary>
+    /// Checks if a specific email account is registered in Business Central.
+    /// </summary>
+    /// <param name="EmailAccountId"> The email account ID </param>
+    /// <param name="EmailConnector"> The email connector </param>
+    /// <returns></returns>
+    procedure IsAccountRegistered(EmailAccountId: Guid; EmailConnector: Enum "Email Connector"): Boolean
+    begin
+        exit(EmailAccountImpl.IsAccountRegistered(EmailAccountId, EmailConnector));
+    end;
+
+    /// <summary>
+    /// Deletes all selected email accounts.
+    /// </summary>
+    /// <param name="TempEmailAccountsToDelete">Holding the selected email accounts to delete.</param>
+    /// <param name="HideDialog">Hides any confirmation or interaction that involves a UI.</param>
+    /// <error>Your user account does not give you permission to set up email. Please contact your administrator.</error>
+    procedure DeleteAccounts(var TempEmailAccountsToDelete: Record "Email Account" temporary; HideDialog: Boolean)
+    begin
+        EmailAccountImpl.DeleteAccounts(TempEmailAccountsToDelete, HideDialog);
     end;
 
     /// <summary>

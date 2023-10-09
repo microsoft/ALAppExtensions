@@ -1,3 +1,11 @@
+namespace Mirosoft.Integration.CompanyHub;
+
+using Microsoft.Foundation.Company;
+using System.Security.AccessControl;
+using System.Environment.Configuration;
+using System.Environment;
+using System.Privacy;
+
 codeunit 1160 "COHUB Install"
 {
     Subtype = Install;

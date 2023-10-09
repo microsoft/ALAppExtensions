@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.RoleCenters;
+
 /// <summary>
 /// PageExtension Shpfy Order Processor RC (ID 30102) extends Record Order Processor Role Center.
 /// </summary>
@@ -55,6 +59,23 @@ pageextension 30102 "Shpfy Order Processor RC" extends "Order Processor Role Cen
                     RunObject = page "Shpfy Orders";
                     RunPageView = where(Closed = const(false));
                     ToolTip = 'View your Shopify agreements with customers to sell certain products on certain delivery and payment terms.';
+                }
+                action(Refunds)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Refunds';
+                    Image = OrderList;
+                    RunObject = page "Shpfy Refunds";
+                    ToolTip = 'View your Shopify refunds.';
+
+                }
+                action(Returns)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Returns';
+                    Image = OrderList;
+                    RunObject = page "Shpfy Returns";
+                    ToolTip = 'View your Shopify returns.';
                 }
                 action("ShpfyShopify Gift Cards")
                 {

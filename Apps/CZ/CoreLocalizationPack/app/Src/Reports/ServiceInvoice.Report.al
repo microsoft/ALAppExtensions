@@ -425,7 +425,7 @@ report 31197 "Service Invoice CZL"
                 }
                 dataitem(LineFee; "Integer")
                 {
-                    DataItemTableView = sorting(Number) ORDER(Ascending) WHERE(Number = FILTER(1 ..));
+                    DataItemTableView = sorting(Number) order(ascending) where(Number = filter(1 ..));
                     column(LineFeeCaptionLbl; TempLineFeeNoteonReportHist.ReportText)
                     {
                     }
@@ -485,7 +485,8 @@ report 31197 "Service Invoice CZL"
             var
                 ServiceInvLine: Record "Service Invoice Line";
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
                 FormatAddressFields("Service Invoice Header");
                 FormatDocumentFields("Service Invoice Header");
@@ -553,12 +554,14 @@ report 31197 "Service Invoice CZL"
         ReasonCode: Record "Reason Code";
         CurrencyExchangeRate: Record "Currency Exchange Rate";
         VATClause: Record "VAT Clause";
-        Language: Codeunit Language;
+        LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
 #if not CLEAN22
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
 #endif
         ExchRateText: Text[50];
         VATClauseText: Text;
@@ -618,7 +621,7 @@ report 31197 "Service Invoice CZL"
                 TempLineFeeNoteonReportHist.Insert();
             until LineFeeNoteonReportHist.Next() = 0
         else begin
-            LineFeeNoteonReportHist.SetRange("Language Code", Language.GetUserLanguageCode());
+            LineFeeNoteonReportHist.SetRange("Language Code", LanguageMgt.GetUserLanguageCode());
             if LineFeeNoteonReportHist.FindSet() then
                 repeat
                     TempLineFeeNoteonReportHist.Init();

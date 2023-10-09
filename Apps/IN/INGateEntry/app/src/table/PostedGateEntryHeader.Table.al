@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Warehouse.GateEntry;
+
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Inventory.Location;
+using System.Security.AccessControl;
+
 table 18606 "Posted Gate Entry Header"
 {
     Caption = 'Posted Gate Entry Header';

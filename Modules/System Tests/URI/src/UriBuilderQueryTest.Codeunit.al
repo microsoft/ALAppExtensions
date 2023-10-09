@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Utilities;
+
+using System.Utilities;
+using System.TestLibraries.Utilities;
+
 codeunit 135072 "Uri Builder Query Test"
 {
     Subtype = Test;

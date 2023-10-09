@@ -108,9 +108,9 @@ pageextension 11721 "User Setup CZL" extends "User Setup"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Card';
                     Image = Card;
-                    RunObject = Page "User Setup Card CZL";
-                    RunPageLink = "User ID" = FIELD("User ID");
-                    ShortCutKey = 'Shift+F7';
+                    RunObject = page "User Setup Card CZL";
+                    RunPageLink = "User ID" = field("User ID");
+                    ShortcutKey = 'Shift+F7';
                     ToolTip = 'Specifies the user setup card.';
                 }
                 action("Lines CZL")
@@ -118,8 +118,8 @@ pageextension 11721 "User Setup CZL" extends "User Setup"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Lines';
                     Image = SetupLines;
-                    RunObject = Page "User Setup Lines CZL";
-                    RunPageLink = "User ID" = Field("User ID");
+                    RunObject = page "User Setup Lines CZL";
+                    RunPageLink = "User ID" = field("User ID");
                     ToolTip = 'Specifies the lines for another user setup.';
                 }
                 action("Dimensions CZL")
@@ -127,7 +127,7 @@ pageextension 11721 "User Setup CZL" extends "User Setup"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Dimensions';
                     Image = Dimensions;
-                    ShortCutKey = 'Shift+Ctrl+D';
+                    ShortcutKey = 'Shift+Ctrl+D';
                     ToolTip = 'Specifies the dimensions related to the user.';
 
                     trigger OnAction()

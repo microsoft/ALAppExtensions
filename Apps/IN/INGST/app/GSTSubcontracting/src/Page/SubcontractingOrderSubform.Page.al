@@ -1,3 +1,18 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Subcontracting;
+
+using Microsoft.Finance.GST.Purchase;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Foundation.ExtendedText;
+using Microsoft.Foundation.Navigate;
+using Microsoft.Inventory.Item.Catalog;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Pricing;
+using Microsoft.Sales.Document;
+
 page 18493 "Subcontracting Order Subform"
 {
 
@@ -860,7 +875,7 @@ page 18493 "Subcontracting Order Subform"
         TransferExtendedText: Codeunit "Transfer Extended Text";
         ShortcutDimCode: array[8] of Code[20];
         UpdateAllowedVar: Boolean;
-        LineAmount:Decimal;
+        LineAmount: Decimal;
         ViewModeMsg: Label 'Unable to run this function while in View mode.';
 
     procedure ApproveCalcInvDisc()

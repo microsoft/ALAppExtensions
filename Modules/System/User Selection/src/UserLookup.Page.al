@@ -1,7 +1,12 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Security.User;
+
+using System.Environment;
+using System.Security.AccessControl;
 
 /// <summary>
 /// Lookup page for users.
@@ -14,7 +19,7 @@ page 9843 "User Lookup"
     InsertAllowed = false;
     PageType = List;
     SourceTable = User;
-    SourceTableView = SORTING("User Name");
+    SourceTableView = sorting("User Name");
     Permissions = tabledata User = r;
 
     layout
@@ -23,28 +28,28 @@ page 9843 "User Lookup"
         {
             repeater(Group)
             {
-                field("User Name"; "User Name")
+                field("User Name"; Rec."User Name")
                 {
                     ApplicationArea = All;
                     Caption = 'User Name';
                     Editable = false;
                     ToolTip = 'Specifies the name of the user. If the user must enter credentials when they sign in, this is the name they must enter.';
                 }
-                field("Full Name"; "Full Name")
+                field("Full Name"; Rec."Full Name")
                 {
                     ApplicationArea = All;
                     Caption = 'Full Name';
                     Editable = false;
                     ToolTip = 'Specifies the full name of the user.';
                 }
-                field("Windows Security ID"; "Windows Security ID")
+                field("Windows Security ID"; Rec."Windows Security ID")
                 {
                     ApplicationArea = All;
                     Editable = false;
                     ToolTip = 'Specifies the Windows Security ID of the user. This is only relevant for Windows authentication.';
-                    Visible = NOT IsSaaS;
+                    Visible = not IsSaaS;
                 }
-                field("Authentication Email"; "Authentication Email")
+                field("Authentication Email"; Rec."Authentication Email")
                 {
                     ApplicationArea = All;
                     Editable = false;
@@ -96,4 +101,5 @@ page 9843 "User Lookup"
         end;
     end;
 }
+
 

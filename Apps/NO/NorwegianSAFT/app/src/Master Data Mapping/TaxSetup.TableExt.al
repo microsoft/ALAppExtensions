@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Setup;
+
+using Microsoft.Finance.AuditFileExport;
+
 tableextension 10679 "SAF-T Tax Setup" extends "VAT Posting Setup"
 {
     fields
@@ -31,24 +39,40 @@ tableextension 10679 "SAF-T Tax Setup" extends "VAT Posting Setup"
             DataClassification = CustomerContent;
             Caption = 'Sales SAF-T Standard Tax Code';
             TableRelation = "VAT Code";
+            ObsoleteReason = 'Use the field "Sale VAT Reporting Code" in BaseApp W1.';
+#if CLEAN23
+            ObsoleteState = Removed;
+            ObsoleteTag = '26.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '23.0';
 
             trigger OnValidate()
             begin
                 If "Sales SAF-T Standard Tax Code" <> '' then
                     TestField("Sales VAT Account");
             end;
+#endif
         }
         field(10673; "Purch. SAF-T Standard Tax Code"; Code[10])
         {
             DataClassification = CustomerContent;
             Caption = 'Purchase SAF-T Standard Tax Code';
             TableRelation = "VAT Code";
+            ObsoleteReason = 'Use the field "Purch. VAT Reporting Code" in BaseApp W1.';
+#if CLEAN23
+            ObsoleteState = Removed;
+            ObsoleteTag = '26.0';
+#else
+            ObsoleteState = Pending;
+            ObsoleteTag = '23.0';
 
             trigger OnValidate()
             begin
                 If "Purch. SAF-T Standard Tax Code" <> '' then
                     TestField("Purchase VAT Account");
             end;
+#endif
         }
     }
 

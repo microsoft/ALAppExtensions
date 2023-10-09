@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.DateTime;
+
+using System.DateTime;
+using System.TestLibraries.Utilities;
+
 codeunit 134684 "Date-Time Dialog Test"
 {
     Subtype = Test;

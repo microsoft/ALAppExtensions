@@ -1,8 +1,8 @@
 table 11752 "VAT Attribute Code CZL"
 {
     Caption = 'VAT Attribute Code';
-    DrillDownPageID = "VAT Attribute Codes CZL";
-    LookupPageID = "VAT Attribute Codes CZL";
+    DrillDownPageId = "VAT Attribute Codes CZL";
+    LookupPageId = "VAT Attribute Codes CZL";
 
     fields
     {

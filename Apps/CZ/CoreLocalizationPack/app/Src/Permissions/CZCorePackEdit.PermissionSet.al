@@ -36,13 +36,21 @@ permissionset 11731 "CZ Core Pack - Edit CZL"
                   tabledata "Enhanced Currency Buffer CZL" = IMD,
                   tabledata "Excel Template CZL" = IMD,
                   tabledata "G/L Account Adjust. Buffer CZL" = IMD,
+#if not CLEAN22
+#pragma warning disable AL0432
                   tabledata "Intrastat Delivery Group CZL" = IMD,
+#pragma warning restore AL0432
+#endif
                   tabledata "Invt. Movement Template CZL" = IMD,
                   tabledata "Reg. No. Service Config CZL" = IMD,
                   tabledata "Registration Log CZL" = IMD,
                   tabledata "Registration Log Detail CZL" = IMD,
+#if not CLEAN22
+#pragma warning disable AL0432
                   tabledata "Specific Movement CZL" = IMD,
                   tabledata "Statistic Indication CZL" = IMD,
+#pragma warning restore AL0432
+#endif
                   tabledata "Statutory Reporting Setup CZL" = IMD,
                   tabledata "Stockkeeping Unit Template CZL" = IMD,
 #if not CLEAN22

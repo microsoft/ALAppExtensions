@@ -133,7 +133,7 @@ codeunit 31031 "SOAP WS Request Management CZL"
         exit('uuid-' + DelChr(LowerCase(Format(CreateGuid())), '=', '{}'));
     end;
 
-    local procedure AddContentToEnvelope(var BodyXmlNode: XmlNode; RequestContentInStream: Instream)
+    local procedure AddContentToEnvelope(var BodyXmlNode: XmlNode; RequestContentInStream: InStream)
     var
         RequestContentXmlDocument: XmlDocument;
         RequestContentXmlElement: XmlElement;
@@ -164,7 +164,7 @@ codeunit 31031 "SOAP WS Request Management CZL"
         CopyStreamWithoutWhitespace(XmlInStream, DataOutStream);
     end;
 
-    local procedure HasEnvelope(ContentInStream: Instream): Boolean
+    local procedure HasEnvelope(ContentInStream: InStream): Boolean
     var
         ContentXmlDocument: XmlDocument;
     begin

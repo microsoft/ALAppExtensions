@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
 /// <summary>
 /// ListPart for viewing and including/excluding permission sets.
 /// </summary>
@@ -166,6 +168,5 @@ page 9857 "Permission Set Tree"
         StyleExprInclusionStatus: Text;
         CurrRoleId: Code[30];
         CurrAppId: Guid;
-        [InDataSet]
         CurrScope: Option System,Tenant;
 }

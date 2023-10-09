@@ -1,3 +1,14 @@
+namespace Microsoft.DataMigration.GP;
+
+using System.Integration;
+using System.Threading;
+using Microsoft.DataMigration;
+using System.Security.User;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Inventory.Item;
+
 codeunit 4035 "Wizard Integration"
 {
     var
@@ -50,10 +61,13 @@ codeunit 4035 "Wizard Integration"
     var
         GPConfiguration: Record "GP Configuration";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-        DataSyncStatus: Page "Data Sync Status";
+        GPMigrationErrorHandler: Codeunit "GP Migration Error Handler";
         Flag: Boolean;
     begin
         if not (DataMigrationStatus."Migration Type" = HelperFunctions.GetMigrationTypeTxt()) then
+            exit;
+
+        if GPMigrationErrorHandler.GetErrorOccured() then
             exit;
 
         if not HelperFunctions.CreatePostMigrationData() then begin
@@ -72,7 +86,6 @@ codeunit 4035 "Wizard Integration"
                 HelperFunctions.ResetAdjustforPaymentInGLSetup(Flag);
             end;
 
-        DataSyncStatus.ParsePosting();
         HelperFunctions.PostGLTransactions();
         HelperFunctions.SetProcessesRunning(false);
 
@@ -115,12 +128,12 @@ codeunit 4035 "Wizard Integration"
 
     local procedure GetDefaultGPHistoricalMigrationJobTimeoutDuration(): Integer
     begin
-        exit(3600000 * 60); // 60 hours
+        exit(48 * 60 * 60 * 1000); // 48 hours
     end;
 
     local procedure GetDefaultGPHistoricalMigrationJobMaxAttempts(): Integer
     begin
-        exit(1);
+        exit(10);
     end;
 
     procedure StartGPHistoricalJobMigrationAction(JobNotRanNotification: Notification)

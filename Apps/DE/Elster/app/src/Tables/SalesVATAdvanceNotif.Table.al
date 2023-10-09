@@ -69,28 +69,16 @@ table 11021 "Sales VAT Advance Notif."
         field(9; "XSL-Filename"; Text[250])
         {
             DataClassification = CustomerContent;
-#if not CLEAN20
-            ObsoleteTag = '20.0';
-            ObsoleteState = Pending;
-            ObsoleteReason = 'This functionality is not in use and not supported';
-#else
-            ObsoleteTag = '20.0';
+            ObsoleteTag = '23.0';
             ObsoleteState = Removed;
             ObsoleteReason = 'This functionality is not in use and not supported';
-#endif     
         }
         field(10; "XSD-Filename"; Text[250])
         {
             DataClassification = CustomerContent;
-#if not CLEAN20
-            ObsoleteTag = '20.0';
-            ObsoleteState = Pending;
-            ObsoleteReason = 'This functionality is not in use and not supported';
-#else
-            ObsoleteTag = '20.0';
+            ObsoleteTag = '23.0';
             ObsoleteState = Removed;
             ObsoleteReason = 'This functionality is not in use and not supported';
-#endif
         }
 
         field(11; "Statement Template Name"; Code[10])
@@ -548,7 +536,7 @@ table 11021 "Sales VAT Advance Notif."
             VATStmtLine2.Type::"Account Totaling":
                 if VATStmtLine2."Account Totaling" <> '' then begin
                     GLAcc.SetFilter("No.", VATStmtLine2."Account Totaling");
-                    GLAcc.SetRange("Date Filter", StartDate, EndDate);
+                    GLAcc.SetRange("VAT Reporting Date Filter", StartDate, EndDate);
                     if GLAcc.FindSet() then begin
                         Amount := 0;
                         repeat
@@ -561,7 +549,7 @@ table 11021 "Sales VAT Advance Notif."
             VATStmtLine2.Type::"VAT Entry Totaling":
                 begin
                     VATEntry.SetCurrentKey(Type, Closed, "VAT Bus. Posting Group", "VAT Prod. Posting Group",
-                      "Tax Jurisdiction Code", "Use Tax", "Posting Date");
+                      "Tax Jurisdiction Code", "Use Tax", "VAT Reporting Date");
                     VATEntry.SetRange(Type, VATStmtLine2."Gen. Posting Type");
                     case Selection of
                         Selection::Open:
@@ -573,9 +561,9 @@ table 11021 "Sales VAT Advance Notif."
                     VATEntry.SetRange("VAT Prod. Posting Group", VATStmtLine2."VAT Prod. Posting Group");
 
                     if PeriodSelection = PeriodSelection::"Before and Within Period" then
-                        VATEntry.SetRange("Posting Date", 0D, EndDate)
+                        VATEntry.SetRange("VAT Reporting Date", 0D, EndDate)
                     else
-                        VATEntry.SetRange("Posting Date", StartDate, EndDate);
+                        VATEntry.SetRange("VAT Reporting Date", StartDate, EndDate);
 
                     Amount := 0;
                     case VATStmtLine2."Amount Type" of

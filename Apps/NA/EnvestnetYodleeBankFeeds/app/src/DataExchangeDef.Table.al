@@ -1,8 +1,14 @@
+namespace Microsoft.Bank.StatementImport.Yodlee;
+
+using System.IO;
+using Microsoft.Bank.Setup;
+
 table 1452 "MS - Yodlee Data Exchange Def"
 {
     ReplicateData = false;
     DataPerCompany = false;
     Permissions = TableData "Bank Export/Import Setup" = rimd;
+    DataClassification = SystemMetadata;
 
     fields
     {
@@ -49,8 +55,8 @@ table 1452 "MS - Yodlee Data Exchange Def"
         DataExchLineDef: Record "Data Exch. Line Def";
         DataExchMapping: Record "Data Exch. Mapping";
     begin
-        IF DataExchDef.GET(GetYodleeLegacyAPIDataExchDefinitionCode()) THEN
-            DataExchDef.DELETE(TRUE);
+        if DataExchDef.GET(GetYodleeLegacyAPIDataExchDefinitionCode()) then
+            DataExchDef.DELETE(true);
 
         DataExchDef.Code := GetYodleeLegacyAPIDataExchDefinitionCode();
         DataExchDef.Name := 'Envestnet Yodlee - Bank Feeds Service';
@@ -105,8 +111,8 @@ table 1452 "MS - Yodlee Data Exchange Def"
         DataExchColumnDef: Record "Data Exch. Column Def";
         DataExchFieldMapping: Record "Data Exch. Field Mapping";
     begin
-        IF DataExchDef.GET(GetYodleeAPI11DataExchDefinitionCode()) THEN
-            DataExchDef.DELETE(TRUE);
+        if DataExchDef.GET(GetYodleeAPI11DataExchDefinitionCode()) then
+            DataExchDef.DELETE(true);
 
         DataExchDef.Code := GetYodleeAPI11DataExchDefinitionCode();
         DataExchDef.Name := 'Envestnet Yodlee - Bank Feeds Service';
@@ -207,11 +213,12 @@ table 1452 "MS - Yodlee Data Exchange Def"
         BankExportImportSetup: Record "Bank Export/Import Setup";
         DataExchDef: Record "Data Exch. Def";
     begin
-        DataExchDef.Get(GetYodleeAPI11DataExchDefinitionCode());
-        IF BankExportImportSetup.GET(GetYodleeAPI11DataExchDefinitionCode()) THEN
-            BankExportImportSetup.DELETE(TRUE);
-        IF BankExportImportSetup.GET(GetYodleeLegacyAPIDataExchDefinitionCode()) THEN
-            BankExportImportSetup.DELETE(TRUE);
+        if not DataExchDef.Get(GetYodleeAPI11DataExchDefinitionCode()) then
+            exit;
+        if BankExportImportSetup.GET(GetYodleeAPI11DataExchDefinitionCode()) then
+            BankExportImportSetup.DELETE(true);
+        if BankExportImportSetup.GET(GetYodleeLegacyAPIDataExchDefinitionCode()) then
+            BankExportImportSetup.DELETE(true);
 
         BankExportImportSetup.INIT();
         BankExportImportSetup.Code := DataExchDef.Code;
@@ -243,7 +250,7 @@ table 1452 "MS - Yodlee Data Exchange Def"
         MSYodleeBankServiceSetup.Get();
         DataExchDef.GET(MSYodleeBankServiceSetup."Bank Feed Import Format");
         DataExchDef.SETRECFILTER();
-        XMLPORT.RUN(XMLPORT::"Imp / Exp Data Exch Def & Map", FALSE, FALSE, DataExchDef);
+        XMLPORT.RUN(XMLPORT::"Imp / Exp Data Exch Def & Map", false, false, DataExchDef);
     end;
 
     procedure GetYodleeAPI11DataExchDefinitionCode(): Code[20];

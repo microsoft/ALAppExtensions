@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 page 4023 "Database Size Too Large Dialog"
 {
     Caption = 'Database Size Too Large';

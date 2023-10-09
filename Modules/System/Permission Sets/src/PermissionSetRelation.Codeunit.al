@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
 /// <summary>
 /// Codeunit that provides functions for permission set relations, such as including and exlcuding permission sets.
 /// </summary>
@@ -75,6 +77,19 @@ codeunit 9855 "Permission Set Relation"
         PermissionSetCopyImpl: Codeunit "Permission Set Copy Impl.";
     begin
         PermissionSetCopyImpl.CopyPermissionSet(NewRoleId, NewName, SourceRoleId, SourceAppId, SourceScope, CopyType);
+    end;
+
+    /// <summary>
+    /// Opens the permission set page in lookup mode and assigns the selected record to specified Permission Set record.
+    /// </summary>
+    /// <param name="AllowMultiselect">Allow for selecting multiple Permission Sets.</param>
+    /// <param name="AggregatePermissionSet">The target Permission Set.</param>
+    /// <returns>true if lookup was successful</returns>
+    procedure LookupPermissionSet(AllowMultiselect: Boolean; var AggregatePermissionSet: Record "Aggregate Permission Set"): Boolean
+    var
+        PermissionSetRelationImpl: Codeunit "Permission Set Relation Impl.";
+    begin
+        exit(PermissionSetRelationImpl.LookupPermissionSet(AllowMultiselect, AggregatePermissionSet));
     end;
 
     /// <summary>

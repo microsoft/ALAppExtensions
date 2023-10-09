@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.Finance.RoleCenters;
+
 pageextension 4815 "Intrastat Report Account RC" extends "Accountant Role Center"
 {
     actions
@@ -6,7 +14,7 @@ pageextension 4815 "Intrastat Report Account RC" extends "Accountant Role Center
         {
             action(IntrastatReports)
             {
-                ApplicationArea = BasicEU, BasicNO, BasicCH;
+                ApplicationArea = BasicEU, BasicCH, BasicNO;
                 Caption = 'Intrastat Reports';
                 RunObject = Page "Intrastat Report List";
                 Image = ListPage;
@@ -17,7 +25,7 @@ pageextension 4815 "Intrastat Report Account RC" extends "Accountant Role Center
         {
             action(IntrastatReportsEmb)
             {
-                ApplicationArea = BasicEU, BasicNO, BasicCH;
+                ApplicationArea = BasicEU, BasicCH, BasicNO;
                 Caption = 'Intrastat Reports';
                 RunObject = Page "Intrastat Report List";
                 ToolTip = 'Report your trade with other EU countries/regions for Intrastat reporting.';
@@ -27,7 +35,7 @@ pageextension 4815 "Intrastat Report Account RC" extends "Accountant Role Center
         {
             action(IntrastatReportHistory)
             {
-                ApplicationArea = BasicEU, BasicNO, BasicCH;
+                ApplicationArea = BasicEU, BasicCH, BasicNO;
                 Caption = '&Intrastat Reports (Reported)';
                 RunObject = Page "Intrastat Report List";
                 RunPageView = sorting("No.") where(Reported = const(true));

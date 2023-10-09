@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 table 40912 "Hist. Migration Current Status"
 {
     DataClassification = SystemMetadata;
@@ -15,7 +17,7 @@ table 40912 "Hist. Migration Current Status"
         }
         field(3; "Log Count"; Integer)
         {
-            CalcFormula = Count("Hist. Migration Step Status");
+            CalcFormula = count("Hist. Migration Step Status");
             Editable = false;
             FieldClass = FlowField;
         }

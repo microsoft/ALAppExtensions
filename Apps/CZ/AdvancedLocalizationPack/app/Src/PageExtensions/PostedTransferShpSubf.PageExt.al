@@ -1,6 +1,12 @@
 #if not CLEAN22
 pageextension 31208 "Posted Transfer Shp. Subf. CZA" extends "Posted Transfer Shpt. Subform"
 {
+    ObsoleteReason = 'Replaced by standard undo shipment action.';
+    ObsoleteState = Pending;
+#pragma warning disable AS0072
+    ObsoleteTag = '22.0';
+#pragma warning restore AS0072
+
     actions
     {
         addlast("&Line")
@@ -17,15 +23,20 @@ pageextension 31208 "Posted Transfer Shp. Subf. CZA" extends "Posted Transfer Sh
                 Visible = false;
 
                 trigger OnAction()
-                var
-                    TransferShipmentLine: Record "Transfer Shipment Line";
                 begin
-                    TransferShipmentLine.Copy(Rec);
-                    CurrPage.SetSelectionFilter(TransferShipmentLine);
-                    Codeunit.Run(Codeunit::"Undo Transfer Ship. Line CZA", TransferShipmentLine);
+                    UndoShipmentPostingCZA();
                 end;
             }
         }
     }
+
+    local procedure UndoShipmentPostingCZA()
+    var
+        TransShptLine: Record "Transfer Shipment Line";
+    begin
+        TransShptLine.Copy(Rec);
+        CurrPage.SetSelectionFilter(TransShptLine);
+        CODEUNIT.Run(CODEUNIT::"Undo Transfer Shipment", TransShptLine);
+    end;
 }
 #endif

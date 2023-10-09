@@ -1,3 +1,5 @@
+namespace Microsoft.Bank.StatementImport.Yodlee;
+
 page 1454 "MS - Yodlee Terms of use"
 {
     Caption = 'Envestnet Yodlee Bank Feeds - Terms of use';
@@ -40,7 +42,7 @@ page 1454 "MS - Yodlee Terms of use"
                             HYPERLINK(MicrosoftPrivacyStatementTxt);
                         end;
                     }
-                    field("Accept Terms of Use"; "Accept Terms of Use")
+                    field("Accept Terms of Use"; Rec."Accept Terms of Use")
                     {
                         ApplicationArea = Basic, Suite;
                         ToolTip = 'Specifies if you accept the terms of use for Envestnet Yodlee.';
@@ -72,7 +74,7 @@ page 1454 "MS - Yodlee Terms of use"
 
     trigger OnOpenPage();
     begin
-        TermsOfUseVisible := TRUE;
+        TermsOfUseVisible := true;
         CloseButtonVisible := CURRENTCLIENTTYPE() <> CLIENTTYPE::Windows;
     end;
 

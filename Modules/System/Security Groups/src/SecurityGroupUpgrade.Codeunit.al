@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
+using System.Upgrade;
+
 codeunit 9872 "Security Group Upgrade"
 {
     Subtype = Upgrade;
@@ -26,11 +30,7 @@ codeunit 9872 "Security Group Upgrade"
     var
         User: Record User;
         SecurityGroupRec: Record "Security Group";
-        SecurityGroup: Codeunit "Security Group";
     begin
-        if not SecurityGroup.IsWindowsAuthentication() then
-            exit;
-
         User.SetRange("License Type", User."License Type"::"Windows Group");
         if not User.FindSet() then
             exit;
@@ -82,6 +82,6 @@ codeunit 9872 "Security Group Upgrade"
 
     internal procedure GetOnPremSecurityGroupUpgradeTag(): Code[250]
     begin
-        exit('MS-458366-EmailAttachmentToMedia-20230205');
+        exit('MS-458366-OnPremSecurityGroups-20230205');
     end;
 }

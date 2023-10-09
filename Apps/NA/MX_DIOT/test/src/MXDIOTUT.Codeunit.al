@@ -535,9 +535,55 @@ codeunit 148041 "MX DIOT UT"
         PurchaseHeader.TestField("DIOT Type of Operation", Vendor."DIOT Type of Operation");
     end;
 
+    [Test]
+    procedure ReportDatasetUT_BaseAmountAndVATAmountUnrealizedVATSetupAppliedFromInvoice()
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+        Vendor: Record Vendor;
+        PurchaseHeader: Record "Purchase Header";
+        PurchInvLine: Record "Purch. Inv. Line";
+        TempDIOTReportBuffer: Record "DIOT Report Buffer" temporary;
+        GenJournalLine: Record "Gen. Journal Line";
+        TempDIOTReportVendorBuffer: Record "DIOT Report Vendor Buffer" temporary;
+        TempErrorMessage: Record "Error Message" temporary;
+        PurchaseInvoiceNo: Code[20];
+        ExpectedBaseAmount: Decimal;
+    begin
+        // [FEATURE] [Unrealized VAT]
+        // [SCENARIO 479227] DIOT considers VAT Entries produced when applying Unrealized VAT Invoice applied to Payment
+        Initialize();
+
+        // [GIVEN] VAT Posting Setup created and linked to Base Amount concept
+        PrepareVATPostingSetupAndLink(VATPostingSetup, BaseAmountConceptNo);
+
+        // [GIVEN] VAT Setup has Unrealized VAT Type = Cash Basis
+        EnableUnrealizedSetup(VATPostingSetup, VATPostingSetup."Unrealized VAT Type"::"Cash Basis");
+
+        // [GIVEN] Vendor was created
+        LibraryMXDIOT.CreateDIOTVendor(Vendor, VATPostingSetup."VAT Bus. Posting Group", false);
+
+        // [GIVEN] Invoice was posted with this VAT Setup for Base Amount = 100 with VAT Amount = 15
+        PurchaseInvoiceNo := CreateAndPostPurchaseInvoiceWithVATSetup(PurchaseHeader, VATPostingSetup, Vendor."No.");
+        FindPurchaseInvoiceLine(PurchInvLine, PurchaseInvoiceNo);
+
+        // [GIVEN] Payment was posted with amount 115
+        CreateAndPostGeneralJournaLine(GenJournalLine, GenJournalLine."Document Type"::Payment, PurchaseHeader."Buy-from Vendor No.", PurchInvLine."Amount Including VAT");
+
+        // [GIVEN] Apply Invoice to Payment from Invoice entry
+        ApplyVendorLedgerEntry("Gen. Journal Document Type"::Invoice, "Gen. Journal Document Type"::Payment, PurchaseInvoiceNo, GenJournalLine."Document No.");
+
+        // [WHEN] Run DIOT Report
+        DIOTDataManagement.CollectDIOTDataSet(TempDIOTReportBuffer, TempDIOTReportVendorBuffer, TempErrorMessage, WorkDate(), WorkDate());
+
+        // [THEN] DIOT Report has Amount 100 for base amount concept for this Vendor
+        ExpectedBaseAmount := PurchInvLine.Amount;
+        VerifyDIOTBufferAmount(TempDIOTReportBuffer, Vendor."No.", Vendor."DIOT Type of Operation"::Others, BaseAmountConceptNo, ExpectedBaseAmount);
+    end;
+
     local procedure Initialize()
     begin
         Clear(DIOTDataManagement);
+        ClearConceptLinks();
         LibraryTestInitialize.OnTestInitialize(Codeunit::"MX DIOT UT");
         LibrarySetupStorage.Restore();
         if IsInitialized then
@@ -550,6 +596,37 @@ codeunit 148041 "MX DIOT UT"
         IsInitialized := true;
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"MX DIOT UT");
         LibrarySetupStorage.Save(Database::"General Ledger Setup");
+    end;
+
+    local procedure ApplyVendorLedgerEntry(DocumentType: Enum "Gen. Journal Document Type"; DocumentType2: Enum "Gen. Journal Document Type"; DocumentNo: Code[20]; DocumentNo2: Code[20])
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        VendorLedgerEntry2: Record "Vendor Ledger Entry";
+    begin
+        LibraryERM.FindVendorLedgerEntry(VendorLedgerEntry, DocumentType, DocumentNo);
+        VendorLedgerEntry.CalcFields("Remaining Amount");
+        LibraryERM.SetApplyVendorEntry(VendorLedgerEntry, VendorLedgerEntry."Remaining Amount");
+        LibraryERM.FindVendorLedgerEntry(VendorLedgerEntry2, DocumentType2, DocumentNo2);
+        VendorLedgerEntry2.FindSet();
+        repeat
+            VendorLedgerEntry2.CalcFields("Remaining Amount");
+            VendorLedgerEntry2.Validate("Amount to Apply", VendorLedgerEntry2."Remaining Amount");
+            VendorLedgerEntry2.Modify(true);
+        until VendorLedgerEntry2.Next() = 0;
+        SetAppliesToIDAndPostEntry(VendorLedgerEntry2, VendorLedgerEntry);
+    end;
+
+    local procedure SetAppliesToIDAndPostEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry"; VendorLedgerEntry2: Record "Vendor Ledger Entry")
+    begin
+        LibraryERM.SetAppliestoIdVendor(VendorLedgerEntry);
+        LibraryERM.PostVendLedgerApplication(VendorLedgerEntry2);
+    end;
+
+    local procedure ClearConceptLinks()
+    var
+        DIOTConceptLink: Record "DIOT Concept Link";
+    begin
+        DIOTConceptLink.DeleteAll();
     end;
 
     local procedure CreateAndPostGenJournalLineForDIOTVendor(VendorNo: Code[20])
@@ -581,6 +658,13 @@ codeunit 148041 "MX DIOT UT"
         PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 100));
         PurchaseLine.Modify(true);
         exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
+    end;
+
+    local procedure CreateAndPostGeneralJournaLine(var GenJournalLine: Record "Gen. Journal Line"; DocumentType: Enum "Gen. Journal Document Type"; AccountNo: Code[20]; Amount: Decimal)
+    begin
+        LibraryJournals.CreateGenJournalLineWithBatch(
+          GenJournalLine, DocumentType, GenJournalLine."Account Type"::Vendor, AccountNo, Amount);
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
     end;
 
     local procedure CreateAndPostGeneralJournaLineAppliedToInvoice(var GenJournalLine: Record "Gen. Journal Line"; DocumentType: Enum "Gen. Journal Document Type"; AccountNo: Code[20]; Amount: Decimal; AppliesToPurchaseInvoiceNo: Code[20])

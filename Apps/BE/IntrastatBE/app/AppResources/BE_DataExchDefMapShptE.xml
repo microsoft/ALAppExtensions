@@ -44,10 +44,10 @@
         <DataExchFieldMapping ColumnNo="3" FieldID="7" Optional="true" />
         <DataExchFieldMapping ColumnNo="4" FieldID="8" Optional="true" />
         <DataExchFieldMapping ColumnNo="5" FieldID="26" Optional="true" />
-        <DataExchFieldMapping ColumnNo="6" FieldID="5" Optional="true" TransformationRule="ALPHANUMERIC_ONLY" />
+        <DataExchFieldMapping ColumnNo="6" FieldID="5" Optional="true" TransformationRule="ALPHANUM_ONLY" />
         <DataExchFieldMapping ColumnNo="7" FieldID="21" Optional="true" TransformationRule="ROUNDTOINT">
           <TransformationRules>
-            <Code>ALPHANUMERIC_ONLY</Code>
+            <Code>ALPHANUM_ONLY</Code>
             <Description>Alphanumeric Text Only</Description>
             <TransformationType>7</TransformationType>
             <FindValue />
@@ -74,7 +74,7 @@
             <Length>0</Length>
             <DataFormat />
             <DataFormattingCulture />
-            <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>
+            <NextTransformationRule>ALPHANUM_ONLY</NextTransformationRule>
             <TableID>0</TableID>
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>
@@ -86,7 +86,7 @@
         <DataExchFieldMapping ColumnNo="8" FieldID="35" Optional="true" />
         <DataExchFieldMapping ColumnNo="9" FieldID="17" Optional="true" TransformationRule="ROUNDTOINT">
           <TransformationRules>
-            <Code>ALPHANUMERIC_ONLY</Code>
+            <Code>ALPHANUM_ONLY</Code>
             <Description>Alphanumeric Text Only</Description>
             <TransformationType>7</TransformationType>
             <FindValue />
@@ -113,7 +113,7 @@
             <Length>0</Length>
             <DataFormat />
             <DataFormattingCulture />
-            <NextTransformationRule>ALPHANUMERIC_ONLY</NextTransformationRule>
+            <NextTransformationRule>ALPHANUM_ONLY</NextTransformationRule>
             <TableID>0</TableID>
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>

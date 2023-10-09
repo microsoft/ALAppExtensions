@@ -1,3 +1,4 @@
+#if not CLEAN19
 codeunit 11106 "Data Load AT"
 {
     ObsoleteState = Pending;
@@ -18,3 +19,4 @@ codeunit 11106 "Data Load AT"
         // Move data from the staged tables to the real tables.
     end;
 }
+#endif

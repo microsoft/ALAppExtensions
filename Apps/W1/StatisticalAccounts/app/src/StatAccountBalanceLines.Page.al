@@ -1,3 +1,10 @@
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using System.Utilities;
+using Microsoft.Foundation.Enums;
+using Microsoft.Foundation.Period;
+
 page 2624 "Stat. Account Balance Lines"
 {
     Caption = 'Lines';
@@ -95,11 +102,6 @@ page 2624 "Stat. Account Balance Lines"
         Rec := VariantRec;
     end;
 
-    trigger OnOpenPage()
-    begin
-        Rec.Reset();
-    end;
-
     var
         AccountingPeriod: Record "Accounting Period";
         DateRec: Record Date;
@@ -185,5 +187,10 @@ page 2624 "Stat. Account Balance Lines"
                     Rec.Amount := StatisticalAccount.Balance;
                 end;
         end;
+    end;
+
+    trigger OnOpenPage()
+    begin
+        Rec.Reset();
     end;
 }

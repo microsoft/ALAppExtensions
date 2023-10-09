@@ -1,3 +1,9 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Document;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
+
 /// <summary>
 /// Codeunit Shpfy Import Order (ID 30161).
 /// </summary>
@@ -24,7 +30,7 @@ codeunit 30161 "Shpfy Import Order"
         DataCapture: Record "Shpfy Data Capture";
         OrderHeader: Record "Shpfy Order Header";
         OrderLine: Record "Shpfy Order Line";
-        Paramters: Dictionary of [Text, Text];
+        Parameters: Dictionary of [Text, Text];
         GraphQLType: Enum "Shpfy GraphQL Type";
         JOrderLines: JsonArray;
         JOrder: JsonObject;
@@ -34,20 +40,20 @@ codeunit 30161 "Shpfy Import Order"
     begin
         if Shop.Get(OrdersToImport."Shop Code") then begin
             CommunicationMgt.SetShop(Shop);
-            Paramters.Add('OrderId', Format(OrdersToImport.Id));
+            Parameters.Add('OrderId', Format(OrdersToImport.Id));
             GraphQLType := "Shpfy GraphQL Type"::GetOrderHeader;
-            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Paramters);
+            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
             if JsonHelper.GetJsonObject(JResponse, JOrder, 'data.order') then begin
                 ImportOrderHeader(OrdersToImport, OrderHeader, JOrder);
                 DataCapture.Add(Database::"Shpfy Order Header", OrderHeader.SystemId, Format(JOrder));
                 GraphQLType := "Shpfy GraphQL Type"::GetOrderLines;
                 repeat
-                    JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Paramters);
+                    JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
                     if JsonHelper.GetJsonObject(JResponse, JPageInfo, 'data.order.lineItems.pageInfo') then
-                        if Paramters.ContainsKey('After') then
-                            Paramters.Set('After', JsonHelper.GetValueAsText(JPageInfo, 'endCursor'))
+                        if Parameters.ContainsKey('After') then
+                            Parameters.Set('After', JsonHelper.GetValueAsText(JPageInfo, 'endCursor'))
                         else
-                            Paramters.Add('After', JsonHelper.GetValueAsText(JPageInfo, 'endCursor'));
+                            Parameters.Add('After', JsonHelper.GetValueAsText(JPageInfo, 'endCursor'));
                     if JsonHelper.GetJsonArray(JResponse, JOrderLines, 'data.order.lineItems.nodes') then
                         foreach JOrderLine in JOrderLines do begin
                             ImportOrderLine(OrderHeader, OrderLine, JOrderLine);
@@ -68,9 +74,12 @@ codeunit 30161 "Shpfy Import Order"
         OrderTransaction: Record "Shpfy Order Transaction";
         ShippingCharges: Codeunit "Shpfy Shipping Charges";
         Transactions: Codeunit "Shpfy Transactions";
+        ReturnsAPI: Codeunit "Shpfy Returns API";
+        RefundsAPI: Codeunit "Shpfy Refunds API";
         FulfillmentOrdersAPI: Codeunit "Shpfy Fulfillment Orders API";
         OrderHeaderRecordRef: RecordRef;
         ICountyFromJson: Interface "Shpfy ICounty From Json";
+        IReturnRefundProcess: Interface "Shpfy IReturnRefund Process";
         OrderId: BigInteger;
         IsNew: Boolean;
         CompanyName: Text;
@@ -114,6 +123,7 @@ codeunit 30161 "Shpfy Import Order"
             JsonHelper.GetValueIntoField(JOrder, 'currencyCode', OrderHeaderRecordRef, OrderHeader.FieldNo("Currency Code"));
             JsonHelper.GetValueIntoField(JOrder, 'presentmentCurrencyCode', OrderHeaderRecordRef, OrderHeader.FieldNo("Presentment Currency Code"));
             JsonHelper.GetValueIntoField(JOrder, 'test', OrderHeaderRecordRef, OrderHeader.FieldNo(Test));
+            JsonHelper.GetValueIntoField(JOrder, 'edited', OrderHeaderRecordRef, OrderHeader.FieldNo(Edited));
             #region Sell-to Address info
             CompanyName := JsonHelper.GetValueAsText(JOrder, 'displayAddress.company');
             FirstName := JsonHelper.GetValueAsText(JOrder, 'displayAddress.firstName');
@@ -227,6 +237,7 @@ codeunit 30161 "Shpfy Import Order"
         OrderHeader."Cancel Reason" := ConvertToCancelReason(JsonHelper.GetValueAsText(JOrder, 'cancelReason'));
         OrderHeader."Financial Status" := ConvertToFinancialStatus(JsonHelper.GetValueAsText(JOrder, 'displayFinancialStatus'));
         OrderHeader."Fulfillment Status" := ConvertToFulfillmentStatus(JsonHelper.GetValueAsText(JOrder, 'displayFulfillmentStatus'));
+        OrderHeader."Return Status" := ConvertToOrderReturnStatus(JsonHelper.GetValueAsText(JOrder, 'returnStatus'));
         OrderHeader."Risk Level" := ConvertToRiskLevel(JsonHelper.GetValueAsText(JOrder, 'riskLevel'));
         AddTaxLines(OrderHeader."Shopify Order Id", JsonHelper.GetJsonArray(JOrder, 'taxLines'));
         OrderHeader.SetWorkDescription(JsonHelper.GetValueAsText(JOrder, 'note'));
@@ -246,8 +257,14 @@ codeunit 30161 "Shpfy Import Order"
             if OrderTransaction.FindFirst() then
                 OrderHeader.Gateway := OrderTransaction.Gateway;
         end;
+        IReturnRefundProcess := Shop."Return and Refund Process";
+        if IReturnRefundProcess.IsImportNeededFor("Shpfy Source Document Type"::Return) then
+            ReturnsAPI.GetReturns(OrderId, JsonHelper.GetJsonObject(JOrder, 'returns'));
+        if IReturnRefundProcess.IsImportNeededFor("Shpfy Source Document Type"::Refund) then
+            RefundsAPI.GetRefunds(JsonHelper.GetJsonArray(JOrder, 'refunds'));
         OrderHeader.Modify();
         OrderEvents.OnAfterImportShopifyOrderHeader(OrderHeader, IsNew);
+
     end;
 
     [NonDebuggable]
@@ -278,11 +295,30 @@ codeunit 30161 "Shpfy Import Order"
         JToken: JsonToken;
     begin
         OrderAttribute.SetRange("Order Id", ShopifyOrderId);
+        if not OrderAttribute.IsEmpty() then
+            OrderAttribute.DeleteAll();
+        foreach JToken in JCustomAttributtes do begin
+            Clear(OrderAttribute);
+            OrderAttribute."Order Id" := ShopifyOrderId;
+            OrderAttribute.Key := CopyStr(JsonHelper.GetValueAsText(JToken, 'key', MaxStrLen(OrderAttribute."Key")), 1, MaxStrLen(OrderAttribute."Key"));
+            OrderAttribute.Value := CopyStr(JsonHelper.GetValueAsText(JToken, 'value', MaxStrLen(OrderAttribute.Value)), 1, MaxStrLen(OrderAttribute.Value));
+            OrderAttribute.Insert();
+        end;
+    end;
+
+    [NonDebuggable]
+    local procedure ImportCustomAttributtes(ShopifyOrderId: BigInteger; OrderLineId: Guid; JCustomAttributtes: JsonArray)
+    var
+        OrderAttribute: Record "Shpfy Order Line Attribute";
+        JToken: JsonToken;
+    begin
+        OrderAttribute.SetRange("Order Id", ShopifyOrderId);
         if not OrderAttribute.IsEmpty then
             OrderAttribute.DeleteAll();
         foreach JToken in JCustomAttributtes do begin
             Clear(OrderAttribute);
             OrderAttribute."Order Id" := ShopifyOrderId;
+            OrderAttribute."Order Line Id" := OrderLineId;
             OrderAttribute.Key := JsonHelper.GetValueAsText(JToken, 'key', MaxStrLen(OrderAttribute."Key"));
             OrderAttribute.Value := JsonHelper.GetValueAsText(JToken, 'value', MaxStrLen(OrderAttribute.Value));
             OrderAttribute.Insert();
@@ -329,14 +365,28 @@ codeunit 30161 "Shpfy Import Order"
             JsonHelper.GetValueIntoField(JOrderLine, 'taxable', OrderLineRecordRef, OrderLine.FieldNo(Taxable));
             JsonHelper.GetValueIntoField(JOrderLine, 'originalUnitPriceSet.shopMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Unit Price"));
             JsonHelper.GetValueIntoField(JOrderLine, 'originalUnitPriceSet.presentmentMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Presentment Unit Price"));
-            JsonHelper.GetValueIntoField(JOrderLine, 'totalDiscountSet.shopMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Discount Amount"));
-            JsonHelper.GetValueIntoField(JOrderLine, 'totalDiscountSet.presentmentMoney.amount', OrderLineRecordRef, OrderLine.FieldNo("Presentment Discount Amount"));
             OrderLineRecordRef.SetTable(OrderLine);
+            OrderLine."Discount Amount" := GetTotalLineDiscountAmount(JsonHelper.GetJsonArray(JOrderLine, 'discountAllocations'), 'shopMoney');
+            OrderLine."Presentment Discount Amount" := GetTotalLineDiscountAmount(JsonHelper.GetJsonArray(JOrderLine, 'discountAllocations'), 'presentmentMoney');
             UpdateLocationIdOnOrderLine(OrderLine);
             OrderLine.Modify();
             OrderLineRecordRef.Close();
             AddTaxLines(OrderLine."Line Id", JsonHelper.GetJsonArray(JOrderLine, 'taxLines'));
+            ImportCustomAttributtes(OrderLine."Shopify Order Id", OrderLine.SystemId, JsonHelper.GetJsonArray(JOrderLine, 'customAttributes'));
         end;
+    end;
+    /// <summary> 
+    /// Description for GetTotalLineDiscountAmount.
+    /// </summary>
+    /// <param name="JDiscountSets">Parameter of type JsonArray.</param>
+    /// <param name="MoneyType">Parameter of type Text.</param>
+    /// <returns>Return variable "Decimal".</returns>
+    local procedure GetTotalLineDiscountAmount(JDiscountSets: JsonArray; MoneyType: Text) Result: Decimal
+    var
+        JDiscountSet: JsonToken;
+    begin
+        foreach JDiscountSet in JDiscountSets do
+            Result += JsonHelper.GetValueAsDecimal(JDiscountSet, 'allocatedAmountSet.' + MoneyType + '.amount');
     end;
 
     /// <summary> 
@@ -524,5 +574,20 @@ codeunit 30161 "Shpfy Import Order"
         FulfillmentOrderLine.SetRange("Total Quantity", OrderLine.Quantity);
         if FulfillmentOrderLine.FindFirst() then
             OrderLine."Location Id" := FulfillmentOrderLine."Shopify Location Id";
+    end;
+
+    local procedure ConvertToOrderReturnStatus(Value: Text) OrderReturnStatus: Enum "Shpfy Order Return Status"
+    var
+        IsHandled: Boolean;
+    begin
+        OrderEvents.OnBeforeConvertToOrderReturnStatus(Value, OrderReturnStatus, IsHandled);
+        if IsHandled then
+            exit;
+
+        Value := CommunicationMgt.ConvertToCleanOptionValue(Value);
+        if Enum::"Shpfy Order Return Status".Names().Contains(Value) then
+            exit(Enum::"Shpfy Order Return Status".FromInteger(Enum::"Shpfy Order Return Status".Ordinals().Get(Enum::"Shpfy Order Return Status".Names().IndexOf(Value))))
+        else
+            exit(Enum::"Shpfy Order Return Status"::" ");
     end;
 }

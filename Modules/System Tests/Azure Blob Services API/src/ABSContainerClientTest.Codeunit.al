@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Azure.Storage;
+
+using System.Azure.Storage;
+using System.TestLibraries.Utilities;
+
 codeunit 132919 "ABS Container Client Test"
 {
     Subtype = Test;

@@ -1,6 +1,12 @@
 #if not CLEAN22
 pageextension 1680 "Email Logging Data Handling" extends "Schedule Feature Data Update"
 {
+    ObsoleteReason = 'Feature EmailLoggingUsingGraphApi will be enabled by default in version 22.0';
+    ObsoleteState = Pending;
+#pragma warning disable AS0072
+    ObsoleteTag = '22.0';
+#pragma warning restore AS0072
+
     trigger OnOpenPage()
     begin
         EmailLogging := FeatureDataUpdateMgt.FeatureKeyMatches(Rec, Enum::"Feature To Update"::EmailLoggingUsingGraphApi);

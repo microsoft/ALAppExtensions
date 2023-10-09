@@ -1,5 +1,10 @@
+#if not CLEAN22
 codeunit 31377 "Item Charge Assgnt Handler CZL"
 {
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Charge Assgnt. (Purch.)", 'OnBeforeInsertItemChargeAssgntWithAssignValues', '', false, false)]
     local procedure InclPurchItemChargesOnBeforeInsertItemChargeAssgntWithAssignValues(var ItemChargeAssgntPurch: Record "Item Charge Assignment (Purch)"; FromItemChargeAssgntPurch: Record "Item Charge Assignment (Purch)")
     var
@@ -15,7 +20,9 @@ codeunit 31377 "Item Charge Assgnt Handler CZL"
             ItemCharge.Get(ItemChargeAssgntPurch."Item Charge No.");
             if ShipmentMethod."Incl. Item Charges (Amt.) CZL" then
                 ItemChargeAssgntPurch."Incl. in Intrastat Amount CZL" :=
+#pragma warning disable AL0432
                     ItemCharge."Incl. in Intrastat Amount CZL" and ItemChargeAssgntPurch.SetIncludeAmountCZL();
+#pragma warning restore AL0432
             if ShipmentMethod."Incl. Item Charges (S.Val) CZL" then
                 ItemChargeAssgntPurch."Incl. in Intrastat S.Value CZL" := ItemCharge."Incl. in Intrastat S.Value CZL";
         end;
@@ -41,3 +48,4 @@ codeunit 31377 "Item Charge Assgnt Handler CZL"
         end;
     end;
 }
+#endif

@@ -16,8 +16,6 @@ permissionset 27004 "BANKREC-POST"
                   tabledata "Bank Account" = m,
                   tabledata "Bank Account Ledger Entry" = rim,
                   tabledata "Bank Comment Line" = RIMD,
-                  tabledata "Bank Rec. Header" = RIMD,
-                  tabledata "Bank Rec. Line" = RIMD,
                   tabledata "Check Ledger Entry" = rim,
                   tabledata Currency = r,
                   tabledata "Currency Exchange Rate" = r,

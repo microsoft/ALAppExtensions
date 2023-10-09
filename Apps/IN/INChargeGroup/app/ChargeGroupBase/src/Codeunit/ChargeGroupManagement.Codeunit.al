@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.ChargeGroup.ChargeGroupBase;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Purchases.Document;
+using Microsoft.Sales.Document;
+using System.Reflection;
+
 codeunit 18502 "Charge Group Management"
 {
     var

@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System.Security.AccessControl;
+
 permissionset 9024 "Azure AD User - View"
 {
     Access = Public;

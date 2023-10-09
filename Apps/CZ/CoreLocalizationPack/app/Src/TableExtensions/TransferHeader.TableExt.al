@@ -6,13 +6,23 @@ tableextension 31010 "Transfer Header CZL" extends "Transfer Header"
         {
             Caption = 'Intrastat Exclude';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
     }
 
     var
         GlobalDocumentNo: Code[20];
         GlobalIsIntrastatTransaction: Boolean;
+#if not CLEAN22
 
+    [Obsolete('Intrastat related functionalities are moved to Intrastat extensions.', '22.0')]
     procedure CheckIntrastatMandatoryFieldsCZL()
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
@@ -27,6 +37,7 @@ tableextension 31010 "Transfer Header CZL" extends "Transfer Header"
         if StatutoryReportingSetupCZL."Shipment Method Mandatory" then
             TestField("Shipment Method Code");
     end;
+#endif
 
     procedure IsIntrastatTransactionCZL() IsIntrastat: Boolean
     begin
@@ -42,9 +53,12 @@ tableextension 31010 "Transfer Header CZL" extends "Transfer Header"
         CountryRegion: Record "Country/Region";
         CompanyInformation: Record "Company Information";
     begin
+#if not CLEAN22
+#pragma warning disable AL0432
         if "Intrastat Exclude CZL" then
             exit(false);
-
+#pragma warning restore AL0432
+#endif
         if "Trsf.-from Country/Region Code" = "Trsf.-to Country/Region Code" then
             exit(false);
 

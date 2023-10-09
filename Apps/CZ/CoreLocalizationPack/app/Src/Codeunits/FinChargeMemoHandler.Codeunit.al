@@ -14,7 +14,7 @@ codeunit 31014 "Fin. Charge Memo Handler CZL"
 
         if Rec."Customer No." <> '' then begin
             Customer.Get(Rec."Customer No.");
-            Rec."Registration No. CZL" := Customer."Registration No. CZL";
+            Rec."Registration No. CZL" := Customer.GetRegistrationNoTrimmedCZL();
             Rec."Tax Registration No. CZL" := Customer."Tax Registration No. CZL";
         end;
     end;
@@ -35,13 +35,22 @@ codeunit 31014 "Fin. Charge Memo Handler CZL"
         if FinChargeMemoHeader."Variable Symbol CZL" <> '' then
             GenJnlLine."Variable Symbol CZL" := FinChargeMemoHeader."Variable Symbol CZL"
         else
-            GenJnlLine."Variable Symbol CZL" := BankOperationsFunctionsCZL.CreateVariableSymbol(FinChargeMemoHeader."No.");
+            GenJnlLine."Variable Symbol CZL" := BankOperationsFunctionsCZL.CreateVariableSymbol(GenJnlLine."Document No.");
         GenJnlLine."Constant Symbol CZL" := FinChargeMemoHeader."Constant Symbol CZL";
         GenJnlLine."Bank Account Code CZL" := FinChargeMemoHeader."Bank Account Code CZL";
         GenJnlLine."Bank Account No. CZL" := FinChargeMemoHeader."Bank Account No. CZL";
         GenJnlLine."Transit No. CZL" := FinChargeMemoHeader."Transit No. CZL";
         GenJnlLine."IBAN CZL" := FinChargeMemoHeader."IBAN CZL";
         GenJnlLine."SWIFT Code CZL" := FinChargeMemoHeader."SWIFT Code CZL";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"FinChrgMemo-Issue", 'OnBeforeIssuedFinChrgMemoHeaderInsert', '', false, false)]
+    local procedure UpdateVariableSymbolOnBeforeIssuedFinChrgMemoHeaderInsert(var IssuedFinChargeMemoHeader: Record "Issued Fin. Charge Memo Header")
+    begin
+        if IssuedFinChargeMemoHeader."Variable Symbol CZL" <> '' then
+            exit;
+
+        IssuedFinChargeMemoHeader."Variable Symbol CZL" := BankOperationsFunctionsCZL.CreateVariableSymbol(IssuedFinChargeMemoHeader."No.");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Issued Fin. Charge Memo Header", 'OnBeforeDeleteEvent', '', false, false)]

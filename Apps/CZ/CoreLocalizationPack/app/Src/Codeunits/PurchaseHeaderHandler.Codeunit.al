@@ -66,8 +66,10 @@
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterCopyBuyFromVendorFieldsFromVendor', '', false, false)]
     local procedure UpdateOnAfterCopyBuyFromVendorFieldsFromVendor(var PurchaseHeader: Record "Purchase Header"; Vendor: Record Vendor)
     begin
-        PurchaseHeader."Registration No. CZL" := Vendor."Registration No. CZL";
+        PurchaseHeader."Registration No. CZL" := Vendor.GetRegistrationNoTrimmedCZL();
         PurchaseHeader."Tax Registration No. CZL" := Vendor."Tax Registration No. CZL";
+#if not CLEAN22
+#pragma warning disable AL0432
         if (Vendor."Transaction Type CZL" <> '') and
            (Vendor."Transaction Type CZL" <> PurchaseHeader."Transaction Type")
         then
@@ -76,6 +78,8 @@
             PurchaseHeader.Validate("Transaction Specification", Vendor."Transaction Specification CZL");
         if Vendor."Transport Method CZL" <> PurchaseHeader."Transport Method" then
             PurchaseHeader.Validate("Transport Method", Vendor."Transport Method CZL");
+#pragma warning restore AL0432
+#endif
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnValidatePurchaseHeaderPayToVendorNoOnBeforeCheckDocType', '', false, false)]
@@ -85,7 +89,7 @@
             PurchaseHeader.Validate("Bank Account Code CZL", PurchaseHeader.GetDefaulBankAccountNoCZL())
         else
             PurchaseHeader.Validate("Bank Account Code CZL", Vendor."Preferred Bank Account Code");
-        PurchaseHeader."Registration No. CZL" := Vendor."Registration No. CZL";
+        PurchaseHeader."Registration No. CZL" := Vendor.GetRegistrationNoTrimmedCZL();
         PurchaseHeader."Tax Registration No. CZL" := Vendor."Tax Registration No. CZL";
     end;
 
@@ -106,30 +110,6 @@
     begin
         PurchaseHeader.UpdateVATCurrencyFactorCZLByCurrencyFactorCZL()
     end;
-#if not CLEAN20
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeValidateEvent', 'Vendor Posting Group', false, false)]
-    local procedure CheckPostingGroupChangeOnBeforeVendorPostingGroupValidate(var Rec: Record "Purchase Header"; var xRec: Record "Purchase Header"; CurrFieldNo: Integer)
-    var
-        PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
-    begin
-        if PostingGroupManagementCZL.IsAllowMultipleCustVendPostingGroupsEnabled() then
-            exit;
-        if CurrFieldNo = Rec.FieldNo("Vendor Posting Group") then
-            PostingGroupManagementCZL.CheckPostingGroupChange(Rec."Vendor Posting Group", xRec."Vendor Posting Group", Rec);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeCheckVendorPostingGroupChange', '', false, false)]
-    local procedure SuppressPostingGroupChangeOnBeforeCheckVendorPostingGroupChange(var IsHandled: Boolean)
-    var
-        PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
-    begin
-        if IsHandled then
-            exit;
-        IsHandled := not PostingGroupManagementCZL.IsAllowMultipleCustVendPostingGroupsEnabled();
-    end;
-#pragma warning restore AL0432
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnInitFromPurchHeader', '', false, false)]
     local procedure UpdateBankAccountOnInitPurchHeader(var PurchaseHeader: Record "Purchase Header"; SourcePurchaseHeader: Record "Purchase Header")
@@ -142,16 +122,19 @@
         PurchaseHeader."SWIFT Code CZL" := SourcePurchaseHeader."SWIFT Code CZL";
         PurchaseHeader."Transit No. CZL" := SourcePurchaseHeader."Transit No. CZL";
     end;
-
+#if not CLEAN22
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnUpdatePurchLinesByChangedFieldName', '', false, false)]
     local procedure UpdatePurchLinesByChangedFieldName(PurchHeader: Record "Purchase Header"; var PurchLine: Record "Purchase Line"; ChangedFieldName: Text[100]; ChangedFieldNo: Integer)
     begin
         case ChangedFieldNo of
+#pragma warning disable AL0432
             PurchHeader.FieldNo("Physical Transfer CZL"):
                 if (PurchLine.Type = PurchLine.Type::Item) and (PurchLine."No." <> '') then
                     PurchLine."Physical Transfer CZL" := PurchHeader."Physical Transfer CZL";
+#pragma warning restore AL0432
         end;
     end;
+#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'VAT Country/Region Code', false, false)]
     local procedure UpdateVATRegistrationNoCodeOnAfterVATCountryRegionCodeValidate(var Rec: Record "Purchase Header")

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "_Exclude_SyncBaseApp_",
     "description":  "_Exclude_SyncBaseApp_",
-    "version":  "22.1.0.0",
+    "version":  "23.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2206524",
@@ -17,11 +17,17 @@
     "screenshots":  [
 
                     ],
-    "platform":  "22.0.0.0",
+    "platform":  "23.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  1,
+                         "to":  49999
+                     }
+                 ],
     "resourceExposurePolicy":  {
                                    "allowDebugging":  false,
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "22.1.0.0"
+    "application":  "23.0.0.0"
 }

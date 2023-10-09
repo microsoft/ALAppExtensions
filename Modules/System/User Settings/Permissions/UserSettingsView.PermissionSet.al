@@ -3,6 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
+using System.Globalization;
+using System.Environment;
+using System.Security.User;
+using System.Azure.Identity;
+using System.Reflection;
+
 permissionset 9176 "User Settings - View"
 {
     Assignable = false;
@@ -10,7 +18,6 @@ permissionset 9176 "User Settings - View"
     IncludedPermissionSets = "User Settings - Objects",
                              "Language - View",
                              "Tenant License State - Read",
-                             "Time Zone Selection - Read",
                              "User Selection - Read",
                              "User Permissions - Read",
                              "AAD User Management - Exec",
@@ -18,7 +25,6 @@ permissionset 9176 "User Settings - View"
 
     Permissions = tabledata "All Profile" = r,
                   tabledata Company = r,
-                  tabledata "Tenant Profile" = r,
                   tabledata "Tenant Profile Setting" = rim,
                   tabledata "User Personalization" = rim;
 }

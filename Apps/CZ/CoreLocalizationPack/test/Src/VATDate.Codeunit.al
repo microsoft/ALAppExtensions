@@ -61,7 +61,8 @@ codeunit 148054 "VAT Date CZL"
         GeneralLedgerSetup."Use VAT Date CZL" := true;
 #pragma warning restore AL0432
 #else
-        GeneralLedgerSetup."VAT Reporting Date Usage" := Enum::"VAT Reporting Date Usage"::Enabled;
+        GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::Enabled;
+        GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL"::Blank;
 #endif
         GeneralLedgerSetup."Allow VAT Posting From CZL" := 0D;
         GeneralLedgerSetup."Allow VAT Posting To CZL" := 0D;

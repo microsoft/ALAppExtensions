@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 40109 "GP CM20600"
 {
     DataClassification = CustomerContent;

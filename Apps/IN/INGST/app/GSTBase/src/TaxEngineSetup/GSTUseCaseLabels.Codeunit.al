@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.JsonExchange;
+
+using Microsoft.Finance.GST.Base;
+
 codeunit 18019 "GST Use Case Labels"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Engine Assisted Setup", 'OnGetUseCaseConfig', '', false, false)]
@@ -181,6 +189,19 @@ codeunit 18019 "GST Use Case Labels"
         CaseList.Add('{3277542b-b49c-4ccd-b661-f72c71ced698}');
         CaseList.Add('{1bae51d1-ad26-40f8-bfd2-156024a23a7b}');
         CaseList.Add('{364eaba8-df5d-4174-951e-9c9b375830d6}');
+        CaseList.Add('{62275f50-6f85-4ea6-aa4f-0bacf20cf65e}');
+        CaseList.Add('{ab179237-ef7c-4bb1-9406-46b7b6dd1449}');
+        CaseList.Add('{8df66c94-890c-4007-9341-18d0565000fe}');
+        CaseList.Add('{DF167294-5878-44C6-9220-01D93BEA09FF}');
+        CaseList.Add('{89071509-bf13-4ed5-a45d-8d938dfef265}');
+        CaseList.Add('{7bdd3ee0-29ae-4c15-a879-1dbf13ada019}');
+        CaseList.Add('{fbedc063-63ea-4fed-a3dd-8b5e175031cd}');
+        CaseList.Add('{055aee33-1301-4b59-ba0d-e76d2d542b34}');
+        CaseList.Add('{d279be29-1cb8-4f96-ba2c-0348368d0879}');
+        CaseList.Add('{f4f11b85-700b-4880-9a73-740ff36c4160}');
+        CaseList.Add('{ce65aeff-0248-437e-b8a6-87c60e49efd4}');
+        CaseList.Add('{0ebd8b25-3c27-46ae-8cd7-4e870db1315b}');
+        CaseList.Add('{97437c0c-3e99-4d15-9378-34ac4b8fd002}');
     end;
 
     procedure GetConfig(CaseID: Guid; var Handled: Boolean): Text
@@ -313,6 +334,19 @@ codeunit 18019 "GST Use Case Labels"
         "{3277542b-b49c-4ccd-b661-f72c71ced698}Lbl": Label 'GST Use Cases';
         "{1bae51d1-ad26-40f8-bfd2-156024a23a7b}Lbl": Label 'GST Use Cases';
         "{364eaba8-df5d-4174-951e-9c9b375830d6}Lbl": Label 'GST Use Cases';
+        "{62275f50-6f85-4ea6-aa4f-0bacf20cf65e}Lbl": Label 'GST Use Cases';
+        "{ab179237-ef7c-4bb1-9406-46b7b6dd1449}Lbl": Label 'GST Use Cases';
+        "{8df66c94-890c-4007-9341-18d0565000fe}Lbl": Label 'GST Use Cases';
+        "{DF167294-5878-44C6-9220-01D93BEA09FF}Lbl": Label 'GST Use Cases';
+        "{89071509-bf13-4ed5-a45d-8d938dfef265}Lbl": Label 'GST Use Cases';
+        "{7bdd3ee0-29ae-4c15-a879-1dbf13ada019}Lbl": Label 'GST Use Cases';
+        "{fbedc063-63ea-4fed-a3dd-8b5e175031cd}Lbl": Label 'GST Use Cases';
+        "{055aee33-1301-4b59-ba0d-e76d2d542b34}Lbl": Label 'GST Use Cases';
+        "{d279be29-1cb8-4f96-ba2c-0348368d0879}Lbl": Label 'GST Use Cases';
+        "{f4f11b85-700b-4880-9a73-740ff36c4160}Lbl": Label 'GST Use Cases';
+        "{ce65aeff-0248-437e-b8a6-87c60e49efd4}Lbl": Label 'GST Use Cases';
+        "{0ebd8b25-3c27-46ae-8cd7-4e870db1315b}Lbl": Label 'GST Use Cases';
+        "{97437c0c-3e99-4d15-9378-34ac4b8fd002}Lbl": Label 'GST Use Cases';
     begin
         Handled := true;
 
@@ -603,6 +637,32 @@ codeunit 18019 "GST Use Case Labels"
                 exit("{1bae51d1-ad26-40f8-bfd2-156024a23a7b}Lbl");
             '{364eaba8-df5d-4174-951e-9c9b375830d6}':
                 exit("{364eaba8-df5d-4174-951e-9c9b375830d6}Lbl");
+            '{62275f50-6f85-4ea6-aa4f-0bacf20cf65e}':
+                exit("{62275f50-6f85-4ea6-aa4f-0bacf20cf65e}Lbl");
+            '{ab179237-ef7c-4bb1-9406-46b7b6dd1449}':
+                exit("{ab179237-ef7c-4bb1-9406-46b7b6dd1449}Lbl");
+            '{8df66c94-890c-4007-9341-18d0565000fe}':
+                exit("{8df66c94-890c-4007-9341-18d0565000fe}Lbl");
+            '{DF167294-5878-44C6-9220-01D93BEA09FF}':
+                exit("{DF167294-5878-44C6-9220-01D93BEA09FF}Lbl");
+            '{89071509-bf13-4ed5-a45d-8d938dfef265}':
+                exit("{89071509-bf13-4ed5-a45d-8d938dfef265}Lbl");
+            '{7bdd3ee0-29ae-4c15-a879-1dbf13ada019}':
+                exit("{7bdd3ee0-29ae-4c15-a879-1dbf13ada019}Lbl");
+            '{fbedc063-63ea-4fed-a3dd-8b5e175031cd}':
+                exit("{fbedc063-63ea-4fed-a3dd-8b5e175031cd}Lbl");
+            '{055aee33-1301-4b59-ba0d-e76d2d542b34}':
+                exit("{055aee33-1301-4b59-ba0d-e76d2d542b34}Lbl");
+            '{d279be29-1cb8-4f96-ba2c-0348368d0879}':
+                exit("{d279be29-1cb8-4f96-ba2c-0348368d0879}Lbl");
+            '{f4f11b85-700b-4880-9a73-740ff36c4160}':
+                exit("{f4f11b85-700b-4880-9a73-740ff36c4160}Lbl");
+            '{ce65aeff-0248-437e-b8a6-87c60e49efd4}':
+                exit("{ce65aeff-0248-437e-b8a6-87c60e49efd4}Lbl");
+            '{0ebd8b25-3c27-46ae-8cd7-4e870db1315b}':
+                exit("{0ebd8b25-3c27-46ae-8cd7-4e870db1315b}Lbl");
+            '{97437c0c-3e99-4d15-9378-34ac4b8fd002}':
+                exit("{97437c0c-3e99-4d15-9378-34ac4b8fd002}Lbl");
         end;
 
         Handled := false;

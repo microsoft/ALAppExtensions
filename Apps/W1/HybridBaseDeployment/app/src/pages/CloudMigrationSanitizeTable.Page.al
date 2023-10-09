@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration;
+
+using System.Environment;
+using System.Reflection;
+
 page 40064 "Cloud Migration Sanitize Table"
 {
     PageType = Card;
@@ -11,6 +16,8 @@ page 40064 "Cloud Migration Sanitize Table"
         {
             group(GroupName)
             {
+                ShowCaption = false;
+
                 field(CompanyName; Company.Name)
                 {
                     ApplicationArea = All;

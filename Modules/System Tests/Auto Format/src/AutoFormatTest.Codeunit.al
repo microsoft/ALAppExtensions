@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Text;
+
+using System.Text;
+using System.TestLibraries.Utilities;
+
 codeunit 132584 "Auto Format Test"
 {
     EventSubscriberInstance = Manual;
@@ -133,7 +138,7 @@ codeunit 132584 "Auto Format Test"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Auto Format", 'OnResolveAutoFormat', '', true, true)]
     [Normal]
-    local procedure HandleOnResolveAutoFormat(AutoFormatType: Enum "Auto Format"; AutoFormatExpr: Text[80]; VAR Result: Text[80]; VAR Resolved: Boolean)
+    local procedure HandleOnResolveAutoFormat(AutoFormatType: Enum "Auto Format"; AutoFormatExpr: Text[80]; var Result: Text[80]; var Resolved: Boolean)
     begin
         if AutoFormatType = AutoFormatEnum::"1 Decimal" then begin
             Result := '<Precision,1:1><Standard Format,0>';
@@ -143,7 +148,7 @@ codeunit 132584 "Auto Format Test"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Auto Format", 'OnReadRounding', '', true, true)]
     [Normal]
-    local procedure HandleOnReadRounding(VAR AmountRoundingPrecision: Decimal)
+    local procedure HandleOnReadRounding(var AmountRoundingPrecision: Decimal)
     begin
         AmountRoundingPrecision := 0.0001;
     end;

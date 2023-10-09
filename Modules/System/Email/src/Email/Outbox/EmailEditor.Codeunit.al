@@ -3,6 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Telemetry;
+using System.IO;
+using System.Utilities;
+using System.Integration.Word;
+using System.Environment;
+
 codeunit 8906 "Email Editor"
 {
     Access = Internal;
@@ -172,20 +180,44 @@ codeunit 8906 "Email Editor"
     var
         TenantMedia: Record "Tenant Media";
         EmailMessage: Codeunit "Email Message";
-        MediaInstream: InStream;
+        MediaInStream: InStream;
         Handled: Boolean;
     begin
         TenantMedia.Get(MediaID);
         TenantMedia.CalcFields(Content);
 
         if TenantMedia.Content.HasValue() then
-            TenantMedia.Content.CreateInStream(MediaInstream)
+            TenantMedia.Content.CreateInStream(MediaInStream)
         else begin
-            EmailMessage.OnGetAttachmentContent(MediaID, MediaInstream, Handled);
+            EmailMessage.OnGetAttachmentContent(MediaID, MediaInStream, Handled);
             if not Handled then
                 Error(NoAttachmentContentMsg);
         end;
-        DownloadFromStream(MediaInstream, '', '', '', Filename);
+        DownloadFromStream(MediaInStream, '', '', '', FileName);
+    end;
+
+    procedure DownloadAttachments(Attachments: Dictionary of [Guid, Text]; FileName: Text)
+    var
+        TenantMedia: Record "Tenant Media";
+        DataCompression: Codeunit "Data Compression";
+        ZipTempBlob: Codeunit "Temp Blob";
+        MediaID: Guid;
+        MediaInStream: InStream;
+        ZipOutStream: OutStream;
+        ZipInStream: InStream;
+    begin
+        DataCompression.CreateZipArchive();
+        foreach MediaID in Attachments.Keys do begin
+            TenantMedia.Get(MediaID);
+            TenantMedia.CalcFields(Content);
+            TenantMedia.Content.CreateInStream(MediaInStream);
+            DataCompression.AddEntry(MediaInStream, Attachments.Get(MediaID));
+        end;
+        ZipTempBlob.CreateOutStream(ZipOutStream);
+        DataCompression.SaveZipArchive(ZipOutStream);
+        DataCompression.CloseZipArchive();
+        ZipTempBlob.CreateInStream(ZipInStream);
+        DownloadFromStream(ZipInStream, '', '', '', FileName);
     end;
 
     procedure ValidateEmailData(FromEmailAddress: Text; var EmailMessageImpl: Codeunit "Email Message Impl."): Boolean
@@ -250,7 +282,7 @@ codeunit 8906 "Email Editor"
         RelatedId: Integer;
     begin
         // If there is only one key in the dict, then there is no need to use DB resources.
-        If RelatedIds.Count = 1 then begin
+        if RelatedIds.Count = 1 then begin
             PrimarySource := RelatedIds.Get(1);
             exit(true);
         end;

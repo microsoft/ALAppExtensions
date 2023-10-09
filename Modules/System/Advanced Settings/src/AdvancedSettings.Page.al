@@ -3,6 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+using System.Apps;
+
 /// <summary>This page shows all the registered entries in the advanced settings page.</summary>
 page 9202 "Advanced Settings"
 {
@@ -29,7 +32,7 @@ page 9202 "Advanced Settings"
                         InstructionalText = 'Extensions enhance the capabilities of Business Central.';
                         ShowCaption = false;
 
-                        field(Extensions; 'Extensions')
+                        field(Extensions; ExtensionsLbl)
                         {
                             ShowCaption = false;
                             ApplicationArea = All;
@@ -50,7 +53,7 @@ page 9202 "Advanced Settings"
                         ShowCaption = false;
                         InstructionalText = 'Overview and manage individual settings and behaviors.';
 
-                        field(ManualSetup; 'Manual Setup')
+                        field(ManualSetup; ManualSetupLbl)
                         {
                             ShowCaption = false;
                             ApplicationArea = All;
@@ -89,4 +92,8 @@ page 9202 "Advanced Settings"
             }
         }
     }
+
+    var
+        ExtensionsLbl: Label 'Extensions';
+        ManualSetupLbl: Label 'Manual Setup';
 }

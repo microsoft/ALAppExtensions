@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.Sales.Customer;
+using Microsoft.Service.Document;
+
 tableextension 4816 "Intrastat Report Serv. Head." extends "Service Header"
 {
     fields
@@ -6,27 +15,48 @@ tableextension 4816 "Intrastat Report Serv. Head." extends "Service Header"
         {
             trigger OnAfterValidate()
             begin
-                if IntrastatReportSetup.Get() and (IntrastatReportSetup."VAT No. Based On" = IntrastatReportSetup."VAT No. Based On"::"Sell-to VAT") then
-                    UpdateIntrastatFields("Customer No.");
+                UpdateIntrastatFields(FieldNo("Customer No."));
             end;
         }
         modify("Bill-to Customer No.")
         {
             trigger OnAfterValidate()
             begin
-                if IntrastatReportSetup.Get() and (IntrastatReportSetup."VAT No. Based On" = IntrastatReportSetup."VAT No. Based On"::"Bill-to VAT") then
-                    UpdateIntrastatFields("Bill-to Customer No.");
+                UpdateIntrastatFields(FieldNo("Bill-to Customer No."));
             end;
         }
     }
 
-    var
-        IntrastatReportSetup: Record "Intrastat Report Setup";
-
-    local procedure UpdateIntrastatFields(CustomerNo: Code[20])
+    local procedure UpdateIntrastatFields(FieldNo: Integer)
     var
         Customer: Record Customer;
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        CustomerNo: Code[20];
+        IsHandled: Boolean;
     begin
+        OnBeforeUpdateIntrastatFields(Rec, FieldNo, IsHandled);
+        if IsHandled then
+            exit;
+
+        if Rec.IsTemporary() then
+            exit;
+
+        if not IntrastatReportSetup.Get() then
+            exit;
+
+        if (FieldNo = FieldNo("Customer No.")) and
+           (IntrastatReportSetup."VAT No. Based On" = IntrastatReportSetup."VAT No. Based On"::"Sell-to VAT")
+        then
+            CustomerNo := "Customer No.";
+
+        if (FieldNo = FieldNo("Bill-to Customer No.")) and
+           (IntrastatReportSetup."VAT No. Based On" = IntrastatReportSetup."VAT No. Based On"::"Bill-to VAT")
+        then
+            CustomerNo := "Bill-to Customer No.";
+
+        if CustomerNo = '' then
+            exit;
+
         if Customer.Get(CustomerNo) then begin
             Validate("Transport Method", Customer."Def. Transport Method");
 
@@ -45,5 +75,10 @@ tableextension 4816 "Intrastat Report Serv. Head." extends "Service Header"
             Validate("Transport Method", '');
             Validate("Transaction Type", '');
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateIntrastatFields(var ServiceHeader: Record "Service Header"; FieldNo: Integer; var IsHandled: Boolean);
+    begin
     end;
 }

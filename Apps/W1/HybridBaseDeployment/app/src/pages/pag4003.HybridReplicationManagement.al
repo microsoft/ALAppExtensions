@@ -1,4 +1,12 @@
-﻿page 4003 "Intelligent Cloud Management"
+﻿namespace Microsoft.DataMigration;
+
+using System.Integration;
+using System.Security.AccessControl;
+using System.Security.User;
+using System.Environment;
+using System.Telemetry;
+
+page 4003 "Intelligent Cloud Management"
 {
     SourceTable = "Hybrid Replication Summary";
     Caption = 'Cloud Migration Management';
@@ -77,7 +85,7 @@
     {
         area(Processing)
         {
-#if not CLEAN19
+#if not CLEAN23
             action(ManageSchedule)
             {
                 Enabled = IsSuper and IsSetupComplete;
@@ -90,6 +98,9 @@
                 RunObject = page "Intelligent Cloud Schedule";
                 RunPageMode = Edit;
                 Image = CalendarMachine;
+                ObsoleteState = Pending;
+                ObsoleteTag = '23.0';
+                ObsoleteReason = 'Scheduling is not supported and will be removed';
             }
 #endif
             action(RunReplicationNow)
@@ -382,40 +393,25 @@
                 Image = TransmitElectronicDoc;
             }
 
+#if not CLEAN23
             action(InsertSetupRecords)
             {
                 ApplicationArea = All;
-                Caption = 'Create Seutp records';
+                Caption = 'Create Setup records';
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedIsBig = true;
+                Visible = false;
+                ObsoleteReason = 'Action is not needed';
+                ObsoleteState = Pending;
+                ObsoleteTag = '23.0';
 
                 trigger OnAction()
-                var
-                    IntelligentCloud: Record "Intelligent Cloud";
-                    IntelligentCloudSetup: Record "Intelligent Cloud Setup";
-                    HybridReplicationDetail: Record "Hybrid Replication Detail";
                 begin
-                    if not IntelligentCloud.Get() then
-                        IntelligentCloud.Insert();
-                    IntelligentCloud.Enabled := true;
-                    IntelligentCloud.Modify();
-
-                    if not IntelligentCloudSetup.Get() then
-                        IntelligentCloudSetup.Insert();
-
-                    IntelligentCloudSetup."Replication Enabled" := true;
-                    IntelligentCloudSetup."Company Creation Task Status" := IntelligentCloudSetup."Company Creation Task Status"::Completed;
-                    IntelligentCloudSetup."Product ID" := 'DynamicsBCLast';
-                    IntelligentCloudSetup.Modify();
-
-                    HybridReplicationDetail."Run ID" := CreateGuid();
-                    HybridReplicationDetail."Company Name" := CopyStr(CompanyName(), 1, MaxStrLen(HybridReplicationDetail."Company Name"));
-                    HybridReplicationDetail.Status := HybridReplicationDetail.Status::Successful;
-                    HybridReplicationDetail."Table Name" := 'Customer';
-                    HybridReplicationDetail.Insert();
+                    Error('');
                 end;
             }
+#endif
             action(EnableDisableNewUI)
             {
                 Enabled = IsSuper and IsSetupComplete;
@@ -434,6 +430,22 @@
                             Page.Run(Page::"Cloud Migration Management");
                             CurrPage.Close();
                         end;
+                end;
+            }
+            action(SkipRemovingPemissionsFromUsers)
+            {
+                Enabled = IsSuper;
+                Visible = not IsOnPrem;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Enable/Disable Removing Permissions from Users';
+                ToolTip = 'Allows change the behavior if user permissions should be removed when the cloud migration is setup.';
+                Image = ChangeLog;
+
+                trigger OnAction()
+                var
+                    HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+                begin
+                    HybridCloudManagement.ChangeRemovePermissionsFromUsers();
                 end;
             }
         }
@@ -524,7 +536,7 @@
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         PermissionManager: Codeunit "Permission Manager";
     begin
-        IsSetupComplete := PermissionManager.IsIntelligentCloud() OR (IsOnPrem AND NOT IntelligentCloudStatus.IsEmpty());
+        IsSetupComplete := PermissionManager.IsIntelligentCloud() or (IsOnPrem and not IntelligentCloudStatus.IsEmpty());
         IsMigratedCompany := HybridCompany.Get(CompanyName()) and HybridCompany.Replicate;
         AdlSetupEnabled := HybridCloudManagement.CanSetupAdlMigration();
     end;
@@ -681,5 +693,4 @@
         IntelligentCloudNotSetupMsg: Label 'Cloud migration was not set up. To migrate data to the cloud, complete the wizard.';
         RunReplicationConfirmQst: Label 'Are you sure you want to trigger migration?';
         DataRepairNotCompletedMsg: Label 'Data repair has not completed. Before you complete the cloud migration or trigger an upgrade, invoke the ''Repair Companion Table Records'' action';
-
 }

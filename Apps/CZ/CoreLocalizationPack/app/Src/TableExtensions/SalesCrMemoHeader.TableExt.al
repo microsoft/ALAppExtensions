@@ -118,7 +118,7 @@ tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
                 VATEntry.SetRange("Posting Date", "Posting Date");
                 VATEntry.SetRange("Document No.", "No.");
                 VATEntry.SetRange(Type, VATEntry.Type::Sale);
-                if VATEntry.FindSet(true, false) then
+                if VATEntry.FindSet(true) then
                     repeat
                         if VATEntry.Closed then
                             Error(VATEntryClosedErr, VATEntry."VAT Date CZL");
@@ -135,7 +135,7 @@ tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
                 GLEntry.SetRange("Posting Date", "Posting Date");
                 GLEntry.SetRange("Document No.", "No.");
                 GLEntry.LockTable();
-                if GLEntry.FindSet(true, false) then
+                if GLEntry.FindSet(true) then
                     repeat
                         GLEntry.Validate("VAT Date CZL", "VAT Date CZL");
                         Codeunit.Run(Codeunit::"G/L Entry-Edit", GLEntry);
@@ -163,11 +163,27 @@ tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
         {
             Caption = 'Physical Transfer';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31069; "Intrastat Exclude CZL"; Boolean)
         {
             Caption = 'Intrastat Exclude';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
         field(31072; "EU 3-Party Intermed. Role CZL"; Boolean)
         {
@@ -181,7 +197,9 @@ tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
     procedure CheckVATDateCZL()
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
         VATDateHandlerCZL: Codeunit "VAT Date Handler CZL";
         VATDateRangeErr: Label 'VAT Date %1 is not within your range of allowed VAT dates.\Correct the date or change VAT posting period.', Comment = '%1 = VAT Date';
     begin

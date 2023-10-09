@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Visualization;
+
+using System.Reflection;
+using System.Environment;
+
 codeunit 9702 "Cues And KPIs Impl."
 {
     Permissions = tabledata Field = r,

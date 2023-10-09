@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.SyncBase;
+
 codeunit 2401 "Sync Management"
 {
     SingleInstance = true;

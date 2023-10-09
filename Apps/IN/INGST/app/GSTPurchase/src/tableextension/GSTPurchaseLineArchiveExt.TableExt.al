@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Archive;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.GST.Purchase;
+using Microsoft.Purchases.History;
+
 tableextension 18082 "GST Purchase Line Archive Ext" extends "Purchase Line Archive"
 {
     fields

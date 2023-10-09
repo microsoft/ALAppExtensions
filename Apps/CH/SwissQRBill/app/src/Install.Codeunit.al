@@ -1,3 +1,20 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.EServices.EDocument;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.Company;
+using Microsoft.Purchases.Document;
+using System.Environment;
+using System.Environment.Configuration;
+using System.Media;
+using System.Privacy;
+using System.Upgrade;
+
 codeunit 11517 "Swiss QR-Bill Install"
 {
     Subtype = Install;
@@ -44,7 +61,9 @@ codeunit 11517 "Swiss QR-Bill Install"
         with SwissQRBillSetup do
             if IsEmpty() then begin
                 "Address Type" := "Address Type"::Structured;
+#if not CLEAN23
                 "Umlaut Chars Encode Mode" := "Umlaut Chars Encode Mode"::Double;
+#endif
                 if NewDefaultLayoutCode <> '' then
                     "Default Layout" := NewDefaultLayoutCode;
                 InitDefaultJournalSetup();
@@ -181,7 +200,9 @@ codeunit 11517 "Swiss QR-Bill Install"
         if OldSwissQRBillSetup.Get() then begin
             SwissQRBillSetup.Init();
             SwissQRBillSetup."Address Type" := MapAddressType(OldSwissQRBillSetup."Address Type");
+#if not CLEAN23
             SwissQRBillSetup."Umlaut Chars Encode Mode" := MapEncodeMode(OldSwissQRBillSetup."Umlaut Chars Encode Mode");
+#endif
             SwissQRBillSetup."Default Layout" := OldSwissQRBillSetup."Default Layout";
             SwissQRBillSetup."Last Used Reference No." := OldSwissQRBillSetup."Last Used Reference No.";
             SwissQRBillSetup."Journal Template" := OldSwissQRBillSetup."Journal Template";
@@ -234,7 +255,7 @@ codeunit 11517 "Swiss QR-Bill Install"
                 exit(SwissQRBillAddressType::Combined);
         end;
     end;
-
+#if not CLEAN23
     local procedure MapEncodeMode(EncodeMode: Option Single,Double,Remove) SwissQRBillUmlautEncoding: Enum "Swiss QR-Bill Umlaut Encoding"
     begin
         case EncodeMode of
@@ -246,6 +267,7 @@ codeunit 11517 "Swiss QR-Bill Install"
                 exit(SwissQRBillUmlautEncoding::Remove);
         end;
     end;
+#endif
 
     local procedure MapIBANType(IBANType: Option IBAN,"QR-IBAN") SwissQRBillIBANType: Enum "Swiss QR-Bill IBAN Type"
     begin

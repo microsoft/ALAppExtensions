@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Document;
+
 /// <summary>
 /// TableExtension Shpfy Sales Line (ID 30104) extends Record Sales Line.
 /// </summary>
@@ -15,6 +19,19 @@ tableextension 30104 "Shpfy Sales Line" extends "Sales Line"
         field(30101; "Shpfy Order No."; Code[50])
         {
             Caption = 'Shopify Order No.';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+        field(30103; "Shpfy Refund Id"; BigInteger)
+        {
+            Caption = 'Shopify Refund Id';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+
+        field(30104; "Shpfy Refund Line Id"; BigInteger)
+        {
+            Caption = 'Shopify Refund Line Id';
             DataClassification = CustomerContent;
             Editable = false;
         }

@@ -322,7 +322,7 @@ codeunit 139662 "GP Item Tests"
         if not GPTestHelperFunctions.MigrationConfiguredForTable(Database::Item) then
             exit;
 
-        GPItemMigrator.OnMigrateItem(ItemDataMigrationFacade, GPItem.RecordId());
+        GPItemMigrator.MigrateItem(ItemDataMigrationFacade, GPItem.RecordId());
         GPItemMigrator.MigrateItemInventoryPostingGroup(GPItem, ItemDataMigrationFacade);
     end;
 

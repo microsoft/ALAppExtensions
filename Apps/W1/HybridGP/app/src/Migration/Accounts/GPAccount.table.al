@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 4090 "GP Account"
 {
     ReplicateData = false;
@@ -68,7 +70,7 @@ table 4090 "GP Account"
         {
             Clustered = true;
         }
-        Key(AcctNum; AcctNum)
+        key(AcctNum; AcctNum)
         {
         }
     }

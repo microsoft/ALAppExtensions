@@ -1,3 +1,19 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.EServices.EDocument;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Utilities;
+
 codeunit 11502 "Swiss QR-Bill Purchases"
 {
     var
@@ -512,29 +528,29 @@ codeunit 11502 "Swiss QR-Bill Purchases"
                     MessageResult := SwissQRBillIncomingDoc.GetImportFailedTxt() + '\\' + MessageResult;
                 end;
             else begin
-                    PurchaseHeader.TestField("Pay-to Vendor No.");
-                    if Confirm(StrSubstNo(PurhDocVendBankAccountQst, IncomingDocument."Vendor IBAN")) then begin
-                        VendorBankAccount."Vendor No." := PurchaseHeader."Pay-to Vendor No.";
-                        VendorBankAccount.IBAN := IncomingDocument."Vendor IBAN";
-                        VendorBankAccount."Payment Form" := VendorBankAccount."Payment Form"::"Bank Payment Domestic";
-                        SwissQRBillCreateVendBank.LookupMode(true);
-                        SwissQRBillCreateVendBank.SetDetails(VendorBankAccount);
-                        if SwissQRBillCreateVendBank.RunModal() = Action::LookupOK then begin
-                            SwissQRBillCreateVendBank.GetDetails(VendorBankAccount);
-                            VendorBankAccount.Insert(true);
-                            SwissQRBillIncomingDoc.UpdatePurchDocFromIncDoc(PurchaseHeader, IncomingDocument);
-                            MessageResult := ImportSuccessMsg;
-                        end else
-                            MessageResult := ImportCancelledMsg;
+                PurchaseHeader.TestField("Pay-to Vendor No.");
+                if Confirm(StrSubstNo(PurhDocVendBankAccountQst, IncomingDocument."Vendor IBAN")) then begin
+                    VendorBankAccount."Vendor No." := PurchaseHeader."Pay-to Vendor No.";
+                    VendorBankAccount.IBAN := IncomingDocument."Vendor IBAN";
+                    VendorBankAccount."Payment Form" := VendorBankAccount."Payment Form"::"Bank Payment Domestic";
+                    SwissQRBillCreateVendBank.LookupMode(true);
+                    SwissQRBillCreateVendBank.SetDetails(VendorBankAccount);
+                    if SwissQRBillCreateVendBank.RunModal() = Action::LookupOK then begin
+                        SwissQRBillCreateVendBank.GetDetails(VendorBankAccount);
+                        VendorBankAccount.Insert(true);
+                        SwissQRBillIncomingDoc.UpdatePurchDocFromIncDoc(PurchaseHeader, IncomingDocument);
+                        MessageResult := ImportSuccessMsg;
                     end else
                         MessageResult := ImportCancelledMsg;
-                end;
+                end else
+                    MessageResult := ImportCancelledMsg;
+            end;
         end;
 
         Message(MessageResult)
     end;
 
-#if not CLEAN20
+#if not CLEAN23
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostVendorEntry', '', false, false)]
     local procedure OnBeforePostVendorEntry(
             var GenJnlLine: Record "Gen. Journal Line";

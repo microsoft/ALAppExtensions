@@ -54,12 +54,16 @@ codeunit 11745 "Service Header Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterCopyCustomerFields', '', false, false)]
     local procedure UpdateRegNoOnAfterCopyCustomerFields(var ServiceHeader: Record "Service Header"; Customer: Record Customer)
     begin
-        ServiceHeader."Registration No. CZL" := Customer."Registration No. CZL";
+        ServiceHeader."Registration No. CZL" := Customer.GetRegistrationNoTrimmedCZL();
         ServiceHeader."Tax Registration No. CZL" := Customer."Tax Registration No. CZL";
+#if not CLEAN22
+#pragma warning disable AL0432
         if Customer."Transaction Type CZL" <> '' then
             ServiceHeader."Transaction Type" := Customer."Transaction Type CZL";
         ServiceHeader."Transaction Specification" := Customer."Transaction Specification CZL";
         ServiceHeader."Transport Method" := Customer."Transport Method CZL";
+#pragma warning restore AL0432
+#endif
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterCopyBillToCustomerFields', '', false, false)]
@@ -69,7 +73,7 @@ codeunit 11745 "Service Header Handler CZL"
             ServiceHeader.Validate("Bank Account Code CZL", ServiceHeader.GetDefaulBankAccountNoCZL())
         else
             ServiceHeader.Validate("Bank Account Code CZL", Customer."Preferred Bank Account Code");
-        ServiceHeader."Registration No. CZL" := Customer."Registration No. CZL";
+        ServiceHeader."Registration No. CZL" := Customer.GetRegistrationNoTrimmedCZL();
         ServiceHeader."Tax Registration No. CZL" := Customer."Tax Registration No. CZL";
         ServiceHeader."VAT Registration No." := Customer."VAT Registration No.";
     end;
@@ -102,42 +106,22 @@ codeunit 11745 "Service Header Handler CZL"
     begin
         Rec.UpdateVATCurrencyFactorCZL();
     end;
-#if not CLEAN20
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnBeforeValidateEvent', 'Customer Posting Group', false, false)]
-    local procedure CheckPostingGroupChangeOnBeforeCustomerPostingGroupValidate(var Rec: Record "Service Header"; var xRec: Record "Service Header"; CurrFieldNo: Integer)
-    var
-        PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
-    begin
-        if PostingGroupManagementCZL.IsAllowMultipleCustVendPostingGroupsEnabled() then
-            exit;
-        if CurrFieldNo = Rec.FieldNo("Customer Posting Group") then
-            PostingGroupManagementCZL.CheckPostingGroupChange(Rec."Customer Posting Group", xRec."Customer Posting Group", Rec);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnBeforeCheckCustomerPostingGroupChange', '', false, false)]
-    local procedure SuppressPostingGroupChangeOnBeforeCheckCustomerPostingGroupChange(var IsHandled: Boolean)
-    var
-        PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
-    begin
-        if IsHandled then
-            exit;
-        IsHandled := not PostingGroupManagementCZL.IsAllowMultipleCustVendPostingGroupsEnabled();
-    end;
-#pragma warning restore AL0432
-#endif
+#if not CLEAN22
 
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnUpdateServLineByChangedFieldName', '', false, false)]
     local procedure UpdateServLineByChangedFieldName(ServiceHeader: Record "Service Header"; var ServiceLine: Record "Service Line"; ChangedFieldName: Text[100])
     begin
         case ChangedFieldName of
+#pragma warning disable AL0432
             ServiceHeader.FieldCaption("Physical Transfer CZL"):
                 if (ServiceLine.Type = ServiceLine.Type::Item) and (ServiceLine."No." <> '') then begin
                     ServiceLine."Physical Transfer CZL" := ServiceHeader."Physical Transfer CZL";
+#pragma warning disable AL0432
                     ServiceLine.Modify(true);
                 end;
         end;
     end;
+#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterValidateEvent', 'VAT Country/Region Code', false, false)]
     local procedure UpdateVATRegistrationNoCodeOnAfterVATCountryRegionCodeValidate(var Rec: Record "Service Header")

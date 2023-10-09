@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
 /// <summary>
 /// Displays the scenarios that could be linked to a provided e-mail account.
 /// </summary>
@@ -27,7 +29,7 @@ page 8894 "Email Scenarios for Account"
                 field(Name; Rec."Display Name")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The email scenario.';
+                    Tooltip = 'Specifies the email scenario.';
                     Caption = 'Email scenario';
                     Editable = false;
                 }
@@ -51,13 +53,19 @@ page 8894 "Email Scenarios for Account"
         until Rec.Next() = 0;
     end;
 
+    internal procedure SetIncludeDefaultEmailScenario(NewIncludeDefaultEmailScenario: Boolean)
+    begin
+        IncludeDefaultEmailScenario := NewIncludeDefaultEmailScenario;
+    end;
+
     trigger OnOpenPage()
     begin
-        EmailScenarioImpl.GetAvailableScenariosForAccount(Rec, Rec);
+        EmailScenarioImpl.GetAvailableScenariosForAccount(Rec, Rec, IncludeDefaultEmailScenario);
         Rec.SetCurrentKey("Display Name");
         if Rec.FindFirst() then; // set the selection to the first record
     end;
 
     var
         EmailScenarioImpl: Codeunit "Email Scenario Impl.";
+        IncludeDefaultEmailScenario: Boolean;
 }

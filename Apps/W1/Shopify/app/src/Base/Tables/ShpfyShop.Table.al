@@ -1,3 +1,22 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using System.Globalization;
+using System.IO;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Pricing;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Finance.SalesTax;
+using Microsoft.Foundation.Address;
+using Microsoft.Inventory.Item;
+using System.Security.AccessControl;
+using System.DataAdministration;
+using System.Privacy;
+using System.Threading;
+using Microsoft.Inventory.Location;
+
 /// <summary>
 /// Table Shpfy Shop (ID 30102).
 /// </summary>
@@ -44,10 +63,16 @@ table 30102 "Shpfy Shop"
             trigger OnValidate()
             var
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
+                WebhooksMgt: Codeunit "Shpfy Webhooks Mgt.";
             begin
                 if Rec."Enabled" then begin
                     Rec.TestField("Shopify URL");
                     Rec."Enabled" := CustomerConsentMgt.ConfirmUserConsent();
+                end else begin
+                    Rec.Enabled := true;
+                    Rec.Validate("Order Created Webhooks", false);
+                    WebhooksMgt.DisableBulkOperationsWebhook(Rec);
+                    Rec.Enabled := false;
                 end;
             end;
         }
@@ -55,6 +80,14 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Log Enabled';
             DataClassification = SystemMetadata;
+            ObsoleteReason = 'Replaced with field "Logging Mode"';
+#if not CLEAN23
+            ObsoleteState = Pending;
+            ObsoleteTag = '23.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
         }
         field(6; "Customer Price Group"; Code[10])
         {
@@ -74,7 +107,7 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Shipping Charges Account';
             DataClassification = SystemMetadata;
-            TableRelation = "G/L Account";
+            TableRelation = "G/L Account"."No.";
             ValidateTableRelation = true;
 
             trigger OnValidate()
@@ -140,6 +173,20 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Auto Create Orders';
             DataClassification = SystemMetadata;
+            trigger OnValidate()
+            var
+                ErrorInfo: ErrorInfo;
+                AutoCreateErrorMsg: Label 'You cannot turn "%1" off if "%2" is set to the value of "%3".', Comment = '%1 = Field Caption of "Auto Create Orders", %2 = Field Caption of "Return and Refund Process", %3 = Field Value of "Return and Refund Process"';
+            begin
+                if Rec."Return and Refund Process" = "Shpfy ReturnRefund ProcessType"::"Auto Create Credit Memo" then
+                    if not Rec."Auto Create Orders" then begin
+                        ErrorInfo.FieldNo(Rec.FieldNo("Auto Create Orders"));
+                        ErrorInfo.ErrorType := ErrorType::Client;
+                        ErrorInfo.RecordId := Rec.RecordId;
+                        ErrorInfo.Message := StrSubstNo(AutoCreateErrorMsg, Rec.FieldCaption("Auto Create Orders"), Rec.FieldCaption("Return and Refund Process"), Rec."Return and Refund Process");
+                        Error(ErrorInfo);
+                    end;
+            end;
         }
         field(22; "Auto Create Unknown Items"; Boolean)
         {
@@ -318,7 +365,7 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Tip Account';
             DataClassification = SystemMetadata;
-            TableRelation = "G/L Account";
+            TableRelation = "G/L Account"."No.";
             ValidateTableRelation = true;
 
             trigger OnValidate()
@@ -333,7 +380,7 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Sold Gift Card Account';
             DataClassification = SystemMetadata;
-            TableRelation = "G/L Account";
+            TableRelation = "G/L Account"."No.";
             ValidateTableRelation = true;
 
             trigger OnValidate()
@@ -356,7 +403,7 @@ table 30102 "Shpfy Shop"
         }
         field(51; "Action for Removed Products"; Enum "Shpfy Remove Product Action")
         {
-            Caption = 'Action for Removed Products';
+            Caption = 'Action for Removed Products and Blocked Items';
             DataClassification = CustomerContent;
         }
         field(52; "Currency Code"; Code[10])
@@ -429,6 +476,60 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             TableRelation = "Item Templ.".Code;
             ValidateTableRelation = true;
+        }
+        field(70; "Return and Refund Process"; Enum "Shpfy ReturnRefund ProcessType")
+        {
+            Caption = 'Return and Refund Process';
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            var
+                ErrorInfo: ErrorInfo;
+                AutoCreateErrorMsg: Label 'You need to turn "%1" on if you want to set "%2" to the value of "%3".', Comment = '%1 = Field Caption of "Auto Create Orders", %2 = Field Caption of "Return and Refund Process", %3 = Field Value of "Return and Refund Process"';
+            begin
+                if Rec."Return and Refund Process" = "Shpfy ReturnRefund ProcessType"::"Auto Create Credit Memo" then
+                    if not Rec."Auto Create Orders" then begin
+                        ErrorInfo.FieldNo(Rec.FieldNo("Return and Refund Process"));
+                        ErrorInfo.ErrorType := ErrorType::Client;
+                        ErrorInfo.RecordId := Rec.RecordId;
+                        ErrorInfo.Message := StrSubstNo(AutoCreateErrorMsg, Rec.FieldCaption("Auto Create Orders"), Rec.FieldCaption("Return and Refund Process"), Rec."Return and Refund Process");
+                        Error(ErrorInfo);
+                    end;
+            end;
+        }
+        field(73; "Return Location"; Code[10])
+        {
+            Caption = 'Return Location';
+            DataClassification = CustomerContent;
+            TableRelation = Location WHERE("Use As In-Transit" = CONST(false));
+        }
+        field(75; "Refund Acc. non-restock Items"; Code[20])
+        {
+            Caption = 'Refund Account non-restock Items';
+            DataClassification = CustomerContent;
+            TableRelation = "G/L Account"."No.";
+
+            trigger OnValidate()
+            var
+                GLAccount: Record "G/L Account";
+            begin
+                if GLAccount.Get("Refund Acc. non-restock Items") then
+                    CheckGLAccount(GLAccount);
+            end;
+        }
+        field(76; "Refund Account"; Code[20])
+        {
+            Caption = 'Refund Account';
+            DataClassification = CustomerContent;
+            TableRelation = "G/L Account"."No.";
+
+            trigger OnValidate()
+            var
+                GLAccount: Record "G/L Account";
+            begin
+                if GLAccount.Get("Refund Account") then
+                    CheckGLAccount(GLAccount);
+            end;
         }
         field(100; "Collection Last Export Version"; BigInteger)
         {
@@ -520,6 +621,16 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Order Created Webhooks';
             DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            var
+                ShpfyWebhooksMgt: Codeunit "Shpfy Webhooks Mgt.";
+            begin
+                if "Order Created Webhooks" then
+                    ShpfyWebhooksMgt.EnableOrderCreatedWebhook(Rec)
+                else
+                    ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec);
+            end;
         }
         field(109; "Order Created Webhook User"; Code[50])
         {
@@ -533,6 +644,57 @@ table 30102 "Shpfy Shop"
             Caption = 'Fulfillment Service Activated';
             DataClassification = SystemMetadata;
             Description = 'Indicates whether the Shopify Fulfillment Service is activated.';
+        }
+        field(111; "Order Created Webhook User Id"; Guid)
+        {
+            Caption = 'Order Created Webhook User Id';
+            DataClassification = EndUserIdentifiableInformation;
+            Editable = false;
+            TableRelation = User;
+
+            trigger OnValidate()
+            var
+                User: Record User;
+            begin
+                if User.Get("Order Created Webhook User Id") then
+                    "Order Created Webhook User" := User."User Name";
+            end;
+        }
+        field(112; "Order Created Webhook Id"; Text[500])
+        {
+            Caption = 'Order Created Webhook Id';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
+        field(113; "Logging Mode"; Enum "Shpfy Logging Mode")
+        {
+            Caption = 'Logging Mode';
+            DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            begin
+                if "Logging Mode" = "Logging Mode"::All then
+                    EnableShopifyLogRetentionPolicySetup();
+            end;
+        }
+        field(114; "Bulk Operation Webhook User Id"; Guid)
+        {
+            Caption = 'Bulk Operation Webhook User Id';
+            DataClassification = EndUserIdentifiableInformation;
+            Editable = false;
+            TableRelation = User;
+        }
+        field(115; "Bulk Operation Webhook Id"; Text[500])
+        {
+            Caption = 'Bulk Operation Webhook Id';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
+        field(116; "Sync Prices"; Boolean)
+        {
+            Caption = 'Sync Prices with Products';
+            DataClassification = SystemMetadata;
+            InitValue = true;
         }
         field(200; "Shop Id"; Integer)
         {
@@ -548,6 +710,13 @@ table 30102 "Shpfy Shop"
         }
         key(Idx1; "Shop Id") { }
     }
+
+    trigger OnDelete()
+    var
+        ShpfyWebhooksMgt: Codeunit "Shpfy Webhooks Mgt.";
+    begin
+        ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec);
+    end;
 
     var
         InvalidShopUrlErr: Label 'The URL must refer to the internal shop location at myshopify.com. It must not be the public URL that customers use, such as myshop.com.';
@@ -589,6 +758,15 @@ table 30102 "Shpfy Shop"
             exit(AuthenticationMgt.AccessTokenExist(Store));
     end;
 
+    internal procedure TestConnection(): Boolean
+    var
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+    begin
+        CommunicationMgt.SetShop(Rec);
+        CommunicationMgt.ExecuteGraphQL('{"query":"query { app { id } }"}');
+        exit(true);
+    end;
+
     local procedure GetStoreName() Store: Text
     begin
         Store := "Shopify URL".ToLower();
@@ -597,7 +775,7 @@ table 30102 "Shpfy Shop"
         Store := Store.TrimStart('/').TrimEnd('/');
     end;
 
-    /// <summary> 
+    /// <summary>
     /// Calc Shop Id.
     /// </summary>
     internal procedure CalcShopId()
@@ -698,11 +876,11 @@ table 30102 "Shpfy Shop"
             Rec."Gen. Bus. Posting Group" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Gen. Bus. Posting Group"));
             Rec."VAT Bus. Posting Group" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("VAT Bus. Posting Group"));
             Rec."Tax Area Code" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Tax Area Code"));
-            Evaluate(Rec."Tax Liable", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Tax Liable")));
+            if Evaluate(Rec."Tax Liable", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Tax Liable"))) then;
             Rec."VAT Country/Region Code" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Country/Region Code"));
             Rec."Customer Posting Group" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Customer Posting Group"));
-            Evaluate(Rec."Prices Including VAT", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Prices Including VAT")));
-            Evaluate(Rec."Allow Line Disc.", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Allow Line Disc.")));
+            if Evaluate(Rec."Prices Including VAT", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Prices Including VAT"))) then;
+            if Evaluate(Rec."Allow Line Disc.", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Allow Line Disc."))) then;
             Rec.Modify();
         end;
     end;
@@ -720,4 +898,25 @@ table 30102 "Shpfy Shop"
             exit(ConfigTemplateLine."Default Value");
     end;
 #endif
+
+    local procedure EnableShopifyLogRetentionPolicySetup()
+    var
+        RetentionPolicySetup: Record "Retention Policy Setup";
+        JobQueueEntry: Record "Job Queue Entry";
+    begin
+        if not TaskScheduler.CanCreateTask() then
+            exit;
+
+        if not (JobQueueEntry.ReadPermission() and JobQueueEntry.WritePermission()) then
+            exit;
+
+        if not RetentionPolicySetup.Get(Database::"Shpfy Log Entry") then
+            exit;
+
+        if RetentionPolicySetup.Enabled then
+            exit;
+
+        RetentionPolicySetup.Validate(Enabled, true);
+        RetentionPolicySetup.Modify(true);
+    end;
 }

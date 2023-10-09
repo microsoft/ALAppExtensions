@@ -1,3 +1,6 @@
+namespace System.Security.AccessControl;
+
+using Microsoft.Utility.ImageAnalysis;
 permissionset 4210 "ImageAnalysis - Edit"
 {
     Assignable = false;

@@ -1,3 +1,5 @@
+namespace Microsoft.API.V2;
+
 entitlement "Azure AD Application Api APIV2"
 {
     Type = ApplicationScope;

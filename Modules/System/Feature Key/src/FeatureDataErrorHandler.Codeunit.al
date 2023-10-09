@@ -3,12 +3,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
 /// <summary>
 /// Error handler codeunit used by the task scheduler during feature data update.
 /// </summary>
 codeunit 2613 "Feature Data Error Handler"
 {
     TableNo = "Feature Data Update Status";
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     trigger OnRun()
     var

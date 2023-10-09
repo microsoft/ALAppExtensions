@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Assembly.Document;
+
 /// <summary>
 /// Codeunit Shpfy Suppress ASM Warning (ID 30210).
 /// </summary>

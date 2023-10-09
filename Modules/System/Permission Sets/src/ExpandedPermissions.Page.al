@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
 /// <summary>
 /// Page for viewing the expanded permissions of a permission set.
 /// </summary>
@@ -36,7 +38,16 @@ page 9862 "Expanded Permissions"
                 field("Object Name"; ObjectName)
                 {
                     ApplicationArea = All;
+                    Caption = 'Object Name';
                     ToolTip = 'Specifies the name of the object to which the permissions apply.';
+                    Style = Strong;
+                    StyleExpr = ZeroObjStyleExpr;
+                }
+                field("Object Caption"; ObjectCaption)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Object Caption';
+                    ToolTip = 'Specifies the caption of the object that the permissions apply to.';
                     Style = Strong;
                     StyleExpr = ZeroObjStyleExpr;
                 }
@@ -88,12 +99,13 @@ page 9862 "Expanded Permissions"
 
     trigger OnAfterGetRecord()
     begin
-        PermissionImpl.GetObjectName(Rec, ObjectName);
+        PermissionImpl.GetObjectCaptionAndName(Rec, ObjectCaption, ObjectName);
         ZeroObjStyleExpr := Rec."Object ID" = 0;
     end;
 
     var
         PermissionImpl: Codeunit "Permission Impl.";
+        ObjectCaption: Text;
         ObjectName: Text;
         ZeroObjStyleExpr: Boolean;
 }

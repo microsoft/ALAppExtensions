@@ -40,7 +40,7 @@ page 20351 "Connectivity App"
                     Caption = 'Category';
                     ToolTip = 'Specifies the category of the app.';
                 }
-                field(SupportedCountry; Rec.Country)
+                field(SupportedCountry; Rec."Country/Region")
                 {
                     ApplicationArea = All;
                     Caption = 'Supported Country';

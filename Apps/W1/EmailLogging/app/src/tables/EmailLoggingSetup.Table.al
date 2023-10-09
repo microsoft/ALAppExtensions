@@ -1,3 +1,8 @@
+namespace Microsoft.CRM.EmailLoggin;
+
+using System.Security.Authentication;
+using System.Security.Encryption;
+
 table 1680 "Email Logging Setup"
 {
     Access = Internal;

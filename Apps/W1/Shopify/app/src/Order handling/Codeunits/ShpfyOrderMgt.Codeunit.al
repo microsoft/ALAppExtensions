@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using System.Reflection;
+
 /// <summary>
 /// Codeunit Shpfy Order Mgt. (ID 30164).
 /// </summary>

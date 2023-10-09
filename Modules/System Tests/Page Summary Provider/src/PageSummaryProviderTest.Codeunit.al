@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Integration;
+
+using System.Integration;
+using System.TestLibraries.Integration;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 132548 "Page Summary Provider Test"
 {
     EventSubscriberInstance = Manual;

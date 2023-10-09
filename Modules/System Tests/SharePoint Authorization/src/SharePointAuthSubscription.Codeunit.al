@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Integration.Sharepoint;
+
+using System.Integration.Sharepoint;
+using System.TestLibraries.Utilities;
+
 codeunit 132976 "SharePoint Auth. Subscription"
 {
     EventSubscriberInstance = Manual;

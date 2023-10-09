@@ -1,3 +1,19 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using Microsoft.HumanResources.Employee;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+
 codeunit 20107 "AMC Bank Exp. CT Valid."
 {
     TableNo = "Gen. Journal Line";
@@ -5,12 +21,16 @@ codeunit 20107 "AMC Bank Exp. CT Valid."
     trigger OnRun()
     var
         GenJournalLine: Record "Gen. Journal Line";
+        GenJournalLineCopy: Record "Gen. Journal Line";
         PaymentMethod: record "Payment Method";
         PaymentExportGenJnlCheck: Codeunit "Payment Export Gen. Jnl Check";
         TestedBankAccount: Boolean;
     begin
-        DeletePaymentFileBatchErrors();
-        DeletePaymentFileErrors();
+        GenJournalLineCopy."Journal Template Name" := Rec."Journal Template Name";
+        GenJournalLineCopy."Journal Batch Name" := Rec."Journal Batch Name";
+
+        GenJournalLineCopy.DeletePaymentFileBatchErrors();
+        GenJournalLineCopy.DeletePaymentFileErrors();
 
         GenJournalLine.CopyFilters(Rec);
         if GenJournalLine.FindSet() then
@@ -25,7 +45,7 @@ codeunit 20107 "AMC Bank Exp. CT Valid."
 
             until GenJournalLine.Next() = 0;
 
-        if GenJournalLine.HasPaymentFileErrorsInBatch() then begin
+        if GenJournalLineCopy.HasPaymentFileErrorsInBatch() then begin
             Commit();
             Error(HasErrorsErr);
         end;

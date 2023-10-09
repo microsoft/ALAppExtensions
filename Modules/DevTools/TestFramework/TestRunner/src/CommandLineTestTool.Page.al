@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestTools.TestRunner;
+
+using System.TestTools.CodeCoverage;
+using System.Tooling;
+
 page 130455 "Command Line Test Tool"
 {
     AccessByPermission = TableData "Test Method Line" = RIMD;
@@ -45,7 +50,7 @@ page 130455 "Command Line Test Tool"
                 begin
                     TestSuiteMgt.DeleteAllMethods(GlobalALTestSuite);
                     TestSuiteMgt.SelectTestMethodsByRange(GlobalALTestSuite, TestCodeunitRangeFilter);
-                    IF Rec.FindFirst() THEN;
+                    if Rec.FindFirst() then;
                 end;
             }
             field(TestProcedureRangeFilter; TestProcedureRangeFilter)
@@ -87,7 +92,7 @@ page 130455 "Command Line Test Tool"
                 begin
                     TestSuiteMgt.DeleteAllMethods(GlobalALTestSuite);
                     TestSuiteMgt.SelectTestMethodsByExtension(GlobalALTestSuite, ExtensionId);
-                    IF Rec.FindFirst() THEN;
+                    if Rec.FindFirst() then;
                 end;
             }
             field(DisableTestMethod; RemoveTestMethod)
@@ -126,7 +131,7 @@ page 130455 "Command Line Test Tool"
             {
                 ApplicationArea = All;
                 Caption = 'Code Coverage Map';
-                Tooltip = 'Code Coverage Map';
+                Tooltip = 'Specifies the Code Coverage Map';
                 trigger OnValidate()
                 begin
                     TestSuiteMgt.SetCCMap(GlobalALTestSuite, CCMap);
@@ -169,7 +174,7 @@ page 130455 "Command Line Test Tool"
             field(CCMapCSVText; CCMapCSVText)
             {
                 Caption = 'Code Coverage Map CSV Text';
-                Tooltip = 'Code Coverage Map CSV Text';
+                Tooltip = 'Specifies the Code Coverage Map CSV Text';
                 ApplicationArea = All;
                 Editable = false;
                 MultiLine = true;
@@ -531,25 +536,26 @@ page 130455 "Command Line Test Tool"
 
         CodeunitTestMethodLine.SetRange("Test Suite", GlobalALTestSuite.Name);
         CodeunitTestMethodLine.SetRange("Line Type", CodeunitTestMethodLine."Line Type"::Codeunit);
-        CodeunitTestMethodLine.SetRange(Name, CodeunitName);
-        if not CodeunitTestMethodLine.FindFirst() then
+        CodeunitTestMethodLine.SetFilter(Name, CodeunitName);
+        if CodeunitTestMethodLine.IsEmpty() then
+            CodeunitTestMethodLine.SetRange(Name, CodeunitName);
+        if not CodeunitTestMethodLine.FindSet() then
             exit;
+        repeat
+            TestMethodLine.SetRange("Test Suite", GlobalALTestSuite.Name);
+            TestMethodLine.SetRange("Line Type", Rec."Line Type"::"Function");
+            TestMethodLine.SetRange("Test Codeunit", CodeunitTestMethodLine."Test Codeunit");
+            TestMethodLine.SetFilter(Name, TestMethodName);
+            TestMethodLine.ModifyAll(Run, false);
 
-        TestMethodLine.SetRange("Test Suite", GlobalALTestSuite.Name);
-        TestMethodLine.SetRange("Line Type", Rec."Line Type"::"Function");
-        TestMethodLine.SetRange("Test Codeunit", CodeunitTestMethodLine."Test Codeunit");
-        TestMethodLine.SetFilter(Name, TestMethodName);
-        TestMethodLine.ModifyAll(Run, false);
-
-
-        TestMethodLine.SETRANGE(Name);
-        TestMethodLine.SETRANGE(Run, TRUE);
-        if TestMethodLine.IsEmpty() then begin
-            CodeunitTestMethodLine.VALIDATE(Run, FALSE);
-            CodeunitTestMethodLine.Modify(TRUE);
-        end;
-
+            TestMethodLine.SetRange(Name);
+            TestMethodLine.SetRange(Run, true);
+            if TestMethodLine.IsEmpty() then begin
+                CodeunitTestMethodLine.Validate(Run, false);
+                CodeunitTestMethodLine.Modify(true);
+            end;
+        until CodeunitTestMethodLine.Next() = 0;
+        
         CurrPage.Update();
     end;
 }
-

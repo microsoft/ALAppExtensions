@@ -1,3 +1,5 @@
+namespace Microsoft.Bank.StatementImport;
+
 table 8850 "Bank Statement Import Preview"
 {
     TableType = Temporary;

@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 codeunit 40015 "Data Lake Migration Cleanup"
 {
     Access = Internal;

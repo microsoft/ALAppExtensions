@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.Finance.VAT.Reporting;
+using System.Telemetry;
+using System.Utilities;
+
 page 4812 "Intrastat Report"
 {
     Caption = 'Intrastat Report';
@@ -13,7 +23,7 @@ page 4812 "Intrastat Report"
                 Caption = 'General';
                 field("No."; Rec."No.")
                 {
-                    ApplicationArea = BasicEU, BasicNO, BasicCH;
+                    ApplicationArea = BasicEU, BasicCH, BasicNO;
                     ToolTip = 'Specifies the number of the Intrastat Report.';
                     trigger OnAssistEdit()
                     begin
@@ -23,49 +33,49 @@ page 4812 "Intrastat Report"
                 }
                 field(Status; Rec.Status)
                 {
-                    ApplicationArea = BasicEU, BasicNO, BasicCH;
+                    ApplicationArea = BasicEU, BasicCH, BasicNO;
                     ToolTip = 'Specifies the status of the Intrastat Report.';
                 }
                 field(Description; Rec.Description)
                 {
-                    ApplicationArea = BasicEU, BasicNO, BasicCH;
+                    ApplicationArea = BasicEU, BasicCH, BasicNO;
                     ToolTip = 'Specifies some information about the Intrastat Report.';
                 }
                 field("Statistics Period"; Rec."Statistics Period")
                 {
-                    ApplicationArea = BasicEU, BasicNO, BasicCH;
+                    ApplicationArea = BasicEU, BasicCH, BasicNO;
                     ToolTip = 'Specifies the month to report data for. Enter the period as a four-digit number, with no spaces or symbols. Enter the year first and then the month, for example, enter 1706 for June, 2017';
                 }
                 field("Currency Identifier"; Rec."Currency Identifier")
                 {
-                    ApplicationArea = BasicEU, BasicNO, BasicCH;
+                    ApplicationArea = BasicEU, BasicCH, BasicNO;
                     ToolTip = 'Specifies a code that identifies the currency of the Intrastat report.';
                 }
                 field("Amounts in Add. Currency"; Rec."Amounts in Add. Currency")
                 {
-                    ApplicationArea = BasicEU, BasicNO, BasicCH;
+                    ApplicationArea = BasicEU, BasicCH, BasicNO;
                     ToolTip = 'Specifies that you use an additional reporting currency in the general ledger and that you want to report Intrastat in this currency.';
                     Visible = false;
                 }
                 field(Reported; Rec.Reported)
                 {
-                    ApplicationArea = BasicEU, BasicNO, BasicCH;
+                    ApplicationArea = BasicEU, BasicCH, BasicNO;
                     ToolTip = 'Specifies whether the entry has already been reported to the tax authorities.';
                 }
                 field("Export Date"; Rec."Export Date")
                 {
-                    ApplicationArea = BasicEU, BasicNO, BasicCH;
+                    ApplicationArea = BasicEU, BasicCH, BasicNO;
                     ToolTip = 'Specifies the date when the report has been exported.';
                 }
                 field("Export Time"; Rec."Export Time")
                 {
-                    ApplicationArea = BasicEU, BasicNO, BasicCH;
+                    ApplicationArea = BasicEU, BasicCH, BasicNO;
                     ToolTip = 'Specifies the time when the report has been exported.';
                 }
             }
             part(IntrastatLines; "Intrastat Report Subform")
             {
-                ApplicationArea = BasicEU, BasicNO, BasicCH;
+                ApplicationArea = BasicEU, BasicCH, BasicNO;
                 SubPageLink = "Intrastat No." = field("No.");
                 UpdatePropagation = Both;
             }
@@ -74,7 +84,7 @@ page 4812 "Intrastat Report"
         {
             part(ErrorMessagesPart; "Error Messages Part")
             {
-                ApplicationArea = BasicEU, BasicNO, BasicCH;
+                ApplicationArea = BasicEU, BasicCH, BasicNO;
                 Provider = IntrastatLines;
                 SubPageLink = "Record ID" = field(filter("Record ID Filter"));
             }
@@ -99,7 +109,7 @@ page 4812 "Intrastat Report"
         {
             action(GetEntries)
             {
-                ApplicationArea = BasicEU, BasicNO, BasicCH;
+                ApplicationArea = BasicEU, BasicCH, BasicNO;
                 Caption = 'Suggest Lines';
                 Ellipsis = true;
                 Image = SuggestLines;
@@ -126,7 +136,7 @@ page 4812 "Intrastat Report"
 
             action(ChecklistReport)
             {
-                ApplicationArea = BasicEU, BasicNO, BasicCH;
+                ApplicationArea = BasicEU, BasicCH, BasicNO;
                 Caption = 'Checklist Report';
                 Image = PrintChecklistReport;
                 ToolTip = 'Validate the Intrastat lines.';
@@ -151,7 +161,7 @@ page 4812 "Intrastat Report"
             }
             action(ToggleErrorFilter)
             {
-                ApplicationArea = BasicEU, BasicNO, BasicCH;
+                ApplicationArea = BasicEU, BasicCH, BasicNO;
                 Caption = 'Filter Error Lines';
                 Image = "Filter";
                 ToolTip = 'Show or hide Intrastat lines that do not have errors.';
@@ -163,7 +173,7 @@ page 4812 "Intrastat Report"
             }
             action(RecalcWeightSupplUOM)
             {
-                ApplicationArea = BasicEU, BasicNO, BasicCH;
+                ApplicationArea = BasicEU, BasicCH, BasicNO;
                 Caption = 'Recalc. Weight/Suppl. UOM';
                 Image = Recalculate;
                 ToolTip = 'Recalculate weight and/or supplemental units quantity.';
@@ -182,7 +192,7 @@ page 4812 "Intrastat Report"
 
                 action(Release)
                 {
-                    ApplicationArea = BasicEU, BasicNO, BasicCH;
+                    ApplicationArea = BasicEU, BasicCH, BasicNO;
                     Caption = 'Re&lease';
                     Image = ReleaseDoc;
                     ShortCutKey = 'Ctrl+F9';
@@ -206,7 +216,7 @@ page 4812 "Intrastat Report"
                 }
                 action(Reopen)
                 {
-                    ApplicationArea = BasicEU, BasicNO, BasicCH;
+                    ApplicationArea = BasicEU, BasicCH, BasicNO;
                     Caption = 'Re&open';
                     Enabled = Rec.Status <> Rec.Status::Open;
                     Image = ReOpen;
@@ -223,7 +233,7 @@ page 4812 "Intrastat Report"
             }
             action(CreateFile)
             {
-                ApplicationArea = BasicEU, BasicNO, BasicCH;
+                ApplicationArea = BasicEU, BasicCH, BasicNO;
                 Caption = 'Create File';
                 Ellipsis = true;
                 Image = MakeDiskette;
@@ -310,8 +320,10 @@ page 4812 "Intrastat Report"
         IntrastatReportTok: Label 'Intrastat Report', Locked = true;
 
     local procedure FindVATReportsConfiguration(var VATReportsConfiguration: Record "VAT Reports Configuration"): Boolean
+    var
+        VATReportConfiguration: Enum "VAT Report Configuration";
     begin
-        VATReportsConfiguration.SetRange("VAT Report Type", "VAT Report Configuration"::"Intrastat Report");
+        VATReportsConfiguration.SetRange("VAT Report Type", VATReportConfiguration::"Intrastat Report");
         OnBeforeFindVATReportsConfiguration(Rec, VATReportsConfiguration);
         exit(VATReportsConfiguration.FindFirst());
     end;

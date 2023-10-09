@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.ChargeGroup.ChargeOnPurchase;
+
+using Microsoft.Finance.ChargeGroup.ChargeGroupBase;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Posting;
+
 codeunit 18516 "Charge Purchase Subscriber"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostPurchaseDoc', '', false, false)]

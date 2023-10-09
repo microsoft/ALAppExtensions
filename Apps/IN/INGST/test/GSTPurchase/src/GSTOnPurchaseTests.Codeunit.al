@@ -995,6 +995,31 @@ codeunit 18131 "GST On Purchase Tests"
         VerifyPostedCreditMemoCreatedAfterPosInvoiceCancelled(PurchInvHeader."No.");
     end;
 
+    [Test]
+    procedure CheckGovtVendorGSTRegistrationNo()
+    var
+        VendorNo: Code[20];
+        LocationStateCode: Code[10];
+        LocPANNo: Code[20];
+        GSTVendorType: Enum "GST Vendor Type";
+    begin
+        //[Scenario] [468457] Creating Government as Vendor is causing issue while entering GST No.
+
+        //[GIVEN] Created Government Vendor With Govt Pan No and GST Registration No.
+
+        //[WHEN] Create Vendor Setup
+        VendorNo := LibraryGST.CreateVendorSetup();
+
+        //[WHEN] Create Govt Vendor PAN No
+        LocPANNo := LibraryGST.CreateGovtPANNos();
+
+        //[WHEN] Create Govt Vendor State
+        LocationStateCode := LibraryGST.CreateInitialSetup();
+
+        //[THEN] Verify Vendor GST Govt. Registration No
+        Assert.IsTrue(libraryGSTPurchase.GetVendorSetupWithGovtGST(VendorNo, GSTVendorType, false, true, LocationStateCode, LocPANNo), 'Sucess');
+    end;
+
     local procedure CancelPostedPurchaseInvoiceToCreatePostedCreditMemo(PurchInvHeader: Record "Purch. Inv. Header"; PurchaseOrderNo: Code[20])
     var
         PostedPurchInvoice: TestPage "Posted Purchase Invoice";
@@ -1132,7 +1157,7 @@ codeunit 18131 "GST On Purchase Tests"
             var PurchaseHeader: Record "Purchase Header";
             var PurchaseLine: Record "Purchase Line";
             LineType: Enum "Purchase Line Type";
-            DocumentType: Enum "Purchase Document Type"): Code[20];
+                          DocumentType: Enum "Purchase Document Type"): Code[20];
     var
         VendorNo: Code[20];
         LocationCode: Code[10];
@@ -1339,7 +1364,7 @@ codeunit 18131 "GST On Purchase Tests"
         var PurchaseHeader: Record "Purchase Header";
         var PurchaseLine: Record "Purchase Line";
         LineType: Enum "Purchase Line Type";
-        DocumentType: Enum "Purchase Document Type"): Code[20];
+                      DocumentType: Enum "Purchase Document Type"): Code[20];
     var
         VendorNo: Code[20];
         LocationCode: Code[10];
@@ -1385,8 +1410,8 @@ codeunit 18131 "GST On Purchase Tests"
         VAR PurchaseHeader: Record "Purchase Header";
         VendorNo: Code[20];
         DocumentType: Enum "Purchase Document Type";
-        LocationCode: Code[10];
-        PurchaseInvoiceType: Enum "GST Invoice Type")
+                          LocationCode: Code[10];
+                          PurchaseInvoiceType: Enum "GST Invoice Type")
     var
         LibraryUtility: Codeunit "Library - Utility";
         Overseas: Boolean;
@@ -1412,7 +1437,13 @@ codeunit 18131 "GST On Purchase Tests"
         PurchaseHeader.Modify(true);
     end;
 
-    local procedure CreatePurchaseLineWithGST(VAR PurchaseHeader: Record "Purchase Header"; VAR PurchaseLine: Record "Purchase Line"; LineType: Enum "Purchase Line Type"; Quantity: Decimal; InputCreditAvailment: Boolean; Exempted: Boolean; LineDiscount: Boolean);
+    local procedure CreatePurchaseLineWithGST(var PurchaseHeader: Record "Purchase Header";
+                                              var PurchaseLine: Record "Purchase Line";
+                                              LineType: Enum "Purchase Line Type";
+                                              Quantity: Decimal;
+                                              InputCreditAvailment: Boolean;
+                                              Exempted: Boolean;
+                                              LineDiscount: Boolean);
     var
         VATPostingSetup: Record "VAT Posting Setup";
         LineTypeNo: Code[20];
@@ -1592,9 +1623,9 @@ codeunit 18131 "GST On Purchase Tests"
 
     local procedure CreateAndPostDistributionDocument(
             DocType: Enum "BankCharges DocumentType";
-            DistGSTCredit: Enum "GST Credit";
-            RcptGSTCredit: Enum "GST Credit";
-            Reversal: Boolean)
+                         DistGSTCredit: Enum "GST Credit";
+                         RcptGSTCredit: Enum "GST Credit";
+                         Reversal: Boolean)
     var
         GSTDistributionHeader: Record "GST Distribution Header";
         GSTDistributionLine: Record "GST Distribution Line";

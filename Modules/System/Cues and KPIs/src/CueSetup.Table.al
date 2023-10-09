@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Visualization;
+
+using System.Security.User;
+using System.Reflection;
+using System.Security.AccessControl;
+
 table 9701 "Cue Setup"
 {
     Access = Internal;
@@ -29,9 +35,10 @@ table 9701 "Cue Setup"
         }
         field(2; "Table ID"; Integer)
         {
+            DataClassification = SystemMetadata;
             Caption = 'Table ID';
-            TableRelation = AllObjWithCaption."Object ID" WHERE("Object Type" = CONST(Table),
-                                                                 "Object Name" = FILTER('*Cue*'));
+            TableRelation = AllObjWithCaption."Object ID" where("Object Type" = const(Table),
+                                                                 "Object Name" = filter('*Cue*'));
             trigger OnValidate()
             begin
                 // Force a calculation, even if the FieldNo hasn't yet been filled out (i.e. the record hasn't been inserted yet)
@@ -40,6 +47,7 @@ table 9701 "Cue Setup"
         }
         field(3; "Field No."; Integer)
         {
+            DataClassification = SystemMetadata;
             Caption = 'Cue ID';
             TableRelation = Field."No.";
 
@@ -53,24 +61,26 @@ table 9701 "Cue Setup"
                 // fields that are "valid" for a cue control.
                 Field.SetRange(TableNo, "Table ID");
                 Field.SetFilter(Type, '%1|%2', Field.Type::Decimal, Field.Type::Integer);
-                if FieldSelection.Open(Field) Then
+                if FieldSelection.Open(Field) then
                     Validate("Field No.", Field."No.");
             end;
         }
         field(4; "Field Name"; Text[80])
         {
-            CalcFormula = Lookup(Field."Field Caption" WHERE(TableNo = FIELD("Table ID"),
-                                                              "No." = FIELD("Field No.")));
+            CalcFormula = lookup(Field."Field Caption" where(TableNo = field("Table ID"),
+                                                              "No." = field("Field No.")));
             Caption = 'Cue Name';
             FieldClass = FlowField;
             Editable = false;
         }
         field(5; "Low Range Style"; Enum "Cues And KPIs Style")
         {
+            DataClassification = SystemMetadata;
             Caption = 'Low Range Style', Comment = 'The Style to use if the cue''s value is below Threshold 1';
         }
         field(6; "Threshold 1"; Decimal)
         {
+            DataClassification = CustomerContent;
 
             trigger OnValidate()
             var
@@ -81,10 +91,12 @@ table 9701 "Cue Setup"
         }
         field(7; "Middle Range Style"; Enum "Cues And KPIs Style")
         {
+            DataClassification = SystemMetadata;
             Caption = 'Middle Range Style', Comment = 'The Style to use if the cue''s value is between Threshold 1 and Threshold 2';
         }
         field(8; "Threshold 2"; Decimal)
         {
+            DataClassification = CustomerContent;
 
             trigger OnValidate()
             var
@@ -95,17 +107,19 @@ table 9701 "Cue Setup"
         }
         field(9; "High Range Style"; Enum "Cues And KPIs Style")
         {
+            DataClassification = SystemMetadata;
             Caption = 'High Range Style', Comment = 'The Style to use if the cue''s value is above Threshold 2';
         }
         field(10; "Table Name"; Text[249])
         {
-            CalcFormula = Lookup(AllObjWithCaption."Object Caption" WHERE("Object ID" = FIELD("Table ID"),
-                                                                           "Object Type" = CONST(Table)));
+            CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object ID" = field("Table ID"),
+                                                                           "Object Type" = const(Table)));
             FieldClass = FlowField;
             Editable = false;
         }
         field(11; Personalized; Boolean)
         {
+            DataClassification = SystemMetadata;
             Caption = 'Personalized';
         }
     }

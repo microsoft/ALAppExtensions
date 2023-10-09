@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
 /// <summary>
 /// This codeunit provides public functions for feature management.
 /// </summary>
@@ -134,6 +136,11 @@ codeunit 2611 "Feature Management Facade"
 
     [IntegrationEvent(false, false)]
     internal procedure OnAfterFeatureDisableConfirmed(FeatureKey: Record "Feature Key")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    internal procedure OnBeforeSetFeatureStatusForOtherCompanies(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; var IsHandled: Boolean)
     begin
     end;
 }

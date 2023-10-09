@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Finance.GeneralLedger.Account;
+
 table 10674 "SAF-T G/L Account Mapping"
 {
     DataClassification = CustomerContent;
@@ -30,7 +38,7 @@ table 10674 "SAF-T G/L Account Mapping"
         {
             DataClassification = CustomerContent;
             Caption = 'Category No.';
-            TableRelation = "SAF-T Mapping Category"."No." where ("Mapping Type" = field ("Mapping Type"));
+            TableRelation = "SAF-T Mapping Category"."No." where("Mapping Type" = field("Mapping Type"));
 
             trigger OnValidate()
             begin
@@ -41,7 +49,7 @@ table 10674 "SAF-T G/L Account Mapping"
         {
             DataClassification = CustomerContent;
             Caption = 'No.';
-            TableRelation = "SAF-T Mapping"."No." where ("Mapping Type" = field ("Mapping Type"), "Category No." = field ("Category No."));
+            TableRelation = "SAF-T Mapping"."No." where("Mapping Type" = field("Mapping Type"), "Category No." = field("Category No."));
 
             trigger OnValidate()
             begin
@@ -59,7 +67,7 @@ table 10674 "SAF-T G/L Account Mapping"
         {
             Caption = 'G/L Account Name';
             FieldClass = FlowField;
-            CalcFormula = lookup ("G/L Account".Name where ("No." = field ("G/L Account No.")));
+            CalcFormula = lookup("G/L Account".Name where("No." = field("G/L Account No.")));
         }
     }
 

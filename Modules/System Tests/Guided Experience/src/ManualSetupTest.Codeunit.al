@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Environment.Configuration;
+
+using System.Environment.Configuration;
+using System.TestLibraries.Environment.Configuration;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 134934 "Manual Setup Test"
 {
     EventSubscriberInstance = Manual;
@@ -77,39 +84,6 @@ codeunit 134934 "Manual Setup Test"
 
         // [Then] Verificaton of records happens inside the modal form handler
     end;
-
-#if not CLEAN18
-    [Test]
-    [Scope('OnPrem')]
-    procedure VerifyListOfPageIDs()
-    var
-        ManualSetupTest: Codeunit "Manual Setup Test";
-        ManualSetup: Codeunit "Manual Setup";
-        AssistedSetupTestLibrary: Codeunit "Assisted Setup Test Library";
-        PageIDs: List of [Integer];
-        OldCount: Integer;
-    begin
-        PermissionsMock.Set('Guided Exp Edit');
-        // [Given] A subscriber that registers a manual setup and randomly initialized values
-        Initialize(ManualSetupTest);
-
-        AssistedSetupTestLibrary.DeleteAll();
-
-        // [When] The list is fetched
-        ManualSetup.GetPageIDs(PageIDs);
-        OldCount := PageIDs.Count();
-
-        // [When] and a new subscriber is added
-        BindSubscription(ManualSetupTest);
-        ManualSetup.GetPageIDs(PageIDs);
-
-        // [Then] The PageID has just one more entry
-        Assert.AreEqual(1, PageIDs.Count() - OldCount, 'The test subscriber only adds one entry.');
-
-        // [Then] and the new entry is found
-        Assert.IsTrue(PageIDs.Contains(Page::"My Manual Setup"), 'The added setup page is not in list.');
-    end;
-#endif
 
     local procedure Initialize(var ManualSetupTest: Codeunit "Manual Setup Test")
     begin

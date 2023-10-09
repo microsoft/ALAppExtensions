@@ -6,6 +6,7 @@ codeunit 11725 "Cash Document-Release CZP"
     var
         VATPostingSetup: Record "VAT Posting Setup";
         GenJnlCheckLine: Codeunit "Gen. Jnl.-Check Line";
+        IsHandled: Boolean;
     begin
         if Rec.Status = Rec.Status::Released then
             exit;
@@ -14,21 +15,25 @@ codeunit 11725 "Cash Document-Release CZP"
 
         CheckCashDocument(Rec);
 
-        CashDocumentLineCZP.Reset();
-        CashDocumentLineCZP.SetRange("Cash Desk No.", Rec."Cash Desk No.");
-        CashDocumentLineCZP.SetRange("Cash Document No.", Rec."No.");
-        CashDocumentLineCZP.FindSet();
-        repeat
-            if CashDocumentLineCZP."Account Type" <> CashDocumentLineCZP."Account Type"::" " then begin
-                CashDocumentLineCZP.TestField("Account No.");
-                CashDocumentLineCZP.TestField(Amount);
-                if CashDocumentLineCZP."Gen. Posting Type" <> CashDocumentLineCZP."Gen. Posting Type"::" " then
-                    VATPostingSetup.Get(CashDocumentLineCZP."VAT Bus. Posting Group", CashDocumentLineCZP."VAT Prod. Posting Group");
-                CashDocumentPostCZP.InitGenJnlLine(Rec, CashDocumentLineCZP);
-                CashDocumentPostCZP.GetGenJnlLine(GenJournalLine);
-                GenJnlCheckLine.RunCheck(GenJournalLine);
-            end;
-        until CashDocumentLineCZP.Next() = 0;
+        IsHandled := false;
+        OnOnRunOnBeforeCheckCashDocLines(Rec, IsHandled);
+        if not IsHandled then begin
+            CashDocumentLineCZP.Reset();
+            CashDocumentLineCZP.SetRange("Cash Desk No.", Rec."Cash Desk No.");
+            CashDocumentLineCZP.SetRange("Cash Document No.", Rec."No.");
+            CashDocumentLineCZP.FindSet();
+            repeat
+                if CashDocumentLineCZP."Account Type" <> CashDocumentLineCZP."Account Type"::" " then begin
+                    CashDocumentLineCZP.TestField("Account No.");
+                    CashDocumentLineCZP.TestField(Amount);
+                    if CashDocumentLineCZP."Gen. Posting Type" <> CashDocumentLineCZP."Gen. Posting Type"::" " then
+                        VATPostingSetup.Get(CashDocumentLineCZP."VAT Bus. Posting Group", CashDocumentLineCZP."VAT Prod. Posting Group");
+                    CashDocumentPostCZP.InitGenJnlLine(Rec, CashDocumentLineCZP);
+                    CashDocumentPostCZP.GetGenJnlLine(GenJournalLine);
+                    GenJnlCheckLine.RunCheck(GenJournalLine);
+                end;
+            until CashDocumentLineCZP.Next() = 0;
+        end;
 
         CashDocumentHeaderCZP.Get(Rec."Cash Desk No.", Rec."No.");
         CashDocumentHeaderCZP.Status := Rec.Status::Released;
@@ -227,6 +232,11 @@ codeunit 11725 "Cash Document-Release CZP"
         SuggestedAmountToApplyQst: Label '%1 Ledger Entry %2 %3 is suggested to application on other documents in the system.\Do you want to use it for this Cash Document?', Comment = '%1 = Account Type, %2 = Applies-To Doc. Type, %3 = Applies-To Doc. No.';
         IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeCheckCashDocumentLines(CashDocumentHeaderCZP, IsHandled);
+        if IsHandled then
+            exit;
+
         CashDocumentLineCZP.Reset();
         CashDocumentLineCZP.SetRange("Cash Desk No.", CashDocumentHeaderCZP."Cash Desk No.");
         CashDocumentLineCZP.SetRange("Cash Document No.", CashDocumentHeaderCZP."No.");
@@ -327,6 +337,16 @@ codeunit 11725 "Cash Document-Release CZP"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCheckCashDocumentLine(CashDocumentLineCZP: Record "Cash Document Line CZP"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnOnRunOnBeforeCheckCashDocLines(CashDocumentHeaderCZP: Record "Cash Document Header CZP"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeCheckCashDocumentLines(CashDocumentHeaderCZP: Record "Cash Document Header CZP"; var IsHandled: Boolean)
     begin
     end;
 }

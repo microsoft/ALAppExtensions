@@ -3,7 +3,10 @@ codeunit 11752 "Customer Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::Customer, 'OnAfterInsertEvent', '', false, false)]
     local procedure InitValueOnAfterInsertEvent(var Rec: Record Customer)
     begin
-        Rec."Allow Multiple Posting Groups" := true;
+        if not Rec."Allow Multiple Posting Groups" then begin
+            Rec."Allow Multiple Posting Groups" := true;
+            Rec.Modify();
+        end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::Customer, 'OnAfterDeleteEvent', '', false, false)]
@@ -24,22 +27,9 @@ codeunit 11752 "Customer Handler CZL"
     local procedure CheckChangeOnBeforeIsContactUpdateNeeded(Customer: Record Customer; xCustomer: Record Customer; var UpdateNeeded: Boolean)
     begin
         UpdateNeeded := UpdateNeeded or
-            (Customer."Registration No. CZL" <> xCustomer."Registration No. CZL") or
+            (Customer."Registration Number" <> xCustomer."Registration Number") or
             (Customer."Tax Registration No. CZL" <> xCustomer."Tax Registration No. CZL");
     end;
-#if not CLEAN20
-    [EventSubscriber(ObjectType::Table, Database::Customer, 'OnBeforeCheckAllowMultiplePostingGroups', '', false, false)]
-    local procedure SuppressCheckAllowMultiplePostingGroupsOnBeforeCheckAllowMultiplePostingGroups(var IsHandled: Boolean)
-    var
-#pragma warning disable AL0432
-        PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
-#pragma warning restore AL0432
-    begin
-        if IsHandled then
-            exit;
-        IsHandled := not PostingGroupManagementCZL.IsAllowMultipleCustVendPostingGroupsEnabled();
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Cust. Ledger Entry", 'OnAfterCopyCustLedgerEntryFromGenJnlLine', '', false, false)]
     local procedure UpdateEntryOnAfterCopyCustLedgerEntryFromGenJnlLine(var CustLedgerEntry: Record "Cust. Ledger Entry"; GenJournalLine: Record "Gen. Journal Line")

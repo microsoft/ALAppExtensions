@@ -563,6 +563,7 @@ report 31018 "Sales - Invoice with Adv. CZZ"
                 SalesInvLine: Record "Sales Invoice Line";
             begin
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := Language.GetFormatRegionOrDefault("Format Region");
 
                 FormatAddressFields("Sales Invoice Header");
                 FormatDocumentFields("Sales Invoice Header");

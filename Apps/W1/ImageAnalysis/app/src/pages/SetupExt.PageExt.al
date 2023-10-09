@@ -1,3 +1,6 @@
+namespace Microsoft.Utility.ImageAnalysis;
+
+using System.AI;
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved. 
 // Licensed under the MIT License. See License.txt in the project root for license information. 
@@ -15,15 +18,12 @@ pageextension 2025 "Image Analysis Setup Ext" extends "Image Analysis Setup"
                 ToolTip = 'Specifies whether to use the Image Analyzer extension to suggest attributes that it detects in images of items and contact persons.';
 
                 trigger OnValidate()
-                var
-                    ImageAnalyzerExtMgt: Codeunit "Image Analyzer Ext. Mgt.";
-                    DummyNotification: Notification;
                 begin
                     if "Image-Based Attribute Recognition Enabled" then begin
                         "Image-Based Attribute Recognition Enabled" := false;
                         Modify();
                         Commit();
-                        ImageAnalyzerExtMgt.OpenSetupWizard(DummyNotification);
+                        Page.RunModal(Page::"Image Analyzer Wizard");
                         Rec.Get();
                         CurrPage.Update();
                     end;

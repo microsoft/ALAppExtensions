@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GeneralLedger.Journal;
+
+using Microsoft.Finance.TaxBase;
+using Microsoft.Finance.TDS.TDSForCustomer;
+
 pageextension 18667 "Cash Receipt Journal TDS" extends "Cash Receipt Journal"
 {
     layout

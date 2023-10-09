@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.Foundation.Company;
+using System.IO;
+using System.Utilities;
+
 codeunit 10502 "Intrastat Report Exp. Ext. GB"
 {
     TableNo = "Data Exch.";
@@ -40,10 +50,10 @@ codeunit 10502 "Intrastat Report Exp. Ext. GB"
         IntrastatReportHeader: Record "Intrastat Report Header";
         IntrastatReportLine: Record "Intrastat Report Line";
         IntrastatReportLineFilters: Text;
-        FileType, HasData: Text[1];
+        FileType, HasData : Text[1];
         InStreamFilters: InStream;
     begin
-        CompanyInfo.Get();       
+        CompanyInfo.Get();
 
         DataExch."Table Filters".CreateInStream(InStreamFilters, TextEncoding::Windows);
         InStreamFilters.ReadText(IntrastatReportLineFilters);
@@ -63,7 +73,7 @@ codeunit 10502 "Intrastat Report Exp. Ext. GB"
         HeaderText := 'T,';
         HeaderText += CompanyInfo."VAT Registration No." + ',';
         HeaderText += ',';
-        HeaderText += CopyStr(CompanyInfo.Name,1,30) + ',';
+        HeaderText += CopyStr(CompanyInfo.Name, 1, 30) + ',';
         HeaderText += HasData + ',';
         HeaderText += FileType + ',';
         HeaderText += Format(WorkDate(), 0, WorkDateFormatTxt) + ',';

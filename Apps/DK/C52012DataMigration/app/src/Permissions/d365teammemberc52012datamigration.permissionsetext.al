@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved. 
+// Licensed under the MIT License. See License.txt in the project root for license information. 
+// ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.DataMigration.C5;
+
+using System.Security.AccessControl;
+
 permissionsetextension 25457 "D365 TEAM MEMBER - C5 2012 Data Migration" extends "D365 TEAM MEMBER"
 {
     Permissions = tabledata "C5 Centre" = RIMD,

@@ -173,13 +173,7 @@ codeunit 139580 "Shpfy Checklist Init. Test"
         CompanyTriggers: Codeunit "Company Triggers";
     begin
         // [WHEN] Calling OnCompanyOpen
-#if not CLEAN20
-#pragma warning disable AL0432        
-#endif
         CompanyTriggers.OnCompanyOpen();
-#if not CLEAN20
-#pragma warning restore AL0432        
-#endif
         Commit(); // Need to commit before calling isolated event OnCompanyOpenCompleted
         CompanyTriggers.OnCompanyOpenCompleted();
     end;

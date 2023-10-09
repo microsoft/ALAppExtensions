@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System.Apps;
+using System.Security.AccessControl;
+
 /// <summary>
 /// List part that holds the custom permission sets assigned to a plan.
 /// </summary>
@@ -52,15 +57,9 @@ page 9058 "Custom Permission Set In Plan"
                     trigger OnLookup(var Text: Text): Boolean
                     var
                         PermissionSetLookupRecord: Record "Aggregate Permission Set";
-                        LookupPermissionSet: Page "Lookup Permission Set";
+                        PlanConfigurationImpl: Codeunit "Plan Configuration Impl.";
                     begin
-                        LookupPermissionSet.LookupMode := true;
-                        if LookupPermissionSet.RunModal() = ACTION::LookupOK then begin
-                            LookupPermissionSet.GetRecord(PermissionSetLookupRecord);
-                            Rec.Scope := PermissionSetLookupRecord.Scope;
-                            Rec."App ID" := PermissionSetLookupRecord."App ID";
-                            Rec."Role ID" := PermissionSetLookupRecord."Role ID";
-                            Rec.CalcFields("App Name", "Role Name");
+                        if PlanConfigurationImpl.LookupPermissionSet(false, Rec, PermissionSetLookupRecord) then begin
                             SkipValidation := true;
                             PermissionScope := Format(PermissionSetLookupRecord.Scope);
                         end;
@@ -77,7 +76,7 @@ page 9058 "Custom Permission Set In Plan"
                         end;
 
                         // Get the Scope and App ID for a matching Role ID
-                        AggregatePermissionSet.SetRange("Role ID", "Role ID");
+                        AggregatePermissionSet.SetRange("Role ID", Rec."Role ID");
                         AggregatePermissionSet.FindFirst();
 
                         if AggregatePermissionSet.Count > 1 then
@@ -168,6 +167,5 @@ page 9058 "Custom Permission Set In Plan"
         LocalPlanId: Guid;
         SkipValidation: Boolean;
         PermissionScope: Text;
-        [InDataSet]
         PermissionSetNotFound: Boolean;
 }

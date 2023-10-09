@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Company;
+
 page 11514 "Swiss QR-Bill Setup"
 {
     Caption = 'QR-Bill Setup';
@@ -25,11 +35,17 @@ page 11514 "Swiss QR-Bill Setup"
                         ApplicationArea = All;
                         ToolTip = 'Specifies the address type used for all printed QR-bills. Recommended value is Structured.';
                     }
+#if not CLEAN23
                     field(UmlautCharsEncodeMode; "Umlaut Chars Encode Mode")
                     {
                         ApplicationArea = All;
                         ToolTip = 'Specifies the German umlaut characters encoding mode. "Single" mode: "Ä" to "A". "Double" mode: "Ä" to "Ae". The recommended value is Double.';
+                        Visible = false;
+                        ObsoleteReason = 'No need to convert umlauts, because encoding was changed to UTF-8.';
+                        ObsoleteState = Pending;
+                        ObsoleteTag = '23.0';
                     }
+#endif
                     field(DefaultQRBillLayout; "Default Layout")
                     {
                         ApplicationArea = All;
@@ -155,7 +171,9 @@ page 11514 "Swiss QR-Bill Setup"
                     field(OpenGLSetup; OpenGLSetupLbl)
                     {
                         ApplicationArea = All;
+#pragma warning disable AA0219
                         ToolTip = 'Opens the General Ledger Setup page.';
+#pragma warning restore AA0219
                         Caption = ' ';
                         ShowCaption = false;
                         StyleExpr = true;

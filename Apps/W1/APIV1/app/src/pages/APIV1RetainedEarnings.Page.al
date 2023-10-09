@@ -1,3 +1,8 @@
+namespace Microsoft.API.V1;
+
+using Microsoft.Integration.Entity;
+using Microsoft.Integration.Graph;
+
 page 20029 "APIV1 - Retained Earnings"
 {
     APIVersion = 'v1.0';
@@ -20,29 +25,29 @@ page 20029 "APIV1 - Retained Earnings"
         {
             repeater(Group)
             {
-                field(lineNumber; "Line No.")
+                field(lineNumber; Rec."Line No.")
                 {
                     Caption = 'lineNumber', Locked = true;
                 }
-                field(display; Description)
+                field(display; Rec.Description)
                 {
                     Caption = 'description', Locked = true;
                 }
-                field(netChange; "Net Change")
+                field(netChange; Rec."Net Change")
                 {
                     AutoFormatType = 0;
                     BlankZero = true;
                     Caption = 'netChange', Locked = true;
                 }
-                field(lineType; "Line Type")
+                field(lineType; Rec."Line Type")
                 {
                     Caption = 'lineType', Locked = true;
                 }
-                field(indentation; Indentation)
+                field(indentation; Rec.Indentation)
                 {
                     Caption = 'indentation', Locked = true;
                 }
-                field(dateFilter; "Date Filter")
+                field(dateFilter; Rec."Date Filter")
                 {
                     Caption = 'dateFilter', Locked = true;
                 }
@@ -64,5 +69,6 @@ page 20029 "APIV1 - Retained Earnings"
         GraphMgtReports.SetUpAccountScheduleBaseAPIDataWrapper(RecVariant, ReportAPIType::"Retained Earnings");
     end;
 }
+
 
 

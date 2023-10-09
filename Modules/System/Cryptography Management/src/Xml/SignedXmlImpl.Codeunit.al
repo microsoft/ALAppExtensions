@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.Encryption;
+
+using System;
+
 codeunit 1461 "SignedXml Impl."
 {
     Access = Internal;
@@ -152,17 +156,6 @@ codeunit 1461 "SignedXml Impl."
         XmlDotNetConvert.ToDotNet(SignatureElement, DotNetXmlElement, true);
         DotNetSignedXml.LoadXml(DotNetXmlElement);
     end;
-
-#if not CLEAN19
-#pragma warning disable AL0432
-    [Obsolete('Replaced by SetSigningKey function with XmlString parameter.', '19.1')]
-    procedure SetSigningKey(var SignatureKey: Record "Signature Key")
-    begin
-        if SignatureKey.TryGetInstance(DotNetAsymmetricAlgorithm) then
-            DotNetSignedXml.SigningKey := DotNetAsymmetricAlgorithm;
-    end;
-#pragma warning restore
-#endif
 
     procedure SetSigningKey(XmlString: Text)
     begin

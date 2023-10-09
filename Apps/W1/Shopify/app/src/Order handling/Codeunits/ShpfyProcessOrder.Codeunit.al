@@ -1,3 +1,11 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item;
+using Microsoft.Sales.Document;
+using Microsoft.Foundation.Address;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Posting;
+
 /// <summary>
 /// Codeunit Shpfy Process Order (ID 30166).
 /// </summary>
@@ -32,6 +40,7 @@ codeunit 30166 "Shpfy Process Order"
         ShopifyShop.Get(OrderHeader."Shop Code");
         CreateHeaderFromShopifyOrder(SalesHeader, OrderHeader);
         CreateLinesFromShopifyOrder(SalesHeader, OrderHeader);
+        ApplyGlobalDiscounts(OrderHeader, SalesHeader);
 
         if ShopifyShop."Auto Release Sales Orders" then
             ReleaseSalesDocument.Run(SalesHeader);
@@ -51,8 +60,10 @@ codeunit 30166 "Shpfy Process Order"
     var
         ShopLocation: Record "Shpfy Shop Location";
         ShopifyTaxArea: Record "Shpfy Tax Area";
+        DocLinkToBCDoc: Record "Shpfy Doc. Link To Doc.";
         OrdersAPI: Codeunit "Shpfy Orders API";
         ProductPriceCalc: Codeunit "Shpfy Product Price Calc.";
+        BCDocumentTypeConvert: Codeunit "Shpfy BC Document Type Convert";
         IsHandled: Boolean;
     begin
         OrderEvents.OnBeforeCreateSalesHeader(ShopifyOrderHeader, SalesHeader, IsHandled);
@@ -125,8 +136,32 @@ codeunit 30166 "Shpfy Process Order"
                 SalesHeader.SetWorkDescription(ShopifyOrderHeader.GetWorkDescription());
         end;
         OrdersAPI.AddOrderAttribute(ShopifyOrderHeader, 'BC Doc. No.', SalesHeader."No.");
+        DocLinkToBCDoc.Init();
+        DocLinkToBCDoc."Shopify Document Type" := "Shpfy Shop Document Type"::"Shopify Shop Order";
+        DocLinkToBCDoc."Shopify Document Id" := ShopifyOrderHeader."Shopify Order Id";
+        DocLinkToBCDoc."Document Type" := BCDocumentTypeConvert.Convert(SalesHeader);
+        DocLinkToBCDoc."Document No." := SalesHeader."No.";
+        DocLinkToBCDoc.Insert();
         OrderEvents.OnAfterCreateSalesHeader(ShopifyOrderHeader, SalesHeader);
     end;
+
+    local procedure ApplyGlobalDiscounts(OrderHeader: Record "Shpfy Order Header"; var SalesHeader: Record "Sales Header")
+    var
+        OrderLine: Record "Shpfy Order Line";
+        OrderShippingCharges: Record "Shpfy Order Shipping Charges";
+        SalesCalcDiscountByType: Codeunit "Sales - Calc Discount By Type";
+        Discount: Decimal;
+    begin
+        OrderLine.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
+        OrderLine.CalcSums("Discount Amount");
+        OrderShippingCharges.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
+        OrderShippingCharges.CalcSums("Discount Amount");
+        SalesHeader.Get(SalesHeader."Document Type", SalesHeader."No.");
+        Discount := OrderHeader."Discount Amount" - OrderLine."Discount Amount" - OrderShippingCharges."Discount Amount";
+        if Discount > 0 then
+            SalesCalcDiscountByType.ApplyInvDiscBasedOnAmt(Discount, SalesHeader);
+    end;
+
 
     /// <summary> 
     /// Create Lines From Shopify Order.
@@ -202,6 +237,7 @@ codeunit 30166 "Shpfy Process Order"
 
         OrderShippingCharges.Reset();
         OrderShippingCharges.SetRange("Shopify Order Id", ShopifyOrderHeader."Shopify Order Id");
+        OrderShippingCharges.SetFilter(Amount, '>0');
         if OrderShippingCharges.FindSet() then begin
             ShopifyShop.TestField("Shipping Charges Account");
             repeat
@@ -221,6 +257,7 @@ codeunit 30166 "Shpfy Process Order"
                     SalesLine.Validate(Description, OrderShippingCharges.Title);
                     SalesLine.Validate("Unit Price", OrderShippingCharges.Amount);
                     SalesLine.Validate("Line Discount Amount", OrderShippingCharges."Discount Amount");
+                    SalesLine."Shpfy Order No." := ShopifyOrderHeader."Shopify Order No.";
                     SalesLine.Modify(true);
                 end;
                 OrderEvents.OnAfterCreateShippingCostSalesLine(ShopifyOrderHeader, OrderShippingCharges, SalesHeader, SalesLine);
@@ -237,6 +274,9 @@ codeunit 30166 "Shpfy Process Order"
     var
         CountryRegion: Record "Country/Region";
     begin
+        if ISOCode = '' then
+            exit(ISOCode);
+
         if CountryRegion.Get(ISOCode) then
             exit(ISOCode)
         else begin
@@ -275,5 +315,22 @@ codeunit 30166 "Shpfy Process Order"
         if SalesHeader.GetBySystemId(LastCreatedDocumentId) then
             SalesHeader.Delete(true);
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnInsertShipmentHeaderOnAfterTransferfieldsToSalesShptHeader', '', false, false)]
+    local procedure TransferShopifyOrderNoToShipmentHeader(SalesHeader: Record "Sales Header"; var SalesShptHeader: Record "Sales Shipment Header")
+    begin
+        SalesShptHeader."Shpfy Order No." := SalesHeader."Shpfy Order No.";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeSalesLineInsert', '', false, false)]
+    local procedure TransferShopifyValuesOnBeforeSalesLineInsert(var SalesLine: Record "Sales Line"; var TempSalesLine: Record "Sales Line" temporary; SalesHeader: Record "Sales Header")
+    begin
+        SalesLine."Shpfy Order No." := TempSalesLine."Shpfy Order No.";
+        SalesLine."Shpfy Order Line Id" := TempSalesLine."Shpfy Order Line Id";
+        SalesLine."Shpfy Refund Id" := TempSalesLine."Shpfy Refund Id";
+        SalesLine."Shpfy Refund Line Id" := TempSalesLine."Shpfy Refund Line Id";
+    end;
 }
+
+
 

@@ -1,3 +1,9 @@
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
+using Microsoft.Foundation.Enums;
+using Microsoft.Finance.Dimension;
+using System.Telemetry;
+
 page 2623 "Stat. Account Balance"
 {
     Caption = 'Statistical Account Balance';
@@ -126,6 +132,16 @@ page 2623 "Stat. Account Balance"
             }
         }
     }
+
+    trigger OnOpenPage()
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
+    begin
+        Rec.Reset();
+        FeatureTelemetry.LogUptake('0000KDS', StatAccTelemetry.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000KDT', StatAccTelemetry.GetFeatureTelemetryName(), 'Opened Balances Page');
+    end;
 
     trigger OnAfterGetRecord()
     begin

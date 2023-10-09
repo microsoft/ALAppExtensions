@@ -79,7 +79,7 @@ codeunit 139550 "Intrastat Report Test"
     end;
 
     [Test]
-    [HandlerFunctions('UndoDocumentConfirmHandler,IntrastatReportGetLinesPageHandler')]
+    [HandlerFunctions('UndoDocumentConfirmHandler,IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure IntrastatLineAfterUndoPurchase()
     var
@@ -210,7 +210,7 @@ codeunit 139550 "Intrastat Report Test"
     end;
 
     [Test]
-    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure IntrastatReportWithPurchaseOrder()
     var
@@ -499,7 +499,7 @@ codeunit 139550 "Intrastat Report Test"
     end;
 
     [Test]
-    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure VerifyIntrastatReportLineSuggestedForNonCrossedBoardItemChargeInNextPeriod()
     var
@@ -683,7 +683,7 @@ codeunit 139550 "Intrastat Report Test"
     end;
 
     [Test]
-    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesShowingItemChargesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure IntrastatReportWithItemChargeOnStartDate()
     var
@@ -721,7 +721,7 @@ codeunit 139550 "Intrastat Report Test"
     end;
 
     [Test]
-    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure NotToShowItemCharges()
     var
@@ -1236,7 +1236,7 @@ codeunit 139550 "Intrastat Report Test"
         IntrastatReportPage.ChecklistReport.Invoke();
 
         // [THEN] Check no error in error part
-        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldName("Partner VAT ID"));
+        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldCaption("Partner VAT ID"));
         IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals('');
 
         // [GIVEN] A Intrastat Report with empty "Total Weight" and "Supplementary Units" = false
@@ -1245,8 +1245,8 @@ codeunit 139550 "Intrastat Report Test"
         IntrastatReportPage.ChecklistReport.Invoke();
 
         // [THEN] You got a error in error part
-        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldName("Partner VAT ID"));
-        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals(IntrastatReportLine.FieldName("Partner VAT ID"));
+        IntrastatReportPage.ErrorMessagesPart.Filter.SetFilter("Field Name", IntrastatReportLine.FieldCaption("Partner VAT ID"));
+        IntrastatReportPage.ErrorMessagesPart."Field Name".AssertEquals(IntrastatReportLine.FieldCaption("Partner VAT ID"));
         IntrastatReportPage.Close();
     end;
 
@@ -1743,7 +1743,7 @@ codeunit 139550 "Intrastat Report Test"
     end;
 
     [Test]
-    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
     [Scope('OnPrem')]
     procedure IntrastatReportWithServiceItem()
     var
@@ -2172,6 +2172,645 @@ codeunit 139550 "Intrastat Report Test"
         CreateAndVerifyIntrastatLine(DocumentNo, SalesLine."No.", SalesLine.Quantity, IntrastatReportLine.Type::Shipment);
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('MessageHandlerEmpty,IntrastatReportGetLinesPageHandler')]
+    procedure VerifyIntrastatShptInDirectTransfer()
+    var
+        ToCountryRegion: Record "Country/Region";
+        FromLocation, ToLocation : Record Location;
+        InventorySetup: Record "Inventory Setup";
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        ItemLedgerEntry: Record "Item Ledger Entry";
+        TransferOrder: TestPage "Transfer Order";
+        ItemNo: Code[20];
+    begin
+        // [SCENARIO 465378] Verify shipment transaction in Intrastat Journal when transferring items from company country to EU country as Direct Transfer
+        Initialize();
+
+        // [GIVEN] Source Location and Country, set in Company Information, with Intrastat Code. Location: "L1". Country "C1"
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(FromLocation);
+        FromLocation."Country/Region Code" := LibraryIntrastat.GetCompanyInfoCountryRegionCode();
+        FromLocation.Modify();
+
+        // [GIVEN] Item on inventory for L1 
+        ItemNo := LibraryIntrastat.CreateItem();
+        LibraryIntrastat.CreateAndPostPurchaseItemJournalLine(FromLocation.Code, ItemNo);
+
+        // [GIVEN] Destination Location and Country with Intrastat Code. Location: "L2". Country "C2"
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(ToLocation);
+        LibraryIntrastat.CreateCountryRegion(ToCountryRegion, true);
+        ToLocation."Country/Region Code" := ToCountryRegion.Code;
+        ToLocation.Modify();
+
+        // [GIVEN] Inventory Setup with "Direct Transfer" as "Direct Transfer Posting"
+        InventorySetup.Get();
+        InventorySetup."Direct Transfer Posting" := InventorySetup."Direct Transfer Posting"::"Direct Transfer";
+        InventorySetup.Modify();
+
+        // [GIVEN] Create Transfer Order
+        LibraryWarehouse.CreateTransferHeader(TransferHeader, FromLocation.Code, ToLocation.Code, '');
+        TransferHeader.Validate("Direct Transfer", true);
+        LibraryWarehouse.CreateTransferLine(TransferHeader, TransferLine, ItemNo, 1);
+
+        // [GIVEN] Post Transfer Order
+        TransferOrder.OpenEdit();
+        TransferOrder.GoToRecord(TransferHeader);
+        TransferOrder.Post.Invoke();
+
+        // [WHEN] Get Intrastat Report Lines for direct transfer
+        // [THEN] Verify Shipment Intrastat Report Line is created on source location and destination country
+        ItemLedgerEntry.SetCurrentKey("Item No.", "Posting Date");
+        ItemLedgerEntry.SetRange("Item No.", ItemNo);
+        ItemLedgerEntry.SetRange("Posting Date", WorkDate());
+        ItemLedgerEntry.SetRange("Document Type", ItemLedgerEntry."Document Type"::"Direct Transfer");
+        ItemLedgerEntry.SetLoadFields("Document No.");
+        ItemLedgerEntry.FindFirst();
+
+        CreateAndVerifyIntrastatLine(ItemLedgerEntry."Document No.", ItemNo, 1, IntrastatReportLine.Type::Shipment, ToCountryRegion.Code, FromLocation.Code);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('MessageHandlerEmpty,IntrastatReportGetLinesPageHandler')]
+    procedure VerifyIntrastatRcptInDirectTransfer()
+    var
+        FromCountryRegion: Record "Country/Region";
+        FromLocation, ToLocation : Record Location;
+        InventorySetup: Record "Inventory Setup";
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        ItemLedgerEntry: Record "Item Ledger Entry";
+        TransferOrder: TestPage "Transfer Order";
+        ItemNo: Code[20];
+    begin
+        // [SCENARIO 465378] Verify receipt transaction in Intrastat Journal when transferring items from EU country to company country as Direct Transfer    
+
+        // [GIVEN]
+        // Source Location and Country with Intrastat Code. Location: "L1". Country "C1"
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(FromLocation);
+        LibraryIntrastat.CreateCountryRegion(FromCountryRegion, true);
+        FromLocation."Country/Region Code" := FromCountryRegion.Code;
+        FromLocation.Modify();
+
+        // [GIVEN] Item on inventory for L1 
+        ItemNo := LibraryIntrastat.CreateItem();
+        LibraryIntrastat.CreateAndPostPurchaseItemJournalLine(FromLocation.Code, ItemNo);
+
+        // Destination Country, set in Company Information, with Intrastat Code. Location: "L2". Country "C2"
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(ToLocation);
+        ToLocation."Country/Region Code" := LibraryIntrastat.GetCompanyInfoCountryRegionCode();
+        ToLocation.Modify();
+
+        // [GIVEN] Inventory Setup with "Direct Transfer" as "Direct Transfer Posting"
+        InventorySetup.Get();
+        InventorySetup."Direct Transfer Posting" := InventorySetup."Direct Transfer Posting"::"Direct Transfer";
+        InventorySetup.Modify();
+
+        // [GIVEN] Create Transfer Order
+        LibraryWarehouse.CreateTransferHeader(TransferHeader, FromLocation.Code, ToLocation.Code, '');
+        TransferHeader.Validate("Direct Transfer", true);
+        LibraryWarehouse.CreateTransferLine(TransferHeader, TransferLine, ItemNo, 1);
+
+        // [GIVEN] Post Transfer Order
+        TransferOrder.OpenEdit();
+        TransferOrder.GoToRecord(TransferHeader);
+        TransferOrder.Post.Invoke();
+
+        // [WHEN] Get Intrastat Report Lines for direct transfer
+        // [THEN] Verify Receipt Intrastat Report Line is created on destination location and source country
+        ItemLedgerEntry.SetCurrentKey("Item No.", "Posting Date");
+        ItemLedgerEntry.SetRange("Item No.", ItemNo);
+        ItemLedgerEntry.SetRange("Posting Date", WorkDate());
+        ItemLedgerEntry.SetRange("Document Type", ItemLedgerEntry."Document Type"::"Direct Transfer");
+        ItemLedgerEntry.SetLoadFields("Document No.");
+        ItemLedgerEntry.FindFirst();
+
+        CreateAndVerifyIntrastatLine(ItemLedgerEntry."Document No.", ItemNo, 1, IntrastatReportLine.Type::Receipt, FromCountryRegion.Code, ToLocation.Code);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('MessageHandlerEmpty,IntrastatReportGetLinesPageHandler')]
+    procedure VerifyIntrastatShptInDirectTransferRcptAndShpt()
+    var
+        ToCountryRegion: Record "Country/Region";
+        FromLocation, ToLocation : Record Location;
+        InventorySetup: Record "Inventory Setup";
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        ItemLedgerEntry: Record "Item Ledger Entry";
+        TransferOrder: TestPage "Transfer Order";
+        ItemNo, OrderNo : Code[20];
+    begin
+        // [SCENARIO 465378] Verify shipment transaction in Intrastat Journal when transferring items from company country to EU country as Direct Transfer Ship and Receive
+
+        // [GIVEN] Source Location and Country, set in Company Information, with Intrastat Code. Location: "L1". Country "C1"
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(FromLocation);
+        FromLocation."Country/Region Code" := LibraryIntrastat.GetCompanyInfoCountryRegionCode();
+        FromLocation.Modify();
+
+        // [GIVEN] Item on inventory for L1 
+        ItemNo := LibraryIntrastat.CreateItem();
+        LibraryIntrastat.CreateAndPostPurchaseItemJournalLine(FromLocation.Code, ItemNo);
+
+        // [GIVEN] Destination Location and Country with Intrastat Code. Location: "L2". Country "C2"
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(ToLocation);
+        LibraryIntrastat.CreateCountryRegion(ToCountryRegion, true);
+        ToLocation."Country/Region Code" := ToCountryRegion.Code;
+        ToLocation.Modify();
+
+        // [GIVEN] Inventory Setup with "Receipt and Shipment" as "Direct Transfer Posting"
+        InventorySetup.Get();
+        InventorySetup."Direct Transfer Posting" := InventorySetup."Direct Transfer Posting"::"Receipt and Shipment";
+        InventorySetup.Modify();
+
+        // [GIVEN] Create Transfer Order
+        LibraryWarehouse.CreateTransferHeader(TransferHeader, FromLocation.Code, ToLocation.Code, '');
+        TransferHeader.Validate("Direct Transfer", true);
+        LibraryWarehouse.CreateTransferLine(TransferHeader, TransferLine, ItemNo, 1);
+        OrderNo := TransferHeader."No.";
+
+        // [GIVEN] Post Transfer Order
+        TransferOrder.OpenEdit();
+        TransferOrder.GoToRecord(TransferHeader);
+        TransferOrder.Post.Invoke();
+
+        // [WHEN] Get Intrastat Report Lines for direct transfer with shipment and receipt
+        // [THEN] Verify Shipment Intrastat Report Line is created on unknown location and destination country
+        ItemLedgerEntry.SetCurrentKey("Item No.", "Posting Date");
+        ItemLedgerEntry.SetRange("Item No.", ItemNo);
+        ItemLedgerEntry.SetRange("Posting Date", WorkDate());
+        ItemLedgerEntry.SetRange("Entry Type", ItemLedgerEntry."Entry Type"::Transfer);
+        ItemLedgerEntry.SetRange("Order No.", OrderNo);
+        ItemLedgerEntry.SetLoadFields("Document No.");
+        ItemLedgerEntry.FindLast();
+
+        CreateAndVerifyIntrastatLine(ItemLedgerEntry."Document No.", ItemNo, 1, IntrastatReportLine.Type::Shipment, ToCountryRegion.Code, '');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('MessageHandlerEmpty,IntrastatReportGetLinesPageHandler')]
+    procedure VerifyIntrastatRcptInDirectTransferRcptAndShpt()
+    var
+        FromCountryRegion: Record "Country/Region";
+        FromLocation, ToLocation : Record Location;
+        InventorySetup: Record "Inventory Setup";
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        ItemLedgerEntry: Record "Item Ledger Entry";
+        TransferOrder: TestPage "Transfer Order";
+        ItemNo, OrderNo : Code[20];
+    begin
+        // [SCENARIO 465378] Verify receipt transaction in Intrastat Journal when transferring items from EU country to company country as Direct Transfer Ship and Receive    
+
+        // [GIVEN]
+        // Source Location and Country with Intrastat Code. Location: "L1". Country "C1"
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(FromLocation);
+        LibraryIntrastat.CreateCountryRegion(FromCountryRegion, true);
+        FromLocation."Country/Region Code" := FromCountryRegion.Code;
+        FromLocation.Modify();
+
+        // [GIVEN] Item on inventory for L1 
+        ItemNo := LibraryIntrastat.CreateItem();
+        LibraryIntrastat.CreateAndPostPurchaseItemJournalLine(FromLocation.Code, ItemNo);
+
+        // Destination Country, set in Company Information, with Intrastat Code. Location: "L2". Country "C2"
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(ToLocation);
+        ToLocation."Country/Region Code" := LibraryIntrastat.GetCompanyInfoCountryRegionCode();
+        ToLocation.Modify();
+
+        // [GIVEN] Inventory Setup with "Receipt and Shipment" as "Direct Transfer Posting"
+        InventorySetup.Get();
+        InventorySetup."Direct Transfer Posting" := InventorySetup."Direct Transfer Posting"::"Receipt and Shipment";
+        InventorySetup.Modify();
+
+        // [GIVEN] Create Transfer Order
+        LibraryWarehouse.CreateTransferHeader(TransferHeader, FromLocation.Code, ToLocation.Code, '');
+        TransferHeader.Validate("Direct Transfer", true);
+        LibraryWarehouse.CreateTransferLine(TransferHeader, TransferLine, ItemNo, 1);
+        OrderNo := TransferHeader."No.";
+
+        // [GIVEN] Post Transfer Order
+        TransferOrder.OpenEdit();
+        TransferOrder.GoToRecord(TransferHeader);
+        TransferOrder.Post.Invoke();
+
+        // [WHEN] Get Intrastat Report Lines for direct transfer with shipment and receipt
+        // [THEN] Verify Receipt Intrastat Report Line is created on unknown location and source country
+        ItemLedgerEntry.SetCurrentKey("Item No.", "Posting Date");
+        ItemLedgerEntry.SetRange("Item No.", ItemNo);
+        ItemLedgerEntry.SetRange("Posting Date", WorkDate());
+        ItemLedgerEntry.SetRange("Entry Type", ItemLedgerEntry."Entry Type"::Transfer);
+        ItemLedgerEntry.SetRange("Order No.", OrderNo);
+        ItemLedgerEntry.SetLoadFields("Document No.");
+        ItemLedgerEntry.FindFirst();
+
+        CreateAndVerifyIntrastatLine(ItemLedgerEntry."Document No.", ItemNo, 1, IntrastatReportLine.Type::Receipt, FromCountryRegion.Code, '');
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    procedure VerifyIntrastatShptInTransferRcptAndShpt()
+    var
+        ToCountryRegion: Record "Country/Region";
+        InTransitLocation, FromLocation, ToLocation : Record Location;
+        InventorySetup: Record "Inventory Setup";
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        ItemLedgerEntry: Record "Item Ledger Entry";
+        ItemNo, OrderNo : Code[20];
+    begin
+        // [SCENARIO 465378] Verify shipment transaction in Intrastat Journal when transferring items from company country to EU country as Ship and Receive
+
+        // [GIVEN] Source Location and Country, set in Company Information, with Intrastat Code. Location: "L1". Country "C1"
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(FromLocation);
+        FromLocation."Country/Region Code" := LibraryIntrastat.GetCompanyInfoCountryRegionCode();
+        FromLocation.Modify();
+
+        // [GIVEN] Item on inventory for L1 
+        ItemNo := LibraryIntrastat.CreateItem();
+        LibraryIntrastat.CreateAndPostPurchaseItemJournalLine(FromLocation.Code, ItemNo);
+
+        // [GIVEN] Destination Location and Country with Intrastat Code. Location: "L2". Country "C2"
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(ToLocation);
+        LibraryIntrastat.CreateCountryRegion(ToCountryRegion, true);
+        ToLocation."Country/Region Code" := ToCountryRegion.Code;
+        ToLocation.Modify();
+
+        // [GIVEN] In Transit Location
+        LibraryWarehouse.CreateInTransitLocation(InTransitLocation);
+
+        // [GIVEN] Inventory Setup with "Receipt and Shipment" as "Direct Transfer Posting"
+        InventorySetup.Get();
+        InventorySetup."Direct Transfer Posting" := InventorySetup."Direct Transfer Posting"::"Receipt and Shipment";
+        InventorySetup.Modify();
+
+        // [GIVEN] Create Transfer Order
+        LibraryWarehouse.CreateTransferHeader(TransferHeader, FromLocation.Code, ToLocation.Code, InTransitLocation.Code);
+        LibraryWarehouse.CreateTransferLine(TransferHeader, TransferLine, ItemNo, 1);
+        OrderNo := TransferHeader."No.";
+
+        // [GIVEN] Post Transfer Order
+        LibraryWarehouse.PostTransferOrder(TransferHeader, true, true);
+
+        // [WHEN] Get Intrastat Report Lines for transfer shipment and receipt
+        // [THEN] Verify Shipment Intrastat Report Line is created on in-transit location and destination country
+        ItemLedgerEntry.SetCurrentKey("Item No.", "Posting Date");
+        ItemLedgerEntry.SetRange("Item No.", ItemNo);
+        ItemLedgerEntry.SetRange("Posting Date", WorkDate());
+        ItemLedgerEntry.SetRange("Entry Type", ItemLedgerEntry."Entry Type"::Transfer);
+        ItemLedgerEntry.SetRange("Order No.", OrderNo);
+        ItemLedgerEntry.SetLoadFields("Document No.");
+        ItemLedgerEntry.FindLast();
+
+        CreateAndVerifyIntrastatLine(ItemLedgerEntry."Document No.", ItemNo, 1, IntrastatReportLine.Type::Shipment, ToCountryRegion.Code, InTransitLocation.Code);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    procedure VerifyIntrastatRcptInTransferRcptAndShpt()
+    var
+        FromCountryRegion: Record "Country/Region";
+        InTransitLocation, FromLocation, ToLocation : Record Location;
+        InventorySetup: Record "Inventory Setup";
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        ItemLedgerEntry: Record "Item Ledger Entry";
+        ItemNo, OrderNo : Code[20];
+    begin
+        // [SCENARIO 465378] Verify receipt transaction in Intrastat Journal when transferring items from EU country to company country as Ship and Receive 
+
+        // [GIVEN]
+        // Source Location and Country with Intrastat Code. Location: "L1". Country "C1"
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(FromLocation);
+        LibraryIntrastat.CreateCountryRegion(FromCountryRegion, true);
+        FromLocation."Country/Region Code" := FromCountryRegion.Code;
+        FromLocation.Modify();
+
+        // [GIVEN] Item on inventory for L1 
+        ItemNo := LibraryIntrastat.CreateItem();
+        LibraryIntrastat.CreateAndPostPurchaseItemJournalLine(FromLocation.Code, ItemNo);
+
+        // Destination Country, set in Company Information, with Intrastat Code. Location: "L2". Country "C2"
+        LibraryWarehouse.CreateLocationWithInventoryPostingSetup(ToLocation);
+        ToLocation."Country/Region Code" := LibraryIntrastat.GetCompanyInfoCountryRegionCode();
+        ToLocation.Modify();
+
+        // [GIVEN] In Transit Location
+        LibraryWarehouse.CreateInTransitLocation(InTransitLocation);
+
+        // [GIVEN] Inventory Setup with "Receipt and Shipment" as "Direct Transfer Posting"
+        InventorySetup.Get();
+        InventorySetup."Direct Transfer Posting" := InventorySetup."Direct Transfer Posting"::"Receipt and Shipment";
+        InventorySetup.Modify();
+
+        // [GIVEN] Create Transfer Order
+        LibraryWarehouse.CreateTransferHeader(TransferHeader, FromLocation.Code, ToLocation.Code, InTransitLocation.Code);
+        LibraryWarehouse.CreateTransferLine(TransferHeader, TransferLine, ItemNo, 1);
+        OrderNo := TransferHeader."No.";
+
+        // [GIVEN] Post Transfer Order
+        LibraryWarehouse.PostTransferOrder(TransferHeader, true, true);
+
+        // [WHEN] Get Intrastat Report Lines for transfer shipment and receipt
+        // [THEN] Verify Receipt Intrastat Report Line is created on in-transit location and source country
+        ItemLedgerEntry.SetCurrentKey("Item No.", "Posting Date");
+        ItemLedgerEntry.SetRange("Item No.", ItemNo);
+        ItemLedgerEntry.SetRange("Posting Date", WorkDate());
+        ItemLedgerEntry.SetRange("Entry Type", ItemLedgerEntry."Entry Type"::Transfer);
+        ItemLedgerEntry.SetRange("Order No.", OrderNo);
+        ItemLedgerEntry.SetLoadFields("Document No.");
+        ItemLedgerEntry.FindFirst();
+
+        CreateAndVerifyIntrastatLine(ItemLedgerEntry."Document No.", ItemNo, 1, IntrastatReportLine.Type::Receipt, FromCountryRegion.Code, InTransitLocation.Code);
+    end;
+
+    [Test]
+    [HandlerFunctions('SalesListModalPageHandler,IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
+    [Scope('OnPrem')]
+    procedure IntraCommunityEUSales()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        PurchaseHeader: Record "Purchase Header";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        SalesShipmentNo: Code[20];
+    begin
+        // [FEATURE] [Sales]
+        // [SCENARIO 443883] Drop shipment Intra-Community sales entry created in the Intrastat Report by Get Entries function
+        Initialize();
+
+        // [GIVEN] Drop shipment sales order for customer with EU country "C1"
+        LibraryIntrastat.CreateSalesOrdersWithDropShipment(SalesHeader, true);
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindFirst();
+
+        // [GIVEN] Drop shipment purchase order for local vendor
+        LibraryIntrastat.CreatePurchOrdersWithDropShipment(PurchaseHeader, SalesHeader."Sell-to Customer No.", false);
+
+        // [GIVEN] Post sales order
+        SalesShipmentNo := LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [WHEN] do not include drop shipment
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(SalesShipmentNo);
+
+        // [WHEN] include drop shipment
+        IntrastatReportSetup."Include Drop Shipment" := true;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] check line created
+        CreateAndVerifyIntrastatLine(SalesShipmentNo, SalesLine."No.", SalesLine.Quantity, IntrastatReportLine.Type::Shipment);
+
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+    end;
+
+    [Test]
+    [HandlerFunctions('SalesListModalPageHandler,IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
+    [Scope('OnPrem')]
+    procedure IntraCommunityEUPurchase()
+    var
+        SalesHeader: Record "Sales Header";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        PurchReceiptNo: Code[20];
+    begin
+        // [FEATURE] [Purchase]
+        // [SCENARIO 443883] Drop shipment Intra-Community purchase entry created in the Intrastat Report by Get Entries function
+        Initialize();
+
+        // [GIVEN] Drop shipment sales order for local customer 
+        LibraryIntrastat.CreateSalesOrdersWithDropShipment(SalesHeader, false);
+
+        // [GIVEN] Drop shipment purchase order for vendor with EU country "C2"
+        LibraryIntrastat.CreatePurchOrdersWithDropShipment(PurchaseHeader, SalesHeader."Sell-to Customer No.", true);
+
+        // [GIVEN] Post sales order
+        LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [GIVEN] Post purchase order
+        PurchaseHeader.Find();
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+        PurchaseLine.FindFirst();
+
+        PurchReceiptNo := PurchaseHeader."Last Receiving No.";
+
+        // [WHEN] do not include drop shipment
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(PurchReceiptNo);
+
+        // [WHEN] include drop shipment
+        IntrastatReportSetup."Include Drop Shipment" := true;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] check line created
+        CreateAndVerifyIntrastatLine(PurchReceiptNo, PurchaseLine."No.", PurchaseLine.Quantity, IntrastatReportLine.Type::Receipt);
+
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+    end;
+
+    [Test]
+    [HandlerFunctions('SalesListModalPageHandler,IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
+    [Scope('OnPrem')]
+    procedure IntraCommunityLocalSales()
+    var
+        SalesHeader: Record "Sales Header";
+        PurchaseHeader: Record "Purchase Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        SalesShipmentNo: Code[20];
+    begin
+        // [FEATURE] [Sales]
+        // [SCENARIO 443883] Drop shipment Intra-Community sales entry created in the Intrastat Report by Get Entries function
+        Initialize();
+
+        // [GIVEN] Drop shipment sales order for local customer
+        LibraryIntrastat.CreateSalesOrdersWithDropShipment(SalesHeader, false);
+
+        // [GIVEN] Drop shipment purchase order for local vendor
+        LibraryIntrastat.CreatePurchOrdersWithDropShipment(PurchaseHeader, SalesHeader."Sell-to Customer No.", false);
+
+        // [GIVEN] Post sales order
+        SalesShipmentNo := LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [WHEN] do not include drop shipment
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(SalesShipmentNo);
+
+        // [WHEN] include drop shipment
+        IntrastatReportSetup."Include Drop Shipment" := true;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(SalesShipmentNo);
+
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+    end;
+
+    [Test]
+    [HandlerFunctions('SalesListModalPageHandler,IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
+    [Scope('OnPrem')]
+    procedure IntraCommunityLocalPurchase()
+    var
+        SalesHeader: Record "Sales Header";
+        PurchaseHeader: Record "Purchase Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        PurchReceiptNo: Code[20];
+    begin
+        // [FEATURE] [Purchase]
+        // [SCENARIO 443883] Drop shipment Intra-Community purchase entry created in the Intrastat Report by Get Entries function
+        Initialize();
+
+        // [GIVEN] Drop shipment sales order for local customer 
+        LibraryIntrastat.CreateSalesOrdersWithDropShipment(SalesHeader, false);
+
+        // [GIVEN] Drop shipment purchase order for local vendor 
+        LibraryIntrastat.CreatePurchOrdersWithDropShipment(PurchaseHeader, SalesHeader."Sell-to Customer No.", false);
+
+        // [GIVEN] Post sales order
+        LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [GIVEN] Post purchase order
+        PurchaseHeader.Find();
+        PurchReceiptNo := PurchaseHeader."Last Receiving No.";
+
+        // [WHEN] do not include drop shipment
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(PurchReceiptNo);
+
+        // [WHEN] include drop shipment
+        IntrastatReportSetup."Include Drop Shipment" := true;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(PurchReceiptNo);
+
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+    end;
+
+    [Test]
+    [HandlerFunctions('SalesListModalPageHandler,IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
+    [Scope('OnPrem')]
+    procedure IntraCommunityForeingSales()
+    var
+        SalesHeader: Record "Sales Header";
+        PurchaseHeader: Record "Purchase Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        SalesShipmentNo: Code[20];
+    begin
+        // [FEATURE] [Sales]
+        // [SCENARIO 443883] Drop shipment Intra-Community sales entry created in the Intrastat Report by Get Entries function
+        Initialize();
+
+        // [GIVEN] Drop shipment sales order for customer with EU country "C1" and item "Item"
+        LibraryIntrastat.CreateSalesOrdersWithDropShipment(SalesHeader, true);
+
+        // [GIVEN] Drop shipment purchase order for EU vendor
+        LibraryIntrastat.CreatePurchOrdersWithDropShipment(PurchaseHeader, SalesHeader."Sell-to Customer No.", true);
+
+        // [GIVEN] Post sales order
+        SalesShipmentNo := LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [WHEN] do not include drop shipment
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(SalesShipmentNo);
+
+        // [WHEN] include drop shipment
+        IntrastatReportSetup."Include Drop Shipment" := true;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(SalesShipmentNo);
+
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+    end;
+
+    [Test]
+    [HandlerFunctions('SalesListModalPageHandler,IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
+    [Scope('OnPrem')]
+    procedure IntraCommunityForeingPurchase()
+    var
+        SalesHeader: Record "Sales Header";
+        PurchaseHeader: Record "Purchase Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        PurchReceiptNo: Code[20];
+    begin
+        // [FEATURE] [Purchase]
+        // [SCENARIO 443883] Drop shipment Intra-Community purchase entry created in the Intrastat Report by Get Entries function
+        Initialize();
+
+        // [GIVEN] Drop shipment sales order for EU customer 
+        LibraryIntrastat.CreateSalesOrdersWithDropShipment(SalesHeader, true);
+
+        // [GIVEN] Drop shipment purchase order for vendor with EU country "C2"
+        LibraryIntrastat.CreatePurchOrdersWithDropShipment(PurchaseHeader, SalesHeader."Sell-to Customer No.", true);
+
+        // [GIVEN] Post sales order
+        LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [GIVEN] Post purchase order
+        PurchaseHeader.Find();
+        PurchReceiptNo := PurchaseHeader."Last Receiving No.";
+
+        // [WHEN] do not include drop shipment
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(PurchReceiptNo);
+
+        // [WHEN] include drop shipment
+        IntrastatReportSetup."Include Drop Shipment" := true;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(PurchReceiptNo);
+
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+    end;
+
     local procedure Initialize()
     var
         LibraryERMCountryData: Codeunit "Library - ERM Country Data";
@@ -2208,6 +2847,17 @@ codeunit 139550 "Intrastat Report Test"
 
         // Verify.
         VerifyIntrastatReportLine(DocumentNo, IntrastatReportNo, IntrastatReportLineType, LibraryIntrastat.GetCountryRegionCode(), ItemNo, Quantity);
+    end;
+
+    procedure CreateAndVerifyIntrastatLine(DocumentNo: Code[20]; ItemNo: Code[20]; Quantity: Decimal; IntrastatReportLineType: Enum "Intrastat Report Line Type"; CountryRegionCode: Code[10]; LocationCode: Code[10])
+    var
+        IntrastatReportNo: Code[20];
+    begin
+        // Exercise: Run Get Item Entries. Take Report Date as WORKDATE
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+
+        // Verify.
+        VerifyIntrastatReportLine(DocumentNo, IntrastatReportNo, IntrastatReportLineType, CountryRegionCode, ItemNo, Quantity, LocationCode);
     end;
 
     local procedure VerifyIntrastatReportLineExist(IntrastatReportNo: Code[20]; DocumentNo: Code[20]; MustExist: Boolean)
@@ -2273,8 +2923,6 @@ codeunit 139550 "Intrastat Report Test"
         UnbindSubscription(LibraryIntrastat);
     end;
 
-
-
     local procedure VerifyIntrastatReportLine(DocumentNo: Code[20]; IntrastatReportNo: Code[20]; Type: Enum "Intrastat Report Line Type"; CountryRegionCode: Code[10];
                                                                                                            ItemNo: Code[20];
                                                                                                            Quantity: Decimal)
@@ -2297,7 +2945,34 @@ codeunit 139550 "Intrastat Report Test"
 
         Assert.AreEqual(
             ItemNo, IntrastatReportLine."Item No.", StrSubstNo(ValidationErr,
+            IntrastatReportLine.FieldCaption("Item No."), ItemNo, IntrastatReportLine.TableCaption()));
+    end;
+
+    local procedure VerifyIntrastatReportLine(DocumentNo: Code[20]; IntrastatReportNo: Code[20]; Type: Enum "Intrastat Report Line Type"; CountryRegionCode: Code[10]; ItemNo: Code[20]; Quantity: Decimal; LocationCode: Code[10])
+    var
+        IntrastatReportLine: Record "Intrastat Report Line";
+    begin
+        LibraryIntrastat.GetIntrastatReportLine(DocumentNo, IntrastatReportNo, IntrastatReportLine);
+
+        Assert.AreEqual(
+          Type, IntrastatReportLine.Type,
+          StrSubstNo(ValidationErr, IntrastatReportLine.FieldCaption(Type), Type, IntrastatReportLine.TableCaption()));
+
+        Assert.AreEqual(
+          Quantity, IntrastatReportLine.Quantity,
+          StrSubstNo(ValidationErr, IntrastatReportLine.FieldCaption(Quantity), Quantity, IntrastatReportLine.TableCaption()));
+
+        Assert.AreEqual(
+            CountryRegionCode, IntrastatReportLine."Country/Region Code", StrSubstNo(ValidationErr,
             IntrastatReportLine.FieldCaption("Country/Region Code"), CountryRegionCode, IntrastatReportLine.TableCaption()));
+
+        Assert.AreEqual(
+            ItemNo, IntrastatReportLine."Item No.", StrSubstNo(ValidationErr,
+            IntrastatReportLine.FieldCaption("Item No."), ItemNo, IntrastatReportLine.TableCaption()));
+
+        Assert.AreEqual(
+            LocationCode, IntrastatReportLine."Location Code", StrSubstNo(ValidationErr,
+            IntrastatReportLine.FieldCaption("Location Code"), LocationCode, IntrastatReportLine.TableCaption()));
     end;
 
     local procedure VerifyItemLedgerEntry(DocumentType: Enum "Item Ledger Document Type"; DocumentNo: Code[20];
@@ -2381,12 +3056,25 @@ codeunit 139550 "Intrastat Report Test"
         IntrastatReportList.OK().Invoke();
     end;
 
+    [ModalPageHandler]
+    [Scope('OnPrem')]
+    procedure SalesListModalPageHandler(var SalesList: TestPage "Sales List")
+    begin
+        SalesList.OK().Invoke();
+    end;
+
     [ConfirmHandler]
     [Scope('OnPrem')]
     procedure UndoDocumentConfirmHandler(Message: Text[1024]; var Reply: Boolean)
     begin
         // Send Reply = TRUE for Confirmation Message.
         Reply := true;
+    end;
+
+    [MessageHandler]
+    [Scope('OnPrem')]
+    procedure NoLinesMsgHandler(Message: Text[1024])
+    begin
     end;
 
     [ModalPageHandler]

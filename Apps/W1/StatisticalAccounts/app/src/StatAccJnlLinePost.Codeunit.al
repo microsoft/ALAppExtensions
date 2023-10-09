@@ -1,3 +1,5 @@
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
 codeunit 2624 "Stat. Acc. Jnl. Line Post"
 {
     TableNo = "Statistical Acc. Journal Line";
@@ -14,9 +16,12 @@ codeunit 2624 "Stat. Acc. Jnl. Line Post"
     internal procedure PostLine(var StatisticalAccJournalLine: Record "Statistical Acc. Journal Line")
     var
         LastStatisticalLedgerEntry: Record "Statistical Ledger Entry";
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
         LastEntryNo: Integer;
         TransactionNumber: Integer;
     begin
+        StatAccTelemetry.LogPostingUsage();
+
         LastStatisticalLedgerEntry.LockTable();
         if LastStatisticalLedgerEntry.FindLast() then;
         LastEntryNo := LastStatisticalLedgerEntry."Entry No.";
@@ -35,7 +40,7 @@ codeunit 2624 "Stat. Acc. Jnl. Line Post"
         StatisticalLedgerEntry.Insert(true);
     end;
 
-    local procedure TransferStatisticalAccJournalLineTo(var StatisticalAccJournalLine: Record "Statistical Acc. Journal Line"; var StatisticalLedgerEntry: Record "Statistical Ledger Entry")
+    procedure TransferStatisticalAccJournalLineTo(var StatisticalAccJournalLine: Record "Statistical Acc. Journal Line"; var StatisticalLedgerEntry: Record "Statistical Ledger Entry")
     begin
         StatisticalLedgerEntry."Statistical Account No." := StatisticalAccJournalLine."Statistical Account No.";
         StatisticalLedgerEntry."Posting Date" := StatisticalAccJournalLine."Posting Date";

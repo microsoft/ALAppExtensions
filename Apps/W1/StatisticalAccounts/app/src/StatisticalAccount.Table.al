@@ -1,8 +1,13 @@
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
+using Microsoft.Finance.Dimension;
+
 table 2632 "Statistical Account"
 {
     DataClassification = CustomerContent;
     DrillDownPageId = "Statistical Account List";
     LookupPageId = "Statistical Account List";
+    Caption = 'Statistical Account';
 
     fields
     {
@@ -140,6 +145,12 @@ table 2632 "Statistical Account"
             DimensionManagement.SaveDefaultDim(DATABASE::"Statistical Account", "No.", FieldNumber, ShortcutDimCode);
             Modify();
         end;
+    end;
+
+
+    procedure GetFeatureTelemetryName(): Text
+    begin
+        exit('Statistical Accounts');
     end;
 
     var

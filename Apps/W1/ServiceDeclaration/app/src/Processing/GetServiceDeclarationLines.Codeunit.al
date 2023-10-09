@@ -1,3 +1,21 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.Reports;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Foundation.Address;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Projects.Resources.Ledger;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+using System.Utilities;
+
 codeunit 5013 "Get Service Declaration Lines"
 {
     TableNo = "Service Declaration Header";
@@ -31,12 +49,18 @@ codeunit 5013 "Get Service Declaration Lines"
         Vendor: Record Vendor;
         CurrencyCode: Code[10];
         CurrencyFactor: Decimal;
+        IsHandled: Boolean;
     begin
         ServiceDeclarationLine.SetRange("Service Declaration No.", ServiceDeclarationHeader."No.");
         ServiceDeclarationLine.DeleteAll(true);
 
         ServiceDeclarationLine.Init();
         ServiceDeclarationLine."Service Declaration No." := ServiceDeclarationHeader."No.";
+
+        IsHandled := false;
+        OnBeforeAddLines(ServiceDeclarationHeader, IsHandled);
+        if IsHandled then
+            exit;
 
         ValueEntry.SetCurrentKey("Item Ledger Entry Type", "Posting Date", "Applicable For Serv. Decl.");
         ValueEntry.SetFilter(
@@ -176,9 +200,9 @@ codeunit 5013 "Get Service Declaration Lines"
             ValueEntry."Item Ledger Entry Type"::Purchase:
                 begin
                     case ValueEntry."Document Type" of
-                        ValueEntry."Document Type"::"Sales Invoice":
+                        ValueEntry."Document Type"::"Purchase Invoice":
                             VendorLedgerEntry.SetRange("Document Type", VendorLedgerEntry."Document Type"::Invoice);
-                        ValueEntry."Document Type"::"Sales Credit Memo":
+                        ValueEntry."Document Type"::"Purchase Credit Memo":
                             VendorLedgerEntry.SetRange("Document Type", VendorLedgerEntry."Document Type"::"Credit Memo");
                     end;
                     VendorLedgerEntry.SetRange("Document No.", ValueEntry."Document No.");
@@ -339,5 +363,11 @@ codeunit 5013 "Get Service Declaration Lines"
                 end;
         end;
     end;
-}
 
+
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeAddLines(ServiceDeclarationHeader: Record "Service Declaration Header"; var IsHandled: Boolean);
+    begin
+    end;
+}

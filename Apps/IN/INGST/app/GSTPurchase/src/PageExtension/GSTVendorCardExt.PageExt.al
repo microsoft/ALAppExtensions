@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Vendor;
+
 pageextension 18092 "GST Vendor Card Ext" extends "Vendor Card"
 {
     layout
@@ -14,6 +20,11 @@ pageextension 18092 "GST Vendor Card Ext" extends "Vendor Card"
         {
             group("GST")
             {
+                field("Govt. Undertaking"; Rec."Govt. Undertaking")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the vendor as Government authorized body.';
+                }
                 field("GST Registration No."; Rec."GST Registration No.")
                 {
                     ApplicationArea = Basic, Suite;

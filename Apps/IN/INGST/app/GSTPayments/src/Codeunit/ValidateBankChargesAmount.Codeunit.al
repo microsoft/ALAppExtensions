@@ -1,3 +1,21 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Payments;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Check;
+using Microsoft.Bank.Ledger;
+using Microsoft.Finance.Deferral;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Finance.TaxEngine.UseCaseBuilder;
+using Microsoft.Inventory.Location;
+
 codeunit 18247 "Validate Bank Charges Amount"
 {
     var
@@ -415,6 +433,7 @@ codeunit 18247 "Validate Bank Charges Amount"
         DeleteJnlBankChgRecords: Boolean;
         GSTRounding: Decimal;
         BankChargeGSTInvAmt: Decimal;
+        IsHandled: Boolean;
     begin
         if (GenJnlLine."Journal Template Name" = '') or (GenJnlLine."Journal Batch Name" = '') then
             exit;
@@ -486,21 +505,24 @@ codeunit 18247 "Validate Bank Charges Amount"
                     else
                         InsertPostedJnlBankCharges(JnlBankCharges, GenJnlLine);
 
-                    if (JnlBankCharges.Amount + BankChargeCodeGSTAmount <> 0) and (not JnlBankCharges."Foreign Exchange") then
-                        JnlBankChargesSessionMgt.CreateGSTBankChargesGenJournallLine(
-                            GenJnlLine,
-                            BankCharge.Account,
-                            (JnlBankCharges.Amount + BankChargeCodeGSTAmount),
-                            (JnlBankCharges."Amount (LCY)" + BankChargeCodeGSTAmount));
-
-                    if (JnlBankCharges.Amount + BankChargeCodeGSTAmount <> 0) and (JnlBankCharges."Foreign Exchange") then
-                        if JnlBankCharges."GST credit" = JnlBankCharges."GST credit"::"Non-Availment" then
+                    IsHandled := false;
+                    OnBeforePostBankCharges(JnlBankCharges, IsHandled);
+                    if Not IsHandled then begin
+                        if (JnlBankCharges.Amount + BankChargeCodeGSTAmount <> 0) and (not JnlBankCharges."Foreign Exchange") then
                             JnlBankChargesSessionMgt.CreateGSTBankChargesGenJournallLine(
                                 GenJnlLine,
                                 BankCharge.Account,
-                                BankChargeCodeGSTAmount,
-                                BankChargeCodeGSTAmount);
+                                (JnlBankCharges.Amount + BankChargeCodeGSTAmount),
+                                (JnlBankCharges."Amount (LCY)" + BankChargeCodeGSTAmount));
 
+                        if (JnlBankCharges.Amount + BankChargeCodeGSTAmount <> 0) and (JnlBankCharges."Foreign Exchange") then
+                            if JnlBankCharges."GST credit" = JnlBankCharges."GST credit"::"Non-Availment" then
+                                JnlBankChargesSessionMgt.CreateGSTBankChargesGenJournallLine(
+                                    GenJnlLine,
+                                    BankCharge.Account,
+                                    BankChargeCodeGSTAmount,
+                                    BankChargeCodeGSTAmount);
+                    end;
 
                     DeleteJnlBankChgRecords := true;
                 end;
@@ -508,6 +530,7 @@ codeunit 18247 "Validate Bank Charges Amount"
             if ExecutionOption = ExecutionOption::ReturnTotChgAmount then
                 JnlBankChargesSessionMgt.SetBankChargeAmount(BankChargeAmount);
 
+            OnAfterSetBankChargeAmount(BankChargeAmount, BankChargeGSTAmount, ExecutionOption, GenJnlLine, JnlBankChargesSessionMgt, JnlBankCharges);
             if JnlBankCharges."GST Inv. Rounding Precision" <> 0 then
                 GSTRounding :=
                   -(BankChargeGSTInvAmt -
@@ -1064,5 +1087,21 @@ codeunit 18247 "Validate Bank Charges Amount"
                 DetailedGSTLedgerEntry.Insert(true);
                 InsertDetailedGSTLedgerInformation(DetailedGSTEntryBuffer, GenJournalLine, JournalBankCharges, DetailedGSTLedgerEntry);
             until DetailedGSTEntryBuffer.Next() = 0;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostBankCharges(var JnlBankCharges: Record "Journal Bank Charges"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterSetBankChargeAmount(
+        var BankChargeAmount: Decimal;
+        var BankChargeGSTAmount: Decimal;
+        ExecutionOption: Option;
+        var GenJnlLine: Record "Gen. Journal Line";
+        var JnlBankChargesSessionMgt: Codeunit "GST Bank Charge Session Mgt.";
+        var JnlBankCharges: Record "Journal Bank Charges")
+    begin
     end;
 }

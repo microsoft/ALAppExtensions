@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Tooling;
+
 dotnet
 {
     assembly("Microsoft.Dynamics.Nav.Ncl")
@@ -14,6 +16,9 @@ dotnet
         {
         }
         type("Microsoft.Dynamics.Nav.Runtime.Debugger.V8ProfileContract.CpuProfileNode"; "CpuProfileNode")
+        {
+        }
+        type("Microsoft.Dynamics.Nav.Runtime.Debugger.ProfilerSamplingInterval"; "ProfilerSamplingInterval")
         {
         }
     }

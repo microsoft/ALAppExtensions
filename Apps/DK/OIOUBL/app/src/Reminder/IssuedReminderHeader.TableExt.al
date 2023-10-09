@@ -1,7 +1,8 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Reminder;
 
 tableextension 13638 "OIOUBL-Issued Reminder Header" extends "Issued Reminder Header"
 {

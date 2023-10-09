@@ -4,11 +4,17 @@ pageextension 11785 "Tariff Numbers CZL" extends "Tariff Numbers"
     {
         addafter("Supplementary Units")
         {
+#if not CLEAN22
             field("Suppl. Unit of Meas. Code CZL"; Rec."Suppl. Unit of Meas. Code CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'Supplementary Unit of Measure Code (Obsolete)';
                 ToolTip = 'Specifies the supplementary unit of measure code for the tariff number. This number is assigned to an item.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
             }
+#endif
             field("Statement Code CZL"; Rec."Statement Code CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -50,8 +56,8 @@ pageextension 11785 "Tariff Numbers CZL" extends "Tariff Numbers"
                 PromotedIsBig = true;
                 PromotedOnly = true;
                 Ellipsis = true;
-                ToolTip = 'Launch importing data from the list of codes published by the Customs Administration of the Czech Republic: https://www.celnisprava.cz/cz/aplikace/Stranky/ciselniky.aspx. 51 - KN Kombinovaná nomenklatura.';
-                RunObject = Report "Import Tariff Numbers XML CZL";
+                ToolTip = 'Launch importing data from the list of codes published by the Customs Administration of the Czech Republic: https://www.celnisprava.cz/cz/aplikace/Stranky/ciselniky.aspx. Kombinovaná nomenklatura (pro Intrastat).';
+                RunObject = report "Import Tariff Numbers XML CZL";
             }
         }
     }

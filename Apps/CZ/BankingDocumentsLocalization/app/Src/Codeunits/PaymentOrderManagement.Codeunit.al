@@ -19,6 +19,7 @@ codeunit 31356 "Payment Order Management CZB"
         if IsHandled then
             exit;
 
+        BankAccount.SetRange(Blocked, false);
         SelectedBankAccountForPaymentOrder := SelectBankAccount(BankAccount);
         if SelectedBankAccountForPaymentOrder then begin
             CheckBankAccessAllowed(BankAccount."No.");
@@ -47,8 +48,15 @@ codeunit 31356 "Payment Order Management CZB"
         end;
     end;
 
-    local procedure SelectBankAccount(var BankAccount: Record "Bank Account"): Boolean
+    local procedure SelectBankAccount(var BankAccount: Record "Bank Account") IsSelected: Boolean
+    var
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeSelectBankAccount(BankAccount, IsSelected, IsHandled);
+        if IsHandled then
+            exit;
+
         case BankAccount.Count() of
             0:
                 exit(false);
@@ -356,6 +364,11 @@ codeunit 31356 "Payment Order Management CZB"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeProcessErrorMessages(var TempErrorMessage: Record "Error Message" temporary; var ShowMessage: Boolean; var RollBackOnError: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeSelectBankAccount(var BankAccount: Record "Bank Account"; var IsSelected: Boolean; var IsHandled: Boolean)
     begin
     end;
 }

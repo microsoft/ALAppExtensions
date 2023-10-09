@@ -1,3 +1,10 @@
+namespace Microsoft.Payroll.QB;
+
+using Microsoft.Finance.Payroll;
+using Microsoft.Utilities;
+using System.Utilities;
+using System.IO;
+
 codeunit 1676 "MS - Quickbooks Payroll Import"
 {
 
@@ -47,8 +54,8 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
     var
         PayrollImportTransactions: Page "Payroll Import Transactions";
     begin
-        IF NOT (TempServiceConnection."No." = FORMAT(GetAppID())) THEN
-            EXIT;
+        if not (TempServiceConnection."No." = FORMAT(GetAppID())) then
+            exit;
         PayrollImportTransactions.Set(TempServiceConnection, GenJournalLine);
         PayrollImportTransactions.RUNMODAL();
     end;
@@ -56,8 +63,8 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
     [EventSubscriber(ObjectType::Page, Page::"Payroll Import Transactions", 'OnImportPayrollTransactions', '', false, false)]
     local procedure OnImportPayrollTransactions(var TempServiceConnection: Record "Service Connection"; var TempImportGLTransaction: Record 1661 temporary);
     begin
-        IF NOT (TempServiceConnection."No." = FORMAT(GetAppID())) THEN
-            EXIT;
+        if not (TempServiceConnection."No." = FORMAT(GetAppID())) then
+            exit;
         TempImportGLTransaction.DELETEALL();
         ImportGLTransactionsFromIIFFile(TempImportGLTransaction);
     end;
@@ -70,8 +77,8 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
         OutStream: OutStream;
         Tab: Char;
     begin
-        IF NOT (TempServiceConnection."No." = FORMAT(GetAppID())) THEN
-            EXIT;
+        if not (TempServiceConnection."No." = FORMAT(GetAppID())) then
+            exit;
         TempBlob.CreateOutStream(OutStream);
 
         Tab := 9;
@@ -88,7 +95,7 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
         OutStream.WRITETEXT();
         OutStream.WRITETEXT('ENDTRNS');
 
-        FileMgt.BLOBExport(TempBlob, 'QuickbooksTransactionsSample.iif', TRUE);
+        FileMgt.BLOBExport(TempBlob, 'QuickbooksTransactionsSample.iif', true);
     end;
 
     [IntegrationEvent(false, false)]
@@ -102,14 +109,14 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
         ServerFile: Text[250];
     begin
         OnUploadFile(ServerFile);
-        IF ServerFile = '' THEN
+        if ServerFile = '' then
             ServerFile := COPYSTR(FileManagement.UploadFile(ImportPackageTxt, FileExtensionTok),
                 1, MAXSTRLEN(ServerFile));
-        IF ServerFile <> '' THEN BEGIN
+        if ServerFile <> '' then begin
             ImportGLTransactionsByIIFFileName(ServerFile, TempImportGLTransaction);
-            EXIT(TRUE);
-        END;
-        EXIT(FALSE);
+            exit(true);
+        end;
+        exit(false);
     end;
 
     procedure ImportGLTransactionsByIIFFileName(FileName: Text[250]; var TempImportGLTransaction: Record 1661 temporary);
@@ -129,7 +136,7 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
         WindowDialog.CLOSE();
 
         Session.LogMessage('00001SZ', STRSUBSTNO(TransactionsImportedTxt, TempImportGLTransaction.COUNT()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', QBPayrollImportTelemetryTok);
-        IF NOT TempImportGLTransaction.ISEMPTY() AND NonGJTransactionsDetected THEN
+        if not TempImportGLTransaction.ISEMPTY() and NonGJTransactionsDetected then
             MESSAGE(NonSupportedTransactionsDetectedMsg);
     end;
 
@@ -137,25 +144,25 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
     begin
         TempCSVBuffer.SETRANGE("Field No.", 1);
         TempCSVBuffer.SETRANGE(Value, TransactionHeaderTok);
-        IF TempCSVBuffer.ISEMPTY() THEN
+        if TempCSVBuffer.ISEMPTY() then
             ERROR(InvalidIIFTransFileErr, TransactionHeaderTok);
 
         TempCSVBuffer.SETRANGE(Value, SplitHeaderTok);
-        IF TempCSVBuffer.ISEMPTY() THEN
+        if TempCSVBuffer.ISEMPTY() then
             ERROR(InvalidIIFTransFileErr, SplitHeaderTok);
 
         TempCSVBuffer.RESET();
 
         TempCSVBuffer.SETRANGE(Value, TransactionTypeTok);
-        IF TempCSVBuffer.ISEMPTY() THEN
+        if TempCSVBuffer.ISEMPTY() then
             ERROR(InvalidIIFTransFileErr, TransactionTypeTok);
 
         TempCSVBuffer.SETRANGE(Value, AmountTok);
-        IF TempCSVBuffer.ISEMPTY() THEN
+        if TempCSVBuffer.ISEMPTY() then
             ERROR(InvalidIIFTransFileErr, AmountTok);
 
         TempCSVBuffer.SETRANGE(Value, AccountNameTok);
-        IF TempCSVBuffer.ISEMPTY() THEN
+        if TempCSVBuffer.ISEMPTY() then
             ERROR(InvalidIIFTransFileErr, AccountNameTok);
     end;
 
@@ -183,15 +190,15 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
         TempCSVBuffer.RESET();
         TempCSVBuffer.SETRANGE("Field No.", 1);
         TempCSVBuffer.SETFILTER(Value, '%1|%2', TransactionLineTok, SplitLineTok);
-        IF TempCSVBuffer.FINDSET() THEN
-            REPEAT
-                IF IsSupportedTransactionType(TempCSVBuffer.GetValueOfLineAt(TransactionTypeFieldNo)) THEN BEGIN
+        if TempCSVBuffer.FINDSET() then
+            repeat
+                if IsSupportedTransactionType(TempCSVBuffer.GetValueOfLineAt(TransactionTypeFieldNo)) then begin
                     TempImportGLTransaction."App ID" := GetAppID();
                     TempImportGLTransaction.VALIDATE("External Account",
                       COPYSTR(TempCSVBuffer.GetValueOfLineAt(TransactionAccountNameFieldNo),
                         1, MAXSTRLEN(TempImportGLTransaction."External Account")));
                     EVALUATE(TempImportGLTransaction.Amount, TempCSVBuffer.GetValueOfLineAt(TransactionAmountFieldNo), 9);
-                    IF TransactionDateFieldNo <> -1 THEN BEGIN
+                    if TransactionDateFieldNo <> -1 then begin
                         TransactionDate := TempCSVBuffer.GetValueOfLineAt(TransactionDateFieldNo);
                         MonthEnd := STRPOS(TransactionDate, '/') - 1;
                         EVALUATE(Month, COPYSTR(TransactionDate, 1, MonthEnd));
@@ -200,19 +207,19 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
                         EVALUATE(Day, COPYSTR(TransactionDate, 1, DayEnd));
                         EVALUATE(Year, COPYSTR(TransactionDate, DayEnd + 2));
                         TempImportGLTransaction."Transaction Date" := DMY2DATE(Day, Month, DetermineQuickbooksYear(Year));
-                    END;
-                    IF TransactionDescriptionFieldNo <> -1 THEN
+                    end;
+                    if TransactionDescriptionFieldNo <> -1 then
                         TempImportGLTransaction.Description :=
-                          COPYSTR(TempCSVBuffer.GetValueOfLineAt(TransactionDescriptionFieldNo, True),
+                          COPYSTR(TempCSVBuffer.GetValueOfLineAt(TransactionDescriptionFieldNo, true),
                             1, MAXSTRLEN(TempImportGLTransaction.Description));
                     EntryNo += 1;
                     TempImportGLTransaction."Entry No." := EntryNo;
                     TempImportGLTransaction.INSERT();
-                END ELSE
-                    NonGJTransactionsDetected := TRUE;
-            UNTIL TempCSVBuffer.NEXT() = 0;
+                end else
+                    NonGJTransactionsDetected := true;
+            until TempCSVBuffer.NEXT() = 0;
 
-        IF TempImportGLTransaction.ISEMPTY() AND GUIALLOWED() THEN
+        if TempImportGLTransaction.ISEMPTY() and GuiAllowed() then
             MESSAGE(NoSupportedTransactionsMsg);
     end;
 
@@ -223,28 +230,28 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
         TempCSVBuffer.RESET();
         TempCSVBuffer.SETRANGE("Field No.", 1);
         TempCSVBuffer.SETRANGE(Value, TransactionHeaderTok);
-        IF NOT TempCSVBuffer.FINDFIRST() THEN
-            EXIT(-1);
+        if not TempCSVBuffer.FindFirst() then
+            exit(-1);
         HeaderLineNo := TempCSVBuffer."Line No.";
 
         TempCSVBuffer.RESET();
         TempCSVBuffer.SETRANGE("Line No.", HeaderLineNo);
         TempCSVBuffer.SETRANGE(Value, Token);
 
-        IF NOT TempCSVBuffer.FINDFIRST() THEN
-            EXIT(-1);
+        if not TempCSVBuffer.FINDFIRST() then
+            exit(-1);
 
-        EXIT(TempCSVBuffer."Field No.");
+        exit(TempCSVBuffer."Field No.");
     end;
 
     local procedure IsSupportedTransactionType(TransType: Text): Boolean;
     begin
-        EXIT((TransType.ToUpper() = GeneralJournalTok) OR (TransType.ToUpper() = CheckTok) OR (TransType.ToUpper() = TransferTok))
+        exit((TransType.ToUpper() = GeneralJournalTok) or (TransType.ToUpper() = CheckTok) or (TransType.ToUpper() = TransferTok))
     end;
 
     procedure GetAppID(): Guid;
     begin
-        EXIT('{bc45ae22-3b5b-44b5-beb4-2a42bf79cc34}');
+        exit('{bc45ae22-3b5b-44b5-beb4-2a42bf79cc34}');
     end;
 
     local procedure DetermineQuickbooksYear(Year: Integer): Integer;
@@ -253,14 +260,14 @@ codeunit 1676 "MS - Quickbooks Payroll Import"
     begin
         // Quickbooks stores the date in MM/DD/YY format
         // The year has only two digits - therefore it is necessary to determine which year is it exactly
-        IF Year > 100 THEN
-            EXIT(Year);
+        if Year > 100 then
+            exit(Year);
 
         CurrentYear := DATE2DMY(TODAY(), 3);
-        IF 2000 + Year <= CurrentYear THEN
-            EXIT(2000 + Year);
+        if 2000 + Year <= CurrentYear then
+            exit(2000 + Year);
 
-        EXIT(1900 + Year);
+        exit(1900 + Year);
     end;
 }
 

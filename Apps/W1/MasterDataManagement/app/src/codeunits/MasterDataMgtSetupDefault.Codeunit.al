@@ -1,3 +1,28 @@
+namespace Microsoft.Integration.MDM;
+
+using System.IO;
+using Microsoft.Integration.SyncEngine;
+using Microsoft.Sales.Customer;
+using System.Reflection;
+using Microsoft.Purchases.Vendor;
+using Microsoft.CRM.Contact;
+using Microsoft.Foundation.Address;
+using Microsoft.Finance.Currency;
+using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Sales.Setup;
+using Microsoft.CRM.Setup;
+using Microsoft.CRM.Team;
+using Microsoft.Purchases.Setup;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.Shipping;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.SalesTax;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.Dimension;
+using Microsoft.Utilities;
+using System.Threading;
+
 codeunit 7230 "Master Data Mgt. Setup Default"
 {
     Permissions = tabledata "Config. Template Header" = ri,
@@ -38,35 +63,35 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         if IsHandled then
             exit;
 
-        ResetNumberSeriesMapping('MDM_NUMBERSERIES', true);
-        ResetNumberSeriesLineMapping('MDM_NUMBERSERIESLINE', true);
-        ResetSalesReceivablesSetupMapping('MDM_SALESRECSETUP', true);
-        ResetMarketingSetupMapping('MDM_MARKETINGSETUP', true);
-        ResetPurchasespayablesSetupMapping('MDM_PURCHPAYSETUP', true);
-        ResetSalesPeopleSystemUserMapping('MDM_SALESPERSON', true);
-        ResetCustomerAccountMapping(CustomerTableMappingNameTxt, true);
-        ResetVendorAccountMapping(VendorTableMappingNameTxt, true);
-        ResetContactContactMapping('MDM_CONTACT', true);
-        ResetCountryRegionMapping('MDM_COUNTRYREGION', true);
-        ResetPostCodeMapping('MDM_POSTCODE', true);
-        ResetCurrencyTransactionCurrencyMapping('MDM_CURRENCY', true);
-        ResetCurrencyExchangeRateMapping('MDM_CURRENCYEXCHRATE', true);
+        ResetNumberSeriesMapping('MDM_NUMBERSERIES', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetNumberSeriesLineMapping('MDM_NUMBERSERIESLINE', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetSalesReceivablesSetupMapping('MDM_SALESRECSETUP', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetMarketingSetupMapping('MDM_MARKETINGSETUP', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetPurchasespayablesSetupMapping('MDM_PURCHPAYSETUP', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetSalesPeopleSystemUserMapping('MDM_SALESPERSON', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetCustomerAccountMapping(CustomerTableMappingNameTxt, (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetVendorAccountMapping(VendorTableMappingNameTxt, (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetContactContactMapping('MDM_CONTACT', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetCountryRegionMapping('MDM_COUNTRYREGION', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetPostCodeMapping('MDM_POSTCODE', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetCurrencyTransactionCurrencyMapping('MDM_CURRENCY', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetCurrencyExchangeRateMapping('MDM_CURRENCYEXCHRATE', (not MasterDataManagementSetup."Delay Job Scheduling"));
         ResetPaymentTermsMapping('MDM_PAYMENTTERMS');
         ResetShipmentMethodMapping('MDM_SHIPMENTMETHOD');
         ResetShippingAgentMapping('MDM_SHIPPINGAGENT');
-        ResetVATBusPostingGroupMapping('MDM_VATBUSPGROUP', true);
-        ResetVATProdPostingGroupMapping('MDM_VATPRODPGROUP', true);
-        ResetGenBusPostingGroupMapping('MDM_GENBUSPGROUP', true);
-        ResetGenProdPostingGroupMapping('MDM_GENPRODPGROUP', true);
-        ResetCustomerPostingGroupMapping('MDM_CUSTOMERPGROUP', true);
-        ResetVendorPostingGroupMapping('MDM_VENDORPGROUP', true);
-        ResetTaxAreaMapping('MDM_TAXAREA', true);
-        ResetTaxGroupMapping('MDM_TAXGROUP', true);
-        ResetGLAccountMapping('MDM_GLACCOUNT', true);
-        ResetVATPostingSetupMapping('MDM_VATPOSTINGSETUP', true);
-        ResetTaxJurisdictionMapping('MDM_TAXJURISDICTION', true);
-        ResetDimensionMapping('MDM_DIMENSION', true);
-        ResetDimensionValueMapping('MDM_DIMENSIONVALUE', true);
+        ResetVATBusPostingGroupMapping('MDM_VATBUSPGROUP', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetVATProdPostingGroupMapping('MDM_VATPRODPGROUP', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetGenBusPostingGroupMapping('MDM_GENBUSPGROUP', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetGenProdPostingGroupMapping('MDM_GENPRODPGROUP', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetCustomerPostingGroupMapping('MDM_CUSTOMERPGROUP', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetVendorPostingGroupMapping('MDM_VENDORPGROUP', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetTaxAreaMapping('MDM_TAXAREA', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetTaxGroupMapping('MDM_TAXGROUP', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetGLAccountMapping('MDM_GLACCOUNT', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetVATPostingSetupMapping('MDM_VATPOSTINGSETUP', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetTaxJurisdictionMapping('MDM_TAXJURISDICTION', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetDimensionMapping('MDM_DIMENSION', (not MasterDataManagementSetup."Delay Job Scheduling"));
+        ResetDimensionValueMapping('MDM_DIMENSIONVALUE', (not MasterDataManagementSetup."Delay Job Scheduling"));
 
         SetCustomIntegrationsTableMappings(MasterDataManagementSetup);
     end;
@@ -121,7 +146,11 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         TableField.SetFilter(RelationFieldNo, '<' + Format(Customer.FieldNo(Customer.SystemId)));
         if TableField.FindSet() then
             repeat
+#if not CLEAN23
                 if not (TableField."No." in [Customer.FieldNo(Customer."Tax Area ID"), Customer.FieldNo(Customer."Contact ID"), Customer.FieldNo(Customer."Contact Graph Id"), Customer.FieldNo(Customer."Search Name"), Customer.FieldNo(Customer.Contact), Customer.FieldNo(Customer."Coupled to CRM"), Customer.FieldNo(Customer."Last Date Modified"), Customer.FieldNo(Customer."Last Modified Date Time")]) then
+#else
+                if not (TableField."No." in [Customer.FieldNo(Customer."Tax Area ID"), Customer.FieldNo(Customer."Contact ID"), Customer.FieldNo(Customer."Contact Graph Id"), Customer.FieldNo(Customer."Search Name"), Customer.FieldNo(Customer.Contact), Customer.FieldNo(Customer."Last Date Modified"), Customer.FieldNo(Customer."Last Modified Date Time")]) then
+#endif
                     FieldNumbers.Add(TableField."No.");
             until TableField.Next() = 0;
 
@@ -164,7 +193,11 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         TableField.SetFilter(RelationFieldNo, '<' + Format(Vendor.FieldNo(Vendor.SystemId)));
         if TableField.FindSet() then
             repeat
+#if not CLEAN23
                 if not (TableField."No." in [Vendor.FieldNo(Vendor."Search Name"), Vendor.FieldNo(Vendor.Contact), Vendor.FieldNo(Vendor."Coupled to CRM"), Vendor.FieldNo(Vendor."Last Date Modified"), Vendor.FieldNo(Vendor."Last Modified Date Time")]) then
+#else
+                if not (TableField."No." in [Vendor.FieldNo(Vendor."Search Name"), Vendor.FieldNo(Vendor.Contact), Vendor.FieldNo(Vendor."Last Date Modified"), Vendor.FieldNo(Vendor."Last Modified Date Time")]) then
+#endif
                     FieldNumbers.Add(TableField."No.");
             until TableField.Next() = 0;
 
@@ -208,7 +241,11 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         TableField.SetFilter(RelationFieldNo, '<' + Format(Contact.FieldNo(Contact.SystemId)));
         if TableField.FindSet() then
             repeat
+#if not CLEAN23
                 if not (TableField."No." in [Contact.FieldNo(Contact."Search Name"), Contact.FieldNo(Contact."Search E-Mail"), Contact.FieldNo(Contact."Xrm Id"), Contact.FieldNo(Contact."Last Date Modified"), Contact.FieldNo(Contact."Coupled to CRM"), Contact.FieldNo(Contact."Lookup Contact No.")]) then
+#else
+                if not (TableField."No." in [Contact.FieldNo(Contact."Search Name"), Contact.FieldNo(Contact."Search E-Mail"), Contact.FieldNo(Contact."Xrm Id"), Contact.FieldNo(Contact."Last Date Modified"), Contact.FieldNo(Contact."Lookup Contact No.")]) then
+#endif
                     FieldNumbers.Add(TableField."No.");
             until TableField.Next() = 0;
 
@@ -340,12 +377,16 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         TableField.SetFilter(RelationFieldNo, '<' + Format(Currency.FieldNo(Currency.SystemId)));
         if TableField.FindSet() then
             repeat
+#if not CLEAN23
                 if not (TableField."No." in [Currency.FieldNo(Currency."Last Date Modified"), Currency.FieldNo(Currency."Last Modified Date Time"), Currency.FieldNo(Currency."Coupled to CRM"), Currency.FieldNo(Currency."Last Date Adjusted")]) then
+#else
+                if not (TableField."No." in [Currency.FieldNo(Currency."Last Date Modified"), Currency.FieldNo(Currency."Last Modified Date Time"), Currency.FieldNo(Currency."Last Date Adjusted")]) then
+#endif
                     FieldNumbers.Add(TableField."No.");
             until TableField.Next() = 0;
 
         GenerateIntegrationTableMapping(IntegrationTableMapping, FieldNumbers, IntegrationTableMappingName, Database::Currency, '', true, EnqueueJobQueEntry);
-        IntegrationTableMapping."Dependency Filter" := 'MDM_NUMBERSERIES|MDM_NUMBERSERIESLINE';
+        IntegrationTableMapping."Dependency Filter" := 'MDM_NUMBERSERIES|MDM_NUMBERSERIESLINE|MDM_GLACCOUNT';
         IntegrationTableMapping."Synch. After Bulk Coupling" := true;
         IntegrationTableMapping."Create New in Case of No Match" := true;
         IntegrationTableMapping.Modify();
@@ -409,6 +450,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
     var
         IntegrationTableMapping: Record "Integration Table Mapping";
         IntegrationFieldMapping: Record "Integration Field Mapping";
+        MasterDataManagementSetup: Record "Master Data Management Setup";
         PaymentTerms: Record "Payment Terms";
         FieldNumbers: List of [Integer];
         IsHandled: Boolean;
@@ -416,6 +458,8 @@ codeunit 7230 "Master Data Mgt. Setup Default"
     begin
         IsHandled := false;
         ShouldRecreateJobQueueEntry := true;
+        if MasterDataManagementSetup.Get() then
+            ShouldRecreateJobQueueEntry := (not MasterDataManagementSetup."Delay Job Scheduling");
         OnBeforeResetTableMapping(IntegrationTableMappingName, ShouldRecreateJobQueueEntry, IsHandled);
         if IsHandled then
             exit;
@@ -443,6 +487,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
     var
         IntegrationTableMapping: Record "Integration Table Mapping";
         IntegrationFieldMapping: Record "Integration Field Mapping";
+        MasterDataManagementSetup: Record "Master Data Management Setup";
         ShipmentMethod: Record "Shipment Method";
         FieldNumbers: List of [Integer];
         IsHandled: Boolean;
@@ -450,6 +495,8 @@ codeunit 7230 "Master Data Mgt. Setup Default"
     begin
         IsHandled := false;
         ShouldRecreateJobQueueEntry := true;
+        if MasterDataManagementSetup.Get() then
+            ShouldRecreateJobQueueEntry := (not MasterDataManagementSetup."Delay Job Scheduling");
         OnBeforeResetTableMapping(IntegrationTableMappingName, ShouldRecreateJobQueueEntry, IsHandled);
         if IsHandled then
             exit;
@@ -477,6 +524,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
     var
         IntegrationTableMapping: Record "Integration Table Mapping";
         IntegrationFieldMapping: Record "Integration Field Mapping";
+        MasterDataManagementSetup: Record "Master Data Management Setup";
         ShippingAgent: Record "Shipping Agent";
         FieldNumbers: List of [Integer];
         IsHandled: Boolean;
@@ -484,6 +532,8 @@ codeunit 7230 "Master Data Mgt. Setup Default"
     begin
         IsHandled := false;
         ShouldRecreateJobQueueEntry := true;
+        if MasterDataManagementSetup.Get() then
+            ShouldRecreateJobQueueEntry := (not MasterDataManagementSetup."Delay Job Scheduling");
         OnBeforeResetTableMapping(IntegrationTableMappingName, ShouldRecreateJobQueueEntry, IsHandled);
         if IsHandled then
             exit;
@@ -582,7 +632,6 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         IsHandled: Boolean;
     begin
         IsHandled := false;
-        ShouldRecreateJobQueueEntry := true;
         OnBeforeResetTableMapping(IntegrationTableMappingName, ShouldRecreateJobQueueEntry, IsHandled);
         if IsHandled then
             exit;
@@ -1205,7 +1254,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         IntegrationTableMapping.Modify();
     end;
 
-    internal procedure GenerateIntegrationTableMapping(var IntegrationTableMapping: Record "Integration Table Mapping"; FieldNumbers: List of [Integer]; IntegrationTableMappingName: Code[20]; TableID: Integer; ConfigTemplateCode: Code[10]; SynchOnlyCoupledRecords: Boolean; ShouldRecreateJobQueueEntry: Boolean)
+    procedure GenerateIntegrationTableMapping(var IntegrationTableMapping: Record "Integration Table Mapping"; FieldNumbers: List of [Integer]; IntegrationTableMappingName: Code[20]; TableID: Integer; ConfigTemplateCode: Code[10]; SynchOnlyCoupledRecords: Boolean; ShouldRecreateJobQueueEntry: Boolean)
     var
         IntegrationFieldMapping: Record "Integration Field Mapping";
         TableField: Record Field;
@@ -1228,8 +1277,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
                 end;
             until TableField.Next() = 0;
 
-        if ShouldRecreateJobQueueEntry then
-            RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 30);
+        RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 30);
         Commit();
     end;
 
@@ -1372,8 +1420,10 @@ codeunit 7230 "Master Data Mgt. Setup Default"
             JobQueueEntry."Job Queue Category Code" := JobQueueCategoryLbl;
         if ShouldRecreateJobQueueEntry then
             Codeunit.Run(Codeunit::"Job Queue - Enqueue", JobQueueEntry)
-        else
+        else begin
+            JobQueueEntry.Status := JobQueueEntry.Status::"On Hold";
             JobQueueEntry.Insert(true);
+        end;
     end;
 
     local procedure GetTableFilterFromView(TableID: Integer; Caption: Text; View: Text): Text

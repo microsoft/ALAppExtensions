@@ -8,6 +8,8 @@ codeunit 130103 "Library - Amc Web Service"
     var
         AMCBankingMgt: Codeunit "AMC Banking Mgt.";
         LocalhostURLTxt: Label 'https://localhost:8080/', Locked = true;
+        //LocalhostURLTxt: Label 'https://host.docker.internal:8088/', Locked = true; //AMC - Internal host at AMC for testing
+        HttpAllowedIsSet: Boolean;
 
         DemoFileLine01_EncodUTF8Txt: Label '<paymentExportBank xmlns="%1"><amcpaymentreq xmlns=""><version>api04</version><clientcode>amcbanking fundamentals bc</clientcode>', Locked = true;
         DemoFileLine02_EncodUTF8Txt: Label '<banktransjournal><erpsystem>amcbanking fundamentals bc</erpsystem><journalname>200106</journalname><journalnumber>journal-02</journalnumber><uniqueid>DE-01</uniqueid>', Locked = true;
@@ -197,13 +199,20 @@ codeunit 130103 "Library - Amc Web Service"
     var
         AMCBankingSetup: Record "AMC Banking Setup";
     begin
-        if AMCBankingSetup.Get() then
-            exit;
-
-        AMCBankingSetup.Init();
-        AMCBankingSetup.Insert(true);
-        AMCBankingSetup."AMC Enabled" := true;
-        AMCBankingSetup.Modify();
+        if AMCBankingSetup.Get() then begin
+            if (AMCBankingSetup."AMC Enabled") then
+                exit
+            else begin
+                AMCBankingSetup."AMC Enabled" := true;
+                AMCBankingSetup.Modify();
+            end;
+        end
+        else begin
+            AMCBankingSetup.Init();
+            AMCBankingSetup.Insert(true);
+            AMCBankingSetup."AMC Enabled" := true;
+            AMCBankingSetup.Modify();
+        end;
     end;
 
     [Scope('OnPrem')]
@@ -283,5 +292,31 @@ codeunit 130103 "Library - Amc Web Service"
         end;
     end;
 
+    internal procedure SetHttpClientRequestAllowed()
+    var
+        NavAppSetting: Record "NAV App Setting";
+        EnvironmentInformation: Codeunit "Environment Information";
+    begin
+        if (HttpAllowedIsSet) then
+            exit;
+
+        if ((EnvironmentInformation.IsSandbox())) then begin
+            //Get AMC Banking Fundamentals App and set HttpAllowedIsSet
+            Clear(NavAppSetting);
+            NavAppSetting."App ID" := '16319982-4995-4fb1-8fb2-2b1e13773e3b';
+            NavAppSetting."Allow HttpClient Requests" := true;
+            if (not NavAppSetting.Insert()) then
+                NavAppSetting.Modify();
+
+            //Get AMC Banking 365 Fundamentals Test Automations App and set HttpAllowedIsSet
+            Clear(NavAppSetting);
+            NavAppSetting."App ID" := '798a05da-4249-48b7-a85c-70dd5e508fa2';
+            NavAppSetting."Allow HttpClient Requests" := true;
+            if (not NavAppSetting.Insert()) then
+                NavAppSetting.Modify();
+
+            HttpAllowedIsSet := true;
+        end;
+    end;
 }
 

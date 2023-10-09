@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration;
+
 /// <summary>
 /// Table containing the required state for document sharing.
 /// </summary>
@@ -109,6 +111,15 @@ table 9560 "Document Sharing"
         field(11; "Item Id"; Text[2048])
         {
             DataClassification = SystemMetadata;
+        }
+
+        /// <summary>
+        /// Specifies the behavior when there is a conflict with an existing document.
+        /// </summary>
+        field(12; "Conflict Behavior"; Enum "Doc. Sharing Conflict Behavior")
+        {
+            DataClassification = SystemMetadata;
+            InitValue = Ask;
         }
     }
 

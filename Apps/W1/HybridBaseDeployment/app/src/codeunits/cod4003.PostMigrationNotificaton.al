@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration;
+
+using Microsoft.RoleCenters;
+using System.Environment.Configuration;
+
 codeunit 4003 "Post Migration Notificaton"
 {
     Permissions = TableData "My Notifications" = rimd;

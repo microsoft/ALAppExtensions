@@ -4,12 +4,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
 /// <summary>
 /// Provides functionality to fetch the default permission sets for a plan.
 /// </summary>
 codeunit 9823 "Default Permission Set In Plan"
 {
     Access = Public;
+    InherentEntitlements = X;
+    InherentPermissions = X;
     ObsoleteState = Pending;
     ObsoleteReason = 'Getting the default permissions will be done only inside the Azure AD Plan module.';
     ObsoleteTag = '22.0';

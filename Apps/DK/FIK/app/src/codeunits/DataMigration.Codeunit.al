@@ -1,7 +1,20 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Reconciliation;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.Company;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+using System.Environment;
+using System.Reflection;
 
 codeunit 13656 "FIK Data Migration"
 {
@@ -33,7 +46,7 @@ codeunit 13656 "FIK Data Migration"
     begin
         if not FIKUplift.Get() then begin
             FIKUplift.Init();
-            FIKUplift.IsUpgraded := True;
+            FIKUplift.IsUpgraded := true;
             FIKUplift.Insert();
             exit(false);
         end;
@@ -65,13 +78,15 @@ codeunit 13656 "FIK Data Migration"
         Vendor: Record Vendor;
         AllObj: Record AllObj;
         UPGVendor: recordref;
+        VendorNo: Code[20];
     begin
         ;
         if AllObj.GET(AllObj."Object Type"::Table, 104038) then begin
             UPGVendor.Open(104038);
             If UPGVendor.FindSet() then
                 repeat
-                    if Vendor.Get(UPGVendor.Field(1)) then begin
+                    VendorNo := UPGVendor.Field(1).Value();
+                    if Vendor.Get(VendorNo) then begin
                         Vendor.Validate(GiroAccNo, UPGVendor.Field(13650).Value());
                         vendor.Modify(true);
                     end;
@@ -85,12 +100,14 @@ codeunit 13656 "FIK Data Migration"
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         AllObj: Record AllObj;
         UpgVendorLedgerEntry: RecordRef;
+        VendorLedgerEntryNo: Integer;
     begin
         if AllObj.GET(AllObj."Object Type"::Table, 104039) then begin
             UpgVendorLedgerEntry.Open(104039);
             If UpgVendorLedgerEntry.FindSet() then
                 repeat
-                    if VendorLedgerEntry.Get(UpgVendorLedgerEntry.Field(1)) then begin
+                    VendorLedgerEntryNo := UpgVendorLedgerEntry.Field(1).Value();
+                    if VendorLedgerEntry.Get(VendorLedgerEntryNo) then begin
                         VendorLedgerEntry.Validate(GiroAccNo, UpgVendorLedgerEntry.Field(13650).Value());
                         VendorLedgerEntry.Modify(true);
                     end;
@@ -103,12 +120,16 @@ codeunit 13656 "FIK Data Migration"
         PurchaseHeader: Record "Purchase Header";
         AllObj: Record AllObj;
         UPGPurchaseHeader: RecordRef;
+        PurchaseHeaderNo: Code[20];
+        PurchaseHeaderDocType: Enum "Purchase Document Type";
     begin
         if AllObj.GET(AllObj."Object Type"::Table, 104040) then begin
             UPGPurchaseHeader.Open(104040);
             If UPGPurchaseHeader.FindSet() then
                 repeat
-                    if PurchaseHeader.Get(UPGPurchaseHeader.Field(1), UPGPurchaseHeader.Field(3)) then begin
+                    PurchaseHeaderDocType := UPGPurchaseHeader.Field(1).Value();
+                    PurchaseHeaderNo := UPGPurchaseHeader.Field(3).Value();
+                    if PurchaseHeader.Get(PurchaseHeaderDocType, PurchaseHeaderNo) then begin
                         PurchaseHeader.Validate(GiroAccNo, UPGPurchaseHeader.Field(13650).Value());
                         PurchaseHeader.Modify(true);
                     end;
@@ -121,12 +142,14 @@ codeunit 13656 "FIK Data Migration"
         CompanyInformation: Record "Company Information";
         AllObj: Record AllObj;
         UPGCompanyInformaiton: RecordRef;
+        CompanyInformationPrimaryKey: Integer;
     begin
         if AllObj.GET(AllObj."Object Type"::Table, 104079) then begin
             UPGCompanyInformaiton.Open(104079);
             if UPGCompanyInformaiton.FindSet() then
                 repeat
-                    if CompanyInformation.Get(UPGCompanyInformaiton.Field(1)) then begin
+                    CompanyInformationPrimaryKey := UPGCompanyInformaiton.Field(1).Value();
+                    if CompanyInformation.Get(CompanyInformationPrimaryKey) then begin
                         CompanyInformation.Validate(BankCreditorNo, UPGCompanyInformaiton.Field(13600).Value());
                         CompanyInformation.Modify(true);
                     end;
@@ -139,12 +162,18 @@ codeunit 13656 "FIK Data Migration"
         GeneralJournalLine: Record "Gen. Journal Line";
         AllObj: Record AllObj;
         UPGGeneralJournalLine: RecordRef;
+        JournalTemplateCode: Code[10];
+        JournalBatchName: Code[10];
+        LineNo: Integer;
     begin
         if AllObj.GET(AllObj."Object Type"::Table, 104042) then begin
             UPGGeneralJournalLine.Open(104042);
             If UPGGeneralJournalLine.FindSet() then
                 repeat
-                    if GeneralJournalLine.Get(UPGGeneralJournalLine.Field(1), UPGGeneralJournalLine.Field(51), UPGGeneralJournalLine.Field(2)) then begin
+                    JournalTemplateCode := UPGGeneralJournalLine.Field(1).Value();
+                    JournalBatchName := UPGGeneralJournalLine.Field(51).Value();
+                    LineNo := UPGGeneralJournalLine.Field(2).Value();
+                    if GeneralJournalLine.Get(JournalTemplateCode, JournalBatchName, LineNo) then begin
                         GeneralJournalLine.Validate(GiroAccNo, UPGGeneralJournalLine.Field(13650).Value());
                         GeneralJournalLine.Modify(true);
                     end;
@@ -157,12 +186,14 @@ codeunit 13656 "FIK Data Migration"
         PurchaseInvoiceHeader: Record "Purch. Inv. Header";
         AllObj: Record AllObj;
         UPGPurchaseInvoiceHeader: RecordRef;
+        DocumentNo: Code[20];
     begin
         if AllObj.GET(AllObj."Object Type"::Table, 104096) then begin
             UPGPurchaseInvoiceHeader.Open(104096);
             If UPGPurchaseInvoiceHeader.FindSet() then
                 repeat
-                    if PurchaseInvoiceHeader.Get(UPGPurchaseInvoiceHeader.Field(3)) then begin
+                    DocumentNo := UPGPurchaseInvoiceHeader.Field(3).Value();
+                    if PurchaseInvoiceHeader.Get(DocumentNo) then begin
                         PurchaseInvoiceHeader.Validate(GiroAccNo, UPGPurchaseInvoiceHeader.Field(13650).Value());
                         PurchaseInvoiceHeader.Modify(true);
                     end;
@@ -175,12 +206,18 @@ codeunit 13656 "FIK Data Migration"
         BankAccReconcilation: Record "Bank Acc. Reconciliation";
         AllObj: Record AllObj;
         UPGBankAccReconcilation: RecordRef;
+        StatementType: Option;
+        StatementNo: Code[20];
+        BankAccountNo: Code[20];
     begin
         if AllObj.GET(AllObj."Object Type"::Table, 104043) then begin
             UPGBankAccReconcilation.Open(104043);
             If UPGBankAccReconcilation.FindSet() then
                 repeat
-                    if BankAccReconcilation.Get(UPGBankAccReconcilation.Field(20), UPGBankAccReconcilation.Field(1), UPGBankAccReconcilation.Field(2)) then begin
+                    StatementType := UPGBankAccReconcilation.Field(1).Value();
+                    StatementNo := UPGBankAccReconcilation.Field(2).Value();
+                    BankAccountNo := UPGBankAccReconcilation.Field(3).Value();
+                    if BankAccReconcilation.Get(StatementType, BankAccountNo, StatementNo) then begin
                         BankAccReconcilation.Validate(FIKPaymentReconciliation, UPGBankAccReconcilation.Field(13600).Value());
                         BankAccReconcilation.Modify(true);
                     end;
@@ -193,12 +230,20 @@ codeunit 13656 "FIK Data Migration"
         BankAccRecLine: Record "Bank Acc. Reconciliation Line";
         AllObj: Record AllObj;
         UPGBankAccRecLine: RecordRef;
+        StatementType: Option;
+        StatementNo: Code[20];
+        BankAccountNo: Code[20];
+        LineNo: Integer;
     begin
         if AllObj.GET(AllObj."Object Type"::Table, 104044) then begin
             UPGBankAccRecLine.Open(104044);
             If UPGBankAccRecLine.FindSet() then
                 repeat
-                    if BankAccRecLine.Get(UPGBankAccRecLine.Field(20), UPGBankAccRecLine.Field(1), UPGBankAccRecLine.Field(2), UPGBankAccRecLine.Field(3)) then begin
+                    StatementType := UPGBankAccRecLine.Field(20).Value();
+                    StatementNo := UPGBankAccRecLine.Field(1).Value();
+                    BankAccountNo := UPGBankAccRecLine.Field(2).Value();
+                    LineNo := UPGBankAccRecLine.Field(3).Value();
+                    if BankAccRecLine.Get(StatementType, BankAccountNo, StatementNo, LineNo) then begin
                         BankAccRecLine.Validate(PaymentReference, UPGBankAccRecLine.Field(13600).Value());
                         BankAccRecLine.Modify(true);
                     end;
@@ -211,12 +256,14 @@ codeunit 13656 "FIK Data Migration"
         PaymentMethod: Record "Payment Method";
         AllObj: Record AllObj;
         UPGPaymentMethod: RecordRef;
+        PaymentMethodCode: Code[20];
     begin
         if AllObj.GET(AllObj."Object Type"::Table, 104045) then begin
             UPGPaymentMethod.Open(104045);
             If UPGPaymentMethod.FindSet() then
                 repeat
-                    if PaymentMethod.Get(UPGPaymentMethod.Field(1)) then begin
+                    PaymentMethodCode := UPGPaymentMethod.Field(1).Value();
+                    if PaymentMethod.Get(PaymentMethodCode) then begin
                         PaymentMethod.Validate(PaymentTypeValidation, UPGPaymentMethod.Field(13601).Value());
                         PaymentMethod.Modify(true);
                     end;
@@ -229,12 +276,14 @@ codeunit 13656 "FIK Data Migration"
         PaymentExportData: Record "Payment Export Data";
         AllObj: Record AllObj;
         UPGPaymentExportData: RecordRef;
+        EntryNo: Integer;
     begin
         if AllObj.GET(AllObj."Object Type"::Table, 104047) then begin
             UPGPaymentExportData.Open(104047);
             If UPGPaymentExportData.FindSet() then
                 repeat
-                    if PaymentExportData.Get(UPGPaymentExportData.Field(1)) then begin
+                    EntryNo := UPGPaymentExportData.Field(1).Value();
+                    if PaymentExportData.Get(EntryNo) then begin
                         PaymentExportData.Validate(RecipientGiroAccNo, UPGPaymentExportData.Field(13650).Value());
                         PaymentExportData.Modify(true);
                     end;

@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 page 40038 "Pause Cloud Migration"
 {
     Caption = 'Pause cloud migration';

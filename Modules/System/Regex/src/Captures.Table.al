@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Utilities;
+
 /// <summary>
 /// Provides a representation of Regex Captures that models Capture objects in .Net
 /// </summary>

@@ -1,3 +1,8 @@
+namespace Microsoft.Bank.Deposit;
+
+using Microsoft.Foundation.Reporting;
+using System.Telemetry;
+
 page 1692 "Bank Deposits"
 {
     ApplicationArea = Basic, Suite;
@@ -76,6 +81,12 @@ page 1692 "Bank Deposits"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the bank account''s language code from the Bank Account table.';
+                    Visible = false;
+                }
+                field("Format Region"; Rec."Format Region")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the bank account''s region format from the Bank Account table.';
                     Visible = false;
                 }
             }
@@ -164,15 +175,9 @@ page 1692 "Bank Deposits"
     var
         SetupBankDepositReports: Codeunit "Setup Bank Deposit Reports";
         FeatureTelemetry: Codeunit "Feature Telemetry";
-#if not CLEAN21
-        FeatureBankDeposits: Codeunit "Feature Bank Deposits";
-#endif
     begin
         SetupBankDepositReports.InsertSetupData();
         FeatureTelemetry.LogUptake('0000IG1', 'Bank Deposit', Enum::"Feature Uptake Status"::Discovered);
-#if not CLEAN21
-        FeatureBankDeposits.OpenPageGuard();
-#endif
     end;
 
     [IntegrationEvent(false, false)]

@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DateTime;
+
 /// <summary>
 /// This enum has the day of the week for which the recurrence will occur.
 /// </summary>

@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Document;
+
 pageextension 18097 "GST Blanket Purchase Order" extends "Blanket Purchase Order"
 {
     layout
@@ -9,7 +15,7 @@ pageextension 18097 "GST Blanket Purchase Order" extends "Blanket Purchase Order
                 field("GST Vendor Type"; Rec."GST Vendor Type")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the vendor type for GST transaction';
+                    ToolTip = 'Specifies the vendor type for GST transaction';
                 }
                 field("Bill of Entry Date"; Rec."Bill of Entry Date")
                 {

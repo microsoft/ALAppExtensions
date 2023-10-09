@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Visualization;
+
+using System.Security.User;
+
 /// <summary>
 /// List page that contains settings that define the appearance of cues on all pages.
 /// Administrators can use this page to define a general style, which users can customize from the Cue Setup End User page.
@@ -23,38 +27,38 @@ page 9701 "Cue Setup Administrator"
         {
             repeater(Group)
             {
-                field("User Name"; "User Name")
+                field("User Name"; Rec."User Name")
                 {
                     ApplicationArea = All;
                     LookupPageID = "User Lookup";
                     ToolTip = 'Specifies which Business Central user the indicator setup for the Cue pertains to. If you leave this field blank, then the indicator setup will pertain to all users.';
                 }
-                field("Table ID"; "Table ID")
+                field("Table ID"; Rec."Table ID")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the ID of the Business Central table that contains the Cue.';
                 }
-                field("Table Name"; "Table Name")
+                field("Table Name"; Rec."Table Name")
                 {
                     ApplicationArea = All;
                     Editable = false;
                     QuickEntry = false;
                     ToolTip = 'Specifies the name of the table that contains the field that defines the Cue.';
                 }
-                field("Field No."; "Field No.")
+                field("Field No."; Rec."Field No.")
                 {
                     ApplicationArea = All;
                     NotBlank = true;
                     ToolTip = 'Specifies the ID that is assigned the Cue.';
                 }
-                field("Field Name"; "Field Name")
+                field("Field Name"; Rec."Field Name")
                 {
                     ApplicationArea = All;
                     Editable = false;
                     QuickEntry = false;
                     ToolTip = 'Specifies the name that is assigned to the Cue.';
                 }
-                field("Low Range Style"; "Low Range Style")
+                field("Low Range Style"; Rec."Low Range Style")
                 {
                     ApplicationArea = All;
                     StyleExpr = LowRangeStyleExpr;
@@ -64,15 +68,15 @@ page 9701 "Cue Setup Administrator"
                     var
                         CuesAndKPIsImpl: Codeunit "Cues And KPIs Impl.";
                     begin
-                        LowRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText("Low Range Style");
+                        LowRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText(Rec."Low Range Style");
                     end;
                 }
-                field("Threshold 1"; "Threshold 1")
+                field("Threshold 1"; Rec."Threshold 1")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the value in the Cue below which the indicator has the color that is specified by the Low Range Style field.';
                 }
-                field("Middle Range Style"; "Middle Range Style")
+                field("Middle Range Style"; Rec."Middle Range Style")
                 {
                     ApplicationArea = All;
                     StyleExpr = MiddleRangeStyleExpr;
@@ -82,15 +86,15 @@ page 9701 "Cue Setup Administrator"
                     var
                         CuesAndKPIsImpl: Codeunit "Cues And KPIs Impl.";
                     begin
-                        MiddleRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText("Middle Range Style");
+                        MiddleRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText(Rec."Middle Range Style");
                     end;
                 }
-                field("Threshold 2"; "Threshold 2")
+                field("Threshold 2"; Rec."Threshold 2")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the value in the Cue above which the indicator has the color that is specified by the High Range Style field.';
                 }
-                field("High Range Style"; "High Range Style")
+                field("High Range Style"; Rec."High Range Style")
                 {
                     ApplicationArea = All;
                     StyleExpr = HighRangeStyleExpr;
@@ -100,7 +104,7 @@ page 9701 "Cue Setup Administrator"
                     var
                         CuesAndKPIsImpl: Codeunit "Cues And KPIs Impl.";
                     begin
-                        HighRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText("High Range Style");
+                        HighRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText(Rec."High Range Style");
                     end;
                 }
             }
@@ -130,8 +134,9 @@ page 9701 "Cue Setup Administrator"
     var
         CuesAndKPIsImpl: Codeunit "Cues And KPIs Impl.";
     begin
-        LowRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText("Low Range Style");
-        MiddleRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText("Middle Range Style");
-        HighRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText("High Range Style");
+        LowRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText(Rec."Low Range Style");
+        MiddleRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText(Rec."Middle Range Style");
+        HighRangeStyleExpr := CuesAndKPIsImpl.ConvertStyleToStyleText(Rec."High Range Style");
     end;
 }
+

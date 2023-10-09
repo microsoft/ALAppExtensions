@@ -622,6 +622,7 @@ codeunit 139709 "Sales Invoices E2E"
         TargetURL: Text;
         DiscountPct: Decimal;
         DiscountAmt: Decimal;
+        InvDiscAmount: Decimal;
     begin
         // [SCENARIO 184721] When an invoice is created, the GET Method should update the invoice and assign a total
 
@@ -632,6 +633,7 @@ codeunit 139709 "Sales Invoices E2E"
         DiscountAmt := LibraryRandom.RandDecInRange(1, ROUND(SalesHeader.Amount / 2, 1), 1);
         SalesCalcDiscountByType.ApplyInvDiscBasedOnAmt(DiscountAmt, SalesHeader);
         GetFirstSalesInvoiceLine(SalesHeader, SalesLine);
+        InvDiscAmount := SalesLine."Inv. Discount Amount";
         SalesLine.VALIDATE(Quantity, SalesLine.Quantity + 1);
         SalesLine.MODIFY(TRUE);
         SalesHeader.CALCFIELDS("Recalculate Invoice Disc.");
@@ -645,7 +647,7 @@ codeunit 139709 "Sales Invoices E2E"
         // [THEN] the invoice should exist in the response and Invoice Discount Should be Applied
         LibraryGraphMgt.VerifyIDInJson(ResponseText);
         LibraryGraphDocumentTools.VerifySalesTotals(
-          SalesHeader, ResponseText, DiscountAmt, SalesHeader."Invoice Discount Calculation"::Amount);
+          SalesHeader, ResponseText, DiscountAmt - InvDiscAmount, SalesHeader."Invoice Discount Calculation"::Amount);
         VerifyGettingAgainKeepsETag(ResponseText, TargetURL);
     end;
 

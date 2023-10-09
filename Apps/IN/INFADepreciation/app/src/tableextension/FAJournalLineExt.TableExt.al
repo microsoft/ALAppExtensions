@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.FixedAssets.Journal;
+
+using Microsoft.FixedAssets.FADepreciation;
+using Microsoft.Inventory.Location;
+
 tableextension 18633 "FA Journal Line Ext" extends "FA Journal Line"
 {
     fields

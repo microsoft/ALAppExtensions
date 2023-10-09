@@ -1,9 +1,22 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AutomaticAccounts;
+
+using System.Environment.Configuration;
+
 #if not CLEAN22
 /// <summary>
 /// Automatic Acc.functionality will be moved to a new app.
 /// </summary>
 codeunit 4858 "Auto. Acc. Codes Page Mgt."
 {
+    ObsoleteReason = 'Automatic Acc.functionality will be moved to a new app.';
+    ObsoleteState = Pending;
+#pragma warning disable AS0072
+    ObsoleteTag = '22.0';
+#pragma warning restore AS0072
 
     local procedure OpenPage(AutoAccCodesPageSetupKey: Enum "AAC Page Setup Key")
     var

@@ -2,12 +2,6 @@ pageextension 11729 "Sales Credit Memo CZL" extends "Sales Credit Memo"
 {
     layout
     {
-#if not CLEAN20
-        modify("Customer Posting Group")
-        {
-            Visible = AllowMultiplePostingGroupsEnabled;
-        }
-#endif
 #if not CLEAN22
         modify("VAT Reporting Date")
         {
@@ -67,13 +61,8 @@ pageextension 11729 "Sales Credit Memo CZL" extends "Sales Credit Memo"
             field("Customer Posting Group CZL"; Rec."Customer Posting Group")
             {
                 ApplicationArea = Basic, Suite;
-#if not CLEAN20
-                Editable = IsPostingGroupEditableCZL;
-                Visible = not AllowMultiplePostingGroupsEnabled;
-#else
                 Editable = false;
                 Visible = false;
-#endif
                 Importance = Additional;
                 ToolTip = 'Specifies the customer''s market type to link business transactions to.';
                 ObsoleteState = Pending;
@@ -167,16 +156,26 @@ pageextension 11729 "Sales Credit Memo CZL" extends "Sales Credit Memo"
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
             }
+#if not CLEAN22 
             field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Exclude (Obsolete)';
                 ToolTip = 'Specifies that entry will be excluded from intrastat.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
             }
             field("Physical Transfer CZL"; Rec."Physical Transfer CZL")
             {
                 ApplicationArea = SalesReturnOrder;
+                Caption = 'Physical Transfer (Obsolete)';
                 ToolTip = 'Specifies if there is physical transfer of the item.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
             }
+#endif
         }
         addafter("Foreign Trade")
         {
@@ -247,35 +246,16 @@ pageextension 11729 "Sales Credit Memo CZL" extends "Sales Credit Memo"
 
     trigger OnOpenPage()
     begin
-#if not CLEAN20
-        AllowMultiplePostingGroupsEnabled := PostingGroupManagement.IsAllowMultipleCustVendPostingGroupsEnabled();
-        if not AllowMultiplePostingGroupsEnabled then begin
-            SalesReceivablesSetupCZL.GetRecordOnce();
-#pragma warning disable AL0432
-            IsPostingGroupEditableCZL := SalesReceivablesSetupCZL."Allow Alter Posting Groups CZL";
-#pragma warning restore AL0432
-        end;
-#endif
         VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
         ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
     end;
 
     var
-#if not CLEAN20
-        SalesReceivablesSetupCZL: Record "Sales & Receivables Setup";
-#pragma warning disable AL0432
-        PostingGroupManagement: Codeunit "Posting Group Management CZL";
-#pragma warning restore AL0432
-#endif
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
 #pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
 #pragma warning restore AL0432
         ReplaceVATDateEnabled: Boolean;
         VATDateEnabled: Boolean;
-#if not CLEAN20
-        AllowMultiplePostingGroupsEnabled: Boolean;
-        IsPostingGroupEditableCZL: Boolean;
-#endif
 #endif
 }

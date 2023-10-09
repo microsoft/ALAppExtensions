@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration;
+
+using System;
+using System.Text;
+using System.Reflection;
+using System.Environment;
+
 /// <summary>
 /// Implements functionality to get summary data for a given object.
 /// </summary>
@@ -11,7 +18,8 @@ codeunit 2717 "Page Summary Provider Impl."
     Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
-    Permissions = tabledata "Page Metadata" = r,
+    Permissions = tabledata Company = r,
+                  tabledata "Page Metadata" = r,
                   tabledata "Tenant Media Set" = r,
                   tabledata "Tenant Media Thumbnails" = r;
 
@@ -49,10 +57,6 @@ codeunit 2717 "Page Summary Provider Impl."
         // Add header
         AddPageSummaryHeader(PageId, ResultJsonObject);
 
-        // If show summary record is false, then exit with summary type caption
-        if not PageSummarySettings.IsShowRecordSummaryEnabled() then
-            exit(Format(ResultJsonObject));
-
         // Initialize variables
         if not PageMetadata.Get(PageId) then
             exit(Format(ResultJsonObject));
@@ -65,6 +69,10 @@ codeunit 2717 "Page Summary Provider Impl."
         end;
 
         AddUrl(ResultJsonObject, PageId, SourceRecordRef);
+
+        // If show summary record is false, then exit with summary type caption
+        if not PageSummarySettings.IsShowRecordSummaryEnabled() then
+            exit(Format(ResultJsonObject));
 
         RecId := SourceRecordRef.RecordId;
         Bookmark := Format(RecId, 0, 10); // 10 = Format RecordId into string

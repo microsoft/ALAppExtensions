@@ -2,6 +2,14 @@ pageextension 31248 "Fixed Asset Card CZF" extends "Fixed Asset Card"
 {
     layout
     {
+        modify(FAPostingGroup)
+        {
+            trigger OnBeforeValidate()
+            begin
+                if FADepreciationBook."FA Posting Group" <> FADepreciationBookOld."FA Posting Group" then
+                    FADepreciationBook.CheckDefaultFAPostingGroupCZF();
+            end;
+        }
         addafter("Responsible Employee")
         {
             field("Tax Deprec. Group Code CZF"; Rec."Tax Deprec. Group Code CZF")

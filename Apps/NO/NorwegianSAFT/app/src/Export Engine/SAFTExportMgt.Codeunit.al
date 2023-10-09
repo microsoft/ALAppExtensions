@@ -1,3 +1,22 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Company;
+using Microsoft.Utilities;
+using System;
+using System.Environment;
+using System.IO;
+using System.Reflection;
+using System.Utilities;
+
 codeunit 10675 "SAF-T Export Mgt."
 {
     TableNo = "SAF-T Export Header";
@@ -717,6 +736,8 @@ codeunit 10675 "SAF-T Export Mgt."
         end;
     end;
 
+#if not CLEAN23
+    [Obsolete('Use GetNotApplicableVATCode() instead', '23.0')]
     procedure GetNotApplicationVATCode(): Code[10]
     var
         SAFTSetup: Record "SAF-T Setup";
@@ -724,6 +745,15 @@ codeunit 10675 "SAF-T Export Mgt."
     begin
         SAFTSetup.Get();
         exit(copystr(SAFTSetup."Not Applicable VAT Code", 1, MaxStrLen(VATCode.Code)));
+    end;
+#endif
+    procedure GetNotApplicableVATCode(): Code[20]
+    var
+        SAFTSetup: Record "SAF-T Setup";
+        VATReportingCode: Record "VAT Reporting Code";
+    begin
+        SAFTSetup.Get();
+        exit(CopyStr(SAFTSetup."Not Applic. VAT Code", 1, MaxStrLen(VATReportingCode.Code)));
     end;
 
     procedure GetISOCurrencyCode(CurrencyCode: Code[10]): Code[10]

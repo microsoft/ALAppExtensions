@@ -1,12 +1,176 @@
 ## Preview
 
-Note that when using the preview version of AL-Go for GitHub, you need to Update your AL-Go system files, as soon as possible when told to do so.
+Note that when using the preview version of AL-Go for GitHub, we recommend you Update your AL-Go system files, as soon as possible when informed that an update is available.
+
+### Removal of the InsiderSasToken
+
+As of October 1st 2023, Business Central insider builds are now publicly available. When creating local containers with the insider builds, you will have to accept the insider EULA (https://go.microsoft.com/fwlink/?linkid=2245051) in order to continue.
+
+AL-Go for GitHub allows you to build and test using insider builds without any explicit approval, but please note that the insider artifacts contains the insider Eula and you automatically accept this when using the builds.
+
+### Issues
+- Issue 730 Support for external rulesets.
+- Issue 739 Workflow specific KeyVault settings doesn't work for localDevEnv
+- Using self-hosted runners while using Azure KeyVault for secrets or signing might fail with C:\Modules doesn't exist
+- PullRequestHandler wasn't triggered if only .md files where changes. This lead to PRs which couldn't be merged if a PR status check was mandatory.
+- Artifacts names for PR Builds were using the merge branch instead of the head branch.
 
 ### New Settings
-New Project Setting: `UseCompilerFolder`. Setting useCompilerFolder to true causes your pipelines to use containerless compiling. Unless you also set `doNotPublishApps` to true, setting useCompilerFolder to true won't give you any performance advantage, since AL-Go for GitHub will still need to create a container in order to publish and test the apps. In the future, publishing and testing will be split from building and there will be other options for getting an instance of Business Central for publishing and testing. 
+- `enableExternalRulesets`: set this setting to true if you want to allow AL-Go to automatically download external references in rulesets.
+- `deliverTo<deliveryTarget>`: is not really new, but has new properties and wasn't documented. The complete list of properties is here (note that some properties are deliveryTarget specific):
+  - **Branches** = an array of branch patterns, which are allowed to deliver to this deliveryTarget. (Default [ "main" ])
+  - **CreateContainerIfNotExist** = *[Only for DeliverToStorage]* Create Blob Storage Container if it doesn't already exist. (Default false)
+
+### Deployment
+Environment URL is now displayed underneath the environment being deployed to in the build summary. For Custom Deployment, the script can set the GitHub Output variable `environmentUrl` in order to show a custom URL.
+
+## v3.3
+
+### Issues
+
+- Issue 227 Feature request: Allow deployments with "Schema Sync Mode" = Force
+- Issue 519 Deploying to onprem environment
+- Issue 520 Automatic deployment to environment with annotation
+- Issue 592 Internal Server Error when publishing
+- Issue 557 Deployment step fails when retried
+- After configuring deployment branches for an environment in GitHub and setting Deployment Branch Policy to **Protected Branches**, AL-Go for GitHub would fail during initialization (trying to get environments for deployment)
+- The DetermineDeploymentEnvironments doesn't work in private repositories (needs the GITHUB_TOKEN)
+- Issue 683 Settings from GitHub variables ALGoRepoSettings and ALGoOrgSettings are not applied during build pipeline
+- Issue 708 Inconsistent AuthTokenSecret Behavior in Multiple Projects: 'Secrets are not available'
+
+### Breaking changes
+
+Earlier, you could specify a mapping to an environment name in an environment secret called `<environmentname>_EnvironmentName`, `<environmentname>-EnvironmentName` or just `EnvironmentName`. You could also specify the projects you want to deploy to an environment as an environment secret called `Projects`.
+
+This mechanism is no longer supported and you will get an error if your repository has these secrets. Instead you should use the `DeployTo<environmentName>` setting described below.
+
+Earlier, you could also specify the projects you want to deploy to an environment in a setting called `<environmentName>_Projects` or `<environmentName>-Projects`. This is also no longer supported. Instead use the `DeployTo<environmentName>` and remove the old settings.
 
 ### New Actions
+- `DetermineDeliveryTargets`: Determine which delivery targets should be used for delivering artifacts from the build job.
+- `DetermineDeploymentEnvironments`: Determine which deployment environments should be used for the workflow.
+
+### New Settings
+- `projectName`: project setting used as friendly name for an AL-Go project, to be used in the UI for various workflows, e.g. CICD, Pull Request Build.
+- `fullBuildPatterns`: used by `DetermineProjectsToBuild` action to specify changes in which files and folders would trigger a full build (building all AL-Go projects).
+- `excludeEnvironments`: used by `DetermineDeploymentEnvironments` action to exclude environments from the list of environments considered for deployment.
+- `deployTo<environmentName>`: is not really new, but has new properties. The complete list of properties is here:
+  - **EnvironmentType** = specifies the type of environment. The environment type can be used to invoke a custom deployment. (Default SaaS)
+  - **EnvironmentName** = specifies the "real" name of the environment if it differs from the GitHub environment
+  - **Branches** = an array of branch patterns, which are allowed to deploy to this environment. (Default [ "main" ])
+  - **Projects** = In multi-project repositories, this property can be a comma separated list of project patterns to deploy to this environment. (Default *)
+  - **SyncMode** = ForceSync if deployment to this environment should happen with ForceSync, else Add. If deploying to the development endpoint you can also specify Development or Clean. (Default Add)
+  - **ContinuousDeployment** = true if this environment should be used for continuous deployment, else false. (Default: AL-Go will continuously deploy to sandbox environments or environments, which doesn't end in (PROD) or (FAT)
+  - **runs-on** = specifies which GitHub runner to use when deploying to this environment. (Default is settings.runs-on)
+
+### Custom Deployment
+
+By specifying a custom EnvironmentType in the DeployTo structure for an environment, you can now add a script in the .github folder called `DeployTo<environmentType>.ps1`. This script will be executed instead of the standard deployment mechanism with the following parameters in a HashTable:
+
+| Parameter | Description | Example |
+| --------- | :--- | :--- |
+| `$parameters.type` | Type of delivery (CD or Release) | CD |
+| `$parameters.apps` | Apps to deploy | /home/runner/.../GHP-Common-main-Apps-2.0.33.0.zip |
+| `$parameters.EnvironmentType` | Environment type | SaaS |
+| `$parameters.EnvironmentName` | Environment name | Production |
+| `$parameters.Branches` | Branches which should deploy to this environment (from settings) | main,dev |
+| `$parameters.AuthContext` | AuthContext in a compressed Json structure | {"refreshToken":"mytoken"} |
+| `$parameters.BranchesFromPolicy` | Branches which should deploy to this environment (from GitHub environments) | main |
+| `$parameters.Projects` | Projects to deploy to this environment | |
+| `$parameters.ContinuousDeployment` | Is this environment setup for continuous deployment | false |
+| `$parameters."runs-on"` | GitHub runner to be used to run the deployment script | windows-latest |
+
+### Status Checks in Pull Requests
+
+AL-Go for GitHub now adds status checks to Pull Requests Builds. In your GitHub branch protection rules, you can set up "Pull Request Status Check" to be a required status check to ensure Pull Request Builds succeed before merging.
+
+### Secrets in AL-Go for GitHub
+In v3.2 of AL-Go for GitHub, all secrets requested by AL-Go for GitHub were available to all steps in a job one compressed JSON structure in env:Secrets.
+With this update, only the steps that actually requires secrets will have the secrets available.
+
+## v3.2
+
+### Issues
+
+Issue 542 Deploy Workflow fails
+Issue 558 CI/CD attempts to deploy from feature branch
+Issue 559 Changelog includes wrong commits
+Publish to AppSource fails if publisher name or app name contains national or special characters
+Issue 598 Cleanup during flush if build pipeline doesn't cleanup properly
+Issue 608 When creating a release, throw error if no new artifacts have been added
+Issue 528 Give better error messages when uploading to storage accounts
+Create Online Development environment workflow failed in AppSource template unless AppSourceCopMandatoryAffixes is defined in repository settings file
+Create Online Development environment workflow didn't have a project parameter and only worked for single project repositories
+Create Online Development environment workflow didn't work if runs-on was set to Linux
+Special characters are not supported in RepoName, Project names or other settings - Use UTF8 encoding to handle special characters in GITHUB_OUTPUT and GITHUB_ENV
+
+### Issue 555
+AL-Go contains several workflows, which create a Pull Request or pushes code directly.
+All (except Update AL-Go System Files) earlier used the GITHUB_TOKEN to create the PR or commit.
+The problem using GITHUB_TOKEN is that is doesn't trigger a pull request build or a commit build.
+This is by design: https://docs.github.com/en/actions/using-workflows/triggering-a-workflow#triggering-a-workflow-from-a-workflow
+Now, you can set the checkbox called Use GhTokenWorkflow to allowing you to use the GhTokenWorkflow instead of the GITHUB_TOKEN - making sure that workflows are triggered
+
+### New Settings
+- `keyVaultCodesignCertificateName`:  With this setting you can delegate the codesigning to an Azure Key Vault. This can be useful if your certificate has to be stored in a Hardware Security Module
+- `PullRequestTrigger`:  With this setting you can set which trigger to use for Pull Request Builds. By default AL-Go will use pull_request_target.
+
+### New Actions
+- `DownloadProjectDependencies`: Downloads the dependency apps for a given project and build mode.
+
+### Settings and Secrets in AL-Go for GitHub
+In earlier versions of AL-Go for GitHub, all settings were available as individual environment variables to scripts and overrides, this is no longer the case.
+Settings were also available as one compressed JSON structure in env:Settings, this is still the case.
+Settings can no longer contain line breaks. It might have been possible to use line breaks earlier, but it would likely have unwanted consequences.
+Use `$settings = $ENV:Settings | ConvertFrom-Json` to get all settings in PowerShell.
+
+In earlier versions of AL-Go for GitHub, all secrets requested by AL-Go for GitHub were available as individual environment variables to scripts and overrides, this is no longer the case.
+As described in bug 647, all secrets available to the workflow were also available in env:_Secrets, this is no longer the case.
+All requested secrets were also available (base64 encoded) as one compressed JSON structure in env:Secrets, this is still the case.
+Use `$secrets = $ENV:Secrets | ConvertFrom-Json` to get all requested secrets in PowerShell.
+You cannot get to any secrets that weren't requested by AL-Go for GitHub.
+
+## v3.1
+
+### Issues
+
+Issue #446 Wrong NewLine character in Release Notes
+Issue #453 DeliverToStorage - override fails reading secrets
+Issue #434 Use gh auth token to get authentication token instead of gh auth status
+Issue #501 The Create New App action will now use 22.0.0.0 as default application reference and include NoImplicitwith feature.
+
+
+### New behavior
+
+The following workflows:
+
+- Create New App
+- Create New Test App
+- Create New Performance Test App
+- Increment Version Number
+- Add Existing App
+- Create Online Development Environment
+
+All these actions now uses the selected branch in the **Run workflow** dialog as the target for the Pull Request or Direct COMMIT.
+
+### New Settings
+
+- `UseCompilerFolder`: Setting useCompilerFolder to true causes your pipelines to use containerless compiling. Unless you also set `doNotPublishApps` to true, setting useCompilerFolder to true won't give you any performance advantage, since AL-Go for GitHub will still need to create a container in order to publish and test the apps. In the future, publishing and testing will be split from building and there will be other options for getting an instance of Business Central for publishing and testing.
+- `vsixFile`: vsixFile should be a direct download URL to the version of the AL Language extension you want to use for building the project or repo. By default, AL-Go will use the AL Language extension that comes with the Business Central Artifacts.
+
+### New Workflows
+
+- **_BuildALGoProject** is a reusable workflow that unites the steps for building an AL-Go projects. It has been reused in the following workflows: _CI/CD_, _Pull Request Build_, _NextMinor_, _NextMajor_ and _Current_.
+The workflow appears under the _Actions_ tab in GitHub, but it is not actionable in any way.
+
+### New Actions
+
 - **DetermineArtifactUrl** is used to determine which artifacts to use for building a project in CI/CD, PullRequestHandler, Current, NextMinor and NextMajor workflows.
+
+### License File
+
+With the changes to the CRONUS license in Business Central version 22, that license can in most cases be used as a developer license for AppSource Apps and it is no longer mandatory to specify a license file in AppSource App repositories.
+Obviously, if you build and test your app for Business Central versions prior to 21, it will fail if you don't specify a licenseFileUrl secret.
 
 ## v3.0
 
@@ -134,7 +298,7 @@ Setting the repo setting "runs-on" to "Ubuntu-Latest", followed by running Updat
 - Issue #273 Potential security issue in Pull Request Handler in Open Source repositories
 - Issue #303 PullRequestHandler fails on added files
 - Issue #299 Multi-project repositories build all projects on Pull Requests
-- Issue #291 Issues with new Pull Request Handler 
+- Issue #291 Issues with new Pull Request Handler
 - Issue #287 AL-Go pipeline fails in ReadSettings step
 
 ### Changes
@@ -249,7 +413,7 @@ Setting the repo setting "runs-on" to "Ubuntu-Latest", followed by running Updat
 ```
     "ConditionalSettings": [
         {
-            "branches": [ 
+            "branches": [
                 "feature/*"
             ],
             "settings": {

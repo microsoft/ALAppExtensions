@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.History;
+
+using Microsoft.Finance.GST.Application;
+
 pageextension 18104 "GST Posted Purch Cr Memo Stats" extends "Purch. Credit Memo Statistics"
 {
     layout

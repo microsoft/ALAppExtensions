@@ -31,7 +31,7 @@ codeunit 11742 "VAT Date Handler CZL"
         GLEntry."VAT Reporting Date" := GenJournalLine."VAT Reporting Date";
     end;
 
-#if not CLEAN20
+#if not CLEAN23
 #pragma warning disable AL0432
     [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterInvPostBufferPrepareSales', '', false, false)]
     local procedure UpdateVatDateInvoicePostBufferFromSalesHeader(var InvoicePostBuffer: Record "Invoice Post. Buffer"; var SalesLine: Record "Sales Line")
@@ -145,7 +145,7 @@ codeunit 11742 "VAT Date Handler CZL"
 
     procedure VATDateNotAllowed(VATDate: Date): Boolean
     var
-        SetupRecordID: RecordID;
+        SetupRecordID: RecordId;
     begin
         exit(IsVATDateCZLNotAllowed(VATDate, SetupRecordID));
     end;
@@ -162,7 +162,7 @@ codeunit 11742 "VAT Date Handler CZL"
             Error(VATPeriodNotExistErr, VATPeriodCZL.TableCaption(), VATDate);
     end;
 
-    procedure IsVATDateCZLNotAllowed(VATDate: Date; var SetupRecordID: RecordID): Boolean
+    procedure IsVATDateCZLNotAllowed(VATDate: Date; var SetupRecordID: RecordId): Boolean
     var
         VATAllowPostingFrom: Date;
         VATAllowPostingTo: Date;
@@ -216,7 +216,7 @@ codeunit 11742 "VAT Date Handler CZL"
 
     procedure CheckVATDateCZL(var SalesHeader: Record "Sales Header")
     var
-        SetupRecID: RecordID;
+        SetupRecID: RecordId;
     begin
 #if not CLEAN22
 #pragma warning disable AL0432
@@ -252,7 +252,7 @@ codeunit 11742 "VAT Date Handler CZL"
 
     procedure CheckVATDateCZL(var PurchaseHeader: Record "Purchase Header")
     var
-        SetupRecID: RecordID;
+        SetupRecID: RecordId;
         MustBeLessOrEqualErr: Label 'must be less or equal to %1', Comment = '%1 = fieldcaption of VAT Date CZL';
     begin
 #if not CLEAN22
@@ -297,7 +297,7 @@ codeunit 11742 "VAT Date Handler CZL"
 
     procedure CheckVATDateCZL(var ServiceHeader: Record "Service Header")
     var
-        SetupRecID: RecordID;
+        SetupRecID: RecordId;
     begin
 #if not CLEAN22
 #pragma warning disable AL0432
@@ -338,7 +338,9 @@ codeunit 11742 "VAT Date Handler CZL"
         DummyVATCtrlReportLineCZL: Record "VAT Ctrl. Report Line CZL";
         DataTypeManagement: Codeunit "Data Type Management";
 #if not CLEAN22
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
 #endif
         RecordRef: RecordRef;
         PostingDateFieldRef: FieldRef;

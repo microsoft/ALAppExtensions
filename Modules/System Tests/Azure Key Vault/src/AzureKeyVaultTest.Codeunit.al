@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Azure.KeyVault;
+
+using System.Azure.KeyVault;
+using System.TestLibraries.Azure.KeyVault;
+using System.Test.Library;
+using System.TestLibraries.Utilities;
+
 codeunit 135212 "Azure Key Vault Test"
 {
     Subtype = Test;

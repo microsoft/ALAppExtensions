@@ -1,7 +1,9 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Environment.Configuration;
 
 /// <summary>
 /// Page that enables a user to pick which new features to use
@@ -12,6 +14,8 @@ page 2610 "Feature Management"
     Caption = 'Feature Management';
     ApplicationArea = All;
     UsageCategory = Administration;
+    AboutTitle = 'Managing change';
+    AboutText = 'Some new features are turned off when Business Central is updated to a newer version. These features are optional for a period of time until they are automatically enabled for all users in a later software update according to the [Release Plan](https://go.microsoft.com/fwlink/?linkid=2227906). You can prepare in advance by enabling these features for all users on the right environment at the right time that suits your schedule.';
     AdditionalSearchTerms = 'new features,feature key,opt in,turn off features,enable features,early access,preview';
     SourceTable = "Feature Key";
     PromotedActionCategories = 'New,Process,Report,Data Update';
@@ -31,9 +35,10 @@ page 2610 "Feature Management"
                 field(FeatureDescription; Rec.Description)
                 {
                     Caption = 'Feature';
-                    ToolTip = 'The name of the new capability or change in design.';
+                    Tooltip = 'Specifies the name of the new capability or change in design.';
                     ApplicationArea = All;
                     Editable = false;
+                    Width = 60;
                 }
                 field(LearnMore; LearnMoreLbl)
                 {
@@ -60,7 +65,7 @@ page 2610 "Feature Management"
                     Caption = 'Enabled for';
                     ToolTip = 'Specifies whether the feature is enabled for all users or for none. The change takes effect the next time each user signs in.';
                     ApplicationArea = All;
-                    Editable = (not "Is One Way") or (Enabled = Enabled::None);
+                    Editable = (not Rec."Is One Way") or (Rec.Enabled = Rec.Enabled::None);
                     StyleExpr = EnabledForStyle;
 
                     trigger OnValidate()
@@ -98,8 +103,10 @@ page 2610 "Feature Management"
                     Caption = 'Get started';
                     ApplicationArea = All;
                     Editable = false;
-                    Enabled = "Can Try";
+                    Enabled = Rec."Can Try";
+#pragma warning disable AA0219
                     ToolTip = 'Starts a new session with the feature temporarily enabled (opens in a new tab). This does not affect any other users.';
+#pragma warning restore AA0219
                     trigger OnDrillDown()
                     begin
                         if Rec."Can Try" then begin
@@ -146,13 +153,19 @@ page 2610 "Feature Management"
                 }
             }
         }
+#if not CLEAN23
         area(factboxes)
         {
             part("Upcoming Changes FactBox"; "Upcoming Changes Factbox")
             {
                 ApplicationArea = All;
+                Visible = false;
+                ObsoleteReason = 'Replaced by teaching tips';
+                ObsoleteState = Pending;
+                ObsoleteTag = '23.0';
             }
         }
+#endif
     }
     actions
     {
@@ -206,7 +219,7 @@ page 2610 "Feature Management"
                     PromotedCategory = Category4;
                     trigger OnAction()
                     begin
-                        FeatureManagementFacade.CancelTask(FeatureDataUpdateStatus, True);
+                        FeatureManagementFacade.CancelTask(FeatureDataUpdateStatus, true);
                     end;
                 }
             }

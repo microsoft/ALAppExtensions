@@ -8,11 +8,6 @@ pageextension 11748 "Service Order CZL" extends "Service Order"
             Visible = ReplaceVATDateEnabled and VATDateEnabled;
         }
 #endif
-#if not CLEAN20
-#pragma warning disable AL0432
-        movelast(General; "Posting Description")
-#pragma warning restore AL0432
-#else
         addlast(General)
         {
             field("Posting Description CZL"; Rec."Posting Description")
@@ -21,7 +16,6 @@ pageextension 11748 "Service Order CZL" extends "Service Order"
                 ToolTip = 'Specifies a description of the document. The posting description also appers on customer and G/L entries.';
             }
         }
-#endif
 #if not CLEAN22
         addafter("Posting Date")
         {
@@ -114,11 +108,17 @@ pageextension 11748 "Service Order CZL" extends "Service Order"
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
             }
+#if not CLEAN22
             field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Exclude (Obsolete)';
                 ToolTip = 'Specifies that entry will be excluded from intrastat.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
             }
+#endif
         }
         addafter(" Foreign Trade")
         {
@@ -194,7 +194,9 @@ pageextension 11748 "Service Order CZL" extends "Service Order"
 
     var
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
         ReplaceVATDateEnabled: Boolean;
         VATDateEnabled: Boolean;
 #endif

@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.UseCaseBuilder;
+
+using System.Automation;
+using System.Reflection;
+
 codeunit 20300 "Use Case Tree Condition Mgmt."
 {
     procedure OpenDynamicRequestPage(var UseCaseTreeNode: Record "Use Case Tree Node")

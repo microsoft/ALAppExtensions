@@ -1,3 +1,10 @@
+namespace Microsoft.Payroll.Ceridian;
+
+using Microsoft.Foundation.Company;
+using System.Environment;
+using System.Privacy;
+using System.Upgrade;
+
 codeunit 1667 "Ceridian Install"
 {
     Subtype = install;

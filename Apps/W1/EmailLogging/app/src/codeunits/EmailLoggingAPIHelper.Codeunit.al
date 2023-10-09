@@ -1,3 +1,5 @@
+namespace Microsoft.CRM.EmailLoggin;
+
 codeunit 1684 "Email Logging API Helper"
 {
     Access = Internal;

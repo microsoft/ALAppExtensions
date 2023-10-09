@@ -1,3 +1,7 @@
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
+using Microsoft.Finance.Dimension;
+
 page 2633 "Statistical Accounts Journal"
 {
     Caption = 'Statistical Account Journal';
@@ -325,13 +329,19 @@ page 2633 "Statistical Accounts Journal"
     }
 
     trigger OnOpenPage()
+    var
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
     begin
+        StatAccTelemetry.LogSetup();
         Rec.SelectJournal(CurrentJnlBatchName);
         SetDimensionVisibility();
     end;
 
     trigger OnNewRecord(BelowxRec: Boolean)
+    var
+        StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
     begin
+        StatAccTelemetry.LogSetup();
         Rec.SetUpNewLine(xRec, CurrentJnlBatchName);
     end;
 

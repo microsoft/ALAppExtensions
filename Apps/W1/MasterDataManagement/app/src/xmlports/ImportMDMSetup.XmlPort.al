@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.MDM;
+
+using Microsoft.Integration.SyncEngine;
+
 xmlport 7231 ImportMDMSetup
 {
     Caption = 'Import Master Data Management Setup';
@@ -117,6 +121,9 @@ xmlport 7231 ImportMDMSetup
                     fieldattribute(IntegrationFieldMapping_FieldNo; IntegrationFieldMapping."Field No.")
                     {
                     }
+                    fieldattribute(IntegrationFieldMapping_FieldCaption; IntegrationFieldMapping."Field Caption")
+                    {
+                    }
                     fieldattribute(IntegrationFieldMapping_IntegrationTableFieldNo; IntegrationFieldMapping."Integration Table Field No.")
                     {
                     }
@@ -175,9 +182,15 @@ xmlport 7231 ImportMDMSetup
 
                 trigger OnAfterInsertRecord()
                 var
+                    MasterDataManagementSetup: Record "Master Data Management Setup";
                     MasterDataMgtSetupDefault: Codeunit "Master Data Mgt. Setup Default";
+                    EnqueueJobQueueEntries: Boolean;
                 begin
-                    MasterDataMgtSetupDefault.RecreateJobQueueEntryFromIntTableMapping(integrationTableMapping, 1, true, 30);
+                    if MasterDataManagementSetup.Get() then
+                        if (MasterDataManagementSetup."Is Enabled") and (not MasterDataManagementSetup."Delay Job Scheduling") then
+                            EnqueueJobQueueEntries := true;
+
+                    MasterDataMgtSetupDefault.RecreateJobQueueEntryFromIntTableMapping(integrationTableMapping, 1, EnqueueJobQueueEntries, 30);
                 end;
 
                 trigger OnBeforeModifyRecord()

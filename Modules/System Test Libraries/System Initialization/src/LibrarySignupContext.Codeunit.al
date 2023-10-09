@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Environment.Configuration;
+
+using System.Environment.Configuration;
+using System.TestLibraries.Utilities;
+
 codeunit 130046 "Library - Signup Context"
 {
     Access = Public;

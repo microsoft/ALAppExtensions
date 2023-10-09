@@ -73,6 +73,7 @@ artifacts/
 *.pidb
 *.svclog
 *.scc
+*.dll
 
 # Chutzpah Test files
 _Chutzpah*
@@ -314,3 +315,5 @@ TestResults.xml
 #Translation files
 *.xlf
 *.lcg
+#Build files
+*.al.bak

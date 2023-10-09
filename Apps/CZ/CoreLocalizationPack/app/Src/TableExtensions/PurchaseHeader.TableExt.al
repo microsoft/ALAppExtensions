@@ -259,6 +259,15 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         {
             Caption = 'Physical Transfer';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
+#if not CLEAN22
 
             trigger OnValidate()
             begin
@@ -267,11 +276,20 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
                         FieldError("Document Type");
                 UpdatePurchLinesByFieldNo(FieldNo("Physical Transfer CZL"), CurrFieldNo <> 0);
             end;
+#endif
         }
         field(31069; "Intrastat Exclude CZL"; Boolean)
         {
             Caption = 'Intrastat Exclude';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
         field(31072; "EU 3-Party Intermed. Role CZL"; Boolean)
         {
@@ -306,7 +324,9 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         UnreliablePayerMgtCZL: Codeunit "Unreliable Payer Mgt. CZL";
         ConfirmManagement: Codeunit "Confirm Management";
 #if not CLEAN22
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
 #endif
         GlobalDocumentType: Enum "Purchase Document Type";
         GlobalDocumentNo: Code[20];
@@ -352,7 +372,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         if "Currency Code" = '' then
             exit;
         if not CurrencyExchangeRate.CurrencyExchangeRateExist("Currency Code", CurrencyDate) then
-            Error(CurrExchRateNotExistsErr)
+            Error(CurrExchRateNotExistsErr, CurrencyExchangeRate.TableCaption, "Currency Code", CurrencyDate);
     end;
 
     procedure UpdateVATCurrencyFactorCZLByCurrencyFactorCZL()
@@ -445,7 +465,9 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         "SWIFT Code CZL" := SWIFTCode;
         OnAfterUpdateBankInfoCZL(Rec);
     end;
+#if not CLEAN22
 
+    [Obsolete('Intrastat related functionalities are moved to Intrastat extensions.', '22.0')]
     procedure CheckIntrastatMandatoryFieldsCZL()
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
@@ -464,6 +486,7 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
                 TestField("Shipment Method Code");
         end;
     end;
+#endif
 
     procedure IsIntrastatTransactionCZL(): Boolean
     begin
@@ -501,8 +524,12 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
 
         if "EU 3-Party Intermed. Role CZL" then
             exit(false);
+#if not CLEAN22
+#pragma warning disable AL0432
         if "Intrastat Exclude CZL" then
             exit(false);
+#pragma warning restore AL0432
+#endif
         if IsCreditDocType() then
             exit(CountryRegion.IsIntrastatCZL("VAT Country/Region Code", true));
         if "VAT Country/Region Code" = "Ship-to Country/Region Code" then

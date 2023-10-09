@@ -3,11 +3,18 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System;
+
 /// <summary>
-/// Retrieve plans in Azure AD and manage plans
+/// Retrieve plans in Microsoft Entra and manage plans
 /// </summary>
 codeunit 9016 "Azure AD Plan"
 {
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
     var
         [NonDebuggable]
         AzureAdPlanImpl: Codeunit "Azure AD Plan Impl.";
@@ -118,24 +125,6 @@ codeunit 9016 "Azure AD Plan"
     begin
         AzureAdPlanImpl.UpdateUserPlans(UserSecurityId, true, true, false);
     end;
-
-#if not CLEAN18
-    /// <summary>
-    /// Updates license plans for a user.
-    /// </summary>
-    /// <raises>OnRemoveUserGroupsForUserAndPlan</raises>
-    /// <raises>OnUpdateUserAccessForSaaS</raises>
-    /// <param name="UserSecurityId">The user for whom to update license information.</param>
-    /// <param name="AppendPermissionsOnNewPlan">Append permissions from the new plan to the user.</param>
-    /// <param name="RemovePermissionsOnDeletePlan">Remove permissions when removing the plan for the user.</param>
-    [Scope('OnPrem')]
-    [NonDebuggable]
-    [Obsolete('Replaced with an overload accepting the RemovePlansOnDeleteUser parameter', '18.0')]
-    procedure UpdateUserPlans(UserSecurityId: Guid; AppendPermissionsOnNewPlan: Boolean; RemovePermissionsOnDeletePlan: Boolean)
-    begin
-        AzureAdPlanImpl.UpdateUserPlans(UserSecurityId, AppendPermissionsOnNewPlan, RemovePermissionsOnDeletePlan, false);
-    end;
-#endif
 
     /// <summary>
     /// Updates license plans for a user.
@@ -365,6 +354,17 @@ codeunit 9016 "Azure AD Plan"
     procedure IsUserExternal(): Boolean
     begin
         exit(AzureAdPlanImpl.IsUserExternal());
+    end;
+
+    /// <summary>    
+    /// Checks whether the current user is external accountant.
+    /// </summary>
+    /// <returns>True if the current user is external accountant, false otherwise.</returns>
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure IsUserExternalAccountant(): Boolean
+    begin
+        exit(AzureAdPlanImpl.IsUserExternalAccountant());
     end;
 
 #if not CLEAN22

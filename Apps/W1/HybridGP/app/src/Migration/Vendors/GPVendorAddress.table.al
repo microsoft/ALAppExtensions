@@ -1,7 +1,11 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.Sales.Customer;
+
 table 4049 "GP Vendor Address"
 {
-    ReplicateData = false;
     Permissions = tabledata "Ship-to Address" = rim;
+    DataClassification = CustomerContent;
 
     fields
     {
@@ -55,7 +59,7 @@ table 4049 "GP Vendor Address"
         }
     }
 
-    [Obsolete('Vendor address logic moved to the GP Vendor Migrator code unit.','22.0')]
+    [Obsolete('Vendor address logic moved to the GP Vendor Migrator code unit.', '22.0')]
     procedure MoveStagingData()
     begin
     end;

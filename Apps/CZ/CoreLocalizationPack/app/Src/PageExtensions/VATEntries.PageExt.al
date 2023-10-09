@@ -8,6 +8,14 @@ pageextension 11755 "VAT Entries CZL" extends "VAT Entries"
             Visible = ReplaceVATDateEnabled and VATDateEnabled;
         }
 #endif
+        addafter("VAT Reporting Date")
+        {
+            field("Original Doc. VAT Date CZL"; Rec."Original Doc. VAT Date CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies the VAT entry''s Original Document VAT Date.';
+            }
+        }
         addafter("Posting Date")
         {
 #if not CLEAN22
@@ -89,7 +97,9 @@ pageextension 11755 "VAT Entries CZL" extends "VAT Entries"
 
     var
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
         ReplaceVATDateEnabled: Boolean;
         VATDateEnabled: Boolean;
 #endif

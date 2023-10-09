@@ -1,3 +1,7 @@
+namespace Microsoft.Finance.Latepayment;
+
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
 codeunit 1954 "LP Feature Table Helper"
 {
     trigger OnRun();

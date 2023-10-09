@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Excel;
+
+using System;
+
 /// <summary>
 /// This codeunit provides an interface to create filters for Edit in Excel.
 /// </summary>

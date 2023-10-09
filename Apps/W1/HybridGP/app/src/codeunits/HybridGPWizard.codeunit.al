@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.DataMigration;
+using System.Environment;
+
 codeunit 4015 "Hybrid GP Wizard"
 {
     var
@@ -109,7 +114,7 @@ codeunit 4015 "Hybrid GP Wizard"
         end;
 
         GPPopulateCombinedTables.PopulateGPCompanySettings();
-        ShowSettingsStep := true;
+        ShowSettingsStep := false;
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanShowUpdateReplicationCompanies', '', false, false)]
@@ -135,6 +140,9 @@ codeunit 4015 "Hybrid GP Wizard"
     var
         GPCompanyMigrationSettings: Record "GP Company Migration Settings";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        HybridCompany: Record "Hybrid Company";
+        HybridCompanyStatus: Record "Hybrid Company Status";
+        HybridReplicationDetail: Record "Hybrid Replication Detail";
     begin
         GPCompanyMigrationSettings.Reset();
         if GPCompanyMigrationSettings.FindSet() then
@@ -142,6 +150,44 @@ codeunit 4015 "Hybrid GP Wizard"
 
         if not GPCompanyAdditionalSettings.IsEmpty() then
             GPCompanyAdditionalSettings.DeleteAll();
+
+        if not HybridCompanyStatus.IsEmpty() then
+            HybridCompanyStatus.DeleteAll();
+
+        if not HybridCompany.IsEmpty() then
+            HybridCompany.DeleteAll();
+
+        if not HybridReplicationDetail.IsEmpty() then
+            HybridReplicationDetail.DeleteAll();
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Company", 'OnAfterDeleteEvent', '', false, false)]
+    local procedure CompanyOnAfterDelete(var Rec: Record Company; RunTrigger: Boolean)
+    var
+        GPCompanyMigrationSettings: Record "GP Company Migration Settings";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        HybridCompany: Record "Hybrid Company";
+        HybridCompanyStatus: Record "Hybrid Company Status";
+        HybridReplicationDetail: Record "Hybrid Replication Detail";
+    begin
+        if Rec.IsTemporary() then
+            exit;
+
+        if (GPCompanyMigrationSettings.Get(Rec.Name)) then
+            GPCompanyMigrationSettings.Delete();
+
+        if (GPCompanyAdditionalSettings.Get(Rec.Name)) then
+            GPCompanyAdditionalSettings.Delete();
+
+        if (HybridCompanyStatus.Get(Rec.Name)) then
+            HybridCompanyStatus.Delete();
+
+        if (HybridCompany.Get(Rec.Name)) then
+            HybridCompany.Delete();
+
+        HybridReplicationDetail.SetRange("Company Name", Rec.Name);
+        if not HybridReplicationDetail.IsEmpty() then
+            HybridReplicationDetail.DeleteAll();
     end;
 
     local procedure ProcessesAreRunning(): Boolean

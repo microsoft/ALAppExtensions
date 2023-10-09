@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
+using System.Telemetry;
+using System.Utilities;
+using System.Security.User;
+
 /// <summary>
 /// The main page for interacting with security groups.
 /// </summary>
@@ -19,6 +25,7 @@ page 9871 "Security Groups"
     SourceTable = "Security Group Buffer";
     SourceTableTemporary = true;
     UsageCategory = Lists;
+    ContextSensitiveHelpPage = 'ui-security-groups';
     AboutTitle = 'About security groups';
     AboutText = 'Security groups help you manage permissions for groups of users.';
 
@@ -54,6 +61,7 @@ page 9871 "Security Groups"
             {
                 ApplicationArea = All;
                 SubPageLink = "Security Group Code" = field(Code);
+                Visible = CanManageUsersOnTenant;
             }
             systempart(Notes; Notes)
             {
@@ -265,24 +273,26 @@ page 9871 "Security Groups"
     trigger OnOpenPage()
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        UserPermissions: Codeunit "User Permissions";
     begin
+        CanManageUsersOnTenant := UserPermissions.CanManageUsersOnTenant(UserSecurityId());
         FeatureTelemetry.LogUptake('0000JGR', 'Security Groups', Enum::"Feature Uptake Status"::Discovered);
-        RefreshData(false);
+        RefreshData();
         IsWindowsAuthentication := SecurityGroup.IsWindowsAuthentication();
         SecurityGroup.SendNotificationForDeletedGroups(Rec);
     end;
 
     local procedure RefreshData()
+    var
+        NumberOfGroupsBeforeRefresh: Integer;
     begin
-        RefreshData(true);
-    end;
+        NumberOfGroupsBeforeRefresh := Rec.Count();
 
-    local procedure RefreshData(ShouldRefreshMembers: Boolean)
-    begin
         SecurityGroup.GetGroups(Rec);
-        if ShouldRefreshMembers then
-            CurrPage."Security Group Members Part".Page.Refresh();
         AreRecordsPresent := not Rec.IsEmpty();
+
+        if Rec.Count() > NumberOfGroupsBeforeRefresh then
+            CurrPage."Security Group Members Part".Page.Refresh(SecurityGroup);
     end;
 
     local procedure GetSelectedGroupCodes(): List of [Code[20]];
@@ -306,6 +316,7 @@ page 9871 "Security Groups"
         ConfirmDeleteGroupQst: Label 'Security group members will lose the permissions associated with the deleted groups. Do you want to continue?';
         SecurityGroupsExportFileNameTxt: Label 'SecurityGroups_%1.xml', Locked = true;
         IsWindowsAuthentication: Boolean;
+        CanManageUsersOnTenant: Boolean;
 
     protected var
         AreRecordsPresent: Boolean;

@@ -45,7 +45,7 @@ codeunit 139759 "Review G/L Entries Tests"
         GLEntry.SetRange("G/L Account No.", GLAccount."No.");
         asserterror
         ReviewGLEntry.ReviewEntries(GLEntry);
-        Assert.ExpectedError(StrSubstNo('G/L Entries for G/L Account %1 %2 were not marked as reviewed since the G/L Account has a No Review Policy', GLAccount."No.", GLAccount.Name));
+        Assert.ExpectedError(StrSubstNo('G/L Entries for G/L Account %1 %2 were not marked as reviewed since the G/L Account has Review Policy None', GLAccount."No.", GLAccount.Name));
     end;
 
     [Test]

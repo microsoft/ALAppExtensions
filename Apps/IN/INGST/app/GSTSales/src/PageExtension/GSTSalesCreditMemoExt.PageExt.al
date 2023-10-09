@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Document;
+
+using Microsoft.Finance.GST.Sales;
+
 pageextension 18146 "GST Sales Credit Memo Ext" extends "Sales Credit Memo"
 {
     layout
@@ -235,6 +243,6 @@ pageextension 18146 "GST Sales Credit Memo Ext" extends "Sales Credit Memo"
 
     var
 #if not CLEAN23
-        UnusedFieldLbl: Label 'This field has been marked as obsolete and will be removed from version 23.0. Instead of this field use ‘E-Comm. Merchant Id’';
+        UnusedFieldLbl: Label 'This field has been marked as obsolete and will be removed from version 23.0. Instead of this field use â€˜E-Comm. Merchant Idâ€™';
 #endif
 }

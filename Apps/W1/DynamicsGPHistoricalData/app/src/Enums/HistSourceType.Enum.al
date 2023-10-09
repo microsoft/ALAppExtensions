@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 enum 40902 "Hist. Source Type"
 {
     value(0; "Other") { Caption = 'Other'; }

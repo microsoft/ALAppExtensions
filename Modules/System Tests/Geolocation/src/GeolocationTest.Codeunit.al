@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Device;
+
+using System.Device;
+using System.TestLibraries.Device;
+using System.TestLibraries.Utilities;
+
 codeunit 135037 "Geolocation Test"
 {
     // [FEATURE] [Geolocation] 

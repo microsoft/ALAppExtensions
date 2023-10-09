@@ -213,6 +213,8 @@ codeunit 31017 "Upgrade Application CZL"
         UpgradeReportSelections();
         UpgradeReplaceVATDateCZL();
         UpgradeReplaceAllowAlterPostingGroups();
+        UpgradeUseW1RegistrationNumber();
+        UpgradeReportSelectionDirectTransfer();
     end;
 
     local procedure UpgradeGeneralLedgerSetup();
@@ -2332,6 +2334,36 @@ codeunit 31017 "Upgrade Application CZL"
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceAllowAlterPostingGroupsUpgradeTag());
     end;
 
+    local procedure UpgradeUseW1RegistrationNumber()
+    var
+        Contact: Record Contact;
+        Customer: Record Customer;
+        Vendor: Record Vendor;
+        ContactDataTransfer: DataTransfer;
+        CustomerDataTransfer: DataTransfer;
+        VendorDataTransfer: DataTransfer;
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetUseW1RegistrationNumberUpgradeTag()) then
+            exit;
+
+        CustomerDataTransfer.SetTables(Database::"Customer", Database::"Customer");
+        CustomerDataTransfer.AddSourceFilter(Customer.FieldNo("Registration No. CZL"), '<>%1', '');
+        CustomerDataTransfer.AddFieldValue(Customer.FieldNo("Registration No. CZL"), Customer.FieldNo("Registration Number"));
+        CustomerDataTransfer.CopyFields();
+
+        VendorDataTransfer.SetTables(Database::"Vendor", Database::"Vendor");
+        VendorDataTransfer.AddSourceFilter(Vendor.FieldNo("Registration No. CZL"), '<>%1', '');
+        VendorDataTransfer.AddFieldValue(Vendor.FieldNo("Registration No. CZL"), Vendor.FieldNo("Registration Number"));
+        VendorDataTransfer.CopyFields();
+
+        ContactDataTransfer.SetTables(Database::"Contact", Database::"Contact");
+        ContactDataTransfer.AddSourceFilter(Contact.FieldNo("Registration No. CZL"), '<>%1', '');
+        ContactDataTransfer.AddFieldValue(Contact.FieldNo("Registration No. CZL"), Contact.FieldNo("Registration Number"));
+        ContactDataTransfer.CopyFields();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetUseW1RegistrationNumberUpgradeTag());
+    end;
+
     local procedure UpgradePermission()
     begin
         UpgradePermissionVersion174();
@@ -2409,6 +2441,29 @@ codeunit 31017 "Upgrade Application CZL"
         ReportSelections.SetRange("Report ID", Report::"Blanket Purchase Order");
         ReportSelections.ModifyAll("Report ID", Report::"Blanket Purchase Order CZL");
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetReportBlanketPurchaseOrderCZUpgradeTag());
+    end;
+
+    local procedure UpgradeReportSelectionDirectTransfer()
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetReportPostedDirectTransferCZUpgradeTag()) then
+            exit;
+
+        InsertRepSelection(Enum::"Report Selection Usage"::"P.Direct Transfer", '1', Report::"Posted Direct Transfer CZL");
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetReportPostedDirectTransferCZUpgradeTag());
+    end;
+
+
+    local procedure InsertRepSelection(ReportUsage: Enum "Report Selection Usage"; Sequence: Code[10]; ReportID: Integer)
+    var
+        ReportSelections: Record "Report Selections";
+    begin
+        if not ReportSelections.Get(ReportUsage, Sequence) then begin
+            ReportSelections.Init();
+            ReportSelections.Usage := ReportUsage;
+            ReportSelections.Sequence := Sequence;
+            ReportSelections."Report ID" := ReportID;
+            ReportSelections.Insert();
+        end;
     end;
 
     local procedure SetDatabaseUpgradeTags();

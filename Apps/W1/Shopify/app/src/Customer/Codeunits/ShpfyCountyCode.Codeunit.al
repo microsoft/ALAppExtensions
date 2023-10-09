@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Customer;
+
 /// <summary>
 /// Codeunit Shpfy County Code (ID 30108) implements Interface Shpfy ICounty.
 /// </summary>

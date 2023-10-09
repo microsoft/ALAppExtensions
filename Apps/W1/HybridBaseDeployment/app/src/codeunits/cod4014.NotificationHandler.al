@@ -1,3 +1,10 @@
+namespace Microsoft.DataMigration;
+
+using Microsoft.CRM.Outlook;
+using System.Environment;
+using System.Integration;
+using System.Text;
+
 codeunit 4014 "Notification Handler"
 {
     var
@@ -102,6 +109,7 @@ codeunit 4014 "Notification Handler"
     procedure ParseReplicationSummary(var HybridReplicationSummary: Record "Hybrid Replication Summary"; NotificationText: Text)
     var
         PreviousHybridReplicationSummary: Record "Hybrid Replication Summary";
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
         HybridMessageManagement: Codeunit "Hybrid Message Management";
         JsonManagement: Codeunit "JSON Management";
@@ -205,6 +213,9 @@ codeunit 4014 "Notification Handler"
 
                 TelemetryDictionary.Add('Category', HybridCloudManagement.GetTelemetryCategory());
                 TelemetryDictionary.Add('ReplicationType', HybridCloudManagement.GetReplicationTypeTelemetryText(HybridReplicationSummary));
+
+                if IntelligentCloudSetup.Get() then
+                    TelemetryDictionary.Add('SourceProduct', IntelligentCloudSetup."Product ID");
 
                 Session.LogMessage('0000K0H', DataReplicationCompletedLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDictionary);
                 HasFailures := HybridReplicationSummary."Tables Failed" > 0;

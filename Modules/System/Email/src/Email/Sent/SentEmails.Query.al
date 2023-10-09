@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Security.AccessControl;
+
 /// <summary>
 /// Query to get all sent emails and their related records.
 /// The query has an one to many relationship between email and the related records.

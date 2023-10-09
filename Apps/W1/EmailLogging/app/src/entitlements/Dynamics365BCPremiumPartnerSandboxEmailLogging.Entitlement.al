@@ -1,3 +1,5 @@
+namespace Microsoft.CRM.EmailLoggin;
+
 entitlement "Dynamics 365 BC Premium Partner Sandbox - Email Logging"
 {
     Type = PerUserServicePlan;

@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP.SmartLists;
+
+using Microsoft.DataMigration.GP;
+
 query 3009 GPHistReceivingsTrx
 {
     QueryType = Normal;

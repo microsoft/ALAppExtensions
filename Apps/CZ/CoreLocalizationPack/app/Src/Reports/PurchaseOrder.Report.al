@@ -96,7 +96,7 @@ report 31185 "Purchase Order CZL"
         }
         dataitem("Purchase Header"; "Purchase Header")
         {
-            DataItemTableView = WHERE("Document Type" = CONST(Order));
+            DataItemTableView = where("Document Type" = const(Order));
             column(DocumentLbl; DocumentLbl)
             {
             }
@@ -307,7 +307,7 @@ report 31185 "Purchase Order CZL"
                 {
                     DataItemLink = "Document No." = field("No.");
                     DataItemLinkReference = "Purchase Header";
-                    DataItemTableView = sorting("Document Type", "Document No.", "Line No.") WHERE("Document Type" = CONST(Order));
+                    DataItemTableView = sorting("Document Type", "Document No.", "Line No.") where("Document Type" = const(Order));
                     column(LineNo_PurchaseLine; "Line No.")
                     {
                     }
@@ -425,7 +425,8 @@ report 31185 "Purchase Order CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
                 FormatAddressFields("Purchase Header");
                 FormatDocumentFields("Purchase Header");
@@ -523,7 +524,7 @@ report 31185 "Purchase Order CZL"
         PaymentTerms: Record "Payment Terms";
         PaymentMethod: Record "Payment Method";
         ShipmentMethod: Record "Shipment Method";
-        Language: Codeunit Language;
+        LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
@@ -537,7 +538,6 @@ report 31185 "Purchase Order CZL"
         NoOfLoops: Integer;
         LogInteraction: Boolean;
         ArchiveDocument: Boolean;
-        [InDataSet]
         LogInteractionEnable: Boolean;
         DocumentLbl: Label 'Order';
         PageLbl: Label 'Page';
@@ -569,7 +569,7 @@ report 31185 "Purchase Order CZL"
 
     local procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractionTemplateCode(13) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(Enum::"Interaction Log Entry Document Type"::"Purch. Ord.") <> '';
     end;
 
     local procedure FormatDocumentFields(PurchaseHeader: Record "Purchase Header")

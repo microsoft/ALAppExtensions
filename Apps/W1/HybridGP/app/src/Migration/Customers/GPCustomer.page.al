@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 page 4093 "GP Customer"
 {
     PageType = Card;

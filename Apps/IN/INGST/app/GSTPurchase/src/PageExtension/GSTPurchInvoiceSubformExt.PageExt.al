@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Document;
+
+using Microsoft.Finance.GST.Purchase;
+using Microsoft.Finance.TaxBase;
+
 pageextension 18090 "GST Purch. Invoice Subform Ext" extends "Purch. Invoice Subform"
 {
     layout
@@ -145,6 +154,20 @@ pageextension 18090 "GST Purch. Invoice Subform Ext" extends "Purch. Invoice Sub
                 begin
                     CurrPage.SaveRecord();
                     CalculateTax.CallTaxEngineOnPurchaseLine(Rec, xRec);
+                end;
+            }
+        }
+        addafter("Line Discount %")
+        {
+            field(FOC; Rec.FOC)
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies if FOC is applicable on Current Line.';
+
+                trigger OnValidate()
+                begin
+                    if Rec.FOC then
+                        Rec.Validate("Line Discount %", 100);
                 end;
             }
         }

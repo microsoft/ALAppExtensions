@@ -658,6 +658,14 @@ codeunit 139554 "Library - Intrastat"
         exit(CountryRegion.Code);
     end;
 
+    procedure GetCompanyInfoCountryRegionCode(): Code[10]
+    var
+        CompanyInformation: Record "Company Information";
+    begin
+        CompanyInformation.Get();
+        exit(CompanyInformation."Country/Region Code");
+    end;
+
     procedure GetIntrastatNo() NoSeriesCode: Code[20]
     var
         IntrastatReportSetup: Record "Intrastat Report Setup";
@@ -812,6 +820,15 @@ codeunit 139554 "Library - Intrastat"
         PurchasesPayablesSetup.Modify(true);
     end;
 
+    procedure UpdateReturnReceiptOnCreditMemoSalesSetup(ReturnReceiptOnCreditMemo: Boolean)
+    var
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+    begin
+        SalesReceivablesSetup.Get();
+        SalesReceivablesSetup.Validate("Return Receipt on Credit Memo", ReturnReceiptOnCreditMemo);
+        SalesReceivablesSetup.Modify(true);
+    end;
+
     procedure UpdateIntrastatCodeInCountryRegion()
     var
         CompanyInformation: Record "Company Information";
@@ -845,6 +862,67 @@ codeunit 139554 "Library - Intrastat"
         IntrastatReportLine.Validate(Quantity, LibraryRandom.RandDecInRange(10, 20, 2));
         IntrastatReportLine.Modify(true);
         exit(Item."Net Weight");
+    end;
+
+    procedure CreateAndPostSalesOrderWithCountryAndLocation(CountryRegionCode: Code[10]; LocationCode: Code[10]; ItemNo: Code[20]; NewShipReceive: Boolean; NewInvoice: Boolean): Code[20]
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+    begin
+        LibrarySales.CreateCustomerWithLocationCode(Customer, LocationCode);
+        Customer.Validate("Country/Region Code", CountryRegionCode);
+        Customer.Modify(true);
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
+        SalesHeader.Validate("Location Code", LocationCode);
+        SalesHeader.Validate("VAT Country/Region Code", CountryRegionCode);
+        SalesHeader.Modify(true);
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::Item, ItemNo, 1);
+        exit(LibrarySales.PostSalesDocument(SalesHeader, NewShipReceive, NewInvoice));
+    end;
+
+    procedure CreateSalesOrdersWithDropShipment(var SalesHeader: Record "Sales Header"; EUCustomer: Boolean): Code[20]
+    var
+        Customer: Record Customer;
+        SalesLine: Record "Sales Line";
+    begin
+        if EUCustomer then
+            LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, CreateCustomer())
+        else begin
+            LibrarySales.CreateCustomer(Customer);
+            LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.")
+        end;
+        CreateDropShipmentLine(SalesLine, SalesHeader);
+        SalesLine.Validate("Unit Price", LibraryRandom.RandDec(1000, 2));
+        SalesLine.Modify(true);
+        LibrarySales.ReleaseSalesDocument(SalesHeader);
+        exit(SalesLine."No.");
+    end;
+
+    procedure CreatePurchOrdersWithDropShipment(var PurchHeader: Record "Purchase Header"; SellToCustomerNo: Code[20]; EUVendor: Boolean)
+    begin
+        if EUVendor then
+            LibraryPurchase.CreatePurchHeader(PurchHeader, PurchHeader."Document Type"::Order, CreateVendor(GetCountryRegionCode()))
+        else
+            LibraryPurchase.CreatePurchHeader(PurchHeader, PurchHeader."Document Type"::Order, CreateVendor(''));
+        PurchHeader.Validate("Sell-to Customer No.", SellToCustomerNo);
+        PurchHeader.Modify(true);
+
+        LibraryPurchase.GetDropShipment(PurchHeader);
+    end;
+
+    procedure CreateDropShipmentLine(var SalesLine: Record "Sales Line"; var SalesHeader: Record "Sales Header")
+    var
+        Purchasing: Record Purchasing;
+        Item: Record Item;
+    begin
+        Item.Get(CreateItem());
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, SalesLine.Type::Item, Item."No.", LibraryRandom.RandDec(10, 2));
+        LibraryPurchase.CreatePurchasingCode(Purchasing);
+        Purchasing.Validate("Drop Shipment", true);
+        Purchasing.Modify(true);
+        SalesLine.Validate("Purchasing Code", Purchasing.Code);
+        SalesLine.Modify(true);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnAfterCheckFeatureEnabled', '', true, true)]

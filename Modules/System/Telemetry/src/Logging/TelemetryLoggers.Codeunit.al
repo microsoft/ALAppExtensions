@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Telemetry;
+
 /// <summary>
 /// Provides functionality for registering 3d party telemetry loggers to be used with Telemetry codeunit.
 /// </summary>

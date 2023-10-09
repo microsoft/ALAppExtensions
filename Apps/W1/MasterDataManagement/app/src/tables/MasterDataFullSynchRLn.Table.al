@@ -1,3 +1,8 @@
+namespace Microsoft.Integration.MDM;
+
+using Microsoft.Integration.SyncEngine;
+using System.Threading;
+
 table 7233 "Master Data Full Synch. R. Ln."
 {
     Caption = 'Master Data Full Synch. Review Line';
@@ -7,6 +12,7 @@ table 7233 "Master Data Full Synch. R. Ln."
                   tabledata "Job Queue Entry" = r,
                   tabledata "Job Queue Log Entry" = r,
                   tabledata "Master Data Management Setup" = r;
+    DataClassification = CustomerContent;
 
     fields
     {

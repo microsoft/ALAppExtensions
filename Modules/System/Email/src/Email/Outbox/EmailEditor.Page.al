@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Telemetry;
+
 /// <summary>
 /// A page to create, edit and send e-mails.
 /// </summary>
@@ -155,6 +159,7 @@ page 13 "Email Editor"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the content of the email.';
                     MultiLine = true;
+                    ExtendedDataType = RichContent;
                     Editable = not EmailScheduled;
 
                     trigger OnValidate()
@@ -213,18 +218,8 @@ page 13 "Email Editor"
                 Image = SendMail;
 
                 trigger OnAction()
-                var
-                    IsEmailDataValid: Boolean;
                 begin
-                    IsEmailDataValid := EmailEditor.ValidateEmailData(TempEmailAccount."Email Address", EmailMessageImpl);
-
-                    if IsEmailDataValid then begin
-                        IsNewOutbox := false;
-                        EmailEditor.SendOutbox(Rec);
-                        EmailAction := Enum::"Email Action"::Sent;
-
-                        CurrPage.Close();
-                    end;
+                    ValidateAndSendEmailData();
                 end;
             }
             action(Discard)
@@ -247,31 +242,6 @@ page 13 "Email Editor"
                     end;
                 end;
             }
-#if not CLEAN19
-            action(Upload)
-            {
-                ObsoleteState = Pending;
-                ObsoleteReason = 'Action Upload moved under attachments';
-                ObsoleteTag = '19.0';
-                ApplicationArea = All;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
-                Image = Attach;
-                Enabled = not EmailScheduled;
-                Caption = 'Attach file';
-                ToolTip = 'Attach files, such as documents or images, to the email.';
-                Visible = false;
-
-                trigger OnAction()
-                begin
-                    EmailEditor.UploadAttachment(EmailMessageImpl);
-
-                    CurrPage.Attachments.Page.UpdateDeleteEnablement();
-                    CurrPage.Attachments.Page.Update();
-                end;
-            }
-#endif
             action(WordTemplate)
             {
                 ApplicationArea = All;
@@ -305,28 +275,6 @@ page 13 "Email Editor"
                     EmailImpl.ShowSourceRecord(Rec."Message Id");
                 end;
             }
-#if not CLEAN19
-            action(SourceAttachments)
-            {
-                ObsoleteState = Pending;
-                ObsoleteReason = 'Action SourceAttachments moved under attachments';
-                ObsoleteTag = '19.0';
-                ApplicationArea = All;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
-                Image = Attach;
-                Caption = 'Get Source attachments';
-                ToolTip = 'Attach a file that was originally attached to the source document.';
-                Scope = Page;
-                Visible = false;
-
-                trigger OnAction()
-                begin
-                    EmailEditor.AttachFromRelatedRecords(Rec."Message Id");
-                end;
-            }
-#endif
         }
     }
 
@@ -449,6 +397,21 @@ page 13 "Email Editor"
         EmailScenario := Scenario;
     end;
 
+    protected procedure ValidateAndSendEmailData()
+    var
+        IsEmailDataValid: Boolean;
+    begin
+        IsEmailDataValid := EmailEditor.ValidateEmailData(TempEmailAccount."Email Address", EmailMessageImpl);
+
+        if IsEmailDataValid then begin
+            IsNewOutbox := false;
+            EmailEditor.SendOutbox(Rec);
+            EmailAction := Enum::"Email Action"::Sent;
+
+            CurrPage.Close();
+        end;
+    end;
+
     var
         TempEmailAccount: Record "Email Account" temporary;
         EmailMessageImpl: Codeunit "Email Message Impl.";
@@ -460,7 +423,6 @@ page 13 "Email Editor"
         HasSourceRecord: Boolean;
         EmailBody, EmailSubject : Text;
         EmailScenario: Enum "Email Scenario";
-        [InDataSet]
         IsHTMLFormatted: Boolean;
         FromDisplayNameLbl: Label '%1 (%2)', Comment = '%1 - Account Name, %2 - Email address', Locked = true;
         CloseThePageQst: Label 'The email has not been sent.';

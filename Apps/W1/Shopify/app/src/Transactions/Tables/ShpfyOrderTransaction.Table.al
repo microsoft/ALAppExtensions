@@ -1,9 +1,13 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+
 /// <summary>
 /// Table Shpfy Order Transaction (ID 30133).
 /// </summary>
 table 30133 "Shpfy Order Transaction"
 {
-    Access = Internal;
     Caption = 'Shopify Order Transaction';
     DataClassification = SystemMetadata;
     LookupPageID = "Shpfy Order Transactions";
@@ -87,30 +91,35 @@ table 30133 "Shpfy Order Transaction"
             Caption = 'Source Name';
             DataClassification = SystemMetadata;
             Editable = false;
+            Access = Internal;
         }
         field(16; "Credit Card Bin"; Code[10])
         {
             Caption = 'Credit Card Bin';
             DataClassification = SystemMetadata;
             Editable = false;
+            Access = Internal;
         }
         field(17; "AVS Result Code"; Code[1])
         {
             Caption = 'AVS Result Code'; //http://www.emsecommerce.net/avs_cvv2_response_codes.htm
             DataClassification = SystemMetadata;
             Editable = false;
+            Access = Internal;
         }
         field(18; "CVV Result Code"; Code[1])
         {
             Caption = 'CVV Result Code'; //http://www.emsecommerce.net/avs_cvv2_response_codes.htm
             DataClassification = SystemMetadata;
             Editable = false;
+            Access = Internal;
         }
         field(19; "Credit Card Number"; Text[30])
         {
             Caption = 'Credit Card Number';
             DataClassification = SystemMetadata;
             Editable = false;
+            Access = Internal;
         }
         field(20; "Credit Card Company"; Text[50])
         {
@@ -190,7 +199,7 @@ table 30133 "Shpfy Order Transaction"
         DataCapture.SetCurrentKey("Linked To Table", "Linked To Id");
         DataCapture.SetRange("Linked To Table", Database::"Shpfy Order Transaction");
         DataCapture.SetRange("Linked To Id", Rec.SystemId);
-        if not DataCapture.IsEmpty then
+        if not DataCapture.IsEmpty() then
             DataCapture.DeleteAll(false);
     end;
 }

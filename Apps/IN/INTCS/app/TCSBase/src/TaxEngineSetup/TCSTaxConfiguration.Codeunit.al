@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TCS.TCSBase;
+
 codeunit 18815 "TCS Tax Configuration"
 {
     SingleInstance = true;
@@ -51,7 +57,7 @@ codeunit 18815 "TCS Tax Configuration"
 
     local procedure UpdateTCSUseCases()
     begin
-        UseCases.Add('{BC834CD9-7782-4B77-8D0E-0D7EF1679775}', 7);
+        UseCases.Add('{BC834CD9-7782-4B77-8D0E-0D7EF1679775}', 8);
         UseCases.Add('{42747DC4-6388-459E-9D2E-103F3F4E2AB0}', 1);
         UseCases.Add('{E696BECA-20A6-498E-9615-114585216ABA}', 1);
         UseCases.Add('{4BC77C19-4CA3-4913-8EB5-11EDAE308A25}', 1);
@@ -61,12 +67,12 @@ codeunit 18815 "TCS Tax Configuration"
         UseCases.Add('{800AD5B2-89E5-4616-8281-37DDEC382E76}', 1);
         UseCases.Add('{F687A3C1-9192-42D2-A042-39C2B63B35D7}', 1);
         UseCases.Add('{593E67FC-EACA-4C9B-8F95-4A1D3D1712E4}', 1);
-        UseCases.Add('{4DC37F56-3558-400D-ABB1-5573CCC0FD30}', 1);
+        UseCases.Add('{4DC37F56-3558-400D-ABB1-5573CCC0FD30}', 2);
         UseCases.Add('{B8AC2649-DEA6-42B1-BF69-62A706C6DC40}', 1);
         UseCases.Add('{DA63D636-4773-418A-8123-6522A7867E5F}', 1);
         UseCases.Add('{4782B33F-5607-4D84-A74F-7061F377D235}', 1);
         UseCases.Add('{4383C40B-8C8A-413C-A840-713CDA7C8B06}', 1);
-        UseCases.Add('{6B7BF4A0-0250-4480-9482-733992652D29}', 1);
+        UseCases.Add('{6B7BF4A0-0250-4480-9482-733992652D29}', 2);
         UseCases.Add('{B1B995F9-C500-4846-9FE8-833A900F0846}', 1);
         UseCases.Add('{82174562-748D-4C6F-AE37-852C7CCEFEAC}', 1);
         UseCases.Add('{3ED702E0-AFA2-4771-AD1F-8FBEF7383436}', 1);

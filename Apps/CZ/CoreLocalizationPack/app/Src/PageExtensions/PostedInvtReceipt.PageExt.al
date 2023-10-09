@@ -7,7 +7,7 @@ pageextension 31177 "Posted Invt. Receipt CZL" extends "Posted Invt. Receipt"
             field("Invt. Movement Template CZL"; Rec."Invt. Movement Template CZL")
             {
                 ApplicationArea = Basic, Suite;
-                Tooltip = 'Specifies the template for item movement.';
+                ToolTip = 'Specifies the template for item movement.';
                 Editable = false;
             }
         }

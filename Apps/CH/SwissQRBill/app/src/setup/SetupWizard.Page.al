@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Foundation.Company;
+using System.Environment;
+using System.Environment.Configuration;
+using System.Utilities;
+
 page 11516 "Swiss QR-Bill Setup Wizard"
 {
     Caption = 'QR-Bill Setup Guide';
@@ -16,7 +28,9 @@ page 11516 "Swiss QR-Bill Setup Wizard"
                 Visible = TopBannerVisible and not FinishActionEnabled;
                 field(MediaResourcesStandard; MediaResourcesStd."Media Reference")
                 {
+#pragma warning disable AA0219
                     ToolTip = ' ';
+#pragma warning restore AA0219
                     ApplicationArea = All;
                     Editable = false;
                     ShowCaption = false;
@@ -29,7 +43,9 @@ page 11516 "Swiss QR-Bill Setup Wizard"
                 Visible = TopBannerVisible and FinishActionEnabled;
                 field(MediaResourcesDone; MediaResourcesFinished."Media Reference")
                 {
+#pragma warning disable AA0219
                     ToolTip = ' ';
+#pragma warning restore AA0219
                     ApplicationArea = All;
                     Editable = false;
                     ShowCaption = false;
@@ -138,12 +154,18 @@ page 11516 "Swiss QR-Bill Setup Wizard"
                         ShowMandatory = true;
                         ToolTip = 'Specifies the address type used for all printed QR-Bills. Recommended value is Structured.';
                     }
+#if not CLEAN23
                     field(UmlautCharsEncodeMode; "Umlaut Chars Encode Mode")
                     {
                         ApplicationArea = All;
                         ShowMandatory = true;
                         ToolTip = 'Specifies the German umlaut characters encoding mode. "Single" mode: "Ä" to "A". "Double" mode: "Ä" to "Ae". Recommended value is Double.';
+                        Visible = false;
+                        ObsoleteReason = 'No need to convert umlauts, because encoding was changed to UTF-8.';
+                        ObsoleteState = Pending;
+                        ObsoleteTag = '23.0';
                     }
+#endif
                 }
             }
             group(DefaultLayoutStep)
@@ -286,7 +308,9 @@ page 11516 "Swiss QR-Bill Setup Wizard"
                         field(FinishSummaryWarningField; FinishSummaryWarningText)
                         {
                             ApplicationArea = All;
+#pragma warning disable AA0219
                             ToolTip = ' ';
+#pragma warning restore AA0219
                             Caption = ' ';
                             ShowCaption = false;
                             Editable = false;

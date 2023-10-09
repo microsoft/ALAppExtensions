@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using System.IO;
+using System.Utilities;
+using System.Xml;
+
 codeunit 10674 "SAF-T XML Helper"
 {
     var
@@ -61,7 +71,7 @@ codeunit 10674 "SAF-T XML Helper"
             exit;
         NewXMLElement := XmlElement.Create(Name, NamespaceFullName, NodeText);
         if (not SavedXMLElement.AddFirst(NewXMLElement)) then
-            error(StrSubstNo('Not possible to insert element %1', NodeText));
+            Error('Not possible to insert element %1', NodeText);
     end;
 
     procedure SaveCurrXmlElement()
@@ -81,7 +91,7 @@ codeunit 10674 "SAF-T XML Helper"
         PrepareNodeTextForXML(NodeText);
         NewXMLElement := XmlElement.Create(Name, NamespaceFullName, NodeText);
         if (not CurrXMLElement[Depth].Add(NewXMLElement)) then
-            error(StrSubstNo('Not possible to insert element %1', NodeText));
+            Error('Not possible to insert element %1', NodeText);
     end;
 
     procedure ExportXMLDocument(var SAFTExportLine: Record "SAF-T Export Line"; SAFTExportHeader: Record "SAF-T Export Header")

@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.Bank.Ledger;
+
 table 40101 "GP Checkbook Transactions"
 {
     DataClassification = CustomerContent;

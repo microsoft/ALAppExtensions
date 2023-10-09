@@ -1,8 +1,27 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.Purchases.Document;
+using Microsoft.Inventory.Journal;
+using Microsoft.Purchases.Setup;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.UOM;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.Currency;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Posting;
+using Microsoft.Inventory.Posting;
+using System.Integration;
+
 codeunit 40108 "GP PO Migrator"
 {
     var
         MigratedFromGPDescriptionTxt: Label 'Migrated from GP';
         GPCodeTxt: Label 'GP', Locked = true;
+        ItemJournalBatchNameTxt: Label 'GPPOITEMS', Comment = 'Item journal batch name for item adjustments', Locked = true;
+        SimpleInvJnlNameTxt: Label 'DEFAULT', Comment = 'The default name of the item journal', Locked = true;
+        ItemJnlBatchLineNo: Integer;
+        PostPurchaseOrderNoList: List of [Text];
 
     procedure MigratePOStagingData()
     var
@@ -12,14 +31,20 @@ codeunit 40108 "GP PO Migrator"
         PurchaseHeader: Record "Purchase Header";
         GeneralLedgerSetup: Record "General Ledger Setup";
         CurrencyExchangeRate: Record "Currency Exchange Rate";
+        Vendor: Record Vendor;
         HelperFunctions: Codeunit "Helper Functions";
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         PurchaseDocumentType: Enum "Purchase Document Type";
         PurchaseDocumentStatus: Enum "Purchase Document Status";
         CountryCode: Code[10];
         CurrencyCode: Code[10];
     begin
+        SetDirectCostPostingAccountIfNeeded();
+        Clear(ItemJnlBatchLineNo);
+
         GPPOP10100.SetRange(POTYPE, GPPOP10100.POTYPE::Standard);
         GPPOP10100.SetRange(POSTATUS, 1, 4);
+        GPPOP10100.SetFilter(VENDORID, '<>%1', '');
         if not GPPOP10100.FindSet() then
             exit;
 
@@ -28,7 +53,8 @@ codeunit 40108 "GP PO Migrator"
         CountryCode := CompanyInformation."Country/Region Code";
 
         repeat
-            if not PurchaseHeader.Get(PurchaseHeader."Document Type"::Order, GPPOP10100.PONUMBER) then begin
+            if Vendor.Get(GPPOP10100.VENDORID) then begin
+                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPPOP10100.RecordId));
                 CurrencyCode := CopyStr(GPPOP10100.CURNCYID.Trim(), 1, MaxStrLen(CurrencyCode));
                 HelperFunctions.CreateCurrencyIfNeeded(CurrencyCode);
 
@@ -47,7 +73,6 @@ codeunit 40108 "GP PO Migrator"
                 PurchaseHeader.Validate("Posting Description", MigratedFromGPDescriptionTxt);
                 PurchaseHeader.Validate("Payment Terms Code", CopyStr(GPPOP10100.PYMTRMID, 1, MaxStrLen(PurchaseHeader."Payment Terms Code")));
                 PurchaseHeader."Shipment Method Code" := CopyStr(GPPOP10100.SHIPMTHD, 1, MaxStrLen(PurchaseHeader."Shipment Method Code"));
-                PurchaseHeader."Vendor Posting Group" := GPCodeTxt;
                 PurchaseHeader.Validate("Prices Including VAT", false);
                 PurchaseHeader.Validate("Vendor Invoice No.", GPPOP10100.PONUMBER);
                 PurchaseHeader.Validate("Gen. Bus. Posting Group", GPCodeTxt);
@@ -75,10 +100,14 @@ codeunit 40108 "GP PO Migrator"
                     PurchaseHeader.Validate("Receiving No. Series", PurchasesPayablesSetup."Posted Receipt Nos.");
                 end;
 
+                SetVendorDocumentNo(PurchaseHeader);
+
                 PurchaseHeader.Modify(true);
-                CreateLines(GPPOP10100);
+                CreateLines(PurchaseHeader."No.");
             end;
         until GPPOP10100.Next() = 0;
+
+        PostReceivedPurchaseLines();
     end;
 
     local procedure UpdateShipToAddress(GPPOP10100: Record "GP POP10100"; CountryCode: Code[10]; var PurchaseHeader: Record "Purchase Header")
@@ -110,76 +139,150 @@ codeunit 40108 "GP PO Migrator"
             PurchaseHeader."Ship-to County" := GPPOP10100.STATE;
     end;
 
-    local procedure CreateLines(GPPOP10100: Record "GP POP10100")
+    local procedure CreateLines(PONumber: Code[20])
     var
         GPPOP10110: Record "GP POP10110";
-        PurchaseLine: Record "Purchase Line";
         GPPOPReceiptApply: Record GPPOPReceiptApply;
-        PurchaseDocumentType: Enum "Purchase Document Type";
-        PurchaseLineType: Enum "Purchase Line Type";
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
+        LineQuantityRemaining: Decimal;
         LineNo: Integer;
-        QtyShipped: Decimal;
+        LocationCode: Code[10];
+        UnitOfMeasure: Code[10];
     begin
-        GPPOP10110.SetRange(PONUMBER, GPPOP10100.PONUMBER);
+        GPPOP10110.SetRange(PONUMBER, PONumber);
         if not GPPOP10110.FindSet() then
             exit;
 
         LineNo := 10000;
-
         repeat
-            PurchaseLine.Init();
-            PurchaseLine."Document No." := GPPOP10110.PONUMBER;
-            PurchaseLine."Document Type" := PurchaseDocumentType::Order;
-            PurchaseLine."Line No." := LineNo;
-            PurchaseLine."Buy-from Vendor No." := GPPOP10110.VENDORID;
-            PurchaseLine.Type := PurchaseLineType::Item;
+            LineQuantityRemaining := GPPOP10110.QTYORDER - GPPOP10110.QTYCANCE;
+            if LineQuantityRemaining > 0 then begin
+                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPPOP10110.RecordId));
+                GPPOPReceiptApply.SetRange(PONUMBER, GPPOP10110.PONUMBER);
+                GPPOPReceiptApply.SetRange(POLNENUM, GPPOP10110.ORD);
+                GPPOPReceiptApply.SetRange(Status, GPPOPReceiptApply.Status::Posted);
+                GPPOPReceiptApply.SetFilter(POPTYPE, '1|3');
+                GPPOPReceiptApply.SetFilter(PCHRPTCT, '>%1', 0);
+                if GPPOPReceiptApply.FindSet() then
+                    repeat
+                        LocationCode := CopyStr(GPPOPReceiptApply.TRXLOCTN, 1, MaxStrLen(LocationCode));
+                        UnitOfMeasure := CopyStr(GPPOPReceiptApply.UOFM.Trim(), 1, MaxStrLen(UnitOfMeasure));
+                        if (GPPOPReceiptApply.QTYSHPPD > GPPOPReceiptApply.QTYINVCD) then
+                            CreateLine(PONumber, GPPOP10110, LineQuantityRemaining, LineNo, GPPOPReceiptApply.QTYSHPPD, GPPOPReceiptApply.QTYINVCD, GPPOPReceiptApply.PCHRPTCT, LocationCode, UnitOfMeasure)
+                        else
+                            LineQuantityRemaining := LineQuantityRemaining - GPPOPReceiptApply.QTYSHPPD;
+                    until GPPOPReceiptApply.Next() = 0;
 
-            if GPPOP10110.NONINVEN = 1 then
-                CreateNonInventoryItem(GPPOP10110);
+                LocationCode := CopyStr(GPPOP10110.LOCNCODE.Trim(), 1, MaxStrLen(LocationCode));
+                UnitOfMeasure := CopyStr(GPPOP10110.UOFM.Trim(), 1, MaxStrLen(UnitOfMeasure));
+                if LineQuantityRemaining > 0 then
+                    CreateLine(PONumber, GPPOP10110, LineQuantityRemaining, LineNo, 0, 0, GPPOP10110.UNITCOST, LocationCode, UnitOfMeasure);
+            end;
+        until GPPOP10110.Next() = 0;
+    end;
 
-            PurchaseLine.Validate("Gen. Bus. Posting Group", GPCodeTxt);
-            PurchaseLine.Validate("Gen. Prod. Posting Group", GPCodeTxt);
-            PurchaseLine."Unit of Measure" := GPPOP10110.UOFM;
-            PurchaseLine."Unit of Measure Code" := GPPOP10110.UOFM;
-            PurchaseLine.Validate("No.", CopyStr(GPPOP10110.ITEMNMBR, 1, MaxStrLen(PurchaseLine."No.")));
-            PurchaseLine."Location Code" := CopyStr(GPPOP10110.LOCNCODE, 1, MaxStrLen(PurchaseLine."Location Code"));
-            PurchaseLine."Posting Group" := GPCodeTxt;
-            PurchaseLine.Validate("Expected Receipt Date", GPPOP10110.PRMDATE);
-            PurchaseLine.Description := CopyStr(GPPOP10110.ITEMDESC, 1, MaxStrLen(PurchaseLine.Description));
+    local procedure CreateLine(PONumber: Code[20]; var GPPOP10110: Record "GP POP10110"; var LineQuantityRemaining: Decimal; var LineNo: Integer; QuantityReceived: Decimal; QuantityInvoiced: Decimal; UnitCost: Decimal; LocationCode: Code[10]; UnitOfMeasure: Code[10])
+    var
+        PurchaseLine: Record "Purchase Line";
+        Item: Record Item;
+        PurchaseDocumentType: Enum "Purchase Document Type";
+        PurchaseLineType: Enum "Purchase Line Type";
+        ItemNo: Code[20];
+        IsInventoryItem: Boolean;
+        AdjustedQuantity: Decimal;
+        AdjustedQuantityReceived: Decimal;
+        AdjustedQuantityInvoiced: Decimal;
+        QuantityOverReceipt: Decimal;
+    begin
+        // Not generating an invoice so zero out the Invoice quantity and adjust the other counts accordingly.
+        // Update Qty. to Receive to equal the adjusted amount received.
+        if QuantityInvoiced > QuantityReceived then
+            QuantityInvoiced := QuantityReceived;
 
-            QtyShipped := GPPOPReceiptApply.GetSumQtyShipped(GPPOP10110.PONUMBER, GPPOP10110.ORD);
+        AdjustedQuantityReceived := ZeroIfNegative(QuantityReceived, QuantityInvoiced);
+        if AdjustedQuantityReceived > 0 then
+            AdjustedQuantity := ZeroIfNegative(QuantityReceived, QuantityInvoiced)
+        else
+            AdjustedQuantity := ZeroIfNegative(LineQuantityRemaining, QuantityInvoiced);
 
-            PurchaseLine."Quantity Received" := QtyShipped;
-            PurchaseLine."Qty. Received (Base)" := QtyShipped;
-            PurchaseLine."Quantity Invoiced" := GPPOPReceiptApply.GetSumQtyInvoiced(GPPOP10110.PONUMBER, GPPOP10110.ORD);
-            PurchaseLine.Validate("Quantity (Base)", GPPOP10110.QTYORDER - GPPOP10110.QTYCANCE);            
-            PurchaseLine."Outstanding Quantity" := PurchaseLine."Quantity (Base)" - QtyShipped;
-            PurchaseLine.Validate("Direct Unit Cost", GPPOP10110.UNITCOST);
-            PurchaseLine.Validate(Amount, GPPOP10110.EXTDCOST);
-            PurchaseLine.Validate("Outstanding Amount", PurchaseLine."Outstanding Quantity" * GPPOP10110.UNITCOST);
-            PurchaseLine."Qty. Rcd. Not Invoiced" := QtyShipped - PurchaseLine."Quantity Invoiced";
-            PurchaseLine.Validate("Amt. Rcd. Not Invoiced", PurchaseLine."Qty. Rcd. Not Invoiced" * GPPOP10110.UNITCOST);
-            PurchaseLine."Outstanding Amount (LCY)" := PurchaseLine."Outstanding Amount";
-            PurchaseLine."Amt. Rcd. Not Invoiced (LCY)" := PurchaseLine."Amt. Rcd. Not Invoiced";
-            PurchaseLine."Unit Cost" := GPPOP10110.UNITCOST;
+        QuantityOverReceipt := ZeroIfNegative(AdjustedQuantityReceived, AdjustedQuantity);
+
+        if QuantityOverReceipt > 0 then
+            AdjustedQuantity := AdjustedQuantityReceived;
+
+        AdjustedQuantityInvoiced := 0;
+        ItemNo := CopyStr(GPPOP10110.ITEMNMBR.Trim(), 1, MaxStrLen(ItemNo));
+        IsInventoryItem := false;
+
+        if Item.Get(ItemNo) then
+            IsInventoryItem := Item.Type = Item.Type::Inventory;
+
+        PurchaseLine.Init();
+        PurchaseLine."Document No." := PONumber;
+        PurchaseLine."Document Type" := PurchaseDocumentType::Order;
+        PurchaseLine."Line No." := LineNo;
+        PurchaseLine."Buy-from Vendor No." := GPPOP10110.VENDORID;
+        PurchaseLine.Type := PurchaseLineType::Item;
+
+        if GPPOP10110.NONINVEN = 1 then
+            CreateNonInventoryItem(GPPOP10110);
+
+        PurchaseLine.Validate("Gen. Bus. Posting Group", GPCodeTxt);
+        PurchaseLine.Validate("Gen. Prod. Posting Group", GPCodeTxt);
+        PurchaseLine."Unit of Measure" := UnitOfMeasure;
+        PurchaseLine."Unit of Measure Code" := UnitOfMeasure;
+        PurchaseLine.Validate("No.", ItemNo);
+        PurchaseLine."Location Code" := LocationCode;
+        PurchaseLine."Posting Group" := GPCodeTxt;
+        PurchaseLine.Validate("Expected Receipt Date", GPPOP10110.PRMDATE);
+        PurchaseLine.Description := CopyStr(GPPOP10110.ITEMDESC.Trim(), 1, MaxStrLen(PurchaseLine.Description));
+
+        if QuantityOverReceipt > 0 then begin
+            if IsInventoryItem then begin
+                CreateOverReceiptCodeIfNeeded(AdjustedQuantityReceived, AdjustedQuantity);
+                if Item."Over-Receipt Code" = '' then begin
+                    Item.Validate("Over-Receipt Code", GPCodeTxt);
+                    Item.Modify();
+                end;
+            end;
+
+            if not IsInventoryItem then
+                QuantityOverReceipt := 0;
+        end;
+
+        PurchaseLine.Validate("Quantity Invoiced", AdjustedQuantityInvoiced);
+        PurchaseLine.Validate("Quantity", AdjustedQuantity);
+        PurchaseLine.Validate("Qty. to Receive", AdjustedQuantityReceived);
+        PurchaseLine.Validate("Outstanding Quantity", AdjustedQuantity);
+        PurchaseLine.Validate("Direct Unit Cost", UnitCost);
+        PurchaseLine.Validate(Amount, UnitCost * AdjustedQuantity);
+        PurchaseLine.Validate("Outstanding Amount", PurchaseLine."Outstanding Quantity" * UnitCost);
+        PurchaseLine.Validate("Outstanding Amount (LCY)", PurchaseLine."Outstanding Amount");
+        PurchaseLine.Validate("Unit Cost", UnitCost);
+
+        if QuantityOverReceipt > 0 then begin
+            PurchaseLine."Over-Receipt Code" := GPCodeTxt;
+            PurchaseLine."Over-Receipt Quantity" := QuantityOverReceipt;
+        end;
+
+        if PurchaseLine."Outstanding Quantity" > 0 then
+            PurchaseLine.Validate("Outstanding Qty. (Base)", PurchaseLine."Outstanding Quantity");
+
+        PurchaseLine."Line Amount" := PurchaseLine.Amount;
+
+        if PurchaseLine.Quantity > 0 then begin
             PurchaseLine.Insert(true);
 
-            if QtyShipped > (GPPOP10110.QTYORDER - GPPOP10110.QTYCANCE) then
-                ProcessOverReceipt(PurchaseLine, QtyShipped - (GPPOP10110.QTYORDER - GPPOP10110.QTYCANCE));
+            if IsInventoryItem and (PurchaseLine."Qty. to Receive (Base)" > 0) then begin
+                if not PostPurchaseOrderNoList.Contains(PONumber) then
+                    PostPurchaseOrderNoList.Add(PONumber);
 
-            PurchaseLine.Validate("Qty. to Receive (Base)", PurchaseLine."Outstanding Quantity");
-            PurchaseLine.Validate("Qty. Invoiced (Base)", PurchaseLine."Quantity Invoiced");            
-            PurchaseLine.Validate("Outstanding Qty. (Base)", PurchaseLine."Outstanding Quantity");
-            PurchaseLine.Validate("Qty. to Invoice (Base)", PurchaseLine."Quantity (Base)" - PurchaseLine."Quantity Invoiced");
+                CreateNegativeAdjustment(PurchaseLine);
+            end;
 
-            if PurchaseLine.Amount > 0 then
-                PurchaseLine.Validate("Line Amount", PurchaseLine.Amount)
-            else
-                PurchaseLine."Line Amount" := PurchaseLine.Amount;
-
-            PurchaseLine.Modify(true);
             LineNo := LineNo + 10000;
-        until GPPOP10110.Next() = 0;
+            LineQuantityRemaining := LineQuantityRemaining - PurchaseLine.Quantity;
+        end;
     end;
 
     local procedure CreateNonInventoryItem(GPPOP10110: Record "GP POP10110")
@@ -203,7 +306,7 @@ codeunit 40108 "GP PO Migrator"
             UnitOfMeasureRec.Insert(true);
         end;
 
-        if not GenProductPostingGroup.get(GPCodeTxt) then begin
+        if not GenProductPostingGroup.Get(GPCodeTxt) then begin
             GenProductPostingGroup.Code := GPCodeTxt;
             GenProductPostingGroup.Description := MigratedFromGPDescriptionTxt;
             GenProductPostingGroup.Insert();
@@ -221,14 +324,12 @@ codeunit 40108 "GP PO Migrator"
         NewItem.Modify(true);
     end;
 
-    local procedure ProcessOverReceipt(var PurchaseLine: Record "Purchase Line"; OverReceiptQty: Decimal)
+    local procedure CreateOverReceiptCodeIfNeeded(QuantityReceived: Decimal; QuantityOrdered: Decimal)
     var
         OverReceiptCode: Record "Over-Receipt Code";
-        PurchaseHeader: Record "Purchase Header";
-        PurchaseDocumentStatus: Enum "Purchase Document Status";
         OveragePercentage: Decimal;
     begin
-        OveragePercentage := OverReceiptQty / PurchaseLine.Quantity;
+        OveragePercentage := QuantityReceived / QuantityOrdered;
         if OveragePercentage > 1 then
             OveragePercentage := 1;
 
@@ -242,17 +343,150 @@ codeunit 40108 "GP PO Migrator"
                 OverReceiptCode.Validate("Over-Receipt Tolerance %", OveragePercentage * 100);
                 OverReceiptCode.Modify();
             end;
+    end;
 
-        if PurchaseHeader.Get(PurchaseHeader."Document Type"::Order, PurchaseLine."Document No.") then begin
-            PurchaseHeader.Validate(Status, PurchaseDocumentStatus::Released);
-            PurchaseHeader.Modify();
+    local procedure CreateNegativeAdjustment(var PurchaseLine: Record "Purchase Line")
+    var
+        ItemJournalLine: Record "Item Journal Line";
+        ItemJournalBatch: Record "Item Journal Batch";
+        AdjustItemInventory: Codeunit "Adjust Item Inventory";
+        ItemTemplateName: Code[10];
+    begin
+        ItemTemplateName := AdjustItemInventory.SelectItemTemplateForAdjustment();
 
-            PurchaseLine.Validate("Over-Receipt Code", GPCodeTxt);
-            PurchaseLine.Validate("Over-Receipt Quantity", OverReceiptQty);
-            PurchaseLine.Modify();
-
-            PurchaseHeader.Validate(Status, PurchaseDocumentStatus::Open);
-            PurchaseHeader.Modify();
+        if not ItemJournalBatch.Get(ItemTemplateName, ItemJournalBatchNameTxt) then begin
+            ItemJournalBatch."Journal Template Name" := ItemTemplateName;
+            ItemJournalBatch.Name := ItemJournalBatchNameTxt;
+            ItemJournalBatch.Description := SimpleInvJnlNameTxt;
+            ItemJournalBatch.Insert();
         end;
+
+        ItemJnlBatchLineNo := ItemJnlBatchLineNo + 1;
+
+        ItemJournalLine.Init();
+        ItemJournalLine.Validate("Journal Template Name", ItemTemplateName);
+        ItemJournalLine.Validate("Journal Batch Name", ItemJournalBatchNameTxt);
+        ItemJournalLine.Validate("Posting Date", PurchaseLine.GetDate());
+        ItemJournalLine.Validate("Document No.", PurchaseLine."Document No.");
+        ItemJournalLine.Validate("Entry Type", ItemJournalLine."Entry Type"::"Negative Adjmt.");
+        ItemJournalLine.Validate("Item No.", PurchaseLine."No.");
+        ItemJournalLine.Validate("Line No.", ItemJnlBatchLineNo);
+        ItemJournalLine.Validate(Description, PurchaseLine.Description);
+        ItemJournalLine.Validate(Quantity, PurchaseLine."Qty. to Receive");
+        ItemJournalLine."Location Code" := PurchaseLine."Location Code";
+        ItemJournalLine.Insert(true);
+    end;
+
+    local procedure PostReceivedPurchaseLines()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        Item: Record Item;
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
+        ItemNo: Code[20];
+        ItemTrackingCode: Code[10];
+        PurchaseOrderNo: Text;
+        ItemTrackingDictionary: Dictionary of [Code[20], Code[10]];
+    begin
+        foreach PurchaseOrderNo in PostPurchaseOrderNoList do
+            if PurchaseHeader.Get(PurchaseHeader."Document Type"::Order, PurchaseOrderNo) then begin
+                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(PurchaseHeader.RecordId));
+                PurchaseHeader.Receive := true;
+                PurchaseHeader.Modify();
+
+                // Reset item tracking for received lines. 
+                // The item transaction has already been recorded by the GP Item Migrator part of the migration, and posting will fail here without this.
+                PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+                PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+                PurchaseLine.SetFilter("Qty. to Receive", '>%1', 0);
+                if PurchaseLine.FindSet() then
+                    repeat
+                        if not ItemTrackingDictionary.ContainsKey(PurchaseLine."No.") then
+                            if Item.Get(PurchaseLine."No.") then
+                                if Item."Item Tracking Code" <> '' then begin
+                                    ItemTrackingDictionary.Add(Item."No.", Item."Item Tracking Code");
+                                    Item."Item Tracking Code" := '';
+                                    Item.Modify();
+                                end;
+                    until PurchaseLine.Next() = 0;
+
+                Codeunit.Run(Codeunit::"Purch.-Post", PurchaseHeader);
+            end;
+
+        PostItemAdjustments();
+
+        // Set the item tracking back
+        Clear(ItemTrackingCode);
+        foreach ItemNo in ItemTrackingDictionary.Keys do
+            if ItemTrackingDictionary.Get(ItemNo, ItemTrackingCode) then
+                if Item.Get(ItemNo) then begin
+                    Item."Item Tracking Code" := ItemTrackingCode;
+                    Item.Modify();
+                end;
+    end;
+
+    local procedure PostItemAdjustments()
+    var
+        ItemJournalLine: Record "Item Journal Line";
+        ItemJournalBatch: Record "Item Journal Batch";
+    begin
+        ItemJournalLine.SetRange("Journal Batch Name", ItemJournalBatchNameTxt);
+        if ItemJournalLine.FindSet() then
+            Codeunit.Run(Codeunit::"Item Jnl.-Post Batch", ItemJournalLine);
+
+        Clear(ItemJournalLine);
+        ItemJournalLine.SetRange("Journal Batch Name", ItemJournalBatchNameTxt);
+        if ItemJournalLine.Count() <= 1 then begin
+            ItemJournalLine.DeleteAll();
+
+            ItemJournalBatch.SetRange("Name", ItemJournalBatchNameTxt);
+            ItemJournalBatch.DeleteAll();
+        end;
+    end;
+
+    local procedure SetVendorDocumentNo(var PurchaseHeader: Record "Purchase Header")
+    var
+        GPPOPReceiptApply: Record GPPOPReceiptApply;
+        GPPOPReceiptHist: Record GPPOPReceiptHist;
+    begin
+        GPPOPReceiptApply.SetRange(PONUMBER, PurchaseHeader."No.");
+        GPPOPReceiptApply.SetRange(Status, GPPOPReceiptApply.Status::Posted);
+        if GPPOPReceiptApply.FindFirst() then begin
+            GPPOPReceiptHist.SetRange(POPRCTNM, GPPOPReceiptApply.POPRCTNM);
+            GPPOPReceiptHist.SetFilter(VNDDOCNM, '<>%1', '');
+            if GPPOPReceiptHist.FindFirst() then
+                PurchaseHeader."Vendor Invoice No." := CopyStr(GPPOPReceiptHist.VNDDOCNM.Trim(), 1, MaxStrLen(PurchaseHeader."Vendor Invoice No."));
+        end;
+    end;
+
+    local procedure SetDirectCostPostingAccountIfNeeded()
+    var
+        GeneralPostingSetup: Record "General Posting Setup";
+    begin
+        if GeneralPostingSetup.Get('', GPCodeTxt) then
+            if (GeneralPostingSetup."Direct Cost Applied Account" = '') then
+                if (GeneralPostingSetup."Inventory Adjmt. Account" <> '') then begin
+                    GeneralPostingSetup."Direct Cost Applied Account" := GeneralPostingSetup."Inventory Adjmt. Account";
+                    GeneralPostingSetup.Modify();
+                end;
+
+        if GeneralPostingSetup.Get(GPCodeTxt, GPCodeTxt) then
+            if (GeneralPostingSetup."Direct Cost Applied Account" = '') then
+                if (GeneralPostingSetup."Inventory Adjmt. Account" <> '') then begin
+                    GeneralPostingSetup."Direct Cost Applied Account" := GeneralPostingSetup."Inventory Adjmt. Account";
+                    GeneralPostingSetup.Modify();
+                end;
+    end;
+
+    local procedure ZeroIfNegative(Minuend: Decimal; Subtrahend: Decimal): Decimal
+    var
+        Difference: Decimal;
+    begin
+        Difference := Minuend - Subtrahend;
+
+        if Difference < 0 then
+            Difference := 0;
+
+        exit(Difference);
     end;
 }

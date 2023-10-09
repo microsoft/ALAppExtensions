@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Base;
+
+using Microsoft.Finance.TaxEngine.PostingHandler;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+
 
 Codeunit 18015 "GST Posting Management"
 {
@@ -37,7 +46,7 @@ Codeunit 18015 "GST Posting Management"
     begin
         if not Record.IsRecord then
             exit;
-
+        Clear(DetailedGSTLedgerEntry);
         RecRef.GetTable(Record);
         case RecRef.Number of
             database::"Detailed GST Ledger Entry":

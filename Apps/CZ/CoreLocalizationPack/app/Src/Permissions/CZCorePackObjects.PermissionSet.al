@@ -66,10 +66,18 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   codeunit "Inventory Posting Handler CZL" = X,
                   codeunit "Invt. Document Handler CZL" = X,
                   codeunit "Invt. Document-Printed CZL" = X,
+#if not CLEAN22   
+#pragma warning disable AL0432               
                   codeunit "Item Charge Assgnt Handler CZL" = X,
+#pragma warning restore AL0432               
+#endif
                   codeunit "Item Handler CZL" = X,
                   codeunit "Item Jnl.CheckLine Handler CZL" = X,
+#if not CLEAN22   
+#pragma warning disable AL0432               
                   codeunit "Item Jnl-Post Line Handler CZL" = X,
+#pragma warning restore AL0432               
+#endif
                   codeunit "Item Jnl. Template Handler CZL" = X,
                   codeunit "Item Journal Line Handler CZL" = X,
                   codeunit "Item Tracking Doc. Handler CZL" = X,
@@ -112,9 +120,17 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   codeunit "SOAP WS Request Management CZL" = X,
                   codeunit "Source Code Setup Handler CZL" = X,
                   codeunit "Substitute Report Handler CZL" = X,
+#if not CLEAN22
+#pragma warning disable AL0432
                   codeunit "Tariff Number Handler CZL" = X,
+#pragma warning restore AL0432
+#endif
                   codeunit "Transfer Line Handler CZL" = X,
+#if not CLEAN22
+#pragma warning disable AL0432
                   codeunit "TransferOrder-Post Handler CZL" = X,
+#pragma warning restore AL0432
+#endif
                   codeunit "Transformation Rule Mgt. CZL" = X,
                   codeunit "Unreliable Payer Mgt. CZL" = X,
                   codeunit "Unreliable Payer WS CZL" = X,
@@ -122,6 +138,7 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   codeunit "Upgrade Tag Definitions CZL" = X,
                   codeunit "User Setup Adv. Management CZL" = X,
                   codeunit "User Setup Handler CZL" = X,
+                  codeunit "VAT Amount Line Handler CZL" = X,
                   codeunit "VAT Attribute Code Mgt. CZL" = X,
                   codeunit "VAT Control Report DPHKH1 CZL" = X,
                   codeunit "VAT Corr. Notif. Handler CZL" = X,
@@ -176,9 +193,9 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   page "File Mapping CZL" = X,
                   page "Get Document No. and Date CZL" = X,
                   page "Get Vend. Bank Acc. Code CZL" = X,
-                  page "Intrastat Delivery Groups CZL" = X,
 #if not CLEAN22   
 #pragma warning disable AL0432    
+                  page "Intrastat Delivery Groups CZL" = X,
                   page "Intrastat Journal Lines CZL" = X,
 #pragma warning restore AL0432    
 #endif
@@ -190,8 +207,12 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   page "Registration No. Check CZL" = X,
                   page "Reg. No. Service Config CZL" = X,
                   page "Save Acc. Schedule Result CZL" = X,
+#if not CLEAN22
+#pragma warning disable AL0432
                   page "Specific Movements CZL" = X,
                   page "Statistic Indications CZL" = X,
+#pragma warning restore AL0432
+#endif
                   page "Statutory Reporting Setup CZL" = X,
                   page "Stockkeeping Unit Templ. CZL" = X,
 #if not CLEAN22
@@ -254,11 +275,6 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   report "Export VAT Ctrl. Dialog CZL" = X,
                   report "Export VAT Stmt. Dialog CZL" = X,
                   report "Finance Charge Memo CZL" = X,
-#if not CLEAN20
-#pragma warning disable AL0432
-                  report "Finance Charge Memo MIR CZL" = X,
-#pragma warning restore AL0432
-#endif
                   report "General Journal CZL" = X,
                   report "General Journal - Test CZL" = X,
                   report "General Ledger CZL" = X,
@@ -286,6 +302,7 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   report "Open Cust. Entries to Date CZL" = X,
                   report "Open Vend. Entries to Date CZL" = X,
                   report "Phys. Inventory Document CZL" = X,
+                  report "Posted Direct Transfer CZL" = X,
                   report "Posted Inventory Document CZL" = X,
                   report "Posted Inventory Receipt CZL" = X,
                   report "Posted Inventory Shipment CZL" = X,
@@ -296,11 +313,6 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   report "Quantity Shipped Check CZL" = X,
                   report "Recon. Bank Account Entry CZL" = X,
                   report "Reminder CZL" = X,
-#if not CLEAN20
-#pragma warning disable AL0432
-                  report "Reminder MIR CZL" = X,
-#pragma warning restore AL0432
-#endif
                   report "Sales Credit Memo CZL" = X,
                   report "Sales Invoice CZL" = X,
                   report "Sales Order Confirmation CZL" = X,
@@ -355,13 +367,21 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   table "Enhanced Currency Buffer CZL" = X,
                   table "Excel Template CZL" = X,
                   table "G/L Account Adjust. Buffer CZL" = X,
+#if not CLEAN22
+#pragma warning disable AL0432
                   table "Intrastat Delivery Group CZL" = X,
+#pragma warning restore AL0432
+#endif
                   table "Invt. Movement Template CZL" = X,
                   table "Registration Log CZL" = X,
                   table "Registration Log Detail CZL" = X,
                   table "Reg. No. Service Config CZL" = X,
+#if not CLEAN22
+#pragma warning disable AL0432
                   table "Specific Movement CZL" = X,
                   table "Statistic Indication CZL" = X,
+#pragma warning restore AL0432
+#endif
                   table "Statutory Reporting Setup CZL" = X,
                   table "Stockkeeping Unit Template CZL" = X,
 #if not CLEAN22
@@ -385,10 +405,10 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   table "VAT Statement Comment Line CZL" = X,
                   table "VIES Declaration Header CZL" = X,
                   table "VIES Declaration Line CZL" = X,
-                  xmlPort "Import Tariff Numbers CZL" = X,
-                  xmlPort "Unreliable Payer List CZL" = X,
-                  xmlPort "Unreliable Payer Status CZL" = X,
-                  xmlPort "VAT Control Report DPHKH1 CZL" = X,
-                  xmlPort "VAT Statement DPHDP3 CZL" = X,
-                  xmlPort "VIES Declaration CZL" = X;
+                  xmlport "Import Tariff Numbers CZL" = X,
+                  xmlport "Unreliable Payer List CZL" = X,
+                  xmlport "Unreliable Payer Status CZL" = X,
+                  xmlport "VAT Control Report DPHKH1 CZL" = X,
+                  xmlport "VAT Statement DPHDP3 CZL" = X,
+                  xmlport "VIES Declaration CZL" = X;
 }

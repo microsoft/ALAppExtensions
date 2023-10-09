@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Security.Encryption;
+
+using System.Security.Encryption;
+using System.TestLibraries.Utilities;
+
 codeunit 132579 "Rfc2898DeriveBytes Test"
 {
     Subtype = Test;

@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Functions;
+
+using System.Security.Authentication;
+using System.Utilities;
+using System.Telemetry;
+
 codeunit 7803 "Azure Functions Impl"
 {
     Access = Internal;
@@ -14,7 +20,7 @@ codeunit 7803 "Azure Functions Impl"
         HttpResponseErr: Label '%1.\\Response Code: %2 %3', Comment = '%1 = Default Error Message ; %2 = Status Code; %3 = Reason Phrase';
         AuthenticationFailedErr: Label 'Authentication failed';
         AzureFunctionCategoryLbl: Label 'Connect to Azure Functions', Locked = true;
-        RequestSucceededMsg: Label 'Request sent to Azure function succeeded: %1', Locked = true;
+        RequestSucceededMsg: Label 'Request sent to Azure function succeeded', Locked = true;
         RequestFailedErr: Label 'Request sent to Azure function failed: %1', Locked = true;
 
     [NonDebuggable]
@@ -72,7 +78,7 @@ codeunit 7803 "Azure Functions Impl"
             Dimensions.Add('FunctionHost', Format(Uri.GetHost()));
 
             if ResponseMessage.IsSuccessStatusCode then
-                FeatureTelemetry.LogUsage('0000I74', AzureFunctionCategoryLbl, StrSubstNo(RequestSucceededMsg, Uri.GetHost()), Dimensions)
+                FeatureTelemetry.LogUsage('0000I74', AzureFunctionCategoryLbl, RequestSucceededMsg, Dimensions)
             else
                 FeatureTelemetry.LogError('0000I7P', AzureFunctionCategoryLbl, StrSubstNo(RequestFailedErr, Uri.GetHost()), StrSubstNo(RequestFailedErr, Uri.GetHost()), '', Dimensions);
 

@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TCS.TCSReturnAndSettlement;
+
+using Microsoft.Foundation.Company;
+
 report 18869 "TCS Challan Register"
 {
     DefaultLayout = RDLC;

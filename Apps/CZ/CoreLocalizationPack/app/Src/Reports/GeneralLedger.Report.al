@@ -10,7 +10,7 @@ report 11712 "General Ledger CZL"
     {
         dataitem(GLAccount; "G/L Account")
         {
-            DataItemTableView = sorting("No.") WHERE("Account Type" = FILTER(Posting));
+            DataItemTableView = sorting("No.") where("Account Type" = filter(Posting));
             RequestFilterFields = "No.", "Date Filter";
             column(COMPANYNAME; COMPANYPROPERTY.DisplayName())
             {
@@ -106,7 +106,7 @@ report 11712 "General Ledger CZL"
                 }
                 dataitem(TotalPeriod; "Integer")
                 {
-                    DataItemTableView = sorting(Number) WHERE(Number = CONST(1));
+                    DataItemTableView = sorting(Number) where(Number = const(1));
                     column(TotalPeriod_NetChangePeriodDebit; NetChangePeriodDebit)
                     {
                     }
@@ -144,7 +144,7 @@ report 11712 "General Ledger CZL"
             }
             dataitem(TotalAccount; "Integer")
             {
-                DataItemTableView = sorting(Number) WHERE(Number = CONST(1));
+                DataItemTableView = sorting(Number) where(Number = const(1));
                 column(TotalAccount_EndDebit; EndDebit)
                 {
                 }

@@ -8,11 +8,6 @@ pageextension 11744 "Posted Purchase Invoice CZL" extends "Posted Purchase Invoi
             Visible = ReplaceVATDateEnabled and VATDateEnabled;
         }
 #endif
-#if not CLEAN20
-#pragma warning disable AL0432
-        movelast(General; "Posting Description")
-#pragma warning restore AL0432
-#else
         addlast(General)
         {
             field("Posting Description CZL"; Rec."Posting Description")
@@ -23,7 +18,6 @@ pageextension 11744 "Posted Purchase Invoice CZL" extends "Posted Purchase Invoi
                 Visible = false;
             }
         }
-#endif
         addafter("Posting Date")
         {
 #if not CLEAN22
@@ -104,9 +98,20 @@ pageextension 11744 "Posted Purchase Invoice CZL" extends "Posted Purchase Invoi
         }
         addafter("Invoice Details")
         {
+#if not CLEAN23
+#pragma warning disable AS0011
             group("Foreign Trade")
+#pragma warning restore AS0011
+#else
+            group("Foreign Trade CZL")
+#endif
             {
                 Caption = 'Foreign Trade';
+#if not CLEAN23
+                ObsoleteState = Pending;
+                ObsoleteTag = '23.0';
+                ObsoleteReason = 'The group will be renamed from Foreign Trade to Foreign Trade CZL.';
+#endif
                 field("Language Code CZL"; Rec."Language Code")
                 {
                     ApplicationArea = Basic, Suite;
@@ -160,12 +165,18 @@ pageextension 11744 "Posted Purchase Invoice CZL" extends "Posted Purchase Invoi
                     Editable = false;
                     ToolTip = 'Specifies when the purchase header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
                 }
+#if not CLEAN22
                 field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
                 {
                     ApplicationArea = Basic, Suite;
+                    Caption = 'Intrastat Exclude (Obsolete)';
                     Editable = false;
                     ToolTip = 'Specifies that entry will be excluded from intrastat.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '22.0';
+                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
                 }
+#endif
             }
             group(PaymentsCZL)
             {
@@ -273,7 +284,9 @@ pageextension 11744 "Posted Purchase Invoice CZL" extends "Posted Purchase Invoi
     var
 #if not CLEAN22
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
         ReplaceVATDateEnabled: Boolean;
         VATDateEnabled: Boolean;
 #endif

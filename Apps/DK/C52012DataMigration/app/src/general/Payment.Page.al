@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
 page 1869 "C5 Payment"
 {
     PageType = Card;
@@ -18,11 +20,11 @@ page 1869 "C5 Payment"
             group(General)
             {
 #pragma warning disable AA0218
-                field(Payment; Payment) { ApplicationArea = All; }
-                field(Txt; Txt) { ApplicationArea = All; }
-                field(Method; Method) { ApplicationArea = All; }
-                field(Qty; Qty) { ApplicationArea = All; }
-                field(UnitCode; UnitCode) { ApplicationArea = All; }
+                field(Payment; Rec.Payment) { ApplicationArea = All; }
+                field(Txt; Rec.Txt) { ApplicationArea = All; }
+                field(Method; Rec.Method) { ApplicationArea = All; }
+                field(Qty; Rec.Qty) { ApplicationArea = All; }
+                field(UnitCode; Rec.UnitCode) { ApplicationArea = All; }
 #pragma warning restore
             }
         }

@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DataAdministration;
+
+using System.Environment;
+
 codeunit 8700 "Table Information Cache Impl."
 {
     Access = Internal;
@@ -53,7 +57,7 @@ codeunit 8700 "Table Information Cache Impl."
         CompanySizeCache: Record "Company Size Cache";
     begin
         CompanySizeCache.CalcSums("Size (KB)");
-        Exit(CompanySizeCache."Size (KB)");
+        exit(CompanySizeCache."Size (KB)");
     end;
 
     local procedure RefreshCompanySizeCache()
@@ -97,7 +101,9 @@ codeunit 8700 "Table Information Cache Impl."
         SetBiggestTablesFilter(TableInformationCache);
         if TableInformationCache.FindSet() then
             repeat
-                if not TryCalcThirtyDayGrowthForTable(TableInformationCache) then
+                if TryCalcThirtyDayGrowthForTable(TableInformationCache) then
+                    TableInformationCache.Modify()
+                else
                     Session.LogMessage('00001PV', StrSubstNo(FailedToCalculateGrowthTxt, TableInformationCache."Table No.", TableInformationCache."Table Name"), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
             until TableInformationCache.Next() = 0;
     end;
@@ -136,7 +142,6 @@ codeunit 8700 "Table Information Cache Impl."
         TableInformationCache."Last Period Data Size (KB)" := Round((RecordRef.Count() * TableInformationCache."Record Size" / 1024), 1);
         if TableInformationCache."Last Period Data Size (KB)" <> 0 then
             TableInformationCache."Growth %" := Round(((TableInformationCache."Data Size (KB)" / TableInformationCache."Last Period Data Size (KB)") - 1), 0.01) * 100;
-        TableInformationCache.Modify();
         RecordRef.Close();
     end;
 

@@ -16,6 +16,7 @@ codeunit 132558 "AMC Banking Credential UT"
         EnvironmentInfoTestLibrary: Codeunit "Environment Info Test Library";
         AMCBankingMgt: Codeunit "AMC Banking Mgt.";
         LocalhostURLTxt: Label 'https://localhost:8080/', Locked = true;
+        //LocalhostURLTxt: Label 'https://host.docker.internal:8088/', Locked = true; //AMC - Internal host at AMC for testing
         MissingCredentialsQst: Label 'The %1 is missing the user name or password. Do you want to open the %1 page?', Comment = '%1 = page name';
         MissingCredentialsErr: Label 'The user name and password must be filled in %1 page.', Comment = '%1 = page name';
         NoConnectionErr: Label 'Valid versions is: NAV01 NAV02 NAV03 API02 API04 ';
@@ -43,9 +44,10 @@ codeunit 132558 "AMC Banking Credential UT"
         if (not AMCBankingSetup.Get()) then begin
             AMCBankingSetup.Init();
             AMCBankingSetup.Insert(true);
-            AMCBankingSetup."AMC Enabled" := true;
-            AMCBankingSetup.Modify();
         end;
+        AMCBankingSetup."AMC Enabled" := true;
+        AMCBankingSetup.Modify();
+
 
         // Exercise test
         BasisSetupRunOK := AMCBankAssistedMgt.RunBasisSetupV162(true, true, '', LocalhostURLTxt, '', true, false, '', '',
@@ -83,9 +85,9 @@ codeunit 132558 "AMC Banking Credential UT"
             AMCBankingSetup.Init();
             AMCBankingSetup.Insert(true);
             AMCBankingSetup."User Name" := AMCBankingMgt.GetLicenseNumber();
-            AMCBankingSetup."AMC Enabled" := true;
-            AMCBankingSetup.Modify();
         end;
+        AMCBankingSetup."AMC Enabled" := true;
+        AMCBankingSetup.Modify();
 
         // Exercise test
         BasisSetupRunOK := AMCBankAssistedMgt.RunBasisSetupV162(true, true, '', LocalhostURLTxt, '', true, false, '', '',
@@ -123,9 +125,9 @@ codeunit 132558 "AMC Banking Credential UT"
             AMCBankingSetup.Insert(true);
             AMCBankingSetup."User Name" := AMCBankingMgt.GetLicenseNumber();
             AMCBankingSetup.Solution := 'Standard';
-            AMCBankingSetup."AMC Enabled" := true;
-            AMCBankingSetup.Modify();
         end;
+        AMCBankingSetup."AMC Enabled" := true;
+        AMCBankingSetup.Modify();
 
         // Exercise test
         BasisSetupRunOK := AMCBankAssistedMgt.RunBasisSetupV162(true, true, '', LocalhostURLTxt, '', true, false, '', '',
@@ -477,6 +479,8 @@ codeunit 132558 "AMC Banking Credential UT"
     var
         AMCBankingSetup: Record "AMC Banking Setup";
     begin
+        LibraryAmcWebService.SetHttpClientRequestallowed();
+
         AMCBankingSetup.DeleteAll();
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
     end;
@@ -491,9 +495,10 @@ codeunit 132558 "AMC Banking Credential UT"
             WasNotPresent := true;
             AMCBankingSetup.Init();
             AMCBankingSetup.Insert(true);
-            AMCBankingSetup."AMC Enabled" := true;
-            AMCBankingSetup.Modify();
         end;
+        AMCBankingSetup."AMC Enabled" := true;
+        AMCBankingSetup.Modify();
+
         LibraryAmcWebService.SetupAMCBankingDataExch(DataExchDef);
 
         if (WasNotPresent) then

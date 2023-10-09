@@ -1,3 +1,15 @@
+namespace Microsoft.Finance.Latepayment;
+
+using Microsoft.Foundation.Company;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Receivables;
+using Microsoft.Utilities;
+using System.Threading;
+using System.Environment;
+using System.Environment.Configuration;
+using System.Security.AccessControl;
+using System.AI;
+
 codeunit 1952 "LP Subscribers"
 {
     var

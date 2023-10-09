@@ -1,3 +1,24 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Purchase;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Location;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Utilities;
+
 codeunit 18080 "GST Purchase Subscribers"
 {
     var
@@ -26,32 +47,19 @@ codeunit 18080 "GST Purchase Subscribers"
         OrderAddGSTARNErr: Label ' Either GST Registration No. or ARN No. should have a value.';
         PANVendErr: Label 'PAN No. must be entered in Vendor.';
         GSTRegNoErr: Label 'You cannot select GST Reg. No. for selected Vendor Type.';
-        GSTAssessableErr: Label 'GST Assessable Value must have a value in Purchase Line Document Type %1 and Document No %2.', Comment = '%1 = Document Type , %2 = Document No.';
         IGSTAggTurnoverErr: Label 'Interstate transaction cannot be calculated against Unregistered Vendor whose aggregate turnover is more than 20 Lakhs.';
         POSasGSTGroupRevChargeErr: Label 'POS as Vendor State is not applicable for Reverse Charge';
         GSTUnregisteredNotAppErr: Label 'GST is not applicable for Unregistered Vendors.';
         SamePANErr: Label 'From position 3 to 12 in GST Registration No. should be same as it is in PAN No.';
         GSTPANErr: Label 'Please update GST Registration No. to blank in the record %1 from Order Address.', Comment = '%1 = Order Address Code';
         ShipToOptionErr: Label 'Location Code is mandatory for ship-to Custom Address';
+        LengthErr: Label 'The Length of the GST Registration Nos. must be 15.';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostPurchaseDoc', '', false, false)]
     local procedure SetPaytoVendorFields(var PurchaseHeader: Record "Purchase Header")
     begin
         SetPayToVendorFieldsForPurchase(PurchaseHeader);
     end;
-
-#if not CLEAN20      
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnBeforeUpdateLocationCode', '', false, false)]
-    [Obsolete('Not actual after Non Inventoriable Item refactoring', '20.0')]
-    local procedure HandledOnBeforeUpdateLocationCode(var PurchaseLine: Record "Purchase Line"; var IsHandled: Boolean)
-    var
-        Item: Record Item;
-    begin
-        if Item.Get(PurchaseLine."No.") then
-            if (Item."HSN/SAC Code" <> '') and (Item."GST Group Code" <> '') then
-                IsHandled := true;
-    end;
-#endif
 
     //CopyDocument 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnAfterCopyPostedPurchInvoice', '', false, false)]
@@ -321,13 +329,19 @@ codeunit 18080 "GST Purchase Subscribers"
     [EventSubscriber(ObjectType::Table, Database::Vendor, 'OnAfterValidateEvent', 'GST Registration No.', false, false)]
     local procedure ValidateVendGSTRegistrationNo(var Rec: Record Vendor)
     begin
-        vendGSTRegistrationNo(Rec);
+        if Rec."Govt. Undertaking" then
+            CheckGSTRegistrationLength(Rec."GST Registration No.")
+        else
+            vendGSTRegistrationNo(Rec);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::Vendor, 'OnAfterValidateEvent', 'GST Vendor Type', false, false)]
     local procedure ValidateVendGSTVEndorType(var Rec: Record Vendor)
     begin
-        GSTVendorType(Rec);
+        if Rec."Govt. Undertaking" then
+            CheckGSTRegistrationLength(Rec."GST Registration No.")
+        else
+            GSTVendorType(Rec);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::Vendor, 'OnAfterValidateEvent', 'Associated Enterprises', false, false)]
@@ -1134,9 +1148,14 @@ codeunit 18080 "GST Purchase Subscribers"
     local procedure ItemValue(var PurchaseLine: Record "Purchase Line"; Item: Record Item)
     var
         GSTGroup: Record "GST Group";
+        PurchaseHeader: Record "Purchase Header";
     begin
         if Item."GST Group Code" <> '' then
             GSTGroup.Get(Item."GST Group Code");
+
+        if not PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.") then
+            exit;
+        PurchaseLine.Validate("GST Vendor Type", PurchaseHeader."GST Vendor Type");
 
         UpdatePurchLineForGST(Item."GST Credit", Item."GST Group Code", GSTGroup."GST Group Type", Item."HSN/SAC Code", Item.Exempted, PurchaseLine);
     end;
@@ -1383,7 +1402,6 @@ codeunit 18080 "GST Purchase Subscribers"
     local procedure CheckBillOfEntry(var PurchaseHeader: Record "Purchase Header")
     var
         PurchaseLine: Record "Purchase Line";
-        Location: Record Location;
     begin
         if not (PurchaseHeader."GST Vendor Type" in [PurchaseHeader."GST Vendor Type"::Import, PurchaseHeader."GST Vendor Type"::SEZ]) then
             exit;
@@ -1391,19 +1409,6 @@ codeunit 18080 "GST Purchase Subscribers"
         if not (PurchaseHeader."Document Type" in ["Document Type Enum"::Order, "Document Type Enum"::Invoice]) then
             exit;
 
-        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
-        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
-        PurchaseLine.SetFilter("GST Group Type", '%1', PurchaseLine."GST Group Type"::Goods);
-        PurchaseLine.SetFilter(Type, '<>%1&<>%2', PurchaseLine.Type::" ", PurchaseLine.Type::"Charge (Item)");
-        PurchaseLine.SetFilter("GST Group Code", '<>%1', '');
-        PurchaseLine.SetFilter("GST Assessable Value", '%1', 0);
-        PurchaseLine.SetFilter("Qty. to Receive", '<>%1', 0);
-        if PurchaseLine.FindSet() then
-            repeat
-                if Location.Get(PurchaseLine."Location Code") then
-                    if not Location.IsBondedWarehouse(Location.Code) then
-                        Error(GSTAssessableErr, PurchaseHeader."Document Type", PurchaseHeader."No.");
-            until PurchaseLine.Next() = 0;
 
         if PurchaseHeader."Without Bill Of Entry" then
             exit;
@@ -1651,6 +1656,21 @@ codeunit 18080 "GST Purchase Subscribers"
         PurchaseLine.TestField("Location Code", PurchaseHeader."Location Code");
     end;
 
+    local procedure CheckGSTRegistrationLength(RegistrationNo: Code[20])
+    var
+        IsHandled: Boolean;
+    begin
+        OnBeforeCheckGSTRegistrationNo(RegistrationNo, IsHandled);
+        if IsHandled then
+            exit;
+
+        if RegistrationNo = '' then
+            exit;
+
+        if StrLen(RegistrationNo) <> 15 then
+            Error(LengthErr);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GST Purchase Subscribers", 'OnBeforePurchaseLineHSNSACEditable', '', false, false)]
     local procedure SetGstHsnEditableforAllType(var IsEditable: Boolean; var IsHandled: Boolean)
     begin
@@ -1665,6 +1685,11 @@ codeunit 18080 "GST Purchase Subscribers"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCheckHeaderLocation(PurchaseLine: Record "Purchase Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckGSTRegistrationNo(RegistrationNo: Code[20]; var IsHandled: Boolean)
     begin
     end;
 }

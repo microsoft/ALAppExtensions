@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 table 30143 "Shpfy FulFillment Order Header"
 {
     Caption = 'Fulfillment Order Header';
@@ -34,6 +36,18 @@ table 30143 "Shpfy FulFillment Order Header"
         {
             Caption = 'Shopify Location Id';
             DataClassification = SystemMetadata;
+        }
+        field(7; "Updated At"; DateTime)
+        {
+            Caption = 'Updated At';
+            DataClassification = SystemMetadata;
+        }
+        field(8; "Shopify Order No."; Text[50])
+        {
+            Caption = 'Shopify Order No.';
+            FieldClass = FlowField;
+            CalcFormula = lookup("Shpfy Order Header"."Shopify Order No." where("Shopify Order Id" = field("Shopify Order Id")));
+            Editable = false;
         }
     }
     keys

@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Word;
+
+using System.Integration;
+using System.Utilities;
+
 /// <summary>
 /// A wizard to select a Word template and apply it for a record.
 /// </summary>
@@ -330,7 +335,7 @@ page 9996 "Word Template Selection Wizard"
 
                         // If user do not know the known source, then always show overview.
                         // Otherwise, only show overview when there are multiple records.
-                        If (FromUnknownSource) or (not FromUnknownSource and not SkipOverview) then
+                        if (FromUnknownSource) or (not FromUnknownSource and not SkipOverview) then
                             Step := Step::Overview;
 
                         exit;
@@ -560,9 +565,7 @@ page 9996 "Word Template Selection Wizard"
         AsDocumentStream: Boolean;
         FinishedWizard: Boolean;
         WithBusinessContactRelation: Boolean;
-        [InDataSet]
         SkipOverview: Boolean;
-        [InDataSet]
         FromUnknownSource: Boolean;
         ShowEditDocument: Boolean;
         EditDocumentTxt: Text;

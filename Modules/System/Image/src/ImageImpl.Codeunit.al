@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Utilities;
+
+using System;
+using System.Text;
+
 codeunit 3970 "Image Impl."
 {
     Access = Internal;
@@ -285,8 +290,10 @@ codeunit 3970 "Image Impl."
     var
         Image: DotNet Image;
         Size, Width, Height : Integer;
+        MaxSize: Integer;
     begin
-        if TempBlob.Length() > 5000000 then begin
+        MaxSize := 5242880; // 5MB
+        if TempBlob.Length() > MaxSize then begin
             Session.LogMessage('0000FMA', StrSubstNo(ImageTooLargeTxt, TempBlob.Length()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ImageCatTxt);
             System.Clear(TempBlob);
             Error(ImageTooLargeErr);

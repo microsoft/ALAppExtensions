@@ -1,3 +1,12 @@
+namespace Microsoft.Integration.Shopify;
+
+using System.IO;
+using System.Reflection;
+using Microsoft.Sales.Customer;
+using Microsoft.Finance.Dimension;
+using Microsoft.Inventory.Item;
+using System.Upgrade;
+
 /// <summary>
 /// Codeunit Shpfy Upgrade Mgt. (ID 30106).
 /// </summary>
@@ -22,6 +31,9 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         MoveTemplatesData();
 #endif
         PriceCalculationUpgrade();
+        LoggingModeUpgrade();
+        LocationUpgrade();
+        SyncPricesWithProductsUpgrade();
     end;
 
 #if CLEAN22
@@ -103,7 +115,7 @@ codeunit 30106 "Shpfy Upgrade Mgt."
                         if Evaluate(DateFormulaDefaultValue, ConfigTemplateLine."Default Value") then
                             FieldRef.Value := DateFormulaDefaultValue;
                     Field.Type::Time:
-                        if Evaluate(TimeDefaultValue, ConfigTemplateLine."Default Value") then 
+                        if Evaluate(TimeDefaultValue, ConfigTemplateLine."Default Value") then
                             FieldRef.Value := TimeDefaultValue;
                     else
                         FieldRef.Value := ConfigTemplateLine."Default Value";
@@ -252,7 +264,9 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         if UpgradeTag.HasUpgradeTag(GetPriceCalculationUpgradeTag()) then
             exit;
 
-        if Shop.FindSet(true, false) then
+        Shop.SetFilter("Customer Template Code", '<>%1', '');
+        Shop.SetRange("Customer Posting Group", '');
+        if Shop.FindSet(true) then
             repeat
 #if not CLEAN22
                 Shop.CopyPriceCalculationFieldsFromCustomerTemplate(Shop."Customer Template Code");
@@ -263,6 +277,58 @@ codeunit 30106 "Shpfy Upgrade Mgt."
             until Shop.Next() = 0;
 
         UpgradeTag.SetUpgradeTag(GetPriceCalculationUpgradeTag());
+    end;
+
+    local procedure LoggingModeUpgrade()
+    var
+        Shop: Record "Shpfy Shop";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        ShopDataTransfer: DataTransfer;
+    begin
+        if UpgradeTag.HasUpgradeTag(GetLoggingModeUpgradeTag()) then
+            exit;
+
+        ShopDataTransfer.SetTables(Database::"Shpfy Shop", Database::"Shpfy Shop");
+        ShopDataTransfer.AddSourceFilter(Shop.FieldNo("Log Enabled"), '=%1', true);
+        ShopDataTransfer.AddConstantValue("Shpfy Logging Mode"::All, Shop.FieldNo("Logging Mode"));
+        ShopDataTransfer.UpdateAuditFields := false;
+        ShopDataTransfer.CopyFields();
+
+        UpgradeTag.SetUpgradeTag(GetLoggingModeUpgradeTag());
+    end;
+
+    local procedure LocationUpgrade()
+    var
+        ShopLocation: Record "Shpfy Shop Location";
+        UpgradeTag: Codeunit "Upgrade Tag";
+    begin
+        if UpgradeTag.HasUpgradeTag(GetLocationUpgradeTag()) then
+            exit;
+
+        if ShopLocation.FindSet(true) then
+            repeat
+                ShopLocation."Default Product Location" := true;
+                ShopLocation.Modify();
+            until ShopLocation.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(GetLocationUpgradeTag());
+    end;
+
+    local procedure SyncPricesWithProductsUpgrade()
+    var
+        Shop: Record "Shpfy Shop";
+        UpgradeTag: Codeunit "Upgrade Tag";
+    begin
+        if UpgradeTag.HasUpgradeTag(GetSyncPricesWithProductsUpgradeTag()) then
+            exit;
+
+        if Shop.FindSet(true) then
+            repeat
+                Shop."Sync Prices" := true;
+                Shop.Modify();
+            until Shop.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(GetSyncPricesWithProductsUpgradeTag());
     end;
 
     internal procedure SetShpfyStockCalculation()
@@ -315,6 +381,21 @@ codeunit 30106 "Shpfy Upgrade Mgt."
     internal procedure GetPriceCalculationUpgradeTag(): Code[250]
     begin
         exit('MS-460298-PriceCalculationUpgradeTag-20221201');
+    end;
+
+    local procedure GetLoggingModeUpgradeTag(): Code[250]
+    begin
+        exit('MS-447972-LoggingMode-20230425');
+    end;
+
+    internal procedure GetLocationUpgradeTag(): Code[250]
+    begin
+        exit('MS-472953-LocationUpgradeTag-20230525');
+    end;
+
+    internal procedure GetSyncPricesWithProductsUpgradeTag(): Code[250]
+    begin
+        exit('MS-480542-SyncPricesWithProductsUpgradeTag-20230814');
     end;
 
     local procedure GetDateBeforeFeature(): DateTime

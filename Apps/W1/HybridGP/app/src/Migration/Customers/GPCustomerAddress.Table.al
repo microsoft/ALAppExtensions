@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.Sales.Customer;
+using System.Email;
+
 table 4048 "GP Customer Address"
 {
     Permissions = tabledata "Ship-to Address" = rim;
@@ -72,6 +77,9 @@ table 4048 "GP Customer Address"
     var
         ShipToAddress: Record "Ship-to Address";
         Customer: Record Customer;
+        GPSY01200: Record "GP SY01200";
+        MailManagement: Codeunit "Mail Management";
+        EmailAddress: Text[80];
         Exists: Boolean;
     begin
         if Customer.Get(CUSTNMBR) then begin
@@ -97,10 +105,21 @@ table 4048 "GP Customer Address"
             if (CopyStr(ShipToAddress."Fax No.", 1, 14) = '00000000000000') then
                 ShipToAddress."Fax No." := '';
 
+            if GPSY01200.Get(CustomerEmailTypeCodeLbl, CUSTNMBR, ADRSCODE) then
+                EmailAddress := CopyStr(GPSY01200.INET1.Trim(), 1, MaxStrLen(ShipToAddress."E-Mail"));
+
+#pragma warning disable AA0139
+            if MailManagement.ValidateEmailAddressField(EmailAddress) then
+                ShipToAddress."E-Mail" := EmailAddress;
+#pragma warning restore AA0139
+
             if not Exists then
                 ShipToAddress.Insert()
             else
                 ShipToAddress.Modify();
         end;
     end;
+
+    var
+        CustomerEmailTypeCodeLbl: Label 'CUS', Locked = true;
 }

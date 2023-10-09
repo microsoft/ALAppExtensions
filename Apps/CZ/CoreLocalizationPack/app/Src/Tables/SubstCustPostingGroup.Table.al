@@ -2,7 +2,7 @@ table 11728 "Subst. Cust. Posting Group CZL"
 {
     Caption = 'Subst. Customer Posting Group';
 #if not CLEAN22
-    LookupPageID = "Subst. Cust. Post. Groups CZL";
+    LookupPageId = "Subst. Cust. Post. Groups CZL";
     ObsoleteState = Pending;
     ObsoleteTag = '22.0';
 #else

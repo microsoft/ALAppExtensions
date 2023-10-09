@@ -2,6 +2,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Tooling;
+
+using System.Reflection;
+
 table 149001 "BCPT Line"
 {
     DataClassification = SystemMetadata;
@@ -27,7 +32,7 @@ table 149001 "BCPT Line"
         field(3; "Codeunit ID"; Integer)
         {
             Caption = 'Codeunit ID';
-            TableRelation = AllObjWithCaption."Object ID" WHERE("Object Type" = CONST(Codeunit));
+            TableRelation = AllObjWithCaption."Object ID" where("Object Type" = const(Codeunit));
             DataClassification = CustomerContent;
 
             trigger OnLookup()
@@ -63,7 +68,7 @@ table 149001 "BCPT Line"
             Caption = 'Codeunit Name';
             Editable = false;
             FieldClass = FlowField;
-            CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object Type" = CONST(Codeunit), "Object ID" = field("Codeunit ID")));
+            CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object Type" = const(Codeunit), "Object ID" = field("Codeunit ID")));
         }
 
         field(5; "No. of Sessions"; Integer)
@@ -94,7 +99,7 @@ table 149001 "BCPT Line"
 
             trigger OnValidate()
             begin
-                If "Max. User Delay (ms)" < "Min. User Delay (ms)" then
+                if "Max. User Delay (ms)" < "Min. User Delay (ms)" then
                     "Max. User Delay (ms)" := "Min. User Delay (ms)";
             end;
         }
@@ -107,7 +112,7 @@ table 149001 "BCPT Line"
 
             trigger OnValidate()
             begin
-                If "Max. User Delay (ms)" < "Min. User Delay (ms)" then
+                if "Max. User Delay (ms)" < "Min. User Delay (ms)" then
                     "Max. User Delay (ms)" := "Min. User Delay (ms)";
             end;
         }
@@ -133,7 +138,7 @@ table 149001 "BCPT Line"
             Caption = 'No. of Iterations';
             Editable = false;
             FieldClass = FlowField;
-            CalcFormula = Count("BCPT Log Entry" where("BCPT Code" = field("BCPT Code"), "BCPT Line No." = field("Line No."), Version = field("Version Filter"), Operation = const('Scenario')));
+            CalcFormula = count("BCPT Log Entry" where("BCPT Code" = field("BCPT Code"), "BCPT Line No." = field("Line No."), Version = field("Version Filter"), Operation = const('Scenario')));
         }
 #pragma warning disable AA0232
         field(16; "Total Duration (ms)"; Integer)
@@ -142,14 +147,16 @@ table 149001 "BCPT Line"
             Caption = 'Total Duration (ms)';
             Editable = false;
             FieldClass = FlowField;
-            CalcFormula = Sum("BCPT Log Entry"."Duration (ms)" where("BCPT Code" = field("BCPT Code"), "BCPT Line No." = field("Line No."), Version = field("Version Filter"), Operation = const('Scenario')));
+            CalcFormula = sum("BCPT Log Entry"."Duration (ms)" where("BCPT Code" = field("BCPT Code"), "BCPT Line No." = field("Line No."), Version = field("Version Filter"), Operation = const('Scenario')));
         }
+#pragma warning disable AA0232
         field(17; "No. of SQL Statements"; Integer)
+#pragma warning restore AA0232
         {
             Caption = 'No. of SQL Statements';
             Editable = false;
             FieldClass = FlowField;
-            CalcFormula = Sum("BCPT Log Entry"."No. of SQL Statements" where("BCPT Code" = field("BCPT Code"), "BCPT Line No." = field("Line No."), Version = field("Version Filter"), Operation = const('Scenario')));
+            CalcFormula = sum("BCPT Log Entry"."No. of SQL Statements" where("BCPT Code" = field("BCPT Code"), "BCPT Line No." = field("Line No."), Version = field("Version Filter"), Operation = const('Scenario')));
         }
         field(18; "Run in Foreground"; Boolean)
         {
@@ -216,21 +223,21 @@ table 149001 "BCPT Line"
             Caption = 'No. of Iterations - Base';
             Editable = false;
             FieldClass = FlowField;
-            CalcFormula = Count("BCPT Log Entry" where("BCPT Code" = field("BCPT Code"), "BCPT Line No." = field("Line No."), Version = field("Base Version Filter"), Operation = const('Scenario')));
+            CalcFormula = count("BCPT Log Entry" where("BCPT Code" = field("BCPT Code"), "BCPT Line No." = field("Line No."), Version = field("Base Version Filter"), Operation = const('Scenario')));
         }
         field(27; "Total Duration - Base (ms)"; Integer)
         {
             Caption = 'Total Duration - Base (ms)';
             Editable = false;
             FieldClass = FlowField;
-            CalcFormula = Sum("BCPT Log Entry"."Duration (ms)" where("BCPT Code" = field("BCPT Code"), "BCPT Line No." = field("Line No."), Version = field("Base Version Filter"), Operation = const('Scenario')));
+            CalcFormula = sum("BCPT Log Entry"."Duration (ms)" where("BCPT Code" = field("BCPT Code"), "BCPT Line No." = field("Line No."), Version = field("Base Version Filter"), Operation = const('Scenario')));
         }
         field(28; "No. of SQL Statements - Base"; Integer)
         {
             Caption = 'No. of SQL Statements - Base';
             Editable = false;
             FieldClass = FlowField;
-            CalcFormula = Sum("BCPT Log Entry"."No. of SQL Statements" where("BCPT Code" = field("BCPT Code"), "BCPT Line No." = field("Line No."), Version = field("Base Version Filter"), Operation = const('Scenario')));
+            CalcFormula = sum("BCPT Log Entry"."No. of SQL Statements" where("BCPT Code" = field("BCPT Code"), "BCPT Line No." = field("Line No."), Version = field("Base Version Filter"), Operation = const('Scenario')));
         }
 #pragma warning disable AS0080
         field(29; "Company Name"; Code[30])

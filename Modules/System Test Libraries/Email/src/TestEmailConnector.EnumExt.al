@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Email;
+
+using System.Email;
+
 enumextension 134684 "Test Email Connector" extends "Email Connector"
 {
     value(134684; "Test Email Connector")

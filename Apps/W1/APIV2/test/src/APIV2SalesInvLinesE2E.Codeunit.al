@@ -844,6 +844,7 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         Item: Record "Item";
         SalesLine: Record "Sales Line";
         DiscountAmount: Decimal;
+        InvDiscAmount: Decimal;
         TargetURL: Text;
         InvoiceLineJSON: Text;
         ResponseText: Text;
@@ -861,6 +862,7 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         Commit();
 
         FindFirstSalesLine(SalesHeader, SalesLine);
+        InvDiscAmount := SalesLine."Inv. Discount Amount";
 
         // [WHEN] we PATCH the line
         TargetURL := LibraryGraphMgt
@@ -874,7 +876,7 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
         // [THEN] Invoice discount is kept
         Assert.AreNotEqual('', ResponseText, 'Response JSON should not be blank');
         LibraryGraphMgt.VerifyIDFieldInJson(ResponseText, 'itemId');
-        VerifyTotals(SalesHeader, DiscountAmount, SalesHeader."Invoice Discount Calculation"::Amount);
+        VerifyTotals(SalesHeader, DiscountAmount - InvDiscAmount, SalesHeader."Invoice Discount Calculation"::Amount);
     end;
 
     [Test]

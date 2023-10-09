@@ -54,6 +54,7 @@ codeunit 31269 "Compensation - Post CZC"
                 GenJournalLine."Dimension Set ID" := CompensationLineCZC."Dimension Set ID";
                 GenJournalLine."Shortcut Dimension 1 Code" := CompensationLineCZC."Shortcut Dimension 1 Code";
                 GenJournalLine."Shortcut Dimension 2 Code" := CompensationLineCZC."Shortcut Dimension 2 Code";
+                GenJournalLine."Variable Symbol CZL" := CompensationLineCZC."Variable Symbol";
 
                 CompensationManagementCZC.SetAppliesToID(CompensationLineCZC, Rec."No.");
 

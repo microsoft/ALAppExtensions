@@ -1,4 +1,9 @@
 #if not CLEAN22
+namespace Microsoft.API.V2;
+
+using System.Environment;
+using System.Security.AccessControl;
+
 page 30003 "APIV2 - Aut. User Groups"
 {
     APIGroup = 'automation';
@@ -23,24 +28,24 @@ page 30003 "APIV2 - Aut. User Groups"
         {
             repeater(Group)
             {
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'Id';
                     Editable = false;
                 }
-                field("code"; Code)
+                field("code"; Rec.Code)
                 {
                     Caption = 'Code';
                 }
-                field(displayName; Name)
+                field(displayName; Rec.Name)
                 {
                     Caption = 'Display Name';
                 }
-                field(defaultProfileID; "Default Profile ID")
+                field(defaultProfileID; Rec."Default Profile ID")
                 {
                     Caption = 'Default Profile Id';
                 }
-                field(assignToAllNewUsers; "Assign to All New Users")
+                field(assignToAllNewUsers; Rec."Assign to All New Users")
                 {
                     Caption = 'Assign To All New Users';
                 }

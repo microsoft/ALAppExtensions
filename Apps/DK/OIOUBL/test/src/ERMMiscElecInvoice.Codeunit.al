@@ -21,6 +21,7 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         LibraryService: Codeunit "Library - Service";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryRandom: Codeunit "Library - Random";
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibraryXMLReadOnServer: Codeunit "Library - XML Read OnServer";
         OIOUBLNewFileMock: Codeunit "OIOUBL-File Events Mock";
         PayeeFinAccCapTxt: Label 'cac:PayeeFinancialAccount';
@@ -508,6 +509,41 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
 
     [Test]
     [HandlerFunctions('MessageHandler')]
+    procedure ElectronicFinChargeMemoWithoutAdditionalFee();
+    var
+        SalesHeader: Record "Sales Header";
+        FinanceChargeMemoHeader: Record "Finance Charge Memo Header";
+        FinanceChargeMemoLine: Record "Finance Charge Memo Line";
+        IssuedFinChargeMemoNo: Code[20];
+        FinChargeMemoNo: Code[20];
+    begin
+        // [SCENARIO 467348] Electronic fin.charge memo is created successfully if no additional fee line in the issued fin.charge memo.
+        Initialize();
+
+        // [GIVEN] Issued fin.charge memo has only 'Customer Ledger Entry' line without additional fee.
+        CreateSalesDocument(SalesHeader, CreateCustomer(''), SalesHeader."Document Type"::Invoice, false, 0);
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        // [GIVEN] Amount = 1000 in 'Customer Ledger Entry' fin.charge memo line
+        FinChargeMemoNo := CreateFinanceChargeMemo(SalesHeader."Sell-to Customer No.");
+        FinanceChargeMemoLine.SetRange("Finance Charge Memo No.", FinChargeMemoNo);
+        FinanceChargeMemoLine.SetFilter(Type, '<>%1', FinanceChargeMemoLine.Type::"Customer Ledger Entry");
+        FinanceChargeMemoLine.DeleteAll();
+        FinanceChargeMemoLine.SetRange(Type);
+        FinanceChargeMemoLine.FindFirst();
+        FinanceChargeMemoHeader.Get(FinChargeMemoNo);
+        IssueFinanceChargeMemo(FinanceChargeMemoHeader."No.");
+
+        // [WHEN] Create electronic fin.charge memo
+        IssuedFinChargeMemoNo := CreateElectronicFinanceChargeMemoDocument(FinChargeMemoNo);
+
+        // [THEN] Electronic fin.charge memo is created
+        // [THEN] 'cac:ReminderLine' has 'cbc:DebitLineAmount' = 1000
+        VerifyElectronicDocumentData(IssuedFinChargeMemoNo, SalesHeader."Document Date");
+        LibraryXMLReadOnServer.VerifyNodeValueInSubtree('cac:ReminderLine', 'cbc:DebitLineAmount', FinanceChargeMemoLine.Amount);
+    end;
+
+    [Test]
+    [HandlerFunctions('MessageHandler')]
     procedure ElectronicReminderWithoutContactShouldFailIssue();
     var
         SalesHeader: Record "Sales Header";
@@ -555,6 +591,82 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
 
         // Verify: Verify ID and Issue Date for Create Electronic Reminder Report.
         VerifyElectronicDocumentData(IssuedReminderNo, SalesHeader."Document Date");
+    end;
+
+    [Test]
+    [HandlerFunctions('MessageHandler')]
+    procedure ElectronicReminderWithoutAdditionalFee();
+    var
+        SalesHeader: Record "Sales Header";
+        ReminderHeader: Record "Reminder Header";
+        ReminderLine: Record "Reminder Line";
+        ReminderNo: Code[20];
+        IssuedReminderNo: Code[20];
+    begin
+        // [SCENARIO 467348] Electronic reminder is created successfully if no additional fee line in the issued reminder.
+        Initialize();
+
+        // [GIVEN] Issued reminder has only 'Customer Ledger Entry' line without additional fee.
+        CreateSalesDocument(SalesHeader, CreateCustomer(''), SalesHeader."Document Type"::Invoice, false, 0);
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        // [GIVEN] Amount = 1000 in 'Customer Ledger Entry' reminder line
+        ReminderNo := CreateReminder(SalesHeader."Sell-to Customer No.");
+        ReminderLine.SetRange("Reminder No.", ReminderNo);
+        ReminderLine.SetFilter(Type, '<>%1', ReminderLine.Type::"Customer Ledger Entry");
+        ReminderLine.DeleteAll();
+        ReminderLine.SetRange(Type);
+        ReminderLine.FindFirst();
+        ReminderLine.Validate(Amount, LibraryRandom.RandIntInRange(1000, 2000));
+        ReminderLine.Modify(true);
+        ReminderHeader.Get(ReminderNo);
+        IssueReminder(ReminderHeader);
+
+        // [WHEN] Create electronic reminder
+        IssuedReminderNo := CreateElectronicReminderDocument(ReminderNo);
+
+        // [THEN] Electronic reminder is created
+        // [THEN] 'cac:ReminderLine' has 'cbc:DebitLineAmount' = 1000
+        VerifyElectronicDocumentData(IssuedReminderNo, SalesHeader."Document Date");
+        LibraryXMLReadOnServer.VerifyNodeValueInSubtree('cac:ReminderLine', 'cbc:DebitLineAmount', ReminderLine.Amount);
+        // [THEN] No conformation message when issueing the reminder
+    end;
+
+
+    [Test]
+    [HandlerFunctions('ConfirmTextHandler,MessageHandler')]
+    procedure ElectronicReminderWithoutAdditionalFeeAndBlankGLAccLine();
+    var
+        SalesHeader: Record "Sales Header";
+        ReminderHeader: Record "Reminder Header";
+        ReminderLine: Record "Reminder Line";
+        ReminderNo: Code[20];
+        IssuedReminderNo: Code[20];
+    begin
+        // [SCENARIO 467348] Confirmation message appeared when issuing reminder having line with blank 'No.', only valid line is exported.
+        Initialize();
+
+        // [GIVEN] Issued reminder has 'Customer Ledger Entry' line with Amount = 1000
+        // [GIVEN] 'No.' is blank in 'G/L Account' reminder line
+        CreateSalesDocument(SalesHeader, CreateCustomer(''), SalesHeader."Document Type"::Invoice, false, 0);
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        ReminderNo := CreateReminder(SalesHeader."Sell-to Customer No.");
+        UpdateReminderHaveCLELine(ReminderLine, ReminderNo);
+        UpdateReminderAddGLAccLine(ReminderNo);
+        ReminderHeader.Get(ReminderNo);
+        IssueReminder(ReminderHeader);
+
+        // [WHEN] Create electronic reminder
+        IssuedReminderNo := CreateElectronicReminderDocument(ReminderNo);
+
+        // [THEN] Electronic reminder is created
+        // [THEN] 'cac:ReminderLine' has 'cbc:DebitLineAmount' = 1000
+        VerifyElectronicDocumentData(IssuedReminderNo, SalesHeader."Document Date");
+        LibraryXMLReadOnServer.VerifyNodeValueInSubtree('cac:ReminderLine', 'cbc:DebitLineAmount', ReminderLine.Amount);
+
+        // [THEN] Confirmation message appeared about reminder contains line with blank 'No.'
+        Assert.ExpectedMessage(
+           'The Reminder %1 contains lines in which either the Type or the No. is empty', LibraryVariableStorage.DequeueText());
+        LibraryVariableStorage.AssertEmpty();
     end;
 
     [Test]
@@ -1622,6 +1734,29 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         GeneralLedgerSetup.MODIFY(true);
     end;
 
+    local procedure UpdateReminderHaveCLELine(var ReminderLine: Record "Reminder Line"; ReminderNo: Code[20]);
+    begin
+        ReminderLine.SetRange("Reminder No.", ReminderNo);
+        ReminderLine.SetFilter(Type, '<>%1', ReminderLine.Type::"Customer Ledger Entry");
+        ReminderLine.DeleteAll();
+        ReminderLine.SetRange(Type);
+        ReminderLine.FindFirst();
+        ReminderLine.Validate(Amount, LibraryRandom.RandIntInRange(1000, 2000));
+        ReminderLine.Modify(true);
+    end;
+
+    local procedure UpdateReminderAddGLAccLine(ReminderNo: Code[20]);
+    var
+        ReminderLine: Record "Reminder Line";
+    begin
+        ReminderLine.Init();
+        ReminderLine."Reminder No." := ReminderNo;
+        ReminderLine."Line No." := LibraryUtility.GetNewRecNo(ReminderLine, ReminderLine.FieldNo("Line No."));
+        ReminderLine.Validate(Type, ReminderLine.Type::"G/L Account");
+        ReminderLine.Validate(Description, LibraryUtility.GenerateGUID());
+        ReminderLine.Insert(true);
+    end;
+
     local procedure UpdateServiceMgtSetup();
     var
         ServiceMgtSetup: Record "Service Mgt. Setup";
@@ -1743,6 +1878,13 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
     procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean);
     begin
         Reply := true;
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmTextHandler(Question: Text[1024]; var Reply: Boolean);
+    begin
+        Reply := true;
+        LibraryVariableStorage.Enqueue(Question);
     end;
 
     local procedure RunReport(ReportID: Integer; No: Code[20]);

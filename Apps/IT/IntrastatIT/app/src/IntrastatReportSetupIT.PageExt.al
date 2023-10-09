@@ -1,3 +1,9 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+
 pageextension 148123 "Intrastat Report Setup IT" extends "Intrastat Report Setup"
 {
     layout
@@ -116,6 +122,18 @@ pageextension 148123 "Intrastat Report Setup IT" extends "Intrastat Report Setup
         modify("Zip Files")
         {
             Visible = false;
+        }
+        modify("Report Receipts")
+        {
+            Visible = false;
+            Editable = false;
+            Enabled = false;
+        }
+        modify("Report Shipments")
+        {
+            Visible = false;
+            Editable = false;
+            Enabled = false;
         }
     }
 }

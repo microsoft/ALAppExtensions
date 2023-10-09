@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Reporting;
+
+using Microsoft.Utilities;
+using System.Integration;
+using System.Security.AccessControl;
+using System.Security.Authentication;
+using System.Utilities;
+
 codeunit 10687 "Elec. VAT Connection Mgt."
 {
     trigger OnRun()
@@ -243,7 +255,11 @@ codeunit 10687 "Elec. VAT Connection Mgt."
         ElecVATLoggingMgt.LogValidationRun();
         TempVATStatementReportLine := VATStatementReportLine;
         TempVATStatementReportLine.Insert();
+#if CLEAN23
+        Request := ElecVATCreateContent.CreateVATReportLinesNodeContent(TempVATStatementReportLine);
+#else
         Request := ElecVATCreateContent.CreateVATReportLinesContent(TempVATStatementReportLine);
+#endif
         ElecVATLoggingMgt.AttachXmlSubmissionTextToVATRepHeader(Request, VATReportHeader, 'mvakode-' + VATStatementReportLine."Box No.");
         Commit();
         InvokePostRequestWithAccessTokenCheck(Response, ElecVATSetup."Validate VAT Return Url", GetXmlContentType(), Request, ValidateVATReturnTxt, ValidateReturnErr);

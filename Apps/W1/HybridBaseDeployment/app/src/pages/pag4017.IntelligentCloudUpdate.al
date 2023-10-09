@@ -1,3 +1,10 @@
+namespace Microsoft.DataMigration;
+
+using System.Environment;
+using System.Security.AccessControl;
+using System.Security.User;
+using System.Utilities;
+
 page 4017 "Intelligent Cloud Update"
 {
     Caption = 'Cloud Migration Update';
@@ -103,7 +110,7 @@ page 4017 "Intelligent Cloud Update"
     begin
         UpdateVisible := true;
         IsSuperAndSetupComplete := PermissionManager.IsIntelligentCloud() and UserPermissions.IsSuper(UserSecurityId());
-        IsOnPrem := NOT EnvironmentInformation.IsSaaS();
+        IsOnPrem := not EnvironmentInformation.IsSaaS();
 
         if not IsSuperAndSetupComplete then
             Error(RunUpdatePermissionErr);

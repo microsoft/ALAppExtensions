@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Email;
+
+using System.Email;
+using System.TestLibraries.Utilities;
+
 codeunit 134688 "Connector Mock"
 {
     Permissions = tabledata "Email Rate Limit" = rimd;

@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Word;
+
+using System.Globalization;
+using System.Telemetry;
+using System.Reflection;
+
 /// <summary>
 /// Wizard to create a Word template.
 /// </summary>
@@ -35,37 +41,10 @@ page 9995 "Word Template Creation Wizard"
                     Caption = 'Choose the source of the data for the template.';
                 }
 
-                field(AddNewEntity; AddNewEntityLbl)
+                part(WordTemplateTables; "Word Templates Tables Part")
                 {
                     ApplicationArea = All;
-                    ShowCaption = false;
-                    ToolTip = ' ';
-                    Editable = false;
-                    Visible = TableFilterExpression = '';
-
-                    trigger OnDrillDown()
-                    var
-                        WordTemplateImpl: Codeunit "Word Template Impl.";
-                        TableId: Integer;
-                    begin
-                        TableId := WordTemplateImpl.AddTable();
-                        if TableId <> 0 then begin
-                            Rec.Get(TableId);
-                            CurrPage.Update(false);
-                        end;
-                    end;
-                }
-
-                repeater(Tables)
-                {
-                    Editable = false;
-                    field(Name; Rec."Table Caption")
-                    {
-                        ApplicationArea = All;
-                        Caption = 'Name';
-                        ToolTip = 'Specifies the name of the data source from which the template will get data.';
-                        Editable = false;
-                    }
+                    Caption = 'Source Tables';
                 }
             }
 
@@ -192,7 +171,7 @@ page 9995 "Word Template Creation Wizard"
                         ApplicationArea = All;
                         Editable = false;
                         Caption = 'Uploaded file';
-                        ToolTip = 'The name of the file that was uploaded.';
+                        Tooltip = 'Specifies the name of the file that was uploaded.';
                     }
 
                     field(TemplateEntity; WordTemplate."Table Caption")
@@ -375,44 +354,7 @@ page 9995 "Word Template Creation Wizard"
 
                 trigger OnAction()
                 begin
-                    case Step of
-                        Step::Select:
-                            begin
-                                if Rec."Table ID" = 0 then
-                                    Error(MissingEntityErr);
-
-                                TableSetSkipped := false;
-                                WordTemplate."Table ID" := Rec."Table ID";
-                                CurrPage.RelatedTables.Page.SetTableNo(WordTemplate."Table ID");
-                                Step := Step::SelectRelated;
-                            end;
-                        Step::SelectRelated:
-                            begin
-                                CurrPage.RelatedTables.Page.VerifyNoSelectedFields();
-                                Step := Step::Download;
-                            end;
-                        Step::Download:
-                            begin
-                                WordTemplate.CalcFields("Table Caption");
-                                Step := Step::Upload;
-                            end;
-                        Step::Upload:
-                            begin
-                                if not TemplateUploaded then
-                                    Error(TemplateNotUploadedErr);
-
-                                SetDefaultWordTemplateLanguageCode();
-                                Step := Step::Details;
-                            end;
-                        Step::Details:
-                            begin
-                                if (WordTemplate.Code = '') or (WordTemplate.Name = '') or (WordTemplate."Language Code" = '') then
-                                    Error(MissingDetailsErr);
-
-                                Step := Step::Overview;
-                            end;
-                    end;
-                    UpdateEnabledStatus();
+                    NextAction();
                 end;
             }
 
@@ -487,7 +429,54 @@ page 9995 "Word Template Creation Wizard"
             Rec.SetFilter("Table ID", TableFilterExpression);
             Rec.Get(WordTemplate."Table ID");
             CurrPage.Update(false);
+            if OpenWithTableId then begin
+                CurrPage.WordTemplateTables.Page.SetRecord(Rec);
+                NextAction();
+            end;
         end;
+    end;
+
+    local procedure NextAction()
+    begin
+        case Step of
+            Step::Select:
+                begin
+                    CurrPage.WordTemplateTables.Page.GetRecord(Rec);
+                    if Rec."Table ID" = 0 then
+                        Error(MissingEntityErr);
+
+                    TableSetSkipped := false;
+                    WordTemplate."Table ID" := Rec."Table ID";
+                    CurrPage.RelatedTables.Page.SetTableNo(WordTemplate."Table ID");
+                    Step := Step::SelectRelated;
+                end;
+            Step::SelectRelated:
+                begin
+                    CurrPage.RelatedTables.Page.VerifyNoSelectedFields();
+                    Step := Step::Download;
+                end;
+            Step::Download:
+                begin
+                    WordTemplate.CalcFields("Table Caption");
+                    Step := Step::Upload;
+                end;
+            Step::Upload:
+                begin
+                    if not TemplateUploaded then
+                        Error(TemplateNotUploadedErr);
+
+                    SetDefaultWordTemplateLanguageCode();
+                    Step := Step::Details;
+                end;
+            Step::Details:
+                begin
+                    if (WordTemplate.Code = '') or (WordTemplate.Name = '') or (WordTemplate."Language Code" = '') then
+                        Error(MissingDetailsErr);
+
+                    Step := Step::Overview;
+                end;
+        end;
+        UpdateEnabledStatus();
     end;
 
     local procedure UpdateEnabledStatus()
@@ -524,6 +513,7 @@ page 9995 "Word Template Creation Wizard"
     var
         TableNos: List of [Integer];
     begin
+        OpenWithTableId := true;
         CurrPage.RelatedTables.Page.SetTableNo(Value);
         TableNos.Add(Value);
         SetMultipleTableNo(TableNos, Value);
@@ -537,6 +527,11 @@ page 9995 "Word Template Creation Wizard"
     procedure SetUnrelatedTable(UnrelatedTableID: Integer; RecordSystemId: Guid; RelatedCode: Code[5])
     begin
         CurrPage.RelatedTables.Page.SetUnrelatedTable(WordTemplate."Table ID", UnrelatedTableID, RecordSystemId, RelatedCode);
+    end;
+
+    procedure SetFieldsToBeIncluded(TableId: Integer; IncludeFields: List of [Text[30]])
+    begin
+        CurrPage.RelatedTables.Page.SetFieldsToBeIncluded(TableId, IncludeFields);
     end;
 
     local procedure SetDefaultWordTemplateLanguageCode()
@@ -559,10 +554,10 @@ page 9995 "Word Template Creation Wizard"
 
     var
         WordTemplate: Record "Word Template";
+        OpenWithTableId: Boolean;
         UploadedFileName, TableFilterExpression : Text;
         TableSetExternally, TableSetSkipped : Boolean;
         TemplateUploaded: Boolean;
-        AddNewEntityLbl: Label 'Add new entity';
         DowloadTemplateLbl: Label 'Download a blank template.';
         UploadTemplateLbl: Label 'Upload the template';
         LearnMoreLbl: Label 'Learn more';

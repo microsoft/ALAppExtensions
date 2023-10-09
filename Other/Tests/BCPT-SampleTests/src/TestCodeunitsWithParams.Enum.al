@@ -20,4 +20,8 @@ enumextension 149100 "Test Codeunits with Params" extends "BCPT Test Param. Enum
     {
         Implementation = "BCPT Test Param. Provider" = "BCPT Purch. Post with N Lines";
     }
+    value(149122; "149122")
+    {
+        Implementation = "BCPT Test Param. Provider" = "BCPT Post Purch. Inv.";
+    }
 }

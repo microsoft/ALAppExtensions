@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestTools.TestRunner;
+
+using System.Reflection;
+
 codeunit 130456 "Test Suite Mgt."
 {
     Permissions = TableData "AL Test Suite" = rimd, TableData "Test Method Line" = rimd;
@@ -545,7 +549,7 @@ codeunit 130456 "Test Suite Mgt."
 
         TestMethodLine.SETRANGE("Line Type", TestMethodLine."Line Type"::"Function");
         TestMethodLine.SETRANGE("Test Codeunit", BackupTestMethodLine."Test Codeunit");
-        TestMethodLine.MODIFYALL(Run, BackupTestMethodLine.Run, TRUE);
+        TestMethodLine.MODIFYALL(Run, BackupTestMethodLine.Run, true);
 
         TestMethodLine.Copy(BackupTestMethodLine);
     end;

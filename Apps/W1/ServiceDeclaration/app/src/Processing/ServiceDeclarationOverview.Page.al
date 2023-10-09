@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.Reports;
+
+using System.IO;
+
 page 5025 "Service Declaration Overview"
 {
     Editable = false;
@@ -54,14 +62,19 @@ page 5025 "Service Declaration Overview"
         TempDataExchFlowFieldGrBuff: Record "Data Exch. FlowField Gr. Buff." temporary;
         ExportMapping: Codeunit "Export Mapping";
         RecRef: RecordRef;
+        IsHandled: Boolean;
     begin
         ServiceDeclarationLine.SetRange("Service Declaration No.", ServiceDeclarationHeader."No.");
         if ServiceDeclarationLine.IsEmpty() then
             exit;
 
-        ServiceDeclarationSetup.Get();
-        ServiceDeclarationSetup.TestField("Data Exch. Def. Code");
-        DataExchDef.Get(ServiceDeclarationSetup."Data Exch. Def. Code");
+        OnBeforeGetDataExchDefinition(ServiceDeclarationHeader, DataExchDef, IsHandled);
+        if not IsHandled then begin
+            ServiceDeclarationSetup.Get();
+            ServiceDeclarationSetup.TestField("Data Exch. Def. Code");
+            DataExchDef.Get(ServiceDeclarationSetup."Data Exch. Def. Code");
+        end;
+
         DataExchMapping.SetRange("Data Exch. Def Code", DataExchDef.Code);
         DataExchMapping.SetRange("Table ID", Database::"Service Declaration Line");
         DataExchMapping.FindFirst();
@@ -75,5 +88,9 @@ page 5025 "Service Declaration Overview"
             Rec.Insert();
         until RecRef.Next() = 0;
     end;
-}
 
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetDataExchDefinition(var ServiceDeclarationHeader: Record "Service Declaration Header"; var DataExchDef: Record "Data Exch. Def"; var IsHandled: Boolean);
+    begin
+    end;
+}

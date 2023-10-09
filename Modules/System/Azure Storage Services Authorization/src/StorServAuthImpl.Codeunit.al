@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Storage;
+
 codeunit 9063 "Stor. Serv. Auth. Impl."
 {
     Access = Internal;
@@ -48,6 +50,16 @@ codeunit 9063 "Stor. Serv. Auth. Impl."
         StorServAuthSharedKey.SetApiVersion(ApiVersion);
 
         exit(StorServAuthSharedKey);
+    end;
+
+    [NonDebuggable]
+    procedure ReadySAS(SASToken: Text): Interface "Storage Service Authorization"
+    var
+        StorServAuthReadySAS: Codeunit "Stor. Serv. Auth. Ready SAS";
+    begin
+        StorServAuthReadySAS.SetSharedAccessSignature(SASToken);
+
+        exit(StorServAuthReadySAS);
     end;
 
     procedure GetDefaultAPIVersion(): Enum "Storage Service API Version"

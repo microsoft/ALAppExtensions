@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DataAdministration;
+
+using System.Reflection;
+using System.Environment.Configuration;
+
 codeunit 3903 "Retention Policy Setup Impl."
 {
     Access = Internal;
@@ -110,7 +115,7 @@ codeunit 3903 "Retention Policy Setup Impl."
         AllowedTablesFilter := RetenPolAllowedTables.GetAllowedTables();
         AllObjWithCaption.FilterGroup := 2;
         AllObjWithCaption.SetRange("Object Type", AllObjWithCaption."Object Type"::Table);
-        If AllowedTablesFilter <> '' then
+        if AllowedTablesFilter <> '' then
             AllObjWithCaption.SetFilter("Object ID", AllowedTablesFilter)
         else
             AllObjWithCaption.SetRange("Object ID", 0); // show empty list
@@ -387,7 +392,7 @@ codeunit 3903 "Retention Policy Setup Impl."
         if RetentionPeriod.Get(RetentionPeriodCode) then begin
             // ensure a unique code
             RetentionPeriodCode := CopyStr(format(RetentionPeriodEnum), 1, MaxStrLen(RetentionPeriodCode) - 2) + '01';
-            While RetentionPeriod.Get(RetentionPeriodCode) do
+            while RetentionPeriod.Get(RetentionPeriodCode) do
                 RetentionPeriodCode := IncStr(RetentionPeriodCode);
         end;
     end;

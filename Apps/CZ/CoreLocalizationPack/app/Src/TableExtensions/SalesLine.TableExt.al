@@ -11,6 +11,15 @@ tableextension 11755 "Sales Line CZL" extends "Sales Line"
         {
             Caption = 'Physical Transfer';
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
+#if not CLEAN22
 
             trigger OnValidate()
             begin
@@ -20,6 +29,7 @@ tableextension 11755 "Sales Line CZL" extends "Sales Line"
                         FieldError("Document Type");
                 end;
             end;
+#endif
         }
         field(31065; "Tariff No. CZL"; Code[20])
         {
@@ -44,25 +54,45 @@ tableextension 11755 "Sales Line CZL" extends "Sales Line"
                     if "Job Contract Entry No." = 0 then
                         Validate("Unit of Measure Code", TariffNumber."VAT Stat. UoM Code CZL");
                 end;
-
+#if not CLEAN22
+#pragma warning disable AL0432
                 if "Tariff No. CZL" <> xRec."Tariff No. CZL" then
                     "Statistic Indication CZL" := '';
+#pragma warning restore AL0432
+#endif
             end;
         }
         field(31066; "Statistic Indication CZL"; Code[10])
         {
             Caption = 'Statistic Indication';
-            TableRelation = "Statistic Indication CZL".Code where("Tariff No." = field("Tariff No. CZL"));
             DataClassification = CustomerContent;
+#if not CLEAN22
+            TableRelation = "Statistic Indication CZL".Code where("Tariff No." = field("Tariff No. CZL"));
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31067; "Country/Reg. of Orig. Code CZL"; Code[10])
         {
             Caption = 'Country/Region of Origin Code';
             TableRelation = "Country/Region";
             DataClassification = CustomerContent;
+#if not CLEAN22
+            ObsoleteState = Pending;
+            ObsoleteTag = '22.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '25.0';
+#endif
+            ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
     }
-
+#if not CLEAN22
+    [Obsolete('Intrastat related functionalities are moved to Intrastat extensions.', '22.0')]
     procedure CheckIntrastatMandatoryFieldsCZL(SalesHeader: Record "Sales Header")
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
@@ -81,4 +111,5 @@ tableextension 11755 "Sales Line CZL" extends "Sales Line"
         if StatutoryReportingSetupCZL."Net Weight Mandatory" and IsInventoriableItem() then
             TestField("Net Weight");
     end;
+#endif
 }

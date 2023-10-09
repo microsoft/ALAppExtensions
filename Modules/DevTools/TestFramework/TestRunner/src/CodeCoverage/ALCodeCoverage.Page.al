@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace System.TestTools.CodeCoverage;
+
+using System.Tooling;
+
 page 130460 "AL Code Coverage"
 {
     ApplicationArea = All;
@@ -149,7 +158,7 @@ page 130460 "AL Code Coverage"
             {
                 ApplicationArea = All;
                 Caption = 'Start';
-                Enabled = NOT CodeCoverageRunning;
+                Enabled = not CodeCoverageRunning;
                 Image = Start;
                 Promoted = true;
                 PromotedCategory = Process;
@@ -269,10 +278,8 @@ page 130460 "AL Code Coverage"
         LinesHit: Integer;
         LinesNotHit: Integer;
         Indent: Integer;
-        [InDataSet]
         CodeCoverageRunning: Boolean;
         CodeLine: Text[1024];
-        [InDataSet]
         NoofLines: Integer;
         CoveragePercent: Decimal;
         TotalNoofLines: Integer;

@@ -3,6 +3,19 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Visualization;
+
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Receivables;
+using Microsoft.Sales.History;
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Inventory.Item;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Sales.Customer;
+using Microsoft.Finance.Currency;
+using System.Reflection;
+using Microsoft.Finance.GeneralLedger.Setup;
+
 codeunit 1437 "Essential Bus. Headline Mgt."
 {
     var
@@ -21,7 +34,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         OverdueVATReturnPeriodTxt: Label 'Your VAT return is overdue since %1 (%2 days)', Comment = '%1 - date; %2 - days count';
         OpenVATReturnPeriodTxt: Label 'Your VAT return is due %1 (in %2 days)', Comment = '%1 - date; %2 - days count';
         RecentlyOverdueInvoicesPayloadTxt: Label 'Overdue invoices up by %1. You can collect %2', Comment = '%1 is the number of recently overdue invoices, %2 is the total amount of the recently overdue invoices', MaxLength = 60; // support up to 3-digit number of overdue invoices and currencies up to 12 chars: '1,234,567 kr'
-        NoDaysAgoFilterTxt: Label '<-%1D>', Comment = '%1 = Number of days';
+        NoDaysAgoFilterTxt: Label '<-%1D>', Locked = true;
 
     local procedure ChooseQualifier(QualifierWeek: Text; QualifierMonth: Text; Qualifier3Months: Text; DaysSearch: Integer): Text
     begin

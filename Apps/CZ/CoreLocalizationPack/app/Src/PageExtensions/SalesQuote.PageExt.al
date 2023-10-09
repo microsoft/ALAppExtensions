@@ -2,11 +2,6 @@ pageextension 11726 "Sales Quote CZL" extends "Sales Quote"
 {
     layout
     {
-#if not CLEAN20
-#pragma warning disable AL0432
-        movelast(General; "Posting Description")
-#pragma warning restore AL0432
-#else
         addlast(General)
         {
             field("Posting Description CZL"; Rec."Posting Description")
@@ -15,7 +10,6 @@ pageextension 11726 "Sales Quote CZL" extends "Sales Quote"
                 ToolTip = 'Specifies a description of the document. The posting description also appers on customer and G/L entries.';
             }
         }
-#endif
         addbefore("Location Code")
         {
             field("Reason Code CZL"; Rec."Reason Code")
@@ -66,11 +60,17 @@ pageextension 11726 "Sales Quote CZL" extends "Sales Quote"
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
             }
+#if not CLEAN22
             field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Exclude (Obsolete)';
                 ToolTip = 'Specifies that entry will be excluded from intrastat.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '22.0';
+                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
             }
+#endif
         }
         addafter("Foreign Trade")
         {

@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
 /// <summary>
 /// Provides functionality to create and send emails.
 /// </summary>
@@ -297,20 +299,6 @@ codeunit 8901 "Email"
 
     #endregion
 
-#if not CLEAN19
-    ///<summary>
-    /// Gets the sent emails related to a record.
-    ///</summary>
-    ///<param name="TableId">The table ID of the record.</param>
-    ///<param name="SystemId">The system ID of the record.</param>
-    ///<returns>The sent email related to a record.</returns>
-    [Obsolete('Use GetSentEmailsForRecord(TableId: Integer; SystemId: Guid; var ResultEmailOutbox: Record "Email Outbox" temporary) instead.', '19.0')]
-    procedure GetSentEmailsForRecord(TableId: Integer; SystemId: Guid) ResultSentEmails: Record "Sent Email" temporary;
-    begin
-        EmailImpl.GetSentEmailsForRecord(TableId, SystemId, ResultSentEmails);
-    end;
-#endif
-
     ///<summary>
     /// Gets the sent emails related to a record.
     ///</summary>
@@ -371,21 +359,6 @@ codeunit 8901 "Email"
         exit(EmailImpl.GetOutboxEmailRecordStatus(MessageId));
     end;
 
-#if not CLEAN20
-    ///<summary>
-    /// Adds a relation between an email message and a record.
-    ///</summary>
-    ///<param name="EmailMessage">The email message for which to create the relation.</param>
-    ///<param name="TableId">The table ID of the record.</param>
-    ///<param name="SystemId">The system ID of the record.</param>
-    ///<param name="RelationType">The relation type to set.</param>
-    [Obsolete('Use "AddRelation(EmailMessage: Codeunit "Email Message"; TableId: Integer; SystemId: Guid; RelationType: Enum "Email Relation Type")" with origin', '20.0')]
-    procedure AddRelation(EmailMessage: Codeunit "Email Message"; TableId: Integer; SystemId: Guid; RelationType: Enum "Email Relation Type")
-    begin
-        EmailImpl.AddRelation(EmailMessage, TableId, SystemId, RelationType, Enum::"Email Relation Origin"::"Compose Context");
-    end;
-#endif
-
     ///<summary>
     /// Adds a relation between an email message and a record.
     ///</summary>
@@ -420,20 +393,17 @@ codeunit 8901 "Email"
         exit(EmailImpl.HasSourceRecord(EmailMessage.GetId()));
     end;
 
-    #region Events
-
-#if not CLEAN17
     /// <summary>
-    /// Integration event to override the default email body for test messages.
+    /// Adds the default attachments of a scenario to the email message.
     /// </summary>
-    /// <param name="Connector">The connector used to send the email message.</param>
-    /// <param name="Body">Out param to set the email body to a new value.</param>
-    [Obsolete('The event will be removed. Subscribe to OnGetBodyForTestEmail instead', '17.3')]
-    [IntegrationEvent(false, false)]
-    procedure OnGetTestEmailBody(Connector: Enum "Email Connector"; var Body: Text)
+    /// <param name="EmailMessage">The email message for which to add the attachments.</param>
+    /// <param name="EmailScenario">Includes the default attachments from this scenario.</param>
+    procedure AddDefaultAttachments(EmailMessage: Codeunit "Email Message"; EmailScenario: Enum "Email Scenario")
     begin
+        EmailImpl.AddDefaultAttachments(EmailMessage, EmailScenario);
     end;
-#endif
+
+    #region Events
 
     /// <summary>
     /// Integration event to show an email source record.
@@ -480,19 +450,6 @@ codeunit 8901 "Email"
     internal procedure OnGetBodyForTestEmail(Connector: Enum "Email Connector"; AccountId: Guid; var Body: Text)
     begin
     end;
-
-#if not CLEAN20
-    /// <summary>
-    /// Integration event that notifies senders about whether their email was successfully sent in the background.
-    /// </summary>
-    /// <param name="MessageId">The ID of the email in the queue.</param>
-    /// <param name="Status">True if the message was successfully sent.</param>
-    [IntegrationEvent(false, false)]
-    [Obsolete('This event has been replaced with OnAfterEmailSend and OnAfterEmailSendFailed which are isolated.', '20.1')]
-    internal procedure OnAfterSendEmail(MessageId: Guid; Status: Boolean)
-    begin
-    end;
-#endif
 
     /// <summary>
     /// Integration event to get the names and IDs of attachments related to a source record. 
@@ -559,6 +516,15 @@ codeunit 8901 "Email"
     /// <param name="EmailMessage">Email message codeunit which is linked to the current email.</param>
     [IntegrationEvent(false, false)]
     internal procedure OnBeforeSendEmail(var EmailMessage: Codeunit "Email Message")
+    begin
+    end;
+
+    /// <summary>
+    /// Integration event that allows adding filters to the Email Scenario Attachments before they are retrieved.
+    /// </summary>
+    /// <param name="EmailScenarioAttachments">The record to add filters to.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnBeforeGetEmailAttachmentsByEmailScenarios(EmailScenarioAttachments: Record "Email Scenario Attachments")
     begin
     end;
 

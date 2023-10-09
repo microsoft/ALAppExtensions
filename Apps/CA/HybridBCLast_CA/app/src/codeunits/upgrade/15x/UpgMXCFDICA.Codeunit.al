@@ -1,3 +1,4 @@
+#if not CLEAN17
 codeunit 10039 "Upg. MX CFDI CA"
 {
     ObsoleteState = Pending;
@@ -46,3 +47,4 @@ codeunit 10039 "Upg. MX CFDI CA"
     end;
 }
 
+#endif

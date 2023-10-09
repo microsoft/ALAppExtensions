@@ -323,7 +323,6 @@ page 31146 "EET Entry Card CZL"
 
     var
         SignatureCode: Text;
-        [InDataSet]
         StatusStyleExpr: Text;
 
     local procedure SetStatusStyle()

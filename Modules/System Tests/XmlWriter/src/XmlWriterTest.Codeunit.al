@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Xml;
+
+using System.Xml;
+using System.TestLibraries.Utilities;
+
 codeunit 139911 "Xml Writer Test"
 {
     Subtype = Test;
@@ -188,7 +193,7 @@ codeunit 139911 "Xml Writer Test"
 
     local procedure GetXmlText(): Text;
     begin
-        Exit('<?xml version="1.0" encoding="utf-16"?><export><meta type="test"><tableno>5200</tableno></meta>' +
+        exit('<?xml version="1.0" encoding="utf-16"?><export><meta type="test"><tableno>5200</tableno></meta>' +
         '<employees><employee no="123" name="Angela"><details><company>Mercash</company><city>Hoorn</city><occupation>Software Developer</occupation></details></employee></employees>' +
         '<!--This is an awesome module--></export>')
     end;

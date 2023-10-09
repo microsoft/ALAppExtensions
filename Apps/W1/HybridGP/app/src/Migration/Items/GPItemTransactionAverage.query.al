@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 query 4098 "GP Item Transaction Average"
 {
     QueryType = Normal;

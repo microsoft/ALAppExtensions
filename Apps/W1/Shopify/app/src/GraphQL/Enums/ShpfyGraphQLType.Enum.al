@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Enum Shpfy GraphQL Type (ID 70007617).
 /// </summary>
@@ -200,10 +202,10 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
         Caption = 'Close Order';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL CloseOrder";
     }
-    value(38; CreateImageUploadUrl)
+    value(38; CreateUploadUrl)
     {
-        Caption = 'Create Image Upload URL';
-        Implementation = "Shpfy IGraphQL" = "Shpfy GQL CreateImageUploadUrl";
+        Caption = 'Create Upload URL';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL CreateUploadUrl";
     }
     value(39; AddProductImage)
     {
@@ -259,5 +261,55 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
     {
         Caption = 'Get Next Fulfillment Orders From Order';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextFFOrdersFromOrd";
+    }
+    value(50; NextOrderReturns)
+    {
+        Caption = 'Next Order Returns';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextOrderReturns";
+    }
+    value(51; GetReturnHeader)
+    {
+        Caption = 'Get Return Header';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL ReturnHeader";
+    }
+    value(52; GetReturnLines)
+    {
+        Caption = 'Get Return Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL ReturnLines";
+    }
+    value(53; GetNextReturnLines)
+    {
+        Caption = 'Get Next Return Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextReturnLines";
+    }
+    value(54; GetRefundHeader)
+    {
+        Caption = 'Get Refund Header';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL RefundHeader";
+    }
+    value(55; GetRefundLines)
+    {
+        Caption = 'Get Refund Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL RefundLines";
+    }
+    value(56; GetNextRefundLines)
+    {
+        Caption = 'Get Next Refund Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextRefundLines";
+    }
+    value(57; GetCurrentBulkOperation)
+    {
+        Caption = 'Get Current Bulk Operation';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL BulkOperations";
+    }
+    value(58; RunBulkOperationMutation)
+    {
+        Caption = 'Run Bulk Operation Mutation';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL BulkOpMutation";
+    }
+    value(59; GetBulkOperation)
+    {
+        Caption = 'Get Bulk Operation';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL BulkOperation";
     }
 }

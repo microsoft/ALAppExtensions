@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.DataAdministration;
+
+using System.DataAdministration;
+
 #pragma warning disable AA0235
 codeunit 138704 "Reten. Pol. Test Installer"
 #pragma warning restore AA0235

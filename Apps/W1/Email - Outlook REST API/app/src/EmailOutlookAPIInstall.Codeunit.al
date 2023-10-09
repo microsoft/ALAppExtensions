@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Environment;
+using System.Privacy;
+
 codeunit 4510 "Email - Outlook API Install"
 {
     Subtype = Install;

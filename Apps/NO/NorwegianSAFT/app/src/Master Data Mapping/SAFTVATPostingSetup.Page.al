@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Finance.VAT.Setup;
+
 page 10678 "SAF-T VAT Posting Setup"
 {
     PageType = List;
@@ -44,15 +52,37 @@ page 10678 "SAF-T VAT Posting Setup"
                     ToolTip = 'Specifies a description of the VAT posting setup';
                     Editable = false;
                 }
+#if not CLEAN23
                 field("Sales VAT Reporting Code"; "Sales VAT Reporting Code")
                 {
                     ApplicationArea = VAT;
                     ToolTip = 'Specifies the VAT code to be used with this VAT posting setup for sales reporting.';
+                    ObsoleteReason = 'Use the field "Sale VAT Reporting Code" in BaseApp W1.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '23.0';
                 }
                 field("Purchase VAT Reporting Code"; "Purchase VAT Reporting Code")
                 {
                     ApplicationArea = VAT;
                     ToolTip = 'Specifies the VAT code to be used with this VAT posting setup for purchase reporting.';
+                    ObsoleteReason = 'Use the field "Purch. VAT Reporting Code" in BaseApp W1.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '23.0';
+                }
+#endif
+                field("Sale VAT Reporting Code"; Rec."Sale VAT Reporting Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the VAT code to be used with this VAT posting setup for sales reporting.';
+                    ShowMandatory = SalesStandardTaxCodeMandatory;
+                    Visible = false;
+                }
+                field("Purch. VAT Reporting Code"; Rec."Purch. VAT Reporting Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the VAT code to be used with this VAT posting setup for purchase reporting.';
+                    ShowMandatory = PurchStandardTaxCodeMandatory;
+                    Visible = false;
                 }
                 field("Sales SAF-T Tax Code"; "Sales SAF-T Tax Code")
                 {
@@ -66,24 +96,33 @@ page 10678 "SAF-T VAT Posting Setup"
                     ToolTip = 'Specifies the code of the VAT posting setup that will be used for the TaxCode XML node in the SAF-T file for the purchase VAT entries.';
                     Editable = false;
                 }
+#if not CLEAN23
                 field("Sales SAF-T Standard Tax Code"; "Sales SAF-T Standard Tax Code")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the code of the VAT posting setup that will be used for the StandardTaxCode XML node in the SAF-T file for the sales VAT entries.';
                     ShowMandatory = SalesStandardTaxCodeMandatory;
+                    ObsoleteReason = 'Use the field "Sale VAT Reporting Code" in BaseApp W1.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '23.0';
                 }
                 field("Purch. SAF-T Standard Tax Code"; "Purch. SAF-T Standard Tax Code")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the code of the VAT posting setup that will be used for the StandardTaxCode XML node in the SAF-T file for the purchase VAT entries.';
                     ShowMandatory = PurchStandardTaxCodeMandatory;
+                    ObsoleteReason = 'Use the field "Purch. VAT Reporting Code" in BaseApp W1.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '23.0';
                 }
+#endif
             }
         }
     }
 
     actions
     {
+#if not CLEAN23
         area(Processing)
         {
             action(CopyReportingCodes)
@@ -96,6 +135,9 @@ page 10678 "SAF-T VAT Posting Setup"
                 PromotedIsBig = true;
                 PromotedOnly = true;
                 Image = Copy;
+                ObsoleteReason = 'The action will be removed, no need to copy reporting codes to SAF-T codes';
+                ObsoleteState = Pending;
+                ObsoleteTag = '23.0';
 
                 trigger OnAction()
                 var
@@ -105,6 +147,7 @@ page 10678 "SAF-T VAT Posting Setup"
                 end;
             }
         }
+#endif
     }
 
     var
@@ -123,7 +166,12 @@ page 10678 "SAF-T VAT Posting Setup"
 
     local procedure CalcTaxCodeMandatoryStyle()
     begin
+#if CLEAN23
+        SalesStandardTaxCodeMandatory := (Rec."Sales VAT Account" <> '') and (Rec."Sale VAT Reporting Code" = '');
+        PurchStandardTaxCodeMandatory := (Rec."Purchase VAT Account" <> '') and (Rec."Purch. VAT Reporting Code" = '');
+#else
         SalesStandardTaxCodeMandatory := ("Sales VAT Account" <> '') and ("Sales SAF-T Standard Tax Code" = '');
         PurchStandardTaxCodeMandatory := ("Purchase VAT Account" <> '') and ("Purch. SAF-T Standard Tax Code" = '');
+#endif
     end;
 }

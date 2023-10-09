@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.Encryption;
+
+using System;
+using System.Text;
+using System.Utilities;
+
 codeunit 1464 "CertificateRequest Impl."
 {
     Access = Internal;

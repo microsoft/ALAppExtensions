@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Media;
+
 /// <summary>This enum is the category under which videos can be classified.</summary>
 /// <remarks>Extensions can extend this enum to add custom categories.</remarks>
 enum 3710 "Video Category"

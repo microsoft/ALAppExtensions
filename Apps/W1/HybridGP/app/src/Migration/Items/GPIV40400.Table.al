@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 40117 "GP IV40400"
 {
     Description = 'Item Class Setup';

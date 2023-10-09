@@ -1,3 +1,7 @@
+namespace Microsoft.API.FinancialManagement;
+
+using Microsoft.Purchases.Payables;
+
 query 30303 "API Fin - Vend Ledg Entry"
 {
     QueryType = API;
@@ -33,7 +37,7 @@ query 30303 "API Fin - Vend Ledg Entry"
             {
                 Caption = 'Document Number';
             }
-            column(externalDocumentNumber; "Document No.")
+            column(externalDocumentNumber; "External Document No.")
             {
                 Caption = 'External Document Number';
             }

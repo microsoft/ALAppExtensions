@@ -1,3 +1,6 @@
+namespace Microsoft.DataMigration.GP;
+
+#pragma warning disable AS0109
 table 4031 "GPForecastTemp"
 {
 #if CLEAN21
@@ -47,3 +50,4 @@ table 4031 "GPForecastTemp"
         }
     }
 }
+#pragma warning restore AS0109

@@ -1,3 +1,5 @@
+namespace Microsoft.Bank.Deposit;
+
 codeunit 1692 "Bank Deposit-Post (Yes/No)"
 {
     Permissions = TableData "Bank Deposit Header" = r;

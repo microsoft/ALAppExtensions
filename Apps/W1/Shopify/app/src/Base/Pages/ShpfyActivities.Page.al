@@ -1,3 +1,8 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.History;
+using System.Threading;
+
 /// <summary>
 /// Page Shpfy Activities (ID 30100).
 /// </summary>
@@ -44,7 +49,21 @@ page 30100 "Shpfy Activities"
                         SalesShipmentHeader: Record "Sales Shipment Header";
                     begin
                         SalesShipmentHeader.SetFilter("Shpfy Order Id", '<>0');
-                        SalesShipmentHeader.SetFilter("Shpfy Fulfillment Id", '0|-1');
+                        SalesShipmentHeader.SetFilter("Shpfy Fulfillment Id", '0');
+                        Page.Run(Page::"Posted Sales Shipments", SalesShipmentHeader);
+                    end;
+                }
+                field(ShipmentErrors; Rec."Shipment Errors")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the number of shipments that are failed to synchronize.';
+
+                    trigger OnDrillDown()
+                    var
+                        SalesShipmentHeader: Record "Sales Shipment Header";
+                    begin
+                        SalesShipmentHeader.SetFilter("Shpfy Order Id", '<>0');
+                        SalesShipmentHeader.SetFilter("Shpfy Fulfillment Id", '-1');
                         Page.Run(Page::"Posted Sales Shipments", SalesShipmentHeader);
                     end;
                 }

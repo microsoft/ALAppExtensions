@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Device;
+
 /// <summary>
 /// Provides functionality for getting geographical location information from the client device.
 /// <example>

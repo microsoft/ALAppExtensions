@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Text;
+
+using System.Text;
+
 codeunit 135059 "IDAutomation 2D Test"
 {
     Subtype = Test;

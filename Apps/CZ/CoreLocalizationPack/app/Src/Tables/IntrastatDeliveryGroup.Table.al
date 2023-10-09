@@ -1,8 +1,16 @@
 table 31078 "Intrastat Delivery Group CZL"
 {
     Caption = 'Intrastat Delivery Group';
+#if not CLEAN22
     DrillDownPageID = "Intrastat Delivery Groups CZL";
     LookupPageID = "Intrastat Delivery Groups CZL";
+    ObsoleteState = Pending;
+    ObsoleteTag = '22.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteTag = '25.0';
+#endif
+    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
 
     fields
     {

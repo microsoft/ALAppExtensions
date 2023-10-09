@@ -1,3 +1,8 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Item.Catalog;
+
 /// <summary>
 /// Codeunit Shpfy Create Product (ID 30174).
 /// </summary>
@@ -65,12 +70,12 @@ codeunit 30174 "Shpfy Create Product"
         ICreateProductStatus := Shop."Status for Created Products";
         TempShopifyProduct.Status := ICreateProductStatus.GetStatus(Item);
         ItemVariant.SetRange("Item No.", Item."No.");
-        if ItemVariant.FindSet(false, false) then
+        if ItemVariant.FindSet(false) then
             repeat
                 TempShopifyProduct."Has Variants" := true;
                 if Shop."UoM as Variant" then begin
                     ItemUnitofMeasure.SetRange("Item No.", Item."No.");
-                    if ItemUnitofMeasure.FindSet(false, false) then
+                    if ItemUnitofMeasure.FindSet(false) then
                         repeat
                             Id += 1;
                             Clear(TempShopifyVariant);
@@ -148,7 +153,7 @@ codeunit 30174 "Shpfy Create Product"
         else
             if Shop."UoM as Variant" then begin
                 ItemUnitofMeasure.SetRange("Item No.", Item."No.");
-                if ItemUnitofMeasure.FindSet(false, false) then
+                if ItemUnitofMeasure.FindSet(false) then
                     repeat
                         Id += 1;
                         Clear(TempShopifyVariant);

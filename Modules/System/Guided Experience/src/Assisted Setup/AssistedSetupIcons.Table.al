@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
 table 1810 "Assisted Setup Icons"
 {
     Access = Internal;
@@ -17,14 +19,17 @@ table 1810 "Assisted Setup Icons"
     {
         field(1; "No."; Code[50])
         {
+            DataClassification = CustomerContent;
             Caption = 'No.';
         }
         field(2; Image; Media)
         {
+            DataClassification = CustomerContent;
             Caption = 'Image';
         }
         field(3; "Media Resources Ref"; Code[50])
         {
+            DataClassification = CustomerContent;
             Caption = 'Media Resources Ref';
         }
     }

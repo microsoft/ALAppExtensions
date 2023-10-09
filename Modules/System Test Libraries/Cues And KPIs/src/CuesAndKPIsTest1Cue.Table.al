@@ -3,9 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Visualization;
+
 table 135039 "Cues And KPIs Test 1 Cue"
 {
-    DataClassification = ToBeClassified;
+    DataClassification = SystemMetadata;
     ReplicateData = false;
 
     fields
@@ -21,16 +23,18 @@ table 135039 "Cues And KPIs Test 1 Cue"
         }
 #pragma warning disable AA0232
         field(20; FlowfieldInteger; Integer)
-#pragma warning restore AA0232
         {
             FieldClass = FlowField;
             CalcFormula = sum("Cues And KPIs Test 1 Cue".NormalInteger);
+            Editable = false;
         }
         field(25; FlowfieldDecimal; Decimal)
         {
             FieldClass = FlowField;
             CalcFormula = sum("Cues And KPIs Test 1 Cue".NormalDecimal);
+            Editable = false;
         }
+#pragma warning restore AA0232
     }
 
     keys
@@ -38,11 +42,7 @@ table 135039 "Cues And KPIs Test 1 Cue"
         key(PK; "Primary Key")
         {
             Clustered = true;
-        }
-
-        key(Key1; NormalInteger)
-        {
-            SumIndexFields = NormalInteger;
+            SumIndexFields = NormalInteger, NormalDecimal;
         }
     }
 }

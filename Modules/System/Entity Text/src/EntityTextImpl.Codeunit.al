@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Text;
+
+using System;
+using System.Utilities;
+using System.Azure.KeyVault;
+using System.Environment.Configuration;
+
 /// <summary>
 /// Implements functionality to handle text suggestions.
 /// </summary>
@@ -348,7 +355,7 @@ codeunit 2012 "Entity Text Impl."
             Completion := CopyStr(Completion, 9).Trim();
         end;
 
-        MinParagraphWords := 100;
+        MinParagraphWords := 50;
 
         FormatValid := true;
         case TextFormat of

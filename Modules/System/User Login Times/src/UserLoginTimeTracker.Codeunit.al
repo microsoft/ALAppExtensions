@@ -1,7 +1,9 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Security.User;
 
 /// <summary>
 /// Exposes functionality to retrieve information about the user's first, penultimate and last login times.
@@ -85,7 +87,7 @@ codeunit 9026 "User Login Time Tracker"
     end;
 
     /// <summary>
-    /// Updates or creates the last login information of the current user (first, last and penultimate login date) for both the current company and for the environment.
+    /// Updates or creates the last login information of the current user (first, last and penultimate login date) for the current company.
     /// </summary>
     [Scope('OnPrem')]
     procedure CreateOrUpdateLoginInfo()
@@ -93,6 +95,17 @@ codeunit 9026 "User Login Time Tracker"
         UserLoginTimeTrackerImpl: Codeunit "User Login Time Tracker Impl.";
     begin
         UserLoginTimeTrackerImpl.CreateOrUpdateLoginInfo();
+    end;
+
+    /// <summary>
+    /// Creates login information of the current user for the environment.
+    /// </summary>
+    [Scope('OnPrem')]
+    procedure CreateEnvironmentLoginInfo()
+    var
+        UserLoginTimeTrackerImpl: Codeunit "User Login Time Tracker Impl.";
+    begin
+        UserLoginTimeTrackerImpl.CreateEnvironmentLoginInfo();
     end;
 
 #if not CLEAN21

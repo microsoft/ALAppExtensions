@@ -618,6 +618,112 @@ codeunit 139899 "APIV2 - Document Attach. E2E"
         TestDeleteAttachment(DocumentRecordRef);
     end;
 
+    [Test]
+    procedure TestGetDraftPurchaseCreditMemoAttachments()
+    var
+        DocumentRecordRef: RecordRef;
+        AttachmentId: array[2] of Guid;
+        ResponseText: Text;
+        TargetURL: Text;
+    begin
+        // [SCENARIO] User can retrieve all records from the Attachments API.
+        // [GIVEN] 2 Attachments in the Document Attachment table
+        CreateDraftPurchaseCreditMemo(DocumentRecordRef);
+        CreateAttachments(DocumentRecordRef, AttachmentId);
+        Commit();
+
+        // [WHEN] A GET request is made to the Attachment API.
+        TargetURL := CreateAttachmentsURLWithFilter(GetDocumentId(DocumentRecordRef), Format(AttachmentEntityBufferDocumentType::"Purchase Credit Memo"));
+        LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
+
+        // [THEN] The 2 Attachments should exist in the response
+        GetAndVerifyIDFromJSON(ResponseText, AttachmentId);
+    end;
+
+    [Test]
+    procedure TestGetPostedPurchaseCreditMemoAttachments()
+    var
+        DocumentRecordRef: RecordRef;
+        AttachmentId: array[2] of Guid;
+        DocumentId: Guid;
+        ResponseText: Text;
+        TargetURL: Text;
+    begin
+        // [SCENARIO] User can retrieve all records from the Attachments API.
+        // [GIVEN] 2 Attachments in the Document Attachment table
+        CreatePostedPurchaseCreditMemo(DocumentRecordRef, DocumentId);
+        CreateAttachments(DocumentRecordRef, AttachmentId);
+        Commit();
+
+        // [WHEN] A GET request is made to the Attachment API.
+        TargetURL := CreateAttachmentsURLWithFilter(DocumentId, Format(AttachmentEntityBufferDocumentType::"Purchase Credit Memo"));
+        LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
+
+        // [THEN] The 2 Attachments should exist in the response
+        GetAndVerifyIDFromJSON(ResponseText, AttachmentId);
+    end;
+
+    [Test]
+    procedure TestCreateDraftPurchaseCreditMemoAttachment()
+    var
+        DocumentRecordRef: RecordRef;
+    begin
+        CreateDraftPurchaseCreditMemo(DocumentRecordRef);
+        TestCreateAttachment(DocumentRecordRef);
+    end;
+
+    [Test]
+    procedure TestCreatePostedPurchaseCreditMemoAttachment()
+    var
+        DocumentRecordRef: RecordRef;
+        DocumentId: Guid;
+        DocumentType: Text;
+    begin
+        CreatePostedPurchaseCreditMemo(DocumentRecordRef, DocumentId);
+        DocumentType := GetDocumentType(DocumentRecordRef);
+        TestCreateAttachment(DocumentRecordRef, DocumentId, DocumentType);
+    end;
+
+    [Test]
+    procedure TestDeleteDraftPurchaseCreditMemoAttachment()
+    var
+        DocumentRecordRef: RecordRef;
+    begin
+        CreateDraftPurchaseCreditMemo(DocumentRecordRef);
+        TestDeleteAttachment(DocumentRecordRef);
+    end;
+
+    [Test]
+    procedure TestDeletePostedPurchaseCreditMemoAttachment()
+    var
+        DocumentRecordRef: RecordRef;
+        DocumentId: Guid;
+    begin
+        CreatePostedPurchaseCreditMemo(DocumentRecordRef, DocumentId);
+        TestDeleteAttachment2(DocumentRecordRef);
+    end;
+
+    local procedure CreatePostedPurchaseCreditMemo(var DocumentRecordRef: RecordRef; var DocumentId: Guid)
+    var
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+        PurchaseHeader: Record "Purchase Header";
+        InvoiceCode: Code[20];
+    begin
+        LibraryPurchase.CreatePurchaseCreditMemo(PurchaseHeader);
+        InvoiceCode := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, false, true);
+        PurchCrMemoHdr.Get(InvoiceCode);
+        DocumentId := PurchCrMemoHdr."Draft Cr. Memo SystemId";
+        DocumentRecordRef.GetTable(PurchCrMemoHdr);
+    end;
+
+    local procedure CreateDraftPurchaseCreditMemo(var DocumentRecordRef: RecordRef)
+    var
+        PurchaseHeader: Record "Purchase Header";
+    begin
+        LibraryPurchase.CreatePurchaseCreditMemo(PurchaseHeader);
+        DocumentRecordRef.GetTable(PurchaseHeader);
+    end;
+
     local procedure TestDeleteAttachment(var DocumentRecordRef: RecordRef)
     var
         DocumentId: Guid;
@@ -760,12 +866,15 @@ codeunit 139899 "APIV2 - Document Attach. E2E"
             Database::"Purchase Header":
                 begin
                     DocumentRecordRef.SetTable(PurchaseHeader);
-
+                    if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::"Credit Memo" then
+                        exit(Format(AttachmentEntityBufferDocumentType::"Purchase Credit Memo"));
                     if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Invoice then
                         exit(Format(AttachmentEntityBufferDocumentType::"Purchase Invoice"));
                     if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Order then
                         exit(Format(AttachmentEntityBufferDocumentType::"Purchase Order"));
                 end;
+            Database::"Purch. Cr. Memo Hdr.":
+                exit(Format(AttachmentEntityBufferDocumentType::"Purchase Credit Memo"));
             Database::"Gen. Journal Line", Database::"G/L Entry":
                 exit(Format(AttachmentEntityBufferDocumentType::"Journal"));
             Database::Customer:

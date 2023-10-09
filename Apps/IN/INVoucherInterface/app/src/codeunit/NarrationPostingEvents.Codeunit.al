@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.VoucherInterface;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.TaxBase;
+
 codeunit 18929 "Narration Posting Events"
 {
     var
@@ -57,41 +68,43 @@ codeunit 18929 "Narration Posting Events"
         GenJnlTemplate: Record "Gen. Journal Template")
     var
         VoucherSetup: Record "Journal Voucher Posting Setup";
-        GenJnlLine2: Record "Gen. Journal Line";
     begin
-        GenJnlLine2.Reset();
-        GenJnlLine2.SetCurrentKey("Journal Template Name", "Journal Batch Name", "Document No.");
-        GenJnlLine2.SetRange("Journal Template Name", GenJnlLine."Journal Template Name");
-        GenJnlLine2.SetRange("Journal Batch Name", GenJnlLine."Journal Batch Name");
-        GenJnlLine2.SetRange("Document No.", GenJnlLine."Document No.");
-        GenJnlLine2.SetFilter(Amount, '<>%1', 0);
-        if GenJnlTemplate.Type in [
-            GenJnlTemplate.Type::"Bank Payment Voucher",
-            GenJnlTemplate.Type::"Cash Payment Voucher",
-            GenJnlTemplate.Type::"Cash Receipt Voucher",
-            GenJnlTemplate.Type::"Bank Receipt Voucher",
-            GenJnlTemplate.Type::"Contra Voucher",
-            GenJnlTemplate.Type::"Journal Voucher"]
-        then begin
+        if GenJnlLine.Amount = 0 then
+            exit;
+
+        if IsGenJnlTemplateVoucherType(GenJnlTemplate) then begin
             VoucherSetup.Get(GenJnlLine."Location Code", GenJnlTemplate.Type);
             case VoucherSetup."Transaction Direction" of
                 VoucherSetup."Transaction Direction"::Debit:
-                    if GenJnlLine2.FindSet() then
-                        repeat
-                            CheckAccountNoValidationForVoucherSubType(GenJnlLine2, VoucherSetup, GenJnlTemplate);
-                        until GenJnlLine2.Next() = 0;
+                    CheckAccountNoValidationForVoucherSubType(GenJnlLine, VoucherSetup, GenJnlTemplate);
+
                 VoucherSetup."Transaction Direction"::Credit:
-                    if GenJnlLine2.FindSet() then
-                        repeat
-                            CheckAccountNoValidationForVoucherSubType(GenJnlLine2, VoucherSetup, GenJnlTemplate);
-                        until GenJnlLine2.Next() = 0;
+                    CheckAccountNoValidationForVoucherSubType(GenJnlLine, VoucherSetup, GenJnlTemplate);
+
                 VoucherSetup."Transaction Direction"::Both, VoucherSetup."Transaction Direction"::" ":
-                    if GenJnlLine2.FindSet() then
-                        repeat
-                            ValidateVoucherAccount(GenJnlTemplate.Type, GenJnlLine2);
-                        until GenJnlLine2.Next() = 0;
+                    ValidateVoucherAccount(GenJnlTemplate.Type, GenJnlLine);
             end;
         end;
+    end;
+
+    local procedure IsGenJnlTemplateVoucherType(GenJnlTemplate: Record "Gen. Journal Template"): Boolean
+    var
+        IsHandled: Boolean;
+        GenJnlTemplateTypeValue: Boolean;
+    begin
+        OnBeforeGetGenJnlTemplateType(GenJnlTemplate, IsHandled, GenJnlTemplateTypeValue);
+        if IsHandled then
+            exit(GenJnlTemplateTypeValue);
+
+        if GenJnlTemplate.Type in [
+           GenJnlTemplate.Type::"Bank Payment Voucher",
+           GenJnlTemplate.Type::"Cash Payment Voucher",
+           GenJnlTemplate.Type::"Cash Receipt Voucher",
+           GenJnlTemplate.Type::"Bank Receipt Voucher",
+           GenJnlTemplate.Type::"Contra Voucher",
+           GenJnlTemplate.Type::"Journal Voucher"]
+        then
+            exit(true);
     end;
 
     local procedure InsertPostedNarrationVouchers(GLEntry: Record "G/L Entry")
@@ -122,7 +135,7 @@ codeunit 18929 "Narration Posting Events"
 
     local procedure ValidateVoucherAccount(
         VoucherType: Enum "Gen. Journal Template Type";
-        GenJournalLine: Record "Gen. Journal Line")
+                         GenJournalLine: Record "Gen. Journal Line")
     begin
         case VoucherType of
             VoucherType::"Cash Receipt Voucher", VoucherType::"Bank Receipt Voucher":
@@ -491,6 +504,11 @@ codeunit 18929 "Narration Posting Events"
                 Error(AccountNoeErr, GenJournalLine."Account No.", VoucherSetup."Transaction Direction", GeneralJournalTemplate.Type, GenJournalLine."Document No.");
             ValidateVoucherAccount(GeneralJournalTemplate.Type, GenJournalLine);
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetGenJnlTemplateType(GenJnlTemplate: Record "Gen. Journal Template"; var IsHandled: Boolean; var GenJnlTemplateTypeValue: Boolean)
+    begin
     end;
 
 }

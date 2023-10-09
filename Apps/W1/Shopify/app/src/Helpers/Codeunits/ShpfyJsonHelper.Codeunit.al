@@ -1,3 +1,8 @@
+namespace Microsoft.Integration.Shopify;
+
+using System.Text;
+using System.Utilities;
+
 /// <summary>
 /// Codeunit Shpfy Json Helper (ID 30157).
 /// </summary>

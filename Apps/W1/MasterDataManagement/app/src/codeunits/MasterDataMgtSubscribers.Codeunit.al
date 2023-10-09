@@ -1,3 +1,22 @@
+namespace Microsoft.Integration.MDM;
+
+using System.Threading;
+using System.Telemetry;
+using System.Environment;
+using System.Reflection;
+using System.IO;
+using System.Environment.Configuration;
+using Microsoft.Integration.Dataverse;
+using Microsoft.CRM.Contact;
+using Microsoft.Sales.Customer;
+using Microsoft.CRM.BusinessRelation;
+using Microsoft.Purchases.Vendor;
+using Microsoft.CRM.Setup;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Inventory.Item;
+using Microsoft.Integration.SyncEngine;
+using Microsoft.Utilities;
+
 codeunit 7237 "Master Data Mgt. Subscribers"
 {
     Access = Internal;
@@ -201,6 +220,12 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         if not MasterDataManagement.IsEnabled() then
             exit;
 
+        if SourceFieldRef.Number() <> DestinationFieldRef.Number() then
+            exit;
+
+        if SourceFieldRef.Record().Number() <> DestinationFieldRef.Record().Number() then
+            exit;
+
         OriginalDestinationFieldValue := DestinationFieldRef.Value();
         if DestinationFieldRef.Name() = 'Primary Contact No.' then begin
             SourceValue := Format(SourceFieldRef.Value());
@@ -327,6 +352,9 @@ codeunit 7237 "Master Data Mgt. Subscribers"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeModifyRecord', '', false, false)]
     local procedure OnBeforeModifyRecord(IntegrationTableMapping: Record "Integration Table Mapping"; SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
     begin
+        if IntegrationTableMapping.Type <> IntegrationTableMapping.Type::"Master Data Management" then
+            exit;
+
         RenameIfNeededOnBeforeModifyRecord(IntegrationTableMapping, SourceRecordRef, DestinationRecordRef);
     end;
 
@@ -338,6 +366,9 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         IsHandled: Boolean;
     begin
         if not MasterDataManagement.IsEnabled() then
+            exit;
+
+        if IntegrationTableMapping.Type <> IntegrationTableMapping.Type::"Master Data Management" then
             exit;
 
         MasterDataManagementSetup.Get();
@@ -352,6 +383,37 @@ codeunit 7237 "Master Data Mgt. Subscribers"
             exit;
 
         RenameDestination(SourceRecordRef, DestinationRecordRef);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeTransferRecordFields', '', false, false)]
+    local procedure OnBeforeTransferRecordFields(SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
+    begin
+        ApplyTransformations(SourceRecordRef, DestinationRecordRef);
+    end;
+
+    local procedure ApplyTransformations(SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
+    var
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        TransformationRule: Record "Transformation Rule";
+        CRMSynchHelper: Codeunit "CRM Synch. Helper";
+    begin
+        IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
+        IntegrationTableMapping.SetRange("Delete After Synchronization", false);
+        IntegrationTableMapping.SetRange("Integration Table ID", SourceRecordRef.Number());
+        IntegrationTableMapping.SetRange("Table ID", DestinationRecordRef.Number());
+        if not IntegrationTableMapping.FindFirst() then
+            exit;
+
+        IntegrationFieldMapping.SetFilter("Integration Table Mapping Name", IntegrationTableMapping.Name);
+        IntegrationFieldMapping.SetFilter("Transformation Rule", '<>%1', ' ');
+
+        if IntegrationFieldMapping.FindSet() then
+            repeat
+                if TransformationRule.Get(IntegrationFieldMapping."Transformation Rule") then
+                    if IntegrationFieldMapping."Transformation Direction" = IntegrationFieldMapping."Transformation Direction"::FromIntegrationTable then
+                        CrmsynchHelper.TransformValue(SourceRecordRef, DestinationRecordRef, TransformationRule, IntegrationFieldMapping."Integration Table Field No.", IntegrationFieldMapping."Field No.");
+            until IntegrationFieldMapping.Next() <= 0;
     end;
 
     local procedure IsPrimaryKeyDifferent(var SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef): Boolean
@@ -477,6 +539,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         ContactBusinessRelation: Record "Contact Business Relation";
         Company: Record COmpany;
         LocalContact: Record Contact;
+        IntegrationTableMapping: Record "Integration Table Mapping";
         MasterDataManagement: Codeunit "Master Data Management";
     begin
         if not MasterDataManagement.IsEnabled() then
@@ -488,7 +551,17 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         if not Company.Get(MasterDataManagementSetup."Company Name") then
             exit;
 
-        ContactBusinessRelation.ChangeCompany(MasterDataManagementSetup."Company Name");
+        IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
+        IntegrationTableMapping.SetRange("Table ID", Database::Customer);
+        IntegrationTableMapping.SetRange("Integration Table ID", Database::Customer);
+        IntegrationTableMapping.SetRange("Delete After Synchronization", false);
+        IntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);
+        if IntegrationTableMapping.IsEmpty() then
+            exit;
+
+        if not ContactBusinessRelation.ChangeCompany(MasterDataManagementSetup."Company Name") then
+            exit;
+
         ContactBusinessRelation.SetRange("Link to Table", ContactBusinessRelation."Link to Table"::Customer);
         ContactBusinessRelation.SetRange("No.", Customer."No.");
         if ContactBusinessRelation.FindFirst() then
@@ -506,6 +579,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         ContactBusinessRelation: Record "Contact Business Relation";
         Company: Record COmpany;
         LocalContact: Record Contact;
+        IntegrationTableMapping: Record "Integration Table Mapping";
         MasterDataManagement: Codeunit "Master Data Management";
     begin
         if not MasterDataManagement.IsEnabled() then
@@ -517,7 +591,17 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         if not Company.Get(MasterDataManagementSetup."Company Name") then
             exit;
 
-        ContactBusinessRelation.ChangeCompany(MasterDataManagementSetup."Company Name");
+        IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
+        IntegrationTableMapping.SetRange("Table ID", Database::Vendor);
+        IntegrationTableMapping.SetRange("Integration Table ID", Database::Vendor);
+        IntegrationTableMapping.SetRange("Delete After Synchronization", false);
+        IntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);
+        if IntegrationTableMapping.IsEmpty() then
+            exit;
+
+        if not ContactBusinessRelation.ChangeCompany(MasterDataManagementSetup."Company Name") then
+            exit;
+
         ContactBusinessRelation.SetRange("Link to Table", ContactBusinessRelation."Link to Table"::Vendor);
         ContactBusinessRelation.SetRange("No.", Vendor."No.");
         if ContactBusinessRelation.FindFirst() then
@@ -535,6 +619,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         ContactBusinessRelation: Record "Contact Business Relation";
         Company: Record COmpany;
         LocalContact: Record Contact;
+        IntegrationTableMapping: Record "Integration Table Mapping";
         MasterDataManagement: Codeunit "Master Data Management";
     begin
         if not MasterDataManagement.IsEnabled() then
@@ -546,7 +631,17 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         if not Company.Get(MasterDataManagementSetup."Company Name") then
             exit;
 
-        ContactBusinessRelation.ChangeCompany(MasterDataManagementSetup."Company Name");
+        IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
+        IntegrationTableMapping.SetRange("Table ID", Database::"Bank Account");
+        IntegrationTableMapping.SetRange("Integration Table ID", Database::"Bank Account");
+        IntegrationTableMapping.SetRange("Delete After Synchronization", false);
+        IntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);
+        if IntegrationTableMapping.IsEmpty() then
+            exit;
+
+        if not ContactBusinessRelation.ChangeCompany(MasterDataManagementSetup."Company Name") then
+            exit;
+
         ContactBusinessRelation.SetRange("Link to Table", ContactBusinessRelation."Link to Table"::"Bank Account");
         ContactBusinessRelation.SetRange("No.", BankAccount."No.");
         if ContactBusinessRelation.FindFirst() then
@@ -555,6 +650,47 @@ codeunit 7237 "Master Data Mgt. Subscribers"
                 Session.LogMessage('0000JT6', StrSubstNo(SetContactNoFromSourceCompanyTxt, BankAccount.TableCaption(), BankAccount.SystemId, MasterDataManagementSetup."Company Name"), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', MasterDataManagement.GetTelemetryCategory());
                 IsHandled := true;
             end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeInsertRecord', '', false, false)]
+    local procedure HandleOnBeforeInsertRecord(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef)
+    var
+        ConfigTemplateHeader: Record "Config. Template Header";
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        CustomerTemplMgt: Codeunit "Customer Templ. Mgt.";
+        VendorTemplMgt: Codeunit "Vendor Templ. Mgt.";
+        ItemTemplMgt: Codeunit "Item Templ. Mgt.";
+        MasterDataManagement: Codeunit "Master Data Management";
+        ConfigTemplateCode: Code[10];
+        SourceDestCode: Text;
+    begin
+        if not MasterDataManagement.IsEnabled() then
+            exit;
+
+        SourceDestCode := GetSourceDestCode(SourceRecordRef, DestinationRecordRef);
+
+        if SourceRecordRef.Number in [Database::Customer, Database::Vendor, Database::Item] then begin
+            IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
+            IntegrationTableMapping.SetRange("Table ID", DestinationRecordRef.Number);
+            IntegrationTableMapping.SetRange("Integration Table ID", SourceRecordRef.Number);
+            if IntegrationTableMapping.FindFirst() then
+                ConfigTemplateCode := IntegrationTableMapping."Table Config Template Code";
+        end;
+
+        case SourceDestCode of
+            'Customer-Customer':
+                if ConfigTemplateCode <> '' then
+                    if ConfigTemplateHeader.Get(ConfigTemplateCode) then
+                        CustomerTemplMgt.FillCustomerKeyFromInitSeries(DestinationRecordRef, ConfigTemplateHeader);
+            'Vendor-Vendor':
+                if ConfigTemplateCode <> '' then
+                    if ConfigTemplateHeader.Get(ConfigTemplateCode) then
+                        VendorTemplMgt.FillVendorKeyFromInitSeries(DestinationRecordRef, ConfigTemplateHeader);
+            'Item-Item':
+                if ConfigTemplateCode <> '' then
+                    if ConfigTemplateHeader.Get(ConfigTemplateCode) then
+                        ItemTemplMgt.FillItemKeyFromInitSeries(DestinationRecordRef, ConfigTemplateHeader);
+        end;
     end;
 
     local procedure SynchRecordIfMappingExists(TableNo: Integer; IntegrationTableNo: Integer; PrimaryKey: Variant; var OutOfMapFilter: Boolean): Boolean

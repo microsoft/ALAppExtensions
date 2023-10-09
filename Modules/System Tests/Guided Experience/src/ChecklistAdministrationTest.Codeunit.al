@@ -3,6 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Environment.Configuration;
+
+using System.Environment.Configuration;
+using System.Media;
+using System.Reflection;
+using System.Security.AccessControl;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 132602 "Checklist Administration Test"
 {
     Subtype = Test;
@@ -67,7 +76,7 @@ codeunit 132602 "Checklist Administration Test"
         ChecklistAPI.Insert(GuidedExperienceType::"Assisted Setup", ObjectType1, ObjectID1, OrderID1, TempAllProfile, true);
 
         ObjectType2 := ObjectType::Codeunit;
-        ObjectID2 := Codeunit::"Checklist Banner";
+        ObjectID2 := Codeunit::"Checklist Banner Impl.";
         InsertManualSetup(Title2, ExpectedDuration2, ObjectType2, ObjectID2, OrderID2);
         ChecklistAPI.Insert(GuidedExperienceType::"Manual Setup", ObjectType2, ObjectID2, OrderID2, TempAllProfile, true);
 
@@ -1082,7 +1091,7 @@ codeunit 132602 "Checklist Administration Test"
     local procedure PopulateSetupFields(var Title: Text[2048]; var ExpectedDuration: Integer; var OrderID: Integer)
     begin
         Title := CopyStr(Any.AlphanumericText(MaxStrLen(Title)), 1, MaxStrLen(Title));
-        ExpectedDuration := Any.IntegerInRange(50000);
+        ExpectedDuration := Any.IntegerInRange(29999);
         OrderID := any.IntegerInRange(100000);
     end;
 

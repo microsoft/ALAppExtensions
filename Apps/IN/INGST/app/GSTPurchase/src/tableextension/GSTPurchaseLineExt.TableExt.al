@@ -1,3 +1,16 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Document;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.GST.Purchase;
+using Microsoft.Finance.GST.Subcontracting;
+using Microsoft.Manufacturing.Document;
+using Microsoft.Purchases.History;
+
+
 tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
 {
     fields
@@ -271,6 +284,17 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         field(18135; "Subcon. Receiving"; Boolean)
         {
             Caption = 'Subcon. Receiving';
+            DataClassification = CustomerContent;
+        }
+        field(18136; FOC; Boolean)
+        {
+            Caption = 'FOC';
+            DataClassification = CustomerContent;
+        }
+        field(18137; "GST Vendor Type"; Enum "GST Vendor Type")
+        {
+            Caption = 'GST Vendor Type';
+            Editable = false;
             DataClassification = CustomerContent;
         }
     }

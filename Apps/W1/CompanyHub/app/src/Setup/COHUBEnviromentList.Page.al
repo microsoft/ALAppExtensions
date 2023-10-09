@@ -1,3 +1,7 @@
+namespace Mirosoft.Integration.CompanyHub;
+
+using System.Telemetry;
+
 page 1166 "COHUB Enviroment List"
 {
     PageType = List;

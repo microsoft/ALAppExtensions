@@ -1,3 +1,21 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.EServices.EDocument;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Company;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using System.IO;
+using System.Reflection;
+using System.Utilities;
+
 codeunit 11516 "Swiss QR-Bill Incoming Doc"
 {
     var
@@ -133,6 +151,9 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
                         CopyStr(IncomingDocument."Vendor Bank Account No.", 1, MaxStrLen("Recipient Bank Account")));
             end;
 
+            if IncomingDocument."Document Date" <> 0D then
+                Validate("Document Date", IncomingDocument."Document Date");
+
             Validate("Currency Code", GetCurrency(IncomingDocument."Currency Code"));
             Validate(Amount, Sign * IncomingDocument."Amount Incl. VAT");
             Validate("Transaction Information", CopyStr(IncomingDocument."Swiss QR-Bill Bill Info", 1, MaxStrLen("Transaction Information")));
@@ -166,6 +187,10 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
                 Validate("Buy-from Vendor No.", IncomingDocument."Vendor No.");
                 Validate("Currency Code", GetCurrency(IncomingDocument."Currency Code"));
             end;
+
+            if IncomingDocument."Document Date" <> 0D then
+                Validate("Document Date", IncomingDocument."Document Date");
+
             Validate("Posting Description", CopyStr(IncomingDocument."Swiss QR-Bill Unstr. Message", 1, MaxStrLen("Posting Description")));
             Validate("Payment Reference", DelChr(IncomingDocument."Swiss QR-Bill Reference No."));
             Validate("Vendor Invoice No.", IncomingDocument."Vendor Invoice No.");
@@ -444,6 +469,7 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
     var
         TempSwissQRBillBillingDetail: Record "Swiss QR-Bill Billing Detail" temporary;
         SwissQRBillBillingInfo: Codeunit "Swiss QR-Bill Billing Info";
+        DocumentDate: Date;
     begin
         if SwissQRBillBillingInfo.ParseBillingInfo(TempSwissQRBillBillingDetail, SwissQRBillBuffer."Billing Information") then
             with TempSwissQRBillBillingDetail do begin
@@ -457,6 +483,11 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
                 if FindFirst() then
                     IncomingDocument."Vendor Invoice No." :=
                         CopyStr("Tag Value", 1, MaxStrLen(IncomingDocument."Vendor Invoice No."));
+
+                SetRange("Tag Type", "Tag Type"::"Document Date");
+                if FindFirst() then
+                    if Evaluate(DocumentDate, "Tag Description") then
+                        IncomingDocument."Document Date" := DocumentDate;
             end;
     end;
 
@@ -628,6 +659,35 @@ codeunit 11516 "Swiss QR-Bill Incoming Doc"
         else
             sender.Status := sender.Status::Failed;
         sender.Modify();
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Incoming Document Attachment", 'OnBeforeExtractHeaderFields', '', false, false)]
+    local procedure AddSwissQRBillFieldsOnBeforeExtractHeaderFields(var TempFieldBuffer: Record "Field Buffer" temporary; var IncomingDocument: Record "Incoming Document")
+    var
+        IncomingDocumentAttachment: Record "Incoming Document Attachment";
+    begin
+        IncomingDocumentAttachment.AddFieldToFieldBuffer(TempFieldBuffer, IncomingDocument.FieldNo("Swiss QR-Bill Reference No."));
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Incoming Document", 'OnGetDataExchangePath', '', false, false)]
+    local procedure GetSwissQRBillFieldsPathOnGetDataExchangePath(DataExchLineDef: Record "Data Exch. Line Def"; FieldNumber: Integer; var DataExchangePath: Text)
+    var
+        IncomingDocument: Record "Incoming Document";
+        PurchaseHeader: Record "Purchase Header";
+    begin
+        case FieldNumber of
+            IncomingDocument.FieldNo("Swiss QR-Bill Reference No."):
+                DataExchangePath := DataExchLineDef.GetPath(Database::"Purchase Header", PurchaseHeader.FieldNo("Payment Reference"));
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Incoming Document Attachment", 'OnAfterSetValueOnExtractHeaderField', '', false, false)]
+    local procedure ValidateSwissQRBillFieldsOnAfterSetValueOnExtractHeaderField(var IncomingDocument: Record "Incoming Document"; FieldNumber: Integer)
+    begin
+        case FieldNumber of
+            IncomingDocument.FieldNo("Swiss QR-Bill Reference No."):
+                IncomingDocument.Validate("Swiss QR-Bill Reference No.");
+        end;
     end;
 
     [IntegrationEvent(false, false)]

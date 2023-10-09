@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Visualization;
+
+using System.Visualization;
+using System;
+
 /// <summary>
 /// Test library for the Business Chart module.
 /// </summary>

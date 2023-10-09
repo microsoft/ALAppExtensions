@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration;
+
+using Microsoft.RoleCenters;
+
 tableextension 4006 "Hybrid Activites Cue" extends "Activities Cue"
 {
     fields

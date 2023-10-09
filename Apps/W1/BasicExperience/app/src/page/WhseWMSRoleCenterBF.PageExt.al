@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Warehouse.RoleCenters;
+
 pageextension 20669 "Whse. WMS Role Center BF" extends "Whse. WMS Role Center"
 {
     actions

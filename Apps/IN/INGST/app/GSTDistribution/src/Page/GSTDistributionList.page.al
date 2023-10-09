@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Distribution;
+
 page 18205 "GST Distribution List"
 {
     Caption = 'GST Distribution List';
@@ -23,7 +29,7 @@ page 18205 "GST Distribution List"
                 field("From GSTIN No."; Rec."From GSTIN No.")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specified the GSTIN number of company or location.';
+                    ToolTip = 'Specifies the GSTIN number of company or location.';
                 }
                 field("Posting Date"; Rec."Posting Date")
                 {

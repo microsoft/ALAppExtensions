@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Globalization;
+
 /// <summary>
 /// Management codeunit that exposes various functions to work with languages.
 /// </summary>
@@ -37,6 +39,20 @@ codeunit 43 Language
         LanguageImpl: Codeunit "Language Impl.";
     begin
         exit(LanguageImpl.GetLanguageIdOrDefault(LanguageCode));
+    end;
+
+
+    /// <summary>
+    /// Returns format region for a given language. If format region is provided it itself will be returned. If format region is empty the region is taken from UserSessionSettings. 
+    /// If no valid tag is found, the default 'en-US' tag is returned.
+    /// </summary>
+    /// <param name="FormatRegion">The variable for the format region id.</param>
+    /// <returns>The ID for the format region that was found.</returns>
+    procedure GetFormatRegionOrDefault(FormatRegion: Text[80]): Text[80]
+    var
+        LanguageImpl: Codeunit "Language Impl.";
+    begin
+        exit(LanguageImpl.GetFormatRegionOrDefault(FormatRegion));
     end;
 
     /// <summary>
@@ -107,6 +123,18 @@ codeunit 43 Language
         LanguageImpl: Codeunit "Language Impl.";
     begin
         exit(LanguageImpl.GetDefaultApplicationLanguageId());
+    end;
+
+    /// <summary>
+    /// Formats the provided value in default language.
+    /// </summary>
+    /// <param name="ValueVariant">The provided value to be returned in default language.</param>
+    /// <returns>The value in default language.</returns>
+    procedure ToDefaultLanguage(ValueVariant: Variant): Text
+    var
+        LanguageImpl: Codeunit "Language Impl.";
+    begin
+        exit(LanguageImpl.ToDefaultLanguage(ValueVariant));
     end;
 
     /// <summary>

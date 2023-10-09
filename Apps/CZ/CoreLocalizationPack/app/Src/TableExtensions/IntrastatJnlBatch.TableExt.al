@@ -20,9 +20,11 @@ tableextension 31025 "Intrastat Jnl. Batch CZL" extends "Intrastat Jnl. Batch"
             trigger OnValidate()
             begin
                 TestField("Statistics Period");
+#pragma warning disable AL0432
                 CheckUniqueDeclarationNoCZL();
                 if xRec."Declaration No. CZL" <> '' then
                     CheckJnlLinesExistCZL(FieldNo("Declaration No. CZL"));
+#pragma warning restore AL0432
             end;
 #endif
         }
@@ -41,7 +43,9 @@ tableextension 31025 "Intrastat Jnl. Batch CZL" extends "Intrastat Jnl. Batch"
 
             trigger OnValidate()
             begin
+#pragma warning disable AL0432
                 CheckJnlLinesExistCZL(FieldNo("Statement Type CZL"));
+#pragma warning restore AL0432
             end;
 #endif
         }
@@ -53,6 +57,7 @@ tableextension 31025 "Intrastat Jnl. Batch CZL" extends "Intrastat Jnl. Batch"
         DeclarationAlreadyExistsErr: Label 'Declaration No. %1 already exists for Statistics Period %2.', Comment = '%1 = declaration number, %2 = statistics period';
         CannotChangeFieldErr: Label 'You cannot change %1 value after Intrastat Journal Batch %2 was exported.', Comment = '%1 = field caption, %2 = intrastat journal batch name';
 
+    [Obsolete('Intrastat related functionalities are moved to Intrastat extensions. This function is not used anymore.', '22.0')]
     procedure CheckUniqueDeclarationNoCZL()
     var
         IntrastatJnlBatch: Record "Intrastat Jnl. Batch";
@@ -68,6 +73,7 @@ tableextension 31025 "Intrastat Jnl. Batch CZL" extends "Intrastat Jnl. Batch"
         end;
     end;
 
+    [Obsolete('Intrastat related functionalities are moved to Intrastat extensions. This function is not used anymore.', '22.0')]
     procedure CheckJnlLinesExistCZL(CurrentFieldNo: Integer)
     begin
         IntrastatJnlLine.Reset();
@@ -95,6 +101,7 @@ tableextension 31025 "Intrastat Jnl. Batch CZL" extends "Intrastat Jnl. Batch"
         end;
     end;
 
+    [Obsolete('Intrastat related functionalities are moved to Intrastat extensions. This function is not used anymore.', '22.0')]
     procedure AssistEditCZL(): Boolean
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";

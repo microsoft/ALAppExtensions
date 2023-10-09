@@ -3,9 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
+using System.Environment;
+
 permissionset 93 "Company - Edit"
 {
-    Assignable = False;
+    Assignable = false;
 
     IncludedPermissionSets = "Company - Read";
 

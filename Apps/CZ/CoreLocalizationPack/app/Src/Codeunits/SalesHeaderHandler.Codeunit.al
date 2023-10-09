@@ -53,7 +53,7 @@ codeunit 11743 "Sales Header Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnUpdateBillToCustOnAfterSalesQuote', '', false, false)]
     local procedure UpdateRegNoOnUpdateBillToCustOnAfterSalesQuote(var SalesHeader: Record "Sales Header"; Contact: Record Contact)
     begin
-        SalesHeader."Registration No. CZL" := Contact."Registration No. CZL";
+        SalesHeader."Registration No. CZL" := Contact.GetRegistrationNoTrimmedCZL();
         SalesHeader."Tax Registration No. CZL" := Contact."Tax Registration No. CZL";
     end;
 
@@ -64,19 +64,23 @@ codeunit 11743 "Sales Header Handler CZL"
             SalesHeader.Validate("Bank Account Code CZL", SalesHeader.GetDefaulBankAccountNoCZL())
         else
             SalesHeader.Validate("Bank Account Code CZL", Customer."Preferred Bank Account Code");
-        SalesHeader."Registration No. CZL" := Customer."Registration No. CZL";
+        SalesHeader."Registration No. CZL" := Customer.GetRegistrationNoTrimmedCZL();
         SalesHeader."Tax Registration No. CZL" := Customer."Tax Registration No. CZL";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterCopySellToCustomerAddressFieldsFromCustomer', '', false, false)]
     local procedure UpdateOnAfterCopySellToCustomerAddressFieldsFromCustomer(var SalesHeader: Record "Sales Header"; SellToCustomer: Record Customer)
     begin
-        SalesHeader."Registration No. CZL" := SellToCustomer."Registration No. CZL";
+        SalesHeader."Registration No. CZL" := SellToCustomer.GetRegistrationNoTrimmedCZL();
         SalesHeader."Tax Registration No. CZL" := SellToCustomer."Tax Registration No. CZL";
+#if not CLEAN22
+#pragma warning disable AL0432
         if SellToCustomer."Transaction Type CZL" <> '' then
             SalesHeader."Transaction Type" := SellToCustomer."Transaction Type CZL";
         SalesHeader."Transaction Specification" := SellToCustomer."Transaction Specification CZL";
         SalesHeader."Transport Method" := SellToCustomer."Transport Method CZL";
+#pragma warning restore AL0432
+#endif
         if SalesHeader.IsCreditDocType() then
             SalesHeader.Validate("Shipment Method Code", SellToCustomer."Shipment Method Code");
     end;
@@ -111,30 +115,6 @@ codeunit 11743 "Sales Header Handler CZL"
     begin
         SalesHeader.UpdateVATCurrencyFactorCZLByCurrencyFactorCZL()
     end;
-#if not CLEAN20
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeValidateEvent', 'Customer Posting Group', false, false)]
-    local procedure CheckPostingGroupChangeOnBeforeCustomerPostingGroupValidate(var Rec: Record "Sales Header"; var xRec: Record "Sales Header"; CurrFieldNo: Integer)
-    var
-        PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
-    begin
-        if PostingGroupManagementCZL.IsAllowMultipleCustVendPostingGroupsEnabled() then
-            exit;
-        if CurrFieldNo = Rec.FieldNo("Customer Posting Group") then
-            PostingGroupManagementCZL.CheckPostingGroupChange(Rec."Customer Posting Group", xRec."Customer Posting Group", Rec);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeCheckCustomerPostingGroupChange', '', false, false)]
-    local procedure SuppressPostingGroupChangeOnBeforeCheckCustomerPostingGroupChange(var IsHandled: Boolean)
-    var
-        PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
-    begin
-        if IsHandled then
-            exit;
-        IsHandled := not PostingGroupManagementCZL.IsAllowMultipleCustVendPostingGroupsEnabled();
-    end;
-#pragma warning restore AL0432
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterInitFromSalesHeader', '', false, false)]
     local procedure UpdateBankAccountOnAfterInitFromSalesHeader(var SalesHeader: Record "Sales Header"; SourceSalesHeader: Record "Sales Header")
@@ -147,16 +127,19 @@ codeunit 11743 "Sales Header Handler CZL"
         SalesHeader."SWIFT Code CZL" := SourceSalesHeader."SWIFT Code CZL";
         SalesHeader."Transit No. CZL" := SourceSalesHeader."Transit No. CZL";
     end;
-
+#if not CLEAN22
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnUpdateSalesLineByChangedFieldName', '', false, false)]
     local procedure UpdateSalesLineByChangedFieldName(SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line"; ChangedFieldName: Text[100]; ChangedFieldNo: Integer)
     begin
         case ChangedFieldNo of
+#pragma warning disable AL0432
             SalesHeader.FieldNo("Physical Transfer CZL"):
                 if (SalesLine.Type = SalesLine.Type::Item) and (SalesLine."No." <> '') then
                     SalesLine."Physical Transfer CZL" := SalesHeader."Physical Transfer CZL";
+#pragma warning restore AL0432
         end;
     end;
+#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterUpdateShipToAddress', '', false, false)]
     local procedure UpdateVATCountryRegionCodeOnAfterUpdateShipToAddress(var SalesHeader: Record "Sales Header")

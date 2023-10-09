@@ -1,3 +1,12 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Vendor;
+
 tableextension 4817 "Intrastat Report Purch. Head." extends "Purchase Header"
 {
     fields
@@ -6,27 +15,48 @@ tableextension 4817 "Intrastat Report Purch. Head." extends "Purchase Header"
         {
             trigger OnAfterValidate()
             begin
-                if IntrastatReportSetup.Get() and (IntrastatReportSetup."VAT No. Based On" = IntrastatReportSetup."VAT No. Based On"::"Sell-to VAT") then
-                    UpdateIntrastatFields("Buy-from Vendor No.");
+                UpdateIntrastatFields(FieldNo("Buy-from Vendor No."));
             end;
         }
         modify("Pay-to Vendor No.")
         {
             trigger OnAfterValidate()
             begin
-                if IntrastatReportSetup.Get() and (IntrastatReportSetup."VAT No. Based On" = IntrastatReportSetup."VAT No. Based On"::"Bill-to VAT") then
-                    UpdateIntrastatFields("Pay-to Vendor No.");
+                UpdateIntrastatFields(FieldNo("Pay-to Vendor No."));
             end;
         }
     }
 
+    local procedure UpdateIntrastatFields(FieldNo: Integer)
     var
         IntrastatReportSetup: Record "Intrastat Report Setup";
-
-    local procedure UpdateIntrastatFields(VendorNo: Code[20])
-    var
         Vendor: Record Vendor;
+        VendorNo: Code[20];
+        IsHandled: Boolean;
     begin
+        OnBeforeUpdateIntrastatFields(Rec, FieldNo, IsHandled);
+        if IsHandled then
+            exit;
+
+        if Rec.IsTemporary() then
+            exit;
+
+        if not IntrastatReportSetup.Get() then
+            exit;
+
+        if (FieldNo = FieldNo("Buy-from Vendor No.")) and
+           (IntrastatReportSetup."VAT No. Based On" = IntrastatReportSetup."VAT No. Based On"::"Sell-to VAT")
+        then
+            VendorNo := "Buy-from Vendor No.";
+
+        if (FieldNo = FieldNo("Pay-to Vendor No.")) and
+           (IntrastatReportSetup."VAT No. Based On" = IntrastatReportSetup."VAT No. Based On"::"Bill-to VAT")
+        then
+            VendorNo := "Pay-to Vendor No.";
+
+        if VendorNo = '' then
+            exit;
+
         if Vendor.Get(VendorNo) then begin
             Validate("Transport Method", Vendor."Def. Transport Method");
 
@@ -45,5 +75,10 @@ tableextension 4817 "Intrastat Report Purch. Head." extends "Purchase Header"
             Validate("Transport Method", Vendor."Def. Transport Method");
             Validate("Transaction Type", Vendor."Default Trans. Type");
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateIntrastatFields(var PurchaseHeader: Record "Purchase Header"; FieldNo: Integer; var IsHandled: Boolean);
+    begin
     end;
 }

@@ -1,3 +1,5 @@
+namespace Microsoft.Purchases.Vendor.RemittanceAdvice;
+
 permissionset 4022 "UKSRA - Objects"
 {
     Assignable = false;

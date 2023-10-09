@@ -3,6 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Company;
+using Microsoft.Utilities;
+using System.Integration;
+using System.Reflection;
+using System.Utilities;
+
 codeunit 1865 "C5 Helper Functions"
 {
     var
