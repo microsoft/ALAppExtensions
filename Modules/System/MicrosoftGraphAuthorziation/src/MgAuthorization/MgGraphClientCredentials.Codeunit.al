@@ -56,7 +56,7 @@ codeunit 9132 "MgGraph Client Credentials" implements "Microsoft Graph Authoriza
     local procedure AcquireToken(var AccessToken: Text; var ErrorText: Text): Boolean
     var
         OAuth2: Codeunit OAuth2;
-        IsHandled, IsSuccess : Boolean;
+        IsSuccess: Boolean;
         OAuthAuthorityUrl: Text;
         AquireTokenFailedErr: Label 'Acquire of token with Client Credentials failed.';
     begin
