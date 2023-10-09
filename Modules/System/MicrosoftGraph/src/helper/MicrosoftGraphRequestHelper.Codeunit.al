@@ -35,7 +35,7 @@ codeunit 9134 "Microsoft Graph Request Helper"
         OperationResponse := SendRequest(PrepareRequestMsg(Enum::"Http Request Type"::POST, MicrosoftGraphUriBuilder, MicrosoftGraphHttpContent));
     end;
 
-    procedure Delete(MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder";) OperationResponse: Codeunit "Mg Operation Response"
+    procedure Delete(MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder") OperationResponse: Codeunit "Mg Operation Response"
     begin
         OperationResponse := SendRequest(PrepareRequestMsg(Enum::"Http Request Type"::DELETE, MicrosoftGraphUriBuilder));
     end;
