@@ -71,7 +71,20 @@ codeunit 9351 "Microsoft Graph Client Impl."
         exit(MgOperationResponse.GetDiagnostics().IsSuccessStatusCode());
     end;
 
-
+    procedure Patch(RelativeUriToResource: Text; MgOptionalParameters: Codeunit "Mg Optional Parameters"; var RequestContentInStream: InStream; var FileInStream: InStream): Boolean
+    var
+        MicrosoftGraphHttpContent: Codeunit "Microsoft Graph Http Content";
+        MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder";
+    begin
+        MicrosoftGraphUriBuilder.Initialize(MicrosoftGraphBaseUrl, MicrosoftGraphAPIVersion, RelativeUriToResource, MgOptionalParameters.GetQueryParameters());
+        MicrosoftGraphHttpContent.FromFileInStream(RequestContentInStream);
+        MicrosoftGraphRequestHelper.SetAuthorization(MicrosoftGraphAuthorization);
+        MicrosoftGraphRequestHelper.SetHttpClient(IHttpClient);
+        MgOperationResponse := MicrosoftGraphRequestHelper.Patch(MicrosoftGraphUriBuilder, MgOptionalParameters, MicrosoftGraphHttpContent);
+        if not MgOperationResponse.TryGetResultAsStream(FileInStream) then
+            exit(false);
+        exit(MgOperationResponse.GetDiagnostics().IsSuccessStatusCode());
+    end;
 
     procedure Delete(RelativeUriToResource: Text): Boolean
     var
