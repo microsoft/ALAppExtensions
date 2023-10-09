@@ -6,6 +6,8 @@
 codeunit 9153 "Microsoft Graph Http Content"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         HttpContent: HttpContent;
@@ -15,7 +17,7 @@ codeunit 9153 "Microsoft Graph Http Content"
     procedure FromFileInStream(var FileInStream: Instream)
     begin
         HttpContent.WriteFrom(FileInStream);
-        ContentLength := GetContentLength(FileInStream);
+        ContentLength := FileInStream.Length();
     end;
 
     procedure FromJson(NewJsonObject: JsonObject)
@@ -42,16 +44,6 @@ codeunit 9153 "Microsoft Graph Http Content"
     procedure GetContentType(): Text
     begin
         exit(ContentType);
-    end;
-
-    local procedure GetContentLength(var SourceInStream: InStream) Length: Integer
-    var
-        MemoryStream: DotNet MemoryStream;
-    begin
-        MemoryStream := MemoryStream.MemoryStream();
-        CopyStream(MemoryStream, SourceInStream);
-        Length := MemoryStream.Length;
-        Clear(SourceInStream);
     end;
 
 }

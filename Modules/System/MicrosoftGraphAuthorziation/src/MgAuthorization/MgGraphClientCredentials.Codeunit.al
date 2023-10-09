@@ -6,6 +6,8 @@
 codeunit 9132 "MgGraph Client Credentials" implements "Microsoft Graph Authorization"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         BearerTxt: Label 'Bearer %1', Comment = '%1 - Token', Locked = true;
@@ -57,27 +59,22 @@ codeunit 9132 "MgGraph Client Credentials" implements "Microsoft Graph Authoriza
         OAuth2: Codeunit OAuth2;
         IsHandled, IsSuccess : Boolean;
         OAuthAuthorityUrl: Text;
+        AquireTokenFailedErr: Label 'Acquire of token with Client Credentials failed.';
     begin
-        OnBeforeGetToken(IsHandled, IsSuccess, ErrorText, AccessToken);
+        OAuthAuthorityUrl := StrSubstNo(ClientCredentialsTokenAuthorityUrlTxt, AadTenantId);
+        if (not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, '', OAuthAuthorityUrl, Scopes, AccessToken)) or (AccessToken = '') then
+            OAuth2.AcquireTokenWithClientCredentials(ClientId, ClientSecret, OAuthAuthorityUrl, '', Scopes, AccessToken);
 
-        if not IsHandled then begin
-            OAuthAuthorityUrl := StrSubstNo(ClientCredentialsTokenAuthorityUrlTxt, AadTenantId);
-            if (not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, '', OAuthAuthorityUrl, Scopes, AccessToken)) or (AccessToken = '') then
-                OAuth2.AcquireTokenWithClientCredentials(ClientId, ClientSecret, OAuthAuthorityUrl, '', Scopes, AccessToken);
+        IsSuccess := AccessToken <> '';
 
-            IsSuccess := AccessToken <> '';
+        if AuthCodeErr <> '' then
+            ErrorText := AuthCodeErr
+        else
+            ErrorText := GetLastErrorText();
 
-            if AuthCodeErr <> '' then
-                ErrorText := AuthCodeErr
-            else
-                ErrorText := GetLastErrorText();
-        end;
+        if not IsSuccess and (ErrorText = '') then
+            ErrorText := AquireTokenFailedErr;
 
         exit(IsSuccess);
-    end;
-
-    [InternalEvent(false, true)]
-    local procedure OnBeforeGetToken(var IsHandled: Boolean; var IsSuccess: Boolean; var ErrorText: Text; var AccessToken: Text)
-    begin
     end;
 }

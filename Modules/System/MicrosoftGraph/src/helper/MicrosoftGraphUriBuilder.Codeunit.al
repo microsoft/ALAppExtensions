@@ -6,6 +6,8 @@
 codeunit 9152 "Microsoft Graph Uri Builder"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         Uri: Codeunit Uri;

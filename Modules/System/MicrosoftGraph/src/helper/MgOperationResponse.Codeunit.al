@@ -6,6 +6,8 @@
 codeunit 9156 "Mg Operation Response"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         MicrosoftGraphDiagnostics: Codeunit "Microsoft Graph Diagnostics";
@@ -14,7 +16,7 @@ codeunit 9156 "Mg Operation Response"
 
     [NonDebuggable]
     [TryFunction]
-    internal procedure TryGetResultAsText(var Result: Text);
+    procedure TryGetResultAsText(var Result: Text);
     var
         ResultInStream: InStream;
     begin
@@ -24,17 +26,18 @@ codeunit 9156 "Mg Operation Response"
 
     [NonDebuggable]
     [TryFunction]
-    internal procedure TryGetResultAsStream(var ResultInStream: InStream)
+    procedure TryGetResultAsStream(var ResultInStream: InStream)
     begin
         TempBlobContent.CreateInStream(ResultInStream);
     end;
 
     [NonDebuggable]
-    internal procedure SetHttpResponse(HttpResponseMessage: HttpResponseMessage)
+    procedure SetHttpResponse(HttpResponseMessage: HttpResponseMessage)
     var
         ContentInStream: InStream;
         ContentOutStream: OutStream;
     begin
+        Clear(TempBlobContent);
         TempBlobContent.CreateOutStream(ContentOutStream);
         HttpResponseMessage.Content().ReadAs(ContentInStream);
         CopyStream(ContentOutStream, ContentInStream);
@@ -43,7 +46,7 @@ codeunit 9156 "Mg Operation Response"
     end;
 
     [NonDebuggable]
-    internal procedure SetHttpResponse(ResponseContent: Text; ResponseHttpHeaders: HttpHeaders; ResponseHttpStatusCode: Integer; ResponseIsSuccessStatusCode: Boolean; ResponseReasonPhrase: Text)
+    procedure SetHttpResponse(ResponseContent: Text; ResponseHttpHeaders: HttpHeaders; ResponseHttpStatusCode: Integer; ResponseIsSuccessStatusCode: Boolean; ResponseReasonPhrase: Text)
     var
         ContentOutStream: OutStream;
     begin
@@ -54,7 +57,7 @@ codeunit 9156 "Mg Operation Response"
     end;
 
     [NonDebuggable]
-    internal procedure GetHeaderValueFromResponseHeaders(HeaderName: Text): Text
+    procedure GetHeaderValueFromResponseHeaders(HeaderName: Text): Text
     var
         Values: array[100] of Text;
     begin
@@ -64,7 +67,7 @@ codeunit 9156 "Mg Operation Response"
     end;
 
     [NonDebuggable]
-    internal procedure GetRetryAfterHeaderValue() RetryAfter: Integer;
+    procedure GetRetryAfterHeaderValue() RetryAfter: Integer;
     var
         HeaderValue: Text;
     begin
@@ -90,7 +93,7 @@ codeunit 9156 "Mg Operation Response"
     end;
 
     [NonDebuggable]
-    internal procedure GetDiagnostics(): Interface "HTTP Diagnostics"
+    procedure GetDiagnostics(): Interface "HTTP Diagnostics"
     begin
         exit(MicrosoftGraphDiagnostics);
     end;

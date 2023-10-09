@@ -9,6 +9,8 @@
 codeunit 9155 "Microsoft Graph Diagnostics" implements "HTTP Diagnostics"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         SuccessStatusCode: Boolean;

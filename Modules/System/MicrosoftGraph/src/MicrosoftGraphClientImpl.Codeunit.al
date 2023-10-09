@@ -6,6 +6,8 @@
 codeunit 9151 "Microsoft Graph Client Impl."
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
 
     var

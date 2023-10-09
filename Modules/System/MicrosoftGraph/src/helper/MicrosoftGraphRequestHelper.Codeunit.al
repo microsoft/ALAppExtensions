@@ -6,12 +6,14 @@
 codeunit 9154 "Microsoft Graph Request Helper"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         HttpClient: HttpClient;
         Authorization: Interface "Microsoft Graph Authorization";
         OperationNotSuccessfulErr: Label 'An error has occurred';
-        UserAgentLbl: Label 'NONISV|%1|Dynamics 365 Business Central - %2/%3', Locked = true, Comment = '%1 = App Publisher; %2 = App Name; %3 = App Version';
+        UserAgentLbl: Label 'NONISV|%1|Dynamics 365 Business Central - %2/%3', Comment = '%1 = App Publisher; %2 = App Name; %3 = App Version', Locked = true;
 
     procedure SetAuthorization(Auth: Interface "Microsoft Graph Authorization")
     begin
@@ -91,21 +93,17 @@ codeunit 9154 "Microsoft Graph Request Helper"
     [NonDebuggable]
     local procedure SendRequest(HttpRequestMessage: HttpRequestMessage) OperationResponse: Codeunit "Mg Operation Response"
     var
-        IsHandled: Boolean;
         HttpResponseMessage: HttpResponseMessage;
         Content: Text;
     begin
-        OnBeforeSendRequest(HttpRequestMessage, OperationResponse, IsHandled, HttpRequestMessage.Method());
 
-        if not IsHandled then begin
-            Authorization.Authorize(HttpRequestMessage);
-            if not HttpClient.Send(HttpRequestMessage, HttpResponseMessage) then
-                Error(OperationNotSuccessfulErr);
+        Authorization.Authorize(HttpRequestMessage);
+        if not HttpClient.Send(HttpRequestMessage, HttpResponseMessage) then
+            Error(OperationNotSuccessfulErr);
 
-            HttpResponseMessage.Content.ReadAs(Content);
+        HttpResponseMessage.Content.ReadAs(Content);
 
-            OperationResponse.SetHttpResponse(HttpResponseMessage);
-        end;
+        OperationResponse.SetHttpResponse(HttpResponseMessage);
     end;
 
     local procedure GetUserAgentString() UserAgentString: Text
@@ -115,11 +113,4 @@ codeunit 9154 "Microsoft Graph Request Helper"
         if NavApp.GetCurrentModuleInfo(ModuleInfo) then
             UserAgentString := StrSubstNo(UserAgentLbl, ModuleInfo.Publisher(), ModuleInfo.Name(), ModuleInfo.AppVersion());
     end;
-
-    [InternalEvent(false, true)]
-    local procedure OnBeforeSendRequest(HttpRequestMessage: HttpRequestMessage; var MgOperationResponse: Codeunit "Mg Operation Response"; var IsHandled: Boolean; Method: Text)
-    begin
-
-    end;
-
 }
