@@ -32,17 +32,17 @@ codeunit 9156 "Mg Operation Response"
     end;
 
     [NonDebuggable]
-    procedure SetHttpResponse(HttpResponseMessage: HttpResponseMessage)
+    procedure SetHttpResponse(IHttpResponseMessage: Interface IHttpResponseMessage)
     var
         ContentInStream: InStream;
         ContentOutStream: OutStream;
     begin
         Clear(TempBlobContent);
         TempBlobContent.CreateOutStream(ContentOutStream);
-        HttpResponseMessage.Content().ReadAs(ContentInStream);
+        IHttpResponseMessage.Content().ReadAs(ContentInStream);
         CopyStream(ContentOutStream, ContentInStream);
-        HttpHeaders := HttpResponseMessage.Headers();
-        MicrosoftGraphDiagnostics.SetParameters(HttpResponseMessage.IsSuccessStatusCode, HttpResponseMessage.HttpStatusCode, HttpResponseMessage.ReasonPhrase, GetRetryAfterHeaderValue(), GetErrorDescription());
+        HttpHeaders := IHttpResponseMessage.Headers();
+        MicrosoftGraphDiagnostics.SetParameters(IHttpResponseMessage.IsSuccessStatusCode(), IHttpResponseMessage.HttpStatusCode(), IHttpResponseMessage.ReasonPhrase(), GetRetryAfterHeaderValue(), GetErrorDescription());
     end;
 
     [NonDebuggable]

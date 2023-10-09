@@ -1,0 +1,25 @@
+{
+    "id":  "6d72c93d-164a-494c-8d65-24d7f41d7b61",
+    "name":  "Http",
+    "publisher":  "Microsoft",
+    "brief":  "Interface for HTTP applications",
+    "description":  "Provides a programming interface for modern HTTP applications.",
+    "version":  "21.6.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2103698",
+    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
+    "logo":  "",
+    "dependencies":  [],
+    "internalsVisibleTo":  [],
+    "screenshots":  [ ],
+    "platform":  "21.0.0.0",
+    "idRanges":  [
+        {
+            "from":  9160,
+            "to":  9169
+        }
+    ],
+    "target":  "OnPrem",
+    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/"
+}

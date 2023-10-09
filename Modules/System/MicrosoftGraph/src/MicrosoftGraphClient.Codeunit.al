@@ -13,6 +13,8 @@ codeunit 9150 "Microsoft Graph Client"
     var
         [NonDebuggable]
         MicrosoftGraphClientImpl: Codeunit "Microsoft Graph Client Impl.";
+        IHttpClient: Interface IHttpClient;
+        HttpClientSet: Boolean;
 
     /// <summary>
     /// Initializes Microsoft Graph client.
@@ -20,8 +22,12 @@ codeunit 9150 "Microsoft Graph Client"
     /// <param name="ApiVersion">API Version to use.</param>
     /// <param name="Authorization">The authorization to use.</param>
     procedure Initialize(MicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version"; MicrosoftGraphAuthorization: Interface "Microsoft Graph Authorization")
+    var
+        HttpClient: Codeunit HttpClient;
     begin
-        MicrosoftGraphClientImpl.Initialize(MicrosoftGraphAPIVersion, MicrosoftGraphAuthorization);
+        if not HttpClientSet then
+            IHttpClient := HttpClient;
+        MicrosoftGraphClientImpl.Initialize(MicrosoftGraphAPIVersion, MicrosoftGraphAuthorization, IHttpClient);
     end;
 
     /// <summary>
@@ -78,5 +84,15 @@ codeunit 9150 "Microsoft Graph Client"
     procedure Delete(RelativeUriToResource: Text): Boolean
     begin
         exit(MicrosoftGraphClientImpl.Delete(RelativeUriToResource));
+    end;
+
+    /// <summary>
+    /// Set a custom implementation of the HttpClient to mock the web communication in a test.
+    /// </summary>
+    /// <param name="NewHttpClient"></param>
+    internal procedure SetHttpClient(NewHttpClient: Interface IHttpClient)
+    begin
+        IHttpClient := NewHttpClient;
+        HttpClientSet := true;
     end;
 }

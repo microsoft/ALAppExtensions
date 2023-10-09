@@ -10,10 +10,15 @@ codeunit 9154 "Microsoft Graph Request Helper"
     InherentPermissions = X;
 
     var
-        HttpClient: HttpClient;
+        IHttpClient: Interface IHttpClient;
         Authorization: Interface "Microsoft Graph Authorization";
         OperationNotSuccessfulErr: Label 'An error has occurred';
         UserAgentLbl: Label 'NONISV|%1|Dynamics 365 Business Central - %2/%3', Comment = '%1 = App Publisher; %2 = App Name; %3 = App Version', Locked = true;
+
+    procedure SetHttpClient(NewHttpClient: Interface IHttpClient)
+    begin
+        IHttpClient := NewHttpClient;
+    end;
 
     procedure SetAuthorization(Auth: Interface "Microsoft Graph Authorization")
     begin
@@ -93,17 +98,17 @@ codeunit 9154 "Microsoft Graph Request Helper"
     [NonDebuggable]
     local procedure SendRequest(HttpRequestMessage: HttpRequestMessage) OperationResponse: Codeunit "Mg Operation Response"
     var
-        HttpResponseMessage: HttpResponseMessage;
+        IHttpResponseMessage: Interface IHttpResponseMessage;
         Content: Text;
     begin
 
         Authorization.Authorize(HttpRequestMessage);
-        if not HttpClient.Send(HttpRequestMessage, HttpResponseMessage) then
+        if not IHttpClient.Send(HttpRequestMessage, IHttpResponseMessage) then
             Error(OperationNotSuccessfulErr);
 
-        HttpResponseMessage.Content.ReadAs(Content);
+        IHttpResponseMessage.Content().ReadAs(Content);
 
-        OperationResponse.SetHttpResponse(HttpResponseMessage);
+        OperationResponse.SetHttpResponse(IHttpResponseMessage);
     end;
 
     local procedure GetUserAgentString() UserAgentString: Text

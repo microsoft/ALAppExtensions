@@ -12,6 +12,12 @@
     "logo":  "",
     "dependencies":  [
                         {                            
+                            "id":  "6d72c93d-164a-494c-8d65-24d7f41d7b61",
+                            "name":  "Http",
+                            "publisher":  "Microsoft",
+                            "version":  "21.6.0.0"
+                        },
+                        {                            
                             "id":  "1ee79d56-c290-46c0-ae69-5901bbbe3f9c",
                             "name":  "Microsoft Graph Authorization",
                             "publisher":  "Microsoft",

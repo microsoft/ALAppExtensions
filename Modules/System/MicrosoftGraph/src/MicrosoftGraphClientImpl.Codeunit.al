@@ -15,12 +15,14 @@ codeunit 9151 "Microsoft Graph Client Impl."
         MicrosoftGraphRequestHelper: Codeunit "Microsoft Graph Request Helper";
         MicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version";
         MicrosoftGraphAuthorization: Interface "Microsoft Graph Authorization";
+        IHttpClient: Interface IHttpClient;
 
 
-    procedure Initialize(NewMicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version"; NewMicrosoftGraphAuthorization: Interface "Microsoft Graph Authorization")
+    procedure Initialize(NewMicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version"; NewMicrosoftGraphAuthorization: Interface "Microsoft Graph Authorization"; NewIHttpClient: Interface IHttpClient)
     begin
         MicrosoftGraphAPIVersion := NewMicrosoftGraphAPIVersion;
         MicrosoftGraphAuthorization := NewMicrosoftGraphAuthorization;
+        IHttpClient := NewIHttpClient;
     end;
 
     procedure GetDiagnostics(): Interface "HTTP Diagnostics"
@@ -41,6 +43,7 @@ codeunit 9151 "Microsoft Graph Client Impl."
     begin
         MicrosoftGraphUriBuilder.Initialize(MicrosoftGraphAPIVersion, RelativeUriToResource, MgOptionalParameters.GetQueryParameters());
         MicrosoftGraphRequestHelper.SetAuthorization(MicrosoftGraphAuthorization);
+        MicrosoftGraphRequestHelper.SetHttpClient(IHttpClient);
         MgOperationResponse := MicrosoftGraphRequestHelper.Get(MicrosoftGraphUriBuilder, MgOptionalParameters);
         if not MgOperationResponse.TryGetResultAsStream(FileInStream) then
             exit(false);
@@ -55,6 +58,7 @@ codeunit 9151 "Microsoft Graph Client Impl."
         MicrosoftGraphUriBuilder.Initialize(MicrosoftGraphAPIVersion, RelativeUriToResource, MgOptionalParameters.GetQueryParameters());
         MicrosoftGraphHttpContent.FromFileInStream(RequestContentInStream);
         MicrosoftGraphRequestHelper.SetAuthorization(MicrosoftGraphAuthorization);
+        MicrosoftGraphRequestHelper.SetHttpClient(IHttpClient);
         MgOperationResponse := MicrosoftGraphRequestHelper.Post(MicrosoftGraphUriBuilder, MgOptionalParameters, MicrosoftGraphHttpContent);
         if not MgOperationResponse.TryGetResultAsStream(FileInStream) then
             exit(false);
@@ -69,6 +73,7 @@ codeunit 9151 "Microsoft Graph Client Impl."
     begin
         MicrosoftGraphUriBuilder.Initialize(MicrosoftGraphAPIVersion, RelativeUriToResource);
         MicrosoftGraphRequestHelper.SetAuthorization(MicrosoftGraphAuthorization);
+        MicrosoftGraphRequestHelper.SetHttpClient(IHttpClient);
         MgOperationResponse := MicrosoftGraphRequestHelper.Delete(MicrosoftGraphUriBuilder);
         exit(MgOperationResponse.GetDiagnostics().IsSuccessStatusCode());
     end;
