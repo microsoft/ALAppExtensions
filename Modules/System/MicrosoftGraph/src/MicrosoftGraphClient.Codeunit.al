@@ -44,4 +44,14 @@ codeunit 9130 "Microsoft Graph Client"
     begin
         exit(MicrosoftGraphClientImpl.Get(RelativeUriToResource, FileInStream));
     end;
+
+    /// <summary>
+    /// Send a DELETE request to the microsoft graph API
+    /// </summary>
+    /// <param name="RelativeUriToResource">A relativ uri to the resource - e.g. /users/{id|userPrincipalName}.</param>
+    /// <returns>True if the operation was successful; otherwise - false.</returns>
+    procedure Delete(RelativeUriToResource: Text): Boolean
+    begin
+        exit(MicrosoftGraphClientImpl.Delete(RelativeUriToResource));
+    end;
 }

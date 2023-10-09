@@ -36,6 +36,7 @@ codeunit 9132 "Microsoft Graph Uri Builder"
     var
         UrlCombineTxt: Label '%1/%2', Comment = '%1 = BaseUrl, %2 = relative url to resource', Locked = true;
     begin
+        BaseUri := BaseUri.TrimEnd('/');
         RelativeUriToResource := RelativeUriToResource.TrimStart('/');
         CombinedUrl := StrSubstNo(UrlCombineTxt, BaseUri, RelativeUriToResource);
     end;

@@ -40,5 +40,19 @@ codeunit 9131 "Microsoft Graph Client Impl."
         exit(true);
     end;
 
+    procedure Delete(RelativeUriToResource: Text): Boolean
+    var
+        MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder";
+    begin
+        MicrosoftGraphUriBuilder.Initialize(MicrosoftGraphAPIVersion, RelativeUriToResource);
+        MicrosoftGraphRequestHelper.SetAuthorization(MicrosoftGraphAuthorization);
+        MgOperationResponse := MicrosoftGraphRequestHelper.Get(MicrosoftGraphUriBuilder);
+        if not MgOperationResponse.GetResultAsStream(FileInStream) then
+            exit(false);
+        if not MgOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
+            exit(false);
+        exit(true);
+    end;
+
 }
 
