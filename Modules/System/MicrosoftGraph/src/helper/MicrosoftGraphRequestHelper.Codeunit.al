@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 9034 "Microsoft Graph Request Helper"
+codeunit 9134 "Microsoft Graph Request Helper"
 {
     Access = Internal;
 
@@ -50,8 +50,8 @@ codeunit 9034 "Microsoft Graph Request Helper"
     [NonDebuggable]
     local procedure PrepareRequestMsg(HttpRequestType: Enum "Http Request Type"; MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder"; MicrosoftGraphHttpContent: Codeunit "Microsoft Graph Http Content") RequestMessage: HttpRequestMessage
     var
-        Headers: HttpHeaders;
         HttpContent: HttpContent;
+        Headers: HttpHeaders;
     begin
         RequestMessage.Method(Format(HttpRequestType));
         RequestMessage.SetRequestUri(MicrosoftGraphUriBuilder.GetUri());
@@ -78,8 +78,8 @@ codeunit 9034 "Microsoft Graph Request Helper"
     [NonDebuggable]
     local procedure SendRequest(HttpRequestMessage: HttpRequestMessage) OperationResponse: Codeunit "Mg Operation Response"
     var
-        HttpResponseMessage: HttpResponseMessage;
         IsHandled: Boolean;
+        HttpResponseMessage: HttpResponseMessage;
         Content: Text;
     begin
         OnBeforeSendRequest(HttpRequestMessage, OperationResponse, IsHandled, HttpRequestMessage.Method());

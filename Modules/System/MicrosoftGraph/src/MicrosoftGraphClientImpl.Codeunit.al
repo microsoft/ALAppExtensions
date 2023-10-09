@@ -3,17 +3,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 9031 "Microsoft Graph Client Impl."
+codeunit 9131 "Microsoft Graph Client Impl."
 {
     Access = Internal;
 
 
     var
-        UriBuilder: Codeunit "Uri Builder";
-        MicrosoftGraphAuthorization: Interface "Microsoft Graph Authorization";
-        MicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version";
         MgOperationResponse: Codeunit "Mg Operation Response";
         MicrosoftGraphRequestHelper: Codeunit "Microsoft Graph Request Helper";
+        MicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version";
+        MicrosoftGraphAuthorization: Interface "Microsoft Graph Authorization";
 
 
     procedure Initialize(NewMicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version"; NewMicrosoftGraphAuthorization: Interface "Microsoft Graph Authorization")
@@ -29,9 +28,6 @@ codeunit 9031 "Microsoft Graph Client Impl."
 
     procedure Get(RelativeUriToResource: Text; var FileInStream: InStream): Boolean
     var
-        MgGraphHttpRequestMessage: HttpRequestMessage;
-        MgGraphHttpResponseMessage: HttpResponseMessage;
-        MgGraphHttpClient: HttpClient;
         MicrosoftGraphUriBuilder: Codeunit "Microsoft Graph Uri Builder";
     begin
         MicrosoftGraphUriBuilder.Initialize(MicrosoftGraphAPIVersion, RelativeUriToResource);
@@ -41,6 +37,7 @@ codeunit 9031 "Microsoft Graph Client Impl."
             exit(false);
         if not MgOperationResponse.GetDiagnostics().IsSuccessStatusCode() then
             exit(false);
+        exit(true);
     end;
 
 }

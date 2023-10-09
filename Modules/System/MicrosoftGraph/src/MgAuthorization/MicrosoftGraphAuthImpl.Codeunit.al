@@ -3,12 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 9036 "Microsoft Graph Auth. - Impl."
+codeunit 9136 "Microsoft Graph Auth. - Impl."
 {
     Access = Internal;
 
     [NonDebuggable]
-    procedure CreateAuthorizationCode(AadTenantId: Text; ClientId: Text; ClientSecret: Text; Scopes: List of [Text]): Interface "Microsoft Graph Authorization";
+    procedure CreateAuthorizationWithClientCredentials(AadTenantId: Text; ClientId: Text; ClientSecret: Text; Scopes: List of [Text]): Interface "Microsoft Graph Authorization";
     var
         MgGraphClientCredentials: Codeunit "MgGraph Client Credentials";
     begin

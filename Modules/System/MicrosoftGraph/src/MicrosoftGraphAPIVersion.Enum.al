@@ -1,4 +1,4 @@
-enum 9030 "Microsoft Graph API Version"
+enum 9130 "Microsoft Graph API Version"
 {
     Access = Public;
     Extensible = false;

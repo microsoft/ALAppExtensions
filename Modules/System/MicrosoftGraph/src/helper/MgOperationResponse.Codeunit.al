@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 9038 "Mg Operation Response"
+codeunit 9138 "Mg Operation Response"
 {
     Access = Internal;
 
@@ -27,8 +27,8 @@ codeunit 9038 "Mg Operation Response"
     [NonDebuggable]
     internal procedure SetHttpResponse(HttpResponseMessage: HttpResponseMessage)
     var
-        ContentOutStream: OutStream;
         ContentInStream: InStream;
+        ContentOutStream: OutStream;
     begin
         TempBlobContent.CreateOutStream(ContentOutStream);
         HttpResponseMessage.Content().ReadAs(ContentInStream);
@@ -73,9 +73,9 @@ codeunit 9038 "Mg Operation Response"
     [NonDebuggable]
     local procedure GetErrorDescription(): Text
     var
-        Result: Text;
         JObject: JsonObject;
         JToken: JsonToken;
+        Result: Text;
     begin
         GetResultAsText(Result);
         if Result <> '' then
@@ -91,7 +91,7 @@ codeunit 9038 "Mg Operation Response"
     end;
 
     var
-        TempBlobContent: Codeunit "Temp Blob";
         SharepointDiagnostics: Codeunit "SharePoint Diagnostics";
+        TempBlobContent: Codeunit "Temp Blob";
         HttpHeaders: HttpHeaders;
 }

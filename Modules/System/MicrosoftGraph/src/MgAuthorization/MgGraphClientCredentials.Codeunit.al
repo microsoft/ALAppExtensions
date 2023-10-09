@@ -3,23 +3,23 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 9037 "MgGraph Client Credentials" implements "Microsoft Graph Authorization"
+codeunit 9137 "MgGraph Client Credentials" implements "Microsoft Graph Authorization"
 {
     Access = Internal;
 
     var
+        BearerTxt: Label 'Bearer %1', Comment = '%1 - Token', Locked = true;
+        ClientCredentialsTokenAuthorityUrlTxt: Label 'https://login.microsoftonline.com/%1/oauth2/v2.0/token', Comment = '%1 = AAD tenant ID', Locked = true;
+        [NonDebuggable]
+        Scopes: List of [Text];
+        [NonDebuggable]
+        AadTenantId: Text;
+        [NonDebuggable]
+        AuthCodeErr: Text;
         [NonDebuggable]
         ClientId: Text;
         [NonDebuggable]
         ClientSecret: Text;
-        [NonDebuggable]
-        AuthCodeErr: Text;
-        [NonDebuggable]
-        AadTenantId: Text;
-        [NonDebuggable]
-        Scopes: List of [Text];
-        ClientCredentialsTokenAuthorityUrlTxt: Label 'https://login.microsoftonline.com/%1/oauth2/v2.0/token', Comment = '%1 = AAD tenant ID', Locked = true;
-        BearerTxt: Label 'Bearer %1', Comment = '%1 - Token', Locked = true;
 
     [NonDebuggable]
     procedure SetParameters(NewAadTenantId: Text; NewClientId: Text; NewClientSecret: Text; NewScopes: List of [Text])
@@ -42,9 +42,9 @@ codeunit 9037 "MgGraph Client Credentials" implements "Microsoft Graph Authoriza
     [NonDebuggable]
     local procedure GetToken(): Text
     var
-        ErrorText: Text;
         [NonDebuggable]
         AccessToken: Text;
+        ErrorText: Text;
     begin
         if not AcquireToken(AccessToken, ErrorText) then
             Error(ErrorText);

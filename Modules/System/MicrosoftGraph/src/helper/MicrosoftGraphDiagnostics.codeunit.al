@@ -6,14 +6,14 @@
 /// <summary>
 /// Stores detailed information about failed api call
 /// </summary>
-codeunit 9039 "Microsoft Graph Diagnostics" implements "HTTP Diagnostics"
+codeunit 9139 "Microsoft Graph Diagnostics" implements "HTTP Diagnostics"
 {
     Access = Internal;
 
     var
-        ErrorMessage, ResponseReasonPhrase : Text;
-        HttpStatusCode, RetryAfter : Integer;
         SuccessStatusCode: Boolean;
+        HttpStatusCode, RetryAfter : Integer;
+        ErrorMessage, ResponseReasonPhrase : Text;
 
     /// <summary>
     /// Gets reponse details.

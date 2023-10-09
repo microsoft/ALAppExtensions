@@ -3,27 +3,27 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 9032 "Microsoft Graph Uri Builder"
+codeunit 9132 "Microsoft Graph Uri Builder"
 {
     Access = Internal;
 
     var
-        ServerName, Namespace : Text;
         Uri: Codeunit Uri;
         MicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version";
         BaseUriLbl: Label 'https://graph.microsoft.com/%1/', Comment = '%1 = Graph API Version', Locked = true;
+        Namespace,
+        ServerName : Text;
 
-    procedure Initialize(NewMicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version"; RelativeUrlToResource: Text)
+    procedure Initialize(NewMicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version"; RelativeUriToResource: Text)
     var
-        BaseUrl: Text;
-        CombinedUrl: Text;
-        UrlCombineTxt: Label '%1/%2', Comment = '%1 = BaseUrl, %2 = relative url to resource';
+        BaseUri: Text;
+        CombinedUri: Text;
     begin
         MicrosoftGraphAPIVersion := NewMicrosoftGraphAPIVersion;
-        BaseUrl := StrSubstNo(BaseUriLbl, Format(MicrosoftGraphAPIVersion));
-        RelativeUrlToResource := RelativeUrlToResource.TrimStart('/');
-        CombinedUrl := StrSubstNo(BaseUrl, RelativeUrlToResource);
-        Uri.Init(CombinedUrl);
+
+        BaseUri := StrSubstNo(BaseUriLbl, Format(MicrosoftGraphAPIVersion));
+        CombinedUri := CombineUri(BaseUri, RelativeUriToResource);
+        Uri.Init(CombinedUri);
     end;
 
 
@@ -32,5 +32,11 @@ codeunit 9032 "Microsoft Graph Uri Builder"
         exit(Uri.GetAbsoluteUri())
     end;
 
-
+    local procedure CombineUri(BaseUri: Text; RelativeUriToResource: Text) CombinedUrl: Text
+    var
+        UrlCombineTxt: Label '%1/%2', Comment = '%1 = BaseUrl, %2 = relative url to resource', Locked = true;
+    begin
+        RelativeUriToResource := RelativeUriToResource.TrimStart('/');
+        CombinedUrl := StrSubstNo(UrlCombineTxt, BaseUri, RelativeUriToResource);
+    end;
 }

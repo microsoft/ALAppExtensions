@@ -6,7 +6,7 @@
 /// <summary>
 /// Provides functionality for creating means for authorizing HTTP requests made to SharePoint REST API.
 /// </summary>
-codeunit 9035 "Microsoft Graph Auth."
+codeunit 9135 "Microsoft Graph Auth."
 {
     Access = Public;
 
@@ -40,6 +40,6 @@ codeunit 9035 "Microsoft Graph Auth."
     var
         MicrosoftGraphAuthImpl: Codeunit "Microsoft Graph Auth. - Impl.";
     begin
-        exit(MicrosoftGraphAuthImpl.CreateAuthorizationCode(AadTenantId, ClientId, ClientSecret, Scopes));
+        exit(MicrosoftGraphAuthImpl.CreateAuthorizationWithClientCredentials(AadTenantId, ClientId, ClientSecret, Scopes));
     end;
 }

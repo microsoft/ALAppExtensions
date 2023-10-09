@@ -6,7 +6,7 @@
 /// <summary>
 /// Exposes functionality to query Microsoft Graph Api
 /// </summary>
-codeunit 9030 "Microsoft Graph Client"
+codeunit 9130 "Microsoft Graph Client"
 {
     Access = Public;
 
@@ -22,6 +22,15 @@ codeunit 9030 "Microsoft Graph Client"
     procedure Initialize(MicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version"; MicrosoftGraphAuthorization: Interface "Microsoft Graph Authorization")
     begin
         MicrosoftGraphClientImpl.Initialize(MicrosoftGraphAPIVersion, MicrosoftGraphAuthorization);
+    end;
+
+    /// <summary>
+    /// Returns detailed information on last API call.
+    /// </summary>
+    /// <returns>Codeunit holding http resonse status, reason phrase, headers and possible error information for tha last API call</returns>
+    procedure GetDiagnostics(): Interface "HTTP Diagnostics"
+    begin
+        exit(MicrosoftGraphClientImpl.GetDiagnostics());
     end;
 
 
