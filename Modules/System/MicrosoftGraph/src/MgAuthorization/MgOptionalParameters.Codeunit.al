@@ -21,27 +21,6 @@ codeunit 9157 "Mg Optional Parameters"
         SetRequestHeader('IF-Match', "Value");
     end;
 
-    /// <summary>
-    /// Sets the value for 'Content-Range' HttpHeader for a request.
-    /// </summary>
-    /// <param name="BytesStartValue">Integer value specifying the Bytes start range value</param>
-    /// <param name="BytesEndValue">Integer value specifying the Bytes end range value</param>
-    procedure SetContentRange(BytesStartValue: Integer; BytesEndValue: Integer)
-    var
-        RangeBytesLbl: Label 'bytes=%1-%2', Comment = '%1 = Start Range; %2 = End Range', Locked = true;
-    begin
-        SetRequestHeader('Content-Range', StrSubstNo(RangeBytesLbl, BytesStartValue, BytesEndValue));
-    end;
-
-    /// <summary>
-    /// Sets the value for 'Content-Range' HttpHeader for a request.
-    /// </summary>
-    /// <param name="ContentLength">Integer value specifying the length value</param>
-    procedure SetContentLength(ContentLength: Integer)
-    begin
-        SetRequestHeader('Content-Length', Format(ContentLength));
-    end;
-
     local procedure SetRequestHeader(Header: Text; HeaderValue: Text)
     begin
         RequestHeaders.Remove(Header);
