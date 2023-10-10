@@ -2,11 +2,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+namespace System.Integration.Microsoft.Graph.Authorization;
 
 /// <summary>
 /// Provides functionality for creating means for authorizing HTTP requests made to Microsoft Graph API.
 /// </summary>
-codeunit 9130 "Microsoft Graph Auth."
+codeunit 9355 "Mg Authorization"
 {
     Access = Public;
 
@@ -19,7 +20,7 @@ codeunit 9130 "Microsoft Graph Auth."
     /// <param name="Scope">A scope that you want the user to consent to.</param>
     /// <returns>Codeunit instance implementing authorization interface</returns>
     [NonDebuggable]
-    procedure CreateAuthorizationWithClientCredentials(AadTenantId: Text; ClientId: Text; ClientSecret: Text; Scope: Text): Interface "Microsoft Graph Authorization";
+    procedure CreateAuthorizationWithClientCredentials(AadTenantId: Text; ClientId: Text; ClientSecret: Text; Scope: Text): Interface "Mg Authorization";
     var
         Scopes: List of [Text];
     begin
@@ -36,10 +37,10 @@ codeunit 9130 "Microsoft Graph Auth."
     /// <param name="Scopes">A list of scopes that you want the user to consent to.</param>
     /// <returns>Codeunit instance implementing authorization interface</returns>
     [NonDebuggable]
-    procedure CreateAuthorizationWithClientCredentials(AadTenantId: Text; ClientId: Text; ClientSecret: Text; Scopes: List of [Text]): Interface "Microsoft Graph Authorization";
+    procedure CreateAuthorizationWithClientCredentials(AadTenantId: Text; ClientId: Text; ClientSecret: Text; Scopes: List of [Text]): Interface "Mg Authorization";
     var
-        MicrosoftGraphAuthImpl: Codeunit "Microsoft Graph Auth. - Impl.";
+        MgAuthorizationImpl: Codeunit "Mg Authorization - Impl.";
     begin
-        exit(MicrosoftGraphAuthImpl.CreateAuthorizationWithClientCredentials(AadTenantId, ClientId, ClientSecret, Scopes));
+        exit(MgAuthorizationImpl.CreateAuthorizationWithClientCredentials(AadTenantId, ClientId, ClientSecret, Scopes));
     end;
 }

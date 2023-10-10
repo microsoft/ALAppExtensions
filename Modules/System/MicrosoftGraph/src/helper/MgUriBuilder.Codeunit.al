@@ -2,8 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+namespace System.Integration.Microsoft.Graph;
+using System.Utilities;
 
-codeunit 9352 "Microsoft Graph Uri Builder"
+codeunit 9352 "Mg Uri Builder"
 {
     Access = Internal;
     InherentEntitlements = X;
@@ -11,18 +13,18 @@ codeunit 9352 "Microsoft Graph Uri Builder"
 
     var
         Uri: Codeunit Uri;
-        MicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version";
+        MicrosoftGraphAPIVersion: Enum "Mg API Version";
         MicrosoftGraphDefaultBaseUrlTxt: Label 'https://graph.microsoft.com', Locked = true;
 
 
-    procedure Initialize(MicrosoftGraphBaseUrl: Text; NewMicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version"; RelativeUriToResource: Text)
+    procedure Initialize(MicrosoftGraphBaseUrl: Text; NewMgAPIVersion: Enum "Mg API Version"; RelativeUriToResource: Text)
     var
         QueryParameters: Dictionary of [Text, Text];
     begin
-        Initialize(MicrosoftGraphBaseUrl, NewMicrosoftGraphAPIVersion, RelativeUriToResource, QueryParameters);
+        Initialize(MicrosoftGraphBaseUrl, NewMgAPIVersion, RelativeUriToResource, QueryParameters);
     end;
 
-    procedure Initialize(MicrosoftGraphBaseUrl: Text; NewMicrosoftGraphAPIVersion: Enum "Microsoft Graph API Version"; RelativeUriToResource: Text; QueryParameters: Dictionary of [Text, Text])
+    procedure Initialize(MicrosoftGraphBaseUrl: Text; NewMicrosoftGraphAPIVersion: Enum "Mg API Version"; RelativeUriToResource: Text; QueryParameters: Dictionary of [Text, Text])
     var
         UriBuilder: Codeunit "Uri Builder";
         BaseUri: Text;
