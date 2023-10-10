@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-codeunit 135141 "Mg Auth. Spy" implements "Microsoft Graph Authorization"
+codeunit 135141 "Mg Auth. Spy" implements "Mg Authorization"
 {
     Access = Internal;
     InherentEntitlements = X;
@@ -21,5 +21,10 @@ codeunit 135141 "Mg Auth. Spy" implements "Microsoft Graph Authorization"
     procedure IsInvoked(): Boolean
     begin
         exit(_invoked);
+    end;
+
+    procedure GetHttpAuthorization(): Interface "Http Authentication";
+    begin
+        _Invoked := true;
     end;
 }

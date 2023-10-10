@@ -18,18 +18,18 @@ codeunit 135140 "Mg Client Test"
     [Test]
     procedure AuthTriggeredTest()
     var
+        HttpResponseMessage: Codeunit "Http Response Message";
         MgAuthSpy: Codeunit "Mg Auth. Spy";
-        MicrosoftGraphClient: Codeunit "Microsoft Graph Client";
-        MockHttpClient: Codeunit "Mock HttpClient";
+        MgClient: Codeunit "Mg Client";
+        MockHttpClientHandler: Codeunit "Mock Http Client Handler";
         TempBlob: Codeunit "Temp Blob";
         ResponseInStream: InStream;
     begin
-        MicrosoftGraphClient.SetHttpClient(MockHttpClient);
-        MicrosoftGraphClient.Initialize(Enum::"Microsoft Graph API Version"::"v1.0", MgAuthSpy);
+        MgClient.Initialize(Enum::"Mg API Version"::"v1.0", MgAuthSpy, MockHttpClientHandler);
         ResponseInStream := TempBlob.CreateInStream();
 
         // [WHEN] When Get Method is called  
-        MicrosoftGraphClient.Get('groups', ResponseInStream);
+        MgClient.Get('groups', HttpResponseMessage);
 
         // [THEN] Verify authorization of request is triggered
         LibraryAssert.AreEqual(true, MgAuthSpy.IsInvoked(), 'Authorization should be invoked.');
@@ -38,47 +38,54 @@ codeunit 135140 "Mg Client Test"
     [Test]
     procedure RequestUriTest()
     var
+        HttpRequestMessage: Codeunit "Http Request Message";
+        HttpResponseMessage: Codeunit "Http Response Message";
         MgAuthSpy: Codeunit "Mg Auth. Spy";
-        MicrosoftGraphClient: Codeunit "Microsoft Graph Client";
-        MockHttpClient: Codeunit "Mock HttpClient";
+        MgClient: Codeunit "Mg Client";
+        MockHttpClientHandler: Codeunit "Mock Http Client Handler";
         TempBlob: Codeunit "Temp Blob";
-        HttpRequestMessage: HttpRequestMessage;
         ResponseInStream: InStream;
     begin
-        MicrosoftGraphClient.SetHttpClient(MockHttpClient);
-        MicrosoftGraphClient.Initialize(Enum::"Microsoft Graph API Version"::"v1.0", MgAuthSpy);
+        MgClient.Initialize(Enum::"Mg API Version"::"v1.0", MgAuthSpy, MockHttpClientHandler);
         ResponseInStream := TempBlob.CreateInStream();
 
         // [WHEN] When Get Method is called  
-        MicrosoftGraphClient.Get('groups', ResponseInStream);
+        MgClient.Get('groups', HttpResponseMessage);
 
         // [THEN] Verify request uri is build correct
-        MockHttpClient.GetHttpRequestMessage(HttpRequestMessage);
+        MockHttpClientHandler.GetHttpRequestMessage(HttpRequestMessage);
         LibraryAssert.AreEqual(HttpRequestMessage.GetRequestUri(), 'https://graph.microsoft.com/v1.0/groups', 'Incorrect Request URI.');
     end;
 
     [Test]
     procedure ResponseBodyTest()
     var
+        HttpContent: Codeunit "Http Content";
+        MockHttpContent: Codeunit "Http Content";
+        HttpResponseMessage: Codeunit "Http Response Message";
+        MockHttpResponseMessage: Codeunit "Http Response Message";
         MgAuthSpy: Codeunit "Mg Auth. Spy";
-        MicrosoftGraphClient: Codeunit "Microsoft Graph Client";
-        MockHttpClient: Codeunit "Mock HttpClient";
-        MockHttpResponseMessage: Codeunit "Mock HttpResponseMessage";
+        MgClient: Codeunit "Mg Client";
+        MockHttpClientHandler: Codeunit "Mock Http Client Handler";
         TempBlob: Codeunit "Temp Blob";
         ResponseInStream: InStream;
         ResponseJsonObject: JsonObject;
         DisplayNameJsonToken: JsonToken;
     begin
-        MockHttpResponseMessage.InitializeSuccess(200, GetGroupsResponse());
-        MockHttpClient.SetResponse(MockHttpResponseMessage);
-        MicrosoftGraphClient.SetHttpClient(MockHttpClient);
-        MicrosoftGraphClient.Initialize(Enum::"Microsoft Graph API Version"::"v1.0", MgAuthSpy);
+        // [GIVEN] Mocked Response for groups
+        MockHttpResponseMessage.SetHttpStatusCode(200);
+        MockHttpContent := HttpContent.Create(GetGroupsResponse());
+        MockHttpResponseMessage.SetContent(MockHttpContent);
+        MockHttpClientHandler.SetResponse(HttpResponseMessage);
+        MgClient.Initialize(Enum::"Mg API Version"::"v1.0", MgAuthSpy, MockHttpClientHandler);
         ResponseInStream := TempBlob.CreateInStream();
 
         // [WHEN] When Get Method is called  
-        MicrosoftGraphClient.Get('groups', ResponseInStream);
+        MgClient.Get('groups', HttpResponseMessage);
 
         // [THEN] Verify response is correct
+        HttpContent := HttpResponseMessage.GetContent();
+        ResponseInStream := HttpContent.AsInStream();
         ResponseJsonObject.ReadFrom(ResponseInStream);
         ResponseJsonObject.SelectToken('$.value[:1].displayName', DisplayNameJsonToken);
         LibraryAssert.AreEqual('HR Taskforce (ÄÖÜßäöü)', DisplayNameJsonToken.AsValue().AsText(), 'Incorrect Displayname.');
