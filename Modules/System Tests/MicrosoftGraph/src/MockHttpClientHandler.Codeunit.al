@@ -2,6 +2,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+namespace System.Test.Integration.Microsoft.Graph;
+
+using System.RestClient;
 
 codeunit 135142 "Mock Http Client Handler" implements "Http Client Handler"
 {
@@ -20,7 +23,6 @@ codeunit 135142 "Mock Http Client Handler" implements "Http Client Handler"
     begin
 
         ClearLastError();
-        // HttpResponseMessage.SetIsSuccessStatusCode();;
         exit(TrySend(HttpRequestMessage, HttpResponseMessage));
     end;
 

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Test objects for the Microsoft Graph module.",
     "description":  "Test objects for the Microsoft Graph module.",
-    "version":  "22.6.0.0",
+    "version":  "23.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -12,16 +12,22 @@
     "logo":  "",
     "dependencies":  [
         {                            
-            "id":  "abc37643-8e95-44d8-8622-32b83008207f",
-            "name":  "Http",
-            "publisher":  "Microsoft",
-            "version":  "21.6.0.0"
+            "id": "812b339d-a9db-4a6e-84e4-fe35cbef0c44",
+            "name": "Rest Client",
+            "publisher": "Microsoft",
+            "version": "23.0.0.0"
         },
         {                      
             "id":  "6d72c93d-164a-494c-8d65-24d7f41d7b61",
             "name":  "Microsoft Graph",
             "publisher":  "Microsoft",
-            "version":  "21.6.0.0"
+            "version":  "23.0.0.0"
+        },
+        {
+            "id":  "e31ad830-3d46-472e-afeb-1d3d35247943",
+            "name":  "BLOB Storage",
+            "publisher":  "Microsoft",
+            "version":  "23.0.0.0"
         }
                      ],
     "screenshots":  [
@@ -33,6 +39,6 @@
                          "to":  135149
                      }
                  ],
-    "platform":  "22.0.0.0",
+    "platform":  "23.0.0.0",
     "target":  "OnPrem"
 }

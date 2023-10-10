@@ -39,6 +39,7 @@ codeunit 9357 "Mg Auth. Client Credentials" implements "Mg Authorization"
     begin
         OAuthAuthorityUrl := StrSubstNo(ClientCredentialsTokenAuthorityUrlTxt, AadTenantId);
         HttpAuthOAuthClientCredentials.Initialize(OAuthAuthorityUrl, ClientId, ClientSecret, Scopes);
+        exit(HttpAuthOAuthClientCredentials);
     end;
 
 }

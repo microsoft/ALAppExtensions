@@ -2,6 +2,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+namespace System.Test.Integration.Microsoft.Graph;
+
+using System.Integration.Microsoft.Graph;
+using System.RestClient;
+using System.Utilities;
+using System.TestLibraries.Utilities;
 
 codeunit 135140 "Mg Client Test"
 {
@@ -76,7 +82,7 @@ codeunit 135140 "Mg Client Test"
         MockHttpResponseMessage.SetHttpStatusCode(200);
         MockHttpContent := HttpContent.Create(GetGroupsResponse());
         MockHttpResponseMessage.SetContent(MockHttpContent);
-        MockHttpClientHandler.SetResponse(HttpResponseMessage);
+        MockHttpClientHandler.SetResponse(MockHttpResponseMessage);
         MgClient.Initialize(Enum::"Mg API Version"::"v1.0", MgAuthSpy, MockHttpClientHandler);
         ResponseInStream := TempBlob.CreateInStream();
 
@@ -84,6 +90,7 @@ codeunit 135140 "Mg Client Test"
         MgClient.Get('groups', HttpResponseMessage);
 
         // [THEN] Verify response is correct
+        LibraryAssert.AreEqual(true, HttpResponseMessage.GetIsSuccessStatusCode(), 'Should be success status code.');
         HttpContent := HttpResponseMessage.GetContent();
         ResponseInStream := HttpContent.AsInStream();
         ResponseJsonObject.ReadFrom(ResponseInStream);

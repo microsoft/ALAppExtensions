@@ -14,7 +14,7 @@ codeunit 9351 "Mg Client Impl."
 
 
     var
-        MicrosoftGraphRequestHelper: Codeunit "Mg Request Helper";
+        MgRequestHelper: Codeunit "Mg Request Helper";
         RestClient: Codeunit "Rest Client";
         MicrosoftGraphAPIVersion: Enum "Mg API Version";
         MicrosoftGraphAuthorization: Interface "Mg Authorization";
@@ -55,8 +55,8 @@ codeunit 9351 "Mg Client Impl."
     begin
         Clear(HttpResponseMessage);
         MicrosoftGraphUriBuilder.Initialize(MicrosoftGraphBaseUrl, MicrosoftGraphAPIVersion, RelativeUriToResource, MgOptionalParameters.GetQueryParameters());
-        MicrosoftGraphRequestHelper.SetRestClient(RestClient);
-        HttpResponseMessage := MicrosoftGraphRequestHelper.Get(MicrosoftGraphUriBuilder, MgOptionalParameters);
+        MgRequestHelper.SetRestClient(RestClient);
+        HttpResponseMessage := MgRequestHelper.Get(MicrosoftGraphUriBuilder, MgOptionalParameters);
         exit(HttpResponseMessage.GetIsSuccessStatusCode());
     end;
 
@@ -65,8 +65,8 @@ codeunit 9351 "Mg Client Impl."
         MicrosoftGraphUriBuilder: Codeunit "Mg Uri Builder";
     begin
         MicrosoftGraphUriBuilder.Initialize(MicrosoftGraphBaseUrl, MicrosoftGraphAPIVersion, RelativeUriToResource, MgOptionalParameters.GetQueryParameters());
-        MicrosoftGraphRequestHelper.SetRestClient(RestClient);
-        HttpResponseMessage := MicrosoftGraphRequestHelper.Post(MicrosoftGraphUriBuilder, MgOptionalParameters, RequestHttpContent);
+        MgRequestHelper.SetRestClient(RestClient);
+        HttpResponseMessage := MgRequestHelper.Post(MicrosoftGraphUriBuilder, MgOptionalParameters, RequestHttpContent);
         exit(HttpResponseMessage.GetIsSuccessStatusCode());
     end;
 
@@ -75,8 +75,8 @@ codeunit 9351 "Mg Client Impl."
         MicrosoftGraphUriBuilder: Codeunit "Mg Uri Builder";
     begin
         MicrosoftGraphUriBuilder.Initialize(MicrosoftGraphBaseUrl, MicrosoftGraphAPIVersion, RelativeUriToResource, MgOptionalParameters.GetQueryParameters());
-        MicrosoftGraphRequestHelper.SetRestClient(RestClient);
-        HttpResponseMessage := MicrosoftGraphRequestHelper.Patch(MicrosoftGraphUriBuilder, MgOptionalParameters, RequestHttpContent);
+        MgRequestHelper.SetRestClient(RestClient);
+        HttpResponseMessage := MgRequestHelper.Patch(MicrosoftGraphUriBuilder, MgOptionalParameters, RequestHttpContent);
         exit(HttpResponseMessage.GetIsSuccessStatusCode());
     end;
 
@@ -85,8 +85,8 @@ codeunit 9351 "Mg Client Impl."
         MicrosoftGraphUriBuilder: Codeunit "Mg Uri Builder";
     begin
         MicrosoftGraphUriBuilder.Initialize(MicrosoftGraphBaseUrl, MicrosoftGraphAPIVersion, RelativeUriToResource);
-        MicrosoftGraphRequestHelper.SetRestClient(RestClient);
-        HttpResponseMessage := MicrosoftGraphRequestHelper.Delete(MicrosoftGraphUriBuilder, MgOptionalParameters);
+        MgRequestHelper.SetRestClient(RestClient);
+        HttpResponseMessage := MgRequestHelper.Delete(MicrosoftGraphUriBuilder, MgOptionalParameters);
         exit(HttpResponseMessage.GetIsSuccessStatusCode());
     end;
 
