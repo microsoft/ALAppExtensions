@@ -19,8 +19,7 @@ codeunit 9355 "Mg Authorization"
     /// <param name="ClientSecret">The Application (client) secret configured in the "Azure Portal - Certificates &amp; Secrets".</param>    
     /// <param name="Scope">A scope that you want the user to consent to.</param>
     /// <returns>Codeunit instance implementing authorization interface</returns>
-    [NonDebuggable]
-    procedure CreateAuthorizationWithClientCredentials(AadTenantId: Text; ClientId: Text; ClientSecret: Text; Scope: Text): Interface "Mg Authorization";
+    procedure CreateAuthorizationWithClientCredentials(AadTenantId: Text; ClientId: Text; ClientSecret: SecretText; Scope: Text): Interface "Mg Authorization";
     var
         Scopes: List of [Text];
     begin
@@ -36,8 +35,7 @@ codeunit 9355 "Mg Authorization"
     /// <param name="ClientSecret">The Application (client) secret configured in the "Azure Portal - Certificates &amp; Secrets".</param>    
     /// <param name="Scopes">A list of scopes that you want the user to consent to.</param>
     /// <returns>Codeunit instance implementing authorization interface</returns>
-    [NonDebuggable]
-    procedure CreateAuthorizationWithClientCredentials(AadTenantId: Text; ClientId: Text; ClientSecret: Text; Scopes: List of [Text]): Interface "Mg Authorization";
+    procedure CreateAuthorizationWithClientCredentials(AadTenantId: Text; ClientId: Text; ClientSecret: SecretText; Scopes: List of [Text]): Interface "Mg Authorization";
     var
         MgAuthorizationImpl: Codeunit "Mg Authorization - Impl.";
     begin

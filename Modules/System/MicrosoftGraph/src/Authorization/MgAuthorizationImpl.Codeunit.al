@@ -9,8 +9,7 @@ codeunit 9356 "Mg Authorization - Impl."
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    [NonDebuggable]
-    procedure CreateAuthorizationWithClientCredentials(AadTenantId: Text; ClientId: Text; ClientSecret: Text; Scopes: List of [Text]): Interface "Mg Authorization";
+    procedure CreateAuthorizationWithClientCredentials(AadTenantId: Text; ClientId: Text; ClientSecret: SecretText; Scopes: List of [Text]): Interface "Mg Authorization";
     var
         MgAuthClientCredentials: Codeunit "Mg Auth. Client Credentials";
     begin

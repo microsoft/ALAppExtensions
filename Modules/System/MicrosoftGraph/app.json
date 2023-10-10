@@ -36,18 +36,6 @@
                             "version":  "23.0.0.0"
                         },
                         {
-                            "id":  "3f95f4c2-037f-44d4-b089-b56ffc01693f",
-                            "name":  "OAuth",
-                            "publisher":  "Microsoft",
-                            "version":  "23.0.0.0"
-                        },
-                        {
-                            "id":  "aa171ba9-d3b0-450d-90fb-546b61e32074",
-                            "name":  "OAuth2",
-                            "publisher":  "Microsoft",
-                            "version":  "23.0.0.0"
-                        },
-                        {
                             "id":  "e31ad830-3d46-472e-afeb-1d3d35247943",
                             "name":  "BLOB Storage",
                             "publisher":  "Microsoft",
