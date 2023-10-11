@@ -28,6 +28,12 @@
             "name":  "BLOB Storage",
             "publisher":  "Microsoft",
             "version":  "23.0.0.0"
+        },        
+        {
+            "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+            "name":  "Library Assert",
+            "publisher":  "Microsoft",
+            "version":  "23.0.0.0"
         }
                      ],
     "screenshots":  [
