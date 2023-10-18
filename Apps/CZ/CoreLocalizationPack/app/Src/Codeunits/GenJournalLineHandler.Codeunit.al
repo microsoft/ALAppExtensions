@@ -303,45 +303,11 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
             NextEntryNo -= 1;
         end;
     end;
-#if not CLEAN20
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnBeforeValidateEvent', 'Posting Group', false, false)]
-    local procedure CheckPostingGroupChangeOnBeforeCustomerPostingGroupValidate(var Rec: Record "Gen. Journal Line"; var xRec: Record "Gen. Journal Line"; CurrFieldNo: Integer)
-    var
-        PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
-    begin
-        if PostingGroupManagementCZL.IsAllowMultipleCustVendPostingGroupsEnabled() then
-            exit;
-        if CurrFieldNo = Rec.FieldNo("Posting Group") then
-            PostingGroupManagementCZL.CheckPostingGroupChange(Rec."Posting Group", xRec."Posting Group", Rec);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnBeforeCheckPostingGroupChange', '', false, false)]
-    local procedure SuppressPostingGroupChangeOnBeforeCheckCustomerPostingGroupChange(var IsHandled: Boolean)
-    var
-        PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
-    begin
-        if IsHandled then
-            exit;
-        IsHandled := not PostingGroupManagementCZL.IsAllowMultipleCustVendPostingGroupsEnabled();
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterInitNewDtldCVLedgEntryBuf', '', false, false)]
-    local procedure SetApplAcrossPostGroupsCZLOnAfterInitNewDtldCVLedgEntryBuf(var DtldCVLedgEntryBuf: Record "Detailed CV Ledg. Entry Buffer"; var NewCVLedgEntryBuf: Record "CV Ledger Entry Buffer"; var OldCVLedgEntryBuf: Record "CV Ledger Entry Buffer"; var PrevNewCVLedgEntryBuf: Record "CV Ledger Entry Buffer"; var PrevOldCVLedgEntryBuf: Record "CV Ledger Entry Buffer"; var GenJnlLine: Record "Gen. Journal Line")
-    var
-        PostingGroupManagement: Codeunit "Posting Group Management CZL";
-    begin
-        if PostingGroupManagement.IsAllowMultipleCustVendPostingGroupsEnabled() then
-            exit;
-        DtldCVLedgEntryBuf.SetApplAcrossPostGroupsCZL(NewCVLedgEntryBuf."CV Posting Group" <> OldCVLedgEntryBuf."CV Posting Group");
-    end;
-#pragma warning restore AL0432
-#endif
 
 #if not CLEAN22
 #pragma warning disable AL0432
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeGetDtldCustLedgEntryAccNo', '', false, false)]
-    local procedure GetApplAcrossPostGrpAccNoOnBeforeGetDtldCustLedgEntryAccNo(var DetailedCVLedgEntryBuffer: Record "Detailed CV Ledg. Entry Buffer"; var AccountNo: code[20]; var IsHandled: Boolean)
+    local procedure GetApplAcrossPostGrpAccNoOnBeforeGetDtldCustLedgEntryAccNo(var DetailedCVLedgEntryBuffer: Record "Detailed CV Ledg. Entry Buffer"; var AccountNo: Code[20]; var IsHandled: Boolean)
     begin
         if IsHandled then
             exit;
@@ -381,7 +347,7 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
 #if not CLEAN22
 #pragma warning disable AL0432
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeGetDtldVendLedgEntryAccNo', '', false, false)]
-    local procedure GetApplAcrossPostGrpAccNoOnBeforeGetDtldVendLedgEntryAccNo(var DetailedCVLedgEntryBuffer: Record "Detailed CV Ledg. Entry Buffer"; var AccountNo: code[20]; var IsHandled: Boolean)
+    local procedure GetApplAcrossPostGrpAccNoOnBeforeGetDtldVendLedgEntryAccNo(var DetailedCVLedgEntryBuffer: Record "Detailed CV Ledg. Entry Buffer"; var AccountNo: Code[20]; var IsHandled: Boolean)
     begin
         if IsHandled then
             exit;
@@ -526,7 +492,7 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
         GLEntry."VAT Amount" := GenJournalLine."VAT Amount (LCY)";
     end;
 
-#if not CLEAN20
+#if not CLEAN23
 #pragma warning disable AL0432
     [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterCopyToGenJnlLine', '', false, false)]
     local procedure CopyFieldsOnAfterCopyToGenJnlLineOld(var GenJnlLine: Record "Gen. Journal Line"; InvoicePostBuffer: Record "Invoice Post. Buffer");
@@ -537,14 +503,14 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
         GenJnlLine."Original Doc. VAT Date CZL" := InvoicePostBuffer."Original Doc. VAT Date CZL";
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterCopyGenJnlLineFromInvPostBufferFA', '', false, false)]
-    local procedure Custom2OnAfterCopyGenJnlLineFromInvPostBufferFA(InvoicePostBuffer: Record "Invoice Post. Buffer"; var GenJournalLine: Record "Gen. Journal Line")
+    [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterCopyToGenJnlLineFA', '', false, false)]
+    local procedure Custom2OnAfterCopyGenJnlLineFromInvPostBufferFA(var GenJnlLine: Record "Gen. Journal Line"; InvoicePostBuffer: Record "Invoice Post. Buffer")
     begin
         if InvoicePostBuffer.Type <> InvoicePostBuffer.Type::"Fixed Asset" then
             exit;
         case InvoicePostBuffer."FA Posting Type" of
             InvoicePostBuffer."FA Posting Type"::"Custom 2":
-                GenJournalLine."FA Posting Type" := GenJournalLine."FA Posting Type"::"Custom 2";
+                GenJnlLine."FA Posting Type" := GenJnlLine."FA Posting Type"::"Custom 2";
         end;
     end;
 #pragma warning restore AL0432

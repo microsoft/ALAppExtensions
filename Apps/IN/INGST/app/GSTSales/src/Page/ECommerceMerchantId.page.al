@@ -1,4 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 #if not CLEAN23
+namespace Microsoft.Finance.GST.Sales;
+
+using Microsoft.Finance.GST.Base;
+using System.Integration.Excel;
+
 page 18141 "E-Commerce Merchant Id"
 {
     PageType = List;
@@ -67,6 +76,6 @@ page 18141 "E-Commerce Merchant Id"
     end;
 
     var
-        UnusedFieldLbl: Label 'This Page has been marked as obsolete and will be removed from version 23.0. Instead of this Page use ‘E-Comm. Merchant Id';
+        UnusedFieldLbl: Label 'This Page has been marked as obsolete and will be removed from version 23.0. Instead of this Page use â€˜E-Comm. Merchant Id';
 }
 #endif

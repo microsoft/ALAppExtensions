@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Environment;
+using System.Utilities;
+
 /// <summary>
 /// Displays an account that is being registered via the SMTP connector.
 /// </summary>

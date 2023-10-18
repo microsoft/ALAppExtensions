@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.History;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.GST.Sales;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Sales.Customer;
+
 tableextension 18148 "GST Sales Invoice Header Ext" extends "Sales Invoice Header"
 {
     fields

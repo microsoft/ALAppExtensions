@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Tooling;
+
+using System.TestLibraries.Tooling;
+using System.Tooling;
+using System.TestLibraries.Utilities;
+
 codeunit 135014 "Profiling Data Processor Test"
 {
     Subtype = Test;
@@ -56,10 +62,10 @@ codeunit 135014 "Profiling Data Processor Test"
             'TestPublisher1', 0, 'TestNode1FunctionName', 0, 0, 0);
 
         // [THEN] Getting a unique identifier from the node returns the correct result for every supported aggregation type.
-        Assert.AreEqual('TestNode1App', PerfProfilerTestLibrary.GetUniqueIdentifierByAggregationType(ProfilingNode, Enum::"Profiling Aggregation Type"::"App Name"), 'Incorrect app name.');
-        Assert.AreEqual('TestPublisher1', PerfProfilerTestLibrary.GetUniqueIdentifierByAggregationType(ProfilingNode, Enum::"Profiling Aggregation Type"::"App Publisher"), 'Incorrect app publisher.');
-        Assert.AreEqual('Codeunit1TestNode1FunctionName', PerfProfilerTestLibrary.GetUniqueIdentifierByAggregationType(ProfilingNode, Enum::"Profiling Aggregation Type"::Method), 'Incorrect method name.');
-        Assert.AreEqual('Codeunit1', PerfProfilerTestLibrary.GetUniqueIdentifierByAggregationType(ProfilingNode, Enum::"Profiling Aggregation Type"::Object), 'Incorrect app object.');
+        Assert.AreEqual('TestNode1App', PerfProfilerTestLibrary.GetUniqueIdentifierByAggregationType(ProfilingNode, Enum::"Test Prof. Aggregation Type"::"App Name"), 'Incorrect app name.');
+        Assert.AreEqual('TestPublisher1', PerfProfilerTestLibrary.GetUniqueIdentifierByAggregationType(ProfilingNode, Enum::"Test Prof. Aggregation Type"::"App Publisher"), 'Incorrect app publisher.');
+        Assert.AreEqual('Codeunit1TestNode1FunctionName', PerfProfilerTestLibrary.GetUniqueIdentifierByAggregationType(ProfilingNode, Enum::"Test Prof. Aggregation Type"::Method), 'Incorrect method name.');
+        Assert.AreEqual('Codeunit1', PerfProfilerTestLibrary.GetUniqueIdentifierByAggregationType(ProfilingNode, Enum::"Test Prof. Aggregation Type"::Object), 'Incorrect app object.');
     end;
 
     [Test]
@@ -81,7 +87,7 @@ codeunit 135014 "Profiling Data Processor Test"
         PerfProfilerTestLibrary.Initialize();
 
         // [WHEN] The self time aggregate is retrieved
-        PerfProfilerTestLibrary.GetSelfTimeAggregate(ProfilingNode, Enum::"Profiling Aggregation Type"::"App Name");
+        PerfProfilerTestLibrary.GetSelfTimeAggregate(ProfilingNode, Enum::"Test Prof. Aggregation Type"::"App Name");
 
         // [THEN] Every node is as expected
         Assert.IsTrue(PerfProfilerTestLibrary.AreEqual(VerificationProfilingNode, ProfilingNode), 'The profiling nodes are not equal to expected ones.');
@@ -108,7 +114,7 @@ codeunit 135014 "Profiling Data Processor Test"
         PerfProfilerTestLibrary.Initialize();
 
         // [WHEN] The self time aggregate is retrieved
-        PerfProfilerTestLibrary.GetSelfTimeAggregate(ProfilingNode, Enum::"Profiling Aggregation Type"::"App Publisher");
+        PerfProfilerTestLibrary.GetSelfTimeAggregate(ProfilingNode, Enum::"Test Prof. Aggregation Type"::"App Publisher");
 
         // [THEN] Every node is as expected
         Assert.IsTrue(PerfProfilerTestLibrary.AreEqual(VerificationProfilingNode, ProfilingNode), 'The profiling nodes are not equal to expected ones.');
@@ -135,7 +141,7 @@ codeunit 135014 "Profiling Data Processor Test"
         PerfProfilerTestLibrary.Initialize();
 
         // [WHEN] The self time aggregate is retrieved
-        PerfProfilerTestLibrary.GetSelfTimeAggregate(ProfilingNode, Enum::"Profiling Aggregation Type"::"App Name", TableViewFilter);
+        PerfProfilerTestLibrary.GetSelfTimeAggregate(ProfilingNode, Enum::"Test Prof. Aggregation Type"::"App Name", TableViewFilter);
 
         // [THEN] Every node is as expected
         Assert.IsTrue(PerfProfilerTestLibrary.AreEqual(VerificationProfilingNode, ProfilingNode), 'The profiling nodes are not equal to expected ones.');
@@ -178,7 +184,7 @@ codeunit 135014 "Profiling Data Processor Test"
         PerfProfilerTestLibrary.Initialize();
 
         // [WHEN] The self time aggregate is retrieved
-        PerfProfilerTestLibrary.GetFullTimeAggregate(ProfilingNode, Enum::"Profiling Aggregation Type"::"None");
+        PerfProfilerTestLibrary.GetFullTimeAggregate(ProfilingNode, Enum::"Test Prof. Aggregation Type"::"None");
 
         // [THEN] Every node is as expected
         Assert.IsTrue(PerfProfilerTestLibrary.AreEqual(VerificationProfilingNode, ProfilingNode), 'The profiling nodes are not equal to expected ones.');
@@ -213,7 +219,7 @@ codeunit 135014 "Profiling Data Processor Test"
         PerfProfilerTestLibrary.Initialize();
 
         // [WHEN] The self time aggregate is retrieved
-        PerfProfilerTestLibrary.GetFullTimeAggregate(ProfilingNode, Enum::"Profiling Aggregation Type"::"App Name");
+        PerfProfilerTestLibrary.GetFullTimeAggregate(ProfilingNode, Enum::"Test Prof. Aggregation Type"::"App Name");
 
         // [THEN] Every node is as expected
         Assert.IsTrue(PerfProfilerTestLibrary.AreEqual(VerificationProfilingNode, ProfilingNode), 'The profiling nodes are not equal to expected ones.');
@@ -240,7 +246,7 @@ codeunit 135014 "Profiling Data Processor Test"
         PerfProfilerTestLibrary.Initialize();
 
         // [WHEN] The self time aggregate is retrieved
-        PerfProfilerTestLibrary.GetFullTimeAggregate(ProfilingNode, Enum::"Profiling Aggregation Type"::"App Publisher");
+        PerfProfilerTestLibrary.GetFullTimeAggregate(ProfilingNode, Enum::"Test Prof. Aggregation Type"::"App Publisher");
 
         // [THEN] Every node is as expected
         Assert.IsTrue(PerfProfilerTestLibrary.AreEqual(VerificationProfilingNode, ProfilingNode), 'The profiling nodes are not equal to expected ones.');

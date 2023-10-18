@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.FixedAssets.Depreciation;
+
+using Microsoft.FixedAssets.FADepreciation;
+using Microsoft.FixedAssets.FixedAsset;
+
 tableextension 18632 "FA Depreciation Book Ext" extends "FA Depreciation Book"
 {
     fields

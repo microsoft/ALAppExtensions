@@ -1113,7 +1113,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
             GenJournalLine."Shortcut Dimension 1 Code", GenJournalLine."Shortcut Dimension 2 Code", GenJournalLine."Dimension Set ID", Preview);
 
         if SalesAdvLetterHeaderCZZ."Automatic Post VAT Document" then
-            ReverseAdvancePaymentVAT(SalesAdvLetterEntryCZZ, CustLedgerEntry."Source Code", CustLedgerEntry.Description, ReverseAmount, CustLedgerEntry."Original Currency Factor", DocumentNo, CustLedgerEntry."Posting Date", SalesAdvLetterEntryCZZGlob."Entry No.", CustLedgerEntry."Document No.", "Advance Letter Entry Type CZZ"::"VAT Usage", GenJnlPostLine, Preview);
+            ReverseAdvancePaymentVAT(SalesAdvLetterEntryCZZ, CustLedgerEntry."Source Code", CustLedgerEntry.Description, ReverseAmount, CustLedgerEntry."Original Currency Factor", DocumentNo, CustLedgerEntry."Posting Date", CustLedgerEntry."VAT Date CZL", SalesAdvLetterEntryCZZGlob."Entry No.", CustLedgerEntry."Document No.", "Advance Letter Entry Type CZZ"::"VAT Usage", GenJnlPostLine, Preview);
 
         if not Preview then begin
             SalesAdvLetterHeaderCZZ.Get(SalesAdvLetterEntryCZZ."Sales Adv. Letter No.");
@@ -1121,7 +1121,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         end;
     end;
 
-    local procedure ReverseAdvancePaymentVAT(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; SourceCode: Code[10]; PostDescription: Text[100]; ReverseAmount: Decimal; CurrencyFactor: Decimal; DocumentNo: Code[20]; PostingDate: Date; UsageEntryNo: Integer; InvoiceNo: Code[20]; EntryType: enum "Advance Letter Entry Type CZZ"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; Preview: Boolean)
+    local procedure ReverseAdvancePaymentVAT(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; SourceCode: Code[10]; PostDescription: Text[100]; ReverseAmount: Decimal; CurrencyFactor: Decimal; DocumentNo: Code[20]; PostingDate: Date; VATDate: Date; UsageEntryNo: Integer; InvoiceNo: Code[20]; EntryType: enum "Advance Letter Entry Type CZZ"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; Preview: Boolean)
     var
         SalesAdvLetterEntryCZZ2: Record "Sales Adv. Letter Entry CZZ";
         TempAdvancePostingBufferCZZ1: Record "Advance Posting Buffer CZZ" temporary;
@@ -1173,6 +1173,14 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
 
                 InitGenJnlLineFromAdvance(SalesAdvLetterHeaderCZZ, SalesAdvLetterEntryCZZ, DocumentNo, SourceCode, PostDescription, GenJournalLine);
                 GenJournalLine.Validate("Posting Date", PostingDate);
+#if not CLEAN22
+#pragma warning disable AL0432
+                if not ReplaceVATDateMgtCZL.IsEnabled() then
+                    GenJournalLine.Validate("VAT Date CZL", VATDate)
+                else
+#pragma warning restore AL0432
+#endif
+                GenJournalLine.Validate("VAT Reporting Date", VATDate);
                 GenJournalLine."Account No." := VATPostingSetup."Sales Adv. Letter Account CZZ";
                 GenJournalLine.SetCurrencyFactor(SalesAdvLetterEntryCZZ."Currency Code", CurrencyFactor);
                 GenJournalLine."Gen. Posting Type" := GenJournalLine."Gen. Posting Type"::Sale;
@@ -1330,12 +1338,12 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                                     UseAmount := TempAdvancePostingBufferCZZ2.Amount;
                                     UseBaseAmount := TempAdvancePostingBufferCZZ2."VAT Base Amount";
                                 end;
-                                if (-UsedAmount > UseAmount) or
-                                   (TempAdvancePostingBufferCZZ1."VAT %" <> TempAdvancePostingBufferCZZ2."VAT %")
-                                then begin
+                                if Abs(UsedAmount) < Abs(UseAmount) then begin
                                     UseAmount := -UsedAmount;
                                     UseBaseAmount := Round(TempAdvancePostingBufferCZZ2."VAT Base Amount" * UseAmount / TempAdvancePostingBufferCZZ2.Amount, CurrencyGlob."Amount Rounding Precision", CurrencyGlob.VATRoundingDirection());
                                 end;
+                                if TempAdvancePostingBufferCZZ1."VAT %" <> TempAdvancePostingBufferCZZ2."VAT %" then
+                                    UseBaseAmount := Round(TempAdvancePostingBufferCZZ2."VAT Base Amount" * UseAmount / TempAdvancePostingBufferCZZ2.Amount, CurrencyGlob."Amount Rounding Precision", CurrencyGlob.VATRoundingDirection());
 
                                 TempAdvancePostingBufferCZZ2.Amount -= UseAmount;
                                 TempAdvancePostingBufferCZZ2."VAT Base Amount" -= UseBaseAmount;
@@ -1413,7 +1421,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         else
             CurrencyFactor := CustLedgerEntry."Original Currency Factor";
 
-        ReverseAdvancePaymentVAT(SalesAdvLetterEntry2, CustLedgerEntry."Source Code", CustLedgerEntry.Description, SalesAdvLetterEntryCZZ.Amount, CurrencyFactor, SalesAdvLetterEntryCZZ."Document No.", CustLedgerEntry."Posting Date", SalesAdvLetterEntryCZZ."Entry No.", CustLedgerEntry."Document No.", "Advance Letter Entry Type CZZ"::"VAT Usage", GenJnlPostLine, false);
+        ReverseAdvancePaymentVAT(SalesAdvLetterEntry2, CustLedgerEntry."Source Code", CustLedgerEntry.Description, SalesAdvLetterEntryCZZ.Amount, CurrencyFactor, SalesAdvLetterEntryCZZ."Document No.", CustLedgerEntry."Posting Date", CustLedgerEntry."VAT Date CZL", SalesAdvLetterEntryCZZ."Entry No.", CustLedgerEntry."Document No.", "Advance Letter Entry Type CZZ"::"VAT Usage", GenJnlPostLine, false);
     end;
 
     local procedure PostExchangeRate(ExchRateAmount: Decimal; ExchRateVATAmount: Decimal; var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
@@ -1438,7 +1446,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 GenJnlPostLine.RunWithCheck(GenJournalLine);
 
             InitGenJnlLineFromAdvance(SalesAdvLetterHeaderCZZ, SalesAdvLetterEntryCZZ, DocumentNo, SourceCode, PostDescription, GenJournalLine);
-            GenJournalLine.Correction := Correction;
+            GenJournalLine.Correction := true;
             GenJournalLine.Validate("Posting Date", PostingDate);
             if ExchRateVATAmount < 0 then begin
                 CurrencyGlob.TestField("Realized Losses Acc.");
@@ -1730,7 +1738,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                             GenJournalLine."Currency Code", GenJournalLine."Currency Factor", GenJournalLine."Document No.",
                             GenJournalLine."Shortcut Dimension 1 Code", GenJournalLine."Shortcut Dimension 2 Code", GenJournalLine."Dimension Set ID", false);
 
-                        ReverseAdvancePaymentVAT(SalesAdvLetterEntryCZZ, CustLedgerEntry1."Source Code", SalesAdvLetterHeaderCZZ."Posting Description", RemAmount, CurrencyFactor, VATDocumentNo, PostingDate, SalesAdvLetterEntryCZZGlob."Entry No.", '', "Advance Letter Entry Type CZZ"::"VAT Close", GenJnlPostLine, false);
+                        ReverseAdvancePaymentVAT(SalesAdvLetterEntryCZZ, CustLedgerEntry1."Source Code", SalesAdvLetterHeaderCZZ."Posting Description", RemAmount, CurrencyFactor, VATDocumentNo, PostingDate, VATDate, SalesAdvLetterEntryCZZGlob."Entry No.", '', "Advance Letter Entry Type CZZ"::"VAT Close", GenJnlPostLine, false);
 
                         InitGenJnlLineFromCustLedgEntry(CustLedgerEntry1, GenJournalLine, GenJournalLine."Document Type"::Payment);
                         GenJournalLine.Correction := true;

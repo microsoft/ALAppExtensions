@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration.API;
+
+using Microsoft.DataMigration;
+using System.Telemetry;
+
 page 40021 "Cloud Migration Status API"
 {
     PageType = API;
@@ -90,7 +95,7 @@ page 40021 "Cloud Migration Status API"
                     Caption = 'Additional Details';
                     EntityName = 'cloudMigrationStatusDetail';
                     EntitySetName = 'cloudMigrationStatusDetails';
-                    SubPageLink = "Run ID" = Field("Run ID");
+                    SubPageLink = "Run ID" = field("Run ID");
                 }
             }
         }
@@ -178,12 +183,12 @@ page 40021 "Cloud Migration Status API"
         SetActionResponse(ActionContext, Page::"Cloud Mig Product Type API", HybridReplicationSummary.SystemId, HybridReplicationSummary.FieldNo(SystemId));
     end;
 
-    local procedure SetActionResponse(var ActionContext: WebServiceActionContext; PageId: Integer; RunId: Guid; KeyFieldNo: Integer)
+    local procedure SetActionResponse(var ActionContext: WebServiceActionContext; PageId: Integer; ActionRunId: Guid; KeyFieldNo: Integer)
     var
     begin
         ActionContext.SetObjectType(ObjectType::Page);
         ActionContext.SetObjectId(PageId);
-        ActionContext.AddEntityKey(KeyFieldNo, RunId);
+        ActionContext.AddEntityKey(KeyFieldNo, ActionRunId);
         ActionContext.SetResultCode(WebServiceActionResultCode::Deleted);
     end;
 

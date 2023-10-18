@@ -1,3 +1,32 @@
+namespace Microsoft.Integration.MDM;
+
+using Microsoft.Integration.SyncEngine;
+using System.Reflection;
+using System.Threading;
+using System.Telemetry;
+using Microsoft.Integration.Dataverse;
+using System.Environment.Configuration;
+using System.Environment;
+using System.Utilities;
+using Microsoft.Finance.Currency;
+using Microsoft.CRM.Contact;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using System.Security.AccessControl;
+using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Foundation.Address;
+using Microsoft.Purchases.Setup;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.Shipping;
+using Microsoft.Sales.Setup;
+using Microsoft.CRM.Setup;
+using Microsoft.CRM.Team;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.SalesTax;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.Dimension;
+
 codeunit 7233 "Master Data Management"
 {
     SingleInstance = true;
@@ -1392,7 +1421,7 @@ codeunit 7233 "Master Data Management"
             isEvtDrivenReschedulingDisabled := true;
 
         if not CachedDisableEventDrivenSynchJobReschedule.ContainsKey(DictionaryKey) then
-            if not CachedIsSynchronizationRecord.Add(DictionaryKey, isEvtDrivenReschedulingDisabled) then
+            if not CachedDisableEventDrivenSynchJobReschedule.Add(DictionaryKey, isEvtDrivenReschedulingDisabled) then
                 exit(isEvtDrivenReschedulingDisabled);
         exit(isEvtDrivenReschedulingDisabled);
     end;
@@ -1487,7 +1516,8 @@ codeunit 7233 "Master Data Management"
         ScheduledTask: Record "Scheduled Task";
         DataUpgradeMgt: Codeunit "Data Upgrade Mgt.";
         NewEarliestStartDateTime: DateTime;
-        Enabled: Boolean;
+        ShouldReactivateJob: Boolean;
+        CurrentCompanyName: Text;
     begin
         if not MasterDataMgtSubscriber.ReadPermission() then
             exit;
@@ -1495,15 +1525,16 @@ codeunit 7233 "Master Data Management"
         if not MasterDataMgtSubscriber.FindSet() then
             exit;
 
+        CurrentCompanyName := CompanyName();
         repeat
             if MasterDataManagementSetup.ChangeCompany(MasterDataMgtSubscriber."Company Name") then begin
                 JobQueueEntry.ChangeCompany(MasterDataMgtSubscriber."Company Name");
                 if MasterDataManagementSetup.Get() then
-                    Enabled := MasterDataManagementSetup."Is Enabled"
+                    ShouldReactivateJob := MasterDataManagementSetup."Is Enabled" and (MasterDataManagementSetup."Company Name" = CurrentCompanyName)
                 else
-                    Enabled := false;
+                    ShouldReactivateJob := false;
 
-                if Enabled then
+                if ShouldReactivateJob then
                     if IsDataSynchRecord(TableNo, MasterDataMgtSubscriber."Company Name") then
                         if not IsEventDrivenReschedulingDisabled(TableNo, MasterDataMgtSubscriber."Company Name") then
                             if not DataUpgradeMgt.IsUpgradeInProgress() then begin
@@ -1561,7 +1592,7 @@ codeunit 7233 "Master Data Management"
         DummyErrorMessageRegister: Record "Error Message Register";
         DummyErrorMessage: Record "Error Message";
     begin
-        If not JobQueueEntry.ReadPermission then
+        if not JobQueueEntry.ReadPermission then
             exit(false);
         if not JobQueueEntry.WritePermission then
             exit(false);

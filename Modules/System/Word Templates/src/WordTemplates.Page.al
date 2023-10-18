@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Word;
+
+using System.Globalization;
+using System.Integration;
+using System.Telemetry;
+
 /// <summary>
 /// Presents a list of available Word templates.
 /// </summary>
@@ -78,7 +84,7 @@ page 9989 "Word Templates"
             {
                 ApplicationArea = All;
                 Caption = 'Related Entities';
-                SubPageLink = Code = Field(Code);
+                SubPageLink = Code = field(Code);
                 Editable = false;
             }
         }

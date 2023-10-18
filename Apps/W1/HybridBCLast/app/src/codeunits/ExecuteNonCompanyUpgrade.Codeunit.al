@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration.BC;
+
+using Microsoft.DataMigration;
+using System.Environment;
+
 codeunit 4055 "Execute Non-Company Upgrade"
 {
     Description = 'This codeunit executes Non-Company upgrade.';

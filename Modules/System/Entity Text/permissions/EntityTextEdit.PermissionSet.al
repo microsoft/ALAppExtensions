@@ -2,6 +2,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Text;
+
 permissionset 2012 "Entity Text - Edit"
 {
     Access = Internal;
@@ -9,5 +12,5 @@ permissionset 2012 "Entity Text - Edit"
     IncludedPermissionSets = "Entity Text - View";
 
     Permissions = tabledata "Azure OpenAi Settings" = IMD,
-        tabledata "Entity Text" = IMD;
+                  tabledata "Entity Text" = IMD;
 }

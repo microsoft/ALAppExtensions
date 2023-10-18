@@ -1,3 +1,18 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.TaxTypeHandler;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.TaxEngine.Core;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+
 table 20261 "Tax Transaction Value"
 {
     Caption = 'Tax Transaction Value';

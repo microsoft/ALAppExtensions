@@ -1,7 +1,9 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Utilities;
 
 /// <summary>
 /// This codeunit is created so that record links that have obsolete record ids can be deleted in a scheduled task.

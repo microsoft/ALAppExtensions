@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DataAdministration;
+
 /// <summary>
 /// The Company Size Cache Part page shows information about company sizes.
 /// </summary>

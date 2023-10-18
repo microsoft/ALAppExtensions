@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Document;
+
+using Microsoft.Finance.TaxBase;
+
 pageextension 18852 "Sales Credit Memo TCS" extends "Sales Credit Memo"
 {
     layout

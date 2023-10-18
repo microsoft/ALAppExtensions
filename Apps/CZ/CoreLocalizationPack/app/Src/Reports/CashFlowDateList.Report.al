@@ -25,7 +25,7 @@ report 31005 "Cash Flow Date List CZL"
 
             dataitem(EditionPeriod; "Integer")
             {
-                DataItemTableView = SORTING(Number) ORDER(Ascending);
+                DataItemTableView = sorting(Number) order(ascending);
                 column(NewCFSumTotal; NewCFSumTotal)
                 {
                 }

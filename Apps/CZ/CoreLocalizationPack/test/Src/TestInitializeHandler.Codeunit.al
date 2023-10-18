@@ -1,14 +1,12 @@
 codeunit 148104 "Test Initialize Handler CZL"
 {
-#if not CLEAN22
     SingleInstance = true;
 
     var
-#if not CLEAN20
-        ERMMulPostGrHandlerCZL: Codeunit "ERM Mul. Post. Gr. Handler CZL";
-#endif
+#if not CLEAN22
         ReplaceVATDateHandlerCZL: Codeunit "Replace VAT Date Handler CZL";
 #endif
+        SuppConfVATEntUpdate: Codeunit "Supp.Conf. VAT Ent. Update CZL";
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Library - Test Initialize", 'OnTestInitialize', '', false, false)]
     local procedure UpdateRecordsOnTestInitialize(CallerCodeunitID: Integer)
@@ -38,10 +36,6 @@ codeunit 148104 "Test Initialize Handler CZL"
             137007, // "SCM Inventory Costing",
             137611: // "SCM Costing Rollup Sev 1":
                 UpdateInventorySetup();
-#if not CLEAN20
-            134195: // "ERM Multiple Posting Groups"
-                BindERMMulPostGrHandler();
-#endif
 #if not CLEAN22
             134982: // ERM Financial Reports
                 TryBindReplaceVATDateHandlerCZL();
@@ -50,25 +44,22 @@ codeunit 148104 "Test Initialize Handler CZL"
             134045, // ERM VAT Sales/Purchase
             134088, // ERM Pmt Disc for Cust/Vendor
             134992: // ERM Financial Reports IV
-#if not CLEAN22
                 begin
+#if not CLEAN22
                     TryBindReplaceVATDateHandlerCZL();
 #endif
+                    TryBindSuppConfVATEntUpdate();
                     UpdateGeneralLedgerSetup();
-#if not CLEAN22
+                    UpdateUserSetup();
                 end;
-#endif
         end;
-#if not CLEAN20
-
-        if CallerCodeunitID <> 134195 then
-            TryUnbindERMMulPostGrHandler();
-#endif
 #if not CLEAN22
 
         if not (CallerCodeunitID in [134992, 134982, 134045, 134008]) then
             TryUnbindReplaceVATDateHandler();
 #endif
+        if not (CallerCodeunitID = 134045) then
+            TryUnbindSuppConfVATEntUpdate();
     end;
 
     local procedure UpdateInventorySetup()
@@ -111,17 +102,30 @@ codeunit 148104 "Test Initialize Handler CZL"
         GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date";
         GeneralLedgerSetup.Modify();
     end;
-#if not CLEAN20
-    local procedure BindERMMulPostGrHandler()
+
+    local procedure UpdateUserSetup()
+    var
+        UserSetup: Record "User Setup";
+        UserSetupAdvManagement: Codeunit "User Setup Adv. Management CZL";
     begin
-        BindSubscription(ERMMulPostGrHandlerCZL);
+        if not UserSetup.Get(UserSetupAdvManagement.GetUserID()) then begin
+            UserSetup.Init();
+            UserSetup."User ID" := UserSetupAdvManagement.GetUserID();
+            UserSetup.Insert();
+        end;
+        UserSetup."Allow VAT Date Changing CZL" := true;
+        UserSetup.Modify();
     end;
 
-    local procedure TryUnbindERMMulPostGrHandler(): Boolean
+    local procedure TryBindSuppConfVATEntUpdate(): Boolean
     begin
-        exit(UnbindSubscription(ERMMulPostGrHandlerCZL));
+        exit(BindSubscription(SuppConfVATEntUpdate));
     end;
-#endif
+
+    local procedure TryUnbindSuppConfVATEntUpdate(): Boolean
+    begin
+        exit(UnbindSubscription(SuppConfVATEntUpdate));
+    end;
 #if not CLEAN22
     local procedure TryBindReplaceVATDateHandlerCZL(): Boolean
     begin

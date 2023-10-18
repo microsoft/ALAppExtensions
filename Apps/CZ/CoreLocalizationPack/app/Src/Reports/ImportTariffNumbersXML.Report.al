@@ -55,7 +55,7 @@ report 31106 "Import Tariff Numbers XML CZL"
 
     var
         TempBlob: Codeunit "Temp Blob";
-        ImportTariffNumbersCZL: XMLport "Import Tariff Numbers CZL";
+        ImportTariffNumbersCZL: XmlPort "Import Tariff Numbers CZL";
         FileInStream: InStream;
         ValidToDate: Date;
         FileName: Text;

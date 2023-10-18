@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Mocking;
+
+using System;
+using System.Security.AccessControl;
+
 codeunit 132927 "MockGraphQuery Test Library"
 {
     var

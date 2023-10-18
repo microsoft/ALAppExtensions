@@ -1,3 +1,22 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Reconciliation;
+using Microsoft.Bank.Setup;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Utilities;
+using System.Environment;
+using System.Environment.Configuration;
+using System.Globalization;
+using System.IO;
+using System.Media;
+using System.Text;
+using System.Utilities;
+
 codeunit 20117 "AMC Bank Assisted Mgt."
 {
     trigger OnRun()
@@ -194,18 +213,6 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         exit(BasisSetupRanOK);
     end;
 
-#if not CLEAN20
-    [Obsolete('This method is obsolete, there is no replacement. It will be removed in future release', '20.0')]
-    procedure GetDataExchDefsFromWebservice(DataExchDefFilter: Text; ApplVersion: Text; BuildNumber: Text; Timeout: Integer; AppCaller: Text[30]): Boolean;
-    var
-        TempBlob: Codeunit "Temp Blob";
-    begin
-        if (SendDataExchRequestToWebService(TempBlob, true, Timeout, ApplVersion, BuildNumber, AppCaller)) then
-            exit(GetDataExchangeData(TempBlob, DataExchDefFilter))
-        else
-            exit(false)
-    end;
-#endif
     local procedure CheckCreateDataExchDef(DataExchDefCode: Code[20])
     var
         DataExchDef: Record "Data Exch. Def";
@@ -670,17 +677,6 @@ codeunit 20117 "AMC Bank Assisted Mgt."
     begin
     end;
 
-#if not CLEAN20    
-    [IntegrationEvent(false, false)]
-    [Obsolete('This IntegrationEvent is obsolete. A new OnAfterRunBasisSetupV19 IntegrationEvent is available, with the an extra parameters (var BasisSetupRanOK) to control if setup ran ok.', '20.0')]
-    procedure OnAfterRunBasisSetupV16(UpdURL: Boolean; URLSChanged: Boolean; SignupURL: Text[250]; ServiceURL: Text[250]; SupportURL: Text[250];
-                                   UpdBank: Boolean; UpdPayMeth: Boolean; BankCountryCode: Code[10]; PaymCountryCode: Code[10];
-                                   UpdDataExchDef: Boolean; UpdCreditTransfer: Boolean; UpdPositivePay: Boolean; UpdateStatementImport: Boolean;
-                                   UpdCreditAdvice: Boolean; ApplVer: Text; BuildNo: Text;
-                                   UpdBankClearStd: Boolean; UpdBankAccounts: Boolean; var TempOnlineBankAccLink: Record "Online Bank Acc. Link"; CallLicenseServer: Boolean)
-    begin
-    end;
-#endif
     [IntegrationEvent(false, false)]
     procedure OnAfterRunBasisSetupV19(UpdURL: Boolean; URLSChanged: Boolean; SignupURL: Text[250]; ServiceURL: Text[250]; SupportURL: Text[250];
                                    UpdBank: Boolean; UpdPayMeth: Boolean; BankCountryCode: Code[10]; PaymCountryCode: Code[10];

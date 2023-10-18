@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Text;
+
+using System;
+
 codeunit 4111 "Base64 Convert Impl."
 {
     Access = Internal;

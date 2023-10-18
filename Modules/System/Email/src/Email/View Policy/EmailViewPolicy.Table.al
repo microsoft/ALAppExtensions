@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Security.User;
+using System.Security.AccessControl;
+
 /// <summary>
 /// Contains what policy each user is given in the system
 /// </summary>

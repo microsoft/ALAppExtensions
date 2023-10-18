@@ -1,3 +1,20 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.Reports;
+
+using Microsoft.Bank.Payment;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Receivables;
+using System.IO;
+using System.Text;
+using System.Utilities;
+
 codeunit 12216 "Service Declaration Mgt. IT"
 {
     Access = Internal;

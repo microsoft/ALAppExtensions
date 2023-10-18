@@ -1,3 +1,8 @@
+namespace Microsoft.API.V2;
+
+using Microsoft.Foundation.UOM;
+using Microsoft.Integration.Graph;
+
 page 30030 "APIV2 - Units of Measure"
 {
     APIVersion = 'v2.0';
@@ -17,49 +22,49 @@ page 30030 "APIV2 - Units of Measure"
         {
             repeater(Group)
             {
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'Id';
                     Editable = false;
                 }
-                field("code"; Code)
+                field("code"; Rec.Code)
                 {
                     Caption = 'Code';
                     ShowMandatory = true;
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo(Code));
+                        RegisterFieldSet(Rec.FieldNo(Code));
                     end;
                 }
-                field(displayName; Description)
+                field(displayName; Rec.Description)
                 {
                     Caption = 'Display Name';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo(Description));
+                        RegisterFieldSet(Rec.FieldNo(Description));
                     end;
                 }
-                field(internationalStandardCode; "International Standard Code")
+                field(internationalStandardCode; Rec."International Standard Code")
                 {
                     Caption = 'International Standard Code';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo("International Standard Code"));
+                        RegisterFieldSet(Rec.FieldNo("International Standard Code"));
                     end;
                 }
-                field(symbol; Symbol)
+                field(symbol; Rec.Symbol)
                 {
                     Caption = 'Symbol';
 
                     trigger OnValidate()
                     begin
-                        RegisterFieldSet(FieldNo("Symbol"));
+                        RegisterFieldSet(Rec.FieldNo("Symbol"));
                     end;
                 }
-                field(lastModifiedDateTime; SystemModifiedAt)
+                field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';
                 }
@@ -76,7 +81,7 @@ page 30030 "APIV2 - Units of Measure"
         GraphMgtGeneralTools: Codeunit "Graph Mgt - General Tools";
         UnitofMeasureRecordRef: RecordRef;
     begin
-        Insert(true);
+        Rec.Insert(true);
 
         UnitofMeasureRecordRef.GetTable(Rec);
         GraphMgtGeneralTools.ProcessNewRecordFromAPI(UnitofMeasureRecordRef, TempFieldSet, CurrentDateTime());

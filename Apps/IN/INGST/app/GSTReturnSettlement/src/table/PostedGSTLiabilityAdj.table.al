@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.ReturnSettlement;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GST.Base;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.Inventory.Item;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+
 table 18321 "Posted GST Liability Adj."
 {
     Caption = 'Posted GST Liability Adj.';

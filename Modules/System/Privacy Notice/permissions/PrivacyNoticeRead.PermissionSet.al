@@ -3,12 +3,17 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Privacy;
+
+using System.Environment;
+using System.Environment.Configuration;
+
 permissionset 1564 "Privacy Notice - Read"
 {
     Access = Public;
     Assignable = false;
     Caption = 'Privacy Notice - Read';
-    
+
     IncludedPermissionSets = "Privacy Notice - Objects";
 
     Permissions = tabledata Company = r,

@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Storage;
+
 /// <summary>
 /// Defines the possible service types for account SAS
 /// More Information: https://go.microsoft.com/fwlink/?linkid=2210398

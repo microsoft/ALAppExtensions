@@ -1,3 +1,32 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Ledger;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Ledger;
+#if CLEAN23
+using Microsoft.Finance.VAT.Reporting;
+#endif
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.PaymentTerms;
+using Microsoft.HumanResources.Employee;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+using System.Reflection;
+
 codeunit 10673 "Generate SAF-T File"
 {
     TableNo = "SAF-T Export Line";

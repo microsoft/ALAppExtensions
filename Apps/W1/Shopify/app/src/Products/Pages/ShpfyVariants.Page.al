@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item;
+
 /// <summary>
 /// Page Shpfy Variants (ID 30127).
 /// </summary>

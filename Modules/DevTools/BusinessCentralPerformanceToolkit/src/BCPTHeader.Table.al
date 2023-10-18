@@ -2,6 +2,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Tooling;
+
+using System.Environment;
+
 table 149000 "BCPT Header"
 {
     DataClassification = SystemMetadata;
@@ -49,9 +54,10 @@ table 149000 "BCPT Header"
             InitValue = 1000;
             MinValue = 100;
             MaxValue = 30000;
+
             trigger OnValidate()
             begin
-                If "Default Max. User Delay (ms)" < "Default Min. User Delay (ms)" then
+                if "Default Max. User Delay (ms)" < "Default Min. User Delay (ms)" then
                     "Default Max. User Delay (ms)" := "Default Min. User Delay (ms)";
             end;
         }

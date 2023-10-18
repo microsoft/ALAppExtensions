@@ -1,3 +1,7 @@
+namespace Microsoft.API.V2;
+
+using System.Threading;
+
 codeunit 30005 "APIV2 - Job Queue Management"
 {
     procedure CreateAndScheduleBackgroundJob(ObjectIdToRun: Integer; JobQueueEntryCategory: Code[10]; Description: Text[250]): Guid

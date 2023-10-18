@@ -1,3 +1,20 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.ReturnSettlement;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GST.Base;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Location;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Utilities;
+
 table 18326 "GST Adjustment Buffer"
 {
     Caption = 'GST Adjustment Buffer';

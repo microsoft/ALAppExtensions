@@ -1,3 +1,20 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxBase;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Setup;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Setup;
+using Microsoft.Service.Document;
+using Microsoft.Service.Setup;
+using System.Reflection;
+
 table 18552 "Posting No. Series"
 {
     DataClassification = EndUserIdentifiableInformation;
@@ -40,10 +57,10 @@ table 18552 "Posting No. Series"
                     "Document Type"::"Gen. Journals":
                         "Table Id" := Database::"Gen. Journal Line"
                     else begin
-                            OnGetPostingTableID("Document Type", "Table Id", Handled);
-                            if not Handled then
-                                Error('Document Type is not handled %1', "Document Type");
-                        end;
+                        OnGetPostingTableID("Document Type", "Table Id", Handled);
+                        if not Handled then
+                            Error('Document Type is not handled %1', "Document Type");
+                    end;
                 end;
             end;
         }
@@ -94,10 +111,10 @@ table 18552 "Posting No. Series"
             Database::"Gen. Journal Line":
                 GetGenJournalpostingSeries(Record);
             else begin
-                    OnGetPostingNoSeries(Record, Handled);
-                    if not Handled then
-                        Error('Record is not handled for Posting No. Series');
-                end;
+                OnGetPostingNoSeries(Record, Handled);
+                if not Handled then
+                    Error('Record is not handled for Posting No. Series');
+            end;
         end;
     end;
 

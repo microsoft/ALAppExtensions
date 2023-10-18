@@ -3,6 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
+using System;
+using System.Security.User;
+using System.Environment;
+using System.Azure.Identity;
+using System.Reflection;
+using System.Security.AccessControl;
+
 codeunit 9175 "User Settings Impl."
 {
     Access = Internal;
@@ -10,13 +19,7 @@ codeunit 9175 "User Settings Impl."
     InherentPermissions = X;
     Permissions = tabledata "All Profile" = r,
                   tabledata Company = r,
-#if not CLEAN20
-#pragma warning disable AL0432
-                  tabledata "Extra Settings" = rim,
-#pragma warning restore AL0432
-#endif
                   tabledata "Application User Settings" = rim,
-                  tabledata "Tenant Profile" = r,
                   tabledata User = r,
                   tabledata "User Personalization" = rim;
 
@@ -60,9 +63,6 @@ codeunit 9175 "User Settings Impl."
     procedure ProfileLookup(var UserSettingsRec: Record "User Settings")
     var
         TempAllProfile: Record "All Profile" temporary;
-#if not CLEAN19
-        UserSettings: Codeunit "User Settings";
-#endif
     begin
         PopulateProfiles(TempAllProfile);
 
@@ -72,12 +72,6 @@ codeunit 9175 "User Settings Impl."
             UserSettingsRec."App ID" := TempAllProfile."App ID";
             UserSettingsRec.Scope := TempAllProfile.Scope;
         end;
-
-#if not CLEAN19
-#pragma warning disable AL0432
-        UserSettings.OnUserRoleCenterChange(TempAllProfile);
-#pragma warning restore AL0432
-#endif
     end;
 
     procedure PopulateProfiles(var TempAllProfile: Record "All Profile" temporary)
@@ -186,13 +180,7 @@ codeunit 9175 "User Settings Impl."
 
     local procedure UpdateCurrentUsersSettings(OldUserSettings: Record "User Settings"; NewUserSettings: Record "User Settings")
     var
-#if not CLEAN19
-        AllProfile: Record "All Profile";
-#endif
         ApplicationUserSettings: Record "Application User Settings";
-#if not CLEAN19
-        UserSettings: Codeunit "User Settings";
-#endif
         TenantLicenseState: Codeunit "Tenant License State";
         sessionSetting: SessionSettings;
         WasEvaluation: Boolean;
@@ -201,11 +189,6 @@ codeunit 9175 "User Settings Impl."
         sessionSetting.Init();
 
         if OldUserSettings."Language ID" <> NewUserSettings."Language ID" then begin
-#if not CLEAN19
-#pragma warning disable AL0432
-            UserSettings.OnBeforeLanguageChange(OldUserSettings."Language ID", NewUserSettings."Language ID");
-#pragma warning restore AL0432
-#endif
             sessionSetting.LanguageId := NewUserSettings."Language ID";
             ShouldRefreshSession := true;
         end;
@@ -238,20 +221,8 @@ codeunit 9175 "User Settings Impl."
             sessionSetting.ProfileSystemScope := NewUserSettings.Scope = NewUserSettings.Scope::System;
         end;
 
-#if not CLEAN19
-#pragma warning disable AL0432
-        if OldUserSettings."Work Date" <> NewUserSettings."Work Date" then begin
-            UserSettings.OnBeforeWorkdateChange(WorkDate(), NewUserSettings."Work Date");
-            WorkDate(NewUserSettings."Work Date");
-        end;
-
-        if AllProfile.Get(NewUserSettings.Scope, NewUserSettings."App ID", NewUserSettings."Profile ID") then;
-        UserSettings.OnAfterQueryClosePage(NewUserSettings."Language ID", NewUserSettings."Locale ID", NewUserSettings."Time Zone", NewUserSettings.Company, AllProfile);
-#pragma warning restore AL0432
-#else
         if OldUserSettings."Work Date" <> NewUserSettings."Work Date" then
             WorkDate(NewUserSettings."Work Date");
-#endif
 
         if OldUserSettings."Teaching Tips" <> NewUserSettings."Teaching Tips" then begin
             GetAppSettings(UserSecurityId(), ApplicationUserSettings);
@@ -344,35 +315,12 @@ codeunit 9175 "User Settings Impl."
         UserPersonalization.Insert();
     end;
 
-#if not CLEAN20
-#pragma warning disable AL0432
-    [Obsolete('Replaced with function that takes Application User Settings record', '20.0')]
-    procedure InitializeAppSettings(UserSecurityID: Guid; var ExtraSettings: Record "Extra Settings")
-    begin
-        ExtraSettings."User Security ID" := UserSecurityID;
-        ExtraSettings."Teaching Tips" := true;
-        ExtraSettings.Insert();
-    end;
-#pragma warning restore AL0432
-#endif
-
     procedure InitializeAppSettings(UserSecurityID: Guid; var ApplicationUserSettings: Record "Application User Settings")
     begin
         ApplicationUserSettings."User Security ID" := UserSecurityID;
         ApplicationUserSettings."Teaching Tips" := true;
         ApplicationUserSettings.Insert();
     end;
-
-#if not CLEAN20
-#pragma warning disable AL0432
-    [Obsolete('Replaced with function that takes Application User Settings record', '20.0')]
-    procedure GetAppSettings(UserSecurityID: Guid; var ExtraSettings: Record "Extra Settings")
-    begin
-        if not ExtraSettings.Get(UserSecurityID) then
-            InitializeAppSettings(UserSecurityID, ExtraSettings);
-    end;
-#pragma warning restore AL0432
-#endif
 
     procedure GetAppSettings(UserSecurityID: Guid; var ApplicationUserSettings: Record "Application User Settings")
     begin

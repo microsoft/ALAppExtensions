@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.UseCaseBuilder;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Purchases.Document;
+using Microsoft.Sales.Document;
+using System.Environment;
+
 codeunit 20286 "Use Case Event Handling"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Use Case Event Library", 'OnAfterHandleBusinessUseCaseEvent', '', false, false)]

@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
+using System.Integration;
+using Microsoft.Pricing.Asset;
+using Microsoft.Inventory.BOM;
+using Microsoft.Pricing.Source;
+
 codeunit 1867 "C5 Item Migrator"
 {
     TableNo = "C5 InvenTable";

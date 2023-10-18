@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 page 40056 "GP Company Migration Settings"
 {
     ApplicationArea = All;

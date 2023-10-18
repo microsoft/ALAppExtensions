@@ -1,6 +1,12 @@
 #if not CLEAN22
 pageextension 31208 "Posted Transfer Shp. Subf. CZA" extends "Posted Transfer Shpt. Subform"
 {
+    ObsoleteReason = 'Replaced by standard undo shipment action.';
+    ObsoleteState = Pending;
+#pragma warning disable AS0072
+    ObsoleteTag = '22.0';
+#pragma warning restore AS0072
+
     actions
     {
         addlast("&Line")

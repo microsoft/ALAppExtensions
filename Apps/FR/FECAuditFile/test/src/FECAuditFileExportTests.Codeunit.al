@@ -2181,6 +2181,93 @@ codeunit 148017 "FEC Audit File Export Tests"
         VerifySourceCodeOfExportedGLEntriesReport(AuditFile, SourceCode.Code);
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes')]
+    procedure BankGLEntriesFieldsMappingTransactionNo()
+    var
+        BankAccount: Record "Bank Account";
+        GLRegister: Record "G/L Register";
+        AuditFile: Record "Audit File";
+        StartingDate: Date;
+    begin
+        // [SCENARIO 475846] Export G/L Entries - Tax Audit by transaction number for multiple documents related to bank account
+
+        Initialize();
+        StartingDate := GetStartingDate();
+
+        // [GIVEN] Multiple general journal lines are posted for the bank account
+        CreateAndPostBankGenJnlLines(BankAccount, "Gen. Journal Account Type"::"Bank Account", StartingDate);
+
+        // [WHEN] Export Tax Audit report with "Use Transaction No." = true
+#if CLEAN23
+        RunFECExport(AuditFile, '', StartingDate, StartingDate, false);
+#else
+        RunFECExport(AuditFile, '', StartingDate, StartingDate, false, true);
+#endif
+
+        // [THEN] "Transaction No." of the G/L entry is used in the exported file
+        GLRegister.FindLast();
+        VerifyExportGLEntriesByTransNoReport(GLRegister, AuditFile, '', BankAccount."No.", BankAccount.Name);
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes')]
+    procedure CustomerGLEntriesFieldsMapping()
+    var
+        Customer: Record Customer;
+        GLRegister: Record "G/L Register";
+        AuditFile: Record "Audit File";
+        StartingDate: Date;
+    begin
+        // [SCENARIO 475846] Export G/L Entries - Tax Audit by transaction number for multiple documents related to customer
+
+        Initialize();
+        StartingDate := GetStartingDate();
+
+        // [GIVEN] Multiple general journal lines are posted for the customer
+        CreateAndPostCustomGenJnlLines(Customer, "Gen. Journal Account Type"::Customer, StartingDate);
+
+        // [WHEN] Export Tax Audit report with "Use Transaction No." = true
+#if CLEAN23
+        RunFECExport(AuditFile, '', StartingDate, StartingDate, false);
+#else
+        RunFECExport(AuditFile, '', StartingDate, StartingDate, false, true);
+#endif
+
+        // [THEN] "Transaction No." of the G/L entry is used in the exported file
+        GLRegister.FindLast();
+        VerifyExportGLEntriesByTransNoReport(GLRegister, AuditFile, '', Customer."No.", Customer.Name);
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes')]
+    procedure VendorGLEntriesFieldsMapping()
+    var
+        Vendor: Record Vendor;
+        GLRegister: Record "G/L Register";
+        AuditFile: Record "Audit File";
+        StartingDate: Date;
+    begin
+        // [SCENARIO 475846] Export G/L Entries - Tax Audit by transaction number for multiple documents related to vendor
+
+        Initialize();
+        StartingDate := GetStartingDate();
+
+        // [GIVEN] Multiple general journal lines are posted for the vendor
+        CreateAndPostVendorGenJnlLines(Vendor, "Gen. Journal Document Type"::Invoice, StartingDate);
+
+        // [WHEN] Export Tax Audit report with "Use Transaction No." = true
+#if CLEAN23
+        RunFECExport(AuditFile, '', StartingDate, StartingDate, false);
+#else
+        RunFECExport(AuditFile, '', StartingDate, StartingDate, false, true);
+#endif
+
+        // [THEN] "Transaction No." of the G/L entry is used in the exported file
+        GLRegister.FindLast();
+        VerifyExportGLEntriesByTransNoReport(GLRegister, AuditFile, '', Vendor."No.", Vendor.Name);
+    end;
+
     local procedure Initialize()
     begin
         LibrarySetupStorage.Restore();
@@ -2204,7 +2291,7 @@ codeunit 148017 "FEC Audit File Export Tests"
         AuditFileExportFormatSetup.InitSetup("Audit File Export Format"::FEC, '', false);
     end;
 
-    procedure CreateAuditFileExportDoc(var AuditFileExportHeader: Record "Audit File Export Header"; StartingDate: Date; EndingDate: Date; IncludeOpeningBalances: Boolean; DefaultSourceCode: Code[10]; GLAccountViewString: Text[2048])
+    local procedure CreateAuditFileExportDoc(var AuditFileExportHeader: Record "Audit File Export Header"; StartingDate: Date; EndingDate: Date; IncludeOpeningBalances: Boolean; DefaultSourceCode: Code[10]; GLAccountViewString: Text[2048])
     begin
         AuditFileExportHeader.Init();
         AuditFileExportHeader.Validate("Audit File Export Format", "Audit File Export Format"::FEC);
@@ -2216,6 +2303,22 @@ codeunit 148017 "FEC Audit File Export Tests"
         AuditFileExportHeader.Validate("Parallel Processing", false);
         AuditFileExportHeader.Insert(true);
     end;
+
+#if not CLEAN23
+    local procedure CreateAuditFileExportDoc(var AuditFileExportHeader: Record "Audit File Export Header"; StartingDate: Date; EndingDate: Date; IncludeOpeningBalances: Boolean; UseTransactionNo: Boolean; DefaultSourceCode: Code[10]; GLAccountViewString: Text[2048])
+    begin
+        AuditFileExportHeader.Init();
+        AuditFileExportHeader.Validate("Audit File Export Format", "Audit File Export Format"::FEC);
+        AuditFileExportHeader.Validate("Starting Date", StartingDate);
+        AuditFileExportHeader.Validate("Ending Date", EndingDate);
+        AuditFileExportHeader.Validate("Include Opening Balances", IncludeOpeningBalances);
+        AuditFileExportHeader.Validate("Use Transaction No.", UseTransactionNo);
+        AuditFileExportHeader.Validate("Default Source Code", DefaultSourceCode);
+        AuditFileExportHeader.Validate("G/L Account View String", GLAccountViewString);
+        AuditFileExportHeader.Validate("Parallel Processing", false);
+        AuditFileExportHeader.Insert(true);
+    end;
+#endif
 
     local procedure CreateReadStream(var FileInStream: InStream; var AuditFile: Record "Audit File")
     begin
@@ -2236,6 +2339,22 @@ codeunit 148017 "FEC Audit File Export Tests"
         AuditFile.SetRange("Export ID", AuditFileExportHeader.ID);
         AuditFile.FindFirst();
     end;
+
+#if not CLEAN23
+    local procedure RunFECExport(var AuditFile: Record "Audit File"; GLAccountNoFilter: Text; StartDate: Date; EndDate: Date; IncludeOpeningBalances: Boolean; UseTransactionNo: Boolean)
+    var
+        AuditFileExportHeader: Record "Audit File Export Header";
+        GLAccount: Record "G/L Account";
+        AuditFileExportMgt: Codeunit "Audit File Export Mgt.";
+    begin
+        GLAccount.SetFilter("No.", GLAccountNoFilter);
+        CreateAuditFileExportDoc(
+            AuditFileExportHeader, StartDate, EndDate, IncludeOpeningBalances, UseTransactionNo, '', CopyStr(GLAccount.GetView(), 1, 2048));
+        AuditFileExportMgt.StartExport(AuditFileExportHeader);
+        AuditFile.SetRange("Export ID", AuditFileExportHeader.ID);
+        AuditFile.FindFirst();
+    end;
+#endif
 
     local procedure RunFECExport(GLAccountNoFilter: Text; StartDate: Date; EndDate: Date; IncludeOpeningBalances: Boolean) AuditFileExportHeaderID: Integer
     var
@@ -2449,10 +2568,36 @@ codeunit 148017 "FEC Audit File Export Tests"
         LibraryERM.PostGeneralJnlLine(GenJournalLine);
     end;
 
+    local procedure CreateAndPostMultipleGenJnlLines(AccountType: Enum "Gen. Journal Account Type"; AccountNo: Code[20]; DocumentType: Enum "Gen. Journal Document Type"; PostingDate: Date; Amount: Decimal)
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        SourceCode: Record "Source Code";
+    begin
+        LibraryJournals.CreateGenJournalLineWithBatch(GenJournalLine, DocumentType, AccountType, AccountNo, Amount);
+        CreateSourceCodeAndDesc(SourceCode);
+        GenJournalLine.Validate("Source Code", SourceCode.Code);
+        GenJournalLine.Validate("Posting Date", PostingDate);
+        GenJournalLine.Modify(true);
+        LibraryJournals.CreateGenJournalLine(
+            GenJournalLine, GenJournalLine."Journal Template Name", GenJournalLine."Journal Batch Name", DocumentType, AccountType, AccountNo,
+            GenJournalLine."Bal. Account Type"::"G/L Account", LibraryERM.CreateGLAccountNo(), Amount);
+        GenJournalLine.Validate("Source Code", SourceCode.Code);
+        GenJournalLine.Validate("Posting Date", PostingDate);
+        GenJournalLine.Modify(true);
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+    end;
+
     local procedure CreateAndPostBankGenJnlLine(var BankAccount: Record "Bank Account"; DocumentType: Enum "Gen. Journal Document Type"; PostingDate: Date)
     begin
         CreateBankAccount(BankAccount);
         CreateAndPostGenJnlLine(
+            "Gen. Journal Account Type"::"Bank Account", BankAccount."No.", DocumentType, PostingDate, -LibraryRandom.RandDecInRange(100, 200, 2));
+    end;
+
+    local procedure CreateAndPostBankGenJnlLines(var BankAccount: Record "Bank Account"; DocumentType: Enum "Gen. Journal Document Type"; PostingDate: Date)
+    begin
+        CreateBankAccount(BankAccount);
+        CreateAndPostMultipleGenJnlLines(
             "Gen. Journal Account Type"::"Bank Account", BankAccount."No.", DocumentType, PostingDate, -LibraryRandom.RandDecInRange(100, 200, 2));
     end;
 
@@ -2463,10 +2608,24 @@ codeunit 148017 "FEC Audit File Export Tests"
             "Gen. Journal Account Type"::Customer, Customer."No.", DocumentType, PostingDate, -LibraryRandom.RandDecInRange(100, 200, 2));
     end;
 
+    local procedure CreateAndPostCustomGenJnlLines(var Customer: Record Customer; DocumentType: Enum "Gen. Journal Document Type"; PostingDate: Date)
+    begin
+        CreateCustomer(Customer);
+        CreateAndPostMultipleGenJnlLines(
+            "Gen. Journal Account Type"::Customer, Customer."No.", DocumentType, PostingDate, -LibraryRandom.RandDecInRange(100, 200, 2));
+    end;
+
     local procedure CreateAndPostVendorGenJnlLine(var Vendor: Record Vendor; DocumentType: Enum "Gen. Journal Document Type"; PostingDate: Date)
     begin
         LibraryPurchase.CreateVendor(Vendor);
         CreateAndPostGenJnlLine(
+          "Gen. Journal Account Type"::Vendor, Vendor."No.", DocumentType, PostingDate, -LibraryRandom.RandDecInRange(100, 200, 2));
+    end;
+
+    local procedure CreateAndPostVendorGenJnlLines(var Vendor: Record Vendor; DocumentType: Enum "Gen. Journal Document Type"; PostingDate: Date)
+    begin
+        LibraryPurchase.CreateVendor(Vendor);
+        CreateAndPostMultipleGenJnlLines(
           "Gen. Journal Account Type"::Vendor, Vendor."No.", DocumentType, PostingDate, -LibraryRandom.RandDecInRange(100, 200, 2));
     end;
 
@@ -3174,6 +3333,29 @@ codeunit 148017 "FEC Audit File Export Tests"
         repeat
             PopulateFieldsArray(iStream, FieldsValueArray);
             VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLRegister."No.", GLRegister."Creation Date");
+            if GLEntry."G/L Account No." = GetPostingGLAccount(GLEntry) then
+                VerifyLedgerFieldValues(FieldsValueArray, PartyNo, PartyName)
+            else
+                VerifyLedgerFieldValues(FieldsValueArray, '', '');
+        until GLEntry.Next() = 0;
+    end;
+
+    local procedure VerifyExportGLEntriesByTransNoReport(GLRegister: Record "G/L Register"; AuditFile: Record "Audit File"; GLAccountNo: Code[250]; PartyNo: Code[20]; PartyName: Text[100])
+    var
+        GLEntry: Record "G/L Entry";
+        iStream: InStream;
+        LineToRead: Text;
+        FieldsValueArray: array[18] of Text[50];
+    begin
+        CreateReadStream(iStream, AuditFile);
+        iStream.ReadText(LineToRead); // headers
+
+        GLEntry.SetFilter("Entry No.", '%1..%2', GLRegister."From Entry No.", GLRegister."To Entry No.");
+        GLEntry.SetFilter("G/L Account No.", GLAccountNo);
+        GLEntry.FindSet();
+        repeat
+            PopulateFieldsArray(iStream, FieldsValueArray);
+            VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLEntry."Transaction No.", GLRegister."Creation Date");
             if GLEntry."G/L Account No." = GetPostingGLAccount(GLEntry) then
                 VerifyLedgerFieldValues(FieldsValueArray, PartyNo, PartyName)
             else

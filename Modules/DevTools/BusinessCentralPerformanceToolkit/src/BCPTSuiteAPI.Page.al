@@ -1,3 +1,10 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+
+namespace System.Tooling;
+
 page 149006 "BCPT Suite API"
 {
     PageType = API;
@@ -67,7 +74,7 @@ page 149006 "BCPT Suite API"
                     Caption = 'BCPT Suite Line';
                     EntityName = 'bcptSuiteLine';
                     EntitySetName = 'bcptSuiteLines';
-                    SubPageLink = "BCPT Code" = Field("Code");
+                    SubPageLink = "BCPT Code" = field("Code");
                 }
             }
         }

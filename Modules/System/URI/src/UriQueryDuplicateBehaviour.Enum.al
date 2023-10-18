@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Utilities;
+
 /// <summary>
 /// Specifies the behaviour when adding a new query parameter or flag to a URI.
 /// </summary>

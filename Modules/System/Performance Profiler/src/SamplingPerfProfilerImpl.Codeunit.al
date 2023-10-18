@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Tooling;
+
+using System;
+using System.Utilities;
+
 codeunit 1925 "Sampling Perf. Profiler Impl."
 {
     Access = Internal;
@@ -17,6 +22,16 @@ codeunit 1925 "Sampling Perf. Profiler Impl."
         IdleTimeTok: Label 'IdleTime', Locked = true;
         NoRecordingErr: Label 'There is no performance profiling data.';
         NotSupportedCpuProfileKindErr: Label 'This type of .alcpuprofile file is not supported. Please upload a sampling-based CPU profile file.';
+
+    procedure Start(SamplingInterval: Enum "Sampling Interval")
+    var
+        ProfilerSamplingInterval: DotNet ProfilerSamplingInterval;
+    begin
+        IsRecordingRunning := true;
+
+        ProfilerSamplingInterval := SamplingInterval.AsInteger();
+        SamplingProfiler.StartProfiling(ProfilerSamplingInterval);
+    end;
 
     procedure Start()
     begin

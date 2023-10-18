@@ -2,7 +2,13 @@ tableextension 11715 "Purchases & Payables Setup CZL" extends "Purchases & Payab
 {
     fields
     {
+#if not CLEAN22
+#pragma warning disable AL0432
+#endif
         field(11780; "Default VAT Date CZL"; Enum "Default VAT Date CZL")
+#if not CLEAN22
+#pragma warning restore AL0432
+#endif
         {
             Caption = 'Default VAT Date';
             DataClassification = CustomerContent;
@@ -19,13 +25,8 @@ tableextension 11715 "Purchases & Payables Setup CZL" extends "Purchases & Payab
         {
             Caption = 'Allow Alter Posting Groups';
             DataClassification = CustomerContent;
-#if not CLEAN20            
-            ObsoleteState = Pending;
-            ObsoleteTag = '20.1';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '23.0';
-#endif
             ObsoleteReason = 'It will be replaced by "Allow Multiple Posting Groups" field.';
         }
         field(31110; "Def. Orig. Doc. VAT Date CZL"; Option)

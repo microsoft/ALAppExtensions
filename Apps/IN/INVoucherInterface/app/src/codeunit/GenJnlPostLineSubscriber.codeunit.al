@@ -1,3 +1,16 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.VoucherInterface;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Check;
+using Microsoft.Bank.Ledger;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
+
 codeunit 18931 "Gen. Jnl. Post Line Subscriber"
 {
     procedure UpdtCheckLedgEnrtyComputerCheck(GenJournalLine: Record "Gen. Journal Line"; BankAccountLedgerEntry: Record "Bank Account Ledger Entry")

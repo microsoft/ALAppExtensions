@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
 page 1882 "C5 Delivery"
 {
     PageType = Card;
@@ -17,8 +19,8 @@ page 1882 "C5 Delivery"
             group(General)
             {
 #pragma warning disable AA0218
-                field(Delivery; Delivery) { ApplicationArea = All; }
-                field(Name; Name) { ApplicationArea = All; }
+                field(Delivery; Rec.Delivery) { ApplicationArea = All; }
+                field(Name; Rec.Name) { ApplicationArea = All; }
 #pragma warning restore
             }
         }

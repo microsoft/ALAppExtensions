@@ -2,6 +2,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Test.Xml;
+
+using System.Xml;
+using System.TestLibraries.Utilities;
 codeunit 135051 "Xml Validation Test"
 {
     Subtype = Test;

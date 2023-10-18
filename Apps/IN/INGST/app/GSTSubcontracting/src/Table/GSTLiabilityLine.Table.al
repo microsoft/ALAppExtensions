@@ -1,3 +1,18 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Subcontracting;
+
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Location;
+using Microsoft.Manufacturing.Document;
+using Microsoft.Manufacturing.Routing;
+
 table 18470 "GST Liability Line"
 {
     Caption = 'GST Liability Line';

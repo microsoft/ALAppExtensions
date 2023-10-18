@@ -1,7 +1,9 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Apps;
 
 /// <summary>
 /// Displays information about the extension.
@@ -19,8 +21,8 @@ page 2504 "Extension Details Part"
     RefreshOnActivate = true;
     ShowFilter = false;
     SourceTable = "Published Application";
-    SourceTableView = WHERE("Package Type" = FILTER(= Extension | Designer),
-                    "Tenant Visible" = CONST(true));
+    SourceTableView = where("Package Type" = filter(= Extension | Designer),
+                    "Tenant Visible" = const(true));
     ContextSensitiveHelpPage = 'ui-extensions';
     Permissions = tabledata "Published Application" = r;
 
@@ -34,7 +36,7 @@ page 2504 "Extension Details Part"
                 group(Control2)
                 {
                     ShowCaption = false;
-                    field(Logo; Logo)
+                    field(Logo; Rec.Logo)
                     {
                         ApplicationArea = All;
                         Caption = 'Logo';
@@ -50,14 +52,14 @@ page 2504 "Extension Details Part"
                 group(Control9)
                 {
                     ShowCaption = false;
-                    field(Name; Name)
+                    field(Name; Rec.Name)
                     {
                         ApplicationArea = All;
                         Caption = 'Name';
                         MultiLine = true;
                         ToolTip = 'Specifies the name of the extension.';
                     }
-                    field(Publisher; Publisher)
+                    field(Publisher; Rec.Publisher)
                     {
                         ApplicationArea = All;
                         Caption = 'Publisher';
@@ -89,4 +91,5 @@ page 2504 "Extension Details Part"
         ExtensionInstallationImpl: Codeunit "Extension Installation Impl";
         VersionDisplay: Text;
 }
+
 

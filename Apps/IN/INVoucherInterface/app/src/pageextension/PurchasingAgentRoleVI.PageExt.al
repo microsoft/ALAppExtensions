@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.RoleCenters;
+
+using Microsoft.Bank.VoucherInterface;
+using Microsoft.Finance.TaxBase;
+
 pageextension 18948 "Purchasing Agent Role VI" extends "Purchasing Agent Role Center"
 {
     actions
@@ -49,7 +58,7 @@ pageextension 18948 "Purchasing Agent Role VI" extends "Purchasing Agent Role Ce
                 action("Journal Voucher")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Register transactions which are affecting neither the cash account nor the bank account are termed as Journal Vouchers.';
+                    ToolTip = 'Register transactions which are affecting neither the cash account nor the bank account are termed asÂ Journal Vouchers.';
                     Caption = 'Journal Voucher';
                     Promoted = false;
                     Image = EditList;

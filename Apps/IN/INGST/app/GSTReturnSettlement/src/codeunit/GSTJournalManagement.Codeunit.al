@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.ReturnSettlement;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+
 codeunit 18319 "GST Journal Management"
 {
     var

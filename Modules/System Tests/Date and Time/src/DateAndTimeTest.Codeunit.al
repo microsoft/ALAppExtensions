@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.DateTime;
+
+using System.DateTime;
+using System.TestLibraries.Utilities;
+
 codeunit 132979 "Date and Time Test"
 {
     Subtype = Test;

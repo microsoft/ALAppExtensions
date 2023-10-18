@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TDS.TDSForCustomer;
+
+using Microsoft.Sales.Receivables;
+
 page 18666 "Rectify TDS Cert. Details"
 {
     Caption = 'Rectify TDS Cert. Details';

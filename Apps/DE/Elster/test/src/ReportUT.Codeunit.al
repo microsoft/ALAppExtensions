@@ -463,8 +463,6 @@ codeunit 148164 "Elster Report UT"
         SalesVATAdvanceNotif: Record "Sales VAT Advance Notif.";
     begin
         SalesVATAdvanceNotif.Get(SalesVATAdvanceNotifNo);
-        SalesVATAdvanceNotif.TestField("XML-File Creation Date", Today());
-        SalesVATAdvanceNotif.TestField("XSL-Filename", '');
         SalesVATAdvanceNotif.TestField(Period, Period);
         SalesVATAdvanceNotif.TestField("Statement Name", StatementName);
     end;

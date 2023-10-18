@@ -1,3 +1,9 @@
+namespace Microsoft.Bank.StatementImport;
+
+using Microsoft;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Setup;
+
 pageextension 8850 "Bank Account Card Extension" extends "Bank Account Card"
 {
     var

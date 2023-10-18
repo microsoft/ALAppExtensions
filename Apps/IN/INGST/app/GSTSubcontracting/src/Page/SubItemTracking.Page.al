@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Subcontracting;
+
+using Microsoft.Purchases.Vendor;
+
 page 18494 "Sub. Item Tracking"
 {
     ApplicationArea = Basic, Suite;

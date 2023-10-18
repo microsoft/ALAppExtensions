@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 codeunit 30222 "Shpfy GQL NextShipmentLines" implements "Shpfy IGraphQL"
 {
     internal procedure GetGraphQL(): Text

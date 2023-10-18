@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Base;
+
+using Microsoft.Finance.GST.Application;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+
 codeunit 18006 "GST Statistics"
 {
     Access = Internal;
@@ -45,6 +59,23 @@ codeunit 18006 "GST Statistics"
             repeat
                 GSTAmount += GetGSTAmount(PurchCrMemoLine.RecordId());
             until PurchCrMemoLine.Next() = 0;
+    end;
+
+    local procedure GetPurchaseRCMStatisticsAmount(
+        PurchaseHeader: Record "Purchase Header";
+        var RCMAmount: Decimal)
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        Clear(RCMAmount);
+
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.SetRange("Document no.", PurchaseHeader."No.");
+        PurchaseLine.SetRange("GST Reverse Charge", true);
+        if PurchaseLine.FindSet() then
+            repeat
+                RCMAmount += GetGSTAmount(PurchaseLine.RecordId());
+            until PurchaseLine.Next() = 0;
     end;
 
     local procedure GetGSTAmount(RecID: RecordID): Decimal
@@ -166,8 +197,13 @@ codeunit 18006 "GST Statistics"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetPurchaseHeaderGSTAmount', '', false, false)]
     local procedure OnGetPurchaseHeaderGSTAmount(PurchaseHeader: Record "Purchase Header"; var GSTAmount: Decimal)
+    var
+        GSTStatsManagement: Codeunit "GST Stats Management";
+        RCMAmount: Decimal;
     begin
-        GetPurchaseStatisticsAmountExcludingChargeItem(PurchaseHeader, GSTAmount);
+        GSTAmount := GSTStatsManagement.GetGstStatsAmount();
+        GetPurchaseRCMStatisticsAmount(PurchaseHeader, RCMAmount);
+        GSTAmount := GSTAmount - RCMAmount;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetPurchInvHeaderGSTAmount', '', false, false)]

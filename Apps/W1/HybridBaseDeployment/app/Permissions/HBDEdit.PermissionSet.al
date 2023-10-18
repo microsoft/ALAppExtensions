@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 permissionset 4005 "HBD - Edit"
 {
     Assignable = false;

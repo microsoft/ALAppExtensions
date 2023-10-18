@@ -67,11 +67,11 @@ page 31144 "EET Cash Registers CZL"
                     Promoted = true;
                     PromotedCategory = Process;
                     PromotedOnly = true;
-                    RunObject = Page "EET Entries CZL";
-                    RunPageLink = "Business Premises Code" = FIELD("Business Premises Code"),
-                                  "Cash Register Code" = FIELD(Code);
-                    RunPageView = SORTING("Business Premises Code", "Cash Register Code");
-                    ShortCutKey = 'Ctrl+F7';
+                    RunObject = page "EET Entries CZL";
+                    RunPageLink = "Business Premises Code" = field("Business Premises Code"),
+                                  "Cash Register Code" = field(Code);
+                    RunPageView = sorting("Business Premises Code", "Cash Register Code");
+                    ShortcutKey = 'Ctrl+F7';
                     ToolTip = 'Displays a list of EET entries for the selected cash register.';
                 }
             }

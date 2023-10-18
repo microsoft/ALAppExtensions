@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DataAdministration;
+
+using System.Reflection;
+
 /// <summary>
 /// This codeunit is used to manage the list of allowed tables for which retention policies can be set up. 
 /// Extensions can only approve the tables they create. Extensions cannot approve tables from other extensions.

@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 page 41014 "Hist. Purchase Recv. Headers"
 {
     ApplicationArea = All;

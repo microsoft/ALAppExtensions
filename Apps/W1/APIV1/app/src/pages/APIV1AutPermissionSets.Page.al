@@ -1,3 +1,8 @@
+namespace Microsoft.API.V1;
+
+using System.Environment;
+using System.Security.AccessControl;
+
 page 20005 "APIV1 - Aut. Permission Sets"
 {
     APIGroup = 'automation';
@@ -20,23 +25,23 @@ page 20005 "APIV1 - Aut. Permission Sets"
         {
             repeater(Group)
             {
-                field(id; "Role ID")
+                field(id; Rec."Role ID")
                 {
                     Caption = 'id', Locked = true;
                 }
-                field(displayName; Name)
+                field(displayName; Rec.Name)
                 {
                     Caption = 'displayName', Locked = true;
                 }
-                field(appId; "App ID")
+                field(appId; Rec."App ID")
                 {
                     Caption = 'appId', Locked = true;
                 }
-                field(extensionName; "App Name")
+                field(extensionName; Rec."App Name")
                 {
                     Caption = 'extensionName', Locked = true;
                 }
-                field(scope; Scope)
+                field(scope; Rec.Scope)
                 {
                     Caption = 'scope', Locked = true;
                 }
@@ -56,4 +61,5 @@ page 20005 "APIV1 - Aut. Permission Sets"
     var
         AutomationAPIManagement: Codeunit "Automation - API Management";
 }
+
 

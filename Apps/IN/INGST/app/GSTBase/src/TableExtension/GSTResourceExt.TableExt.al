@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Projects.Resources.Resource;
+
+using Microsoft.Finance.GST.Base;
+
 tableextension 18010 "GST Resource Ext" extends Resource
 {
     fields

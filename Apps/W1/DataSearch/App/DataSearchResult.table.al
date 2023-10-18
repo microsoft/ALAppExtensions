@@ -1,3 +1,28 @@
+namespace Microsoft.Foundation.DataSearch;
+
+using Microsoft.Sales.Document;
+using Microsoft.Purchases.Document;
+using Microsoft.Service.Document;
+using Microsoft.Service.Contract;
+using System.Reflection;
+using Microsoft.Sales.History;
+using Microsoft.Purchases.History;
+using Microsoft.Service.History;
+using Microsoft.Sales.Archive;
+using Microsoft.Purchases.Archive;
+using Microsoft.Projects.Project.Job;
+using Microsoft.Projects.Project.Planning;
+using Microsoft.Manufacturing.Document;
+using Microsoft.Manufacturing.ProductionBOM;
+using Microsoft.Manufacturing.Routing;
+using Microsoft.Warehouse.Document;
+using Microsoft.Warehouse.Activity;
+using Microsoft.Warehouse.Activity.History;
+using Microsoft.Warehouse.History;
+using Microsoft.Assembly.Document;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Utilities;
+
 table 2680 "Data Search Result"
 {
     DataClassification = CustomerContent;
@@ -39,7 +64,7 @@ table 2680 "Data Search Result"
         }
         field(10; "Table Caption"; Text[250])
         {
-            CalcFormula = Lookup(AllObjWithCaption."Object Caption" WHERE("Object Type" = CONST(Table), "Object ID" = FIELD("Table No.")));
+            CalcFormula = lookup(AllObjWithCaption."Object Caption" where("Object Type" = const(Table), "Object ID" = field("Table No.")));
             Caption = 'Table Caption';
             FieldClass = FlowField;
         }

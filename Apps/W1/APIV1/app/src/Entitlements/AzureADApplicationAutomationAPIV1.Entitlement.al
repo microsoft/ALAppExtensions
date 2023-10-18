@@ -1,3 +1,5 @@
+namespace Microsoft.API.V1;
+
 entitlement "Azure AD Application Automation APIV1"
 {
     Type = ApplicationScope;

@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Visualization;
+
 pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business Manager"
 {
 

@@ -3,6 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
+using System.Integration;
+using Microsoft.Inventory.Item;
+using Microsoft.Sales.Customer;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Finance.GeneralLedger.Account;
+
 codeunit 1870 "C5 Migr. Dashboard Mgt"
 {
     var

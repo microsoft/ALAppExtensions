@@ -256,7 +256,7 @@ codeunit 11700 "Acc. Schedule Management CZL"
         NonZero: Boolean;
     begin
         ColumnLayout.SetRange("Column Layout Name", ColumnLayoutName);
-        if ColumnLayout.FindSet(false, false) then
+        if ColumnLayout.FindSet(false) then
             repeat
                 NonZero := AccSchedManagement.CalcCell(AccScheduleLine, ColumnLayout, CalcAddCurr) <> 0;
             until (ColumnLayout.Next() = 0) or NonZero;

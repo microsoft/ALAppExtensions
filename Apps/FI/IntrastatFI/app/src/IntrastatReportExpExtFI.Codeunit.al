@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.Foundation.Company;
+using System.IO;
+using System.Utilities;
+
 codeunit 13407 "Intrastat Report Exp. Ext. FI"
 {
     TableNo = "Data Exch.";

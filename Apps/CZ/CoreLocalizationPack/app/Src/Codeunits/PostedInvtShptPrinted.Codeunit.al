@@ -1,6 +1,6 @@
 codeunit 31410 "Posted Invt. Shpt.-Printed CZL"
 {
-    Permissions = TableData "Invt. Shipment Header" = rimd;
+    Permissions = tabledata "Invt. Shipment Header" = rimd;
     TableNo = "Invt. Shipment Header";
 
     trigger OnRun()

@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.API;
+
+using Microsoft.DataMigration;
+
 page 40026 "Cloud Mig Status Detail API"
 {
     PageType = API;

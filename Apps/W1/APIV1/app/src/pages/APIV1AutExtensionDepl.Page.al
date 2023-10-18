@@ -1,3 +1,8 @@
+namespace Microsoft.API.V1;
+
+using System.Apps;
+using System.Environment.Configuration;
+
 page 20007 "APIV1 - Aut. Extension Depl."
 {
     APIGroup = 'automation';
@@ -37,7 +42,7 @@ page 20007 "APIV1 - Aut. Extension Depl."
                     Caption = 'operationType', Locked = true;
                     ToolTip = 'Specifies the deployment type.';
                 }
-                field(status; Status)
+                field(status; Rec.Status)
                 {
                     Caption = 'status', Locked = true;
                     ToolTip = 'Specifies the deployment status.';
@@ -54,7 +59,7 @@ page 20007 "APIV1 - Aut. Extension Depl."
                     ToolTip = 'Specifies the version of the App.';
                     Width = 6;
                 }
-                field(startedOn; "Started On")
+                field(startedOn; Rec."Started On")
                 {
                     Caption = 'startedOn', Locked = true;
                     ToolTip = 'Specifies the deployment start date.';
@@ -72,20 +77,20 @@ page 20007 "APIV1 - Aut. Extension Depl."
 
     trigger OnAfterGetRecord()
     begin
-        IF "Operation Type" = 0 THEN
+        if Rec."Operation Type" = 0 then
             OperationTypeOption := OperationTypeOption::Install
-        ELSE
+        else
             OperationTypeOption := OperationTypeOption::Upload;
 
-        ExtensionManagement.GetDeployOperationInfo("Operation ID", Version, ExtensionSchedule, ExtensionPublisher, AppName, Description);
-        IF Status = Status::InProgress THEN
-            ExtensionManagement.RefreshStatus("Operation ID");
+        ExtensionManagement.GetDeployOperationInfo(Rec."Operation ID", Version, ExtensionSchedule, ExtensionPublisher, AppName, Rec.Description);
+        if Rec.Status = Rec.Status::InProgress then
+            ExtensionManagement.RefreshStatus(Rec."Operation ID");
     end;
 
     trigger OnOpenPage()
     begin
-        SetCurrentKey("Started On");
-        Ascending(false);
+        Rec.SetCurrentKey("Started On");
+        Rec.Ascending(false);
     end;
 
     var
@@ -96,4 +101,5 @@ page 20007 "APIV1 - Aut. Extension Depl."
         AppName: Text;
         OperationTypeOption: Option Upload,Install;
 }
+
 

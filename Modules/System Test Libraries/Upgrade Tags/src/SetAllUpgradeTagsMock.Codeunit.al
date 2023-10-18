@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Upgrade;
+
+using System.Upgrade;
+
 codeunit 135093 "SetAllUpgradeTags Mock"
 {
     EventSubscriberInstance = Manual;

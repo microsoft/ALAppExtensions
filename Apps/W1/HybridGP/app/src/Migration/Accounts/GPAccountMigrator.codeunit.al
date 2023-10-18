@@ -1,3 +1,9 @@
+namespace Microsoft.DataMigration.GP;
+
+using System.Integration;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.Dimension;
+
 codeunit 4017 "GP Account Migrator"
 {
     TableNo = "GP Account";
@@ -12,11 +18,11 @@ codeunit 4017 "GP Account Migrator"
 #pragma warning disable AA0207
     [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccount', '', true, true)]
-    procedure OnMigrateGlAccount(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+    procedure OnMigrateGlAccount(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
 #pragma warning restore AA0207
 #else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccount', '', true, true)]
-    local procedure OnMigrateGlAccount(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+    local procedure OnMigrateGlAccount(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
 #endif
     var
         GPAccount: Record "GP Account";
@@ -32,11 +38,11 @@ codeunit 4017 "GP Account Migrator"
 #pragma warning disable AA0207
     [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateAccountTransactions', '', true, true)]
-    procedure OnMigrateAccountTransactions(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+    procedure OnMigrateAccountTransactions(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
 #pragma warning restore AA0207
 #else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateAccountTransactions', '', true, true)]
-    local procedure OnMigrateAccountTransactions(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+    local procedure OnMigrateAccountTransactions(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
 #endif
     var
         GPAccount: Record "GP Account";
@@ -56,11 +62,11 @@ codeunit 4017 "GP Account Migrator"
 #pragma warning disable AA0207
     [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigratePostingGroups', '', true, true)]
-    procedure OnMigratePostingGroups(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+    procedure OnMigratePostingGroups(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
 #pragma warning restore AA0207
 #else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigratePostingGroups', '', true, true)]
-    local procedure OnMigratePostingGroups(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+    local procedure OnMigratePostingGroups(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
 #endif
     var
         GPAccount: Record "GP Account";
@@ -96,8 +102,8 @@ codeunit 4017 "GP Account Migrator"
             Sender.SetGeneralPostingSetupPurchPmtDiscDebitAccount(CopyStr(PostingGroupCodeTxt, 1, 20), HelperFunctions.GetPostingAccountNumber('PurchPmtDiscDebitAcc'));
         if GPAccount.AcctNum = HelperFunctions.GetPostingAccountNumber('PurchPrepaymentsAccount') then
             Sender.SetGeneralPostingSetupPurchPrepaymentsAccount(CopyStr(PostingGroupCodeTxt, 1, 20), HelperFunctions.GetPostingAccountNumber('PurchPrepaymentsAccount'));
-        if GPAccount.AcctNum = HelperFunctions.GetPostingAccountNumber('PurchaseVarianceAccount') then
-            Sender.SetGeneralPostingSetupPurchaseVarianceAccount(CopyStr(PostingGroupCodeTxt, 1, 20), HelperFunctions.GetPostingAccountNumber('PurchaseVarianceAccount'));
+        if GPAccount.AcctNum = HelperFunctions.GetPostingAccountNumber('PurchasevarianceAccount') then
+            Sender.SetGeneralPostingSetupPurchasevarianceAccount(CopyStr(PostingGroupCodeTxt, 1, 20), HelperFunctions.GetPostingAccountNumber('PurchasevarianceAccount'));
 
         Sender.ModifyGLAccount(true);
     end;
@@ -106,11 +112,11 @@ codeunit 4017 "GP Account Migrator"
 #pragma warning disable AA0207
     [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnCreateOpeningBalanceTrx', '', true, true)]
-    procedure OnCreateOpeningBalanceTrx(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+    procedure OnCreateOpeningBalanceTrx(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
 #pragma warning restore AA0207
 #else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnCreateOpeningBalanceTrx', '', true, true)]
-    local procedure OnCreateOpeningBalanceTrx(VAR Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
+    local procedure OnCreateOpeningBalanceTrx(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
 #endif
     var
         GPAccount: Record "GP Account";
@@ -129,7 +135,7 @@ codeunit 4017 "GP Account Migrator"
         CreateBeginningBalance(GPAccount);
     end;
 
-    local procedure CreateBeginningBalance(GPAccount: Record "GP Account")
+    procedure CreateBeginningBalance(GPAccount: Record "GP Account")
     var
         GPGL10111: Record "GP GL10111";
         GenJournalLine: Record "Gen. Journal Line";
@@ -200,9 +206,10 @@ codeunit 4017 "GP Account Migrator"
         end;
     end;
 
-    local procedure MigrateAccountDetails(GPAccount: Record "GP Account"; GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade")
+    procedure MigrateAccountDetails(GPAccount: Record "GP Account"; var GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade")
     var
         HelperFunctions: Codeunit "Helper Functions";
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         AccountType: Option Posting;
         AccountNum: Code[20];
     begin
@@ -211,6 +218,7 @@ codeunit 4017 "GP Account Migrator"
         if not GLAccDataMigrationFacade.CreateGLAccountIfNeeded(AccountNum, CopyStr(GPAccount.Name, 1, 50), AccountType::Posting) then
             exit;
 
+        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPAccount.RecordId));
         GLAccDataMigrationFacade.SetAccountCategory(HelperFunctions.ConvertAccountCategory(GPAccount));
         GLAccDataMigrationFacade.SetDebitCreditType(HelperFunctions.ConvertDebitCreditType(GPAccount));
         GLAccDataMigrationFacade.SetAccountSubCategory(HelperFunctions.AssignSubAccountCategory(GPAccount));
@@ -218,7 +226,7 @@ codeunit 4017 "GP Account Migrator"
         GLAccDataMigrationFacade.ModifyGLAccount(true);
     end;
 
-    local procedure GenerateGLTransactionBatches(GPAccount: Record "GP Account");
+    procedure GenerateGLTransactionBatches(GPAccount: Record "GP Account");
     var
         GPGLTransactions: Record "GP GLTransactions";
         GenJournalLine: Record "Gen. Journal Line";

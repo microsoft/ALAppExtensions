@@ -13,8 +13,8 @@ report 31202 "Account Schedule Result CZL"
             }
             dataitem(AccScheduleResultLine; "Acc. Schedule Result Line CZL")
             {
-                DataItemLink = "Result Code" = FIELD("Result Code");
-                DataItemTableView = SORTING("Result Code", "Line No.");
+                DataItemLink = "Result Code" = field("Result Code");
+                DataItemTableView = sorting("Result Code", "Line No.");
                 column(AccScheduleName_Description; AccScheduleName.Description)
                 {
                 }

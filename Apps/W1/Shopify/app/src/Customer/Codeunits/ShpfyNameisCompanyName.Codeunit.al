@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Customer;
+
 /// <summary>
 /// Codeunit Shpfy Name is CompanyName (ID 30120) implements Interface Shpfy ICustomer Name.
 /// </summary>

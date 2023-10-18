@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DataAdministration;
+
+using System.Security.User;
+using System.Environment;
+
 /// <summary>
 /// The Table Information page shows information about database tables.
 /// </summary>

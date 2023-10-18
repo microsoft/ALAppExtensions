@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Azure.Storage;
+
+using System.Azure.Storage;
+using System.TestLibraries.Utilities;
+
 codeunit 132920 "ABS Blob Client Test"
 {
     Subtype = Test;
@@ -13,7 +18,7 @@ codeunit 132920 "ABS Blob Client Test"
         Response: Codeunit "ABS Operation Response";
         ContainerName, BlobName, BlobContent, NewBlobContent : Text;
     begin
-        // [Scenarion] Given a storage account and a container, PutBlobBlockBlob operation succeeds and GetBlobAsText returns the content 
+        // [Scenario] Given a storage account and a container, PutBlobBlockBlob operation succeeds and GetBlobAsText returns the content 
 
         SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
 
@@ -48,7 +53,7 @@ codeunit 132920 "ABS Blob Client Test"
         Response: Codeunit "ABS Operation Response";
         ContainerName, FirstBlobName, SecondBlobName, BlobContent : Text;
     begin
-        // [Scenarion] Given a storage account and a container with BLOBs, ListBlobs operation succeeds. 
+        // [Scenario] Given a storage account and a container with BLOBs, ListBlobs operation succeeds. 
 
         SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
 
@@ -96,7 +101,7 @@ codeunit 132920 "ABS Blob Client Test"
         BlobList: Dictionary of [Text, XmlNode];
         Blobs: List of [Text];
     begin
-        // [Scenarion] Given a storage account and a container with BLOBs, ListBlobs operation succeeds. 
+        // [Scenario] Given a storage account and a container with BLOBs, ListBlobs operation succeeds. 
 
         SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
 
@@ -140,13 +145,62 @@ codeunit 132920 "ABS Blob Client Test"
         ABSContainerClient.DeleteContainer(ContainerName);
     end;
 
+    [Test] // Failing if ran against azurite, as BLOB tags are not supported there
+    procedure ListBlobsTestIncludeTags()
+    var
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        ABSOptionalParameters: Codeunit "ABS Optional Parameters";
+        BlobList: Dictionary of [Text, XmlNode];
+        Tags: Dictionary of [Text, Text];
+        ContainerName, BlobName, BlobContent : Text;
+    begin
+        // [SCENARIO] Given a storage account and a container with BLOB, ListBlobs operation succeeds and returns the content with tags.
+        // [GIVEN] Shared Key Authorization
+        SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
+
+        // [GIVEN] ABS Container
+        ContainerName := ABSTestLibrary.GetContainerName();
+        ABSContainerClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), SharedKeyAuthorization);
+        ABSContainerClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSOperationResponse := ABSContainerClient.CreateContainer(ContainerName);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation CreateContainer failed');
+
+        // [GIVEN] Block Blob
+        BlobName := ABSTestLibrary.GetBlobName();
+        BlobContent := ABSTestLibrary.GetSampleTextBlobContent();
+        ABSBlobClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), ContainerName, SharedKeyAuthorization);
+        ABSBlobClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSOperationResponse := ABSBlobClient.PutBlobBlockBlobText(BlobName, BlobContent);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation PutBlobBlockBlob failed');
+
+        // [GIVEN] Blob Tags
+        Tags := ABSTestLibrary.GetBlobTags();
+
+        // [WHEN] Tags are Set
+        ABSOperationResponse := ABSBlobClient.SetBlobTags(BlobName, Tags);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation SetBlobTags failed: ' + ABSOperationResponse.GetError());
+
+        // Listing the BLOBs in the container
+        ABSOptionalParameters.Include('tags');
+        ABSOperationResponse := ABSBlobClient.ListBlobs(BlobList, ABSOptionalParameters);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation ListBlobs failed');
+
+        // [THEN] The get tags are equal to set tags
+        Assert.AreEqual(Tags, GetBlobTagsFromABSContainerBlobList(BlobName, BlobList));
+
+        // Clean-up
+        ABSContainerClient.DeleteContainer(ContainerName);
+    end;
+
     [Test]
     procedure ListBlobHierarchyTest()
     var
         ABSContainerContent: Record "ABS Container Content";
         ContainerName: Text;
     begin
-        // [Scenarion] When listing blobs, the levels, parent directories etc. are set correctly
+        // [Scenario] When listing blobs, the levels, parent directories etc. are set correctly
 
         SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
 
@@ -484,7 +538,7 @@ codeunit 132920 "ABS Blob Client Test"
         LeaseId: Guid;
         ProposedLeaseId: Guid;
     begin
-        // [Scenarion] Given a storage account and a container, PutBlobBlockBlob operation succeeds and subsequent lease-operations
+        // [Scenario] Given a storage account and a container, PutBlobBlockBlob operation succeeds and subsequent lease-operations
         // (1) create a lease, (2) renew a lease, [(3) change a lease], (4) break a lease and (5) release the lease
 
         SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
@@ -533,6 +587,186 @@ codeunit 132920 "ABS Blob Client Test"
 
         // Clean-up
         ABSContainerClient.DeleteContainer(ContainerName);
+    end;
+
+    [Test]
+    procedure GetBlobPropertiesTest()
+    var
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        ContainerName, BlobName, BlobContent : Text;
+    begin
+        // [SCENARIO] Given a storage account and a container, PutBlobBlockBlob operation succeeds and GetBlobAsText returns the content
+        // [GIVEN] Shared Key Authorization
+        SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
+
+        // [GIVEN] ABS Container 
+        ContainerName := ABSTestLibrary.GetContainerName();
+        ABSContainerClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), SharedKeyAuthorization);
+        ABSContainerClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSOperationResponse := ABSContainerClient.CreateContainer(ContainerName);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation CreateContainer failed');
+
+        // [GIVEN] Block Blob
+        BlobName := ABSTestLibrary.GetBlobName();
+        BlobContent := ABSTestLibrary.GetSampleTextBlobContent();
+        ABSBlobClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), ContainerName, SharedKeyAuthorization);
+        ABSBlobClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSOperationResponse := ABSBlobClient.PutBlobBlockBlobText(BlobName, BlobContent);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation PutBlobBlockBlob failed');
+
+        // [WHEN] Properties are read
+        ABSOperationResponse := ABSBlobClient.GetBlobProperties(BlobName);
+
+        // [THEN] The properties are as expected
+        Assert.IsTrue(ABSOperationResponse.GetHeaderValueFromResponseHeaders('x-ms-creation-time') <> '', 'Property x-ms-creation-time is missing');
+        Assert.AreEqual(ABSOperationResponse.GetHeaderValueFromResponseHeaders('x-ms-blob-type'), 'BlockBlob', 'Property x-ms-blob-type is wrong');
+
+        // Clean-up
+        ABSContainerClient.DeleteContainer(ContainerName);
+    end;
+
+    [Test]
+    procedure BlobExistsTest()
+    var
+        ABSOperationResponse: Codeunit "ABS Operation Response";
+        ContainerName, BlobName, BlobContent : Text;
+        BlobExists: Boolean;
+    begin
+        // [SCENARIO] Given a storage account and a container, PutBlobBlockBlob operation succeeds and GetBlobAsText returns the content
+        // [GIVEN] Shared Key Authorization
+        SharedKeyAuthorization := StorageServiceAuthorization.CreateSharedKey(AzuriteTestLibrary.GetAccessKey());
+
+        // [GIVEN] ABS Container 
+        ContainerName := ABSTestLibrary.GetContainerName();
+        ABSContainerClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), SharedKeyAuthorization);
+        ABSContainerClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSOperationResponse := ABSContainerClient.CreateContainer(ContainerName);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation CreateContainer failed');
+
+        // [GIVEN] Block Blob
+        BlobName := ABSTestLibrary.GetBlobName();
+        BlobContent := ABSTestLibrary.GetSampleTextBlobContent();
+        ABSBlobClient.Initialize(AzuriteTestLibrary.GetStorageAccountName(), ContainerName, SharedKeyAuthorization);
+        ABSBlobClient.SetBaseUrl(AzuriteTestLibrary.GetBlobStorageBaseUrl());
+
+        ABSOperationResponse := ABSBlobClient.PutBlobBlockBlobText(BlobName, BlobContent);
+        Assert.IsTrue(ABSOperationResponse.IsSuccessful(), 'Operation PutBlobBlockBlob failed');
+
+        // [WHEN] Blob Exists is called
+        BlobExists := ABSBlobClient.BlobExists(BlobName);
+
+        // [THEN] The blob exists
+        Assert.IsTrue(BlobExists, 'The return value of procedure BlobExists should be true.');
+
+        // Clean-up
+        ABSContainerClient.DeleteContainer(ContainerName);
+    end;
+
+    [Test]
+    procedure ParseResponseWithHierarchicalBlobName()
+    var
+        ABSContainerContent: Record "ABS Container Content";
+        ABSHelperLibrary: Codeunit "ABS Helper Library";
+        NodeList: XmlNodeList;
+        NextMarker: Text;
+    begin
+        // [SCENARIO] Parse the BLOB storage API response listing BLOBs in a container without the hierarchical namespace
+
+        // [GIVEN] Prepare an XML response from the BLOB Storage API, listing all BLOBs in a container.
+        // [GIVEN] Container does not have hierarchical namespace and contains a single BLOB with the name like "folder/blob"
+        NodeList := ABSHelperLibrary.CreateBlobNodeListFromResponse(ABSTestLibrary.GetServiceResponseBlobWithHierarchicalName(), NextMarker);
+
+        // [WHEN] Invoke BlobNodeListToTempRecord
+        ABSHelperLibrary.BlobNodeListToTempRecord(NodeList, ABSContainerContent);
+
+        // [THEN] "ABS Container Content" contains one record "folder" and one record "blob"
+        Assert.RecordCount(ABSContainerContent, 2);
+
+        ABSContainerContent.SetRange(Name, ABSTestLibrary.GetSampleResponseRootDirName());
+        Assert.RecordCount(ABSContainerContent, 1);
+
+        ABSContainerContent.SetRange(Name, ABSTestLibrary.GetSampleResponseFileName());
+        Assert.RecordCount(ABSContainerContent, 1);
+    end;
+
+    [Test]
+    procedure ParseResponseFromStorageHierarachicalNamespace()
+    var
+        ABSContainerContent: Record "ABS Container Content";
+        ABSHelperLibrary: Codeunit "ABS Helper Library";
+        NodeList: XmlNodeList;
+        NextMarker: Text;
+    begin
+        // [SCENARIO] Parse the BLOB storage API response listing BLOBs in a container with the hierarchical namespace enabled
+
+        // [GIVEN] Prepare an XML response from the BLOB Storage API, listing all BLOBs in a container.
+        // [GIVEN] Container has the hierarchical namespace enabled, and contains a root folder named "rootdir".
+        // [GIVEN] There is a subdirectory "subdir" in the root, and one blob named "blob" in the subdirectory.
+        NodeList := ABSHelperLibrary.CreateBlobNodeListFromResponse(ABSTestLibrary.GetServiceResponseHierarchicalNamespace(), NextMarker);
+
+        // [WHEN] Invoke BlobNodeListToTempRecord
+        ABSHelperLibrary.BlobNodeListToTempRecord(NodeList, ABSContainerContent);
+
+        // [THEN] "ABS Container Content" contains two records with resource type "folder" and one record with resource type = "blob"
+        Assert.RecordCount(ABSContainerContent, 3);
+
+        VerifyContainerContentType(ABSContainerContent, CopyStr(ABSTestLibrary.GetSampleResponseRootDirName(), 1, MaxStrLen(ABSContainerContent.Name)), Enum::"ABS Blob Resource Type"::Directory);
+        VerifyContainerContentType(ABSContainerContent, CopyStr(ABSTestLibrary.GetSampleResponseSubdirName(), 1, MaxStrLen(ABSContainerContent.Name)), Enum::"ABS Blob Resource Type"::Directory);
+        VerifyContainerContentType(ABSContainerContent, CopyStr(ABSTestLibrary.GetSampleResponseFileName(), 1, MaxStrLen(ABSContainerContent.Name)), Enum::"ABS Blob Resource Type"::File);
+    end;
+
+    local procedure VerifyContainerContentType(var ABSContainerContent: Record "ABS Container Content"; BlobName: Text[2048]; ExpectedResourceType: Enum "ABS Blob Resource Type")
+    var
+        IncorrectBlobPropertyErr: Label 'BLOB property is assigned incorrectly';
+    begin
+        ABSContainerContent.SetRange(Name, BlobName);
+        ABSContainerContent.FindFirst();
+        Assert.AreEqual(ExpectedResourceType, ABSContainerContent."Resource Type", IncorrectBlobPropertyErr);
+    end;
+
+    local procedure GetBlobTagsFromABSContainerBlobList(BlobName: Text; BlobList: Dictionary of [Text, XmlNode]): Dictionary of [Text, Text]
+    var
+        BlobNode: XmlNode;
+    begin
+        BlobNode := BlobList.Get(BlobName);
+        exit(XmlNodeToTagsDictionary(BlobNode));
+    end;
+
+    local procedure XmlNodeToTagsDictionary(Node: XmlNode): Dictionary of [Text, Text]
+    var
+        Tags: Dictionary of [Text, Text];
+        TagNodesList: XmlNodeList;
+        TagNode: XmlNode;
+        KeyValue: Text;
+        Value: Text;
+    begin
+        if not Node.SelectNodes('Tags/TagSet/Tag', TagNodesList) then
+            exit;
+
+        foreach TagNode in TagNodesList do begin
+            KeyValue := GetSingleNodeInnerText(TagNode, 'Key');
+            Value := GetSingleNodeInnerText(TagNode, 'Value');
+            if KeyValue = '' then begin
+                Clear(Tags);
+                exit;
+            end;
+            Tags.Add(KeyValue, Value);
+        end;
+        exit(Tags);
+    end;
+
+    local procedure GetSingleNodeInnerText(Node: XmlNode; XPath: Text): Text
+    var
+        ChildNode: XmlNode;
+        XmlElement: XmlElement;
+    begin
+        if not Node.SelectSingleNode(XPath, ChildNode) then
+            exit;
+        XmlElement := ChildNode.AsXmlElement();
+        exit(XmlElement.InnerText());
     end;
 
     var

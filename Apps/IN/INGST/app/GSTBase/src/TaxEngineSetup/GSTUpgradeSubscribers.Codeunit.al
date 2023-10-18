@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.JsonExchange;
+
+using Microsoft.Finance.GST.Base;
+
 codeunit 18018 "GST Upgrade Subscribers"
 {
     local procedure GetUseCaseConfigText(CaseID: Guid; var UseCaseUpdated: Boolean; var ConfigText: text)

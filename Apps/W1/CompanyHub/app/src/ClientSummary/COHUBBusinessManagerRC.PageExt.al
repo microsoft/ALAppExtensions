@@ -1,3 +1,7 @@
+namespace Mirosoft.Integration.CompanyHub;
+
+using Microsoft.Finance.RoleCenters;
+
 pageextension 1152 "COHUB Business Manager RC" extends "Business Manager Role Center"
 {
     layout

@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Security.Encryption;
+
+using System.Security.Encryption;
+using System.Utilities;
+using System.Text;
+using System.TestLibraries.Utilities;
+
 codeunit 132588 "DESCryptoServiceProvider Test"
 {
     Subtype = Test;

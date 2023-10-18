@@ -1,7 +1,19 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+namespace Microsoft.EServices.EDocument;
+
+using Microsoft.CRM.Contact;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.Reporting;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Setup;
+using System.IO;
+using System.Utilities;
 
 codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
 {
@@ -53,7 +65,7 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
 
         SalesSetup.Get();
 
-        FileName := ElectronicDocumentFormat.GetAttachmentFileName(SalesCrMemoHeader."No.", 'Credit Memo', 'xml');
+        FileName := ElectronicDocumentFormat.GetAttachmentFileName(SalesCrMemoHeader, SalesCrMemoHeader."No.", 'Credit Memo', 'xml');
         OIOUBLManagement.UpdateRecordExportBuffer(SalesCrMemoHeader.RecordId(), TempBlob, FileName);
 
         OIOUBLManagement.ExportXMLFile(SalesCrMemoHeader."No.", TempBlob, SalesSetup."OIOUBL-Cr. Memo Path", FileName);

@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Document;
+
 codeunit 30254 "Shpfy Open SalesOrder" implements "Shpfy IOpenBCDocument"
 {
 
@@ -5,7 +9,7 @@ codeunit 30254 "Shpfy Open SalesOrder" implements "Shpfy IOpenBCDocument"
     var
         SalesHeader: Record "Sales Header";
     begin
-        if SalesHeader.Get("Sales Document Type"::Order, DocumentNo) then begin
+        if SalesHeader.Get(SalesHeader."Document Type"::Order, DocumentNo) then begin
             SalesHeader.SetRecFilter();
             Page.Run(Page::"Sales Order", SalesHeader);
         end;

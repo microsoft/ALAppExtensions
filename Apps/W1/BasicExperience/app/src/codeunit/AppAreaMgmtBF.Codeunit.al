@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace System.Environment.Configuration;
+
+using System.Telemetry;
+
 codeunit 20600 "App Area Mgmt BF"
 {
     // It is not possible to get the Essential Experience Application Areas, but when the function 'IsEssentialExperienceEnabled' is called, the event trigger OnGetEssentialExperienceAppAreas() is trigged, 

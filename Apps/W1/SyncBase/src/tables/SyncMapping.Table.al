@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.SyncBase;
+
 table 2402 "Sync Mapping"
 {
     Caption = 'Sync Mapping';

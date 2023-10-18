@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Environment;
+
+using System.Environment;
+using System.TestLibraries.Environment;
+using System.TestLibraries.Utilities;
+
 codeunit 135091 "Environment Information Test"
 {
     Subtype = Test;

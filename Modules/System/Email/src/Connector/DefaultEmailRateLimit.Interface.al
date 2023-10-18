@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
 /// <summary>
 /// A default email rate limit interface used to limit how many e-mails per second a connector can send.
 /// </summary>

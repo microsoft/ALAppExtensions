@@ -1,3 +1,16 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Payments;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.TaxBase;
+using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+
 table 18245 "GST TDS/TCS Entry"
 {
     Caption = 'GST TDS/TCS Entry';

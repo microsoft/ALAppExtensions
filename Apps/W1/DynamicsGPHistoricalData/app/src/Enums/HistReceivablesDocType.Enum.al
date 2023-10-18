@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 enum 40903 "Hist. Receivables Doc. Type"
 {
     value(0; Balance) { Caption = 'Balance'; }

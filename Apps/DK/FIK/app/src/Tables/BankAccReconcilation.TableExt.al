@@ -1,7 +1,12 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Reconciliation;
 
 tableextension 13618 BankAccReconcilation extends "Bank Acc. Reconciliation"
 {

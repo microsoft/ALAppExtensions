@@ -3,7 +3,7 @@ codeunit 31026 "Job Transfer Line Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Job Transfer Line", 'OnAfterFromPlanningSalesLineToJnlLine', '', false, false)]
     local procedure SetCorrectionOnAfterFromPlanningSalesLineToJnlLine(var JobJnlLine: Record "Job Journal Line"; JobPlanningLine: Record "Job Planning Line"; SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line"; EntryType: Enum "Job Journal Line Entry Type")
     var
-        CorrectionsPostingMgtCZL: codeunit "Corrections Posting Mgt. CZL";
+        CorrectionsPostingMgtCZL: Codeunit "Corrections Posting Mgt. CZL";
     begin
         JobJnlLine."Shpt. Method Code" := SalesHeader."Shipment Method Code";
 #if not CLEAN22
@@ -22,7 +22,7 @@ codeunit 31026 "Job Transfer Line Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Job Transfer Line", 'OnAfterFromPlanningLineToJnlLine', '', false, false)]
     local procedure SetCorrectionOnAfterFromPlanningLineToJnlLine(var JobJournalLine: Record "Job Journal Line"; JobPlanningLine: Record "Job Planning Line")
     var
-        CorrectionsPostingMgtCZL: codeunit "Corrections Posting Mgt. CZL";
+        CorrectionsPostingMgtCZL: Codeunit "Corrections Posting Mgt. CZL";
     begin
         CorrectionsPostingMgtCZL.SetCorrectionIfNegQty(JobJournalLine);
     end;
@@ -30,7 +30,7 @@ codeunit 31026 "Job Transfer Line Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Job Transfer Line", 'OnAfterFromGenJnlLineToJnlLine', '', false, false)]
     local procedure SetCorrectionOnAfterFromGenJnlLineToJnlLine(var JobJnlLine: Record "Job Journal Line"; GenJnlLine: Record "Gen. Journal Line")
     var
-        CorrectionsPostingMgtCZL: codeunit "Corrections Posting Mgt. CZL";
+        CorrectionsPostingMgtCZL: Codeunit "Corrections Posting Mgt. CZL";
     begin
         CorrectionsPostingMgtCZL.SetCorrectionIfNegQty(JobJnlLine);
     end;
@@ -38,7 +38,7 @@ codeunit 31026 "Job Transfer Line Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Job Transfer Line", 'OnAfterFromPurchaseLineToJnlLine', '', false, false)]
     local procedure SetCorrectionOnAfterFromPurchaseLineToJnlLine(var JobJnlLine: Record "Job Journal Line"; PurchHeader: Record "Purchase Header"; PurchInvHeader: Record "Purch. Inv. Header"; PurchCrMemoHeader: Record "Purch. Cr. Memo Hdr."; PurchLine: Record "Purchase Line"; SourceCode: Code[10])
     var
-        CorrectionsPostingMgtCZL: codeunit "Corrections Posting Mgt. CZL";
+        CorrectionsPostingMgtCZL: Codeunit "Corrections Posting Mgt. CZL";
     begin
         JobJnlLine."Transaction Type" := PurchLine."Transaction Type";
         JobJnlLine."Transport Method" := PurchLine."Transport Method";

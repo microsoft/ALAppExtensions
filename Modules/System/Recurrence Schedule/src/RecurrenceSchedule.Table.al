@@ -2,9 +2,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.DateTime;
+
 table 4690 "Recurrence Schedule"
 {
     Access = Internal;
+    InherentEntitlements = rimdX;
+    InherentPermissions = rimdX;
 
     fields
     {
@@ -24,7 +29,7 @@ table 4690 "Recurrence Schedule"
                 "Recurs Every" := 1;
 
                 if (Pattern = RecurrencePattern::Monthly) or (Pattern = RecurrencePattern::Yearly) then
-                    VALIDATE("Monthly Pattern", RecurrenceMonthlyPattern::"Specific Day");
+                    Rec.Validate("Monthly Pattern", RecurrenceMonthlyPattern::"Specific Day");
             end;
         }
         field(3; "Recurs Every"; Integer)
@@ -108,8 +113,8 @@ table 4690 "Recurrence Schedule"
 
     trigger OnInsert()
     begin
-        IF ISNULLGUID(ID) THEN
-            ID := CREATEGUID();
+        if IsNullGuid(ID) then
+            ID := CreateGuid();
     end;
 }
 

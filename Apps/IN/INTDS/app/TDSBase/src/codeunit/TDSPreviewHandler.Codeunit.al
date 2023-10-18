@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TDS.TDSBase;
+
+using Microsoft.Finance.GeneralLedger.Preview;
+using Microsoft.Purchases.Posting;
+using Microsoft.Sales.Posting;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Foundation.Navigate;
+
 codeunit 18687 "TDS Preview Handler"
 {
     SingleInstance = true;

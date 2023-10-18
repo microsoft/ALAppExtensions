@@ -7,5 +7,5 @@ enumextension 11702 "Acc. Sched. Line Tot. Type CZL" extends "Acc. Schedule Line
     value(11702; "Constant CZL")
     {
         Caption = 'Constant';
-    }    
+    }
 }

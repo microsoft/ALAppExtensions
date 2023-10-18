@@ -2536,6 +2536,281 @@ codeunit 139550 "Intrastat Report Test"
         CreateAndVerifyIntrastatLine(ItemLedgerEntry."Document No.", ItemNo, 1, IntrastatReportLine.Type::Receipt, FromCountryRegion.Code, InTransitLocation.Code);
     end;
 
+    [Test]
+    [HandlerFunctions('SalesListModalPageHandler,IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
+    [Scope('OnPrem')]
+    procedure IntraCommunityEUSales()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        PurchaseHeader: Record "Purchase Header";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        SalesShipmentNo: Code[20];
+    begin
+        // [FEATURE] [Sales]
+        // [SCENARIO 443883] Drop shipment Intra-Community sales entry created in the Intrastat Report by Get Entries function
+        Initialize();
+
+        // [GIVEN] Drop shipment sales order for customer with EU country "C1"
+        LibraryIntrastat.CreateSalesOrdersWithDropShipment(SalesHeader, true);
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindFirst();
+
+        // [GIVEN] Drop shipment purchase order for local vendor
+        LibraryIntrastat.CreatePurchOrdersWithDropShipment(PurchaseHeader, SalesHeader."Sell-to Customer No.", false);
+
+        // [GIVEN] Post sales order
+        SalesShipmentNo := LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [WHEN] do not include drop shipment
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(SalesShipmentNo);
+
+        // [WHEN] include drop shipment
+        IntrastatReportSetup."Include Drop Shipment" := true;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] check line created
+        CreateAndVerifyIntrastatLine(SalesShipmentNo, SalesLine."No.", SalesLine.Quantity, IntrastatReportLine.Type::Shipment);
+
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+    end;
+
+    [Test]
+    [HandlerFunctions('SalesListModalPageHandler,IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
+    [Scope('OnPrem')]
+    procedure IntraCommunityEUPurchase()
+    var
+        SalesHeader: Record "Sales Header";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        IntrastatReportLine: Record "Intrastat Report Line";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        PurchReceiptNo: Code[20];
+    begin
+        // [FEATURE] [Purchase]
+        // [SCENARIO 443883] Drop shipment Intra-Community purchase entry created in the Intrastat Report by Get Entries function
+        Initialize();
+
+        // [GIVEN] Drop shipment sales order for local customer 
+        LibraryIntrastat.CreateSalesOrdersWithDropShipment(SalesHeader, false);
+
+        // [GIVEN] Drop shipment purchase order for vendor with EU country "C2"
+        LibraryIntrastat.CreatePurchOrdersWithDropShipment(PurchaseHeader, SalesHeader."Sell-to Customer No.", true);
+
+        // [GIVEN] Post sales order
+        LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [GIVEN] Post purchase order
+        PurchaseHeader.Find();
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
+        PurchaseLine.FindFirst();
+
+        PurchReceiptNo := PurchaseHeader."Last Receiving No.";
+
+        // [WHEN] do not include drop shipment
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(PurchReceiptNo);
+
+        // [WHEN] include drop shipment
+        IntrastatReportSetup."Include Drop Shipment" := true;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] check line created
+        CreateAndVerifyIntrastatLine(PurchReceiptNo, PurchaseLine."No.", PurchaseLine.Quantity, IntrastatReportLine.Type::Receipt);
+
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+    end;
+
+    [Test]
+    [HandlerFunctions('SalesListModalPageHandler,IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
+    [Scope('OnPrem')]
+    procedure IntraCommunityLocalSales()
+    var
+        SalesHeader: Record "Sales Header";
+        PurchaseHeader: Record "Purchase Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        SalesShipmentNo: Code[20];
+    begin
+        // [FEATURE] [Sales]
+        // [SCENARIO 443883] Drop shipment Intra-Community sales entry created in the Intrastat Report by Get Entries function
+        Initialize();
+
+        // [GIVEN] Drop shipment sales order for local customer
+        LibraryIntrastat.CreateSalesOrdersWithDropShipment(SalesHeader, false);
+
+        // [GIVEN] Drop shipment purchase order for local vendor
+        LibraryIntrastat.CreatePurchOrdersWithDropShipment(PurchaseHeader, SalesHeader."Sell-to Customer No.", false);
+
+        // [GIVEN] Post sales order
+        SalesShipmentNo := LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [WHEN] do not include drop shipment
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(SalesShipmentNo);
+
+        // [WHEN] include drop shipment
+        IntrastatReportSetup."Include Drop Shipment" := true;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(SalesShipmentNo);
+
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+    end;
+
+    [Test]
+    [HandlerFunctions('SalesListModalPageHandler,IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
+    [Scope('OnPrem')]
+    procedure IntraCommunityLocalPurchase()
+    var
+        SalesHeader: Record "Sales Header";
+        PurchaseHeader: Record "Purchase Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        PurchReceiptNo: Code[20];
+    begin
+        // [FEATURE] [Purchase]
+        // [SCENARIO 443883] Drop shipment Intra-Community purchase entry created in the Intrastat Report by Get Entries function
+        Initialize();
+
+        // [GIVEN] Drop shipment sales order for local customer 
+        LibraryIntrastat.CreateSalesOrdersWithDropShipment(SalesHeader, false);
+
+        // [GIVEN] Drop shipment purchase order for local vendor 
+        LibraryIntrastat.CreatePurchOrdersWithDropShipment(PurchaseHeader, SalesHeader."Sell-to Customer No.", false);
+
+        // [GIVEN] Post sales order
+        LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [GIVEN] Post purchase order
+        PurchaseHeader.Find();
+        PurchReceiptNo := PurchaseHeader."Last Receiving No.";
+
+        // [WHEN] do not include drop shipment
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(PurchReceiptNo);
+
+        // [WHEN] include drop shipment
+        IntrastatReportSetup."Include Drop Shipment" := true;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(PurchReceiptNo);
+
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+    end;
+
+    [Test]
+    [HandlerFunctions('SalesListModalPageHandler,IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
+    [Scope('OnPrem')]
+    procedure IntraCommunityForeingSales()
+    var
+        SalesHeader: Record "Sales Header";
+        PurchaseHeader: Record "Purchase Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        SalesShipmentNo: Code[20];
+    begin
+        // [FEATURE] [Sales]
+        // [SCENARIO 443883] Drop shipment Intra-Community sales entry created in the Intrastat Report by Get Entries function
+        Initialize();
+
+        // [GIVEN] Drop shipment sales order for customer with EU country "C1" and item "Item"
+        LibraryIntrastat.CreateSalesOrdersWithDropShipment(SalesHeader, true);
+
+        // [GIVEN] Drop shipment purchase order for EU vendor
+        LibraryIntrastat.CreatePurchOrdersWithDropShipment(PurchaseHeader, SalesHeader."Sell-to Customer No.", true);
+
+        // [GIVEN] Post sales order
+        SalesShipmentNo := LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [WHEN] do not include drop shipment
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(SalesShipmentNo);
+
+        // [WHEN] include drop shipment
+        IntrastatReportSetup."Include Drop Shipment" := true;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(SalesShipmentNo);
+
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+    end;
+
+    [Test]
+    [HandlerFunctions('SalesListModalPageHandler,IntrastatReportGetLinesPageHandler,NoLinesMsgHandler')]
+    [Scope('OnPrem')]
+    procedure IntraCommunityForeingPurchase()
+    var
+        SalesHeader: Record "Sales Header";
+        PurchaseHeader: Record "Purchase Header";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        PurchReceiptNo: Code[20];
+    begin
+        // [FEATURE] [Purchase]
+        // [SCENARIO 443883] Drop shipment Intra-Community purchase entry created in the Intrastat Report by Get Entries function
+        Initialize();
+
+        // [GIVEN] Drop shipment sales order for EU customer 
+        LibraryIntrastat.CreateSalesOrdersWithDropShipment(SalesHeader, true);
+
+        // [GIVEN] Drop shipment purchase order for vendor with EU country "C2"
+        LibraryIntrastat.CreatePurchOrdersWithDropShipment(PurchaseHeader, SalesHeader."Sell-to Customer No.", true);
+
+        // [GIVEN] Post sales order
+        LibrarySales.PostSalesDocument(SalesHeader, true, false);
+
+        // [GIVEN] Post purchase order
+        PurchaseHeader.Find();
+        PurchReceiptNo := PurchaseHeader."Last Receiving No.";
+
+        // [WHEN] do not include drop shipment
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(PurchReceiptNo);
+
+        // [WHEN] include drop shipment
+        IntrastatReportSetup."Include Drop Shipment" := true;
+        IntrastatReportSetup.Modify();
+
+        // [THEN] no lines created
+        GetEntriesAndVerifyNoItemLine(PurchReceiptNo);
+
+        IntrastatReportSetup."Include Drop Shipment" := false;
+        IntrastatReportSetup.Modify();
+    end;
+
     local procedure Initialize()
     var
         LibraryERMCountryData: Codeunit "Library - ERM Country Data";
@@ -2779,6 +3054,13 @@ codeunit 139550 "Intrastat Report Test"
         LibraryVariableStorage.Dequeue(NoVariant);
         IntrastatReportList.FILTER.SetFilter("No.", NoVariant);
         IntrastatReportList.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    [Scope('OnPrem')]
+    procedure SalesListModalPageHandler(var SalesList: TestPage "Sales List")
+    begin
+        SalesList.OK().Invoke();
     end;
 
     [ConfirmHandler]

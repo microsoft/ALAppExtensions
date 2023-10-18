@@ -39,7 +39,7 @@ pageextension 11769 "Item List CZL" extends "Item List"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Quantity Shipped Check';
                 Image = Report;
-                RunObject = Report "Quantity Shipped Check CZL";
+                RunObject = report "Quantity Shipped Check CZL";
                 ToolTip = 'Verify that all sales shipments are fully invoiced. Report shows a list of sales shipment lines which are not fully invoiced.';
             }
             action("Quantity Received Check CZL")
@@ -47,7 +47,7 @@ pageextension 11769 "Item List CZL" extends "Item List"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Quantity Received Check';
                 Image = Report;
-                RunObject = Report "Quantity Received Check CZL";
+                RunObject = report "Quantity Received Check CZL";
                 ToolTip = 'Verify that all purchase receipts are fully invoiced. Report shows a list of purchase receipt lines which are not fully invoiced.';
             }
         }
@@ -59,7 +59,7 @@ pageextension 11769 "Item List CZL" extends "Item List"
                 Caption = 'Test Tariff Numbers';
                 Image = TestReport;
                 ToolTip = 'Run a test of item tariff numbers.';
-                RunObject = Report "Test Tariff Numbers CZL";
+                RunObject = report "Test Tariff Numbers CZL";
             }
         }
     }

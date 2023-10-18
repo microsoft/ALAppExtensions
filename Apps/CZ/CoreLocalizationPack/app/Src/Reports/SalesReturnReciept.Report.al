@@ -281,7 +281,8 @@ report 31192 "Sales Return Reciept CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
                 FormatAddress.SalesRcptShipTo(ShipToAddr, "Return Receipt Header");
                 FormatAddress.SalesRcptBillTo(CustAddr, ShipToAddr, "Return Receipt Header");
@@ -350,7 +351,7 @@ report 31192 "Sales Return Reciept CZL"
 
     var
         ShipmentMethod: Record "Shipment Method";
-        Language: Codeunit Language;
+        LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
@@ -362,7 +363,6 @@ report 31192 "Sales Return Reciept CZL"
         NoOfCopies: Integer;
         NoOfLoops: Integer;
         LogInteraction: Boolean;
-        [InDataSet]
         LogInteractionEnable: Boolean;
         ShowLotSN: Boolean;
         DocumentLbl: Label 'Return Receipt';
@@ -384,7 +384,7 @@ report 31192 "Sales Return Reciept CZL"
 
     procedure InitLogInteraction()
     begin
-        LogInteraction := SegManagement.FindInteractionTemplateCode(20) <> '';
+        LogInteraction := SegManagement.FindInteractionTemplateCode(Enum::"Interaction Log Entry Document Type"::"Sales Return Receipt") <> '';
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

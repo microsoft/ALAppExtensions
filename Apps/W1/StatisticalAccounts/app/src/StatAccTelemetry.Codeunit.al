@@ -1,3 +1,7 @@
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
+using System.Telemetry;
+
 codeunit 2627 "Stat. Acc. Telemetry"
 {
     SingleInstance = true;

@@ -1,3 +1,18 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.ReturnSettlement;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using System.Reflection;
+
 table 18323 "GST Journal Template"
 {
     Caption = 'GST Journal Template';

@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 enum 40907 "Hist. Migration Step Type"
 {
     value(0; "Not Started") { Caption = 'Not Started'; }

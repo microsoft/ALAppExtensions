@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.DataAdministration;
+
+using System.DataAdministration;
+using System.TestLibraries.DataAdministration;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 // These tests rely on codeunit 138704 "Reten. Pol. Test Installer"
 // if/when we get the function NavApp.GetCalllerModuleInfo(var Info: ModuleInfo) we can refactor and remove the installer dependency
 
@@ -121,7 +128,7 @@ codeunit 138703 "Reten. Pol. Allowed Tbl. Test"
         Assert.AreNotEqual(0, AllowedTables.Count(), ' The list of allowed tables should not be empty');
         AllowedTablesCommaSep := ConvertStr(AllowedTablesFilter, '|', ',');
         Assert.AreEqual(StrLen(DelChr(AllowedTablesFilter, '=', '0123456789')), AllowedTables.Count() - 1, 'The filter should contain all allowed tables.');
-        For i := 1 to AllowedTables.Count do begin
+        for i := 1 to AllowedTables.Count do begin
             Evaluate(TableId, SelectStr(i, AllowedTablesCommaSep));
             Assert.IsTrue(AllowedTables.Contains(TableId), StrSubstNo(TableIdinFilterNotListLbl, TableId));
         end;

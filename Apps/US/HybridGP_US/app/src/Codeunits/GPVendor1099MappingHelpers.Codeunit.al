@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 codeunit 42002 "GP Vendor 1099 Mapping Helpers"
 {
     var

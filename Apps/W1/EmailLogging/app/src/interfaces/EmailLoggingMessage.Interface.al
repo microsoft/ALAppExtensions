@@ -1,3 +1,5 @@
+namespace Microsoft.CRM.EmailLoggin;
+
 interface "Email Logging Message"
 {
     Access = Internal;

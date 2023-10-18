@@ -1,3 +1,7 @@
+namespace Microsoft.API.V2;
+
+using Microsoft.Integration.Entity;
+
 page 30015 "APIV2 - Tax Groups"
 {
     APIVersion = 'v2.0';
@@ -18,25 +22,25 @@ page 30015 "APIV2 - Tax Groups"
         {
             repeater(Group)
             {
-                field(id; Id)
+                field(id; Rec.Id)
                 {
                     Caption = 'Id';
                     Editable = false;
                 }
-                field("code"; Code)
+                field("code"; Rec.Code)
                 {
                     Caption = 'Code';
                 }
-                field(displayName; Description)
+                field(displayName; Rec.Description)
                 {
                     Caption = 'Display Name';
                 }
-                field(taxType; Type)
+                field(taxType; Rec.Type)
                 {
                     Caption = 'Tax Type';
                     Editable = false;
                 }
-                field(lastModifiedDateTime; SystemModifiedAt)
+                field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';
                 }
@@ -50,22 +54,22 @@ page 30015 "APIV2 - Tax Groups"
 
     trigger OnDeleteRecord(): Boolean
     begin
-        PropagateDelete();
+        Rec.PropagateDelete();
     end;
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     begin
-        PropagateInsert();
+        Rec.PropagateInsert();
     end;
 
     trigger OnModifyRecord(): Boolean
     begin
-        PropagateModify();
+        Rec.PropagateModify();
     end;
 
     trigger OnOpenPage()
     begin
-        LoadRecords();
+        Rec.LoadRecords();
     end;
 }
 

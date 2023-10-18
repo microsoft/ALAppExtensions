@@ -55,6 +55,7 @@ codeunit 147101 "CD Sales Red Storno"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ItemTrackingDeleteConfirmHandler')]
     procedure "1ItemCD_IRRedStorno"()
     var
         Vendor: Record Vendor;
@@ -107,6 +108,7 @@ codeunit 147101 "CD Sales Red Storno"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ItemTrackingDeleteConfirmHandler')]
     procedure "1ItemCDLot_IRRedStorno"()
     var
         Vendor: Record Vendor;
@@ -161,6 +163,7 @@ codeunit 147101 "CD Sales Red Storno"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ItemTrackingDeleteConfirmHandler')]
     procedure "1ItemCDLotSerial_IRRedStorno"()
     var
         Vendor: Record Vendor;
@@ -224,6 +227,7 @@ codeunit 147101 "CD Sales Red Storno"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ItemTrackingDeleteConfirmHandler')]
     procedure "1ItemCD_ISRedStorno"()
     var
         Vendor: Record Vendor;
@@ -294,6 +298,7 @@ codeunit 147101 "CD Sales Red Storno"
 
     [Test]
     [Scope('OnPrem')]
+    [HandlerFunctions('ItemTrackingDeleteConfirmHandler')]
     procedure "1ItemCDLot_ISRedStorno"()
     var
         Vendor: Record Vendor;
@@ -528,6 +533,13 @@ codeunit 147101 "CD Sales Red Storno"
                 ItemTrackingSetup."Package No." := PackageNo[1];
                 LibraryItemTracking.CreateItemReceiptItemTracking(ReservationEntry, InvtDocumentLine, ItemTrackingSetup, Sign * 1);
             end;
+    end;
+
+    [ConfirmHandler]
+    [Scope('OnPrem')]
+    procedure ItemTrackingDeleteConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := true;
     end;
 }
 

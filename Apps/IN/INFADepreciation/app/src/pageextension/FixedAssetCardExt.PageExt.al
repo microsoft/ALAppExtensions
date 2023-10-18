@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.FixedAssets.FixedAsset;
+
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FADepreciation;
+
 pageextension 18636 "Fixed Asset Card Ext" extends "Fixed Asset Card"
 {
     layout

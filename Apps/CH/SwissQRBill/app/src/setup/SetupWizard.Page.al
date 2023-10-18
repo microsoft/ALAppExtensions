@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Foundation.Company;
+using System.Environment;
+using System.Environment.Configuration;
+using System.Utilities;
+
 page 11516 "Swiss QR-Bill Setup Wizard"
 {
     Caption = 'QR-Bill Setup Guide';
@@ -16,7 +28,9 @@ page 11516 "Swiss QR-Bill Setup Wizard"
                 Visible = TopBannerVisible and not FinishActionEnabled;
                 field(MediaResourcesStandard; MediaResourcesStd."Media Reference")
                 {
+#pragma warning disable AA0219
                     ToolTip = ' ';
+#pragma warning restore AA0219
                     ApplicationArea = All;
                     Editable = false;
                     ShowCaption = false;
@@ -29,7 +43,9 @@ page 11516 "Swiss QR-Bill Setup Wizard"
                 Visible = TopBannerVisible and FinishActionEnabled;
                 field(MediaResourcesDone; MediaResourcesFinished."Media Reference")
                 {
+#pragma warning disable AA0219
                     ToolTip = ' ';
+#pragma warning restore AA0219
                     ApplicationArea = All;
                     Editable = false;
                     ShowCaption = false;
@@ -292,7 +308,9 @@ page 11516 "Swiss QR-Bill Setup Wizard"
                         field(FinishSummaryWarningField; FinishSummaryWarningText)
                         {
                             ApplicationArea = All;
+#pragma warning disable AA0219
                             ToolTip = ' ';
+#pragma warning restore AA0219
                             Caption = ' ';
                             ShowCaption = false;
                             Editable = false;

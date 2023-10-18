@@ -7,7 +7,9 @@ tableextension 11723 "Gen. Journal Line CZL" extends "Gen. Journal Line"
             trigger OnAfterValidate()
             var
 #if not CLEAN22
+#pragma warning disable AL0432
                 ReplaceVATDateMgt: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
 #endif
                 VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
             begin
@@ -287,8 +289,10 @@ tableextension 11723 "Gen. Journal Line CZL" extends "Gen. Journal Line"
         }
     }
 #if not CLEAN22
+#pragma warning disable AL0432
     var
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
 #endif
 
     procedure AdjustDebitCreditCZL(Invert: Boolean)

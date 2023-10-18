@@ -2,7 +2,7 @@ table 31069 "Invt. Movement Template CZL"
 {
     Caption = 'Inventory Movement Template';
     DataCaptionFields = Name;
-    LookupPageID = "Invt. Movement Templates CZL";
+    LookupPageId = "Invt. Movement Templates CZL";
 
     fields
     {

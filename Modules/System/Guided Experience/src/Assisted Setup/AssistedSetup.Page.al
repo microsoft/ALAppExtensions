@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
+using System.Media;
+using System.Globalization;
+
 /// <summary>This page shows all registered assisted setup guides.</summary>
 page 1801 "Assisted Setup"
 {
@@ -32,7 +37,7 @@ page 1801 "Assisted Setup"
                 IndentationColumn = NameIndent;
                 IndentationControls = Name;
                 ShowAsTree = true;
-                field(Name; Title)
+                field(Name; Rec.Title)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name.';
@@ -44,7 +49,7 @@ page 1801 "Assisted Setup"
                         RunPage();
                     end;
                 }
-                field(Completed; Completed)
+                field(Completed; Rec.Completed)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether the setup is complete.';
@@ -58,7 +63,9 @@ page 1801 "Assisted Setup"
                 {
                     ApplicationArea = All;
                     Caption = 'Learn more';
+#pragma warning disable AA0219
                     ToolTip = 'Learn more about the process.';
+#pragma warning restore AA0219
                     Width = 3;
 
                     trigger OnDrillDown()
@@ -72,7 +79,9 @@ page 1801 "Assisted Setup"
                 {
                     ApplicationArea = All;
                     Caption = 'Video';
+#pragma warning disable AA0219
                     ToolTip = 'Play a video that describes the process.';
+#pragma warning restore AA0219
                     Width = 3;
                     Visible = false;
 
@@ -80,8 +89,8 @@ page 1801 "Assisted Setup"
                     var
                         Video: Codeunit Video;
                     begin
-                        if "Video Url" <> '' then
-                            Video.Play("Video Url");
+                        if Rec."Video Url" <> '' then
+                            Video.Play(Rec."Video Url");
                     end;
                 }
                 field(TranslatedName; TranslatedNameValue)
@@ -96,17 +105,17 @@ page 1801 "Assisted Setup"
                         GuidedExperienceItem: Record "Guided Experience Item";
                         Translation: Codeunit Translation;
                     begin
-                        if GuidedExperienceItem.Get(Code, Version) then
+                        if GuidedExperienceItem.Get(Rec.Code, Rec.Version) then
                             Translation.Show(GuidedExperienceItem, GuidedExperienceItem.FieldNo(Title));
                     end;
                 }
-                field("Extension Name"; "Extension Name")
+                field("Extension Name"; Rec."Extension Name")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the extension which has added this setup.';
                     Visible = false;
                 }
-                field(Description; Description)
+                field(Description; Rec.Description)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the description of the set up.';
@@ -147,30 +156,29 @@ page 1801 "Assisted Setup"
                 end;
             }
         }
+        area(Promoted)
+        {
+            actionref("Start Setup Ref"; "Start Setup")
+            {
+            }
+            actionref("General videos Ref"; "General videos")
+            {
+            }
+        }
     }
 
     trigger OnOpenPage()
     var
         GuidedExperience: Codeunit "Guided Experience";
         ChecklistImplementation: Codeunit "Checklist Implementation";
-#if not CLEAN18
-#pragma warning disable AL0432
-        AssistedSetup: Codeunit "Assisted Setup";
-#pragma warning restore
-#endif
         GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
     begin
-#if not CLEAN18
-#pragma warning disable AL0432
-        AssistedSetup.OnRegister();
-#pragma warning restore
-#endif
         GuidedExperience.OnRegisterAssistedSetup();
         GuidedExperienceImpl.GetContentForAssistedSetup(Rec);
-        SetCurrentKey("Assisted Setup Group");
+        Rec.SetCurrentKey("Assisted Setup Group");
 
         if FilterSet then
-            SetRange("Assisted Setup Group", AssistedSetupGroup);
+            Rec.SetRange("Assisted Setup Group", AssistedSetupGroup);
 
         if Rec.FindFirst() then; // Set selected record to first record
 
@@ -183,9 +191,9 @@ page 1801 "Assisted Setup"
     begin
         HelpAvailable := '';
         VideoAvailable := '';
-        if "Help Url" <> '' then
+        if Rec."Help Url" <> '' then
             HelpAvailable := HelpLinkTxt;
-        if "Video Url" <> '' then
+        if Rec."Video Url" <> '' then
             VideoAvailable := VideoLinkTxt;
         if GuidedExperienceImpl.IsAssistedSetupSetupRecord(Rec) then
             SetPageVariablesForSetupRecord()
@@ -207,7 +215,7 @@ page 1801 "Assisted Setup"
     var
         GuidedExperienceImpl: Codeunit "Guided Experience Impl.";
     begin
-        TranslatedNameValue := GuidedExperienceImpl.GetTranslationForField(Rec, FieldNo(Title));
+        TranslatedNameValue := GuidedExperienceImpl.GetTranslationForField(Rec, Rec.FieldNo(Title));
         NameIndent := 1;
         NameEmphasize := false;
     end;
@@ -230,13 +238,11 @@ page 1801 "Assisted Setup"
         VideoLinkTxt: Label 'Watch';
         HelpAvailable: Text;
         VideoAvailable: Text;
-        [InDataSet]
         TranslatedNameValue: Text;
-        [InDataSet]
         NameIndent: Integer;
-        [InDataSet]
         NameEmphasize: Boolean;
         AssistedSetupGroup: Enum "Assisted Setup Group";
         FilterSet: Boolean;
 }
+
 

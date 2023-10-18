@@ -92,7 +92,8 @@ codeunit 4886 "EU3 Feature Data Update" implements "Feature Data Update"
                 if SourceRecRef.FieldExist(SourceFieldId) then begin
                     SourceFieldRef := SourceRecRef.Field(SourceFieldId);
 
-                    SourceFieldRef.SetFilter('=%1', true);
+                    if SourceTableId <> Database::"VAT Statement Line" then
+                        SourceFieldRef.SetFilter('=%1', true);
                     if SourceRecRef.FindSet() then
                         RecordCount += SourceRecRef.Count;
                 end;
@@ -126,16 +127,19 @@ codeunit 4886 "EU3 Feature Data Update" implements "Feature Data Update"
         if SourceRecRef.FieldExist(SourceFieldId) then begin
             SourceRecRef.SetLoadFields(SourceFieldId, TargetFieldId);
             SourceFieldRef := SourceRecRef.Field(SourceFieldId);
-            SourceFieldRef.SetFilter('=%1', true);
+            if SourceTableId <> Database::"VAT Statement Line" then
+                SourceFieldRef.SetFilter('=%1', true);
 
             if SourceRecRef.FindSet() then
-                Repeat
+                repeat
                     SourceFieldRef := SourceRecRef.Field(SourceFieldId);
                     TargetFieldRef := SourceRecRef.Field(TargetFieldId);
                     if SourceFieldRef.Value then
-                        TargetFieldRef.Value := EU3PartyTradeFilter::EU3;
+                        TargetFieldRef.Value := EU3PartyTradeFilter::EU3
+                    else
+                        TargetFieldRef.Value := EU3PartyTradeFilter::"non-EU3";
                     SourceRecRef.Modify();
-                Until SourceRecRef.Next() = 0;
+                until SourceRecRef.Next() = 0;
         end;
         SourceRecRef.Close();
     end;

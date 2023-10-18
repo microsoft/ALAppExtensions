@@ -3,6 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Integration.Sharepoint;
+
+using System.TestLibraries.Integration.Sharepoint;
+using System.Integration.Sharepoint;
+using System.Utilities;
+using System.TestLibraries.Utilities;
+
+#pragma warning disable AA0217
 codeunit 132970 "SharePoint Client Test"
 {
     Subtype = Test;
@@ -492,3 +500,4 @@ codeunit 132970 "SharePoint Client Test"
         TempBlob.CreateInStream(FileInStream);
     end;
 }
+#pragma warning restore AA0217

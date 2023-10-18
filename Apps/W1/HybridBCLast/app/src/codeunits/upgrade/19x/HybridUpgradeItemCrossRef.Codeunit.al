@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.BC;
+
 #if not CLEAN22
 codeunit 40024 "Hybrid Upgrade Item Cross Ref"
 {

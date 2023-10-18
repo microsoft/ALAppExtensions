@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.DataAdministration;
+
 codeunit 1598 "Email Logs Delete"
 {
     Access = Internal;

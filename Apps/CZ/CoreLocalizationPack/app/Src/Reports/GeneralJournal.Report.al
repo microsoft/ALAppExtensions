@@ -10,7 +10,7 @@ report 11705 "General Journal CZL"
     {
         dataitem(Date; Date)
         {
-            DataItemTableView = sorting("Period Type", "Period Start") WHERE("Period Type" = CONST(Date));
+            DataItemTableView = sorting("Period Type", "Period Start") where("Period Type" = const(Date));
             PrintOnlyIfDetail = true;
             column(COMPANYNAME; COMPANYPROPERTY.DisplayName())
             {
@@ -57,7 +57,7 @@ report 11705 "General Journal CZL"
             }
             dataitem(BufferedGLEntry; "Integer")
             {
-                DataItemTableView = sorting(Number) WHERE(Number = FILTER(1 ..));
+                DataItemTableView = sorting(Number) where(Number = filter(1 ..));
 
                 column(TempGLEntry_PostingDate; TempGLEntry."Posting Date")
                 {

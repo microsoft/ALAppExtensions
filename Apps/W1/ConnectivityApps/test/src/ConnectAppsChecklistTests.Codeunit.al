@@ -51,13 +51,7 @@ codeunit 139533 "Connect. Apps Checklist Tests"
         BindSubscription(ConnectivityAppsLocationMock);
 
         // [WHEN] Calling OnCompanyOpen
-#if not CLEAN20
-#pragma warning disable AL0432
-#endif
         CompanyTriggers.OnCompanyOpen();
-#if not CLEAN20
-#pragma warning restore AL0432        
-#endif
         Commit(); // Need to commit before calling isolated event OnCompanyOpenCompleted
         CompanyTriggers.OnCompanyOpenCompleted();
 
@@ -86,9 +80,7 @@ codeunit 139533 "Connect. Apps Checklist Tests"
     begin
         BusinessManagerEvalProfileID := 'Business Manager Evaluation';
 
-        Assert.IsTrue(ChecklistTestLibrary.ChecklistItemExists(GuidedExperienceType::"Application Feature",
-            ObjectType::Page, Page::"Banking Apps", BusinessManagerEvalProfileID),
-            'The checklist item for Banking Apps was not created.');
+        Assert.IsTrue(ChecklistTestLibrary.ChecklistItemExists(GuidedExperienceType::"Application Feature", ObjectType::Page, Page::"Banking Apps", BusinessManagerEvalProfileID), 'The checklist item for Banking Apps was not created.');
     end;
 
     local procedure LoadTestData()

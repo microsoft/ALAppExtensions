@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Report Shpfy Sync Customers (ID 30100).
 /// </summary>

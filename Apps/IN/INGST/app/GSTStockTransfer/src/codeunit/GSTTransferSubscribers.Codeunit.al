@@ -1,3 +1,16 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.StockTransfer;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GST.Base;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Location;
+using Microsoft.Inventory.Transfer;
+
 codeunit 18392 "GST Transfer Subscribers"
 {
     var

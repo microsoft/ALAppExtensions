@@ -1,3 +1,32 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Bank.Ledger;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.FixedAssets.Ledger;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Location;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
+using Microsoft.Service.History;
+using System.Environment;
+using System.Environment.Configuration;
+
 codeunit 5280 "SAF-T Data Mgt."
 {
     Access = Public;
@@ -705,13 +734,13 @@ codeunit 5280 "SAF-T Data Mgt."
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Feature Management Facade", 'OnAfterFeatureEnableConfirmed', '', true, true)]
     local procedure OnAfterFeatureEnableConfirmed(var FeatureKey: Record "Feature Key")
     var
-        SAFTSetupWizard: Page "SAF-T Setup Wizard";
+        SAFTWizard: Page "SAF-T Wizard";
     begin
         if FeatureKey.ID = GetSAFTAuditFileExportFeatureKeyId() then begin
             Commit();
-            SAFTSetupWizard.SetRunFromFeatureMgt();
-            if SAFTSetupWizard.RunModal() = Action::OK then
-                if not SAFTSetupWizard.IsSetupCompleted() then
+            SAFTWizard.SetRunFromFeatureMgt();
+            if SAFTWizard.RunModal() = Action::OK then
+                if not SAFTWizard.IsSetupCompleted() then
                     Error('');
         end;
     end;

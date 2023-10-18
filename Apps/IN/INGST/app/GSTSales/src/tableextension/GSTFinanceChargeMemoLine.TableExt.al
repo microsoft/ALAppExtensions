@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.FinanceCharge;
+
+using Microsoft.Finance.GST.Base;
+
 tableextension 18159 "GST Finance Charge Memo Line" extends "Finance Charge Memo Line"
 {
     fields

@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
+using System.Security.User;
+
 /// <summary>
 /// Xmlport for importing permission sets.
 /// </summary>
@@ -44,7 +48,7 @@ xmlport 9864 "Import Permission Sets"
                 tableelement(TempTenantPermissionSetRel; "Tenant Permission Set Rel.")
                 {
                     LinkTable = TempTenantPermissionSet;
-                    LinkFields = "App ID" = Field("App ID"), "Role ID" = field("Role ID");
+                    LinkFields = "App ID" = field("App ID"), "Role ID" = field("Role ID");
                     MinOccurs = Zero;
                     XmlName = 'TenantPermissionSetRel';
                     SourceTableView = sorting("App ID", "Role ID", "Related App ID", "Related Role ID");
@@ -64,11 +68,11 @@ xmlport 9864 "Import Permission Sets"
                 }
                 tableelement(TempTenantPermission; "Tenant Permission")
                 {
-                    LinkFields = "App ID" = field("App ID"), "Role ID" = FIELD("Role ID");
+                    LinkFields = "App ID" = field("App ID"), "Role ID" = field("Role ID");
                     LinkTable = TempTenantPermissionSet;
                     MinOccurs = Zero;
                     XmlName = 'TenantPermission';
-                    SourceTableView = SORTING("Role ID", "Object Type", "Object ID");
+                    SourceTableView = sorting("Role ID", "Object Type", "Object ID");
                     UseTemporary = true;
                     fieldelement(ObjectType; TempTenantPermission."Object Type")
                     {
@@ -142,7 +146,7 @@ xmlport 9864 "Import Permission Sets"
                 tableelement(TempMetadataPermissionSetRel; "Metadata Permission Set Rel.")
                 {
                     LinkTable = TempMetadataPermissionSet;
-                    LinkFields = "App ID" = Field("App ID"), "Role ID" = field("Role ID");
+                    LinkFields = "App ID" = field("App ID"), "Role ID" = field("Role ID");
                     MinOccurs = Zero;
                     XmlName = 'PermissionSetRel';
                     SourceTableView = sorting("App ID", "Role ID", "Related App ID", "Related Role ID");
@@ -159,11 +163,11 @@ xmlport 9864 "Import Permission Sets"
                 }
                 tableelement(TempMetadataPermission; "Metadata Permission")
                 {
-                    LinkFields = "App ID" = field("App ID"), "Role ID" = FIELD("Role ID");
+                    LinkFields = "App ID" = field("App ID"), "Role ID" = field("Role ID");
                     LinkTable = TempMetadataPermissionSet;
                     MinOccurs = Zero;
                     XmlName = 'Permission';
-                    SourceTableView = SORTING("Role ID", "Object Type", "Object ID");
+                    SourceTableView = sorting("Role ID", "Object Type", "Object ID");
                     UseTemporary = true;
                     fieldelement(ObjectType; TempMetadataPermission."Object Type")
                     {

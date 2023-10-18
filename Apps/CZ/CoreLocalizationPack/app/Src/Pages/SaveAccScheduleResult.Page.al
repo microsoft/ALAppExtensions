@@ -33,7 +33,9 @@ page 31202 "Save Acc. Schedule Result CZL"
 
                     trigger OnValidate()
                     begin
+#pragma warning disable AL0432
                         UpdateColumnLayoutName();
+#pragma warning restore AL0432
                     end;
 #endif
                 }
@@ -128,7 +130,9 @@ page 31202 "Save Acc. Schedule Result CZL"
         AccSchedName := NewAccSchedName;
 #if not CLEAN21
         if NewColumnLayoutName = '' then
+#pragma warning disable AL0432
             UpdateColumnLayoutName()
+#pragma warning restore AL0432
         else
 #endif
         ColumnLayoutName := NewColumnLayoutName;

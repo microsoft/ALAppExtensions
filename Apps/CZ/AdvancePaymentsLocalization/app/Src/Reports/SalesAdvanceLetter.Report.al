@@ -307,6 +307,7 @@ report 31014 "Sales - Advance Letter CZZ"
                 SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ";
             begin
                 CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := Language.GetFormatRegionOrDefault("Format Region");
 
                 FormatDocumentFields("Sales Advance Letter Header");
 

@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration;
+
+using System.Security.AccessControl;
+
 permissionsetextension 4002 "D365 TEAM MEMBER - HBD" extends "D365 TEAM MEMBER"
 {
     Permissions = tabledata "Hybrid Product Type" = RIMD,

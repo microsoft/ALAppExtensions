@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 page 4002 "Hybrid Product Types"
 {
     Caption = 'Cloud Migration Product Types';
@@ -14,7 +16,7 @@ page 4002 "Hybrid Product Types"
         {
             repeater(Products)
             {
-                field("Display Name"; "Display Name")
+                field("Display Name"; Rec."Display Name")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'The display name of the source product.';
@@ -30,3 +32,4 @@ page 4002 "Hybrid Product Types"
         HybridCloudManagement.OnGetHybridProductType(Rec);
     end;
 }
+

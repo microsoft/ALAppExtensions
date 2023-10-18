@@ -22,49 +22,49 @@ table 11797 "User Setup Line CZL"
         field(30; "Code / Name"; Code[20])
         {
             Caption = 'Code / Name';
-            TableRelation = if (Type = Const("Location (quantity increase)")) Location
+            TableRelation = if (Type = const("Location (quantity increase)")) Location
             else
-            if (Type = Const("Location (quantity decrease)")) Location
+            if (Type = const("Location (quantity decrease)")) Location
             else
-            if (Type = Const("Release Location (quantity increase)")) Location
+            if (Type = const("Release Location (quantity increase)")) Location
             else
-            if (Type = Const("Release Location (quantity decrease)")) Location
+            if (Type = const("Release Location (quantity decrease)")) Location
             else
-            if (Type = Const("Bank Account")) "Bank Account"
+            if (Type = const("Bank Account")) "Bank Account"
             else
-            if (Type = Const("Payment Order")) "Bank Account"
+            if (Type = const("Payment Order")) "Bank Account"
             else
-            if (Type = Const("Bank Statement")) "Bank Account"
+            if (Type = const("Bank Statement")) "Bank Account"
             else
-            if (Type = Const("General Journal")) "Gen. Journal Template"
+            if (Type = const("General Journal")) "Gen. Journal Template"
             else
-            if (Type = Const("Item Journal")) "Item Journal Template"
+            if (Type = const("Item Journal")) "Item Journal Template"
             else
-            if (Type = Const("Resource Journal")) "Res. Journal Template"
+            if (Type = const("Resource Journal")) "Res. Journal Template"
             else
-            if (Type = Const("Job Journal")) "Job Journal Template"
+            if (Type = const("Job Journal")) "Job Journal Template"
             else
 #if not CLEAN22
 #pragma warning disable AL0432
-            if (Type = Const("Intrastat Journal")) "Intrastat Jnl. Template"
+            if (Type = const("Intrastat Journal")) "Intrastat Jnl. Template"
             else
 #pragma warning restore AL0432
 #endif
-            if (Type = Const("FA Journal")) "FA Journal Template"
+            if (Type = const("FA Journal")) "FA Journal Template"
             else
-            if (Type = Const("Insurance Journal")) "Insurance Journal Template"
+            if (Type = const("Insurance Journal")) "Insurance Journal Template"
             else
-            if (Type = Const("FA Reclass. Journal")) "FA Reclass. Journal Template"
+            if (Type = const("FA Reclass. Journal")) "FA Reclass. Journal Template"
             else
-            if (Type = Const("Req. Worksheet")) "Req. Wksh. Template"
+            if (Type = const("Req. Worksheet")) "Req. Wksh. Template"
             else
-            if (Type = Const("VAT Statement")) "VAT Statement Template"
+            if (Type = const("VAT Statement")) "VAT Statement Template"
             else
-            if (Type = Const("Whse. Journal")) "Warehouse Journal Template"
+            if (Type = const("Whse. Journal")) "Warehouse Journal Template"
             else
-            if (Type = Const("Whse. Worksheet")) "Whse. Worksheet Template"
+            if (Type = const("Whse. Worksheet")) "Whse. Worksheet Template"
             else
-            if (Type = Const("Invt. Movement Templates")) "Invt. Movement Template CZL";
+            if (Type = const("Invt. Movement Templates")) "Invt. Movement Template CZL";
         }
     }
 

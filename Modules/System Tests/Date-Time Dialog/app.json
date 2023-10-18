@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Tests for the Date-Time Dialog module",
-    "version":  "22.5.0.0",
+    "version":  "23.0.0.0",
     "privacyStatement":  "",
     "EULA":  "",
     "help":  "",
@@ -15,22 +15,24 @@
                              "id":  "54911257-906e-42e5-b529-735f5b4bb244",
                              "name":  "Date-Time Dialog",
                              "publisher":  "Microsoft",
-                             "version":  "22.5.0.0"
+                             "version":  "23.0.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "22.5.0.0"
+                             "version":  "23.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "22.0.0.0",
-    "idRange":  {
-                    "from":  134684,
-                    "to":  134684
-                },
+    "platform":  "23.0.0.0",
+    "idRanges":  [
+                    {
+                        "from":  134684,
+                        "to":  134684
+                    }
+                 ],
     "target":  "OnPrem"
 }

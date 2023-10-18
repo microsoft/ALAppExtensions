@@ -1,3 +1,6 @@
+namespace Microsoft.Bank.PayPal;
+
+
 page 1073 "MS - PayPal Standard Accounts"
 {
     Caption = 'PayPal Payments Standard Accounts';
@@ -15,27 +18,27 @@ page 1073 "MS - PayPal Standard Accounts"
         {
             repeater(Group)
             {
-                field(Name; Name)
+                field(Name; Rec.Name)
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the name of the PayPal Standard account.';
                 }
-                field(Description; Description)
+                field(Description; Rec.Description)
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the PayPal Standard account description.';
                 }
-                field(Enabled; Enabled)
+                field(Enabled; Rec.Enabled)
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies whether the PayPal Standard account is enabled.';
                 }
-                field("Always Include on Documents"; "Always Include on Documents")
+                field("Always Include on Documents"; Rec."Always Include on Documents")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies whether to make this PayPal Standard account available on all documents.';
                 }
-                field("Account ID"; "Account ID")
+                field("Account ID"; Rec."Account ID")
                 {
                     ApplicationArea = Basic, Suite;
                     Visible = false;
@@ -71,4 +74,6 @@ page 1073 "MS - PayPal Standard Accounts"
         }
     }
 }
+
+
 

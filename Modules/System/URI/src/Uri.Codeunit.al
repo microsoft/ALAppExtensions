@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Utilities;
+
+using System;
+
 /// <summary>
 /// Provides an object representation of a uniform resource identifier (URI) and easy access to the parts of the URI.
 /// </summary>
@@ -109,8 +113,8 @@ codeunit 3060 Uri
     /// <param name="Segments">An out variable that contains the path segments that make up the specified URI.</param>
     procedure GetSegments(var Segments: List of [Text])
     var
-        Result: List of [Text];
         Segment: DotNet String;
+        Result: List of [Text];
     begin
         foreach Segment in Uri.Segments do
             Result.Add(Segment);
@@ -151,6 +155,41 @@ codeunit 3060 Uri
         LocalUri: DotNet Uri;
     begin
         LocalUri := LocalUri.Uri(UriString); // If creating the URI succeeds, then the UriString is a valid URI.
+    end;
+
+    /// <summary>
+    /// Indicates whether the string is well-formed by attempting to construct a URI with the string and ensures that the string does not require further escaping.
+    /// </summary>
+    /// <remarks>Visit https://learn.microsoft.com/en-us/dotnet/api/system.uri.iswellformeduristring for more information.</remarks>
+    /// <param name="UriString">The string used to attempt to construct a Uri.</param>
+    /// <param name="UriKind">The type of the Uri in uriString.</param>
+    /// <returns>True if the string was well-formed; otherwise, false.</returns>
+    procedure IsWellFormedUriString(UriString: Text; UriKind: Enum UriKind): Boolean
+    var
+        DotNetlUriKind: DotNet UriKind;
+    begin
+        case UriKind of
+            UriKind::RelativeOrAbsolute:
+                exit(Uri.IsWellFormedUriString(UriString, DotNetlUriKind.RelativeOrAbsolute));
+            UriKind::Absolute:
+                exit(Uri.IsWellFormedUriString(UriString, DotNetlUriKind.Absolute));
+            UriKind::Relative:
+                exit(Uri.IsWellFormedUriString(UriString, DotNetlUriKind.Relative));
+        end;
+    end;
+
+    /// <summary>
+    /// Determines whether the current Uri instance is a base of the specified Uri instance.
+    /// </summary>
+    /// <remarks>Visit https://learn.microsoft.com/en-us/dotnet/api/system.uri.isbaseof for more information.</remarks>
+    /// <param name="UriToTest">The specified URI to test.</param>
+    /// <returns>True if the current Uri instance is a base of uri; otherwise, false.</returns>
+    procedure IsBaseOf(var UriToTest: Codeunit Uri): Boolean
+    var
+        LocalUri: DotNet Uri;
+    begin
+        UriToTest.GetUri(LocalUri);
+        exit(Uri.IsBaseOf(LocalUri));
     end;
 
     /// <summary>

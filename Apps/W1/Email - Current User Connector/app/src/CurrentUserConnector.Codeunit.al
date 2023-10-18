@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Security.AccessControl;
+using System.Environment;
+
 codeunit 4500 "Current User Connector" implements "Email Connector", "Default Email Rate Limit"
 {
     Access = Internal;

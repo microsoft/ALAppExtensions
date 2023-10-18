@@ -1,7 +1,12 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+namespace Microsoft.EServices.EDocument;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Company;
+using Microsoft.Sales.FinanceCharge;
 
 codeunit 13634 "OIOUBL-Check Issued Fin. Chrg"
 {

@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.DataMigration;
+
 pageextension 41101 "Intelligent Cloud Ext." extends "Intelligent Cloud Management"
 {
     layout

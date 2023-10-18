@@ -3,6 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Integration.Word;
+
+using System.Integration.Word;
+using System.Text;
+using System.Utilities;
+using System.TestLibraries.Integration.Word;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 /// <summary>
 /// Tests for Mail Merge codeunit
 /// </summary>

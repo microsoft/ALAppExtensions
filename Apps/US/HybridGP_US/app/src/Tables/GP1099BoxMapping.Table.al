@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 41101 "GP 1099 Box Mapping"
 {
     DataPerCompany = false;

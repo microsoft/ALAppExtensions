@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
 /// <summary>
 /// The types of the action to take in response to permission conflicts arising out of changes to plans in Office users.
 /// </summary>

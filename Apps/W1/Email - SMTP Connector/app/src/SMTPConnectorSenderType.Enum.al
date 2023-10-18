@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
 /// <summary>
 /// Types of senders available for the SMTP Connector.
 /// </summary>

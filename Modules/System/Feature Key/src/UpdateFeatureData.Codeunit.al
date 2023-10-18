@@ -3,12 +3,16 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
 /// <summary>
 /// Codeunit that is executed by the task scheduler during the feature data update.
 /// </summary>
 codeunit 2612 "Update Feature Data"
 {
     TableNo = "Feature Data Update Status";
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     trigger OnRun()
     var

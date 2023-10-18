@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.Reports;
+
+using System.IO;
+
 tableextension 12214 "Serv. Decl. Setup IT" extends "Service Declaration Setup"
 {
     fields

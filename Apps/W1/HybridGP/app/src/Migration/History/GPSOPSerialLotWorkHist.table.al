@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 4074 "GPSOPSerialLotWorkHist"
 {
     DataClassification = CustomerContent;

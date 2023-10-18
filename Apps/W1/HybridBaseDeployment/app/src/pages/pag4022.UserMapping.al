@@ -1,8 +1,16 @@
+namespace Microsoft.DataMigration;
+
+using System.Environment.Configuration;
+using System.Telemetry;
+using System.Security.AccessControl;
+using System.Security.User;
+
+
 page 4022 "Migration User Mapping"
 {
     PageType = NavigatePage;
     SourceTable = "User Mapping Work";
-    SourceTableTemporary = True;
+    SourceTableTemporary = true;
     InsertAllowed = false;
     DeleteAllowed = false;
     ModifyAllowed = true;
@@ -31,7 +39,7 @@ page 4022 "Migration User Mapping"
                     repeater(UserList)
                     {
                         ShowCaption = false;
-                        field("Source User ID2"; "Source User ID")
+                        field("Source User ID2"; Rec."Source User ID")
                         {
                             ApplicationArea = Basic, Suite;
                             Caption = 'On-Premises User';
@@ -40,7 +48,7 @@ page 4022 "Migration User Mapping"
                             Width = 10;
                             Editable = false;
                         }
-                        field("Dest User ID2"; "Dest User ID")
+                        field("Dest User ID2"; Rec."Dest User ID")
                         {
                             ApplicationArea = Basic, Suite;
                             Caption = 'Cloud User';
@@ -154,7 +162,7 @@ page 4022 "Migration User Mapping"
     begin
         Rec.Reset();
         Rec.SetFilter("Dest User ID", '<>%1', '');
-        Rec.SetFilter("Source User ID", '<>%1', "Dest User ID");
+        Rec.SetFilter("Source User ID", '<>%1', Rec."Dest User ID");
         if Rec.FindSet() then
             repeat
                 User.Reset();
@@ -178,7 +186,7 @@ page 4022 "Migration User Mapping"
         UserMappingSource.Reset();
         UserMappingSource.FindSet();
         repeat
-            If not Rec.Get(UserMappingSource."User ID") then begin
+            if not Rec.Get(UserMappingSource."User ID") then begin
                 Rec.Init();
                 Rec."Source User ID" := UserMappingSource."User ID";
                 if FoundValidUser(UserMappingSource."Authentication Object ID", UserMappingSource."Name Identifier", UserMappingSource."Authentication Email", UserName) then
@@ -248,3 +256,4 @@ page 4022 "Migration User Mapping"
         HybridCompanyStatus.Modify();
     end;
 }
+

@@ -1,7 +1,11 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+namespace Microsoft.EServices.EDocument;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Foundation.Company;
 
 page 13647 "OIOUBL-Company Info. Setup"
 {

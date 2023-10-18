@@ -720,8 +720,8 @@ codeunit 139530 "MigrationQBO Tests"
     begin
         if Accounts.FindSet() then
             repeat
-                AccountMigrator.OnMigrateGlAccount(AccountFacade, Accounts.RecordId());
-                AccountMigrator.OnMigratePostingGroups(AccountFacade, Accounts.RecordId());
+                AccountMigrator.MigrateAccountDetails(Accounts, AccountFacade);
+                AccountMigrator.MigratePostingGroups(AccountFacade, Accounts.RecordId());
             until Accounts.Next() = 0;
     end;
 
@@ -742,8 +742,8 @@ codeunit 139530 "MigrationQBO Tests"
         if SetupAccounts() then
             if Customers.FindSet() then
                 repeat
-                    CustomerMigrator.OnMigrateCustomer(CustomerFacade, Customers.RecordId());
-                    CustomerMigrator.OnMigrateCustomerPostingGroups(CustomerFacade, Customers.RecordId(), true);
+                    CustomerMigrator.MigrateCustomerDetails(Customers, CustomerFacade);
+                    CustomerMigrator.MigrateCustomerPostingGroups(CustomerFacade, Customers.RecordId(), true);
                 until Customers.Next() = 0;
     end;
 
@@ -752,8 +752,8 @@ codeunit 139530 "MigrationQBO Tests"
         if SetupAccounts() then
             if Vendors.FindSet() then
                 repeat
-                    VendorMigrator.OnMigrateVendor(VendorFacade, Vendors.RecordId());
-                    VendorMigrator.OnMigrateVendorPostingGroups(VendorFacade, Vendors.RecordId(), true);
+                    VendorMigrator.MigrateVendorDetails(Vendors, VendorFacade);
+                    VendorMigrator.MigrateVendorPostingGroups(VendorFacade, Vendors.RecordId(), true);
                 until Vendors.Next() = 0;
     end;
 
@@ -762,10 +762,10 @@ codeunit 139530 "MigrationQBO Tests"
         if SetupAccounts() then
             if Items.FindSet() then
                 repeat
-                    ItemMigrator.OnMigrateItem(ItemFacade, Items.RecordId());
-                    ItemMigrator.OnMigrateItemPostingGroups(ItemFacade, Items.RecordId(), true);
+                    ItemMigrator.MigrateItemDetails(Items, ItemFacade);
+                    ItemMigrator.MigrateItemPostingGroups(ItemFacade, Items.RecordId(), true);
                     if IncludeTransactions then
-                        ItemMigrator.OnMigrateInventoryTransactions(ItemFacade, Items.RecordId(), true);
+                        ItemMigrator.MigrateInventoryTransactions(ItemFacade, Items.RecordId(), true);
                 until Items.Next() = 0;
     end;
 

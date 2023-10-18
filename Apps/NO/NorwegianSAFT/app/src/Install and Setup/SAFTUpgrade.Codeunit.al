@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using System.Environment;
+using System.Upgrade;
+
 codeunit 10678 "SAF-T Upgrade"
 {
     Permissions = TableData "Media Resources" = r, TableData "Tenant Media" = rimd;

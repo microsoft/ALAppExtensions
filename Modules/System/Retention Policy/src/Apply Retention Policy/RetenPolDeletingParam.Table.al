@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DataAdministration;
+
 /// <summary>
 /// The table is used as a parameter table for the DeleteRecords method on the Reten. Pol Deleting interface.
 ///

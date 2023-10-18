@@ -1,3 +1,20 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Reports;
+
+using Microsoft.CRM.Team;
+using Microsoft.Finance.Dimension;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.Shipping;
+using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Archive;
+using Microsoft.Purchases.Vendor;
+using System.Globalization;
+using System.Utilities;
+
 report 18001 "Archived Purchase Quote GST"
 {
     DefaultLayout = RDLC;
@@ -440,6 +457,7 @@ report 18001 "Archived Purchase Quote GST"
             trigger OnAfterGetRecord()
             begin
                 CurrReport.LANGUAGE := Language.GetLanguageID("Language Code");
+                CurrReport.FormatRegion := Language.GetFormatRegionOrDefault("Format Region");
                 Vendor.Get("Buy-from Vendor No.");
                 CompanyInformation.Get();
 

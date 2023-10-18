@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
 page 1862 "C5 InvenTable"
 {
     PageType = Card;
@@ -19,67 +21,67 @@ page 1862 "C5 InvenTable"
             group(General)
             {
 #pragma warning disable AA0218
-                field(ItemNumber; ItemNumber) { ApplicationArea = All; }
-                field(ItemName1; ItemName1) { ApplicationArea = All; }
-                field(ItemName2; ItemName2) { ApplicationArea = All; }
-                field(ItemName3; ItemName3) { ApplicationArea = All; }
-                field(ItemType; ItemType) { ApplicationArea = All; }
-                field(DiscGroup; DiscGroup) { ApplicationArea = All; }
-                field(CostCurrency; CostCurrency) { ApplicationArea = All; }
-                field(CostPrice; CostPrice) { ApplicationArea = All; }
-                field(Group; Group) { ApplicationArea = All; }
-                field(SalesModel; SalesModel) { ApplicationArea = All; }
-                field(CostingMethod; CostingMethod) { ApplicationArea = All; }
-                field(PurchSeriesSize; PurchSeriesSize) { ApplicationArea = All; }
-                field(PrimaryVendor; PrimaryVendor) { ApplicationArea = All; }
-                field(VendItemNumber; VendItemNumber) { ApplicationArea = All; }
-                field(Blocked; Blocked) { ApplicationArea = All; }
-                field(Alternative; Alternative) { ApplicationArea = All; }
-                field(AltItemNumber; AltItemNumber) { ApplicationArea = All; }
-                field(Decimals_; Decimals_) { ApplicationArea = All; }
-                field(DEL_SalesDuty; DEL_SalesDuty) { ApplicationArea = All; }
-                field(Commission; Commission) { ApplicationArea = All; }
-                field(ImageFile; ImageFile) { ApplicationArea = All; }
-                field(NetWeight; NetWeight) { ApplicationArea = All; }
-                field(Volume; Volume) { ApplicationArea = All; }
-                field(TariffNumber; TariffNumber) { ApplicationArea = All; }
-                field(UnitCode; UnitCode) { ApplicationArea = All; }
-                field(OneTimeItem; OneTimeItem) { ApplicationArea = All; }
-                field(CostType; CostType) { ApplicationArea = All; }
-                field(ExtraCost; ExtraCost) { ApplicationArea = All; }
-                field(PurchCostModel; PurchCostModel) { ApplicationArea = All; }
-                field(MainLocation; MainLocation) { ApplicationArea = All; }
-                field(InvenLocation; InvenLocation) { ApplicationArea = All; }
-                field(PurchVat; PurchVat) { ApplicationArea = All; }
-                field(RESERVED2; RESERVED2) { ApplicationArea = All; }
-                field(Inventory; Inventory) { ApplicationArea = All; }
-                field(Delivered; Delivered) { ApplicationArea = All; }
-                field(Reserved; Reserved) { ApplicationArea = All; }
-                field(Received; Received) { ApplicationArea = All; }
-                field(Ordered; Ordered) { ApplicationArea = All; }
-                field(InventoryValue; InventoryValue) { ApplicationArea = All; }
-                field(DeliveredValue; DeliveredValue) { ApplicationArea = All; }
-                field(ReceivedValue; ReceivedValue) { ApplicationArea = All; }
-                field(Department; Department) { ApplicationArea = All; }
-                field(CostPriceUnit; CostPriceUnit) { ApplicationArea = All; }
-                field(DEL_PurchDuty; DEL_PurchDuty) { ApplicationArea = All; }
-                field(Level; Level) { ApplicationArea = All; }
-                field(Pulled; Pulled) { ApplicationArea = All; }
-                field(WarnNegativeInventory; WarnNegativeInventory) { ApplicationArea = All; }
-                field(NegativeInventory; NegativeInventory) { ApplicationArea = All; }
-                field(IgnoreListCode; IgnoreListCode) { ApplicationArea = All; }
-                field(PayCType; PayCType) { ApplicationArea = All; }
-                field(ItemTracking; ItemTracking) { ApplicationArea = All; }
-                field(ItemTrackGroup; ItemTrackGroup) { ApplicationArea = All; }
-                field(ProjCostFactor; ProjCostFactor) { ApplicationArea = All; }
-                field(Centre; Centre) { ApplicationArea = All; }
-                field(Purpose; Purpose) { ApplicationArea = All; }
-                field(SupplFactor; SupplFactor) { ApplicationArea = All; }
-                field(SupplementaryUnits; SupplementaryUnits) { ApplicationArea = All; }
-                field(MarkedPhysical; MarkedPhysical) { ApplicationArea = All; }
-                field(LastMovementDate; LastMovementDate) { ApplicationArea = All; }
-                field(VatGroup; VatGroup) { ApplicationArea = All; }
-                field(StdItemNumber; StdItemNumber) { ApplicationArea = All; }
+                field(ItemNumber; Rec.ItemNumber) { ApplicationArea = All; }
+                field(ItemName1; Rec.ItemName1) { ApplicationArea = All; }
+                field(ItemName2; Rec.ItemName2) { ApplicationArea = All; }
+                field(ItemName3; Rec.ItemName3) { ApplicationArea = All; }
+                field(ItemType; Rec.ItemType) { ApplicationArea = All; }
+                field(DiscGroup; Rec.DiscGroup) { ApplicationArea = All; }
+                field(CostCurrency; Rec.CostCurrency) { ApplicationArea = All; }
+                field(CostPrice; Rec.CostPrice) { ApplicationArea = All; }
+                field(Group; Rec.Group) { ApplicationArea = All; }
+                field(SalesModel; Rec.SalesModel) { ApplicationArea = All; }
+                field(CostingMethod; Rec.CostingMethod) { ApplicationArea = All; }
+                field(PurchSeriesSize; Rec.PurchSeriesSize) { ApplicationArea = All; }
+                field(PrimaryVendor; Rec.PrimaryVendor) { ApplicationArea = All; }
+                field(VendItemNumber; Rec.VendItemNumber) { ApplicationArea = All; }
+                field(Blocked; Rec.Blocked) { ApplicationArea = All; }
+                field(Alternative; Rec.Alternative) { ApplicationArea = All; }
+                field(AltItemNumber; Rec.AltItemNumber) { ApplicationArea = All; }
+                field(Decimals_; Rec.Decimals_) { ApplicationArea = All; }
+                field(DEL_SalesDuty; Rec.DEL_SalesDuty) { ApplicationArea = All; }
+                field(Commission; Rec.Commission) { ApplicationArea = All; }
+                field(ImageFile; Rec.ImageFile) { ApplicationArea = All; }
+                field(NetWeight; Rec.NetWeight) { ApplicationArea = All; }
+                field(Volume; Rec.Volume) { ApplicationArea = All; }
+                field(TariffNumber; Rec.TariffNumber) { ApplicationArea = All; }
+                field(UnitCode; Rec.UnitCode) { ApplicationArea = All; }
+                field(OneTimeItem; Rec.OneTimeItem) { ApplicationArea = All; }
+                field(CostType; Rec.CostType) { ApplicationArea = All; }
+                field(ExtraCost; Rec.ExtraCost) { ApplicationArea = All; }
+                field(PurchCostModel; Rec.PurchCostModel) { ApplicationArea = All; }
+                field(MainLocation; Rec.MainLocation) { ApplicationArea = All; }
+                field(InvenLocation; Rec.InvenLocation) { ApplicationArea = All; }
+                field(PurchVat; Rec.PurchVat) { ApplicationArea = All; }
+                field(RESERVED2; Rec.RESERVED2) { ApplicationArea = All; }
+                field(Inventory; Rec.Inventory) { ApplicationArea = All; }
+                field(Delivered; Rec.Delivered) { ApplicationArea = All; }
+                field(Reserved; Rec.Reserved) { ApplicationArea = All; }
+                field(Received; Rec.Received) { ApplicationArea = All; }
+                field(Ordered; Rec.Ordered) { ApplicationArea = All; }
+                field(InventoryValue; Rec.InventoryValue) { ApplicationArea = All; }
+                field(DeliveredValue; Rec.DeliveredValue) { ApplicationArea = All; }
+                field(ReceivedValue; Rec.ReceivedValue) { ApplicationArea = All; }
+                field(Department; Rec.Department) { ApplicationArea = All; }
+                field(CostPriceUnit; Rec.CostPriceUnit) { ApplicationArea = All; }
+                field(DEL_PurchDuty; Rec.DEL_PurchDuty) { ApplicationArea = All; }
+                field(Level; Rec.Level) { ApplicationArea = All; }
+                field(Pulled; Rec.Pulled) { ApplicationArea = All; }
+                field(WarnNegativeInventory; Rec.WarnNegativeInventory) { ApplicationArea = All; }
+                field(NegativeInventory; Rec.NegativeInventory) { ApplicationArea = All; }
+                field(IgnoreListCode; Rec.IgnoreListCode) { ApplicationArea = All; }
+                field(PayCType; Rec.PayCType) { ApplicationArea = All; }
+                field(ItemTracking; Rec.ItemTracking) { ApplicationArea = All; }
+                field(ItemTrackGroup; Rec.ItemTrackGroup) { ApplicationArea = All; }
+                field(ProjCostFactor; Rec.ProjCostFactor) { ApplicationArea = All; }
+                field(Centre; Rec.Centre) { ApplicationArea = All; }
+                field(Purpose; Rec.Purpose) { ApplicationArea = All; }
+                field(SupplFactor; Rec.SupplFactor) { ApplicationArea = All; }
+                field(SupplementaryUnits; Rec.SupplementaryUnits) { ApplicationArea = All; }
+                field(MarkedPhysical; Rec.MarkedPhysical) { ApplicationArea = All; }
+                field(LastMovementDate; Rec.LastMovementDate) { ApplicationArea = All; }
+                field(VatGroup; Rec.VatGroup) { ApplicationArea = All; }
+                field(StdItemNumber; Rec.StdItemNumber) { ApplicationArea = All; }
 #pragma warning restore
             }
         }
@@ -104,7 +106,7 @@ page 1862 "C5 InvenTable"
                     RunObject = Page "C5 InvenDiscGroup";
                     RunPageLink = DiscGroup = field(DiscGroup);
                     RunPageMode = Edit;
-                    Enabled = DiscGroup <> '';
+                    Enabled = Rec.DiscGroup <> '';
                     ToolTip = 'Open the C5 Inventory Discount page.';
                 }
 
@@ -133,7 +135,7 @@ page 1862 "C5 InvenTable"
                     RunObject = Page "C5 CN8Code";
                     RunPageLink = CN8Code = field(TariffNumber);
                     RunPageMode = Edit;
-                    Enabled = TariffNumber <> '';
+                    Enabled = Rec.TariffNumber <> '';
                     ToolTip = 'Open the C5 Item CN8 Codes page.';
                 }
 
@@ -148,7 +150,7 @@ page 1862 "C5 InvenTable"
                     RunObject = Page "C5 InvenItemGroup";
                     RunPageLink = Group = field(Group);
                     RunPageMode = Edit;
-                    Enabled = Group <> '';
+                    Enabled = Rec.Group <> '';
                     ToolTip = 'Open the C5 Item Groups page.';
                 }
 
@@ -188,7 +190,7 @@ page 1862 "C5 InvenTable"
     var
         C5InvenBOM: Record "C5 InvenBOM";
     begin
-        C5InvenBOM.SetRange(BOMItemNumber, ItemNumber);
+        C5InvenBOM.SetRange(BOMItemNumber, Rec.ItemNumber);
         BOMActionEnabled := not C5InvenBOM.IsEmpty();
     end;
 

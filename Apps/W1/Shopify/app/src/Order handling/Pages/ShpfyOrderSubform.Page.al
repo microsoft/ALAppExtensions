@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Page Shpfy Order Subform (ID 30122).
 /// </summary>
@@ -85,5 +87,28 @@ page 30122 "Shpfy Order Subform"
             }
         }
     }
-}
 
+    actions
+    {
+        area(Processing)
+        {
+            action(RetrievedShopifyData)
+            {
+                ApplicationArea = All;
+                Caption = 'Retrieved Shopify Data';
+                Image = Entry;
+                ToolTip = 'View the data retrieved from Shopify.';
+
+                trigger OnAction();
+                var
+                    DataCapture: Record "Shpfy Data Capture";
+                begin
+                    DataCapture.SetCurrentKey("Linked To Table", "Linked To Id");
+                    DataCapture.SetRange("Linked To Table", Database::"Shpfy Order Line");
+                    DataCapture.SetRange("Linked To Id", Rec.SystemId);
+                    Page.Run(Page::"Shpfy Data Capture List", DataCapture);
+                end;
+            }
+        }
+    }
+}

@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Reflection;
+
 /// <summary>
 /// The Record Reference interface provides a method for delegating read/write operations for tables that require indirect permissions.
 /// </summary>

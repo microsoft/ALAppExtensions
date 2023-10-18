@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 table 4000 "Hybrid Product Type"
 {
     DataPerCompany = false;

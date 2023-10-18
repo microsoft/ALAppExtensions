@@ -200,7 +200,6 @@ pageextension 11705 "Vendor Card CZL" extends "Vendor Card"
     var
         Customer: Record Customer;
         BalanceAsCustomer: Decimal;
-        [InDataSet]
         BalanceOfCustomerEnabled: Boolean;
 #endif
 }

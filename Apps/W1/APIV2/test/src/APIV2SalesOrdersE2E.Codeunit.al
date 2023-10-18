@@ -413,7 +413,8 @@ codeunit 139811 "APIV2 - Sales Orders E2E"
         ResponseText: Text;
         TargetURL: Text;
         DiscountPct: Decimal;
-        DiscountAmt, InvDiscAmount : Decimal;
+        DiscountAmt: Decimal;
+        InvDiscAmount: Decimal;
     begin
         // [SCENARIO 184721] When an order is created, the GET Method should update the order and redistribute the discount amount
         // [GIVEN] an order with discount amount that should be redistributed

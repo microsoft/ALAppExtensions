@@ -3,15 +3,20 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-PermissionSet 8900 "Email - Read"
+namespace System.Email;
+
+using System.DataAdministration;
+using System.Reflection;
+using System.Environment;
+using System.Security.AccessControl;
+
+permissionset 8900 "Email - Read"
 {
     Access = Internal;
     Assignable = false;
 
     IncludedPermissionSets = "Email - Objects",
-                             "Retention Policy - View",
-                             "Upgrade Tags - View",
-                             "Telemetry - Exec";
+                             "Retention Policy - View";
 
     Permissions = tabledata "Email Connector Logo" = r,
                   tabledata "Email Error" = r,

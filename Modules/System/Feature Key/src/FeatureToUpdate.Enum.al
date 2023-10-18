@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
 /// <summary>
 /// The enum lists the features that require some data update.
 /// Text value must match the key value in the "Feature Key" table, Int value is the implementation codeunit id.

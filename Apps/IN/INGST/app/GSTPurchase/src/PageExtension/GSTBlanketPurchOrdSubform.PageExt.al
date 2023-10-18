@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Document;
+
+using Microsoft.Finance.GST.Purchase;
+using Microsoft.Finance.TaxBase;
+
 pageextension 18098 "GST Blanket Purch Ord Subform" extends "Blanket Purchase Order Subform"
 {
     layout

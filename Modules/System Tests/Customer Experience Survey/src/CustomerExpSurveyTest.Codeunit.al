@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Feedback;
+
+using System.Feedback;
+using System.TestLibraries.Feedback;
+using System.TestLibraries.Utilities;
+
 codeunit 132103 "Customer Exp. Survey Test"
 {
     Subtype = Test;

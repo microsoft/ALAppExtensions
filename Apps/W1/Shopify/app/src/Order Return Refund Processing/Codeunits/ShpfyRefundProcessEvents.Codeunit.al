@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Document;
+
 codeunit 30247 "Shpfy Refund Process Events"
 {
     Access = Internal;

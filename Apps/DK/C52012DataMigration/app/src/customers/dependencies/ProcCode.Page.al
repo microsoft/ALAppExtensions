@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
 page 1884 "C5 ProcCode"
 {
     PageType = Card;
@@ -17,14 +19,14 @@ page 1884 "C5 ProcCode"
             group(General)
             {
 #pragma warning disable AA0218
-                field(Type;Type) { ApplicationArea=All; }
-                field(Code;Code) { ApplicationArea=All; }
-                field(Name;Name) { ApplicationArea=All; }
-                field(Int1;Int1) { ApplicationArea=All; }
-                field(Int2;Int2) { ApplicationArea=All; }
-                field(Int3;Int3) { ApplicationArea=All; }
-                field(Int4;Int4) { ApplicationArea=All; }
-                field(NoYes1;NoYes1) { ApplicationArea=All; }
+                field(Type; Rec.Type) { ApplicationArea = All; }
+                field(Code; Rec.Code) { ApplicationArea = All; }
+                field(Name; Rec.Name) { ApplicationArea = All; }
+                field(Int1; Rec.Int1) { ApplicationArea = All; }
+                field(Int2; Rec.Int2) { ApplicationArea = All; }
+                field(Int3; Rec.Int3) { ApplicationArea = All; }
+                field(Int4; Rec.Int4) { ApplicationArea = All; }
+                field(NoYes1; Rec.NoYes1) { ApplicationArea = All; }
 #pragma warning restore
             }
         }

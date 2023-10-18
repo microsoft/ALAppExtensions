@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 codeunit 40901 "Hist. Page Navigation Handler"
 {
     procedure NavigateToTransactionDetail(HistGenJournalLine: Record "Hist. Gen. Journal Line")

@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 page 41100 "GP 1099 Migration Log Factbox"
 {
     Caption = 'GP 1099 Migration Log Factbox';

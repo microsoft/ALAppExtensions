@@ -1,3 +1,9 @@
+namespace Microsoft.DataMigration;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using System.Environment.Configuration;
+using Microsoft.Finance.GeneralLedger.Account;
+
 page 4014 "Intelligent Edge KPIs"
 {
     PageType = CardPart;
@@ -93,11 +99,11 @@ page 4014 "Intelligent Edge KPIs"
         GeneralLedgerSetup.Get();
         CurrencySymbol := GeneralLedgerSetup.GetCurrencySymbol();
 
-        CASE UserPersonalization."Locale ID" OF
+        case UserPersonalization."Locale ID" OF
             1030, // da-DK
             1053, // sv-Se
             1044: // no-no
-                EXIT('<Precision,0:0><Standard Format,0>' + CurrencySymbol);
+                exit('<Precision,0:0><Standard Format,0>' + CurrencySymbol);
             2057, // en-gb
             1033, // en-us
             4108, // fr-ch
@@ -111,9 +117,9 @@ page 4014 "Intelligent Edge KPIs"
             3079, // de-at
             1035, // fi
             1034: // es-es
-                EXIT(CurrencySymbol + '<Precision,0:0><Standard Format,0>');
-            ELSE
-                EXIT('<Precision,0:0><Standard Format,0>');
+                exit(CurrencySymbol + '<Precision,0:0><Standard Format,0>');
+            else
+                exit('<Precision,0:0><Standard Format,0>');
         END
     end;
 }

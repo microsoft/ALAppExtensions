@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Vendor;
+
+using Microsoft.Finance.AuditFileExport;
+
 pageextension 10695 "SAF-T Vend. Bank Account Card" extends "Vendor Bank Account Card"
 {
     var

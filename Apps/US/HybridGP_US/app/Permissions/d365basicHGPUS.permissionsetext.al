@@ -1,3 +1,9 @@
+namespace System.Security.AccessControl;
+
+using Microsoft.DataMigration.GP;
+
+using System.Security.AccessControl;
+
 permissionsetextension 4710 "D365 Basic Ext. - HGPUS" extends "D365 BASIC"
 {
     Permissions = tabledata "Supported Tax Year" = RIMD,

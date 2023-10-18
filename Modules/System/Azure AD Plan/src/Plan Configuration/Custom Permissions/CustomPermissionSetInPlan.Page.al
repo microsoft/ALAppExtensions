@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System.Apps;
+using System.Security.AccessControl;
+
 /// <summary>
 /// List part that holds the custom permission sets assigned to a plan.
 /// </summary>
@@ -71,7 +76,7 @@ page 9058 "Custom Permission Set In Plan"
                         end;
 
                         // Get the Scope and App ID for a matching Role ID
-                        AggregatePermissionSet.SetRange("Role ID", "Role ID");
+                        AggregatePermissionSet.SetRange("Role ID", Rec."Role ID");
                         AggregatePermissionSet.FindFirst();
 
                         if AggregatePermissionSet.Count > 1 then
@@ -162,6 +167,5 @@ page 9058 "Custom Permission Set In Plan"
         LocalPlanId: Guid;
         SkipValidation: Boolean;
         PermissionScope: Text;
-        [InDataSet]
         PermissionSetNotFound: Boolean;
 }

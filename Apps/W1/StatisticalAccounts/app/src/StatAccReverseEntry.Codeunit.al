@@ -1,3 +1,8 @@
+namespace Microsoft.Finance.Analysis.StatisticalAccount;
+
+using Microsoft.Finance.GeneralLedger.Reversal;
+using System.Telemetry;
+
 codeunit 2630 "Stat. Acc. Reverse Entry"
 {
     [EventSubscriber(ObjectType::Table, Database::"Reversal Entry", 'OnBeforeReverseEntries', '', false, false)]

@@ -629,7 +629,8 @@ codeunit 139837 "APIV2 - Sales CrMemo Lines E2E"
         SalesHeader: Record "Sales Header";
         Item: Record "Item";
         SalesLine: Record "Sales Line";
-        DiscountAmount, InvDiscAmount : Decimal;
+        DiscountAmount: Decimal;
+        InvDiscAmount: Decimal;
         CreditMemoLineJSON: Text;
         ResponseText: Text;
         SalesQuantity: Integer;

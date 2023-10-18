@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.ServicesTransfer;
+
+using Microsoft.Finance.Dimension;
+
 page 18350 "Posted Serv. Transfer Reciept"
 {
     Caption = 'Posted Serv. Transfer Reciept';
@@ -55,7 +63,7 @@ page 18350 "Posted Serv. Transfer Reciept"
                 field("Receipt Date"; Rec."Receipt Date")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specified the receipt date of the posted transaction.';
+                    ToolTip = 'Specifies the receipt date of the posted transaction.';
                 }
                 field(Status; Rec.Status)
                 {

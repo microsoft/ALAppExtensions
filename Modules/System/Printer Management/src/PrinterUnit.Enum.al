@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Device;
+
 /// <summary>
 /// Specifies several of the units of measure used for printing.
 /// </summary>

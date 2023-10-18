@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 page 30137 "Shpfy Initial Import"
 {
     Caption = 'Shopify Initial Import';

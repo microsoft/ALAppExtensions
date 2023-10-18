@@ -3,6 +3,15 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Security.AccessControl;
+
+using System.Security.AccessControl;
+using System.Security.User;
+using System.TestLibraries.Environment;
+using System.Environment;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 135035 "User Selection Test"
 {
     Subtype = Test;

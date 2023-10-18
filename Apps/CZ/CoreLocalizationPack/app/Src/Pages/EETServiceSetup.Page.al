@@ -72,7 +72,7 @@ page 31142 "EET Service Setup CZL"
                     ShowCaption = false;
                     AssistEdit = false;
                     Editable = false;
-                    Enabled = NOT EditableByNotEnabled;
+                    Enabled = not EditableByNotEnabled;
 
                     trigger OnDrillDown()
                     begin
@@ -92,7 +92,7 @@ page 31142 "EET Service Setup CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'EET Business Premises';
                 Image = ElectronicPayment;
-                RunObject = Page "EET Business Premises CZL";
+                RunObject = page "EET Business Premises CZL";
                 ToolTip = 'Displays a list of your premises.';
             }
             action("Certificate Codes")
@@ -100,7 +100,7 @@ page 31142 "EET Service Setup CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Certificate Codes';
                 Image = Certificate;
-                RunObject = Page "Certificate Code List CZL";
+                RunObject = page "Certificate Code List CZL";
                 ToolTip = 'Displays a list of available certificates.';
             }
         }
@@ -110,7 +110,7 @@ page 31142 "EET Service Setup CZL"
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Set URL to Default';
-                Enabled = NOT Rec.Enabled;
+                Enabled = not Rec.Enabled;
                 Image = Restore;
                 Promoted = true;
                 PromotedCategory = Process;

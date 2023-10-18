@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Telemetry;
+
 /// <summary>
 /// Provides functionality for emitting telemetry in a universal format. Only system metadata is to be emitted through this codeunit.
 /// </summary>

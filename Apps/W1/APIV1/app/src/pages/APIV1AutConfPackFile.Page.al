@@ -1,3 +1,8 @@
+namespace Microsoft.API.V1;
+
+using System.Environment;
+using System.IO;
+
 page 20054 "APIV1 - Aut. Conf. Pack. File"
 {
 #pragma warning disable AA0218
@@ -34,10 +39,10 @@ page 20054 "APIV1 - Aut. Conf. Pack. File"
         CodeFilter: Text;
     begin
         if not FilesLoaded then begin
-            CodeFilter := GetFilter(Code);
+            CodeFilter := Rec.GetFilter(Code);
             if CodeFilter = '' then
                 Error(CodeNotSpecifiedForLinesErr);
-            if not FindFirst() then
+            if not Rec.FindFirst() then
                 exit(false);
             FilesLoaded := true;
         end;
@@ -56,4 +61,5 @@ page 20054 "APIV1 - Aut. Conf. Pack. File"
         CodeNotSpecifiedForLinesErr: Label 'You must specify a Configuration Package Code before uploading a Configuration Package File.', Locked = true;
 #pragma warning restore
 }
+
 

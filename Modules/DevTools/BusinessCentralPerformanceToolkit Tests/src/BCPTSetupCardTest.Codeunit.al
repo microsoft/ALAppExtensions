@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Tooling;
+
+using System.Tooling;
+using System.TestLibraries.Utilities;
+
 codeunit 144741 "BCPT Setup Card Test"
 {
     SingleInstance = true;

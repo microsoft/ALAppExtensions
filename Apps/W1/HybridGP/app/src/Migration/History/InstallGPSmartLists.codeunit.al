@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 codeunit 4033 "Install GP SmartLists"
 {
     trigger OnRun();
@@ -30,6 +32,6 @@ codeunit 4033 "Install GP SmartLists"
     var
         ExtensionManagement: Codeunit 2504;
     begin
-        ExtensionManagement.InstallExtension(PackageID, GlobalLanguage(), FALSE)
+        ExtensionManagement.InstallExtension(PackageID, GlobalLanguage(), false)
     end;
 }

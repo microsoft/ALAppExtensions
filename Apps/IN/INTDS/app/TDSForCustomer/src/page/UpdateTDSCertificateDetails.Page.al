@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TDS.TDSForCustomer;
+
+using Microsoft.Sales.Customer;
+using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Sales.Receivables;
+
 page 18663 "Update TDS Certificate Details"
 {
     Caption = 'Update TDS Certificate Details';

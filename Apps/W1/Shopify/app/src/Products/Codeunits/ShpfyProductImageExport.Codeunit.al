@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item;
+
 /// <summary>
 /// Codeunit Shpfy Product Image Export (ID 30179).
 /// </summary>
@@ -20,10 +24,15 @@ codeunit 30179 "Shpfy Product Image Export"
         if Rec."Item SystemId" <> NullGuid then
             if Item.GetBySystemId(Rec."Item SystemId") then
                 Hash := HashCalc.CalcItemImageHash(Item);
-        if (Hash <> Rec."Image Hash") or (Rec."Image Id" = 0) then begin
+        if (Rec."Image Id" = 0) and (Hash <> Rec."Image Hash") then begin
             NewImageId := ProductApi.CreateShopifyProductImage(Rec, Item);
             if NewImageId <> Rec."Image Id" then
                 Rec."Image Id" := NewImageId;
+            Rec."Image Hash" := Hash;
+            Rec.Modify();
+        end;
+        if (Hash <> Rec."Image Hash") then begin
+            ProductApi.UpdateShopifyProductImage(Rec, Item, BulkOperationInput, ParametersList);
             Rec."Image Hash" := Hash;
             Rec.Modify();
         end;
@@ -33,6 +42,8 @@ codeunit 30179 "Shpfy Product Image Export"
         Shop: Record "Shpfy Shop";
         ProductApi: Codeunit "Shpfy Product API";
         NullGuid: Guid;
+        ParametersList: List of [Dictionary of [Text, Text]];
+        BulkOperationInput: TextBuilder;
 
     /// <summary> 
     /// Set Shop.
@@ -55,5 +66,15 @@ codeunit 30179 "Shpfy Product Image Export"
     begin
         Shop := ShopifyShop;
         ProductApi.SetShop(Shop);
+    end;
+
+    internal procedure GetBulkOperationInput(): TextBuilder
+    begin
+        exit(BulkOperationInput);
+    end;
+
+    internal procedure GetParametersList(): List of [Dictionary of [Text, Text]]
+    begin
+        exit(ParametersList);
     end;
 }

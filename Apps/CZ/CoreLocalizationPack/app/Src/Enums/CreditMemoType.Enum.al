@@ -4,7 +4,7 @@ enum 11786 "Credit Memo Type CZL"
 
     value(0; " ")
     {
-    	Caption = '';
+        Caption = '';
     }
     value(1; "Corrective Tax Document")
     {

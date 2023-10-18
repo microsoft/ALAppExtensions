@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 permissionset 4032 "HybridGP - Read"
 {
     Assignable = false;
@@ -116,5 +118,7 @@ permissionset 4032 "HybridGP - Read"
                     tabledata "GP POP10100" = R,
                     tabledata "GP POP10110" = R,
                     tabledata "GP PM00204" = R,
+                    tabledata "GP Upgrade Settings" = R,
+                    tabledata "GP Migration Error Overview" = R,
                     tabledata "GP Known Countries" = R;
 }

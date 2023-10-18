@@ -3,6 +3,18 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Security.AccessControl;
+
+using System.TestLibraries.Visualization;
+using System.TestLibraries.Integration.Excel;
+using System.TestLibraries.Email;
+using System.TestLibraries.Reflection;
+using System.TestLibraries.Integration;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.DataAdministration;
+using System.TestLibraries.Globalization;
+using System.TestLibraries.Media;
+
 permissionset 132585 "System Application Test Tables"
 {
     Access = Public;
@@ -10,6 +22,7 @@ permissionset 132585 "System Application Test Tables"
 
     Permissions = tabledata "Cues And KPIs Test 1 Cue" = RIMD,
                   tabledata "Cues And KPIs Test 2 Cue" = RIMD,
+                  tabledata "Edit In Excel Test Table" = RIMD,
                   tabledata "Test Email Account" = RIMD,
                   tabledata "Test Email Connector Setup" = RIMD,
                   tabledata "Test Table A" = RIMD,

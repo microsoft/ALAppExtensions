@@ -1,7 +1,7 @@
 table 11769 "VAT Period CZL"
 {
     Caption = 'VAT Period';
-    LookupPageID = "VAT Periods CZL";
+    LookupPageId = "VAT Periods CZL";
 
     fields
     {

@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.BC;
+
+using Microsoft.DataMigration;
+
 tableextension 4001 "NAV Hybrid Replication Summary" extends "Hybrid Replication Summary"
 {
     fields

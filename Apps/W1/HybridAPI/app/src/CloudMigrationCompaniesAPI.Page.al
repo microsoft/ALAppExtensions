@@ -1,3 +1,9 @@
+namespace Microsoft.DataMigration.API;
+
+using Microsoft.Utilities;
+using Microsoft.DataMigration;
+using System.Environment;
+
 page 40020 "Cloud Migration Companies API"
 {
     PageType = API;

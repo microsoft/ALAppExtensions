@@ -34,34 +34,6 @@ page 11016 "Sales VAT Adv. Notif. Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies a description of the sales VAT advance notification.';
                 }
-#if not CLEAN20
-                field("XSL-Filename Desktop"; "XSL-Filename")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'XSL-Filename';
-                    ToolTip = 'Specifies the path and the file name of the style sheet for the VAT advance notification that you submit to and receive from the tax authorities.';
-                    Visible = false;
-                    ObsoleteTag = '20.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This functionality is not in use and not supported';
-
-                    trigger OnAssistEdit()
-                    var
-                        FileMgt: Codeunit "File Management";
-                    begin
-                        "XSL-Filename" := CopyStr(FileMgt.UploadFile(CopyStr(Text1140000Lbl, 1, 50), "XSL-Filename"), 1, MaxStrLen("XSL-Filename"));
-                    end;
-                }
-                field("XSL-Filename"; "XSL-Filename")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the path and the file name of the style sheet for the VAT advance notification that you submit to and receive from the tax authorities.';
-                    Visible = false;
-                    ObsoleteTag = '20.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This functionality is not in use and not supported';
-                }
-#endif
                 field("Starting Date"; "Starting Date")
                 {
                     ApplicationArea = Basic, Suite;
@@ -301,6 +273,5 @@ page 11016 "Sales VAT Adv. Notif. Card"
     var
         VATStatementName: Record "VAT Statement Name";
         ReportPrint: Codeunit "Test Report-Print";
-        Text1140000Lbl: Label 'Selection of the XSL-File';
 }
 

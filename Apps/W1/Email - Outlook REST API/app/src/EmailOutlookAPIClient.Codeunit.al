@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Email;
+
+using System.Azure.Identity;
+using System.Text;
+using System.Utilities;
+
 codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Client"
 {
     var
@@ -147,7 +153,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         if ErrorMessage.Contains('AADSTS50158') then
             Error(ExternalSecurityChallengeNotSatisfiedMsg);
 
-        Error(StrSubstNo(SendEmailMessageErr, ErrorMessage));
+        Error(SendEmailMessageErr, ErrorMessage);
     end;
 
     [NonDebuggable]

@@ -1,3 +1,7 @@
+namespace Microsoft.API.V1;
+
+using System.Environment;
+
 page 20001 "APIV1 - Aut. Companies"
 {
     APIGroup = 'automation';
@@ -18,27 +22,27 @@ page 20001 "APIV1 - Aut. Companies"
         {
             repeater(Group)
             {
-                field(id; Id)
+                field(id; Rec.Id)
                 {
                     Caption = 'id', Locked = true;
                     Editable = false;
                 }
-                field(name; Name)
+                field(name; Rec.Name)
                 {
                     Caption = 'name', Locked = true;
                     Editable = false;
                 }
-                field(evaluationCompany; "Evaluation Company")
+                field(evaluationCompany; Rec."Evaluation Company")
                 {
                     Caption = 'evaluationCompany', Locked = true;
                     Editable = false;
                 }
-                field(displayName; "Display Name")
+                field(displayName; Rec."Display Name")
                 {
                     Caption = 'displayName', Locked = true;
                     NotBlank = true;
                 }
-                field(businessProfileId; "Business Profile Id")
+                field(businessProfileId; Rec."Business Profile Id")
                 {
                     Caption = 'businessProfileId', Locked = true;
                 }
@@ -52,8 +56,8 @@ page 20001 "APIV1 - Aut. Companies"
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     begin
-        Name := COPYSTR("Display Name", 1, MAXSTRLEN(Name));
-        "Evaluation Company" := FALSE;
+        Rec.Name := CopyStr(Rec."Display Name", 1, MaxStrLen(Rec.Name));
+        Rec."Evaluation Company" := false;
     end;
 
     trigger OnOpenPage()
@@ -64,4 +68,5 @@ page 20001 "APIV1 - Aut. Companies"
     var
         AutomationAPIManagement: Codeunit "Automation - API Management";
 }
+
 

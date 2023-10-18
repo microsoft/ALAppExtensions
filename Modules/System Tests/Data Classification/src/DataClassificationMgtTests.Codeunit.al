@@ -3,6 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Privacy;
+
+using System.Privacy;
+using System.Reflection;
+using System.Integration;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 135150 "Data Classification Mgt. Tests"
 {
     EventSubscriberInstance = Manual;
@@ -192,7 +200,7 @@ codeunit 135150 "Data Classification Mgt. Tests"
         // [GIVEN] Some records in the Web Service table
         WebService.Init();
         WebService."Service Name" := 'Name';
-        WebService.Insert();        
+        WebService.Insert();
 
         // Verify the module highest permission level is sufficient ignore non Tables
         PermissionsMock.Set('Data Class Edit');

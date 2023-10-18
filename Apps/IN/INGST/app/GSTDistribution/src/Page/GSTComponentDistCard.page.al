@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Distribution;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+
 page 18201 "GST Component Dist. Card"
 {
     PageType = Card;

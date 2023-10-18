@@ -161,7 +161,7 @@ codeunit 11748 "Install Application CZL"
         CompanyInitialize();
     end;
 
-    local procedure InitializeDone(): boolean
+    local procedure InitializeDone(): Boolean
     begin
         NavApp.GetCurrentModuleInfo(AppInfo);
         exit(AppInfo.DataVersion() <> Version.Create('0.0.0.0'));
@@ -637,9 +637,6 @@ codeunit 11748 "Install Application CZL"
         SalesReceivablesSetup.SetLoadFields("Default VAT Date", "Allow Alter Posting Groups");
         if SalesReceivablesSetup.Get() then begin
             SalesReceivablesSetup."Default VAT Date CZL" := SalesReceivablesSetup."Default VAT Date";
-#if not CLEAN20
-            SalesReceivablesSetup."Allow Alter Posting Groups CZL" := SalesReceivablesSetup."Allow Alter Posting Groups";
-#endif
             SalesReceivablesSetup."Allow Multiple Posting Groups" := SalesReceivablesSetup."Allow Alter Posting Groups";
             SalesReceivablesSetup.Modify(false);
         end;
@@ -653,9 +650,6 @@ codeunit 11748 "Install Application CZL"
         PurchasesPayablesSetup.SetLoadFields("Default VAT Date", "Allow Alter Posting Groups", "Default Orig. Doc. VAT Date");
         if PurchasesPayablesSetup.Get() then begin
             PurchasesPayablesSetup."Default VAT Date CZL" := PurchasesPayablesSetup."Default VAT Date";
-#if not CLEAN20
-            PurchasesPayablesSetup."Allow Alter Posting Groups CZL" := PurchasesPayablesSetup."Allow Alter Posting Groups";
-#endif
             PurchasesPayablesSetup."Allow Multiple Posting Groups" := PurchasesPayablesSetup."Allow Alter Posting Groups";
 #if not CLEAN22
             PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" := PurchasesPayablesSetup."Default Orig. Doc. VAT Date";
@@ -684,9 +678,6 @@ codeunit 11748 "Install Application CZL"
         ServiceMgtSetup.SetLoadFields("Default VAT Date", "Allow Alter Cust. Post. Groups");
         if ServiceMgtSetup.Get() then begin
             ServiceMgtSetup."Default VAT Date CZL" := ServiceMgtSetup."Default VAT Date";
-#if not CLEAN20
-            ServiceMgtSetup."Allow Alter Posting Groups CZL" := ServiceMgtSetup."Allow Alter Cust. Post. Groups";
-#endif
             ServiceMgtSetup."Allow Multiple Posting Groups" := ServiceMgtSetup."Allow Alter Cust. Post. Groups";
             ServiceMgtSetup.Modify(false);
         end;

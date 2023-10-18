@@ -1,3 +1,5 @@
+namespace Microsoft.CRM.EmailLoggin;
+
 codeunit 1682 "Email Logging API Client" implements "Email Logging API Client"
 {
     Access = Internal;

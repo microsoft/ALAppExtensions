@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration;
+
+using System.Apps;
+using System.Reflection;
+
 page 4009 "Migration Table Mapping"
 {
     ApplicationArea = All;
@@ -111,7 +116,7 @@ page 4009 "Migration Table Mapping"
 
                     // The following properties are to disable user manipulation of locked mapping records.
                     Style = Subordinate;
-                    StyleExpr = Locked;
+                    StyleExpr = Rec.Locked;
                     Editable = not Rec.Locked;
                     Enabled = not Rec.Locked;
 

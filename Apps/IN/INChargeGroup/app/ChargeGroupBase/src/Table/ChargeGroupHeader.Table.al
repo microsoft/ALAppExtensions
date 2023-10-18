@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.ChargeGroup.ChargeGroupBase;
+
+using Microsoft.Purchases.Document;
+using Microsoft.Sales.Document;
+
 table 18510 "Charge Group Header"
 {
     Caption = 'Charge Group Header';

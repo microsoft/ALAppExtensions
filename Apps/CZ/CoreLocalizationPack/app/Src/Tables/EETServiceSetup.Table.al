@@ -131,7 +131,7 @@ table 31125 "EET Service Setup CZL"
     local procedure ScheduleJobQueueEntry()
     var
         JobQueueEntry: Record "Job Queue Entry";
-        DummyRecId: RecordID;
+        DummyRecId: RecordId;
     begin
         JobQueueEntry.ScheduleRecurrentJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit,
           Codeunit::"EET Send Entries To Serv. CZL", DummyRecId);

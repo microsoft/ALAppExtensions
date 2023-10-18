@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item;
+
 /// <summary>
 /// Codeunit Shpfy CreateProdStatusDraft (ID 30173) implements Interface Shopify.ICreateProductStatusValue.
 /// </summary>

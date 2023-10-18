@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.ReturnSettlement;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+
 codeunit 18317 "GST Helpers"
 {
     procedure GetGSTPayableAccountNo(StateCode: Code[10]; GSTComponentCode: Code[30]): Code[20]

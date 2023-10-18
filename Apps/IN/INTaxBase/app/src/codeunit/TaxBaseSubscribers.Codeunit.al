@@ -1,3 +1,27 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxBase;
+
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.Payroll;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Finance.TaxEngine.UseCaseBuilder;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.FinanceCharge;
+using Microsoft.Sales.History;
+using Microsoft.Service.Document;
+using Microsoft.RoleCenters;
+using Microsoft;
+
 codeunit 18544 "Tax Base Subscribers"
 {
     procedure GetTCSAmount(Amount: Decimal)

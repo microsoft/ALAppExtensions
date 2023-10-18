@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.Reports;
+
+using Microsoft.Inventory.Intrastat;
+
 tableextension 12215 "Service Decl. Header IT" extends "Service Declaration Header"
 {
     fields

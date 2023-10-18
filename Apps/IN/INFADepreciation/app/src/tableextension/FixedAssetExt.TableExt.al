@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.FixedAssets.FixedAsset;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.SalesTax;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FADepreciation;
+
 tableextension 18635 "Fixed Asset Ext" extends "Fixed Asset"
 {
     fields

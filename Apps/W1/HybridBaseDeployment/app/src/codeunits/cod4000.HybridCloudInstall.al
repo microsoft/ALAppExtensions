@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration;
+
 codeunit 4000 "Hybrid Cloud Install"
 {
     Subtype = Install;

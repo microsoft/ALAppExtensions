@@ -104,6 +104,11 @@ tableextension 11717 "User Setup CZL" extends "User Setup"
             Caption = 'Check Invt. Movement Templates';
             DataClassification = CustomerContent;
         }
+        field(11787; "Allow VAT Date Changing CZL"; Boolean)
+        {
+            Caption = 'Allow VAT Date Changing';
+            DataClassification = CustomerContent;
+        }
     }
     procedure CopyToCZL(ToUserId: Code[50])
     var

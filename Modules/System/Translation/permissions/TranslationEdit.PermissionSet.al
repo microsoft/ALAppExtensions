@@ -3,10 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Globalization;
+
 /// <summary>
 /// This permission set allows the editing of translations from the Translations page. The table is internal but the page is editable.
 /// </summary>
-PermissionSet 3712 "Translation - Edit"
+permissionset 3712 "Translation - Edit"
 {
     Access = Public;
     Assignable = false;

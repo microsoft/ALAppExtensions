@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 table 40900 "Hist. G/L Account"
 {
     DataClassification = AccountData;

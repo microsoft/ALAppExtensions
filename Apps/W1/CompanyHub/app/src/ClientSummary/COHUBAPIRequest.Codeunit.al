@@ -1,3 +1,7 @@
+namespace Mirosoft.Integration.CompanyHub;
+
+using System.Azure.Identity;
+
 codeunit 1164 "COHUB API Request"
 {
     Access = Internal;

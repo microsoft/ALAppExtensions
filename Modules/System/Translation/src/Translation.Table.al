@@ -1,7 +1,9 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Globalization;
 
 table 3712 Translation
 {
@@ -14,31 +16,36 @@ table 3712 Translation
     {
         field(1; "Language ID"; Integer)
         {
+            DataClassification = SystemMetadata;
             Caption = 'Language ID';
             TableRelation = Language."Windows Language ID";
         }
         field(2; "System ID"; Guid)
         {
+            DataClassification = SystemMetadata;
             Caption = 'System ID';
             Editable = false;
         }
         field(3; "Table ID"; Integer)
         {
+            DataClassification = SystemMetadata;
             Caption = 'Table ID';
             Editable = false;
         }
         field(4; "Field ID"; Integer)
         {
+            DataClassification = SystemMetadata;
             Caption = 'Field ID';
             Editable = false;
         }
         field(5; Value; Text[2048])
         {
+            DataClassification = CustomerContent;
             Caption = 'Value';
         }
         field(6; "Language Name"; Text[50])
         {
-            CalcFormula = Lookup(Language.Name WHERE("Windows Language ID" = FIELD("Language ID")));
+            CalcFormula = lookup(Language.Name where("Windows Language ID" = field("Language ID")));
             Caption = 'Language Name';
             Editable = false;
             FieldClass = FlowField;

@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Visualization;
+
 pageextension 1444 "Headlines RC Rel. Mgt. Ext." extends "Headline RC Relationship Mgt."
 {
 

@@ -1076,7 +1076,7 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
                 }
                 tableelement(commentline; "VAT Statement Comment Line CZL")
                 {
-                    LinkFields = "VAT Statement Template Name" = FIELD("Statement Template Name"), "VAT Statement Name" = FIELD(Name);
+                    LinkFields = "VAT Statement Template Name" = field("Statement Template Name"), "VAT Statement Name" = field(Name);
                     LinkTable = VATStatementName;
                     MinOccurs = Zero;
                     XmlName = 'VetaR';

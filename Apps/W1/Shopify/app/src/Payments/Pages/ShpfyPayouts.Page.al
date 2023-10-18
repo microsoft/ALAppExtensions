@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Page Shpfy Payouts (ID 30125).
 /// </summary>

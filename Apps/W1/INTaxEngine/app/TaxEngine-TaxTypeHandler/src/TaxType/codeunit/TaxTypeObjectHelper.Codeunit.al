@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.TaxTypeHandler;
+
+using Microsoft.Finance.TaxEngine.Core;
+using Microsoft.Finance.TaxEngine.UseCaseBuilder;
+
 codeunit 20232 "Tax Type Object Helper"
 {
     procedure SearchTaxTypeTable(var TableID: Integer; var TableName: Text[30]; TaxType: Code[20]; IsTransactionTable: Boolean)

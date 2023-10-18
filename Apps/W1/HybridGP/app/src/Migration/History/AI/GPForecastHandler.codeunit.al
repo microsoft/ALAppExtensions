@@ -1,3 +1,11 @@
+namespace Microsoft.DataMigration.GP;
+
+using System.AI;
+using System.Reflection;
+using Microsoft.CashFlow.Forecast;
+using Microsoft.CashFlow.Setup;
+using Microsoft.Inventory.InventoryForecast;
+
 codeunit 4034 "GPForecastHandler"
 {
     trigger OnRun()
@@ -192,16 +200,16 @@ codeunit 4034 "GPForecastHandler"
 #pragma warning disable AA0207
     [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Forecast Handler", 'OnAfterPrepareSalesInvData', '', true, true)]
-    procedure OnAfterPrepareSalesInvData(ItemNo: Code[20]; VAR TempTimeSeriesBuffer: Record "Time Series Buffer"; PeriodType: Integer; ForecastStartDate: Date; NumberOfPeriodsWithHistory: Integer; VAR Status: Option " ","Missing API","Not enough historical data","Out of limit");
+    procedure OnAfterPrepareSalesInvData(ItemNo: Code[20]; var TempTimeSeriesBuffer: Record "Time Series Buffer"; PeriodType: Integer; ForecastStartDate: Date; NumberOfPeriodsWithHistory: Integer; var Status: Option " ","Missing API","Not enough historical data","Out of limit");
 #pragma warning restore AA0207
 #else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Forecast Handler", 'OnAfterPrepareSalesInvData', '', true, true)]
-    local procedure OnAfterPrepareSalesInvData(ItemNo: Code[20]; VAR TempTimeSeriesBuffer: Record "Time Series Buffer"; PeriodType: Integer; ForecastStartDate: Date; NumberOfPeriodsWithHistory: Integer; VAR Status: Option " ","Missing API","Not enough historical data","Out of limit");
+    local procedure OnAfterPrepareSalesInvData(ItemNo: Code[20]; var TempTimeSeriesBuffer: Record "Time Series Buffer"; PeriodType: Integer; ForecastStartDate: Date; NumberOfPeriodsWithHistory: Integer; var Status: Option " ","Missing API","Not enough historical data","Out of limit");
 #endif
     var
         GPIVTrxAmountsHist: Record GPIVTrxAmountsHist;
     begin
-        If not InitializeSI() then begin
+        if not InitializeSI() then begin
             Status := GPStatus;
             exit;
         end;
@@ -233,16 +241,16 @@ codeunit 4034 "GPForecastHandler"
 #pragma warning disable AA0207
     [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Forecast Handler", 'OnAfterHasMinimumSIHistData', '', true, true)]
-    procedure OnAfterHasMinimumSIHistData(ItemNo: Code[20]; VAR HasMinimumHistoryLoc: boolean; VAR NumberOfPeriodsWithHistoryLoc: Integer; PeriodType: Integer; ForecastStartDate: Date; VAR Status: Option " ","Missing API","Not enough historical data","Out of limit")
+    procedure OnAfterHasMinimumSIHistData(ItemNo: Code[20]; var HasMinimumHistoryLoc: boolean; var NumberOfPeriodsWithHistoryLoc: Integer; PeriodType: Integer; ForecastStartDate: Date; var Status: Option " ","Missing API","Not enough historical data","Out of limit")
 #pragma warning restore AA0207
 #else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Forecast Handler", 'OnAfterHasMinimumSIHistData', '', true, true)]
-    local procedure OnAfterHasMinimumSIHistData(ItemNo: Code[20]; VAR HasMinimumHistoryLoc: boolean; VAR NumberOfPeriodsWithHistoryLoc: Integer; PeriodType: Integer; ForecastStartDate: Date; VAR Status: Option " ","Missing API","Not enough historical data","Out of limit")
+    local procedure OnAfterHasMinimumSIHistData(ItemNo: Code[20]; var HasMinimumHistoryLoc: boolean; var NumberOfPeriodsWithHistoryLoc: Integer; PeriodType: Integer; ForecastStartDate: Date; var Status: Option " ","Missing API","Not enough historical data","Out of limit")
 #endif
     var
         GPIVTrxAmountsHist: Record GPIVTrxAmountsHist;
     begin
-        If not InitializeSI() then begin
+        if not InitializeSI() then begin
             Status := GPStatus;
             exit;
         end;
@@ -268,16 +276,16 @@ codeunit 4034 "GPForecastHandler"
 #pragma warning disable AA0207
     [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Page, Page::"Sales Forecast", 'OnAfterHasMinimumSIHistData', '', true, true)]
-    procedure OnAfterHasMinSIHistDataSF(ItemNo: Code[20]; VAR HasMinimumHistoryLoc: boolean; VAR NumberOfPeriodsWithHistoryLoc: Integer; PeriodType: Integer; ForecastStartDate: Date; VAR StatusType: Option " ","No columns due to high variance","Limited columns due to high variance","Forecast expired","Forecast period type changed","Not enough historical data","Zero Forecast","No Forecast available")
+    procedure OnAfterHasMinSIHistDataSF(ItemNo: Code[20]; var HasMinimumHistoryLoc: boolean; var NumberOfPeriodsWithHistoryLoc: Integer; PeriodType: Integer; ForecastStartDate: Date; var StatusType: Option " ","No columns due to high variance","Limited columns due to high variance","Forecast expired","Forecast period type changed","Not enough historical data","Zero Forecast","No Forecast available")
 #pragma warning restore AA0207
 #else
     [EventSubscriber(ObjectType::Page, Page::"Sales Forecast", 'OnAfterHasMinimumSIHistData', '', true, true)]
-    local procedure OnAfterHasMinSIHistDataSF(ItemNo: Code[20]; VAR HasMinimumHistoryLoc: boolean; VAR NumberOfPeriodsWithHistoryLoc: Integer; PeriodType: Integer; ForecastStartDate: Date; VAR StatusType: Option " ","No columns due to high variance","Limited columns due to high variance","Forecast expired","Forecast period type changed","Not enough historical data","Zero Forecast","No Forecast available")
+    local procedure OnAfterHasMinSIHistDataSF(ItemNo: Code[20]; var HasMinimumHistoryLoc: boolean; var NumberOfPeriodsWithHistoryLoc: Integer; PeriodType: Integer; ForecastStartDate: Date; var StatusType: Option " ","No columns due to high variance","Limited columns due to high variance","Forecast expired","Forecast period type changed","Not enough historical data","Zero Forecast","No Forecast available")
 #endif
     var
         GPIVTrxAmountsHist: Record GPIVTrxAmountsHist;
     begin
-        If not InitializeSI() then begin
+        if not InitializeSI() then begin
             StatusType := StatusType::" ";
             exit;
         end;
@@ -300,16 +308,16 @@ codeunit 4034 "GPForecastHandler"
 #pragma warning disable AA0207
     [Obsolete('The procedure will be made local.', '22.0')]
     [EventSubscriber(ObjectType::Page, Page::"Sales Forecast No Chart", 'OnAfterHasMinimumSIHistData', '', true, true)]
-    procedure OnAfterHasMinSIHistDataSFNoC(ItemNo: Code[20]; VAR HasMinimumHistoryLoc: boolean; VAR NumberOfPeriodsWithHistoryLoc: Integer; PeriodType: Integer; ForecastStartDate: Date; VAR StatusType: Option " ","No columns due to high variance","Limited columns due to high variance","Forecast expired","Forecast period type changed","Not enough historical data","Zero Forecast","No Forecast available")
+    procedure OnAfterHasMinSIHistDataSFNoC(ItemNo: Code[20]; var HasMinimumHistoryLoc: boolean; var NumberOfPeriodsWithHistoryLoc: Integer; PeriodType: Integer; ForecastStartDate: Date; var StatusType: Option " ","No columns due to high variance","Limited columns due to high variance","Forecast expired","Forecast period type changed","Not enough historical data","Zero Forecast","No Forecast available")
 #pragma warning restore AA0207
 #else
     [EventSubscriber(ObjectType::Page, Page::"Sales Forecast No Chart", 'OnAfterHasMinimumSIHistData', '', true, true)]
-    local procedure OnAfterHasMinSIHistDataSFNoC(ItemNo: Code[20]; VAR HasMinimumHistoryLoc: boolean; VAR NumberOfPeriodsWithHistoryLoc: Integer; PeriodType: Integer; ForecastStartDate: Date; VAR StatusType: Option " ","No columns due to high variance","Limited columns due to high variance","Forecast expired","Forecast period type changed","Not enough historical data","Zero Forecast","No Forecast available")
+    local procedure OnAfterHasMinSIHistDataSFNoC(ItemNo: Code[20]; var HasMinimumHistoryLoc: boolean; var NumberOfPeriodsWithHistoryLoc: Integer; PeriodType: Integer; ForecastStartDate: Date; var StatusType: Option " ","No columns due to high variance","Limited columns due to high variance","Forecast expired","Forecast period type changed","Not enough historical data","Zero Forecast","No Forecast available")
 #endif
     var
         GPIVTrxAmountsHist: Record GPIVTrxAmountsHist;
     begin
-        If not InitializeSI() then begin
+        if not InitializeSI() then begin
             StatusType := StatusType::" ";
             exit;
         end;
@@ -454,7 +462,7 @@ codeunit 4034 "GPForecastHandler"
             TempGPForecastTemp.Init();
             TempGPForecastTemp.Validate(DocNumber, DocNumberFieldRef.Value());
 
-            if ((Format(DocTypeFieldRef.Value()) = Format(TempGPForecastTemp.DocType::"Credit Memo")) OR (Format(DocTypeFieldRef.Value()) = Format(TempGPForecastTemp.DocType::"Credit Memos"))) then
+            if ((Format(DocTypeFieldRef.Value()) = Format(TempGPForecastTemp.DocType::"Credit Memo")) or (Format(DocTypeFieldRef.Value()) = Format(TempGPForecastTemp.DocType::"Credit Memos"))) then
                 TempGPForecastTemp.Validate(DocType, TempGPForecastTemp.DocType::"Credit Memo")
             else
                 TempGPForecastTemp.Validate(DocType, TempGPForecastTemp.DocType::Invoice);

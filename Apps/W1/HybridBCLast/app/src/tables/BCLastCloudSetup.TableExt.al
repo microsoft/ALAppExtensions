@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.BC;
+
+using Microsoft.DataMigration;
+
 tableextension 4038 "BC Last Cloud Setup" extends "Intelligent Cloud Setup"
 {
     fields

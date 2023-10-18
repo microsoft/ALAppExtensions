@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 page 4092 "GP Fiscal Periods"
 {
     PageType = Card;

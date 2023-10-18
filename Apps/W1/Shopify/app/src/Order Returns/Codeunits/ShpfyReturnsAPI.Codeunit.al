@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 codeunit 30250 "Shpfy Returns API"
 {
     var

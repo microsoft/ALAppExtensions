@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
 page 1885 "C5 InvenDiscGroup"
 {
     PageType = Card;
@@ -17,8 +19,8 @@ page 1885 "C5 InvenDiscGroup"
             group(General)
             {
 #pragma warning disable AA0218
-                field(DiscGroup;DiscGroup) { ApplicationArea=All; }
-                field(Comment;Comment) { ApplicationArea=All; }
+                field(DiscGroup; Rec.DiscGroup) { ApplicationArea = All; }
+                field(Comment; Rec.Comment) { ApplicationArea = All; }
 #pragma warning restore
             }
         }

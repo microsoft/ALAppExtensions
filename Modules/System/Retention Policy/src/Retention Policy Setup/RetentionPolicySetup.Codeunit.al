@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.DataAdministration;
+
+using System.Environment.Configuration;
+
 /// <summary>
 /// This codeunit contains helper methods for retention policy setups.
 /// </summary>

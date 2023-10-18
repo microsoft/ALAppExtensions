@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.History;
+
 codeunit 30263 "Shpfy Open PostedSalesCrMemo" implements "Shpfy IOpenBCDocument"
 {
 

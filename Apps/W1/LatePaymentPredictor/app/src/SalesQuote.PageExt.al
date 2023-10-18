@@ -1,3 +1,6 @@
+namespace Microsoft.Finance.Latepayment;
+
+using Microsoft.Sales.Document;
 pageextension 1955 "LPP Sales Quote" extends "Sales Quote"
 {
     actions

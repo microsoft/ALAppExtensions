@@ -3,9 +3,6 @@ codeunit 31432 "Acc. Sched. Ext. Handler CZZ"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Acc. Sched. Extension Mgt. CZL", 'OnAfterSetCustLedgEntryFilters', '', false, false)]
     local procedure SetFiltersOnAfterSetCustLedgEntryFilters(AccScheduleExtensionCZL: Record "Acc. Schedule Extension CZL"; var CustLedgerEntry: Record "Cust. Ledger Entry")
     begin
-#if not CLEAN20
-        CustLedgerEntry.SetRange(Prepayment);
-#endif
         case AccScheduleExtensionCZL."Advance Payments CZZ" of
             AccScheduleExtensionCZL."Advance Payments CZZ"::Yes:
                 CustLedgerEntry.SetFilter("Advance Letter No. CZZ", '<>%1', '');
@@ -17,9 +14,6 @@ codeunit 31432 "Acc. Sched. Ext. Handler CZZ"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Acc. Sched. Extension Mgt. CZL", 'OnAfterSetVendLedgEntryFilters', '', false, false)]
     local procedure SetFiltersOnAfterSetVendLedgEntryFilters(AccScheduleExtensionCZL: Record "Acc. Schedule Extension CZL"; var VendorLedgerEntry: Record "Vendor Ledger Entry")
     begin
-#if not CLEAN20
-        VendorLedgerEntry.SetRange(Prepayment);
-#endif
         case AccScheduleExtensionCZL."Advance Payments CZZ" of
             AccScheduleExtensionCZL."Advance Payments CZZ"::Yes:
                 VendorLedgerEntry.SetFilter("Advance Letter No. CZZ", '<>%1', '');

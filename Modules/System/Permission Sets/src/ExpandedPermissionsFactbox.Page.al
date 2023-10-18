@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
 /// <summary>
 /// Factbox for viewing the expanded permissions of a permission set.
 /// </summary>

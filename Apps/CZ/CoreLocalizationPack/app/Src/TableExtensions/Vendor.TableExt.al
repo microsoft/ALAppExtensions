@@ -82,7 +82,7 @@ tableextension 11702 "Vendor CZL" extends Vendor
         field(11767; "Last Unreliab. Check Date CZL"; Date)
         {
             CalcFormula = max("Unreliable Payer Entry CZL"."Check Date" where("VAT Registration No." = field("VAT Registration No."),
-                                                                            "Entry Type" = CONST(Payer)));
+                                                                            "Entry Type" = const(Payer)));
             Caption = 'Last Unreliability Check Date';
             Editable = false;
             FieldClass = FlowField;

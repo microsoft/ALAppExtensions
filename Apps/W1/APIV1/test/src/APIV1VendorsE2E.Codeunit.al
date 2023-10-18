@@ -64,6 +64,9 @@ codeunit 139703 "APIV1 - Vendors E2E"
         // [GIVEN] A vendor exists and has values assigned to some of the fields contained in complex types.
         CreateVendorWithAddress(Vendor);
 
+        // Commit so that following OData session has access to the latest data.
+        COMMIT();
+
         // [WHEN] The user calls GET for the given Vendor.
         TargetURL := LibraryGraphMgt.CreateTargetURL(Vendor.SystemId, PAGE::"APIV1 - Vendors", ServiceNameTxt);
         LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);

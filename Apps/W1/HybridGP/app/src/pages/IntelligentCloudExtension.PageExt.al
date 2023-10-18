@@ -1,3 +1,10 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.DataMigration.GP.HistoricalData;
+using Microsoft.DataMigration;
+using System.Security.User;
+using System.Integration;
+
 pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Management"
 {
     layout

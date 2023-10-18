@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.StockTransfer;
+
+using Microsoft.Inventory.Transfer;
+
 pageextension 18392 "GST Posted Transfer Shpt. Ext" extends "Posted Transfer Shpt. Subform"
 {
     layout

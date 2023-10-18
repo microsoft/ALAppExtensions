@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TDS;
+
+using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Finance.TDS.TDSForCustomer;
+using Microsoft.Finance.TDS.TDSOnPayments;
+using Microsoft.Finance.TDS.TDSReturnAndSettlement;
+using System.Security.AccessControl;
+
 permissionsetextension 18669 "INTELLIGENT CLOUD - India TDS" extends "INTELLIGENT CLOUD"
 {
     Permissions = tabledata "Acknowledgement Setup" = RIMD,

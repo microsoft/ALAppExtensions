@@ -1,3 +1,13 @@
+namespace Microsoft.API.V1;
+
+using Microsoft.Foundation.Reporting;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Document;
+using System.Email;
+using Microsoft.Utilities;
+using System.Threading;
+
 codeunit 20038 "APIV1 - Send Sales Document"
 {
     TableNo = "Job Queue Entry";
@@ -37,14 +47,13 @@ codeunit 20038 "APIV1 - Send Sales Document"
     [Scope('Cloud')]
     procedure CheckDocumentIfNoItemsExists(SalesHeader: Record "Sales Header")
     begin
-        with SalesHeader do
-            if not SalesLinesExist() then
-                case "Document Type" of
-                    "Document Type"::Invoice:
-                        Error(ThereIsNothingToSellInvoiceErr);
-                    else
-                        Error(ThereIsNothingToSellQuoteErr);
-                end;
+        if not SalesHeader.SalesLinesExist() then
+            case SalesHeader."Document Type" of
+                SalesHeader."Document Type"::Invoice:
+                    Error(ThereIsNothingToSellInvoiceErr);
+                else
+                    Error(ThereIsNothingToSellQuoteErr);
+            end;
     end;
 
     local procedure SendCancelledCreditMemoInBackground(var SalesCrMemoHeader: Record "Sales Cr.Memo Header")
@@ -79,8 +88,8 @@ codeunit 20038 "APIV1 - Send Sales Document"
         O365SetupEmail.CheckMailSetup();
         CheckSendToEmailAddress(SalesCrMemoHeader);
 
-        SalesCrMemoHeader.SETRECFILTER();
-        SalesCrMemoHeader.EmailRecords(FALSE);
+        SalesCrMemoHeader.SetRecFilter();
+        SalesCrMemoHeader.EmailRecords(false);
     end;
 
     local procedure SendCancelledCreditMemo(var SalesCrMemoHeader: Record "Sales Cr.Memo Header")
@@ -100,8 +109,8 @@ codeunit 20038 "APIV1 - Send Sales Document"
         O365SetupEmail.CheckMailSetup();
         CheckSendToEmailAddress(SalesHeader);
 
-        SalesHeader.SETRECFILTER();
-        SalesHeader.EmailRecords(FALSE);
+        SalesHeader.SetRecFilter();
+        SalesHeader.EmailRecords(false);
     end;
 
     local procedure CheckSendToEmailAddress(var SalesHeader: Record "Sales Header")

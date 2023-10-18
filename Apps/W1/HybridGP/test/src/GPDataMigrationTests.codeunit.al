@@ -1756,7 +1756,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY01200.Master_Type := 'CUS';
         GPSY01200.Master_ID := GPCustomerAddress.CUSTNMBR;
         GPSY01200.ADRSCODE := GPCustomerAddress.ADRSCODE;
-        GPSY01200.INET1 := 'bad email address@testing.tst';
+        GPSY01200.INET1 := 'bad.email(address@testing.tst';
         GPSY01200.Insert();
 
         Clear(GPCustomerAddress);
@@ -2685,7 +2685,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY01200.Master_Type := 'VEN';
         GPSY01200.Master_ID := GPVendorAddress.VENDORID;
         GPSY01200.ADRSCODE := GPVendorAddress.ADRSCODE;
-        GPSY01200.INET1 := 'bad email address@testing.tst';
+        GPSY01200.INET1 := 'bad.email(address@testing.tst';
         GPSY01200.Insert();
 
         Clear(GPVendorAddress);

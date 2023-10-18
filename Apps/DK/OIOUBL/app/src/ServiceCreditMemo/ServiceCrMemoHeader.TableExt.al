@@ -1,7 +1,10 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.History;
+
+using Microsoft.EServices.EDocument;
 
 tableextension 13657 "OIOUBL-Service Cr.Memo Header" extends "Service Cr.Memo Header"
 {

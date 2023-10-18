@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using System.DateTime;
+using System.Telemetry;
+
 table 5265 "Audit File Export Header"
 {
     DataClassification = CustomerContent;
@@ -16,7 +25,7 @@ table 5265 "Audit File Export Header"
         {
             DataClassification = CustomerContent;
             Caption = 'G/L Account Mapping Code';
-            TableRelation = "G/L Account Mapping Header";
+            TableRelation = "G/L Account Mapping Header" where("Audit File Export Format" = field("Audit File Export Format"));
 
             trigger OnValidate()
             var
@@ -41,9 +50,10 @@ table 5265 "Audit File Export Header"
             var
                 AuditFileExportFormatSetup: Record "Audit File Export Format Setup";
             begin
-                AuditFileExportFormatSetup.Get(Rec."Audit File Export Format");
-                Rec."Archive to Zip" := AuditFileExportFormatSetup."Archive to Zip";
-                Rec."Audit File Name" := AuditFileExportFormatSetup."Audit File Name";
+                if AuditFileExportFormatSetup.Get(Rec."Audit File Export Format") then begin
+                    Rec."Archive to Zip" := AuditFileExportFormatSetup."Archive to Zip";
+                    Rec."Audit File Name" := AuditFileExportFormatSetup."Audit File Name";
+                end;
             end;
         }
         field(4; "Audit File Name"; Text[1024])

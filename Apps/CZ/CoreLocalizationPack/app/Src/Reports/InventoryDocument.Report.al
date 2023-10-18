@@ -110,7 +110,8 @@ report 11752 "Inventory Document CZL"
 
             trigger OnAfterGetRecord()
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
                 if not IsReportInPreviewMode() then
                     Codeunit.Run(Codeunit::"Invt. Document-Printed CZL", "Invt. Document Header");
@@ -129,7 +130,7 @@ report 11752 "Inventory Document CZL"
 
     var
         FormatAddress: Codeunit "Format Address";
-        Language: Codeunit Language;
+        LanguageMgt: Codeunit Language;
         CompanyAddr: array[8] of Text[100];
 
     local procedure GetItemDescription(ItemNo: Code[20]) Description: Text[100]

@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TDS.TDSReturnAndSettlement;
+
+using System.Security.User;
+using Microsoft.Finance.TDS.TDSBase;
+using System.Security.AccessControl;
+
 table 18749 "TDS Challan Register"
 {
     Caption = 'TDS Challan Register';

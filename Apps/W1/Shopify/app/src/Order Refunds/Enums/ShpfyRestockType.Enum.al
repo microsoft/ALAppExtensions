@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 enum 30140 "Shpfy Restock Type"
 {
     value(0; " ")

@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Payables;
+
 pageextension 18095 "GST Vend Ledg Ent Prev Ext" extends "Vend. Ledg. Entries Preview"
 {
     layout

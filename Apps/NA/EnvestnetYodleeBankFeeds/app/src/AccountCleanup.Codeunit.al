@@ -1,3 +1,5 @@
+namespace Microsoft.Bank.StatementImport.Yodlee;
+
 codeunit 1453 "MS - Yodlee Account Cleanup"
 {
 
@@ -11,19 +13,19 @@ codeunit 1453 "MS - Yodlee Account Cleanup"
         MSYodleeBankServiceSetup: Record "MS - Yodlee Bank Service Setup";
         MSYodleeServiceMgt: Codeunit "MS - Yodlee Service Mgt.";
     begin
-        IF NOT MSYodleeBankServiceSetup.GET() THEN
-            EXIT;
+        if not MSYodleeBankServiceSetup.GET() then
+            exit;
 
-        IF NOT (MSYodleeBankServiceSetup.Enabled AND MSYodleeBankServiceSetup."Accept Terms of Use") THEN
-            EXIT;
+        if not (MSYodleeBankServiceSetup.Enabled and MSYodleeBankServiceSetup."Accept Terms of Use") then
+            exit;
 
-        IF MSYodleeBankServiceSetup.HasDefaultCredentials() AND
-           (MSYodleeBankServiceSetup."Consumer Name" <> '') AND
+        if MSYodleeBankServiceSetup.HasDefaultCredentials() and
+           (MSYodleeBankServiceSetup."Consumer Name" <> '') and
            MSYodleeBankServiceSetup.HasPassword(MSYodleeBankServiceSetup."Consumer Password")
-        THEN BEGIN
-            MSYodleeServiceMgt.SetDisableRethrowException(TRUE);
+        then begin
+            MSYodleeServiceMgt.SetDisableRethrowException(true);
             MSYodleeServiceMgt.UnregisterConsumer();
-        END;
+        end;
     end;
 }
 

@@ -50,6 +50,11 @@ codeunit 1920 "MigrationQB Item Migrator"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemPostingGroups', '', true, true)]
     local procedure OnMigrateItemPostingGroups(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
 #endif
+    begin
+        MigrateItemPostingGroups(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
+    end;
+
+    procedure MigrateItemPostingGroups(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         MigrationQBItem: Record "MigrationQB Item";
         HelperFunctions: Codeunit "MigrationQB Helper Functions";
@@ -80,6 +85,11 @@ codeunit 1920 "MigrationQB Item Migrator"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateInventoryTransactions', '', true, true)]
     local procedure OnMigrateInventoryTransactions(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
 #endif
+    begin
+        MigrateInventoryTransactions(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
+    end;
+
+    procedure MigrateInventoryTransactions(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         Item: Record Item;
         MigrationQBItem: Record "MigrationQB Item";

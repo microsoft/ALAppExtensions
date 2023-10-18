@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 4025 "GP Codes"
 {
     ReplicateData = false;

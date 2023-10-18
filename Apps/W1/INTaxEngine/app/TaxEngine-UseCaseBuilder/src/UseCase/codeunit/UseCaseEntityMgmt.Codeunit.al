@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TaxEngine.UseCaseBuilder;
+
+using Microsoft.Finance.TaxEngine.Core;
+using Microsoft.Finance.TaxEngine.TaxTypeHandler;
+using Microsoft.Foundation.Company;
+
 codeunit 20292 "Use Case Entity Mgmt."
 {
     procedure GetSourceTable(CaseID: Guid): Integer;

@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Text;
+
 page 132577 "Caption Class Test Page"
 {
 
@@ -14,7 +16,7 @@ page 132577 "Caption Class Test Page"
             {
                 ApplicationArea = All;
                 CaptionClass = CaptionClassTest.GetCaptionClass();
-                ToolTip = 'Test field';
+                ToolTip = 'Specifies a Test field';
             }
         }
     }

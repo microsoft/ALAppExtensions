@@ -51,7 +51,7 @@ pageextension 11767 "Customer List CZL" extends "Customer List"
                 Image = Balance;
                 Promoted = true;
                 PromotedCategory = "Report";
-                RunObject = Report "Cust.- Bal. Reconciliation CZL";
+                RunObject = report "Cust.- Bal. Reconciliation CZL";
                 ToolTip = 'Open the report for customer''s balance reconciliation.';
             }
         }

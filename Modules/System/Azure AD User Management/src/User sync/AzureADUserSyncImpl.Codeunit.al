@@ -3,6 +3,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System;
+using System.Security.User;
+using System.Globalization;
+using System.Security.AccessControl;
+using System.Environment.Configuration;
+
 codeunit 9029 "Azure AD User Sync Impl."
 {
     Access = Internal;
@@ -28,7 +36,7 @@ codeunit 9029 "Azure AD User Sync Impl."
         AddingInformationForANewUserTxt: Label 'Adding changes for a new user. Authentication object ID: [%1].', Comment = '%1 = authentication object ID', Locked = true;
         AddingInformationForAnExistingUserTxt: Label 'Adding changes for an existing user [%1].', Comment = '%1 = user security ID', Locked = true;
         AddingInformationForARemovedUserTxt: Label 'Adding changes for a user removed / de-licensed in Office with user security ID [%1].', Comment = '%1 = User security ID', Locked = true;
-        PlanNamesPerUserFromGraphTxt: Label 'User with AAD Object ID [%1] has plans [%2].', Comment = '%1 = authentication object ID (guid); %2 = list of plans for the user (text)', Locked = true;
+        PlanNamesPerUserFromGraphTxt: Label 'User with object ID [%1] has plans [%2].', Comment = '%1 = authentication object ID (guid); %2 = list of plans for the user (text)', Locked = true;
         DelimiterTxt: Label '|', Locked = true;
         DeviceGroupNameTxt: Label 'Dynamics 365 Business Central Device Users', Locked = true;
 
@@ -68,7 +76,8 @@ codeunit 9029 "Azure AD User Sync Impl."
 
         AllPlanIds := AzureADPlan.GetAllPlanIds();
         AllPlanIds.Remove(PlanIds.GetMicrosoft365PlanId());
-        AllPlanIds.Remove(PlanIds.GetInternalAdminPlanId());
+        AllPlanIds.Remove(PlanIds.GetGlobalAdminPlanId());
+        AllPlanIds.Remove(PlanIds.GetD365AdminPlanId());
         ConvertList(AllPlanIds, AssignedPlansList);
 
         AzureADGraph.GetLicensedUsersPage(AssignedPlansList, UsersPerPage, GraphUserInfoPage);
@@ -128,22 +137,23 @@ codeunit 9029 "Azure AD User Sync Impl."
         UserPlanIds: List of [Guid];
         GraphUserInfo: DotNet UserInfo;
     begin
-        // If the environment is not defined, update internal admins and Teams users, as they are not pulled in automatically
-        // If the environment is defined, only update the internal admins, as they are still allowed to access the environment
+        // If the environment is not defined, update global admins and Teams users, as they are not pulled in automatically
+        // If the environment is defined, only update the global admins, as they are still allowed to access the environment
 
-        UserSelection.FilterSystemUserAndAADGroupUsers(User); // do not sync the daemon user and AAD groups
+        UserSelection.FilterSystemUserAndAADGroupUsers(User); // do not sync the daemon user and Microsoft Entra groups
         if not User.FindSet() then
             exit;
 
         repeat
             // Only iterate over the users who have not been scanned yet.
-            // These should only include Internal Admins and Teams users (handled here)
-            // and the users who have been deleted in Azure AD / had their BC plans unassigned (handled in HandleRemovedUsers)
+            // These should only Global Admins, Dynamics 365 Admins and Teams users (handled here)
+            // and the users who have been deleted in Microsoft Entra / had their BC plans unassigned (handled in HandleRemovedUsers)
             if not OfficeUsersInBC.Contains(User."User Security ID") then
                 if TryGetUserByAuthorizationEmail(User."Authentication Email", GraphUserInfo) then
                     if not IsNull(GraphUserInfo) then begin
                         AzureADPlan.GetPlanIDs(GraphUserInfo, UserPlanIds);
-                        if UserPlanIds.Contains(PlanIds.GetInternalAdminPlanId()) or // internal admins are not affected by the environment security group
+                        if UserPlanIds.Contains(PlanIds.GetGlobalAdminPlanId()) or // global admins are not affected by the environment security group
+                           UserPlanIds.Contains(PlanIds.GetD365AdminPlanId()) or // dynamics 365 admins are not affected by the environment security group
                            ((not AzureADGraph.IsEnvironmentSecurityGroupDefined()) and UserPlanIds.Contains(PlanIds.GetMicrosoft365PlanId()))
                         then
                             GetUpdatesFromGraphUserInfo(GraphUserInfo, AzureADUserUpdate, OfficeUsersInBC);
@@ -161,7 +171,7 @@ codeunit 9029 "Azure AD User Sync Impl."
         // If the environment is not defined, only the users that were unassigned the BC "plans" in office or were deleted are handled here
         // If the environment is defined, then additionally the existing BC users that are not members of the environment group will be handled
 
-        UserSelection.FilterSystemUserAndAADGroupUsers(User); // do not sync the daemon user and AAD groups
+        UserSelection.FilterSystemUserAndAADGroupUsers(User); // do not sync the daemon user and Microsoft Entra groups
         if not User.FindSet() then
             exit;
 
@@ -200,11 +210,11 @@ codeunit 9029 "Azure AD User Sync Impl."
         end;
     end;
 
-    // If the AAD user's plans are any of the following:
-    // - Internal Administrator
+    // If the user's plans are any of the following:
+    // - Internal Administrator (Global Administrator or Dynamics 365 Administrator)
     // - Microsoft 365
     // - Internal Administrator + Microsoft 365
-    // and there is no environemnt security group defined,
+    // and there is no environment security group defined,
     // then we don't want to create a BC user during user sync.
     local procedure SkipCreatingUserDuringSync(UserPlanIDs: List of [Guid]): Boolean
     var
@@ -215,7 +225,7 @@ codeunit 9029 "Azure AD User Sync Impl."
             exit(false);
 
         foreach PlanID in UserPlanIDs do
-            if not (PlanID in [PlanIDs.GetInternalAdminPlanId(), PlanIDs.GetMicrosoft365PlanId()]) then
+            if not (PlanID in [PlanIDs.GetGlobalAdminPlanId(), PlanIDs.GetD365AdminPlanId(), PlanIDs.GetMicrosoft365PlanId()]) then
                 exit(false);
 
         exit(true);

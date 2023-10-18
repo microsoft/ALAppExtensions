@@ -30,9 +30,6 @@ codeunit 148016 "SIE Test Helper"
     begin
         StandardAccountType := "Standard Account Type"::"Four Digit Standard Account (SRU)";
 
-        GLAccountMappingHeader.SetRange(Code, DefaultLbl);
-        GLAccountMappingHeader.DeleteAll(true);
-
         GLAccountMappingHeader.Init();
         GLAccountMappingHeader.Validate(Code, DefaultLbl);
         GLAccountMappingHeader.Validate("Standard Account Type", StandardAccountType);

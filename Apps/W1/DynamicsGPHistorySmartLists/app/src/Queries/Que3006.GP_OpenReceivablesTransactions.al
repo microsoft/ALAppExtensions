@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration.GP.SmartLists;
+
+using Microsoft.DataMigration.GP;
+using Microsoft.Sales.Customer;
+
 query 3006 GPOpenReceivablesTrx
 {
     QueryType = Normal;

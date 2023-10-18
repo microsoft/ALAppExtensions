@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Report Shpfy Sync Countries (ID 30110).
 /// </summary>

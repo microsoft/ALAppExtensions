@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 4076 "GPSOPTrackingNumbersWorkHist"
 {
     DataClassification = CustomerContent;

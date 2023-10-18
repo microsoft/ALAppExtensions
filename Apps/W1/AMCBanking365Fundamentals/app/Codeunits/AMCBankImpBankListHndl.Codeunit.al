@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using System.Utilities;
+
 codeunit 20115 "AMC Bank Imp.BankList Hndl"
 {
     Permissions = TableData "AMC Bank Banks" = rimd,

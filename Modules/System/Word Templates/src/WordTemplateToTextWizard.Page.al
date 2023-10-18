@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Integration.Word;
+
 /// <summary>
 /// A wizard to select a Word template that can then be output as text
 /// </summary>

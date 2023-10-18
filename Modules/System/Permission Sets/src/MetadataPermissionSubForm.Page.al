@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
 /// <summary>
 /// ListPart for viewing the permissions of a metadata permission set.
 /// </summary>
@@ -153,7 +155,6 @@ page 9856 "Metadata Permission Subform"
     end;
 
     var
-        [InDataSet]
         IsTableData: Boolean;
         IsNewRecord: Boolean;
         PermissionRecExists: Boolean;

@@ -3,6 +3,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.DataAdministration;
+
+using System.DataAdministration;
+using System.TestLibraries.DataAdministration;
+using System.TestLibraries.Utilities;
+using System.TestLibraries.Security.AccessControl;
+
 codeunit 138700 "Retention Period Test"
 {
     Subtype = Test;
@@ -18,156 +25,60 @@ codeunit 138700 "Retention Period Test"
 
     [Test]
     procedure TestOneWeekRetentionPeriod()
-    var
-        RetentionPeriod: Record "Retention Period";
-        RetentionPeriodInterface: Interface "Retention Period";
-        ExpirationDate: Date;
-        ExpirationDateTime: DateTime;
-        CurrDateTime: DateTime;
     begin
-        PermissionsMock.Set('Retention Pol. Admin');
-        // Setup
-        RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"1 Week";
-        RetentionPeriodInterface := RetentionPeriod."Retention Period";
+        TestRetentionPeriod(Enum::"Retention Period Enum"::"1 Week", '<-1W>');
+    end;
 
-        // Exercise
-        ExpirationDate := RetentionPeriodInterface.CalculateExpirationDate(RetentionPeriod, Today);
-        CurrDateTime := CurrentDateTime();
-        ExpirationDateTime := RetentionPeriodInterface.CalculateExpirationDate(RetentionPeriod, CurrDateTime);
-
-        // Verify
-        Assert.AreEqual(CalcDate('<-1W>', Today()), ExpirationDate, 'Incorrect expiration date for Retention Period ''1 Week''');
-        Assert.AreEqual(CreateDateTime(CalcDate('<-1W>', DT2Date(CurrDateTime)), DT2Time(CurrDateTime)), ExpirationDateTime, 'Incorrect expiration datetime for Retention Period ''1 Week''');
+    [Test]
+    procedure TestTwentyEightDaysRetentionPeriod()
+    begin
+        TestRetentionPeriod(Enum::"Retention Period Enum"::"28 Days", '<-28D>');
     end;
 
     [Test]
     procedure TestOneMonthRetentionPeriod()
-    var
-        RetentionPeriod: Record "Retention Period";
-        RetentionPeriodInterface: Interface "Retention Period";
-        ExpirationDate: Date;
-        ExpirationDateTime: DateTime;
-        CurrDateTime: DateTime;
     begin
-        PermissionsMock.Set('Retention Pol. Admin');
-        // Setup
-        RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"1 Month";
-        RetentionPeriodInterface := RetentionPeriod."Retention Period";
-
-        // Exercise
-        ExpirationDate := RetentionPeriodInterface.CalculateExpirationDate(RetentionPeriod, Today);
-        CurrDateTime := CurrentDateTime();
-        ExpirationDateTime := RetentionPeriodInterface.CalculateExpirationDate(RetentionPeriod, CurrDateTime);
-
-        // Verify
-        Assert.AreEqual(CalcDate('<-1M>', Today()), ExpirationDate, 'Incorrect expiration date for Retention Period ''1 Month''');
-        Assert.AreEqual(CreateDateTime(CalcDate('<-1M>', DT2Date(CurrDateTime)), DT2Time(CurrDateTime)), ExpirationDateTime, 'Incorrect expiration datetime for Retention Period ''1 Month''');
+        TestRetentionPeriod(Enum::"Retention Period Enum"::"1 Month", '<-1M>');
     end;
 
     [Test]
     procedure TestThreeMonthsRetentionPeriod()
-    var
-        RetentionPeriod: Record "Retention Period";
-        RetentionPeriodInterface: Interface "Retention Period";
-        ExpirationDate: Date;
-        ExpirationDateTime: DateTime;
-        CurrDateTime: DateTime;
     begin
-        PermissionsMock.Set('Retention Pol. Admin');
-        // Setup
-        RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"3 Months";
-        RetentionPeriodInterface := RetentionPeriod."Retention Period";
-
-        // Exercise
-        ExpirationDate := RetentionPeriodInterface.CalculateExpirationDate(RetentionPeriod, Today);
-        CurrDateTime := CurrentDateTime();
-        ExpirationDateTime := RetentionPeriodInterface.CalculateExpirationDate(RetentionPeriod, CurrDateTime);
-
-        // Verify
-        Assert.AreEqual(CalcDate('<-3M>', Today()), ExpirationDate, 'Incorrect expiration date for Retention Period ''3 Months''');
-        Assert.AreEqual(CreateDateTime(CalcDate('<-3M>', DT2Date(CurrDateTime)), DT2Time(CurrDateTime)), ExpirationDateTime, 'Incorrect expiration datetime for Retention Period ''3 Months''');
+        TestRetentionPeriod(Enum::"Retention Period Enum"::"3 Months", '<-3M>');
     end;
 
     [Test]
     procedure TestSixMonthsRetentionPeriod()
-    var
-        RetentionPeriod: Record "Retention Period";
-        RetentionPeriodInterface: Interface "Retention Period";
-        ExpirationDate: Date;
-        ExpirationDateTime: DateTime;
-        CurrDateTime: DateTime;
     begin
-        PermissionsMock.Set('Retention Pol. Admin');
-        // Setup
-        RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"6 Months";
-        RetentionPeriodInterface := RetentionPeriod."Retention Period";
-
-        // Exercise
-        ExpirationDate := RetentionPeriodInterface.CalculateExpirationDate(RetentionPeriod, Today);
-        CurrDateTime := CurrentDateTime();
-        ExpirationDateTime := RetentionPeriodInterface.CalculateExpirationDate(RetentionPeriod, CurrDateTime);
-
-        // Verify
-        Assert.AreEqual(CalcDate('<-6M>', Today()), ExpirationDate, 'Incorrect expiration date for Retention Period ''6 Months''');
-        Assert.AreEqual(CreateDateTime(CalcDate('<-6M>', DT2Date(CurrDateTime)), DT2Time(CurrDateTime)), ExpirationDateTime, 'Incorrect expiration datetime for Retention Period ''6 Months''');
+        TestRetentionPeriod(Enum::"Retention Period Enum"::"6 Months", '<-6M>');
     end;
 
     [Test]
     procedure TestOneYearRetentionPeriod()
-    var
-        RetentionPeriod: Record "Retention Period";
-        RetentionPeriodInterface: Interface "Retention Period";
-        ExpirationDate: Date;
-        ExpirationDateTime: DateTime;
-        CurrDateTime: DateTime;
     begin
-        PermissionsMock.Set('Retention Pol. Admin');
-        // Setup
-        RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"1 Year";
-        RetentionPeriodInterface := RetentionPeriod."Retention Period";
+        TestRetentionPeriod(Enum::"Retention Period Enum"::"1 Year", '<-1Y>');
+    end;
 
-        // Exercise
-        ExpirationDate := RetentionPeriodInterface.CalculateExpirationDate(RetentionPeriod, Today());
-        CurrDateTime := CurrentDateTime();
-        ExpirationDateTime := RetentionPeriodInterface.CalculateExpirationDate(RetentionPeriod, CurrDateTime);
-
-        // Verify
-        Assert.AreEqual(CalcDate('<-1Y>', Today()), ExpirationDate, 'Incorrect expiration date for Retention Period ''1 Year''');
-        Assert.AreEqual(CreateDateTime(CalcDate('<-1Y>', DT2Date(CurrDateTime)), DT2Time(CurrDateTime)), ExpirationDateTime, 'Incorrect expiration datetime for Retention Period ''1 Year''');
+    [Test]
+    procedure TestThreeYearsRetentionPeriod()
+    begin
+        TestRetentionPeriod(Enum::"Retention Period Enum"::"3 Years", '<-3Y>');
     end;
 
     [Test]
     procedure TestFiveYearsRetentionPeriod()
-    var
-        RetentionPeriod: Record "Retention Period";
-        RetentionPeriodInterface: Interface "Retention Period";
-        ExpirationDate: Date;
-        ExpirationDateTime: DateTime;
-        CurrDateTime: DateTime;
     begin
-        PermissionsMock.Set('Retention Pol. Admin');
-        // Setup
-        RetentionPeriod."Retention Period" := RetentionPeriod."Retention Period"::"5 Years";
-        RetentionPeriodInterface := RetentionPeriod."Retention Period";
-
-        // Exercise
-        ExpirationDate := RetentionPeriodInterface.CalculateExpirationDate(RetentionPeriod, Today);
-        CurrDateTime := CurrentDateTime();
-        ExpirationDateTime := RetentionPeriodInterface.CalculateExpirationDate(RetentionPeriod, CurrDateTime);
-
-        // Verify
-        Assert.AreEqual(CalcDate('<-5Y>', Today()), ExpirationDate, 'Incorrect expiration date for Retention Period ''5 Years''');
-        Assert.AreEqual(CreateDateTime(CalcDate('<-5Y>', DT2Date(CurrDateTime)), DT2Time(CurrDateTime)), ExpirationDateTime, 'Incorrect expiration datetime for Retention Period ''5 Years''');
+        TestRetentionPeriod(Enum::"Retention Period Enum"::"5 Years", '<-5Y>');
     end;
 
     [Test]
     procedure TestNeverDeleteRetentionPeriod()
     var
         RetentionPeriod: Record "Retention Period";
-        RetentionPeriodInterface: Interface "Retention Period";
         ExpirationDate: Date;
-        ExpirationDateTime: DateTime;
         CurrDateTime: DateTime;
+        ExpirationDateTime: DateTime;
+        RetentionPeriodInterface: Interface "Retention Period";
     begin
         PermissionsMock.Set('Retention Pol. Admin');
         // Setup
@@ -184,14 +95,38 @@ codeunit 138700 "Retention Period Test"
         Assert.AreEqual(CreateDateTime(DMY2DATE(31, 12, 9999), 235959.999T), ExpirationDateTime, 'Incorrect expiration datetime for Retention Period ''Never Delete''');
     end;
 
+    local procedure TestRetentionPeriod(RetentionPeriodEnum: Enum "Retention Period Enum"; DateExpression: Text)
+    var
+        RetentionPeriod: Record "Retention Period";
+        ExpirationDate: Date;
+        CurrDateTime: DateTime;
+        ExpirationDateTime: DateTime;
+        RetentionPeriodInterface: Interface "Retention Period";
+        IncorrectExpirationDatetimeTxt: Label 'Incorrect expiration datetime for Retention Period ''%1''', Comment = '%1 = Retetion Period (e.g. 3 years)';
+        IncorrectExpirationDateTxt: Label 'Incorrect expiration date for Retention Period ''%1''', Comment = '%1 = Retetion Period (e.g. 3 years)';
+    begin
+        PermissionsMock.Set('Retention Pol. Admin');
+        // Setup
+        RetentionPeriod."Retention Period" := RetentionPeriodEnum;
+        RetentionPeriodInterface := RetentionPeriod."Retention Period";
+        // Exercise
+        ExpirationDate := RetentionPeriodInterface.CalculateExpirationDate(RetentionPeriod, Today);
+        CurrDateTime := CurrentDateTime();
+        ExpirationDateTime := RetentionPeriodInterface.CalculateExpirationDate(RetentionPeriod, CurrDateTime);
+
+        // Verify
+        Assert.AreEqual(CalcDate(DateExpression, Today()), ExpirationDate, StrSubstNo(IncorrectExpirationDateTxt, RetentionPeriodEnum));
+        Assert.AreEqual(CreateDateTime(CalcDate(DateExpression, DT2Date(CurrDateTime)), DT2Time(CurrDateTime)), ExpirationDateTime, StrSubstNo(IncorrectExpirationDatetimeTxt, RetentionPeriodEnum));
+    end;
+
     [Test]
     procedure TestRollingMonthCustomRetentionPeriod()
     var
         RetentionPeriod: Record "Retention Period";
-        RetentionPeriodInterface: Interface "Retention Period";
         ExpirationDate: Date;
-        ExpirationDateTime: DateTime;
         CurrDateTime: DateTime;
+        ExpirationDateTime: DateTime;
+        RetentionPeriodInterface: Interface "Retention Period";
     begin
         PermissionsMock.Set('Retention Pol. Admin');
         // Setup
@@ -340,8 +275,8 @@ codeunit 138700 "Retention Period Test"
     var
         RetentionPeriod: Record "Retention Period";
         RetentionPeriodInterface: Interface "Retention Period";
-        UnltdRetenPolCalcFormTxt: Label '<+CY+%1Y>', Locked = true;
         UnltdRetenPolCalcFormDKTxt: Label '+LÅ+%1Å', Locked = true;
+        UnltdRetenPolCalcFormTxt: Label '<+CY+%1Y>', Locked = true;
     begin
         PermissionsMock.Set('Retention Pol. Admin');
         // Setup
@@ -471,7 +406,7 @@ codeunit 138700 "Retention Period Test"
         // Exercise
         RetentionPeriods."Retention Period".SetValue(RetentionPeriod."Retention Period"::"Custom");
         RetentionPeriods."Expiration Date".AssertEquals(0D);
-        AssertError
+        asserterror
             RetentionPeriods."Ret. Period Calculation".SetValue('3M');
 
         // Verify

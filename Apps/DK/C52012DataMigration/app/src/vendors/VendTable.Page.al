@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information. 
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.DataMigration.C5;
+
 page 1861 "C5 VendTable"
 {
     PageType = Card;
@@ -19,77 +21,77 @@ page 1861 "C5 VendTable"
             group(General)
             {
 #pragma warning disable AA0218
-                field(Account; Account) { ApplicationArea = All; }
-                field(Name; Name) { ApplicationArea = All; }
-                field(Address1; Address1) { ApplicationArea = All; }
-                field(Address2; Address2) { ApplicationArea = All; }
-                field(ZipCity; ZipCity) { ApplicationArea = All; }
-                field(Country; Country) { ApplicationArea = All; }
-                field(Attention; Attention) { ApplicationArea = All; }
-                field(Phone; Phone) { ApplicationArea = All; }
-                field(Fax; Fax) { ApplicationArea = All; }
-                field(InvoiceAccount; InvoiceAccount) { ApplicationArea = All; }
-                field(Group; Group) { ApplicationArea = All; }
-                field(FixedDiscPct; FixedDiscPct) { ApplicationArea = All; }
-                field(DiscGroup; DiscGroup) { ApplicationArea = All; }
-                field(CashDisc; CashDisc) { ApplicationArea = All; }
-                field(Approved; Approved) { ApplicationArea = All; }
-                field(DEL_ExclDuty; DEL_ExclDuty) { ApplicationArea = All; }
-                field(InclVat; InclVat) { ApplicationArea = All; }
-                field(Currency; Currency) { ApplicationArea = All; }
-                field(Language_; Language_) { ApplicationArea = All; }
-                field(Payment; Payment) { ApplicationArea = All; }
-                field(Delivery; Delivery) { ApplicationArea = All; }
-                field(Interest; Interest) { ApplicationArea = All; }
-                field(Blocked; Blocked) { ApplicationArea = All; }
-                field(Purchaser; Purchaser) { ApplicationArea = All; }
-                field(Vat; Vat) { ApplicationArea = All; }
-                field(DEL_StatType; DEL_StatType) { ApplicationArea = All; }
-                field(ESRnumber; ESRnumber) { ApplicationArea = All; }
-                field(GiroNumber; GiroNumber) { ApplicationArea = All; }
-                field(OurAccount; OurAccount) { ApplicationArea = All; }
-                field(BankAccount; BankAccount) { ApplicationArea = All; }
-                field(VatNumber; VatNumber) { ApplicationArea = All; }
-                field(Department; Department) { ApplicationArea = All; }
-                field(OnetimeSupplier; OnetimeSupplier) { ApplicationArea = All; }
-                field(ImageFile; ImageFile) { ApplicationArea = All; }
-                field(Inventory; Inventory) { ApplicationArea = All; }
-                field(EDIAddress; EDIAddress) { ApplicationArea = All; }
-                field(Balance; Balance) { ApplicationArea = All; }
-                field(Balance30; Balance30) { ApplicationArea = All; }
-                field(Balance60; Balance60) { ApplicationArea = All; }
-                field(Balance90; Balance90) { ApplicationArea = All; }
-                field(Balance120; Balance120) { ApplicationArea = All; }
-                field(Balance120Plus; Balance120Plus) { ApplicationArea = All; }
-                field(AmountDue; AmountDue) { ApplicationArea = All; }
-                field(CalculationDate; CalculationDate) { ApplicationArea = All; }
-                field(BalanceMax; BalanceMax) { ApplicationArea = All; }
-                field(BalanceMST; BalanceMST) { ApplicationArea = All; }
-                field(SearchName; SearchName) { ApplicationArea = All; }
-                field(DEL_Transport; DEL_Transport) { ApplicationArea = All; }
-                field(CashPayment; CashPayment) { ApplicationArea = All; }
-                field(PaymentMode; PaymentMode) { ApplicationArea = All; }
-                field(PaymSpec; PaymSpec) { ApplicationArea = All; }
-                field(Telex; Telex) { ApplicationArea = All; }
-                field(PaymId; PaymId) { ApplicationArea = All; }
-                field(PurchGroup; PurchGroup) { ApplicationArea = All; }
-                field(TradeCode; TradeCode) { ApplicationArea = All; }
-                field(TransportCode; TransportCode) { ApplicationArea = All; }
-                field(Email; Email) { ApplicationArea = All; }
-                field(URL; URL) { ApplicationArea = All; }
-                field(CellPhone; CellPhone) { ApplicationArea = All; }
-                field(KrakNumber; KrakNumber) { ApplicationArea = All; }
-                field(Centre; Centre) { ApplicationArea = All; }
-                field(Purpose; Purpose) { ApplicationArea = All; }
-                field(LastInvoiceDate; LastInvoiceDate) { ApplicationArea = All; }
-                field(LastPaymentDate; LastPaymentDate) { ApplicationArea = All; }
-                field(LastInvoiceNumber; LastInvoiceNumber) { ApplicationArea = All; }
-                field(XMLImport; XMLImport) { ApplicationArea = All; }
-                field(EanNumber; EanNumber) { ApplicationArea = All; }
-                field(VatGroup; VatGroup) { ApplicationArea = All; }
-                field(CardType; CardType) { ApplicationArea = All; }
-                field(StdAccount; StdAccount) { ApplicationArea = All; }
-                field(VatNumberType; VatNumberType) { ApplicationArea = All; }
+                field(Account; Rec.Account) { ApplicationArea = All; }
+                field(Name; Rec.Name) { ApplicationArea = All; }
+                field(Address1; Rec.Address1) { ApplicationArea = All; }
+                field(Address2; Rec.Address2) { ApplicationArea = All; }
+                field(ZipCity; Rec.ZipCity) { ApplicationArea = All; }
+                field(Country; Rec.Country) { ApplicationArea = All; }
+                field(Attention; Rec.Attention) { ApplicationArea = All; }
+                field(Phone; Rec.Phone) { ApplicationArea = All; }
+                field(Fax; Rec.Fax) { ApplicationArea = All; }
+                field(InvoiceAccount; Rec.InvoiceAccount) { ApplicationArea = All; }
+                field(Group; Rec.Group) { ApplicationArea = All; }
+                field(FixedDiscPct; Rec.FixedDiscPct) { ApplicationArea = All; }
+                field(DiscGroup; Rec.DiscGroup) { ApplicationArea = All; }
+                field(CashDisc; Rec.CashDisc) { ApplicationArea = All; }
+                field(Approved; Rec.Approved) { ApplicationArea = All; }
+                field(DEL_ExclDuty; Rec.DEL_ExclDuty) { ApplicationArea = All; }
+                field(InclVat; Rec.InclVat) { ApplicationArea = All; }
+                field(Currency; Rec.Currency) { ApplicationArea = All; }
+                field(Language_; Rec.Language_) { ApplicationArea = All; }
+                field(Payment; Rec.Payment) { ApplicationArea = All; }
+                field(Delivery; Rec.Delivery) { ApplicationArea = All; }
+                field(Interest; Rec.Interest) { ApplicationArea = All; }
+                field(Blocked; Rec.Blocked) { ApplicationArea = All; }
+                field(Purchaser; Rec.Purchaser) { ApplicationArea = All; }
+                field(Vat; Rec.Vat) { ApplicationArea = All; }
+                field(DEL_StatType; Rec.DEL_StatType) { ApplicationArea = All; }
+                field(ESRnumber; Rec.ESRnumber) { ApplicationArea = All; }
+                field(GiroNumber; Rec.GiroNumber) { ApplicationArea = All; }
+                field(OurAccount; Rec.OurAccount) { ApplicationArea = All; }
+                field(BankAccount; Rec.BankAccount) { ApplicationArea = All; }
+                field(VatNumber; Rec.VatNumber) { ApplicationArea = All; }
+                field(Department; Rec.Department) { ApplicationArea = All; }
+                field(OnetimeSupplier; Rec.OnetimeSupplier) { ApplicationArea = All; }
+                field(ImageFile; Rec.ImageFile) { ApplicationArea = All; }
+                field(Inventory; Rec.Inventory) { ApplicationArea = All; }
+                field(EDIAddress; Rec.EDIAddress) { ApplicationArea = All; }
+                field(Balance; Rec.Balance) { ApplicationArea = All; }
+                field(Balance30; Rec.Balance30) { ApplicationArea = All; }
+                field(Balance60; Rec.Balance60) { ApplicationArea = All; }
+                field(Balance90; Rec.Balance90) { ApplicationArea = All; }
+                field(Balance120; Rec.Balance120) { ApplicationArea = All; }
+                field(Balance120Plus; Rec.Balance120Plus) { ApplicationArea = All; }
+                field(AmountDue; Rec.AmountDue) { ApplicationArea = All; }
+                field(CalculationDate; Rec.CalculationDate) { ApplicationArea = All; }
+                field(BalanceMax; Rec.BalanceMax) { ApplicationArea = All; }
+                field(BalanceMST; Rec.BalanceMST) { ApplicationArea = All; }
+                field(SearchName; Rec.SearchName) { ApplicationArea = All; }
+                field(DEL_Transport; Rec.DEL_Transport) { ApplicationArea = All; }
+                field(CashPayment; Rec.CashPayment) { ApplicationArea = All; }
+                field(PaymentMode; Rec.PaymentMode) { ApplicationArea = All; }
+                field(PaymSpec; Rec.PaymSpec) { ApplicationArea = All; }
+                field(Telex; Rec.Telex) { ApplicationArea = All; }
+                field(PaymId; Rec.PaymId) { ApplicationArea = All; }
+                field(PurchGroup; Rec.PurchGroup) { ApplicationArea = All; }
+                field(TradeCode; Rec.TradeCode) { ApplicationArea = All; }
+                field(TransportCode; Rec.TransportCode) { ApplicationArea = All; }
+                field(Email; Rec.Email) { ApplicationArea = All; }
+                field(URL; Rec.URL) { ApplicationArea = All; }
+                field(CellPhone; Rec.CellPhone) { ApplicationArea = All; }
+                field(KrakNumber; Rec.KrakNumber) { ApplicationArea = All; }
+                field(Centre; Rec.Centre) { ApplicationArea = All; }
+                field(Purpose; Rec.Purpose) { ApplicationArea = All; }
+                field(LastInvoiceDate; Rec.LastInvoiceDate) { ApplicationArea = All; }
+                field(LastPaymentDate; Rec.LastPaymentDate) { ApplicationArea = All; }
+                field(LastInvoiceNumber; Rec.LastInvoiceNumber) { ApplicationArea = All; }
+                field(XMLImport; Rec.XMLImport) { ApplicationArea = All; }
+                field(EanNumber; Rec.EanNumber) { ApplicationArea = All; }
+                field(VatGroup; Rec.VatGroup) { ApplicationArea = All; }
+                field(CardType; Rec.CardType) { ApplicationArea = All; }
+                field(StdAccount; Rec.StdAccount) { ApplicationArea = All; }
+                field(VatNumberType; Rec.VatNumberType) { ApplicationArea = All; }
 #pragma warning restore
             }
         }

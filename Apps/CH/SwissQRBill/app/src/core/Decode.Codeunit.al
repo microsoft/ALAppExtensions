@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Sales.Customer;
+using Microsoft.Utilities;
+using System.Utilities;
+
 codeunit 11512 "Swiss QR-Bill Decode"
 {
     var
@@ -39,7 +49,7 @@ codeunit 11512 "Swiss QR-Bill Decode"
         exit(IsAnyErrorLog);
     end;
 
-    internal procedure DecodeQRCodeText(var SwissQRBillBuffer: Record "Swiss QR-Bill Buffer"; QRCodeText: Text): Boolean
+    procedure DecodeQRCodeText(var SwissQRBillBuffer: Record "Swiss QR-Bill Buffer"; QRCodeText: Text): Boolean
     begin
         Clear(SwissQRBillBuffer);
 

@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using System.IO;
+using System.Utilities;
+
 codeunit 5315 "Data Handling SIE" implements "Audit File Export Data Handling"
 {
     var
@@ -42,7 +51,7 @@ codeunit 5315 "Data Handling SIE" implements "Audit File Export Data Handling"
 
         // all data in one line
         AuditFileExportMgt.InsertAuditFileExportLine(
-            AuditFileExportLine, LineNo, AuditFileExportHeader.ID, "Audit File Export Data Class"::Custom,
+            AuditFileExportLine, LineNo, AuditFileExportHeader.ID, Enum::"Audit File Export Data Class"::Custom,
             LineDescription, AuditFileExportHeader."Starting Date", AuditFileExportHeader."Ending Date");
     end;
 

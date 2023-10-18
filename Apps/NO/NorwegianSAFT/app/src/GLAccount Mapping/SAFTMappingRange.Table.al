@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AuditFileExport;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Period;
+using System.Utilities;
+
 table 10676 "SAF-T Mapping Range"
 {
     DataClassification = CustomerContent;
@@ -72,7 +82,7 @@ table 10676 "SAF-T Mapping Range"
         {
             DataClassification = CustomerContent;
             Caption = 'Accounting Period';
-            TableRelation = "Accounting Period" where ("New Fiscal Year" = const (true));
+            TableRelation = "Accounting Period" where("New Fiscal Year" = const(true));
 
             trigger OnValidate()
             var
@@ -99,7 +109,7 @@ table 10676 "SAF-T Mapping Range"
         {
             DataClassification = CustomerContent;
             Caption = 'Mapping Category No.';
-            TableRelation = "SAF-T Mapping Category"."No." where ("Mapping Type" = field ("Mapping Type"));
+            TableRelation = "SAF-T Mapping Category"."No." where("Mapping Type" = field("Mapping Type"));
 
             trigger OnValidate()
             begin
@@ -111,7 +121,7 @@ table 10676 "SAF-T Mapping Range"
         {
             DataClassification = CustomerContent;
             Caption = 'Mapping No.';
-            TableRelation = "SAF-T Mapping"."No." where ("Mapping Type" = field ("Mapping Type"), "Category No." = field ("Mapping Category No."));
+            TableRelation = "SAF-T Mapping"."No." where("Mapping Type" = field("Mapping Type"), "Category No." = field("Mapping Category No."));
 
             trigger OnValidate()
             begin

@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Azure.Identity;
+
+using System.Upgrade;
+
 /// <summary>
 /// Codeunit to upgrade the Plan table.
 /// </summary>
@@ -25,7 +29,8 @@ codeunit 9057 "Plan Upgrade"
         AddPremiumPartnerSandbox();
         AddMicrosoft365();
         AddEssentialAttach();
-        
+        AddD365Admin();
+
         AddDefaultPlanConfigurations();
     end;
 
@@ -200,6 +205,32 @@ codeunit 9057 "Plan Upgrade"
         CreatePlan(PlanId, PlanName, RoleCenterId);
 
         UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetMicrosoft365UpgradeTag());
+    end;
+
+    [NonDebuggable]
+    local procedure AddD365Admin()
+    var
+        Plan: Record "Plan";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        PlanUpgradeTag: Codeunit "Plan Upgrade Tag";
+        PlanIds: Codeunit "Plan Ids";
+        PlanId: Guid;
+        PlanName: Text[50];
+        RoleCenterId: Integer;
+    begin
+        if UpgradeTag.HasUpgradeTag(PlanUpgradeTag.GetMD365AdminUpgradeTag()) then
+            exit;
+
+        PlanId := PlanIds.GetD365AdminPlanId();
+        PlanName := 'Dynamics 365 Administrator';
+        RoleCenterId := 9022;
+
+        if Plan.Get(PlanId) then
+            exit;
+
+        CreatePlan(PlanId, PlanName, RoleCenterId);
+
+        UpgradeTag.SetUpgradeTag(PlanUpgradeTag.GetMD365AdminUpgradeTag());
     end;
 
     local procedure AddDefaultPlanConfigurations()

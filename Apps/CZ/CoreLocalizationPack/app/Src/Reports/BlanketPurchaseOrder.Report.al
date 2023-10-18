@@ -96,7 +96,7 @@ report 31204 "Blanket Purchase Order CZL"
         }
         dataitem("Purchase Header"; "Purchase Header")
         {
-            DataItemTableView = WHERE("Document Type" = CONST("Blanket Order"));
+            DataItemTableView = where("Document Type" = const("Blanket Order"));
             column(DocumentLbl; DocumentLbl)
             {
             }
@@ -299,7 +299,7 @@ report 31204 "Blanket Purchase Order CZL"
                 {
                     DataItemLink = "Document No." = field("No.");
                     DataItemLinkReference = "Purchase Header";
-                    DataItemTableView = sorting("Document Type", "Document No.", "Line No.") WHERE("Document Type" = CONST("Blanket Order"));
+                    DataItemTableView = sorting("Document Type", "Document No.", "Line No.") where("Document Type" = const("Blanket Order"));
                     column(LineNo_PurchaseLine; "Line No.")
                     {
                     }
@@ -379,7 +379,8 @@ report 31204 "Blanket Purchase Order CZL"
             }
             trigger OnAfterGetRecord()
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
+                CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
                 FormatAddressFields("Purchase Header");
                 FormatDocumentFields("Purchase Header");
@@ -477,7 +478,7 @@ report 31204 "Blanket Purchase Order CZL"
         PaymentTerms: Record "Payment Terms";
         PaymentMethod: Record "Payment Method";
         ShipmentMethod: Record "Shipment Method";
-        Language: Codeunit Language;
+        LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
@@ -491,7 +492,6 @@ report 31204 "Blanket Purchase Order CZL"
         NoOfLoops: Integer;
         LogInteraction: Boolean;
         ArchiveDocument: Boolean;
-        [InDataSet]
         LogInteractionEnable: Boolean;
         DocumentLbl: Label 'Blanket Purchase Order';
         PageLbl: Label 'Page';

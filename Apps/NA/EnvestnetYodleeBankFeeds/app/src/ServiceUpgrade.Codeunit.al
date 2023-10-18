@@ -1,3 +1,9 @@
+namespace Microsoft.Bank.StatementImport.Yodlee;
+
+using System.Security.Encryption;
+using System.Upgrade;
+using Microsoft.Bank.BankAccount;
+
 codeunit 1452 "MS - Yodlee Service Upgrade"
 {
     Subtype = Upgrade;
@@ -7,7 +13,7 @@ codeunit 1452 "MS - Yodlee Service Upgrade"
         AppInfo: ModuleInfo;
     begin
         NavApp.GetCurrentModuleInfo(AppInfo);
-        IF AppInfo.DataVersion().Major() = 1 THEN
+        if AppInfo.DataVersion().Major() = 1 then
             NAVAPP.LOADPACKAGEDATA(DATABASE::"MS - Yodlee Data Exchange Def");
     end;
 
@@ -39,8 +45,8 @@ codeunit 1452 "MS - Yodlee Service Upgrade"
 
         MSYodleeDataExchangeDef.ResetDataExchToDefault();
 
-        IF MSYodleeBankServiceSetup.GET() THEN
-            IF MSYodleeBankServiceSetup."Bank Feed Import Format" = '' THEN
+        if MSYodleeBankServiceSetup.GET() then
+            if MSYodleeBankServiceSetup."Bank Feed Import Format" = '' then
                 MSYodleeDataExchangeDef.UpdateMSYodleeBankServiceSetupBankStmtImportFormat();
 
         UpgradeTag.SetUpgradeTag(GetYodleeUpdateDataExchangeDefinitionTag());
@@ -51,14 +57,14 @@ codeunit 1452 "MS - Yodlee Service Upgrade"
         MSYodleeBankAccLink: Record "MS - Yodlee Bank Acc. Link";
         BankAccount: Record "Bank Account";
     begin
-        IF MSYodleeBankAccLink.FIND('-') THEN
-            REPEAT
-                IF NOT BankAccount.GET(MSYodleeBankAccLink."No.") THEN
+        if MSYodleeBankAccLink.FIND('-') then
+            repeat
+                if not BankAccount.GET(MSYodleeBankAccLink."No.") then
                     MSYodleeBankAccLink.DELETE()
-                ELSE
-                    IF (BankAccount."Currency Code" <> '') AND (MSYodleeBankAccLink."Currency Code" <> '') AND (BankAccount."Currency Code" <> MSYodleeBankAccLink."Currency Code") THEN
+                else
+                    if (BankAccount."Currency Code" <> '') and (MSYodleeBankAccLink."Currency Code" <> '') and (BankAccount."Currency Code" <> MSYodleeBankAccLink."Currency Code") then
                         MSYodleeBankAccLink.DELETE();
-            UNTIL MSYodleeBankAccLink.NEXT() = 0;
+            until MSYodleeBankAccLink.NEXT() = 0;
     end;
 
     procedure UpdateYodleeBankSession();
@@ -70,11 +76,11 @@ codeunit 1452 "MS - Yodlee Service Upgrade"
         if UpgradeTag.HasUpgradeTag(GetYodleeUpdateBankSessionTableTag()) then
             exit;
 
-        IF MSYodleeBankSession.GET() THEN
-            EXIT;
+        if MSYodleeBankSession.GET() then
+            exit;
 
-        IF NOT MSYodleeBankServiceSetup.GET() THEN
-            EXIT;
+        if not MSYodleeBankServiceSetup.GET() then
+            exit;
 
         MSYodleeBankSession.INIT();
         MSYodleeBankSession.TRANSFERFIELDS(MSYodleeBankServiceSetup);

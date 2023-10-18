@@ -1,3 +1,8 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Journal;
+
 codeunit 40025 "GP Checkbook Migrator"
 {
     var
@@ -30,7 +35,7 @@ codeunit 40025 "GP Checkbook Migrator"
                     BankAccount.Insert(true);
 
                     if not GPCompanyAdditionalSettings.GetMigrateOnlyBankMaster() then
-                    	CreateTransactions(BankAccount."No.", BankAccount."Bank Acc. Posting Group", GPCheckbookMSTR.CHEKBKID,
+                        CreateTransactions(BankAccount."No.", BankAccount."Bank Acc. Posting Group", GPCheckbookMSTR.CHEKBKID,
                                             GPCheckbookMSTR.Last_Reconciled_Date, GPCheckbookMSTR.Last_Reconciled_Balance);
                 end;
         until GPCheckbookMSTR.Next() = 0;

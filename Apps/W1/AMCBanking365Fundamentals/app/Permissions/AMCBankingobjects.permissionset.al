@@ -1,3 +1,9 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
 permissionset 20109 "AMC Banking- Objects"
 {
     Assignable = false;
@@ -5,41 +11,20 @@ permissionset 20109 "AMC Banking- Objects"
     Caption = 'AMC Banking- Objects';
 
     Permissions = codeunit "AMC Bank Assisted Mgt." = X,
-#if not CLEAN21
-                    codeunit "AMC Bank Bank Acc. Rec Lin" = X,
-#endif
                     codeunit "AMC Bank Exp. CT Feedback" = X,
                     codeunit "AMC Bank Exp. CT Hndl" = X,
                     codeunit "AMC Bank Exp. CT Launcher" = X,
-#if not CLEAN21
-                    codeunit "AMC Bank Exp. CT Mapping" = X,
-#endif
                     codeunit "AMC Bank Exp. CT Pre-Map" = X,
                     codeunit "AMC Bank Exp. CT Valid." = X,
                     codeunit "AMC Bank Exp. CT Write" = X,
-#if not CLEAN20
-                    codeunit "AMC Bank Exp. CT Writing" = X,
-#endif
                     codeunit "AMC Bank Imp.BankList Hndl" = X,
-#if not CLEAN20
-                    codeunit "AMC Bank Import Bank STMT" = X,
-#endif
                     codeunit "AMC Bank Import Statement" = X,
-#if not CLEAN20
-                    codeunit "AMC Bank Imp.-Post-Mapping" = X,
-#endif
                     codeunit "AMC Bank Imp.-Post-Process" = X,
-#if not CLEAN20
-                    codeunit "AMC Bank Imp.-Pre-Mapping" = X,
-#endif
                     codeunit "AMC Bank Imp.-Pre-Process" = X,
                     codeunit "AMC Bank Imp.STMT. Hndl" = X,
                     codeunit "AMC Banking Mgt." = X,
                     codeunit "AMC Bank Install" = X,
                     codeunit "AMC Bank PrePost Proc" = X,
-#if not CLEAN20
-                    codeunit "AMC Bank Pre&Post Process" = X,
-#endif
                     codeunit "AMC Bank Process Statement" = X,
                     codeunit "AMC Bank REST Request Mgt." = X,
                     codeunit "AMC Bank Service Request Mgt." = X,

@@ -1,9 +1,14 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.History;
+
 /// <summary>
 /// Page Shpfy Order Fulfillments (ID 30112).
 /// </summary>
 page 30112 "Shpfy Order Fulfillments"
 {
-    Caption = 'Shopify Order Fulfillments';
+    Caption = 'Shopify Fulfillments';
+    CardPageID = "Shpfy Order Fulfillment";
     DeleteAllowed = false;
     Editable = false;
     InsertAllowed = false;

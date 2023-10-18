@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TDS.TDSReturnAndSettlement;
+
+using Microsoft.Finance.GeneralLedger.Reversal;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.TDS.TDSBase;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using System.Utilities;
+using Microsoft.Finance.TDS.TDSOnPayments;
+using Microsoft.Finance.GeneralLedger.Posting;
+
 codeunit 18746 "TDS Pay"
 {
     procedure PayTDS(var GenJnlLine: Record "Gen. Journal Line")

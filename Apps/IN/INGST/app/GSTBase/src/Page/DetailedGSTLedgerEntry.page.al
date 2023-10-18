@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Base;
+
 page 18000 "Detailed GST Ledger Entry"
 {
     Caption = 'Detailed GST Ledger Entry';
@@ -355,6 +361,19 @@ page 18000 "Detailed GST Ledger Entry"
                 ToolTip = 'Display the additional information of detailed GST ledger entry.';
                 RunObject = page "Detailed GST Ledger Entry Info";
                 RunPageLink = "Entry No." = field("Entry No.");
+            }
+            action("Show Related Information By Document No.")
+            {
+                Image = Info;
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Display the additional information of detailed GST ledger entry by document number.';
+
+                trigger OnAction()
+                var
+                    GSTNavigate: Codeunit "GST Navigate";
+                begin
+                    GSTNavigate.ShowRelatedDetailedGSTLedgerInfoByDocumentNo(Rec);
+                end;
             }
         }
     }

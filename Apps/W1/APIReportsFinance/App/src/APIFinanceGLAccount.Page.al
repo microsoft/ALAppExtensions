@@ -1,3 +1,7 @@
+namespace Microsoft.API.FinancialManagement;
+
+using Microsoft.Finance.GeneralLedger.Account;
+
 page 30304 "API Finance - GL Account"
 {
     PageType = API;

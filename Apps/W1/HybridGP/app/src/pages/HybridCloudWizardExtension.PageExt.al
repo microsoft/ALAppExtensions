@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.DataMigration;
+
 pageextension 4014 "Hybrid Cloud Wizard Extension" extends "Hybrid Cloud Setup Wizard"
 {
     layout
@@ -26,6 +30,11 @@ pageextension 4014 "Hybrid Cloud Wizard Extension" extends "Hybrid Cloud Setup W
                         ApplicationArea = Basic, Suite;
                         Caption = '';
                         UpdatePropagation = Both;
+                        ObsoleteState = Pending;
+                        ObsoleteReason = 'Replaced by page GP Migration Configuration';
+#pragma warning disable AS0072
+                        ObsoleteTag = '22.0';
+#pragma warning restore AS0072
                     }
                 }
                 group("GPMigrationSettings.2.0")
@@ -40,11 +49,21 @@ pageextension 4014 "Hybrid Cloud Wizard Extension" extends "Hybrid Cloud Setup W
                     {
                         ShowCaption = false;
                         InstructionalText = 'Select the two segments from Dynamics GP you would like as the global dimensions. The remaining segments will automatically be set up as shortcut dimensions.';
+                        ObsoleteState = Pending;
+                        ObsoleteReason = 'Replaced by page GP Migration Configuration';
+#pragma warning disable AS0072
+                        ObsoleteTag = '22.0';
+#pragma warning restore AS0072
                     }
                     group("GPMigrationSettings.2.2")
                     {
                         ShowCaption = false;
                         InstructionalText = 'Choose whether to migrate inactive customers, vendors and checkbooks, or uncheck the boxes to only migrate those that are active.';
+                        ObsoleteState = Pending;
+                        ObsoleteReason = 'Replaced by page GP Migration Configuration';
+#pragma warning disable AS0072
+                        ObsoleteTag = '22.0';
+#pragma warning restore AS0072
                     }
                 }
             }

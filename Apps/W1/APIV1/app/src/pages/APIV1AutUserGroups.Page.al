@@ -1,4 +1,9 @@
 #if not CLEAN22
+namespace Microsoft.API.V1;
+
+using System.Environment;
+using System.Security.AccessControl;
+
 page 20003 "APIV1 - Aut. User Groups"
 {
     APIGroup = 'automation';
@@ -23,20 +28,20 @@ page 20003 "APIV1 - Aut. User Groups"
         {
             repeater(Group)
             {
-                field("code"; Code)
+                field("code"; Rec.Code)
                 {
                     Caption = 'code', Locked = true;
                     Editable = false;
                 }
-                field(displayName; Name)
+                field(displayName; Rec.Name)
                 {
                     Caption = 'displayName', Locked = true;
                 }
-                field(defaultProfileID; "Default Profile ID")
+                field(defaultProfileID; Rec."Default Profile ID")
                 {
                     Caption = 'defaultProfileID', Locked = true;
                 }
-                field(assignToAllNewUsers; "Assign to All New Users")
+                field(assignToAllNewUsers; Rec."Assign to All New Users")
                 {
                     Caption = 'assignToAllNewUsers', Locked = true;
                 }
@@ -56,5 +61,6 @@ page 20003 "APIV1 - Aut. User Groups"
     var
         AutomationAPIManagement: Codeunit "Automation - API Management";
 }
+
 
 #endif

@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Visualization;
+
+using System;
+
 /// <summary>
 /// Provides functionality for working with the business chart control add-in.
 /// </summary>

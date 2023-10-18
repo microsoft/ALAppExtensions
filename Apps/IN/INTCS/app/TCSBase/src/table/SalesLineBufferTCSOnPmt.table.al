@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.TCS.TCSBase;
+
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Customer;
+using Microsoft.Inventory.Location;
+using Microsoft.Foundation.AuditCodes;
+
 table 18815 "Sales Line Buffer TCS On Pmt."
 {
     Caption = 'Sales Lines Buffer TCS on Payment';

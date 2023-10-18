@@ -1,8 +1,8 @@
 table 31129 "EET Entry Status Log CZL"
 {
     Caption = 'EET Entry Status Log';
-    DrillDownPageID = "EET Entry Status Log CZL";
-    LookupPageID = "EET Entry Status Log CZL";
+    DrillDownPageId = "EET Entry Status Log CZL";
+    LookupPageId = "EET Entry Status Log CZL";
 
     fields
     {

@@ -11,16 +11,6 @@ page 1919 "MigrationQB Default Accounts"
     {
         area(content)
         {
-#if not CLEAN18
-            group("Instructions")
-            {
-                Visible = false;
-                ShowCaption = false;
-                ObsoleteState = Pending;
-                ObsoleteReason = 'Instruction field is moved inside groups below. This group is no longer in use.';
-                ObsoleteTag = '18.0';
-            }
-#endif
             group("Group2")
             {
                 Visible = FirstGroupVisible;

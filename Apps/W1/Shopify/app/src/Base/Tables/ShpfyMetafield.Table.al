@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Table Shpfy Metafield (ID 30101).
 /// </summary>

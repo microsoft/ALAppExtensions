@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP.HistoricalData;
+
 page 41006 "Hist. Receivables Document"
 {
     PageType = Card;

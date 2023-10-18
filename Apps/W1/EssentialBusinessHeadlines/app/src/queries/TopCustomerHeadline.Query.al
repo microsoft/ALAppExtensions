@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Visualization;
+
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+
 query 1441 "Top Customer Headline"
 {
     QueryType = Normal;

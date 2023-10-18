@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GeneralLedger.Account;
+
+using Microsoft.Finance.GST.Base;
+
 tableextension 18005 "GST G/L Account Ext" extends "G/L Account"
 {
     fields

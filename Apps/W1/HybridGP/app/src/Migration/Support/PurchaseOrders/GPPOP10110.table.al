@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 40138 "GP POP10110"
 {
     DataClassification = CustomerContent;

@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.VoucherInterface;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Inventory.Location;
+
 table 18930 "Journal Voucher Posting Setup"
 {
     Caption = 'Voucher Posting Setup';
@@ -40,9 +50,9 @@ table 18930 "Journal Voucher Posting Setup"
                         xRec."Transaction Direction"::Debit:
                             ValidationEvents.DeleteDrAccounts("Location Code", Type);
                         else begin
-                                ValidationEvents.DeleteCrAccounts("Location Code", Type);
-                                ValidationEvents.DeleteDrAccounts("Location Code", Type);
-                            end;
+                            ValidationEvents.DeleteCrAccounts("Location Code", Type);
+                            ValidationEvents.DeleteDrAccounts("Location Code", Type);
+                        end;
                     end;
             end;
         }

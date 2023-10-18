@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration;
+
+using System.Security.AccessControl;
+
 permissionsetextension 4000 "D365 BASIC - HBD" extends "D365 BASIC"
 {
     Permissions = tabledata "Hybrid Product Type" = RIMD,

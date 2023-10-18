@@ -3,8 +3,8 @@ table 31075 "VIES Declaration Header CZL"
 {
     Caption = 'VIES Declaration Header';
     DataCaptionFields = "No.";
-    DrillDownPageID = "VIES Declarations CZL";
-    LookupPageID = "VIES Declarations CZL";
+    DrillDownPageId = "VIES Declarations CZL";
+    LookupPageId = "VIES Declarations CZL";
 
     fields
     {
@@ -256,7 +256,7 @@ table 31075 "VIES Declaration Header CZL"
         field(21; "Corrected Declaration No."; Code[20])
         {
             Caption = 'Corrected Declaration No.';
-            TableRelation = "VIES Declaration Header CZL" where("Corrected Declaration No." = FILTER(''),
+            TableRelation = "VIES Declaration Header CZL" where("Corrected Declaration No." = filter(''),
                                                              Status = const(Released));
             DataClassification = CustomerContent;
 
@@ -779,7 +779,7 @@ table 31075 "VIES Declaration Header CZL"
         Testfield("Corrected Declaration No.");
         VIESDeclarationHeaderCZL.Get("Corrected Declaration No.");
         SavedVIESDeclarationHeaderCZL.TransferFields(Rec);
-        TransferFields(VIESDeclarationHeaderCZL);
+        TransferFields(VIESDeclarationHeaderCZL, false);
         Modify();
         "No." := SavedVIESDeclarationHeaderCZL."No.";
         Status := SavedVIESDeclarationHeaderCZL.Status::Open;

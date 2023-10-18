@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 /// <summary>
 /// Table Shpfy Synchronization Info (ID 30103).
 /// </summary>

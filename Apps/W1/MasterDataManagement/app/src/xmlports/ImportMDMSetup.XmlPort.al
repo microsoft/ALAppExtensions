@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.MDM;
+
+using Microsoft.Integration.SyncEngine;
+
 xmlport 7231 ImportMDMSetup
 {
     Caption = 'Import Master Data Management Setup';

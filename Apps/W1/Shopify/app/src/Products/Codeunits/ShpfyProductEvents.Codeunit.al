@@ -1,3 +1,7 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Inventory.Item;
+
 /// <summary>
 /// Codeunit Shpfy Product Events (ID 30177).
 /// </summary>

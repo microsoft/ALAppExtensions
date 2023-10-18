@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
 /// <summary>
 /// Copies a security group.
 /// </summary>
@@ -32,8 +34,8 @@ page 9873 "Copy Security Group"
             field(NewAadSecurityGroupName; NewSecurityGroupNameValue)
             {
                 ApplicationArea = All;
-                Caption = 'New AAD security group name';
-                ToolTip = 'Specifies the name of the AAD security group.';
+                Caption = 'New Microsoft Entra security group name';
+                ToolTip = 'Specifies the name of the Microsoft Entra security group.';
                 NotBlank = true;
                 Visible = not IsWindowsAuthentication;
 

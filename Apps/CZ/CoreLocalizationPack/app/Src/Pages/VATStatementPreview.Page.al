@@ -18,7 +18,7 @@ page 31135 "VAT Statement Preview CZL"
                 {
                     ApplicationArea = VAT;
                     Caption = 'VAT Period Start Date';
-                    LookupPageID = "VAT Periods CZL";
+                    LookupPageId = "VAT Periods CZL";
                     TableRelation = "VAT Period CZL";
                     ToolTip = 'Specifies the starting date for the VAT period.';
 

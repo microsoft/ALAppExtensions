@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Privacy;
+
+using System.Privacy;
+
 codeunit 135157 "Library - Data Classification"
 {
     Subtype = Normal;

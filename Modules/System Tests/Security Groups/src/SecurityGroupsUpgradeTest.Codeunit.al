@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Security.AccessControl;
+
+using System.Security.AccessControl;
+using System.TestLibraries.Security.AccessControl;
+using System.TestLibraries.Utilities;
+
 codeunit 135017 "Security Groups Upgrade Test"
 {
     Subtype = Test;

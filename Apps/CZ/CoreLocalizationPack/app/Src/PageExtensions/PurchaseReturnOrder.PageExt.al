@@ -2,15 +2,6 @@ pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
 {
     layout
     {
-#if not CLEAN20
-#pragma warning disable AL0432
-        movelast(General; "Posting Description")
-#pragma warning restore AL0432
-        modify("Vendor Posting Group")
-        {
-            Visible = AllowMultiplePostingGroupsEnabled;
-        }
-#endif
 #if not CLEAN22
         modify("VAT Reporting Date")
         {
@@ -19,13 +10,11 @@ pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
 #endif
         addlast(General)
         {
-#if CLEAN20
             field("Posting Description CZL"; Rec."Posting Description")
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies a description of the document. The posting description also appers on vendor and G/L entries.';
             }
-#endif
             field("Your Reference CZL"; Rec."Your Reference")
             {
                 ApplicationArea = Basic, Suite;
@@ -67,13 +56,8 @@ pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
             field("Vendor Posting Group CZL"; Rec."Vendor Posting Group")
             {
                 ApplicationArea = Basic, Suite;
-#if not CLEAN20
-                Editable = IsPostingGroupEditableCZL;
-                Visible = not AllowMultiplePostingGroupsEnabled;
-#else
                 Editable = false;
                 Visible = false;
-#endif
                 Importance = Additional;
                 ToolTip = 'Specifies the vendor''s market type to link business transactions to.';
                 ObsoleteState = Pending;
@@ -264,27 +248,12 @@ pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
 #if not CLEAN22
     trigger OnOpenPage()
     begin
-#if not CLEAN20
-        AllowMultiplePostingGroupsEnabled := PostingGroupManagement.IsAllowMultipleCustVendPostingGroupsEnabled();
-        if not AllowMultiplePostingGroupsEnabled then begin
-            PurchasesPayablesSetupCZL.GetRecordOnce();
-#pragma warning disable AL0432
-            IsPostingGroupEditableCZL := PurchasesPayablesSetupCZL."Allow Alter Posting Groups CZL";
-#pragma warning restore AL0432
-        end;
-#endif
         VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
         ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
     end;
 #endif    
 
     var
-#if not CLEAN20
-        PurchasesPayablesSetupCZL: Record "Purchases & Payables Setup";
-#pragma warning disable AL0432
-        PostingGroupManagement: Codeunit "Posting Group Management CZL";
-#pragma warning restore AL0432
-#endif
 #if not CLEAN22
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
 #pragma warning disable AL0432
@@ -292,10 +261,6 @@ pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
 #pragma warning restore AL0432
 #endif
         ChangeExchangeRate: Page "Change Exchange Rate";
-#if not CLEAN20
-        AllowMultiplePostingGroupsEnabled: Boolean;
-        IsPostingGroupEditableCZL: Boolean;
-#endif
 #if not CLEAN22
         ReplaceVATDateEnabled: Boolean;
         VATDateEnabled: Boolean;

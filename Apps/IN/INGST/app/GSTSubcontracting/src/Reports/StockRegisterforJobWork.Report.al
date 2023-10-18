@@ -1,3 +1,16 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GST.Subcontracting;
+
+using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Vendor;
+using System.Utilities;
+
 report 18468 "Stock Register for Job Work"
 {
     UsageCategory = Administration;

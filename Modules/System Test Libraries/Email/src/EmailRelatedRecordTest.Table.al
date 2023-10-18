@@ -3,10 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Email;
+
 table 134684 "Email Related Record Test"
 {
     ReplicateData = false;
-    
+
     fields
     {
         field(1; "No."; Integer)

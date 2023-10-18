@@ -1,3 +1,10 @@
+namespace Microsoft.Finance.GeneralLedger.Review;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Foundation.Company;
+using System.Telemetry;
+
 codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
 {
     Permissions = TableData "G/L Entry" = rm,
@@ -6,8 +13,9 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
 
     var
         NoEntriesSelectedLbl: Label 'No entries were selected';
-        GLAccountLbl: Label 'G/L Entries for G/L Account %1 %2 were not marked as reviewed since the G/L Account has a No Review Policy', Locked = false, MaxLength = 999, Comment = '%1 is G/L Account No. and %2 is G/L Account Name';
+        GLAccountLbl: Label 'G/L Entries for G/L Account %1 %2 were not marked as reviewed since the G/L Account has Review Policy None', Locked = false, MaxLength = 999, Comment = '%1 is G/L Account No. and %2 is G/L Account Name';
         BalanceNotMatchingMsg: Label 'Selected G/L Entries for G/L Account %1 %2 were not marked as reviewed because credit and debit do not match and the review policy on the account enforces that', Locked = false, MaxLength = 999, Comment = '%1 is G/L Account No. and %2 is G/L Account Name';
+
 
     procedure ReviewEntries(var GLEntry: Record "G/L Entry");
     var
@@ -29,6 +37,7 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
         OnAfterReviewEntries(GLEntry, GLEntryReviewEntry);
 
         FeatureTelemetry.LogUptake('0000J2W', 'Review G/L Entries', "Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000KQJ', 'Review G/L Entries', 'Review G/L Entries');
     end;
 
     procedure UnreviewEntries(var GLEntry: Record "G/L Entry");
@@ -94,7 +103,6 @@ codeunit 22200 "Review G/L Entry" implements "G/L Entry Reviewer"
             GLEntryReviewSetup.Insert();
         end;
     end;
-
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterReviewEntries(var GLEntry: Record "G/L Entry"; var GLEntryReviewEntry: Record "G/L Entry Review Entry")

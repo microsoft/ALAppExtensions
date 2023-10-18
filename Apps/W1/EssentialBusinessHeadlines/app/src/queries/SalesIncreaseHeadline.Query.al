@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Visualization;
+
+using Microsoft.Sales.History;
+
 query 1442 "Sales Increase Headline"
 {
     QueryType = Normal;

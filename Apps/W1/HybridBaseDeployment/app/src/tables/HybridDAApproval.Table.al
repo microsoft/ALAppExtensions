@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration;
+
+using System.Security.AccessControl;
+
 table 40028 "Hybrid DA Approval"
 {
     DataClassification = CustomerContent;

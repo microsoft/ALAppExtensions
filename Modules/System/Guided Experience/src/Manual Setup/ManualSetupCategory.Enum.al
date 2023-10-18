@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
 /// <summary>The category enum is used to navigate the setup page, which can have many records. It is encouraged to extend this enum and use the newly defined options.</summary>
 enum 1875 "Manual Setup Category"
 {

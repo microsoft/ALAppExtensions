@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.EU3PartyTrade;
+
+using Microsoft.Purchases.Document;
+
 #pragma warning disable AS0032
 pageextension 4883 "EU3 Blanket Purch. Order" extends "Blanket Purchase Order"
 {

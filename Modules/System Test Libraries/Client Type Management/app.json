@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "",
     "description":  "Library functions to initialize test data for Client Type Management module",
-    "version":  "22.5.0.0",
+    "version":  "23.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "",
@@ -15,13 +15,13 @@
                              "id":  "7f3d7c69-3ffc-4201-b2b9-9f7cd56f7c50",
                              "name":  "Client Type Management",
                              "publisher":  "Microsoft",
-                             "version":  "22.5.0.0"
+                             "version":  "23.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "22.0.0.0",
+    "platform":  "23.0.0.0",
     "idRanges":  [
                      {
                          "from":  130018,

@@ -267,7 +267,9 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
     var
         ConfirmManagement: Codeunit "Confirm Management";
 #if not CLEAN22
+#pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
 #endif
 
     local procedure CheckCurrencyExchangeRateCZL(CurrencyDate: Date)

@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Customer;
+
+using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.TaxBase;
+
 tableextension 18157 "GST Ship-to Address Ext" extends "Ship-to Address"
 {
     fields

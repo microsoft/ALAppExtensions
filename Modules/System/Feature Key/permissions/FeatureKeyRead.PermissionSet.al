@@ -3,7 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-PermissionSet 2610 "Feature Key - Read"
+namespace System.Environment.Configuration;
+
+using System.Environment;
+
+permissionset 2610 "Feature Key - Read"
 {
     Access = Internal;
     Assignable = false;

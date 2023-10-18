@@ -1,3 +1,6 @@
+namespace Microsoft.Finance.Latepayment;
+
+using Microsoft.Sales.Document;
 pageextension 1956 "LPP  Sales Order" extends "Sales Order"
 {
     actions

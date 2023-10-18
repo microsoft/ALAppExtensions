@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Payment;
+
+using Microsoft.Utilities;
+using System.Reflection;
+using System.Security.Encryption;
+using System.Telemetry;
+
 page 20101 "AMC Banking Setup"
 {
     AdditionalSearchTerms = 'bank file import,bank file export,bank transfer,amc,bank service setup,bank data conversion';

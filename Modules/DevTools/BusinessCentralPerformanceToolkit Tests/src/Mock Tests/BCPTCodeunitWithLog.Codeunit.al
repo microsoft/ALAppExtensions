@@ -3,6 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Test.Tooling;
+
+using System.Reflection;
+using System.Tooling;
+
 codeunit 144757 "BCPT Codeunit With Log"
 {
     trigger OnRun()

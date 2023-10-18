@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Security.AccessControl;
+
+using System.Reflection;
+
 codeunit 9864 "Permission Impl."
 {
     Access = Internal;
@@ -78,6 +82,68 @@ codeunit 9864 "Permission Impl."
         ModifyPermissionAsTxt := GetPermissionAsTxt(TenantPermission.Type, TenantPermission."Modify Permission");
         DeletePermissionAsTxt := GetPermissionAsTxt(TenantPermission.Type, TenantPermission."Delete Permission");
         ExecutePermissionAsTxt := GetPermissionAsTxt(TenantPermission.Type, TenantPermission."Execute Permission");
+    end;
+
+    procedure UpdateSelectedPermissionLines(var TenantPermission: Record "Tenant Permission"; RIMDX: Text[1]; PermissionOption: Option)
+    var
+        ModifyPermissionLine: Boolean;
+    begin
+        if TenantPermission.FindSet() then
+            repeat
+                ModifyPermissionLine := false;
+                case RIMDX of
+                    'R':
+                        if TenantPermission."Object Type" = TenantPermission."Object Type"::"Table Data" then
+                            if TenantPermission."Read Permission" <> PermissionOption then begin
+                                TenantPermission."Read Permission" := PermissionOption;
+                                ModifyPermissionLine := true;
+                            end;
+                    'I':
+                        if TenantPermission."Object Type" = TenantPermission."Object Type"::"Table Data" then
+                            if TenantPermission."Insert Permission" <> PermissionOption then begin
+                                TenantPermission."Insert Permission" := PermissionOption;
+                                ModifyPermissionLine := true;
+                            end;
+                    'M':
+                        if TenantPermission."Object Type" = TenantPermission."Object Type"::"Table Data" then
+                            if TenantPermission."Modify Permission" <> PermissionOption then begin
+                                TenantPermission."Modify Permission" := PermissionOption;
+                                ModifyPermissionLine := true;
+                            end;
+                    'D':
+                        if TenantPermission."Object Type" = TenantPermission."Object Type"::"Table Data" then
+                            if TenantPermission."Delete Permission" <> PermissionOption then begin
+                                TenantPermission."Delete Permission" := PermissionOption;
+                                ModifyPermissionLine := true;
+                            end;
+                    'X':
+                        if TenantPermission."Object Type" <> TenantPermission."Object Type"::"Table Data" then
+                            if TenantPermission."Execute Permission" <> PermissionOption then begin
+                                TenantPermission."Execute Permission" := PermissionOption;
+                                ModifyPermissionLine := true;
+                            end;
+                    '*':
+                        if TenantPermission."Object Type" = TenantPermission."Object Type"::"Table Data" then begin
+                            if (TenantPermission."Read Permission" <> PermissionOption) or
+                                (TenantPermission."Insert Permission" <> PermissionOption) or
+                                (TenantPermission."Modify Permission" <> PermissionOption) or
+                                (TenantPermission."Delete Permission" <> PermissionOption)
+                            then begin
+                                TenantPermission."Read Permission" := PermissionOption;
+                                TenantPermission."Insert Permission" := PermissionOption;
+                                TenantPermission."Modify Permission" := PermissionOption;
+                                TenantPermission."Delete Permission" := PermissionOption;
+                                ModifyPermissionLine := true;
+                            end;
+                        end else
+                            if TenantPermission."Execute Permission" <> PermissionOption then begin
+                                TenantPermission."Execute Permission" := PermissionOption;
+                                ModifyPermissionLine := true;
+                            end;
+                end;
+                if ModifyPermissionLine then
+                    TenantPermission.Modify();
+            until TenantPermission.Next() = 0;
     end;
 
     procedure IsPermissionEmpty(var TenantPermission: Record "Tenant Permission"): Boolean

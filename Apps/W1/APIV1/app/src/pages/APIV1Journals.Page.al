@@ -1,3 +1,9 @@
+namespace Microsoft.API.V1;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Integration.Graph;
+using Microsoft.Finance.GeneralLedger.Posting;
+
 page 20016 "APIV1 - Journals"
 {
     APIVersion = 'v1.0';
@@ -17,29 +23,29 @@ page 20016 "APIV1 - Journals"
         {
             repeater(Group)
             {
-                field(id; SystemId)
+                field(id; Rec.SystemId)
                 {
                     Caption = 'id', Locked = true;
                     Editable = false;
                 }
-                field("code"; Name)
+                field("code"; Rec.Name)
                 {
                     Caption = 'code', Locked = true;
                     ShowMandatory = true;
                 }
-                field(displayName; Description)
+                field(displayName; Rec.Description)
                 {
                     Caption = 'displayName', Locked = true;
                 }
-                field(lastModifiedDateTime; "Last Modified DateTime")
+                field(lastModifiedDateTime; Rec."Last Modified DateTime")
                 {
                     Caption = 'lastModifiedDateTime', Locked = true;
                 }
-                field(balancingAccountId; BalAccountId)
+                field(balancingAccountId; Rec.BalAccountId)
                 {
                     Caption = 'balancingAccountId', Locked = true;
                 }
-                field(balancingAccountNumber; "Bal. Account No.")
+                field(balancingAccountNumber; Rec."Bal. Account No.")
                 {
                     Caption = 'balancingAccountNumber', Locked = true;
                     Editable = false;
@@ -51,7 +57,7 @@ page 20016 "APIV1 - Journals"
                 Caption = 'JournalLines', Locked = true;
                 EntityName = 'journalLine';
                 EntitySetName = 'journalLines';
-                SubPageLink = "Journal Batch Id" = FIELD(SystemId);
+                SubPageLink = "Journal Batch Id" = field(SystemId);
             }
         }
     }
@@ -62,12 +68,12 @@ page 20016 "APIV1 - Journals"
 
     trigger OnNewRecord(BelowxRec: Boolean)
     begin
-        "Journal Template Name" := GraphMgtJournal.GetDefaultJournalLinesTemplateName();
+        Rec."Journal Template Name" := GraphMgtJournal.GetDefaultJournalLinesTemplateName();
     end;
 
     trigger OnOpenPage()
     begin
-        SETRANGE("Journal Template Name", GraphMgtJournal.GetDefaultJournalLinesTemplateName());
+        Rec.SETRANGE("Journal Template Name", GraphMgtJournal.GetDefaultJournalLinesTemplateName());
     end;
 
     var
@@ -83,7 +89,7 @@ page 20016 "APIV1 - Journals"
     begin
         GetBatch(GenJournalBatch);
         PostBatch(GenJournalBatch);
-        SetActionResponse(ActionContext, SystemId);
+        SetActionResponse(ActionContext, Rec.SystemId);
     end;
 
     local procedure PostBatch(var GenJournalBatch: Record "Gen. Journal Batch")
@@ -92,16 +98,16 @@ page 20016 "APIV1 - Journals"
     begin
         GenJournalLine.SETRANGE("Journal Template Name", GenJournalBatch."Journal Template Name");
         GenJournalLine.SETRANGE("Journal Batch Name", GenJournalBatch.Name);
-        IF NOT GenJournalLine.FINDFIRST() THEN
-            ERROR(ThereIsNothingToPostErr);
+        if not GenJournalLine.FINDFIRST() then
+            error(ThereIsNothingToPostErr);
 
         CODEUNIT.RUN(CODEUNIT::"Gen. Jnl.-Post", GenJournalLine);
     end;
 
     local procedure GetBatch(var GenJournalBatch: Record "Gen. Journal Batch")
     begin
-        if not GenJournalBatch.GetBySystemId(SystemId) then
-            Error(CannotFindBatchErr, SystemId);
+        if not GenJournalBatch.GetBySystemId(Rec.SystemId) then
+            Error(CannotFindBatchErr, Rec.SystemId);
     end;
 
     local procedure SetActionResponse(var ActionContext: WebServiceActionContext; GenJournalBatchId: Guid)
@@ -110,7 +116,8 @@ page 20016 "APIV1 - Journals"
 
         ActionContext.SetObjectType(ObjectType::Page);
         ActionContext.SetObjectId(Page::"APIV1 - Journals");
-        ActionContext.AddEntityKey(FieldNo(SystemId), GenJournalBatchId);
+        ActionContext.AddEntityKey(Rec.FieldNo(SystemId), GenJournalBatchId);
         ActionContext.SetResultCode(WebServiceActionResultCode::Deleted);
     end;
 }
+

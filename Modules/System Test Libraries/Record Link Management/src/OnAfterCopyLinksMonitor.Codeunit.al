@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Utilities;
+
+using System.Utilities;
+
 codeunit 132507 "OnAfterCopyLinks Monitor"
 {
     EventSubscriberInstance = Manual;

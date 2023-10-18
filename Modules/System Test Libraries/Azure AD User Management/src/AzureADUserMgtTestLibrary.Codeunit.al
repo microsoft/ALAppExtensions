@@ -3,6 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Azure.ActiveDirectory;
+
+using System.Azure.Identity;
+using System.Security.AccessControl;
+using System;
+
 codeunit 132914 "Azure AD User Mgt Test Library"
 {
     EventSubscriberInstance = Manual;

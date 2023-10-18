@@ -1,3 +1,7 @@
+namespace Mirosoft.Integration.CompanyHub;
+
+using System.Telemetry;
+
 page 1167 "COHUB Companies Overview"
 {
     Caption = 'Company Hub';

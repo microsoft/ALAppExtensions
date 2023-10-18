@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.TestLibraries.Visualization;
+
+using System.Visualization;
+
 permissionset 139481 "Headlines Read"
 {
     Assignable = true;

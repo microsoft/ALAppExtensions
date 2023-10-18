@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace System.Environment.Configuration;
+
 /// <summary>
 /// Lists all checklist items and provides capabilities to edit and insert new ones based on existing guided experience items.
 /// </summary>
@@ -26,7 +28,7 @@ page 1993 Checklist
             repeater(Control1)
             {
                 ShowCaption = false;
-                field(Title; Title)
+                field(Title; Rec.Title)
                 {
                     Caption = 'Task';
                     ApplicationArea = All;
@@ -38,28 +40,28 @@ page 1993 Checklist
                         CurrPage.Update();
                     end;
                 }
-                field(Description; Description)
+                field(Description; Rec.Description)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the description of the checklist item.';
                 }
-                field("Expected Duration"; "Expected Duration")
+                field("Expected Duration"; Rec."Expected Duration")
                 {
                     Caption = 'Expected Duration (in minutes)';
                     ApplicationArea = All;
                     ToolTip = 'Specifies how long you expect it will take to complete the checklist item, such as 2 minutes or 10 minutes.';
                 }
-                field("Completition Requirements"; "Completion Requirements")
+                field("Completition Requirements"; Rec."Completion Requirements")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the completition requirements of the checklist item.';
                 }
-                field("Assigned To"; "Assigned To")
+                field("Assigned To"; Rec."Assigned To")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies which users or roles the checklist item is assigned to.';
                 }
-                field("Order ID"; "Order ID")
+                field("Order ID"; Rec."Order ID")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies which step in the checklist this task will appear at.';
@@ -104,7 +106,7 @@ page 1993 Checklist
     var
         ChecklistImplementation: Codeunit "Checklist Implementation";
     begin
-        ChecklistImplementation.Delete(Code);
+        ChecklistImplementation.Delete(Rec.Code);
     end;
 
     trigger OnModifyRecord(): Boolean

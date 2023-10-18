@@ -1,3 +1,8 @@
+namespace Microsoft.API.V2;
+
+using Microsoft.Integration.Graph;
+using Microsoft.Integration.Entity;
+
 page 30033 "APIV2 - Balance Sheet"
 {
     APIVersion = 'v2.0';
@@ -22,34 +27,34 @@ page 30033 "APIV2 - Balance Sheet"
         {
             repeater(Group)
             {
-                field(id; Id)
+                field(id; Rec.Id)
                 {
                     Caption = 'Id';
                     Editable = false;
                 }
-                field(lineNumber; "Line No.")
+                field(lineNumber; Rec."Line No.")
                 {
                     Caption = 'Line No.';
                 }
-                field(display; Description)
+                field(display; Rec.Description)
                 {
                     Caption = 'Description';
                 }
-                field(balance; Balance)
+                field(balance; Rec.Balance)
                 {
                     AutoFormatType = 0;
                     BlankZero = true;
                     Caption = 'Balance';
                 }
-                field(lineType; "Line Type")
+                field(lineType; Rec."Line Type")
                 {
                     Caption = 'Line Type';
                 }
-                field(indentation; Indentation)
+                field(indentation; Rec.Indentation)
                 {
                     Caption = 'Indentation';
                 }
-                field(dateFilter; "Date Filter")
+                field(dateFilter; Rec."Date Filter")
                 {
                     Caption = 'Date Filter';
                 }
