@@ -6,7 +6,8 @@
 query 1440 "Best Sold Item Headline"
 {
     QueryType = Normal;
-    OrderBy = descending (SumQuantity);
+    OrderBy = descending(SumQuantity);
+    DataAccessIntent = ReadOnly;
 
     elements
     {
@@ -18,12 +19,12 @@ query 1440 "Best Sold Item Headline"
 
             filter(Cancelled; Cancelled)
             {
-                ColumnFilter = Cancelled = const (false);
+                ColumnFilter = Cancelled = const(false);
             }
 
             filter(Amount; Amount)
             {
-                ColumnFilter = Amount = filter ('>0');
+                ColumnFilter = Amount = filter('>0');
             }
 
             dataitem(Line; "Sales Invoice Line")
