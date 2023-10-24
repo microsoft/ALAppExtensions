@@ -6,7 +6,7 @@
                                                       "Version":  "22.3.998"
                                                   },
     "AppBaselines-BCArtifacts":  {
-                                     "Version":  "22.5.59966.61267",
+                                     "Version":  "22.5.59966.61556",
                                      "_comment":  "Deprecated. Temporary workaround for not having enough baselines packages"
                                  }
 }
