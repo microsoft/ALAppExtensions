@@ -128,7 +128,7 @@ codeunit 2680 "Data Search in Table"
     local procedure SetTypeFilterOnRecRef(var RecRef: RecordRef; TableType: Integer; FieldNo: Integer)
     var
         FldRef: FieldRef;
-    begin 
+    begin
         if not RecRef.FieldExist(FieldNo) then
             exit;
         FldRef := RecRef.Field(FieldNo);
@@ -148,7 +148,7 @@ codeunit 2680 "Data Search in Table"
         case RecRef.Number of
             Database::"Sales Header", Database::"Sales Line",
             Database::"Purchase Header", Database::"Purchase Line",
-            Database::"Service Header",  Database::"Service Line",
+            Database::"Service Header", Database::"Service Line",
             Database::"Service Contract Line":
                 FieldNo := 1;
             Database::"Service Item Line":
@@ -185,6 +185,7 @@ codeunit 2680 "Data Search in Table"
 
     local procedure SearchTable(TableNo: Integer; TableType: Integer; var FieldList: List of [Integer]; var SearchStrings: List of [Text]; var Results: Dictionary of [Text, Text])
     var
+        DataSearchEvents: Codeunit "Data Search Events";
         [SecurityFiltering(SecurityFilter::Filtered)]
         RecRef: RecordRef;
         FldRef: FieldRef;
@@ -204,6 +205,7 @@ codeunit 2680 "Data Search in Table"
         FldRef := RecRef.Field(RecRef.SystemModifiedAtNo);
         RecRef.SetView(StrSubstNo(SetViewLbl, FldRef.Name));
         SetListedFieldFiltersOnRecRef(RecRef, TableType, SearchString1, UseTextSearch, FieldList);
+        DataSearchEvents.OnBeforeSearchTable(RecRef);
         if RecRef.FindSet() then
             repeat
                 FldRef := RecRef.Field(RecRef.SystemIdNo);
