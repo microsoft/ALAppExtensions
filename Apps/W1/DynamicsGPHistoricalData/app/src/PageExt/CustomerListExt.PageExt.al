@@ -15,18 +15,32 @@ pageextension 41018 "Customer List Ext." extends "Customer List"
                     ApplicationArea = All;
                     Caption = 'Receivables Transactions';
                     Image = Documents;
-                    RunObject = Page "Hist. Receivables Documents";
                     ToolTip = 'View the GP receivables transactions.';
                     Visible = GPRecvDataAvailable;
+
+                    trigger OnAction()
+                    var
+                        HistReceivablesDocuments: Page "Hist. Receivables Documents";
+                    begin
+                        HistReceivablesDocuments.SetFilterCustomerNo(Rec."No.");
+                        HistReceivablesDocuments.Run();
+                    end;
                 }
                 action("GP Sales Trx.")
                 {
                     ApplicationArea = All;
                     Caption = 'Sales Transactions';
                     Image = Sales;
-                    RunObject = Page "Hist. Sales Trx. Headers";
                     ToolTip = 'View the GP sales transactions.';
                     Visible = GPSalesTrxDataAvailable;
+
+                    trigger OnAction()
+                    var
+                        HistSalesTrxHeaders: Page "Hist. Sales Trx. Headers";
+                    begin
+                        HistSalesTrxHeaders.SetFilterCustomerNo(Rec."No.");
+                        HistSalesTrxHeaders.Run();
+                    end;
                 }
             }
         }

@@ -467,9 +467,10 @@ codeunit 40900 "GP Populate Hist. Tables"
             HistReceivablesDocument."Payment Terms ID" := GPRM20101.PYMTRMID;
             HistReceivablesDocument."Write Off Amount" := GPRM20101.WROFAMNT;
 
-            if HistReceivablesDocument.Insert() then
+            if HistReceivablesDocument.Insert() then begin
+                PopulateRecvApply(HistReceivablesDocument."Customer No.", CustomerName, HistReceivablesDocument."Document No.", GPRM20101.RMDTYPAL);
                 ReportLastSuccess(SourceTableId, LastSourceRecordId)
-            else
+            end else
                 ReportLastError(SourceTableId, LastSourceRecordId, "Hist. Migration Step Type"::"GP Receivables Trx.", GPRM20101.DOCNUMBR);
 
             AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
@@ -542,15 +543,176 @@ codeunit 40900 "GP Populate Hist. Tables"
             HistReceivablesDocument."Payment Terms ID" := GPRMHist.PYMTRMID;
             HistReceivablesDocument."Write Off Amount" := GPRMHist.WROFAMNT;
 
-            if HistReceivablesDocument.Insert() then
+            if HistReceivablesDocument.Insert() then begin
+                PopulateRecvApply(HistReceivablesDocument."Customer No.", CustomerName, HistReceivablesDocument."Document No.", GPRMHist.RMDTYPAL);
                 ReportLastSuccess(SourceTableId, LastSourceRecordId)
-            else
+            end else
                 ReportLastError(SourceTableId, LastSourceRecordId, "Hist. Migration Step Type"::"GP Receivables Trx.", GPRMHist.DOCNUMBR);
 
             AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
         until GPRMHist.Next() = 0;
 
         AfterProcessedSection(SourceTableId, LastSourceRecordId);
+    end;
+
+    local procedure PopulateRecvApply(CustomerNo: Code[35]; CustomerName: Text[100]; DocumentNo: Code[35]; GPDocumentTypeId: Integer)
+    begin
+        PopulateRecvOpenApply(CustomerNo, CustomerName, DocumentNo, GPDocumentTypeId);
+        PopulateRecvHistApply(CustomerNo, CustomerName, DocumentNo, GPDocumentTypeId);
+    end;
+
+    local procedure PopulateRecvOpenApply(CustomerNo: Code[35]; CustomerName: Text[100]; DocumentNo: Code[35]; GPDocumentTypeId: Integer)
+    var
+        GPRM20201: Record "GP RM20201";
+        GPRM30201: Record "GP RM30201";
+        HistReceivablesApply: Record "Hist. Receivables Apply";
+    begin
+        GPRM20201.SetLoadFields(DEX_ROW_ID, ActualApplyToAmount, ActualDiscAvailTaken, ActualDiscTakenAmount, ActualWriteOffAmount, APFRDCDT, APFRDCNM, APFRDCTY, APFRMAPLYAMT, APFRMDENRATE, APFRMDISCAVAIL, APFRMDISCTAKEN, APFRMEXRATE, APFRMWROFAMT, ApplyFromGLPostDate, ApplyToGLPostDate, APPTOAMT, APTODCDT, APTODCNM, APTODCTY, APTODENRATE, APTOEXRATE, APYFRMRNDAMT, APYTORNDAMT, APYTORNDDISC, CPRCSTNM, CURNCYID, CUSTNMBR, DATE1, DISAVTKN, DISTKNAM, FROMCURR, GLPOSTDT, GSTDSAMT, OAPYFRMRNDAMT, OAPYTORNDAMT, OAPYTORNDDISC, ORAPTOAM, ORDATKN, ORDISTKN, ORWROFAM, PPSAMDED, RLGANLOS, Settled_Gain_CreditCurrT, Settled_Gain_DebitCurrTr, Settled_Gain_DebitDiscAv, Settled_Loss_CreditCurrT, Settled_Loss_DebitCurrTr, Settled_Loss_DebitDiscAv, TRXSORCE, WROFAMNT);
+        GPRM20201.SetRange(CUSTNMBR, CustomerNo);
+        GPRM20201.SetRange(APTODCTY, GPDocumentTypeId);
+        GPRM20201.SetRange(APTODCNM, DocumentNo);
+
+        if not GPRM20201.FindSet() then
+            exit;
+
+        repeat
+            GPRM30201.SetLoadFields(DEX_ROW_ID);
+            if not GPRM30201.Get(GPRM20201.APFRDCTY, GPRM20201.APFRDCNM, GPRM20201.APTODCTY, GPRM20201.APTODCNM) then begin
+                Clear(HistReceivablesApply);
+
+                HistReceivablesApply."Customer No." := GPRM20201.CUSTNMBR;
+                HistReceivablesApply."Customer Name" := CustomerName;
+                HistReceivablesApply."Corporate Customer No." := CopyStr(GPRM20201.CPRCSTNM.TrimEnd(), 1, MaxStrLen(HistReceivablesApply."Corporate Customer No."));
+                HistReceivablesApply."Date" := DT2Date(GPRM20201.DATE1);
+                HistReceivablesApply."GL Posting Date" := DT2Date(GPRM20201.GLPOSTDT);
+                HistReceivablesApply."Apply To Document No." := GPRM20201.APTODCNM;
+                HistReceivablesApply."Apply To Document Type" := ConvertGPDocTypeToHistReceivablesDocType(GPRM20201.APTODCTY);
+                HistReceivablesApply."Apply To Document Date" := DT2Date(GPRM20201.APTODCDT);
+                HistReceivablesApply."Apply To GL Posting Date" := DT2Date(GPRM20201.ApplyToGLPostDate);
+                HistReceivablesApply."Currency Code" := CopyStr(GPRM20201.CURNCYID.TrimEnd(), 1, MaxStrLen(HistReceivablesApply."Currency Code"));
+                HistReceivablesApply."Apply To Amount" := GPRM20201.APPTOAMT;
+                HistReceivablesApply."Discount Taken Amount" := GPRM20201.DISTKNAM;
+                HistReceivablesApply."Discount Available Taken" := GPRM20201.DISAVTKN;
+                HistReceivablesApply."Write Off Amount" := GPRM20201.WROFAMNT;
+                HistReceivablesApply."Orig. Apply To Amount" := GPRM20201.ORAPTOAM;
+                HistReceivablesApply."Orig. Disc. Taken Amount" := GPRM20201.ORDISTKN;
+                HistReceivablesApply."Orig. Disc. Available Taken" := GPRM20201.ORDATKN;
+                HistReceivablesApply."Orig. Write Off Amount" := GPRM20201.ORWROFAM;
+                HistReceivablesApply."Apply To Exchange Rate" := GPRM20201.APTOEXRATE;
+                HistReceivablesApply."Apply To Denom. Exch. Rate" := GPRM20201.APTODENRATE;
+                HistReceivablesApply."Apply From Document No." := GPRM20201.APFRDCNM;
+                HistReceivablesApply."Apply From Document Type" := ConvertGPDocTypeToHistReceivablesDocType(GPRM20201.APFRDCTY);
+                HistReceivablesApply."Apply From Document Date" := DT2Date(GPRM20201.APFRDCDT);
+                HistReceivablesApply."Apply From GL Posting Date" := DT2Date(GPRM20201.ApplyFromGLPostDate);
+                HistReceivablesApply."Apply From Currency Code" := CopyStr(GPRM20201.FROMCURR.TrimEnd(), 1, MaxStrLen(HistReceivablesApply."Apply From Currency Code"));
+                HistReceivablesApply."Apply From Apply Amount" := GPRM20201.APFRMAPLYAMT;
+                HistReceivablesApply."Apply From Disc. Taken Amount" := GPRM20201.APFRMDISCTAKEN;
+                HistReceivablesApply."Apply From Disc. Avail. Taken" := GPRM20201.APFRMDISCAVAIL;
+                HistReceivablesApply."Apply From Write Off Amount" := GPRM20201.APFRMWROFAMT;
+                HistReceivablesApply."Actual Apply To Amount" := GPRM20201.ActualApplyToAmount;
+                HistReceivablesApply."Actual Disc. Taken Amount" := GPRM20201.ActualDiscTakenAmount;
+                HistReceivablesApply."Actual Disc. Avail. Taken" := GPRM20201.ActualDiscAvailTaken;
+                HistReceivablesApply."Actual Write Off Amount" := GPRM20201.ActualWriteOffAmount;
+                HistReceivablesApply."Apply From Exchange Rate" := GPRM20201.APFRMEXRATE;
+                HistReceivablesApply."Apply From Denom. Exch. Rate" := GPRM20201.APFRMDENRATE;
+                HistReceivablesApply."Apply From Round Amount" := GPRM20201.APYFRMRNDAMT;
+                HistReceivablesApply."Apply To Round Amount" := GPRM20201.APYTORNDAMT;
+                HistReceivablesApply."Apply To Round Discount" := GPRM20201.APYTORNDDISC;
+                HistReceivablesApply."Orig. Apply From Round Amount" := GPRM20201.OAPYFRMRNDAMT;
+                HistReceivablesApply."Orig. Apply To Round Amount" := GPRM20201.OAPYTORNDAMT;
+                HistReceivablesApply."Orig. Apply To Round Discount" := GPRM20201.OAPYTORNDDISC;
+                HistReceivablesApply."GST Discount Amount" := GPRM20201.GSTDSAMT;
+                HistReceivablesApply."PPS Amount Deducted" := GPRM20201.PPSAMDED;
+                HistReceivablesApply."Realized Gain-Loss Amount" := GPRM20201.RLGANLOS;
+                HistReceivablesApply."Settled Gain CreditCurrTrx" := GPRM20201.Settled_Gain_CreditCurrT;
+                HistReceivablesApply."Settled Loss CreditCurrTrx" := GPRM20201.Settled_Loss_CreditCurrT;
+                HistReceivablesApply."Settled Gain DebitCurrTrx" := GPRM20201.Settled_Gain_DebitCurrTr;
+                HistReceivablesApply."Settled Loss DebitCurrTrx" := GPRM20201.Settled_Loss_DebitCurrTr;
+                HistReceivablesApply."Settled Gain DebitDiscAvail" := GPRM20201.Settled_Gain_DebitDiscAv;
+                HistReceivablesApply."Settled Loss DebitDiscAvail" := GPRM20201.Settled_Loss_DebitDiscAv;
+                HistReceivablesApply."Audit Code" := GPRM20201.TRXSORCE;
+
+                if not HistReceivablesApply.Insert() then
+                    ReportLastError(Database::"GP RM20201", GPRM20201.DEX_ROW_ID, "Hist. Migration Step Type"::"GP Receivables Trx.", DocumentNo);
+
+                AfterProcessedNextChildRecord();
+            end;
+        until GPRM20201.Next() = 0;
+    end;
+
+    local procedure PopulateRecvHistApply(CustomerNo: Code[35]; CustomerName: Text[100]; DocumentNo: Code[35]; GPDocumentTypeId: Integer)
+    var
+        GPRM30201: Record "GP RM30201";
+        HistReceivablesApply: Record "Hist. Receivables Apply";
+    begin
+        GPRM30201.SetLoadFields(DEX_ROW_ID, ActualApplyToAmount, ActualDiscAvailTaken, ActualDiscTakenAmount, ActualWriteOffAmount, APFRDCDT, APFRDCNM, APFRDCTY, APFRMAPLYAMT, APFRMDENRATE, APFRMDISCAVAIL, APFRMDISCTAKEN, APFRMEXRATE, APFRMWROFAMT, ApplyFromGLPostDate, ApplyToGLPostDate, APPTOAMT, APTODCDT, APTODCNM, APTODCTY, APTODENRATE, APTOEXRATE, APYFRMRNDAMT, APYTORNDAMT, APYTORNDDISC, CPRCSTNM, CURNCYID, CUSTNMBR, DATE1, DISAVTKN, DISTKNAM, FROMCURR, GLPOSTDT, GSTDSAMT, OAPYFRMRNDAMT, OAPYTORNDAMT, OAPYTORNDDISC, ORAPTOAM, ORDATKN, ORDISTKN, ORWROFAM, PPSAMDED, RLGANLOS, Settled_Gain_CreditCurrT, Settled_Gain_DebitCurrTr, Settled_Gain_DebitDiscAv, Settled_Loss_CreditCurrT, Settled_Loss_DebitCurrTr, Settled_Loss_DebitDiscAv, TRXSORCE, WROFAMNT);
+        GPRM30201.SetRange(CUSTNMBR, CustomerNo);
+        GPRM30201.SetRange(APTODCTY, GPDocumentTypeId);
+        GPRM30201.SetRange(APTODCNM, DocumentNo);
+
+        if not GPRM30201.FindSet() then
+            exit;
+
+        repeat
+            Clear(HistReceivablesApply);
+
+            HistReceivablesApply."Customer No." := GPRM30201.CUSTNMBR;
+            HistReceivablesApply."Customer Name" := CustomerName;
+            HistReceivablesApply."Corporate Customer No." := CopyStr(GPRM30201.CPRCSTNM.TrimEnd(), 1, MaxStrLen(HistReceivablesApply."Corporate Customer No."));
+            HistReceivablesApply."Date" := DT2Date(GPRM30201.DATE1);
+            HistReceivablesApply."GL Posting Date" := DT2Date(GPRM30201.GLPOSTDT);
+            HistReceivablesApply."Apply To Document No." := GPRM30201.APTODCNM;
+            HistReceivablesApply."Apply To Document Type" := ConvertGPDocTypeToHistReceivablesDocType(GPRM30201.APTODCTY);
+            HistReceivablesApply."Apply To Document Date" := DT2Date(GPRM30201.APTODCDT);
+            HistReceivablesApply."Apply To GL Posting Date" := DT2Date(GPRM30201.ApplyToGLPostDate);
+            HistReceivablesApply."Currency Code" := CopyStr(GPRM30201.CURNCYID.TrimEnd(), 1, MaxStrLen(HistReceivablesApply."Currency Code"));
+            HistReceivablesApply."Apply To Amount" := GPRM30201.APPTOAMT;
+            HistReceivablesApply."Discount Taken Amount" := GPRM30201.DISTKNAM;
+            HistReceivablesApply."Discount Available Taken" := GPRM30201.DISAVTKN;
+            HistReceivablesApply."Write Off Amount" := GPRM30201.WROFAMNT;
+            HistReceivablesApply."Orig. Apply To Amount" := GPRM30201.ORAPTOAM;
+            HistReceivablesApply."Orig. Disc. Taken Amount" := GPRM30201.ORDISTKN;
+            HistReceivablesApply."Orig. Disc. Available Taken" := GPRM30201.ORDATKN;
+            HistReceivablesApply."Orig. Write Off Amount" := GPRM30201.ORWROFAM;
+            HistReceivablesApply."Apply To Exchange Rate" := GPRM30201.APTOEXRATE;
+            HistReceivablesApply."Apply To Denom. Exch. Rate" := GPRM30201.APTODENRATE;
+            HistReceivablesApply."Apply From Document No." := GPRM30201.APFRDCNM;
+            HistReceivablesApply."Apply From Document Type" := ConvertGPDocTypeToHistReceivablesDocType(GPRM30201.APFRDCTY);
+            HistReceivablesApply."Apply From Document Date" := DT2Date(GPRM30201.APFRDCDT);
+            HistReceivablesApply."Apply From GL Posting Date" := DT2Date(GPRM30201.ApplyFromGLPostDate);
+            HistReceivablesApply."Apply From Currency Code" := CopyStr(GPRM30201.FROMCURR.TrimEnd(), 1, MaxStrLen(HistReceivablesApply."Apply From Currency Code"));
+            HistReceivablesApply."Apply From Apply Amount" := GPRM30201.APFRMAPLYAMT;
+            HistReceivablesApply."Apply From Disc. Taken Amount" := GPRM30201.APFRMDISCTAKEN;
+            HistReceivablesApply."Apply From Disc. Avail. Taken" := GPRM30201.APFRMDISCAVAIL;
+            HistReceivablesApply."Apply From Write Off Amount" := GPRM30201.APFRMWROFAMT;
+            HistReceivablesApply."Actual Apply To Amount" := GPRM30201.ActualApplyToAmount;
+            HistReceivablesApply."Actual Disc. Taken Amount" := GPRM30201.ActualDiscTakenAmount;
+            HistReceivablesApply."Actual Disc. Avail. Taken" := GPRM30201.ActualDiscAvailTaken;
+            HistReceivablesApply."Actual Write Off Amount" := GPRM30201.ActualWriteOffAmount;
+            HistReceivablesApply."Apply From Exchange Rate" := GPRM30201.APFRMEXRATE;
+            HistReceivablesApply."Apply From Denom. Exch. Rate" := GPRM30201.APFRMDENRATE;
+            HistReceivablesApply."Apply From Round Amount" := GPRM30201.APYFRMRNDAMT;
+            HistReceivablesApply."Apply To Round Amount" := GPRM30201.APYTORNDAMT;
+            HistReceivablesApply."Apply To Round Discount" := GPRM30201.APYTORNDDISC;
+            HistReceivablesApply."Orig. Apply From Round Amount" := GPRM30201.OAPYFRMRNDAMT;
+            HistReceivablesApply."Orig. Apply To Round Amount" := GPRM30201.OAPYTORNDAMT;
+            HistReceivablesApply."Orig. Apply To Round Discount" := GPRM30201.OAPYTORNDDISC;
+            HistReceivablesApply."GST Discount Amount" := GPRM30201.GSTDSAMT;
+            HistReceivablesApply."PPS Amount Deducted" := GPRM30201.PPSAMDED;
+            HistReceivablesApply."Realized Gain-Loss Amount" := GPRM30201.RLGANLOS;
+            HistReceivablesApply."Settled Gain CreditCurrTrx" := GPRM30201.Settled_Gain_CreditCurrT;
+            HistReceivablesApply."Settled Loss CreditCurrTrx" := GPRM30201.Settled_Loss_CreditCurrT;
+            HistReceivablesApply."Settled Gain DebitCurrTrx" := GPRM30201.Settled_Gain_DebitCurrTr;
+            HistReceivablesApply."Settled Loss DebitCurrTrx" := GPRM30201.Settled_Loss_DebitCurrTr;
+            HistReceivablesApply."Settled Gain DebitDiscAvail" := GPRM30201.Settled_Gain_DebitDiscAv;
+            HistReceivablesApply."Settled Loss DebitDiscAvail" := GPRM30201.Settled_Loss_DebitDiscAv;
+            HistReceivablesApply."Audit Code" := GPRM30201.TRXSORCE;
+
+            if not HistReceivablesApply.Insert() then
+                ReportLastError(Database::"GP RM30201", GPRM30201.DEX_ROW_ID, "Hist. Migration Step Type"::"GP Receivables Trx.", DocumentNo);
+
+            AfterProcessedNextChildRecord();
+        until GPRM30201.Next() = 0;
     end;
 
     local procedure PopulatePayablesDocuments()
@@ -630,9 +792,10 @@ codeunit 40900 "GP Populate Hist. Tables"
             HistPayablesDocument."1099 Box Number" := Format(GPPM20000.TEN99BOXNUMBER);
             HistPayablesDocument."PO Number" := GPPM20000.PONUMBER;
 
-            if HistPayablesDocument.Insert() then
+            if HistPayablesDocument.Insert() then begin
+                PopulatePayablesApply(HistPayablesDocument."Vendor No.", VendorName, HistPayablesDocument."Voucher No.", GPPM20000.DOCTYPE);
                 ReportLastSuccess(SourceTableId, LastSourceRecordId)
-            else
+            end else
                 ReportLastError(SourceTableId, LastSourceRecordId, "Hist. Migration Step Type"::"GP Payables Trx.", GPPM20000.DOCNUMBR);
 
             AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
@@ -707,15 +870,148 @@ codeunit 40900 "GP Populate Hist. Tables"
             HistPayablesDocument."1099 Box Number" := Format(GPPMHist.TEN99BOXNUMBER);
             HistPayablesDocument."PO Number" := GPPMHist.PONUMBER;
 
-            if HistPayablesDocument.Insert() then
+            if HistPayablesDocument.Insert() then begin
+                PopulatePayablesApply(HistPayablesDocument."Vendor No.", VendorName, HistPayablesDocument."Voucher No.", GPPMHist.DOCTYPE);
                 ReportLastSuccess(SourceTableId, LastSourceRecordId)
-            else
+            end else
                 ReportLastError(SourceTableId, LastSourceRecordId, "Hist. Migration Step Type"::"GP Payables Trx.", GPPMHist.DOCNUMBR);
 
             AfterProcessedNextRecord(SourceTableId, LastSourceRecordId);
         until GPPMHist.Next() = 0;
 
         AfterProcessedSection(SourceTableId, LastSourceRecordId);
+    end;
+
+    local procedure PopulatePayablesApply(VendorNo: Code[35]; VendorName: Text[65]; VoucherNo: Code[35]; GPDocumentTypeId: Integer)
+    begin
+        PopulatePayablesOpenApply(VendorNo, VendorName, VoucherNo, GPDocumentTypeId);
+        PopulatePayablesHistApply(VendorNo, VendorName, VoucherNo, GPDocumentTypeId);
+    end;
+
+    local procedure PopulatePayablesOpenApply(VendorNo: Code[35]; VendorName: Text[65]; VoucherNo: Code[35]; GPDocumentTypeId: Integer)
+    var
+        GPPM10200: Record "GP PM10200";
+        GPPM30300: Record "GP PM30300";
+        HistPayablesApply: Record "Hist. Payables Apply";
+    begin
+        GPPM10200.SetLoadFields(DEX_ROW_ID, ActualApplyToAmount, ActualDiscAvailTaken, ActualDiscTakenAmount, ActualWriteOffAmount, APFRDCNM, APFRMAPLYAMT, APFRMDENRATE, APFRMDISCAVAIL, APFRMDISCTAKEN, APFRMEXRATE, APFRMWROFAMT, APPLDAMT, ApplyFromGLPostDate, ApplyToGLPostDate, APTODCDT, APTODCNM, APTODCTY, APTVCHNM, Credit1099Amount, CURNCYID, DISTKNAM, DOCTYPE, FROMCURR, GSTDSAMT, ORAPPAMT, ORDATKN, ORDISTKN, ORWROFAM, PPSAMDED, TEN99AMNT, VCHRNMBR, VENDORID, WROFAMNT);
+        GPPM10200.SetRange(VENDORID, VendorNo);
+        GPPM10200.SetRange(DOCTYPE, GPDocumentTypeId);
+        GPPM10200.SetRange(VCHRNMBR, VoucherNo);
+        GPPM10200.SetRange(POSTED, true);
+
+        if not GPPM10200.FindSet() then
+            exit;
+
+        repeat
+            GPPM30300.SetLoadFields(DEX_ROW_ID);
+            if not GPPM30300.Get(GPPM10200.APTVCHNM, GPPM10200.APTODCTY, GPPM10200.VCHRNMBR, GPPM10200.DOCTYPE) then begin
+                Clear(HistPayablesApply);
+
+                HistPayablesApply."Vendor No." := GPPM10200.VENDORID;
+                HistPayablesApply."Vendor Name" := VendorName;
+                HistPayablesApply."Document Type" := ConvertGPDocTypeToHistPayablesDocType(GPPM10200.DOCTYPE);
+#pragma warning disable AA0139
+                HistPayablesApply."Apply To Voucher No." := GPPM10200.APTVCHNM.TrimEnd();
+                HistPayablesApply."Apply To Document No." := GPPM10200.APTODCNM.TrimEnd();
+                HistPayablesApply."Voucher No." := GPPM10200.VCHRNMBR.TrimEnd();
+#pragma warning restore AA0139
+                HistPayablesApply."Apply To Document Type" := ConvertGPDocTypeToHistPayablesDocType(GPPM10200.APTODCTY);
+                HistPayablesApply."Apply To Document Date" := DT2Date(GPPM10200.APTODCDT);
+                HistPayablesApply."Document Amount" := GPPM10200.APPLDAMT;
+                HistPayablesApply."Currency Code" := CopyStr(GPPM10200.CURNCYID.TrimEnd(), 1, MaxStrLen(HistPayablesApply."Currency Code"));
+                HistPayablesApply."Disc. Taken Amount" := GPPM10200.DISTKNAM;
+                HistPayablesApply."Write Off Amount" := GPPM10200.WROFAMNT;
+                HistPayablesApply."Orig. Applied Amount" := GPPM10200.ORAPPAMT;
+                HistPayablesApply."Orig. Discount Taken Amount" := GPPM10200.ORDISTKN;
+                HistPayablesApply."Orig. Discount Available Taken" := GPPM10200.ORDATKN;
+                HistPayablesApply."Orig. Write Off Amount" := GPPM10200.ORWROFAM;
+                HistPayablesApply."Apply To Post Date" := DT2Date(GPPM10200.ApplyToGLPostDate);
+                HistPayablesApply."Apply From Document No." := GPPM10200.APFRDCNM;
+                HistPayablesApply."Apply From GL Posting Date" := DT2Date(GPPM10200.ApplyFromGLPostDate);
+                HistPayablesApply."Apply From Currency Code" := CopyStr(GPPM10200.FROMCURR.TrimEnd(), 1, MaxStrLen(HistPayablesApply."Apply From Currency Code"));
+                HistPayablesApply."Apply From Apply Amount" := GPPM10200.APFRMAPLYAMT;
+                HistPayablesApply."Apply From Disc. Taken Amount" := GPPM10200.APFRMDISCTAKEN;
+                HistPayablesApply."Apply From Disc. Avail. Taken" := GPPM10200.APFRMDISCAVAIL;
+                HistPayablesApply."Apply From Write Off Amount" := GPPM10200.APFRMWROFAMT;
+                HistPayablesApply."Actual Apply To Amount" := GPPM10200.ActualApplyToAmount;
+                HistPayablesApply."Actual Discount Taken Amount" := GPPM10200.ActualDiscTakenAmount;
+                HistPayablesApply."Actual Disc. Available Taken" := GPPM10200.ActualDiscAvailTaken;
+                HistPayablesApply."Actual Write Off Amount" := GPPM10200.ActualWriteOffAmount;
+                HistPayablesApply."Apply From Exchange Rate" := GPPM10200.APFRMEXRATE;
+                HistPayablesApply."Apply From Denom. Exch. Rate" := GPPM10200.APFRMDENRATE;
+                HistPayablesApply."PPS Amount Deducted" := GPPM10200.PPSAMDED;
+                HistPayablesApply."GST Discount Amount" := GPPM10200.GSTDSAMT;
+                HistPayablesApply."1099 Amount" := GPPM10200.TEN99AMNT;
+                HistPayablesApply."Credit 1099 Amount" := GPPM10200.Credit1099Amount;
+
+                if not HistPayablesApply.Insert() then
+                    ReportLastError(Database::"GP PM10200", GPPM10200.DEX_ROW_ID, "Hist. Migration Step Type"::"GP Payables Trx.", VoucherNo);
+
+                AfterProcessedNextChildRecord();
+            end;
+        until GPPM10200.Next() = 0;
+    end;
+
+    local procedure PopulatePayablesHistApply(VendorNo: Code[35]; VendorName: Text[65]; VoucherNo: Code[35]; GPDocumentTypeId: Integer)
+    var
+        GPPM30300: Record "GP PM30300";
+        HistPayablesApply: Record "Hist. Payables Apply";
+    begin
+        GPPM30300.SetLoadFields(DEX_ROW_ID, ActualApplyToAmount, ActualDiscAvailTaken, ActualDiscTakenAmount, ActualWriteOffAmount, APFRDCNM, APFRMAPLYAMT, APFRMDENRATE, APFRMDISCAVAIL, APFRMDISCTAKEN, APFRMEXRATE, APFRMWROFAMT, APPLDAMT, ApplyFromGLPostDate, ApplyToGLPostDate, APTODCDT, APTODCNM, APTODCTY, APTVCHNM, Credit1099Amount, CURNCYID, DISTKNAM, DOCTYPE, FROMCURR, GSTDSAMT, ORAPPAMT, ORDATKN, ORDISTKN, ORWROFAM, PPSAMDED, TEN99AMNT, VCHRNMBR, VENDORID, WROFAMNT);
+        GPPM30300.SetRange(VENDORID, VendorNo);
+        GPPM30300.SetRange(DOCTYPE, GPDocumentTypeId);
+        GPPM30300.SetRange(VCHRNMBR, VoucherNo);
+        GPPM30300.SetRange(POSTED, true);
+
+        if not GPPM30300.FindSet() then
+            exit;
+
+        repeat
+            Clear(HistPayablesApply);
+
+            HistPayablesApply."Vendor No." := GPPM30300.VENDORID;
+            HistPayablesApply."Vendor Name" := VendorName;
+            HistPayablesApply."Document Type" := ConvertGPDocTypeToHistPayablesDocType(GPPM30300.DOCTYPE);
+#pragma warning disable AA0139
+            HistPayablesApply."Apply To Voucher No." := GPPM30300.APTVCHNM.TrimEnd();
+            HistPayablesApply."Apply To Document No." := GPPM30300.APTODCNM.TrimEnd();
+            HistPayablesApply."Voucher No." := GPPM30300.VCHRNMBR.TrimEnd();
+#pragma warning restore AA0139
+            HistPayablesApply."Currency Code" := CopyStr(GPPM30300.CURNCYID.TrimEnd(), 1, MaxStrLen(HistPayablesApply."Currency Code"));
+            HistPayablesApply."Apply To Document Type" := ConvertGPDocTypeToHistPayablesDocType(GPPM30300.APTODCTY);
+            HistPayablesApply."Apply To Document Date" := DT2Date(GPPM30300.APTODCDT);
+            HistPayablesApply."Document Amount" := GPPM30300.APPLDAMT;
+            HistPayablesApply."Disc. Taken Amount" := GPPM30300.DISTKNAM;
+            HistPayablesApply."Write Off Amount" := GPPM30300.WROFAMNT;
+            HistPayablesApply."Orig. Applied Amount" := GPPM30300.ORAPPAMT;
+            HistPayablesApply."Orig. Discount Taken Amount" := GPPM30300.ORDISTKN;
+            HistPayablesApply."Orig. Discount Available Taken" := GPPM30300.ORDATKN;
+            HistPayablesApply."Orig. Write Off Amount" := GPPM30300.ORWROFAM;
+            HistPayablesApply."Apply To Post Date" := DT2Date(GPPM30300.ApplyToGLPostDate);
+            HistPayablesApply."Apply From Document No." := GPPM30300.APFRDCNM;
+            HistPayablesApply."Apply From GL Posting Date" := DT2Date(GPPM30300.ApplyFromGLPostDate);
+            HistPayablesApply."Apply From Currency Code" := CopyStr(GPPM30300.FROMCURR.TrimEnd(), 1, MaxStrLen(HistPayablesApply."Apply From Currency Code"));
+            HistPayablesApply."Apply From Apply Amount" := GPPM30300.APFRMAPLYAMT;
+            HistPayablesApply."Apply From Disc. Taken Amount" := GPPM30300.APFRMDISCTAKEN;
+            HistPayablesApply."Apply From Disc. Avail. Taken" := GPPM30300.APFRMDISCAVAIL;
+            HistPayablesApply."Apply From Write Off Amount" := GPPM30300.APFRMWROFAMT;
+            HistPayablesApply."Actual Apply To Amount" := GPPM30300.ActualApplyToAmount;
+            HistPayablesApply."Actual Discount Taken Amount" := GPPM30300.ActualDiscTakenAmount;
+            HistPayablesApply."Actual Disc. Available Taken" := GPPM30300.ActualDiscAvailTaken;
+            HistPayablesApply."Actual Write Off Amount" := GPPM30300.ActualWriteOffAmount;
+            HistPayablesApply."Apply From Exchange Rate" := GPPM30300.APFRMEXRATE;
+            HistPayablesApply."Apply From Denom. Exch. Rate" := GPPM30300.APFRMDENRATE;
+            HistPayablesApply."PPS Amount Deducted" := GPPM30300.PPSAMDED;
+            HistPayablesApply."GST Discount Amount" := GPPM30300.GSTDSAMT;
+            HistPayablesApply."1099 Amount" := GPPM30300.TEN99AMNT;
+            HistPayablesApply."Credit 1099 Amount" := GPPM30300.Credit1099Amount;
+
+            if not HistPayablesApply.Insert() then
+                ReportLastError(Database::"GP PM30300", GPPM30300.DEX_ROW_ID, "Hist. Migration Step Type"::"GP Payables Trx.", VoucherNo);
+
+            AfterProcessedNextChildRecord();
+        until GPPM30300.Next() = 0;
     end;
 
     local procedure PopulateInventoryTransactions()

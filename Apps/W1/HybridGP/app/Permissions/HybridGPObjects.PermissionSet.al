@@ -157,5 +157,9 @@ permissionset 4029 "HybridGP - Objects"
                     page "Hybrid GP Errors Overview Fb" = X,
                     table "GP Migration Error Overview" = X,
                     table "GP Upgrade Settings" = X,
-                    codeunit "Data Migration Error Logging" = X;
+                    codeunit "Data Migration Error Logging" = X,
+                    table "GP PM10200" = X,
+                    table "GP PM30300" = X,
+                    table "GP RM20201" = X,
+                    table "GP RM30201" = X;
 }

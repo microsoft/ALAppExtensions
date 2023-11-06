@@ -5,6 +5,8 @@ page 41008 "Hist. Payables Document"
     PageType = Card;
     Caption = 'Historical Payables Document';
     SourceTable = "Hist. Payables Document";
+    ApplicationArea = All;
+    UsageCategory = None;
     Editable = false;
     DeleteAllowed = false;
     InsertAllowed = false;
@@ -178,11 +180,24 @@ page 41008 "Hist. Payables Document"
                     ToolTip = 'Specifies the value of the User field.';
                 }
             }
+            group(Apply)
+            {
+                Caption = 'Payables Apply';
+
+                part(HistPayablesApplyList; "Hist. Payables Apply List")
+                {
+                    Caption = 'Historical Payables Apply Lines';
+                    ShowFilter = false;
+                    ApplicationArea = All;
+                    SubPageLink = "Vendor No." = field("Vendor No.");
+                }
+            }
         }
     }
 
     trigger OnAfterGetCurrRecord()
     begin
+        CurrPage.HistPayablesApplyList.Page.FilterByVoucherNo(Rec."Document Type", Rec."Voucher No.", Rec."Document No.");
         DataCaptionExpressionTxt := Format(Rec."Document Type") + ' - ' + Rec."Document No.";
     end;
 

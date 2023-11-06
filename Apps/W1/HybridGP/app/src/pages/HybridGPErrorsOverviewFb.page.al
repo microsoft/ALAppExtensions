@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 page 40132 "Hybrid GP Errors Overview Fb"
 {
     Caption = 'GP Upgrade Errors';

@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using System.Integration;
+
 codeunit 40112 "GP Migration Error Handler"
 {
     SingleInstance = true;

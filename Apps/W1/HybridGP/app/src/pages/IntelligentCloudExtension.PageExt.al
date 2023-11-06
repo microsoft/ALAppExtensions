@@ -69,6 +69,9 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                         exit;
                     end;
 
+                    if not TaskScheduler.CanCreateTask() then
+                        Error(HistoricalSnapshotJobNeedPermissionsMsg);
+
                     if Confirm(ConfirmRerunQst) then begin
                         if not GPHistSourceProgress.IsEmpty() then begin
                             HistMigrationCurrentStatus.EnsureInit();
@@ -137,5 +140,6 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
         ResetPreviousRunQst: Label 'Do you want to reset your previous GP Historical Snapshot migration? Choose No if you want to continue progress from the previous attempt.';
         SnapshotJobRunningMsg: Label 'The GP Historical Snapshot job is running.';
         HistoricalDataJobNotRanMsg: Label 'The GP Historical Snapshot job has not ran.';
+        HistoricalSnapshotJobNeedPermissionsMsg: Label 'The GP Historical Snapshot job cannot be started. Your user needs permission to create a scheduled task.';
         HistoricalDataStartJobMsg: Label 'Start GP Historical Snapshot job.';
 }

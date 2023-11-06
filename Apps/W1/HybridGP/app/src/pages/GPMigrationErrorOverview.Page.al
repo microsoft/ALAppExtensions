@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using System.Integration;
+
 page 40131 "GP Migration Error Overview"
 {
     PageType = List;

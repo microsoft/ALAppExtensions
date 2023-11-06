@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 40141 "GP Migration Error Overview"
 {
     ReplicateData = false;

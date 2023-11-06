@@ -225,8 +225,10 @@ codeunit 4025 "GP Cloud Migration"
         UpdateOrInsertRecord(Database::"GP PM00201", 'PM00201');
         UpdateOrInsertRecord(Database::"GP PM00204", 'PM00204');
         UpdateOrInsertRecord(Database::"GP Vendor Address", 'PM00300');
+        UpdateOrInsertRecord(Database::"GP PM10200", 'PM10200');
         UpdateOrInsertRecord(Database::"GP PM20000", 'PM20000');
         UpdateOrInsertRecord(Database::GPPMHist, 'PM30200');
+        UpdateOrInsertRecord(Database::"GP PM30300", 'PM30300');
 
         UpdateOrInsertRecord(Database::"GP POP10100", 'POP10100');
         UpdateOrInsertRecord(Database::"GP POP10110", 'POP10110');
@@ -247,7 +249,9 @@ codeunit 4025 "GP Cloud Migration"
         UpdateOrInsertRecord(Database::"GP RM00103", 'RM00103');
         UpdateOrInsertRecord(Database::"GP RM00201", 'RM00201');
         UpdateOrInsertRecord(Database::"GP RM20101", 'RM20101');
+        UpdateOrInsertRecord(Database::"GP RM20201", 'RM20201');
         UpdateOrInsertRecord(Database::GPRMHist, 'RM30101');
+        UpdateOrInsertRecord(Database::"GP RM30201", 'RM30201');
 
         UpdateOrInsertRecord(Database::GPSOPTrxHist, 'SOP30200');
         UpdateOrInsertRecord(Database::GPSOPDepositHist, 'SOP30201');
