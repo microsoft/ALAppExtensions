@@ -1,0 +1,34 @@
+name: Suggest a feature for contribution
+description: Suggest a feature you would like to implement, which is based on a BC idea.
+title: "[BC Idea]: "
+labels: ["bcidea"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to create a BC Idea issue!
+
+        ⚠️⚠️ BEFORE WE GET STARTED ⚠️⚠️
+        Please do not create an issue for a BC Idea unless you intend to implement it yourself. If you are not planning to implement the BC Idea yourself, please go to aka.ms/bcideas and upvote the feature on BC Ideas instead. 
+
+        Before you create a new issue please:
+        🔎 Search existing issues to avoid creating duplicates.
+
+        Read more about what and how to contribute in the CONTRIBUTIONS document of this repository: https://github.com/microsoft/BCApps/blob/main/CONTRIBUTING.md.
+
+  - type: input
+    id: bcidea
+    attributes:
+      label: BC Idea Link
+      description: Please link to the BC Idea
+      placeholder: ex. https://experience.dynamics.com/ideas/idea/?ideaid=123456
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Please include the description from the BC Ideas page
+      placeholder: Description of BC Idea
+    validations:
+      required: true

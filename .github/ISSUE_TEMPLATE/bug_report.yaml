@@ -1,0 +1,50 @@
+name: Report and address a bug
+description: Create a bug report for a product defect you would like to address yourself
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report! 
+
+        ⚠️⚠️ BEFORE WE GET STARTED ⚠️⚠️
+        This is not the right place to report product defects with customer impact to Microsoft! Issues reported in this repository do not fall under SLAs (Service Level Agreements) and hence have no guaranteed time to mitigation. If your customers are experiencing product defects or you have discovered a severe issue in the product, please follow the steps outlined in https://learn.microsoft.com/dynamics365/business-central/dev-itpro/technical-support to get your issue routed to the right team at Microsoft and to get it treated with the right priority.
+
+        Before you create a new issue, please check the following:
+        🔎 Search existing issues to avoid creating duplicates.
+        🧪 Test using the latest bcinsider builds to see if your issue has already been fixed
+
+        Read more about what and how to contribute in the CONTRIBUTIONS document of this repository: https://github.com/microsoft/BCApps/blob/main/CONTRIBUTING.md.
+  - type: textarea
+    id: describe-the-issue
+    attributes:
+      label: Describe the issue
+      description: A clear and concise description of what the issue is
+      placeholder: Describe the issue
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: Describe what behavior you expected
+      placeholder: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to reproduce
+      description: List of steps to reproduce
+      placeholder: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: If needed add any other context about the problem here or include screenshots
+      placeholder: Additional context, screenshots, log output, etc.
+    validations:
+      required: true
