@@ -1,9 +1,11 @@
 # Microsoft AL application foundation modules and application add-ons for Microsoft Dynamics 365 Business Central
 Welcome to the ALAppExtension repository!
 
-This repo is a platform for Microsoft and our vibrant partner channel and community to work together to develop system modules and add-on apps in the AL language and to enable the general extensibility of Microsoft Dynamics 365 Business Central.
+This repo is a platform for Microsoft and our vibrant partner channel and community to work together to develop add-on apps in the AL language and to enable the general extensibility of Microsoft Dynamics 365 Business Central.
 
-We’re working to make the core application thinner, more extensible, and easier to localize by extracting more and more of our system logic into modules, forming a system application and application foundation, as well as extracting business logic into add-on and localization apps. As we go, we’ll publish the source code for the modules and apps in this repo. The modules and apps are open for contributions. The apps can furthermore serve as starting point for verticalizations or just as samples for developing apps.
+We’re working to make the core application thinner, more extensible, and easier to localize extracting business logic into add-on and localization apps. As we go, we’ll publish the source code for the apps in this repo. The apps are open for contributions and can furthermore serve as starting point for verticalizations or just as samples for developing apps.
+
+⚠ This repository is no longer a place to develop on the System Application or Developer Tools! The System Application is now fully developed in the [BCApps](https://github.com/microsoft/BCApps) repository. Please use that repository for all contributions to the System Application and Developer Tools. ⚠
 
 Microsoft will ship the contributions in upcoming releases of [Microsoft Dynamics 365 Business Central](https://dynamics.microsoft.com/en-us/business-central), where you’ll get to enjoy the effect of your contributions.
 
@@ -32,5 +34,3 @@ This project may contain trademarks or logos for projects, products, or services
 
 ## See Also
 [FAQ](FAQ.md)
-
-[System Application Overview](https://docs.microsoft.com/en-us/dynamics365/business-central/dev-itpro/developer/devenv-system-application-overview)
