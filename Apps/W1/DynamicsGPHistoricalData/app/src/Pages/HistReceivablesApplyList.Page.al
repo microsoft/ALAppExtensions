@@ -69,19 +69,35 @@ page 41022 "Hist. Receivables Apply List"
 
     procedure FilterByDocumentNo(DocType: Enum "Hist. Receivables Doc. Type"; DocumentNo: Code[35])
     begin
-        if DocType = "Hist. Receivables Doc. Type"::SaleOrInvoice then
+        ParentDocType := DocType;
+        ParentDocumentNo := DocumentNo;
+    end;
+
+    trigger OnAfterGetRecord()
+    begin
+        ApplyFilters();
+    end;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        ApplyFilters();
+    end;
+
+    local procedure ApplyFilters()
+    begin
+        if ParentDocType = "Hist. Receivables Doc. Type"::SaleOrInvoice then
             IsInvoice := true;
 
-        Rec.SetRange("Apply To Document No.", DocumentNo);
+        Rec.SetRange("Apply To Document No.", ParentDocumentNo);
 
         if (Rec.IsEmpty) then begin
             Rec.SetRange("Apply To Document No.");
-            Rec.SetRange("Apply From Document No.", DocumentNo);
+            Rec.SetRange("Apply From Document No.", ParentDocumentNo);
         end;
-
-        CurrPage.Update();
     end;
 
     var
+        ParentDocType: Enum "Hist. Receivables Doc. Type";
+        ParentDocumentNo: Code[35];
         IsInvoice: Boolean;
 }

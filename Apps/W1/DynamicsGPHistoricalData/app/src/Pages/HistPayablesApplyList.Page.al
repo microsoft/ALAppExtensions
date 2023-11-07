@@ -77,17 +77,33 @@ page 41021 "Hist. Payables Apply List"
         }
     }
 
-    procedure FilterByVoucherNo(DocType: Enum "Hist. Payables Doc. Type"; VoucherNo: Code[35]; DocumentNo: Code[35])
+    procedure FilterByVoucherNo(DocType: Enum "Hist. Payables Doc. Type"; VoucherNo: Code[35])
     begin
-        if DocType = Rec."Document Type"::Invoice then begin
-            IsInvoice := true;
-            Rec.SetRange("Apply To Voucher No.", VoucherNo)
-        end else
-            Rec.SetRange("Voucher No.", VoucherNo);
+        ParentDocType := DocType;
+        ParentVoucherNo := VoucherNo;
+    end;
 
-        CurrPage.Update();
+    trigger OnAfterGetRecord()
+    begin
+        ApplyFilters();
+    end;
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        ApplyFilters();
+    end;
+
+    local procedure ApplyFilters()
+    begin
+        if ParentDocType = Rec."Document Type"::Invoice then begin
+            IsInvoice := true;
+            Rec.SetRange("Apply To Voucher No.", ParentVoucherNo)
+        end else
+            Rec.SetRange("Voucher No.", ParentVoucherNo);
     end;
 
     var
+        ParentDocType: Enum "Hist. Payables Doc. Type";
+        ParentVoucherNo: Code[35];
         IsInvoice: Boolean;
 }
