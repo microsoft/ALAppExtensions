@@ -15,7 +15,7 @@ body:
         🔎 Search existing issues to avoid creating duplicates.
         🧪 Test using the latest bcinsider builds to see if your issue has already been fixed
 
-        Read more about what and how to contribute in the CONTRIBUTIONS document of this repository: https://github.com/microsoft/BCApps/blob/main/CONTRIBUTING.md.
+        Read more about what and how to contribute in the CONTRIBUTIONS document of this repository: https://github.com/microsoft/AlAppExtensions/blob/main/CONTRIBUTING.md.
   - type: textarea
     id: describe-the-issue
     attributes:
