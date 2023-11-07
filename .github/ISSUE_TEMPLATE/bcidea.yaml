@@ -14,7 +14,7 @@ body:
         Before you create a new issue please:
         🔎 Search existing issues to avoid creating duplicates.
 
-        Read more about what and how to contribute in the CONTRIBUTIONS document of this repository: https://github.com/microsoft/BCApps/blob/main/CONTRIBUTING.md.
+        Read more about what and how to contribute in the CONTRIBUTIONS document of this repository: https://github.com/microsoft/AlAppExtensions/blob/main/CONTRIBUTING.md.
 
   - type: input
     id: bcidea
