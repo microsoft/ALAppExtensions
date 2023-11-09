@@ -26,6 +26,7 @@ codeunit 20352 "Connectivity App Definitions"
         RegisterWiseBanking();
         RegisterDirectBankingNL();
         RegisterDirectBankingBE();
+        RegisterDirectBankingDE();
         RegisterSofteraBankfeed();
         RegisterSUManGOAutoBank();
     end;
@@ -284,6 +285,36 @@ codeunit 20352 "Connectivity App Definitions"
         AddDescriptionTranslation(AppId, 'Automatiseer uw bankprocessen in Business Central, zonder uitwisseling van bestanden. Stroomlijn uw banktransacties inclusief matching voor uw bankrekeningen en initieer betalingen vanuit Business Central.', 2067);
         AddDescriptionTranslation(AppId, 'Automatisez votre processus bancaire dans Business Central, sans échange de fichiers. Rationalisez les transactions bancaires, y compris l''appariement de vos comptes bancaires, et initiez des paiements à partir de Business Central.', 2060);
         AddDescriptionTranslation(AppId, 'Automatisez votre processus bancaire dans Business Central, sans échange de fichiers. Rationalisez les transactions bancaires, y compris l''appariement de vos comptes bancaires, et initiez des paiements à partir de Business Central.', 1036);
+        RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
+    end;
+
+    local procedure RegisterDirectBankingDE()
+    var
+        AppId: Text[250];
+        AppName: Text[1024];
+        AppPublisher: Text[250];
+        AppDescription: Text[2048];
+        AppProviderSupportURL: Text[250];
+        AppSourceURL: Text[250];
+        AppWorksOn: Text;
+        AppApprovedFor: Text;
+    begin
+        /***************************************************
+            Add app 'Direct Banking' to DE
+        ***************************************************/
+
+        AppId := '1b3790da-e8ba-4a11-92a9-c70e37b4f831';
+        AppName := 'Direct Banking';
+        AppPublisher := 'IDYN B.V.';
+        AppDescription := 'Automate your banking process in Business Central, no file exchange needed. Streamline bank transactions including matching for your bank accounts, and initiate payment from Business Central.';
+        AppProviderSupportURL := 'https://help.idyn.nl/directbanking/bc/en/topic/about-directbanking';
+        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.idynbv%7CAID.bcbanking%7CPAPPID.1b3790da-e8ba-4a11-92a9-c70e37b4f831';
+        AppApprovedFor := 'DE';
+        AppWorksOn := 'DE';
+
+        AddDescriptionTranslation(AppId, 'Automatisieren Sie Ihre Bankprozesse in Business Central, ohne Dateien auszutauschen. Optimieren Sie Ihre Banktransaktionen, einschließlich des Abgleichs mit Ihren Bankkonten, und veranlassen Sie Zahlungen über Business Central.', 1031);
+        AddDescriptionTranslation(AppId, 'Automatisieren Sie Ihre Bankprozesse in Business Central, ohne Dateien auszutauschen. Optimieren Sie Ihre Banktransaktionen, einschließlich des Abgleichs mit Ihren Bankkonten, und veranlassen Sie Zahlungen über Business Central.', 2055);
+        AddDescriptionTranslation(AppId, 'Automatisieren Sie Ihre Bankprozesse in Business Central, ohne Dateien auszutauschen. Optimieren Sie Ihre Banktransaktionen, einschließlich des Abgleichs mit Ihren Bankkonten, und veranlassen Sie Zahlungen über Business Central.', 3079);
         RegisterApp(AppId, AppName, AppPublisher, AppDescription, AppProviderSupportURL, AppSourceURL, AppApprovedFor, AppWorksOn, "Connectivity Apps Category"::Banking);
     end;
 
