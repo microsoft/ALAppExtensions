@@ -13,7 +13,7 @@ codeunit 4691 "Recurrence Schedule Impl."
     InherentEntitlements = X;
     InherentPermissions = X;
     Permissions = tabledata Date = r,
-                  tabledata "Recurrence Schedule" = ri;
+                  tabledata "Recurrence Schedule" = rim;
 
     var
         MinDateTime: DateTime;
