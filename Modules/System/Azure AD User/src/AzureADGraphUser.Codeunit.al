@@ -109,7 +109,6 @@ codeunit 9024 "Azure AD Graph User"
     /// Returns whether the current user is Delegated Admin.
     /// </summary>
     /// <returns>True if the current user is Delegated Admin, false otherwise.</returns>
-    [Scope('OnPrem')]
     [NonDebuggable]
     procedure IsUserDelegatedAdmin(): Boolean
     begin
@@ -120,7 +119,6 @@ codeunit 9024 "Azure AD Graph User"
     /// Returns whether the current user is Delegated Helpdesk.
     /// </summary>
     /// <returns>True if the current user is Delegated Helpdesk, false otherwise.</returns>
-    [Scope('OnPrem')]
     [NonDebuggable]
     procedure IsUserDelegatedHelpdesk(): Boolean
     begin

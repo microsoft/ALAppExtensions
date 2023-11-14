@@ -25,7 +25,7 @@ codeunit 9871 "Security Group Impl."
         InvalidWindowsGroupErr: Label 'The group ID %1 does not correspond to a valid Windows group.', Comment = '%1 = Windows group ID';
         InvalidEntraGroupErr: Label 'The group ID %1 does not correspond to a valid Microsoft Entra group.', Comment = '%1 = Microsoft Entra security group ID';
         InvalidGroupNameErr: Label 'The group %1 could not be found.', Comment = '%1 = group name';
-        GroupAlreadyExistsErr: Label 'The group %1 already exists.', Comment = '%1 = Microsoft Entra group ID / Windows group name / group code';
+        GroupAlreadyExistsErr: Label 'The group %1 already exists.', Comment = '%1 = group name or group code';
         WindowsAccountNotAllowedErr: Label 'The group %1 is not allowed.', Comment = '%1 = Windows group name';
         CouldNotFindGroupErr: Label 'Could not find %1 group.', Comment = '%1 = Active Directory / Microsoft Entra';
         NoPermissionsErr: Label 'You do not have permissions to create security groups. Ask your system administrator to give you Insert, Modify and Delete permissions for the Security Group table.';
@@ -35,6 +35,7 @@ codeunit 9871 "Security Group Impl."
         AdTxt: Label 'Active Directory', Locked = true;
         EntraTxt: Label 'Microsoft Entra', Locked = true;
         SecurityGroupAddedLbl: Label 'A security group with ID %1 has been added. Automatically created user with security ID: %2.', Locked = true;
+        RemovingOrphanedGroupsTxt: Label 'Removing %1 orphaned security groups.', Locked = true;
         NotificationIdLbl: Label 'e78ecb57-f560-4788-b9c7-e5a477467d65', Locked = true;
 
     procedure ValidateGroupId(GroupId: Text)
@@ -224,6 +225,7 @@ codeunit 9871 "Security Group Impl."
             end
         else begin
             FetchAllEntraGroups();
+            RemoveOrphanedEntraGroups();
 
             foreach EntraGroupId in EntraGroups.Keys do begin
                 UserProperty.SetRange("Authentication Object ID", EntraGroupId);
@@ -444,14 +446,15 @@ codeunit 9871 "Security Group Impl."
     local procedure ValidateEntraGroup(EntraGroupObjectId: Text)
     var
         OtherUserProperty: Record "User Property";
-        DummyGroupName: Text[250];
+        GroupName: Text[250];
     begin
-        if not TryGetNameById(EntraGroupObjectId, DummyGroupName) then
+        if not TryGetNameById(EntraGroupObjectId, GroupName) then
             Error(InvalidEntraGroupErr, EntraGroupObjectId);
 
+        RemoveOrphanedEntraGroups();
         OtherUserProperty.SetRange("Authentication Object ID", EntraGroupObjectId);
         if not OtherUserProperty.IsEmpty() then
-            Error(GroupAlreadyExistsErr, EntraGroupObjectId);
+            Error(GroupAlreadyExistsErr, GroupName);
     end;
 
     local procedure FetchAllEntraGroups()
@@ -540,6 +543,41 @@ codeunit 9871 "Security Group Impl."
             exit(CopyStr(GroupDomainAndNameList.Get(GroupDomainAndNameList.Count()), 1, 20));
         end else
             exit(CopyStr(GroupName, 1, 20));
+    end;
+
+    /// <summary>
+    /// Removes orphaned groups from the system. An orphaned group is a group that has no corresponding security group record.
+    /// </summary>
+    /// <remarks>
+    /// It is possible to have a User record corresponding to a security group without a Security Group record,
+    /// because the function NavUserAccountHelper.CreateUserFromAAdGroupObjectId inserts the user record in a separate session.
+    /// So, if there is an error in the process after <see cref="Create"/> was called, the changes to the User table are not rolled back.
+    /// </remarks>
+    local procedure RemoveOrphanedEntraGroups();
+    var
+        GroupUser: Record User;
+        SecurityGroup: Record "Security Group";
+        OrphanedGroupUserSecurityIds: List of [Guid];
+        OrphanedGroupUserSecurityId: Guid;
+    begin
+        if not GroupUser.WritePermission() then
+            exit;
+
+        GroupUser.SetRange("License Type", GroupUser."License Type"::"AAD Group");
+        if GroupUser.FindSet() then
+            repeat
+                SecurityGroup.SetRange("Group User SID", GroupUser."User Security ID");
+                if SecurityGroup.IsEmpty() then
+                    OrphanedGroupUserSecurityIds.Add(GroupUser."User Security ID");
+            until GroupUser.Next() = 0;
+
+        if OrphanedGroupUserSecurityIds.Count() = 0 then
+            exit;
+
+        Session.LogMessage('0000LI8', StrSubstNo(RemovingOrphanedGroupsTxt, OrphanedGroupUserSecurityIds.Count()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SecurityGroupsTok);
+        foreach OrphanedGroupUserSecurityId in OrphanedGroupUserSecurityIds do
+            if GroupUser.Get(OrphanedGroupUserSecurityId) then
+                GroupUser.Delete();
     end;
 
     [InternalEvent(false)]

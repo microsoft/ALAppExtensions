@@ -2204,6 +2204,21 @@ dotnet
         {
         }
     }
+    assembly("Microsoft.Dynamics.Nav.Service.CopilotApi")
+    {
+        Culture = 'neutral';
 
+        type("Microsoft.Dynamics.Nav.Service.CopilotApi.AL.ALCopilotAuthorization"; ALCopilotAuthorization)
+        {
+        }
+
+        type("Microsoft.Dynamics.Nav.Service.CopilotApi.AL.ALCopilotFunctions"; ALCopilotFunctions)
+        {
+        }
+
+        type("Microsoft.Dynamics.Nav.Service.CopilotApi.AL.ALCopilotOperationResponse"; ALCopilotOperationResponse)
+        {
+        }
+    }
 }
 

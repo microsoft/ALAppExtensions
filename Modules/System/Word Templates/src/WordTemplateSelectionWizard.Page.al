@@ -413,7 +413,7 @@ page 9996 "Word Template Selection Wizard"
         exit((SaveFormat::Doc = SaveFormat) or (SaveFormat::Docx = SaveFormat));
     end;
 
-    local procedure MergeTemplate(var WordTemplates: Codeunit "Word Template")
+    protected procedure MergeTemplate(var WordTemplates: Codeunit "Word Template")
     var
         TempBlob: Codeunit "Temp Blob";
         Data: Dictionary of [Text, Text];
@@ -563,7 +563,6 @@ page 9996 "Word Template Selection Wizard"
         Step: Option Template,Output,Overview;
         SplitDocuments: Boolean;
         AsDocumentStream: Boolean;
-        FinishedWizard: Boolean;
         WithBusinessContactRelation: Boolean;
         SkipOverview: Boolean;
         FromUnknownSource: Boolean;
@@ -576,4 +575,7 @@ page 9996 "Word Template Selection Wizard"
         SetFiltersLbl: Label 'Set filters';
         EditLbl: Label 'You can edit the document created from the Word template to provide a custom message. After editing the document, you must save and close it before returning here to continue.';
         FilterHelpLbl: Label 'You can define a filter to choose which rows get a template associated.';
+
+    protected var
+        FinishedWizard: Boolean;
 }

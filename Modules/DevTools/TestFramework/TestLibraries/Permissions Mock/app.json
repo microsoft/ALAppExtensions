@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Library used to mock permission sets assignments on current user.",
     "description":  "In test code, Permissions Mock can be used to mock the permisison sets assignment of the user.",
-    "version":  "23.0.0.0",
+    "version":  "23.1.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2131960",
@@ -24,8 +24,10 @@
                          "to":  131006
                      }
                  ],
-    "features":  ["TranslationFile",
-                  "GenerateCaptions"],
+    "features":  [
+                     "TranslationFile",
+                     "GenerateCaptions"
+                 ],
     "resourceExposurePolicy":  {
                                    "allowDebugging":  true,
                                    "allowDownloadingSource":  true,

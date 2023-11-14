@@ -411,6 +411,21 @@ codeunit 9175 "User Settings Impl."
         UserPersonalization.FilterGroup(0);
     end;
 
+    /// <summary>
+    /// Ensure that users can only see their own personalizations, unless they have the permission to manage users on the tenant.
+    /// </summary>
+    procedure HideUsersDependingOnPermissions(var UserPersonalization: Record "User Personalization")
+    var
+        UserPermissions: Codeunit "User Permissions";
+    begin
+        if UserPermissions.CanManageUsersOnTenant(UserSecurityId()) then
+            exit; // No need for additional user filters
+
+        UserPersonalization.FilterGroup(2);
+        UserPersonalization.SetRange("User SID", UserSecurityId());
+        UserPersonalization.FilterGroup(0);
+    end;
+
     procedure CheckPermissions(var UserSettings: Record "User Settings")
     begin
         if (UserSettings.Count() > 1) or (UserSettings."User Security ID" <> UserSecurityId()) then

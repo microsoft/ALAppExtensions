@@ -48,6 +48,7 @@ permissionset 66 "System Tables - Basic"
                   tabledata "Document Service Scenario" = R,
                   tabledata Drive = Rimd,
                   tabledata "Event Subscription" = Rimd,
+                  tabledata "External Event Activity Log" = I,
                   tabledata "External Event Log Entry" = I,
                   tabledata Field = Rimd,
                   tabledata File = Rimd,

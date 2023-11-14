@@ -48,39 +48,6 @@ page 2011 "Entity Text Factbox Part"
                     ShowCaption = false;
                     MultiLine = true;
                 }
-
-                group(SuggestionFeedback)
-                {
-                    ShowCaption = false;
-                    Visible = HasSuggestion;
-
-                    field(ApproveSuggestion; ReviewSuggestionTxt)
-                    {
-                        ApplicationArea = All;
-                        Editable = false;
-                        ShowCaption = false;
-
-                        trigger OnDrillDown()
-                        begin
-                            OpenEditPage();
-                        end;
-                    }
-
-                    field(DismissSuggestion; DismissSuggestionTxt)
-                    {
-                        ApplicationArea = All;
-                        Editable = false;
-                        ShowCaption = false;
-
-                        trigger OnDrillDown()
-                        begin
-                            HasSuggestion := false;
-                            Rec.DeleteAll();
-
-                            ReloadLatestContext();
-                        end;
-                    }
-                }
             }
         }
     }
@@ -89,36 +56,6 @@ page 2011 "Entity Text Factbox Part"
     {
         area(processing)
         {
-            action(Suggest)
-            {
-                ApplicationArea = All;
-                Caption = 'Create with Copilot';
-                Visible = CanCreate;
-#pragma warning disable AL0482
-                Image = Sparkle;
-#pragma warning restore AL0482
-                ToolTip = 'Let Copilot create a new draft';
-
-                trigger OnAction()
-                var
-                    EntityTextImpl: Codeunit "Entity Text Impl.";
-                    AzureOpenAiImpl: Codeunit "Azure OpenAi Impl.";
-                    Suggestion: Text;
-                begin
-                    if not HasContext then
-                        Error(ContextNotSetErr);
-
-                    if not AzureOpenAiImpl.IsEnabled(false) then // validates privacy flow
-                        exit;
-
-                    Suggestion := EntityTextImpl.GenerateSuggestion(CurrentTableId, CurrentSystemId, CurrentScenario, Enum::"Entity Text Emphasis"::None, CallerModuleInfo);
-                    EntityTextImpl.SetText(Rec, Suggestion);
-                    Rec.Modify();
-
-                    HasSuggestion := true;
-                end;
-            }
-
             action(Edit)
             {
                 ApplicationArea = All;
@@ -128,9 +65,33 @@ page 2011 "Entity Text Factbox Part"
 
                 trigger OnAction()
                 begin
-                    OpenEditPage();
+                    OpenEditPage("Entity Text Actions"::Edit);
                 end;
             }
+
+            action(Suggest)
+            {
+                ApplicationArea = All;
+                Caption = 'Draft with Copilot';
+#pragma warning disable AL0482
+                Image = Sparkle;
+#pragma warning restore AL0482
+                ToolTip = 'Let Copilot create a new draft';
+
+                trigger OnAction()
+                var
+                    EntityTextImpl: Codeunit "Entity Text Impl.";
+                begin
+                    if not HasContext then
+                        Error(ContextNotSetErr);
+
+                    if not EntityTextImpl.IsEnabled(false) then
+                        exit;
+
+                    OpenEditPage("Entity Text Actions"::Create);
+                end;
+            }
+
         }
     }
 
@@ -208,12 +169,11 @@ page 2011 "Entity Text Factbox Part"
         Session.LogMessage('0000JVC', StrSubstNo(TelemetrySetContextTxt, Format(SourceTableId), Format(SourceScenario), Format(CallerModuleInfo.Id()), CallerModuleInfo.Publisher()), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
     end;
 
-    local procedure OpenEditPage()
+    local procedure OpenEditPage(SourceAction: Enum "Entity Text Actions")
     var
         TempEntityText: Record "Entity Text" temporary;
         EntityTextCod: Codeunit "Entity Text";
         EntityTextImpl: Codeunit "Entity Text Impl.";
-        EntityTextPage: Page "Entity Text";
         Handled: Boolean;
         EditAction: Action;
     begin
@@ -228,14 +188,11 @@ page 2011 "Entity Text Factbox Part"
             TempEntityText.Insert();
         end;
 
-        EntityTextCod.OnEditEntityText(TempEntityText, EditAction, Handled);
+        EntityTextCod.OnEditEntityTextWithTriggerAction(TempEntityText, EditAction, Handled, SourceAction);
 
         if not Handled then begin
-            Session.LogMessage('0000JVA', StrSubstNo(TelemetryFallbackPageTxt, Format(CurrentTableId), Format(CurrentScenario)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
-            EntityTextPage.SetRecord(TempEntityText);
-            EntityTextPage.SetModuleInfo(CallerModuleInfo);
-            EntityTextPage.SaveRecord();
-            EditAction := EntityTextPage.RunModal();
+            Session.LogMessage('0000LJ4', StrSubstNo(TelemetryNoEditPageTxt, Format(CurrentTableId), Format(CurrentScenario)), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
+            Error(NoHandlerErr);
         end;
 
         Session.LogMessage('0000JVB', StrSubstNo(TelemetryEditHandledTxt, Format(Handled), Format(EditAction)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategoryLbl);
@@ -282,9 +239,8 @@ page 2011 "Entity Text Factbox Part"
         DefaultPlaceholderTxt: Label '[Create text](). Then review and edit based on your needs.', Comment = 'Text contained in [here]() will be clickable to invoke the suggest action';
         ContextNotSetErr: Label 'The context has not been set on the part. Ensure SetContext has been called from the parent page, contact your partner to fix this.';
         TelemetryCategoryLbl: Label 'Entity Text', Locked = true;
-        TelemetryFallbackPageTxt: Label 'No custom page was specified for edit, using the fallback page for table %1 and scneario %2.', Locked = true;
+        NoHandlerErr: Label 'There was no handler to provide an edit page for this entity. Contact your partner.';
+        TelemetryNoEditPageTxt: Label 'No custom page was specified for edit by partner: table %1, scenario %2.', Locked = true;
         TelemetryEditHandledTxt: Label 'Edit result was handled: %1, with action %2.', Locked = true;
         TelemetrySetContextTxt: Label 'Context set for entity text factbox. Table %1, scenario %2, calling module %3 (%4).', Locked = true;
-        ReviewSuggestionTxt: Label 'Review and save this suggestion';
-        DismissSuggestionTxt: Label 'Dismiss';
 }

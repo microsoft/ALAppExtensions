@@ -1,3 +1,4 @@
+#if not CLEAN24
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -11,6 +12,9 @@ namespace System.Text;
 /// </summary>
 page 2013 "Entity Text"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Copilot pages are using the prompt dialog page, to edit entity text with a rich text editor, use a rich text control instead.';
+    ObsoleteTag = '24.0';
     ApplicationArea = All;
     Caption = 'Entity Text';
     DelayedInsert = true;
@@ -118,3 +122,4 @@ page 2013 "Entity Text"
         InvalidAppErr: Label 'The Entity Text page could not be opened as it cannot be opened from another extension.';
 
 }
+#endif

@@ -31,6 +31,7 @@ codeunit 134689 "Email Message Unit Test"
         EmailMessageSentCannotModifyErr: Label 'Cannot edit the message because it has already been sent.';
         EmailMessageQueuedCannotInsertAttachmentErr: Label 'Cannot add the attachment because the email is queued to be sent.';
         EmailMessageSentCannotInsertAttachmentErr: Label 'Cannot add the attachment because the email has already been sent.';
+        EmailMessageSentCannotDeleteAttachmentErr: Label 'Cannot delete the attachment because the email has already been sent.';
         EmailMessageQueuedCannotDeleteRecipientErr: Label 'Cannot delete the recipient because the email is queued to be sent.';
         EmailMessageSentCannotDeleteRecipientErr: Label 'Cannot delete the recipient because the email has already been sent.';
         EmailMessageQueuedCannotInsertRecipientErr: Label 'Cannot add a recipient because the email is queued to be sent.';
@@ -1249,6 +1250,97 @@ codeunit 134689 "Email Message Unit Test"
         Assert.AreEqual(2, Count, 'Number of attachments is not 2');
         Assert.AreNotEqual(LastModifiedNo, EmailMessage.GetNoOfModifies(), 'The last modified no is the same');
         UnbindSubscription(EmailMessageEventsMock);
+    end;
+
+    [Test]
+    procedure TestDeleteSentEmailAttachments()
+    var
+        TempAccount: Record "Email Account" temporary;
+        ConnectorMock: Codeunit "Connector Mock";
+        EmailMessage: Codeunit "Email Message";
+        TempBlob: Codeunit "Temp Blob";
+        OutStream: OutStream;
+        InStream: InStream;
+    begin
+        // [SCENARIO] Delete attachments after email is sent
+
+        // [GIVEN] Email message with attachments
+        EmailMessage.Create('test@email.com', 'Current Subject', 'Current Body');
+
+        TempBlob.CreateOutStream(OutStream);
+        OutStream.WriteText('Attachment');
+        TempBlob.CreateInStream(InStream);
+
+        EmailMessage.AddAttachment('test.txt', 'text/plain', InStream);
+
+        // [GIVEN] A connector is installed and an account is added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempAccount);
+
+        // [GIVEN] The email is sent
+        Email.Send(EmailMessage, TempAccount);
+        EmailMessage.Get(EmailMessage.GetId());
+
+        // [WHEN] Try to delete the attachment without bypassing Sent Emails check
+        Assert.IsTrue(EmailMessage.Attachments_First(), 'Does not have an attachment');
+        asserterror EmailMessage.Attachments_Delete();
+
+        // [THEN] Unable to delete email attachment due to email being sent
+        Assert.ExpectedError(EmailMessageSentCannotDeleteAttachmentErr);
+
+        // [WHEN] Try to delete the attachment bypassing Sent Emails check
+        Assert.IsTrue(EmailMessage.Attachments_First(), 'Does not have an attachment');
+        EmailMessage.Attachments_Delete(true);
+
+        // [THEN] Email attachment is deleted
+        Assert.IsFalse(EmailMessage.Attachments_First(), 'Attachment was not deleted');
+    end;
+
+    [Test]
+    procedure TestDeleteSentEmailAttachmentsContent()
+    var
+        TempAccount: Record "Email Account" temporary;
+        ConnectorMock: Codeunit "Connector Mock";
+        EmailMessage: Codeunit "Email Message";
+        TempBlob: Codeunit "Temp Blob";
+        OutStream: OutStream;
+        InStream: InStream;
+        AttachmentLength: Integer;
+    begin
+        // [SCENARIO] Delete attachments' content after email is sent
+
+        // [GIVEN] Email message with attachments
+        EmailMessage.Create('test@email.com', 'Current Subject', 'Current Body');
+
+        TempBlob.CreateOutStream(OutStream);
+        OutStream.WriteText('Attachment');
+        TempBlob.CreateInStream(InStream);
+
+        EmailMessage.AddAttachment('test.txt', 'text/plain', InStream);
+        EmailMessage.Attachments_First();
+        AttachmentLength := EmailMessage.Attachments_GetLength();
+
+        // [GIVEN] A connector is installed and an account is added
+        ConnectorMock.Initialize();
+        ConnectorMock.AddAccount(TempAccount);
+
+        // [GIVEN] The email is sent
+        Email.Send(EmailMessage, TempAccount);
+        EmailMessage.Get(EmailMessage.GetId());
+
+        // [WHEN] Try to delete the attachment content without bypassing Sent Emails check
+        Assert.IsTrue(EmailMessage.Attachments_First(), 'Does not have an attachment');
+        asserterror EmailMessage.Attachments_DeleteContent();
+
+        // [THEN] Unable to delete email attachment content due to email being sent
+        Assert.ExpectedError(EmailMessageSentCannotModifyErr);
+        Assert.AreEqual(AttachmentLength, EmailMessage.Attachments_GetLength(), 'Attachment content was deleted');
+
+        // [WHEN] Try to delete the attachment content bypassing Sent Emails check
+        EmailMessage.Attachments_DeleteContent(true);
+
+        // [THEN] Email attachment content is deleted
+        Assert.AreEqual(0, EmailMessage.Attachments_GetLength(), 'Attachment content was not deleted');
     end;
 
     [StrMenuHandler]

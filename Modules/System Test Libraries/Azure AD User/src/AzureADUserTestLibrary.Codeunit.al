@@ -15,7 +15,7 @@ codeunit 132915 "Azure AD User Test Library"
     /// Mocks the behavior of IsUserDelegatedAdmin.
     /// </summary>
     /// <param name="NewValue">The value to set.</param>
-    procedure SetIsUserDelegatedtAdmin(NewValue: Boolean)
+    procedure SetIsUserDelegatedAdmin(NewValue: Boolean)
     begin
         IsUserDelegatedAdminValue := NewValue;
     end;
@@ -24,7 +24,7 @@ codeunit 132915 "Azure AD User Test Library"
     /// Mocks the behavior of IsUserDelegatedHelpdesk.
     /// </summary>
     /// <param name="NewValue">The value to set.</param>
-    procedure SetIsUserDelegatedtHelpdesk(NewValue: Boolean)
+    procedure SetIsUserDelegatedHelpdesk(NewValue: Boolean)
     begin
         IsUserDelegatedHelpdeskValue := NewValue;
     end;
