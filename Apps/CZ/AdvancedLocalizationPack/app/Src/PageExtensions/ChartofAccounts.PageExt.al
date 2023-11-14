@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GeneralLedger.Account;
+
+using Microsoft.Finance.GeneralLedger.Reports;
+
 pageextension 31259 "Chart of Accounts CZA" extends "Chart of Accounts"
 {
     actions

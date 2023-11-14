@@ -1,3 +1,20 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Enums;
+using Microsoft.Foundation.Reporting;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+using System.Security.AccessControl;
+
 table 31009 "Purch. Adv. Letter Entry CZZ"
 {
     Caption = 'Purchase Adv. Letter Entry';

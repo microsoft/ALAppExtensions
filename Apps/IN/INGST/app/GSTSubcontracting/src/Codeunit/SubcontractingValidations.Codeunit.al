@@ -48,7 +48,7 @@ codeunit 18470 "Subcontracting Validations"
         SubOrderCompListVend.SetRange("Document Line No.", PurchaseLine."Line No.");
         SubOrderCompListVend.FindSet();
         repeat
-            SubOrderCompListVend.Validate("Qty. to Consume", PurchaseLine."Qty. to Receive" * SubOrderCompListVend."Quantity per");
+            SubOrderCompListVend.Validate("Qty. to Consume", PurchaseLine."Qty. to Receive" * SubOrderCompListVend."Quantity per" * SubOrderCompListVend."Qty. per Unit of Measure");
             SubOrderCompListVend.Validate("Qty. to Return (C.E.)", PurchaseLine."Qty. to Reject (C.E.)" * SubOrderCompListVend."Quantity per");
             SubOrderCompListVend.Validate("Qty. To Return (V.E.)", (SubOrderCompListVend."Quantity per" * PurchaseLine."Qty. to Reject (V.E.)"));
             SubOrderCompListVend.Validate("Posting Date", PurchaseLine."Posting Date");

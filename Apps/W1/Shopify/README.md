@@ -12,8 +12,13 @@ We're opening for extensibility for specific scenarios, based on feedback from o
 
 Find overview of objects expected to become public in future releases:
 
+## Object reference
+
+The following sections show the codeunits, tables, and enums that are public.
+
 ### codeunit 30162 "Shpfy Order Events"
-Availability date: starting with version 22.0
+
+Available in version: 22.0
 
 Exposes the following integration events:
 
@@ -32,10 +37,11 @@ Exposes the following integration events:
 - OnAfterProcessSalesDocument(var SalesHeader: Record "Sales Header"; ShopifyHeader: Record "Shpfy Order Header")
 - OnBeforeCreateItemSalesLine(ShopifyOrderHeader: Record "Shpfy Order Header"; ShopifyOrderLine: Record "Shpfy Order Line"; SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line"; var Handled: Boolean)
 
-[Example: Order processing](extensibility_examples.md#order-processing)
+To explore examples of how to extend this codeunit, go to [Order processing](https://learn.microsoft.com/dynamics365/business-central/dev-itpro/developer/devenv-extending-shopify#order-processing).
 
 ### codeunit 30177 "Shpfy Product Events"
-Availability date: starting with version 22.0
+
+Available in version: 22.0
 
 Exposes the following integration events:
 
@@ -65,13 +71,11 @@ Exposes the following integration events:
 - OnBeforeSendUpdateShopifyProductVariant(ShopifyShop: Record "Shpfy Shop"; var ShopifyVariant: Record "Shpfy Variant"; xShopifyVariant: Record "Shpfy Variant")
 - OnAfterCreateTempShopifyProduct(Item: Record Item; var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var ShopifyTag: Record "Shpfy Tag")
 
-[Example: Price](extensibility_examples.md#Price)
-
-
-[Example: Product properties](extensibility_examples.md#product-properties)
+To explore examples of how to extend this codeunit, go to [Price management](https://learn.microsoft.com/dynamics365/business-central/dev-itpro/developer/devenv-extending-shopify#price-management) and [Product properties](https://learn.microsoft.com/dynamics365/business-central/dev-itpro/developer/devenv-extending-shopify#product-properties).
 
 ### codeunit 30115 "Shpfy Customer Events"
-Availability date: starting with version 22.0
+
+Available in version: 22.0
 
 Exposes the following integration events:
 
@@ -84,136 +88,47 @@ Exposes the following integration events:
 - OnBeforeUpdateCustomer(Shop: Record "Shpfy Shop"; var ShopifyCustomer: Record "Shpfy Customer"; var Customer: Record Customer; var Handled: Boolean);
 
 ### codeunit 30196 "Shpfy Inventory Events"
-Availability date: starting with version 22.0
+
+Available in version: 22.0
 
 Exposes the following integration events:
 
 - OnAfterCalculationStock(Item: Record Item; ShopifyShop: Record "Shpfy Shop"; LocationFilter: Text; var StockResult: Decimal)
 
-### table 30124 "Shpfy Payment Transaction"
-Availability date: starting with version 22.4
+### Tables and enums
 
-### table 30125 "Shpfy Payout"
-Availability date: starting with version 22.4
+The following table lists the table and enum objects that we've made public, and in which version they became available.
 
-### table 30118 "Shpfy Order Header"
-Availability date: starting with version 22.0
-
-### table 30119 "Shpfy Order Line"
-Availability date: starting with version 22.0
-
-### table 30130 "Shpfy Order Shipping Charges"
-Availability date: starting with version 22.0
-
-### table 30116 "Shpfy Order Attribute"
-Availability date: starting with version 22.0
-
-### table 30127 "Shpfy Product"
-Availability date: starting with version 22.0
-
-### table 30129 "Shpfy Variant"
-Availability date: starting with version 22.0
-
-### table 30105 "Shpfy Customer"
-Availability date: starting with version 22.0
-
-### table 30106 "Shpfy Customer Address"
-Availability date: starting with version 22.0
-
-### table 30102 "Shpfy Shop"
-Availability date: starting with version 22.0
-
-### table 30104 "Shpfy Tag"
-Availability date: starting with version 22.0
-
-### Enum "Shpfy Mapping Direction"
-Availability date: starting with version 22.0
-
-Extensible = false;
-
-### Enum "Shpfy Inventory Policy"
-Availability date: starting with version 22.0
-
-Extensible = false;
-
-### Enum "Shpfy Product Status"
-Availability date: starting with version 22.0
-
-Extensible = false;
-
-### Enum "Shpfy Risk Level"
-Availability date: starting with version 22.0
-
-Extensible = false;
-
-### Enum "Shpfy Processing Method"
-Availability date: starting with version 22.0
-
-Extensible = false;
-
-### Enum "Shpfy Financial Status"
-Availability date: starting with version 22.0
-
-Extensible = false;
-
-### Enum "Shpfy Order Fulfill. Status"
-Availability date: starting with version 22.0
-
-Extensible = false;
-
-### Enum "Shpfy Cancel Reason"
-Availability date: starting with version 22.0
-
-Extensible = false;
-
-### Enum "Shpfy Customer State"
-Availability date: starting with version 22.0
-
-Extensible = false;
-
-### Enum "Shpfy Customer Import Range"
-Availability date: starting with version 22.0
-
-Extensible = false;
-
-### Enum "Shpfy Name Source"
-Availability date: starting with version 22.0
-
-Extensible = false;
-
-### Enum "Shpfy County Source"
-Availability date: starting with version 22.0
-
-Extensible = false;
-
-### Enum "Shpfy Customer Mapping"
-Availability date: starting with version 22.0
-
-Extensible = True;
-
-### Enum "Shpfy Cr. Prod. Status Value"
-Availability date: starting with version 22.0
-
-Extensible = false;
-
-### Enum "Shpfy Remove Product Action"
-Availability date: starting with version 22.0
-
-Extensible = false;
-
-### Enum "Shpfy SKU Mapping"
-Availability date: starting with version 22.0
-
-Extensible = false;
-
-### Enum "Shpfy Tax By"
-Availability date: starting with version 22.0
-
-Extensible = false;
-
-### Enum "Shpfy Stock Calculation"
-Availability date: starting with version 21.3
-
-Extensible = true;
-
-[Example](extensibility_examples.md#stock-calculation)
+|Object  |Availabile in Version  | Comments |
+|---------|---------|---------|
+|table 30118 "Shpfy Order Header"     | 22.0        |         |
+|table 30119 "Shpfy Order Line"     | 22.0         |         |
+|table 30130 "Shpfy Order Shipping Charges"     | 22.0         |         |
+|table 30116 "Shpfy Order Attribute"     | 22.0        |         |
+|table 30127 "Shpfy Product"     | 22.0        |         |
+|table 30129 "Shpfy Variant"     | 22.0        |         |
+|table 30105 "Shpfy Customer"     | 22.0         |         |
+|table 30106 "Shpfy Customer Address"     | 22.0        |         |
+|table 30102 "Shpfy Shop"     | 22.0        |         |
+|table 30104 "Shpfy Tag"     | 22.0        |         |
+|table 30124 "Shpfy Payment Transaction"     | 22.4        |         |
+|table 30125 "Shpfy Payout"     | 22.4        |         |
+|table 30133 "Shpfy Order Transaction"     | 23.0        |         |
+|Enum "Shpfy Mapping Direction"     | 22.0        | Extensible = false;   |
+|Enum "Shpfy Inventory Policy"     | 22.0        | Extensible = false;        |
+|Enum "Shpfy Product Status"     | 22.0        | Extensible = false;        |
+|Enum "Shpfy Risk Level"     | 22.0        | Extensible = false;        |
+|Enum "Shpfy Processing Method"     | 22.0        | Extensible = false;        |
+|Enum "Shpfy Financial Status"     | 22.0        | Extensible = false;        |
+|Enum "Shpfy Order Fulfill. Status"     | 22.0        | Extensible = false;        |
+|Enum "Shpfy Cancel Reason"     | 22.0        | Extensible = false;        |
+|Enum "Shpfy Customer State"     | 22.0        | Extensible = false;        |
+|Enum "Shpfy Customer Import Range"     | 22.0        | Extensible = false;        | 
+|Enum "Shpfy Name Source"     | 22.0        | Extensible = false;        |
+|Enum "Shpfy County Source"     | 22.0        | Extensible = false;        |
+|Enum "Shpfy Customer Mapping"     | 22.0        | Extensible = True;        |
+|Enum "Shpfy Cr. Prod. Status Value"     | 22.0        | Extensible = false;        |
+|Enum "Shpfy Remove Product Action"     | 22.0        | Extensible = false;        |
+|Enum "Shpfy SKU Mapping"     | 22.0        | Extensible = false;        |
+|Enum "Shpfy Tax By"     | 22.0        | Extensible = false;        |
+|Enum "Shpfy Stock Calculation"     | 21.3        | Extensible = true; <br><br>[Example](https://learn.microsoft.com/dynamics365/business-central/dev-itpro/developer/devenv-extending-shopify#stock-calculation)|

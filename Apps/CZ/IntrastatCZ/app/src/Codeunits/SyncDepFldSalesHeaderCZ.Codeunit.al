@@ -28,6 +28,7 @@ codeunit 31285 "Sync.Dep.Fld-Sales Header CZ"
         if SyncDepFldUtilities.GetPreviousRecord(Rec, PreviousRecordRef) then
             PreviousRecordRef.SetTable(PreviousRecord);
         SyncDepFldUtilities.SyncFields(Rec."Physical Transfer CZL", Rec."Physical Transfer CZ", PreviousRecord."Physical Transfer CZL", PreviousRecord."Physical Transfer CZ");
+        SyncDepFldUtilities.SyncFields(Rec."Intrastat Exclude CZL", Rec."Intrastat Exclude CZ", PreviousRecord."Intrastat Exclude CZL", PreviousRecord."Intrastat Exclude CZ");
     end;
 }
 #endif

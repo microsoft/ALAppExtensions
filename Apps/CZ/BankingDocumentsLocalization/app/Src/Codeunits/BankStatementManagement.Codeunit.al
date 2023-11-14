@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Documents;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Setup;
+using System.Security.User;
+
 codeunit 31360 "Bank Statement Management CZB"
 {
     procedure BankStatementSelection(var BankStatementHeaderCZB: Record "Bank Statement Header CZB"; var SelectedBankAccountForBankStatement: Boolean)

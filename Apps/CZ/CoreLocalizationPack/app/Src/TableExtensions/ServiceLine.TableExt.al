@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.Document;
+
+using Microsoft.Foundation.Address;
+using Microsoft.Inventory.Intrastat;
+
 tableextension 11763 "Service Line CZL" extends "Service Line"
 {
     fields

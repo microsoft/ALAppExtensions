@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Documents;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.Currency;
+using Microsoft.Foundation.Attachment;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Sales.History;
+using System.Automation;
+using System.Utilities;
+
 table 31256 "Payment Order Header CZB"
 {
     Caption = 'Payment Order Header';

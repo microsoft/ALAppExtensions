@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Reporting;
+
+using Microsoft.Foundation.Attachment;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.NoSeries;
+using System.Utilities;
+
 table 31106 "VAT Ctrl. Report Header CZL"
 {
     Caption = 'VAT Control Report Header';

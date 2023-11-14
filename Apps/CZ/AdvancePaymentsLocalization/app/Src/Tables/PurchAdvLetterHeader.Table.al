@@ -1,3 +1,42 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Documents;
+using Microsoft.Bank.Setup;
+using Microsoft.CRM.BusinessRelation;
+using Microsoft.CRM.Contact;
+using Microsoft.CRM.Team;
+using Microsoft.EServices.EDocument;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.FixedAssets.Journal;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Attachment;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.BatchProcessing;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Foundation.Reporting;
+using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Setup;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Utilities;
+using System.Automation;
+using System.Globalization;
+using System.Reflection;
+using System.Security.User;
+using System.Utilities;
+
 table 31008 "Purch. Adv. Letter Header CZZ"
 {
     Caption = 'Purchase Advance Letter Header';
@@ -194,7 +233,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         field(17; "Pay-to County"; Text[30])
         {
             Caption = 'Pay-to County';
-            CaptionClass = '5,1,' + "Pay-to Country/Region Code";
+            CaptionClass = '5,6,' + "Pay-to Country/Region Code";
             DataClassification = CustomerContent;
         }
         field(18; "Pay-to Country/Region Code"; Code[10])

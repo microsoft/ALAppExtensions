@@ -10,7 +10,6 @@ using Microsoft.Sales.History;
 query 1442 "Sales Increase Headline"
 {
     QueryType = Normal;
-    DataAccessIntent = ReadOnly;
 
     elements
     {

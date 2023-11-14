@@ -148,7 +148,6 @@ codeunit 40026 "Upgrade BaseApp 21x"
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetUseCustomLookupUpgradeTag());
     end;
 
-    [Scope('OnPrem')]
     local procedure UpgradeAccountSchedulesToFinancialReports()
     var
         GeneralLedgerSetup: Record "General Ledger Setup";

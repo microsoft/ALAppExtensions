@@ -245,8 +245,8 @@ codeunit 18017 "GST Tax Configuration"
         UseCases.Add('{7E781F55-9A83-4206-B18A-46C2CA5E8573}', 3);
         UseCases.Add('{EB169AE5-8DE0-4490-8DFD-46CEE05AA5C1}', 2);
         UseCases.Add('{3A6F385C-72E7-42C6-A696-47102B270402}', 1);
-        UseCases.Add('{710042C6-833D-4CF4-B943-47CF6691F7DE}', 3);
-        UseCases.Add('{34D0EE0E-FC73-416C-A59C-484107E36965}', 5);
+        UseCases.Add('{710042C6-833D-4CF4-B943-47CF6691F7DE}', 4);
+        UseCases.Add('{34D0EE0E-FC73-416C-A59C-484107E36965}', 6);
         UseCases.Add('{F023887D-C599-4FE6-89E7-49C257DC208C}', 3);
         UseCases.Add('{F52FFF81-A64B-4A23-B699-49E370AB59F0}', 3);
         UseCases.Add('{95551286-5BF2-42D5-895A-4A4F450A424B}', 3);
@@ -310,7 +310,7 @@ codeunit 18017 "GST Tax Configuration"
         UseCases.Add('{66A099C8-9660-498E-9BEB-61296A76CFAF}', 1);
         UseCases.Add('{929EB05F-45B5-4F4F-9DD4-61AFAB36F21B}', 3);
         UseCases.Add('{E75A7A67-D332-41BE-B7EA-61C8BF69E9F7}', 3);
-        UseCases.Add('{4738101C-19E3-418C-A19D-61E67100D199}', 3);
+        UseCases.Add('{4738101C-19E3-418C-A19D-61E67100D199}', 4);
         UseCases.Add('{4CB6ACCD-BD47-4485-A757-62924EA09524}', 6);
         UseCases.Add('{8B96F1E1-FC2C-48FD-AD1E-62986961AC0D}', 1);
         UseCases.Add('{CBDB09CC-FB6C-4475-89A3-62C04DADFA15}', 1);
@@ -526,7 +526,7 @@ codeunit 18017 "GST Tax Configuration"
         UseCases.Add('{DA8551C9-79B9-423C-801E-A8C868788300}', 3);
         UseCases.Add('{9568C93C-FC46-477D-B554-A8EACAEAF21A}', 5);
         UseCases.Add('{079237F7-FA64-40B5-8BE7-A92428550117}', 5);
-        UseCases.Add('{AA85EF19-5F94-438E-ADC4-A9ACF0DCB0C1}', 3);
+        UseCases.Add('{AA85EF19-5F94-438E-ADC4-A9ACF0DCB0C1}', 4);
         UseCases.Add('{CEAE9F6C-7E67-4347-9E66-A9C6C54E4ECE}', 1);
         UseCases.Add('{4911101A-A3D1-4596-836C-A9EB2F2CB24C}', 8);
         UseCases.Add('{E6B10245-E536-41CF-A9CC-AA043113F6F4}', 2);
@@ -620,7 +620,7 @@ codeunit 18017 "GST Tax Configuration"
         UseCases.Add('{8139E94E-D43E-4C24-B6B3-C59F55737321}', 4);
         UseCases.Add('{5F7E0B6C-3D83-418C-9829-C5E5E52460C6}', 3);
         UseCases.Add('{A26AB5CA-52E6-4626-A426-C656627502E4}', 2);
-        UseCases.Add('{D8792403-FBC9-455C-8A3A-C67DAFDB6E53}', 3);
+        UseCases.Add('{D8792403-FBC9-455C-8A3A-C67DAFDB6E53}', 4);
         UseCases.Add('{A030C0C9-951C-4818-8A68-C6D5917C31BF}', 2);
         UseCases.Add('{F56F247A-8E36-496E-8672-C6FE2C81CE7B}', 4);
         UseCases.Add('{3A542488-E9A7-41E5-BF0B-C73F9C82A8DB}', 1);
@@ -636,7 +636,7 @@ codeunit 18017 "GST Tax Configuration"
         UseCases.Add('{56D375F9-6B43-4460-B0F6-CAB18F44DE92}', 4);
         UseCases.Add('{6EC9FAFD-8029-4B9C-8899-CB3C494682D1}', 6);
         UseCases.Add('{744B47C3-E4C1-4AC4-A37E-CBA3102A59A1}', 3);
-        UseCases.Add('{E607F91D-D6E7-459A-801A-CBB9C7F8CE89}', 3);
+        UseCases.Add('{E607F91D-D6E7-459A-801A-CBB9C7F8CE89}', 4);
         UseCases.Add('{A170BEEF-350A-4B43-B333-CBEA1D197E1B}', 2);
         UseCases.Add('{4529A161-49CC-44B6-95BA-CC141FA794B1}', 7);
         UseCases.Add('{E6D39823-CCCC-43DC-BD7E-CC6EEEBDB5EB}', 6);
@@ -708,7 +708,7 @@ codeunit 18017 "GST Tax Configuration"
         UseCases.Add('{43D94D4C-82EA-4A44-B80F-E297292CAA10}', 3);
         UseCases.Add('{D2E1CF7B-EA38-4EB3-82C3-E2E6949625D3}', 3);
         UseCases.Add('{77DC6AF2-5D31-4450-8F78-E2F7383B9EAB}', 6);
-        UseCases.Add('{F8591F7C-5D5C-4976-B5F1-E3248733EBC5}', 5);
+        UseCases.Add('{F8591F7C-5D5C-4976-B5F1-E3248733EBC5}', 6);
         UseCases.Add('{FF5D43D6-C93E-42D5-9CD3-E3FCA99E77DD}', 3);
         UseCases.Add('{DBFAD9E1-15D2-44E9-9305-E453D15DE128}', 3);
         UseCases.Add('{C340D02B-697D-414F-9082-E4CC9B4B2A3B}', 3);
@@ -957,6 +957,7 @@ codeunit 18017 "GST Tax Configuration"
         UseCases.Add('{1f11a81c-0551-4b07-aa30-23da57e0fe16}', 1);
         UseCases.Add('{ebfdb89b-5f22-4386-87ca-72157cbf122d}', 1);
         UseCases.Add('{321e0f7b-a15d-4ce6-9c11-bf3fd3dee918}', 1);
+        UseCases.Add('{631DEFA0-165E-4BDC-8F8A-AB2A88DF90AD}', 1);
     end;
 
     var

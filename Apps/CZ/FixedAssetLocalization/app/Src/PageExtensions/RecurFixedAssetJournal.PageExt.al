@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.FixedAssets;
+
+using Microsoft.FixedAssets.Journal;
+
 pageextension 31214 "Recur. Fixed Asset Journal CZF" extends "Recurring Fixed Asset Journal"
 {
     layout

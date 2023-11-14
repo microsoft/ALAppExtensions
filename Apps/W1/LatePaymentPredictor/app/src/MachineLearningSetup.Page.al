@@ -32,7 +32,7 @@ page 1950 "LP Machine Learning Setup"
                         CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
                     begin
                         if not xRec."Make Predictions" and Rec."Make Predictions" then
-                            Rec."Make Predictions" := CustomerConsentMgt.ConfirmUserConsentToMicrosoftService();
+                            Rec."Make Predictions" := CustomerConsentMgt.ConsentToMicrosoftServiceWithAI();
                     end;
                 }
 

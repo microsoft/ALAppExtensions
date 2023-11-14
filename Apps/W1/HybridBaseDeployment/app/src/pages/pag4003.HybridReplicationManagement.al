@@ -63,6 +63,8 @@ page 4003 "Intelligent Cloud Management"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Details';
                     ToolTip = 'Specifies additional details about the migration run.';
+                    Editable = false;
+
                     trigger OnDrillDown()
                     begin
                         if DetailsValue <> '' then

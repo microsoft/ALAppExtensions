@@ -1,4 +1,4 @@
-#if not CLEAN22
+﻿#if not CLEAN22
 page 31078 "Statistic Indications CZL"
 {
     ApplicationArea = Basic, Suite;

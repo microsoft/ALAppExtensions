@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Intrastat;
 
+using Microsoft;
+using Microsoft.Foundation.Company;
 using Microsoft.Foundation.Shipping;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
@@ -58,8 +60,11 @@ codeunit 31301 "Install Application CZ"
                   tabledata "Service Shipment Header" = m,
                   tabledata "Service Shipment Line" = m,
                   tabledata "Tariff Number" = m,
+                  tabledata "Transfer Header" = m,
                   tabledata "Transfer Line" = m,
+                  tabledata "Transfer Receipt Header" = m,
                   tabledata "Transfer Receipt Line" = m,
+                  tabledata "Transfer Shipment Header" = m,
                   tabledata "Transfer Shipment Line" = m,
                   tabledata "Item Ledger Entry" = m,
                   tabledata "Job Ledger Entry" = m,
@@ -67,6 +72,7 @@ codeunit 31301 "Install Application CZ"
                   tabledata "Return Receipt Line" = m,
                   tabledata "Return Shipment Header" = m,
                   tabledata "Return Shipment Line" = m,
+                  tabledata "Direct Trans. Header" = m,
                   tabledata "Direct Trans. Line" = m,
                   tabledata "Specific Movement CZ" = im,
                   tabledata "Specific Movement CZL" = r,
@@ -114,6 +120,7 @@ codeunit 31301 "Install Application CZ"
     local procedure CopyData()
     begin
         CopyCustomer();
+        CopyDirectTransHeader();
         CopyDirectTransLine();
         CopyIntrastatDeliveryGroup();
         CopyItem();
@@ -159,8 +166,11 @@ codeunit 31301 "Install Application CZ"
         CopyStatisticIndication();
         CopyStatutoryReportingSetup();
         CopyTariffNumber();
+        CopyTransferHeader();
         CopyTransferLine();
+        CopyTransferReceiptHeader();
         CopyTransferReceiptLine();
+        CopyTransferShipmentHeader();
         CopyTransferShipmentLine();
         CopyVendor();
     end;
@@ -173,6 +183,16 @@ codeunit 31301 "Install Application CZ"
         DataTransfer.SetTables(Database::"Customer", Database::"Customer");
         DataTransfer.AddFieldValue(Customer.FieldNo("Transaction Type CZL"), Customer.FieldNo("Default Trans. Type"));
         DataTransfer.AddFieldValue(Customer.FieldNo("Transport Method CZL"), Customer.FieldNo("Def. Transport Method"));
+        DataTransfer.CopyFields();
+    end;
+
+    local procedure CopyDirectTransHeader()
+    var
+        DirectTransHeader: Record "Direct Trans. Header";
+        DataTransfer: DataTransfer;
+    begin
+        DataTransfer.SetTables(Database::"Direct Trans. Header", Database::"Direct Trans. Header");
+        DataTransfer.AddFieldValue(DirectTransHeader.FieldNo("Intrastat Exclude CZL"), DirectTransHeader.FieldNo("Intrastat Exclude CZ"));
         DataTransfer.CopyFields();
     end;
 
@@ -233,6 +253,7 @@ codeunit 31301 "Install Application CZ"
         DataTransfer: DataTransfer;
     begin
         DataTransfer.SetTables(Database::"Purchase Header", Database::"Purchase Header");
+        DataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Intrastat Exclude CZL"), PurchaseHeader.FieldNo("Intrastat Exclude CZ"));
         DataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Physical Transfer CZL"), PurchaseHeader.FieldNo("Physical Transfer CZ"));
         DataTransfer.CopyFields();
     end;
@@ -243,6 +264,7 @@ codeunit 31301 "Install Application CZ"
         DataTransfer: DataTransfer;
     begin
         DataTransfer.SetTables(Database::"Purchase Header Archive", Database::"Purchase Header Archive");
+        DataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Intrastat Exclude CZL"), PurchaseHeaderArchive.FieldNo("Intrastat Exclude CZ"));
         DataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Physical Transfer CZL"), PurchaseHeaderArchive.FieldNo("Physical Transfer CZ"));
         DataTransfer.CopyFields();
     end;
@@ -274,6 +296,7 @@ codeunit 31301 "Install Application CZ"
         DataTransfer: DataTransfer;
     begin
         DataTransfer.SetTables(Database::"Purch. Cr. Memo Hdr.", Database::"Purch. Cr. Memo Hdr.");
+        DataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Intrastat Exclude CZL"), PurchCrMemoHdr.FieldNo("Intrastat Exclude CZ"));
         DataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Physical Transfer CZL"), PurchCrMemoHdr.FieldNo("Physical Transfer CZ"));
         DataTransfer.CopyFields();
     end;
@@ -295,6 +318,7 @@ codeunit 31301 "Install Application CZ"
         DataTransfer: DataTransfer;
     begin
         DataTransfer.SetTables(Database::"Purch. Inv. Header", Database::"Purch. Inv. Header");
+        DataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Intrastat Exclude CZL"), PurchInvHeader.FieldNo("Intrastat Exclude CZ"));
         DataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Physical Transfer CZL"), PurchInvHeader.FieldNo("Physical Transfer CZ"));
         DataTransfer.CopyFields();
     end;
@@ -316,6 +340,7 @@ codeunit 31301 "Install Application CZ"
         DataTransfer: DataTransfer;
     begin
         DataTransfer.SetTables(Database::"Purch. Rcpt. Header", Database::"Purch. Rcpt. Header");
+        DataTransfer.AddFieldValue(PurchRcptHeader.FieldNo("Intrastat Exclude CZL"), PurchRcptHeader.FieldNo("Intrastat Exclude CZ"));
         DataTransfer.AddFieldValue(PurchRcptHeader.FieldNo("Physical Transfer CZL"), PurchRcptHeader.FieldNo("Physical Transfer CZ"));
         DataTransfer.CopyFields();
     end;
@@ -337,6 +362,7 @@ codeunit 31301 "Install Application CZ"
         DataTransfer: DataTransfer;
     begin
         DataTransfer.SetTables(Database::"Sales Cr.Memo Header", Database::"Sales Cr.Memo Header");
+        DataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Intrastat Exclude CZL"), SalesCrMemoHeader.FieldNo("Intrastat Exclude CZ"));
         DataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Physical Transfer CZL"), SalesCrMemoHeader.FieldNo("Physical Transfer CZ"));
         DataTransfer.CopyFields();
     end;
@@ -358,6 +384,7 @@ codeunit 31301 "Install Application CZ"
         DataTransfer: DataTransfer;
     begin
         DataTransfer.SetTables(Database::"Sales Invoice Header", Database::"Sales Invoice Header");
+        DataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Intrastat Exclude CZL"), SalesInvoiceHeader.FieldNo("Intrastat Exclude CZ"));
         DataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Physical Transfer CZL"), SalesInvoiceHeader.FieldNo("Physical Transfer CZ"));
         DataTransfer.CopyFields();
     end;
@@ -379,6 +406,7 @@ codeunit 31301 "Install Application CZ"
         DataTransfer: DataTransfer;
     begin
         DataTransfer.SetTables(Database::"Sales Header", Database::"Sales Header");
+        DataTransfer.AddFieldValue(SalesHeader.FieldNo("Intrastat Exclude CZL"), SalesHeader.FieldNo("Intrastat Exclude CZ"));
         DataTransfer.AddFieldValue(SalesHeader.FieldNo("Physical Transfer CZL"), SalesHeader.FieldNo("Physical Transfer CZ"));
         DataTransfer.CopyFields();
     end;
@@ -389,6 +417,7 @@ codeunit 31301 "Install Application CZ"
         DataTransfer: DataTransfer;
     begin
         DataTransfer.SetTables(Database::"Sales Header Archive", Database::"Sales Header Archive");
+        DataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Intrastat Exclude CZL"), SalesHeaderArchive.FieldNo("Intrastat Exclude CZ"));
         DataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Physical Transfer CZL"), SalesHeaderArchive.FieldNo("Physical Transfer CZ"));
         DataTransfer.CopyFields();
     end;
@@ -420,6 +449,7 @@ codeunit 31301 "Install Application CZ"
         DataTransfer: DataTransfer;
     begin
         DataTransfer.SetTables(Database::"Sales Shipment Header", Database::"Sales Shipment Header");
+        DataTransfer.AddFieldValue(SalesShipmentHeader.FieldNo("Intrastat Exclude CZL"), SalesShipmentHeader.FieldNo("Intrastat Exclude CZ"));
         DataTransfer.AddFieldValue(SalesShipmentHeader.FieldNo("Physical Transfer CZL"), SalesShipmentHeader.FieldNo("Physical Transfer CZ"));
         DataTransfer.CopyFields();
     end;
@@ -547,6 +577,7 @@ codeunit 31301 "Install Application CZ"
         DataTransfer: DataTransfer;
     begin
         DataTransfer.SetTables(Database::"Service Header", Database::"Service Header");
+        DataTransfer.AddFieldValue(ServiceHeader.FieldNo("Intrastat Exclude CZL"), ServiceHeader.FieldNo("Intrastat Exclude CZ"));
         DataTransfer.AddFieldValue(ServiceHeader.FieldNo("Physical Transfer CZL"), ServiceHeader.FieldNo("Physical Transfer CZ"));
         DataTransfer.CopyFields();
     end;
@@ -568,6 +599,7 @@ codeunit 31301 "Install Application CZ"
         DataTransfer: DataTransfer;
     begin
         DataTransfer.SetTables(Database::"Service Invoice Header", Database::"Service Invoice Header");
+        DataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Intrastat Exclude CZL"), ServiceInvoiceHeader.FieldNo("Intrastat Exclude CZ"));
         DataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Physical Transfer CZL"), ServiceInvoiceHeader.FieldNo("Physical Transfer CZ"));
         DataTransfer.CopyFields();
     end;
@@ -589,6 +621,7 @@ codeunit 31301 "Install Application CZ"
         DataTransfer: DataTransfer;
     begin
         DataTransfer.SetTables(Database::"Service Cr.Memo Header", Database::"Service Cr.Memo Header");
+        DataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Intrastat Exclude CZL"), ServiceCrMemoHeader.FieldNo("Intrastat Exclude CZ"));
         DataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Physical Transfer CZL"), ServiceCrMemoHeader.FieldNo("Physical Transfer CZ"));
         DataTransfer.CopyFields();
     end;
@@ -610,6 +643,7 @@ codeunit 31301 "Install Application CZ"
         DataTransfer: DataTransfer;
     begin
         DataTransfer.SetTables(Database::"Service Shipment Header", Database::"Service Shipment Header");
+        DataTransfer.AddFieldValue(ServiceShipmentHeader.FieldNo("Intrastat Exclude CZL"), ServiceShipmentHeader.FieldNo("Intrastat Exclude CZ"));
         DataTransfer.AddFieldValue(ServiceShipmentHeader.FieldNo("Physical Transfer CZL"), ServiceShipmentHeader.FieldNo("Physical Transfer CZ"));
         DataTransfer.CopyFields();
     end;
@@ -633,6 +667,16 @@ codeunit 31301 "Install Application CZ"
         DataTransfer.SetTables(Database::"Tariff Number", Database::"Tariff Number");
         DataTransfer.AddSourceFilter(TariffNumber.FieldNo("Suppl. Unit of Meas. Code CZL"), '<>%1', '');
         DataTransfer.AddFieldValue(TariffNumber.FieldNo("Suppl. Unit of Meas. Code CZL"), TariffNumber.FieldNo("Suppl. Unit of Measure"));
+        DataTransfer.CopyFields();
+    end;
+
+    local procedure CopyTransferHeader()
+    var
+        TransferHeader: Record "Transfer Header";
+        DataTransfer: DataTransfer;
+    begin
+        DataTransfer.SetTables(Database::"Transfer Header", Database::"Transfer Header");
+        DataTransfer.AddFieldValue(TransferHeader.FieldNo("Intrastat Exclude CZL"), TransferHeader.FieldNo("Intrastat Exclude CZ"));
         DataTransfer.CopyFields();
     end;
 
@@ -669,6 +713,16 @@ codeunit 31301 "Install Application CZ"
         DataTransfer.CopyFields();
     end;
 
+    local procedure CopyTransferReceiptHeader()
+    var
+        TransferReceiptHeader: Record "Transfer Receipt Header";
+        DataTransfer: DataTransfer;
+    begin
+        DataTransfer.SetTables(Database::"Transfer Receipt Header", Database::"Transfer Receipt Header");
+        DataTransfer.AddFieldValue(TransferReceiptHeader.FieldNo("Intrastat Exclude CZL"), TransferReceiptHeader.FieldNo("Intrastat Exclude CZ"));
+        DataTransfer.CopyFields();
+    end;
+
     local procedure CopyTransferReceiptLine()
     var
         TransferReceiptLine: Record "Transfer Receipt Line";
@@ -677,6 +731,16 @@ codeunit 31301 "Install Application CZ"
         DataTransfer.SetTables(Database::"Transfer Receipt Line", Database::"Transfer Receipt Line");
         DataTransfer.AddSourceFilter(TransferReceiptLine.FieldNo("Statistic Indication CZL"), '<>%1', '');
         DataTransfer.AddFieldValue(TransferReceiptLine.FieldNo("Statistic Indication CZL"), TransferReceiptLine.FieldNo("Statistic Indication CZ"));
+        DataTransfer.CopyFields();
+    end;
+
+    local procedure CopyTransferShipmentHeader()
+    var
+        TransferShipmentHeader: Record "Transfer Shipment Header";
+        DataTransfer: DataTransfer;
+    begin
+        DataTransfer.SetTables(Database::"Transfer Shipment Header", Database::"Transfer Shipment Header");
+        DataTransfer.AddFieldValue(TransferShipmentHeader.FieldNo("Intrastat Exclude CZL"), TransferShipmentHeader.FieldNo("Intrastat Exclude CZ"));
         DataTransfer.CopyFields();
     end;
 
@@ -697,7 +761,8 @@ codeunit 31301 "Install Application CZ"
         DataTransfer: DataTransfer;
     begin
         DataTransfer.SetTables(Database::"Return Receipt Header", Database::"Return Receipt Header");
-        DataTransfer.AddFieldValue(ReturnReceiptHeader.FieldNo("physical Transfer CZL"), ReturnReceiptHeader.FieldNo("physical Transfer CZ"));
+        DataTransfer.AddFieldValue(ReturnReceiptHeader.FieldNo("Intrastat Exclude CZL"), ReturnReceiptHeader.FieldNo("Intrastat Exclude CZ"));
+        DataTransfer.AddFieldValue(ReturnReceiptHeader.FieldNo("Physical Transfer CZL"), ReturnReceiptHeader.FieldNo("Physical Transfer CZ"));
         DataTransfer.CopyFields();
     end;
 
@@ -718,6 +783,7 @@ codeunit 31301 "Install Application CZ"
         DataTransfer: DataTransfer;
     begin
         DataTransfer.SetTables(Database::"Return Shipment Header", Database::"Return Shipment Header");
+        DataTransfer.AddFieldValue(ReturnShipmentHeader.FieldNo("Intrastat Exclude CZL"), ReturnShipmentHeader.FieldNo("Intrastat Exclude CZ"));
         DataTransfer.AddFieldValue(ReturnShipmentHeader.FieldNo("Physical Transfer CZL"), ReturnShipmentHeader.FieldNo("Physical Transfer CZ"));
         DataTransfer.CopyFields();
     end;

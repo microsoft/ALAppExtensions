@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Foundation.Navigate;
+using Microsoft.Purchases.Payables;
+
 #pragma warning disable AL0604
 page 31183 "Purch. Adv. Letter Entries CZZ"
 {

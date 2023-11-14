@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Finance.GeneralLedger.Preview;
+using Microsoft.Foundation.Navigate;
+
 codeunit 31068 "Post Preview Handler CZZ"
 {
     SingleInstance = true;

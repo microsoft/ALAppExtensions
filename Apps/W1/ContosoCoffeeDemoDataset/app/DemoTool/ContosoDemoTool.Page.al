@@ -5,6 +5,7 @@ page 5194 "Contoso Demo Tool"
     UsageCategory = Administration;
     SourceTable = "Contoso Demo Data Module";
     Caption = 'Contoso Demo Tool';
+    AdditionalSearchTerms = 'Demo Data';
     Extensible = false;
     InsertAllowed = false;
     DeleteAllowed = false;

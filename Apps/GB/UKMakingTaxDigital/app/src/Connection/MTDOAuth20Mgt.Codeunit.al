@@ -32,6 +32,30 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         AccessTokenURLPathTxt: Label '/oauth/token', Locked = true;
         RefreshTokenURLPathTxt: Label '/oauth/token', Locked = true;
         AuthorizationResponseTypeTxt: Label 'code', Locked = true;
+        HMRCFraudPreventHeadersTok: label 'HMRC Fraud Prevention Headers', Locked = true;
+        FraudPreventHeadersValidTxt: Label 'Fraud prevention headers are valid. ', Locked = true;
+        FraudPreventHeadersNotValidTxt: Label 'Fraud prevention headers are NOT valid. ', Locked = true;
+        JsonTextBlankErr: Label 'JSON text is blank. ', Locked = true;
+        CannotReadJsonErr: Label 'Cannot read JSON. ', Locked = true;
+        JsonKeyMissingErr: Label 'JSON key %1 is missing. ', Locked = true;
+        CannotReadJsonValueErr: Label 'Cannot read value from JSON key %1. ', Locked = true;
+        JsonValueBlankErr: Label 'Value from key %1 is blank. ', Locked = true;
+        JsonValueNotMatchedErr: Label 'Value from key %1 does not match validation pattern %2. ', Locked = true;
+        ClientBrowserDoNotTrackTxt: Label 'GOV-CLIENT-BROWSER-DO-NOT-TRACK', Locked = true;
+        ClientBrowserJsUserAgentTxt: Label 'GOV-CLIENT-BROWSER-JS-USER-AGENT', Locked = true;
+        ClientConnectionMethodTxt: Label 'GOV-CLIENT-CONNECTION-METHOD', Locked = true;
+        ClientDeviceIdTxt: Label 'GOV-CLIENT-DEVICE-ID', Locked = true;
+        ClientPublicIpTxt: Label 'GOV-CLIENT-PUBLIC-IP', Locked = true;
+        ClientPublicIpTimestampTxt: Label 'GOV-CLIENT-PUBLIC-IP-TIMESTAMP', Locked = true;
+        ClientScreensTxt: Label 'GOV-CLIENT-SCREENS', Locked = true;
+        ClientTimezoneTxt: Label 'GOV-CLIENT-TIMEZONE', Locked = true;
+        ClientUserIdsTxt: Label 'GOV-CLIENT-USER-IDS', Locked = true;
+        ClientWindowSizeTxt: Label 'GOV-CLIENT-WINDOW-SIZE', Locked = true;
+        VendorForwardedTxt: Label 'GOV-VENDOR-FORWARDED', Locked = true;
+        VendorLicenseIdsTxt: Label 'GOV-VENDOR-LICENSE-IDS', Locked = true;
+        VendorProductNameTxt: Label 'GOV-VENDOR-PRODUCT-NAME', Locked = true;
+        VendorPublicIpTxt: Label 'GOV-VENDOR-PUBLIC-IP', Locked = true;
+        VendorVersionTxt: Label 'GOV-VENDOR-VERSION', Locked = true;
 
     internal procedure GetOAuthPRODSetupCode() Result: Code[20]
     begin
@@ -377,6 +401,82 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         MTDFraudPreventionMgt: Codeunit "MTD Fraud Prevention Mgt.";
     begin
         MTDFraudPreventionMgt.AddFraudPreventionHeaders(RequestJSON, ConfirmHeaders);
+        LogFraudPreventionHeadersValidity(RequestJSON);
+    end;
+
+    local procedure LogFraudPreventionHeadersValidity(RequestJSON: Text)
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        JsonObject: JsonObject;
+        HeaderJsonToken: JsonToken;
+        ErrorText: Text;
+    begin
+        if RequestJSON = '' then begin
+            FeatureTelemetry.LogError('0000LJE', HMRCFraudPreventHeadersTok, '', JsonTextBlankErr);
+            exit;
+        end;
+
+        if not JsonObject.ReadFrom(RequestJSON) then begin
+            FeatureTelemetry.LogError('0000LJF', HMRCFraudPreventHeadersTok, '', CannotReadJsonErr);
+            exit;
+        end;
+
+        if not JsonObject.Get('Header', HeaderJsonToken) then begin
+            FeatureTelemetry.LogError('0000LJG', HMRCFraudPreventHeadersTok, '', StrSubstNo(JsonKeyMissingErr, 'Header'));
+            exit;
+        end;
+
+        JsonObject := HeaderJsonToken.AsObject();
+
+        ErrorText += CheckJsonTokenValidity(JsonObject, ClientBrowserDoNotTrackTxt, 'true|false');              // true or false
+        ErrorText += CheckJsonTokenValidity(JsonObject, ClientBrowserJsUserAgentTxt, '\w+');                    // any letter, digit, or underscore
+        ErrorText += CheckJsonTokenValidity(JsonObject, ClientConnectionMethodTxt, 'WEB_APP_VIA_SERVER');       // WEB_APP_VIA_SERVER
+        ErrorText += CheckJsonTokenValidity(JsonObject, ClientDeviceIdTxt, '\w+');                              // any letter, digit, or underscore
+        ErrorText += CheckJsonTokenValidity(JsonObject, ClientPublicIpTxt, '[0-9]{1,3}(\.[0-9]{1,3}){3}|([0-9A-Fa-f]{0,4}:){2,7}([0-9A-Fa-f]{1,4})');   // IPv4 or IPv6
+        ErrorText += CheckJsonTokenValidity(JsonObject, ClientPublicIpTimestampTxt, '\d+[:\.-]\d+[:\.-]\d+');   // for example 13:00:00
+        ErrorText += CheckJsonTokenValidity(JsonObject, ClientScreensTxt, '^(?=.*width)(?=.*height).*$');       // width and height must be present in any order
+        ErrorText += CheckJsonTokenValidity(JsonObject, ClientTimezoneTxt, '[-+]\d{1,2}');                      // for example +02
+        ErrorText += CheckJsonTokenValidity(JsonObject, ClientUserIdsTxt, 'Business.*Central');                 // Business Central
+        ErrorText += CheckJsonTokenValidity(JsonObject, ClientWindowSizeTxt, '^(?=.*width)(?=.*height).*$');    // width and height must be present in any order
+        ErrorText += CheckJsonTokenValidity(JsonObject, VendorForwardedTxt, '[0-9]{1,3}(\.[0-9]{1,3}){3}|([0-9A-Fa-f]{0,4}:){2,7}([0-9A-Fa-f]{1,4})');  // IPv4 or IPv6
+        ErrorText += CheckJsonTokenValidity(JsonObject, VendorLicenseIdsTxt, 'Business.*Central.*\w+');         // Business Central and any letter, digit, or underscore
+        ErrorText += CheckJsonTokenValidity(JsonObject, VendorProductNameTxt, 'Business.*Central');             // Business Central
+        ErrorText += CheckJsonTokenValidity(JsonObject, VendorPublicIpTxt, '[0-9]{1,3}(\.[0-9]{1,3}){3}|([0-9A-Fa-f]{0,4}:){2,7}([0-9A-Fa-f]{1,4})');   // IPv4 or IPv6
+        ErrorText += CheckJsonTokenValidity(JsonObject, VendorVersionTxt, 'Business.*Central.*=\d+');           // for example Business Central=23
+
+        if ErrorText <> '' then
+            FeatureTelemetry.LogError('0000LJH', HMRCFraudPreventHeadersTok, FraudPreventHeadersNotValidTxt, ErrorText)
+        else
+            FeatureTelemetry.LogUsage('0000LJI', HMRCFraudPreventHeadersTok, FraudPreventHeadersValidTxt);
+    end;
+
+    local procedure CheckJsonTokenValidity(var JsonObject: JsonObject; TokenKey: Text; ValidationRegExPattern: Text) ErrorText: Text
+    var
+        JsonToken: JsonToken;
+        TextValue: Text;
+        RegEx: DotNet Regex;
+        RegExOptions: DotNet RegexOptions;
+    begin
+        if not JsonObject.Get(TokenKey, JsonToken) then begin
+            ErrorText := StrSubstNo(JsonKeyMissingErr, TokenKey);
+            exit;
+        end;
+
+        if not JsonToken.WriteTo(TextValue) then begin
+            ErrorText := StrSubstNo(CannotReadJsonValueErr, TokenKey);
+            exit;
+        end;
+
+        if TextValue = '' then begin
+            ErrorText := StrSubstNo(JsonValueBlankErr, TokenKey);
+            exit;
+        end;
+
+        RegEx := RegEx.Regex(ValidationRegExPattern, RegExOptions.IgnoreCase);
+        if not RegEx.IsMatch(TextValue) then begin
+            ErrorText := StrSubstNo(JsonValueNotMatchedErr, TokenKey, ValidationRegExPattern);
+            exit;
+        end;
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"OAuth 2.0 Setup", 'OnBeforeActionEvent', 'RefreshAccessToken', false, false)]

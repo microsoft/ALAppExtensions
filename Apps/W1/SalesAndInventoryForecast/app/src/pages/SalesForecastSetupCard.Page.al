@@ -2,6 +2,8 @@ namespace Microsoft.Inventory.InventoryForecast;
 
 using System.Threading;
 using System.AI;
+using System.Privacy;
+using System.Security.User;
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -30,6 +32,17 @@ page 1853 "Sales Forecast Setup Card"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies if the forecasting feature is enabled.';
+                    trigger OnValidate();
+                    var
+                        CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
+                        UserPermissions: Codeunit "User Permissions";
+                    begin
+                        if (Rec.Enabled <> xRec.Enabled) and not UserPermissions.IsSuper(UserSecurityId()) then
+                            Error(NotAdminErr);
+
+                        if not xRec.Enabled and Rec.Enabled then
+                            Rec.Enabled := CustomerConsentMgt.ConsentToMicrosoftServiceWithAI();
+                    end;
                 }
                 field("Period Type"; "Period Type")
                 {
@@ -199,6 +212,7 @@ page 1853 "Sales Forecast Setup Card"
 
     var
         UpdatingForecastsMsg: Label 'Sales forecasts are being updated in the background. This might take a minute.';
+        NotAdminErr: Label 'You must be an administrator to enable/disable sales forecasting. Ensure that you are assigned the ''SUPER'' user permission set.';
         [NonDebuggable]
         APIKeyValue: Text[250];
         JobQueueCreationInProgressErr: Label 'Sales forecast updates are being scheduled. Please wait until the process is complete.';

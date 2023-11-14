@@ -6,12 +6,16 @@ codeunit 5193 "Contoso Demo Tool"
 
     var
         SelectedModulesGeneratedErr: Label 'All the selected modules have already been generated.';
+        LanguageConfirmationMsg: Label 'The demo data will be created with %1, which is different than the language used before (%2). Do you want to continue? \\ The differences in the language could cause issues with the demo data.', Comment = '%1 = Language Name, %2 = Language Name';
 
     internal procedure CreateDemoData(var ContosoDemoDataModule: Record "Contoso Demo Data Module"; ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
     var
         ContosoModuleDependency: Codeunit "Contoso Module Dependency";
         DemoDataModulesList, SortedModulesList : List of [Enum "Contoso Demo Data Module"];
     begin
+        if not CheckLanguageBeforeGeneratingDemoData() then
+            exit;
+
         if ContosoDemoDataModule.FindSet() then
             repeat
                 if not IsModuleGenerated(ContosoDemoDataModule, ContosoDemoDataLevel) then
@@ -32,6 +36,8 @@ codeunit 5193 "Contoso Demo Tool"
             GenerateDemoData(SortedModulesList, Enum::"Contoso Demo Data Level"::"Transactional Data");
             GenerateDemoData(SortedModulesList, Enum::"Contoso Demo Data Level"::"Historical Data");
         end;
+
+        UpdateLanguageAfterGeneratingDemoDataForTheFirstRun();
     end;
 
     local procedure GenerateDemoData(SortedModulesList: List of [enum "Contoso Demo Data Module"]; ContosoDemoDataLevel: Enum "Contoso Demo Data Level")
@@ -98,6 +104,35 @@ codeunit 5193 "Contoso Demo Tool"
 
             foreach Dependency in ModuleProvider.GetDependencies() do
                 ContosoModuleDependency.AddDependency(Module, Dependency);
+        end;
+    end;
+
+    local procedure CheckLanguageBeforeGeneratingDemoData(): Boolean
+
+    var
+        ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
+        Language: Codeunit "Language";
+    begin
+        ContosoCoffeeDemoDataSetup.InitRecord();
+        ContosoCoffeeDemoDataSetup.Get();
+        // If the language is not set, then it is the first run
+        if ContosoCoffeeDemoDataSetup."Language ID" = 0 then
+            exit(true);
+
+        if ContosoCoffeeDemoDataSetup."Language ID" <> GlobalLanguage() then
+            exit(Dialog.Confirm(LanguageConfirmationMsg, false, Language.GetWindowsLanguageName(GlobalLanguage()), Language.GetWindowsLanguageName(ContosoCoffeeDemoDataSetup."Language ID")));
+
+        exit(true);
+    end;
+
+    local procedure UpdateLanguageAfterGeneratingDemoDataForTheFirstRun()
+    var
+        ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
+    begin
+        ContosoCoffeeDemoDataSetup.Get();
+        if ContosoCoffeeDemoDataSetup."Language ID" = 0 then begin
+            ContosoCoffeeDemoDataSetup.Validate("Language ID", GlobalLanguage());
+            ContosoCoffeeDemoDataSetup.Modify(true);
         end;
     end;
 

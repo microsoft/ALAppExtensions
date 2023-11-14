@@ -6,6 +6,8 @@ table 2682 "Data Search Setup (Field)"
 {
     Caption = 'Search Setup (Field)';
     ReplicateData = true;
+    InherentEntitlements = R;
+    InherentPermissions = R;
 
     fields
     {

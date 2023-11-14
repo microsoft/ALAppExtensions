@@ -37,8 +37,7 @@ codeunit 1438 "Ess. Bus. Headline Subscribers"
             exit;
 
         EssentialBusinessHeadline.SetRange("User Id", UserSecurityId());
-        if not EssentialBusinessHeadline.IsEmpty then
-            EssentialBusinessHeadline.DeleteAll();
+        EssentialBusinessHeadline.DeleteAll();
     end;
 
     local procedure TransferHeadlineToPage(HeadlineName: Option; var HeadlineText: Text[250]; var HeadlineVisible: Boolean)

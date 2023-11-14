@@ -13,19 +13,17 @@ using Microsoft.Purchases.Setup;
 
 codeunit 6137 "E-Document Create Jnl. Line"
 {
-    Access = Internal;
-
     trigger OnRun()
     begin
         CreateGeneralJournalLine(SourceEDocument, CreatedJnlLine);
     end;
 
-    procedure SetSource(var SourceEDocument2: Record "E-Document")
+    internal procedure SetSource(var SourceEDocument2: Record "E-Document")
     begin
         SourceEDocument := SourceEDocument2;
     end;
 
-    procedure GetCreatedJnlLine(): RecordRef;
+    internal procedure GetCreatedJnlLine(): RecordRef;
     begin
         exit(CreatedJnlLine);
     end;

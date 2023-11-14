@@ -10,7 +10,6 @@ using System.Threading;
 
 codeunit 6144 "E-Document Get Response"
 {
-    Access = Internal;
     TableNo = "Job Queue Entry";
 
     trigger OnRun()

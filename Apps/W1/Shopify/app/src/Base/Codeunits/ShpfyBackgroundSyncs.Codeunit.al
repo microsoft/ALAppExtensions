@@ -18,7 +18,7 @@ codeunit 30101 "Shpfy Background Syncs"
         ProductImagesSyncTypeTxt: Label 'Product Images';
         ProductsSyncTypeTxt: Label 'Products';
         JobQueueCategoryLbl: Label 'SHPFY', Locked = true;
-
+        NothingToSyncErr: Label 'You need to add items to Shopify first, do you want to do it now?';
 
     /// <summary> 
     /// Country Sync.
@@ -389,8 +389,16 @@ codeunit 30101 "Shpfy Background Syncs"
     internal procedure ProductsSync(ShopCode: Code[20])
     var
         Shop: Record "Shpfy Shop";
+        Product: Record "Shpfy Product";
+        SyncProduct: Codeunit "Shpfy Sync Products";
     begin
         if Shop.Get(ShopCode) then begin
+            if (Shop."Sync Item" = Shop."Sync Item"::" ") or (Shop."Sync Item" = Shop."Sync Item"::"To Shopify") then
+                if Product.IsEmpty then
+                    if Confirm(NothingToSyncErr) then
+                        SyncProduct.AddItemsToShopify(Shop.Code)
+                    else
+                        exit;
             Shop.SetRecFilter();
             ProductsSync(Shop);
         end;

@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.CashDesk;
+
 page 31154 "Cash Desk Activities CZP"
 {
     Caption = 'Cash Desk Activities';
@@ -28,6 +34,7 @@ page 31154 "Cash Desk Activities CZP"
                 field("Posted Documents"; Rec."Posted Documents")
                 {
                     ApplicationArea = Basic, Suite;
+                    Caption = 'Posted documents for the last 30 days';
                     ToolTip = 'Specifies number of cash desk documents with status posted.';
                 }
             }
@@ -51,7 +58,7 @@ page 31154 "Cash Desk Activities CZP"
             Rec.SetFilter("Cash Desk Filter", CashDeskFilter)
         else
             Rec.SetRange("Cash Desk Filter", '');
-        Rec.SetRange("Date Filter", WorkDate());
+        Rec.SetRange("Date Filter", CalcDate('<-30D>', WorkDate()), WorkDate());
         Rec.FilterGroup(0);
     end;
 }

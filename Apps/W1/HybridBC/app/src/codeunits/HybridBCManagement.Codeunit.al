@@ -150,6 +150,56 @@ codeunit 4008 "Hybrid BC Management"
             OpenNewUI := true;
     end;
 
+    [EventSubscriber(ObjectType::Page, Page::"Cloud Mig - Select Tables", 'OnCanChangeSetup', '', false, false)]
+    local procedure OnCanChangeSetup(var CanChangeSetup: Boolean)
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+    begin
+        if not IntelligentCloudSetup.Get() then begin
+            IntelligentCloudSetup."Product ID" := 'DynamicsBC';
+            IntelligentCloudSetup.Insert();
+        end;
+
+        if not GetBCProductEnabled() then
+            exit;
+
+        CanChangeSetup := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cloud Mig. Replicate Data Mgt.", 'OnCanIntelligentCloudSetupTableBeModified', '', false, false)]
+    local procedure CanIntelligentCloudSetupTableBeModified(TableID: Integer; var CanBeModified: Boolean)
+    begin
+        if not GetBCProductEnabled() then
+            exit;
+
+        CanBeModified := CheckRecordCanBeIncluded(TableID);
+    end;
+
+    local procedure CheckRecordCanBeIncluded(TableID: Integer): Boolean
+    var
+        CloudMigReplicateDataMgt: Codeunit "Cloud Mig. Replicate Data Mgt.";
+        IsObsolete: Boolean;
+    begin
+        if not CloudMigReplicateDataMgt.CanChangeIntelligentCloudStatus(TableID, IsObsolete) then
+            exit(false);
+
+        if IsObsolete then
+            exit(true);
+
+        if not TryOpenTable(TableID) then
+            exit(false);
+
+        exit(true);
+    end;
+
+    [TryFunction]
+    local procedure TryOpenTable(TableID: Integer)
+    var
+        TestRecordRef: RecordRef;
+    begin
+        TestRecordRef.Open(TableID, false);
+    end;
+
     local procedure GetBCProductEnabled(): Boolean
     var
         IntelligentCloudSetup: Record "Intelligent Cloud Setup";

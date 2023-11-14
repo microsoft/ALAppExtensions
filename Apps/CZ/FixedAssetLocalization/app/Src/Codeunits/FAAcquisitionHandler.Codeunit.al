@@ -1,3 +1,21 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.FixedAssets;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Reports;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Journal;
+using Microsoft.FixedAssets.Ledger;
+using Microsoft.FixedAssets.Setup;
+using Microsoft.Purchases.Document;
+using System.Environment.Configuration;
+
 codeunit 31236 "FA Acquisition Handler CZF"
 {
     var
@@ -193,6 +211,8 @@ codeunit 31236 "FA Acquisition Handler CZF"
     local procedure AcquisitionAsCustom2OnBeforeGetFAPostingGroup(var PurchaseLine: Record "Purchase Line"; var IsHandled: Boolean)
     var
         FADepreciationBook: Record "FA Depreciation Book";
+        FADeprBook: Record "FA Depreciation Book";
+        SetFADeprBook: Record "FA Depreciation Book";
         FAPostingGroup: Record "FA Posting Group";
         GLAccount: Record "G/L Account";
         ApplicationAreaMgmt: Codeunit "Application Area Mgmt.";
@@ -206,12 +226,22 @@ codeunit 31236 "FA Acquisition Handler CZF"
         if PurchaseLine."Depreciation Book Code" = '' then begin
             FADepreciationBook.SetRange("FA No.", PurchaseLine."No.");
             FADepreciationBook.SetRange("Default FA Depreciation Book", true);
-            if not FADepreciationBook.FindFirst() then begin
-                PurchaseLine."Depreciation Book Code" := FASetup."Default Depr. Book";
-                if not FADepreciationBook.Get(PurchaseLine."No.", PurchaseLine."Depreciation Book Code") then
+
+            SetFADeprBook.SetRange("FA No.", PurchaseLine."No.");
+            case true of
+                SetFADeprBook.Count = 1:
+                    begin
+                        SetFADeprBook.FindFirst();
+                        PurchaseLine."Depreciation Book Code" := SetFADeprBook."Depreciation Book Code";
+                    end;
+                FADepreciationBook.FindFirst():
+                    PurchaseLine."Depreciation Book Code" := FADepreciationBook."Depreciation Book Code";
+                FADeprBook.Get(PurchaseLine."No.", FASetup."Default Depr. Book"):
+                    PurchaseLine."Depreciation Book Code" := FASetup."Default Depr. Book"
+                else
                     PurchaseLine."Depreciation Book Code" := '';
-            end else
-                PurchaseLine."Depreciation Book Code" := FADepreciationBook."Depreciation Book Code";
+            end;
+
             if PurchaseLine."Depreciation Book Code" = '' then
                 exit;
         end;

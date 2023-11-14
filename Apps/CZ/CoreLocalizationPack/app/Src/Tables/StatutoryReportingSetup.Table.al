@@ -1,3 +1,19 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Foundation.Company;
+
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Inventory.Intrastat;
+#if not CLEAN22
+using Microsoft.Inventory.Item;
+#endif
+using Microsoft.Purchases.Vendor;
+using System.Email;
+using System.Reflection;
+
 table 31105 "Statutory Reporting Setup CZL"
 {
     Caption = 'Statutory Reporting Setup';

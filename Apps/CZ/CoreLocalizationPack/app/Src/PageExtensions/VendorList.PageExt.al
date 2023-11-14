@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Vendor;
+
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Purchases.Payables;
+
 pageextension 11768 "Vendor List CZL" extends "Vendor List"
 {
     layout

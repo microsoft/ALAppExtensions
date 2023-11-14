@@ -105,17 +105,17 @@ codeunit 5143 "Contoso Item"
 
     procedure InsertInventoryItem(ItemNo: Code[20]; Description: Text[100]; UnitPrice: Decimal; LastDirectCost: Decimal; GenProdPostingGroup: Code[20]; TaxGroup: Code[20]; InventoryPostingGroup: Code[20]; CostingMethod: Enum "Costing Method"; BaseUnitOfMeasure: Code[10]; ItemCategoryCode: Code[20]; ItemTrackingCode: Code[10]; NetWeight: Decimal; PutAwayTemplateCode: Code[10]; Picture: Codeunit "Temp Blob"; GTIN: Code[14])
     begin
-        InsertItem(ItemNo, Enum::"Item Type"::Inventory, Description, UnitPrice, LastDirectCost, GenProdPostingGroup, TaxGroup, InventoryPostingGroup, CostingMethod, BaseUnitOfMeasure, ItemCategoryCode, ItemTrackingCode, NetWeight, PutAwayTemplateCode, '', 0, Enum::"Replenishment System"::" ", 0, '', '', Enum::"Flushing Method"::Backward, Enum::"Reordering Policy"::" ", false, '', Picture, GTIN);
+        InsertItem(ItemNo, Enum::"Item Type"::Inventory, Description, UnitPrice, LastDirectCost, GenProdPostingGroup, TaxGroup, InventoryPostingGroup, CostingMethod, BaseUnitOfMeasure, ItemCategoryCode, ItemTrackingCode, NetWeight, PutAwayTemplateCode, '', 0, Enum::"Replenishment System"::Purchase, 0, '', '', Enum::"Flushing Method"::Backward, Enum::"Reordering Policy"::" ", false, '', Picture, GTIN);
     end;
 
     procedure InsertInventoryItem(ItemNo: Code[20]; Description: Text[100]; UnitPrice: Decimal; LastDirectCost: Decimal; GenProdPostingGroup: Code[20]; TaxGroup: Code[20]; InventoryPostingGroup: Code[20]; CostingMethod: Enum "Costing Method"; BaseUnitOfMeasure: Code[10]; ItemCategoryCode: Code[20]; NetWeight: Decimal; ServiceItemGroupCode: Code[10]; Picture: Codeunit "Temp Blob")
     begin
-        InsertItem(ItemNo, Enum::"Item Type"::Inventory, Description, UnitPrice, LastDirectCost, GenProdPostingGroup, TaxGroup, InventoryPostingGroup, CostingMethod, BaseUnitOfMeasure, ItemCategoryCode, '', NetWeight, '', ServiceItemGroupCode, 0, Enum::"Replenishment System"::" ", 0, '', '', Enum::"Flushing Method"::Backward, Enum::"Reordering Policy"::" ", false, '', Picture, '');
+        InsertItem(ItemNo, Enum::"Item Type"::Inventory, Description, UnitPrice, LastDirectCost, GenProdPostingGroup, TaxGroup, InventoryPostingGroup, CostingMethod, BaseUnitOfMeasure, ItemCategoryCode, '', NetWeight, '', ServiceItemGroupCode, 0, Enum::"Replenishment System"::Purchase, 0, '', '', Enum::"Flushing Method"::Backward, Enum::"Reordering Policy"::" ", false, '', Picture, '');
     end;
 
     procedure InsertServiceItem(ItemNo: Code[20]; Description: Text[100]; UnitPrice: Decimal; LastDirectCost: Decimal; GenProdPostingGroup: Code[20]; TaxGroup: Code[20]; BaseUnitOfMeasure: Code[10]; ItemCategoryCode: Code[20]; Picture: Codeunit "Temp Blob")
     begin
-        InsertItem(ItemNo, Enum::"Item Type"::Service, Description, UnitPrice, LastDirectCost, GenProdPostingGroup, TaxGroup, '', Enum::"Costing Method"::FIFO, BaseUnitOfMeasure, ItemCategoryCode, '', 0, '', '', 0, Enum::"Replenishment System"::" ", 0, '', '', Enum::"Flushing Method"::Backward, Enum::"Reordering Policy"::" ", false, '', Picture, '');
+        InsertItem(ItemNo, Enum::"Item Type"::Service, Description, UnitPrice, LastDirectCost, GenProdPostingGroup, TaxGroup, '', Enum::"Costing Method"::FIFO, BaseUnitOfMeasure, ItemCategoryCode, '', 0, '', '', 0, Enum::"Replenishment System"::Purchase, 0, '', '', Enum::"Flushing Method"::Backward, Enum::"Reordering Policy"::" ", false, '', Picture, '');
     end;
 
     procedure InsertItemCategory(ItemCategoryCode: Code[20]; Description: Text[100]; ParentCategory: Code[20])

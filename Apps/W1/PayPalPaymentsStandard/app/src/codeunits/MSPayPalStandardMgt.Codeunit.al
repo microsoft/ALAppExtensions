@@ -2,6 +2,7 @@ namespace Microsoft.Bank.PayPal;
 
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Setup;
+using System.Telemetry;
 using Microsoft.Foundation.Company;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
@@ -18,7 +19,10 @@ codeunit 1070 "MS - PayPal Standard Mgt."
     TableNo = "Payment Reporting Argument";
 
     trigger OnRun();
+    var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
+        FeatureTelemetry.LogUptake('0000LHT', PaypalTelemetryTok, Enum::"Feature Uptake Status"::Used);
         if not GenerateHyperlink(Rec) then begin
             Session.LogMessage('0000801', PayPalNoLinkTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             if not GuiAllowed() then
@@ -65,6 +69,13 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         InvoiceNoFormatTxt: Label '%1 (%2 %3)', Locked = true;
         PaymentReportingArgumentFormatTxt: Label '%1 (%2)', Locked = true;
         UrlJoinPlaceholderLbl: Label '%1&%2', Comment = '%1 - First part of the URL, %2 additional query', Locked = true;
+        PayPalTelemetryTok: Label 'PayPal', Locked = true;
+        HyperlinkGeneratedTok: Label 'Hyperlink generated', Locked = true;
+
+    internal procedure GetFeatureTelemetryName(): Text;
+    begin
+        exit(PayPalTelemetryTok);
+    end;
 
     local procedure GenerateHyperlink(var PaymentReportingArgument: Record 1062): Boolean;
     var
@@ -72,6 +83,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         MsPayPalStandardAccount: Record "MS - PayPal Standard Account";
         MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
         DataTypeManagement: Codeunit "Data Type Management";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         DocumentRecordRef: RecordRef;
         BaseURL: Text;
         TargetURL: Text;
@@ -118,6 +130,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
 
                     if SalesInvoiceHeader."No. Printed" = 1 then
                         Session.LogMessage('00001ZR', PayPalHyperlinkGeneratedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
+                    FeatureTelemetry.LogUsage('0000LHU', PayPalTelemetryTok, HyperlinkGeneratedTok);
 
                     exit(true);
                 end;
@@ -130,6 +143,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
                     PaymentReportingArgument.Logo := MSPayPalStandardTemplate.Logo;
                     PaymentReportingArgument."Payment Service ID" := PaymentReportingArgument.GetPayPalServiceID();
                     PaymentReportingArgument.MODIFY(true);
+                    FeatureTelemetry.LogUsage('0000LHV', PayPalTelemetryTok, HyperlinkGeneratedTok);
 
                     exit(true);
                 end;

@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Payables;
+
+using Microsoft.Purchases.Vendor;
+
 tableextension 11786 "Detailed Vend. Ledg. Entry CZL" extends "Detailed Vendor Ledg. Entry"
 {
     fields

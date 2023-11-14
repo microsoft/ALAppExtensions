@@ -15,5 +15,10 @@ tableextension 31343 "Service Cr.Memo Header CZ" extends "Service Cr.Memo Header
             Caption = 'Physical Transfer';
             DataClassification = CustomerContent;
         }
+        field(31310; "Intrastat Exclude CZ"; Boolean)
+        {
+            Caption = 'Intrastat Exclude';
+            DataClassification = CustomerContent;
+        }
     }
 }

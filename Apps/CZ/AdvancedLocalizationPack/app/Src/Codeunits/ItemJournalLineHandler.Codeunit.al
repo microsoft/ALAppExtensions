@@ -1,3 +1,18 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Journal;
+
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Tracking;
+using Microsoft.Manufacturing.Setup;
+using Microsoft.Purchases.Document;
+using Microsoft.Sales.Document;
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
+
 codeunit 31253 "Item Journal Line Handler CZA"
 {
     [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterValidateEvent', 'Variant Code', false, false)]
@@ -53,52 +68,6 @@ codeunit 31253 "Item Journal Line Handler CZA"
     begin
         ItemJnlLine."Currency Code CZA" := ServShptHeader."Currency Code";
         ItemJnlLine."Currency Factor CZA" := ServShptHeader."Currency Factor";
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnInsertCapValueEntryOnAfterUpdateCostAmounts', '', false, false)]
-    local procedure AddFieldsOnInsertCapValueEntryOnAfterUpdateCostAmounts(var ValueEntry: Record "Value Entry"; var ItemJournalLine: Record "Item Journal Line")
-    begin
-        ValueEntry."Source No." := ItemJournalLine."Source No.";
-        ValueEntry."Invoice-to Source No. CZA" := ItemJournalLine."Invoice-to Source No.";
-        ValueEntry."Delivery-to Source No. CZA" := ItemJournalLine."Delivery-to Source No. CZA";
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnBeforeInsertCapLedgEntry', '', false, false)]
-    local procedure AddFieldsOnBeforeInsertCapLedgEntry(var CapLedgEntry: Record "Capacity Ledger Entry")
-    begin
-        CapLedgEntry."User ID CZA" := CopyStr(UserId(), 1, MaxStrLen(CapLedgEntry."User ID CZA"));
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnBeforeInsertCapValueEntry', '', false, false)]
-    local procedure AddFieldsOnBeforeInsertCapValueEntry(var ValueEntry: Record "Value Entry"; ItemJnlLine: Record "Item Journal Line")
-    begin
-        ValueEntry."Source No." := ItemJnlLine."Source No.";
-        ValueEntry."Location Code" := ItemJnlLine."Location Code";
-        ValueEntry."Invoice-to Source No. CZA" := ItemJnlLine."Invoice-to Source No.";
-        ValueEntry."Delivery-to Source No. CZA" := ItemJnlLine."Delivery-to Source No. CZA";
-        ValueEntry."Currency Code CZA" := ItemJnlLine."Currency Code CZA";
-        ValueEntry."Currency Factor CZA" := ItemJnlLine."Currency Factor CZA";
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterInitItemLedgEntry', '', false, false)]
-    local procedure AddFieldsOnAfterInitItemLedgEntry(var NewItemLedgEntry: Record "Item Ledger Entry"; ItemJournalLine: Record "Item Journal Line")
-    begin
-        NewItemLedgEntry."Invoice-to Source No. CZA" := ItemJournalLine."Invoice-to Source No.";
-        NewItemLedgEntry."Delivery-to Source No. CZA" := ItemJournalLine."Delivery-to Source No. CZA";
-        NewItemLedgEntry."Currency Code CZA" := ItemJournalLine."Currency Code CZA";
-        NewItemLedgEntry."Currency Factor CZA" := ItemJournalLine."Currency Factor CZA";
-        NewItemLedgEntry."Source Code CZA" := ItemJournalLine."Source Code";
-        NewItemLedgEntry."Reason Code CZA" := ItemJournalLine."Reason Code";
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnInitValueEntryOnAfterAssignFields', '', false, false)]
-    local procedure AddFieldsOnInitValueEntryOnAfterAssignFields(var ValueEntry: Record "Value Entry"; ItemJnlLine: Record "Item Journal Line")
-    begin
-        ValueEntry."Source No." := ItemJnlLine."Source No.";
-        ValueEntry."Invoice-to Source No. CZA" := ItemJnlLine."Invoice-to Source No.";
-        ValueEntry."Delivery-to Source No. CZA" := ItemJnlLine."Delivery-to Source No. CZA";
-        ValueEntry."Currency Code CZA" := ItemJnlLine."Currency Code CZA";
-        ValueEntry."Currency Factor CZA" := ItemJnlLine."Currency Factor CZA";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterValidateEvent', 'Applies-from Entry', false, false)]

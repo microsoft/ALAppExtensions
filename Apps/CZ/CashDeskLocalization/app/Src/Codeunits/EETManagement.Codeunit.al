@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.CashDesk;
+
+using Microsoft.Finance;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Sales.Receivables;
+
 codeunit 31083 "EET Management CZP"
 {
     Permissions = tabledata "Posted Cash Document Hdr. CZP" = rm,

@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Document;
+
+using Microsoft.Finance.Currency;
+#if not CLEAN24
+using Microsoft.Finance.EU3PartyTrade;
+#endif
+#if not CLEAN22
+using Microsoft.Finance.VAT.Calculation;
+#endif
+
 pageextension 11738 "Purchase Order CZL" extends "Purchase Order"
 {
     layout
@@ -126,11 +140,19 @@ pageextension 11738 "Purchase Order CZL" extends "Purchase Order"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the VAT country/region code of customer.';
             }
+#if not CLEAN24
             field("EU 3-Party Trade CZL"; Rec."EU 3-Party Trade CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'EU 3-Party Trade (Obsolete)';
                 ToolTip = 'Specifies whether the document is part of a three-party trade.';
+                Visible = not EU3PartyTradeFeatureEnabled;
+                Enabled = not EU3PartyTradeFeatureEnabled;
+                ObsoleteState = Pending;
+                ObsoleteTag = '24.0';
+                ObsoleteReason = 'Replaced by "EU 3 Party Trade" field in "EU 3-Party Trade Purchase" app.';
             }
+#endif
             field("EU 3-Party Intermed. Role CZL"; Rec."EU 3-Party Intermed. Role CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -155,6 +177,7 @@ pageextension 11738 "Purchase Order CZL" extends "Purchase Order"
             }
 #endif
         }
+        movebefore("EU 3-Party Intermed. Role CZL"; "EU 3rd Party Trade")
         addafter("Foreign Trade")
         {
             group(PaymentsCZL)
@@ -232,20 +255,31 @@ pageextension 11738 "Purchase Order CZL" extends "Purchase Order"
             }
         }
     }
-#if not CLEAN22
+#if not CLEAN24
 
     trigger OnOpenPage()
     begin
+#if not CLEAN22
         VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
         ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
+#endif
+        EU3PartyTradeFeatureEnabled := EU3PartyTradeFeatMgt.IsEnabled();
     end;
 
     var
+#if not CLEAN22
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
 #pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
 #pragma warning restore AL0432
+#endif
+#pragma warning disable AL0432
+        EU3PartyTradeFeatMgt: Codeunit "EU3 Party Trade Feat Mgt. CZL";
+#pragma warning restore AL0432
+#if not CLEAN22
         ReplaceVATDateEnabled: Boolean;
         VATDateEnabled: Boolean;
+#endif
+        EU3PartyTradeFeatureEnabled: Boolean;
 #endif
 }

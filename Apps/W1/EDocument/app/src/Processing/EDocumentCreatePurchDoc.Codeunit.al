@@ -9,21 +9,19 @@ using System.Reflection;
 
 codeunit 6136 "E-Document Create Purch. Doc."
 {
-    Access = Internal;
-
     trigger OnRun()
     begin
         CreatePurchaseDocument(SourceEDocument, SourceDocumentHeader, SourceDocumentLine, CreatedDocumentHeader)
     end;
 
-    procedure SetSource(var SourceEDocument2: Record "E-Document"; var SourceDocumentHeader2: RecordRef; var SourceDocumentLine2: RecordRef)
+    internal procedure SetSource(var SourceEDocument2: Record "E-Document"; var SourceDocumentHeader2: RecordRef; var SourceDocumentLine2: RecordRef)
     begin
         SourceEDocument := SourceEDocument2;
         SourceDocumentHeader := SourceDocumentHeader2;
         SourceDocumentLine := SourceDocumentLine2;
     end;
 
-    procedure GetCreatedDocument(): RecordRef;
+    internal procedure GetCreatedDocument(): RecordRef;
     begin
         exit(CreatedDocumentHeader);
     end;

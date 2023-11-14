@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Documents;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Foundation.Attachment;
+
 page 31266 "Iss. Payment Order CZB"
 {
     Caption = 'Issued Payment Order';

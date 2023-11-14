@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GeneralLedger.Journal;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Setup;
+using Microsoft.Finance.Currency;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+
 tableextension 31021 "Posted Gen. Journal Line CZL" extends "Posted Gen. Journal Line"
 {
     fields

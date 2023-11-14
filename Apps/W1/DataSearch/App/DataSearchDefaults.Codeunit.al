@@ -42,6 +42,7 @@ using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Vendor;
+using Microsoft.RoleCenters;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.FinanceCharge;
@@ -68,12 +69,13 @@ using Microsoft.Intercompany.Partner;
 using System.Globalization;
 using System.Reflection;
 using System.Security.AccessControl;
-using Microsoft.RoleCenters;
 
 codeunit 2681 "Data Search Defaults"
 {
     Permissions = tabledata "Data Search Setup (Table)" = rim,
                   tabledata "Data Search Setup (Field)" = rim;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     var
         BaseLbl: Label '(default)';
@@ -190,25 +192,17 @@ codeunit 2681 "Data Search Defaults"
         TableList.Add(Database::"Purch. Inv. Line");
         TableList.Add(Database::"Purch. Cr. Memo Hdr.");
         TableList.Add(Database::"Purch. Cr. Memo Line");
+        TableList.Add(Database::"Reminder Header");
+        TableList.Add(Database::"Reminder Line");
+        TableList.Add(Database::"Issued Reminder Header");
+        TableList.Add(Database::"Issued Reminder Line");
     end;
 
     local procedure GetTableListForBusinessManager(var TableList: List of [Integer])
     begin
-        TableList.Add(Database::"G/L Entry");
-        TableList.Add(Database::Customer);
-        TableList.Add(Database::"Cust. Ledger Entry");
-        TableList.Add(Database::Vendor);
-        TableList.Add(Database::"Vendor Ledger Entry");
+        GetTableListForAccountant(TableList);
         TableList.Add(Database::Item);
         TableList.Add(Database::Contact);
-        TableList.Add(Database::"Sales Invoice Header");
-        TableList.Add(Database::"Sales Invoice Line");
-        TableList.Add(Database::"Sales Cr.Memo Header");
-        TableList.Add(Database::"Sales Cr.Memo Line");
-        TableList.Add(Database::"Purch. Inv. Header");
-        TableList.Add(Database::"Purch. Inv. Line");
-        TableList.Add(Database::"Purch. Cr. Memo Hdr.");
-        TableList.Add(Database::"Purch. Cr. Memo Line");
     end;
 
     local procedure GetTableListForServiceManager(var TableList: List of [Integer])
@@ -347,7 +341,7 @@ codeunit 2681 "Data Search Defaults"
         DataSearchSetupTable."No. of Hits" := 0;
         if DataSearchSetupTable."Table No." in [Database::Contact] then
             DataSearchSetupTable."No. of Hits" := 1; // move to top of list
-        DataSearchSetupTable.Insert(true);
+        DataSearchSetupTable.InsertRec(true);
         AddDefaultFields(TableNo);
     end;
 

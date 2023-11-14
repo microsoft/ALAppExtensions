@@ -20,8 +20,6 @@ codeunit 11517 "Swiss QR-Bill Install"
     Subtype = Install;
 
     var
-        AssistedSetupTxt: Label 'Set up QR-Bill';
-        AssistedSetupDescriptionTxt: Label 'Set up QR-Bills and easily generate, send and import QR-Bills in Dynamics 365 Business Central';
         DefaultIBANLbl: Label 'DEFAULT IBAN';
         DefaultQRIBANLbl: Label 'DEFAULT QR-IBAN';
 
@@ -42,7 +40,6 @@ codeunit 11517 "Swiss QR-Bill Install"
         NewDefaultBillInfoFormatCode := InitQRBillingInfoFormat();
         NewDefaultLayoutCode := InitQRBillLayouts(NewDefaultBillInfoFormatCode);
         InitQRBillSetup(NewDefaultLayoutCode);
-        AddAssistedSetup();
         ApplyEvaluationClassificationsForPrivacy();
     end;
 
@@ -112,25 +109,6 @@ codeunit 11517 "Swiss QR-Bill Install"
                 Insert();
                 exit(Code);
             end;
-    end;
-
-    local procedure AddAssistedSetup()
-    var
-        GuidedExperience: Codeunit "Guided Experience";
-    begin
-        if not GuidedExperience.Exists("Guided Experience Type"::"Assisted Setup", ObjectType::Page, Page::"Swiss QR-Bill Setup Wizard") then
-            GuidedExperience.InsertAssistedSetup(
-                CopyStr(AssistedSetupTxt, 1, 2048),
-                CopyStr(AssistedSetupTxt, 1, 50),
-                AssistedSetupDescriptionTxt,
-                1,
-                ObjectType::Page,
-                PAGE::"Swiss QR-Bill Setup Wizard",
-                "Assisted Setup Group"::FirstInvoice,
-                '',
-                "Video Category"::Uncategorized,
-                ''
-            );
     end;
 
     local procedure ApplyEvaluationClassificationsForPrivacy()

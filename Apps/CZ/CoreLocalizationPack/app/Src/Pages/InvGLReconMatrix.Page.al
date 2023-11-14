@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Reconciliation;
+
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Setup;
+using System.Globalization;
+using System.Utilities;
+
 page 31197 "Inv. - G/L Recon. Matrix CZL"
 {
     Caption = 'Inventory - G/L Reconciliation Enhanced';

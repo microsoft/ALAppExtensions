@@ -1,3 +1,16 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance;
+
+using Microsoft.Foundation.Company;
+using Microsoft.Utilities;
+using System.Integration;
+using System.Security.Encryption;
+using System.Utilities;
+using System.Xml;
+
 codeunit 31116 "EET Service Management CZL"
 {
     Access = Internal;

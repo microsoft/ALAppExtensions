@@ -5,6 +5,7 @@ codeunit 139608 "Shpfy Orders API Test"
 
     var
         LibraryAssert: Codeunit "Library Assert";
+        Any: Codeunit Any;
 
     [Test]
     procedure UnitTestExtractShopifyOrdersToImport()
@@ -24,7 +25,7 @@ codeunit 139608 "Shpfy Orders API Test"
         if not OrdersToImport.IsEmpty then
             OrdersToImport.DeleteAll();
 
-        // [GIVEN] the shopify shop
+        // [GIVEN] Shopify Shop
         Shop := CommunicationMgt.GetShopRecord();
         // [GIVEN] the orders to import as a json structure.
         JOrdersToImport := OrderHandlingHelper.GetOrdersToImport();
@@ -57,7 +58,7 @@ codeunit 139608 "Shpfy Orders API Test"
         // [SCENARIO] Import a Shopify order from the "Shpfy Orders to Import" record.
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
 
-        // [GIVEN] the shopify shop
+        // [GIVEN] Shopify Shop
         Shop := CommunicationMgt.GetShopRecord();
         Shop."Customer Mapping Type" := "Shpfy Customer Mapping"::"By EMail/Phone";
         if not Shop.Modify() then
@@ -80,7 +81,7 @@ codeunit 139608 "Shpfy Orders API Test"
         LibraryAssert.AreEqual(OrdersToImport."Order Amount", OrderHeader."Total Amount", 'ShpfyOrdersToImport."Order Amount" = ShpfyOrderHeader."Total Amount"');
     end;
 
-    // [Test]
+    [Test]
     procedure UnitTestDoMappingsOnAShopifyOrder()
     var
         Shop: Record "Shpfy Shop";
@@ -90,11 +91,11 @@ codeunit 139608 "Shpfy Orders API Test"
         ImportOrder: Codeunit "Shpfy Import Order";
         Result: Boolean;
     begin
-        // [SCENARION] Crating a random Shopify Order and try to map customer and product data.
-        // [SCENARION] If everithing succeed the function will return true.
+        // [SCENARIO] Creating a random Shopify Order and try to map customer and product data.
+        // [SCENARIO] If everithing succeed the function will return true.
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
 
-        // [GIVEN] the shopify shop
+        // [GIVEN] Shopify Shop
         Shop := CommunicationMgt.GetShopRecord();
         Shop."Customer Mapping Type" := "Shpfy Customer Mapping"::"By EMail/Phone";
         if not Shop.Modify() then
@@ -111,21 +112,21 @@ codeunit 139608 "Shpfy Orders API Test"
         LibraryAssert.IsTrue(Result, 'Order Mapping must succeed.');
     end;
 
-    // [Test]
+    [Test]
     procedure UnitTestImportShopifyOrderAndCreateSalesDocument()
     var
         Shop: Record "Shpfy Shop";
         OrderHeader: Record "Shpfy Order Header";
         SalesHeader: Record "Sales Header";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-        ImportOrder: codeunit "Shpfy Import Order";
+        ImportOrder: Codeunit "Shpfy Import Order";
         ProcessOrders: Codeunit "Shpfy Process Orders";
     begin
-        // [SCENARION] Crating a random Shopify Order and try to map customer and product data.
-        // [SCENARION] When the sales document is created, everything will be mapped and the sales document must exist.
+        // [SCENARIO] Creating a random Shopify Order and try to map customer and product data.
+        // [SCENARIO] When the sales document is created, everything will be mapped and the sales document must exist.
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
 
-        // [GIVEN] the shopify shop
+        // [GIVEN] Shopify Shop
         Shop := CommunicationMgt.GetShopRecord();
         Shop."Customer Mapping Type" := "Shpfy Customer Mapping"::"By EMail/Phone";
         if not Shop.Modify() then
@@ -156,7 +157,166 @@ codeunit 139608 "Shpfy Orders API Test"
         end;
     end;
 
-    local procedure ImportShopifyOrder(var Shop: Record "Shpfy Shop"; var OrderHeader: Record "Shpfy Order Header"; var OrdersToImport: Record "Shpfy Orders to Import"; var ImportOrder: codeunit "Shpfy Import Order"; var JShopifyOrder: JsonObject; var JShopifyLineItems: JsonArray)
+    [Test]
+    procedure UnitTestCreateSalesDocumentTaxPriorityCode()
+    var
+        Shop: Record "Shpfy Shop";
+        OrderHeader: Record "Shpfy Order Header";
+        SalesHeader: Record "Sales Header";
+        TaxArea: Record "Tax Area";
+        ShopifyTaxArea: Record "Shpfy Tax Area";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        ImportOrder: Codeunit "Shpfy Import Order";
+        ProcessOrders: Codeunit "Shpfy Process Orders";
+    begin
+        // [SCENARIO] When the sales document is created, tax priority is taken from the shop.
+        Codeunit.Run(Codeunit::"Shpfy Initialize Test");
+
+        // [GIVEN] Shopify Shop
+        Shop := CommunicationMgt.GetShopRecord();
+        Shop."Tax Area Priority" := Shop."Tax Area Priority"::"Ship-to -> Sell-to -> Bill-to";
+        Shop."County Source" := Shop."County Source"::"Code";
+        if not Shop.Modify() then
+            Shop.Insert();
+        ImportOrder.SetShop(Shop);
+
+        // [GIVEN] Shopify Tax Area and BC Tax Area
+        CreateTaxArea(TaxArea, ShopifyTaxArea, Shop);
+
+        // [GIVEN] ShpfyImportOrder.ImportOrder
+        ImportShopifyOrder(Shop, OrderHeader, ImportOrder);
+        OrderHeader."Ship-to City" := ShopifyTaxArea.County;
+        OrderHeader."Ship-to Country/Region Code" := ShopifyTaxArea."Country/Region Code";
+        OrderHeader."Ship-to County" := ShopifyTaxArea."County Code";
+        OrderHeader.Modify();
+        Commit();
+
+        // [WHEN] Order is processed
+        ProcessOrders.ProcessShopifyOrder(OrderHeader);
+        OrderHeader.Find();
+
+        // [THEN] Sales document is created from Shopify order with correct tax area
+        SalesHeader.SetRange("Shpfy Order Id", OrderHeader."Shopify Order Id");
+        LibraryAssert.IsTrue(SalesHeader.FindLast(), 'Sales document is created from Shopify order');
+        LibraryAssert.AreEqual(SalesHeader."Tax Area Code", TaxArea.Code, 'Tax Area Code is taken from the ship-to address');
+    end;
+
+    [Test]
+    procedure UnitTestCreateSalesDocumentTaxPriorityName()
+    var
+        Shop: Record "Shpfy Shop";
+        OrderHeader: Record "Shpfy Order Header";
+        SalesHeader: Record "Sales Header";
+        TaxArea: Record "Tax Area";
+        ShopifyTaxArea: Record "Shpfy Tax Area";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        ImportOrder: Codeunit "Shpfy Import Order";
+        ProcessOrders: Codeunit "Shpfy Process Orders";
+    begin
+        // [SCENARIO] When the sales document is created, tax priority is taken from the shop
+        Codeunit.Run(Codeunit::"Shpfy Initialize Test");
+
+        // [GIVEN] Shopify Shop
+        Shop := CommunicationMgt.GetShopRecord();
+        Shop."Tax Area Priority" := Shop."Tax Area Priority"::"Sell-to -> Ship-to -> Bill-to";
+        Shop."County Source" := Shop."County Source"::"Name";
+        if not Shop.Modify() then
+            Shop.Insert();
+        ImportOrder.SetShop(Shop);
+
+        // [GIVEN] Shopify Tax Area and BC Tax Area
+        CreateTaxArea(TaxArea, ShopifyTaxArea, Shop);
+
+        // [GIVEN] ShpfyImportOrder.ImportOrder
+        ImportShopifyOrder(Shop, OrderHeader, ImportOrder);
+        OrderHeader."Sell-to City" := ShopifyTaxArea.County;
+        OrderHeader."Sell-to Country/Region Code" := ShopifyTaxArea."Country/Region Code";
+        OrderHeader."Sell-to County" := CopyStr(ShopifyTaxArea.County, 1, MaxStrLen(OrderHeader."Sell-to County"));
+        OrderHeader.Modify();
+        Commit();
+
+        // [WHEN] Order is processed
+        ProcessOrders.ProcessShopifyOrder(OrderHeader);
+        OrderHeader.Find();
+
+        // [THEN] Sales document is created from Shopify order with correct tax area
+        SalesHeader.SetRange("Shpfy Order Id", OrderHeader."Shopify Order Id");
+        LibraryAssert.IsTrue(SalesHeader.FindLast(), 'Sales document is created from Shopify order');
+        LibraryAssert.AreEqual(SalesHeader."Tax Area Code", TaxArea.Code, 'Tax Area Code is taken from the sell-to address');
+    end;
+
+    [Test]
+    procedure UnitTestCreateSalesDocumentTaxPriorityEmpty()
+    var
+        Shop: Record "Shpfy Shop";
+        OrderHeader: Record "Shpfy Order Header";
+        SalesHeader: Record "Sales Header";
+        TaxArea: Record "Tax Area";
+        ShopifyTaxArea: Record "Shpfy Tax Area";
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        ImportOrder: Codeunit "Shpfy Import Order";
+        ProcessOrders: Codeunit "Shpfy Process Orders";
+    begin
+        // [SCENARIO] When the sales document is created, tax area is empty if there is no mapping
+        Codeunit.Run(Codeunit::"Shpfy Initialize Test");
+
+        // [GIVEN] Shopify Shop
+        Shop := CommunicationMgt.GetShopRecord();
+        Shop."Tax Area Priority" := Shop."Tax Area Priority"::"Ship-to -> Sell-to -> Bill-to";
+        Shop."County Source" := Shop."County Source"::"Code";
+        if not Shop.Modify() then
+            Shop.Insert();
+        ImportOrder.SetShop(Shop);
+
+        // [GIVEN] Shopify Tax Area and BC Tax Area
+        CreateTaxArea(TaxArea, ShopifyTaxArea, Shop);
+
+        // [GIVEN] ShpfyImportOrder.ImportOrder
+        ImportShopifyOrder(Shop, OrderHeader, ImportOrder);
+        OrderHeader."Ship-to City" := ShopifyTaxArea.County;
+        OrderHeader."Ship-to Country/Region Code" := ShopifyTaxArea."Country/Region Code";
+        OrderHeader."Ship-to County" := ShopifyTaxArea."County Code";
+        OrderHeader.Modify();
+
+        // [GIVEN] Delete tax area mapping
+        ShopifyTaxArea.Delete();
+        Commit();
+
+        // [WHEN] Order is processed
+        ProcessOrders.ProcessShopifyOrder(OrderHeader);
+        OrderHeader.Find();
+
+        // [THEN] Sales document is created from Shopify order with correct tax area
+        SalesHeader.SetRange("Shpfy Order Id", OrderHeader."Shopify Order Id");
+        LibraryAssert.IsTrue(SalesHeader.FindLast(), 'Sales document is created from Shopify order');
+        LibraryAssert.AreEqual(SalesHeader."Tax Area Code", '', 'Tax Area Code is empty');
+    end;
+
+    local procedure CreateTaxArea(var TaxArea: Record "Tax Area"; var ShopifyTaxArea: Record "Shpfy Tax Area"; Shop: Record "Shpfy Shop")
+    var
+        ShopifyCustomerTemplate: Record "Shpfy Customer Template";
+        CountryRegion: Record "Country/Region";
+        CountryRegionCode: Code[20];
+        CountyCode: Code[2];
+        County: Text[30];
+    begin
+        CountryRegion.FindFirst();
+        CountryRegionCode := CountryRegion.Code;
+        Evaluate(CountyCode, Any.AlphabeticText(MaxStrLen(CountyCode)));
+        County := CopyStr(Any.AlphabeticText(MaxStrLen(County)), 1, MaxStrLen(County));
+        ShopifyCustomerTemplate."Shop Code" := Shop.Code;
+        ShopifyCustomerTemplate."Country/Region Code" := CountryRegionCode;
+        if ShopifyCustomerTemplate.Insert() then;
+        ShopifyTaxArea."Country/Region Code" := CountryRegionCode;
+        ShopifyTaxArea."County Code" := CountyCode;
+        ShopifyTaxArea.County := County;
+        ShopifyTaxArea."Tax Area Code" := CountyCode;
+        if ShopifyTaxArea.Insert() then;
+        TaxArea.Code := CountyCode;
+        if TaxArea.Insert() then;
+    end;
+
+    local procedure ImportShopifyOrder(var Shop: Record "Shpfy Shop"; var OrderHeader: Record "Shpfy Order Header"; var OrdersToImport: Record "Shpfy Orders to Import"; var ImportOrder: Codeunit "Shpfy Import Order"; var JShopifyOrder: JsonObject; var JShopifyLineItems: JsonArray)
     var
         OrderLine: Record "Shpfy Order Line";
         JOrderLine: JsonToken;
@@ -168,7 +328,7 @@ codeunit 139608 "Shpfy Orders API Test"
             ImportOrder.ImportOrderLine(OrderHeader, OrderLine, JOrderLine);
     end;
 
-    local procedure ImportShopifyOrder(var Shop: Record "Shpfy Shop"; var OrderHeader: Record "Shpfy Order Header"; var ImportOrder: codeunit "Shpfy Import Order")
+    local procedure ImportShopifyOrder(var Shop: Record "Shpfy Shop"; var OrderHeader: Record "Shpfy Order Header"; var ImportOrder: Codeunit "Shpfy Import Order")
     var
         OrdersToImport: Record "Shpfy Orders to Import";
         OrderHandlingHelper: Codeunit "Shpfy Order Handling Helper";

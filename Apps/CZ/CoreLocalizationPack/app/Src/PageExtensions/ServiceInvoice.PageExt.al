@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.Document;
+
+using Microsoft.Finance.Currency;
+#if not CLEAN22
+using Microsoft.Finance.VAT.Calculation;
+#endif
+
 pageextension 11749 "Service Invoice CZL" extends "Service Invoice"
 {
     layout

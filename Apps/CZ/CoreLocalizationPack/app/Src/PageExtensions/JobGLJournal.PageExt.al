@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Projects.Project.Journal;
+
+using Microsoft.Finance.VAT.Calculation;
+
 pageextension 31211 "Job G/L Journal CZL" extends "Job G/L Journal"
 {
     layout

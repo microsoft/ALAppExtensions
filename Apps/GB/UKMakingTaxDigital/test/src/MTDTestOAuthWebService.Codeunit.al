@@ -54,9 +54,9 @@ codeunit 148081 "MTDTestOAuthWebService"
     begin
         // [FEATURE] [UI]
         // [SCENARIO 258181] COD 10530 "MTD Mgt.".RetrievePayments() confirms to open OAuth setup (accept open, set Enabled setup)
-        // <parse key="Packet330" compare="MockServicePacket330" response="MakingTaxDigital\200_payment.txt"/>
+        // <parse key="Packet330" compare="333333330" response="MakingTaxDigital\200_payment.txt"/>
         Initialize();
-        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(false, '', 'MockServicePacket330');
+        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(false, '', '333333330');
 
         LibraryVariableStorage.Enqueue(true); // accept open OAuth setup
         LibraryVariableStorage.Enqueue(DummyOAuth20Setup.Status::Enabled);
@@ -72,27 +72,27 @@ codeunit 148081 "MTDTestOAuthWebService"
     procedure ParseErrors_Basic()
     begin
         // [SCENARIO 258181] Parsing of basic HMRC json error response in case of error code = 400\403\404
-        // MockServicePacket310..MockServicePacket327
-        PerformParseErrorScenario('MockServicePacket310', Error_VRN_INVALID_Txt);
-        PerformParseErrorScenario('MockServicePacket311', Error_INVALID_DATE_FROM_Txt);
-        PerformParseErrorScenario('MockServicePacket312', Error_INVALID_DATE_FROM_Txt);
-        PerformParseErrorScenario('MockServicePacket313', Error_INVALID_DATE_TO_Txt);
-        PerformParseErrorScenario('MockServicePacket314', Error_INVALID_DATE_TO_Txt);
-        PerformParseErrorScenario('MockServicePacket315', Error_INVALID_DATE_RANGE_Txt);
-        PerformParseErrorScenario('MockServicePacket316', Error_INVALID_DATE_RANGE_Txt);
-        PerformParseErrorScenario('MockServicePacket317', Error_INVALID_STATUS_Txt);
-        PerformParseErrorScenario('MockServicePacket318', Error_PERIOD_KEY_INVALID_Txt);
-        PerformParseErrorScenario('MockServicePacket319', Error_INVALID_REQUEST_Txt);
-        PerformParseErrorScenario('MockServicePacket320', Error_VAT_TOTAL_VALUE_Txt);
-        PerformParseErrorScenario('MockServicePacket321', Error_VAT_NET_VALUE_Txt);
-        PerformParseErrorScenario('MockServicePacket322', Error_INVALID_NUMERIC_VALUE_Txt);
+        // 310..327
+        PerformParseErrorScenario('3333333310', Error_VRN_INVALID_Txt);
+        PerformParseErrorScenario('3333333311', Error_INVALID_DATE_FROM_Txt);
+        PerformParseErrorScenario('3333333312', Error_INVALID_DATE_FROM_Txt);
+        PerformParseErrorScenario('3333333313', Error_INVALID_DATE_TO_Txt);
+        PerformParseErrorScenario('3333333314', Error_INVALID_DATE_TO_Txt);
+        PerformParseErrorScenario('3333333315', Error_INVALID_DATE_RANGE_Txt);
+        PerformParseErrorScenario('3333333316', Error_INVALID_DATE_RANGE_Txt);
+        PerformParseErrorScenario('3333333317', Error_INVALID_STATUS_Txt);
+        PerformParseErrorScenario('3333333318', Error_PERIOD_KEY_INVALID_Txt);
+        PerformParseErrorScenario('3333333319', Error_INVALID_REQUEST_Txt);
+        PerformParseErrorScenario('3333333320', Error_VAT_TOTAL_VALUE_Txt);
+        PerformParseErrorScenario('3333333321', Error_VAT_NET_VALUE_Txt);
+        PerformParseErrorScenario('3333333322', Error_INVALID_NUMERIC_VALUE_Txt);
 
-        PerformParseErrorScenario('MockServicePacket323', Error_DATE_RANGE_TOO_LARGE_Txt);
-        PerformParseErrorScenario('MockServicePacket324', Error_NOT_FINALISED_Txt);
-        PerformParseErrorScenario('MockServicePacket325', Error_DUPLICATE_SUBMISSION_Txt);
-        PerformParseErrorScenario('MockServicePacket326', Error_CLIENT_OR_AGENT_NOT_AUTHORISED_Txt);
+        PerformParseErrorScenario('3333333323', Error_DATE_RANGE_TOO_LARGE_Txt);
+        PerformParseErrorScenario('3333333324', Error_NOT_FINALISED_Txt);
+        PerformParseErrorScenario('3333333325', Error_DUPLICATE_SUBMISSION_Txt);
+        PerformParseErrorScenario('3333333326', Error_CLIENT_OR_AGENT_NOT_AUTHORISED_Txt);
 
-        PerformParseErrorScenario('MockServicePacket327', Error_NOT_FOUND_Txt);
+        PerformParseErrorScenario('3333333327', Error_NOT_FOUND_Txt);
     end;
 
     [Test]
@@ -103,9 +103,9 @@ codeunit 148081 "MTDTestOAuthWebService"
         Value: array[6] of Text;
     begin
         // [SCENARIO 258181] Parsing of custom HMRC json error response
-        // <parse key="Packet328" compare="MockServicePacket328" response="MakingTaxDigital\400_custom.txt"/>
+        // <parse key="Packet328" compare="3333333328" response="MakingTaxDigital\400_custom.txt"/>
         Initialize();
-        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', 'MockServicePacket328');
+        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', '3333333328');
 
         Value[1] := '400_custom_msg';
         Value[2] := '400_custom_err1_msg';
@@ -133,9 +133,9 @@ codeunit 148081 "MTDTestOAuthWebService"
         Value: array[2] of Text;
     begin
         // [SCENARIO 258181] Parsing of HTTP error 429 "Too Many Requests"
-        // <parse key="Packet329" compare="MockServicePacket329" response="MakingTaxDigital\429_too_many_requests.txt"/>
+        // <parse key="Packet329" compare="3333333329" response="MakingTaxDigital\429_too_many_requests.txt"/>
         Initialize();
-        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', 'MockServicePacket329');
+        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', '3333333329');
         Value[1] := 'The request for the API is throttled as you have exceeded your quota.';
         Value[2] := 'Too Many Requests';
 
@@ -264,9 +264,9 @@ codeunit 148081 "MTDTestOAuthWebService"
 
     local procedure PerformFraudPreventionHeadersForGivenClientType(GivenClientType: ClientType)
     begin
-        // MockServicePacket340 MockService\MakingTaxDigital\200_period_open.txt
+        // 333333340 MockService\MakingTaxDigital\200_period_open.txt
         Initialize();
-        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', 'MockServicePacket340');
+        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', '333333340');
 
         RetrieveVATReturnPeriodsForGivenClientType(GivenClientType);
 

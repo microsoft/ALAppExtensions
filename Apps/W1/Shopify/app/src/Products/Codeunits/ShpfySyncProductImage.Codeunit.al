@@ -42,6 +42,7 @@ codeunit 30184 "Shpfy Sync Product Image"
         ShopifyProduct.SetRange("Shop Code", Shop.Code);
         if ProductFilter <> '' then
             ShopifyProduct.SetFilter(Id, ProductFilter);
+        ProductImageExport.SetRecordCount(ShopifyProduct.Count());
         if ShopifyProduct.FindSet() then
             repeat
                 Commit();

@@ -1,3 +1,23 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace System.Environment.Configuration;
+
+using Microsoft.Bank.Setup;
+using Microsoft.Finance;
+using Microsoft.Finance.Registration;
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Foundation.Company;
+#if not CLEAN22
+using Microsoft.Inventory.Intrastat;
+#endif
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Utilities;
+using System.IO;
+
 codeunit 11747 "Guided Experience Handler CZL"
 {
     Access = Internal;

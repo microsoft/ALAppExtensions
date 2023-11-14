@@ -70,6 +70,8 @@ codeunit 18080 "GST Purchase Subscribers"
         if (FromPurchInvHeader."Buy-from Vendor No." <> FromPurchInvHeader."Pay-to Vendor No.") then
             if PaytoVendor.Get(FromPurchInvHeader."Pay-to Vendor No.") then
                 PaytoVendorInfo(ToPurchaseHeader, PaytoVendor);
+
+        ToPurchaseHeader.Validate("Order Address Code");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnAfterCopyPurchLineFromPurchLineBuffer', '', false, false)]
@@ -516,6 +518,18 @@ codeunit 18080 "GST Purchase Subscribers"
             exit;
 
         CalculateTaxOnPurchase(Rec, xRec);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Purch. Inv. Header", 'OnBeforCheckIfPurchaseInvoiceFullyOpen', '', false, false)]
+    local procedure OnBeforCheckIfPurchaseInvoiceFullyOpen(var PurchInvHeader: Record "Purch. Inv. Header"; var FullyOpen: Boolean; var IsHandled: Boolean)
+    var
+        GSTStatistics: Codeunit "GST Statistics";
+        GSTAmount: Decimal;
+    begin
+        IsHandled := true;
+        GSTStatistics.GetStatisticsPostedPurchInvAmount(PurchInvHeader, GSTAmount);
+        PurchInvHeader.CalcFields("Amount Including VAT", "Remaining Amount");
+        FullyOpen := (PurchInvHeader."Amount Including VAT" + GSTAmount) = PurchInvHeader."Remaining Amount";
     end;
 
     local procedure CalculateTaxOnPurchase(PurchaseLine: Record "Purchase Line"; xPurchaseLine: Record "Purchase Line")

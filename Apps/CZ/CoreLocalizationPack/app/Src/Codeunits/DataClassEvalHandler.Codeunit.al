@@ -1,3 +1,77 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Utilities;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Setup;
+using Microsoft.CRM.Contact;
+using Microsoft.Finance;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.FinancialReports;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+#if not CLEAN22
+using Microsoft.Finance.GeneralLedger.Ledger;
+#endif
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.Registration;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Company;
+#if not CLEAN22
+using Microsoft.Foundation.Shipping;
+#endif
+using Microsoft.Foundation.UOM;
+using Microsoft.Inventory.Counting.Document;
+using Microsoft.Inventory.Intrastat;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Location;
+using Microsoft.Inventory.Reconciliation;
+using Microsoft.Inventory.Setup;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Projects.Project.Journal;
+#if not CLEAN22
+using Microsoft.Projects.Project.Ledger;
+#endif
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Purchases.Archive;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+#if not CLEAN22
+using Microsoft.Purchases.Setup;
+#endif
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Archive;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.FinanceCharge;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
+using Microsoft.Sales.Reminder;
+#if not CLEAN22
+using Microsoft.Sales.Setup;
+#endif
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
+#if not CLEAN22
+using Microsoft.Service.Setup;
+#endif
+using System.Environment;
+using System.IO;
+using System.Security.Encryption;
+using System.Security.User;
+using System.Privacy;
+
 codeunit 11710 "Data Class. Eval. Handler CZL"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Class. Eval. Data Country", 'OnAfterClassifyCountrySpecificTables', '', false, false)]
@@ -493,7 +567,11 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
 #pragma warning restore AL0432
 #endif
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header", PurchaseHeader.FieldNo("EU 3-Party Intermed. Role CZL"));
+#if not CLEAN23
+#pragma warning disable AL0432
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header", PurchaseHeader.FieldNo("EU 3-Party Trade CZL"));
+#pragma warning restore AL0432
+#endif
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header", PurchaseHeader.FieldNo("Original Doc. VAT Date CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header Archive", PurchaseHeaderArchive.FieldNo("VAT Currency Factor CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header Archive", PurchaseHeaderArchive.FieldNo("VAT Currency Code CZL"));
@@ -534,7 +612,11 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Cr. Memo Hdr.", PurchCrMemoHdr.FieldNo("Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Cr. Memo Hdr.", PurchCrMemoHdr.FieldNo("Tax Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Cr. Memo Hdr.", PurchCrMemoHdr.FieldNo("EU 3-Party Intermed. Role CZL"));
+#if not CLEAN23
+#pragma warning disable AL0432
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Cr. Memo Hdr.", PurchCrMemoHdr.FieldNo("EU 3-Party Trade CZL"));
+#pragma warning restore AL0432
+#endif
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Cr. Memo Hdr.", PurchCrMemoHdr.FieldNo("Original Doc. VAT Date CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Cr. Memo Line", PurchCrMemoLine.FieldNo("Tariff No. CZL"));
 #if not CLEAN22
@@ -555,7 +637,11 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Inv. Header", PurchInvHeader.FieldNo("Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Inv. Header", PurchInvHeader.FieldNo("Tax Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Inv. Header", PurchInvHeader.FieldNo("EU 3-Party Intermed. Role CZL"));
+#if not CLEAN23
+#pragma warning disable AL0432
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Inv. Header", PurchInvHeader.FieldNo("EU 3-Party Trade CZL"));
+#pragma warning restore AL0432
+#endif
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Inv. Header", PurchInvHeader.FieldNo("Original Doc. VAT Date CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Inv. Line", PurchInvLine.FieldNo("Tariff No. CZL"));
 #if not CLEAN22
@@ -900,7 +986,11 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Statement Line", VATStatementLine.FieldNo("Gen. Prod. Posting Group CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Statement Line", VATStatementLine.FieldNo("Show CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Statement Line", VATStatementLine.FieldNo("EU 3-Party Intermed. Role CZL"));
+#if not CLEAN23
+#pragma warning disable AL0432
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Statement Line", VATStatementLine.FieldNo("EU-3 Party Trade CZL"));
+#pragma warning restore AL0432
+#endif
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Statement Line", VATStatementLine.FieldNo("VAT Ctrl. Report Section CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Statement Line", VATStatementLine.FieldNo("Ignore Simpl. Doc. Limit CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"VAT Statement Name", VATStatementName.FieldNo("Comments CZL"));

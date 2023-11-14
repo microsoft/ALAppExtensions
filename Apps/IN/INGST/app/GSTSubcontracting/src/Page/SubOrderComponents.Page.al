@@ -65,6 +65,11 @@ page 18496 "Sub Order Components"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the company location code for the document.';
                 }
+                field("Bin Code"; Rec."Bin Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the Bin Code for the company location.';
+                }
                 field("Vendor Location"; Rec."Vendor Location")
                 {
                     ApplicationArea = Basic, Suite;

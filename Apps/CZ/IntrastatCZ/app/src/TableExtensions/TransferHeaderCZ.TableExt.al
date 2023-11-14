@@ -8,6 +8,15 @@ using Microsoft.Inventory.Transfer;
 
 tableextension 31329 "Transfer Header CZ" extends "Transfer Header"
 {
+    fields
+    {
+        field(31310; "Intrastat Exclude CZ"; Boolean)
+        {
+            Caption = 'Intrastat Exclude';
+            DataClassification = CustomerContent;
+        }
+    }
+
     procedure CheckIntrastatMandatoryFieldsCZ()
     var
         IntrastatReportSetup: Record "Intrastat Report Setup";

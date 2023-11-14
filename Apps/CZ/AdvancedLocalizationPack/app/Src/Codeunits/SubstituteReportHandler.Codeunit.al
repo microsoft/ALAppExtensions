@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Foundation.Reporting;
+
+using Microsoft.Inventory.Reports;
+using System.Apps;
+
 codeunit 31445 "Substitute Report Handler CZA"
 {
     Permissions = tabledata "NAV App Installed App" = r;

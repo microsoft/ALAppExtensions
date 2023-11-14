@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Item;
+
+using Microsoft.Inventory.Intrastat;
+using Microsoft.Purchases.Reports;
+using Microsoft.Sales.Reports;
+
 pageextension 11769 "Item List CZL" extends "Item List"
 {
 #if not CLEAN22

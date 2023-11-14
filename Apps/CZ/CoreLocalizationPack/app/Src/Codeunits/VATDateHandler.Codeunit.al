@@ -1,3 +1,29 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Calculation;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Inventory.Costing;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
+using Microsoft.Utilities;
+using System.Reflection;
+using System.Security.User;
+using System.Utilities;
+
 codeunit 11742 "VAT Date Handler CZL"
 {
 
@@ -39,8 +65,10 @@ codeunit 11742 "VAT Date Handler CZL"
         SalesHeader: Record "Sales Header";
     begin
         SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
+#if not CLEAN22
         if not SalesHeader.IsReplaceVATDateEnabled() then
             SalesHeader."VAT Reporting Date" := SalesHeader."VAT Date CZL";
+#endif
         InvoicePostBuffer."VAT Date CZL" := SalesHeader."VAT Reporting Date";
         InvoicePostBuffer."Original Doc. VAT Date CZL" := SalesHeader."Original Doc. VAT Date CZL";
     end;
@@ -51,8 +79,10 @@ codeunit 11742 "VAT Date Handler CZL"
         PurchaseHeader: Record "Purchase Header";
     begin
         PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
+#if not CLEAN22
         if not PurchaseHeader.IsReplaceVATDateEnabled() then
             PurchaseHeader."VAT Reporting Date" := PurchaseHeader."VAT Date CZL";
+#endif
         InvoicePostBuffer."VAT Date CZL" := PurchaseHeader."VAT Reporting Date";
         InvoicePostBuffer."Original Doc. VAT Date CZL" := PurchaseHeader."Original Doc. VAT Date CZL";
     end;
@@ -63,8 +93,10 @@ codeunit 11742 "VAT Date Handler CZL"
         ServiceHeader: Record "Service Header";
     begin
         ServiceHeader.Get(ServiceLine."Document Type", ServiceLine."Document No.");
+#if not CLEAN22 
         if not ServiceHeader.IsReplaceVATDateEnabled() then
             ServiceHeader."VAT Reporting Date" := ServiceHeader."VAT Date CZL";
+#endif
         InvoicePostBuffer."VAT Date CZL" := ServiceHeader."VAT Reporting Date";
     end;
 
@@ -356,8 +388,8 @@ codeunit 11742 "VAT Date Handler CZL"
 #pragma warning restore AL0432
 #endif
         if not DataTypeManagement.FindFieldByName(RecordRef, VATDateFieldRef, DummyGLEntry.FieldName("VAT Reporting Date")) then
-                if not DataTypeManagement.FindFieldByName(RecordRef, VATDateFieldRef, DummyVATCtrlReportLineCZL.FieldName("VAT Date")) then
-                    DataTypeManagement.FindFieldByName(RecordRef, VATDateFieldRef, DummyCustLedgerEntry.FieldName("VAT Date CZL"));
+            if not DataTypeManagement.FindFieldByName(RecordRef, VATDateFieldRef, DummyVATCtrlReportLineCZL.FieldName("VAT Date")) then
+                DataTypeManagement.FindFieldByName(RecordRef, VATDateFieldRef, DummyCustLedgerEntry.FieldName("VAT Date CZL"));
         DataTypeManagement.FindFieldByName(RecordRef, PostingDateFieldRef, DummyCustLedgerEntry.FieldName("Posting Date"));
         VATDateFieldRef.SetRange(0D);
         PostingDateFieldRef.SetFilter('<>%1', 0D);

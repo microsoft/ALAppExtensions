@@ -129,4 +129,10 @@ codeunit 18248 "GST Bank Charge Session Mgt."
         if GLAcc.Get(GLAccCode) then
             exit(GLAcc.Name);
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforePostBankAcc', '', false, false)]
+    local procedure DeleteAllTempVariables()
+    begin
+        TempGenJournalLine.DeleteAll();
+    end;
 }

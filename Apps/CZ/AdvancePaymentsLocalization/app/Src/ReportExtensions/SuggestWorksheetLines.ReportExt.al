@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.CashFlow.Setup;
+using Microsoft.CashFlow.Worksheet;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+
 reportextension 31001 "Suggest Worksheet Lines CZZ" extends "Suggest Worksheet Lines"
 {
     dataset

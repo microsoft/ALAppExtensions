@@ -12,7 +12,6 @@ query 1441 "Top Customer Headline"
 {
     QueryType = Normal;
     OrderBy = descending(SumAmountLcy);
-    DataAccessIntent = ReadOnly;
 
     elements
     {

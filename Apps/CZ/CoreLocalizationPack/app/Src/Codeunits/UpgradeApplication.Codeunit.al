@@ -1,3 +1,57 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Upgrade;
+
+using Microsoft;
+using Microsoft.Bank.Setup;
+using Microsoft.CRM.Contact;
+using Microsoft.Finance;
+using Microsoft.Finance.FinancialReports;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.Reporting;
+using Microsoft.Foundation.Shipping;
+using Microsoft.Foundation.UOM;
+using Microsoft.Inventory.History;
+using Microsoft.Inventory.Intrastat;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Setup;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Projects.Project.Journal;
+using Microsoft.Projects.Project.Ledger;
+using Microsoft.Purchases.Archive;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Setup;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Archive;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.FinanceCharge;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
+using Microsoft.Sales.Reminder;
+using Microsoft.Sales.Setup;
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
+using Microsoft.Service.Setup;
+using System.Environment.Configuration;
+using System.Security.AccessControl;
+using System.Security.Encryption;
+using System.Security.User;
+using System.Upgrade;
+
 #pragma warning disable AL0432,AL0603
 codeunit 31017 "Upgrade Application CZL"
 {
@@ -215,6 +269,7 @@ codeunit 31017 "Upgrade Application CZL"
         UpgradeReplaceAllowAlterPostingGroups();
         UpgradeUseW1RegistrationNumber();
         UpgradeReportSelectionDirectTransfer();
+        UpgradeEU3PartyTradePurchase();
     end;
 
     local procedure UpgradeGeneralLedgerSetup();
@@ -2362,6 +2417,47 @@ codeunit 31017 "Upgrade Application CZL"
         ContactDataTransfer.CopyFields();
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetUseW1RegistrationNumberUpgradeTag());
+    end;
+
+    local procedure UpgradeEU3PartyTradePurchase()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+        PurchInvHeader: Record "Purch. Inv. Header";
+        VATStatementLine: Record "VAT Statement Line";
+        PurchCrMemoHdrDataTransfer: DataTransfer;
+        PurchInvHeaderDataTransfer: DataTransfer;
+        PurchHeaderDataTransfer: DataTransfer;
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetEU3PartyTradePurchaseUpgradeTag()) then
+            exit;
+
+        PurchHeaderDataTransfer.SetTables(Database::"Purchase Header", Database::"Purchase Header");
+        PurchHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("EU 3-Party Trade CZL"), PurchaseHeader.FieldNo("EU 3 Party Trade"));
+        PurchHeaderDataTransfer.CopyFields();
+
+        PurchCrMemoHdrDataTransfer.SetTables(Database::"Purch. Cr. Memo Hdr.", Database::"Purch. Cr. Memo Hdr.");
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("EU 3-Party Trade CZL"), PurchCrMemoHdr.FieldNo("EU 3 Party Trade"));
+        PurchCrMemoHdrDataTransfer.CopyFields();
+
+        PurchInvHeaderDataTransfer.SetTables(Database::"Purch. Inv. Header", Database::"Purch. Inv. Header");
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("EU 3-Party Trade CZL"), PurchInvHeader.FieldNo("EU 3 Party Trade"));
+        PurchInvHeaderDataTransfer.CopyFields();
+
+        if VATStatementLine.FindSet() then
+            repeat
+                case VATStatementLine."EU-3 Party Trade" of
+                    VATStatementLine."EU-3 Party Trade"::" ":
+                        VATStatementLine."EU 3 Party Trade" := VATStatementLine."EU 3 Party Trade"::All;
+                    VATStatementLine."EU-3 Party Trade"::Yes:
+                        VATStatementLine."EU 3 Party Trade" := VATStatementLine."EU 3 Party Trade"::EU3;
+                    VATStatementLine."EU-3 Party Trade"::No:
+                        VATStatementLine."EU 3 Party Trade" := VATStatementLine."EU 3 Party Trade"::"non-EU3";
+                end;
+                VATStatementLine.Modify(false);
+            until VATStatementLine.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetEU3PartyTradePurchaseUpgradeTag());
     end;
 
     local procedure UpgradePermission()

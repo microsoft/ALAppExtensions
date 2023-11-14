@@ -56,11 +56,10 @@ codeunit 4035 "Wizard Integration"
     end;
 
     // This is after OnMigrationCompleted. OnMigrationCompleted fires when opening the Data Migration Overview page so removed that subscriber
-    [EventSubscriber(ObjectType::Codeunit, 1798, 'OnAfterMigrationFinished', '', true, true)]
-    local procedure OnAfterMigrationFinishedSubscriber(var DataMigrationStatus: Record "Data Migration Status"; WasAborted: Boolean; StartTime: DateTime; Retry: Boolean)
+    [EventSubscriber(ObjectType::Codeunit, 1798, 'OnCreatePostMigrationData', '', true, true)]
+    local procedure OnCreatePostMigrationDataSubscriber(var DataMigrationStatus: Record "Data Migration Status"; var DataCreationFailed: Boolean)
     var
         GPConfiguration: Record "GP Configuration";
-        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         GPMigrationErrorHandler: Codeunit "GP Migration Error Handler";
         Flag: Boolean;
     begin
@@ -72,7 +71,9 @@ codeunit 4035 "Wizard Integration"
 
         if not HelperFunctions.CreatePostMigrationData() then begin
             HelperFunctions.GetLastError();
+            HelperFunctions.CheckAndLogErrors();
             HelperFunctions.SetProcessesRunning(false);
+            DataCreationFailed := true;
             exit;
         end;
 
@@ -85,7 +86,14 @@ codeunit 4035 "Wizard Integration"
                 Flag := true;
                 HelperFunctions.ResetAdjustforPaymentInGLSetup(Flag);
             end;
+    end;
 
+    // This is after OnMigrationCompleted. OnMigrationCompleted fires when opening the Data Migration Overview page so removed that subscriber
+    [EventSubscriber(ObjectType::Codeunit, 1798, 'OnAfterMigrationFinished', '', true, true)]
+    local procedure OnAfterMigrationFinishedSubscriber(var DataMigrationStatus: Record "Data Migration Status"; WasAborted: Boolean; StartTime: DateTime; Retry: Boolean)
+    var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+    begin
         HelperFunctions.PostGLTransactions();
         HelperFunctions.SetProcessesRunning(false);
 

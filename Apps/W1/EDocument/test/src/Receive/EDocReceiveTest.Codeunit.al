@@ -23,6 +23,8 @@ codeunit 139628 "E-Doc. Receive Test"
         PurchOrderTestBuffer: Codeunit "Purch. Doc. Test Buffer";
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
+        GetBasicInfoErr: Label 'Test Get Basic Info From Received Document Error.', Locked = true;
+        GetCompleteInfoErr: Label 'Test Get Complete Info From Received Document Error.', Locked = true;
 
     [Test]
     procedure ReceiveSinglePurchaseInvoice()
@@ -654,6 +656,96 @@ codeunit 139628 "E-Doc. Receive Test"
 
                 GenJnlLine.Delete(true);
             until GenJnlLine.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler')]
+    procedure GetBasicInfoFromReceivedDocumentError()
+    var
+        EDocService: Record "E-Document Service";
+        EDocServicePage: TestPage "E-Document Service";
+        EDocumentPage: TestPage "E-Document";
+        i: Integer;
+    begin
+        // [FEATURE] [E-Document] [Receive]
+        // [SCENARIO] Receive single e-document and try to get besic info
+
+        // [GIVEN] e-Document service to raised receiving error
+        LibraryEDoc.CreateGetBasicInfoErrorReceiveServiceForEDoc(EDocService);
+
+        // [GIVEN] purchase invoice
+        LibraryPurchase.CreateVendorWithAddress(Vendor);
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
+
+        for i := 1 to 3 do begin
+            LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(100));
+            PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDecInRange(1, 100, 2));
+            PurchaseLine.Modify(true);
+        end;
+
+        PurchOrderTestBuffer.ClearTempVariables();
+        PurchOrderTestBuffer.AddPurchaseDocToTemp(PurchaseHeader);
+
+        // [WHEN] Running Receive
+        EDocServicePage.OpenView();
+        EDocServicePage.Filter.SetFilter(Code, EDocService.Code);
+        EDocServicePage.Receive.Invoke();
+
+        // [THEN] Purchase invoice is created with corresponfing values
+        EDocumentPage.OpenView();
+        EDocumentPage.Last();
+        Assert.AreEqual(GetBasicInfoErr, EDocumentPage.ErrorMessagesPart.Description.Value(), '');
+
+        PurchaseHeader.SetHideValidationDialog(true);
+        PurchaseHeader.Delete(true);
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler')]
+    procedure GetCompleteInfoFromReceivedDocumentError()
+    var
+        EDocService: Record "E-Document Service";
+        EDocServicePage: TestPage "E-Document Service";
+        EDocumentPage: TestPage "E-Document";
+        i: Integer;
+    begin
+        // [FEATURE] [E-Document] [Receive]
+        // [SCENARIO] Receive single e-document and try to get besic info
+
+        // [GIVEN] e-Document service to raised receiving error
+        LibraryEDoc.CreateGetCompleteInfoErrorReceiveServiceForEDoc(EDocService);
+
+        // [GIVEN] purchase invoice
+        LibraryPurchase.CreateVendorWithAddress(Vendor);
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
+
+        for i := 1 to 3 do begin
+            LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), LibraryRandom.RandInt(100));
+            PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandDecInRange(1, 100, 2));
+            PurchaseLine.Modify(true);
+        end;
+
+        PurchOrderTestBuffer.ClearTempVariables();
+        PurchOrderTestBuffer.AddPurchaseDocToTemp(PurchaseHeader);
+
+        // [WHEN] Running Receive
+        EDocServicePage.OpenView();
+        EDocServicePage.Filter.SetFilter(Code, EDocService.Code);
+        EDocServicePage.Receive.Invoke();
+
+        // [THEN] Purchase invoice is created with corresponfing values
+        EDocumentPage.OpenView();
+        EDocumentPage.Last();
+        Assert.AreEqual(GetCompleteInfoErr, EDocumentPage.ErrorMessagesPart.Description.Value(), '');
+
+        PurchaseHeader.SetHideValidationDialog(true);
+        PurchaseHeader.Delete(true);
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmHandler(Message: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := false;
     end;
 
     local procedure CheckPurchaseHeadersAreEqual(var PurchHeader1: Record "Purchase Header"; var PurchHeader2: Record "Purchase Header")

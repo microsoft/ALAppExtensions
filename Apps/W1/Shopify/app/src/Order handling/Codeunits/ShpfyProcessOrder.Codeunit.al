@@ -212,7 +212,7 @@ codeunit 30166 "Shpfy Process Order"
                         end else begin
                             SalesLine.Validate(Type, SalesLine.Type::Item);
                             SalesLine.Validate("No.", ShopifyOrderLine."Item No.");
-                            if Item.Get(SalesLine."No.") and (Item.Type = Item.Type::Inventory) then begin
+                            if Item.Get(SalesLine."No.") then begin
                                 if (ShopifyOrderLine."Location Id" <> 0) then
                                     if ShopLocation.Get(ShopifyOrderHeader."Shop Code", ShopifyOrderLine."Location Id") then
                                         SalesLine.Validate("Location Code", ShopLocation."Default Location Code");

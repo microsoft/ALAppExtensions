@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GeneralLedger.Posting;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+
 codeunit 31448 "Gen. Journal Batch Handler CZL"
 {
     Access = Internal;
@@ -26,4 +34,19 @@ codeunit 31448 "Gen. Journal Batch Handler CZL"
         IsHandled := GenJournalBatch."Allow Hybrid Document CZL";
     end;
 #endif
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Batch", 'OnBeforeIfCheckBalance', '', false, false)]
+    local procedure OnBeforeIfCheckBalance(GenJnlTemplate: Record "Gen. Journal Template"; GenJnlLine: Record "Gen. Journal Line"; var LastDocType: Option; var LastDocNo: Code[20]; var LastDate: Date; var CheckIfBalance: Boolean; CommitIsSuppressed: Boolean; var IsHandled: Boolean)
+    begin
+        if IsHandled then
+            exit;
+        if CheckIfBalance then
+            exit;
+        if (GenJnlLine."Posting Date" <> LastDate) then
+            exit;
+        if not GenJnlTemplate."Force Doc. Balance" then
+            exit;
+        if ((GenJnlLine."Document Type" <> "Gen. Journal Document Type".FromInteger(LastDocType)) and (GenJnlTemplate."Not Check Doc. Type CZL")) then
+            IsHandled := true;
+    end;
 }

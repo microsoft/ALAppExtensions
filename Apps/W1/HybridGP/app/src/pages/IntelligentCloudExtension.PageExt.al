@@ -14,12 +14,17 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
             part("Show Errors"; "Hybrid GP Errors Factbox")
             {
                 ApplicationArea = Basic, Suite;
+                Visible = false;
+            }
+            part(Errors; "Hybrid GP Errors Overview Fb")
+            {
+                ApplicationArea = Basic, Suite;
                 Visible = FactBoxesVisible;
             }
             part("Show Detail Snapshot Errors"; "Hist. Migration Status Factbox")
             {
                 ApplicationArea = Basic, Suite;
-                Visible = FactBoxesVisible;
+                Visible = false;
             }
         }
     }
@@ -101,11 +106,12 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
         HybridCompany.SetRange(Replicate, true);
         HasCompletedSetupWizard := not HybridCompany.IsEmpty();
 
+        GPConfiguration.GetSingleInstance();
+
         if GetHasCompletedMigration() then
             if GPCompanyAdditionalSettings.GetMigrateHistory() then
-                if GPConfiguration.Get() then
-                    if not GPConfiguration.HasHistoricalJobRan() then
-                        ShowGPHistoricalJobNeedsToRunNotification();
+                if not GPConfiguration.HasHistoricalJobRan() then
+                    ShowGPHistoricalJobNeedsToRunNotification();
     end;
 
     local procedure GetHasCompletedMigration(): Boolean

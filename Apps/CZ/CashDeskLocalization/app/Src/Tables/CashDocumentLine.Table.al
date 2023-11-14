@@ -1,3 +1,35 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.CashDesk;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.CRM.Team;
+using Microsoft.Finance;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Maintenance;
+using Microsoft.FixedAssets.Setup;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Enums;
+using Microsoft.HumanResources.Employee;
+using Microsoft.HumanResources.Payables;
+using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+using Microsoft.Utilities;
+using System.Utilities;
+
 #pragma warning disable AL0432
 table 11733 "Cash Document Line CZP"
 {
@@ -252,6 +284,7 @@ table 11733 "Cash Document Line CZP"
                 AccountNo: Code[20];
                 AccountType: Enum "Gen. Journal Account Type";
                 PreviousAmount: Decimal;
+                IsHandled: Boolean;
             begin
                 GetCashDocumentHeaderCZP();
                 CashDocumentPostCZP.InitGenJnlLine(CashDocumentHeaderCZP, Rec);
@@ -294,7 +327,9 @@ table 11733 "Cash Document Line CZP"
                 "Applies-To Doc. No." := GenJournalLine."Applies-to Doc. No.";
                 "Applies-to ID" := GenJournalLine."Applies-to ID";
                 OnLookupAppliesToDocNoOnAfterFillAppliesToDocNo(Rec, GenJournalLine);
-                Validate(Amount, SignAmount() * GenJournalLine.Amount);
+                OnLookupAppliesToDocNoOnBeforeValidateAmount(Rec, GenJournalLine, IsHandled);
+                if not IsHandled then
+                    Validate(Amount, SignAmount() * GenJournalLine.Amount);
                 if PreviousAmount <> 0 then begin
                     PaymentToleranceManagement.SetSuppressCommit(true);
                     if not PaymentToleranceManagement.PmtTolGenJnl(GenJournalLine) then
@@ -311,6 +346,7 @@ table 11733 "Cash Document Line CZP"
                 EmployeeLedgEntry: Record "Employee Ledger Entry";
                 CashDocumentPostCZP: Codeunit "Cash Document-Post CZP";
                 PaymentToleranceManagement: Codeunit "Payment Tolerance Management";
+                IsHandled: Boolean;
             begin
                 GetCashDocumentHeaderCZP();
                 CashDocumentPostCZP.InitGenJnlLine(CashDocumentHeaderCZP, Rec);
@@ -383,7 +419,9 @@ table 11733 "Cash Document Line CZP"
                         "Account Type"::Employee:
                             GenJournalLine.Validate(Amount, GetAmtToApplyEmpl(GenJournalLine));
                     end;
-                    Validate(Amount, SignAmount() * GenJournalLine.Amount);
+                    OnValidateAppliesToDocNoOnBeforeValidateAmount(Rec, GenJournalLine, IsHandled);
+                    if not IsHandled then
+                        Validate(Amount, SignAmount() * GenJournalLine.Amount);
                     "Applies-To Doc. Type" := GenJournalLine."Applies-to Doc. Type";
                     "Applies-To Doc. No." := GenJournalLine."Applies-to Doc. No.";
                     "Applies-to ID" := GenJournalLine."Applies-to ID";
@@ -1094,7 +1132,12 @@ table 11733 "Cash Document Line CZP"
     end;
 
     procedure UpdateDocumentType()
+    var
+        IsHandled: Boolean;
     begin
+        OnBeforeUpdateDocumenType(Rec, IsHandled);
+        if IsHandled then
+            exit;
         "Gen. Document Type" := "Gen. Document Type"::" ";
         if not ("Account Type" in ["Account Type"::Customer, "Account Type"::Vendor]) then
             exit;
@@ -1106,13 +1149,15 @@ table 11733 "Cash Document Line CZP"
            (("Document Type" = "Document Type"::Receipt) and ("Account Type" = "Account Type"::Vendor))
         then
             "Gen. Document Type" := "Gen. Document Type"::Refund;
+        OnAfterUpdateDocumentType(Rec);
     end;
 
-    procedure SignAmount(): Integer
+    procedure SignAmount() Sign: Integer
     begin
+        Sign := 1;
         if "Document Type" = "Document Type"::Receipt then
-            exit(-1);
-        exit(1);
+            Sign := -1;
+        OnAfterSignAmount(Rec, Sign);
     end;
 
     procedure ApplyEntries()
@@ -1481,6 +1526,8 @@ table 11733 "Cash Document Line CZP"
         FAPostingGroup: Record "FA Posting Group";
         FASetup: Record "FA Setup";
         FADepreciationBook: Record "FA Depreciation Book";
+        SetFADeprBook: Record "FA Depreciation Book";
+        FADeprBook: Record "FA Depreciation Book";
     begin
         if ("Account Type" <> "Account Type"::"Fixed Asset") or ("Account No." = '') then
             exit;
@@ -1489,12 +1536,23 @@ table 11733 "Cash Document Line CZP"
             FADepreciationBook.Reset();
             FADepreciationBook.SetRange("FA No.", "Account No.");
             FADepreciationBook.SetRange("Default FA Depreciation Book", true);
-            if not FADepreciationBook.FindFirst() then begin
-                "Depreciation Book Code" := FASetup."Default Depr. Book";
-                if not FADepreciationBook.Get("Account No.", "Depreciation Book Code") then
+
+            SetFADeprBook.SetRange("FA No.", "Account No.");
+
+            case true of
+                SetFADeprBook.Count = 1:
+                    begin
+                        SetFADeprBook.FindFirst();
+                        "Depreciation Book Code" := SetFADeprBook."Depreciation Book Code";
+                    end;
+                FADepreciationBook.FindFirst():
+                    "Depreciation Book Code" := FADepreciationBook."Depreciation Book Code";
+                FADeprBook.Get("Account No.", FASetup."Default Depr. Book"):
+                    "Depreciation Book Code" := FASetup."Default Depr. Book"
+                else
                     "Depreciation Book Code" := '';
-            end else
-                "Depreciation Book Code" := FADepreciationBook."Depreciation Book Code";
+            end;
+
             if "Depreciation Book Code" = '' then
                 exit;
         end;
@@ -1758,6 +1816,31 @@ table 11733 "Cash Document Line CZP"
 
     [IntegrationEvent(true, false)]
     local procedure OnValidateAccountNoOnBeforeCreateDim(var Rec: Record "Cash Document Line CZP"; var xRec: Record "Cash Document Line CZP"; TempCashDocumentLineCZP: Record "Cash Document Line CZP" temporary; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnLookupAppliesToDocNoOnBeforeValidateAmount(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var GenJournalLine: Record "Gen. Journal Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnValidateAppliesToDocNoOnBeforeValidateAmount(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var GenJournalLine: Record "Gen. Journal Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateDocumenType(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateDocumentType(var CashDocumentLineCZP: Record "Cash Document Line CZP")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterSignAmount(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var Sign: Integer)
     begin
     end;
 }

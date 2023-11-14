@@ -81,7 +81,7 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     Importance = Additional;
-                    ToolTip = 'Specifies the currency of the Shopify Shop.';
+                    ToolTip = 'Specifies the currency of the Shopify Shop. Enter a currency code only if your online shop uses a different currency than the local currency (LCY). The specified currency must have exchange rates configured. If your online shop uses the same currency as Business Central, leave the field empty.';
                 }
                 field(LanguageCode; Rec."Language Code")
                 {

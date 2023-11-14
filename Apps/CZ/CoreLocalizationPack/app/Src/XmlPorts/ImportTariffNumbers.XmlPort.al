@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.Foundation.UOM;
+using System.Utilities;
+
 xmlport 31106 "Import Tariff Numbers CZL"
 {
     Caption = 'Import Tariff Numbers';

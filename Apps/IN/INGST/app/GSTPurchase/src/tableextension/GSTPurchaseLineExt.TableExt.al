@@ -327,7 +327,7 @@ tableextension 18083 "GST Purchase Line Ext" extends "Purchase Line"
         SubOrderCompListVend.SetRange("Document Line No.", "Line No.");
         if SubOrderCompListVend.FindSet() then
             repeat
-                SubOrderCompListVend.Validate("Qty. to Consume", "Qty. to Receive" * SubOrderCompListVend."Quantity per");
+                SubOrderCompListVend.Validate("Qty. to Consume", "Qty. to Receive" * SubOrderCompListVend."Quantity per" * SubOrderCompListVend."Qty. per Unit of Measure");
                 SubOrderCompListVend.Validate("Qty. to Return (C.E.)", "Qty. to Reject (C.E.)" * SubOrderCompListVend."Quantity per");
                 SubOrderCompListVend.Validate("Qty. To Return (V.E.)", (SubOrderCompListVend."Quantity per" * "Qty. to Reject (V.E.)"));
                 SubOrderCompListVend.Validate("Posting Date", "Posting Date");

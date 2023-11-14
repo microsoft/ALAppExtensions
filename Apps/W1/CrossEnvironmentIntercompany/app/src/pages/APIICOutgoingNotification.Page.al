@@ -19,6 +19,7 @@ page 30425 "API IC Outgoing Notification"
     ModifyAllowed = false;
     DeleteAllowed = false;
     ODataKeyFields = "Operation ID";
+    Permissions = tabledata "IC Outgoing Notification" = m;
 
     layout
     {

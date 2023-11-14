@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.ReceivablesPayables;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+
 codeunit 31058 "Customer Vendor Balance CZL"
 {
     procedure FillCustomerVendorBuffer(var TempCurrency: Record Currency temporary; var TempCVLedgerEntryBuffer: Record "CV Ledger Entry Buffer" temporary; CustomerNo: Code[20]; VendorNo: Code[20]; AtDate: Date; AmountsInCurrency: Boolean)

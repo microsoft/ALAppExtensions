@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Analysis;
+
 tableextension 11782 "Analysis View CZL" extends "Analysis View"
 {
     procedure GetCaptionClassCZL(DimNo: Integer): Text[250]

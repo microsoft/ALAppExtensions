@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Receivables;
+
 pageextension 31017 "Cust. Ledg.Entries Preview CZL" extends "Cust. Ledg. Entries Preview"
 {
     layout

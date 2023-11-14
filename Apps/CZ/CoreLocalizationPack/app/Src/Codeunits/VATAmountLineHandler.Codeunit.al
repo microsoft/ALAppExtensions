@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Calculation;
+
+using Microsoft.Sales.History;
+using Microsoft.Service.History;
+
 codeunit 148120 "VAT Amount Line Handler CZL"
 {
     [EventSubscriber(ObjectType::Table, Database::"VAT Amount Line", 'OnAfterCopyFromSalesInvLine', '', false, false)]

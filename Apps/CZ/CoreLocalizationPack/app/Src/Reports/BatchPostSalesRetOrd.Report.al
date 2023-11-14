@@ -1,7 +1,23 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+#if not CLEAN24
+namespace Microsoft.Sales.Document;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Foundation.BatchProcessing;
+using Microsoft.Sales.Posting;
+using Microsoft.Sales.Setup;
+
 report 31118 "Batch Post Sales Ret. Ord. CZL"
 {
     Caption = 'Batch Post Sales Return Orders';
     ProcessingOnly = true;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by standard report 6655 "Batch Post Sales Return Orders"';
+    ObsoleteTag = '24.0';
 
     dataset
     {
@@ -18,11 +34,11 @@ report 31118 "Batch Post Sales Ret. Ord. CZL"
                 if ReplaceVATDateReq and (VATDateReq = 0D) then
                     Error(EnterVATDateErr);
 
-                SalesBatchPostMgt.SetParameter("Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDateReq);
-                SalesBatchPostMgt.SetParameter("Batch Posting Parameter Type"::"VAT Date", VATDateReq);
+                SalesBatchPostMgt.SetParameter(Enum::"Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDateReq);
+                SalesBatchPostMgt.SetParameter(Enum::"Batch Posting Parameter Type"::"VAT Date", VATDateReq);
 
-                SalesBatchPostMgt.SetParameter("Batch Posting Parameter Type"::Receive, ReceiveReq);
-                SalesBatchPostMgt.SetParameter("Batch Posting Parameter Type"::Print, PrintDocReq);
+                SalesBatchPostMgt.SetParameter(Enum::"Batch Posting Parameter Type"::Receive, ReceiveReq);
+                SalesBatchPostMgt.SetParameter(Enum::"Batch Posting Parameter Type"::Print, PrintDocReq);
                 SalesBatchPostMgt.RunBatch("Sales Header", ReplacePostingDateReq, PostingDateReq, ReplaceDocumentDateReq, CalcInvDiscReq, false, InvReq);
 
                 CurrReport.Break();
@@ -164,3 +180,4 @@ report 31118 "Batch Post Sales Ret. Ord. CZL"
         PrintDocVisible: Boolean;
         EnterVATDateErr: Label 'Enter the VAT date.';
 }
+#endif

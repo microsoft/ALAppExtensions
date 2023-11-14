@@ -10,11 +10,10 @@ using System.Utilities;
 
 codeunit 6135 "E-Document WorkFlow Processing"
 {
-    Access = Internal;
     Permissions =
         tabledata "E-Document" = m;
 
-    procedure DoesFlowHasEDocService(var EDocServices: Record "E-Document Service"; WorkfLowCode: Code[20]): Boolean
+    internal procedure DoesFlowHasEDocService(var EDocServices: Record "E-Document Service"; WorkfLowCode: Code[20]): Boolean
     var
         WorkflowStepArgument: Record "Workflow Step Argument";
         WorkflowStep: Record "Workflow Step";
@@ -37,7 +36,7 @@ codeunit 6135 "E-Document WorkFlow Processing"
         exit(true);
     end;
 
-    procedure SendEDocument(var EDocument: Record "E-Document"; WorkflowStepInstance: Record "Workflow Step Instance"): Boolean
+    internal procedure SendEDocument(var EDocument: Record "E-Document"; WorkflowStepInstance: Record "Workflow Step Instance"): Boolean
     var
         WorkflowStepArgument: Record "Workflow Step Argument";
         EDocumentService: Record "E-Document Service";
@@ -62,7 +61,7 @@ codeunit 6135 "E-Document WorkFlow Processing"
         Telemetry.LogMessage('0000LBW', EDocTelemetryProcessingEndScopeLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;
 
-    procedure HandleNextEvent(var EDocument: Record "E-Document")
+    internal procedure HandleNextEvent(var EDocument: Record "E-Document")
     var
         WorkflowManagement: Codeunit "Workflow Management";
         EDocumentWorkflowSetup: Codeunit "E-Document Workflow Setup";
@@ -80,7 +79,7 @@ codeunit 6135 "E-Document WorkFlow Processing"
         end;
     end;
 
-    procedure AddFilter(var Filter: Text; Value: Text)
+    internal procedure AddFilter(var Filter: Text; Value: Text)
     begin
         if Value = '' then
             exit;

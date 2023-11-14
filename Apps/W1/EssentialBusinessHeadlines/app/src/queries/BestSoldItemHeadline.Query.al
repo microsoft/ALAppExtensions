@@ -11,7 +11,6 @@ query 1440 "Best Sold Item Headline"
 {
     QueryType = Normal;
     OrderBy = descending(SumQuantity);
-    DataAccessIntent = ReadOnly;
 
     elements
     {

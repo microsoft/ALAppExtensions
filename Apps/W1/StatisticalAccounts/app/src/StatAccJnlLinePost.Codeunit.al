@@ -17,16 +17,16 @@ codeunit 2624 "Stat. Acc. Jnl. Line Post"
     var
         LastStatisticalLedgerEntry: Record "Statistical Ledger Entry";
         StatAccTelemetry: Codeunit "Stat. Acc. Telemetry";
-        LastEntryNo: Integer;
+        NextEntryNo: Integer;
         TransactionNumber: Integer;
     begin
         StatAccTelemetry.LogPostingUsage();
 
         LastStatisticalLedgerEntry.LockTable();
         if LastStatisticalLedgerEntry.FindLast() then;
-        LastEntryNo := LastStatisticalLedgerEntry."Entry No.";
+        NextEntryNo := LastStatisticalLedgerEntry."Entry No." + 1;
         TransactionNumber := LastStatisticalLedgerEntry."Transaction No." + 1;
-        PostLine(StatisticalAccJournalLine, LastEntryNo, TransactionNumber);
+        PostLine(StatisticalAccJournalLine, NextEntryNo, TransactionNumber);
     end;
 
     internal procedure PostLine(var StatisticalAccJournalLine: Record "Statistical Acc. Journal Line"; var NextEntryNo: Integer; TransactionNumber: Integer)

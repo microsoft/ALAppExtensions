@@ -160,6 +160,11 @@ codeunit 30270 "Shpfy Bulk Operation Mgt."
         end;
     end;
 
+    internal procedure GetBulkOperationThreshold(): Integer
+    begin
+        exit(10);
+    end;
+
 #if not CLEAN23
     [Obsolete('Feature ShopifyBulkAPI will be enabled by default in version 26.0.', '23.0')]
     procedure IsBulkOperationFeatureEnabled() FeatureEnabled: Boolean;

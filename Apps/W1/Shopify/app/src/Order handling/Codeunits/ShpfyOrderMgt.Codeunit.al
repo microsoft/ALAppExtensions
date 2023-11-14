@@ -18,116 +18,90 @@ codeunit 30164 "Shpfy Order Mgt."
     internal procedure FindTaxArea(ShopifyOrderHeader: Record "Shpfy Order Header"; var ShopTaxArea: Record "Shpfy Tax Area"): Boolean
     var
         Shop: Record "Shpfy Shop";
+        ShipToExists: Boolean;
+        SellToExists: Boolean;
+        BillToExists: Boolean;
     begin
         if Shop.Get(ShopifyOrderHeader."Shop Code") then begin
+            ShipToExists := ShopifyOrderHeader."Ship-to City" <> '';
+            SellToExists := ShopifyOrderHeader."Sell-to City" <> '';
+            BillToExists := ShopifyOrderHeader."Bill-to City" <> '';
+
+            if not ShipToExists and not SellToExists and not BillToExists then
+                exit(false);
+
             case Shop."Tax Area Priority" of
                 "Shpfy Tax By"::"No Taxes":
                     exit(false);
                 "Shpfy Tax By"::"Ship-to -> Sell-to -> Bill-to":
-                    if ShopifyOrderHeader."Ship-to County" = '' then begin
-                        if ShopifyOrderHeader."Sell-to County" = '' then begin
-                            if ShopifyOrderHeader."Bill-to City" = '' then
-                                exit(false)
-                            else begin
-                                ShopTaxArea.SetRange("Country/Region Code", ShopifyOrderHeader."Bill-to Country/Region Code");
-                                ShopTaxArea.SetRange(County, ShopifyOrderHeader."Bill-to County");
-                            end;
-                        end else begin
-                            ShopTaxArea.SetRange("Country/Region Code", ShopifyOrderHeader."Sell-to Country/Region Code");
-                            ShopTaxArea.SetRange(County, ShopifyOrderHeader."Sell-to County");
-                        end;
-                    end else begin
-                        ShopTaxArea.SetRange("Country/Region Code", ShopifyOrderHeader."Ship-to Country/Region Code");
-                        ShopTaxArea.SetRange(County, ShopifyOrderHeader."Ship-to County");
+                    begin
+                        if ShipToExists then
+                            exit(GetTaxArea(ShopifyOrderHeader."Ship-to Country/Region Code", ShopifyOrderHeader."Ship-to County", Shop, ShopTaxArea));
+                        if SellToExists then
+                            exit(GetTaxArea(ShopifyOrderHeader."Sell-to Country/Region Code", ShopifyOrderHeader."Sell-to County", Shop, ShopTaxArea));
+                        if BillToExists then
+                            exit(GetTaxArea(ShopifyOrderHeader."Bill-to Country/Region Code", ShopifyOrderHeader."Bill-to County", Shop, ShopTaxArea));
                     end;
                 "Shpfy Tax By"::"Ship-to -> Bill-to -> Sell-to":
-                    if ShopifyOrderHeader."Ship-to County" = '' then begin
-                        if ShopifyOrderHeader."Bill-to County" = '' then begin
-                            if ShopifyOrderHeader."Sell-to City" = '' then
-                                exit(false)
-                            else begin
-                                ShopTaxArea.SetRange("Country/Region Code", ShopifyOrderHeader."Sell-to Country/Region Code");
-                                ShopTaxArea.SetRange(County, ShopifyOrderHeader."Sell-to County");
-                            end;
-                        end else begin
-                            ShopTaxArea.SetRange("Country/Region Code", ShopifyOrderHeader."Bill-to Country/Region Code");
-                            ShopTaxArea.SetRange(County, ShopifyOrderHeader."Bill-to County");
-                        end;
-                    end else begin
-                        ShopTaxArea.SetRange("Country/Region Code", ShopifyOrderHeader."Ship-to Country/Region Code");
-                        ShopTaxArea.SetRange(County, ShopifyOrderHeader."Ship-to County");
+                    begin
+                        if ShipToExists then
+                            exit(GetTaxArea(ShopifyOrderHeader."Ship-to Country/Region Code", ShopifyOrderHeader."Ship-to County", Shop, ShopTaxArea));
+                        if BillToExists then
+                            exit(GetTaxArea(ShopifyOrderHeader."Bill-to Country/Region Code", ShopifyOrderHeader."Bill-to County", Shop, ShopTaxArea));
+                        if SellToExists then
+                            exit(GetTaxArea(ShopifyOrderHeader."Sell-to Country/Region Code", ShopifyOrderHeader."Sell-to County", Shop, ShopTaxArea));
                     end;
                 "Shpfy Tax By"::"Sell-to -> Ship-to -> Bill-to":
-                    if ShopifyOrderHeader."Sell-to County" = '' then begin
-                        if ShopifyOrderHeader."Ship-to County" = '' then begin
-                            if ShopifyOrderHeader."Bill-to City" = '' then
-                                exit(false)
-                            else begin
-                                ShopTaxArea.SetRange("Country/Region Code", ShopifyOrderHeader."Bill-to Country/Region Code");
-                                ShopTaxArea.SetRange(County, ShopifyOrderHeader."Bill-to County");
-                            end;
-                        end else begin
-                            ShopTaxArea.SetRange("Country/Region Code", ShopifyOrderHeader."Ship-to Country/Region Code");
-                            ShopTaxArea.SetRange(County, ShopifyOrderHeader."Ship-to County");
-                        end;
-                    end else begin
-                        ShopTaxArea.SetRange("Country/Region Code", ShopifyOrderHeader."Sell-to Country/Region Code");
-                        ShopTaxArea.SetRange(County, ShopifyOrderHeader."Sell-to County");
+                    begin
+                        if SellToExists then
+                            exit(GetTaxArea(ShopifyOrderHeader."Sell-to Country/Region Code", ShopifyOrderHeader."Sell-to County", Shop, ShopTaxArea));
+                        if ShipToExists then
+                            exit(GetTaxArea(ShopifyOrderHeader."Ship-to Country/Region Code", ShopifyOrderHeader."Ship-to County", Shop, ShopTaxArea));
+                        if BillToExists then
+                            exit(GetTaxArea(ShopifyOrderHeader."Bill-to Country/Region Code", ShopifyOrderHeader."Bill-to County", Shop, ShopTaxArea));
                     end;
                 "Shpfy Tax By"::"Sell-to -> Bill-to -> Ship-to":
-                    if ShopifyOrderHeader."Sell-to County" = '' then begin
-                        if ShopifyOrderHeader."Bill-to County" = '' then begin
-                            if ShopifyOrderHeader."Ship-to City" = '' then
-                                exit(false)
-                            else begin
-                                ShopTaxArea.SetRange("Country/Region Code", ShopifyOrderHeader."Ship-to Country/Region Code");
-                                ShopTaxArea.SetRange(County, ShopifyOrderHeader."Ship-to County");
-                            end;
-                        end else begin
-                            ShopTaxArea.SetRange("Country/Region Code", ShopifyOrderHeader."Bill-to Country/Region Code");
-                            ShopTaxArea.SetRange(County, ShopifyOrderHeader."Bill-to County");
-                        end;
-                    end else begin
-                        ShopTaxArea.SetRange("Country/Region Code", ShopifyOrderHeader."Sell-to Country/Region Code");
-                        ShopTaxArea.SetRange(County, ShopifyOrderHeader."Sell-to County");
+                    begin
+                        if SellToExists then
+                            exit(GetTaxArea(ShopifyOrderHeader."Sell-to Country/Region Code", ShopifyOrderHeader."Sell-to County", Shop, ShopTaxArea));
+                        if BillToExists then
+                            exit(GetTaxArea(ShopifyOrderHeader."Bill-to Country/Region Code", ShopifyOrderHeader."Bill-to County", Shop, ShopTaxArea));
+                        if ShipToExists then
+                            exit(GetTaxArea(ShopifyOrderHeader."Ship-to Country/Region Code", ShopifyOrderHeader."Ship-to County", Shop, ShopTaxArea));
                     end;
                 "Shpfy Tax By"::"Bill-to -> Sell-to -> Ship-to":
-                    if ShopifyOrderHeader."Bill-to County" = '' then begin
-                        if ShopifyOrderHeader."Sell-to County" = '' then begin
-                            if ShopifyOrderHeader."Ship-to City" = '' then
-                                exit(false)
-                            else begin
-                                ShopTaxArea.SetRange("Country/Region Code", ShopifyOrderHeader."Ship-to Country/Region Code");
-                                ShopTaxArea.SetRange(County, ShopifyOrderHeader."Ship-to County");
-                            end;
-                        end else begin
-                            ShopTaxArea.SetRange("Country/Region Code", ShopifyOrderHeader."Sell-to Country/Region Code");
-                            ShopTaxArea.SetRange(County, ShopifyOrderHeader."Sell-to County");
-                        end;
-                    end else begin
-                        ShopTaxArea.SetRange("Country/Region Code", ShopifyOrderHeader."Bill-to Country/Region Code");
-                        ShopTaxArea.SetRange(County, ShopifyOrderHeader."Bill-to County");
+                    begin
+                        if BillToExists then
+                            exit(GetTaxArea(ShopifyOrderHeader."Bill-to Country/Region Code", ShopifyOrderHeader."Bill-to County", Shop, ShopTaxArea));
+                        if SellToExists then
+                            exit(GetTaxArea(ShopifyOrderHeader."Sell-to Country/Region Code", ShopifyOrderHeader."Sell-to County", Shop, ShopTaxArea));
+                        if ShipToExists then
+                            exit(GetTaxArea(ShopifyOrderHeader."Ship-to Country/Region Code", ShopifyOrderHeader."Ship-to County", Shop, ShopTaxArea));
                     end;
                 "Shpfy Tax By"::"Bill-to Ship-to Sell-to":
-                    if ShopifyOrderHeader."Bill-to County" = '' then begin
-                        if ShopifyOrderHeader."Ship-to County" = '' then begin
-                            if ShopifyOrderHeader."Sell-to City" = '' then
-                                exit(false)
-                            else begin
-                                ShopTaxArea.SetRange("Country/Region Code", ShopifyOrderHeader."Sell-to Country/Region Code");
-                                ShopTaxArea.SetRange(County, ShopifyOrderHeader."Sell-to County");
-                            end;
-                        end else begin
-                            ShopTaxArea.SetRange("Country/Region Code", ShopifyOrderHeader."Sell-to Country/Region Code");
-                            ShopTaxArea.SetRange(County, ShopifyOrderHeader."Sell-to County");
-                        end;
-                    end else begin
-                        ShopTaxArea.SetRange("Country/Region Code", ShopifyOrderHeader."Bill-to Country/Region Code");
-                        ShopTaxArea.SetRange(County, ShopifyOrderHeader."Bill-to County");
+                    begin
+                        if BillToExists then
+                            exit(GetTaxArea(ShopifyOrderHeader."Bill-to Country/Region Code", ShopifyOrderHeader."Bill-to County", Shop, ShopTaxArea));
+                        if ShipToExists then
+                            exit(GetTaxArea(ShopifyOrderHeader."Ship-to Country/Region Code", ShopifyOrderHeader."Ship-to County", Shop, ShopTaxArea));
+                        if SellToExists then
+                            exit(GetTaxArea(ShopifyOrderHeader."Sell-to Country/Region Code", ShopifyOrderHeader."Sell-to County", Shop, ShopTaxArea));
                     end;
             end;
-            exit(ShopTaxArea.FindFirst());
         end;
+    end;
+
+    local procedure GetTaxArea(CountryRegionCode: Code[20]; County: Text[30]; Shop: Record "Shpfy Shop"; var ShopTaxArea: Record "Shpfy Tax Area"): Boolean
+    begin
+        ShopTaxArea.SetRange("Country/Region Code", CountryRegionCode);
+        if Shop."County Source" = "Shpfy County Source"::Name then
+            ShopTaxArea.SetRange(County, County);
+        if Shop."County Source" = "Shpfy County Source"::Code then begin
+            if StrLen(County) > MaxStrLen(ShopTaxArea."County Code") then
+                exit(false);
+            ShopTaxArea.SetRange("County Code", County);
+        end;
+        exit(ShopTaxArea.FindFirst());
     end;
 
     /// <summary> 

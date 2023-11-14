@@ -1,4 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 #if not CLEAN22
+namespace Microsoft.Finance.GeneralLedger.Ledger;
+
+using Microsoft.Finance.VAT.Calculation;
+
 pageextension 11708 "General Ledger Entries CZL" extends "General Ledger Entries"
 {
     ObsoleteState = Pending;

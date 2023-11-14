@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Ledger;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+
 codeunit 11741 "VAT Entry Handler CZL"
 {
     [EventSubscriber(ObjectType::Table, Database::"VAT Entry", 'OnBeforeValidateEvent', 'EU 3-Party Trade', false, false)]
@@ -33,17 +41,5 @@ codeunit 11741 "VAT Entry Handler CZL"
         VATEntry."VAT Date CZL" := FromVATEntry."VAT Date CZL";
 #pragma warning restore AL0432
 #endif
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnInsertVATOnAfterAssignVATEntryFields', '', false, false)]
-    local procedure SetVATIdentifierCZLOnInsertVATOnAfterAssignVATEntryFields(GenJnlLine: Record "Gen. Journal Line"; var VATEntry: Record "VAT Entry")
-    var
-        VATPostingSetup: Record "VAT Posting Setup";
-    begin
-        if GenJnlLine."Gen. Posting Type" = GenJnlLine."Gen. Posting Type"::" " then
-            exit;
-        if not VATPostingSetup.Get(GenJnlLine."VAT Bus. Posting Group", GenJnlLine."VAT Prod. Posting Group") then
-            exit;
-        VATEntry."VAT Identifier CZL" := VATPostingSetup."VAT Identifier";
     end;
 }

@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.Inventory.Item;
+using System.Utilities;
+
 report 31105 "Test Tariff Numbers CZL"
 {
     ApplicationArea = Basic, Suite;
@@ -100,7 +109,6 @@ report 31105 "Test Tariff Numbers CZL"
         MissingTariffNoDictionary: Dictionary of [Code[20], Integer];
         WindowDialog: Dialog;
         NoOfItems: Integer;
-
         CurrentRecord: Integer;
         RecordCount: Integer;
         ProcessingItemsTxt: Label 'Checking item #1############\@2@@@@@@@@@@@@@@@@@@@@@@@@@@', Comment = '#1 = item no., @2 = progress';

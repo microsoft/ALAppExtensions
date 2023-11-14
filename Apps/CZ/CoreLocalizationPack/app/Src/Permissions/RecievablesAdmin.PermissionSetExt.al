@@ -1,4 +1,4 @@
-permissionsetextension 11745 "Recievables - Admin CZL" extends "Recievables - Admin"
+﻿permissionsetextension 11745 "Recievables - Admin CZL" extends "Recievables - Admin"
 {
 #if not CLEAN22
 #pragma warning disable AL0432

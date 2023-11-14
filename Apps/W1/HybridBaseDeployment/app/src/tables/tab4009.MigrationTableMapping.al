@@ -2,7 +2,6 @@ namespace Microsoft.DataMigration;
 
 using System.Apps;
 using System.Reflection;
-using System.Environment.Configuration;
 using System.Utilities;
 
 table 4009 "Migration Table Mapping"
@@ -250,31 +249,41 @@ table 4009 "Migration Table Mapping"
     end;
 
     internal procedure GetSourceTableAppID(var MigrationTableMapping: Record "Migration Table Mapping"): Text
+    begin
+        exit(MigrationTableMapping.GetSourceTableAppID(MigrationTableMapping."Source Table Name"));
+    end;
+
+    internal procedure GetSourceTableAppID(SourceTableName: Text): Text
     var
         ExtensionIndex: Integer;
     begin
-        if MigrationTableMapping."Source Table Name" = '' then
+        if SourceTableName = '' then
             exit('');
 
-        ExtensionIndex := MigrationTableMapping."Source Table Name".IndexOf(GetExtensionSeparatorCharacter());
+        ExtensionIndex := SourceTableName.IndexOf(GetExtensionSeparatorCharacter());
         if ExtensionIndex = 0 then
             exit('');
 
-        exit(CopyStr(MigrationTableMapping."Source Table Name", ExtensionIndex + 1, StrLen(MigrationTableMapping."Source Table Name") - ExtensionIndex));
+        exit(CopyStr(SourceTableName, ExtensionIndex + 1, StrLen(SourceTableName) - ExtensionIndex));
     end;
 
     internal procedure GetSourceTableName(var MigrationTableMapping: Record "Migration Table Mapping"): Text
+    begin
+        exit(ParseSourceTableName(MigrationTableMapping."Source Table Name"));
+    end;
+
+    internal procedure ParseSourceTableName(SourcetableName: Text): Text
     var
         ExtensionIndex: Integer;
     begin
-        if MigrationTableMapping."Source Table Name" = '' then
+        if SourcetableName = '' then
             exit('');
 
-        ExtensionIndex := MigrationTableMapping."Source Table Name".IndexOf(GetExtensionSeparatorCharacter());
+        ExtensionIndex := SourcetableName.IndexOf(GetExtensionSeparatorCharacter());
         if ExtensionIndex = 0 then
-            exit(MigrationTableMapping."Source Table Name");
+            exit(SourcetableName);
 
-        exit(CopyStr(MigrationTableMapping."Source Table Name", 1, ExtensionIndex - 1));
+        exit(CopyStr(SourcetableName, 1, ExtensionIndex - 1));
     end;
 
     internal procedure GetExtensionSeparatorCharacter(): Text

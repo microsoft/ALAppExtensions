@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Compensations;
+
+using System.Apps;
+using System.Automation;
+
 codeunit 31277 "Workflow Handler CZC"
 {
     Permissions = tabledata "NAV App Installed App" = r;

@@ -1,3 +1,19 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Transfer;
+
+using Microsoft.Foundation.Address;
+#if not CLEAN22
+using Microsoft.Foundation.Company;
+#endif
+using Microsoft.Inventory.Intrastat;
+#if not CLEAN22
+using Microsoft.Inventory.Item;
+using System.Environment.Configuration;
+#endif
+
 tableextension 31011 "Transfer Line CZL" extends "Transfer Line"
 {
     fields
@@ -51,7 +67,11 @@ tableextension 31011 "Transfer Line CZL" extends "Transfer Line"
     procedure CheckIntrastatMandatoryFieldsCZL()
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
+        FeatureMgtFacade: Codeunit "Feature Management Facade";
+        IntrastatFeatureKeyIdTok: Label 'ReplaceIntrastat', Locked = true;
     begin
+        if FeatureMgtFacade.IsEnabled(IntrastatFeatureKeyIdTok) then
+            exit;
         StatutoryReportingSetupCZL.Get();
         if StatutoryReportingSetupCZL."Tariff No. Mandatory" then
             TestField("Tariff No. CZL");

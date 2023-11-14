@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Dimension;
+
+using Microsoft.Utilities;
+using System.Security.User;
+using System.Utilities;
+
 codeunit 31318 "Dimension Mgt. Handler CZL"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::DimensionManagement, 'OnCheckDimValuePostingOnBeforeExit', '', false, false)]

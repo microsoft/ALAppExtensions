@@ -1,3 +1,24 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Document;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Setup;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.BatchProcessing;
+#if not CLEAN22
+using Microsoft.Foundation.Company;
+#endif
+using Microsoft.Sales.Customer;
+#if not CLEAN22
+using System.Environment.Configuration;
+#endif
+using System.Utilities;
+
 tableextension 11703 "Sales Header CZL" extends "Sales Header"
 {
     fields
@@ -376,8 +397,8 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
     begin
         OnBeforeConfirmUpdateVATCurrencyFactorCZL(Rec, HideValidationDialog);
 
-        BatchProcessingMgt.GetBooleanParameter(Rec.RecordId, "Batch Posting Parameter Type"::"Replace Posting Date", ReplacePostingDate);
-        BatchProcessingMgt.GetBooleanParameter(Rec.RecordId, "Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDate);
+        BatchProcessingMgt.GetBooleanParameter(Rec.RecordId, Enum::"Batch Posting Parameter Type"::"Replace Posting Date", ReplacePostingDate);
+        BatchProcessingMgt.GetBooleanParameter(Rec.RecordId, Enum::"Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDate);
         if GetHideValidationDialog() or not GuiAllowed or ReplacePostingDate or ReplaceVATDate then
             IsConfirmedCZL := true
         else
@@ -406,7 +427,11 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
     procedure CheckIntrastatMandatoryFieldsCZL()
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
+        FeatureMgtFacade: Codeunit "Feature Management Facade";
+        IntrastatFeatureKeyIdTok: Label 'ReplaceIntrastat', Locked = true;
     begin
+        if FeatureMgtFacade.IsEnabled(IntrastatFeatureKeyIdTok) then
+            exit;
         if not (Ship or Receive) then
             exit;
         if IsIntrastatTransactionCZL() and ShipOrReceiveInventoriableTypeItemsCZL() then begin

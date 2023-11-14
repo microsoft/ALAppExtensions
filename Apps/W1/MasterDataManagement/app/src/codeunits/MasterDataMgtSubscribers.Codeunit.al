@@ -391,6 +391,23 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         ApplyTransformations(SourceRecordRef, DestinationRecordRef);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeDetermineConfigTemplateCode', '', false, false)]
+    local procedure OnBeforeDetermineConfigTemplateCode(IntegrationTableMapping: Record "Integration Table Mapping"; var TemplateCode: Code[10]; var Handled: Boolean)
+    begin
+        if Handled then
+            exit;
+
+        if IntegrationTableMapping.Type <> IntegrationTableMapping.Type::"Master Data Management" then
+            exit;
+
+        if IntegrationTableMapping."Table Config Template Code" <> '' then
+            TemplateCode := IntegrationTableMapping."Table Config Template Code"
+        else
+            TemplateCode := IntegrationTableMapping."Int. Tbl. Config Template Code";
+
+        Handled := true;
+    end;
+
     local procedure ApplyTransformations(SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
     var
         IntegrationTableMapping: Record "Integration Table Mapping";

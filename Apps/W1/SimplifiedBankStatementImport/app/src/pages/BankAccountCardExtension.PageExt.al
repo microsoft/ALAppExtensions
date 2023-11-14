@@ -43,6 +43,7 @@ pageextension 8850 "Bank Account Card Extension" extends "Bank Account Card"
             if SetBankStatementImportFormat.Recall() then;
             SetBankStatementImportFormat.Message := BankStatementImportFormatEmptyMsg;
             SetBankStatementImportFormat.Scope := NotificationScope::LocalScope;
+            SetBankStatementImportFormat.SetData('BankAccountCode', Rec."No.");
             SetBankStatementImportFormat.AddAction(NotificationActionLbl, Codeunit::"Bank Statement File Wizard", 'RunBankStatementFileWizard');
             SetBankStatementImportFormat.Send();
         end;

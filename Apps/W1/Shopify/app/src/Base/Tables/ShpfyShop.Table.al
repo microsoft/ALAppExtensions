@@ -411,6 +411,17 @@ table 30102 "Shpfy Shop"
             Caption = 'Currency Code';
             DataClassification = CustomerContent;
             TableRelation = Currency.Code;
+
+            trigger OnValidate()
+            var
+                CurrencyExchangeRate: Record "Currency Exchange Rate";
+            begin
+                if "Currency Code" <> '' then begin
+                    CurrencyExchangeRate.SetRange("Currency Code", "Currency Code");
+                    if CurrencyExchangeRate.IsEmpty() then
+                        Error(CurrencyExchangeRateNotDefinedErr);
+                end;
+            end;
         }
         field(53; "Gen. Bus. Posting Group"; Code[20])
         {
@@ -720,6 +731,7 @@ table 30102 "Shpfy Shop"
 
     var
         InvalidShopUrlErr: Label 'The URL must refer to the internal shop location at myshopify.com. It must not be the public URL that customers use, such as myshop.com.';
+        CurrencyExchangeRateNotDefinedErr: Label 'The specified currency must have exchange rates configured. If your online shop uses the same currency as Business Central then leave the field empty.';
 
     [NonDebuggable]
     [Scope('OnPrem')]

@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.CashDesk;
+
+using Microsoft.Finance;
+
 codeunit 31114 "EET Cash Desk CZP" implements "EET Cash Register CZL"
 {
     procedure GetCashRegisterName(CashRegisterNo: Code[20]): Text[100]

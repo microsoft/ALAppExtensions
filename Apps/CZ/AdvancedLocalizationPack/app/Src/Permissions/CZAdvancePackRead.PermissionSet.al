@@ -1,4 +1,4 @@
-permissionset 11740 "CZ Advance Pack - Read CZA"
+﻿permissionset 11740 "CZ Advance Pack - Read CZA"
 {
     Access = Internal;
     Assignable = false;

@@ -360,7 +360,7 @@ codeunit 2752 "Universal Print Graph Helper"
     end;
 
     var
-        UserNotAuthenticatedTxt: Label 'User cannot be authenticated with Azure AD.';
+        UserNotAuthenticatedTxt: Label 'User cannot be authenticated with Microsoft Entra.';
         NoAccessTxt: Label 'You don''t have access to the data. Make sure your account has been assigned a Universal Print license and you have the required permissions.';
         UniversalPrintTelemetryCategoryTxt: Label 'Universal Print AL', Locked = true;
         UniversalPrintFeatureTelemetryNameTxt: Label 'Universal Print', Locked = true;

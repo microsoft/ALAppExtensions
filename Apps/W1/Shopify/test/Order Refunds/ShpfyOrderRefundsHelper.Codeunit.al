@@ -16,7 +16,6 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         RefundId: BigInteger;
     begin
         Any.SetDefaultSeed();
-        Codeunit.Run(Codeunit::"Shpfy Initialize Test");
         Shop := CommunicationMgt.GetShopRecord();
         ProductId := Any.IntegerInRange(100000, 999999);
         VariantId := Any.IntegerInRange(100000, 999999);
@@ -68,7 +67,7 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         OrderHeader: Record "Shpfy Order Header";
         Customer: Record Customer;
     begin
-        Customer.FindFirst();
+        Customer := GetCustomer();
         OrderHeader."Shopify Order Id" := Any.IntegerInRange(100000, 999999);
         OrderHeader."Sales Order No." := Any.AlphabeticText(10);
         OrderHeader."Created At" := CurrentDateTime;
@@ -130,7 +129,7 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         Item: Record Item;
         OrderLine: Record "Shpfy Order Line";
     begin
-        Item.FindFirst();
+        Item := GetItem();
         LineNo := LineNo * 100000;
         OrderLine."Shopify Order Id" := OrderId;
         OrderLine."Line Id" := Any.IntegerInRange(LineNo, LineNo + 99999);
@@ -209,5 +208,19 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         RefundLine.Amount := 156.38;
         RefundLine."Subtotal Amount" := 156.38;
         RefundLine.Insert();
+    end;
+
+    local procedure GetItem(): Record Item
+    var
+        InitializeTest: Codeunit "Shpfy Initialize Test";
+    begin
+        exit(InitializeTest.GetDummyItem());
+    end;
+
+    local procedure GetCustomer(): Record Customer
+    var
+        InitializeTest: Codeunit "Shpfy Initialize Test";
+    begin
+        exit(InitializeTest.GetDummyCustomer());
     end;
 }

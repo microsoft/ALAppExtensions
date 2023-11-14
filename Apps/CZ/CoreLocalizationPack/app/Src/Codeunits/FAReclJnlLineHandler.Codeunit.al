@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.FixedAssets.Journal;
+
+using System.Security.User;
+
 codeunit 31323 "FA Recl. Jnl. Line Handler CZL"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::FAReclassJnlManagement, 'OnBeforeOpenJournal', '', false, false)]

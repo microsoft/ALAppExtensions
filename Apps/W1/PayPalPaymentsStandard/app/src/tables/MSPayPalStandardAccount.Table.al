@@ -1,10 +1,11 @@
-﻿namespace Microsoft.Bank.PayPal;
+namespace Microsoft.Bank.PayPal;
 
 using System.Integration;
 using System.Privacy;
 using Microsoft.Sales.Document;
 using Microsoft.CRM.Setup;
 using Microsoft.Bank.Payment;
+using System.Telemetry;
 
 table 1070 "MS - PayPal Standard Account"
 {
@@ -35,12 +36,16 @@ table 1070 "MS - PayPal Standard Account"
             trigger OnValidate();
             var
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
+                MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
+                FeatureTelemetry: Codeunit "Feature Telemetry";
             begin
                 if not xRec."Enabled" and Rec."Enabled" then
                     Rec."Enabled" := CustomerConsentMgt.ConfirmUserConsent();
 
-                if Rec.Enabled then
+                if Rec.Enabled then begin
                     VerifyAccountID();
+                    FeatureTelemetry.LogUptake('0000LHR', MSPayPalStandardMgt.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::"Set up");
+                end;
             end;
         }
         field(5; "Always Include on Documents"; Boolean)

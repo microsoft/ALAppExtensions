@@ -1,3 +1,23 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.History;
+
+using Microsoft.Bank.Setup;
+using Microsoft.Finance.Currency;
+#if not CLEAN22
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Finance.VAT.Ledger;
+#endif
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+#if not CLEAN22
+using System.Utilities;
+#endif
+
 tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
 {
     fields
