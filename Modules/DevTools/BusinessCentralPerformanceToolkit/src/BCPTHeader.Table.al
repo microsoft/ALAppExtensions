@@ -28,8 +28,7 @@ table 149000 "BCPT Header"
         {
             Caption = 'Duration (minutes)';
             InitValue = 1;
-            MinValue = 1;
-            MaxValue = 240; // 4 hrs
+            MinValue = 1;            
         }
         field(4; Status; Enum "BCPT Header Status")
         {
