@@ -1,9 +1,4 @@
-// ------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See License.txt in the project root for license information.
-// ------------------------------------------------------------------------------------------------
-
-permissionset 11731 "CZ Core Pack - Edit CZL"
+﻿permissionset 11731 "CZ Core Pack - Edit CZL"
 {
     Access = Internal;
     Assignable = false;

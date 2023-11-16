@@ -37,6 +37,8 @@ codeunit 139661 "GP Account Tests"
         StartTime := CurrentDateTime;
         ClearTables();
 
+        GPTestHelperFunctions.CreateConfigurationSettings();
+
         // [GIVEN] Some records are created in the staging table
         CreateAccountData(GPAccount);
         CreateDimensionData(GPSegements, GPCodes);
@@ -75,6 +77,45 @@ codeunit 139661 "GP Account Tests"
                 'Debit/Credit not set correctly.');
             GPAccount.Next();
         until GLAccount.Next() = 0;
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGLModuleDisabled()
+    var
+        GPGLTransactions: Record "GP GLTransactions";
+        GPAccount: Record "GP Account";
+        GLAccount: Record "G/L Account";
+        GPSegements: Record "GP Segments";
+        GPCodes: Record "GP Codes";
+        GPFiscalPeriods: Record "GP Fiscal Periods";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        // [SCENARIO] G/L Accounts are migrated from GP
+        // [GIVEN] There are no records in G/L Account, G/L Entry, and staging tables
+        if not BindSubscription(MSGPAccountMigrationTests) then
+            exit;
+        ClearTables();
+
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings."Migrate GL Module" := false;
+        GPCompanyAdditionalSettings.Modify();
+
+        // [GIVEN] Some records are created in the staging table
+        CreateAccountData(GPAccount);
+        CreateDimensionData(GPSegements, GPCodes);
+        HelperFunctions.CreateDimensions();
+        CreateFiscalPeriods(GPFiscalPeriods);
+        CreateTrxData(GPGLTransactions);
+
+        // [WHEN] MigrationAccounts is called
+        GPAccount.FindSet();
+        repeat
+            Migrate(GPAccount);
+        until GPAccount.Next() = 0;
+
+        // [THEN] G/L Account's will not be created
+        Assert.RecordCount(GLAccount, 0);
     end;
 
     [Test]

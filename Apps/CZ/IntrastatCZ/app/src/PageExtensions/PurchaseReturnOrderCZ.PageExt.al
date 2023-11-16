@@ -10,9 +10,26 @@ pageextension 31351 "Purchase Return Order CZ" extends "Purchase Return Order"
             Visible = not IntrastatEnabled;
             Enabled = not IntrastatEnabled;
         }
-#endif
-        addlast("Shipping and Payment")
+#pragma warning disable AL0432
+        modify("Intrastat Exclude CZL")
+#pragma warning restore AL0432
         {
+            Enabled = not IntrastatEnabled;
+            Visible = not IntrastatEnabled;
+        }
+#endif
+        addlast("Foreign Trade")
+        {
+            field("Intrastat Exclude CZ"; Rec."Intrastat Exclude CZ")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Exclude';
+                ToolTip = 'Specifies that entry will be excluded from intrastat.';
+#if not CLEAN22
+                Enabled = IntrastatEnabled;
+                Visible = IntrastatEnabled;
+#endif
+            }
             field("Physical Transfer CZ"; Rec."Physical Transfer CZ")
             {
                 ApplicationArea = Basic, Suite;

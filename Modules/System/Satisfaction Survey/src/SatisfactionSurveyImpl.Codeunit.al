@@ -793,13 +793,12 @@ codeunit 1432 "Satisfaction Survey Impl."
 
     local procedure CheckExternalUser(): Boolean
     var
-        AzureADPlan: Codeunit "Azure AD Plan";
+        AzureADUserManagement: Codeunit "Azure AD User Management";
     begin
-        if AzureADPlan.IsUserExternal() then
-            if not AzureADPlan.IsUserExternalAccountant() then begin
-                Session.LogMessage('0000KSR', ExternalUserTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
-                exit(true);
-            end;
+        if AzureADUserManagement.IsUserDelegated(UserSecurityId()) then begin
+            Session.LogMessage('0000KSR', ExternalUserTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NpsCategoryTxt);
+            exit(true);
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Initialization", OnAfterLogin, '', false, false)]

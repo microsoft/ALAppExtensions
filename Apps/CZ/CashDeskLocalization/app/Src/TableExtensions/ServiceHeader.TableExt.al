@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.CashDesk;
+
+using Microsoft.Service.Document;
+
 tableextension 11775 "Service Header CZP" extends "Service Header"
 {
     fields

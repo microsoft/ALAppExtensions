@@ -5,13 +5,15 @@ using System.Reflection;
 
 page 2683 "Data Search Setup (Table) List"
 {
-    Caption = 'Data Search Setup';
+    Caption = 'Enable tables for searching';
     DeleteAllowed = false;
     InsertAllowed = false;
     LinksAllowed = true;
     PageType = List;
     UsageCategory = Administration;
     SourceTable = AllObjWithCaption;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     layout
     {
@@ -20,7 +22,7 @@ page 2683 "Data Search Setup (Table) List"
             field(RoleName; AllProfile.Caption)
             {
                 ApplicationArea = All;
-                Caption = 'Role';
+                Caption = 'Choose among tables for role';
                 Editable = false;
                 ToolTip = 'Specifies which role the search setup is valid for.';
 
@@ -42,6 +44,22 @@ page 2683 "Data Search Setup (Table) List"
                             CurrPage.Update(false);
                         end;
                     end;
+                end;
+            }
+            field(ShowAll; TableFilterIsSet)
+            {
+                ApplicationArea = All;
+                Caption = 'Show only search enabled tables';
+                ToolTip = 'Specifies whether only the enabled tables are shown or all tables are shown.';
+                trigger OnValidate()
+                begin
+                    if TableFilterIsSet then
+                        SetEnabledTablesFilter(RoleCenterID)
+                    else begin
+                        Rec.SetRange("Object ID");
+                        TableFilterIsSet := false;
+                    end;
+                    CurrPage.Update(false);
                 end;
             }
             repeater(Control1)
@@ -69,7 +87,7 @@ page 2683 "Data Search Setup (Table) List"
                 field(TableIsEnabledCtrl; TableIsEnabled)
                 {
                     ApplicationArea = All;
-                    Caption = 'Search Enabled';
+                    Caption = 'Enable Search';
                     ToolTip = 'Specifies whether this table is included in search.';
 
                     trigger OnValidate()
@@ -96,6 +114,7 @@ page 2683 "Data Search Setup (Table) List"
             action(ResetSetup)
             {
                 ApplicationArea = All;
+                AccessByPermission = TableData "Data Search Setup (Table)" = IMD;
                 Caption = 'Reset to default';
                 ToolTip = 'Removes the current selection for this rolecenter and inserts the default table selection.';
                 Image = Restore;
@@ -111,10 +130,12 @@ page 2683 "Data Search Setup (Table) List"
             action(ShowAllTables)
             {
                 ApplicationArea = All;
-                Caption = 'Show all tables';
+                AccessByPermission = TableData "Data Search Setup (Table)" = IMD;
+                Caption = 'All tables';
                 ToolTip = 'Select this action if you want to see all tables and/or select more tables to be included in the search.';
                 Image = ShowList;
                 Enabled = TableFilterIsSet;
+                Visible = false;
 
                 trigger OnAction()
                 begin
@@ -125,10 +146,11 @@ page 2683 "Data Search Setup (Table) List"
             action(ShowFilteredTables)
             {
                 ApplicationArea = All;
-                Caption = 'Show selected tables';
+                Caption = 'Only enabled tables';
                 ToolTip = 'Compacts the view, so you only see the tables that have been selected for search.';
                 Image = FilterLines;
                 Enabled = not TableFilterIsSet;
+                Visible = false;
 
                 trigger OnAction()
                 begin
@@ -217,11 +239,11 @@ page 2683 "Data Search Setup (Table) List"
     local procedure UpdateRec()
     begin
         if not TableIsEnabled then begin
-            if DataSearchSetupTable.Delete(true) then;  // deletes for all table subtypes
-            if TempDataSearchSetupTable.Delete() then;
+            DataSearchSetupTable.DeleteRec(true);  // deletes for all table subtypes
+            TempDataSearchSetupTable.DeleteRec(true);
         end else begin
-            if not DataSearchSetupTable.Insert(true) then; // inserts for all table subtypes
-            if not TempDataSearchSetupTable.Insert() then;
+            DataSearchSetupTable.InsertRec(true); // inserts for all table subtypes
+            TempDataSearchSetupTable.InsertRec(true);
         end;
     end;
 

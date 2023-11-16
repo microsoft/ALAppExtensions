@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Document;
+
+using Microsoft.Inventory.History;
+
 codeunit 31369 "Invt. Document Handler CZL"
 {
     [EventSubscriber(ObjectType::Table, Database::"Invt. Document Header", 'OnBeforeValidateEvent', 'Gen. Bus. Posting Group', false, false)]

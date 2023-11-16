@@ -1,3 +1,25 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.CashDesk;
+
+using Microsoft;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Comment;
+using Microsoft.Foundation.Company;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
+using System.Security.User;
+using System.Upgrade;
+
 #pragma warning disable AL0432,AL0603
 codeunit 31054 "Install Application CZP"
 {

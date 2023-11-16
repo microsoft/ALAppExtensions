@@ -151,7 +151,6 @@ page 4009 "Migration Table Mapping"
                     ApplicationArea = All;
                     Caption = 'Data Per Company';
                     Tooltip = 'Specifies if the table data is per company';
-                    Visible = IsBCCloudMigration;
                     Editable = Rec."Target Table Type" = Rec."Target Table Type"::"Table Extension";
                 }
             }

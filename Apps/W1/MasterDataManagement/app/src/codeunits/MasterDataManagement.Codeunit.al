@@ -1347,6 +1347,17 @@ codeunit 7233 "Master Data Management"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Integration Synch. Job Errors", 'OnIsDataIntegrationEnabled', '', false, false)]
+    local procedure HandleOnIsDataIntegrationEnabled(var IsIntegrationEnabled: Boolean)
+    var
+        MasterDataManagementSetup: Record "Master Data Management Setup";
+    begin
+        if IsIntegrationEnabled then
+            exit;
+
+        if MasterDataManagementSetup.Get() then
+            IsIntegrationEnabled := MasterDataManagementSetup."Is Enabled";
+    end;
+
     local procedure IsDataIntegrationEnabled(var IsIntegrationEnabled: Boolean)
     var
         MasterDataManagementSetup: Record "Master Data Management Setup";

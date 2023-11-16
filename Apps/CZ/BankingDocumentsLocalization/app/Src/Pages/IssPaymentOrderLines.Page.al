@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Documents;
+
 page 31268 "Iss. Payment Order Lines CZB"
 {
     ApplicationArea = Basic, Suite;

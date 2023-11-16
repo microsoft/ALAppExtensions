@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Payables;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Setup;
+#if not CLEAN24
+using Microsoft.Finance.GeneralLedger.Journal;
+#endif
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Purchases.Vendor;
+
 tableextension 11721 "Vendor Ledger Entry CZL" extends "Vendor Ledger Entry"
 {
     fields
@@ -132,6 +146,33 @@ tableextension 11721 "Vendor Ledger Entry CZL" extends "Vendor Ledger Entry"
         OnIsRelatedToAdvanceLetterCZL(Rec, IsRelatedToAdvanceLetter);
     end;
 
+    procedure GetPayablesAccNoCZL(): Code[20]
+    var
+#if not CLEAN24
+        GenJournalLineHandler: Codeunit "Gen. Journal Line Handler CZL";
+#else
+        VendorPostingGroup: Record "Vendor Posting Group";
+#endif
+        GLAccountNo: Code[20];
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeGetPayablesAccountNoCZL(Rec, GLAccountNo, IsHandled);
+        if IsHandled then
+            exit(GLAccountNo);
+
+#if not CLEAN24
+#pragma warning disable AL0432
+        exit(GenJournalLineHandler.GetPayablesAccNo(Rec));
+#pragma warning restore AL0432
+#else
+        TestField("Vendor Posting Group");
+        VendorPostingGroup.Get("Vendor Posting Group");
+        VendorPostingGroup.TestField("Payables Account");
+        exit(VendorPostingGroup.GetPayablesAccount());
+#endif
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnIsRelatedToAdvanceLetterCZL(VendorLedgerEntry: Record "Vendor Ledger Entry"; var IsRelatedToAdvanceLetter: Boolean)
     begin
@@ -139,6 +180,11 @@ tableextension 11721 "Vendor Ledger Entry CZL" extends "Vendor Ledger Entry"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterUpdateBankInfoCZL(var VendorLedgerEntry: Record "Vendor Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetPayablesAccountNoCZL(VendorLedgerEntry: Record "Vendor Ledger Entry"; var GLAccountNo: Code[20]; var IsHandled: Boolean)
     begin
     end;
 }

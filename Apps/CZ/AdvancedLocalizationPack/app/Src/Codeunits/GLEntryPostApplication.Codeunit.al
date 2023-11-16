@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GeneralLedger.Posting;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.ReceivablesPayables;
+using System.Utilities;
+
 codeunit 31370 "G/L Entry Post Application CZA"
 {
     Permissions = tabledata "G/L Entry" = rm,
@@ -22,7 +33,7 @@ codeunit 31370 "G/L Entry Post Application CZA"
 
     procedure PostApplyGLEntry(var ApplyingGLEntry: Record "G/L Entry")
     var
-	    ApplyUnapplyParameters: Record "Apply Unapply Parameters";
+        ApplyUnapplyParameters: Record "Apply Unapply Parameters";
         DetailedGLEntryCZA: Record "Detailed G/L Entry CZA";
         PostApplication: Page "Post Application";
         WindowDialog: Dialog;
@@ -50,15 +61,15 @@ codeunit 31370 "G/L Entry Post Application CZA"
 
         DocumentNo := ApplyingGLEntry."Document No.";
         if not NotUseDialog then begin
-		    ApplyUnapplyParameters."Document No." := DocumentNo;
-			ApplyUnapplyParameters."Posting Date" := PostingDate;
+            ApplyUnapplyParameters."Document No." := DocumentNo;
+            ApplyUnapplyParameters."Posting Date" := PostingDate;
             PostApplication.SetParameters(ApplyUnapplyParameters);
             PostApplication.LookupMode(true);
             Commit();
             if Action::LookupOK = PostApplication.RunModal() then begin
                 PostApplication.GetParameters(ApplyUnapplyParameters);
-				DocumentNo := ApplyUnapplyParameters."Document No.";
-				ApplicationDate := ApplyUnapplyParameters."Posting Date";
+                DocumentNo := ApplyUnapplyParameters."Document No.";
+                ApplicationDate := ApplyUnapplyParameters."Posting Date";
                 if ApplicationDate < PostingDate then
                     Error(PrecedeLatestErr, GLEntry.FieldCaption("Posting Date"), GLEntry.TableCaption);
             end else

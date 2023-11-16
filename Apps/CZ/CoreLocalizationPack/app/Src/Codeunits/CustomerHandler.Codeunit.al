@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Customer;
+
+using Microsoft.Finance.Registration;
+
 codeunit 11752 "Customer Handler CZL"
 {
     [EventSubscriber(ObjectType::Table, Database::Customer, 'OnAfterInsertEvent', '', false, false)]
@@ -29,39 +37,5 @@ codeunit 11752 "Customer Handler CZL"
         UpdateNeeded := UpdateNeeded or
             (Customer."Registration Number" <> xCustomer."Registration Number") or
             (Customer."Tax Registration No. CZL" <> xCustomer."Tax Registration No. CZL");
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Cust. Ledger Entry", 'OnAfterCopyCustLedgerEntryFromGenJnlLine', '', false, false)]
-    local procedure UpdateEntryOnAfterCopyCustLedgerEntryFromGenJnlLine(var CustLedgerEntry: Record "Cust. Ledger Entry"; GenJournalLine: Record "Gen. Journal Line")
-    begin
-        CustLedgerEntry."Specific Symbol CZL" := GenJournalLine."Specific Symbol CZL";
-        CustLedgerEntry."Variable Symbol CZL" := GenJournalLine."Variable Symbol CZL";
-        CustLedgerEntry."Constant Symbol CZL" := GenJournalLine."Constant Symbol CZL";
-        CustLedgerEntry."Bank Account Code CZL" := GenJournalLine."Bank Account Code CZL";
-        CustLedgerEntry."Bank Account No. CZL" := GenJournalLine."Bank Account No. CZL";
-        CustLedgerEntry."Transit No. CZL" := GenJournalLine."Transit No. CZL";
-        CustLedgerEntry."IBAN CZL" := GenJournalLine."IBAN CZL";
-        CustLedgerEntry."SWIFT Code CZL" := GenJournalLine."SWIFT Code CZL";
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not GenJournalLine.IsReplaceVATDateEnabled() then
-            GenJournalLine."VAT Reporting Date" := GenJournalLine."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
-        CustLedgerEntry."VAT Date CZL" := GenJournalLine."VAT Reporting Date";
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cust. Entry-Edit", 'OnBeforeCustLedgEntryModify', '', false, false)]
-    local procedure UpdateEntryOnBeforeCustLedgEntryModify(var CustLedgEntry: Record "Cust. Ledger Entry"; FromCustLedgEntry: Record "Cust. Ledger Entry")
-    begin
-        CustLedgEntry."Specific Symbol CZL" := FromCustLedgEntry."Specific Symbol CZL";
-        CustLedgEntry."Variable Symbol CZL" := FromCustLedgEntry."Variable Symbol CZL";
-        CustLedgEntry."Constant Symbol CZL" := FromCustLedgEntry."Constant Symbol CZL";
-        CustLedgEntry."Bank Account Code CZL" := FromCustLedgEntry."Bank Account Code CZL";
-        CustLedgEntry."Bank Account No. CZL" := FromCustLedgEntry."Bank Account No. CZL";
-        CustLedgEntry."Transit No. CZL" := FromCustLedgEntry."Transit No. CZL";
-        CustLedgEntry."IBAN CZL" := FromCustLedgEntry."IBAN CZL";
-        CustLedgEntry."SWIFT Code CZL" := FromCustLedgEntry."SWIFT Code CZL";
-        CustLedgEntry."VAT Date CZL" := FromCustLedgEntry."VAT Date CZL";
     end;
 }

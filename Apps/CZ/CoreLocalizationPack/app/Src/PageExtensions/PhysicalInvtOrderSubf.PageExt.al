@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Counting.Document;
+
 pageextension 11715 "Physical Invt. Order Subf. CZL" extends "Physical Inventory Order Subf."
 {
     layout

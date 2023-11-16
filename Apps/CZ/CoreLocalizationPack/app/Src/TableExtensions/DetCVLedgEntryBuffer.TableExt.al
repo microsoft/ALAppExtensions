@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.ReceivablesPayables;
+
 tableextension 11789 "Det. CV Ledg. Entry Buffer CZL" extends "Detailed CV Ledg. Entry Buffer"
 {
     fields

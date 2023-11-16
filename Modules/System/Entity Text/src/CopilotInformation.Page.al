@@ -1,3 +1,4 @@
+#if not CLEAN24
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -14,15 +15,16 @@ using System.Environment.Configuration;
 /// </summary>
 page 2014 "Copilot Information"
 {
-    ApplicationArea = All;
+
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Information about Copilot capabilities has been moved to page 7775 "Copilot AI Capabilities"';
+    ObsoleteTag = '24.0';
     Caption = 'Copilot';
-    AdditionalSearchTerms = 'OpenAI,AI,Copilot,Co-pilot,Artificial Intelligence,GPT,GTP,Dynamics 365 Copilot,ChatGPT';
     PageType = NavigatePage;
     SourceTable = "Privacy Notice";
     SourceTableTemporary = true;
     RefreshOnActivate = true;
     Extensible = false;
-    UsageCategory = Administration;
 
     layout
     {
@@ -319,3 +321,4 @@ page 2014 "Copilot Information"
         end;
     end;
 }
+#endif

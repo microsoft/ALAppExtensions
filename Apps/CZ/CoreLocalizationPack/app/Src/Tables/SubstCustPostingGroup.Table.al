@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Customer;
+
 table 11728 "Subst. Cust. Posting Group CZL"
 {
     Caption = 'Subst. Customer Posting Group';

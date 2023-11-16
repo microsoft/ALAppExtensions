@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Compensations;
+
+using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Receivables;
+using System.Utilities;
+
 codeunit 31278 "Release Compens. Document CZC"
 {
     TableNo = "Compensation Header CZC";

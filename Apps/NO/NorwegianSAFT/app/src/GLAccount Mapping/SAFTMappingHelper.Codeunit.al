@@ -41,7 +41,9 @@ codeunit 10672 "SAF-T Mapping Helper"
         GeneralLedgerJournalsSourceCodeDescriptionLbl: Label 'General Ledger Journals';
         AccountReceivablesSourceCodeDescriptionLbl: Label 'Account Receivables';
         AccountPayablesSourceCodeDescriptionLbl: Label 'Account Payables';
+#if not CLEAN24
         SAFTSetupGuideTxt: Label 'Set up SAF-T';
+#endif
         DefaultLbl: Label 'DEFAULT';
 
     trigger OnRun()
@@ -520,6 +522,8 @@ codeunit 10672 "SAF-T Mapping Helper"
         ErrorMessageManagement.LogContextFieldError(0, ErrorMessage, SourceVariant, SourceFieldNo, '');
     end;
 
+#if not CLEAN24
+    [Obsolete('The procedure is not used will be removed', '24.0')]
     procedure AddSAFTAssistedSetup()
     var
         GuidedExperience: Codeunit "Guided Experience";
@@ -537,6 +541,7 @@ codeunit 10672 "SAF-T Mapping Helper"
             ''
         );
     end;
+#endif
 
     procedure InsertDefaultNoSeriesInSAFTSetup()
     var

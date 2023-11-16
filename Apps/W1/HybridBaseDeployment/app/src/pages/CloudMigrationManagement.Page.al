@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.DataMigration;
 
-using System.Integration;
 using System.Environment;
+using System.Integration;
 using System.Telemetry;
 using System.Security.AccessControl;
 using System.Security.User;
@@ -560,6 +560,25 @@ page 40063 "Cloud Migration Management"
                     HybridCloudManagement: Codeunit "Hybrid Cloud Management";
                 begin
                     HybridCloudManagement.ChangeRemovePermissionsFromUsers();
+                end;
+            }
+            action(ChangeTheWayDataIsReplicated)
+            {
+                Enabled = IsSuper;
+                Visible = not IsOnPrem;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Change how the data is replicated';
+                ToolTip = 'Allows defining which data is replicated and how. You can include or exclude the tables from the cloud migration and define if a table keeps existing data (delta sync) or replaces the entire table.';
+                Image = ChangeLog;
+
+                trigger OnAction()
+                var
+                    IntelligentCloudStatus: Record "Intelligent Cloud Status";
+                    CloudMigReplicateDataMgt: Codeunit "Cloud Mig. Replicate Data Mgt.";
+                begin
+                    CloudMigReplicateDataMgt.LoadRecords(IntelligentCloudStatus);
+                    if IntelligentCloudStatus.FindFirst() then
+                        Page.Run(Page::"Cloud Mig - Select Tables", IntelligentCloudStatus);
                 end;
             }
         }

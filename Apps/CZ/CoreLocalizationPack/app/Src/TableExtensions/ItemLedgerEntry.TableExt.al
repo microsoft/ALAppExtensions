@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Ledger;
+
+using Microsoft.Foundation.Address;
+using Microsoft.Inventory.History;
+using Microsoft.Inventory.Intrastat;
+using Microsoft.Inventory.Transfer;
+
 tableextension 11799 "Item Ledger Entry CZL" extends "Item Ledger Entry"
 {
     fields

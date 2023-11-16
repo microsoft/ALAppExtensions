@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Vendor;
+
+using System.Utilities;
+
 report 11758 "Unreliable Payer Get All CZL"
 {
     ApplicationArea = Basic, Suite;

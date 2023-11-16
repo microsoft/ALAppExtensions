@@ -422,6 +422,15 @@ page 30042 "APIV2 - Purchase Invoices"
                     Caption = 'Order No.';
                     Editable = false;
                 }
+                field(purchaser; Rec."Purchaser Code")
+                {
+                    Caption = 'Purchaser';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(Rec.FieldNo("Purchaser Code"));
+                    end;
+                }
                 field(pricesIncludeTax; Rec."Prices Including VAT")
                 {
                     Caption = 'Prices Include Tax';
@@ -467,6 +476,7 @@ page 30042 "APIV2 - Purchase Invoices"
                 field(discountAppliedBeforeTax; Rec."Discount Applied Before Tax")
                 {
                     Caption = 'Discount Applied Before Tax';
+                    Editable = false;
                 }
                 field(totalAmountExcludingTax; Rec.Amount)
                 {
@@ -486,6 +496,7 @@ page 30042 "APIV2 - Purchase Invoices"
                 field(totalAmountIncludingTax; Rec."Amount Including VAT")
                 {
                     Caption = 'Total Amount Including Tax';
+                    Editable = false;
 
                     trigger OnValidate()
                     begin

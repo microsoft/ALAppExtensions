@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.ReceivablesPayables;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+
 codeunit 31379 "Gen. Jnl.-Apply Handler CZA"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Apply", 'OnBeforeRun', '', false, false)]

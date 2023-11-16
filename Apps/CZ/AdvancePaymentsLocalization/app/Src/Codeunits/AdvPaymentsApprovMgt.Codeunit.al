@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Finance.Currency;
+using System.Automation;
+using System.Security.User;
+
 codeunit 31383 "Adv. Payments Approv. Mgt. CZZ"
 {
     var

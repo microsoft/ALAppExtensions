@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.GST.Subcontracting;
 
 using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Location;
 using Microsoft.Inventory.Planning;
 using Microsoft.Inventory.Tracking;
@@ -18,6 +19,8 @@ codeunit 18472 "Apply Delivery Challan Mgt."
         ForAppDelChEntry: Record "Applied Delivery Challan Entry";
         CalcReservEntry: Record "Reservation Entry";
         CalcReservEntry3: Record "Reservation Entry";
+        AppDelChallanNo: Code[20];
+        AppDelChallan: Boolean;
 
     procedure SetAppliedDeliveryChallanEntry(NewAppDelChEntry: Record "Applied Delivery Challan Entry")
     var
@@ -87,5 +90,18 @@ codeunit 18472 "Apply Delivery Challan Mgt."
     begin
         if CalcReservEntry2."Source Type" = 0 then
             CalcReservEntry2 := CalcReservEntry3;
+    end;
+
+    procedure SetAppDelChallan(FromAppDelChallanFrom: Boolean; DeliveryChallanNoFrom: Code[20])
+    begin
+        AppDelChallan := FromAppDelChallanFrom;
+        AppDelChallanNo := DeliveryChallanNoFrom;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Tracking Data Collection", 'OnRetrieveLookupDataOnBeforeTransferToTempRec', '', false, false)]
+    local procedure FilterItemLedgEntry(var TempTrackingSpecification: Record "Tracking Specification" temporary; var ItemLedgerEntry: Record "Item Ledger Entry")
+    begin
+        if (TempTrackingSpecification."Source Type" = Database::"Applied Delivery Challan Entry") and AppDelChallan then
+            ItemLedgerEntry.SetRange("External Document No.", AppDelChallanNo);
     end;
 }

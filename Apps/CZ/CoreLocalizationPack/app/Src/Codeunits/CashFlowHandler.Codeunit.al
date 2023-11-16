@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.CashFlow;
+
+using Microsoft.CashFlow.Forecast;
+using Microsoft.CashFlow.Setup;
+using Microsoft.CashFlow.Worksheet;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Finance.VAT.Ledger;
+
 codeunit 31045 "Cash Flow Handler CZL"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cash Flow Management", 'OnAfterSetViewOnVATEntryForTaxCalc', '', false, false)]

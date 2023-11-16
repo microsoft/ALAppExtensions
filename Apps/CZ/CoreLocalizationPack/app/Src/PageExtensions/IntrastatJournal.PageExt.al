@@ -1,4 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 #if not CLEAN22
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.Finance.VAT.Reporting;
+
 #pragma warning disable AL0432
 pageextension 31139 "Intrastat Journal CZL" extends "Intrastat Journal"
 #pragma warning restore AL0432

@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.FixedAssets.Journal;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.ReceivablesPayables;
+using System.Security.User;
+
 codeunit 31317 "FA Jnl. Check Line Handler CZL"
 {
     var

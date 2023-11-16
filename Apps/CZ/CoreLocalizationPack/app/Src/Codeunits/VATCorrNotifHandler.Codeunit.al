@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Calculation;
+
+using Microsoft.CRM.Outlook;
+using Microsoft.Foundation.Enums;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Utilities;
+
 codeunit 31029 "VAT Corr. Notif. Handler CZL"
 {
     [EventSubscriber(ObjectType::Page, Page::"Purchase Invoice", 'OnPostDocumentBeforeNavigateAfterPosting', '', false, false)]

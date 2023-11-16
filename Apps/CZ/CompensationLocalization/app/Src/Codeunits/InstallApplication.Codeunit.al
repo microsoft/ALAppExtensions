@@ -1,3 +1,18 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Compensations;
+
+using Microsoft;
+using Microsoft.EServices.EDocument;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Company;
+using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Receivables;
+using System.Upgrade;
+
 #pragma warning disable AL0432,AL0603
 codeunit 31270 "Install Application CZC"
 {

@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Reporting;
+
+using Microsoft.Foundation.Company;
+using System.Environment;
+
 xmlport 31110 "VAT Control Report DPHKH1 CZL"
 {
     Caption = 'VAT Control Report';

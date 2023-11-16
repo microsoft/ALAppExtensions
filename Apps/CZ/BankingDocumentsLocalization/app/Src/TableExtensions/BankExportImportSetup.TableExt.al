@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Documents;
+
+using Microsoft.Bank.Setup;
+using System.IO;
+using System.Reflection;
+
 tableextension 31284 "Bank Export/Import Setup CZB" extends "Bank Export/Import Setup"
 {
     fields

@@ -184,7 +184,6 @@ page 40021 "Cloud Migration Status API"
     end;
 
     local procedure SetActionResponse(var ActionContext: WebServiceActionContext; PageId: Integer; ActionRunId: Guid; KeyFieldNo: Integer)
-    var
     begin
         ActionContext.SetObjectType(ObjectType::Page);
         ActionContext.SetObjectId(PageId);

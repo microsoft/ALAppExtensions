@@ -36,7 +36,7 @@ codeunit 5138 "Contoso Module Dependency"
             repeat
                 if DemoDataFeatureDependency.DependsOn = Name then
                     exit(true);
-                IsCircularDependency(Name, DemoDataFeatureDependency.DependsOn);
+                exit(IsCircularDependency(Name, DemoDataFeatureDependency.DependsOn));
 
             until DemoDataFeatureDependency.Next() = 0;
         exit(false);

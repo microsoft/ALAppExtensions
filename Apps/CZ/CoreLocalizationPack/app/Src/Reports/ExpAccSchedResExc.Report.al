@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.FinancialReports;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
+using System.IO;
+using System.Utilities;
+
 report 31203 "Exp. Acc. Sched. Res. Exc. CZL"
 {
     Caption = 'Exp. Acc. Sched. Res. to Excel';

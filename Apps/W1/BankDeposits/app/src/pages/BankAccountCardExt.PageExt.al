@@ -13,7 +13,7 @@ pageextension 1702 BankAccountCardExt extends "Bank Account Card"
             action("Bank Deposits")
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Bank Deposits';
+                Caption = 'Posted Bank Deposits';
                 Image = DepositSlip;
                 RunObject = Page "Posted Bank Deposit List";
                 RunPageLink = "Bank Account No." = field("No.");

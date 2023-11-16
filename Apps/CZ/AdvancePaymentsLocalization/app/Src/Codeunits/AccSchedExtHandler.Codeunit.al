@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Finance.FinancialReports;
+using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Receivables;
+
 codeunit 31432 "Acc. Sched. Ext. Handler CZZ"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Acc. Sched. Extension Mgt. CZL", 'OnAfterSetCustLedgEntryFilters', '', false, false)]

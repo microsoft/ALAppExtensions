@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Receivables;
+
 page 31191 "Advance Letter Link CZZ"
 {
     Caption = 'Advance Letter Link';

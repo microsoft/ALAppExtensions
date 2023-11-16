@@ -1,3 +1,24 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.CashDesk;
+
+using Microsoft.CRM.Contact;
+using Microsoft.CRM.Team;
+using Microsoft.Finance;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.Dimension;
+using Microsoft.Foundation.Attachment;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Navigate;
+using Microsoft.HumanResources.Employee;
+using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using System.Security.AccessControl;
+using System.Utilities;
+
 #pragma warning disable AA0232
 table 11737 "Posted Cash Document Hdr. CZP"
 {

@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.CashDesk;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Setup;
+using System.Utilities;
+
 codeunit 11725 "Cash Document-Release CZP"
 {
     TableNo = "Cash Document Header CZP";

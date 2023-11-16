@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.FinancialReports;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.Period;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Receivables;
+
 codeunit 31326 "Acc. Sched. Extension Mgt. CZL"
 {
     var

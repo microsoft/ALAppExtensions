@@ -1,3 +1,18 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Payables;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Foundation.Company;
+using Microsoft.HumanResources.Employee;
+using Microsoft.Purchases.Vendor;
+using System.Globalization;
+using System.Utilities;
+
 report 11724 "Vendor-Bal. Reconciliation CZL"
 {
     DefaultLayout = RDLC;

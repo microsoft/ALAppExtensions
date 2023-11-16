@@ -35,6 +35,7 @@ codeunit 31300 "Data Class. Eval. Handler CZ"
     procedure ApplyEvaluationClassificationsForPrivacy()
     var
         Company: Record Company;
+        DirectTransHeader: Record "Direct Trans. Header";
         DirectTransLine: Record "Direct Trans. Line";
         FixedAsset: Record "Fixed Asset";
         IntrastatReportLine: Record "Intrastat Report Line";
@@ -79,8 +80,11 @@ codeunit 31300 "Data Class. Eval. Handler CZ"
         ServiceShipmentHeader: Record "Service Shipment Header";
         ServiceShipmentLine: Record "Service Shipment Line";
         ShipmentMethod: Record "Shipment Method";
+        TransferHeader: Record "Transfer Header";
         TransferLine: Record "Transfer Line";
+        TransferReceiptHeader: Record "Transfer Receipt Header";
         TransferReceiptLine: Record "Transfer Receipt Line";
+        TransferShipmentHeader: Record "Transfer Shipment Header";
         TransferShipmentLine: Record "Transfer Shipment Line";
         DataClassificationMgt: Codeunit "Data Classification Mgt.";
     begin
@@ -92,6 +96,7 @@ codeunit 31300 "Data Class. Eval. Handler CZ"
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Intrastat Delivery Group CZ");
         DataClassificationMgt.SetTableFieldsToNormal(Database::"Specific Movement CZ");
 
+        DataClassificationMgt.SetFieldToNormal(Database::"Direct Trans. Header", DirectTransHeader.FieldNo("Intrastat Exclude CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Direct Trans. Line", DirectTransLine.FieldNo("Statistic Indication CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Fixed Asset", FixedAsset.FieldNo("Statistic Indication CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Fixed Asset", FixedAsset.FieldNo("Specific Movement CZ"));
@@ -107,6 +112,7 @@ codeunit 31300 "Data Class. Eval. Handler CZ"
         DataClassificationMgt.SetFieldToNormal(Database::"Intrastat Report Setup", IntrastatReportSetup.FieldNo("Transport Method Mandatory CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Intrastat Report Setup", IntrastatReportSetup.FieldNo("Shipment Method Mandatory CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Intrastat Report Setup", IntrastatReportSetup.FieldNo("Intrastat Rounding Type CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Intrastat Report Setup", IntrastatReportSetup.FieldNo("Def. Phys. Trans. - Returns CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::Item, Item.FieldNo("Statistic Indication CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::Item, Item.FieldNo("Specific Movement CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Item Charge", ItemCharge.FieldNo("Incl. in Intrastat Amount CZ"));
@@ -116,45 +122,64 @@ codeunit 31300 "Data Class. Eval. Handler CZ"
         DataClassificationMgt.SetFieldToNormal(Database::"Item Ledger Entry", ItemLedgerEntry.FieldNo("Physical Transfer CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Job Journal Line", JobJournalLine.FieldNo("Statistic Indication CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Job Ledger Entry", JobLedgerEntry.FieldNo("Statistic Indication CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header", PurchaseHeader.FieldNo("Intrastat Exclude CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header", PurchaseHeader.FieldNo("Physical Transfer CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header Archive", PurchaseHeaderArchive.FieldNo("Intrastat Exclude CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Header Archive", PurchaseHeaderArchive.FieldNo("Physical Transfer CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Line", PurchaseLine.FieldNo("Statistic Indication CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Line", PurchaseLine.FieldNo("Physical Transfer CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purchase Line Archive", PurchaseLineArchive.FieldNo("Physical Transfer CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Purch. Cr. Memo Hdr.", PurchCrMemoHdr.FieldNo("Intrastat Exclude CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Cr. Memo Hdr.", PurchCrMemoHdr.FieldNo("Physical Transfer CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Cr. Memo Line", PurchCrMemoLine.FieldNo("Statistic Indication CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Purch. Inv. Header", PurchInvHeader.FieldNo("Intrastat Exclude CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Inv. Header", PurchInvHeader.FieldNo("Physical Transfer CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Inv. Line", PurchInvLine.FieldNo("Statistic Indication CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Purch. Rcpt. Header", PurchRcptHeader.FieldNo("Intrastat Exclude CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Rcpt. Header", PurchRcptHeader.FieldNo("Physical Transfer CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Purch. Rcpt. Line", PurchRcptLine.FieldNo("Statistic Indication CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Return Receipt Header", ReturnReceiptHeader.FieldNo("Intrastat Exclude CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Return Receipt Header", ReturnReceiptHeader.FieldNo("Physical Transfer CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Return Receipt Line", ReturnReceiptLine.FieldNo("Statistic Indication CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Return Shipment Header", ReturnShipmentHeader.FieldNo("Intrastat Exclude CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Return Shipment Header", ReturnShipmentHeader.FieldNo("Physical Transfer CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Return Shipment Line", ReturnShipmentLine.FieldNo("Statistic Indication CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Sales Cr.Memo Header", SalesCrMemoHeader.FieldNo("Intrastat Exclude CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Cr.Memo Header", SalesCrMemoHeader.FieldNo("Physical Transfer CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Cr.Memo Line", SalesCrMemoLine.FieldNo("Statistic Indication CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Sales Header", SalesHeader.FieldNo("Intrastat Exclude CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Sales Header", SalesHeader.FieldNo("Physical Transfer CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Sales Header Archive", SalesHeaderArchive.FieldNo("Intrastat Exclude CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Sales Header Archive", SalesHeaderArchive.FieldNo("Physical Transfer CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Sales Invoice Header", SalesInvoiceHeader.FieldNo("Intrastat Exclude CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Invoice Header", SalesInvoiceHeader.FieldNo("Physical Transfer CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Invoice Line", SalesInvoiceLine.FieldNo("Statistic Indication CZ"));
-        DataClassificationMgt.SetFieldToNormal(Database::"Sales Header", SalesHeader.FieldNo("Physical Transfer CZ"));
-        DataClassificationMgt.SetFieldToNormal(Database::"Sales Header Archive", SalesHeaderArchive.FieldNo("Physical Transfer CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Line", SalesLine.FieldNo("Statistic Indication CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Line", SalesLine.FieldNo("Physical Transfer CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Line Archive", SalesLineArchive.FieldNo("Physical Transfer CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Sales Shipment Header", SalesShipmentHeader.FieldNo("Intrastat Exclude CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Shipment Header", SalesShipmentHeader.FieldNo("Physical Transfer CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Sales Shipment Line", SalesShipmentLine.FieldNo("Statistic Indication CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Service Cr.Memo Header", ServiceCrMemoHeader.FieldNo("Intrastat Exclude CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Service Cr.Memo Header", ServiceCrMemoHeader.FieldNo("Physical Transfer CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Service Cr.Memo Line", ServiceCrMemoLine.FieldNo("Statistic Indication CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Service Header", ServiceHeader.FieldNo("Intrastat Exclude CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Service Header", ServiceHeader.FieldNo("Physical Transfer CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Service Invoice Header", ServiceInvoiceHeader.FieldNo("Intrastat Exclude CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Service Invoice Header", ServiceInvoiceHeader.FieldNo("Physical Transfer CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Service Invoice Line", ServiceInvoiceLine.FieldNo("Statistic Indication CZ"));
-        DataClassificationMgt.SetFieldToNormal(Database::"Service Header", ServiceHeader.FieldNo("Physical Transfer CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Service Line", ServiceLine.FieldNo("Statistic Indication CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Service Line", ServiceLine.FieldNo("Physical Transfer CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Service Shipment Header", ServiceShipmentHeader.FieldNo("Intrastat Exclude CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Service Shipment Header", ServiceShipmentHeader.FieldNo("Physical Transfer CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Service Shipment Line", ServiceShipmentLine.FieldNo("Statistic Indication CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Shipment Method", ShipmentMethod.FieldNo("Intrastat Deliv. Grp. Code CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Shipment Method", ShipmentMethod.FieldNo("Incl. Item Charges (Amt.) CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Transfer Header", TransferHeader.FieldNo("Intrastat Exclude CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Transfer Line", TransferLine.FieldNo("Statistic Indication CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Transfer Receipt Header", TransferReceiptHeader.FieldNo("Intrastat Exclude CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Transfer Receipt Line", TransferReceiptLine.FieldNo("Statistic Indication CZ"));
+        DataClassificationMgt.SetFieldToNormal(Database::"Transfer Shipment Header", TransferShipmentHeader.FieldNo("Intrastat Exclude CZ"));
         DataClassificationMgt.SetFieldToNormal(Database::"Transfer Shipment Line", TransferShipmentLine.FieldNo("Statistic Indication CZ"));
     end;
 }

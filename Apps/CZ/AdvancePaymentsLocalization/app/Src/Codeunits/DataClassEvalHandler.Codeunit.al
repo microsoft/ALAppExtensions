@@ -1,3 +1,26 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Bank.Documents;
+using Microsoft.CashFlow.Setup;
+using Microsoft.Finance.CashDesk;
+using Microsoft.Finance.FinancialReports;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Receivables;
+using Microsoft.Utilities;
+using System.Environment;
+using System.Privacy;
+
 codeunit 31093 "Data Class. Eval. Handler CZZ"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Class. Eval. Data Country", 'OnAfterClassifyCountrySpecificTables', '', false, false)]

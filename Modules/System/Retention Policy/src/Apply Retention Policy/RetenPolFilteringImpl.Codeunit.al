@@ -77,20 +77,30 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
         TotalRecords: Integer;
         YoungestExpirationDate, OldestRecordDate, CurrDate : Date;
         NumberOfDays, i : Integer;
+        SelectedSystemIds: Dictionary of [Guid, Boolean]; // using a dictionary here, as there is no native hash set type
+        RetentionPolicySetupLineTableFilters: Dictionary of [Guid, Text];
     begin
         RecordRef.Open(RetentionPolicySetup."Table ID");
         RecordReference.Initialize(RecordRef, RecordReferenceIndirectPermission);
 
         RetentionPolicySetupLine.SetRange("Table ID", RetentionPolicySetup."Table Id");
         RetentionPolicySetupLine.SetRange(Enabled, true);
-        if RetentionPolicySetupLine.IsEmpty then
+        if not RetentionPolicySetupLine.FindSet(false) then
             exit(false);
+
+        repeat
+            // prepare table filter views outside the main loop, as unpacking blobs takes a lot of time and memory
+            RetentionPolicySetupLineTableFilters.Add(RetentionPolicySetupLine.SystemId, RetentionPolicySetupLine.GetTableFilterView());
+        until RetentionPolicySetupLine.Next() = 0;
 
         YoungestExpirationDate := GetYoungestExpirationDate(RetentionPolicySetup);
         if YoungestExpirationDate >= Yesterday() then
             YoungestExpirationDate := Yesterday();
         OldestRecordDate := GetOldestRecordDate(RetentionPolicySetup);
-        NumberOfDays := YoungestExpirationDate - OldestRecordDate;
+        if OldestRecordDate = 0D then
+            NumberOfDays := 0
+        else
+            NumberOfDays := YoungestExpirationDate - OldestRecordDate;
 
         if NumberOfDays <= 0 then begin
             RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(OldestRecordYoungerThanExpirationLbl, RetentionPolicySetup."Table Id", RetentionPolicySetup."Table Caption"));
@@ -100,24 +110,24 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
         CurrDate := OldestRecordDate;
         for i := 1 to NumberOfDays do begin
             CurrDate := CalcDate('<+1D>', CurrDate);
-            RecordRef.MarkedOnly(false);
 
             // Pass 1: Mark Records to delete
-            MarkRecordRefWithRecordsToDelete(RetentionPolicySetup, RecordRef, RetenPolFilteringParam, CurrDate);
+            MarkRecordRefWithRecordsToDelete(RetentionPolicySetup, RecordRef, RetenPolFilteringParam, CurrDate, SelectedSystemIds, RetentionPolicySetupLineTableFilters);
             // Pass 2: UnMark Records to keep
-            UnMarkRecordRefWithRecordsToKeep(RetentionPolicySetup, RecordRef, RetenPolFilteringParam, CurrDate);
+            UnMarkRecordRefWithRecordsToKeep(RetentionPolicySetup, RecordRef, RetenPolFilteringParam, CurrDate, SelectedSystemIds, RetentionPolicySetupLineTableFilters);
 
             // if max records exceeded, exit loop
-            RecordRef.MarkedOnly(true);
-            TotalRecords := Count(RecordRef);
+            TotalRecords := SelectedSystemIds.Count();
             if TotalRecords >= ApplyRetentionPolicyImpl.MaxNumberOfRecordsToDelete() then begin
                 RetenPolFilteringParam."Expired Record Expiration Date" := CurrDate;
+                RecordRef.MarkedOnly(true);
                 exit(true);
             end;
         end;
         RetenPolFilteringParam."Expired Record Expiration Date" := CurrDate;
+        RecordRef.MarkedOnly(true);
 
-        if not RecordReferenceIndirectPermission.IsEmpty(RecordRef) then
+        if SelectedSystemIds.Count() > 0 then
             exit(true);
 
         RetentionPolicyLog.LogInfo(LogCategory(), StrSubstNo(NoRecordsToDeleteLbl, RetentionPolicySetup."Table Id", RetentionPolicySetup."Table Caption"));
@@ -149,34 +159,38 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
         CurrDate, OldestDate : Date;
         ViewStringTxt: Label 'sorting (field%1) where(field%1=1(<>''''))', Locked = true;
         PrevDateFieldNo: Integer;
+        IsOldestDateDefined: Boolean;
     begin
         RecordRef.Open(RetentionPolicySetup."Table Id");
         RetentionPolicySetupLine.SetCurrentKey("Date Field No.");
         RetentionPolicySetupLine.SetRange("Table ID", RetentionPolicySetup."Table ID");
         RetentionPolicySetupLine.SetRange(Enabled, true);
+        OldestDate := Today();
         if RetentionPolicySetupLine.FindSet(false) then
             repeat
                 if RetentionPolicySetupLine."Date Field No." <> PrevDateFieldNo then begin
                     RecordRef.SetView(StrSubstNo(ViewStringTxt, RetentionPolicySetupLine."Date Field No."));
-                    RecordReferenceIndirectPermission.FindFirst(RecordRef);
+                    if RecordReferenceIndirectPermission.FindFirst(RecordRef, true) then begin
+                        FieldRef := RecordRef.Field(RetentionPolicySetupLine."Date Field No.");
 
-                    FieldRef := RecordRef.Field(RetentionPolicySetupLine."Date Field No.");
+                        if FieldRef.Type = FieldType::DateTime then
+                            CurrDate := DT2Date(FieldRef.Value())
+                        else
+                            CurrDate := FieldRef.Value();
 
-                    if FieldRef.Type = FieldType::DateTime then
-                        CurrDate := DT2Date(FieldRef.Value())
-                    else
-                        CurrDate := FieldRef.Value();
-
-#pragma warning disable AA0205
-                    if OldestDate = 0D then
-#pragma warning restore AA0205
-                        OldestDate := CurrDate;
-                    if CurrDate < OldestDate then
-                        OldestDate := CurrDate;
+                        if CurrDate < OldestDate then begin
+                            OldestDate := CurrDate;
+                            IsOldestDateDefined := true;
+                        end;
+                    end;
                 end;
                 PrevDateFieldNo := RetentionPolicySetupLine."Date Field No.";
             until RetentionPolicySetupLine.Next() = 0;
-        exit(OldestDate);
+
+        if IsOldestDateDefined then
+            exit(OldestDate)
+        else
+            exit(0D);
     end;
 
     local procedure CalculateExpirationDate(RetentionPeriod: Record "Retention Period"): Date
@@ -200,17 +214,17 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
             RetentionPolicyLog.LogError(LogCategory(), StrSubstNo(MinExpirationDateErr, TableId, TableCaption, RetenPolAllowedTables.GetMandatoryMinimumRetentionDays(TableId)));
     end;
 
-    local procedure MarkRecordRefWithRecordsToDelete(RetentionPolicySetup: Record "Retention Policy Setup"; var RecordRef: RecordRef; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary; CurrDate: Date)
+    local procedure MarkRecordRefWithRecordsToDelete(RetentionPolicySetup: Record "Retention Policy Setup"; var RecordRef: RecordRef; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary; CurrDate: Date; var SelectedSystemIds: Dictionary of [Guid, Boolean]; RetentionPolicySetupLineTableFilters: Dictionary of [Guid, Text])
     begin
-        SetMarksOnRecordRef(RetentionPolicySetup, RecordRef, true, RetenPolFilteringParam, CurrDate);
+        SetMarksOnRecordRef(RetentionPolicySetup, RecordRef, true, RetenPolFilteringParam, CurrDate, SelectedSystemIds, RetentionPolicySetupLineTableFilters);
     end;
 
-    local procedure UnMarkRecordRefWithRecordsToKeep(RetentionPolicySetup: Record "Retention Policy Setup"; RecordRef: RecordRef; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary; CurrDate: Date)
+    local procedure UnMarkRecordRefWithRecordsToKeep(RetentionPolicySetup: Record "Retention Policy Setup"; RecordRef: RecordRef; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary; CurrDate: Date; var SelectedSystemIds: Dictionary of [Guid, Boolean]; RetentionPolicySetupLineTableFilters: Dictionary of [Guid, Text])
     begin
-        SetMarksOnRecordRef(RetentionPolicySetup, RecordRef, false, RetenPolFilteringParam, CurrDate);
+        SetMarksOnRecordRef(RetentionPolicySetup, RecordRef, false, RetenPolFilteringParam, CurrDate, SelectedSystemIds, RetentionPolicySetupLineTableFilters);
     end;
 
-    local procedure SetMarksOnRecordRef(RetentionPolicySetup: Record "Retention Policy Setup"; RecordRef: RecordRef; MarkValue: Boolean; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary; CurrDate: Date);
+    local procedure SetMarksOnRecordRef(RetentionPolicySetup: Record "Retention Policy Setup"; RecordRef: RecordRef; MarkValue: Boolean; var RetenPolFilteringParam: Record "Reten. Pol. Filtering Param" temporary; CurrDate: Date; var SelectedSystemIds: Dictionary of [Guid, Boolean]; RetentionPolicySetupLineTableFilters: Dictionary of [Guid, Text]);
     var
         RetentionPolicySetupLine: Record "Retention Policy Setup Line";
         RetentionPeriod: Record "Retention Period";
@@ -228,21 +242,21 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
                 ValidateExpirationDate(ExpirationDate, RetentionPolicySetupLine."Table ID", RetentionPolicySetupLine."Table Caption");
 
                 // set filter for Table Filter in filtergroup 10
-                SetRetentionPolicyLineTableFilter(RetentionPolicySetupLine, RecordRef, 10);
+                SetRetentionPolicyLineTableFilter(RetentionPolicySetupLineTableFilters.Get(RetentionPolicySetupLine.SystemId), RecordRef, 10);
 
                 if MarkValue then begin
                     if (ExpirationDate < Yesterday()) and (CurrDate <= ExpirationDate) then
                         ExpirationDate := CurrDate;
                     // set filter for date in filtergroup 11
                     ApplyRetentionPolicy.SetSingleDateExpirationDateFilter(RetentionPolicySetupLine."Date Field No.", ExpirationDate, RecordRef, 11, RetenPolFilteringParam."Null Date Replacement value");
-                    SetMarks(RecordRef, true);
+                    SetMarks(RecordRef, true, SelectedSystemIds);
                 end else
                     if (ExpirationDate <= CurrDate) or (ExpirationDate >= yesterday()) then begin
                         // if ExpirationDate is >= today - 1, don't set filter and remove all records from temp
                         if ExpirationDate < Yesterday() then
                             // set filter for date in filtergroup 11
                             ApplyRetentionPolicy.SetWhereNewerExpirationDateFilter(RetentionPolicySetupLine."Date Field No.", ExpirationDate, RecordRef, 11, RetenPolFilteringParam."Null Date Replacement value");
-                        SetMarks(RecordRef, false);
+                        SetMarks(RecordRef, false, SelectedSystemIds);
                     end;
 
                 ClearFilterGroupOnRecRef(RecordRef, 10);
@@ -250,18 +264,30 @@ codeunit 3915 "Reten. Pol. Filtering Impl." implements "Reten. Pol. Filtering"
             until RetentionPolicySetupLine.Next() = 0;
     end;
 
-    local procedure SetMarks(var RecordRef: RecordRef; MarkValue: Boolean)
+    local procedure SetMarks(var RecordRef: RecordRef; MarkValue: Boolean; var SelectedSystemIds: Dictionary of [Guid, Boolean])
     begin
         if RecordReferenceIndirectPermission.FindSet(RecordRef, true) then
             repeat
                 RecordRef.Mark := MarkValue;
+                SetSelectedSystemId(RecordRef.Field(RecordRef.SystemIdNo).Value, MarkValue, SelectedSystemIds);
             until RecordReferenceIndirectPermission.Next(RecordRef) = 0;
     end;
 
-    local procedure SetRetentionPolicyLineTableFilter(var RetentionPolicySetupLine: Record "Retention Policy Setup Line"; var RecordRef: RecordRef; FilterGroup: Integer);
+    // Keep track of the result set of expired records in a hash set (in addition to marks on the RecordRef) for performance reasons (i. e. to have efficient Count() calls).
+    local procedure SetSelectedSystemId(SelectedSystemId: Guid; IsSelected: Boolean; var SelectedSystemIds: Dictionary of [Guid, Boolean])
+    begin
+        if IsSelected then
+            if not SelectedSystemIds.ContainsKey(SelectedSystemId) then
+                SelectedSystemIds.Add(SelectedSystemId, true)
+            else
+                if SelectedSystemIds.ContainsKey(SelectedSystemId) then
+                    SelectedSystemIds.Remove(SelectedSystemId)
+    end;
+
+    local procedure SetRetentionPolicyLineTableFilter(TableFilterView: Text; var RecordRef: RecordRef; FilterGroup: Integer);
     begin
         RecordRef.FilterGroup := FilterGroup;
-        RecordRef.SetView(RetentionPolicySetupLine.GetTableFilterView());
+        RecordRef.SetView(TableFilterView);
     end;
 
     local procedure ClearFilterGroupOnRecRef(var RecordRef: RecordRef; FilterGroup: Integer)

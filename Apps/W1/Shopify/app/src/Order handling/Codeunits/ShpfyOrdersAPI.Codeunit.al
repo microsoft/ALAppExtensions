@@ -193,13 +193,14 @@ codeunit 30165 "Shpfy Orders API"
         JLineItem: JsonToken;
         JValue: JsonValue;
         Tags: TextBuilder;
+        Closed: Boolean;
     begin
         if JsonHelper.GetJsonArray(JResponse, JOrders, 'data.orders.edges') then begin
             foreach JItem in JOrders do begin
                 Cursor := JsonHelper.GetValueAsText(JItem.AsObject(), 'cursor');
                 if JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
                     Id := JsonHelper.GetValueAsBigInteger(JNode, 'legacyResourceId');
-
+                    Closed := JsonHelper.GetValueAsBoolean(JNode, 'closed');
                     OrdersToImport.SetRange(Id, Id);
                     if not OrdersToImport.FindFirst() then
                         Clear(OrdersToImport);
@@ -238,8 +239,9 @@ codeunit 30165 "Shpfy Orders API"
                     else
                         OrdersToImport."Import Action" := OrdersToImport."Import Action"::Update;
 
-                    if not OrdersToImport.Insert() then
-                        OrdersToImport.Modify();
+                    if (OrdersToImport."Import Action" = OrdersToImport."Import Action"::Update) or ((OrdersToImport."Import Action" = OrdersToImport."Import Action"::New) and not Closed) then
+                        if not OrdersToImport.Insert() then
+                            OrdersToImport.Modify();
                 end;
             end;
             exit(true);

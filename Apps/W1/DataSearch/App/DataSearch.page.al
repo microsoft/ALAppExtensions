@@ -11,6 +11,7 @@ page 2680 "Data Search"
     ApplicationArea = All;
     AboutTitle = 'About Search in company data';
     AboutText = 'Enter one or more search words in the search field. To see which tables are being searched, select Results | Show tables to search.';
+    InherentEntitlements = X;
 
     layout
     {
@@ -21,9 +22,9 @@ page 2680 "Data Search"
                 ShowCaption = false;
                 field(SearchString; DisplaySearchString)
                 {
-                    Caption = 'Text to search for (enter at least 3 characters)';
+                    Caption = 'Search for (min. 3 characters)';
 #pragma warning disable AA0219
-                    ToolTip = 'Specify at least three characters to search for.';
+                    ToolTip = 'Specify at least three characters to search for. You can enter multiple search words, and we will only find data that contains all words.';
 #pragma warning restore AA0219
                     ApplicationArea = All;
                     Style = Subordinate;

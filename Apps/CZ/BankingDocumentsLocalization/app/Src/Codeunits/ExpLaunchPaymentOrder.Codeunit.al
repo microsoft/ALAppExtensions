@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Documents;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Setup;
+using Microsoft.Finance.GeneralLedger.Journal;
+using System.IO;
+using System.Utilities;
+
 codeunit 31366 "Exp. Launch Payment Order CZB"
 {
     TableNo = "Iss. Payment Order Header CZB";

@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Foundation.Attachment;
+
+using Microsoft.Finance.VAT.Reporting;
+
 codeunit 31015 "Doc. Attachment Handler CZL"
 {
     [EventSubscriber(ObjectType::Page, Page::"Document Attachment Details", 'OnAfterOpenForRecRef', '', false, false)]

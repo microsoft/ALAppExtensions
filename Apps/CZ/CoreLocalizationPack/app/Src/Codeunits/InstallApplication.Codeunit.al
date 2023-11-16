@@ -1,3 +1,65 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Setup;
+using Microsoft.CRM.Contact;
+using Microsoft.Finance;
+using Microsoft.Finance.FinancialReports;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Reports;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.Registration;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.Reporting;
+using Microsoft.Foundation.Shipping;
+using Microsoft.Foundation.UOM;
+using Microsoft.Inventory.Counting.Document;
+using Microsoft.Inventory.History;
+using Microsoft.Inventory.Intrastat;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Location;
+using Microsoft.Inventory.Setup;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Projects.Project.Journal;
+using Microsoft.Projects.Project.Ledger;
+using Microsoft.Projects.Resources.Resource;
+using Microsoft.Purchases.Archive;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Setup;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Archive;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.FinanceCharge;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
+using Microsoft.Sales.Reminder;
+using Microsoft.Sales.Setup;
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
+using Microsoft.Service.Reports;
+using Microsoft.Service.Setup;
+using Microsoft.Utilities;
+using System.IO;
+using System.Security.Encryption;
+using System.Security.User;
+using System.Upgrade;
+
 #pragma warning disable AL0432,AL0603
 codeunit 11748 "Install Application CZL"
 {
@@ -1115,7 +1177,10 @@ codeunit 11748 "Install Application CZL"
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Physical Transfer"), PurchaseHeader.FieldNo("Physical Transfer CZL"));
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Intrastat Exclude"), PurchaseHeader.FieldNo("Intrastat Exclude CZL"));
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("EU 3-Party Intermediate Role"), PurchaseHeader.FieldNo("EU 3-Party Intermed. Role CZL"));
+#if not CLEAN23
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("EU 3-Party Trade"), PurchaseHeader.FieldNo("EU 3-Party Trade CZL"));
+#endif
+        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("EU 3-Party Trade"), PurchaseHeader.FieldNo("EU 3 Party Trade"));
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Original Document VAT Date"), PurchaseHeader.FieldNo("Original Doc. VAT Date CZL"));
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("VAT Currency Factor"), PurchaseHeader.FieldNo("VAT Currency Factor CZL"));
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Currency Code"), PurchaseHeader.FieldNo("VAT Currency Code CZL"));
@@ -1160,7 +1225,10 @@ codeunit 11748 "Install Application CZL"
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Physical Transfer"), PurchInvHeader.FieldNo("Physical Transfer CZL"));
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Intrastat Exclude"), PurchInvHeader.FieldNo("Intrastat Exclude CZL"));
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("EU 3-Party Intermediate Role"), PurchInvHeader.FieldNo("EU 3-Party Intermed. Role CZL"));
+#if not CLEAN23
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("EU 3-Party Trade"), PurchInvHeader.FieldNo("EU 3-Party Trade CZL"));
+#endif
+        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("EU 3-Party Trade"), PurchInvHeader.FieldNo("EU 3 Party Trade"));
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Original Document VAT Date"), PurchInvHeader.FieldNo("Original Doc. VAT Date CZL"));
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("VAT Currency Factor"), PurchInvHeader.FieldNo("VAT Currency Factor CZL"));
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Currency Code"), PurchInvHeader.FieldNo("VAT Currency Code CZL"));
@@ -1190,7 +1258,10 @@ codeunit 11748 "Install Application CZL"
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Physical Transfer"), PurchCrMemoHdr.FieldNo("Physical Transfer CZL"));
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Intrastat Exclude"), PurchCrMemoHdr.FieldNo("Intrastat Exclude CZL"));
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("EU 3-Party Intermediate Role"), PurchCrMemoHdr.FieldNo("EU 3-Party Intermed. Role CZL"));
+#if not CLEAN23
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("EU 3-Party Trade"), PurchCrMemoHdr.FieldNo("EU 3-Party Trade CZL"));
+#endif
+        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("EU 3-Party Trade"), PurchCrMemoHdr.FieldNo("EU 3 Party Trade"));
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Original Document VAT Date"), PurchCrMemoHdr.FieldNo("Original Doc. VAT Date CZL"));
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("VAT Currency Factor"), PurchCrMemoHdr.FieldNo("VAT Currency Factor CZL"));
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Currency Code"), PurchCrMemoHdr.FieldNo("VAT Currency Code CZL"));
@@ -1660,7 +1731,19 @@ codeunit 11748 "Install Application CZL"
                 VATStatementLine."Gen. Prod. Posting Group CZL" := VATStatementLine."Gen. Prod. Posting Group";
                 VATStatementLine."Show CZL" := VATStatementLine.Show;
                 VATStatementLine."EU 3-Party Intermed. Role CZL" := VATStatementLine."EU 3-Party Intermediate Role";
+#if not CLEAN23
+#pragma warning disable AL0432
                 VATStatementLine."EU-3 Party Trade CZL" := VATStatementLine."EU-3 Party Trade";
+#pragma warning restore AL0432
+#endif
+                case VATStatementLine."EU-3 Party Trade" of
+                    VATStatementLine."EU-3 Party Trade"::" ":
+                        VATStatementLine."EU 3 Party Trade" := VATStatementLine."EU 3 Party Trade"::All;
+                    VATStatementLine."EU-3 Party Trade"::Yes:
+                        VATStatementLine."EU 3 Party Trade" := VATStatementLine."EU 3 Party Trade"::EU3;
+                    VATStatementLine."EU-3 Party Trade"::No:
+                        VATStatementLine."EU 3 Party Trade" := VATStatementLine."EU 3 Party Trade"::"non-EU3";
+                end;
                 VATStatementLine."VAT Ctrl. Report Section CZL" := VATStatementLine."VAT Control Rep. Section Code";
                 VATStatementLine."Ignore Simpl. Doc. Limit CZL" := VATStatementLine."Ignore Simpl. Tax Doc. Limit";
                 ConvertVATStatementLineDeprEnumValues(VATStatementLine);

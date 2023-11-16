@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.FinancialReports;
+
+using System.Text;
+
 page 31202 "Save Acc. Schedule Result CZL"
 {
     Caption = 'Save Acc. Schedule Result';

@@ -251,7 +251,6 @@ codeunit 30176 "Shpfy Product API"
                 exit(CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JResponse, 'id')));
     end;
 
-#if not CLEAN23
     local procedure UpdateProductImage(Product: Record "Shpfy Product"; ResourceUrl: Text): BigInteger
     var
         Parameters: Dictionary of [Text, Text];
@@ -262,7 +261,6 @@ codeunit 30176 "Shpfy Product API"
         CommunicationMgt.ExecuteGraphQL("Shpfy GraphQL Type"::UpdateProductImage, Parameters);
         exit(Product."Image Id");
     end;
-#endif
 
     internal procedure UpdateProductImage(Parameters: Dictionary of [Text, Text])
     begin
@@ -275,12 +273,10 @@ codeunit 30176 "Shpfy Product API"
     /// <param name="Product">Parameter of type Record "Shopify Product".</param>
     /// <param name="Item">Parameter of type Record Item.</param>
     /// <returns>Return value of type BigInteger.</returns>
-    internal procedure UpdateShopifyProductImage(Product: Record "Shpfy Product"; Item: Record Item; var BulkOperationInput: TextBuilder; var ParametersList: List of [Dictionary of [Text, Text]]): BigInteger
+    internal procedure UpdateShopifyProductImage(Product: Record "Shpfy Product"; Item: Record Item; var BulkOperationInput: TextBuilder; var ParametersList: List of [Dictionary of [Text, Text]]; RecordCount: Integer): BigInteger
     var
         TenantMedia: Record "Tenant Media";
-#if not CLEAN23
         BulkOperationMgt: Codeunit "Shpfy Bulk Operation Mgt.";
-#endif
         BulkOperationType: Enum "Shpfy Bulk Operation Type";
         IBulkOperation: Interface "Shpfy IBulk Operation";
         Parameters: Dictionary of [Text, Text];
@@ -289,9 +285,12 @@ codeunit 30176 "Shpfy Product API"
     begin
         if Item.Picture.Count > 0 then
             if CreateImageUploadUrl(Item, Url, ResourceUrl, TenantMedia) then
-#if not CLEAN23
                 if UploadImage(TenantMedia, Url) then
-                    if not BulkOperationMgt.IsBulkOperationFeatureEnabled() then
+#if not CLEAN23
+                    if not BulkOperationMgt.IsBulkOperationFeatureEnabled() or (RecordCount < BulkOperationMgt.GetBulkOperationThreshold()) then
+#else
+                    if RecordCount <= BulkOperationMgt.GetBulkOperationThreshold() then
+#endif
                         exit(UpdateProductImage(Product, ResourceUrl))
                     else begin
                         IBulkOperation := BulkOperationType::UpdateProductImage;
@@ -302,17 +301,6 @@ codeunit 30176 "Shpfy Product API"
                         BulkOperationInput.AppendLine(StrSubstNo(IBulkOperation.GetInput(), Format(Product."Image Id"), ResourceUrl, Format(Product.Id)));
                         exit(Product."Image Id");
                     end;
-#else
-                if UploadImage(TenantMedia, Url) then begin
-                    IBulkOperation := BulkOperationType::UpdateProductImage;
-                    Parameters.Add('ProductId', Format(Product.Id));
-                    Parameters.Add('ResourceUrl', ResourceUrl);
-                    Parameters.Add('ImageId', Format(Product."Image Id"));
-                    ParametersList.Add(Parameters);
-                    BulkOperationInput.AppendLine(StrSubstNo(IBulkOperation.GetInput(), Format(Product."Image Id"), ResourceUrl, Format(Product.Id)));
-                    exit(Product."Image Id");
-                end;
-#endif
     end;
 
     /// <summary> 

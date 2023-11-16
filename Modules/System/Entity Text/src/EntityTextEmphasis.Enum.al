@@ -17,7 +17,7 @@ enum 2012 "Entity Text Emphasis"
     /// </summary>
     value(0; None)
     {
-        Caption = ' ';
+        Caption = 'No Emphasis';
     }
 
     /// <summary>

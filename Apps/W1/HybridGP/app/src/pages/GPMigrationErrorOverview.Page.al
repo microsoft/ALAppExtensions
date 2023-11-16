@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using System.Integration;
+
 page 40131 "GP Migration Error Overview"
 {
     PageType = List;
@@ -17,17 +21,25 @@ page 40131 "GP Migration Error Overview"
                 field("Company"; Rec."Company Name")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the name of the company in which the error occured.';
 
                 }
                 field("Error Message"; Rec."Error Message")
                 {
                     ApplicationArea = All;
+                    ToolTip = 'Specifies the error message that occurred during the data upgrade.';
                 }
                 field(LastRecordUnderProcessing; Rec."Last Record Under Processing")
                 {
                     Caption = 'Last Processed Record';
                     ApplicationArea = All;
                     ToolTip = 'Specifies the last record that was processed before the error occurred.';
+                    Editable = false;
+
+                    trigger OnDrillDown()
+                    begin
+                        Message(Rec.GetLastRecordsUnderProcessingLog());
+                    end;
                 }
                 field(StackTrace; StackTraceTxt)
                 {
@@ -35,8 +47,13 @@ page 40131 "GP Migration Error Overview"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the stack trace that relates to the error.';
                     trigger OnDrillDown()
+                    var
+                        MessageWithStackTrace: Text;
+                        NewLine: Text;
                     begin
-                        Message(StackTraceTxt);
+                        NewLine[1] := 10;
+                        MessageWithStackTrace := StackTraceTxt + NewLine + Rec.GetExceptionCallStack();
+                        Message(MessageWithStackTrace);
                     end;
                 }
                 field(ErrorDismissed; Rec."Error Dismissed")
@@ -59,11 +76,27 @@ page 40131 "GP Migration Error Overview"
                 PromotedOnly = true;
                 PromotedCategory = Process;
                 Image = Open;
+                Visible = false;
                 ToolTip = 'Open the company in which the error occurred.';
 
                 trigger OnAction()
                 begin
                     Hyperlink(GetUrl(ClientType::Web, Rec."Company Name", ObjectType::Page, Page::"Data Migration Overview"));
+                end;
+            }
+            action(ShowProcessedRecordsLog)
+            {
+                ApplicationArea = All;
+                Caption = 'Show log of processed records';
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Process;
+                Image = ShowList;
+                ToolTip = 'Shows the log of last processed records before error occured.';
+
+                trigger OnAction()
+                begin
+                    Message(Rec.GetLastRecordsUnderProcessingLog());
                 end;
             }
             action(DismissError)
@@ -82,8 +115,28 @@ page 40131 "GP Migration Error Overview"
                     Rec.Modify();
                 end;
             }
-        }
+            action(ShowHideAllErrors)
+            {
+                ApplicationArea = All;
+                Caption = 'Show/Hide All Errors';
+                Promoted = true;
+                PromotedOnly = true;
+                PromotedCategory = Process;
+                Image = ShowList;
+                ToolTip = 'Shows or hides dismissed errors.';
 
+                trigger OnAction()
+                var
+                    ErrorDismissedTxt: Text;
+                begin
+                    ErrorDismissedTxt := Rec.GetFilter("Error Dismissed");
+                    if ErrorDismissedTxt = '' then
+                        Rec.SetRange("Error Dismissed", true)
+                    else
+                        Rec.SetRange("Error Dismissed");
+                end;
+            }
+        }
     }
 
     trigger OnAfterGetRecord()
@@ -94,6 +147,11 @@ page 40131 "GP Migration Error Overview"
     trigger OnAfterGetCurrRecord()
     begin
         StackTraceTxt := Rec.GetFullExceptionMessage();
+    end;
+
+    trigger OnOpenPage()
+    begin
+        rec.SetRange("Error Dismissed", false);
     end;
 
     var

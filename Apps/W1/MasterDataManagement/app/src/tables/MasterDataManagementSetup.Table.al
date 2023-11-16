@@ -128,7 +128,7 @@ table 7230 "Master Data Management Setup"
         Companies: Page Companies;
         Result: Boolean;
     begin
-        Company.SetFilter(Name, '<>' + CompanyName());
+        Company.SetFilter(Name, '<>%1', CompanyName());
         Companies.SetTableView(Company);
         Companies.SetRecord(Company);
         Companies.LookupMode := true;

@@ -1,3 +1,20 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace System.Upgrade;
+
+using Microsoft;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Item.Catalog;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Setup;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Manufacturing.Setup;
+using System.Environment.Configuration;
+
 codeunit 31251 "Upgrade Application CZA"
 {
     Subtype = Upgrade;

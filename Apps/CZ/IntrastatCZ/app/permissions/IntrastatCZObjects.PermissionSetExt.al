@@ -22,7 +22,6 @@ permissionsetextension 31300 "Intrastat CZ - Objects" extends "Intrastat Core - 
         codeunit "Sync.Dep.Fld-ShipmentMethod CZ" = X,
         codeunit "Sync.Dep.Fld-SpecMovement CZ" = X,
         codeunit "Sync.Dep.Fld-StatIndication CZ" = X,
-        codeunit "Sync.Dep.Fld-StatRepSetup CZ" = X,
         codeunit "Sync.Dep.Fld-TariffNumber CZ" = X,
         codeunit "Sync.Dep.Fld-Transfer Line CZ" = X,
         codeunit "Sync.Dep.Fld-Vendor CZ" = X,

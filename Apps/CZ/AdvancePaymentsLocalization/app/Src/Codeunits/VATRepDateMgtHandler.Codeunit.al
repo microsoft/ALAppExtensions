@@ -1,8 +1,20 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.VAT;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Finance.VAT.Ledger;
+
 codeunit 31127 "VAT Rep. Date Mgt. Handler CZZ"
 {
     Access = Internal;
     Permissions = tabledata "Purch. Adv. Letter Entry CZZ" = m,
                   tabledata "Sales Adv. Letter Entry CZZ" = m,
+                  tabledata "G/L Entry" = m,
                   tabledata "VAT Entry" = m;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"VAT Reporting Date Mgt", 'OnBeforeUpdateLinkedEntries', '', false, false)]
@@ -51,6 +63,7 @@ codeunit 31127 "VAT Rep. Date Mgt. Handler CZZ"
         end;
 
         UpdateRelatedVATEntries(VATEntry);
+        UpdateRelatedGLEntries(VATEntry);
     end;
 
     local procedure FilterRelatedVATEntries(VATEntry: Record "VAT Entry"; var RelatedVATEntry: Record "VAT Entry")
@@ -62,6 +75,14 @@ codeunit 31127 "VAT Rep. Date Mgt. Handler CZZ"
         RelatedVATEntry.SetRange("Posting Date", VATEntry."Posting Date");
     end;
 
+    local procedure FilterRelatedGLEntries(VATEntry: Record "VAT Entry"; var RelatedGLEntry: Record "G/L Entry")
+    begin
+        RelatedGLEntry.SetFilter("Transaction No.", '<>%1', VATEntry."Transaction No.");
+        RelatedGLEntry.SetFilter("VAT Reporting Date", '<>%1', VATEntry."VAT Reporting Date");
+        RelatedGLEntry.SetRange("Document No.", VATEntry."Document No.");
+        RelatedGLEntry.SetRange("Posting Date", VATEntry."Posting Date");
+    end;
+
     local procedure UpdateRelatedVATEntries(VATEntry: Record "VAT Entry")
     var
         RelatedVATEntry: Record "VAT Entry";
@@ -69,5 +90,14 @@ codeunit 31127 "VAT Rep. Date Mgt. Handler CZZ"
         RelatedVATEntry.LoadFields("Entry No.", Type, "Document No.", "Posting Date", "VAT Reporting Date");
         FilterRelatedVATEntries(VATEntry, RelatedVATEntry);
         RelatedVATEntry.ModifyAll("VAT Reporting Date", VATEntry."VAT Reporting Date")
+    end;
+
+    local procedure UpdateRelatedGLEntries(VATEntry: Record "VAT Entry")
+    var
+        RelatedGLEntry: Record "G/L Entry";
+    begin
+        RelatedGLEntry.LoadFields("Entry No.", "Document No.", "Posting Date", "Transaction No.", "VAT Reporting Date");
+        FilterRelatedGLEntries(VATEntry, RelatedGLEntry);
+        RelatedGLEntry.ModifyAll("VAT Reporting Date", VATEntry."VAT Reporting Date")
     end;
 }

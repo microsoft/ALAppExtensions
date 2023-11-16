@@ -30,7 +30,7 @@ codeunit 30188 "Shpfy Update Item"
     begin
         if ShopifyProduct.Get(Rec."Product Id") then begin
             SetShop(ShopifyProduct."Shop Code");
-            if Item.GetBySystemId(ShopifyProduct."Item SystemId") then begin
+            if Item.GetBySystemId(Rec."Item SystemId") then begin
                 ProductEvents.OnBeforeUpdateItem(Shop, ShopifyProduct, Rec, Item, IsHandled);
 
                 if not IsHandled then
@@ -42,6 +42,7 @@ codeunit 30188 "Shpfy Update Item"
                     ProductEvents.OnBeforeUpdateItemVariant(Shop, ShopifyProduct, Rec, Item, ItemVariant, IsHandled);
                     if not IsHandled then begin
                         CreateItem.CreateReferences(ShopifyProduct, Rec, Item, ItemVariant);
+
                         if DoUpdateItemVariant(Rec, ItemVariant) then
                             ProductEvents.OnAfterUpdateItemVariant(Shop, ShopifyProduct, Rec, Item, ItemVariant);
                     end;

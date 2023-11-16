@@ -1,3 +1,19 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace System.Security.User;
+
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.FixedAssets.Insurance;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Journal;
+using Microsoft.Projects.Project.Journal;
+using Microsoft.Projects.Resources.Journal;
+
 codeunit 31072 "User Setup Adv. Management CZL"
 {
     Permissions = tabledata "User Setup" = m;

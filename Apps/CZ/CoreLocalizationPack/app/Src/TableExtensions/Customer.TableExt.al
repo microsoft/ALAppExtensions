@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Customer;
+
+using Microsoft.CRM.BusinessRelation;
+using Microsoft.Finance.Registration;
+using Microsoft.Inventory.Intrastat;
+using Microsoft.Sales.Receivables;
+
 tableextension 11701 "Customer CZL" extends Customer
 {
     fields

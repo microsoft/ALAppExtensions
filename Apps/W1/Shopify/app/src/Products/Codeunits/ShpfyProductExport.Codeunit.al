@@ -38,6 +38,7 @@ codeunit 30178 "Shpfy Product Export"
     begin
         ShopifyProduct.SetFilter("Item SystemId", '<>%1', NullGuid);
         ShopifyProduct.SetFilter("Shop Code", Rec.GetFilter(Code));
+        RecordCount := ShopifyProduct.Count();
         if ShopifyProduct.FindSet(false) then
             repeat
                 SetShop(ShopifyProduct."Shop Code");
@@ -59,6 +60,7 @@ codeunit 30178 "Shpfy Product Export"
         ProductPriceCalc: Codeunit "Shpfy Product Price Calc.";
         VariantApi: Codeunit "Shpfy Variant API";
         OnlyUpdatePrice: Boolean;
+        RecordCount: Integer;
         NullGuid: Guid;
         BulkOperationInput: TextBuilder;
         GraphQueryList: List of [TextBuilder];
@@ -694,7 +696,7 @@ codeunit 30178 "Shpfy Product Export"
         TempShopifyVariant := ShopifyVariant;
         FillInProductVariantData(ShopifyVariant, Item, ItemUnitofMeasure);
         if OnlyUpdatePrice then
-            VariantApi.UpdateProductPrice(ShopifyVariant, TempShopifyVariant, BulkOperationInput, GraphQueryList)
+            VariantApi.UpdateProductPrice(ShopifyVariant, TempShopifyVariant, BulkOperationInput, GraphQueryList, RecordCount)
         else
             VariantApi.UpdateProductVariant(ShopifyVariant, TempShopifyVariant);
     end;
@@ -713,7 +715,7 @@ codeunit 30178 "Shpfy Product Export"
         TempShopifyVariant := ShopifyVariant;
         FillInProductVariantData(ShopifyVariant, Item, ItemVariant);
         if OnlyUpdatePrice then
-            VariantApi.UpdateProductPrice(ShopifyVariant, TempShopifyVariant, BulkOperationInput, GraphQueryList)
+            VariantApi.UpdateProductPrice(ShopifyVariant, TempShopifyVariant, BulkOperationInput, GraphQueryList, RecordCount)
         else
             VariantApi.UpdateProductVariant(ShopifyVariant, TempShopifyVariant);
     end;
@@ -733,7 +735,7 @@ codeunit 30178 "Shpfy Product Export"
         TempShopifyVariant := ShopifyVariant;
         FillInProductVariantData(ShopifyVariant, Item, ItemVariant, ItemUnitofMeasure);
         if OnlyUpdatePrice then
-            VariantApi.UpdateProductPrice(ShopifyVariant, TempShopifyVariant, BulkOperationInput, GraphQueryList)
+            VariantApi.UpdateProductPrice(ShopifyVariant, TempShopifyVariant, BulkOperationInput, GraphQueryList, RecordCount)
         else
             VariantApi.UpdateProductVariant(ShopifyVariant, TempShopifyVariant);
     end;

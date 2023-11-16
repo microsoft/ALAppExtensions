@@ -340,7 +340,7 @@ codeunit 139603 "Shpfy Product Init Test"
             ShopifyProduct.Vendor := Vendor.Name;
     end;
 
-    local procedure GetShopifyVariantId(): BigInteger
+    internal procedure GetShopifyVariantId(): BigInteger
     var
         ShopifyVariant: Record "Shpfy Variant";
     begin

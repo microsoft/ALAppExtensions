@@ -1333,7 +1333,7 @@ codeunit 18001 "GST Base Validation"
         if not GSTSetup.Get() then
             exit;
 
-        TaxComponent.SetRange("Tax Type", GSTSetup."GST Tax Type");
+        TaxComponent.SetFilter("Tax Type", '%1|%2', GSTSetup."GST Tax Type", GSTSetup."Cess Tax Type");
         TaxComponent.SetRange(Name, ComponenetCode);
         if TaxComponent.FindFirst() then begin
             GSTRoundingDirection := GetRoundingPrecisionofTaxComponent(TaxComponent);

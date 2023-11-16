@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Dimension;
+
+using System.Diagnostics;
+using System.Environment;
+using System.Environment.Configuration;
+using System.Reflection;
+
 codeunit 31395 "Dimension Auto.Update Mgt. CZA"
 {
     Permissions = TableData "Dimension Value" = rim,

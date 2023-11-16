@@ -2,7 +2,7 @@
   "id": "ae153cbb-ad55-447c-9226-5af3ef57280f",
   "name": "Rest Client Tests",
   "publisher": "Microsoft",
-  "version": "23.0.0.0",
+  "version": "23.1.0.0",
   "brief": "Tests for the Rest Client module",
   "description": "Tests for the Rest Client module",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -14,19 +14,19 @@
         "id": "812b339d-a9db-4a6e-84e4-fe35cbef0c44",
         "name": "Rest Client",
         "publisher": "Microsoft",
-        "version": "23.0.0.0"
+        "version": "23.1.0.0"
       },
       {
           "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
           "name":  "Library Assert",
           "publisher":  "Microsoft",
-          "version":  "23.0.0.0"
+          "version":  "23.1.0.0"
       },
       {
         "id":  "e31ad830-3d46-472e-afeb-1d3d35247943",
         "name":  "BLOB Storage",
         "publisher":  "Microsoft",
-        "version":  "23.0.0.0"
+        "version":  "23.1.0.0"
       }
   ],
   "screenshots": [],

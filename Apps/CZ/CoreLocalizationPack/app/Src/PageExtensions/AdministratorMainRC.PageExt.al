@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.RoleCenters;
+
+using Microsoft.Finance;
+
 pageextension 31161 "Administrator Main RC CZL" extends "Administrator Main Role Center"
 {
     actions

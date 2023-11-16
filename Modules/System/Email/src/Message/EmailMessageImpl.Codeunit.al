@@ -7,6 +7,7 @@ namespace System.Email;
 
 using System;
 using System.Text;
+using System.Telemetry;
 using System.Utilities;
 using System.Environment;
 
@@ -440,15 +441,57 @@ codeunit 8905 "Email Message Impl."
     end;
 
     procedure Attachments_DeleteContent(): Boolean
+    begin
+        exit(Attachments_DeleteContent(false));
+    end;
+
+    procedure Attachments_DeleteContent(BypassSentCheck: Boolean): Boolean
     var
+        EmailAttachmentsImpl: Codeunit "Email Attachments Impl";
         MediaId: Guid;
+        CustomDimensions: Dictionary of [Text, Text];
     begin
         MediaId := GlobalEmailMessageAttachment.Data.MediaId();
         TenantMedia.Get(MediaID);
         Clear(TenantMedia.Content);
         TenantMedia.Modify();
+
+        if BypassSentCheck then
+            BindSubscription(EmailAttachmentsImpl);
         Modify();
+        GlobalEmailMessageAttachment.Length := 0;
+        GlobalEmailMessageAttachment.Modify();
+        if BypassSentCheck then begin
+            CustomDimensions.Add('category', EmailCategoryLbl);
+            CustomDimensions.Add('MessageId', Format(GlobalEmailMessageAttachment."Email Message Id"));
+            Telemetry.LogMessage('0000LD1', TelemetryEmailMessageAttachmentContentDeletedMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, CustomDimensions);
+            UnbindSubscription(EmailAttachmentsImpl);
+        end;
+
         exit(not TenantMedia.Content.HasValue());
+    end;
+
+    procedure Attachments_Delete() Result: Boolean
+    begin
+        exit(Attachments_Delete(false));
+    end;
+
+    procedure Attachments_Delete(BypassSentCheck: Boolean) Result: Boolean
+    var
+        EmailMessageAttachment: Record "Email Message Attachment";
+        EmailAttachmentsImpl: Codeunit "Email Attachments Impl";
+        CustomDimensions: Dictionary of [Text, Text];
+    begin
+        if BypassSentCheck then
+            BindSubscription(EmailAttachmentsImpl);
+        EmailMessageAttachment.Get(GlobalEmailMessageAttachment.Id);
+        Result := EmailMessageAttachment.Delete();
+        if BypassSentCheck then begin
+            CustomDimensions.Add('category', EmailCategoryLbl);
+            CustomDimensions.Add('MessageId', Format(EmailMessageAttachment."Email Message Id"));
+            Telemetry.LogMessage('0000LD2', TelemetryEmailMessageAttachmentDeletedMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, CustomDimensions);
+            UnbindSubscription(EmailAttachmentsImpl);
+        end;
     end;
 
     procedure Attachments_First(): Boolean
@@ -609,6 +652,11 @@ codeunit 8905 "Email Message Impl."
         exit(StrSubstNo(FileSizeTxt, Round(FileSizeConverted, 1, '>'), FileSizeUnit));
     end;
 
+    [InternalEvent(false)]
+    local procedure OnBeforeDeleteSentEmailAttachment(var BypassSentCheck: Boolean)
+    begin
+    end;
+
     [EventSubscriber(ObjectType::Table, Database::"Sent Email", OnAfterDeleteEvent, '', false, false)]
     local procedure OnAfterDeleteSentEmail(var Rec: Record "Sent Email"; RunTrigger: Boolean)
     var
@@ -682,6 +730,7 @@ codeunit 8905 "Email Message Impl."
     var
         EmailOutbox: Record "Email Outbox";
         EmailMessageOld: Record "Email Message";
+        BypassSentCheck: Boolean;
     begin
         if Rec.IsTemporary() then
             exit;
@@ -692,7 +741,9 @@ codeunit 8905 "Email Message Impl."
         if not EmailOutbox.IsEmpty() then
             Error(EmailMessageQueuedCannotModifyErr);
 
-        if EmailMessageOld.Get(Rec.Id) and (not EmailMessageOld.Editable) then
+        OnBeforeDeleteSentEmailAttachment(BypassSentCheck);
+
+        if EmailMessageOld.Get(Rec.Id) and (not EmailMessageOld.Editable) and (not BypassSentCheck) then
             Error(EmailMessageSentCannotModifyErr);
 
         Rec."No. of Modifies" += 1;
@@ -703,6 +754,7 @@ codeunit 8905 "Email Message Impl."
     var
         EmailOutbox: Record "Email Outbox";
         SentEmail: Record "Sent Email";
+        BypassSentCheck: Boolean;
     begin
         if Rec.IsTemporary() then
             exit;
@@ -712,9 +764,12 @@ codeunit 8905 "Email Message Impl."
         if not EmailOutbox.IsEmpty() then
             Error(EmailMessageQueuedCannotDeleteAttachmentErr);
 
+        OnBeforeDeleteSentEmailAttachment(BypassSentCheck);
+
         SentEmail.SetRange("Message Id", Rec."Email Message Id");
-        if not SentEmail.IsEmpty() then
-            Error(EmailMessageSentCannotDeleteAttachmentErr);
+        if not BypassSentCheck then
+            if not SentEmail.IsEmpty() then
+                Error(EmailMessageSentCannotDeleteAttachmentErr);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Email Recipient", OnBeforeDeleteEvent, '', false, false)]
@@ -791,6 +846,7 @@ codeunit 8905 "Email Message Impl."
         GlobalEmailMessage: Record "Email Message";
         GlobalEmailMessageAttachment: Record "Email Message Attachment";
         TenantMedia: Record "Tenant Media";
+        Telemetry: Codeunit Telemetry;
         EmailCategoryLbl: Label 'Email', Locked = true;
         EmailMessageQueuedCannotModifyErr: Label 'Cannot edit the email because it has been queued to be sent.';
         EmailMessageSentCannotModifyErr: Label 'Cannot edit the message because it has already been sent.';
@@ -803,6 +859,8 @@ codeunit 8905 "Email Message Impl."
         EmailMessageQueuedCannotInsertRecipientErr: Label 'Cannot add a recipient because the email is queued to be sent.';
         EmailMessageSentCannotInsertRecipientErr: Label 'Cannot add the recipient because the email has already been sent.';
         EmailMessageGetAttachmentContentErr: Label 'The attachment content was not found.';
+        TelemetryEmailMessageAttachmentDeletedMsg: Label 'Email message attachment has been deleted.', Locked = true;
+        TelemetryEmailMessageAttachmentContentDeletedMsg: Label 'Email message attachment content has been deleted.', Locked = true;
         NoAccountErr: Label 'You must specify a valid email account to send the message to.';
         RecordNotFoundMsg: Label 'Record not found in table: %1', Comment = '%1 - File size', Locked = true;
         RgbReplacementTok: Label 'rgb($1, $2, $3)', Locked = true;

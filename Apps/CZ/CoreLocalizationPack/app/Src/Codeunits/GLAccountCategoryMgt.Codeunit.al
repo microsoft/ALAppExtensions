@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GeneralLedger.Account;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+
 codeunit 31036 "G/L Account Category Mgt. CZL"
 {
     var

@@ -211,7 +211,7 @@ codeunit 5291 "Mapping Helper SAF-T"
             repeat
                 Dimension.UpdateSAFTAnalysisTypeFromNoSeries();
                 Dimension.Validate("SAF-T Export", true);
-                Dimension.Modify(true);
+                Dimension.Modify();
             until Dimension.Next() = 0;
 
         VATPostingSetup.SetRange("Purchase Tax Code SAF-T", '');

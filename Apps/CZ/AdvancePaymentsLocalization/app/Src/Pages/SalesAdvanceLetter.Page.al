@@ -1,3 +1,20 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.EServices.EDocument;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.Dimension;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Attachment;
+using Microsoft.Inventory.Location;
+using Microsoft.Sales.Customer;
+using Microsoft.Utilities;
+using System.Automation;
+using System.Security.User;
+
 #pragma warning disable AL0204, AL0604
 page 31171 "Sales Advance Letter CZZ"
 {

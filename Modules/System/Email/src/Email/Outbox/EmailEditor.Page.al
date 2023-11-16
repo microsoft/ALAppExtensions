@@ -350,7 +350,7 @@ page 13 "Email Editor"
             FromDisplayName := StrSubstNo(FromDisplayNameLbl, EmailAccount.Name, EmailAccount."Email Address");
     end;
 
-    local procedure ShowCloseOptionsMenu(): Boolean
+    protected procedure ShowCloseOptionsMenu(): Boolean
     var
         CloseOptions: Text;
         SelectedCloseOption: Integer;

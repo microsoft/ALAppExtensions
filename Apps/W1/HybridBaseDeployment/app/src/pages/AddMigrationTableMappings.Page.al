@@ -2,7 +2,6 @@ namespace Microsoft.DataMigration;
 
 using System.Reflection;
 using System.Apps;
-using System.Environment.Configuration;
 
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved. 

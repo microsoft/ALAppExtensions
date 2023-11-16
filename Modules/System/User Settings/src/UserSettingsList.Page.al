@@ -86,6 +86,8 @@ page 9206 "User Settings List"
     var
         UserSettingsImpl: Codeunit "User Settings Impl.";
     begin
+        UserSettingsImpl.HideUsersDependingOnPermissions(Rec);
         UserSettingsImpl.HideExternalUsers(Rec);
     end;
+
 }

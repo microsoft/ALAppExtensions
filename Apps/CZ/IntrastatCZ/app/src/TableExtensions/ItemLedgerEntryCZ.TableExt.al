@@ -6,6 +6,8 @@ namespace Microsoft.Inventory.Intrastat;
 
 using Microsoft.Inventory.Ledger;
 using Microsoft.Sales.Document;
+using Microsoft.Sales.Customer;
+using Microsoft.Purchases.Vendor;
 
 tableextension 31303 "Item Ledger Entry CZ" extends "Item Ledger Entry"
 {
@@ -75,5 +77,12 @@ tableextension 31303 "Item Ledger Entry CZ" extends "Item Ledger Entry"
         then
             exit(-1);
         exit(1);
+    end;
+
+    internal procedure IsCreditDocType(): Boolean
+    begin
+        exit("Document Type" in ["Document Type"::"Purchase Credit Memo", "Document Type"::"Purchase Return Shipment",
+                                 "Document Type"::"Sales Credit Memo", "Document Type"::"Sales Return Receipt",
+                                 "Document Type"::"Service Credit Memo"]);
     end;
 }

@@ -449,6 +449,178 @@ codeunit 139656 "Hybrid Cloud Management Tests"
         Assert.AreEqual(Product, HybridReplicationSummary.Source, 'Unexpected source');
     end;
 
+    [Test]
+    procedure TestIncludingTableInReplication()
+    var
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CloudMigSelectTables: TestPage "Cloud Mig - Select Tables";
+    begin
+        Initialize();
+
+        // [GIVEN] The intelligent cloud is enabled
+        LibraryHybridManagement.SetCanModifyDataReplicationRules(true);
+        HybridCloudManagement.RefreshIntelligentCloudStatusTable();
+
+        // [WHEN] User opens the cloud migration select tables page and selects a table to be replicated
+        OpenCloudMigSelectTablesPage(CloudMigSelectTables);
+
+#pragma warning disable AA0210
+        IntelligentCloudStatus.SetRange("Replicate Data", false);
+#pragma warning restore AA0210
+        IntelligentCloudStatus.FindFirst();
+        CloudMigSelectTables.Filter.SetFilter("Table Id", Format(IntelligentCloudStatus."Table Id"));
+        CloudMigSelectTables.IncludeTablesInMigration.Invoke();
+
+        // [THEN] The table is marked as included in replication and log is inserted
+        VerifyReplicateDataProperty(CloudMigSelectTables, true, IntelligentCloudStatus."Table Id");
+
+        // [WHEN] User invokes reset to default
+        CloudMigSelectTables.ResetToDefault.Invoke();
+
+        // [THEN] The table is marked as excluded from replication
+        VerifyReplicateDataProperty(CloudMigSelectTables, false, IntelligentCloudStatus."Table Id");
+    end;
+
+    [Test]
+    procedure TestExcludingTableFromReplication()
+    var
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CloudMigSelectTables: TestPage "Cloud Mig - Select Tables";
+    begin
+        Initialize();
+
+        // [GIVEN] The intelligent cloud is enabled
+        LibraryHybridManagement.SetCanModifyDataReplicationRules(true);
+        HybridCloudManagement.RefreshIntelligentCloudStatusTable();
+
+        // [WHEN] User opens the cloud migration select tables page and selects a table to be replicated
+        OpenCloudMigSelectTablesPage(CloudMigSelectTables);
+
+#pragma warning disable AA0210
+        IntelligentCloudStatus.SetRange("Replicate Data", true);
+#pragma warning restore AA0210
+        IntelligentCloudStatus.FindFirst();
+        CloudMigSelectTables.Filter.SetFilter("Table Id", Format(IntelligentCloudStatus."Table Id"));
+        CloudMigSelectTables.ExcludeTablesFromMigration.Invoke();
+
+        // [THEN] The table is marked as included in replication and log is inserted
+        VerifyReplicateDataProperty(CloudMigSelectTables, false, IntelligentCloudStatus."Table Id");
+
+        // [WHEN] User invokes reset to default
+        CloudMigSelectTables.ResetToDefault.Invoke();
+
+        // [THEN] The table is marked as excluded from replication
+        VerifyReplicateDataProperty(CloudMigSelectTables, true, IntelligentCloudStatus."Table Id");
+    end;
+
+    [Test]
+    procedure TestSettingTableToDeltaSync()
+    var
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CloudMigSelectTables: TestPage "Cloud Mig - Select Tables";
+    begin
+        Initialize();
+
+        // [GIVEN] The intelligent cloud is enabled
+        LibraryHybridManagement.SetCanModifyDataReplicationRules(true);
+        HybridCloudManagement.RefreshIntelligentCloudStatusTable();
+
+        // [WHEN] User opens the cloud migration select tables page and selects a table to be replicated
+        OpenCloudMigSelectTablesPage(CloudMigSelectTables);
+#pragma warning disable AA0210
+        IntelligentCloudStatus.SetRange("Preserve Cloud Data", false);
+#pragma warning restore AA0210
+        IntelligentCloudStatus.FindFirst();
+        CloudMigSelectTables.Filter.SetFilter("Table Id", Format(IntelligentCloudStatus."Table Id"));
+        CloudMigSelectTables.DeltaSyncTables.Invoke();
+
+        // [THEN] The table is marked as included in replication and log is inserted
+        VerifyDeltaSyncProperty(CloudMigSelectTables, true, IntelligentCloudStatus."Table Id");
+
+        // [WHEN] User invokes reset to default
+        CloudMigSelectTables.ResetToDefault.Invoke();
+
+        // [THEN] The table is marked as excluded from replication
+        VerifyDeltaSyncProperty(CloudMigSelectTables, false, IntelligentCloudStatus."Table Id");
+    end;
+
+    [Test]
+    procedure TestSettingToReplaceTableData()
+    var
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CloudMigSelectTables: TestPage "Cloud Mig - Select Tables";
+    begin
+        Initialize();
+
+        // [GIVEN] The intelligent cloud is enabled
+        LibraryHybridManagement.SetCanModifyDataReplicationRules(true);
+        HybridCloudManagement.RefreshIntelligentCloudStatusTable();
+
+        // [WHEN] User opens the cloud migration select tables page and selects a table to be replicated
+        OpenCloudMigSelectTablesPage(CloudMigSelectTables);
+#pragma warning disable AA0210
+        IntelligentCloudStatus.SetRange("Preserve Cloud Data", true);
+#pragma warning restore AA0210
+        IntelligentCloudStatus.FindFirst();
+        CloudMigSelectTables.Filter.SetFilter("Table Id", Format(IntelligentCloudStatus."Table Id"));
+        CloudMigSelectTables.ReplaceSyncTables.Invoke();
+
+        // [THEN] The table is marked as included in replication and log is inserted
+        VerifyDeltaSyncProperty(CloudMigSelectTables, false, IntelligentCloudStatus."Table Id");
+
+        // [WHEN] User invokes reset to default
+        CloudMigSelectTables.ResetToDefault.Invoke();
+
+        // [THEN] The table is marked as excluded from replication
+        VerifyDeltaSyncProperty(CloudMigSelectTables, true, IntelligentCloudStatus."Table Id");
+    end;
+
+    local procedure OpenCloudMigSelectTablesPage(var CloudMigSelectTables: TestPage "Cloud Mig - Select Tables")
+    var
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        CloudMigReplicateDataManagement: Codeunit "Cloud Mig. Replicate Data Mgt.";
+    begin
+        CloudMigSelectTables.Trap();
+        CloudMigReplicateDataManagement.LoadRecords(IntelligentCloudStatus);
+        Page.Run(Page::"Cloud Mig - Select Tables", IntelligentCloudStatus);
+    end;
+
+    local procedure VerifyReplicateDataProperty(var CloudMigSelectTables: TestPage "Cloud Mig - Select Tables"; ExpectedReplicateProperty: Boolean; SelectedTableId: Integer)
+    var
+        CloudMigOverrideLog: Record "Cloud Migration Override Log";
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+    begin
+        // [THEN] The table is marked as included in replication
+        Assert.AreEqual(ExpectedReplicateProperty, CloudMigSelectTables."Replicate Data".AsBoolean(), 'Table was not correctly marked for replication');
+
+        // [THEN] The log table is created and main intelligent cloud status table is updated
+        Assert.IsTrue(IntelligentCloudStatus.Get(CloudMigSelectTables."Table Name".Value, CloudMigSelectTables."Company Name".Value), 'Intelligent cloud status record not found');
+        Assert.AreEqual(ExpectedReplicateProperty, IntelligentCloudStatus."Replicate Data", 'Intelligent cloud status record not updated correctly');
+        Assert.IsTrue(CloudMigOverrideLog.FindLast(), 'Cloud migration override log record not found');
+        Assert.AreEqual(CloudMigOverrideLog."Table Id", SelectedTableId, 'Cloud migration override log record not updated correctly');
+        Assert.AreEqual(ExpectedReplicateProperty, CloudMigOverrideLog."Replicate Data", 'Cloud migration override log record not updated correctly');
+    end;
+
+    local procedure VerifyDeltaSyncProperty(var CloudMigSelectTables: TestPage "Cloud Mig - Select Tables"; ExpectedDeltaSyncProperty: Boolean; SelectedTableId: Integer)
+    var
+        CloudMigOverrideLog: Record "Cloud Migration Override Log";
+        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+    begin
+        // [THEN] The table is marked as included in replication
+        Assert.AreEqual(ExpectedDeltaSyncProperty, CloudMigSelectTables."Preserve Cloud Data".AsBoolean(), 'Table was not correctly marked for delta sync');
+
+        // [THEN] The log table is created and main intelligent cloud status table is updated
+        Assert.IsTrue(IntelligentCloudStatus.Get(CloudMigSelectTables."Table Name".Value, CloudMigSelectTables."Company Name".Value), 'Intelligent cloud status record not found');
+        Assert.AreEqual(ExpectedDeltaSyncProperty, IntelligentCloudStatus."Preserve Cloud Data", 'Intelligent cloud status record not updated correctly');
+        Assert.IsTrue(CloudMigOverrideLog.FindLast(), 'Cloud migration override log record not found');
+        Assert.AreEqual(CloudMigOverrideLog."Table Id", SelectedTableId, 'Cloud migration override log record not updated correctly');
+        Assert.AreEqual(ExpectedDeltaSyncProperty, CloudMigOverrideLog."Preserve Cloud Data", 'Cloud migration override log record not updated correctly');
+    end;
+
     local procedure InsertNotification(SubscriptionID: Text[50]; Body: Text)
     var
         WebhookNotification: Record "Webhook Notification";

@@ -6,6 +6,7 @@
 namespace System.Security.AccessControl;
 
 using System.Telemetry;
+using System.Security.User;
 
 /// <summary>
 /// Card page for the permission set.
@@ -206,6 +207,23 @@ page 9855 "Permission Set"
         SetPageVariables();
     end;
 
+    trigger OnDeleteRecord(): Boolean
+    var
+        TenantPermissionSet: Record "Tenant Permission Set";
+        UserPermissions: Codeunit "User Permissions";
+    begin
+        if not UserPermissions.CanManageUsersOnTenant(UserSecurityId()) then
+            Error(CannotManagePermissionsErr);
+
+        if Rec.Type <> Rec.Type::"User-Defined" then
+            Error(CannotDeletePermissionSetErr);
+
+        TenantPermissionSet.Get(Rec."App ID", Rec."Role ID");
+        TenantPermissionSet.Delete();
+
+        exit(true);
+    end;
+
     local procedure UpdatePageParts()
     var
         TempPermissionSetRelationBufferList: Record "Permission Set Relation Buffer" temporary;
@@ -256,6 +274,8 @@ page 9855 "Permission Set"
         ComposablePermissionSetsTok: Label 'Composable Permission Sets', Locked = true;
         StartRecordingQst: Label 'Do you want to start the recording now?';
         AddPermissionsQst: Label 'Do you want to add the recorded permissions?';
+        CannotManagePermissionsErr: Label 'Only users with the SUPER or the SECURITY permission set can delete permission sets.';
+        CannotDeletePermissionSetErr: Label 'You can only delete user-created or copied permission sets.';
         PermissionSetCaptionTok: Label '%1 (%2)', Locked = true;
         PermissionLoggingRunning: Boolean;
 }

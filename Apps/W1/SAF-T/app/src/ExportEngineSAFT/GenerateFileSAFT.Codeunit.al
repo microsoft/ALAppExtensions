@@ -241,7 +241,7 @@ codeunit 5289 "Generate File SAF-T"
 
         XmlHelper.SetCurrentRec(CompanyInformation);
         XmlHelper.AddNewXmlNode('Company', '');
-        XmlHelper.AppendXmlNode('RegistrationNumber', CompanyInformation."Registration No.");
+        XmlHelper.AppendXmlNode('RegistrationNumber', CompanyInformation."VAT Registration No.");
         XmlHelper.AppendXmlNode('Name', SAFTDataMgt.GetSAFTMiddle2Text(CompanyInformation.Name));
         ExportAddress(
             AddressTxt, CombineWithSpace(CompanyInformation.Address, CompanyInformation."Address 2"), CompanyInformation.City, CompanyInformation."Post Code",
@@ -583,15 +583,15 @@ codeunit 5289 "Generate File SAF-T"
         Vendor.SetRange("Date Filter", 0D, ClosingDate(AuditFileExportHeader."Starting Date" - 1));
         Vendor.CalcFields("Net Change (LCY)");
         if Vendor."Net Change (LCY)" > 0 then
-            OpeningDebitBalance := Vendor."Net Change (LCY)"
+            OpeningCreditBalance := Vendor."Net Change (LCY)"
         else
-            OpeningCreditBalance := -Vendor."Net Change (LCY)";
+            OpeningDebitBalance := -Vendor."Net Change (LCY)";
         Vendor.SetRange("Date Filter", 0D, ClosingDate(AuditFileExportHeader."Ending Date"));
         Vendor.CalcFields("Net Change (LCY)");
         if Vendor."Net Change (LCY)" > 0 then
-            ClosingDebitBalance := Vendor."Net Change (LCY)"
+            ClosingCreditBalance := Vendor."Net Change (LCY)"
         else
-            ClosingCreditBalance := -Vendor."Net Change (LCY)";
+            ClosingDebitBalance := -Vendor."Net Change (LCY)";
 
         XmlHelper.SetCurrentRec(Vendor);
         XmlHelper.AddNewXmlNode('Supplier', '');
@@ -1132,11 +1132,10 @@ codeunit 5289 "Generate File SAF-T"
         UpdateDataSourceInProgressDialog(ExportingGLEntriesTxt);
         TotalCount := GLEntry.Count();
 
-        GLEntry.CalcSums("Debit Amount", "Credit Amount");
         XmlHelper.AddNewXmlNode('GeneralLedgerEntries', '');
-        XmlHelper.SaveCurrXmlElement();                         // NumberOfEntries
-        XmlHelper.AppendXmlNode('TotalDebit', SAFTDataMgt.GetSAFTMonetaryDecimal(GLEntry."Debit Amount"));
-        XmlHelper.AppendXmlNode('TotalCredit', SAFTDataMgt.GetSAFTMonetaryDecimal(GLEntry."Credit Amount"));
+        XmlHelper.AppendXMLNode('NumberOfEntries', FormatAmount(AuditFileExportHeader."Number of G/L Entries"));
+        XmlHelper.AppendXMLNode('TotalDebit', FormatAmount(AuditFileExportHeader."Total G/L Entry Debit"));
+        XmlHelper.AppendXMLNode('TotalCredit', FormatAmount(AuditFileExportHeader."Total G/L Entry Credit"));
 
         if SourceCodeSAFT.FindSet() then
             repeat
@@ -1159,7 +1158,6 @@ codeunit 5289 "Generate File SAF-T"
                 ExportGLEntriesBySourceCode(SourceCodeSAFT, SourceCodeFilter, AuditFileExportHeader, NumberOfEntries, TotalCount);
             until SourceCodeSAFT.Next() = 0;
 
-        XmlHelper.AppendToSavedXMLNode('NumberOfEntries', Format(NumberOfEntries));
         XmlHelper.FinalizeXmlNode();
     end;
 

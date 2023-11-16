@@ -68,9 +68,8 @@ codeunit 139653 "Replication Mgt Page Tests"
         CloudMigrationManagement.Trap();
         Page.Run(Page::"Cloud Migration Management");
 
-        with CloudMigrationManagement do
-            // [WHEN] User clicks 'Run Replication Now' action in the ribbon.
-            RunReplicationNow.Invoke();
+        // [WHEN] User clicks 'Run Replication Now' action in the ribbon.
+        CloudMigrationManagement.RunReplicationNow.Invoke();
     end;
 
     [Test]
@@ -86,9 +85,8 @@ codeunit 139653 "Replication Mgt Page Tests"
         CloudMigrationManagement.Trap();
         Page.Run(Page::"Cloud Migration Management");
 
-        with CloudMigrationManagement do
-            // [WHEN] User clicks 'Get Service Key' action in the ribbon.
-            GetRuntimeKey.Invoke();
+        // [WHEN] User clicks 'Get Service Key' action in the ribbon.
+        CloudMigrationManagement.GetRuntimeKey.Invoke();
     end;
 
     [Test]
@@ -104,9 +102,8 @@ codeunit 139653 "Replication Mgt Page Tests"
         CloudMigrationManagement.Trap();
         Page.Run(Page::"Cloud Migration Management");
 
-        with CloudMigrationManagement do
-            // [WHEN] User clicks 'Get Service Key' action in the ribbon.
-            GenerateNewKey.Invoke();
+        // [WHEN] User clicks 'Get Service Key' action in the ribbon.
+        CloudMigrationManagement.GenerateNewKey.Invoke();
     end;
 
     [Test]
@@ -131,19 +128,15 @@ codeunit 139653 "Replication Mgt Page Tests"
         // [WHEN] User clicks 'Replicate Now' action in the ribbon.
         HybridReplicationSummary.DeleteAll();
         CloudMigrationManagement.RunReplicationNow.Invoke();
-
         // [THEN] A Replication Summary record is created that has InProgress status
-        with HybridReplicationSummary do begin
-            FindFirst();
-            Assert.AreEqual(ExpectedRunId, "Run ID", 'Run ID');
-            Assert.AreEqual(Status::InProgress, Status, 'Status');
-            Assert.AreEqual(ExpectedSource, Source, 'Source');
-            Assert.AreEqual("Trigger Type"::Manual, "Trigger Type", 'Trigger Type');
-            Assert.AreEqual(ReplicationType::Full, ReplicationType, 'Replication Type');
-
-            // [THEN] The correct replication type is passed to the service
-            Assert.AreEqual(ReplicationType::Normal, LibraryHybridManagement.GetActualReplicationType(), 'Replication run type');
-        end;
+        HybridReplicationSummary.FindFirst();
+        Assert.AreEqual(ExpectedRunId, HybridReplicationSummary."Run ID", 'Run ID');
+        Assert.AreEqual(HybridReplicationSummary.Status::InProgress, HybridReplicationSummary.Status, 'Status');
+        Assert.AreEqual(ExpectedSource, HybridReplicationSummary.Source, 'Source');
+        Assert.AreEqual(HybridReplicationSummary."Trigger Type"::Manual, HybridReplicationSummary."Trigger Type", 'Trigger Type');
+        Assert.AreEqual(HybridReplicationSummary.ReplicationType::Full, HybridReplicationSummary.ReplicationType, 'Replication Type');
+        // [THEN] The correct replication type is passed to the service
+        Assert.AreEqual(HybridReplicationSummary.ReplicationType::Normal, LibraryHybridManagement.GetActualReplicationType(), 'Replication run type');
     end;
 
     [Test]
@@ -168,19 +161,15 @@ codeunit 139653 "Replication Mgt Page Tests"
 
         // [WHEN] User chooses to create a diagnostic run
         CloudMigrationManagement.RunDiagnostic.Invoke();
-
         // [THEN] A Replication Summary record is created that has InProgress status and Diagnostic Replication Type
-        with HybridReplicationSummary do begin
-            FindFirst();
-            Assert.AreEqual(ExpectedRunId, "Run ID", 'Run ID');
-            Assert.AreEqual(Status::InProgress, Status, 'Status');
-            Assert.AreEqual(ExpectedSource, Source, 'Source');
-            Assert.AreEqual("Trigger Type"::Manual, "Trigger Type", 'Trigger Type');
-            Assert.AreEqual(ReplicationType::Diagnostic, ReplicationType, 'Replication Type');
-
-            // [THEN] The correct replication type is passed to the service
-            Assert.AreEqual(ReplicationType::Diagnostic, LibraryHybridManagement.GetActualReplicationType(), 'Replication run type');
-        end;
+        HybridReplicationSummary.FindFirst();
+        Assert.AreEqual(ExpectedRunId, HybridReplicationSummary."Run ID", 'Run ID');
+        Assert.AreEqual(HybridReplicationSummary.Status::InProgress, HybridReplicationSummary.Status, 'Status');
+        Assert.AreEqual(ExpectedSource, HybridReplicationSummary.Source, 'Source');
+        Assert.AreEqual(HybridReplicationSummary."Trigger Type"::Manual, HybridReplicationSummary."Trigger Type", 'Trigger Type');
+        Assert.AreEqual(HybridReplicationSummary.ReplicationType::Diagnostic, HybridReplicationSummary.ReplicationType, 'Replication Type');
+        // [THEN] The correct replication type is passed to the service
+        Assert.AreEqual(HybridReplicationSummary.ReplicationType::Diagnostic, LibraryHybridManagement.GetActualReplicationType(), 'Replication run type');
     end;
 
     [Test]
@@ -488,8 +477,7 @@ codeunit 139653 "Replication Mgt Page Tests"
         Page.Run(Page::"Cloud Migration Management");
 
         // [THEN] Check for Update action should be enabled
-        with CloudMigrationManagement do
-            Assert.IsTrue(CheckForUpdate.Enabled(), 'Check for update action should be enabled');
+        Assert.IsTrue(CloudMigrationManagement.CheckForUpdate.Enabled(), 'Check for update action should be enabled');
     end;
 
     [Test]
@@ -507,10 +495,8 @@ codeunit 139653 "Replication Mgt Page Tests"
         Page.Run(Page::"Intelligent Cloud Update");
 
         // [THEN] Intelligent Cloud pipeline upgrade is run
-        with IntelligentCloudUpdatePage do begin
-            Assert.IsTrue(ActionUpdate.Enabled(), 'Update action should be enabled');
-            ActionUpdate.Invoke();
-        end;
+        Assert.IsTrue(IntelligentCloudUpdatePage.ActionUpdate.Enabled(), 'Update action should be enabled');
+        IntelligentCloudUpdatePage.ActionUpdate.Invoke();
 
         // [THEN] The Deployed Version in Intelligent Cloud Setup should be udpated to Latest Version
         if IntelligentCloudSetup.Get() then

@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Reports;
+
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using System.Utilities;
+
 report 11718 "Quantity Shipped Check CZL"
 {
     DefaultLayout = RDLC;

@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace System.Upgrade;
+
 codeunit 31016 "Upgrade Tag Definitions CZL"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerDatabaseUpgradeTags', '', false, false)]
@@ -29,6 +35,7 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
         PerCompanyUpgradeTags.Add(GetReplaceAllowAlterPostingGroupsUpgradeTag());
         PerCompanyUpgradeTags.Add(GetUseW1RegistrationNumberUpgradeTag());
         PerCompanyUpgradeTags.Add(GetReportPostedDirectTransferCZUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetEU3PartyTradePurchaseUpgradeTag());
     end;
 
     procedure GetDataVersion174PerDatabaseUpgradeTag(): Code[250]
@@ -134,5 +141,10 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
     procedure GetReportPostedDirectTransferCZUpgradeTag(): Code[250]
     begin
         exit('CZL-480581-ReportPostedDirectTransferCZ-20230811');
+    end;
+
+    procedure GetEU3PartyTradePurchaseUpgradeTag(): Code[250]
+    begin
+        exit('CZL-475293-EU3PartyTradePurchaseUpgrade-20230613');
     end;
 }

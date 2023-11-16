@@ -1,3 +1,19 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Foundation.Reporting;
+
+using Microsoft.CashFlow.Reports;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.FinancialReports;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Inventory.Location;
+using Microsoft.Utilities;
+using System.Apps;
+using System.Environment.Configuration;
+
 #pragma warning disable AL0432
 codeunit 31097 "Substitute Report Handler CZL"
 {
@@ -38,22 +54,6 @@ codeunit 31097 "Substitute Report Handler CZL"
                     NewReportId := Report::"Income Statement";
                 Report::"VAT Statement CZL":
                     NewReportId := Report::"VAT Statement";
-                Report::"Batch Post Sales Orders CZL":
-                    NewReportId := Report::"Batch Post Sales Orders";
-                Report::"Batch Post Sales Invoices CZL":
-                    NewReportId := Report::"Batch Post Sales Invoices";
-                Report::"Batch Post Sales Cr. Memos CZL":
-                    NewReportId := Report::"Batch Post Sales Credit Memos";
-                Report::"Batch Post Purchase Orders CZL":
-                    NewReportId := Report::"Batch Post Purchase Orders";
-                Report::"Batch Post Purchase Inv. CZL":
-                    NewReportId := Report::"Batch Post Purchase Invoices";
-                Report::"Batch Post Purch. Cr.Memos CZL":
-                    NewReportId := Report::"Batch Post Purch. Credit Memos";
-                Report::"Batch Post Sales Ret. Ord. CZL":
-                    NewReportId := Report::"Batch Post Sales Return Orders";
-                Report::"Batch Post Purch. Ret.Ord. CZL":
-                    NewReportId := Report::"Batch Post Purch. Ret. Orders";
                 Report::"VAT Register CZL":
                     NewReportId := Report::"VAT Register";
                 Report::"VAT Exceptions CZL":
@@ -84,22 +84,6 @@ codeunit 31097 "Substitute Report Handler CZL"
                     NewReportId := Report::"Income Statement CZL";
                 Report::"VAT Statement":
                     NewReportId := Report::"VAT Statement CZL";
-                Report::"Batch Post Sales Orders":
-                    NewReportId := Report::"Batch Post Sales Orders CZL";
-                Report::"Batch Post Sales Invoices":
-                    NewReportId := Report::"Batch Post Sales Invoices CZL";
-                Report::"Batch Post Sales Credit Memos":
-                    NewReportId := Report::"Batch Post Sales Cr. Memos CZL";
-                Report::"Batch Post Purchase Orders":
-                    NewReportId := Report::"Batch Post Purchase Orders CZL";
-                Report::"Batch Post Purchase Invoices":
-                    NewReportId := Report::"Batch Post Purchase Inv. CZL";
-                Report::"Batch Post Purch. Credit Memos":
-                    NewReportId := Report::"Batch Post Purch. Cr.Memos CZL";
-                Report::"Batch Post Sales Return Orders":
-                    NewReportId := Report::"Batch Post Sales Ret. Ord. CZL";
-                Report::"Batch Post Purch. Ret. Orders":
-                    NewReportId := Report::"Batch Post Purch. Ret.Ord. CZL";
                 Report::"VAT Register":
                     NewReportId := Report::"VAT Register CZL";
                 Report::"VAT Exceptions":

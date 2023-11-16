@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace System.Security.User;
+
 pageextension 11721 "User Setup CZL" extends "User Setup"
 {
     layout
@@ -180,7 +186,7 @@ pageextension 11721 "User Setup CZL" extends "User Setup"
                     begin
                         if UserSetup.Get(Rec."User ID") then begin
                             UserSetup.SetRecFilter();
-                            REPORT.RunModal(REPORT::"User Setup List CZL", true, false, UserSetup);
+                            Report.RunModal(Report::"User Setup List CZL", true, false, UserSetup);
                         end;
                     end;
                 }

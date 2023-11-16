@@ -40,7 +40,6 @@ codeunit 4003 "Post Migration Notificaton"
     end;
 
     procedure DisableNotifications(Notification: Notification)
-    var
     begin
         MyNotifications.InsertDefault(GetNotificationGuid(), CLNotificationNameTxt, CLNotificationDescTxt, false);
         MyNotifications.Disable(GetNotificationGuid());

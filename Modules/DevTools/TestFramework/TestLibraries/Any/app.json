@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Library used to generate pseudo-random values.",
     "description":  "In test code, Any should be used to generate values that should not be hardcoded to a specific values.",
-    "version":  "23.0.0.0",
+    "version":  "23.1.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2131960",
@@ -24,8 +24,10 @@
                          "to":  130500
                      }
                  ],
-    "features": ["GenerateCaptions",
-                 "TranslationFile"],
+    "features":  [
+                     "GenerateCaptions",
+                     "TranslationFile"
+                 ],
     "resourceExposurePolicy":  {
                                    "allowDebugging":  true,
                                    "allowDownloadingSource":  true,

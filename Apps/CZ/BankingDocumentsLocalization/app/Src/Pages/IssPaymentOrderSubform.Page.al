@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Documents;
+
+using Microsoft.Finance.Currency;
+
 page 31267 "Iss. Payment Order Subform CZB"
 {
     AutoSplitKey = true;

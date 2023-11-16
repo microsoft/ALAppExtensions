@@ -1,3 +1,27 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Document;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Setup;
+using Microsoft.Finance.Currency;
+#if not CLEAN23
+using Microsoft.Finance.EU3PartyTrade;
+#endif
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.BatchProcessing;
+using Microsoft.Foundation.Company;
+using Microsoft.Purchases.Vendor;
+#if not CLEAN22
+using System.Environment.Configuration;
+#endif
+using System.Utilities;
+
 #pragma warning disable AA0232
 tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
 {
@@ -30,6 +54,14 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
                         ConfirmVATCurrencyFactorUpdateCZL();
                 end;
                 OnValidateVATDateOnAfterCheckNeedUpdateVATCurrencyFactorCZL(Rec, xRec, NeedUpdateVATCurrencyFactor);
+            end;
+        }
+        modify("EU 3 Party Trade")
+        {
+            trigger OnAfterValidate()
+            begin
+                if not "EU 3 Party Trade" then
+                    "EU 3-Party Intermed. Role CZL" := false;
             end;
         }
         field(11717; "Specific Symbol CZL"; Code[10])
@@ -299,19 +331,36 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
             trigger OnValidate()
             begin
                 if "EU 3-Party Intermed. Role CZL" then
-                    "EU 3-Party Trade CZL" := true;
+#if not CLEAN23
+#pragma warning disable AL0432
+                    if not IsEU3PartyTradeFeatureEnabled() then
+                        "EU 3-Party Trade CZL" := true
+                    else
+#pragma warning restore AL0432
+#endif
+                        "EU 3 Party Trade" := true;
             end;
         }
         field(31073; "EU 3-Party Trade CZL"; Boolean)
         {
             Caption = 'EU 3-Party Trade';
             DataClassification = CustomerContent;
+#if not CLEAN24
+            ObsoleteState = Pending;
+            ObsoleteTag = '24.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '27.0';
+#endif
+            ObsoleteReason = 'Replaced by "EU 3 Party Trade" field in "EU 3-Party Trade Purchase" app.';
+#if not CLEAN23
 
             trigger OnValidate()
             begin
                 if not "EU 3-Party Trade CZL" then
                     "EU 3-Party Intermed. Role CZL" := false;
             end;
+#endif
         }
         field(31112; "Original Doc. VAT Date CZL"; Date)
         {
@@ -323,6 +372,11 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
     var
         UnreliablePayerMgtCZL: Codeunit "Unreliable Payer Mgt. CZL";
         ConfirmManagement: Codeunit "Confirm Management";
+#if not CLEAN23
+#pragma warning disable AL0432
+        EU3PartyTradeFeatMgt: Codeunit "EU3 Party Trade Feat Mgt. CZL";
+#pragma warning restore AL0432
+#endif
 #if not CLEAN22
 #pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
@@ -436,13 +490,14 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
     procedure ConfirmVATCurrencyFactorUpdateCZL(): Boolean
     var
         BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
+        BatchPostingParameterType: Enum "Batch Posting Parameter Type";
         ReplacePostingDate: Boolean;
         ReplaceVATDate: Boolean;
     begin
         OnBeforeConfirmUpdateVATCurrencyFactorCZL(Rec, HideValidationDialog);
 
-        BatchProcessingMgt.GetBooleanParameter(Rec.RecordId, "Batch Posting Parameter Type"::"Replace Posting Date", ReplacePostingDate);
-        BatchProcessingMgt.GetBooleanParameter(Rec.RecordId, "Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDate);
+        BatchProcessingMgt.GetBooleanParameter(Rec.RecordId, BatchPostingParameterType::"Replace Posting Date", ReplacePostingDate);
+        BatchProcessingMgt.GetBooleanParameter(Rec.RecordId, BatchPostingParameterType::"Replace VAT Date", ReplaceVATDate);
         if GetHideValidationDialog() or not GuiAllowed or ReplacePostingDate or ReplaceVATDate then
             IsConfirmedCZL := true
         else
@@ -471,7 +526,11 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
     procedure CheckIntrastatMandatoryFieldsCZL()
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
+        FeatureMgtFacade: Codeunit "Feature Management Facade";
+        IntrastatFeatureKeyIdTok: Label 'ReplaceIntrastat', Locked = true;
     begin
+        if FeatureMgtFacade.IsEnabled(IntrastatFeatureKeyIdTok) then
+            exit;
         if not (Ship or Receive) then
             exit;
         if IsIntrastatTransactionCZL() and ShipOrReceiveInventoriableTypeItemsCZL() then begin
@@ -554,6 +613,13 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
     internal procedure IsReplaceVATDateEnabled(): Boolean
     begin
         exit(ReplaceVATDateMgtCZL.IsEnabled());
+    end;
+#endif
+#if not CLEAN23
+
+    internal procedure IsEU3PartyTradeFeatureEnabled(): Boolean
+    begin
+        exit(EU3PartyTradeFeatMgt.IsEnabled());
     end;
 #endif
 

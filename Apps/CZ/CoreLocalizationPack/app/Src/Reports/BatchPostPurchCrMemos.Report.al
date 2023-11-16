@@ -1,7 +1,22 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+#if not CLEAN24
+namespace Microsoft.Purchases.Document;
+
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Foundation.BatchProcessing;
+using Microsoft.Purchases.Posting;
+using Microsoft.Purchases.Setup;
+
 report 31117 "Batch Post Purch. Cr.Memos CZL"
 {
     Caption = 'Batch Post Purch. Credit Memos';
     ProcessingOnly = true;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by standard report 498 "Batch Post Purch. Credit Memos"';
+    ObsoleteTag = '24.0';
 
     dataset
     {
@@ -18,10 +33,10 @@ report 31117 "Batch Post Purch. Cr.Memos CZL"
                 if ReplaceVATDateReq and (VATDateReq = 0D) then
                     Error(EnterVATDateErr);
 
-                PurchaseBatchPostMgt.SetParameter("Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDateReq);
-                PurchaseBatchPostMgt.SetParameter("Batch Posting Parameter Type"::"VAT Date", VATDateReq);
+                PurchaseBatchPostMgt.SetParameter(Enum::"Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDateReq);
+                PurchaseBatchPostMgt.SetParameter(Enum::"Batch Posting Parameter Type"::"VAT Date", VATDateReq);
 
-                PurchaseBatchPostMgt.SetParameter("Batch Posting Parameter Type"::Print, PrintDocReq);
+                PurchaseBatchPostMgt.SetParameter(Enum::"Batch Posting Parameter Type"::Print, PrintDocReq);
                 PurchaseBatchPostMgt.RunBatch("Purchase Header", ReplacePostingDateReq, PostingDateReq, ReplaceDocumentDateReq, CalcInvDiscReq, false, false);
 
                 CurrReport.Break();
@@ -145,3 +160,4 @@ report 31117 "Batch Post Purch. Cr.Memos CZL"
         PrintDocVisible: Boolean;
         EnterVATDateErr: Label 'Enter the VAT date.';
 }
+#endif

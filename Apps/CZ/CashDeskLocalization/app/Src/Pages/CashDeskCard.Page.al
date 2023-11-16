@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.CashDesk;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Ledger;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Comment;
+using Microsoft.Utilities;
+using System.Security.User;
+
 page 31151 "Cash Desk Card CZP"
 {
     Caption = 'Cash Desk Card';

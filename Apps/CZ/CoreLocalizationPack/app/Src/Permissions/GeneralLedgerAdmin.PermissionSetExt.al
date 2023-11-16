@@ -1,4 +1,4 @@
-permissionsetextension 11746 "General Ledger - Admin CZL" extends "General Ledger - Admin"
+﻿permissionsetextension 11746 "General Ledger - Admin CZL" extends "General Ledger - Admin"
 {
     Permissions = tabledata "Commodity CZL" = RIMD,
                   tabledata "Commodity Setup CZL" = RIMD,

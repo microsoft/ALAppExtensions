@@ -15,5 +15,10 @@ tableextension 31342 "Sales Shipment Header CZ" extends "Sales Shipment Header"
             Caption = 'Physical Transfer';
             DataClassification = CustomerContent;
         }
+        field(31310; "Intrastat Exclude CZ"; Boolean)
+        {
+            Caption = 'Intrastat Exclude';
+            DataClassification = CustomerContent;
+        }
     }
 }

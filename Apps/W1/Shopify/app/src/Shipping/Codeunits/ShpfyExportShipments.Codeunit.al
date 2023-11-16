@@ -155,7 +155,7 @@ codeunit 30190 "Shpfy Export Shipments"
                     GraphQuery.Append(Format(TempFulfillmentOrderLine."Shopify Fulfillm. Ord. Line Id"));
                     GraphQuery.Append('\",');
                     GraphQuery.Append('quantity: ');
-                    GraphQuery.Append(Format(TempFulfillmentOrderLine."Quantity to Fulfill"));
+                    GraphQuery.Append(Format(TempFulfillmentOrderLine."Quantity to Fulfill", 0, 9));
                     GraphQuery.Append('}');
                 until TempFulfillmentOrderLine.Next() = 0;
                 GraphQuery.Append(']}]})');

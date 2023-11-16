@@ -1,3 +1,16 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Finance.CashDesk;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Posting;
+
 codeunit 31022 "Purch.-Post Handler CZZ"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostPurchaseDoc', '', false, false)]
@@ -25,6 +38,7 @@ codeunit 31022 "Purch.-Post Handler CZZ"
     var
         AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
+        GetLastGLEntryNoCZZ: Codeunit "Get Last G/L Entry No. CZZ";
         PurchAdvLetterManagementCZZ: Codeunit "PurchAdvLetterManagement CZZ";
         AdvLetterUsageDocTypeCZZ: Enum "Adv. Letter Usage Doc.Type CZZ";
     begin
@@ -37,7 +51,9 @@ codeunit 31022 "Purch.-Post Handler CZZ"
             AdvLetterUsageDocTypeCZZ := AdvLetterUsageDocTypeCZZ::"Purchase Invoice";
 
         VendorLedgerEntry.Get(PurchInvHeader."Vendor Ledger Entry No.");
+        BindSubscription(GetLastGLEntryNoCZZ);
         PurchAdvLetterManagementCZZ.PostAdvancePaymentUsage(AdvLetterUsageDocTypeCZZ, PurchHeader."No.", PurchInvHeader, VendorLedgerEntry, GenJnlPostLine, false);
+        UnbindSubscription(GetLastGLEntryNoCZZ);
 
         if not PurchHeader.Get(PurchHeader."Document Type", PurchHeader."No.") then begin
             AdvanceLetterApplicationCZZ.SetRange("Advance Letter Type", AdvanceLetterApplicationCZZ."Advance Letter Type"::Purchase);
@@ -57,33 +73,5 @@ codeunit 31022 "Purch.-Post Handler CZZ"
     local procedure DisableCheckOnBeforeTestStatusRelease(var IsHandled: Boolean)
     begin
         IsHandled := true;
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnRunOnBeforeMakeInventoryAdjustment', '', false, false)]
-    local procedure SuppressInventoryAdjustmentOnRunOnBeforeMakeInventoryAdjustment(PurchInvHeader: Record "Purch. Inv. Header"; var PurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean)
-    var
-        AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
-        VendorLedgerEntry: Record "Vendor Ledger Entry";
-        AdvLetterUsageDocTypeCZZ: Enum "Adv. Letter Usage Doc.Type CZZ";
-    begin
-        if IsHandled then
-            exit;
-
-        if (not PurchaseHeader.Invoice) or (not (PurchaseHeader."Document Type" in [PurchaseHeader."Document Type"::Order, PurchaseHeader."Document Type"::Invoice])) then
-            exit;
-
-        if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Order then
-            AdvLetterUsageDocTypeCZZ := AdvLetterUsageDocTypeCZZ::"Purchase Order"
-        else
-            AdvLetterUsageDocTypeCZZ := AdvLetterUsageDocTypeCZZ::"Purchase Invoice";
-
-        VendorLedgerEntry.Get(PurchInvHeader."Vendor Ledger Entry No.");
-        VendorLedgerEntry.CalcFields("Remaining Amount");
-        if VendorLedgerEntry."Remaining Amount" = 0 then
-            exit;
-
-        AdvanceLetterApplicationCZZ.SetRange("Document Type", AdvLetterUsageDocTypeCZZ);
-        AdvanceLetterApplicationCZZ.SetRange("Document No.", PurchaseHeader."No.");
-        IsHandled := not AdvanceLetterApplicationCZZ.IsEmpty();
     end;
 }

@@ -1,3 +1,22 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.Posting;
+
+using Microsoft.Bank;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Inventory.Intrastat;
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
+
 codeunit 31040 "Service Posting Handler CZL"
 {
     var
@@ -46,10 +65,12 @@ codeunit 31040 "Service Posting Handler CZL"
 
         GenJournalLine.Init();
         GenJournalLine."Posting Date" := ServiceHeader."Posting Date";
+#if not CLEAN22
         if not GenJournalLine.IsReplaceVATDateEnabled() then
             GenJournalLine.Validate("VAT Date CZL", ServiceHeader."VAT Date CZL")
         else
-            GenJournalLine.Validate("VAT Reporting Date", ServiceHeader."VAT Reporting Date");
+#endif
+        GenJournalLine.Validate("VAT Reporting Date", ServiceHeader."VAT Reporting Date");
         GenJournalLine."Document Date" := ServiceHeader."Document Date";
         GenJournalLine.Description := ServiceHeader."Posting Description";
         GenJournalLine."Reason Code" := ServiceHeader."Reason Code";
@@ -149,7 +170,7 @@ codeunit 31040 "Service Posting Handler CZL"
         else
 #pragma warning restore AL0432
 #endif
-            GenJournalLine.Validate("VAT Reporting Date", ServiceHeader."VAT Reporting Date");
+        GenJournalLine.Validate("VAT Reporting Date", ServiceHeader."VAT Reporting Date");
         GenJournalLine."Document Date" := ServiceHeader."Document Date";
         GenJournalLine.Description := ServiceHeader."Posting Description";
         GenJournalLine."Reason Code" := ServiceHeader."Reason Code";

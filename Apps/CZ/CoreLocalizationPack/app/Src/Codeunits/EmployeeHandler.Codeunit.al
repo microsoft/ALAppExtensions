@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.HumanResources.Employee;
+
+using Microsoft.Bank;
+using Microsoft.Foundation.Company;
+
 codeunit 11750 "Employee Handler CZL"
 {
     var
@@ -70,13 +79,5 @@ codeunit 11750 "Employee Handler CZL"
     local procedure CheckCzBankAccountNoOnBeforeCountryRegionCodeValidate(var Rec: Record Employee)
     begin
         BankOperationsFunctionsCZL.CheckCzBankAccountNo(Rec."Bank Account No.", Rec."Country/Region Code");
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Employee Ledger Entry", 'OnAfterCopyEmployeeLedgerEntryFromGenJnlLine', '', false, false)]
-    local procedure OnAfterCopyEmployeeLedgerEntryFromGenJnlLine(var EmployeeLedgerEntry: Record "Employee Ledger Entry"; GenJournalLine: Record "Gen. Journal Line")
-    begin
-        EmployeeLedgerEntry."Specific Symbol CZL" := GenJournalLine."Specific Symbol CZL";
-        EmployeeLedgerEntry."Variable Symbol CZL" := GenJournalLine."Variable Symbol CZL";
-        EmployeeLedgerEntry."Constant Symbol CZL" := GenJournalLine."Constant Symbol CZL";
     end;
 }

@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Documents;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+using System.Utilities;
+
 tableextension 31285 "Gen. Journal Line CZB" extends "Gen. Journal Line"
 {
     fields
@@ -31,6 +42,12 @@ tableextension 31285 "Gen. Journal Line CZB" extends "Gen. Journal Line"
         field(11716; "Variable S. to Ext.Doc.No. CZB"; Boolean)
         {
             Caption = 'Variable Symbol to External Document No.';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+        field(11730; "Bank Statement No. CZB"; Code[20])
+        {
+            Caption = 'Bank Statement No.';
             DataClassification = CustomerContent;
             Editable = false;
         }

@@ -1,3 +1,29 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GeneralLedger.Posting;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.Journal;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Inventory.Costing;
+using Microsoft.Inventory.Document;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Posting;
+using Microsoft.Inventory.Setup;
+using Microsoft.Projects.Project.Journal;
+using Microsoft.Purchases.Document;
+using Microsoft.Sales.Document;
+using Microsoft.Service.Document;
+
 codeunit 11796 "Corrections Posting Mgt. CZL"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeInsertGLEntryBuffer', '', false, false)]

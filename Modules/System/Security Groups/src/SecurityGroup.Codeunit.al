@@ -153,7 +153,7 @@ codeunit 9031 "Security Group"
     end;
 
     /// <summary>
-    /// Shows the notification listing groups deleted Windows / Microsoft Entra groups.
+    /// Shows the notification listing deleted Windows / Microsoft Entra groups.
     /// </summary>
     /// <param name="SecurityGroupBuffer">The table containing all security group records.</param>
     internal procedure SendNotificationForDeletedGroups(var SecurityGroupBuffer: Record "Security Group Buffer")

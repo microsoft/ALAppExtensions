@@ -1128,7 +1128,7 @@ codeunit 139540 "Sales Forecast Tests"
     end;
 
     [ModalPageHandler]
-    procedure CustomerConsentPageHandler(var ConsentMicrosoftConfirm: TestPage "Consent Microsoft Confirm")
+    procedure CustomerConsentPageHandler(var ConsentMicrosoftConfirm: TestPage "Consent Microsoft AI")
     begin
         ConsentMicrosoftConfirm.Accept.Invoke();
     end;

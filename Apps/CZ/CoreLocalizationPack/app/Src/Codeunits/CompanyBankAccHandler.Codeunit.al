@@ -1,3 +1,18 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank;
+
+using Microsoft.Purchases.Document;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.FinanceCharge;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
+using Microsoft.Sales.Reminder;
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
+
 codeunit 31447 "Company Bank Acc. Handler CZL"
 {
     #region unposted documents

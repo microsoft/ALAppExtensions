@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Compensations;
+
+using Microsoft.EServices.EDocument;
+
 tableextension 31275 "Incoming Document CZC" extends "Incoming Document"
 {
     procedure SetCompensationCZC(var CompensationHeaderCZC: Record "Compensation Header CZC")

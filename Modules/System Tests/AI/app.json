@@ -1,0 +1,56 @@
+{
+    "id":  "81848664-2a4b-4f1d-af93-7173c12be82f",
+    "name":  "AI Test",
+    "publisher":  "Microsoft",
+    "brief":  "",
+    "description":  "Tests for the AI module",
+    "version":  "23.1.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+                         {
+                             "id":  "d3433b68-4901-445f-9547-fdfeca57575a",
+                             "name":  "AI SDK",
+                             "publisher":  "Microsoft",
+                             "version":  "23.1.0.0"
+                         },
+                         {
+                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+                             "name":  "Library Assert",
+                             "publisher":  "Microsoft",
+                             "version":  "23.1.0.0"
+                         },
+                         {
+                            "id": "daa5d70e-eaf5-4256-bf80-53545ef7629a",
+                            "name": "Privacy Notice",
+                            "publisher": "Microsoft",
+                            "version": "23.1.0.0"
+                          },
+                          {
+                              "id":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
+                              "name":  "Any",
+                              "publisher":  "Microsoft",
+                              "version":  "23.1.0.0"
+                          },
+                          {
+                            "id":  "f2d92a20-33a7-4174-a82f-666e8e2ad69e",
+                            "name":  "AI Test Library",
+                            "publisher":  "Microsoft",
+                            "version":  "23.1.0.0"
+                          }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "23.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  132683,
+                         "to":  132685
+                     }
+                 ],
+    "target":  "OnPrem"
+}

@@ -323,6 +323,28 @@ codeunit 139629 "Library - E-Document"
         end;
     end;
 
+    procedure CreateGetBasicInfoErrorReceiveServiceForEDoc(var EDocService: Record "E-Document Service")
+    begin
+        if not EDocService.Get('BIERRRECEIVE') then begin
+            EDocService.Init();
+            EDocService.Code := 'BIERRRECEIVE';
+            EDocService."Document Format" := "E-Document Format"::"Import E-Doc. Basic Info Err.";
+            EDocService."Service Integration" := "E-Document Integration"::"Test Import Impl. Integration";
+            EDocService.Insert();
+        end;
+    end;
+
+    procedure CreateGetCompleteInfoErrorReceiveServiceForEDoc(var EDocService: Record "E-Document Service")
+    begin
+        if not EDocService.Get('CIERRRECEIVE') then begin
+            EDocService.Init();
+            EDocService.Code := 'CIERRRECEIVE';
+            EDocService."Document Format" := "E-Document Format"::"Import E-Doc. Compl. Info Err.";
+            EDocService."Service Integration" := "E-Document Integration"::"Test Import Impl. Integration";
+            EDocService.Insert();
+        end;
+    end;
+
     procedure CreateDirectMapping(var EDocMapping: Record "E-Doc. Mapping"; FindValue: Text; ReplaceValue: Text)
     begin
         CreateDirectMapping(EDocMapping, FindValue, ReplaceValue, 0, 0);

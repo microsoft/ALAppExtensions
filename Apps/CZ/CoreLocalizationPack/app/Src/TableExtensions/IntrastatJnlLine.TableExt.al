@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.Inventory.Item;
+
 #pragma warning disable AL0432
 tableextension 31026 "Intrastat Jnl. Line CZL" extends "Intrastat Jnl. Line"
 #pragma warning restore AL0432

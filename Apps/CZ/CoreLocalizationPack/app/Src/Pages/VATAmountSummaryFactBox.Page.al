@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Calculation;
+
+using System.Utilities;
+
 page 31046 "VAT Amount Summary FactBox CZL"
 {
     Caption = 'VAT Amount Summary';

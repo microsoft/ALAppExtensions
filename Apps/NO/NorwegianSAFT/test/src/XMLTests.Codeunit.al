@@ -16,6 +16,7 @@ codeunit 148103 "SAF-T XML Tests"
         LibrarySales: Codeunit "Library - Sales";
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryERM: Codeunit "Library - ERM";
+        LibraryDimension: Codeunit "Library - Dimension";
         SAFTTestHelper: Codeunit "SAF-T Test Helper";
         Assert: Codeunit Assert;
         SAFTMappingType: Enum "SAF-T Mapping Type";
@@ -61,7 +62,8 @@ codeunit 148103 "SAF-T XML Tests"
         // TFS 372962: Customer and vendor with zero balance should be presented
         // TFS 425270: Xml nodes values are encoded. The value '<&' must be exported as '&amp;lt;&amp;amp;'
         // TFS 427679: Export all bank account data
-        // TFS 453255: Export bank account data depends on IBAN       
+        // TFS 453255: Export bank account data depends on IBAN
+        // TFS 485839: VAT Registration No. field of the Company Information exports to the Registratuin Number xml node
         VerifyMasterDataStructureWithStdAccMapping(TempXMLBuffer, SAFTExportHeader."Mapping Range Code", NumberOfMasterDataRecords);
         LibraryVariableStorage.AssertEmpty();
     end;
@@ -1465,6 +1467,187 @@ codeunit 148103 "SAF-T XML Tests"
         VerifyCurrencyAmountInfo(TempChildXMLBuffer, Currency.Code, Amount, AmountLCY, 0);
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure GLEntryTotalsContainValuesFromAllPeriods()
+    var
+        SAFTExportHeader: Record "SAF-T Export Header";
+        SAFTExportLine: Record "SAF-T Export Line";
+        SAFTMappingRange: Record "SAF-T Mapping Range";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        Amount: array[2] of Decimal;
+    begin
+        // [SCENARIO 485839] G/L Entry Totals xml nodes contain values from all periods when SAF-T file splitted to multiple periods
+
+        Initialize();
+        SAFTTestHelper.SetupSAFT(SAFTMappingRange, SAFTMappingType::"Four Digit Standard Account", LibraryRandom.RandInt(5));
+        SAFTTestHelper.MatchGLAccountsFourDigit(SAFTMappingRange.Code);
+        // [GIVEN] SAF-T Export with "Starting Date" = 01.01.2023 and "Ending Date" = 01.02.2023
+        // [GIVEN] "Split by Month" option is enabled
+        SAFTTestHelper.CreateSAFTExportHeader(SAFTExportHeader, SAFTMappingRange.Code);
+        SAFTTestHelper.IncludesNoSourceCodeToTheFirstSAFTSourceCode();
+
+        // [GIVEN] G/L Entry with "Transaction No." = 1, "Posting Date" = 01.01.2023 and Debit = 100
+        Amount[1] := LibraryRandom.RandDec(100, 2);
+        SAFTTestHelper.MockGLEntry(
+            SAFTExportHeader."Starting Date", LibraryUtility.GenerateGUID(), '',
+            1, 0, 0, '', '', 0, '', '', Amount[1], 0);
+        // [GIVEN] G/L Entry with "Transaction No." = 2, "Posting Date" = 01.02.2023 and Credit Amount = 200
+        Amount[2] := LibraryRandom.RandDec(100, 2);
+        SAFTTestHelper.MockGLEntry(
+            SAFTExportHeader."Ending Date", LibraryUtility.GenerateGUID(), '',
+            2, 0, 0, '', '', 0, '', '', 0, Amount[2]);
+
+        // [WHEN] Export G/L Entries to the XML file
+        LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+
+        // [THEN] Two SAF-T Export Lines have been generated
+        SAFTExportLine.SetRange("Master Data", false);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        Assert.RecordCount(SAFTExportLine, 2);
+        repeat
+            SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+            Assert.IsTrue(TempXMLBuffer.FindNodesByXPath(TempXMLBuffer, '/n1:AuditFile/n1:GeneralLedgerEntries'), 'No G/L entries exported.');
+            // [GIVEN] Each file has "Number Of Entries" = 2            
+            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:NumberOfEntries', Format(2));
+            // [GIVEN] Each file has "Total Debit" = 100
+            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:TotalDebit', SAFTTestHelper.FormatAmount(Amount[1]));
+            // [GIVEN] Each file has "Total Credit" = 200
+            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:TotalCredit', SAFTTestHelper.FormatAmount(Amount[2]));
+        until SAFTExportLine.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure CreditBalanceForPurchInvoice()
+    var
+        SAFTExportHeader: Record "SAF-T Export Header";
+        Vendor: Record Vendor;
+        SAFTExportLine: Record "SAF-T Export Line";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        VendNo: Code[20];
+        OpeningAmount: Decimal;
+        AmountInPeriod: Decimal;
+    begin
+        // [SCENARIO 464814] Purchase invoice exports with credit opening and closing balance
+
+        Initialize();
+        // [GIVEN] SAF-T Setup with "Starting Date" = 01.01.2023
+        BasicSAFTSetup(SAFTExportHeader);
+
+        Vendor.FindFirst();
+        VendNo := Vendor."No.";
+        OpeningAmount := LibraryRandom.RandIntInRange(100, 1000);
+        // [GIVEN] Invoice Vendor Ledger Entry with "Starting Date" = 31.12.2022 and Amount = -100
+        SAFTTestHelper.MockVendLedgEntry(
+            SAFTExportHeader."Starting Date" - 1, VendNo, -OpeningAmount, -OpeningAmount, "Gen. Journal Document Type"::Invoice);
+        AmountInPeriod := LibraryRandom.RandIntInRange(100, 1000);
+        // [GIVEN] Invoice Vendor Ledger Entry with "Starting Date" = 01.01.2023 and Amount = -200
+        SAFTTestHelper.MockVendLedgEntry(
+            SAFTExportHeader."Starting Date", VendNo, -AmountInPeriod, -AmountInPeriod, "Gen. Journal Document Type"::Invoice);
+
+        // [WHEN] Export SAF-T
+        LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+
+        // [THEN] Master file contains the 'n1:SupplierID' node with 'OpeningCreditBalance' = 100 and 'ClosingCreditBalance' = 300
+        SAFTExportLine.SetRange(Status, SAFTExportLine.Status::Completed);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        TempXMLBuffer.SetFilter(Name, 'SupplierID');
+        TempXMLBuffer.FindSet();
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.Next(); // skip AccountIDXmlNode
+        SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:OpeningCreditBalance', SAFTTestHelper.FormatAmount(OpeningAmount));
+        SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:ClosingCreditBalance', SAFTTestHelper.FormatAmount(OpeningAmount + AmountInPeriod));
+
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure DebitBalanceForPurchCrMemo()
+    var
+        SAFTExportHeader: Record "SAF-T Export Header";
+        Vendor: Record Vendor;
+        SAFTExportLine: Record "SAF-T Export Line";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        VendNo: Code[20];
+        OpeningAmount: Decimal;
+        AmountInPeriod: Decimal;
+    begin
+        // [SCENARIO 464814] Purchase credit memo exports with debit ppening and closing balance
+
+        Initialize();
+        // [GIVEN] SAF-T Setup with "Starting Date" = 01.01.2023
+        BasicSAFTSetup(SAFTExportHeader);
+
+        Vendor.FindFirst();
+        VendNo := Vendor."No.";
+        OpeningAmount := LibraryRandom.RandIntInRange(100, 1000);
+        // [GIVEN] Credit Memo Vendor Ledger Entry with "Starting Date" = 31.12.2022 and Amount = -100
+        SAFTTestHelper.MockVendLedgEntry(
+            SAFTExportHeader."Starting Date" - 1, VendNo, OpeningAmount, OpeningAmount, "Gen. Journal Document Type"::"Credit Memo");
+        AmountInPeriod := LibraryRandom.RandIntInRange(100, 1000);
+        // [GIVEN] Credit Memo Vendor Ledger Entry with "Starting Date" = 01.01.2023 and Amount = -200
+        SAFTTestHelper.MockVendLedgEntry(
+            SAFTExportHeader."Starting Date", VendNo, AmountInPeriod, AmountInPeriod, "Gen. Journal Document Type"::"Credit Memo");
+
+        // [WHEN] Export SAF-T
+        LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+
+        // [THEN] Master file contains the 'n1:SupplierID' node with 'OpeningDebitBalance' = 100 and 'ClosingDebitBalance' = 300
+        SAFTExportLine.SetRange(Status, SAFTExportLine.Status::Completed);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        TempXMLBuffer.SetFilter(Name, 'SupplierID');
+        TempXMLBuffer.FindSet();
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.Next(); // skip AccountIDXmlNode
+        SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:OpeningDebitBalance', SAFTTestHelper.FormatAmount(OpeningAmount));
+        SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:ClosingDebitBalance', SAFTTestHelper.FormatAmount(OpeningAmount + AmountInPeriod));
+
+        LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmYesHandler')]
+    procedure BlankDimensionValueDoesNotExportToAnalysisID()
+    var
+        SAFTExportHeader: Record "SAF-T Export Header";
+        Vendor: Record Vendor;
+        Dimension: Record Dimension;
+        DefaultDimension: Record "Default Dimension";
+        SAFTExportLine: Record "SAF-T Export Line";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        VendNo: Code[20];
+    begin
+        // [SCENARIO 485406] A default dimension with blank dimension value code does not export to the 'AnalysysID' xml node
+
+        Initialize();
+        BasicSAFTSetup(SAFTExportHeader);
+
+        Vendor.FindFirst();
+        VendNo := Vendor."No.";
+        // [GIVEN] Vendor with a default dimension "ADM" and no dimension value code
+        LibraryDimension.CreateDimension(Dimension);
+        LibraryDimension.CreateDefaultDimensionVendor(DefaultDimension, VendNo, Dimension.Code, '');
+
+        // [WHEN] Export SAF-T
+        LibraryVariableStorage.Enqueue(GenerateSAFTFileImmediatelyQst);
+        SAFTTestHelper.RunSAFTExport(SAFTExportHeader);
+
+        // [THEN] Master file does not contain the 'n1:PartyInfo' xml node under the 'n1:SupplierID' xml node 
+        SAFTExportLine.SetRange(Status, SAFTExportLine.Status::Completed);
+        SAFTTestHelper.FindSAFTExportLine(SAFTExportLine, SAFTExportHeader.ID);
+        SAFTTestHelper.LoadXMLBufferFromSAFTExportLine(TempXMLBuffer, SAFTExportLine);
+        Assert.IsFalse(
+            TempXMLBuffer.FindNodesByXPath(
+                TempXMLBuffer, '/n1:AuditFile/n1:MasterFiles/n1:Suppliers/n1:Supplier/n1:PartyInfo'), 'Vendor dimension is exported.');
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(CODEUNIT::"SAF-T XML Tests");
@@ -1704,7 +1887,7 @@ codeunit 148103 "SAF-T XML Tests"
             SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:OpeningCreditBalance', SAFTTestHelper.FormatAmount(Vendor."Net Change (LCY)"));
             Vendor.SetRange("Date Filter", 0D, closingdate(SAFTMappingRange."Ending Date"));
             Vendor.CalcFields("Net Change (LCY)");
-            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:ClosingDebitBalance', SAFTTestHelper.FormatAmount(Vendor."Net Change (LCY)"));
+            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:ClosingCreditBalance', SAFTTestHelper.FormatAmount(Vendor."Net Change (LCY)"));
             VerifyPartyInfo(TempXMLBuffer, Vendor."Payment Terms Code", database::Vendor, Vendor."No.");
             Vendor.Next();
         end;
@@ -1721,7 +1904,11 @@ codeunit 148103 "SAF-T XML Tests"
         SAFTTestHelper.AssertElementName(TempXMLBuffer, 'n1:TaxTableEntry');
         SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:TaxType', 'MVA');
         SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:Description', 'Merverdiavgift');
+#if CLEAN23
         NotApplicationVATCode := SAFTExportMgt.GetNotApplicableVATCode();
+#else
+        NotApplicationVATCode := SAFTExportMgt.GetNotApplicationVATCode();
+#endif
         // Verify first VAT Posting Setup with no standard tax codes
         VerifySingleVATPostingSetup(
             TempXMLBuffer, VATPostingSetup."Sales SAF-T Tax Code", VATPostingSetup.Description,
@@ -1731,12 +1918,21 @@ codeunit 148103 "SAF-T XML Tests"
             VATPostingSetup."VAT %", NotApplicationVATCode, false, 100);
         VATPostingSetup.Next();
         repeat
+#if CLEAN23
             VerifySingleVATPostingSetup(
                 TempXMLBuffer, VATPostingSetup."Sales SAF-T Tax Code", VATPostingSetup.Description,
                 VATPostingSetup."VAT %", VATPostingSetup."Sale VAT Reporting Code", false, 100);
             VerifySingleVATPostingSetup(
                 TempXMLBuffer, VATPostingSetup."Purchase SAF-T Tax Code", VATPostingSetup.Description,
                 VATPostingSetup."VAT %", VATPostingSetup."Purch. VAT Reporting Code", false, 100);
+#else
+            VerifySingleVATPostingSetup(
+                TempXMLBuffer, VATPostingSetup."Sales SAF-T Tax Code", VATPostingSetup.Description,
+                VATPostingSetup."VAT %", VATPostingSetup."Sales SAF-T Standard Tax Code", false, 100);
+            VerifySingleVATPostingSetup(
+                TempXMLBuffer, VATPostingSetup."Purchase SAF-T Tax Code", VATPostingSetup.Description,
+                VATPostingSetup."VAT %", VATPostingSetup."Purch. SAF-T Standard Tax Code", false, 100);
+#endif
         until VATPostingSetup.Next() = 0;
     end;
 
@@ -1777,7 +1973,7 @@ codeunit 148103 "SAF-T XML Tests"
         Employee: Record Employee;
         BankAccount: Record "Bank Account";
     begin
-        SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:RegistrationNumber', CompanyInformation."Registration No.");
+        SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:RegistrationNumber', CompanyInformation."VAT Registration No.");
         SAFTTestHelper.AssertElementValue(
             TempXMLBuffer, 'n1:Name', SAFTTestHelper.CombineWithSpace(CompanyInformation.Name, CompanyInformation."Name 2"));
         VerifyAddress(

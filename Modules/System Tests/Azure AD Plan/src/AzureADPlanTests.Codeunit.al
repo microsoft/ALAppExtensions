@@ -352,7 +352,7 @@ codeunit 132912 "Azure AD Plan Tests"
 
         // [Given] The current user is a delegated admin
         BindSubscription(AzureADUserTestLibrary);
-        AzureADUserTestLibrary.SetIsUserDelegatedtAdmin(true);
+        AzureADUserTestLibrary.SetIsUserDelegatedAdmin(true);
 
         // [Given] The plan configuration for the plan is not customized
         LibraryAssert.IsFalse(PlanConfiguration.IsCustomized(PlanIds.GetDelegatedAdminPlanId()), 'Plan configuration should not be customized');
@@ -406,7 +406,7 @@ codeunit 132912 "Azure AD Plan Tests"
 
         // [Given] The current user is not a delegated admin
         BindSubscription(AzureADUserTestLibrary);
-        AzureADUserTestLibrary.SetIsUserDelegatedtAdmin(false);
+        AzureADUserTestLibrary.SetIsUserDelegatedAdmin(false);
 
         // [Given] The plan configuration for the plan is not customized
         LibraryAssert.IsFalse(PlanConfiguration.IsCustomized(PlanIds.GetDelegatedAdminPlanId()), 'Plan configuration should not be customized');
@@ -457,7 +457,7 @@ codeunit 132912 "Azure AD Plan Tests"
 
         // [Given] The current user is a delegated admin
         BindSubscription(AzureADUserTestLibrary);
-        AzureADUserTestLibrary.SetIsUserDelegatedtAdmin(true);
+        AzureADUserTestLibrary.SetIsUserDelegatedAdmin(true);
 
         // [Given] The plan configuration for the plan is customized and contains SUPER
         PlanConfigurationLibrary.AddConfiguration(PlanIds.GetDelegatedAdminPlanId(), true);
@@ -512,7 +512,7 @@ codeunit 132912 "Azure AD Plan Tests"
 
         // [Given] The current user is a delegated admin
         BindSubscription(AzureADUserTestLibrary);
-        AzureADUserTestLibrary.SetIsUserDelegatedtHelpdesk(true);
+        AzureADUserTestLibrary.SetIsUserDelegatedHelpdesk(true);
 
         // [Given] The plan configuration for the plan is not customized
         LibraryAssert.IsFalse(PlanConfiguration.IsCustomized(PlanIds.GetHelpDeskPlanId()), 'Plan configuration should not be customized');
@@ -566,7 +566,7 @@ codeunit 132912 "Azure AD Plan Tests"
 
         // [Given] The current user is not a delegated helpdesk
         BindSubscription(AzureADUserTestLibrary);
-        AzureADUserTestLibrary.SetIsUserDelegatedtHelpdesk(false);
+        AzureADUserTestLibrary.SetIsUserDelegatedHelpdesk(false);
 
         // [Given] The plan configuration for the plan is not customized
         LibraryAssert.IsFalse(PlanConfiguration.IsCustomized(PlanIds.GetHelpDeskPlanId()), 'Plan configuration should not be customized');
@@ -617,7 +617,7 @@ codeunit 132912 "Azure AD Plan Tests"
 
         // [Given] The current user is a delegated helpdesk
         BindSubscription(AzureADUserTestLibrary);
-        AzureADUserTestLibrary.SetIsUserDelegatedtHelpdesk(true);
+        AzureADUserTestLibrary.SetIsUserDelegatedHelpdesk(true);
 
         // [Given] The plan configuration for the plan is customized and contains SUPER
         PlanConfigurationLibrary.AddConfiguration(PlanIds.GetHelpDeskPlanId(), true);

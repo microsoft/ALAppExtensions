@@ -22,6 +22,7 @@ codeunit 148000 "Digipoort XML"
         AttrBdObTok: Label 'xmlns:bd-ob';
         BDDataEndpointTxt: Label 'http://www.nltaxonomie.nl/nt17/bd/20221207/dictionary/bd-data', Locked = true;
         VATDeclarationSchemaEndpointTxt: Label 'http://www.nltaxonomie.nl/nt17/bd/20221207/entrypoints/bd-rpt-ob-aangifte-2023.xsd', Locked = true;
+        IncorrectNumberOfNodesErr: Label 'Incorrect number of node %1', Comment = '%1 = the name of the node';
 
     [Test]
     [HandlerFunctions('VATStatementRequestPageHandler,MessageHandler')]
@@ -57,12 +58,28 @@ codeunit 148000 "Digipoort XML"
         // [THEN] XBLR content generats correctly for Tax Declaration
         // [THEN] "period/startDate" = 01-01-2020
         // [THEN] "period/endDate" = 31-01-2020
+        // Bug 487820: Duplicate InstallationDistanceSalesWithinTheEC xbrl node created in the Digipoort file
+        // [THEN] Only one Amount xbrl node is generated in the file
         VerifyVATXBLRDocContent(VATReportHeader);
 
         LibraryVariableStorage.AssertEmpty();
 
         // Tear down
         VATReportsConfiguration := SavedVATReportsConfiguration;
+    end;
+
+    [Test]
+    procedure UT_TurnoverSuppliesServicesByWhichVATTaxationIsTransferredCode()
+    var
+        TempNameValueBuffer: Record "Name/Value Buffer" temporary;
+        DigitalTaxDeclMgt: Codeunit "Digital Tax. Decl. Mgt.";
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 487820] Verify that the AddTurnoverSuppliesServicesByWhichVATTaxationIsTransferred function of the "Digital Tax. Decl. Mgt." codeunit returns "2A-1"
+
+        Initialize();
+        DigitalTaxDeclMgt.AddTurnoverSuppliesServicesByWhichVATTaxationIsTransferred(TempNameValueBuffer);
+        TempNameValueBuffer.TestField(Name, '2A-1');
     end;
 
     local procedure SetLocalCurrencyEuro()
@@ -92,6 +109,7 @@ codeunit 148000 "Digipoort XML"
         CompanyInfo: Record "Company Information";
         SubmissionMessageInStream: InStream;
         NodeList: List of [Text];
+        XmlNodeListNet: DotNet XmlNodeList;
         Node: Text;
     begin
         VATReportArchive.Get(VATReportHeader."VAT Report Config. Code", VATReportHeader."No.");
@@ -157,6 +175,7 @@ codeunit 148000 "Digipoort XML"
             'bd-i:ValueAddedTaxSuppliesServicesReducedTariff');
 
         foreach Node in NodeList do begin
+            Assert.AreEqual(1, LibraryXMLReadServer.GetNodeListByElementName(Node, XmlNodeListNet), StrSubstNo(IncorrectNumberOfNodesErr, Node));
             LibraryXMLReadServer.GetNodeValueInSubtree(XbrliXbrlTok, Node); // Don't care about value, just verify existence
             LibraryXMLReadServer.VerifyAttributeValueInSubtree(XbrliXbrlTok, Node, 'decimals', 'INF');
             LibraryXMLReadServer.VerifyAttributeValueInSubtree(XbrliXbrlTok, Node, 'contextRef', 'Msg');

@@ -1,4 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 #if not CLEAN22
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Transfer;
+
 #pragma warning disable AL0432
 codeunit 31048 "TransferOrder-Post Handler CZL"
 {

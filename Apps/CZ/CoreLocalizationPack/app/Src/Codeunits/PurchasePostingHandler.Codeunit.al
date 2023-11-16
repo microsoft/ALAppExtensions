@@ -1,3 +1,36 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Posting;
+
+using Microsoft.Bank;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.AuditCodes;
+#if not CLEAN22
+using Microsoft.Foundation.BatchProcessing;
+#endif
+using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Intrastat;
+using Microsoft.Inventory.Journal;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Reports;
+using Microsoft.Purchases.Setup;
+using Microsoft.Purchases.Vendor;
+#if not CLEAN22
+using Microsoft.Sales.Document;
+using System.Environment.Configuration;
+#endif
+using System.Utilities;
+
 codeunit 31039 "Purchase Posting Handler CZL"
 {
     var
@@ -5,7 +38,6 @@ codeunit 31039 "Purchase Posting Handler CZL"
         GLEntry: Record "G/L Entry";
         Currency: Record Currency;
         BankOperationsFunctionsCZL: Codeunit "Bank Operations Functions CZL";
-        ReverseChargeCheckCZL: Enum "Reverse Charge Check CZL";
         PurchaseAlreadyExistsQst: Label 'Purchase %1 %2 already exists for this vendor.\Do you want to continue?',
             Comment = '%1 = Document Type; %2 = External Document No.; e.g. Purchase Invoice 123 already exists...';
 
@@ -25,8 +57,10 @@ codeunit 31039 "Purchase Posting Handler CZL"
             SourceCodeSetup.Get();
             SourceCodeSetup.TestField("Purchase VAT Delay CZL");
             GLEntry.Get(GLEntryNo);
+#if not CLEAN22
             if not PurchHeader.IsReplaceVATDateEnabled() then
                 PurchHeader."VAT Reporting Date" := PurchHeader."VAT Date CZL";
+#endif
             PostPurchaseVATCurrencyFactor(
               PurchHeader, InvoicePostBuffer, false, PurchHeader."Posting Date", true, VATPostingSetup, PurchHeader."VAT Reporting Date", GenJnlPostLine);
             PostPurchaseVATCurrencyFactor(
@@ -78,10 +112,12 @@ codeunit 31039 "Purchase Posting Handler CZL"
         GenJournalLine.Init();
         GenJournalLine."Posting Date" := PostingDate;
         GenJournalLine."Document Date" := PurchaseHeader."Document Date";
+#if not CLEAN22
         if not GenJournalLine.IsReplaceVATDateEnabled() then
             GenJournalLine.Validate("VAT Date CZL", VATDate)
         else
-            GenJournalLine.Validate("VAT Reporting Date", VATDate);
+#endif
+        GenJournalLine.Validate("VAT Reporting Date", VATDate);
         GenJournalLine.Validate("Original Doc. VAT Date CZL", PurchaseHeader."Original Doc. VAT Date CZL");
         GenJournalLine.Description := PurchaseHeader."Posting Description";
         GenJournalLine."Reason Code" := PurchaseHeader."Reason Code";
@@ -98,7 +134,13 @@ codeunit 31039 "Purchase Posting Handler CZL"
         GenJournalLine."Gen. Posting Type" := GenJournalLine."Gen. Posting Type"::Purchase;
         GenJournalLine."Gen. Bus. Posting Group" := InvoicePostBuffer."Gen. Bus. Posting Group";
         GenJournalLine."Gen. Prod. Posting Group" := InvoicePostBuffer."Gen. Prod. Posting Group";
-        GenJournalLine."EU 3-Party Trade" := PurchaseHeader."EU 3-Party Trade CZL";
+#if not CLEAN23
+#pragma warning disable AL0432
+        if not PurchaseHeader.IsEU3PartyTradeFeatureEnabled() then
+            PurchaseHeader."EU 3 Party Trade" := PurchaseHeader."EU 3-Party Trade CZL";
+#pragma warning restore AL0432
+#endif
+        GenJournalLine."EU 3-Party Trade" := PurchaseHeader."EU 3 Party Trade";
         GenJournalLine.Validate("EU 3-Party Intermed. Role CZL", PurchaseHeader."EU 3-Party Intermed. Role CZL");
         GenJournalLine."VAT Bus. Posting Group" := InvoicePostBuffer."VAT Bus. Posting Group";
         GenJournalLine."VAT Prod. Posting Group" := InvoicePostBuffer."VAT Prod. Posting Group";
@@ -186,10 +228,12 @@ codeunit 31039 "Purchase Posting Handler CZL"
         GenJournalLine.Init();
         GenJournalLine."Posting Date" := PostingDate;
         GenJournalLine."Document Date" := PurchaseHeader."Document Date";
+#if not CLEAN22
         if not GenJournalLine.IsReplaceVATDateEnabled() then
             GenJournalLine.Validate("VAT Date CZL", VATDate)
         else
-            GenJournalLine.Validate("VAT Reporting Date", VATDate);
+#endif
+        GenJournalLine.Validate("VAT Reporting Date", VATDate);
         GenJournalLine.Validate("Original Doc. VAT Date CZL", PurchaseHeader."Original Doc. VAT Date CZL");
         GenJournalLine.Description := PurchaseHeader."Posting Description";
         GenJournalLine."Reason Code" := PurchaseHeader."Reason Code";
@@ -307,7 +351,7 @@ codeunit 31039 "Purchase Posting Handler CZL"
         else
 #pragma warning restore AL0432
 #endif
-            GenJournalLine.Validate("VAT Reporting Date", VATDate);
+        GenJournalLine.Validate("VAT Reporting Date", VATDate);
         GenJournalLine.Validate("Original Doc. VAT Date CZL", PurchaseHeader."Original Doc. VAT Date CZL");
         GenJournalLine.Description := PurchaseHeader."Posting Description";
         GenJournalLine."Reason Code" := PurchaseHeader."Reason Code";
@@ -324,7 +368,13 @@ codeunit 31039 "Purchase Posting Handler CZL"
         GenJournalLine."Gen. Posting Type" := GenJournalLine."Gen. Posting Type"::Purchase;
         GenJournalLine."Gen. Bus. Posting Group" := InvoicePostingBuffer."Gen. Bus. Posting Group";
         GenJournalLine."Gen. Prod. Posting Group" := InvoicePostingBuffer."Gen. Prod. Posting Group";
-        GenJournalLine."EU 3-Party Trade" := PurchaseHeader."EU 3-Party Trade CZL";
+#if not CLEAN23
+#pragma warning disable AL0432
+        if not PurchaseHeader.IsEU3PartyTradeFeatureEnabled() then
+            PurchaseHeader."EU 3 Party Trade" := PurchaseHeader."EU 3-Party Trade CZL";
+#pragma warning restore AL0432
+#endif
+        GenJournalLine."EU 3-Party Trade" := PurchaseHeader."EU 3 Party Trade";
         GenJournalLine.Validate("EU 3-Party Intermed. Role CZL", PurchaseHeader."EU 3-Party Intermed. Role CZL");
         GenJournalLine."VAT Bus. Posting Group" := InvoicePostingBuffer."VAT Bus. Posting Group";
         GenJournalLine."VAT Prod. Posting Group" := InvoicePostingBuffer."VAT Prod. Posting Group";
@@ -417,9 +467,9 @@ codeunit 31039 "Purchase Posting Handler CZL"
         if not GenJournalLine.IsReplaceVATDateEnabled() then
             GenJournalLine.Validate("VAT Date CZL", VATDate)
         else
-#pragma warning restore AL0432        
+#pragma warning restore AL0432
 #endif
-            GenJournalLine.Validate("VAT Reporting Date", VATDate);
+        GenJournalLine.Validate("VAT Reporting Date", VATDate);
         GenJournalLine.Validate("Original Doc. VAT Date CZL", PurchaseHeader."Original Doc. VAT Date CZL");
         GenJournalLine.Description := PurchaseHeader."Posting Description";
         GenJournalLine."Reason Code" := PurchaseHeader."Reason Code";
@@ -503,7 +553,7 @@ codeunit 31039 "Purchase Posting Handler CZL"
         if PurchaseLine.FindSet(false) then
             repeat
                 if VATPostingSetup.Get(PurchaseLine."VAT Bus. Posting Group", PurchaseLine."VAT Prod. Posting Group") then
-                    if VATPostingSetup."Reverse Charge Check CZL" = ReverseChargeCheckCZL::"Limit Check" then begin
+                    if VATPostingSetup."Reverse Charge Check CZL" = Enum::"Reverse Charge Check CZL"::"Limit Check" then begin
                         PurchaseLine.TestField("Tariff No. CZL");
                         if TariffNumber.Get(PurchaseLine."Tariff No. CZL") then
                             if TariffNumber."VAT Stat. UoM Code CZL" <> '' then
@@ -660,18 +710,18 @@ codeunit 31039 "Purchase Posting Handler CZL"
             exit;
         if VATReportingDateMgt.IsVATDateEnabled() then begin
             VATDateExists :=
-                BatchProcessingMgt.GetBooleanParameter(PurchaseHeader.RecordId, "Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDate) and
-                BatchProcessingMgt.GetDateParameter(PurchaseHeader.RecordId, "Batch Posting Parameter Type"::"VAT Date", VATDate);
+                BatchProcessingMgt.GetBooleanParameter(PurchaseHeader.RecordId, Enum::"Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDate) and
+                BatchProcessingMgt.GetDateParameter(PurchaseHeader.RecordId, Enum::"Batch Posting Parameter Type"::"VAT Date", VATDate);
             if not VATDateExists then
                 VATDateExists :=
-                    BatchProcessingMgt.GetBooleanParameter(PurchaseHeader.RecordId, "Batch Posting Parameter Type"::"Replace VAT Date CZL", ReplaceVATDate) and
-                    BatchProcessingMgt.GetDateParameter(PurchaseHeader.RecordId, "Batch Posting Parameter Type"::"VAT Date CZL", VATDate);
+                    BatchProcessingMgt.GetBooleanParameter(PurchaseHeader.RecordId, Enum::"Batch Posting Parameter Type"::"Replace VAT Date CZL", ReplaceVATDate) and
+                    BatchProcessingMgt.GetDateParameter(PurchaseHeader.RecordId, Enum::"Batch Posting Parameter Type"::"VAT Date CZL", VATDate);
             if VATDateExists and (ReplaceVATDate or (PurchaseHeader."VAT Date CZL" = 0D)) then begin
                 PurchaseHeader.Validate("VAT Date CZL", VATDate);
                 PurchaseHeader.Modify();
             end;
         end else
-            if BatchProcessingMgt.GetDateParameter(PurchaseHeader.RecordId, "Batch Posting Parameter Type"::"Posting Date", PostingDate) and
+            if BatchProcessingMgt.GetDateParameter(PurchaseHeader.RecordId, Enum::"Batch Posting Parameter Type"::"Posting Date", PostingDate) and
                (PurchaseHeader."Posting Date" <> PurchaseHeader."VAT Date CZL")
             then begin
                 PurchaseHeader.Validate("VAT Date CZL", PurchaseHeader."Posting Date");
@@ -683,8 +733,12 @@ codeunit 31039 "Purchase Posting Handler CZL"
     local procedure CheckIntrastatMandatoryFieldsOnAfterCheckPurchaseDoc(PurchaseHeader: Record "Purchase Header"; var ErrorCounter: Integer; var ErrorText: array[99] of Text[250])
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
+        FeatureMgtFacade: Codeunit "Feature Management Facade";
         MustBeSpecifiedLbl: Label '%1 must be specified.', Comment = '%1 = FieldCaption';
+        IntrastatFeatureKeyIdTok: Label 'ReplaceIntrastat', Locked = true;
     begin
+        if FeatureMgtFacade.IsEnabled(IntrastatFeatureKeyIdTok) then
+            exit;
         if not (PurchaseHeader.Ship or PurchaseHeader.Receive) then
             exit;
         if PurchaseHeader.IsIntrastatTransactionCZL() and PurchaseHeader.ShipOrReceiveInventoriableTypeItemsCZL() then begin

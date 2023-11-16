@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Posting;
+
 pageextension 31027 "Sales Invoice CZZ" extends "Sales Invoice"
 {
     layout

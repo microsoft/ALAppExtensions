@@ -512,6 +512,39 @@ codeunit 135016 "Security Groups Test"
         TearDown();
     end;
 
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestCreateWithOrphanedSecurityGroups()
+    var
+        SecurityGroupBuffer: Record "Security Group Buffer";
+        SecurityGroupUser: Record User;
+        SecurityGroup: Codeunit "Security Group";
+        NavUserAccountHelper: DotNet NavUserAccountHelper;
+    begin
+        Initialize();
+
+        // [GIVEN] An AAD security group exists
+        MockGraphQueryTestLibrary.AddGroup(TestSecurityGroupNameTxt, TestSecurityGroupIdTxt);
+
+        // [GIVEN] There is an orphaned record in the User table (this can happen, because changes to the user table are not correctly rolled back on errors)
+        SecurityGroupUser."User Security ID" := CreateGuid();
+        SecurityGroupUser."User Name" := CopyStr('AAD Group: ' + TestSecurityGroupNameTxt, 1, MaxStrLen(SecurityGroupUser."User Name"));
+        SecurityGroupUser."License Type" := SecurityGroupUser."License Type"::"AAD Group";
+        SecurityGroupUser.Insert();
+
+        NavUserAccountHelper.SetAuthenticationObjectId(SecurityGroupUser."User Security ID", TestSecurityGroupIdTxt);
+
+        // [WHEN] A BC security group that corresponds to the orphaned user is created
+        // [THEN] No error happens
+        SecurityGroup.Create(TestSecurityGroupCodeTxt, TestSecurityGroupIdTxt);
+
+        // [THEN] There is one properly defined security group in the system
+        SecurityGroup.GetGroups(SecurityGroupBuffer);
+        Assert.RecordCount(SecurityGroupBuffer, 1);
+
+        TearDown();
+    end;
+
     [ModalPageHandler]
     procedure CopySecurityGroupHandler(var CopySecurityGroup: TestPage "Copy Security Group")
     begin

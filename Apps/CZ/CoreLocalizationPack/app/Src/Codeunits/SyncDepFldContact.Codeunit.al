@@ -1,4 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 #if not CLEAN23
+namespace Microsoft.Utilities;
+
+using Microsoft.CRM.Contact;
+
 #pragma warning disable AL0432
 codeunit 31152 "Sync.Dep.Fld-Contact CZL"
 {

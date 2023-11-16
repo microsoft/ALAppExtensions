@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Counting.History;
+
+using Microsoft.Inventory.Counting.Journal;
+using Microsoft.Inventory.Reports;
+
 pageextension 31003 "Posted Phys. Invt. Order CZL" extends "Posted Phys. Invt. Order"
 {
     actions

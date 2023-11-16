@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Reports;
+
+using Microsoft.Finance.Currency;
+
 table 31117 "Bank Acc. Adjust. Buffer CZL"
 {
     Caption = 'Bank Account Adjustment Buffer';

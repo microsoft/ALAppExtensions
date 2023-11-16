@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Foundation.Reporting;
+
+using Microsoft.Inventory.Document;
+using Microsoft.Inventory.History;
+
 codeunit 31411 "Report Selection Handler CZL"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Report Selection Mgt.", 'OnAfterInitReportSelectionInvt', '', false, false)]

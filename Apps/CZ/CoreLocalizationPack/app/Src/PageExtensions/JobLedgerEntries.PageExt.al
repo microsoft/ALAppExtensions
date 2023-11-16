@@ -1,4 +1,10 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 #if not CLEAN22
+namespace Microsoft.Projects.Project.Ledger;
+
 pageextension 31137 "Job Ledger Entries CZL" extends "Job Ledger Entries"
 {
     ObsoleteState = Pending;

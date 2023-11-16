@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GeneralLedger.Reports;
+
 table 31118 "G/L Account Adjust. Buffer CZL"
 {
     Caption = 'G/L Account Adjustment Buffer';

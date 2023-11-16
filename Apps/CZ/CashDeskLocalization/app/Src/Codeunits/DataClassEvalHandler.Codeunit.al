@@ -1,3 +1,23 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.CashDesk;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
+using Microsoft.Utilities;
+using System.Environment;
+using System.Privacy;
+using System.Security.User;
+
 codeunit 31056 "Data Class. Eval. Handler CZP"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Data Class. Eval. Data Country", 'OnAfterClassifyCountrySpecificTables', '', false, false)]

@@ -54,6 +54,7 @@ codeunit 3904 "Apply Retention Policy Impl."
         SingleDateFilterExclWithNullTxt: Label 'WHERE(Field%1=1(%2|%3))', Locked = true;
         SingleDateFilterExclTxt: Label 'WHERE(Field%1=1(%2))', Locked = true;
         DateFieldNoMustHaveAValueErr: Label 'The field Date Field No. must have a value in the retention policy for table %1, %2', Comment = '%1 = table number, %2 = table caption';
+        SystemUserSIDTxt: Label '{00000000-0000-0000-0000-000000000001}', Locked = true;
 
     trigger OnRun()
     var
@@ -119,7 +120,8 @@ codeunit 3904 "Apply Retention Policy Impl."
     begin
         IsUserInvokedRun := UserInvokedRun;
 
-        FeatureTelemetry.LogUptake('0000FVU', 'Retention policies', Enum::"Feature Uptake Status"::"Used");
+        if not IsSystemEnabledPolicy(RetentionPolicySetup) then
+            FeatureTelemetry.LogUptake('0000FVU', 'Retention policies', Enum::"Feature Uptake Status"::"Used");
         if not CanApplyRetentionPolicy(RetentionPolicySetup, Manual) then
             exit;
 
@@ -143,7 +145,8 @@ codeunit 3904 "Apply Retention Policy Impl."
 
         CheckAndContinueWithRerun(RetentionPolicySetup);
 
-        FeatureTelemetry.LogUsage('0000FVV', 'Retention policies', 'Retention policy applied');
+        if not IsSystemEnabledPolicy(RetentionPolicySetup) then
+            FeatureTelemetry.LogUsage('0000FVV', 'Retention policies', 'Retention policy applied');
     end;
 
     procedure GetExpiredRecordCount(RetentionPolicySetup: Record "Retention Policy Setup"; var ExpiredRecordExpirationDate: Date): Integer;
@@ -440,4 +443,17 @@ codeunit 3904 "Apply Retention Policy Impl."
         exit(Message)
     end;
 
+    /// <summary>
+    /// Determines if the retention policy was automatically created and enabled during install / upgrade and no user has modified it since.
+    /// </summary>
+    /// <param name="RetentionPolicySetup">The retention policy setup record.</param>
+    /// <returns>True if the retention policy was automatically created and enabled during install / upgrade and no user has modified it since. Otherwise, false.</returns>
+    local procedure IsSystemEnabledPolicy(RetentionPolicySetup: Record "Retention Policy Setup"): Boolean
+    var
+        OneHour: Duration;
+    begin
+        OneHour := 60 * 60 * 1000;
+        exit((RetentionPolicySetup.SystemCreatedBy = SystemUserSIDTxt) and (RetentionPolicySetup.SystemModifiedBy = SystemUserSIDTxt)
+              and (RetentionPolicySetup.SystemModifiedAt - RetentionPolicySetup.SystemCreatedAt < OneHour));
+    end;
 }

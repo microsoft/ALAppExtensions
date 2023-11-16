@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Posting;
+using System.Utilities;
+
 report 31029 "Create Purch. Adv. Letter CZZ"
 {
     Caption = 'Create Purchase Advance Letter';

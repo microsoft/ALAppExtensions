@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.History;
+
 pageextension 11754 "Posted Serv. Credit Memos CZL" extends "Posted Service Credit Memos"
 {
     layout

@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT;
+
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Receivables;
+using System.Security.User;
+
 codeunit 31129 "VAT Rep. Date Mgt. Handler CZL"
 {
     Access = Internal;
@@ -48,6 +62,13 @@ codeunit 31129 "VAT Rep. Date Mgt. Handler CZL"
         VATCtrlReportHeader: Record "VAT Ctrl. Report Header CZL";
         VATCtrlReportLine: Record "VAT Ctrl. Report Line CZL";
     begin
+        case VATEntry.Type of
+            VATEntry.Type::Sale:
+                UpdateRelatedCustomerLedgerEntries(VATEntry);
+            VATEntry.Type::Purchase:
+                UpdateRelatedVendorLedgerEntries(VATEntry);
+        end;
+
         VATEntry.CalcFields("VAT Ctrl. Report No. CZL", "VAT Ctrl. Report Line No. CZL");
         if (VATEntry."VAT Ctrl. Report No. CZL" = '') and
            (VATEntry."VAT Ctrl. Report Line No. CZL" = 0)
@@ -109,6 +130,20 @@ codeunit 31129 "VAT Rep. Date Mgt. Handler CZL"
         RelatedVATEntry.SetRange("VAT Ctrl. Report Line No. CZL", VATEntry."VAT Ctrl. Report Line No. CZL");
     end;
 
+    local procedure FilterRelatedCustomerLedgerEntries(VATEntry: Record "VAT Entry"; var RelatedCustLedgerEntry: Record "Cust. Ledger Entry")
+    begin
+        RelatedCustLedgerEntry.SetFilter("VAT Date CZL", '<>%1', VATEntry."VAT Reporting Date");
+        RelatedCustLedgerEntry.SetRange("Posting Date", VATEntry."Posting Date");
+        RelatedCustLedgerEntry.SetRange("Document No.", VATEntry."Document No.");
+    end;
+
+    local procedure FilterRelatedVendorLedgerEntries(VATEntry: Record "VAT Entry"; var RelatedVendorLedgerEntry: Record "Vendor Ledger Entry")
+    begin
+        RelatedVendorLedgerEntry.SetFilter("VAT Date CZL", '<>%1', VATEntry."VAT Reporting Date");
+        RelatedVendorLedgerEntry.SetRange("Posting Date", VATEntry."Posting Date");
+        RelatedVendorLedgerEntry.SetRange("Document No.", VATEntry."Document No.");
+    end;
+
     local procedure UpdateRelatedVATEntries(VATEntry: Record "VAT Entry")
     var
         RelatedVATEntry: Record "VAT Entry";
@@ -116,5 +151,23 @@ codeunit 31129 "VAT Rep. Date Mgt. Handler CZL"
         RelatedVATEntry.LoadFields("Entry No.", "VAT Ctrl. Report No. CZL", "VAT Ctrl. Report Line No. CZL", "VAT Reporting Date");
         FilterRelatedVATEntries(VATEntry, RelatedVATEntry);
         RelatedVATEntry.ModifyAll("VAT Reporting Date", VATEntry."VAT Reporting Date")
+    end;
+
+    local procedure UpdateRelatedCustomerLedgerEntries(VATEntry: Record "VAT Entry")
+    var
+        RelatedCustLedgerEntry: Record "Cust. Ledger Entry";
+    begin
+        RelatedCustLedgerEntry.LoadFields("Entry No.", "VAT Date CZL", "Posting Date", "Document No.");
+        FilterRelatedCustomerLedgerEntries(VATEntry, RelatedCustLedgerEntry);
+        RelatedCustLedgerEntry.ModifyAll("VAT Date CZL", VATEntry."VAT Reporting Date");
+    end;
+
+    local procedure UpdateRelatedVendorLedgerEntries(VATEntry: Record "VAT Entry")
+    var
+        RelatedVendorLedgerEntry: Record "Vendor Ledger Entry";
+    begin
+        RelatedVendorLedgerEntry.LoadFields("Entry No.", "VAT Date CZL", "Posting Date", "Document No.");
+        FilterRelatedVendorLedgerEntries(VATEntry, RelatedVendorLedgerEntry);
+        RelatedVendorLedgerEntry.ModifyAll("VAT Date CZL", VATEntry."VAT Reporting Date");
     end;
 }

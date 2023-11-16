@@ -73,17 +73,15 @@ codeunit 139650 "Hybrid Wizard Tests"
         // [GIVEN] User starts the wizard.
         InitializePage(HybridCloudSetupWizard, true, true);
 
-        with HybridCloudSetupWizard do begin
-            // [GIVEN] User clicks 'Next' on Welcome window.
-            ActionNext.Invoke();
+        // [GIVEN] User clicks 'Next' on Welcome window.
+        HybridCloudSetupWizard.ActionNext.Invoke();
 
-            // [WHEN] User selects a product and clicks 'Next' on Dynamics Product window.
-            "Product Name".AssistEdit();
-            ActionNext.Invoke();
+        // [WHEN] User selects a product and clicks 'Next' on Dynamics Product window.
+        HybridCloudSetupWizard."Product Name".AssistEdit();
+        HybridCloudSetupWizard.ActionNext.Invoke();
 
-            // [WHEN] User exists wizard before finishing.
-            Close();
-        end;
+        // [WHEN] User exists wizard before finishing.
+        HybridCloudSetupWizard.Close();
 
         // [THEN] Status of assisted setup remains not completed.
         Assert.IsFalse(GuidedExperience.IsAssistedSetupComplete(ObjectType::Page, Page::"Hybrid Cloud Setup Wizard"), 'Wizard status should not be completed.');
@@ -180,26 +178,19 @@ codeunit 139650 "Hybrid Wizard Tests"
 
         // [GIVEN] User starts the wizard.
         InitializePage(HybridCloudSetupWizard, true, true);
-
-        with HybridCloudSetupWizard do begin
-            // [WHEN] User clicks 'Next' on Welcome window.
-            ActionNext.Invoke();
-
-            // [WHEN] User selects a product
-            "Product Name".AssistEdit();
-            ActionNext.Invoke();
-
-            // [WHEN] User inputs their connection string
-            SqlConnectionString.Value := 'myconnectionstring';
-            RuntimeName.Value := 'default';
-            ActionNext.Invoke();
-
-            // [WHEN] User clicks 'Next' on the Company Selection page. Both companies are selected to replicate.
-            ActionNext.Invoke();
-
-            // [THEN] A confirmation dialog is displayed warning the customer that they have
-            // chosen to replicate too much data. ModalPageHandler will be triggered.
-        end;
+        // [WHEN] User clicks 'Next' on Welcome window.
+        HybridCloudSetupWizard.ActionNext.Invoke();
+        // [WHEN] User selects a product
+        HybridCloudSetupWizard."Product Name".AssistEdit();
+        HybridCloudSetupWizard.ActionNext.Invoke();
+        // [WHEN] User inputs their connection string
+        HybridCloudSetupWizard.SqlConnectionString.Value := 'myconnectionstring';
+        HybridCloudSetupWizard.RuntimeName.Value := 'default';
+        HybridCloudSetupWizard.ActionNext.Invoke();
+        // [WHEN] User clicks 'Next' on the Company Selection page. Both companies are selected to replicate.
+        HybridCloudSetupWizard.ActionNext.Invoke();
+        // [THEN] A confirmation dialog is displayed warning the customer that they have
+        // chosen to replicate too much data. ModalPageHandler will be triggered.
     end;
 
     [Test]
@@ -230,25 +221,23 @@ codeunit 139650 "Hybrid Wizard Tests"
         // [GIVEN] User starts the wizard.
         InitializePage(HybridCloudSetupWizard, true, true);
 
-        with HybridCloudSetupWizard do begin
-            // [WHEN] User clicks 'Next' on Welcome window.
-            ActionNext.Invoke();
+        // [WHEN] User clicks 'Next' on Welcome window.
+        HybridCloudSetupWizard.ActionNext.Invoke();
 
-            // [WHEN] User selects a product
-            "Product Name".AssistEdit();
-            ActionNext.Invoke();
+        // [WHEN] User selects a product
+        HybridCloudSetupWizard."Product Name".AssistEdit();
+        HybridCloudSetupWizard.ActionNext.Invoke();
 
-            // [WHEN] User inputs their connection string
-            SqlConnectionString.Value := 'myconnectionstring';
-            RuntimeName.Value := 'default';
-            ActionNext.Invoke();
+        // [WHEN] User inputs their connection string
+        HybridCloudSetupWizard.SqlConnectionString.Value := 'myconnectionstring';
+        HybridCloudSetupWizard.RuntimeName.Value := 'default';
+        HybridCloudSetupWizard.ActionNext.Invoke();
 
-            // [WHEN] User clicks 'Next' on the Company Selection page. Only one company is selected to replicate.
-            ActionNext.Invoke();
+        // [WHEN] User clicks 'Next' on the Company Selection page. Only one company is selected to replicate.
+        HybridCloudSetupWizard.ActionNext.Invoke();
 
-            // [THEN] A confirmation dialog is NOT displayed warning the customer that they have
-            // chosen to replicate too much data. ModalPageHandler will NOT be triggered.
-        end;
+        // [THEN] A confirmation dialog is NOT displayed warning the customer that they have
+        // chosen to replicate too much data. ModalPageHandler will NOT be triggered.
     end;
 
     [Test]
@@ -264,26 +253,24 @@ codeunit 139650 "Hybrid Wizard Tests"
         // [GIVEN] User starts the wizard.
         InitializePage(HybridCloudSetupWizard, true, true);
 
-        with HybridCloudSetupWizard do begin
-            // [WHEN] User clicks 'Next' on Welcome window.
-            ActionNext.Invoke();
+        // [WHEN] User clicks 'Next' on Welcome window.
+        HybridCloudSetupWizard.ActionNext.Invoke();
 
-            // [THEN] Dynamics Product window is displayed.
-            VerifySaasDynamicsProductWindow(HybridCloudSetupWizard);
+        // [THEN] Dynamics Product window is displayed.
+        VerifySaasDynamicsProductWindow(HybridCloudSetupWizard);
 
-            // [WHEN] User clicks 'Next' with out selecting a product.
-            asserterror ActionNext.Invoke();
+        // [WHEN] User clicks 'Next' with out selecting a product.
+        asserterror HybridCloudSetupWizard.ActionNext.Invoke();
 
-            // [THEN] An error is displayed that a product must be selected.
-            Assert.ExpectedError(SelectProductErr);
+        // [THEN] An error is displayed that a product must be selected.
+        Assert.ExpectedError(SelectProductErr);
 
-            // [WHEN] User selects a product
-            "Product Name".AssistEdit();
+        // [WHEN] User selects a product
+        HybridCloudSetupWizard."Product Name".AssistEdit();
 
-            // [THEN] The product is correctly selected and the user can click 'Next'
-            Assert.AreEqual(libraryHybridManagement.GetTestProductName(), "Product Name".Value(), 'Correct product name was not selected.');
-            ActionNext.Invoke();
-        end;
+        // [THEN] The product is correctly selected and the user can click 'Next'
+        Assert.AreEqual(libraryHybridManagement.GetTestProductName(), HybridCloudSetupWizard."Product Name".Value(), 'Correct product name was not selected.');
+        HybridCloudSetupWizard.ActionNext.Invoke();
     end;
 
     [Test]
@@ -299,20 +286,18 @@ codeunit 139650 "Hybrid Wizard Tests"
         // [GIVEN] User starts the wizard.
         InitializePage(HybridCloudSetupWizard, true, true);
 
-        with HybridCloudSetupWizard do begin
-            // [GIVEN] User clicks 'Next' on Welcome window.
-            ActionNext.Invoke();
+        // [GIVEN] User clicks 'Next' on Welcome window.
+        HybridCloudSetupWizard.ActionNext.Invoke();
 
-            // [WHEN] User selects a product and clicks 'Next' on Dynamics Product window.
-            "Product Name".AssistEdit();
-            ActionNext.Invoke();
+        // [WHEN] User selects a product and clicks 'Next' on Dynamics Product window.
+        HybridCloudSetupWizard."Product Name".AssistEdit();
+        HybridCloudSetupWizard.ActionNext.Invoke();
 
-            // [WHEN] User clicks 'Next' on SQL Conection window.
-            asserterror ActionNext.Invoke();
+        // [WHEN] User clicks 'Next' on SQL Conection window.
+        asserterror HybridCloudSetupWizard.ActionNext.Invoke();
 
-            // [THEN] Error message is displayed.
-            Assert.ExpectedError(SqlConnectionStringMissingErr);
-        end;
+        // [THEN] Error message is displayed.
+        Assert.ExpectedError(SqlConnectionStringMissingErr);
     end;
 
     local procedure VerifyEstimatedSizeVisibility(HybridCompanies: TestPage "Hybrid Companies"; Visibility: Boolean)
@@ -322,20 +307,16 @@ codeunit 139650 "Hybrid Wizard Tests"
 
     local procedure VerifySaasWelcomeWindow(HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard")
     begin
-        with HybridCloudSetupWizard do begin
-            Assert.IsFalse(ActionBack.Enabled(), 'Welcome window ActionBack should be disabled.');
-            Assert.IsTrue(ActionNext.Enabled(), 'Welcome window ActionNext should be enabled.');
-            Assert.IsFalse(ActionFinish.Enabled(), 'Welcome window ActionFinish should be disabled.');
-        end;
+        Assert.IsFalse(HybridCloudSetupWizard.ActionBack.Enabled(), 'Welcome window ActionBack should be disabled.');
+        Assert.IsTrue(HybridCloudSetupWizard.ActionNext.Enabled(), 'Welcome window ActionNext should be enabled.');
+        Assert.IsFalse(HybridCloudSetupWizard.ActionFinish.Enabled(), 'Welcome window ActionFinish should be disabled.');
     end;
 
     local procedure VerifySaasDynamicsProductWindow(HybridCloudSetupWizard: TestPage "Hybrid Cloud Setup Wizard")
     begin
-        with HybridCloudSetupWizard do begin
-            Assert.IsTrue(ActionBack.Enabled(), 'Dynamics Product window ActionBack should be enabled.');
-            Assert.IsTrue(ActionNext.Enabled(), 'Dynamics Product window ActionNext should be enabled.');
-            Assert.IsFalse(ActionFinish.Enabled(), 'Dynamics Product window ActionFinish should be disabled.');
-        end;
+        Assert.IsTrue(HybridCloudSetupWizard.ActionBack.Enabled(), 'Dynamics Product window ActionBack should be enabled.');
+        Assert.IsTrue(HybridCloudSetupWizard.ActionNext.Enabled(), 'Dynamics Product window ActionNext should be enabled.');
+        Assert.IsFalse(HybridCloudSetupWizard.ActionFinish.Enabled(), 'Dynamics Product window ActionFinish should be disabled.');
     end;
 
     [ConfirmHandler]

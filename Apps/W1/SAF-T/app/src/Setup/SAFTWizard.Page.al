@@ -207,10 +207,10 @@ page 5280 "SAF-T Wizard"
 
                         trigger OnDrillDown()
                         var
-                            GLAccountMappingCard: Page "G/L Account Mapping Card";
+                            GLAccMappingCard: Page "G/L Acc. Mapping Card";
                         begin
-                            GLAccountMappingCard.SetTableView(Rec);
-                            GLAccountMappingCard.RunModal();
+                            GLAccMappingCard.SetTableView(Rec);
+                            GLAccMappingCard.RunModal();
                             UpdateGLAccountsMappedInfo();
                         end;
                     }
@@ -387,7 +387,7 @@ page 5280 "SAF-T Wizard"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Match chart of accounts';
                 ToolTip = 'Automatically match existing G/L accounts with SAF-T standard accounts codes, with either two or four digits depending on the mapping type selected in the previous step.';
-                Visible = MappingAccountVisible and SAFTStandardAccMappingSelected;
+                Visible = MappingAccountVisible;
                 Image = MapAccounts;
                 InFooterBar = true;
                 trigger OnAction();
@@ -404,7 +404,7 @@ page 5280 "SAF-T Wizard"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Create chart of accounts';
                 ToolTip = 'Create a chart of accounts in Business Central from SAF-T standard accounts codes, with either two or four digits depending on mapping type selected in the previous step.';
-                Visible = MappingRangeStepVisible and SAFTStandardAccMappingSelected;
+                Visible = MappingRangeStepVisible;
                 Image = MapAccounts;
                 InFooterBar = true;
                 trigger OnAction();
@@ -497,7 +497,6 @@ page 5280 "SAF-T Wizard"
         DimensionExportVisible: Boolean;
         ContactVisible: Boolean;
         TopBannerVisible: Boolean;
-        SAFTStandardAccMappingSelected: Boolean;
         StandardAccountsLoaded: Boolean;
         SetupCompleted: Boolean;
         DataUpgradeAgreed: Boolean;

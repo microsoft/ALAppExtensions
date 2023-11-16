@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Documents;
+
+using Microsoft.Bank;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using System.Security.User;
+using System.Utilities;
+
 codeunit 31356 "Payment Order Management CZB"
 {
     Permissions = tabledata "Iss. Payment Order Header CZB" = rm;

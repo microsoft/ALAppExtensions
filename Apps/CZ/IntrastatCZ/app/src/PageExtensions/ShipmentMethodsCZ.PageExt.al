@@ -24,6 +24,20 @@ pageextension 31339 "Shipment Methods CZ" extends "Shipment Methods"
         {
             Enabled = not IntrastatEnabled;
         }
+#pragma warning disable AL0432
+        modify("Incl. Item Charges (S.Val) CZL")
+#pragma warning restore AL0432
+        {
+            Enabled = not IntrastatEnabled;
+            Visible = not IntrastatEnabled;
+        }
+#pragma warning disable AL0432
+        modify("Adjustment % CZL")
+#pragma warning restore AL0432
+        {
+            Enabled = not IntrastatEnabled;
+            Visible = not IntrastatEnabled;
+        }
 #endif
         addafter(Description)
         {

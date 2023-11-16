@@ -1,3 +1,21 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Documents;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Setup;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.HumanResources.Employee;
+using Microsoft.HumanResources.Payables;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+using System.Utilities;
+
 table 31259 "Iss. Payment Order Line CZB"
 {
     Caption = 'Issued Payment Order Line';

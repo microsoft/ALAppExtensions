@@ -1,0 +1,32 @@
+{
+    "id":  "f2d92a20-33a7-4174-a82f-666e8e2ad69e",
+    "name":  "AI Test Library",
+    "publisher":  "Microsoft",
+    "brief":  "Test objects for the AI.",
+    "description":  "Test objects for the AI.",
+    "version":  "23.1.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "",
+    "dependencies":  [
+        {
+            "id":  "d3433b68-4901-445f-9547-fdfeca57575a",
+            "name":  "AI SDK",
+            "publisher":  "Microsoft",
+            "version":  "23.1.0.0"
+        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "idRanges":  [
+                     {
+                         "from":  132932,
+                         "to":  132934
+                     }
+                 ],
+    "platform":  "23.0.0.0",
+    "target":  "OnPrem"
+}

@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.CRM;
+
+using Microsoft.CRM.BusinessRelation;
+using Microsoft.CRM.Contact;
+using Microsoft.Finance.Registration;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+
 codeunit 11751 "Contact Handler CZL"
 {
     [EventSubscriber(ObjectType::Table, Database::Contact, 'OnAfterDeleteEvent', '', false, false)]

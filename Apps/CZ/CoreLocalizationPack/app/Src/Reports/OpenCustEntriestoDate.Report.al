@@ -1,3 +1,16 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Receivables;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Sales.Customer;
+using System.Utilities;
+
 report 11715 "Open Cust. Entries to Date CZL"
 {
     DefaultLayout = RDLC;
@@ -267,7 +280,7 @@ report 11715 "Open Cust. Entries to Date CZL"
                             end;
 
                         // buffer for total sumary by G/L account;
-                        UpdateBuffer(TempGLAccountNetChange, GenJournalLineHandlerCZL.GetReceivablesAccNo("Cust. Ledger Entry"), "Remaining Amt. (LCY)", 0);
+                        UpdateBuffer(TempGLAccountNetChange, "Cust. Ledger Entry".GetReceivablesAccNoCZL(), "Remaining Amt. (LCY)", 0);
                         UpdateBuffer(TempTotalCurrencyGLAccountNetChange, '', "Original Amt. (LCY)", "Remaining Amt. (LCY)");
 
                         if PrintCurrency then begin
@@ -644,7 +657,6 @@ report 11715 "Open Cust. Entries to Date CZL"
         TempTotalCurrencyGLAccountNetChange: Record "G/L Account Net Change" temporary;
 #pragma warning restore AL0432        
         GLAccount: Record "G/L Account";
-        GenJournalLineHandlerCZL: Codeunit "Gen. Journal Line Handler CZL";
         LimitDate: array[5] of DateFormula;
         CurrencyCode: Code[10];
         WindowDialog: Dialog;

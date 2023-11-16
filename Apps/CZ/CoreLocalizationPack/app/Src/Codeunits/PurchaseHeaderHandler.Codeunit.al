@@ -1,4 +1,17 @@
-﻿codeunit 11744 "Purchase Header Handler CZL"
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Document;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Setup;
+#if not CLEAN22
+using Microsoft.Purchases.Setup;
+#endif
+using Microsoft.Purchases.Vendor;
+
+codeunit 11744 "Purchase Header Handler CZL"
 {
     var
         GeneralLedgerSetup: Record "General Ledger Setup";

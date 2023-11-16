@@ -87,6 +87,9 @@ codeunit 18143 "GST Sales Validation"
             if ShiptoAddr.Get(ToSalesHeader."Bill-to Customer No.", ToSalesHeader."Ship-to Code") then
                 ToSalesHeader."GST-Ship to Customer Type" := ShiptoAddr."Ship-to GST Customer Type";
 
+        if ToSalesHeader."GST Customer Type" = ToSalesHeader."GST Customer Type"::Unregistered then
+            ToSalesHeader."GST-Ship to Customer Type" := ToSalesHeader."GST Customer Type";
+
         AssignInvoiceType(ToSalesHeader);
     end;
 

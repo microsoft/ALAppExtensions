@@ -1,4 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 #if not CLEAN22
+namespace Microsoft.Utilities;
+
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Sales.History;
+
 #pragma warning disable AL0432
 codeunit 31469 "Sync.Dep.Fld-SCrMemoHdr CZL"
 {

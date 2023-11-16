@@ -136,6 +136,7 @@ codeunit 9029 "Azure AD User Sync Impl."
         PlanIds: Codeunit "Plan Ids";
         UserPlanIds: List of [Guid];
         GraphUserInfo: DotNet UserInfo;
+        AuthenticationObjectId: Text;
     begin
         // If the environment is not defined, update global admins and Teams users, as they are not pulled in automatically
         // If the environment is defined, only update the global admins, as they are still allowed to access the environment
@@ -149,15 +150,16 @@ codeunit 9029 "Azure AD User Sync Impl."
             // These should only Global Admins, Dynamics 365 Admins and Teams users (handled here)
             // and the users who have been deleted in Microsoft Entra / had their BC plans unassigned (handled in HandleRemovedUsers)
             if not OfficeUsersInBC.Contains(User."User Security ID") then
-                if TryGetUserByAuthorizationEmail(User."Authentication Email", GraphUserInfo) then
-                    if not IsNull(GraphUserInfo) then begin
-                        AzureADPlan.GetPlanIDs(GraphUserInfo, UserPlanIds);
-                        if UserPlanIds.Contains(PlanIds.GetGlobalAdminPlanId()) or // global admins are not affected by the environment security group
-                           UserPlanIds.Contains(PlanIds.GetD365AdminPlanId()) or // dynamics 365 admins are not affected by the environment security group
-                           ((not AzureADGraph.IsEnvironmentSecurityGroupDefined()) and UserPlanIds.Contains(PlanIds.GetMicrosoft365PlanId()))
-                        then
-                            GetUpdatesFromGraphUserInfo(GraphUserInfo, AzureADUserUpdate, OfficeUsersInBC);
-                    end;
+                if AzureADGraphUser.TryGetUserAuthenticationObjectId(User."User Security ID", AuthenticationObjectId) then
+                    if AzureADGraph.TryGetUserByObjectId(AuthenticationObjectId, GraphUserInfo) then
+                        if not IsNull(GraphUserInfo) then begin
+                            AzureADPlan.GetPlanIDs(GraphUserInfo, UserPlanIds);
+                            if UserPlanIds.Contains(PlanIds.GetGlobalAdminPlanId()) or // global admins are not affected by the environment security group
+                                UserPlanIds.Contains(PlanIds.GetD365AdminPlanId()) or // dynamics 365 admins are not affected by the environment security group
+                                ((not AzureADGraph.IsEnvironmentSecurityGroupDefined()) and UserPlanIds.Contains(PlanIds.GetMicrosoft365PlanId()))
+                            then
+                                GetUpdatesFromGraphUserInfo(GraphUserInfo, AzureADUserUpdate, OfficeUsersInBC);
+                        end;
         until User.Next() = 0;
     end;
 
@@ -393,13 +395,6 @@ codeunit 9029 "Azure AD User Sync Impl."
             Result += Element + DelimiterTxt;
         // TrimStart in case the plan name for the first plan is empty.
         Result := Result.TrimEnd(DelimiterTxt).TrimStart(DelimiterTxt);
-    end;
-
-    [TryFunction]
-    [NonDebuggable]
-    local procedure TryGetUserByAuthorizationEmail(AuthorizationEmail: Text; var GraphUserInfo: DotNet UserInfo)
-    begin
-        AzureADGraph.GetUserByAuthorizationEmail(AuthorizationEmail, GraphUserInfo);
     end;
 
     local procedure ConvertList(AssingedPlans: List of [Guid]; var AssignedPlansList: DotNet StringArray)

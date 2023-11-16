@@ -1,3 +1,38 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GeneralLedger.Setup;
+
+using Microsoft.Finance.FinancialReports;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Purchases.Archive;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+#if not CLEAN22
+using Microsoft.Purchases.Setup;
+#endif
+using Microsoft.Sales.Archive;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
+#if not CLEAN22
+using Microsoft.Sales.Setup;
+#endif
+using Microsoft.Service.Document;
+using Microsoft.Service.History;
+#if not CLEAN22
+using Microsoft.Service.Setup;
+#endif
+using System.Utilities;
+
 tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
 {
     fields

@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Intrastat;
 
+using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 
 tableextension 31327 "Sales Header CZ" extends "Sales Header"
@@ -18,16 +19,29 @@ tableextension 31327 "Sales Header CZ" extends "Sales Header"
             trigger OnValidate()
             begin
                 if "Physical Transfer CZ" then
-                    if not ("Document Type" in ["Document Type"::"Credit Memo", "Document Type"::"Return Order"]) then
+                    if not IsCreditDocType() then
                         FieldError("Document Type");
+                Validate("Transaction Type", GetDefaultTransactionType());
                 UpdateSalesLinesByFieldNo(FieldNo("Physical Transfer CZ"), false);
             end;
         }
+        field(31310; "Intrastat Exclude CZ"; Boolean)
+        {
+            Caption = 'Intrastat Exclude';
+            DataClassification = CustomerContent;
+        }
     }
 
-    procedure CheckIntrastatMandatoryFieldsCZ()
+    trigger OnBeforeInsert()
+    begin
+        "Physical Transfer CZ" := IntrastatReportSetup.GetDefaultPhysicalTransferCZ() and IsCreditDocType();
+    end;
+
     var
         IntrastatReportSetup: Record "Intrastat Report Setup";
+        IntrastatReportManagementCZ: Codeunit IntrastatReportManagementCZ;
+
+    procedure CheckIntrastatMandatoryFieldsCZ()
     begin
         if not (Ship or Receive) then
             exit;
@@ -42,5 +56,15 @@ tableextension 31327 "Sales Header CZ" extends "Sales Header"
             if IntrastatReportSetup."Shipment Method Mandatory CZ" then
                 TestField("Shipment Method Code");
         end;
+    end;
+
+    procedure GetPartnerBasedOnSetupCZ() Customer: Record Customer
+    begin
+        exit(IntrastatReportManagementCZ.GetCustomerBasedOnSetup("Sell-to Customer No.", "Bill-to Customer No."));
+    end;
+
+    local procedure GetDefaultTransactionType(): Code[10]
+    begin
+        exit(IntrastatReportManagementCZ.GetDefaultTransactionType(Rec));
     end;
 }

@@ -1,3 +1,16 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Customer;
+
+using Microsoft.Finance.Registration;
+#if not CLEAN21
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+#endif
+using Microsoft.Sales.Receivables;
+
 pageextension 11704 "Customer Card CZL" extends "Customer Card"
 {
     layout

@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Foundation.Shipping;
+#if not CLEAN22
+
+using Microsoft.Inventory.Intrastat;
+using Microsoft.Foundation.Company;
+#endif
+
 tableextension 11796 "Shipment Method CZL" extends "Shipment Method"
 {
     fields

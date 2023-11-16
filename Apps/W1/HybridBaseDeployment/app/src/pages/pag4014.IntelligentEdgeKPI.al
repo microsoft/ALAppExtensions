@@ -99,7 +99,7 @@ page 4014 "Intelligent Edge KPIs"
         GeneralLedgerSetup.Get();
         CurrencySymbol := GeneralLedgerSetup.GetCurrencySymbol();
 
-        case UserPersonalization."Locale ID" OF
+        case UserPersonalization."Locale ID" of
             1030, // da-DK
             1053, // sv-Se
             1044: // no-no
@@ -120,6 +120,6 @@ page 4014 "Intelligent Edge KPIs"
                 exit(CurrencySymbol + '<Precision,0:0><Standard Format,0>');
             else
                 exit('<Precision,0:0><Standard Format,0>');
-        END
+        end
     end;
 }

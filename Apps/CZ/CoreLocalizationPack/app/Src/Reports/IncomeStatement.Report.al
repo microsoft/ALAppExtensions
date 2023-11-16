@@ -1,3 +1,23 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.FinancialReports;
+
+using Microsoft.CashFlow.Forecast;
+using Microsoft.CostAccounting.Account;
+using Microsoft.CostAccounting.Budget;
+using Microsoft.Finance.Analysis;
+using Microsoft.Finance.Consolidation;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Budget;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.Period;
+using System.Text;
+using System.Utilities;
+
 report 11795 "Income Statement CZL"
 {
     DefaultLayout = RDLC;
@@ -602,6 +622,7 @@ report 11795 "Income Statement CZL"
             Dim3FilterEnable := true;
             Dim2FilterEnable := true;
             Dim1FilterEnable := true;
+            AccSchedNameEditable := true;
         end;
 
         trigger OnOpenPage()

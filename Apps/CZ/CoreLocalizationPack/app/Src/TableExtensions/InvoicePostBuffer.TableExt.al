@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.ReceivablesPayables;
+
 #pragma warning disable AL0432
 tableextension 11722 "Invoice Post. Buffer CZL" extends "Invoice Post. Buffer"
 #pragma warning restore AL0432

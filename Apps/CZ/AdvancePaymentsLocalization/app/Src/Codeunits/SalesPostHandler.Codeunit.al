@@ -1,3 +1,16 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Finance.CashDesk;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Posting;
+using Microsoft.Sales.Receivables;
+
 codeunit 31008 "Sales-Post Handler CZZ"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforePostSalesDoc', '', false, false)]
@@ -25,6 +38,7 @@ codeunit 31008 "Sales-Post Handler CZZ"
     var
         AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
         CustLedgerEntry: Record "Cust. Ledger Entry";
+        GetLastGLEntryNoCZZ: Codeunit "Get Last G/L Entry No. CZZ";
         SalesAdvLetterManagement: Codeunit "SalesAdvLetterManagement CZZ";
         AdvLetterUsageDocTypeCZZ: Enum "Adv. Letter Usage Doc.Type CZZ";
     begin
@@ -37,8 +51,10 @@ codeunit 31008 "Sales-Post Handler CZZ"
             AdvLetterUsageDocTypeCZZ := AdvLetterUsageDocTypeCZZ::"Sales Invoice";
 
         CustLedgerEntry.Get(SalesInvoiceHeader."Cust. Ledger Entry No.");
+        BindSubscription(GetLastGLEntryNoCZZ);
         SalesAdvLetterManagement.PostAdvancePaymentUsage(AdvLetterUsageDocTypeCZZ, SalesHeader."No.", SalesInvoiceHeader, CustLedgerEntry, GenJnlPostLine, false);
         SalesAdvLetterManagement.CorrectDocumentAfterPaymentUsage(SalesInvoiceHeader."No.", CustLedgerEntry, GenJnlPostLine);
+        UnbindSubscription(GetLastGLEntryNoCZZ);
 
         if not SalesHeader.Get(SalesHeader."Document Type", SalesHeader."No.") then begin
             AdvanceLetterApplicationCZZ.SetRange("Advance Letter Type", AdvanceLetterApplicationCZZ."Advance Letter Type"::Sales);
@@ -64,33 +80,5 @@ codeunit 31008 "Sales-Post Handler CZZ"
     local procedure DisableCheckOnBeforeTestStatusRelease(var IsHandled: Boolean)
     begin
         IsHandled := true;
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnRunOnBeforeMakeInventoryAdjustment', '', false, false)]
-    local procedure SuppressInventoryAdjustmentOnRunOnBeforeMakeInventoryAdjustment(SalesInvHeader: Record "Sales Invoice Header"; var SalesHeader: Record "Sales Header"; var SkipInventoryAdjustment: Boolean)
-    var
-        AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
-        CustLedgerEntry: Record "Cust. Ledger Entry";
-        AdvLetterUsageDocTypeCZZ: Enum "Adv. Letter Usage Doc.Type CZZ";
-    begin
-        if SkipInventoryAdjustment then
-            exit;
-
-        if (not SalesHeader.Invoice) or (not (SalesHeader."Document Type" in [SalesHeader."Document Type"::Order, SalesHeader."Document Type"::Invoice])) then
-            exit;
-
-        if SalesHeader."Document Type" = SalesHeader."Document Type"::Order then
-            AdvLetterUsageDocTypeCZZ := AdvLetterUsageDocTypeCZZ::"Sales Order"
-        else
-            AdvLetterUsageDocTypeCZZ := AdvLetterUsageDocTypeCZZ::"Sales Invoice";
-
-        CustLedgerEntry.Get(SalesInvHeader."Cust. Ledger Entry No.");
-        CustLedgerEntry.CalcFields("Remaining Amount");
-        if CustLedgerEntry."Remaining Amount" = 0 then
-            exit;
-
-        AdvanceLetterApplicationCZZ.SetRange("Document Type", AdvLetterUsageDocTypeCZZ);
-        AdvanceLetterApplicationCZZ.SetRange("Document No.", SalesHeader."No.");
-        SkipInventoryAdjustment := not AdvanceLetterApplicationCZZ.IsEmpty();
     end;
 }

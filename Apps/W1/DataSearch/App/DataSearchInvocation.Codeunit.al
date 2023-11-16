@@ -5,6 +5,8 @@ using System.Environment;
 codeunit 2684 "Data Search Invocation"
 {
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"System Action Triggers", 'GetDataSearchPageId', '', true, true)]
     local procedure GetDataSearchPageId(var PageId: Integer)

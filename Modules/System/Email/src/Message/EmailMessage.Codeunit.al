@@ -240,6 +240,35 @@ codeunit 8904 "Email Message"
     end;
 
     /// <summary>
+    /// Deletes the contents of the currently selected attachment.
+    /// </summary>
+    /// <param name="BypassSentCheck">If true, the attachment content will be deleted even if the email message has been sent.</param>
+    /// <returns>Returns true if contents was successfully deleted, otherwise false.</returns>
+    procedure Attachments_DeleteContent(BypassSentCheck: Boolean): Boolean
+    begin
+        exit(EmailMessageImpl.Attachments_DeleteContent(BypassSentCheck));
+    end;
+
+    /// <summary>
+    /// Deletes the currently selected attachment.
+    /// </summary>
+    /// <returns>Returns true if attachment was successfully deleted, otherwise false.</returns>
+    procedure Attachments_Delete(): Boolean
+    begin
+        exit(EmailMessageImpl.Attachments_Delete());
+    end;
+
+    /// <summary>
+    /// Deletes the currently selected attachment.
+    /// </summary>
+    /// <param name="BypassSentCheck">If true, the attachment will be deleted even if the email message has been sent.</param>
+    /// <returns>Returns true if attachment was successfully deleted, otherwise false.</returns>
+    procedure Attachments_Delete(BypassSentCheck: Boolean): Boolean
+    begin
+        exit(EmailMessageImpl.Attachments_Delete(BypassSentCheck));
+    end;
+
+    /// <summary>
     /// Finds the first attachment of the email message.
     /// </summary>
     /// <returns>True if there is any attachment; otherwise - false.</returns>

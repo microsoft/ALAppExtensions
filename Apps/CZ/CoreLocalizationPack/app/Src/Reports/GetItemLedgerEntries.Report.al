@@ -1,4 +1,28 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 #if not CLEAN22
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.Shipping;
+using Microsoft.Foundation.UOM;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Location;
+using Microsoft.Projects.Project.Job;
+using Microsoft.Projects.Project.Ledger;
+using Microsoft.Purchases.History;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+using Microsoft.Service.History;
+
 report 31006 "Get Item Ledger Entries CZL"
 {
     Caption = 'Get Item Ledger Entries';

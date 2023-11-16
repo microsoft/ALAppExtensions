@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Counting.Journal;
+
+using Microsoft.Inventory.Reports;
+
 pageextension 31002 "Phys. Invt. Ledger Entries CZL" extends "Phys. Inventory Ledger Entries"
 {
     actions

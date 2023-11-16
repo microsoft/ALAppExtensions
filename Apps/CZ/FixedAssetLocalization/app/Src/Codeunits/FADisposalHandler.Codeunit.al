@@ -1,3 +1,20 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.FixedAssets;
+
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Journal;
+using Microsoft.FixedAssets.Ledger;
+using Microsoft.FixedAssets.Maintenance;
+using Microsoft.FixedAssets.Posting;
+using Microsoft.Foundation.AuditCodes;
+using System.Utilities;
+
 #pragma warning disable AL0603
 codeunit 31235 "FA Disposal Handler CZF"
 {

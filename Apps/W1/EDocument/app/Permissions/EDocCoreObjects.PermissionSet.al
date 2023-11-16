@@ -40,6 +40,8 @@ permissionset 6100 "E-Doc. Core - Objects"
         codeunit "E-Document Create" = X,
         codeunit "E-Document Setup" = X,
         codeunit "E-Doc. Recurrent Batch Send" = X,
+        codeunit "E-Doc. Get Basic Info" = X,
+        codeunit "E-Doc. Get Complete Info" = X,
         page "E-Doc. Changes Part" = X,
         page "E-Doc. Changes Preview" = X,
         page "E-Document Activities" = X,

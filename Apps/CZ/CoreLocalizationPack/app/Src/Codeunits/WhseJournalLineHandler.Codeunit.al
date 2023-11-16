@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Warehouse.Journal;
+
+using System.Security.User;
+
 codeunit 31319 "Whse. Journal Line Handler CZL"
 {
     [EventSubscriber(ObjectType::Table, Database::"Warehouse Journal Line", 'OnBeforeOpenJnl', '', false, false)]

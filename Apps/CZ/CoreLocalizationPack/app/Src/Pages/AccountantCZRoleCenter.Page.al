@@ -1,3 +1,84 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.RoleCenters;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.DirectDebit;
+using Microsoft.Bank.Reconciliation;
+using Microsoft.Bank.Reports;
+using Microsoft.Bank.Statement;
+using Microsoft.CashFlow.Account;
+using Microsoft.CashFlow.Forecast;
+using Microsoft.CashFlow.Reports;
+using Microsoft.CashFlow.Setup;
+using Microsoft.CostAccounting.Account;
+using Microsoft.CostAccounting.Allocation;
+using Microsoft.CostAccounting.Budget;
+using Microsoft.CostAccounting.Ledger;
+using Microsoft.CostAccounting.Reports;
+using Microsoft.CRM.Contact;
+using Microsoft.EServices.EDocument;
+using Microsoft.Finance;
+using Microsoft.Finance.VAT.Registration;
+using Microsoft.Finance.Analysis;
+using Microsoft.Finance.Consolidation;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.Deferral;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.FinancialReports;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Budget;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Reports;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Insurance;
+using Microsoft.FixedAssets.Journal;
+using Microsoft.FixedAssets.Ledger;
+using Microsoft.Foundation.Navigate;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Foundation.Period;
+using Microsoft.Foundation.Task;
+using Microsoft.HumanResources.Employee;
+using Microsoft.Intercompany;
+using Microsoft.Intercompany.Dimension;
+using Microsoft.Intercompany.GLAccount;
+using Microsoft.Intercompany.Partner;
+using Microsoft.Inventory.Costing;
+using Microsoft.Inventory.History;
+using Microsoft.Inventory.Intrastat;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Reports;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Reports;
+using Microsoft.Purchases.Vendor;
+using Microsoft.RoleCenters;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.FinanceCharge;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Reminder;
+using Microsoft.Sales.Receivables;
+using Microsoft.Sales.Reports;
+using System.Automation;
+using System.Email;
+using System.Environment;
+#if not CLEAN21
+using System.Integration.PowerBI;
+#endif
+using System.Threading;
+using System.Visualization;
+
 page 31210 "Accountant CZ Role Center CZL"
 {
     Caption = 'Accountant CZ', Comment = 'Use same translation as ''Profile Description'' (if applicable)';
@@ -227,7 +308,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'G/L Account Categories';
                     RunObject = page "G/L Account Categories";
-                    ToolTip = 'Personalize the structure of your financial statements by mapping general ledger accounts to account categories. You can create category groups by indenting subcategories under them. Each grouping shows a total balance. When you choose the Generate Account Schedules action, the account schedules for the underlying financial reports are updated. The next time you run one of these reports, such as the balance statement, new totals and subentries are added, based on your changes.';
+                    ToolTip = 'Personalize the structure of your financial statements by mapping general ledger accounts to account categories. You can create category groups by indenting subcategories under them. Each grouping shows a total balance. When you choose the Generate Financial Reports action, the row definitions for the underlying financial reports are updated. The next time you run one of these reports, such as the balance statement, new totals and subentries are added, based on your changes.';
                 }
                 action(Currencies)
                 {

@@ -14,13 +14,14 @@ using System.Environment;
 using System.Azure.Identity;
 using System.Media;
 using System.Text;
+using Microsoft.Foundation.Company;
 
 codeunit 4001 "Hybrid Cloud Management"
 {
-    Permissions = tabledata "Published Application" = r,
+    Permissions = tabledata "Intelligent Cloud Status" = rimd,
+                  tabledata "Published Application" = r,
                   tabledata AllObj = r,
                   tabledata "Intelligent Cloud" = rimd,
-                  tabledata "Intelligent Cloud Status" = rimd,
                   tabledata "Hybrid DA Approval" = rim,
                   tabledata "Webhook Subscription" = rimd;
 
@@ -37,7 +38,8 @@ codeunit 4001 "Hybrid Cloud Management"
         CreatedIntegrationRuntimeMsg: Label 'Created Integration Runtime, IRName" %1', Comment = '%1 - Name of Integration Runtime', Locked = true;
         ReplicationCompletedServiceTypeTxt: Label 'ReplicationCompleted', Locked = true;
         CloudMigrationDisabledDueToUpgradeMsg: Label 'Cloud migration was stopped because the target environment was upgraded. Before you set up the cloud migration again, see the article Migrate On-Premises Data to Business Central Online in the Business Central administration content.';
-        CannotStartReplicationCompanyUpgradeFailedErr: Label 'You cannot start the replication because there are companies in which data upgrade has failed. After investigating the failure you must delete these companies and start the migration again.';
+        CannotStartUpgradeFailedErr: Label 'You cannot start the upgrade again because there are companies in which data upgrade has failed. After investigating the failure you must delete these companies and start the migration again, revert to backup or point in time restore to the point before running upgrade.';
+        CannotStartUpgradeFailedTablesErr: Label 'The upgrade can''t start due to %1 failed tables.\\Investigate and mitigate the failure, and then use the Replicate Data action again to migrate the missing data from the on-premises database.', Comment = '%1 the number of failed tables.';
         CannotTriggerUpgradeErr: Label 'Upgrade cannot be started until all companies are successfully replicated.';
         CannotStartUpgradeNotAllComapniesAreMigratedErr: Label 'Cannot start upgrade because following companies are not ready to be migrated:%1', Comment = '%1 - Comma separated list of companies pending cloud migration';
         ScheduledFixingDataTelemetryMsg: Label 'Companion table repair scheduled.', Locked = true;
@@ -91,6 +93,12 @@ codeunit 4001 "Hybrid Cloud Management"
         DataUpgradeScheduledLbl: Label 'Cloud Migration data upgrade scheduled.', Locked = true;
         UnblockedManuallyLbl: Label 'Unblocked manually';
         SettingForUserPermissionsMsg: Label 'Setting for Keeping user permissions was set to: %1.', Comment = '%1 - true or false';
+        DoNotManageCompaniesManuallyLbl: Label 'We strongly recommend that you don''t manage companies, such as renaming and deleting, while cloud migration is running.';
+        LearnMoreMsg: Label 'Learn more';
+        DontShowAgainMsg: Label 'Don''t show again';
+        CompanyManagementDocumentationHyperlinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2248704', Locked = true;
+        WarnManageCompaniesNotificationsTxt: Label 'Cloud Migration - Manage Companies Warning';
+        WarnManageCompaniesDescriptionTxt: Label 'Warning to the users to read the documentation before managing the companies during cloud migration.';
 
     procedure CanHandleNotification(SubscriptionId: Text; ProductId: Text): Boolean
     var
@@ -356,7 +364,6 @@ codeunit 4001 "Hybrid Cloud Management"
         SendTelemetryDisableCloudMigration(Reason);
     end;
 
-    [Scope('OnPrem')]
     procedure RepairCompanionTableRecordConsistency()
     var
         LastHybridReplicationSummary: Record "Hybrid Replication Summary";
@@ -1627,11 +1634,18 @@ codeunit 4001 "Hybrid Cloud Management"
     var
         HybridCompany: Record "Hybrid Company";
         HybridCompanyStatus: Record "Hybrid Company Status";
+        HybridReplicationDetail: Record "Hybrid Replication Detail";
+        HybridReplicationStatistics: Codeunit "Hybrid Replication Statistics";
         CompaniesNotReadyForUpgrade: Text;
     begin
+        if HybridReplicationStatistics.GetTotalFailedTables(HybridReplicationDetail) then begin
+            ErrorMessage := StrSubstNo(CannotStartUpgradeFailedTablesErr, HybridReplicationDetail.Count());
+            exit(false);
+        end;
+
         HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Failed);
         if not HybridCompanyStatus.IsEmpty() then begin
-            ErrorMessage := CannotStartReplicationCompanyUpgradeFailedErr;
+            ErrorMessage := CannotStartUpgradeFailedErr;
             exit(false);
         end;
 
@@ -1670,6 +1684,13 @@ codeunit 4001 "Hybrid Cloud Management"
             HybridReplicationSummary.Modify();
             SetPendingOnHybridCompanyStatus();
         end;
+    end;
+
+    internal procedure StartDataUpgrade()
+    var
+        HybridDeployment: Codeunit "Hybrid Deployment";
+    begin
+        HybridDeployment.StartDataUpgrade();
     end;
 
     internal procedure IsUpgradeCompleted(): Boolean
@@ -1810,7 +1831,6 @@ codeunit 4001 "Hybrid Cloud Management"
 
     internal procedure CompaniesReplicatedSuccessfully(var HybridReplicationSummary: Record "Hybrid Replication Summary"; var JsonManagement: Codeunit "JSON Management"): Boolean
     var
-        IntelligentCloudStatus: Record "Intelligent Cloud Status";
         HybridCompany: Record "Hybrid Company";
         ServiceType: Text;
     begin
@@ -1822,10 +1842,6 @@ codeunit 4001 "Hybrid Cloud Management"
 
         HybridCompany.SetRange(Replicate, true);
         if HybridCompany.IsEmpty() then
-            exit(false);
-
-        IntelligentCloudStatus.SetRange(Blocked, true);
-        if not IntelligentCloudStatus.IsEmpty() then
             exit(false);
 
         if not JsonManagement.GetStringPropertyValueByName('ServiceType', ServiceType) then
@@ -1847,7 +1863,7 @@ codeunit 4001 "Hybrid Cloud Management"
             until HybridCompany.Next() = 0;
     end;
 
-    local procedure InsertOrUpdateHybridCompanyStatus(HybridCompanyName: Text[50])
+    local procedure InsertOrUpdateHybridCompanyStatus(HybridCompanyName: Text[250])
     var
         HybridCompanyStatus: Record "Hybrid Company Status";
         HybridCompanyStatusExist: Boolean;
@@ -1863,7 +1879,7 @@ codeunit 4001 "Hybrid Cloud Management"
         if HybridCompanyStatusExist then
             HybridCompanyStatus.Modify()
         else begin
-            HybridCompanyStatus.Name := HybridCompanyName;
+            HybridCompanyStatus.Name := CopyStr(HybridCompanyName, 1, MaxStrLen(HybridCompanyStatus.Name));
             HybridCompanyStatus.Insert();
         end;
         Session.LogMessage('0000FXD', StrSubstNo(MarkedCompanyAsUpgradePendingTelemetryMsg, HybridCompanyStatus.Name), Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
@@ -1883,6 +1899,47 @@ codeunit 4001 "Hybrid Cloud Management"
             exit(false);
 
         exit(true);
+    end;
+
+    local procedure GetManageCompaniesWarningNotificationID(): Guid
+    begin
+        exit('3796153f-fd0a-47dc-899b-8cab5f5cd941');
+    end;
+
+    procedure DontShowCompaniesWarningNotification(Notification: Notification)
+    var
+        MyNotifications: Record "My Notifications";
+    begin
+        if not MyNotifications.SetStatus(GetManageCompaniesWarningNotificationID(), false) then
+            MyNotifications.InsertDefault(
+              GetManageCompaniesWarningNotificationID(), WarnManageCompaniesNotificationsTxt, WarnManageCompaniesDescriptionTxt, false);
+    end;
+
+    procedure CompaniesWarningNotificationLearnMore(Notification: Notification)
+    begin
+        Hyperlink(CompanyManagementDocumentationHyperlinkTxt);
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::Companies, 'OnOpenPageEvent', '', false, false)]
+    local procedure WarnNotToManageCompaniesManually(var Rec: Record Company)
+    var
+        MyNotifications: Record "My Notifications";
+        SendSetupWebhooksNotification: Notification;
+    begin
+        if not IsIntelligentCloudEnabled() then
+            exit;
+
+        if MyNotifications.Get(UserId(), GetManageCompaniesWarningNotificationID()) then
+            if MyNotifications.Enabled = false then
+                exit;
+
+        SendSetupWebhooksNotification.Id := GetManageCompaniesWarningNotificationID();
+        if SendSetupWebhooksNotification.Recall() then;
+        SendSetupWebhooksNotification.Message(DoNotManageCompaniesManuallyLbl);
+        SendSetupWebhooksNotification.Scope(NotificationScope::LocalScope);
+        SendSetupWebhooksNotification.AddAction(LearnMoreMsg, Codeunit::"Hybrid Cloud Management", 'CompaniesWarningNotificationLearnMore');
+        SendSetupWebhooksNotification.AddAction(DontShowAgainMsg, Codeunit::"Hybrid Cloud Management", 'DontShowCompaniesWarningNotification');
+        SendSetupWebhooksNotification.Send();
     end;
 
     [IntegrationEvent(false, false)]

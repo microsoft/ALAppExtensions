@@ -19,7 +19,8 @@ codeunit 38505 "Purchases External Events"
         if PreviewMode then
             exit;
         if PurchaseHeader.Status = PurchaseHeader.Status::Released then begin
-            ExternalEventsHelper.CreateLink(PurchaseOrderApiUrlTok, PurchaseHeader.SystemId);
+            Url := ExternalEventsHelper.CreateLink(PurchaseOrderApiUrlTok, PurchaseHeader.SystemId);
+            WebClientUrl := CopyStr(GetUrl(ClientType::Web, CompanyName(), ObjectType::Page, Page::"Purchase Order", PurchaseHeader), 1, MaxStrLen(WebClientUrl));
 #if not CLEAN23
             MyBusinessEventPurchaseOrderReleased(PurchaseHeader.SystemId, Url);
 #endif

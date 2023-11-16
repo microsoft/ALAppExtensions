@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Item;
+
+#if not CLEAN22
+using Microsoft.Inventory.Intrastat;
+#endif
+using Microsoft.Inventory.Ledger;
+
 tableextension 11745 "Item CZL" extends Item
 {
     fields

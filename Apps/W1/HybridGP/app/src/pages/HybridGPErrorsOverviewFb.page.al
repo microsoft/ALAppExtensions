@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.DataMigration;
+
 page 40132 "Hybrid GP Errors Overview Fb"
 {
     Caption = 'GP Upgrade Errors';
@@ -29,6 +33,24 @@ page 40132 "Hybrid GP Errors Overview Fb"
                     end;
                 }
             }
+            cuegroup(FailedCompanies)
+            {
+                ShowCaption = false;
+
+                field("Failed Companies"; FailedCompanyCount)
+                {
+                    Caption = 'Failed Companies';
+                    ApplicationArea = Basic, Suite;
+                    Style = Unfavorable;
+                    StyleExpr = (FailedCompanyCount > 0);
+                    ToolTip = 'Indicates the number of companies that failed to upgrade.';
+
+                    trigger OnDrillDown()
+                    begin
+                        Page.Run(Page::"Hybrid GP Failed Companies");
+                    end;
+                }
+            }
         }
     }
     trigger OnAfterGetRecord()
@@ -37,10 +59,15 @@ page 40132 "Hybrid GP Errors Overview Fb"
     end;
 
     trigger OnAfterGetCurrRecord()
+    var
+        HybridCompanyUpgrade: Record "Hybrid Company Status";
     begin
         MigrationErrorCount := Rec.Count();
+        HybridCompanyUpgrade.SetRange("Upgrade Status", HybridCompanyUpgrade."Upgrade Status"::Failed);
+        FailedCompanyCount := HybridCompanyUpgrade.Count();
     end;
 
     var
         MigrationErrorCount: Integer;
+        FailedCompanyCount: Integer;
 }

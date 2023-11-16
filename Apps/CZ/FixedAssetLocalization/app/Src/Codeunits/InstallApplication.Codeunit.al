@@ -1,3 +1,16 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.FixedAssets;
+
+using Microsoft;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Setup;
+using Microsoft.Foundation.Company;
+using System.Upgrade;
+
 #pragma warning disable AL0432,AL0603
 codeunit 31240 "Install Application CZF"
 {

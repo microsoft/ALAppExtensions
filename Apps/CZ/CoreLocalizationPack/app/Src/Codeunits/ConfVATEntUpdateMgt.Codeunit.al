@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT;
+
+using Microsoft.Finance.VAT.Ledger;
+
 codeunit 31130 "Conf. VAT Ent. Update Mgt. CZL"
 {
     procedure GetResponseOrDefault(var TempVATEntry: Record "VAT Entry" temporary; DefaultResponse: Boolean): Boolean

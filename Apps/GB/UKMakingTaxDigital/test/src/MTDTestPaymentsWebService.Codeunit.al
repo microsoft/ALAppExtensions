@@ -31,8 +31,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: Record "MTD Payment";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of HTTP error response and disabled message output
-        // <parse key="Packet303" compare="MockServicePacket303" response="MakingTaxDigital\400_blanked.txt"/>
-        InitGetOnePaymentScenario(DummyMTDPayment, 'MockServicePacket303', false);
+        // <parse key="Packet303" compare="333333303" response="MakingTaxDigital\400_blanked.txt"/>
+        InitGetOnePaymentScenario(DummyMTDPayment, '333333303', false);
 
         GetVATPayments(DummyMTDPayment, false, false, 0, 0, 0);
 
@@ -50,9 +50,9 @@ codeunit 148082 "MTDTestPaymentsWebService"
         HttpError: Text;
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of HTTP error response with details
-        // <parse key="Packet310" compare="MockServicePacket310" response="MakingTaxDigital\400_vrn_invalid.txt"/>
+        // <parse key="Packet310" compare="333333310" response="MakingTaxDigital\400_vrn_invalid.txt"/>
         HttpError := 'The provided VRN is invalid.';
-        InitGetOnePaymentScenario(DummyMTDPayment, 'MockServicePacket310', false);
+        InitGetOnePaymentScenario(DummyMTDPayment, '333333310', false);
 
         asserterror GetVATPaymentsAndShowResult(DummyMTDPayment, 0, 0, 0);
 
@@ -71,8 +71,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: Record "MTD Payment";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of blanked http json response
-        // <parse key="Packet301" compare="MockServicePacket301" response="MakingTaxDigital\200_blanked.txt"/>
-        InitGetOnePaymentScenario(DummyMTDPayment, 'MockServicePacket301', false);
+        // <parse key="Packet301" compare="333333301" response="MakingTaxDigital\200_blanked.txt"/>
+        InitGetOnePaymentScenario(DummyMTDPayment, '333333301', false);
 
         asserterror GetVATPaymentsAndShowResult(DummyMTDPayment, 0, 0, 0);
 
@@ -87,8 +87,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: Record "MTD Payment";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of wrong http json response
-        // <parse key="Packet302" compare="MockServicePacket302" response="MakingTaxDigital\200_dummyjson.txt"/>
-        InitGetOnePaymentScenario(DummyMTDPayment, 'MockServicePacket302', false);
+        // <parse key="Packet302" compare="333333302" response="MakingTaxDigital\200_dummyjson.txt"/>
+        InitGetOnePaymentScenario(DummyMTDPayment, '333333302', false);
 
         asserterror GetVATPaymentsAndShowResult(DummyMTDPayment, 0, 0, 0);
 
@@ -103,8 +103,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: Record "MTD Payment";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of a one new payment with disabled message output
-        // <parse key="Packet330" compare="MockServicePacket330" response="MakingTaxDigital\200_payment.txt"/>
-        InitGetOnePaymentScenario(DummyMTDPayment, 'MockServicePacket330', false);
+        // <parse key="Packet330" compare="333333330" response="MakingTaxDigital\200_payment.txt"/>
+        InitGetOnePaymentScenario(DummyMTDPayment, '333333330', false);
 
         GetVATPayments(DummyMTDPayment, false, true, 1, 1, 0);
 
@@ -122,10 +122,10 @@ codeunit 148082 "MTDTestPaymentsWebService"
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of a one new payment and  expired access token
         // <parse key="Packet346" compare="MockServicePacket346" response="MakingTaxDigital\200_payment.txt"/>
-        // <parse key="Packet347" compare="MockServicePacket347" response="MakingTaxDigital\401_unauthorized.txt"/>
+        // <parse key="Packet347" compare="333333347" response="MakingTaxDigital\401_unauthorized.txt"/>
         // <parse key="Packet348" compare="MockServicePacket348" response="MakingTaxDigital\200_authorize_346.txt"/> 
         Initialize();
-        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '\MockServicePacket348', 'MockServicePacket347');
+        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '\MockServicePacket348', '333333347');
         InitDummyVATPayment(DummyMTDPayment);
 
         GetVATPayments(DummyMTDPayment, false, true, 1, 1, 0);
@@ -143,8 +143,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: Record "MTD Payment";
     begin
         // [SCENARIO 258181] PAG 10531 "MTD Payments" action "Get Payments" in case of a one new payment with date
-        // <parse key="Packet330" compare="MockServicePacket330" response="MakingTaxDigital\200_payment.txt"/>
-        InitGetOnePaymentScenario(DummyMTDPayment, 'MockServicePacket330', false);
+        // <parse key="Packet330" compare="333333330" response="MakingTaxDigital\200_payment.txt"/>
+        InitGetOnePaymentScenario(DummyMTDPayment, '333333330', false);
 
         GetVATPaymentsAndShowResultViaPage(DummyMTDPayment);
 
@@ -164,8 +164,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: Record "MTD Payment";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of a one new payment without date
-        // <parse key="Packet331" compare="MockServicePacket331" response="MakingTaxDigital\200_payment_nodate.txt"/>
-        InitGetOnePaymentScenario(DummyMTDPayment, 'MockServicePacket331', true);
+        // <parse key="Packet331" compare="333333331" response="MakingTaxDigital\200_payment_nodate.txt"/>
+        InitGetOnePaymentScenario(DummyMTDPayment, '333333331', true);
 
         GetVATPaymentsAndShowResult(DummyMTDPayment, 1, 1, 0);
 
@@ -180,8 +180,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: Record "MTD Payment";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of a one up to date payment with date
-        // <parse key="Packet330" compare="MockServicePacket330" response="MakingTaxDigital\200_payment.txt"/>
-        InitGetOnePaymentScenario(DummyMTDPayment, 'MockServicePacket330', false);
+        // <parse key="Packet330" compare="333333330" response="MakingTaxDigital\200_payment.txt"/>
+        InitGetOnePaymentScenario(DummyMTDPayment, '333333330', false);
         MockVATPayment(DummyMTDPayment, DummyMTDPayment."Received Date", DummyMTDPayment.Amount);
 
         GetVATPaymentsAndShowResult(DummyMTDPayment, 1, 0, 0);
@@ -197,8 +197,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: Record "MTD Payment";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of a one up to date payment without date
-        // <parse key="Packet331" compare="MockServicePacket331" response="MakingTaxDigital\200_payment_nodate.txt"/>
-        InitGetOnePaymentScenario(DummyMTDPayment, 'MockServicePacket331', true);
+        // <parse key="Packet331" compare="333333331" response="MakingTaxDigital\200_payment_nodate.txt"/>
+        InitGetOnePaymentScenario(DummyMTDPayment, '333333331', true);
         MockVATPayment(DummyMTDPayment, DummyMTDPayment."Received Date", DummyMTDPayment.Amount);
 
         GetVATPaymentsAndShowResult(DummyMTDPayment, 1, 0, 0);
@@ -214,8 +214,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: Record "MTD Payment";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of a one modified payment with date
-        // <parse key="Packet330" compare="MockServicePacket330" response="MakingTaxDigital\200_payment.txt"/>
-        InitGetOnePaymentScenario(DummyMTDPayment, 'MockServicePacket330', false);
+        // <parse key="Packet330" compare="333333330" response="MakingTaxDigital\200_payment.txt"/>
+        InitGetOnePaymentScenario(DummyMTDPayment, '333333330', false);
         MockVATPayment(DummyMTDPayment, DummyMTDPayment."Received Date" + 1, DummyMTDPayment.Amount + 0.01);
 
         GetVATPaymentsAndShowResult(DummyMTDPayment, 1, 0, 1);
@@ -231,8 +231,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: Record "MTD Payment";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of a one modified payment without date
-        // <parse key="Packet331" compare="MockServicePacket331" response="MakingTaxDigital\200_payment_nodate.txt"/>
-        InitGetOnePaymentScenario(DummyMTDPayment, 'MockServicePacket331', true);
+        // <parse key="Packet331" compare="333333331" response="MakingTaxDigital\200_payment_nodate.txt"/>
+        InitGetOnePaymentScenario(DummyMTDPayment, '333333331', true);
         MockVATPayment(DummyMTDPayment, DummyMTDPayment."Received Date", DummyMTDPayment.Amount + 0.01);
 
         GetVATPaymentsAndShowResult(DummyMTDPayment, 1, 0, 1);
@@ -248,8 +248,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: array[2] of Record "MTD Payment";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of a two new payments with dates
-        // <parse key="Packet332" compare="MockServicePacket332" response="MakingTaxDigital\200_payments.txt"/>
-        InitGetTwoPaymentsScenario(DummyMTDPayment, 'MockServicePacket332', false, false);
+        // <parse key="Packet332" compare="333333332" response="MakingTaxDigital\200_payments.txt"/>
+        InitGetTwoPaymentsScenario(DummyMTDPayment, '333333332', false, false);
 
         GetVATPaymentsAndShowResult(DummyMTDPayment[1], 2, 2, 0);
 
@@ -264,8 +264,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: array[2] of Record "MTD Payment";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of a two new payments without dates
-        // <parse key="Packet333" compare="MockServicePacket333" response="MakingTaxDigital\200_payments_nodates.txt"/>
-        InitGetTwoPaymentsScenario(DummyMTDPayment, 'MockServicePacket333', true, true);
+        // <parse key="Packet333" compare="333333333" response="MakingTaxDigital\200_payments_nodates.txt"/>
+        InitGetTwoPaymentsScenario(DummyMTDPayment, '333333333', true, true);
 
         GetVATPaymentsAndShowResult(DummyMTDPayment[1], 2, 2, 0);
 
@@ -280,8 +280,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: array[2] of Record "MTD Payment";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of a two new payments with only first date
-        //<parse key="Packet334" compare="MockServicePacket334" response="MakingTaxDigital\200_payments_firstdate.txt"/>
-        InitGetTwoPaymentsScenario(DummyMTDPayment, 'MockServicePacket334', false, true);
+        //<parse key="Packet334" compare="333333334" response="MakingTaxDigital\200_payments_firstdate.txt"/>
+        InitGetTwoPaymentsScenario(DummyMTDPayment, '333333334', false, true);
 
         GetVATPaymentsAndShowResult(DummyMTDPayment[1], 2, 2, 0);
 
@@ -296,8 +296,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: array[2] of Record "MTD Payment";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of a two new payments with only second date
-        // <parse key="Packet335" compare="MockServicePacket335" response="MakingTaxDigital\200_payments_seconddate.txt"/>
-        InitGetTwoPaymentsScenario(DummyMTDPayment, 'MockServicePacket335', true, false);
+        // <parse key="Packet335" compare="333333335" response="MakingTaxDigital\200_payments_seconddate.txt"/>
+        InitGetTwoPaymentsScenario(DummyMTDPayment, '333333335', true, false);
 
         GetVATPaymentsAndShowResult(DummyMTDPayment[1], 2, 2, 0);
 
@@ -312,8 +312,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: array[2] of Record "MTD Payment";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of a two up to date payments with dates
-        // <parse key="Packet332" compare="MockServicePacket332" response="MakingTaxDigital\200_payments.txt"/>
-        InitGetTwoPaymentsScenario(DummyMTDPayment, 'MockServicePacket332', false, false);
+        // <parse key="Packet332" compare="333333332" response="MakingTaxDigital\200_payments.txt"/>
+        InitGetTwoPaymentsScenario(DummyMTDPayment, '333333332', false, false);
         MockVATPayment(DummyMTDPayment[1], DummyMTDPayment[1]."Received Date", DummyMTDPayment[1].Amount);
         MockVATPayment(DummyMTDPayment[2], DummyMTDPayment[2]."Received Date", DummyMTDPayment[2].Amount);
 
@@ -330,8 +330,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: array[2] of Record "MTD Payment";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of a two modified payments with dates
-        // <parse key="Packet332" compare="MockServicePacket332" response="MakingTaxDigital\200_payments.txt"/>
-        InitGetTwoPaymentsScenario(DummyMTDPayment, 'MockServicePacket332', false, false);
+        // <parse key="Packet332" compare="333333332" response="MakingTaxDigital\200_payments.txt"/>
+        InitGetTwoPaymentsScenario(DummyMTDPayment, '333333332', false, false);
         MockVATPayment(DummyMTDPayment[1], DummyMTDPayment[1]."Received Date" + 1, DummyMTDPayment[1].Amount + 0.01);
         MockVATPayment(DummyMTDPayment[2], DummyMTDPayment[2]."Received Date" - 1, DummyMTDPayment[2].Amount - 0.01);
 
@@ -348,8 +348,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: array[2] of Record "MTD Payment";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of a two payments including one new
-        // <parse key="Packet332" compare="MockServicePacket332" response="MakingTaxDigital\200_payments.txt"/>
-        InitGetTwoPaymentsScenario(DummyMTDPayment, 'MockServicePacket332', false, false);
+        // <parse key="Packet332" compare="333333332" response="MakingTaxDigital\200_payments.txt"/>
+        InitGetTwoPaymentsScenario(DummyMTDPayment, '333333332', false, false);
         MockVATPayment(DummyMTDPayment[1], DummyMTDPayment[1]."Received Date", DummyMTDPayment[1].Amount);
 
         GetVATPaymentsAndShowResult(DummyMTDPayment[1], 2, 1, 0);
@@ -365,8 +365,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: array[2] of Record "MTD Payment";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of a two payments including one modified
-        // <parse key="Packet332" compare="MockServicePacket332" response="MakingTaxDigital\200_payments.txt"/>
-        InitGetTwoPaymentsScenario(DummyMTDPayment, 'MockServicePacket332', false, false);
+        // <parse key="Packet332" compare="333333332" response="MakingTaxDigital\200_payments.txt"/>
+        InitGetTwoPaymentsScenario(DummyMTDPayment, '333333332', false, false);
         MockVATPayment(DummyMTDPayment[1], DummyMTDPayment[1]."Received Date", DummyMTDPayment[1].Amount);
         MockVATPayment(DummyMTDPayment[2], DummyMTDPayment[2]."Received Date" + 1, DummyMTDPayment[2].Amount + 0.01);
 
@@ -383,8 +383,8 @@ codeunit 148082 "MTDTestPaymentsWebService"
         DummyMTDPayment: array[2] of Record "MTD Payment";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrievePayments() in case of a two payments including one new and one modified
-        // <parse key="Packet332" compare="MockServicePacket332" response="MakingTaxDigital\200_payments.txt"/>
-        InitGetTwoPaymentsScenario(DummyMTDPayment, 'MockServicePacket332', false, false);
+        // <parse key="Packet332" compare="333333332" response="MakingTaxDigital\200_payments.txt"/>
+        InitGetTwoPaymentsScenario(DummyMTDPayment, '333333332', false, false);
         MockVATPayment(DummyMTDPayment[2], DummyMTDPayment[1]."Received Date", DummyMTDPayment[1].Amount + 0.01);
 
         GetVATPaymentsAndShowResult(DummyMTDPayment[1], 2, 1, 1);

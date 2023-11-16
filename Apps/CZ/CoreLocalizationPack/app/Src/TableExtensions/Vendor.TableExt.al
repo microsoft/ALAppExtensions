@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Vendor;
+
+using Microsoft.CRM.BusinessRelation;
+using Microsoft.Finance.Registration;
+using Microsoft.Inventory.Intrastat;
+using Microsoft.Purchases.Payables;
+
 #pragma warning disable AA0232
 tableextension 11702 "Vendor CZL" extends Vendor
 {

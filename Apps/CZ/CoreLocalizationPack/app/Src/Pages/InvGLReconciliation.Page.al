@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Reconciliation;
+
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Location;
+using System.Utilities;
+
 page 31196 "Inv. G/L Reconciliation CZL"
 {
     AdditionalSearchTerms = 'general ledger reconcile inventory';

@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Bank;
+
 codeunit 31001 "Rel. Sales Adv.Letter Doc. CZZ"
 {
     TableNo = "Sales Adv. Letter Header CZZ";

@@ -317,8 +317,8 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         Language: Codeunit Language;
         PlanIds: Codeunit "Plan Ids";
         UserAccountHelper: DotNet NavUserAccountHelper;
-        TenantInfo: DotNet TenantInfo;
         IsAdmin: Boolean;
+        CountryCode: Text;
     begin
         if not UserAccountHelper.IsAzure() then
             exit;
@@ -328,9 +328,18 @@ codeunit 9017 "Azure AD User Mgmt. Impl."
         Sender.AddCommonCustomDimension('IsAdmin', Language.ToDefaultLanguage(IsAdmin));
 
         // Add CountryCode
+        if TryGetCountryCode(CountryCode) then
+            Sender.AddCommonCustomDimension('CountryCode', CountryCode);
+    end;
+
+    [TryFunction]
+    local procedure TryGetCountryCode(var CountryCode: Text)
+    var
+        TenantInfo: DotNet TenantInfo;
+    begin
         AzureADGraph.GetTenantDetail(TenantInfo);
         if not IsNull(TenantInfo) then
-            Sender.AddCommonCustomDimension('CountryCode', TenantInfo.CountryLetterCode());
+            CountryCode := TenantInfo.CountryLetterCode();
     end;
 
     [InternalEvent(false)]

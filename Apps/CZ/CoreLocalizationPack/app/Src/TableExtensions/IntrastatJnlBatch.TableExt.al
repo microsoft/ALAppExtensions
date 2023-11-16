@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+#if not CLEAN22
+
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.NoSeries;
+#endif
+
 #pragma warning disable AL0432
 tableextension 31025 "Intrastat Jnl. Batch CZL" extends "Intrastat Jnl. Batch"
 #pragma warning restore AL0432

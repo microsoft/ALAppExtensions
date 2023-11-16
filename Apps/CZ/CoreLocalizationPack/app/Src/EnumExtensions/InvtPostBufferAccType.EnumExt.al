@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Costing;
+
 enumextension 11701 "Invt.Post.Buffer Acc. Type CZL" extends "Invt. Posting Buffer Account Type"
 {
     value(11701; "Invt. Accrual (Interim) Corr.CZL")

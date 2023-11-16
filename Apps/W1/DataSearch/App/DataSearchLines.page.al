@@ -9,6 +9,8 @@ page 2681 "Data Search lines"
     ShowFilter = false;
     InsertAllowed = false;
     DeleteAllowed = false;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     layout
     {
@@ -40,13 +42,26 @@ page 2681 "Data Search lines"
             action(Setup)
             {
                 ApplicationArea = All;
-                Caption = 'Show tables to search';
-                ToolTip = 'Opens a page that lists which tables are searched for your role center. If you have permissions, you can change which tables and fields are searched.';
-                Image = SetupList;
+                Caption = 'Set up which tables to search';
+                ToolTip = 'Opens a page that lists which tables are enabled for search for your role center. If you have permissions, you can change which tables and fields are searched.';
+                Image = SetupColumns;
+                Visible = false;
 
                 trigger OnAction()
                 begin
                     Page.RunModal(Page::"Data Search Setup (Table) List");
+                end;
+            }
+            action(SetupLists)
+            {
+                ApplicationArea = All;
+                Caption = 'Set up where to search';
+                ToolTip = 'Opens a page that shows which lists are enabled for search for your role center. If you have permissions, you can change which lists, tables and fields are searched.';
+                Image = ShowList;
+
+                trigger OnAction()
+                begin
+                    Page.RunModal(Page::"Data Search Setup (Lists)");
                 end;
             }
         }

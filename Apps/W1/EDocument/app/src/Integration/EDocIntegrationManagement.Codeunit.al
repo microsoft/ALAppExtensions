@@ -9,8 +9,7 @@ using System.Utilities;
 
 codeunit 6134 "E-Doc. Integration Management"
 {
-    Access = Internal;
-    procedure Send(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var IsAsync: Boolean) Success: Boolean
+    internal procedure Send(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var IsAsync: Boolean) Success: Boolean
     var
         TempBlob: Codeunit "Temp Blob";
         HttpResponse: HttpResponseMessage;
@@ -32,7 +31,7 @@ codeunit 6134 "E-Doc. Integration Management"
         SetDocumentStatusAndInsertLogs(EDocument, EDocumentService, TempBlob, HttpRequest, HttpResponse, IsAsync, Success);
     end;
 
-    procedure SendBatch(var EDocuments: Record "E-Document"; EDocumentService: Record "E-Document Service"; var IsAsync: Boolean) Success: Boolean
+    internal procedure SendBatch(var EDocuments: Record "E-Document"; EDocumentService: Record "E-Document Service"; var IsAsync: Boolean) Success: Boolean
     var
         TempBlob: Codeunit "Temp Blob";
         HttpResponse: HttpResponseMessage;
@@ -69,7 +68,7 @@ codeunit 6134 "E-Doc. Integration Management"
         until EDocuments.Next() = 0;
     end;
 
-    procedure GetApproval(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
+    internal procedure GetApproval(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
     var
         EDocumentServiceStatus: Record "E-Document Service Status";
         EDocIntegration: Interface "E-Document Integration";
@@ -92,7 +91,7 @@ codeunit 6134 "E-Doc. Integration Management"
         end;
     end;
 
-    procedure Cancel(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
+    internal procedure Cancel(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
     var
         EDocumentServiceStatus: Record "E-Document Service Status";
         EDocIntegration: Interface "E-Document Integration";
@@ -153,7 +152,9 @@ codeunit 6134 "E-Doc. Integration Management"
         if not EDocumentSend.Run() then
             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, GetLastErrorText());
 
+        EDocumentSend.GetRequestResponse(HttpRequest, HttpResponse);
         IsAsync := EDocumentSend.IsAsync();
+
         Telemetry.LogMessage('0000LBM', EDocTelemetrySendScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;
 
@@ -177,7 +178,10 @@ codeunit 6134 "E-Doc. Integration Management"
                 EDocumentErrorHelper.LogSimpleErrorMessage(EDocuments, ErrorText);
             until EDocuments.Next() = 0;
         end;
+
+        EDocumentSend.GetRequestResponse(HttpRequest, HttpResponse);
         IsAsync := EDocumentSend.IsAsync();
+
         Telemetry.LogMessage('0000LBO', EDocTelemetrySendBatchScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;
 

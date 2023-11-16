@@ -1,3 +1,20 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.CashFlow.Setup;
+using Microsoft.CashFlow.Worksheet;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.Projects.Project.Job;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Receivables;
+using Microsoft.Service.Document;
+
 pageextension 31194 "Cash Flow Worksheet CZZ" extends "Cash Flow Worksheet"
 {
     layout

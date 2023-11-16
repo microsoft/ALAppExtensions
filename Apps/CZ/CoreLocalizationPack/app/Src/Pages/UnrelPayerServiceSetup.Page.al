@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Vendor;
+
+using System.Privacy;
+
 page 11754 "Unrel. Payer Service Setup CZL"
 {
     ApplicationArea = Basic, Suite;

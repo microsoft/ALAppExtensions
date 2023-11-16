@@ -12,6 +12,13 @@ pageextension 31365 "Service Credit Memo CZ" extends "Service Credit Memo"
     {
 #if not CLEAN22
 #pragma warning disable AL0432
+        modify("Intrastat Exclude CZL")
+#pragma warning restore AL0432
+        {
+            Enabled = not IntrastatEnabled;
+            Visible = not IntrastatEnabled;
+        }
+#pragma warning disable AL0432
         modify("Physical Transfer CZL")
 #pragma warning restore AL0432
         {
@@ -19,8 +26,18 @@ pageextension 31365 "Service Credit Memo CZ" extends "Service Credit Memo"
             Enabled = not IntrastatEnabled;
         }
 #endif
-        addlast(Shipping)
+        addlast("Foreign Trade")
         {
+            field("Intrastat Exclude CZ"; Rec."Intrastat Exclude CZ")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Exclude';
+                ToolTip = 'Specifies that entry will be excluded from intrastat.';
+#if not CLEAN22
+                Enabled = IntrastatEnabled;
+                Visible = IntrastatEnabled;
+#endif
+            }
             field("Physical Transfer CZ"; Rec."Physical Transfer CZ")
             {
                 ApplicationArea = Basic, Suite;

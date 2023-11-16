@@ -35,9 +35,18 @@ page 9868 "Security Group Permission Sets"
                         AggregatePermissionSet: Record "Aggregate Permission Set";
                     begin
                         AggregatePermissionSet.Get(Selected.RecordId);
-                        Rec.Scope := AggregatePermissionSet.Scope;
-                        Rec."App ID" := AggregatePermissionSet."App ID";
-                        Rec."Role Name" := AggregatePermissionSet.Name;
+                        UpdateAccessControlFields(AggregatePermissionSet);
+                    end;
+
+                    trigger OnValidate()
+                    var
+                        AggregatePermissionSet: Record "Aggregate Permission Set";
+                    begin
+                        AggregatePermissionSet.SetRange("Role ID", Rec."Role ID");
+                        if AggregatePermissionSet.Count() = 1 then begin
+                            AggregatePermissionSet.FindFirst();
+                            UpdateAccessControlFields(AggregatePermissionSet);
+                        end;
                     end;
                 }
                 field("Role Name"; Rec."Role Name")
@@ -118,6 +127,13 @@ page 9868 "Security Group Permission Sets"
     internal procedure SetGroupCode(GroupCode: Code[20])
     begin
         PageCaptionExpression := GroupCode;
+    end;
+
+    local procedure UpdateAccessControlFields(AggregatePermissionSet: Record "Aggregate Permission Set")
+    begin
+        Rec.Scope := AggregatePermissionSet.Scope;
+        Rec."App ID" := AggregatePermissionSet."App ID";
+        Rec."Role Name" := AggregatePermissionSet.Name;
     end;
 
     var

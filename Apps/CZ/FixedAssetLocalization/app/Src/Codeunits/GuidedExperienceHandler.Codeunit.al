@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.FixedAssets;
+
+using System.Environment.Configuration;
+
 codeunit 31244 "Guided Experience Handler CZF"
 {
     Access = Internal;

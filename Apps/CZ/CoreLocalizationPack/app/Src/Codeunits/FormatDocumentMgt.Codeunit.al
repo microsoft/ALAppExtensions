@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Utilities;
+
 codeunit 11701 "Format Document Mgt. CZL"
 {
     procedure GetDocumentFooterText(LanguageCode: Code[10]): Text[1000]
