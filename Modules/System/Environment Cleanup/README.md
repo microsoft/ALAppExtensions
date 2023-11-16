@@ -1,1 +1,0 @@
-Provides events in order to be able to clean up data when copying an environment.
