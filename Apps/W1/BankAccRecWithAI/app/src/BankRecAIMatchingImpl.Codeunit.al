@@ -1,9 +1,12 @@
 namespace Microsoft.Bank.Reconciliation;
 
 using Microsoft.Bank.Ledger;
+using Microsoft.Upgrade;
 using System.AI;
 using System.Azure.KeyVault;
+using System.Environment;
 using System.Telemetry;
+using System.Upgrade;
 
 codeunit 7250 "Bank Rec. AI Matching Impl."
 {
@@ -553,6 +556,31 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
         exit('Bank Account Reconciliation with AI');
     end;
 
+    [EventSubscriber(ObjectType::Page, Page::"Copilot AI Capabilities", 'OnRegisterCopilotCapability', '', false, false)]
+    local procedure HandleOnRegisterCopilotCapability()
+    begin
+        RegisterCapability();
+    end;
+
+    procedure RegisterCapability()
+    var
+        CopilotCapability: Codeunit "Copilot Capability";
+        EnvironmentInformation: Codeunit "Environment Information";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
+    begin
+        if not EnvironmentInformation.IsSaaSInfrastructure() then
+            exit;
+
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetRegisterBankAccRecCopilotCapabilityUpgradeTag()) then
+            exit;
+
+        if not CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"Bank Account Reconciliation") then
+            CopilotCapability.RegisterCapability(Enum::"Copilot Capability"::"Bank Account Reconciliation", LearnMoreUrlTxt);
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetRegisterBankAccRecCopilotCapabilityUpgradeTag());
+    end;
+
 #if not CLEAN21
 #pragma warning disable AL0432
 #endif
@@ -598,4 +626,5 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
         TelemetryConstructingPromptFailedErr: label 'There was an error with constructing the chat completion prompt from the Key Vault.', Locked = true;
         TelemetryApproximateTokenCountExceedsLimitTxt: label 'The approximate token count for the Copilot request exceeded the limit. Sending request in chunks.', Locked = true;
         TelemetryChatCompletionErr: label 'Chat completion request was unsuccessful. Response code: %1', Locked = true;
+        LearnMoreUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2248547', Locked = true;
 }
