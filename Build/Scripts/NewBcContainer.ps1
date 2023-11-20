@@ -14,9 +14,12 @@ New-BcContainer @parameters
 
 $installedApps = Get-BcContainerAppInfo -containerName $containerName -tenantSpecificProperties -sort DependenciesLast
 $installedApps | ForEach-Object {
-    $removeData = $_.Name -ne "Base Application"
     Write-Host "Removing $($_.Name)"
-    Unpublish-BcContainerApp -containerName $parameters.ContainerName -name $_.Name -unInstall -doNotSaveData:$removeData -doNotSaveSchema:$removeData -force
+    if ($_.Name -notin @("System Application", "Base Application", "Application")) {
+        Unpublish-BcContainerApp -containerName $parameters.ContainerName -name $_.Name -unInstall -doNotSaveData -doNotSaveSchema -force
+    } else {
+        Write-Host "Skipping $($_.Name)"
+    }
 }
 
 Invoke-ScriptInBcContainer -containerName $parameters.ContainerName -scriptblock { $progressPreference = 'SilentlyContinue' }

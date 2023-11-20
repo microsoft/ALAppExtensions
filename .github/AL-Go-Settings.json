@@ -27,22 +27,35 @@
     "CreateRelease.yaml",
     "CreateTestApp.yaml",
     "Current.yaml",
+    "IncrementVersionNumber.yaml",
     "NextMajor.yaml",
     "NextMinor.yaml",
-    "PublishToEnvironment.yaml"
+    "PublishToEnvironment.yaml",
+    "Test Current.settings.json"
+  ],
+  "excludeEnvironments": [
+    "Official-Build"
   ],
   "buildModes": [
-    "Default",
-    "Clean"
+    "Translated"
   ],
-  "excludeEnvironments":  [
-    "Official"
-  ],
-  "enableCodeCop": true,
   "CICDPushBranches": [
     "main"
   ],
+  "CICDPullRequestBranches": [
+    "main"
+  ],
+  "enableCodeCop": true,
+  "enableAppSourceCop": true,
+  "enablePerTenantExtensionCop": true,
+  "enableUICop": true,
   "rulesetFile": "..\\Build\\Rulesets\\module.ruleset.json",
-  "PullRequestTrigger": "pull_request",
-  "alwaysBuildAllProjects": true
+  "skipUpgrade": true,
+  "fullBuildPatterns": [
+    "Build/*",
+    "src/rulesets/*",
+    ".github/workflows/PullRequestHandler.yaml",
+    ".github/workflows/_BuildALGoProject.yaml"
+  ],
+  "PullRequestTrigger": "pull_request"
 }
