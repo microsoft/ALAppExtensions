@@ -287,7 +287,8 @@
                   },
                   {
                       "id":  "AA0072",
-                      "action":  "Error"
+                      "action":  "None",
+                      "justification": "Naming rule. Turned off globally. The name of variables and parameters must be suffixed with the type or object name."
                   },
                   {
                       "id":  "AA0073",

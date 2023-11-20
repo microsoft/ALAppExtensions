@@ -1,8 +1,12 @@
 {
-  "name": "Ruleset for shipped modules",
-  "description": "This ruleset applies to shipped modules/apps.",
+  "name": "Ruleset for shipped apps",
+  "description": "This ruleset applies to shipped apps.",
   "generalAction": "Error",
   "includedRuleSets": [
+    {
+      "action": "Error",
+      "path": "./Analyzer.ruleset.json"
+    },
     {
       "action": "Error",
       "path": "./AppSourceCop.ruleset.json"
@@ -22,10 +26,6 @@
     {
       "action": "Error",
       "path": "./UICop.ruleset.json"
-    },
-    {
-      "action": "Error",
-      "path": "./Analyzer.ruleset.json"
     }
   ],
   "rules": [
@@ -38,11 +38,6 @@
       "id": "AW0009",
       "action": "Warning",
       "justification": "Using a Blob with subtype Bitmap on a page field is deprecated. Instead use the Media/MediaSet data types."
-    },
-    {
-      "id": "AA0072",
-      "action": "None",
-	    "justification": "The name of variables and parameters must be suffixed with the type or object name"
     },
     {
       "id": "AS0053",
@@ -125,9 +120,9 @@
       "justification": "The Web client only supports displaying Repeater controls in pages of type List, ListPart, and Worksheet."
     },
     {
-      "id": "AL0792",
-      "action": "Warning",
-      "justification": "Temporarily ignored while waiting for violations to be fixed."
+      "id": "AL0678",
+      "action": "None",
+      "justification": "Information diagnostic reported on obsolete symbols contributing to metadata name conflicts, ex: 'My Page' and 'My_Page'."
     }
   ]
 }
