@@ -1,9 +1,9 @@
-name: Update Package Versions
+name: Update BC Artifact Version
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: "55 03 * * 2" # Run at 03:55 UTC on Tuesday
+    - cron: "55 05 * * 0,2,4" # Run at 05:55 UTC on Sunday, Tuesday, and Thursday
 
 defaults:
   run:
@@ -30,10 +30,10 @@ jobs:
           Write-Host "Updating branches: $branchMatrix"
           Add-Content -Path $env:GITHUB_OUTPUT -Value "UpdateBranches=$branchMatrix"
 
-  UpdatePackageVersions:
-    name: "[${{ matrix.branch }}] Update Package Versions"
-    runs-on: windows-latest
+  UpdateBCArtifactVersion:
+    name: "[${{ matrix.branch }}] Update BC Artifact Version"
     environment: Official-Build
+    runs-on: windows-latest
     needs: GetBranches
     strategy:
       matrix:
@@ -45,9 +45,8 @@ jobs:
         with:
           ref: ${{ matrix.branch }}
 
-      - name: Update Package Versions
+      - name: Update BC Artifact Version
         env:
           GH_TOKEN: ${{ secrets.GHTOKENWORKFLOW }}
-          InsiderSASToken: ${{ secrets.INSIDERSASTOKEN }}
         run: |
-          build/scripts/UpdatePackageVersions.ps1 -Repository $ENV:GITHUB_REPOSITORY -TargetBranch ${{ matrix.branch }} -Actor $env:GITHUB_ACTOR
+          build/scripts/UpdateBCArtifactVersion.ps1 -Repository $ENV:GITHUB_REPOSITORY -TargetBranch ${{ matrix.branch }} -Actor $env:GITHUB_ACTOR
