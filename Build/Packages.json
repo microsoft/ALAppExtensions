@@ -1,12 +1,12 @@
 {
     "Microsoft.Dynamics.BusinessCentral.Translations":  {
-                                                            "Version":  "23.0.20230907.5"
+                                                            "Version":  "23.1.20231030.3"
                                                         },
     "microsoft-ALAppExtensions-Modules-preview":  {
                                                       "Version":  "22.3.998"
                                                   },
     "AppBaselines-BCArtifacts":  {
-                                     "Version":  "22.5.59966.61267",
+                                     "Version":  "23.0.12034.14029",
                                      "_comment":  "Deprecated. Temporary workaround for not having enough baselines packages"
                                  }
 }
