@@ -5,7 +5,7 @@
   "runs-on": "windows-latest",
   "cacheImageName": "",
   "UsePsSession": false,
-  "artifact": "bcartifacts//23.1/base/latest",
+  "artifact": "bcartifacts//23.1.13431.14020/base",
   "country": "base",
   "useProjectDependencies": true,
   "repoVersion": "23.1",
@@ -49,7 +49,7 @@
   "enableAppSourceCop": true,
   "enablePerTenantExtensionCop": true,
   "enableUICop": true,
-  "rulesetFile": "..\\Build\\Rulesets\\module.ruleset.json",
+  "rulesetFile": "..\\..\\..\\Apps\\rulesets\\app.ruleset.json",
   "skipUpgrade": true,
   "fullBuildPatterns": [
     "Build/*",

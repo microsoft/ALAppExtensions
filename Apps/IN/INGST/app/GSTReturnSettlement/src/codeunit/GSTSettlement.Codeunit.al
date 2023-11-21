@@ -529,7 +529,7 @@ codeunit 18318 "GST Settlement"
                 else
                     GSTLiabilityBuffer[1]."GST Base Amount" := DetailedGSTLedgerEntry[1]."GST Base Amount";
 
-                GSTLiabilityBuffer[1]."GST Amount" := GSTBaseValidation.RoundGSTPrecision(DetailedGSTLedgerEntry[1]."GST Amount" * CurrencyFactor);
+                GSTLiabilityBuffer[1]."GST Amount" := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTLedgerEntry[1]."GST Component Code", DetailedGSTLedgerEntry[1]."GST Amount" * CurrencyFactor);
 
                 if (DetailedGSTLedgerEntry[1]."Cr. & Liab. Adjustment Type" =
                     DetailedGSTLedgerEntry[1]."Cr. & Liab. Adjustment Type"::Generate) and
@@ -540,7 +540,7 @@ codeunit 18318 "GST Settlement"
                     else
                         GSTLiabilityBuffer[1]."GST Base Amount" := DetailedGSTLedgerEntry[1]."Remaining Base Amount";
 
-                    GSTLiabilityBuffer[1]."GST Amount" := GSTBaseValidation.RoundGSTPrecision(DetailedGSTLedgerEntry[1]."Remaining GST Amount" * CurrencyFactor);
+                    GSTLiabilityBuffer[1]."GST Amount" := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTLedgerEntry[1]."GST Component Code", DetailedGSTLedgerEntry[1]."Remaining GST Amount" * CurrencyFactor);
                 end;
 
                 if NatureOfAdj = NatureOfAdj::Reverse then begin
@@ -549,7 +549,7 @@ codeunit 18318 "GST Settlement"
                     else
                         GSTLiabilityBuffer[1]."Applied Base Amount" := DetailedGSTLedgerEntry[1]."AdjustmentBase Amount";
 
-                    GSTLiabilityBuffer[1]."Applied Amount" := GSTBaseValidation.RoundGSTPrecision(DetailedGSTLedgerEntry[1]."Adjustment Amount" * CurrencyFactor);
+                    GSTLiabilityBuffer[1]."Applied Amount" := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTLedgerEntry[1]."GST Component Code", DetailedGSTLedgerEntry[1]."Adjustment Amount" * CurrencyFactor);
                     if DetailedGSTLedgerEntry[1]."GST Credit" = DetailedGSTLedgerEntry[1]."GST Credit"::Availment then
                         GSTLiabilityBuffer[1]."Credit Amount" := GSTLiabilityBuffer[1]."Applied Amount";
                 end;
@@ -1847,8 +1847,8 @@ codeunit 18318 "GST Settlement"
         TempGSTPostingBuffer1[1]."GST Group Code" := '';
         TempGSTPostingBuffer1[1].Availment := DetailedGSTLedgerEntry."GST Credit" = DetailedGSTLedgerEntry."GST Credit"::Availment;
         TempGSTPostingBuffer1[1]."GST Group Type" := TempGSTPostingBuffer1[1]."GST Group Type"::Service;
-        TempGSTPostingBuffer1[1]."GST Base Amount" := GSTBaseValidation.RoundGSTPrecision(AppliedBaseAmount);
-        TempGSTPostingBuffer1[1]."GST Amount" := GSTBaseValidation.RoundGSTPrecision(AppliedAmount);
+        TempGSTPostingBuffer1[1]."GST Base Amount" := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTLedgerEntry."GST Component Code", AppliedBaseAmount);
+        TempGSTPostingBuffer1[1]."GST Amount" := GSTBaseValidation.RoundGSTPrecisionThroughTaxComponent(DetailedGSTLedgerEntry."GST Component Code", AppliedAmount);
         TempGSTPostingBuffer1[1]."GST %" := DetailedGSTLedgerEntry."GST %";
         TempGSTPostingBuffer1[1]."Normal Payment" := DetailedGSTLedgerEntry."Payment Type" = "Payment Type"::Normal;
         TempGSTPostingBuffer1[1]."Dimension Set ID" := DimensionSetID;

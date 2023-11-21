@@ -32,6 +32,8 @@ pageextension 7253 BankAccReconciliationExt extends "Bank Acc. Reconciliation"
                     TransToGLAccAIProposal: Page "Trans. To GL Acc. AI Proposal";
                     LineNoFilter: Text;
                 begin
+                    BankRecAIMatchingImpl.RegisterCapability();
+
                     if not AzureOpenAI.IsEnabled(Enum::"Copilot Capability"::"Bank Account Reconciliation") then
                         exit;
 
@@ -100,6 +102,8 @@ pageextension 7253 BankAccReconciliationExt extends "Bank Acc. Reconciliation"
                     BankRecAIMatchingImpl: Codeunit "Bank Rec. AI Matching Impl.";
                     AzureOpenAI: Codeunit "Azure OpenAI";
                 begin
+                    BankRecAIMatchingImpl.RegisterCapability();
+
                     if not AzureOpenAI.IsEnabled(Enum::"Copilot Capability"::"Bank Account Reconciliation") then
                         exit;
 

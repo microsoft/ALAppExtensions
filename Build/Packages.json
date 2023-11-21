@@ -1,11 +1,9 @@
 {
     "Microsoft.Dynamics.BusinessCentral.Translations":  {
-                                                            "Version":  "24.0.20231106.5",
-                                                            "Source":  "NuGet.org"
+                                                            "Version":  "23.1.20231030.3"
                                                         },
     "AppBaselines-BCArtifacts":  {
-                                     "Version":  "23.0.12034.13705",
-                                     "Source":  "BCArtifacts",
-                                     "_comment":  "Used to fetch app baselines from BC artifacts"
+                                     "Version":  "23.0.12034.14029",
+                                     "_comment":  "Deprecated. Temporary workaround for not having enough baselines packages"
                                  }
 }

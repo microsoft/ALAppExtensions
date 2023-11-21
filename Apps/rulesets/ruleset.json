@@ -1,0 +1,128 @@
+{
+  "name": "Ruleset for shipped apps",
+  "description": "This ruleset applies to shipped apps.",
+  "generalAction": "Error",
+  "includedRuleSets": [
+    {
+      "action": "Error",
+      "path": "./Analyzer.ruleset.json"
+    },
+    {
+      "action": "Error",
+      "path": "./AppSourceCop.ruleset.json"
+    },
+    {
+      "action": "Error",
+      "path": "./CodeCop.ruleset.json"
+    },
+    {
+      "action": "Error",
+      "path": "./Compiler.ruleset.json"
+    },
+    {
+      "action": "Error",
+      "path": "./PTECop.ruleset.json"
+    },
+    {
+      "action": "Error",
+      "path": "./UICop.ruleset.json"
+    }
+  ],
+  "rules": [
+    {
+      "id": "AS0059",
+      "action": "Warning",
+      "justification": "Will be fixed. Reserved database tables are read-only in a multi-tenant environment"
+    },
+    {
+      "id": "AW0009",
+      "action": "Warning",
+      "justification": "Using a Blob with subtype Bitmap on a page field is deprecated. Instead use the Media/MediaSet data types."
+    },
+    {
+      "id": "AS0053",
+      "action": "None",
+      "justification": "The compilation target of an application must be a value that is allowed in a multi-tenant SaaS environment"
+    },
+    {
+      "id": "AS0054",
+      "action": "None",
+      "justification": "The AppSourceCop configuration must specify the set of affixes used by the application"
+    },
+    {
+      "id": "AS0055",
+      "action": "None",
+      "justification": "The AppSourceCop configuration must specify the list of countries/regions targeted by the application"
+    },
+    {
+      "id": "AS0060",
+      "action": "None",
+      "justification": "Unsafe methods cannot be invoked in an AppSource application"
+    },
+    {
+      "id": "AS0081",
+      "action": "None",
+      "justification": "InternalsVisibleTo should not be used as a security feature."
+    },
+    {
+      "id": "AS0084",
+      "action": "None",
+      "justification": "The ID range assigned to the extension must be within the allowed range"
+    },
+    {
+      "id": "AS0085",
+      "action": "None",
+      "justification": "Use the 'application' property instead of specifying explicit dependencies."
+    },
+    {
+      "id": "AS0092",
+      "action": "None",
+      "justification": "The app.json file must specify an Azure Application Insights resource."
+    },
+    {
+      "id": "AS0100",
+      "action": "None",
+      "justification": "The 'application' property must be specified in the app.json file."
+    },
+    {
+      "id": "PTE0001",
+      "action": "None",
+      "justification": "Object ID must be in free range."
+    },
+    {
+      "id": "PTE0005",
+      "action": "None",
+      "justification": "The compilation target of an application must be a value that is allowed in a multi-tenant SaaS environment"
+    },
+    {
+      "id": "PTE0006",
+      "action": "None",
+      "justification": "Encryption key functions must not be invoked."
+    },
+    {
+      "id": "PTE0012",
+      "action": "None",
+      "justification": "Test assertion functions are not allowed in a non-test context."
+    },
+    {
+      "id": "PTE0013",
+      "action": "None",
+      "justification": "Entitlements cannot be defined in an extension."
+    },
+    {
+      "id": "AW0006",
+      "action": "None",
+      "justification": "Pages and reports should use the UsageCategory and ApplicationArea properties to be searchable."
+    },
+    {
+      "id": "AW0008",
+      "action": "None",
+      "justification": "The Web client only supports displaying Repeater controls in pages of type List, ListPart, and Worksheet."
+    },
+    {
+      "id": "AL0678",
+      "action": "None",
+      "justification": "Information diagnostic reported on obsolete symbols contributing to metadata name conflicts, ex: 'My Page' and 'My_Page'."
+    }
+  ]
+}
