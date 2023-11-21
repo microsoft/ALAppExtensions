@@ -1,4 +1,4 @@
-codeunit 139900 "APIV2 - FA Locations E2E"
+codeunit 139906 "APIV2 - FA Locations E2E"
 {
     // version Test,W1,All
 
@@ -88,7 +88,6 @@ codeunit 139900 "APIV2 - FA Locations E2E"
         // [GIVEN] A Fixed Asset Location exists with a name.
         CreateFALocation(FALocation);
         TempFALocation.TransferFields(FALocation);
-        FALocation.Code := LibraryUtility.GenerateRandomCodeWithLength(FALocation.FieldNo(Code), Database::"FA Location", 10);
         TempFALocation.Name := LibraryUtility.GenerateGUID();
         RequestBody := GetFALocationJSON(TempFALocation);
 
@@ -100,7 +99,7 @@ codeunit 139900 "APIV2 - FA Locations E2E"
         VerifyProperties(Response, TempFALocation);
 
         // [THEN] The Fixed Asset Location in the database contains the updated value.
-        FALocation.Get(FALocation.Code);
+        FALocation.GetBySystemId(FALocation.SystemId);
         Assert.AreEqual(FALocation.Name, TempFALocation.Name, 'Names should be equal.');
     end;
 

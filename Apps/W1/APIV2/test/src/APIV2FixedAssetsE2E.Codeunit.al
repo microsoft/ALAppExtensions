@@ -1,4 +1,4 @@
-codeunit 139901 "APIV2 - Fixed Assets E2E"
+codeunit 139907 "APIV2 - Fixed Assets E2E"
 {
     // version Test,W1,All
 
@@ -54,6 +54,7 @@ codeunit 139901 "APIV2 - Fixed Assets E2E"
     procedure TestCreateFixedAsset()
     var
         FixedAsset: Record "Fixed Asset";
+        TempFixedAsset: Record "Fixed Asset" temporary;
         Response: Text;
         TargetURL: Text;
     begin
@@ -61,14 +62,15 @@ codeunit 139901 "APIV2 - Fixed Assets E2E"
         Initialize();
 
         // [GIVEN] The user has constructed a Fixed Asset JSON object to send to the service.
-        LibraryFixedAsset.CreateFixedAsset(FixedAsset);
+        LibraryFixedAsset.CreateFixedAsset(TempFixedAsset);
+        Commit();
 
         // [WHEN] The user posts the JSON to the service.
         TargetURL := LibraryGraphMgt.CreateTargetURL('', Page::"APIV2 - Fixed Assets", ServiceNameTxt);
-        LibraryGraphMgt.PostToWebService(TargetURL, GetFixedAssetJSON(FixedAsset), Response);
+        LibraryGraphMgt.PostToWebService(TargetURL, GetFixedAssetJSON(TempFixedAsset), Response);
 
         // [THEN] The Fixed Asset has been created in the database with all the details.
-        FixedAsset.Get(FixedAsset."No.");
+        FixedAsset.Get(TempFixedAsset."No.");
         VerifyProperties(Response, FixedAsset);
     end;
 
@@ -85,6 +87,7 @@ codeunit 139901 "APIV2 - Fixed Assets E2E"
 
         // [GIVEN] A Fixed Asset exists.
         LibraryFixedAsset.CreateFixedAsset(FixedAsset);
+        Commit();
         FixedAssetNo := FixedAsset."No.";
 
         // [WHEN] The user makes a DELETE request to the endpoint for the Fixed Asset.
@@ -113,6 +116,7 @@ codeunit 139901 "APIV2 - Fixed Assets E2E"
 
         // [GIVEN] A Fixed Asset exists.
         LibraryFixedAsset.CreateFixedAsset(FixedAsset);
+        Commit();
         TempFixedAsset.TransferFields(FixedAsset);
         TempFixedAsset.Description := LibraryUtility.GenerateGUID();
         RequestBody := GetFixedAssetJSON(TempFixedAsset);
@@ -139,12 +143,14 @@ codeunit 139901 "APIV2 - Fixed Assets E2E"
             FixedAsset.Description := LibraryUtility.GenerateGUID();
         FixedAssetJson := LibraryGraphMgt.AddPropertytoJSON(FixedAssetJson, 'number', FixedAsset."No.");
         FixedAssetJson := LibraryGraphMgt.AddPropertytoJSON(FixedAssetJson, 'displayName', FixedAsset.Description);
-        FixedAssetJson := LibraryGraphMgt.AddPropertytoJSON(FixedAssetJson, 'faLocationCode', FixedAsset."FA Location Code");
-        FixedAssetJson := LibraryGraphMgt.AddPropertytoJSON(FixedAssetJson, 'faClassCode', FixedAsset."FA Class Code");
-        FixedAssetJson := LibraryGraphMgt.AddPropertytoJSON(FixedAssetJson, 'faSubclassCode', FixedAsset."FA Subclass Code");
+        FixedAssetJson := LibraryGraphMgt.AddPropertytoJSON(FixedAssetJson, 'fixedAssetLocationCode', FixedAsset."FA Location Code");
+        FixedAssetJson := LibraryGraphMgt.AddPropertytoJSON(FixedAssetJson, 'fixedAssetLocationId', FormatGuid(FixedAsset."FA Location Id"));
+        FixedAssetJson := LibraryGraphMgt.AddPropertytoJSON(FixedAssetJson, 'classCode', FixedAsset."FA Class Code");
+        FixedAssetJson := LibraryGraphMgt.AddPropertytoJSON(FixedAssetJson, 'subclassCode', FixedAsset."FA Subclass Code");
         FixedAssetJson := LibraryGraphMgt.AddPropertytoJSON(FixedAssetJson, 'blocked', FixedAsset.Blocked);
-        FixedAssetJson := LibraryGraphMgt.AddPropertytoJSON(FixedAssetJson, 'serialNo', FixedAsset."Serial No.");
-        FixedAssetJson := LibraryGraphMgt.AddPropertytoJSON(FixedAssetJson, 'responsibleEmployee', FixedAsset."Responsible Employee");
+        FixedAssetJson := LibraryGraphMgt.AddPropertytoJSON(FixedAssetJson, 'serialNumber', FixedAsset."Serial No.");
+        FixedAssetJson := LibraryGraphMgt.AddPropertytoJSON(FixedAssetJson, 'employeeNumber', FixedAsset."Responsible Employee");
+        FixedAssetJson := LibraryGraphMgt.AddPropertytoJSON(FixedAssetJson, 'employeeId', FormatGuid(FixedAsset."Responsible Employee Id"));
         FixedAssetJson := LibraryGraphMgt.AddPropertytoJSON(FixedAssetJson, 'underMaintenance', FixedAsset."Under Maintenance");
         exit(FixedAssetJson)
     end;
@@ -166,12 +172,19 @@ codeunit 139901 "APIV2 - Fixed Assets E2E"
         LibraryGraphMgt.VerifyIDInJson(JSON);
         LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'number', FixedAsset."No.");
         LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'displayName', FixedAsset.Description);
-        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'faLocationCode', FixedAsset."FA Location Code");
-        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'faClassCode', FixedAsset."FA Class Code");
-        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'faSubclassCode', FixedAsset."FA Subclass Code");
+        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'fixedAssetLocationCode', FixedAsset."FA Location Code");
+        LibraryGraphMgt.VerifyGUIDFieldInJson(JSON, 'fixedAssetLocationId', FixedAsset."FA Location Id");
+        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'classCode', FixedAsset."FA Class Code");
+        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'subclassCode', FixedAsset."FA Subclass Code");
         Assert.AreEqual(false, FixedAsset.Blocked, 'Fixed Asset should have the correct ''blocked'' information.');
-        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'serialNo', FixedAsset."Serial No.");
-        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'responsibleEmployee', FixedAsset."Responsible Employee");
+        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'serialNumber', FixedAsset."Serial No.");
+        LibraryGraphMgt.VerifyPropertyInJSON(JSON, 'employeeNumber', FixedAsset."Responsible Employee");
+        LibraryGraphMgt.VerifyGUIDFieldInJson(JSON, 'employeeId', FixedAsset."Responsible Employee Id");
         Assert.AreEqual(false, FixedAsset."Under Maintenance", 'Fixed Asset should have the correct ''under maintenance'' information.');
+    end;
+
+    local procedure FormatGuid(Value: Guid): Text
+    begin
+        exit(LowerCase(LibraryGraphMgt.StripBrackets(Format(Value, 0, 9))));
     end;
 }

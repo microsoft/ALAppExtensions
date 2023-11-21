@@ -31,29 +31,37 @@ page 30098 "APIV2 - Fixed Assets"
                 {
                     Caption = 'Description';
                 }
-                field(faLocationCode; Rec."FA Location Code")
+                field(fixedAssetLocationCode; Rec."FA Location Code")
                 {
-                    Caption = 'FA Location Code';
+                    Caption = 'Fixed Asset Location Code';
                 }
-                field(faClassCode; Rec."FA Class Code")
+                field(fixedAssetLocationId; Rec."FA Location Id")
                 {
-                    Caption = 'FA Class Code';
+                    Caption = 'Fixed Asset Location Id';
                 }
-                field(faSubclassCode; Rec."FA Subclass Code")
+                field(classCode; Rec."FA Class Code")
                 {
-                    Caption = 'FA Subclass Code';
+                    Caption = 'Class Code';
+                }
+                field(subclassCode; Rec."FA Subclass Code")
+                {
+                    Caption = 'Subclass Code';
                 }
                 field(blocked; Rec.Blocked)
                 {
                     Caption = 'Blocked';
                 }
-                field(serialNo; Rec."Serial No.")
+                field(serialNumber; Rec."Serial No.")
                 {
                     Caption = 'Serial No.';
                 }
-                field(responsibleEmployee; Rec."Responsible Employee")
+                field(employeeNumber; Rec."Responsible Employee")
                 {
-                    Caption = 'Responsible Employee';
+                    Caption = 'Employee No.';
+                }
+                field(employeeId; Rec."Responsible Employee Id")
+                {
+                    Caption = 'Employee Id';
                 }
                 field(underMaintenance; Rec."Under Maintenance")
                 {
@@ -62,6 +70,22 @@ page 30098 "APIV2 - Fixed Assets"
                 field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';
+                }
+                part(fixedAssetLocation; "APIV2 - FA Locations")
+                {
+                    Caption = 'Fixed Asset Location';
+                    EntityName = 'fixedAssetLocation';
+                    EntitySetName = 'fixedAssetLocations';
+                    SubPageLink = SystemId = field("FA Location Id");
+                    Multiplicity = ZeroOrOne;
+                }
+                part(employee; "APIV2 - Employees")
+                {
+                    Caption = 'Employee';
+                    EntityName = 'employee';
+                    EntitySetName = 'employees';
+                    SubPageLink = SystemId = field("Responsible Employee Id");
+                    Multiplicity = ZeroOrOne;
                 }
             }
         }
