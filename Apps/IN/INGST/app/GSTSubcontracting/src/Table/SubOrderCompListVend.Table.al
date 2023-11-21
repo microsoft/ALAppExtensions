@@ -11,6 +11,7 @@ using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Location;
 using Microsoft.Manufacturing.Document;
 using Microsoft.Purchases.Document;
+using Microsoft.Warehouse.Structure;
 
 table 18478 "Sub Order Comp. List Vend"
 {
@@ -346,6 +347,12 @@ table 18478 "Sub Order Comp. List Vend"
         field(70; SSI; Boolean)
         {
             Caption = 'SSI';
+            DataClassification = EndUserIdentifiableInformation;
+        }
+        field(71; "Bin Code"; Code[20])
+        {
+            Caption = 'Bin Code';
+            TableRelation = if ("Qty. To Receive" = filter(> 0)) "Bin Content"."Bin Code" where("Location Code" = field("Company Location"), "Item No." = field("Item No."), "Variant Code" = field("Variant Code"));
             DataClassification = EndUserIdentifiableInformation;
         }
         field(89; "Qty. per Unit of Measure"; Decimal)

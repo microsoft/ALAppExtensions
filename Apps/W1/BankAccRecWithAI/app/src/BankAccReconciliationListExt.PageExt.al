@@ -27,6 +27,8 @@ pageextension 7254 BankAccReconciliationListExt extends "Bank Acc. Reconciliatio
                     AzureOpenAI: Codeunit "Azure OpenAI";
                     BankAccRecAIProposal: Page "Bank Acc. Rec. AI Proposal";
                 begin
+                    BankRecAIMatchingImpl.RegisterCapability();
+
                     if not AzureOpenAI.IsEnabled(Enum::"Copilot Capability"::"Bank Account Reconciliation") then
                         exit;
 
