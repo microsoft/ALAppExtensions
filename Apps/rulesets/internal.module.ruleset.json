@@ -1,11 +1,11 @@
 {
   "name": "Ruleset for internal modules",
-  "description": "This ruleset applies to internal modules. Internal modules are not shipped separately , they are part of larger apps that do ship.",
+  "description": "This ruleset applies to internal modules. Internal modules are not shipped separately, they are part of larger apps that do ship.",
   "generalAction": "Error",
   "includedRuleSets": [
     {    
       "action": "Default", 
-      "path": "./module.ruleset.json"
+      "path": "./ruleset.json"
     }
   ],
   "rules": [

@@ -5,10 +5,14 @@
   "includedRuleSets": [
     {
       "action": "Default",
-      "path": "./module.ruleset.json"
+      "path": "./ruleset.json"
     }
   ],
   "rules": [
+    {
+      "id": "AL0792",
+      "action": "Warning"
+    },
     {
       "id": "AD0001",
       "action": "Error",
