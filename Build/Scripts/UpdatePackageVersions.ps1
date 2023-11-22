@@ -1,3 +1,14 @@
+<#
+.SYNOPSIS
+    Updates the package versions in the Packages.json file to the latest version available on the corresponding source.
+.DESCRIPTION
+    This script will update the package versions in the Packages.json file to the latest version available on the corresponding source.
+    If the version is updated, a new branch will be created and a pull request will be created to merge the changes into the target branch.
+.PARAMETER TargetBranch
+    The branch to create the pull request to
+.PARAMETER Actor
+    The name of the user that will be used as commit author
+#>
 Param(
     [Parameter(Mandatory = $true)]
     [string]$TargetBranch,
@@ -6,14 +17,14 @@ Param(
 )
 
 # BC Container Helper is needed to fetch the latest version of one of the packages
-Install-Module -Name BcContainerHelper -Force
+Install-Module -Name BcContainerHelper -AllowPrerelease -Force
 Import-Module BcContainerHelper
 
 Import-Module $PSScriptRoot\EnlistmentHelperFunctions.psm1
 Import-Module $PSScriptRoot\GuardingV2ExtensionsHelper.psm1
 Import-Module $PSScriptRoot\AutomatedSubmission.psm1
 
-$packageConfig = Get-Content -Path (Join-Path (Get-BaseFolder) "Build\Packages.json") -Raw | ConvertFrom-Json
+$packageConfig = Get-Content -Path (Join-Path (Get-BaseFolder) "build\Packages.json") -Raw | ConvertFrom-Json
 $packageNames = ($packageConfig | Get-Member -MemberType NoteProperty).Name
 
 $updatesAvailable = $false
@@ -22,7 +33,12 @@ foreach($packageName in $packageNames)
 {
     $currentPackage = Get-ConfigValue -Key $packageName -ConfigType Packages
     $currentVersion = $currentPackage.Version
-    $latestVersion = Get-PackageLatestVersion -PackageName $packageName
+
+    if ($currentPackage.PSobject.Properties.name -eq "MaxVersion") {
+        $latestVersion = Get-PackageLatestVersion -PackageName $packageName -MaxVersion $currentPackage.MaxVersion
+    } else {
+        $latestVersion = Get-PackageLatestVersion -PackageName $packageName
+    }
 
     if ([System.Version] $latestVersion -gt [System.Version] $currentVersion) {
         Write-Host "Updating $packageName version from $currentVersion to $latestVersion"
@@ -40,18 +56,11 @@ foreach($packageName in $packageNames)
 if ($updatesAvailable) {
     # Create branch and push changes
     Set-GitConfig -Actor $Actor
-    $BranchName = New-TopicBranch -Category "UpdatePackageVersions"
-    $title = "Update package versions"
-    Push-GitBranch -BranchName $BranchName -Files @("Build/Packages.json") -CommitMessage $title
+    $BranchName = New-TopicBranch -Category "UpdatePackageVersions/$TargetBranch"
+    $title = "[$TargetBranch] Update package versions"
+    Push-GitBranch -BranchName $BranchName -Files @("build/Packages.json") -CommitMessage $title
 
-    # Create PR
-    $availableLabels = gh label list --json name | ConvertFrom-Json
-    if ("automation" -in $availableLabels.name) {
-        gh pr create --fill --head $BranchName --base $TargetBranch --label "automation"
-    } else {
-        gh pr create --fill --head $BranchName --base $TargetBranch
-    }
-    gh pr merge --auto --squash --delete-branch
+    New-GitHubPullRequest -BranchName $BranchName -TargetBranch $TargetBranch -label "automation"
 } else {
     Write-Host "No updates available"
 }

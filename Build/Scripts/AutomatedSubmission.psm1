@@ -17,7 +17,7 @@ function Set-GitConfig
 }
 
 <#
-.Synopsis 
+.Synopsis
     Stages files for commit and pushes them to the specified branch
 .Parameter BranchName
     The name of the branch to push to
@@ -32,7 +32,7 @@ function Push-GitBranch
     [string] $BranchName,
     [string[]] $Files,
     [string] $CommitMessage
-) 
+)
 {
     git add $Files
     git commit -m $commitMessage
@@ -63,10 +63,31 @@ function New-TopicBranch
         $currentDate = (Get-Date).ToUniversalTime().ToString("yyMMddHHmm")
         $BranchName = "automation/$Category/$currentDate"
     }
-    
+
     git checkout -b $BranchName | Out-Null
 
     return $BranchName
+}
+
+function New-GitHubPullRequest
+{
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [string] $BranchName,
+        [Parameter(Mandatory=$true)]
+        [string] $TargetBranch,
+        [Parameter(Mandatory=$false)]
+        [string] $label = "automation"
+    )
+
+    $availableLabels = gh label list --json name | ConvertFrom-Json
+    if ($label -in $availableLabels.name) {
+        gh pr create --fill --head $BranchName --base $TargetBranch --label $label
+    } else {
+        gh pr create --fill --head $BranchName --base $TargetBranch
+    }
+    gh pr merge --auto --squash --delete-branch
 }
 
 Export-ModuleMember -Function *-*
