@@ -1,6 +1,4 @@
 Param(
-    [Parameter(Mandatory=$true)]
-    [string] $currentProjectFolder,
     [Hashtable] $parameters
 )
 
@@ -13,7 +11,7 @@ $appType = switch ($true) {
 }
 
 $PreCompileApp = (Get-Command "$PSScriptRoot\PreCompileApp.ps1" | Select-Object -ExpandProperty ScriptBlock)
-Invoke-Command -ScriptBlock $PreCompileApp -ArgumentList $currentProjectFolder, $appType, ([ref] $parameters)
+Invoke-Command -ScriptBlock $PreCompileApp -ArgumentList $appType, ([ref] $parameters)
 
 $appFile = Compile-AppInBcContainer @parameters
 

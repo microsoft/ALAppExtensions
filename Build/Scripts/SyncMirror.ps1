@@ -40,7 +40,9 @@ if ($Branch) {
     if (RunAndCheck git ls-remote origin $Branch) {
         # If branch exists in target, checkout branch and pull changes from target repository
         Write-Host "Checking out $Branch from $TargetRepository"
-        RunAndCheck git checkout origin/$Branch --track
+        if ($Branch -ne "main") {
+            RunAndCheck git checkout origin/$Branch --track
+        }
         RunAndCheck git pull origin $Branch
     }
     else {
@@ -48,10 +50,10 @@ if ($Branch) {
         Write-Host "Checking out $Branch from $SourceRepository"
         RunAndCheck git checkout upstream/$Branch --track
     }
-    
+
     # Merge changes from upstream
     RunAndCheck git pull upstream $Branch
-    
+
     # Push to origin
     Write-Host "Pushing $Branch to $TargetRepository"
     RunAndCheck git push origin $Branch
