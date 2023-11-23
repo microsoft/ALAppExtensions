@@ -34,7 +34,8 @@
     "Test Current.settings.json"
   ],
   "excludeEnvironments": [
-    "Official-Build"
+    "Official-Build",
+    "Official"
   ],
   "buildModes": [
     "Translated"
