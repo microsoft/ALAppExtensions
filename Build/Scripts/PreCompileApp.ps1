@@ -1,6 +1,4 @@
 Param(
-    [Parameter(Mandatory=$true)]
-    [string] $currentProjectFolder,
     [ValidateSet('app', 'testApp', 'bcptApp')]
     [string] $appType = 'app',
     [ref] $parameters

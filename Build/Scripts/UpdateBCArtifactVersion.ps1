@@ -11,6 +11,8 @@
 #>
 param(
     [Parameter(Mandatory = $true)]
+    [string]$Repository,
+    [Parameter(Mandatory = $true)]
     [string]$TargetBranch,
     [Parameter(Mandatory = $true)]
     [string]$Actor
@@ -50,16 +52,16 @@ function UpdateBCArtifactVersion() {
     return $false
 }
 
+$pullRequestTitle = "[$TargetBranch] Update BC Artifact version"
+$BranchName = New-TopicBranchIfNeeded -Repository $Repository -Category "UpdateBCArtifactVersion/$TargetBranch" -PullRequestTitle $pullRequestTitle
+
 $updatesAvailable = UpdateBCArtifactVersion
 
 if ($updatesAvailable) {
     # Create branch and push changes
     Set-GitConfig -Actor $Actor
-    $BranchName = New-TopicBranch -Category "UpdateBCArtifactVersion/$TargetBranch"
-    $title = "[$TargetBranch] Update BC Artifact version"
-    Push-GitBranch -BranchName $BranchName -Files @(".github/AL-Go-Settings.json") -CommitMessage $title
-
-    New-GitHubPullRequest -BranchName $BranchName -TargetBranch $TargetBranch -label "automation"
+    Push-GitBranch -BranchName $BranchName -Files @(".github/AL-Go-Settings.json") -CommitMessage $pullRequestTitle
+    New-GitHubPullRequest -Repository $Repository -BranchName $BranchName -TargetBranch $TargetBranch -label "automation"
 } else {
     Write-Host "No updates available"
 }
