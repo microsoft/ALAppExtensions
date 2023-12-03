@@ -5,7 +5,7 @@
     "runs-on":  "windows-latest",
     "cacheImageName":  "",
     "UsePsSession":  false,
-    "artifact":  "bcartifacts//23.1.13431.14292/base",
+    "artifact":  "bcartifacts//23.1.13431.14380/base",
     "country":  "base",
     "useProjectDependencies":  true,
     "repoVersion":  "23.1",
