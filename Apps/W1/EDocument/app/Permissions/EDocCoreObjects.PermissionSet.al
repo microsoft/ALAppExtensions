@@ -4,6 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using Microsoft.eServices.EDocument.IO;
+using Microsoft.eServices.EDocument.IO.Peppol;
+
 permissionset 6100 "E-Doc. Core - Objects"
 {
     Assignable = false;
@@ -17,6 +20,7 @@ permissionset 6100 "E-Doc. Core - Objects"
         table "E-Doc. Mapping Log" = X,
         table "E-Document Service" = X,
         table "E-Document Service Status" = X,
+        table "E-Doc. Service Data Exch. Def." = X,
         codeunit "E-Document Import Job" = X,
         codeunit "E-Doc. Integration Management" = X,
         codeunit "E-Doc. Mapping" = X,
@@ -39,9 +43,19 @@ permissionset 6100 "E-Doc. Core - Objects"
         codeunit "E-Doc. Import" = X,
         codeunit "E-Document Create" = X,
         codeunit "E-Document Setup" = X,
+        codeunit "E-Document Install" = X,
         codeunit "E-Doc. Recurrent Batch Send" = X,
         codeunit "E-Doc. Get Basic Info" = X,
         codeunit "E-Doc. Get Complete Info" = X,
+        codeunit "E-Doc. Data Exchange Impl." = X,
+        codeunit "E-Doc. DED PEPPOL External" = X,
+        codeunit "E-Doc. DED PEPPOL Pre-Mapping" = X,
+        codeunit "E-Doc. DED PEPPOL Subscribers" = X,
+        codeunit "Pre-Map Sales Cr. Memo Line" = X,
+        codeunit "Pre-Map Sales Inv. Line" = X,
+        codeunit "Pre-Map Service Cr. Memo Line" = X,
+        codeunit "Pre-Map Service Inv. Line" = X,
+        codeunit "EDoc PEPPOL BIS 3.0" = X,
         page "E-Doc. Changes Part" = X,
         page "E-Doc. Changes Preview" = X,
         page "E-Document Activities" = X,
@@ -53,5 +67,6 @@ permissionset 6100 "E-Doc. Core - Objects"
         page "E-Document Services" = X,
         page "E-Documents" = X,
         page "E-Document Service Status" = X,
-        page "E-Document Integration Logs" = X;
+        page "E-Document Integration Logs" = X,
+        page "E-Doc. Service Data Exch. Sub" = X;
 }

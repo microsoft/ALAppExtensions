@@ -13,6 +13,7 @@ using Microsoft.Inventory.Item;
 using Microsoft.Purchases.Vendor;
 using System.Email;
 using System.Reflection;
+using Microsoft.Foundation.Address;
 
 table 31105 "Statutory Reporting Setup CZL"
 {
@@ -99,6 +100,13 @@ table 31105 "Statutory Reporting Setup CZL"
         field(29; "Apartment No."; Text[30])
         {
             Caption = 'Apartment No.';
+            DataClassification = CustomerContent;
+        }
+        field(30; City; Text[30])
+        {
+            Caption = 'City';
+            TableRelation = "Post Code".City;
+            ValidateTableRelation = false;
             DataClassification = CustomerContent;
         }
         field(40; "VAT Control Report Nos."; Code[20])

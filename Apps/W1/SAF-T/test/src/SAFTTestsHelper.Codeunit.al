@@ -17,6 +17,7 @@ codeunit 139512 "SAF-T Tests Helper"
         VATReportingCode: Record "VAT Reporting Code";
         CompanyInformation: Record "Company Information";
         SAFTDataMgt: Codeunit "SAF-T Data Mgt.";
+        MappingHelperSAFT: Codeunit "Mapping Helper SAF-T";
         CreateStandDataSAFTTest: Codeunit "Create Stand. Data SAF-T Test";
     begin
         AuditFileExportSetup.InitSetup(Enum::"Audit File Export Format"::SAFT);
@@ -45,6 +46,9 @@ codeunit 139512 "SAF-T Tests Helper"
         CompanyInformation.Get();
         CompanyInformation.Validate("Contact No. SAF-T", LibraryHumanResource.CreateEmployeeNo());
         CompanyInformation.Modify(true);
+
+        MappingHelperSAFT.InitDimensionFieldsSAFT();
+        MappingHelperSAFT.InitVATPostingSetupFieldsSAFT();
 
         AuditFileExportFormatSetup.InitSetup("Audit File Export Format"::SAFT, SAFTDataMgt.GetZipFileName(), true);
 

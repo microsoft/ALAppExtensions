@@ -5,6 +5,7 @@ using System.Integration;
 using System.Telemetry;
 using System.Security.AccessControl;
 using System.Security.User;
+using Microsoft.API.Upgrade;
 
 page 40063 "Cloud Migration Management"
 {
@@ -580,6 +581,15 @@ page 40063 "Cloud Migration Management"
                     if IntelligentCloudStatus.FindFirst() then
                         Page.Run(Page::"Cloud Mig - Select Tables", IntelligentCloudStatus);
                 end;
+            }
+            action(SkipApiUpgrade)
+            {
+                Visible = not IsOnPrem;
+                ApplicationArea = Basic, Suite;
+                Caption = 'Manage API Upgrade';
+                ToolTip = 'Allows to skip the API upgrade and run it later after the cloud migraiton is completed.';
+                Image = ChangeLog;
+                RunObject = page "API Data Upgrade Companies";
             }
         }
 

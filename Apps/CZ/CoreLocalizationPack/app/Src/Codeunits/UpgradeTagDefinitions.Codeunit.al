@@ -36,6 +36,7 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
         PerCompanyUpgradeTags.Add(GetUseW1RegistrationNumberUpgradeTag());
         PerCompanyUpgradeTags.Add(GetReportPostedDirectTransferCZUpgradeTag());
         PerCompanyUpgradeTags.Add(GetEU3PartyTradePurchaseUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetStatutoryReportingSetupCityUpgradeTag());
     end;
 
     procedure GetDataVersion174PerDatabaseUpgradeTag(): Code[250]
@@ -146,5 +147,10 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
     procedure GetEU3PartyTradePurchaseUpgradeTag(): Code[250]
     begin
         exit('CZL-475293-EU3PartyTradePurchaseUpgrade-20230613');
+    end;
+
+    procedure GetStatutoryReportingSetupCityUpgradeTag(): Code[250]
+    begin
+        exit('CZL-491441-StatutoryReportingSetupCityUpgradeTag-20231114');
     end;
 }

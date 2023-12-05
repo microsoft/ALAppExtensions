@@ -68,11 +68,9 @@ codeunit 31003 "Gen.Jnl.-Post Line Handler CZZ"
             // If the advance letter is posting then the manual application method must be used
             OldCustLedgerEntry.SetRange("Posting Date");
             OldCustLedgerEntry.SetFilter("Amount to Apply", '<>%1', 0);
-        end else begin
+        end else
             // If the advance letter is not posting then the customer ledger entries applied to advance letter mustn't be used for application
             OldCustLedgerEntry.SetRange("Advance Letter No. CZZ", '');
-            OldCustLedgerEntry.SetRange("Adv. Letter Template Code CZZ", '');
-        end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"CV Ledger Entry Buffer", 'OnAfterCopyFromVendLedgerEntry', '', false, false)]

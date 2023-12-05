@@ -38,8 +38,6 @@ pageextension 1443 "Headlines RC Project Mgr. Ext" extends "Headline RC Project 
     end;
 
     var
-        [InDataSet]
         Headline1Visible: Boolean;
-        [InDataSet]
         Headline1Text: Text[250];
 }

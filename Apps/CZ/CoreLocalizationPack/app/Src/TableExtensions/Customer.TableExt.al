@@ -21,7 +21,12 @@ tableextension 11701 "Customer CZL" extends Customer
                 RegNoServiceConfigCZL: Record "Reg. No. Service Config CZL";
                 ResultRecordRef: RecordRef;
                 LogNotVerified: Boolean;
+                IsHandled: Boolean;
             begin
+                OnBeforeOnValidateRegistrationNoCZL(Rec, xRec, IsHandled);
+                if IsHandled then
+                    exit;
+
                 if not RegistrationNoMgtCZL.CheckRegistrationNo(GetRegistrationNoTrimmedCZL(), "No.", Database::Customer) then
                     exit;
 
@@ -57,7 +62,12 @@ tableextension 11701 "Customer CZL" extends Customer
                 RegNoServiceConfigCZL: Record "Reg. No. Service Config CZL";
                 ResultRecordRef: RecordRef;
                 LogNotVerified: Boolean;
+                IsHandled: Boolean;
             begin
+                OnBeforeOnValidateRegistrationNoCZL(Rec, xRec, IsHandled);
+                if IsHandled then
+                    exit;
+
                 if not RegistrationNoMgtCZL.CheckRegistrationNo("Registration No. CZL", "No.", Database::Customer) then
                     exit;
 
@@ -190,5 +200,10 @@ tableextension 11701 "Customer CZL" extends Customer
     procedure GetRegistrationNoTrimmedCZL(): Text[20]
     begin
         exit(CopyStr("Registration Number", 1, 20));
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeOnValidateRegistrationNoCZL(Customer: Record "Customer"; xCustomer: Record "Customer"; var IsHandled: Boolean)
+    begin
     end;
 }

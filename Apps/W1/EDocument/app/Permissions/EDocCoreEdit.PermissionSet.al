@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using Microsoft.eServices.EDocument.IO.Peppol;
+
 permissionset 6102 "E-Doc. Core - Edit"
 {
     Access = Public;
@@ -20,5 +22,6 @@ permissionset 6102 "E-Doc. Core - Edit"
         tabledata "E-Document Log" = IMD,
         tabledata "E-Document Service" = IMD,
         tabledata "E-Document Service Status" = IMD,
-        tabledata "E-Document Integration Log" = IMD;
+        tabledata "E-Document Integration Log" = IMD,
+        tabledata "E-Doc. Service Data Exch. Def." = IMD;
 }

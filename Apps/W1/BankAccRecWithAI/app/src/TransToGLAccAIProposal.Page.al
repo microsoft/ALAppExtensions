@@ -101,12 +101,36 @@ page 7252 "Trans. To GL Acc. AI Proposal"
                         end;
                     end;
                 }
-                field("Post if fully Applied"; PostIfFullyApplied)
+                group(Posting)
+                {
+                    Caption = ' ';
+                    ShowCaption = false;
+                    Visible = false;
+
+                    field("Post if fully Applied"; PostIfFullyApplied)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Post if fully applied';
+                        Editable = PostIfFullyAppliedEditable;
+                        ToolTip = 'Specifies if the bank account reconciliation should be posted if it gets fully applied by the matching proposals.';
+                    }
+                }
+            }
+            group(Warning)
+            {
+                Caption = '';
+                ShowCaption = false;
+                Visible = (WarningTxt <> '');
+
+                field("Warning Text"; WarningTxt)
                 {
                     ApplicationArea = All;
-                    Caption = 'Post if fully applied';
-                    Editable = PostIfFullyAppliedEditable;
-                    ToolTip = 'Specifies if the bank account reconciliation should be posted if it gets fully applied by the matching proposals.';
+                    Caption = '';
+                    ShowCaption = false;
+                    Editable = false;
+                    Style = Ambiguous;
+                    MultiLine = true;
+                    ToolTip = 'Specifies a warning text';
                 }
             }
             part(ProposalDetails; "Bank Acc. Rec. AI Proposal Sub")
@@ -231,6 +255,8 @@ page 7252 "Trans. To GL Acc. AI Proposal"
             SummaryStyleTxt := 'Ambiguous';
             SummaryTxt := StrSubstNo(SubsetOfLinesMatchedTxt, Pct);
         end;
+        if BankAccRecTransToAcc.FoundInputWithReservedWords() then
+            WarningTxt := InputWithReservedWordsRemovedTxt;
         TelemetryDimensions.Add('Category', BankRecAIMatchingImpl.FeatureName());
         TelemetryDimensions.Add('TotalLines', Format(TotalLines));
         TelemetryDimensions.Add('AppliedLinesUpFront', Format(AppliedLinesUpFront));
@@ -289,6 +315,11 @@ page 7252 "Trans. To GL Acc. AI Proposal"
         StatementEndingBalance := InputStatementEndingBalance;
     end;
 
+    internal procedure SetPageCaption(InputPageCaption: Text);
+    begin
+        PageCaptionLbl := InputPageCaption;
+    end;
+
     var
         BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line";
 #if not CLEAN21
@@ -305,7 +336,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
         OpenBankRecCardMsg: label 'There are statement lines with amounts that are not fully applied. Before posting, you must apply all statement line amounts in the bank account reconciliation.';
         SuccessfullPostedQst: label 'The bank account reconciliation is posted successfully. Do you want to view the posted bank reconciliation details?';
         TelemetryUserAcceptedProposalsTxt: label 'User accepted Copilot proposals for transferring amounts to G/L Account', Locked = true;
-        TelemetryCopilotProposedTxt: label 'Copilot proposed transferring amounts to G/L Account', Locked = true;
+        TelemetryCopilotProposedTxt: label 'Copilot proposed transferring amounts to G/L Account, using cosine similarity threshold of 0.6', Locked = true;
         TelemetryUserNotAcceptedProposalsTxt: label 'User closed Copilot proposals page without accepting', Locked = true;
         TelemetryUserAttemptedToPostFromProposalsPageTxt: label 'User attempted to post from proposals page.', Locked = true;
         TelemetryUserAttemptedToPostFromProposalsPageNotFullyAppliedTxt: label 'User attempted to post from proposals page, but there are still unapplied amounts.', Locked = true;
@@ -313,6 +344,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
         ContentAreaCaptionTxt: label 'Reconciling %1 statement %2 for %3', Comment = '%1 - bank account code, %2 - statement number, %3 - statement date';
         AllLinesMatchedTxt: label 'All lines (100%) are matched. Review match proposals.';
         SubsetOfLinesMatchedTxt: label '%1% of lines are matched. Review match proposals.', Comment = '%1 - a decimal between 0 and 100';
+        InputWithReservedWordsRemovedTxt: label 'Statement line descriptions or G/L Account names with reserved AI chat completion prompt words were detected. For security reasons, they were excluded from the auto-matching process. You must match these statement lines or G/L Accounts manually.';
         StatementDate: Date;
         StatementEndingBalance: Decimal;
         BankAccNo: Code[20];
@@ -325,4 +357,5 @@ page 7252 "Trans. To GL Acc. AI Proposal"
         PostIfFullyAppliedEditable: Boolean;
         SummaryTxt: Text;
         SummaryStyleTxt: Text;
+        WarningTxt: Text;
 }

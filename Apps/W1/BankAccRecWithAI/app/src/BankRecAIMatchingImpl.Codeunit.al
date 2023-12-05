@@ -104,17 +104,20 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
             LedgerLines := '**Ledger Entries**:\n"""\n';
 
         repeat
-            LedgerLines += '#Id: ' + Format(TempBankAccLedgerEntryMatchingBuffer."Entry No.");
-            if TempBankAccLedgerEntryMatchingBuffer."Document No." <> '' then
-                LedgerLines += ', DocumentNo: ' + TempBankAccLedgerEntryMatchingBuffer."Document No.";
-            LedgerLines += ', Description: ' + TempBankAccLedgerEntryMatchingBuffer.Description;
-            if TempBankAccLedgerEntryMatchingBuffer."Payment Reference" <> '' then
-                LedgerLines += ', PaymentReference: ' + TempBankAccLedgerEntryMatchingBuffer."Payment Reference";
-            if TempBankAccLedgerEntryMatchingBuffer."External Document No." <> '' then
-                LedgerLines += ', ExtDocNo: ' + TempBankAccLedgerEntryMatchingBuffer."External Document No.";
-            LedgerLines += ', Amount: ' + Format(TempBankAccLedgerEntryMatchingBuffer."Remaining Amount", 0, 9);
-            LedgerLines += ', Date: ' + Format(TempBankAccLedgerEntryMatchingBuffer."Posting Date", 0, 9);
-            LedgerLines += '\n';
+            if not HasReservedWords(TempBankAccLedgerEntryMatchingBuffer.Description) then begin
+                LedgerLines += '#Id: ' + Format(TempBankAccLedgerEntryMatchingBuffer."Entry No.");
+                if TempBankAccLedgerEntryMatchingBuffer."Document No." <> '' then
+                    LedgerLines += ', DocumentNo: ' + TempBankAccLedgerEntryMatchingBuffer."Document No.";
+                LedgerLines += ', Description: ' + TempBankAccLedgerEntryMatchingBuffer.Description;
+                if TempBankAccLedgerEntryMatchingBuffer."Payment Reference" <> '' then
+                    LedgerLines += ', PaymentReference: ' + TempBankAccLedgerEntryMatchingBuffer."Payment Reference";
+                if TempBankAccLedgerEntryMatchingBuffer."External Document No." <> '' then
+                    LedgerLines += ', ExtDocNo: ' + TempBankAccLedgerEntryMatchingBuffer."External Document No.";
+                LedgerLines += ', Amount: ' + Format(TempBankAccLedgerEntryMatchingBuffer."Remaining Amount", 0, 9);
+                LedgerLines += ', Date: ' + Format(TempBankAccLedgerEntryMatchingBuffer."Posting Date", 0, 9);
+                LedgerLines += '\n';
+            end else
+                InputWithReservedWordsFound := true;
         until (TempBankAccLedgerEntryMatchingBuffer.Next() = 0);
     end;
 
@@ -124,17 +127,20 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
             StatementLines := '**Statement Lines**:\n"""\n';
 
         repeat
-            StatementLines += '#Id: ' + Format(BankAccReconciliationLine."Statement Line No.");
-            if BankAccReconciliationLine."Document No." <> '' then
-                StatementLines += ', DocumentNo: ' + BankAccReconciliationLine."Document No.";
-            StatementLines += ', Description: ' + BankAccReconciliationLine.Description;
-            if BankAccReconciliationLine."Additional Transaction Info" <> '' then
-                StatementLines += ' ' + BankAccReconciliationLine."Additional Transaction Info";
-            if BankAccReconciliationLine."Payment Reference No." <> '' then
-                StatementLines += ', PaymentReference: ' + BankAccReconciliationLine."Payment Reference No.";
-            StatementLines += ', Amount: ' + Format(BankAccReconciliationLine.Difference, 0, 9);
-            StatementLines += ', Date: ' + Format(BankAccReconciliationLine."Transaction Date", 0, 9);
-            StatementLines += '\n';
+            if not HasReservedWords(BankAccReconciliationLine.Description) then begin
+                StatementLines += '#Id: ' + Format(BankAccReconciliationLine."Statement Line No.");
+                if BankAccReconciliationLine."Document No." <> '' then
+                    StatementLines += ', DocumentNo: ' + BankAccReconciliationLine."Document No.";
+                StatementLines += ', Description: ' + BankAccReconciliationLine.Description;
+                if BankAccReconciliationLine."Additional Transaction Info" <> '' then
+                    StatementLines += ' ' + BankAccReconciliationLine."Additional Transaction Info";
+                if BankAccReconciliationLine."Payment Reference No." <> '' then
+                    StatementLines += ', PaymentReference: ' + BankAccReconciliationLine."Payment Reference No.";
+                StatementLines += ', Amount: ' + Format(BankAccReconciliationLine.Difference, 0, 9);
+                StatementLines += ', Date: ' + Format(BankAccReconciliationLine."Transaction Date", 0, 9);
+                StatementLines += '\n';
+            end else
+                InputWithReservedWordsFound := true;
         until (BankAccReconciliationLine.Next() = 0);
     end;
 
@@ -235,6 +241,7 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
                 BankAccRecProposal.SetStatementDate(BankAccReconciliation."Statement Date");
                 BankAccRecProposal.SetBalanceLastStatement(BankAccReconciliation."Balance Last Statement");
                 BankAccRecProposal.SetStatementEndingBalance(BankAccReconciliation."Statement Ending Balance");
+                BankAccRecProposal.SetPageCaption(StrSubstNo(ContentAreaCaptionTxt, BankAccReconciliationLine."Bank Account No.", BankAccReconciliationLine."Statement No.", BankAccReconciliation."Statement Date"));
             end;
             BankAccRecProposal.SetBankAccReconciliationLines(BankAccReconciliationLine);
             BankAccRecProposal.SetTempBankAccLedgerEntryMatchingBuffer(TempBankAccLedgerEntryMatchingBuffer);
@@ -243,8 +250,8 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
             BankAccRecProposal.SetSkipNativeAutoMatchingAlgorithm(true);
             BankAccRecProposal.SetGenerateMode();
             BankAccRecProposal.LookupMode(true);
-            if BankAccRecProposal.RunModal() = Action::LookupOK then;
-            Handled := true;
+            if BankAccRecProposal.RunModal() = Action::OK then
+                Handled := true;
         end;
     end;
 
@@ -389,7 +396,6 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
 #pragma warning restore AL0432
 #endif
         LocalBankAccountLedgerEntry: Record "Bank Account Ledger Entry";
-        BankRecAIMatchingImpl: Codeunit "Bank Rec. AI Matching Impl.";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         CompletionTaskTxt: Text;
         CompletionPromptTxt: Text;
@@ -413,8 +419,8 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
             FeatureTelemetry.LogUptake('0000LF5', FeatureName(), Enum::"Feature Uptake Status"::Used);
             FeatureTelemetry.LogUsage('0000LF6', FeatureName(), 'Match proposals');
             // Initialize the counts
-            CompletionTaskTxt := BankRecAIMatchingImpl.BuildBankRecCompletionTask(true);
-            TaskPromptTokenCount := BankRecAIMatchingImpl.ApproximateTokenCount(CompletionTaskTxt);
+            CompletionTaskTxt := BuildBankRecCompletionTask(true);
+            TaskPromptTokenCount := ApproximateTokenCount(CompletionTaskTxt);
 
             // Iterate through each statement line
             BankAccReconciliationLine.FindSet();
@@ -435,7 +441,7 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
                         BankRecLineDescription += (' ' + BankAccReconciliationLine."Additional Transaction Info");
 
                     EntryAddedToTop5 := false;
-                    SimilarityScore := BankRecAIMatchingImpl.ComputeStringNearness(TempBankAccLedgerEntryMatchingBuffer."Description" + ' ' + TempBankAccLedgerEntryMatchingBuffer."Document No.", CopyStr(BankRecLineDescription, 1, 250));
+                    SimilarityScore := ComputeStringNearness(TempBankAccLedgerEntryMatchingBuffer."Description" + ' ' + TempBankAccLedgerEntryMatchingBuffer."Document No.", CopyStr(BankRecLineDescription, 1, 250));
                     AmountEquals := (TempBankAccLedgerEntryMatchingBuffer."Remaining Amount" = BankAccReconciliationLine.Difference);
 
                     for i := 1 to 5 do
@@ -466,24 +472,26 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
 
                 until (TempBankAccLedgerEntryMatchingBuffer.Next() = 0);
 
+                InputWithReservedWordsFound := false;
+
                 // Generate Prompt using the Statement Line and the Top 5 Ledger Entries
                 BankAccReconciliationLineCopy.Copy(BankAccReconciliationLine);
                 BankAccReconciliationLineCopy.SetFilter("Statement Line No.", '=%1', BankAccReconciliationLine."Statement Line No.");
                 BankAccReconciliationLineCopy.FindSet();
-                BankRecAIMatchingImpl.BuildBankRecStatementLines(BankRecStatementLinesTxt, BankAccReconciliationLineCopy);
+                BuildBankRecStatementLines(BankRecStatementLinesTxt, BankAccReconciliationLineCopy);
 
                 // Apply filters to the ledger entries (TempBankAccLedgerEntryMatchingBuffer) from the top 5 ledger entries.
-                TopBankLedgerEntriesFilterTxt := BankRecAIMatchingImpl.BuildLedgerEntriesFilter(TopLedgerEntries, TopSimilarityScore);
+                TopBankLedgerEntriesFilterTxt := BuildLedgerEntriesFilter(TopLedgerEntries, TopSimilarityScore);
                 TempBankAccLedgerEntryMatchingBuffer.SetFilter("Entry No.", TopBankLedgerEntriesFilterTxt);
                 TempBankAccLedgerEntryMatchingBuffer.FindSet();
-                BankRecAIMatchingImpl.BuildBankRecLedgerEntries(BankRecLedgerEntriesTxt, TempBankAccLedgerEntryMatchingBuffer);
+                BuildBankRecLedgerEntries(BankRecLedgerEntriesTxt, TempBankAccLedgerEntryMatchingBuffer);
 
-                CompletePromptTokenCount := TaskPromptTokenCount + BankRecAIMatchingImpl.ApproximateTokenCount(BankRecStatementLinesTxt) + BankRecAIMatchingImpl.ApproximateTokenCount(BankRecLedgerEntriesTxt);
-                if (CompletePromptTokenCount >= BankRecAIMatchingImpl.PromptSizeThreshold()) then begin
+                CompletePromptTokenCount := TaskPromptTokenCount + ApproximateTokenCount(BankRecStatementLinesTxt) + ApproximateTokenCount(BankRecLedgerEntriesTxt);
+                if (CompletePromptTokenCount >= PromptSizeThreshold()) then begin
                     Session.LogMessage('0000LFK', TelemetryApproximateTokenCountExceedsLimitTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
-                    CompletionPromptTxt := BankRecAIMatchingImpl.BuildBankRecCompletionPrompt(CompletionTaskTxt, BankRecStatementLinesTxt, BankRecLedgerEntriesTxt);
+                    CompletionPromptTxt := BuildBankRecCompletionPrompt(CompletionTaskTxt, BankRecStatementLinesTxt, BankRecLedgerEntriesTxt);
                     CompletionPromptTxt := CompletionPromptTxt.Replace('\n', NewLineChar);
-                    BankRecAIMatchingImpl.CreateCompletionAndMatch(CompletionPromptTxt, BankAccReconciliationLine, TempBankAccLedgerEntryMatchingBuffer, TempBankStatementMatchingBuffer, DaysTolerance);
+                    CreateCompletionAndMatch(CompletionPromptTxt, BankAccReconciliationLine, TempBankAccLedgerEntryMatchingBuffer, TempBankStatementMatchingBuffer, DaysTolerance);
                     BankRecStatementLinesTxt := '';
                     BankRecLedgerEntriesTxt := '';
                 end;
@@ -491,9 +499,9 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
 
             // If BankRecStatementLinesTxt and BankRecLedgerEntriesTxt are not empty, then we need to generate a prompt for the remaining records
             if (BankRecStatementLinesTxt <> '') and (BankRecLedgerEntriesTxt <> '') then begin
-                CompletionPromptTxt := BankRecAIMatchingImpl.BuildBankRecCompletionPrompt(CompletionTaskTxt, BankRecStatementLinesTxt, BankRecLedgerEntriesTxt);
+                CompletionPromptTxt := BuildBankRecCompletionPrompt(CompletionTaskTxt, BankRecStatementLinesTxt, BankRecLedgerEntriesTxt);
                 CompletionPromptTxt := CompletionPromptTxt.Replace('\n', NewLineChar);
-                BankRecAIMatchingImpl.CreateCompletionAndMatch(CompletionPromptTxt, BankAccReconciliationLine, TempBankAccLedgerEntryMatchingBuffer, TempBankStatementMatchingBuffer, DaysTolerance);
+                CreateCompletionAndMatch(CompletionPromptTxt, BankAccReconciliationLine, TempBankAccLedgerEntryMatchingBuffer, TempBankStatementMatchingBuffer, DaysTolerance);
             end;
 
             TempBankStatementMatchingBuffer.Reset();
@@ -515,6 +523,23 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
                             end;
                 until TempBankStatementMatchingBuffer.Next() = 0;
         end;
+    end;
+
+    procedure HasReservedWords(Input: Text): Boolean
+    begin
+        if StrPos(LowerCase(Input), '<|im_start|>') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), '<|im_end|>') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), '<|start|>') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), '<|end|>') > 0 then
+            exit(true);
+
+        exit(false)
     end;
 
 #if not CLEAN21
@@ -620,6 +645,11 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
         exit((Amount1 div Abs(Amount1)) = (Amount2 div Abs(Amount2)));
     end;
 
+    procedure FoundInputWithReservedWords(): Boolean
+    begin
+        exit(InputWithReservedWordsFound)
+    end;
+
     var
         MatchedByCopilotTxt: label 'Matched by Copilot based on semantic similarity.', Comment = 'Copilot is a Microsoft service name and must not be translated';
         ConstructingPromptFailedErr: label 'There was an error with sending the call to Copilot. Log a Business Central support request about this.', Comment = 'Copilot is a Microsoft service name and must not be translated';
@@ -627,4 +657,6 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
         TelemetryApproximateTokenCountExceedsLimitTxt: label 'The approximate token count for the Copilot request exceeded the limit. Sending request in chunks.', Locked = true;
         TelemetryChatCompletionErr: label 'Chat completion request was unsuccessful. Response code: %1', Locked = true;
         LearnMoreUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2248547', Locked = true;
+        ContentAreaCaptionTxt: label 'Reconciling %1 statement %2 for %3', Comment = '%1 - bank account code, %2 - statement number, %3 - statement date';
+        InputWithReservedWordsFound: Boolean;
 }

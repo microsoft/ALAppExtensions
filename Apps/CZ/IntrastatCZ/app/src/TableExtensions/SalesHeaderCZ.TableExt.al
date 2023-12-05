@@ -45,8 +45,9 @@ tableextension 31327 "Sales Header CZ" extends "Sales Header"
     begin
         if not (Ship or Receive) then
             exit;
+        if not IntrastatReportSetup.Get() then
+            exit;
         if IsIntrastatTransactionCZL() and ShipOrReceiveInventoriableTypeItemsCZL() then begin
-            IntrastatReportSetup.Get();
             if IntrastatReportSetup."Transaction Type Mandatory CZ" then
                 TestField("Transaction Type");
             if IntrastatReportSetup."Transaction Spec. Mandatory CZ" then

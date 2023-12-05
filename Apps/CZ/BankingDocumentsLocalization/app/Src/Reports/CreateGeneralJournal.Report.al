@@ -38,6 +38,9 @@ report 31287 "Create General Journal CZB"
                         WindowDialog.Open(ApplyingLinesMsg);
                     end;
 
+                    if not BankAccount."Post Per Line CZB" then
+                        CreateSummaryLines("Iss. Bank Statement Header CZB");
+
                     if not ApplyGeneralJournalLine("Iss. Bank Statement Header CZB") then
                         ApplyingFailed := true;
 
@@ -49,6 +52,8 @@ report 31287 "Create General Journal CZB"
                 begin
                     if not HideMessages then
                         WindowDialog.Open(CreatingLinesMsg);
+                    CreditTotal := 0;
+                    DebitTotal := 0;
                 end;
             }
 
@@ -124,6 +129,8 @@ report 31287 "Create General Journal CZB"
         ApplyingFailed: Boolean;
         HideMessages: Boolean;
         LastLineNo: Integer;
+        CreditTotal: Decimal;
+        DebitTotal: Decimal;
 
     procedure SetHideMessages(HideMessagesNew: Boolean)
     begin
@@ -242,11 +249,65 @@ report 31287 "Create General Journal CZB"
             IssBankStatementLineCZB."Variable Symbol", VariableSymbolToDescription, VariableSymbolToVariableSymbol, VariableSymbolToExtDocNo);
         GenJournalLine."Specific Symbol CZL" := IssBankStatementLineCZB."Specific Symbol";
         GenJournalLine."Constant Symbol CZL" := IssBankStatementLineCZB."Constant Symbol";
-        GenJournalLine.Validate("Bal. Account Type", GenJournalLine."Bal. Account Type"::"Bank Account");
-        GenJournalLine.Validate("Bal. Account No.", BankAccount."No.");
         GenJournalLine.Validate("Search Rule Code CZB", IssBankStatementHeaderCZB."Search Rule Code");
+        if BankAccount."Post Per Line CZB" then begin
+            GenJournalLine.Validate("Bal. Account Type", GenJournalLine."Bal. Account Type"::"Bank Account");
+            GenJournalLine.Validate("Bal. Account No.", BankAccount."No.");
+        end;
         OnAfterAssignGenJournalLine(IssBankStatementHeaderCZB, IssBankStatementLineCZB, BankAccount, GenJournalLine);
         GenJournalLine.Insert();
+
+        if GenJournalLine.Amount > 0 then
+            DebitTotal += IssBankStatementLineCZB."Amount (Bank Stat. Currency)"
+        else
+            CreditTotal += IssBankStatementLineCZB."Amount (Bank Stat. Currency)";
+    end;
+
+    local procedure CreateSummaryLines(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB")
+    var
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeCreateSummaryLines(IssBankStatementHeaderCZB, CreditTotal, DebitTotal, IsHandled);
+        if IsHandled then
+            exit;
+
+        LastLineNo := GetLastLineNo();
+        if CreditTotal <> 0 then
+            CreateSummaryLine(IssBankStatementHeaderCZB, CreditTotal, true);
+        if DebitTotal <> 0 then
+            CreateSummaryLine(IssBankStatementHeaderCZB, DebitTotal, false);
+    end;
+
+    local procedure CreateSummaryLine(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; AmountTotal: Decimal; IsCreditAmount: Boolean)
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        GenJournalTemplate: Record "Gen. Journal Template";
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeCreateSummaryLine(IssBankStatementHeaderCZB, LastLineNo, AmountTotal, IsCreditAmount, IsHandled);
+        if IsHandled then
+            exit;
+
+        GenJournalLine.SetSuppressCommit(true);
+        GenJournalLine.Init();
+        GenJournalLine."Journal Template Name" := BankAccount."Payment Jnl. Template Name CZB";
+        GenJournalLine."Journal Batch Name" := BankAccount."Payment Jnl. Batch Name CZB";
+        GenJournalLine."Line No." := LastLineNo + 10000;
+        GenJournalLine."Bank Statement No. CZB" := IssBankStatementHeaderCZB."No.";
+        GenJournalTemplate.Get(GenJournalLine."Journal Template Name");
+        GenJournalLine."Source Code" := GenJournalTemplate."Source Code";
+        GenJournalLine.Validate("Posting Date", IssBankStatementHeaderCZB."Document Date");
+        GenJournalLine.Validate("Document No.", IssBankStatementHeaderCZB."No.");
+        GenJournalLine.Validate("Account Type", GenJournalLine."Account Type"::"Bank Account");
+        GenJournalLine.Validate("Account No.", BankAccount."No.");
+        GenJournalLine.Validate("Currency Code", BankAccount."Currency Code");
+        GenJournalLine.Validate(Amount, AmountTotal);
+        OnCreateSummaryLineOnBeforeInsertGenJournalLine(IssBankStatementHeaderCZB, BankAccount, LastLineNo, AmountTotal, IsCreditAmount, GenJournalLine);
+        GenJournalLine.Insert();
+
+        LastLineNo += GenJournalLine."Line No.";
     end;
 
     local procedure ApplyGeneralJournalLine(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB") Result: Boolean
@@ -258,6 +319,7 @@ report 31287 "Create General Journal CZB"
         GenJournalLine.SetRange("Journal Template Name", BankAccount."Payment Jnl. Template Name CZB");
         GenJournalLine.SetRange("Journal Batch Name", BankAccount."Payment Jnl. Batch Name CZB");
         GenJournalLine.SetRange("Document No.", IssBankStatementHeaderCZB."No.");
+        GenJournalLine.SetFilter("Search Rule Code CZB", '<>%1', '');
         if GenJournalLine.FindSet() then begin
             Commit(); // the matching bank payment should not rollback already created general journal lines in case of error
             repeat
@@ -289,6 +351,21 @@ report 31287 "Create General Journal CZB"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterMatchingBankPayment(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; var GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCreateSummaryLines(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; CreditTotal: Decimal; DebitTotal: Decimal; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCreateSummaryLine(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; LastLineNo: Integer; AmountTotal: Decimal; IsCreditAmount: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateSummaryLineOnBeforeInsertGenJournalLine(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; BankAccount: Record "Bank Account"; LastLineNo: Integer; AmountTotal: Decimal; IsCreditAmount: Boolean; var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
 }

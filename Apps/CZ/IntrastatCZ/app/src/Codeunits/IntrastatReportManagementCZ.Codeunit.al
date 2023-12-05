@@ -389,8 +389,9 @@ codeunit 31302 IntrastatReportManagementCZ
     begin
         if not (SalesHeader.Ship or SalesHeader.Receive) then
             exit;
+        if not IntrastatReportSetup.Get() then
+            exit;
         if SalesHeader.IsIntrastatTransactionCZL() and SalesHeader.ShipOrReceiveInventoriableTypeItemsCZL() then begin
-            IntrastatReportSetup.Get();
             if IntrastatReportSetup."Transaction Type Mandatory CZ" then
                 if SalesHeader."Transaction Type" = '' then
                     AddError(StrSubstNo(MustBeSpecifiedLbl, SalesHeader.FieldCaption("Transaction Type")), ErrorCounter, ErrorText);
@@ -414,8 +415,9 @@ codeunit 31302 IntrastatReportManagementCZ
     begin
         if not (PurchaseHeader.Ship or PurchaseHeader.Receive) then
             exit;
+        if not IntrastatReportSetup.Get() then
+            exit;
         if PurchaseHeader.IsIntrastatTransactionCZL() and PurchaseHeader.ShipOrReceiveInventoriableTypeItemsCZL() then begin
-            IntrastatReportSetup.Get();
             if IntrastatReportSetup."Transaction Type Mandatory CZ" then
                 if PurchaseHeader."Transaction Type" = '' then
                     AddError(StrSubstNo(MustBeSpecifiedLbl, PurchaseHeader.FieldCaption("Transaction Type")), ErrorCounter, ErrorText);

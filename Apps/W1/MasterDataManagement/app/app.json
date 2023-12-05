@@ -2,7 +2,7 @@
     "id":  "a01864f8-9c3f-42f6-8328-8d7be1ce3e20",
     "name":  "_Exclude_Master_Data_Management",
     "publisher":  "Microsoft",
-    "version":  "23.1.0.0",
+    "version":  "23.3.0.0",
     "brief":  "_Exclude_Master_Data_Management",
     "description":  "_Exclude_Master_Data_Management",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -37,7 +37,7 @@
                                    "includeSourceInSymbolFile":  true
                                },
     "target":  "Cloud",
-    "application":  "23.1.0.0",
+    "application":  "23.3.0.0",
     "features":  [
                      "TranslationFile",
                      "GenerateCaptions"

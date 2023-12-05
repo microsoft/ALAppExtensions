@@ -540,23 +540,16 @@ codeunit 31301 "Install Application CZ"
         Item: Record Item;
         ItemUnitofMeasure: Record "Item Unit of Measure";
         TariffNumber: Record "Tariff Number";
-        DataTransfer: DataTransfer;
     begin
-        DataTransfer.SetTables(Database::Item, Database::Item);
-        DataTransfer.AddFieldValue(Item.FieldNo("Statistic Indication CZL"), Item.FieldNo("Statistic Indication CZ"));
-        DataTransfer.AddFieldValue(Item.FieldNo("Specific Movement CZL"), Item.FieldNo("Specific Movement CZ"));
-        DataTransfer.CopyFields();
-
         if Item.FindSet() then
             repeat
                 Item."Statistic Indication CZ" := Item."Statistic Indication CZL";
                 Item."Specific Movement CZ" := Item."Specific Movement CZL";
-                if Item."Tariff No." <> '' then begin
-                    TariffNumber.Get(Item."Tariff No.");
-                    if not (TariffNumber."Suppl. Unit of Meas. Code CZL" in ['', Item."Supplementary Unit of Measure"]) then
-                        if ItemUnitofMeasure.Get(Item."No.", TariffNumber."Suppl. Unit of Meas. Code CZL") then
-                            Item."Supplementary Unit of Measure" := ItemUnitofMeasure.Code;
-                end;
+                if Item."Tariff No." <> '' then
+                    if TariffNumber.Get(Item."Tariff No.") then
+                        if not (TariffNumber."Suppl. Unit of Meas. Code CZL" in ['', Item."Supplementary Unit of Measure"]) then
+                            if ItemUnitofMeasure.Get(Item."No.", TariffNumber."Suppl. Unit of Meas. Code CZL") then
+                                Item."Supplementary Unit of Measure" := ItemUnitofMeasure.Code;
                 Item.Modify();
             until Item.Next() = 0;
     end;

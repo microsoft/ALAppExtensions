@@ -90,10 +90,9 @@ codeunit 6103 "E-Document Subscription"
         if SalesInvHdrNo <> '' then begin
             if SalesInvHeader.Get(SalesInvHdrNo) then
                 RunEDocumentCreation(SalesHeader, SalesInvHeader, SalesInvHdrNo);
-        end else begin
+        end else
             if SalesCrMemoHeader.Get(SalesCrMemoHdrNo) then
                 RunEDocumentCreation(SalesHeader, SalesCrMemoHeader, SalesCrMemoHdrNo);
-        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterPostPurchaseDoc', '', false, false)]
@@ -108,10 +107,9 @@ codeunit 6103 "E-Document Subscription"
         if PurchInvHdrNo <> '' then begin
             if PurchInvHeader.Get(PurchInvHdrNo) then
                 RunEDocumentCreation(PurchaseHeader, PurchInvHeader, PurchInvHdrNo);
-        end else begin
+        end else
             if PurchCrMemoHdr.Get(PurchCrMemoHdrNo) then
                 RunEDocumentCreation(PurchaseHeader, PurchCrMemoHdr, PurchCrMemoHdrNo);
-        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service-Post", 'OnAfterPostServiceDoc', '', false, false)]
@@ -126,10 +124,9 @@ codeunit 6103 "E-Document Subscription"
         if ServInvoiceNo <> '' then begin
             if ServiceInvoiceHeader.Get(ServInvoiceNo) then
                 RunEDocumentCreation(ServiceHeader, ServiceInvoiceHeader, ServInvoiceNo);
-        end else begin
+        end else
             if ServiceCrMemoHdr.Get(ServCrMemoNo) then
                 RunEDocumentCreation(ServiceHeader, ServiceCrMemoHdr, ServCrMemoNo);
-        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"FinChrgMemo-Issue", 'OnAfterIssueFinChargeMemo', '', false, false)]

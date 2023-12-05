@@ -55,6 +55,22 @@ page 6122 "E-Documents"
     {
         area(Processing)
         {
+            action(ImportManually)
+            {
+                Caption = 'Create From File';
+                ToolTip = 'Create an electronic document by manually uploading a file.';
+                Image = Import;
+
+                trigger OnAction()
+                var
+                    EDocument: Record "E-Document";
+                    EDocImport: Codeunit "E-Doc. Import";
+                begin
+                    EDocImport.UploadDocument(EDocument);
+                    if EDocument."Entry No" <> 0 then
+                        EDocImport.GetBasicInfo(EDocument);
+                end;
+            }
             action(EDocumentServices)
             {
                 RunObject = Page "E-Document Services";
@@ -72,6 +88,7 @@ page 6122 "E-Documents"
         }
         area(Promoted)
         {
+            actionref(Promoted_ImportManually; ImportManually) { }
             actionref(Promoted_EDocumentServices; EDocumentServices) { }
         }
     }

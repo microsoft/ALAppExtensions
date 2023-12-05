@@ -574,7 +574,7 @@ table 31075 "VIES Declaration Header CZL"
         if CountryRegion.Get(CompanyInformation."Country/Region Code") then
             "Country/Region Name" := CountryRegion.Name;
         County := CompanyInformation.County;
-        City := CompanyInformation.City;
+        City := StatutoryReportingSetupCZL.City;
         Street := StatutoryReportingSetupCZL.Street;
         "House No." := StatutoryReportingSetupCZL."House No.";
         "Apartment No." := StatutoryReportingSetupCZL."Apartment No.";

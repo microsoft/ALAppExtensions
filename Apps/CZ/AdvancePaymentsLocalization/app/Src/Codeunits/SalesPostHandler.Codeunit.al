@@ -22,9 +22,9 @@ codeunit 31008 "Sales-Post Handler CZZ"
             exit;
 
         if SalesHeader."Document Type" = SalesHeader."Document Type"::Order then
-            SalesAdvLetterManagement.CheckAdvancePayement("Adv. Letter Usage Doc.Type CZZ"::"Sales Order", SalesHeader."No.")
+            SalesAdvLetterManagement.CheckAdvancePayment("Adv. Letter Usage Doc.Type CZZ"::"Sales Order", SalesHeader)
         else
-            SalesAdvLetterManagement.CheckAdvancePayement("Adv. Letter Usage Doc.Type CZZ"::"Sales Invoice", SalesHeader."No.");
+            SalesAdvLetterManagement.CheckAdvancePayment("Adv. Letter Usage Doc.Type CZZ"::"Sales Invoice", SalesHeader);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Handler CZP", 'OnBeforeCreateCashDocument', '', false, false)]

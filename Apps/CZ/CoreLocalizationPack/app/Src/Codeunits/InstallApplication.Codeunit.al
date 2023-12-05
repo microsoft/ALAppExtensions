@@ -458,7 +458,7 @@ codeunit 11748 "Install Application CZL"
         ResponsibilityCenterDataTransfer: DataTransfer;
     begin
         ResponsibilityCenterDataTransfer.SetTables(Database::"Responsibility Center", Database::"Responsibility Center");
-        ResponsibilityCenterDataTransfer.AddFieldValue(ResponsibilityCenter.FieldNo("Bank Account No."), ResponsibilityCenter.FieldNo("Default Bank Account Code CZL"));
+        ResponsibilityCenterDataTransfer.AddFieldValue(ResponsibilityCenter.FieldNo("Bank Account Code"), ResponsibilityCenter.FieldNo("Default Bank Account Code CZL"));
         ResponsibilityCenterDataTransfer.CopyFields();
     end;
 

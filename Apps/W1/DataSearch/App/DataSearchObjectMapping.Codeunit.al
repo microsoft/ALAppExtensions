@@ -20,6 +20,7 @@ using Microsoft.Service.Document;
 using Microsoft.Service.History;
 using Microsoft.Warehouse.Activity;
 using Microsoft.Warehouse.Activity.History;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Warehouse.Document;
 using Microsoft.Warehouse.History;
 using System.Reflection;
@@ -48,6 +49,8 @@ codeunit 2685 "Data Search Object Mapping"
             TableNo := ParentTableNo;
 
         case TableNo of
+            Database::"Gen. Journal Line":
+                PageNo := GetGenJournalPageNo(TableSubType);
             Database::"Sales Header":
                 case TableSubType of
                     SalesDocumentType::"Blanket Order".AsInteger():
@@ -204,6 +207,8 @@ codeunit 2685 "Data Search Object Mapping"
         FieldNo: Integer;
     begin
         case TableNo of
+            Database::"Gen. Journal Line":
+                FieldNo := 1;
             Database::"Sales Header", Database::"Sales Line",
             Database::"Purchase Header", Database::"Purchase Line",
             Database::"Service Header", Database::"Service Line",
@@ -218,6 +223,49 @@ codeunit 2685 "Data Search Object Mapping"
             DataSearchEvents.OnGetFieldNoForTableType(TableNo, FieldNo);
         exit(FieldNo);
     end;
+
+    local procedure GetGenJournalPageNo(TableSubType: Integer): Integer
+    var
+        GenJournalTemplate: Record "Gen. Journal Template";
+    begin
+        GenJournalTemplate.SetLoadFields("Page ID");
+        GenJournalTemplate.SetFilter("Page ID", '>0');
+        GenJournalTemplate.SetRange(Type, TableSubType);
+        if GenJournalTemplate.FindFirst() then
+            exit(GenJournalTemplate."Page ID");
+        exit(page::"General Journal");
+    end;
+
+    internal procedure SetTypeFilterOnRecRef(var RecRef: RecordRef; TableType: Integer; FieldNo: Integer)
+    var
+        GenJournalTemplate: Record "Gen. Journal Template";
+        FldRef: FieldRef;
+        FilterTxt: TextBuilder;
+    begin
+        if not RecRef.FieldExist(FieldNo) then
+            exit;
+        FldRef := RecRef.Field(FieldNo);
+        case RecRef.Number of
+            Database::"Gen. Journal Line":
+                begin
+                    GenJournalTemplate.SetLoadFields(Name);
+                    GenJournalTemplate.SetRange(Type, TableType);
+                    if GenJournalTemplate.FindSet() then
+                        repeat
+                            if FilterTxt.Length() > 0 then
+                                FilterTxt.Append('|');
+                            FilterTxt.Append('''');
+                            FilterTxt.Append(GenJournalTemplate.Name);
+                            FilterTxt.Append('''');
+                        until GenJournalTemplate.Next() = 0;
+                    if FilterTxt.Length > 0 then
+                        FldRef.SetFilter(FilterTxt.ToText());
+                end;
+            else
+                FldRef.SetRange(TableType);
+        end;
+    end;
+
 
     internal procedure IsSubTable(TableNo: Integer): Boolean
     var
@@ -240,6 +288,8 @@ codeunit 2685 "Data Search Object Mapping"
         FieldNo: Integer;
     begin
         case DataSearchSetupTable."Table No." of
+            Database::"Gen. Journal Line":
+                FieldNo := 1;
             Database::"Sales Header", Database::"Sales Line",
             Database::"Purchase Header", Database::"Purchase Line",
             Database::"Service Header", Database::"Service Item Line",
@@ -260,6 +310,10 @@ codeunit 2685 "Data Search Object Mapping"
         FldRef: FieldRef;
         i: Integer;
     begin
+        if TableNo = Database::"Gen. Journal Line" then begin
+            TableNo := Database::"Gen. Journal Template";
+            FieldNo := 9; // Type
+        end;
         RecRef.Open(TableNo);
         FldRef := RecRef.Field(FieldNo);
         for i := 1 to FldRef.EnumValueCount() do
@@ -268,6 +322,7 @@ codeunit 2685 "Data Search Object Mapping"
 
     internal procedure GetTableSubTypeFromPage(PageNo: Integer): Integer
     var
+        PageMetaData: Record "Page Metadata";
         DataSearchEvents: Codeunit "Data Search Events";
         SalesDocumentType: Enum "Sales Document Type";
         PurchaseDocumentType: Enum "Purchase Document Type";
@@ -315,10 +370,95 @@ codeunit 2685 "Data Search Object Mapping"
             Page::"Service Contract Template List":
                 exit(ServiceContractType::Template.AsInteger());
             else begin
+                if PageMetaData.Get(PageNo) and (PageMetaData.SourceTable = Database::"Gen. Journal Line") then
+                    exit(FindGenJournalTemplateType(PageNo));
                 TableSubtype := 0;
                 DataSearchEvents.OnGetTableSubTypeFromPage(PageNo, TableSubtype);
                 exit(TableSubtype);
             end;
+        end;
+    end;
+
+    local procedure FindGenJournalTemplateType(PageNo: Integer): Integer
+    var
+        GenJournalTemplate: Record "Gen. Journal Template";
+    begin
+        GenJournalTemplate.SetLoadFields(Type);
+        GenJournalTemplate.SetRange("Page ID", PageNo);
+        if GenJournalTemplate.FindFirst() then
+            exit(GenJournalTemplate.Type.AsInteger());
+        exit(0);
+    end;
+
+    /*
+    Returns the search setup in the format of (example):
+    [
+      {
+         "tableNo": 1234,
+         "tableSubtype": 0,
+         "tableSubtypeFieldNo": 3,
+         "tableSearchFieldNos": [ 1, 2, 5, 8 ]
+      }
+    ]
+    */
+    internal procedure GetDataSearchSetup(var SetupInfo: JsonArray)
+    var
+        DataSearchSetupTable: Record "Data Search Setup (Table)";
+        DataSearchSetupField: Record "Data Search Setup (Field)";
+        AllProfile: Record "All Profile";
+        DataSearchDefaults: Codeunit "Data Search Defaults";
+        jObject: JsonObject;
+        jArray: JsonArray;
+    begin
+        AllProfile.SetRange("Profile ID", DataSearchSetupTable.GetProfileID());
+        if AllProfile.FindFirst() then;
+        DataSearchSetupTable.SetRange("Role Center ID", AllProfile."Role Center ID");
+        if DataSearchSetupTable.IsEmpty then
+            DataSearchDefaults.InitSetupForProfile(AllProfile."Role Center ID");
+        if DataSearchSetupTable.FindSet() then
+            repeat
+                Clear(jObject);
+                Clear(jArray);
+                jObject.Add('tableNo', Format(DataSearchSetupTable."Table No."));
+                jObject.Add('tableSubtype', Format(DataSearchSetupTable."Table Subtype"));
+                jObject.Add('tableSubtypeFieldNo', Format(GetTypeNoField(DataSearchSetupTable."Table No.")));
+                DataSearchSetupField.SetRange("Table No.", DataSearchSetupTable."Table No.");
+                DataSearchSetupField.SetRange("Enable Search", true);
+                if DataSearchSetupField.IsEmpty() then
+                    DataSearchDefaults.AddDefaultFields(DataSearchSetupTable."Table No.");
+                if DataSearchSetupField.FindSet() then
+                    repeat
+                        jArray.Add(Format(DataSearchSetupField."Field No."));
+                    until DataSearchSetupField.Next() = 0;
+                jObject.Add('tableSearchFieldNos', jArray);
+                SetupInfo.Add(jObject);
+            until DataSearchSetupTable.Next() = 0;
+    end;
+
+    internal procedure GetDisplayPageId(TableNo: Integer; SystemId: Guid; var DisplayPageId: Integer; var DisplayTableNo: Integer; var DisplaySystemId: Guid)
+    var
+        PageMetaData: Record "Page Metadata";
+        DataSearchEvents: Codeunit "Data Search Events";
+        PageManagement: Codeunit "Page Management";
+        RecRef: RecordRef;
+    begin
+        if TableNo = 0 then
+            exit;
+        RecRef.Open(TableNo);
+        if not RecRef.GetBySystemId(SystemId) then
+            exit;
+        MapLinesRecToHeaderRec(RecRef);
+        DisplayTableNo := RecRef.Number;
+        DisplaySystemId := RecRef.Field(RecRef.SystemIdNo).Value;
+        DisplayPageId := PageManagement.GetPageID(RecRef);
+        if DisplayPageId = 0 then
+            DataSearchEvents.OnGetCardPageNo(RecRef.Number, 0, DisplayPageId);
+        if DisplayPageId = 0 then begin
+            DisplayPageId := GetListPageNo(TableNo, RecRef.Field(GetTypeNoField(RecRef.Number)).Value);
+            if not PageMetaData.Get(DisplayPageId) then
+                exit;
+            if PageMetaData.CardPageID <> 0 then
+                DisplayPageId := PageMetaData.CardPageID;
         end;
     end;
 

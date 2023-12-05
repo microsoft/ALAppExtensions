@@ -9,7 +9,9 @@ permissionset 13687 "SAF-T Objects DK"
     Access = Public;
     Assignable = false;
 
-    Permissions = codeunit "Create Standard Data SAF-T DK" = X,
+    Permissions = table "Imported SAF-T File DK" = X,
+                  page "Imported SAF-T Files DK" = X,
+                  codeunit "Create Standard Data SAF-T DK" = X,
                   codeunit "Data Check SAF-T DK" = X,
                   codeunit "Install SAF-T DK" = X,
                   codeunit "Standard Account DK" = X,

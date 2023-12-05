@@ -38,6 +38,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         VATDocumentExistsErr: Label 'VAT Document already exists.';
         DateEmptyErr: Label 'Posting Date and VAT Date cannot be empty.';
         PostingDateEmptyErr: Label 'Posting Date cannot be empty.';
+        LaterPostingDateQst: Label 'The linked advance letter %1 is paid after %2. If you continue, the advance letter won''t be deducted.\\Do you want to continue?', Comment = '%1 = advance letter no., %2 = posting date';
 
     procedure AdvEntryInit(Preview: Boolean)
     begin
@@ -2385,7 +2386,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         if not ConfirmManagement.GetResponseOrDefault(ApplyAdvanceLetterQst, false) then
             exit;
 
-        CheckAdvancePayement(AdvanceLetterApplication."Document Type"::"Posted Sales Invoice", SalesInvoiceHeader."No.");
+        CheckAdvancePayment(AdvanceLetterApplication."Document Type"::"Posted Sales Invoice", SalesInvoiceHeader);
         AdvanceLetterApplication.CalcSums(Amount);
         CustLedgerEntry.SetCurrentKey("Document No.");
         CustLedgerEntry.SetRange("Document No.", SalesInvoiceHeader."No.");
@@ -2399,7 +2400,8 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         PostAdvancePaymentUsage(AdvanceLetterApplication."Document Type"::"Posted Sales Invoice", SalesInvoiceHeader."No.", SalesInvoiceHeader,
             CustLedgerEntry, GenJnlPostLine, false);
     end;
-
+#if not CLEAN24
+    [Obsolete('Replaced by CheckAdvancePayment with Variant parameter.', '24.0')]
     procedure CheckAdvancePayement(AdvLetterUsageDocTypeCZZ: Enum "Adv. Letter Usage Doc.Type CZZ"; DocumentNo: Code[20])
     var
         AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
@@ -2415,6 +2417,59 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 SalesAdvLetterHeaderCZZ.Get(AdvanceLetterApplicationCZZ."Advance Letter No.");
                 if SalesAdvLetterHeaderCZZ."To Use" < AdvanceLetterApplicationCZZ.Amount then
                     if not ConfirmManagement.GetResponseOrDefault(UsageQst, false) then
+                        Error('');
+            until AdvanceLetterApplicationCZZ.Next() = 0;
+    end;
+#endif
+
+    procedure CheckAdvancePayment(AdvLetterUsageDocTypeCZZ: Enum "Adv. Letter Usage Doc.Type CZZ"; DocumentHeader: Variant)
+    var
+        AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
+        SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ";
+        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+        SalesHeader: Record "Sales Header";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        ConfirmManagement: Codeunit "Confirm Management";
+        DocumentNo: Code[20];
+        PostingDate: Date;
+        IsHandled: Boolean;
+        UsageQst: Label 'Usage all applicated advances is not possible.\Continue?';
+    begin
+        OnBeforeCheckAdvancePayment(AdvLetterUsageDocTypeCZZ, DocumentHeader, IsHandled);
+        if IsHandled then
+            exit;
+
+        case AdvLetterUsageDocTypeCZZ of
+            AdvLetterUsageDocTypeCZZ::"Posted Sales Invoice":
+                begin
+                    SalesInvoiceHeader := DocumentHeader;
+                    DocumentNo := SalesInvoiceHeader."No.";
+                    PostingDate := SalesInvoiceHeader."Posting Date";
+                end;
+            AdvLetterUsageDocTypeCZZ::"Sales Invoice",
+            AdvLetterUsageDocTypeCZZ::"Sales Order":
+                begin
+                    SalesHeader := DocumentHeader;
+                    DocumentNo := SalesHeader."No.";
+                    PostingDate := SalesHeader."Posting Date";
+                end;
+        end;
+
+        AdvanceLetterApplicationCZZ.SetRange("Document Type", AdvLetterUsageDocTypeCZZ);
+        AdvanceLetterApplicationCZZ.SetRange("Document No.", DocumentNo);
+        if AdvanceLetterApplicationCZZ.FindSet() then
+            repeat
+                SalesAdvLetterHeaderCZZ.SetAutoCalcFields("To Use");
+                SalesAdvLetterHeaderCZZ.Get(AdvanceLetterApplicationCZZ."Advance Letter No.");
+                if SalesAdvLetterHeaderCZZ."To Use" < AdvanceLetterApplicationCZZ.Amount then
+                    if not ConfirmManagement.GetResponseOrDefault(UsageQst, false) then
+                        Error('');
+                SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", AdvanceLetterApplicationCZZ."Advance Letter No.");
+                SalesAdvLetterEntryCZZ.SetRange(Cancelled, false);
+                SalesAdvLetterEntryCZZ.SetRange("Entry Type", SalesAdvLetterEntryCZZ."Entry Type"::Payment);
+                SalesAdvLetterEntryCZZ.SetFilter("Posting Date", '%1..', PostingDate + 1);
+                if not SalesAdvLetterEntryCZZ.IsEmpty() then
+                    if not ConfirmManagement.GetResponseOrDefault(StrSubstNo(LaterPostingDateQst, AdvanceLetterApplicationCZZ."Advance Letter No.", Format(PostingDate)), false) then
                         Error('');
             until AdvanceLetterApplicationCZZ.Next() = 0;
     end;
@@ -2785,6 +2840,11 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
 
     [IntegrationEvent(true, false)]
     local procedure OnPostAdvancePaymentVATOnBeforeGenJnlPostLine(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; var GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeCheckAdvancePayment(AdvLetterUsageDocTypeCZZ: Enum "Adv. Letter Usage Doc.Type CZZ"; DocumentHeader: Variant; var IsHandled: Boolean);
     begin
     end;
 }

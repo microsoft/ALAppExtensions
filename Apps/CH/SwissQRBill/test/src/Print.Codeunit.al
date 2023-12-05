@@ -17,6 +17,8 @@ codeunit 148092 "Swiss QR-Bill Test Print"
         LibraryRandom: Codeunit "Library - Random";
         SwissQRBillMgt: Codeunit "Swiss QR-Bill Mgt.";
         LibrarySetupStorage: Codeunit "Library - Setup Storage";
+        LibrarySales: Codeunit "Library - Sales";
+        LibraryService: Codeunit "Library - Service";
         ReportType: Enum "Swiss QR-Bill Reports";
         IBANType: Enum "Swiss QR-Bill IBAN Type";
         ReferenceType: Enum "Swiss QR-Bill Payment Reference Type";
@@ -945,6 +947,79 @@ codeunit 148092 "Swiss QR-Bill Test Print"
         Assert.IsTrue(TenantMediaThumbnails.IsEmpty(), 'Tenant Media Thumbnails were not removed');
     end;
 
+    [Test]
+    [HandlerFunctions('QRBillPrintRPH')]
+    procedure PrintPostedSalesInvoiceDifferentBillToAddress()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        BillToInfo: Dictionary of [Text, Text];
+        QRLayout: Code[20];
+    begin
+        // [FEATURE] [UI] [Print]
+        // [SCENARIO 486959] Print posted sales invoice when Bill-to information is different from the Sell-to information.
+        Initialize();
+        EnableReport(ReportType::"Posted Sales Invoice", true);
+        QRLayout :=
+            SwissQRBillTestLibrary.CreateQRLayout(
+                IBANType::"QR-IBAN", ReferenceType::"QR Reference", '', SwissQRBillTestLibrary.CreateFullBillingInfo());
+        SwissQRBillTestLibrary.UpdateDefaultLayout(QRLayout);
+
+        // [GIVEN] Posted Sales Invoice with Bill-to information different from the Sell-to information.
+        SwissQRBillTestLibrary.CreateSalesInvoice(SalesHeader, '', 100, SwissQRBillTestLibrary.CreatePaymentTerms(1, 2), '');
+        BillToInfo.Add('BillToName', LibraryUtility.GenerateGUID());
+        BillToInfo.Add('BillToAddress', LibraryUtility.GenerateGUID());
+        BillToInfo.Add('BillToAddress2', LibraryUtility.GenerateGUID());
+        BillToInfo.Add('BillToPostCode', LibraryUtility.GenerateGUID());
+        BillToInfo.Add('BillToCity', LibraryUtility.GenerateGUID());
+        BillToInfo.Add('BillToCountryRegion', LibraryUtility.GenerateGUID());
+        UpdateBillToInfoOnSalesInvoice(SalesHeader, BillToInfo);
+        SalesInvoiceHeader.Get(LibrarySales.PostSalesDocument(SalesHeader, false, true));
+
+        // [WHEN] Run Swiss QR-Bill report on Posted Sales Invoice.
+        PrintPostedSalesInvoice(SalesInvoiceHeader);
+
+        // [THEN] Section Payable By contains Bill-to information.
+        VerifyReportDatasetDebitorInfo(FormatPayableByInfo(BillToInfo));
+    end;
+
+    [Test]
+    [HandlerFunctions('QRBillPrintRPH')]
+    procedure PrintPostedServiceInvoiceDifferentBillToAddress()
+    var
+        ServiceHeader: Record "Service Header";
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        BillToInfo: Dictionary of [Text, Text];
+        QRLayout: Code[20];
+    begin
+        // [FEATURE] [UI] [Print] [Service]
+        // [SCENARIO 486959] Print posted service invoice when Bill-to information is different from the Sell-to information.
+        Initialize();
+        EnableReport(ReportType::"Posted Service Invoice", true);
+        QRLayout :=
+            SwissQRBillTestLibrary.CreateQRLayout(
+                IBANType::"QR-IBAN", ReferenceType::"QR Reference", '', SwissQRBillTestLibrary.CreateFullBillingInfo());
+        SwissQRBillTestLibrary.UpdateDefaultLayout(QRLayout);
+
+        // [GIVEN] Posted Service Invoice with Bill-to information different from the Sell-to information.
+        SwissQRBillTestLibrary.CreateServiceInvoice(ServiceHeader, '', 100, SwissQRBillTestLibrary.CreatePaymentTerms(1, 2), '');
+        BillToInfo.Add('BillToName', LibraryUtility.GenerateGUID());
+        BillToInfo.Add('BillToAddress', LibraryUtility.GenerateGUID());
+        BillToInfo.Add('BillToAddress2', LibraryUtility.GenerateGUID());
+        BillToInfo.Add('BillToPostCode', LibraryUtility.GenerateGUID());
+        BillToInfo.Add('BillToCity', LibraryUtility.GenerateGUID());
+        BillToInfo.Add('BillToCountryRegion', LibraryUtility.GenerateGUID());
+        UpdateBillToInfoOnServiceInvoice(ServiceHeader, BillToInfo);
+        LibraryService.PostServiceOrder(ServiceHeader, true, false, true);
+        LibraryService.FindServiceInvoiceHeader(ServiceInvoiceHeader, ServiceHeader."No.");
+
+        // [WHEN] Run Swiss QR-Bill report on Posted Sales Invoice.
+        PrintPostedServiceInvoice(ServiceInvoiceHeader);
+
+        // [THEN] Section Payable By contains Bill-to information.
+        VerifyReportDatasetDebitorInfo(FormatPayableByInfo(BillToInfo));
+    end;
+
     local procedure Initialize()
     var
         DummyReportSelections: Record "Report Selections";
@@ -1062,6 +1137,35 @@ codeunit 148092 "Swiss QR-Bill Test Print"
             SwissQRBillMgt.AddLineIfNotBlanked(Result, CopyStr(Address + ' ' + "Address 2", 1, 70));
             SwissQRBillMgt.AddLineIfNotBlanked(Result, CopyStr("Post Code" + ' ' + City, 1, 70));
         end;
+    end;
+
+    local procedure FormatPayableByInfo(BillToInfo: Dictionary of [Text, Text]) Result: Text
+    begin
+        SwissQRBillMgt.AddLineIfNotBlanked(Result, CopyStr(BillToInfo.Get('BillToName'), 1, 70));
+        SwissQRBillMgt.AddLineIfNotBlanked(Result, CopyStr(BillToInfo.Get('BillToAddress') + ' ' + BillToInfo.Get('BillToAddress2'), 1, 70));
+        SwissQRBillMgt.AddLineIfNotBlanked(Result, CopyStr(BillToInfo.Get('BillToPostCode') + ' ' + BillToInfo.Get('BillToCity'), 1, 70));
+    end;
+
+    local procedure UpdateBillToInfoOnSalesInvoice(var SalesHeader: Record "Sales Header"; BillToInfo: Dictionary of [Text, Text])
+    begin
+        SalesHeader."Bill-to Name" := CopyStr(BillToInfo.Get('BillToName'), 1, MaxStrLen(SalesHeader."Bill-to Name"));
+        SalesHeader."Bill-to Address" := CopyStr(BillToInfo.Get('BillToAddress'), 1, MaxStrLen(SalesHeader."Bill-to Address"));
+        SalesHeader."Bill-to Address 2" := CopyStr(BillToInfo.Get('BillToAddress2'), 1, MaxStrLen(SalesHeader."Bill-to Address 2"));
+        SalesHeader."Bill-to Post Code" := CopyStr(BillToInfo.Get('BillToPostCode'), 1, MaxStrLen(SalesHeader."Bill-to Post Code"));
+        SalesHeader."Bill-to City" := CopyStr(BillToInfo.Get('BillToCity'), 1, MaxStrLen(SalesHeader."Bill-to City"));
+        SalesHeader."Bill-to Country/Region Code" := CopyStr(BillToInfo.Get('BillToCountryRegion'), 1, MaxStrLen(SalesHeader."Bill-to Country/Region Code"));
+        SalesHeader.Modify();
+    end;
+
+    local procedure UpdateBillToInfoOnServiceInvoice(var ServiceHeader: Record "Service Header"; BillToInfo: Dictionary of [Text, Text])
+    begin
+        ServiceHeader."Bill-to Name" := CopyStr(BillToInfo.Get('BillToName'), 1, MaxStrLen(ServiceHeader."Bill-to Name"));
+        ServiceHeader."Bill-to Address" := CopyStr(BillToInfo.Get('BillToAddress'), 1, MaxStrLen(ServiceHeader."Bill-to Address"));
+        ServiceHeader."Bill-to Address 2" := CopyStr(BillToInfo.Get('BillToAddress2'), 1, MaxStrLen(ServiceHeader."Bill-to Address 2"));
+        ServiceHeader."Bill-to Post Code" := CopyStr(BillToInfo.Get('BillToPostCode'), 1, MaxStrLen(ServiceHeader."Bill-to Post Code"));
+        ServiceHeader."Bill-to City" := CopyStr(BillToInfo.Get('BillToCity'), 1, MaxStrLen(ServiceHeader."Bill-to City"));
+        ServiceHeader."Bill-to Country/Region Code" := CopyStr(BillToInfo.Get('BillToCountryRegion'), 1, MaxStrLen(ServiceHeader."Bill-to Country/Region Code"));
+        ServiceHeader.Modify();
     end;
 
     local procedure VerifyReportEnabling(var SwissQRBillReports: Record "Swiss QR-Bill Reports"; ExpectedCount: Integer; ExpectedCurrentType: Enum "Swiss QR-Bill Reports"; Enable: Boolean;

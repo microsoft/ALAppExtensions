@@ -16,6 +16,7 @@ permissionsetextension 2680 "Data Search Setup" extends "D365 Bus Full Access"
         codeunit "Data Search Invocation" = X,
         codeunit "Data Search Object Mapping" = X,
         codeunit "Data Search Events" = X,
+        codeunit "Data Search Setup Changes" = X,
         page "Data Search" = X,
         page "Data Search Lines" = X,
         page "Data Search Result Records" = X,

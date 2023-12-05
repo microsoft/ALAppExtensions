@@ -99,6 +99,8 @@ codeunit 13629 "OIOUBL-Check Sales Header"
         EmptyLineFound: Boolean;
         TotalLineAmount: Decimal;
         TotalLineDiscountAmount: Decimal;
+        IsHandled: Boolean;
+        ConfirmEmptyLine: Boolean;
     begin
         EmptyLineFound := FALSE;
         TotalLineAmount := 0;
@@ -127,8 +129,14 @@ codeunit 13629 "OIOUBL-Check Sales Header"
             if TotalLineDiscountAmount < 0 then
                 ERROR(DiscountAmountNegativeErr);
 
+            ConfirmEmptyLine := true;
+            IsHandled := false;
+            OnCheckSalesLinesOnBeforeConfirmEmptyLines(SalesHeader, ConfirmEmptyLine, IsHandled);
+            if IsHandled then
+                exit;
+
             if EmptyLineFound then
-                if NOT CONFIRM(EmptyFieldsQst, TRUE, "Document Type", "Document No.") then
+                if NOT CONFIRM(EmptyFieldsQst, ConfirmEmptyLine, "Document Type", "Document No.") then
                     ERROR(WarningExistErr);
         end;
     end;
@@ -148,6 +156,11 @@ codeunit 13629 "OIOUBL-Check Sales Header"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeOnRun(SalesHeader: Record "Sales Header"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCheckSalesLinesOnBeforeConfirmEmptyLines(var SalesHeader: Record "Sales Header"; var ConfirmEmptyLine: Boolean; var IsHandled: Boolean)
     begin
     end;
 }

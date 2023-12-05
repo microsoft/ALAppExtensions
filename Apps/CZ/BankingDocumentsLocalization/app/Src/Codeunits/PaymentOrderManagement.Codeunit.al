@@ -261,11 +261,31 @@ codeunit 31356 "Payment Order Management CZB"
     end;
 
     local procedure IsLedgerEntryApplied(PaymentOrderLineCZB: Record "Payment Order Line CZB"): Boolean
+    var
+        IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
+        PaymentOrderLineCZB2: Record "Payment Order Line CZB";
     begin
         if PaymentOrderLineCZB."Applies-to C/V/E Entry No." = 0 then
             exit(false);
 
-        exit(PaymentOrderLineCZB.CalcRelatedAmountToApply() <> 0);
+        IssPaymentOrderLineCZB.SetRange(Type, PaymentOrderLineCZB.Type);
+        IssPaymentOrderLineCZB.SetRange("No.", PaymentOrderLineCZB."No.");
+        IssPaymentOrderLineCZB.SetRange("Applies-to C/V/E Entry No.", PaymentOrderLineCZB."Applies-to C/V/E Entry No.");
+        IssPaymentOrderLineCZB.SetFilter(Status, '<>%1', IssPaymentOrderLineCZB.Status::Canceled);
+        if not IssPaymentOrderLineCZB.IsEmpty() then
+            exit(true);
+
+        PaymentOrderLineCZB2.SetRange(Type, PaymentOrderLineCZB.Type);
+        PaymentOrderLineCZB2.SetRange("No.", PaymentOrderLineCZB."No.");
+        PaymentOrderLineCZB2.SetRange("Applies-to C/V/E Entry No.", PaymentOrderLineCZB."Applies-to C/V/E Entry No.");
+        PaymentOrderLineCZB2.SetFilter("Payment Order No.", '<>%1', PaymentOrderLineCZB."Payment Order No.");
+        if not PaymentOrderLineCZB2.IsEmpty() then
+            exit(true);
+
+        PaymentOrderLineCZB2.SetRange("Payment Order No.", PaymentOrderLineCZB."Payment Order No.");
+        PaymentOrderLineCZB2.SetFilter("Line No.", '<>%1', PaymentOrderLineCZB."Line No.");
+        if not PaymentOrderLineCZB2.IsEmpty() then
+            exit(true);
     end;
 
     local procedure HasErrorMessages(var TempErrorMessage2: Record "Error Message" temporary; ShowErrorMessages: Boolean): Boolean

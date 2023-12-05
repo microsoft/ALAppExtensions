@@ -105,6 +105,7 @@ table 11733 "Cash Document Line CZP"
                 CashDeskCZP: Record "Bank Account";
                 Employee: Record Employee;
                 IsHandled: Boolean;
+                BreakValidation: Boolean;
             begin
                 GetCashDeskEventCZP();
                 if CashDeskEventCZP."Account No." <> '' then
@@ -138,7 +139,10 @@ table 11733 "Cash Document Line CZP"
                 "Gen. Document Type" := TempCashDocumentLineCZP."Gen. Document Type";
 
                 IsHandled := false;
-                OnValidateAccountNoOnAfterInitRec(Rec, xRec, TempCashDocumentLineCZP, IsHandled);
+                BreakValidation := false;
+                OnValidateAccountNoOnAfterInitRec(Rec, xRec, TempCashDocumentLineCZP, IsHandled, BreakValidation);
+                if BreakValidation  then
+                    exit;
                 if not IsHandled then
                     if "Account No." = '' then
                         exit;
@@ -1805,7 +1809,7 @@ table 11733 "Cash Document Line CZP"
     end;
 
     [IntegrationEvent(true, false)]
-    local procedure OnValidateAccountNoOnAfterInitRec(var Rec: Record "Cash Document Line CZP"; var xRec: Record "Cash Document Line CZP"; TempCashDocumentLineCZP: Record "Cash Document Line CZP" temporary; var IsHandled: Boolean);
+    local procedure OnValidateAccountNoOnAfterInitRec(var Rec: Record "Cash Document Line CZP"; var xRec: Record "Cash Document Line CZP"; TempCashDocumentLineCZP: Record "Cash Document Line CZP" temporary; var IsHandled: Boolean; var BreakValidation: Boolean);
     begin
     end;
 

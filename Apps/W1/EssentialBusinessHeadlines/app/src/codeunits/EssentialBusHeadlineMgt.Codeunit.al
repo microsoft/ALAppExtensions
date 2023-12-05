@@ -91,6 +91,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
             exit;
 
         BestQty := BestSoldItemQuery.SumQuantity;
+        Item.SetLoadFields(Description, "Base Unit of Measure");
         Item.Get(BestSoldItemQuery.ProductNo);
         HeadlineText := EssentialBusinessHeadline."Headline Text";
 
@@ -104,7 +105,8 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         EssentialBusinessHeadline."Headline Text" := CopyStr(HeadlineText, 1, MaxStrLen(EssentialBusinessHeadline."Headline Text"));
         HeadlineDetails.SetRange(Type, HeadlineDetails.Type::Item);
         HeadlineDetails.SetRange("User Id", UserSecurityId());
-        HeadlineDetails.DeleteAll();
+        if not HeadlineDetails.IsEmpty() then
+            HeadlineDetails.DeleteAll();
 
         InsertHeadlineDetails(BestSoldItemQuery.ProductNo, HeadlineDetails.Type::Item, Item.Description, Item."Base Unit of Measure", BestSoldItemQuery.SumQuantity, 0);
 
@@ -186,6 +188,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         if not BusiestResource.Read() then
             exit;
         BestQty := BusiestResource.SumQuantity;
+        Resource.SetLoadFields(Name, "Base Unit of Measure");
         Resource.Get(BusiestResource.ProductNo);
         HeadlineText := EssentialBusinessHeadline."Headline Text";
 
@@ -199,7 +202,8 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         EssentialBusinessHeadline."Headline Text" := CopyStr(HeadlineText, 1, MaxStrLen(EssentialBusinessHeadline."Headline Text"));
         HeadlineDetails.SetRange(Type, HeadlineDetails.Type::Resource);
         HeadlineDetails.SetRange("User Id", UserSecurityId());
-        HeadlineDetails.DeleteAll();
+        if not HeadlineDetails.IsEmpty() then
+            HeadlineDetails.DeleteAll();
 
         InsertHeadlineDetails(BusiestResource.ProductNo, HeadlineDetails.Type::Resource, Resource.Name, Resource."Base Unit of Measure", BusiestResource.SumQuantity, 0);
 
@@ -360,9 +364,8 @@ codeunit 1437 "Essential Bus. Headline Mgt."
 
         // we need at least 5 sales for this headline to be valid
         if (CustomerLedgerEntry.Count() > 5) then begin
+            CustomerLedgerEntry.SetAutoCalcFields(Amount);
             if CustomerLedgerEntry.FindFirst() then begin
-                CustomerLedgerEntry.CalcFields(Amount);
-
                 if not Headlines.GetHeadlineText(
                     ChooseQualifier(QualifierWeekTxt, QualifierMonthTxt, Qualifier3MonthsTxt, DaysSearch),
                     StrSubstNo(LargestSalePayloadTxt,
@@ -506,6 +509,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         HeadlineText: Text;
     begin
         EssentialBusinessHeadline.GetOrCreateHeadline(EssentialBusinessHeadline."Headline Name"::RecentlyOverdueInvoices);
+        CustomerLedgerEntry.SetLoadFields(Open, "Due Date", "Document Type");
         FindRecentlyOverdueInvoices(CustomerLedgerEntry, WorkDate());
         RecentlyOverdueInvoices := CustomerLedgerEntry.Count();
 
@@ -516,9 +520,9 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         end;
 
         TotalAmount := 0.0;
+        CustomerLedgerEntry.SetAutoCalcFields("Amount (LCY)");
         if CustomerLedgerEntry.FindSet() then
             repeat
-                CustomerLedgerEntry.CalcFields("Amount (LCY)");
                 TotalAmount := TotalAmount + CustomerLedgerEntry."Amount (LCY)";
             until CustomerLedgerEntry.Next() = 0;
 
@@ -602,12 +606,10 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         if not TopCustomerHeadlineQuery.Read() then
             exit;
 
-        Customer.Get(TopCustomerHeadlineQuery.CustomerNo);
-
         HeadlineText := EssentialBusinessHeadline."Headline Text";
         if not Headlines.GetHeadlineText(
             ChooseQualifier(QualifierWeekTxt, QualifierMonthTxt, Qualifier3MonthsTxt, DaysSearch),
-            GetTopCustomerPayload(Customer.Name, FormatLocalCurrency(TopCustomerHeadlineQuery.SumAmountLcy)),
+            GetTopCustomerPayload(TopCustomerHeadlineQuery.CustomerName, FormatLocalCurrency(TopCustomerHeadlineQuery.SumAmountLcy)),
             HeadlineText)
         then
             exit;
@@ -616,7 +618,8 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         EssentialBusinessHeadline."Headline Text" := CopyStr(HeadlineText, 1, MaxStrLen(EssentialBusinessHeadline."Headline Text"));
         HeadlineDetails.SetRange(Type, HeadlineDetails.Type::Customer);
         HeadlineDetails.SetRange("User Id", UserSecurityId());
-        HeadlineDetails.DeleteAll();
+        if not HeadlineDetails.IsEmpty() then
+            HeadlineDetails.DeleteAll();
         InsertHeadlineDetails(TopCustomerHeadlineQuery.No, HeadlineDetails.Type::Customer, TopCustomerHeadlineQuery.CustomerName, '', 0, TopCustomerHeadlineQuery.SumAmountLcy);
 
         // if there is only one customer last month, do not set to visible

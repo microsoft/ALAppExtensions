@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using Microsoft.eServices.EDocument.IO.Peppol;
 using System.Telemetry;
 
 page 6133 "E-Document Service"
@@ -159,11 +160,20 @@ page 6133 "E-Document Service"
             {
                 Caption = 'Export Mapping';
                 SubPageLink = Code = field(Code), "For Import" = const(false);
+                Visible = not (Rec."Document Format" = Rec."Document Format"::"Data Exchange");
             }
             part(EDocumentImportFormatMapping; "E-Doc. Mapping Part")
             {
                 Caption = 'Import Mapping';
                 SubPageLink = Code = field(Code), "For Import" = const(true);
+                Visible = not (Rec."Document Format" = Rec."Document Format"::"Data Exchange");
+            }
+            part(EDocumentDataExchDef; "E-Doc. Service Data Exch. Sub")
+            {
+                ApplicationArea = All;
+                Caption = 'Data Exchange Definition';
+                SubPageLink = "E-Document Format Code" = field(Code);
+                Visible = Rec."Document Format" = Rec."Document Format"::"Data Exchange";
             }
         }
     }

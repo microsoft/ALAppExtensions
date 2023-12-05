@@ -124,16 +124,6 @@ codeunit 2680 "Data Search in Table"
             until DataSearchSetupField.Next() = 0;
     end;
 
-    local procedure SetTypeFilterOnRecRef(var RecRef: RecordRef; TableType: Integer; FieldNo: Integer)
-    var
-        FldRef: FieldRef;
-    begin
-        if not RecRef.FieldExist(FieldNo) then
-            exit;
-        FldRef := RecRef.Field(FieldNo);
-        FldRef.SetRange(TableType);
-    end;
-
     local procedure SetListedFieldFiltersOnRecRef(var RecRef: RecordRef; TableType: Integer; SearchString: Text; UseTextSearch: Boolean; var FieldList: List of [Integer])
     var
         DataSearchObjectMapping: Codeunit "Data Search Object Mapping";
@@ -145,8 +135,9 @@ codeunit 2680 "Data Search in Table"
             exit;
 
         FieldNo := DataSearchObjectMapping.GetTypeNoField(RecRef.Number);
+
         if FieldNo > 0 then
-            SetTypeFilterOnRecRef(RecRef, TableType, FieldNo);
+            DataSearchObjectMapping.SetTypeFilterOnRecRef(RecRef, TableType, FieldNo);
 
         RecRef.FilterGroup(-1); // 'OR' group
         foreach FieldNo in FieldList do
@@ -172,6 +163,7 @@ codeunit 2680 "Data Search in Table"
 
     local procedure SearchTable(TableNo: Integer; TableType: Integer; var FieldList: List of [Integer]; var SearchStrings: List of [Text]; var Results: Dictionary of [Text, Text])
     var
+        DataSearchEvents: Codeunit "Data Search Events";
         [SecurityFiltering(SecurityFilter::Filtered)]
         RecRef: RecordRef;
         FldRef: FieldRef;
@@ -191,6 +183,7 @@ codeunit 2680 "Data Search in Table"
         FldRef := RecRef.Field(RecRef.SystemModifiedAtNo);
         RecRef.SetView(StrSubstNo(SetViewLbl, FldRef.Name));
         SetListedFieldFiltersOnRecRef(RecRef, TableType, SearchString1, UseTextSearch, FieldList);
+        DataSearchEvents.OnBeforeSearchTable(RecRef);
         if RecRef.FindSet() then
             repeat
                 FldRef := RecRef.Field(RecRef.SystemIdNo);

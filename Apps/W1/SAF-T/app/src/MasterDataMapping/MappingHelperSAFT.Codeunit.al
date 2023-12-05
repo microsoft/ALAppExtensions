@@ -201,10 +201,9 @@ codeunit 5291 "Mapping Helper SAF-T"
         MapRestSourceCodesToAssortedJournals();
     end;
 
-    procedure UpdateMasterDataWithNoSeries()
+    procedure InitDimensionFieldsSAFT()
     var
         Dimension: Record Dimension;
-        VATPostingSetup: Record "VAT Posting Setup";
     begin
         Dimension.SetRange("Analysis Type SAF-T", '');
         if Dimension.FindSet() then
@@ -213,7 +212,12 @@ codeunit 5291 "Mapping Helper SAF-T"
                 Dimension.Validate("SAF-T Export", true);
                 Dimension.Modify();
             until Dimension.Next() = 0;
+    end;
 
+    procedure InitVATPostingSetupFieldsSAFT()
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
         VATPostingSetup.SetRange("Purchase Tax Code SAF-T", '');
         if VATPostingSetup.FindSet() then
             repeat

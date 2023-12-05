@@ -53,6 +53,16 @@ codeunit 6108 "E-Document Processing"
                     SourceDocumentLines.Open(Database::"Sales Cr.Memo Line");
                     SourceDocumentLines.Field(3).SetRange(EDocument."Document No.");
                 end;
+            EDocument."Document Type"::"Service Invoice":
+                begin
+                    SourceDocumentLines.Open(Database::"Service Invoice Line");
+                    SourceDocumentLines.Field(3).SetRange(EDocument."Document No.");
+                end;
+            EDocument."Document Type"::"Service Credit Memo":
+                begin
+                    SourceDocumentLines.Open(Database::"Service Cr.Memo Line");
+                    SourceDocumentLines.Field(3).SetRange(EDocument."Document No.");
+                end;
             EDocument."Document Type"::"Purchase Invoice":
                 begin
                     SourceDocumentLines.Open(Database::"Purch. Inv. Line");

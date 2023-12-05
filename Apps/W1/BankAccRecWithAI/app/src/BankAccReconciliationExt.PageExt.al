@@ -1,6 +1,7 @@
 namespace Microsoft.Bank.Reconciliation;
 
 using System.AI;
+using System.Environment;
 using System.Environment.Configuration;
 using System.Telemetry;
 
@@ -73,11 +74,12 @@ pageextension 7253 BankAccReconciliationExt extends "Bank Acc. Reconciliation"
                         if BankAccReconciliation.Get(BankAccReconciliationLine."Statement Type", BankAccReconciliationLine."Bank Account No.", BankAccReconciliationLine."Statement No.") then begin
                             TransToGLAccAIProposal.SetStatementDate(BankAccReconciliation."Statement Date");
                             TransToGLAccAIProposal.SetStatementEndingBalance(BankAccReconciliation."Statement Ending Balance");
+                            TransToGLAccAIProposal.SetPageCaption(StrSubstNo(ContentAreaCaptionTxt, BankAccReconciliationLine."Bank Account No.", BankAccReconciliationLine."Statement No.", BankAccReconciliation."Statement Date"));
                         end;
                         TransToGLAccAIProposal.SetBankAccReconciliationLines(BankAccReconciliationLine);
                         FeatureTelemetry.LogUptake('0000LF1', BankRecAIMatchingImpl.FeatureName(), Enum::"Feature Uptake Status"::"Set up");
                         TransToGLAccAIProposal.LookupMode(true);
-                        if TransToGLAccAIProposal.RunModal() = Action::LookupOK then
+                        if TransToGLAccAIProposal.RunModal() = Action::OK then
                             CurrPage.Update();
                     end;
                 end;
@@ -109,7 +111,7 @@ pageextension 7253 BankAccReconciliationExt extends "Bank Acc. Reconciliation"
 
                     FeatureTelemetry.LogUptake('0000LF2', BankRecAIMatchingImpl.FeatureName(), Enum::"Feature Uptake Status"::Discovered);
                     FeatureTelemetry.LogUptake('0000LF3', BankRecAIMatchingImpl.FeatureName(), Enum::"Feature Uptake Status"::"Set up");
-                    MatchBankRecLines.BankAccReconciliationAutoMatch(Rec, 1, true, true);
+                    MatchBankRecLines.BankAccReconciliationAutoMatch(Rec, 1, true, false);
                 end;
             }
         }
@@ -134,16 +136,21 @@ pageextension 7253 BankAccReconciliationExt extends "Bank Acc. Reconciliation"
     var
         FeatureKey: Record "Feature Key";
         FeatureManagementFacade: Codeunit "Feature Management Facade";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
         if not FeatureKey.Get(BankAccRecWithAILbl) then
             CopilotActionsVisible := true
         else
             CopilotActionsVisible := FeatureManagementFacade.IsEnabled(BankAccRecWithAILbl);
+        
+        if CopilotActionsVisible then
+            CopilotActionsVisible := EnvironmentInformation.IsSaaSInfrastructure();
     end;
 
     var
         CopilotActionsVisible: Boolean;
         BankAccRecWithAILbl: label 'BankAccRecWithAI', Locked = true;
         NoBankAccReconcilliationLnWithDiffSellectedErr: Label 'Select the bank statement lines that have differences to transfer to the general journal.';
+        ContentAreaCaptionTxt: label 'Reconciling %1 statement %2 for %3', Comment = '%1 - bank account code, %2 - statement number, %3 - statement date';
 
 }

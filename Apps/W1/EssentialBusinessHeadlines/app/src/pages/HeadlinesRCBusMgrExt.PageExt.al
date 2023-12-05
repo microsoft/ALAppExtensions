@@ -229,48 +229,30 @@ pageextension 1440 "Headlines RC Bus. Mgr. Ext." extends "Headline RC Business M
     end;
 
     var
-        [InDataSet]
         MostPopularItemVisible: Boolean;
-        [InDataSet]
         MostPopularItemText: Text[250];
 
-        [InDataSet]
         LargestOrderVisible: Boolean;
-        [InDataSet]
         LargestOrderText: Text[250];
 
-        [InDataSet]
         LargestSaleVisible: Boolean;
-        [InDataSet]
         LargestSaleText: Text[250];
 
-        [InDataSet]
         SalesIncreaseVisible: Boolean;
-        [InDataSet]
         SalesIncreaseText: Text[250];
 
-        [InDataSet]
         BusiestResourceVisible: Boolean;
-        [InDataSet]
         BusiestResourceText: Text[250];
 
-        [InDataSet]
         IsTopCustomerVisible: Boolean;
-        [InDataSet]
         TopCustomerText: Text[250];
 
-        [InDataSet]
         OpenVATReturnVisible: Boolean;
-        [InDataSet]
         OpenVATReturnText: Text[250];
 
-        [InDataSet]
         OverdueVATReturnVisible: Boolean;
-        [InDataSet]
         OverdueVATReturnText: Text[250];
 
-        [InDataSet]
         RecentlyOverdueInvoicesVisible: Boolean;
-        [InDataSet]
         RecentlyOverdueInvoicesText: Text[250];
 }

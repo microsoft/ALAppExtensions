@@ -221,7 +221,6 @@ report 11728 "Cash Desk Book CZP"
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
         CompanyInformation: Record "Company Information";
-        TempCashDocumentHeaderCZP: Record "Cash Document Header CZP" temporary;
         FormatAddress: Codeunit "Format Address";
         CashDeskManagementCZP: Codeunit "Cash Desk Management CZP";
         BalanceToDate, Balance, Receipt, Payment : Decimal;
@@ -229,4 +228,7 @@ report 11728 "Cash Desk Book CZP"
         Sorting: Option PostingDate,CashDeskNo;
         CompanyAddress: array[8] of Text[150];
         EmptyDateFilterErr: Label 'Set up Date Filter.';
+
+    protected var
+        TempCashDocumentHeaderCZP: Record "Cash Document Header CZP" temporary;
 }
