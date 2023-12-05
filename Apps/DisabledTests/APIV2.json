@@ -323,5 +323,15 @@
         "codeunitId": 139899,
         "CodeunitName": "APIV2 - Document Attach. E2E",
         "Method": "*"
+    },
+    {
+        "codeunitId": 139906,
+        "CodeunitName": "APIV2 - FA Locations E2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139907,
+        "CodeunitName": "APIV2 - Fixed Assets E2E",
+        "Method": "*"
     }
 ]
