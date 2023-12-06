@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Item;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Inventory.Ledger;
+using System.Utilities;
+
 tableextension 31031 "Inventory Posting Setup CZL" extends "Inventory Posting Setup"
 {
     fields

@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Document;
+#if not CLEAN22
+
+using Microsoft.Foundation.Company;
+using Microsoft.Purchases.History;
+#endif
+
 tableextension 31019 "Item Charge Asgmt. (Purch) CZL" extends "Item Charge Assignment (Purch)"
 {
     fields

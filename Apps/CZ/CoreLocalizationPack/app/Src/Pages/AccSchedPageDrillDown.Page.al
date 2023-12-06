@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.FinancialReports;
+
+using Microsoft.Finance.Analysis;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Setup;
+
 page 31204 "Acc. Sched.Page.Drill-Down CZL"
 {
     Caption = 'Acc. Sched. Formula Drill-Down';

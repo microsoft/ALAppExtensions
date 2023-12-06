@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.VAT.Clause;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Enums;
+
 table 31011 "Purch. Adv. Letter Line CZZ"
 {
     Caption = 'Purchase Adv. Letter Line';

@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Foundation.Navigate;
+
+using Microsoft.Finance;
+
 #pragma warning disable AL0432
 codeunit 31044 "Navigate Handler CZL"
 {
@@ -17,7 +25,7 @@ codeunit 31044 "Navigate Handler CZL"
             EETEntryCZL.Reset();
             EETEntryCZL.SetCurrentKey("Document No.");
             EETEntryCZL.SetFilter("Document No.", DocNoFilter);
-            Navigate.InsertIntoDocEntry(DocumentEntry, Database::"EET Entry CZL", "Document Entry Document Type"::Quote,
+            Navigate.InsertIntoDocEntry(DocumentEntry, Database::"EET Entry CZL", Enum::"Document Entry Document Type"::Quote,
                 EETEntryCZL.TableCaption(), EETEntryCZL.Count());
         end;
     end;

@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 40150 "GP Upgrade Settings"
 {
     DataClassification = CustomerContent;
@@ -38,6 +40,26 @@ table 40150 "GP Upgrade Settings"
             DataClassification = CustomerContent;
             Caption = 'Data Upgrade Started';
         }
+        field(7; "Log All Record Changes"; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Log all record changes';
+        }
+        field(8; "One Step Upgrade"; Boolean)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Run upgrade after replication';
+        }
+        field(9; "One Step Upgrade Delay"; Duration)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Delay to run the upgrade after replication';
+        }
+        field(10; "Replication Completed"; DateTime)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Replication Completed';
+        }
     }
     keys
     {
@@ -52,9 +74,15 @@ table 40150 "GP Upgrade Settings"
     begin
         if not GPUpgradeSettings.Get() then begin
             GPUpgradeSettings."Upgrade Duration" := HybridGPManagement.GetDefaultJobTimeout();
+            GPUpgradeSettings."One Step Upgrade Delay" := GetUpgradeDelay();
             GPUpgradeSettings.Insert();
             GPUpgradeSettings.Get();
         end;
+    end;
+
+    internal procedure GetUpgradeDelay(): Duration
+    begin
+        exit(30 * 1000); // 30 seconds
     end;
 
     var

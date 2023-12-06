@@ -14,12 +14,17 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
             part("Show Errors"; "Hybrid GP Errors Factbox")
             {
                 ApplicationArea = Basic, Suite;
+                Visible = false;
+            }
+            part(Errors; "Hybrid GP Errors Overview Fb")
+            {
+                ApplicationArea = Basic, Suite;
                 Visible = FactBoxesVisible;
             }
             part("Show Detail Snapshot Errors"; "Hist. Migration Status Factbox")
             {
                 ApplicationArea = Basic, Suite;
-                Visible = FactBoxesVisible;
+                Visible = false;
             }
         }
     }
@@ -69,6 +74,9 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                         exit;
                     end;
 
+                    if not TaskScheduler.CanCreateTask() then
+                        Error(HistoricalSnapshotJobNeedPermissionsMsg);
+
                     if Confirm(ConfirmRerunQst) then begin
                         if not GPHistSourceProgress.IsEmpty() then begin
                             HistMigrationCurrentStatus.EnsureInit();
@@ -101,11 +109,12 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
         HybridCompany.SetRange(Replicate, true);
         HasCompletedSetupWizard := not HybridCompany.IsEmpty();
 
+        GPConfiguration.GetSingleInstance();
+
         if GetHasCompletedMigration() then
             if GPCompanyAdditionalSettings.GetMigrateHistory() then
-                if GPConfiguration.Get() then
-                    if not GPConfiguration.HasHistoricalJobRan() then
-                        ShowGPHistoricalJobNeedsToRunNotification();
+                if not GPConfiguration.HasHistoricalJobRan() then
+                    ShowGPHistoricalJobNeedsToRunNotification();
     end;
 
     local procedure GetHasCompletedMigration(): Boolean
@@ -137,5 +146,6 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
         ResetPreviousRunQst: Label 'Do you want to reset your previous GP Historical Snapshot migration? Choose No if you want to continue progress from the previous attempt.';
         SnapshotJobRunningMsg: Label 'The GP Historical Snapshot job is running.';
         HistoricalDataJobNotRanMsg: Label 'The GP Historical Snapshot job has not ran.';
+        HistoricalSnapshotJobNeedPermissionsMsg: Label 'The GP Historical Snapshot job cannot be started. Your user needs permission to create a scheduled task.';
         HistoricalDataStartJobMsg: Label 'Start GP Historical Snapshot job.';
 }

@@ -1,3 +1,14 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Bank.Documents;
+using Microsoft.Finance.CashDesk;
+using Microsoft.Finance.ReceivablesPayables;
+using System.Utilities;
+
 codeunit 31418 "Cross Application Handler CZZ"
 {
     var

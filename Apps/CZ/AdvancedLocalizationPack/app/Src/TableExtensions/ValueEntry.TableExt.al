@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Ledger;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+
 tableextension 31263 "Value Entry CZA" extends "Value Entry"
 {
     fields

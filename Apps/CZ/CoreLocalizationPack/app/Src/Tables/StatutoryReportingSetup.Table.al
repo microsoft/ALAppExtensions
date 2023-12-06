@@ -1,3 +1,20 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Foundation.Company;
+
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Inventory.Intrastat;
+#if not CLEAN22
+using Microsoft.Inventory.Item;
+#endif
+using Microsoft.Purchases.Vendor;
+using System.Email;
+using System.Reflection;
+using Microsoft.Foundation.Address;
+
 table 31105 "Statutory Reporting Setup CZL"
 {
     Caption = 'Statutory Reporting Setup';
@@ -83,6 +100,13 @@ table 31105 "Statutory Reporting Setup CZL"
         field(29; "Apartment No."; Text[30])
         {
             Caption = 'Apartment No.';
+            DataClassification = CustomerContent;
+        }
+        field(30; City; Text[30])
+        {
+            Caption = 'City';
+            TableRelation = "Post Code".City;
+            ValidateTableRelation = false;
             DataClassification = CustomerContent;
         }
         field(40; "VAT Control Report Nos."; Code[20])

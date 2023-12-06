@@ -25,6 +25,12 @@ page 4762 "Contoso Coffee Demo Data"
                 {
                     ToolTip = 'Specifies the Country or Region Code that you want to create the demo data with.';
                 }
+                field("Language Name"; Language.GetWindowsLanguageName(Rec."Language ID"))
+                {
+                    ToolTip = 'Specifies the Language Name that you create the demo data with for the first time.';
+                    Editable = false;
+                    Caption = 'Language Name';
+                }
             }
             group(Pricing)
             {
@@ -45,4 +51,7 @@ page 4762 "Contoso Coffee Demo Data"
     begin
         Rec.InitRecord();
     end;
+
+    var
+        Language: Codeunit Language;
 }

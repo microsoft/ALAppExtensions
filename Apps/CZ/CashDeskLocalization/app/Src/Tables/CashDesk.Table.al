@@ -1,3 +1,30 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.CashDesk;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Ledger;
+using Microsoft.EServices.OnlineMap;
+using Microsoft.Finance;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Comment;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.HumanResources.Employee;
+using Microsoft.Inventory.Location;
+using Microsoft.Utilities;
+using System.EMail;
+using System.Globalization;
+using System.Security.AccessControl;
+using System.Security.User;
+using System.Utilities;
+
 #pragma warning disable AA0232
 table 11744 "Cash Desk CZP"
 {

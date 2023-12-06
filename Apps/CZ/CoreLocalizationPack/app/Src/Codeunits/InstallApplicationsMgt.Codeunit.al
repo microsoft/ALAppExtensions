@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft;
+
+using System.Diagnostics;
+using System.Environment;
+using System.Reflection;
+using System.Security.AccessControl;
+
 codeunit 31393 "Install Applications Mgt. CZL"
 {
     EventSubscriberInstance = Manual;

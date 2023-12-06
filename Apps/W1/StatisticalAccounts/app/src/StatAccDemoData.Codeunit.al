@@ -4,6 +4,7 @@ using System.Environment.Configuration;
 using Microsoft.Finance.FinancialReports;
 using Microsoft.Finance.Dimension;
 using Microsoft.Foundation.Company;
+using Microsoft.Finance.AllocationAccount;
 
 codeunit 2625 "Stat. Acc. Demo Data"
 {
@@ -46,6 +47,8 @@ codeunit 2625 "Stat. Acc. Demo Data"
         StatisticalLedgerEntry: Record "Statistical Ledger Entry";
         StatisticalAccJournalLine: Record "Statistical Acc. Journal Line";
         FinancialReport: Record "Financial Report";
+        AllocationAccount: Record "Allocation Account";
+        AllocAccountDistribution: Record "Alloc. Account Distribution";
         RevenuePerEmpAccScheduleLine: Record "Acc. Schedule Line";
     begin
         if not CanSetupDemoData() then
@@ -57,6 +60,19 @@ codeunit 2625 "Stat. Acc. Demo Data"
         StatisticalAccount.DeleteAll(false);
         StatisticalLedgerEntry.DeleteAll(false);
         StatisticalAccJournalLine.DeleteAll(false);
+
+        if AllocationAccount.Get(OfficeSpaceAllocationAccountNoLbl) then
+            AllocationAccount.Delete(true);
+
+        AllocAccountDistribution.SetRange("Allocation Account No.", OfficeSpaceAllocationAccountNoLbl);
+        AllocAccountDistribution.DeleteAll();
+
+        if AllocationAccount.Get(EmployeesAllocationAccountNoLbl) then
+            AllocationAccount.Delete(true);
+
+        AllocAccountDistribution.SetRange("Allocation Account No.", EmployeesAllocationAccountNoLbl);
+        AllocAccountDistribution.DeleteAll();
+
         if FinancialReport.Get(RevenuePerEmployeeNameLbl) then
             FinancialReport.Delete(true);
 
@@ -72,6 +88,8 @@ codeunit 2625 "Stat. Acc. Demo Data"
     internal procedure InsertDemoData()
     begin
         InsertBasicDemoData();
+        Commit();
+        InsertAllocationAccounts();
         Commit();
         CreateOrReplaceFinancialReport();
         Message(DemoDataSetupCompleteMsg);
@@ -98,6 +116,83 @@ codeunit 2625 "Stat. Acc. Demo Data"
             StatisticalAccount."No." := OfficeSpaceLbl;
             StatisticalAccount.Name := OfficeSpaceNameLbl;
             StatisticalAccount.Insert();
+        end;
+    end;
+
+    local procedure InsertAllocationAccounts()
+    var
+        AllocationAccount: Record "Allocation Account";
+        StatisticalAccount: Record "Statistical Account";
+        DimensionValue: Record "Dimension Value";
+    begin
+        DimensionValue.SetRange("Dimension Code", OfficeDimensionCodeLbl);
+        if not DimensionValue.FindSet() then
+            exit;
+
+        if DimensionValue."Global Dimension No." = 0 then
+            exit;
+
+        if StatisticalAccount.Get(OfficeSpaceLbl) then
+            if not AllocationAccount.Get(OfficeSpaceAllocationAccountNoLbl) then begin
+                AllocationAccount."No." := OfficeSpaceAllocationAccountNoLbl;
+                AllocationAccount.Name := OfficeSpaceAllocationAccountNameLbl;
+                AllocationAccount."Account Type" := AllocationAccount."Account Type"::Variable;
+                InsertAllocationAccountDepartmentLines(DimensionValue, AllocationAccount, StatisticalAccount);
+                AllocationAccount.Insert();
+            end;
+
+
+        if StatisticalAccount.Get(EmployeesLbl) then
+            if not AllocationAccount.Get(EmployeesAllocationAccountNoLbl) then begin
+                DimensionValue.FindSet();
+                AllocationAccount."No." := EmployeesAllocationAccountNoLbl;
+                AllocationAccount.Name := EmployeesAllocationAccountNameLbl;
+                AllocationAccount."Account Type" := AllocationAccount."Account Type"::Variable;
+                InsertAllocationAccountDepartmentLines(DimensionValue, AllocationAccount, StatisticalAccount);
+                AllocationAccount.Insert();
+            end;
+    end;
+
+    local procedure InsertAllocationAccountDepartmentLines(var DimensionValue: Record "Dimension Value"; var AllocationAccount: Record "Allocation Account"; var StatisticalAccount: Record "Statistical Account")
+    var
+        AllocAccountDistribution: Record "Alloc. Account Distribution";
+        CurrentLineNo: Integer;
+    begin
+        CurrentLineNo := 0;
+        repeat
+            CurrentLineNo += 10000;
+            Clear(AllocAccountDistribution);
+            AllocAccountDistribution."Allocation Account No." := AllocationAccount."No.";
+            AllocAccountDistribution."Line No." := CurrentLineNo;
+            AllocAccountDistribution."Account Type" := AllocAccountDistribution."Account Type"::Variable;
+            AllocAccountDistribution."Destination Account Type" := AllocAccountDistribution."Destination Account Type"::"Inherit from Parent";
+            AllocAccountDistribution."Breakdown Account Type" := AllocAccountDistribution."Breakdown Account Type"::"Statistical Account";
+            AllocAccountDistribution."Breakdown Account Number" := StatisticalAccount."No.";
+            SetDimensionFilter(AllocAccountDistribution, DimensionValue);
+            AllocAccountDistribution."Dimension Set ID" := GetDimensionSetID(DimensionValue);
+            AllocAccountDistribution.Insert();
+        until DimensionValue.Next() = 0;
+    end;
+
+    local procedure SetDimensionFilter(var AllocAccountDistribution: Record "Alloc. Account Distribution"; var DimensionValue: Record "Dimension Value")
+    begin
+        case DimensionValue."Global Dimension No." of
+            1:
+                AllocAccountDistribution."Dimension 1 Filter" := DimensionValue.Code;
+            2:
+                AllocAccountDistribution."Dimension 2 Filter" := DimensionValue.Code;
+            3:
+                AllocAccountDistribution."Dimension 3 Filter" := DimensionValue.Code;
+            4:
+                AllocAccountDistribution."Dimension 4 Filter" := DimensionValue.Code;
+            5:
+                AllocAccountDistribution."Dimension 5 Filter" := DimensionValue.Code;
+            6:
+                AllocAccountDistribution."Dimension 6 Filter" := DimensionValue.Code;
+            7:
+                AllocAccountDistribution."Dimension 7 Filter" := DimensionValue.Code;
+            8:
+                AllocAccountDistribution."Dimension 8 Filter" := DimensionValue.Code;
         end;
     end;
 
@@ -464,5 +559,9 @@ codeunit 2625 "Stat. Acc. Demo Data"
         RevenuePerEmployeeNameLbl: Label 'REV_EMPL';
         RevenuePerEmployeeDescriptionLbl: Label 'Revenue per Employee';
         NumberOfEmployeesLbl: Label 'Number of Employees';
+        OfficeSpaceAllocationAccountNoLbl: Label 'OFFICE SPACE DEP';
+        OfficeSpaceAllocationAccountNameLbl: Label 'Distribute the cost per department office space';
+        EmployeesAllocationAccountNoLbl: Label 'EMPL HEADCOUNT DEP';
+        EmployeesAllocationAccountNameLbl: Label 'Distribute cost per department employee headcount';
         PeriodsLbl: Label 'PERIODS';
 }

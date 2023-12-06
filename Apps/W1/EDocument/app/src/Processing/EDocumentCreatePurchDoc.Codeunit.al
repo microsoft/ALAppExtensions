@@ -9,21 +9,19 @@ using System.Reflection;
 
 codeunit 6136 "E-Document Create Purch. Doc."
 {
-    Access = Internal;
-
     trigger OnRun()
     begin
         CreatePurchaseDocument(SourceEDocument, SourceDocumentHeader, SourceDocumentLine, CreatedDocumentHeader)
     end;
 
-    procedure SetSource(var SourceEDocument2: Record "E-Document"; var SourceDocumentHeader2: RecordRef; var SourceDocumentLine2: RecordRef)
+    internal procedure SetSource(var SourceEDocument2: Record "E-Document"; var SourceDocumentHeader2: RecordRef; var SourceDocumentLine2: RecordRef)
     begin
         SourceEDocument := SourceEDocument2;
         SourceDocumentHeader := SourceDocumentHeader2;
         SourceDocumentLine := SourceDocumentLine2;
     end;
 
-    procedure GetCreatedDocument(): RecordRef;
+    internal procedure GetCreatedDocument(): RecordRef;
     begin
         exit(CreatedDocumentHeader);
     end;
@@ -118,6 +116,7 @@ codeunit 6136 "E-Document Create Purch. Doc."
 
                 if Format(DocumentLine.Field(PurchaseLine.FieldNo(Type)).Value()) <> '0' then begin
                     EDocumentImportHelper.ProcessField(EDocument, DocumentLine, PurchaseLine.FieldNo("No."), TempDocumentLine.Field(PurchaseLine.FieldNo("No.")).Value());
+                    EDocumentImportHelper.ProcessField(EDocument, DocumentLine, PurchaseLine.FieldNo(Description), TempDocumentLine.Field(PurchaseLine.FieldNo(Description)).Value());
                     EDocumentImportHelper.ProcessField(EDocument, DocumentLine, PurchaseLine.FieldNo(Quantity), TempDocumentLine.Field(PurchaseLine.FieldNo(Quantity)).Value());
                     EDocumentImportHelper.ProcessField(EDocument, DocumentLine, PurchaseLine.FieldNo("Unit of Measure Code"), TempDocumentLine.Field(PurchaseLine.FieldNo("Unit of Measure Code")).Value());
                     EDocumentImportHelper.ProcessField(EDocument, DocumentLine, PurchaseLine.FieldNo("Direct Unit Cost"), TempDocumentLine.Field(PurchaseLine.FieldNo("Direct Unit Cost")).Value());

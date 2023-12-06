@@ -40,6 +40,9 @@ table 2631 "Statistical Acc. Journal Line"
             var
                 StatisticalAccount: Record "Statistical Account";
             begin
+                if Rec."Statistical Account No." = '' then
+                    exit;
+
                 StatisticalAccount.Get("Statistical Account No.");
                 if StatisticalAccount.Blocked then
                     Error(StatisticalAccountIsBlockedErr, Rec."Statistical Account No.", Rec."Line No.");
@@ -235,7 +238,7 @@ table 2631 "Statistical Acc. Journal Line"
         StatisticalAccJournalBatch.SetRange(Name, JournalBatchName);
         StatisticalAccJournalBatch.FindFirst();
         if StatisticalAccJournalBatch."Statistical Account No." <> '' then
-            Rec."Statistical Account No." := StatisticalAccJournalBatch."Statistical Account No.";
+            Rec.Validate("Statistical Account No.", StatisticalAccJournalBatch."Statistical Account No.");
 
         StatisticalAccJournalLine.SetRange("Journal Batch Name", JournalBatchName);
         if not StatisticalAccJournalLine.IsEmpty() then begin
@@ -264,6 +267,13 @@ table 2631 "Statistical Acc. Journal Line"
             else
                 BalanceAfterPosting := StatisticalAccount.Balance;
         end;
+    end;
+
+    internal procedure ShowShortcutDimCode(var ShortcutDimCode: array[8] of Code[20])
+    var
+        DimensionManagement: Codeunit DimensionManagement;
+    begin
+        DimensionManagement.GetShortcutDimensions(Rec."Dimension Set ID", ShortcutDimCode);
     end;
 
     var

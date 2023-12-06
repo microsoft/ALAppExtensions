@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Transfer;
+
+using Microsoft.Foundation.Address;
+using Microsoft.Inventory.Intrastat;
+
 tableextension 31015 "Transfer Receipt Line CZL" extends "Transfer Receipt Line"
 {
     fields

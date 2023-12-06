@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.CashDesk;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.NoSeries;
+
 tableextension 11781 "General Ledger Setup CZP" extends "General Ledger Setup"
 {
     fields

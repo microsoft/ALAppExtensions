@@ -8,6 +8,7 @@ codeunit 30273 "Shpfy Installer"
 {
     Subtype = Install;
     Access = Internal;
+    Permissions = tabledata "Retention Policy Setup" = ri;
 
     trigger OnInstallAppPerCompany()
     begin

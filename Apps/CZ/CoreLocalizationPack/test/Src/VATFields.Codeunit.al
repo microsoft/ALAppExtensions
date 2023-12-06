@@ -47,48 +47,6 @@ codeunit 148065 "VAT Fields CZL"
     end;
 
     [Test]
-    procedure EU3PartyTradeCopiedToPurchaseVATEntry()
-    var
-        Vendor: Record Vendor;
-        PurchaseHeader: Record "Purchase Header";
-        PurchaseLine: Record "Purchase Line";
-        VATEntry: Record "VAT Entry";
-    begin
-        // [SCENARIO] EU 3-Party Trade copied to VAT Entry from Purchase Invoice
-        Initialize();
-
-        // [GIVEN] New Vendor has been created
-        LibraryPurchase.CreateVendor(Vendor);
-
-        // [GIVEN] New Purchase Invoice has been created
-        LibraryPurchase.CreatePurchaseInvoiceForVendorNo(PurchaseHeader, Vendor."No.");
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchaseHeader."Original Doc. VAT Date CZL" := PurchaseHeader."VAT Date CZL";
-#pragma warning restore AL0432
-#else
-        PurchaseHeader."Original Doc. VAT Date CZL" := PurchaseHeader."VAT Reporting Date";
-#endif
-        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLineType::"G/L Account",
-            LibraryERM.CreateGLAccountWithPurchSetup(), 1);
-        PurchaseLine.Validate("Direct Unit Cost", 1000);
-        PurchaseLine.Modify(true);
-
-        // [GIVEN] EU 3-Party Trade has been set
-        PurchaseHeader.Validate("EU 3-Party Trade CZL", true);
-        PurchaseHeader.Modify();
-
-        // [GIVEN] Purchase Invoice has been posted
-        PurchPost.Run(PurchaseHeader);
-
-        // [WHEN] Find last VAT Entry
-        VATEntry.FindLast();
-
-        // [THEN] EU 3-Party Trade will be true
-        Assert.AreEqual(true, VATEntry."EU 3-Party Trade", VATEntry.FieldCaption("EU 3-Party Trade"));
-    end;
-
-    [Test]
     procedure EU3PartyIntermediateRoleCopiedToPurchaseVATEntry()
     var
         Vendor: Record Vendor;

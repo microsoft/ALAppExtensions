@@ -1,5 +1,4 @@
-
-#if not CLEAN22
+﻿#if not CLEAN22
 page 31195 "Intrastat Journal Lines CZL"
 {
     Caption = 'Intrastat Journal Lines';

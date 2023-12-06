@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Compensations;
+
+using Microsoft.CRM.Contact;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using System.Environment.Configuration;
+using System.Upgrade;
+
 codeunit 31263 "Upgrade Application CZC"
 {
     Subtype = Upgrade;
@@ -33,7 +45,7 @@ codeunit 31263 "Upgrade Application CZC"
             repeat
                 CompensationHeaderCZC."Language Code" :=
                     GetLanguageCode(CompensationHeaderCZC."Company Type", CompensationHeaderCZC."Company No.");
-                CompensationHeaderCZC."Format Region" := 
+                CompensationHeaderCZC."Format Region" :=
                     GetFormatRegion(CompensationHeaderCZC."Company Type", CompensationHeaderCZC."Company No.");
                 CompensationHeaderCZC.Modify();
             until CompensationHeaderCZC.Next() = 0;
@@ -53,7 +65,7 @@ codeunit 31263 "Upgrade Application CZC"
             repeat
                 PostedCompensationHeaderCZC."Language Code" :=
                     GetLanguageCode(PostedCompensationHeaderCZC."Company Type", PostedCompensationHeaderCZC."Company No.");
-                PostedCompensationHeaderCZC."Format Region" := 
+                PostedCompensationHeaderCZC."Format Region" :=
                     GetFormatRegion(PostedCompensationHeaderCZC."Company Type", PostedCompensationHeaderCZC."Company No.");
                 PostedCompensationHeaderCZC.Modify();
             until PostedCompensationHeaderCZC.Next() = 0;
@@ -88,7 +100,7 @@ codeunit 31263 "Upgrade Application CZC"
                 end;
         end;
     end;
-    
+
     internal procedure GetFormatRegion(CompanyType: Enum "Compensation Company Type CZC"; CompanyNo: Code[20]): Text[80]
     var
         Customer: Record Customer;

@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Reporting;
+
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Attachment;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.HumanResources.Employee;
+using System.IO;
+using System.Utilities;
+
 #pragma warning disable AA0232
 table 31075 "VIES Declaration Header CZL"
 {
@@ -560,7 +574,7 @@ table 31075 "VIES Declaration Header CZL"
         if CountryRegion.Get(CompanyInformation."Country/Region Code") then
             "Country/Region Name" := CountryRegion.Name;
         County := CompanyInformation.County;
-        City := CompanyInformation.City;
+        City := StatutoryReportingSetupCZL.City;
         Street := StatutoryReportingSetupCZL.Street;
         "House No." := StatutoryReportingSetupCZL."House No.";
         "Apartment No." := StatutoryReportingSetupCZL."Apartment No.";

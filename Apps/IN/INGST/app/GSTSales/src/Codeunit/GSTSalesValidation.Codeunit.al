@@ -87,6 +87,9 @@ codeunit 18143 "GST Sales Validation"
             if ShiptoAddr.Get(ToSalesHeader."Bill-to Customer No.", ToSalesHeader."Ship-to Code") then
                 ToSalesHeader."GST-Ship to Customer Type" := ShiptoAddr."Ship-to GST Customer Type";
 
+        if ToSalesHeader."GST Customer Type" = ToSalesHeader."GST Customer Type"::Unregistered then
+            ToSalesHeader."GST-Ship to Customer Type" := ToSalesHeader."GST Customer Type";
+
         AssignInvoiceType(ToSalesHeader);
     end;
 
@@ -1211,14 +1214,18 @@ codeunit 18143 "GST Sales Validation"
             SalesHeader."Customer GST Reg. No." := Customer."GST Registration No.";
 
         if SalesHeader."GST Customer Type" = "GST Customer Type"::Unregistered then
-            SalesHeader."Nature Of Supply" := SalesHeader."Nature Of Supply"::B2C;
+            SalesHeader."Nature Of Supply" := SalesHeader."Nature Of Supply"::B2C
+        else
+            SalesHeader."Nature of Supply" := SalesHeader."Nature of Supply"::B2B;
     end;
 
     local procedure BilltoNatureOfSupply(var SalesHeader: Record "Sales Header"; Customer: Record Customer)
     begin
         SalesHeader."GST Customer Type" := Customer."GST Customer Type";
         if SalesHeader."GST Customer Type" = "GST Customer Type"::Unregistered then
-            SalesHeader."Nature Of Supply" := SalesHeader."Nature Of Supply"::B2C;
+            SalesHeader."Nature Of Supply" := SalesHeader."Nature Of Supply"::B2C
+        else
+            SalesHeader."Nature of Supply" := SalesHeader."Nature of Supply"::B2B;
     end;
 
     local procedure ShipToAddrfields(var SalesHeader: Record "Sales Header"; ShipToAddress: Record "Ship-to Address")

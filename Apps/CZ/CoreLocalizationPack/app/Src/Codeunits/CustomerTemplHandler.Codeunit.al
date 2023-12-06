@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Customer;
+
+using Microsoft.Finance.Registration;
+
 codeunit 31385 "Customer Templ. Handler CZL"
 {
     [EventSubscriber(ObjectType::Table, Database::"Customer Templ.", 'OnBeforeValidateEvent', 'Validate EU Vat Reg. No.', false, false)]

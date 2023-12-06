@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Documents;
+
+using Microsoft.Foundation.Attachment;
+
 page 31257 "Iss. Bank Statements CZB"
 {
     ApplicationArea = Basic, Suite;
@@ -59,6 +67,11 @@ page 31257 "Iss. Bank Statements CZB"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the name and address of bank statement file uploaded from bank.';
                     Visible = false;
+                }
+                field("Payment Journal Status"; Rec."Payment Journal Status")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the posting status of the payment journal.';
                 }
             }
         }

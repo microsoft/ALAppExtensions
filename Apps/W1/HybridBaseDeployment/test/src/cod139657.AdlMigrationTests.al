@@ -309,7 +309,6 @@ codeunit 139657 "ADL Migration Tests"
 
     [Test]
     procedure AdlCleanupDisablesAdlMigration()
-    var
     begin
         // [SCENARIO 345772] ADL Cleanup codeunit properly disables ADL migration
         Initialize();

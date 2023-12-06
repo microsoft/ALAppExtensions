@@ -1,3 +1,22 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GeneralLedger.Setup;
+
+using Microsoft.Finance.Analysis;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Foundation.Period;
+using Microsoft.Utilities;
+using System.Globalization;
+using System.Utilities;
+
 report 11754 "Close Balance Sheet CZL"
 {
     ApplicationArea = Basic, Suite;

@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Currency;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+
 table 11795 "Adj. Exchange Rate Buffer CZL"
 {
     Caption = 'Adjust Exchange Rate Buffer Extended';

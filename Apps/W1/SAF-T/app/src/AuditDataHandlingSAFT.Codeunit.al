@@ -134,4 +134,30 @@ codeunit 5281 "Audit Data Handling SAF-T" implements "Audit File Export Data Han
         AuditExportDataTypeSetup.SetRange("Export Data Class", AuditFileExportDataClass);
         exit(not AuditExportDataTypeSetup.IsEmpty());
     end;
+
+    local procedure CalculateGLEntryTotals(var AuditFileExportHeader: Record "Audit File Export Header")
+    var
+        GLEntry: Record "G/L Entry";
+        GLEntryByTransSAFT: Query "G/L Entry By Trans. SAF-T";
+    begin
+        GLEntry.SetCurrentKey("Transaction No.");
+        GLEntry.SetRange("Posting Date", AuditFileExportHeader."Starting Date", AuditFileExportHeader."Ending Date");
+        GLEntry.CalcSums("Debit Amount", "Credit Amount");
+        AuditFileExportHeader."Total G/L Entry Debit" := GLEntry."Debit Amount";
+        AuditFileExportHeader."Total G/L Entry Credit" := GLEntry."Credit Amount";
+        AuditFileExportHeader."Number of G/L Entries" := 0;
+
+        GLEntryByTransSAFT.SetRange(Posting_Date, AuditFileExportHeader."Starting Date", AuditFileExportHeader."Ending Date");
+        if GLEntryByTransSAFT.Open() then begin
+            while GLEntryByTransSAFT.Read() do
+                AuditFileExportHeader."Number of G/L Entries" += 1;
+            GLEntryByTransSAFT.Close();
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Audit File Export Mgt.", 'OnBeforeModifyAuditFileExportHeaderToStartExport', '', false, false)]
+    local procedure OnBeforeModifyAuditFileExportHeaderToStartExport(var AuditFileExportHeader: Record "Audit File Export Header")
+    begin
+        CalculateGLEntryTotals(AuditFileExportHeader);
+    end;
 }

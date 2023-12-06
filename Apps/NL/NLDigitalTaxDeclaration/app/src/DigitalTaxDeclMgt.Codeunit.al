@@ -85,7 +85,7 @@ codeunit 11423 "Digital Tax. Decl. Mgt."
 
     procedure AddTurnoverSuppliesServicesByWhichVATTaxationIsTransferred(var TempNameValueBuffer: Record "Name/Value Buffer" temporary)
     begin
-        AddElectronicTaxCode(TempNameValueBuffer, '4A-1', 'TurnoverSuppliesServicesByWhichVATTaxationIsTransferred');
+        AddElectronicTaxCode(TempNameValueBuffer, '2A-1', 'TurnoverSuppliesServicesByWhichVATTaxationIsTransferred');
     end;
 
     procedure AddValueAddedTaxOnInput(var TempNameValueBuffer: Record "Name/Value Buffer" temporary)

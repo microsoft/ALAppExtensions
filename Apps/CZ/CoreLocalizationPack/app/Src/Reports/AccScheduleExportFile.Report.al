@@ -1,3 +1,19 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.FinancialReports;
+
+using Microsoft.CostAccounting.Budget;
+using Microsoft.Finance.Analysis;
+using Microsoft.Finance.Consolidation;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Budget;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Enums;
+using System.IO;
+using System.Utilities;
+
 report 11776 "Acc. Schedule Export File CZL"
 {
     Caption = 'Account Schedule Export File';

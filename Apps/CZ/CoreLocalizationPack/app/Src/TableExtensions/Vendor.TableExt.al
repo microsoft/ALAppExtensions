@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.Vendor;
+
+using Microsoft.CRM.BusinessRelation;
+using Microsoft.Finance.Registration;
+using Microsoft.Inventory.Intrastat;
+using Microsoft.Purchases.Payables;
+
 #pragma warning disable AA0232
 tableextension 11702 "Vendor CZL" extends Vendor
 {
@@ -11,7 +22,12 @@ tableextension 11702 "Vendor CZL" extends Vendor
                 RegNoServiceConfigCZL: Record "Reg. No. Service Config CZL";
                 ResultRecordRef: RecordRef;
                 LogNotVerified: Boolean;
+                IsHandled: Boolean;
             begin
+                OnBeforeOnValidateRegistrationNoCZL(Rec, xRec, IsHandled);
+                if IsHandled then
+                    exit;
+
                 if not RegistrationNoMgtCZL.CheckRegistrationNo(GetRegistrationNoTrimmedCZL(), "No.", Database::Vendor) then
                     exit;
 
@@ -47,7 +63,12 @@ tableextension 11702 "Vendor CZL" extends Vendor
                 RegNoServiceConfigCZL: Record "Reg. No. Service Config CZL";
                 ResultRecordRef: RecordRef;
                 LogNotVerified: Boolean;
+                IsHandled: Boolean;
             begin
+                OnBeforeOnValidateRegistrationNoCZL(Rec, xRec, IsHandled);
+                if IsHandled then
+                    exit;
+
                 if not RegistrationNoMgtCZL.CheckRegistrationNo("Registration No. CZL", "No.", Database::Vendor) then
                     exit;
 
@@ -250,5 +271,10 @@ tableextension 11702 "Vendor CZL" extends Vendor
     procedure GetRegistrationNoTrimmedCZL(): Text[20]
     begin
         exit(CopyStr("Registration Number", 1, 20));
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeOnValidateRegistrationNoCZL(Vendor: Record "Vendor"; xVendor: Record "Vendor"; var IsHandled: Boolean)
+    begin
     end;
 }

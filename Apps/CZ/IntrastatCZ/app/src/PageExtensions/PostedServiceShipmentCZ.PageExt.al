@@ -12,6 +12,13 @@ pageextension 31367 "Posted Service Shipment CZ" extends "Posted Service Shipmen
     {
 #if not CLEAN22
 #pragma warning disable AL0432
+        modify("Intrastat Exclude CZL")
+#pragma warning restore AL0432
+        {
+            Enabled = not IntrastatEnabled;
+            Visible = not IntrastatEnabled;
+        }
+#pragma warning disable AL0432
         modify("Physical Transfer CZL")
 #pragma warning restore AL0432
         {
@@ -19,8 +26,19 @@ pageextension 31367 "Posted Service Shipment CZ" extends "Posted Service Shipmen
             Visible = not IntrastatEnabled;
         }
 #endif
-        addafter("EU 3-Party Trade")
+        addlast("Foreign Trade")
         {
+            field("Intrastat Exclude CZ"; Rec."Intrastat Exclude CZ")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Exclude';
+                Editable = false;
+                ToolTip = 'Specifies that entry will be excluded from intrastat.';
+#if not CLEAN22
+                Enabled = IntrastatEnabled;
+                Visible = IntrastatEnabled;
+#endif
+            }
             field("Physical Transfer CZ"; Rec."Physical Transfer CZ")
             {
                 ApplicationArea = Basic, Suite;

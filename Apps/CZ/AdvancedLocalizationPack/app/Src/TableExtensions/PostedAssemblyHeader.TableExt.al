@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Assembly.History;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+
 tableextension 31260 "Posted Assembly Header CZA" extends "Posted Assembly Header"
 {
     fields

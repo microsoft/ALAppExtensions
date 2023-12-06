@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Projects.Project.Journal;
+
+#if not CLEAN22
+using Microsoft.Inventory.Item;
+#endif
+using System.Security.User;
+
 codeunit 31077 "Job Journal Line Handler CZL"
 {
     [EventSubscriber(ObjectType::Table, Database::"Job Journal Line", 'OnBeforeValidateEvent', 'Entry Type', false, false)]

@@ -55,13 +55,13 @@ function Get-ConfigValue() {
 
     switch ($ConfigType) {
         "BuildConfig" {
-            $ConfigPath = Join-Path (Get-BaseFolder) "Build/BuildConfig.json" -Resolve
+            $ConfigPath = Join-Path (Get-BaseFolder) "build/BuildConfig.json" -Resolve
         }
         "AL-GO" {
             $ConfigPath = Join-Path (Get-BaseFolder) ".github/AL-Go-Settings.json" -Resolve
         }
         "Packages" {
-            $ConfigPath = Join-Path (Get-BaseFolder) "Build/Packages.json" -Resolve
+            $ConfigPath = Join-Path (Get-BaseFolder) "build/Packages.json" -Resolve
         }
     }
 
@@ -93,13 +93,13 @@ function Set-ConfigValue() {
 
     switch ($ConfigType) {
         "BuildConfig" {
-            $ConfigPath = Join-Path (Get-BaseFolder) "Build/BuildConfig.json" -Resolve
+            $ConfigPath = Join-Path (Get-BaseFolder) "build/BuildConfig.json" -Resolve
         }
         "AL-GO" {
             $ConfigPath = Join-Path (Get-BaseFolder) ".github/AL-Go-Settings.json" -Resolve
         }
         "Packages" {
-            $ConfigPath = Join-Path (Get-BaseFolder) "Build/Packages.json" -Resolve
+            $ConfigPath = Join-Path (Get-BaseFolder) "build/Packages.json" -Resolve
         }
     }
 
@@ -123,55 +123,81 @@ function Get-PackageLatestVersion() {
         [string] $PackageName
     )
 
-    if($PackageName -eq "AppBaselines-BCArtifacts") {
-        # Temp solution until we have enough baseline packages
-        # Handle special case for AppBaselines-BCArtifacts, as there is no package, the BC artifacts are used instead
-        return Get-LatestBaselineVersionFromArtifacts
+    $package = Get-ConfigValue -Key $PackageName -ConfigType Packages
+    if(!$package) {
+        throw "Package $PackageName not found in Packages config"
     }
 
-    $majorMinorVersion = Get-ConfigValue -Key "repoVersion" -ConfigType AL-Go
-    $maxVerion = "$majorMinorVersion.99999999.99" # maximum version for the given major/minor
+    [System.Version] $majorMinorVersion = Get-ConfigValue -Key "repoVersion" -ConfigType AL-Go
 
-    $packageSource = "https://api.nuget.org/v3/index.json" # default source
+    switch($package.Source)
+    {
+        'NuGet.org' {
+            $maxVersion = "$majorMinorVersion.99999999.99" # maximum version for the given major/minor
 
-    $latestVersion = (Find-Package $PackageName -Source $packageSource -MaximumVersion $maxVerion -AllVersions | Sort-Object -Property Version -Descending | Select-Object -First 1).Version
+            $packageSource = "https://api.nuget.org/v3/index.json" # default source
+            $latestVersion = (Find-Package $PackageName -Source $packageSource -MaximumVersion $maxVersion -AllVersions | Sort-Object -Property Version -Descending | Select-Object -First 1).Version
+
+            return $latestVersion
+        }
+        'BCArtifacts' {
+            # BC artifacts works with minimum version
+            $minimumVersion = $majorMinorVersion
+
+            if ($PackageName -eq "AppBaselines-BCArtifacts") {
+                # For app baselines, use the previous minor version as minimum version
+                if ($majorMinorVersion.Minor -gt 0) {
+                    $minimumVersion = "$($majorMinorVersion.Major).$($majorMinorVersion.Minor - 1)"
+                } else {
+                    $minimumVersion = "$($majorMinorVersion.Major - 1)"
+                }
+            }
+
+            return Get-LatestBCArtifactVersion -minimumVersion $minimumVersion
+        }
+        default {
+            throw "Unknown package source: $($package.Source)"
+        }
+    }
+}
+
+<#
+.Synopsis
+    Gets the latest version of a BC artifact
+.Parameter MinimumVersion
+    The minimum version of the artifact to look for
+#>
+function Get-LatestBCArtifactVersion
+(
+    [Parameter(Mandatory=$true)]
+    $minimumVersion
+)
+{
+    $artifactUrl = Get-BCArtifactUrl -type Sandbox -country base -version $minimumVersion -select Latest
+
+    if(-not $artifactUrl) {
+        #Fallback to bcinsider
+        $artifactUrl = Get-BCArtifactUrl -type Sandbox -country base -version $minimumVersion -select Latest -storageAccount bcinsider -accept_insiderEula
+    }
+
+    if ($artifactUrl -and ($artifactUrl -match "\d+\.\d+\.\d+\.\d+")) {
+        $latestVersion = $Matches[0]
+    } else {
+        throw "Could not find BCArtifact version (for min version: $minimumVersion)"
+    }
 
     return $latestVersion
 }
 
 <#
 .Synopsis
-    Gets the latest baseline version to use for the breaking change check
-#>
-function Get-LatestBaselineVersionFromArtifacts {
-
-    Import-Module $PSScriptRoot\EnlistmentHelperFunctions.psm1
-
-    [System.Version] $repoVersion = Get-ConfigValue -Key "repoVersion" -ConfigType AL-Go
-
-    if ($repoVersion.Minor -gt 0) {
-        $baselineMajorMinor = "$($repoVersion.Major).$($repoVersion.Minor - 1)"
-    } else {
-        $baselineMajorMinor = "$($repoVersion.Major - 1)"
-    }
-    $artifactUrl = Get-BCArtifactUrl -type Sandbox -country 'W1' -version $baselineMajorMinor -select 'Latest'
-
-    if ($artifactUrl -and ($artifactUrl -match "\d+\.\d+\.\d+\.\d+")) {
-        $updatedBaseline = $Matches[0]
-    } else {
-        throw "Could not find baseline version from artifact url: $artifactUrl"
-    }
-
-    return $updatedBaseline
-}
-
-<#
-.Synopsis
     Installs a package from a NuGet.org feed
 .Parameter PackageName
-    The name of the package to look for in the Packages config
+    The name of the package to install
 .Parameter OutputPath
     The path to install the package to
+.Parameter PackageVersion
+    The version of the package to install. If not specified, the version will be read from the Packages config
 .Returns
     The path to the installed package
 #>
@@ -184,12 +210,17 @@ function Install-PackageFromConfig
     [switch] $Force
 ) {
     $packageConfig = Get-ConfigValue -Key $PackageName -ConfigType Packages
-    
+
     if(!$packageConfig) {
         throw "Package $PackageName not found in Packages config"
     }
 
+    if($packageConfig.Source -ne 'NuGet.org') {
+        throw "Package $PackageName is not from NuGet.org"
+    }
+
     $packageVersion = $packageConfig.Version
+
     $packageSource = "https://api.nuget.org/v3/index.json" # default source
 
     $packagePath = Join-Path $OutputPath "$PackageName.$packageVersion"
@@ -210,4 +241,20 @@ function Install-PackageFromConfig
     return $packagePath
 }
 
+<#
+.SYNOPSIS
+Run an executable and check the exit code
+.EXAMPLE
+RunAndCheck git checkout -b xxx
+#>
+function RunAndCheck {
+    $ErrorActionPreference = 'Continue'
+    $rest = if ($args.Count -gt 1) { $args[1..($args.Count - 1)] } else { $null }
+    & $args[0] $rest
+    if ($LASTEXITCODE -ne 0) {
+        throw "$($args[0]) $($rest | ForEach-Object { $_ }) failed with exit code $LASTEXITCODE"
+    }
+}
+
 Export-ModuleMember -Function *-*
+Export-ModuleMember -Function RunAndCheck

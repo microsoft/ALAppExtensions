@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Foundation.Company;
+
+using System.Reflection;
+using Microsoft.Finance.VAT.Reporting;
+
 page 31108 "Statutory Reporting Setup CZL"
 {
     ApplicationArea = Basic, Suite;
@@ -74,6 +83,11 @@ page 31108 "Statutory Reporting Setup CZL"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies company''s apartment number.';
+                }
+                field(City; Rec.City)
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies company''s City.';
                 }
             }
             group(Representative)

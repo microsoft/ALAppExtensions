@@ -1,4 +1,5 @@
 namespace Microsoft.Bank.PayPal;
+using System.Telemetry;
 
 
 page 1073 "MS - PayPal Standard Accounts"
@@ -73,6 +74,13 @@ page 1073 "MS - PayPal Standard Accounts"
             }
         }
     }
+    trigger OnOpenPage()
+    var
+        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+    begin
+        FeatureTelemetry.LogUptake('0000LHS', MSPayPalStandardMgt.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
+    end;
 }
 
 

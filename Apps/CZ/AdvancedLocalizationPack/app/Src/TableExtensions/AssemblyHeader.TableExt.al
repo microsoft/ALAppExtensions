@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Assembly.Document;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using System.Utilities;
+
 tableextension 31258 "Assembly Header CZA" extends "Assembly Header"
 {
     fields

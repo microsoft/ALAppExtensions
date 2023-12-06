@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance;
+
 codeunit 31115 "EET Cash Register Default CZL" implements "EET Cash Register CZL"
 {
     procedure GetCashRegisterName(CashRegisterNo: Code[20]): Text[100]

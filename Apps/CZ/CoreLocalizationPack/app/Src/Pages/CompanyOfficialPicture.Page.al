@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Foundation.Company;
+
+using System.Device;
+using System.IO;
+using System.Utilities;
+
 #pragma implicitwith disable
 page 11738 "Company Official Picture CZL"
 {

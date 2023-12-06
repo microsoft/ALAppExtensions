@@ -69,8 +69,7 @@
         <DataExchFieldMapping ColumnNo="4" FieldID="3" Optional="true" TransformationRule="INT_ARRIVALDISPATCH">
           <TransformationRules>
             <Code>INT_ARRIVALDISPATCH</Code>
-            <Description>Transforming intrastat "Receipt" type to letter 'A' and "Shipment" type to
-              letter 'D'.</Description>
+            <Description>Transforming intrastat "Receipt" type to letter 'A' and "Shipment" type to letter 'D'.</Description>
             <TransformationType>11</TransformationType>
             <FindValue />
             <ReplaceValue />
@@ -94,27 +93,7 @@
         <DataExchFieldMapping ColumnNo="8" FieldID="24" Optional="true" />
         <DataExchFieldMapping ColumnNo="9" FieldID="8" Optional="true" />
         <DataExchFieldMapping ColumnNo="10" FieldID="9" Optional="true" />
-        <DataExchFieldMapping ColumnNo="11" FieldID="28" Optional="true" TransformationRule="INT_DELIV_GROUP">
-          <TransformationRules>
-            <Code>INT_DELIV_GROUP</Code>
-            <Description>Intrastat Delivery Group</Description>
-            <TransformationType>13</TransformationType>
-            <FindValue />
-            <ReplaceValue />
-            <StartPosition>0</StartPosition>
-            <Length>0</Length>
-            <DataFormat />
-            <DataFormattingCulture />
-            <NextTransformationRule />
-            <TableID>10</TableID>
-            <SourceFieldID>1</SourceFieldID>
-            <TargetFieldID>31300</TargetFieldID>
-            <FieldLookupRule>0</FieldLookupRule>
-            <Precision>0.00</Precision>
-            <Direction />
-            <ExportFromDateType>0</ExportFromDateType>
-          </TransformationRules>
-        </DataExchFieldMapping>
+        <DataExchFieldMapping ColumnNo="11" FieldID="31320" Optional="true" />
         <DataExchFieldMapping ColumnNo="12" FieldID="31305" Optional="true" />
         <DataExchFieldMapping ColumnNo="13" FieldID="5" Optional="true" TransformationRule="TRIMALL">
           <TransformationRules>
@@ -138,7 +117,7 @@
           </TransformationRules>
         </DataExchFieldMapping>
         <DataExchFieldMapping ColumnNo="14" FieldID="31300" Optional="true" />
-        <DataExchFieldMapping ColumnNo="15" FieldID="20" Optional="true" />
+        <DataExchFieldMapping ColumnNo="15" FieldID="6" Optional="true" />
         <DataExchFieldMapping ColumnNo="16" FieldID="21" Optional="true" TransformationRule="INT_ROUNDTOINTGTONE">
           <TransformationRules>
             <Code>INT_ROUNDTOINTGTONE</Code>
@@ -184,8 +163,7 @@
         <DataExchFieldMapping ColumnNo="18" FieldID="13" Optional="true" TransformationRule="INT_ROUNDTOINT">
           <TransformationRules>
             <Code>INT_ROUNDTOINT</Code>
-            <Description>Round to integer and take into account the rounding direction setting in
-              intrastat report setup.</Description>
+            <Description>Round to integer and take into account the rounding direction setting in intrastat report setup.</Description>
             <TransformationType>11</TransformationType>
             <FindValue />
             <ReplaceValue />
@@ -209,8 +187,10 @@
         <DataExchFieldGrouping FieldID="5" />
         <DataExchFieldGrouping FieldID="7" />
         <DataExchFieldGrouping FieldID="8" />
+        <DataExchFieldGrouping FieldID="9" />
         <DataExchFieldGrouping FieldID="24" />
         <DataExchFieldGrouping FieldID="29" />
+        <DataExchFieldGrouping FieldID="31320" />
       </DataExchMapping>
     </DataExchLineDef>
   </DataExchDef>

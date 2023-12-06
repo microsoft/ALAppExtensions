@@ -1,4 +1,17 @@
-#if not CLEAN22
+﻿#if not CLEAN22
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.UOM;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Ledger;
+using System.Security.User;
+
 codeunit 31025 "Intrastat Jnl.Line Handler CZL"
 {
     ObsoleteState = Pending;

@@ -379,6 +379,218 @@ codeunit 6109 "E-Document Import Helper"
         end;
     end;
 
+    /// <summary>
+    /// Use it to find a vendor by number, GLN or VAT registration number.
+    /// </summary>
+    /// <param name="VendorNoText">Vendor's number.</param>
+    /// <param name="GLN">Vendor's GLN.</param>
+    /// <param name="VATRegistrationNo">Vendor's VAT registration number.</param>
+    /// <returns>Vendor number if exists or empty string.</returns>
+    procedure FindVendor(VendorNoText: Code[20]; GLN: Code[13]; VATRegistrationNo: Text[20]): Code[20]
+    var
+        VendorNo: Code[20];
+    begin
+        VendorNo := FindVendorByNo(VendorNoText);
+        if VendorNo <> '' then
+            exit(VendorNo);
+
+        VendorNo := FindVendorByGLN(GLN);
+        if VendorNo <> '' then
+            exit(VendorNo);
+
+        VendorNo := FindVendorByVATRegistrationNo(VATRegistrationNo);
+        if VendorNo <> '' then
+            exit(VendorNo);
+    end;
+
+    /// <summary>
+    /// Use it to find a vendor by Id.
+    /// </summary>
+    /// <param name="VendorIdText">Vendor's Id.</param>
+    /// <returns>Vendor number if exists or empty string.</returns>
+    procedure FindVendorById(VendorIdText: Text): Code[20]
+    var
+        Vendor: Record Vendor;
+        VendorId: Guid;
+    begin
+        if VendorIdText = '' then
+            exit('');
+
+        if not Evaluate(VendorId, VendorIdText, 9) then
+            exit('');
+
+        if Vendor.GetBySystemId(VendorId) then
+            exit(Vendor."No.");
+    end;
+
+    /// <summary>
+    /// Use it to find a vendor by number.
+    /// </summary>
+    /// <param name="VendorNoText">Vendor's number.</param>
+    /// <returns>Vendor number if exists or empty string.</returns>
+    procedure FindVendorByNo(VendorNoText: Code[20]): Code[20]
+    var
+        Vendor: Record Vendor;
+    begin
+        if VendorNoText = '' then
+            exit('');
+
+        if Vendor.Get(VendorNoText) then
+            exit(Vendor."No.");
+    end;
+
+    /// <summary>
+    /// Use it to find a vendor by GLN.
+    /// </summary>
+    /// <param name="GLN">Vendor's GLN.</param>
+    /// <returns>Vendor number if exists or empty string.</returns>
+    procedure FindVendorByGLN(GLN: Code[13]): Code[20]
+    var
+        Vendor: Record Vendor;
+    begin
+        if GLN = '' then
+            exit('');
+
+        Vendor.SetRange(GLN, GLN);
+        if Vendor.FindFirst() then
+            exit(Vendor."No.");
+    end;
+
+    /// <summary>
+    /// Use it to find a vendor by VAT registration number.
+    /// </summary>
+    /// <param name="VATRegistrationNo">Vendor's VAT registration number.</param>
+    /// <returns>Vendor number if exists or empty string.</returns>
+    procedure FindVendorByVATRegistrationNo(VATRegistrationNo: Text[20]): Code[20]
+    var
+        Vendor: Record Vendor;
+    begin
+        if VATRegistrationNo = '' then
+            exit('');
+
+        Vendor.SetLoadFields("VAT Registration No.", "Country/Region Code");
+        Vendor.SetFilter("VAT Registration No.", StrSubstNo(VATRegistrationNoFilterTxt, CopyStr(VATRegistrationNo, 1, MaxStrLen(VATRegistrationNo))));
+        if Vendor.FindSet() then
+            repeat
+                if ExtractVatRegNo(Vendor."VAT Registration No.", Vendor."Country/Region Code") = ExtractVatRegNo(VATRegistrationNo, Vendor."Country/Region Code") then
+                    exit(Vendor."No.");
+            until Vendor.Next() = 0;
+    end;
+
+    /// <summary>
+    /// Use it to find a vendor by phone number.
+    /// </summary>
+    /// <param name="PhoneNo">Vendor's Phone number.</param>
+    /// <returns>Vendor number if exists or empty string.</returns>
+    procedure FindVendorByPhoneNo(PhoneNo: Text): Code[20]
+    var
+        Vendor: Record Vendor;
+        RecordMatchMgt: Codeunit "Record Match Mgt.";
+        PhoneNoNearness: Integer;
+    begin
+        if PhoneNo = '' then
+            exit('');
+
+        PhoneNo := DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '0123456789'));
+
+        Vendor.SetCurrentKey(Blocked);
+        Vendor.SetLoadFields("Phone No.");
+        if Vendor.FindSet() then
+            repeat
+                PhoneNoNearness := RecordMatchMgt.CalculateStringNearness(PhoneNo, Vendor."Phone No.", MatchThreshold(), NormalizingFactor());
+                if PhoneNoNearness >= RequiredNearness() then
+                    exit(Vendor."No.");
+            until Vendor.Next() = 0;
+    end;
+
+    /// <summary>
+    /// Use it to find a vendor by name and address.
+    /// </summary>
+    /// <param name="VendorName">Vendor's name.</param>
+    /// <param name="VendorAddress">Vendor's address.</param>
+    /// <returns>Vendor number if exists or empty string.</returns>
+    procedure FindVendorByNameAndAddress(VendorName: Text; VendorAddress: Text): Code[20]
+    var
+        Vendor: Record Vendor;
+        RecordMatchMgt: Codeunit "Record Match Mgt.";
+        NameNearness: Integer;
+        AddressNearness: Integer;
+    begin
+        Vendor.SetCurrentKey(Blocked);
+        Vendor.SetLoadFields(Name, Address);
+        if Vendor.FindSet() then
+            repeat
+                NameNearness := RecordMatchMgt.CalculateStringNearness(VendorName, Vendor.Name, MatchThreshold(), NormalizingFactor());
+                if VendorAddress = '' then
+                    AddressNearness := RequiredNearness()
+                else
+                    AddressNearness := RecordMatchMgt.CalculateStringNearness(VendorAddress, Vendor.Address, MatchThreshold(), NormalizingFactor());
+                if (NameNearness >= RequiredNearness()) and (AddressNearness >= RequiredNearness()) then
+                    exit(Vendor."No.");
+            until Vendor.Next() = 0;
+    end;
+
+    /// <summary>
+    /// Use it to find a vendor by IBAN, vendor bank branch number and vendor bank account number.
+    /// </summary>
+    /// <param name="VendorIBAN">Vendor's IBAN.</param>
+    /// <param name="VendorBankBranchNo">Vendor's bank account branch number.</param>
+    /// <param name="VendorBankAccountNo">Vendor's bank account number.</param>
+    /// <returns>Vendor number if exists or empty string.</returns>
+    procedure FindVendorByBankAccount(VendorIBAN: Code[50]; VendorBankBranchNo: Text[20]; VendorBankAccountNo: Text[30]): Code[20]
+    var
+        VendorBankAccount: Record "Vendor Bank Account";
+        VendorNo: Code[20];
+    begin
+        if VendorIBAN <> '' then begin
+            VendorBankAccount.SetRange(IBAN, VendorIBAN);
+            VendorNo := TryFindLeastBlockedVendorNoByVendorBankAcc(VendorBankAccount);
+        end;
+
+        if (VendorNo = '') and (VendorBankBranchNo <> '') and (VendorBankAccountNo <> '') then begin
+            VendorBankAccount.Reset();
+            VendorBankAccount.SetRange("Bank Branch No.", VendorBankBranchNo);
+            VendorBankAccount.SetRange("Bank Account No.", VendorBankAccountNo);
+            VendorNo := TryFindLeastBlockedVendorNoByVendorBankAcc(VendorBankAccount);
+        end;
+
+        if VendorNo <> '' then
+            exit(VendorNo);
+    end;
+
+    local procedure TryFindLeastBlockedVendorNoByVendorBankAcc(var VendorBankAccount: record "Vendor Bank Account"): Code[20]
+    var
+        Vendor: Record Vendor;
+        NonBlockedVendorNo: Code[20];
+        BlockedPaymentVendorNo: Code[20];
+        BlockedAllVendorNo: Code[20];
+    begin
+        BlockedAllVendorNo := '';
+        BlockedPaymentVendorNo := '';
+        if VendorBankAccount.FindSet() then
+            repeat
+                if Vendor.Get(VendorBankAccount."Vendor No.") then begin
+                    if Vendor.Blocked = "Vendor Blocked"::" " then
+                        NonBlockedVendorNo := Vendor."No.";
+
+                    if (Vendor.Blocked = "Vendor Blocked"::Payment) and (BlockedPaymentVendorNo = '') then
+                        BlockedPaymentVendorNo := Vendor."No.";
+
+                    if (Vendor.Blocked = "Vendor Blocked"::All) and (BlockedAllVendorNo = '') then
+                        BlockedAllVendorNo := Vendor."No.";
+                end;
+            until (VendorBankAccount.Next() = 0) or (NonBlockedVendorNo <> '');
+
+        if NonBlockedVendorNo <> '' then
+            exit(NonBlockedVendorNo);
+        if BlockedPaymentVendorNo <> '' then
+            exit(BlockedPaymentVendorNo);
+        if BlockedAllVendorNo <> '' then
+            exit(BlockedAllVendorNo);
+
+        exit('');
+    end;
+
     internal procedure ProcessFieldNoValidate(RecRef: RecordRef; FieldNo: Integer; Value: Text[250])
     var
         FieldRef: FieldRef;
@@ -645,4 +857,5 @@ codeunit 6109 "E-Document Import Helper"
         UnableToApplyDiscountErr: Label 'The invoice discount of %1 cannot be applied. Invoice discount must be allowed on at least one invoice line and invoice total must not be 0.', Comment = '%1 - a decimal number';
         TotalsMismatchErr: Label 'The total amount %1 on the created document is different than the total amount %2 in the electronic document.', Comment = '%1 total amount, %2 expected total amount';
         NotSpecifiedUnitOfMeasureTxt: Label '<NONE>';
+        VATRegistrationNoFilterTxt: Label '*%1', Comment = '%1 - Filter value', Locked = true;
 }

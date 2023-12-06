@@ -3,6 +3,8 @@ namespace Microsoft.Foundation.DataSearch;
 codeunit 2682 "Data Search Events"
 {
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Specifies the Field No. for the table type field. For example "Sales Header" would specify 1 = "Document Type"
@@ -21,6 +23,16 @@ codeunit 2682 "Data Search Events"
     /// <param name="ParentTableNo">If the the table is a sub-table, please specify the parent table here</param>
     [IntegrationEvent(false, false)]
     procedure OnGetParentTable(SubTableNo: Integer; var ParentTableNo: Integer)
+    begin
+    end;
+
+    /// <summary>
+    /// Specifies the sub table if a table is a parent table in a header/lines construct, such as Sales Line / Sales Header
+    /// </summary>
+    /// <param name="ParentTableNo">The table no. of the table that is being searched.</param>
+    /// <param name="SubTableNo">If the the table is a parent table, please specify the sub table here</param>
+    [IntegrationEvent(false, false)]
+    procedure OnGetSubTable(ParentTableNo: Integer; var SubTableNo: Integer)
     begin
     end;
 
@@ -86,6 +98,17 @@ codeunit 2682 "Data Search Events"
     /// <param name="IsExcluded">true/false whether the field should be excluded from the default setup.</param>
     [IntegrationEvent(false, false)]
     procedure OnGetExcludedRelatedTableField(RelatedTableNo: Integer; var IsExcluded: Boolean)
+    begin
+    end;
+
+    /// <summary>
+    /// Specifies the table subtype for a page.
+    /// Typically this means 'document type' for a specific table that is source table for the page.
+    /// </summary>
+    /// <param name="PageNo">The page no. that we want to get the subtype ('document type') for.</param>
+    /// <param name="TableSubType">Integer. The value of the subtype/document type.</param>
+    [IntegrationEvent(false, false)]
+    procedure OnGetTableSubTypeFromPage(PageNo: Integer; var TableSubtype: Integer)
     begin
     end;
 

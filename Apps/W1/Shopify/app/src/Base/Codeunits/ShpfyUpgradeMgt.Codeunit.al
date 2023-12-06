@@ -405,13 +405,16 @@ codeunit 30106 "Shpfy Upgrade Mgt."
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
     local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
-    var
-        UpgradeTag: Codeunit "Upgrade Tag";
     begin
-        if not UpgradeTag.HasUpgradeTag(GetAllowOutgoingRequestseUpgradeTag()) then
-            PerCompanyUpgradeTags.Add(GetAllowOutgoingRequestseUpgradeTag());
-
-        if not UpgradeTag.HasUpgradeTag(GetPriceCalculationUpgradeTag()) then
-            PerCompanyUpgradeTags.Add(GetPriceCalculationUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetAllowOutgoingRequestseUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetPriceCalculationUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetNewAvailabilityCalculationTag());
+        PerCompanyUpgradeTags.Add(GetAutoReleaseSalesOrderTag());
+#if CLEAN22
+        PerCompanyUpgradeTags.Add(GetMoveTemplatesDataTag());
+#endif
+        PerCompanyUpgradeTags.Add(GetLoggingModeUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetLocationUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetSyncPricesWithProductsUpgradeTag());
     end;
 }

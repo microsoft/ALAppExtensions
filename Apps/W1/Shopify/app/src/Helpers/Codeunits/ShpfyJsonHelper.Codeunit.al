@@ -2,6 +2,9 @@ namespace Microsoft.Integration.Shopify;
 
 using System.Text;
 using System.Utilities;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using System.DateTime;
 
 /// <summary>
 /// Codeunit Shpfy Json Helper (ID 30157).
@@ -574,14 +577,43 @@ codeunit 30157 "Shpfy Json Helper"
     /// <returns>Return value of type Date.</returns>
     internal procedure GetValueAsDate(JObject: JsonObject; TokenPath: Text): Date
     var
+        CompanyInformation: Record "Company Information";
+        PostCode: Record "Post Code";
         JValue: JsonValue;
         Result: Date;
+        UTC: DateTime;
+        OffSet: Duration;
     begin
         if GetJsonValue(JObject, JValue, TokenPath) then
             if TryAsDate(JValue, Result) then
                 exit(Result)
-            else
+            else begin
+                if TryGetUTC(JValue.AsDateTime(), UTC) then begin
+                    if CompanyInformation.Get() then
+                        if PostCode.Get(CompanyInformation."Post Code", CompanyInformation.City) then
+                            if PostCode."Time Zone" <> '' then
+                                if TryGetTimezoneOffset(UTC, PostCode."Time Zone", OffSet) then
+                                    exit(DT2Date(UTC - OffSet));
+                    exit(DT2Date(UTC));
+                end;
                 exit(DT2Date(JValue.AsDateTime()));
+            end;
+    end;
+
+    [TryFunction]
+    local procedure TryGetTimezoneOffset(DateTime: DateTime; TimeZoneCode: Text; var OffSet: Duration)
+    var
+        TimeZone: Codeunit "Time Zone";
+    begin
+        OffSet := TimeZone.GetTimezoneOffset(DateTime, TimeZoneCode);
+    end;
+
+    [TryFunction]
+    local procedure TryGetUTC(DateTime: DateTime; var UTC: DateTime)
+    var
+        TimeZone: Codeunit "Time Zone";
+    begin
+        UTC := DateTime - TimeZone.GetTimezoneOffset(DateTime);
     end;
 
     [TryFunction]

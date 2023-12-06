@@ -1,3 +1,21 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Enums;
+using Microsoft.Foundation.Reporting;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.History;
+using Microsoft.Sales.Receivables;
+using System.Security.AccessControl;
+
 table 31006 "Sales Adv. Letter Entry CZZ"
 {
     Caption = 'Sales Adv. Letter Entry';

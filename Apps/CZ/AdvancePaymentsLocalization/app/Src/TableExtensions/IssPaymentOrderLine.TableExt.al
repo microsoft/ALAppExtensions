@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Bank.Documents;
+
 tableextension 31040 "Iss. Payment Order Line CZZ" extends "Iss. Payment Order Line CZB"
 {
     fields

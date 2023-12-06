@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Purchases.Payables;
+
 reportextension 31004 "Open Vend. Entries to Date CZZ" extends "Open Vend. Entries to Date CZL"
 {
     dataset

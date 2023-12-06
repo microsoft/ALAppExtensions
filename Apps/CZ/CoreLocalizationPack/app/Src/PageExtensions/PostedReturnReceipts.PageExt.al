@@ -1,4 +1,10 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 #if not CLEAN22
+namespace Microsoft.Sales.History;
+
 pageextension 31116 "Posted Return Receipts CZL" extends "Posted Return Receipts"
 {
     ObsoleteState = Pending;

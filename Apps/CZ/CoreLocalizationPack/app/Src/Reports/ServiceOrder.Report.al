@@ -1,3 +1,24 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.Document;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.CRM.Team;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.PaymentTerms;
+using Microsoft.Foundation.Shipping;
+using Microsoft.HumanResources.Employee;
+using Microsoft.Service.Comment;
+using Microsoft.Service.Setup;
+using Microsoft.Utilities;
+using System.Email;
+using System.Globalization;
+using System.Security.User;
+using System.Utilities;
+
 report 31194 "Service Order CZL"
 {
     DefaultLayout = RDLC;

@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Documents;
+
+using Microsoft.Bank.Setup;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.HumanResources.Payables;
+using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Receivables;
+
 table 31260 "Match Bank Payment Buffer CZB"
 {
     Caption = 'Match Bank Payment Buffer';

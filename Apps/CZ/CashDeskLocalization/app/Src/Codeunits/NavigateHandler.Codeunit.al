@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.CashDesk;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Ledger;
+using Microsoft.Foundation.Navigate;
+
 codeunit 11791 "Navigate Handler CZP"
 {
     var
@@ -66,12 +76,17 @@ codeunit 11791 "Navigate Handler CZP"
     end;
 
     local procedure NoOfRecords(var DocumentEntry: Record "Document Entry"; TableID: Integer): Integer
+    var
+        DocEntryNoOfRecords: Integer;
     begin
         DocumentEntry.SetRange(DocumentEntry."Table ID", TableID);
         if not DocumentEntry.FindFirst() then
             DocumentEntry.Init();
         DocumentEntry.SetRange(DocumentEntry."Table ID");
-        exit(DocumentEntry."No. of Records");
+        DocEntryNoOfRecords := DocumentEntry."No. of Records";
+        if not DocumentEntry.FindLast() then
+            DocumentEntry.Init();
+        exit(DocEntryNoOfRecords);
     end;
 
     [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnBeforeNavigateShowRecords', '', false, false)]

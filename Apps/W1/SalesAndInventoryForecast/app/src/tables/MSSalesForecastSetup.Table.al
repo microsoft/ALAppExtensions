@@ -145,18 +145,6 @@ table 1853 "MS - Sales Forecast Setup"
         field(20; Enabled; Boolean)
         {
             DataClassification = CustomerContent;
-
-            trigger OnValidate();
-            var
-                CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
-                UserPermissions: Codeunit "User Permissions";
-            begin
-                if (Rec.Enabled <> xRec.Enabled) and not UserPermissions.IsSuper(UserSecurityId()) then
-                    Error(NotAdminErr);
-
-                if not xRec.Enabled and Rec.Enabled then
-                    Rec.Enabled := CustomerConsentMgt.ConfirmUserConsentToMicrosoftService();
-            end;
         }
     }
 
@@ -299,7 +287,7 @@ table 1853 "MS - Sales Forecast Setup"
         if not Rec.Enabled then begin
             if not UserPermissions.IsSuper(UserSecurityId()) then
                 Error(NotAdminErr);
-            if CustomerConsentMgt.ConfirmUserConsentToMicrosoftService() then begin
+            if CustomerConsentMgt.ConsentToMicrosoftServiceWithAI() then begin
                 Rec.Enabled := true;
                 Rec.Modify(true);
             end else

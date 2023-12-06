@@ -4,8 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.TaxEngine.UseCaseBuilder;
 
-using System.Automation;
 using System.Reflection;
+using System.Automation;
 
 codeunit 20300 "Use Case Tree Condition Mgmt."
 {

@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GeneralLedger.Ledger;
+
+using Microsoft.Foundation.Navigate;
+using System.Security.User;
+
 page 31283 "Detailed G/L Entries CZA"
 {
     Caption = 'Detailed G/L Entries';

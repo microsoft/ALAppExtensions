@@ -4,7 +4,7 @@ codeunit 139652 "Library - Hybrid Management"
 
     var
         TestJsonOutput: Text;
-        ProductId: Text;
+        GlobalProductId: Text;
         ExpectedRunId: Text;
         ExpectedProduct: Text;
         ExpectedErrors: Text;
@@ -24,6 +24,7 @@ codeunit 139652 "Library - Hybrid Management"
         TestTrackingIdTxt: Label 'TestTrackingID';
         TestDeployedVersionTxt: Label 'V1.0', Locked = true;
         TestLatestVersionTxt: Label 'V2.0', Locked = true;
+        CanModifyDataReplicationRules: Boolean;
 
     local procedure CanHandle(): Boolean
     var
@@ -65,7 +66,7 @@ codeunit 139652 "Library - Hybrid Management"
         if not CanHandle() then
             exit;
 
-        ProductId := SourceProductId;
+        GlobalProductId := SourceProductId;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Deployment", 'OnSetReplicationSchedule', '', false, false)]
@@ -375,6 +376,11 @@ codeunit 139652 "Library - Hybrid Management"
         TableMappingEnabled := Enabled;
     end;
 
+    procedure SetCanModifyDataReplicationRules(NewCanModifyDataReplicationRules: Boolean)
+    begin
+        CanModifyDataReplicationRules := NewCanModifyDataReplicationRules;
+    end;
+
     [EventSubscriber(ObjectType::Page, Page::"Intelligent Cloud Management", 'CanRunDiagnostic', '', false, false)]
     local procedure CanRunDiagnostic(var CanRun: Boolean)
     begin
@@ -391,5 +397,17 @@ codeunit 139652 "Library - Hybrid Management"
     local procedure HandleCanSetupAdlMigration(var CanSetup: Boolean)
     begin
         CanSetup := AdlMigrationEnabled;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cloud Mig. Replicate Data Mgt.", 'OnCanIntelligentCloudSetupTableBeModified', '', false, false)]
+    local procedure HandleCanIntelligentCloudSetupTableBeModified(TableID: Integer; var CanBeModified: Boolean)
+    begin
+        CanBeModified := CanModifyDataReplicationRules;
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Cloud Mig - Select Tables", 'OnCanChangeSetup', '', false, false)]
+    local procedure HandleCanChangeSetup(var CanChangeSetup: Boolean)
+    begin
+        CanChangeSetup := CanModifyDataReplicationRules;
     end;
 }

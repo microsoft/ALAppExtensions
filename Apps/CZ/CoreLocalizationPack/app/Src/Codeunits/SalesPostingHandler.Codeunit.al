@@ -1,3 +1,38 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Posting;
+
+using Microsoft.Bank;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Finance.VAT.Reporting;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.AuditCodes;
+#if not CLEAN22
+using Microsoft.Foundation.BatchProcessing;
+#endif
+using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Counting.Journal;
+using Microsoft.Inventory.Intrastat;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Journal;
+#if not CLEAN22
+using Microsoft.Purchases.Document;
+#endif
+using Microsoft.Sales.Document;
+using Microsoft.Sales.History;
+#if not CLEAN22
+using Microsoft.Sales.Reports;
+using System.Environment.Configuration;
+#endif
+using System.Utilities;
+
 codeunit 31038 "Sales Posting Handler CZL"
 {
     var
@@ -48,10 +83,12 @@ codeunit 31038 "Sales Posting Handler CZL"
 
         GenJournalLine.Init();
         GenJournalLine."Posting Date" := SalesHeader."Posting Date";
+#if not CLEAN22
         if not GenJournalLine.IsReplaceVATDateEnabled() then
             GenJournalLine.Validate("VAT Date CZL", SalesHeader."VAT Date CZL")
         else
-            GenJournalLine.Validate("VAT Reporting Date", SalesHeader."VAT Reporting Date");
+#endif
+        GenJournalLine.Validate("VAT Reporting Date", SalesHeader."VAT Reporting Date");
         GenJournalLine.Validate("Original Doc. VAT Date CZL", SalesHeader."Original Doc. VAT Date CZL");
         GenJournalLine."Document Date" := SalesHeader."Document Date";
         GenJournalLine.Description := SalesHeader."Posting Description";
@@ -153,7 +190,7 @@ codeunit 31038 "Sales Posting Handler CZL"
         else
 #pragma warning restore AL0432
 #endif
-            GenJournalLine.Validate("VAT Reporting Date", SalesHeader."VAT Reporting Date");
+        GenJournalLine.Validate("VAT Reporting Date", SalesHeader."VAT Reporting Date");
         GenJournalLine.Validate("Original Doc. VAT Date CZL", SalesHeader."Original Doc. VAT Date CZL");
         GenJournalLine."Document Date" := SalesHeader."Document Date";
         GenJournalLine.Description := SalesHeader."Posting Description";
@@ -507,18 +544,18 @@ codeunit 31038 "Sales Posting Handler CZL"
             exit;
         if VATReportingDateMgt.IsVATDateEnabled() then begin
             VATDateExists :=
-                BatchProcessingMgt.GetBooleanParameter(SalesHeader.RecordId, "Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDate) and
-                BatchProcessingMgt.GetDateParameter(SalesHeader.RecordId, "Batch Posting Parameter Type"::"VAT Date", VATDate);
+                BatchProcessingMgt.GetBooleanParameter(SalesHeader.RecordId, Enum::"Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDate) and
+                BatchProcessingMgt.GetDateParameter(SalesHeader.RecordId, Enum::"Batch Posting Parameter Type"::"VAT Date", VATDate);
             if not VATDateExists then
                 VATDateExists :=
-                    BatchProcessingMgt.GetBooleanParameter(SalesHeader.RecordId, "Batch Posting Parameter Type"::"Replace VAT Date CZL", ReplaceVATDate) and
-                    BatchProcessingMgt.GetDateParameter(SalesHeader.RecordId, "Batch Posting Parameter Type"::"VAT Date CZL", VATDate);
+                    BatchProcessingMgt.GetBooleanParameter(SalesHeader.RecordId, Enum::"Batch Posting Parameter Type"::"Replace VAT Date CZL", ReplaceVATDate) and
+                    BatchProcessingMgt.GetDateParameter(SalesHeader.RecordId, Enum::"Batch Posting Parameter Type"::"VAT Date CZL", VATDate);
             if VATDateExists and (ReplaceVATDate or (SalesHeader."VAT Date CZL" = 0D)) then begin
                 SalesHeader.Validate("VAT Date CZL", VATDate);
                 SalesHeader.Modify();
             end;
         end else
-            if BatchProcessingMgt.GetDateParameter(SalesHeader.RecordId, "Batch Posting Parameter Type"::"Posting Date", PostingDate) and
+            if BatchProcessingMgt.GetDateParameter(SalesHeader.RecordId, Enum::"Batch Posting Parameter Type"::"Posting Date", PostingDate) and
                (SalesHeader."Posting Date" <> SalesHeader."VAT Date CZL")
             then begin
                 SalesHeader.Validate("VAT Date CZL", PostingDate);
@@ -549,8 +586,12 @@ codeunit 31038 "Sales Posting Handler CZL"
     local procedure CheckIntrastatMandatoryFieldsOnAfterCheckSalesDoc(SalesHeader: Record "Sales Header"; var ErrorCounter: Integer; var ErrorText: array[99] of Text[250])
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
+        FeatureMgtFacade: Codeunit "Feature Management Facade";
         MustBeSpecifiedLbl: Label '%1 must be specified.', Comment = '%1 = FieldCaption';
+        IntrastatFeatureKeyIdTok: Label 'ReplaceIntrastat', Locked = true;
     begin
+        if FeatureMgtFacade.IsEnabled(IntrastatFeatureKeyIdTok) then
+            exit;
         if not (SalesHeader.Ship or SalesHeader.Receive) then
             exit;
         if SalesHeader.IsIntrastatTransactionCZL() and SalesHeader.ShipOrReceiveInventoriableTypeItemsCZL() then begin

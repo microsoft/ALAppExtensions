@@ -5,6 +5,8 @@ page 41006 "Hist. Receivables Document"
     PageType = Card;
     Caption = 'Historical Receivables Document';
     SourceTable = "Hist. Receivables Document";
+    ApplicationArea = All;
+    UsageCategory = None;
     Editable = false;
     DeleteAllowed = false;
     InsertAllowed = false;
@@ -168,11 +170,24 @@ page 41006 "Hist. Receivables Document"
                     ToolTip = 'Specifies the value of the User field.';
                 }
             }
+            group(Apply)
+            {
+                Caption = 'Receivables Apply';
+
+                part(HistReceivablesApplyList; "Hist. Receivables Apply List")
+                {
+                    Caption = 'Historical Receivables Apply Lines';
+                    ShowFilter = false;
+                    ApplicationArea = All;
+                    SubPageLink = "Customer No." = field("Customer No.");
+                }
+            }
         }
     }
 
     trigger OnAfterGetCurrRecord()
     begin
+        CurrPage.HistReceivablesApplyList.Page.FilterByDocumentNo(Rec."Document Type", Rec."Document No.");
         DataCaptionExpressionTxt := Format(Rec."Document Type") + ' - ' + Rec."Document No.";
     end;
 

@@ -1,3 +1,11 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Bank.Documents;
+
 tableextension 31041 "Match Bank Payment Buffer CZZ" extends "Match Bank Payment Buffer CZB"
 {
     fields

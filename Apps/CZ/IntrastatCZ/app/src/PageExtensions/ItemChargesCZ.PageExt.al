@@ -18,6 +18,13 @@ pageextension 31338 "Item Charges CZ" extends "Item Charges"
             Enabled = not IntrastatEnabled;
             Visible = not IntrastatEnabled;
         }
+#pragma warning disable AL0432
+        modify("Incl. in Intrastat S.Value CZL")
+#pragma warning restore AL0432
+        {
+            Enabled = not IntrastatEnabled;
+            Visible = not IntrastatEnabled;
+        }
 #endif
         addlast(Control1)
         {

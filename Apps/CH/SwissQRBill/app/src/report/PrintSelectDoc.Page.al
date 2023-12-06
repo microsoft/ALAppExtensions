@@ -255,4 +255,27 @@ page 11512 "Swiss QR-Bill Print Select Doc"
     begin
         exit(CustLedgerEntry."Entry No.");
     end;
+
+    internal procedure GetSelectedRecord(RecRef: RecordRef)
+    begin
+        if SalesInvoiceHeader."No." <> '' then begin
+            RecRef.GetTable(SalesInvoiceHeader);
+            exit;
+        end;
+
+        if ServiceInvoiceHeader."No." <> '' then begin
+            RecRef.GetTable(ServiceInvoiceHeader);
+            exit;
+        end;
+
+        if IssuedReminderHeader."No." <> '' then begin
+            RecRef.GetTable(IssuedReminderHeader);
+            exit;
+        end;
+
+        if IssuedFinChargeMemoHeader."No." <> '' then begin
+            RecRef.GetTable(IssuedFinChargeMemoHeader);
+            exit;
+        end;
+    end;
 }

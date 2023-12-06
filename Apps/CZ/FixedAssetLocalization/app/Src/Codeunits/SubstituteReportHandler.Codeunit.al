@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.FixedAssets;
+
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.Maintenance;
+using Microsoft.FixedAssets.Reports;
+using Microsoft.Foundation.Reporting;
+using Microsoft.Utilities;
+using System.Apps;
+using System.Environment.Configuration;
+
 #pragma warning disable AL0432
 codeunit 31245 "Substitute Report Handler CZF"
 {

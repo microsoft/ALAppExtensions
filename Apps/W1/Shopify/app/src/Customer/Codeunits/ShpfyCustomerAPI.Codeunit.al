@@ -35,7 +35,7 @@ codeunit 30114 "Shpfy Customer API"
             GraphQuery.Append(': \"')
         else
             GraphQuery.Append(': ');
-        GraphQuery.Append(Format(ValueAsVariant));
+        GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(Format(ValueAsVariant)));
         if ValueAsString then
             GraphQuery.Append('\", ')
         else

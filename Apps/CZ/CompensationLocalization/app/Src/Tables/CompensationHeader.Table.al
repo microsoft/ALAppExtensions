@@ -1,3 +1,24 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Compensations;
+
+using Microsoft.CRM.Contact;
+using Microsoft.CRM.Team;
+using Microsoft.EServices.EDocument;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Attachment;
+using Microsoft.Foundation.BatchProcessing;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Utilities;
+using System.Automation;
+using System.Globalization;
+using System.Security.AccessControl;
+using System.Utilities;
+
 #pragma warning disable AA0232
 table 31272 "Compensation Header CZC"
 {
@@ -165,7 +186,7 @@ table 31272 "Compensation Header CZC"
         field(46; "Company County"; Text[30])
         {
             Caption = 'Company County';
-            CaptionClass = '5,1,' + "Company Country/Region Code";
+            CaptionClass = '5,12,' + "Company Country/Region Code";
             DataClassification = CustomerContent;
         }
         field(47; "Company Country/Region Code"; Code[10])

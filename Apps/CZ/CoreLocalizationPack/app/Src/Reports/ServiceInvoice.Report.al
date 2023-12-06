@@ -1,3 +1,30 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.History;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Finance.VAT.Clause;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.PaymentTerms;
+using Microsoft.HumanResources.Employee;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+using Microsoft.Sales.Reminder;
+using Microsoft.Service.Setup;
+using System.Email;
+using System.Globalization;
+using System.Security.User;
+using System.Utilities;
+using Microsoft.CRM.Team;
+using Microsoft.Utilities;
+
 report 31197 "Service Invoice CZL"
 {
     DefaultLayout = RDLC;

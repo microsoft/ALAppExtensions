@@ -711,6 +711,43 @@ codeunit 139768 "UT Page Bank Deposit"
         BankDeposit.Subform."Document No.".AssertEquals(DocumentNo);
     end;
 
+    [Test]
+    [HandlerFunctions('BankDepositHandler,GenJournalBatchHandler')]
+    procedure VerifyEditJournalOpenBAnkDepositCardPage()
+    var
+        GenJournalTemplate: Record "Gen. Journal Template";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        BAnkDepositHeader: Record "Bank Deposit Header";
+        GenJournalTemplatePage: TestPage "General Journal Templates";
+        GenJournalBatchPage: TestPage "General Journal Batches";
+    begin
+        // [SCENARIO 472257] "The table IDs do not match." error message appears on using Edit Journal from the General Journal 
+        // Batches page for Bank Deposits
+        Initialize();
+
+        // [GIVEN] Create General Journal Template and update Type as "Bank Deposits"
+        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+        GenJournalTemplate.Validate(Type, GenJournalTemplate.Type::"Bank Deposits");
+        GenJournalTemplate.Modify();
+
+        // [GIVEN] Create General Journal Batch
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+
+        // [WHEN] Open General Journal Template page and got Batches and click on "Edit Journal"
+        GenJournalBatchPage.Trap();
+        GenJournalTemplatePage.OpenEdit();
+        GenJournalTemplatePage.GoToRecord(GenJournalTemplate);
+        GenJournalTemplatePage.Batches.Invoke();
+        GenJournalBatchPage.EditJournal.Invoke();
+
+        // [THEN] Close the General Journal Batch Page
+        GenJournalBatchPage.Close();
+
+        // [VERIFY] Find the first record of Bank Deposit and verify Journal Template Name
+        BankDepositHeader.FindFirst();
+        Assert.AreEqual(GenJournalTemplate.Name, BAnkDepositHeader."Journal Template Name", '');
+    end;
+
     local procedure GetBankDepositsFeature(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; ID: Text[50])
     begin
         if FeatureDataUpdateStatus.Get(ID, CompanyName()) then
@@ -1097,6 +1134,20 @@ codeunit 139768 "UT Page Bank Deposit"
     procedure ConfirmHandlerTRUE(Question: Text[1024]; var Reply: Boolean)
     begin
         Reply := true;
+    end;
+
+    [PageHandler]
+    [Scope('OnPrem')]
+    procedure BankDepositHandler(var BankDeposit: TestPage "Bank Deposit")
+    begin
+        BankDeposit.Close();
+    end;
+
+    [ModalPageHandler]
+    [Scope('OnPrem')]
+    procedure GenJournalBatchHandler(var GenJournalBatchPage: TestPage "General Journal Batches")
+    begin
+        // Handle the page which is already Open.
     end;
 
     [IntegrationEvent(false, false)]

@@ -20,13 +20,12 @@ using System.Utilities;
 
 codeunit 6102 "E-Doc. Export"
 {
-    Access = Internal;
     Permissions =
         tabledata "E-Document" = im,
         tabledata "E-Doc. Mapping" = im,
         tabledata "E-Doc. Mapping Log" = im;
 
-    procedure CheckEDocument(var EDocSourceRecRef: RecordRef; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
+    internal procedure CheckEDocument(var EDocSourceRecRef: RecordRef; EDocumentProcessingPhase: Enum "E-Document Processing Phase")
     var
         EDocumentService: Record "E-Document Service";
         DocumentSendingProfile: Record "Document Sending Profile";
@@ -53,7 +52,7 @@ codeunit 6102 "E-Doc. Export"
         OnAfterEDocumentCheck(EDocSourceRecRef, EDocumentProcessingPhase);
     end;
 
-    procedure CreateEDocument(var SourceDocumentHeader: RecordRef)
+    internal procedure CreateEDocument(var SourceDocumentHeader: RecordRef)
     var
         EDocument: Record "E-Document";
         EDocumentLog: Codeunit "E-Document Log";
@@ -74,7 +73,7 @@ codeunit 6102 "E-Doc. Export"
         EDocumentBackgroundJobs.StartEDocumentCreatedFlow(EDocument);
     end;
 
-    procedure ExportEDocument(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service") Success: Boolean
+    internal procedure ExportEDocument(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service") Success: Boolean
     var
         TempEDocMapping: Record "E-Doc. Mapping" temporary;
         EDocumentLog: Codeunit "E-Document Log";
@@ -97,7 +96,7 @@ codeunit 6102 "E-Doc. Export"
             EDocumentLog.InsertLog(EDocument, EDocService, Enum::"E-Document Service Status"::"Export Error");
     end;
 
-    procedure ExportEDocumentBatch(var EDocuments: Record "E-Document"; var EDocService: Record "E-Document Service"; var TempEDocMappingLogs: Record "E-Doc. Mapping Log" temporary; var TempBlob: Codeunit "Temp Blob"; var EDocumentsErrorCount: Dictionary of [Integer, Integer])
+    internal procedure ExportEDocumentBatch(var EDocuments: Record "E-Document"; var EDocService: Record "E-Document Service"; var TempEDocMappingLogs: Record "E-Doc. Mapping Log" temporary; var TempBlob: Codeunit "Temp Blob"; var EDocumentsErrorCount: Dictionary of [Integer, Integer])
     var
         TempEDocMapping: Record "E-Doc. Mapping" temporary;
         EDocumentLog: Codeunit "E-Document Log";
@@ -134,12 +133,12 @@ codeunit 6102 "E-Doc. Export"
         CreateEDocumentBatch(EDocService, EDocuments, SourceDocumentHeaderMapped, SourceDocumentLineMapped, TempBlob);
     end;
 
-    procedure Recreate(EDocument: Record "E-Document"; EDocService: Record "E-Document Service")
+    internal procedure Recreate(EDocument: Record "E-Document"; EDocService: Record "E-Document Service")
     begin
         ExportEDocument(EDocument, EDocService);
     end;
 
-    procedure MapEDocument(var EDocumentSource: RecordRef; var EDocumentSourceLine: RecordRef; EDocumentFormat: Record "E-Document Service"; var EDocumentSourceMapped: RecordRef; var EDocumentSourceLineMapped: RecordRef; var TempEDocMapping: Record "E-Doc. Mapping" temporary; ForImport: Boolean)
+    internal procedure MapEDocument(var EDocumentSource: RecordRef; var EDocumentSourceLine: RecordRef; EDocumentFormat: Record "E-Document Service"; var EDocumentSourceMapped: RecordRef; var EDocumentSourceLineMapped: RecordRef; var TempEDocMapping: Record "E-Doc. Mapping" temporary; ForImport: Boolean)
     var
         EDocMapping: Record "E-Doc. Mapping";
         EDocMappingNgt: Codeunit "E-Doc. Mapping";

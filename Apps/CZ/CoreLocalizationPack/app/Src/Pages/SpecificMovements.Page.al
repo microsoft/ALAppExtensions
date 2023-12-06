@@ -1,4 +1,4 @@
-#if not CLEAN22
+﻿#if not CLEAN22
 page 31038 "Specific Movements CZL"
 {
     ApplicationArea = Basic, Suite;

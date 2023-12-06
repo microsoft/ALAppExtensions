@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Reporting;
+
+using Microsoft.Foundation.Company;
+using System.Environment;
+
 xmlport 31110 "VAT Control Report DPHKH1 CZL"
 {
     Caption = 'VAT Control Report';
@@ -983,7 +992,7 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
         CheckLen(StatutoryReportingSetupCZL."Individual Title", StatutoryReportingSetupCZL.FieldCaption("Individual Title"), 10);
         NatPersTitle := StatutoryReportingSetupCZL."Individual Title";
         CompanyTradeName := StatutoryReportingSetupCZL."Company Trade Name";
-        City := CompanyInformation.City;
+        City := StatutoryReportingSetupCZL.City;
         CheckLen(StatutoryReportingSetupCZL.Street, StatutoryReportingSetupCZL.FieldCaption(Street), 38);
         Street := StatutoryReportingSetupCZL.Street;
         CheckLen(StatutoryReportingSetupCZL."House No.", StatutoryReportingSetupCZL.FieldCaption("House No."), 6);

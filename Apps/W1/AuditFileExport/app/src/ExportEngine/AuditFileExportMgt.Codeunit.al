@@ -63,6 +63,7 @@ codeunit 5261 "Audit File Export Mgt."
         AuditFileExportHeader.Validate(Status, AuditFileExportHeader.Status::"In Progress");
         AuditFileExportHeader.Validate("Execution Start Date/Time", TypeHelper.GetCurrentDateTimeInUserTimeZone());
         AuditFileExportHeader.Validate("Execution End Date/Time", 0DT);
+        OnBeforeModifyAuditFileExportHeaderToStartExport(AuditFileExportHeader);
         AuditFileExportHeader.Modify(true);
         Commit();
 
@@ -740,6 +741,12 @@ codeunit 5261 "Audit File Export Mgt."
     [IntegrationEvent(false, false)]
     local procedure OnAuditFileExportLineCompleted(var AuditFileExportHeader: Record "Audit File Export Header")
     begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeModifyAuditFileExportHeaderToStartExport(var AuditFileExportHeader: Record "Audit File Export Header")
+    begin
+
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Audit File Export Mgt.", 'OnAuditFileExportLineCompleted', '', false, false)]

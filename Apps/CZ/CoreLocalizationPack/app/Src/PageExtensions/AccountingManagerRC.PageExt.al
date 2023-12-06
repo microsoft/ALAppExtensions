@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.RoleCenters;
+
+using Microsoft.Finance.FinancialReports;
+
 pageextension 11796 "Accounting Manager RC CZL" extends "Accounting Manager Role Center"
 {
     actions

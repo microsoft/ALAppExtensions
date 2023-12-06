@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.FinancialReports;
+
+using System.Security.User;
+
 page 31206 "Acc. Sched. Res. Overview CZL"
 {
     Caption = 'Acc. Schedule Results Overview';

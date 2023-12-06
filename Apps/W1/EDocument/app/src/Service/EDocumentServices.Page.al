@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using Microsoft.eServices.EDocument.IO;
 using System.DataAdministration;
 using System.Telemetry;
 
@@ -109,7 +110,9 @@ page 6103 "E-Document Services"
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
         EDocumentHelper: Codeunit "E-Document Processing";
+        EDocumentInstall: Codeunit "E-Document Install";
     begin
         FeatureTelemetry.LogUptake('0000KZ9', EDocumentHelper.GetEDocTok(), Enum::"Feature Uptake Status"::Discovered);
+        EDocumentInstall.InsertDataExch();
     end;
 }

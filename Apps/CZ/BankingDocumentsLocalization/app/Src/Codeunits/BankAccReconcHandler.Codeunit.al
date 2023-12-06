@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Documents;
+
+using Microsoft.Bank.Reconciliation;
+
 codeunit 31388 "Bank Acc. Reconc. Handler CZB"
 {
     [EventSubscriber(ObjectType::Table, Database::"Bank Acc. Reconciliation", 'OnAfterInsertEvent', '', false, false)]

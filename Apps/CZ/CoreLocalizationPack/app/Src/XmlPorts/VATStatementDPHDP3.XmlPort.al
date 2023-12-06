@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Reporting;
+
+using Microsoft.Foundation.Company;
+using System.Environment;
+using System.Utilities;
+
 xmlport 11766 "VAT Statement DPHDP3 CZL"
 {
     Caption = 'VAT Statement DPHDP3';
@@ -1300,7 +1310,7 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
           CheckLen(StatutoryReportingSetupCZL."Individual Title", StatutoryReportingSetupCZL.FieldCaption("Individual Title"), 10);
 
         CompanyTradeName := StatutoryReportingSetupCZL."Company Trade Name";
-        City := CompanyInformation.City;
+        City := StatutoryReportingSetupCZL.City;
         Street := CheckLen(StatutoryReportingSetupCZL.Street, StatutoryReportingSetupCZL.FieldCaption(Street), 38);
         HouseNo := CheckLen(StatutoryReportingSetupCZL."House No.", StatutoryReportingSetupCZL.FieldCaption("House No."), 6);
         MunicipalityNo :=

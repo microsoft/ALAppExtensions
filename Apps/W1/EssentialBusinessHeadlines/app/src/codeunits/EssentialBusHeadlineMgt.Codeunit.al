@@ -105,7 +105,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         EssentialBusinessHeadline."Headline Text" := CopyStr(HeadlineText, 1, MaxStrLen(EssentialBusinessHeadline."Headline Text"));
         HeadlineDetails.SetRange(Type, HeadlineDetails.Type::Item);
         HeadlineDetails.SetRange("User Id", UserSecurityId());
-        if not HeadlineDetails.IsEmpty then
+        if not HeadlineDetails.IsEmpty() then
             HeadlineDetails.DeleteAll();
 
         InsertHeadlineDetails(BestSoldItemQuery.ProductNo, HeadlineDetails.Type::Item, Item.Description, Item."Base Unit of Measure", BestSoldItemQuery.SumQuantity, 0);
@@ -202,7 +202,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         EssentialBusinessHeadline."Headline Text" := CopyStr(HeadlineText, 1, MaxStrLen(EssentialBusinessHeadline."Headline Text"));
         HeadlineDetails.SetRange(Type, HeadlineDetails.Type::Resource);
         HeadlineDetails.SetRange("User Id", UserSecurityId());
-        if not HeadlineDetails.IsEmpty then
+        if not HeadlineDetails.IsEmpty() then
             HeadlineDetails.DeleteAll();
 
         InsertHeadlineDetails(BusiestResource.ProductNo, HeadlineDetails.Type::Resource, Resource.Name, Resource."Base Unit of Measure", BusiestResource.SumQuantity, 0);
@@ -618,7 +618,7 @@ codeunit 1437 "Essential Bus. Headline Mgt."
         EssentialBusinessHeadline."Headline Text" := CopyStr(HeadlineText, 1, MaxStrLen(EssentialBusinessHeadline."Headline Text"));
         HeadlineDetails.SetRange(Type, HeadlineDetails.Type::Customer);
         HeadlineDetails.SetRange("User Id", UserSecurityId());
-        if not HeadlineDetails.IsEmpty then
+        if not HeadlineDetails.IsEmpty() then
             HeadlineDetails.DeleteAll();
         InsertHeadlineDetails(TopCustomerHeadlineQuery.No, HeadlineDetails.Type::Customer, TopCustomerHeadlineQuery.CustomerName, '', 0, TopCustomerHeadlineQuery.SumAmountLcy);
 

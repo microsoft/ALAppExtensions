@@ -42,7 +42,7 @@ table 40141 "GP Migration Error Overview"
             Caption = 'Error Dismissed';
             DataClassification = SystemMetadata;
         }
-        field(11; "Exception Information"; BLOB)
+        field(11; "Exception Information"; Blob)
         {
             DataClassification = CustomerContent;
         }
@@ -50,6 +50,16 @@ table 40141 "GP Migration Error Overview"
         {
             DataClassification = CustomerContent;
             Caption = 'Last record under processing';
+        }
+        field(15; "Records Under Processing Log"; Blob)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'List of last processed records';
+        }
+        field(16; "Exception Callstack"; Blob)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'List of last processed records';
         }
         field(50; "Company Name"; Text[30])
         {
@@ -76,7 +86,21 @@ table 40141 "GP Migration Error Overview"
             exit('');
 
         Rec."Exception Information".CreateInStream(ExceptionMessageInStream, GetDefaultTextEncoding());
-        ExceptionMessageInStream.ReadText(ExceptionMessage);
+        ExceptionMessageInStream.Read(ExceptionMessage);
+        exit(ExceptionMessage);
+    end;
+
+    procedure GetExceptionCallStack(): Text
+    var
+        ExceptionCallStackInStream: InStream;
+        ExceptionMessage: Text;
+    begin
+        Rec.CalcFields("Exception Callstack");
+        if not Rec."Exception Callstack".HasValue() then
+            exit('');
+
+        Rec."Exception Callstack".CreateInStream(ExceptionCallStackInStream, GetDefaultTextEncoding());
+        ExceptionCallStackInStream.Read(ExceptionMessage);
         exit(ExceptionMessage);
     end;
 
@@ -85,8 +109,40 @@ table 40141 "GP Migration Error Overview"
         ExceptionMessageOutStream: OutStream;
     begin
         Rec."Exception Information".CreateOutStream(ExceptionMessageOutStream, GetDefaultTextEncoding());
-        ExceptionMessageOutStream.WriteText(ExceptionMessage);
+        ExceptionMessageOutStream.Write(ExceptionMessage);
         Rec.Modify(true);
+    end;
+
+    procedure SetExceptionCallStack(ExceptionMessage: Text)
+    var
+        ExceptionMessageOutStream: OutStream;
+    begin
+        Rec."Exception Callstack".CreateOutStream(ExceptionMessageOutStream, GetDefaultTextEncoding());
+        ExceptionMessageOutStream.Write(ExceptionMessage);
+        Rec.Modify(true);
+    end;
+
+    procedure SetLastRecordUnderProcessingLog(RecordsUnderProcessingLog: Text)
+    var
+        RecordsUnderProcessingOutStreamLog: OutStream;
+    begin
+        Rec."Records Under Processing Log".CreateOutStream(RecordsUnderProcessingOutStreamLog, GetDefaultTextEncoding());
+        RecordsUnderProcessingOutStreamLog.Write(RecordsUnderProcessingLog);
+        Rec.Modify(true);
+    end;
+
+    procedure GetLastRecordsUnderProcessingLog(): Text
+    var
+        RecordsUnderProcessingLogInStream: InStream;
+        RecordsUnderProcessingLog: Text;
+    begin
+        Rec.CalcFields("Records Under Processing Log");
+        if not Rec."Records Under Processing Log".HasValue() then
+            exit('');
+
+        Rec."Records Under Processing Log".CreateInStream(RecordsUnderProcessingLogInStream, GetDefaultTextEncoding());
+        RecordsUnderProcessingLogInStream.Read(RecordsUnderProcessingLog);
+        exit(RecordsUnderProcessingLog);
     end;
 
     local procedure GetDefaultTextEncoding(): TextEncoding

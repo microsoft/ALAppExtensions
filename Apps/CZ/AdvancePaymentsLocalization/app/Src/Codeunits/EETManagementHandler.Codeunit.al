@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Finance;
+using Microsoft.Finance.CashDesk;
+using Microsoft.Finance.VAT.Ledger;
+
 codeunit 31090 "EET Management Handler CZZ"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"EET Management CZP", 'OnBeforeCheckLineWithAppliedDocument', '', false, false)]

@@ -10,11 +10,10 @@ using System.Utilities;
 
 codeunit 6140 "E-Doc. Import"
 {
-    Access = Internal;
     Permissions =
         tabledata "E-Document" = im;
 
-    procedure UploadDocument(var EDocument: Record "E-Document")
+    internal procedure UploadDocument(var EDocument: Record "E-Document")
     var
         EDocumentService: Record "E-Document Service";
         TempBlob: Codeunit "Temp Blob";
@@ -22,24 +21,26 @@ codeunit 6140 "E-Doc. Import"
         InStr: InStream;
         FileName: Text;
     begin
-        if Page.RunModal(Page::"E-Document Services", EDocumentService) = Action::LookupOK then begin
-            UploadIntoStream('', '', '', FileName, InStr);
+        if Page.RunModal(Page::"E-Document Services", EDocumentService) <> Action::LookupOK then
+            exit;
 
-            TempBlob.CreateOutStream(OutStr);
-            CopyStream(OutStr, InStr);
+        if not UploadIntoStream('', '', '', FileName, InStr) then
+            exit;
 
-            EDocument.Direction := EDocument.Direction::Incoming;
-            EDocument.Status := EDocument.Status::"In Progress";
-            if EDocument."Entry No" = 0 then
-                EDocument.Insert(true)
-            else
-                EDocument.Modify(true);
+        TempBlob.CreateOutStream(OutStr);
+        CopyStream(OutStr, InStr);
 
-            EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Imported);
-        end;
+        EDocument.Direction := EDocument.Direction::Incoming;
+        EDocument.Status := EDocument.Status::"In Progress";
+        if EDocument."Entry No" = 0 then
+            EDocument.Insert(true)
+        else
+            EDocument.Modify(true);
+
+        EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Imported);
     end;
 
-    procedure GetBasicInfo(var EDocument: Record "E-Document")
+    internal procedure GetBasicInfo(var EDocument: Record "E-Document")
     var
         EDocService: Record "E-Document Service";
         TempBlob: Codeunit "Temp Blob";
@@ -52,7 +53,7 @@ codeunit 6140 "E-Doc. Import"
         GetDocumentBasicInfo(EDocument, EDocService, TempBlob);
     end;
 
-    procedure ProcessDocument(var EDocument: Record "E-Document"; UpdateOrder: Boolean; CreateJnlLine: Boolean)
+    internal procedure ProcessDocument(var EDocument: Record "E-Document"; UpdateOrder: Boolean; CreateJnlLine: Boolean)
     var
         EDocService: Record "E-Document Service";
         TempBlob: Codeunit "Temp Blob";
@@ -71,25 +72,31 @@ codeunit 6140 "E-Doc. Import"
     local procedure GetDocumentBasicInfo(var EDocument: Record "E-Document"; EDocService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob")
     var
         EDocument2: Record "E-Document";
-
+        EDocGetBasicInfo: Codeunit "E-Doc. Get Basic Info";
         EDocumentInterface: Interface "E-Document";
     begin
+        // Commit before getting basic info with error handling (if Codeunit.Run then )
+        Commit();
         EDocumentInterface := EDocService."Document Format";
+        EDocGetBasicInfo.SetValues(EDocumentInterface, EDocument, TempBlob);
+        if EDocGetBasicInfo.Run() then begin
+            EDocGetBasicInfo.GetValues(EDocumentInterface, EDocument, TempBlob);
 
-        EDocumentInterface.GetBasicInfoFromReceivedDocument(EDocument, TempBlob);
+            EDocument2.SetRange("Incoming E-Document No.", EDocument."Incoming E-Document No.");
+            EDocument2.SetRange("Bill-to/Pay-to No.", EDocument."Bill-to/Pay-to No.");
+            EDocument2.SetFilter("Entry No", '<>%1', EDocument."Entry No");
+            if EDocument2.FindFirst() then
+                EDocErrorHelper.LogWarningMessage(EDocument, EDocument2, EDocument2.FieldNo("Incoming E-Document No."), DocAlreadyExistsMsg);
+
+            if EDocService."Validate Receiving Company" then
+                EDocImportHelper.ValidateReceivingCompanyInfo(EDocument);
+        end else
+            EDocErrorHelper.LogSimpleErrorMessage(EDocument, GetLastErrorText());
+
         EDocument.Modify();
-
-        EDocument2.SetRange("Incoming E-Document No.", EDocument."Incoming E-Document No.");
-        EDocument2.SetRange("Bill-to/Pay-to No.", EDocument."Bill-to/Pay-to No.");
-        EDocument2.SetFilter("Entry No", '<>%1', EDocument."Entry No");
-        if EDocument2.FindFirst() then
-            EDocErrorHelper.LogWarningMessage(EDocument, EDocument2, EDocument2.FieldNo("Incoming E-Document No."), DocAlreadyExistsMsg);
-
-        if EDocService."Validate Receiving Company" then
-            EDocImportHelper.ValidateReceivingCompanyInfo(EDocument);
     end;
 
-    procedure ReceiveDocument(EDocService: Record "E-Document Service")
+    internal procedure ReceiveDocument(EDocService: Record "E-Document Service")
     var
         EDocument, EDocument2 : Record "E-Document";
         EDocumentLogRecord: Record "E-Document Log";
@@ -222,6 +229,7 @@ codeunit 6140 "E-Doc. Import"
     var
         EDocService: Record "E-Document Service";
         EDocExport: Codeunit "E-Doc. Export";
+        EDocGetFullInfo: Codeunit "E-Doc. Get Complete Info";
         SourceDocumentHeaderMapped, SourceDocumentLineMapped : RecordRef;
         EDocInterface: Interface "E-Document";
         ItemFound, UOMResolved : Boolean;
@@ -241,48 +249,54 @@ codeunit 6140 "E-Doc. Import"
         if SourceDocumentHeader.Number <> 0 then begin
             EDocService := EDocumentLog.GetLastServiceFromLog(EDocument);
             EDocInterface := EDocService."Document Format";
-            EDocInterface.GetCompleteInfoFromReceivedDocument(EDocument, SourceDocumentHeader, SourceDocumentLine, TempBlob);
 
-            EDocExport.MapEDocument(SourceDocumentHeader, SourceDocumentLine, EDocService, SourceDocumentHeaderMapped, SourceDocumentLineMapped, TempEDocMapping, true);
+            // Commit before getting full info with error handling (if Codeunit.Run then )
+            Commit();
+            EDocGetFullInfo.SetValues(EDocInterface, EDocument, SourceDocumentHeader, SourceDocumentLine, TempBlob);
+            if EDocGetFullInfo.Run() then begin
+                EDocGetFullInfo.GetValues(EDocInterface, EDocument, SourceDocumentHeader, SourceDocumentLine, TempBlob);
+                EDocExport.MapEDocument(SourceDocumentHeader, SourceDocumentLine, EDocService, SourceDocumentHeaderMapped, SourceDocumentLineMapped, TempEDocMapping, true);
 
-            if EDocService."Resolve Unit Of Measure" or EDocService."Lookup Item Reference" or
-                EDocService."Lookup Item GTIN" or EDocService."Lookup Account Mapping" or
-                EDocService."Validate Line Discount"
-            then
-                if SourceDocumentLineMapped.FindSet() then
-                    repeat
-                        ItemFound := false;
-                        UOMResolved := false;
+                if EDocService."Resolve Unit Of Measure" or EDocService."Lookup Item Reference" or
+                    EDocService."Lookup Item GTIN" or EDocService."Lookup Account Mapping" or
+                    EDocService."Validate Line Discount"
+                then
+                    if SourceDocumentLineMapped.FindSet() then
+                        repeat
+                            ItemFound := false;
+                            UOMResolved := false;
 
-                        if EDocService."Resolve Unit Of Measure" then
-                            UOMResolved := EDocImportHelper.ResolveUnitOfMeasureFromDataImport(EDocument, SourceDocumentLineMapped)
-                        else
-                            UOMResolved := true;
+                            if EDocService."Resolve Unit Of Measure" then
+                                UOMResolved := EDocImportHelper.ResolveUnitOfMeasureFromDataImport(EDocument, SourceDocumentLineMapped)
+                            else
+                                UOMResolved := true;
 
-                        // Lookup Item Ref, then GTIN/Bar Code, else G/L Account
-                        if UOMResolved then begin
-                            if EDocService."Lookup Item Reference" then
-                                ItemFound := EDocImportHelper.FindItemReferenceForLine(EDocument, SourceDocumentLineMapped);
+                            // Lookup Item Ref, then GTIN/Bar Code, else G/L Account
+                            if UOMResolved then begin
+                                if EDocService."Lookup Item Reference" then
+                                    ItemFound := EDocImportHelper.FindItemReferenceForLine(EDocument, SourceDocumentLineMapped);
 
-                            if (not ItemFound) and EDocService."Lookup Item GTIN" then
-                                ItemFound := EDocImportHelper.FindItemForLine(EDocument, SourceDocumentLineMapped);
+                                if (not ItemFound) and EDocService."Lookup Item GTIN" then
+                                    ItemFound := EDocImportHelper.FindItemForLine(EDocument, SourceDocumentLineMapped);
 
-                            if (not ItemFound) and EDocService."Lookup Account Mapping" then
-                                ItemFound := EDocImportHelper.FindGLAccountForLine(EDocument, SourceDocumentLineMapped);
+                                if (not ItemFound) and EDocService."Lookup Account Mapping" then
+                                    ItemFound := EDocImportHelper.FindGLAccountForLine(EDocument, SourceDocumentLineMapped);
 
-                            if not ItemFound then
-                                EDocImportHelper.LogErrorIfItemNotFound(EDocument, SourceDocumentLineMapped);
-                        end;
+                                if not ItemFound then
+                                    EDocImportHelper.LogErrorIfItemNotFound(EDocument, SourceDocumentLineMapped);
+                            end;
 
-                        if EDocService."Validate Line Discount" then
-                            EDocImportHelper.ValidateLineDiscount(EDocument, SourceDocumentLineMapped);
+                            if EDocService."Validate Line Discount" then
+                                EDocImportHelper.ValidateLineDiscount(EDocument, SourceDocumentLineMapped);
 
-                        SourceDocumentLineMapped.Modify();
-                    until SourceDocumentLineMapped.Next() = 0;
+                            SourceDocumentLineMapped.Modify();
+                        until SourceDocumentLineMapped.Next() = 0;
 
 
-            SourceDocumentHeader.Copy(SourceDocumentHeaderMapped, true);
-            SourceDocumentLine.Copy(SourceDocumentLineMapped, true);
+                SourceDocumentHeader.Copy(SourceDocumentHeaderMapped, true);
+                SourceDocumentLine.Copy(SourceDocumentLineMapped, true);
+            end else
+                EDocErrorHelper.LogSimpleErrorMessage(EDocument, GetLastErrorText());
 
             OnAfterPrepareReceivedDoc(EDocument, TempBlob, SourceDocumentHeader, SourceDocumentLine, TempEDocMapping);
         end;

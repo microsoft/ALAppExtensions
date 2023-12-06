@@ -1,0 +1,33 @@
+{
+  "name": "Ruleset for internal modules",
+  "description": "This ruleset applies to internal modules. Internal modules are not shipped separately, they are part of larger apps that do ship.",
+  "generalAction": "Error",
+  "includedRuleSets": [
+    {    
+      "action": "Default", 
+      "path": "./ruleset.json"
+    }
+  ],
+  "rules": [
+    {
+      "id": "AS0014",
+      "action": "None",
+      "justification": "The project manifest must contain the allocated identifier range"
+    },
+    {
+      "id": "AS0015",
+      "action": "None",
+      "justification": "TranslationFile must be enabled."
+    },
+    {
+      "id": "AS0051",
+      "action": "None",
+      "justification": "Manifest property is required for AppSource submission"
+    },
+    {
+      "id": "AS0052",
+      "action": "None",
+      "justification": "The property 'url' must be set to a valid URL"
+    }
+  ]
+}

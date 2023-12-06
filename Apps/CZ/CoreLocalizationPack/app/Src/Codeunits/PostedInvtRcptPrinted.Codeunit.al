@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Document;
+
+using Microsoft.Inventory.History;
+
 codeunit 31409 "Posted Invt. Rcpt.-Printed CZL"
 {
     Permissions = tabledata "Invt. Receipt Header" = rimd;

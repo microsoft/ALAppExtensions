@@ -17,6 +17,7 @@ codeunit 139511 "SAF-T Tests"
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryXPathXMLReader: Codeunit "Library - XPath XML Reader";
+        LibraryUtility: Codeunit "Library - Utility";
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
 
@@ -150,6 +151,155 @@ codeunit 139511 "SAF-T Tests"
         // [THEN] The third file contains list of Sales Invoices, Purchase Invoices, Payments etc.
         GetAuditFileContent(AuditFileExportHeader.ID, 3, TempBlob);
         VerifyAuditFileWithSourceDocs(TempBlob, SalesInvoiceLine, PurchInvLine, GenJournalLineCust, GenJournalLineVend);
+    end;
+
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes,MessageHandler')]
+    procedure GLEntryTotalsContainValuesFromAllPeriods()
+    var
+        GLAccountMappingLine: Record "G/L Account Mapping Line";
+        GLEntry: Record "G/L Entry";
+        AuditFileExportHeader: Record "Audit File Export Header";
+        TempBlob: Codeunit "Temp Blob";
+        NamespacePrefix: Text;
+        NamespaceUri: Text;
+        Amount: array[2] of Decimal;
+        FileNo: Integer;
+    begin
+        // [SCENARIO 485839] G/L Entry Totals xml nodes contain values from all periods when SAF-T file splitted to multiple periods
+
+        Initialize();
+        GLEntry.DeleteAll();
+
+        SAFTTestsHelper.CreateGLAccMappingWithLine(GLAccountMappingLine);
+
+        // [GIVEN] Audit File Export document with "Split By Month" option enabled, "Starting Date" = 01.01.2023, "Ending Date" = 01.02.2023
+        SAFTTestsHelper.CreateAuditFileExportDoc(AuditFileExportHeader, WorkDate(), CalcDate('<1M>', WorkDate()), false);
+        AuditFileExportHeader.Validate("Split By Month", true);
+        AuditFileExportHeader.Modify(true);
+
+        // [GIVEN] G/L Entry with "Transaction No." = 1, "Posting Date" = 01.01.2023 and Debit = 100
+        Amount[1] := LibraryRandom.RandDec(100, 2);
+        SAFTTestsHelper.MockGLEntry(
+            AuditFileExportHeader."Starting Date", LibraryUtility.GenerateGUID(), '',
+            1, 0, 0, '', '', 0, '', '', Amount[1], 0);
+        // [GIVEN] G/L Entry with "Transaction No." = 2, "Posting Date" = 01.02.2023 and Credit Amount = 200
+        Amount[2] := LibraryRandom.RandDec(100, 2);
+        SAFTTestsHelper.MockGLEntry(
+            AuditFileExportHeader."Ending Date", LibraryUtility.GenerateGUID(), '',
+            2, 0, 0, '', '', 0, '', '', 0, Amount[2]);
+
+        // [WHEN] Start export.
+        SAFTTestsHelper.StartExport(AuditFileExportHeader);
+
+        // [THEN] Two SAF-T Export Lines have been generated
+        FileNo := 2; // Skip master file
+        repeat
+            GetAuditFileContent(AuditFileExportHeader.ID, FileNo, TempBlob);
+            XmlDataHandlingSAFTTest.GetAuditFileNamespace(NamespacePrefix, NamespaceUri);
+            LibraryXPathXMLReader.InitializeWithBlob(TempBlob, NamespaceUri);
+            LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/GeneralLedgerEntries/NumberOfEntries', Format(2));
+            LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/GeneralLedgerEntries/TotalDebit', GetSAFTMonetaryDecimal(Amount[1]));
+            LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/GeneralLedgerEntries/TotalCredit', GetSAFTMonetaryDecimal(Amount[2]));
+            FileNo += 1;
+        until FileNo = 4;
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes,MessageHandler')]
+    procedure CreditBalanceForPurchInvoice()
+    var
+        GLAccountMappingLine: Record "G/L Account Mapping Line";
+        VendLedgEntry: Record "Vendor Ledger Entry";
+        AuditFileExportHeader: Record "Audit File Export Header";
+        Vendor: Record Vendor;
+        TempBlob: Codeunit "Temp Blob";
+        NamespacePrefix: Text;
+        NamespaceUri: Text;
+        VendNo: Code[20];
+        OpeningAmount: Decimal;
+        AmountInPeriod: Decimal;
+    begin
+        // [SCENARIO 464814] Purchase invoice exports with credit opening and closing balance
+
+        Initialize();
+        Vendor.DeleteAll();
+        VendLedgEntry.DeleteAll();
+
+        // [GIVEN] SAF-T Setup with "Starting Date" = 01.01.2023
+        SAFTTestsHelper.CreateGLAccMappingWithLine(GLAccountMappingLine);
+
+        // [GIVEN] Audit File Export document with "Split By Month" option enabled, "Starting Date" = 01.01.2023, "Ending Date" = 01.02.2023
+        SAFTTestsHelper.CreateAuditFileExportDoc(AuditFileExportHeader, WorkDate(), WorkDate(), false);
+
+        VendNo := LibraryPurchase.CreateVendorNo();
+        OpeningAmount := LibraryRandom.RandIntInRange(100, 1000);
+        // [GIVEN] Invoice Vendor Ledger Entry with "Starting Date" = 31.12.2022 and Amount = -100
+        SAFTTestsHelper.MockVendLedgEntry(
+            AuditFileExportHeader."Starting Date" - 1, VendNo, -OpeningAmount, -OpeningAmount, "Gen. Journal Document Type"::Invoice);
+        AmountInPeriod := LibraryRandom.RandIntInRange(100, 1000);
+        // [GIVEN] Invoice Vendor Ledger Entry with "Starting Date" = 01.01.2023 and Amount = -200
+        SAFTTestsHelper.MockVendLedgEntry(
+            AuditFileExportHeader."Starting Date", VendNo, -AmountInPeriod, -AmountInPeriod, "Gen. Journal Document Type"::Invoice);
+
+        // [WHEN] Start export.
+        SAFTTestsHelper.StartExport(AuditFileExportHeader);
+
+        // [THEN] Master file contains the 'n1:SupplierID' node with 'OpeningCreditBalance' = 100 and 'ClosingCreditBalance' = 300
+        GetAuditFileContent(AuditFileExportHeader.ID, 1, TempBlob);
+        XmlDataHandlingSAFTTest.GetAuditFileNamespace(NamespacePrefix, NamespaceUri);
+        LibraryXPathXMLReader.InitializeWithBlob(TempBlob, NamespaceUri);
+        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/MasterFiles/Suppliers/Supplier/OpeningCreditBalance', GetSAFTMonetaryDecimal(OpeningAmount));
+        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/MasterFiles/Suppliers/Supplier/ClosingCreditBalance', GetSAFTMonetaryDecimal(OpeningAmount + AmountInPeriod));
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes,MessageHandler')]
+    procedure DebitBalanceForPurchCrMemo()
+    var
+        GLAccountMappingLine: Record "G/L Account Mapping Line";
+        VendLedgEntry: Record "Vendor Ledger Entry";
+        AuditFileExportHeader: Record "Audit File Export Header";
+        Vendor: Record Vendor;
+        TempBlob: Codeunit "Temp Blob";
+        NamespacePrefix: Text;
+        NamespaceUri: Text;
+        VendNo: Code[20];
+        OpeningAmount: Decimal;
+        AmountInPeriod: Decimal;
+    begin
+        // [SCENARIO 464814] Purchase credit memo exports with debit ppening and closing balance
+
+        Initialize();
+        Vendor.DeleteAll();
+        VendLedgEntry.DeleteAll();
+
+        // [GIVEN] SAF-T Setup with "Starting Date" = 01.01.2023
+        SAFTTestsHelper.CreateGLAccMappingWithLine(GLAccountMappingLine);
+
+        // [GIVEN] Audit File Export document with "Split By Month" option enabled, "Starting Date" = 01.01.2023, "Ending Date" = 01.02.2023
+        SAFTTestsHelper.CreateAuditFileExportDoc(AuditFileExportHeader, WorkDate(), WorkDate(), false);
+
+        VendNo := LibraryPurchase.CreateVendorNo();
+        OpeningAmount := LibraryRandom.RandIntInRange(100, 1000);
+        // [GIVEN] Credit Memo Vendor Ledger Entry with "Starting Date" = 31.12.2022 and Amount = -100
+        SAFTTestsHelper.MockVendLedgEntry(
+            AuditFileExportHeader."Starting Date" - 1, VendNo, OpeningAmount, OpeningAmount, "Gen. Journal Document Type"::"Credit Memo");
+        AmountInPeriod := LibraryRandom.RandIntInRange(100, 1000);
+        // [GIVEN] Credit Memo Vendor Ledger Entry with "Starting Date" = 01.01.2023 and Amount = -200
+        SAFTTestsHelper.MockVendLedgEntry(
+            AuditFileExportHeader."Starting Date", VendNo, AmountInPeriod, AmountInPeriod, "Gen. Journal Document Type"::"Credit Memo");
+
+        // [WHEN] Start export.
+        SAFTTestsHelper.StartExport(AuditFileExportHeader);
+
+        // [THEN] Master file contains the 'n1:SupplierID' node with 'OpeningDebitBalance' = 100 and 'ClosingDebitBalance' = 300
+        GetAuditFileContent(AuditFileExportHeader.ID, 1, TempBlob);
+        XmlDataHandlingSAFTTest.GetAuditFileNamespace(NamespacePrefix, NamespaceUri);
+        LibraryXPathXMLReader.InitializeWithBlob(TempBlob, NamespaceUri);
+        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/MasterFiles/Suppliers/Supplier/OpeningDebitBalance', GetSAFTMonetaryDecimal(OpeningAmount));
+        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/MasterFiles/Suppliers/Supplier/ClosingDebitBalance', GetSAFTMonetaryDecimal(OpeningAmount + AmountInPeriod));
     end;
 
     local procedure Initialize()

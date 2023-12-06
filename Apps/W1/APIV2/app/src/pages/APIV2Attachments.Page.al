@@ -72,6 +72,12 @@ page 30039 "APIV2 - Attachments"
                 field(parentType; Rec."Document Type")
                 {
                     Caption = 'Parent Type';
+
+                    trigger OnValidate()
+                    begin
+                        if Rec."Document Type" in [Rec."Document Type"::Employee, Rec."Document Type"::Job, Rec."Document Type"::Item, Rec."Document Type"::Customer, Rec."Document Type"::Vendor] then
+                            Error(ParentTypeNotSupportedErr, Rec."Document Type");
+                    end;
                 }
             }
         }
@@ -174,6 +180,7 @@ page 30039 "APIV2 - Attachments"
         AttachmentsFound: Boolean;
         MissingParentIdErr: Label 'You must specify a parentId in the request body.';
         CannotModifyKeyFieldErr: Label 'You cannot change the value of the key field %1.', Comment = '%1 = Field name';
+        ParentTypeNotSupportedErr: Label 'Parent type %1 is not supported. Use documentAttachments API instead.', Comment = '%1 = Parent type';
 
     local procedure ByteSizeFromContent()
     var

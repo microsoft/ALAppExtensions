@@ -1,8 +1,9 @@
-﻿namespace Microsoft.Bank.PayPal;
+namespace Microsoft.Bank.PayPal;
 
 using System.Integration;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Payment;
+using System.Telemetry;
 
 codeunit 1073 "MS - PayPal Webhook Management"
 {
@@ -44,6 +45,8 @@ codeunit 1073 "MS - PayPal Webhook Management"
     local procedure SyncToNavOnWebhookNotificationInsert(var Rec: Record "Webhook Notification"; RunTrigger: Boolean);
     var
         WebhookSubscription: Record "Webhook Subscription";
+        MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         AccountID: Text[250];
         BackgroundSessionAllowed: Boolean;
     begin
@@ -51,6 +54,7 @@ codeunit 1073 "MS - PayPal Webhook Management"
             exit;
 
         Session.LogMessage('00008IP', ProcessingWebhookNotificationTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
+        FeatureTelemetry.LogUsage('0000LHW', MSPayPalStandardMgt.GetFeatureTelemetryName(), ProcessingWebhookNotificationTxt);
 
         AccountID := LOWERCASE(Rec."Subscription ID");
         WebhookSubscription.SetRange("Subscription ID", AccountID);

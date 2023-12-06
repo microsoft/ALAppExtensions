@@ -241,4 +241,24 @@ codeunit 30185 "Shpfy Sync Products"
         if not ShopLocation.IsEmpty() then
             BackgroundSyncs.InventorySync(ShopifyShop.Code);
     end;
+
+    internal procedure AddItemsToShopify(ShopCode: Code[20])
+    var
+        AddItems: Report "Shpfy Add Item to Shopify";
+    begin
+        AddItems.SetShop(ShopCode);
+        AddItems.Run();
+    end;
+
+    procedure AddItemsToShopifyNotification(Notification: Notification)
+    begin
+        AddItemsToShopify(CopyStr(Notification.GetData('ShopCode'), 1, MaxStrLen(Shop.Code)));
+    end;
+
+    procedure SyncProductsNotification(Notification: Notification)
+    var
+        BackgroundSyncs: Codeunit "Shpfy Background Syncs";
+    begin
+        BackgroundSyncs.ProductsSync(CopyStr(Notification.GetData('ShopCode'), 1, MaxStrLen(Shop.Code)));
+    end;
 }

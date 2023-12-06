@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Posting;
+
 page 31187 "Sales Adv. Usage FactBox CZZ"
 {
     Caption = 'Sales Advance Usage';

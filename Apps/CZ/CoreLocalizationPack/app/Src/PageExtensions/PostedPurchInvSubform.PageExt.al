@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Purchases.History;
+
 pageextension 31121 "Posted Purch. Inv. Subform CZL" extends "Posted Purch. Invoice Subform"
 {
     layout

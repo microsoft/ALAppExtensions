@@ -2,6 +2,7 @@ namespace Microsoft.Bank.PayPal;
 
 using Microsoft.Utilities;
 using System.Environment;
+using System.Telemetry;
 
 page 1070 "MS - PayPal Standard Setup"
 {
@@ -158,7 +159,9 @@ page 1070 "MS - PayPal Standard Setup"
     trigger OnOpenPage();
     var
         MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
+        FeatureTelemetry.LogUptake('0000LHQ', MSPayPalStandardMgt.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
         MSPayPalStandardMgt.GetTemplate(MSPayPalStandardTemplate);
         MSPayPalStandardTemplate.RefreshLogoIfNeeded();
     end;

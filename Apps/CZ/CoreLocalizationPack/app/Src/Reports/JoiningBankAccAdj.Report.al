@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Reports;
+
+using Microsoft.Bank.Ledger;
+using Microsoft.Finance.Currency;
+using System.Utilities;
+
 report 11713 "Joining Bank. Acc. Adj. CZL"
 {
     DefaultLayout = RDLC;

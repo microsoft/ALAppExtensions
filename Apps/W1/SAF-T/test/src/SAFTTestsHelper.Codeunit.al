@@ -17,6 +17,7 @@ codeunit 139512 "SAF-T Tests Helper"
         VATReportingCode: Record "VAT Reporting Code";
         CompanyInformation: Record "Company Information";
         SAFTDataMgt: Codeunit "SAF-T Data Mgt.";
+        MappingHelperSAFT: Codeunit "Mapping Helper SAF-T";
         CreateStandDataSAFTTest: Codeunit "Create Stand. Data SAF-T Test";
     begin
         AuditFileExportSetup.InitSetup(Enum::"Audit File Export Format"::SAFT);
@@ -45,6 +46,9 @@ codeunit 139512 "SAF-T Tests Helper"
         CompanyInformation.Get();
         CompanyInformation.Validate("Contact No. SAF-T", LibraryHumanResource.CreateEmployeeNo());
         CompanyInformation.Modify(true);
+
+        MappingHelperSAFT.InitDimensionFieldsSAFT();
+        MappingHelperSAFT.InitVATPostingSetupFieldsSAFT();
 
         AuditFileExportFormatSetup.InitSetup("Audit File Export Format"::SAFT, SAFTDataMgt.GetZipFileName(), true);
 
@@ -133,6 +137,86 @@ codeunit 139512 "SAF-T Tests Helper"
     begin
         AuditFileExportMgt.StartExport(AuditFileExportHeader);
     end;
+
+    procedure MockGLEntry(PostingDate: Date; DocNo: Code[20]; GLAccNo: Code[20]; TransactionNo: Integer; DimSetID: Integer; VATBusPostingGroupCode: Code[20]; VATProdPostingGroupCode: Code[20]; SourceType: Integer; SourceNo: Code[20]; SourceCode: Code[10]; DebitAmount: Decimal; CreditAmount: Decimal): Integer
+    begin
+        exit(MockGLEntryLocal(PostingDate, DocNo, GLAccNo, TransactionNo, DimSetID, 0, VATBusPostingGroupCode, VATProdPostingGroupCode, SourceType, SourceNo, SourceCode, DebitAmount, CreditAmount));
+    end;
+
+    procedure MockGLEntry(PostingDate: Date; DocNo: Code[20]; GLAccNo: Code[20]; TransactionNo: Integer; DimSetID: Integer; GenPostingType: Integer; VATBusPostingGroupCode: Code[20]; VATProdPostingGroupCode: Code[20]; SourceType: Integer; SourceNo: Code[20]; SourceCode: Code[10]; DebitAmount: Decimal; CreditAmount: Decimal): Integer
+    begin
+        exit(MockGLEntryLocal(PostingDate, DocNo, GLAccNo, TransactionNo, DimSetID, GenPostingType, VATBusPostingGroupCode, VATProdPostingGroupCode, SourceType, SourceNo, SourceCode, DebitAmount, CreditAmount));
+    end;
+
+    local procedure MockGLEntryLocal(PostingDate: Date; DocNo: Code[20]; GLAccNo: Code[20]; TransactionNo: Integer; DimSetID: Integer; GenPostingType: Integer; VATBusPostingGroupCode: Code[20]; VATProdPostingGroupCode: Code[20]; SourceType: Integer; SourceNo: Code[20]; SourceCode: Code[10]; DebitAmount: Decimal; CreditAmount: Decimal): Integer
+    var
+        GLEntry: Record "G/L Entry";
+    begin
+        GLEntry.Init();
+        GLEntry."Entry No." := LibraryUtility.GetNewRecNo(GLEntry, GLEntry.FieldNo("Entry No."));
+        GLEntry."Posting Date" := PostingDate;
+        GLEntry."Document Date" := PostingDate;
+        GLEntry."Document Type" := GLEntry."Document Type"::Invoice;
+        GLEntry."Document No." := DocNo;
+        GLEntry."G/L Account No." := GLAccNo;
+        GLEntry."Transaction No." := TransactionNo;
+        GLEntry."Dimension Set ID" := DimSetID;
+        GLEntry.Description := LibraryUtility.GenerateGUID();
+        GLEntry."External Document No." := LibraryUtility.GenerateGUID();
+        GLEntry."User ID" := copystr(UserId(), 1, MaxStrLen(GLEntry."User ID"));
+        GLEntry."Source Type" := SourceType;
+        GLEntry."Source No." := SourceNo;
+        GLEntry."Source Code" := SourceCode;
+        GLEntry."Gen. Posting Type" := GenPostingType;
+        GLEntry."VAT Bus. Posting Group" := VATBusPostingGroupCode;
+        GLEntry."VAT Prod. Posting Group" := VATProdPostingGroupCode;
+        GLEntry."Debit Amount" := DebitAmount;
+        GLEntry."Credit Amount" := CreditAmount;
+        GLEntry.Amount := DebitAmount + CreditAmount;
+        GLEntry.Insert(true);
+        exit(GLEntry."Entry No.");
+    end;
+
+    procedure MockVendLedgEntry(PostingDate: Date; VendNo: Code[20]; Amount: Decimal; AmountDtldVendLedgEntry: Decimal; DocumentType: Enum "Gen. Journal Document Type")
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+    begin
+        MockVendLedgEntryCustom(LibraryUtility.GetNewRecNo(VendorLedgerEntry, VendorLedgerEntry.FieldNo("Entry No.")), PostingDate, VendNo, 0, '', Amount, AmountDtldVendLedgEntry, AmountDtldVendLedgEntry, 0, DocumentType);
+    end;
+
+    procedure MockVendLedgEntry(EntryNo: Integer; PostingDate: Date; VendNo: Code[20]; TransactionNo: Integer; CurrencyCode: Code[10]; PurchAmount: Decimal; Amount: Decimal; AmountDtldVendLedgEntry: Decimal; CurrencyFactor: Decimal; DocumentType: Enum "Gen. Journal Document Type")
+    begin
+        MockVendLedgEntryCustom(EntryNo, PostingDate, VendNo, TransactionNo, CurrencyCode, PurchAmount, Amount, AmountDtldVendLedgEntry, CurrencyFactor, DocumentType);
+    end;
+
+    local procedure MockVendLedgEntryCustom(EntryNo: Integer; PostingDate: Date; VendNo: Code[20]; TransactionNo: Integer; CurrencyCode: Code[10]; PurchAmount: Decimal; Amount: Decimal; AmountLCY: Decimal; CurrencyFactor: Decimal; DocumentType: Enum "Gen. Journal Document Type")
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
+    begin
+        VendorLedgerEntry.Init();
+        VendorLedgerEntry."Entry No." := EntryNo;
+        VendorLedgerEntry."Posting Date" := PostingDate;
+        VendorLedgerEntry."Vendor No." := VendNo;
+        if not (DocumentType in ["Gen. Journal Document Type"::Payment, "Gen. Journal Document Type"::Refund]) then
+            VendorLedgerEntry."Purchase (LCY)" := PurchAmount;
+        VendorLedgerEntry."Document Type" := DocumentType;
+        VendorLedgerEntry."Transaction No." := TransactionNo;
+        VendorLedgerEntry."Currency Code" := CurrencyCode;
+        VendorLedgerEntry."Original Currency Factor" := CurrencyFactor;
+        VendorLedgerEntry.Insert();
+        DetailedVendorLedgEntry.Init();
+        DetailedVendorLedgEntry."Entry No." :=
+            LibraryUtility.GetNewRecNo(DetailedVendorLedgEntry, DetailedVendorLedgEntry.FieldNo("Entry No."));
+        DetailedVendorLedgEntry."Vendor Ledger Entry No." := VendorLedgerEntry."Entry No.";
+        DetailedVendorLedgEntry."Posting Date" := VendorLedgerEntry."Posting Date";
+        DetailedVendorLedgEntry."Vendor No." := VendorLedgerEntry."Vendor No.";
+        DetailedVendorLedgEntry.Amount := Amount;
+        DetailedVendorLedgEntry."Ledger Entry Amount" := true;
+        DetailedVendorLedgEntry."Amount (LCY)" := AmountLCY;
+        DetailedVendorLedgEntry.Insert();
+    end;
+
 #if not CLEAN23
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Feature Management Facade", 'OnInitializeFeatureDataUpdateStatus', '', false, false)]
     local procedure EnableSIEFeatureOnInitializeFeatureDataUpdateStatus(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; var InitializeHandled: Boolean)

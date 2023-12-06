@@ -841,11 +841,9 @@ report 4810 "Intrastat Report Get Lines"
                         case true of
                             ((ItemLedgEntry."Order Type" <> ItemLedgEntry."Order Type"::Transfer) or (ItemLedgEntry."Order No." = '')),
                             ItemLedgEntry."Document Type" = ItemLedgEntry."Document Type"::"Direct Transfer":
-                                begin
-                                    Location.Get(ItemLedgEntry."Location Code");
+                                if Location.Get(ItemLedgEntry."Location Code") then
                                     if (Location."Country/Region Code" <> '') and (Location."Country/Region Code" <> CompanyInfo."Country/Region Code") then
                                         exit(false);
-                                end;
                             ItemLedgEntry."Document Type" = ItemLedgEntry."Document Type"::"Transfer Receipt":
                                 begin
                                     ItemLedgEntry2.SetCurrentKey("Order Type", "Order No.");

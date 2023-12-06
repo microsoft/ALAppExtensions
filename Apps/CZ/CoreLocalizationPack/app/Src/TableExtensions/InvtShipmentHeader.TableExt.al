@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.History;
+
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Ledger;
+
 tableextension 31036 "Invt. Shipment Header CZL" extends "Invt. Shipment Header"
 {
     fields

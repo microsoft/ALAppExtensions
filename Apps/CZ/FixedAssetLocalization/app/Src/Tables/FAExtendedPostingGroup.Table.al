@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.FixedAssets;
+
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Maintenance;
+using Microsoft.Foundation.AuditCodes;
+
 table 31246 "FA Extended Posting Group CZF"
 {
     Caption = 'FA Extended Posting Group';

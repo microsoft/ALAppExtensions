@@ -60,7 +60,7 @@ page 7234 "Master Data Full Synch. Review"
                 {
                     ApplicationArea = Suite;
                     StyleExpr = ToIntTableJobStatusStyle;
-                    ToolTip = 'Specifies the status of jobs for data going to the integration table. ';
+                    ToolTip = 'Specifies the status of jobs for data going to the source table. ';
                     Visible = false;
 
                     trigger OnDrillDown()
@@ -72,7 +72,7 @@ page 7234 "Master Data Full Synch. Review"
                 {
                     ApplicationArea = Suite;
                     StyleExpr = FromIntTableJobStatusStyle;
-                    ToolTip = 'Specifies the status of jobs for data coming from the integration table. ';
+                    ToolTip = 'Specifies the status of jobs for data coming from the source table. ';
                     Caption = 'Job Status';
 
                     trigger OnDrillDown()

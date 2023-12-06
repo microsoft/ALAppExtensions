@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Documents;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Foundation.NoSeries;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using System.Security.AccessControl;
+
 codeunit 31357 "Issue Bank Statement CZB"
 {
     Permissions = tabledata "Iss. Bank Statement Header CZB" = im,
@@ -45,8 +57,10 @@ codeunit 31357 "Issue Bank Statement CZB"
         IssBankStatementHeaderCZB.Init();
         IssBankStatementHeaderCZB.TransferFields(Rec);
         BankAccount.TestField("Issued Bank Statement Nos. CZB");
-        if BankAccount."Issued Bank Statement Nos. CZB" <> Rec."No. Series" then
+        if (BankAccount."Issued Bank Statement Nos. CZB" <> Rec."No. Series") and (Rec."No. Series" <> '') then
             IssBankStatementHeaderCZB."No." := NoSeriesManagement.GetNextNo(BankAccount."Issued Bank Statement Nos. CZB", Rec."Document Date", true);
+        if IssBankStatementHeaderCZB."No." = '' then
+            IssBankStatementHeaderCZB."No." := Rec."No.";
 
         Rec."Last Issuing No." := IssBankStatementHeaderCZB."No.";
 

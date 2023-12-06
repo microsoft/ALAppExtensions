@@ -69,7 +69,7 @@ table 4005 "Hybrid Company"
         {
             Description = 'Indicates if the company was replicated';
             FieldClass = FlowField;
-            CalcFormula = exist("Hybrid Replication Detail" where("Company Name" = field(Name), Status = Const(2)));
+            CalcFormula = exist("Hybrid Replication Detail" where("Company Name" = field(Name), Status = const(2)));
         }
     }
 

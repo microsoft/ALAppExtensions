@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Calculation;
+
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Payables;
+
 page 31025 "VAT LCY Correction CZL"
 {
     Caption = 'VAT LCY Correction';

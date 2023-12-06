@@ -88,12 +88,11 @@ codeunit 6103 "E-Document Subscription"
             exit;
 
         if SalesInvHdrNo <> '' then begin
-            SalesInvHeader.Get(SalesInvHdrNo);
-            RunEDocumentCreation(SalesHeader, SalesInvHeader, SalesInvHdrNo);
-        end else begin
-            SalesCrMemoHeader.Get(SalesCrMemoHdrNo);
-            RunEDocumentCreation(SalesHeader, SalesCrMemoHeader, SalesCrMemoHdrNo);
-        end;
+            if SalesInvHeader.Get(SalesInvHdrNo) then
+                RunEDocumentCreation(SalesHeader, SalesInvHeader, SalesInvHdrNo);
+        end else
+            if SalesCrMemoHeader.Get(SalesCrMemoHdrNo) then
+                RunEDocumentCreation(SalesHeader, SalesCrMemoHeader, SalesCrMemoHdrNo);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterPostPurchaseDoc', '', false, false)]
@@ -106,12 +105,11 @@ codeunit 6103 "E-Document Subscription"
             exit;
 
         if PurchInvHdrNo <> '' then begin
-            PurchInvHeader.Get(PurchInvHdrNo);
-            RunEDocumentCreation(PurchaseHeader, PurchInvHeader, PurchInvHdrNo);
-        end else begin
-            PurchCrMemoHdr.Get(PurchCrMemoHdrNo);
-            RunEDocumentCreation(PurchaseHeader, PurchCrMemoHdr, PurchCrMemoHdrNo);
-        end;
+            if PurchInvHeader.Get(PurchInvHdrNo) then
+                RunEDocumentCreation(PurchaseHeader, PurchInvHeader, PurchInvHdrNo);
+        end else
+            if PurchCrMemoHdr.Get(PurchCrMemoHdrNo) then
+                RunEDocumentCreation(PurchaseHeader, PurchCrMemoHdr, PurchCrMemoHdrNo);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service-Post", 'OnAfterPostServiceDoc', '', false, false)]
@@ -124,12 +122,11 @@ codeunit 6103 "E-Document Subscription"
             exit;
 
         if ServInvoiceNo <> '' then begin
-            ServiceInvoiceHeader.Get(ServInvoiceNo);
-            RunEDocumentCreation(ServiceHeader, ServiceInvoiceHeader, ServInvoiceNo);
-        end else begin
-            ServiceCrMemoHdr.Get(ServCrMemoNo);
-            RunEDocumentCreation(ServiceHeader, ServiceCrMemoHdr, ServCrMemoNo);
-        end;
+            if ServiceInvoiceHeader.Get(ServInvoiceNo) then
+                RunEDocumentCreation(ServiceHeader, ServiceInvoiceHeader, ServInvoiceNo);
+        end else
+            if ServiceCrMemoHdr.Get(ServCrMemoNo) then
+                RunEDocumentCreation(ServiceHeader, ServiceCrMemoHdr, ServCrMemoNo);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"FinChrgMemo-Issue", 'OnAfterIssueFinChargeMemo', '', false, false)]
@@ -139,8 +136,8 @@ codeunit 6103 "E-Document Subscription"
     begin
         if IssuedFinChargeMemoNo = '' then
             exit;
-        IssuedFinChrgMemoHeader.Get(IssuedFinChargeMemoNo);
-        RunEDocumentCreation(FinChargeMemoHeader, IssuedFinChrgMemoHeader, IssuedFinChargeMemoNo);
+        if IssuedFinChrgMemoHeader.Get(IssuedFinChargeMemoNo) then
+            RunEDocumentCreation(FinChargeMemoHeader, IssuedFinChrgMemoHeader, IssuedFinChargeMemoNo);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reminder-Issue", 'OnAfterIssueReminder', '', false, false)]
@@ -150,8 +147,8 @@ codeunit 6103 "E-Document Subscription"
     begin
         if IssuedReminderNo = '' then
             exit;
-        IssuedReminderHeader.Get(IssuedReminderNo);
-        RunEDocumentCreation(ReminderHeader, IssuedReminderHeader, IssuedReminderNo);
+        if IssuedReminderHeader.Get(IssuedReminderNo) then
+            RunEDocumentCreation(ReminderHeader, IssuedReminderHeader, IssuedReminderNo);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", 'OnCheckElectronicSendingEnabled', '', false, false)]

@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Reporting;
+
+using Microsoft.Foundation.Attachment;
+using Microsoft.Foundation.Company;
+using Microsoft.Utilities;
+
 page 31138 "VIES Declaration CZL"
 {
     Caption = 'VIES Declaration';

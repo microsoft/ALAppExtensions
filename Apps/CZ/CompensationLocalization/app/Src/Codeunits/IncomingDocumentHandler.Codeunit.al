@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Compensations;
+
+using Microsoft.EServices.EDocument;
+
 codeunit 31436 "Incoming Document Handler CZC"
 {
     [EventSubscriber(ObjectType::Table, Database::"Incoming Document", 'OnAfterSetCreatedDocumentType', '', false, false)]

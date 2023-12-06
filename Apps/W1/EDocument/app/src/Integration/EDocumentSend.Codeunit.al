@@ -44,6 +44,12 @@ codeunit 6146 "E-Document Send"
         exit(IsAsync2);
     end;
 
+    procedure GetRequestResponse(var HttpRequest2: HttpRequestMessage; var HttpResponse2: HttpResponseMessage)
+    begin
+        HttpRequest2 := HttpRequest;
+        HttpResponse2 := HttpResponse;
+    end;
+
     var
         EDocumentService: Record "E-Document Service";
         EDocument: Record "E-Document";

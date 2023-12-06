@@ -1,3 +1,13 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Purchases.Document;
+using Microsoft.Sales.Document;
+
 codeunit 148111 "Prepayment Mgt. Handler CZZ"
 {
     Access = Internal;

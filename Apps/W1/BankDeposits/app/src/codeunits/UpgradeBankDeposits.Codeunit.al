@@ -44,7 +44,8 @@ codeunit 1714 "Upgrade Bank Deposits"
         GeneralLedgerSetup: Record "General Ledger Setup";
         RecordRef: RecordRef;
     begin
-        GeneralLedgerSetup.Get();
+        if not GeneralLedgerSetup.Get() then
+            exit(true);
         RecordRef.GetTable(GeneralLedgerSetup);
         exit(RecordRef.Field(10120).Value); // "Bank Recon. with Auto. Match"
     end;
@@ -266,11 +267,38 @@ codeunit 1714 "Upgrade Bank Deposits"
         BankAccReconciliationLine.Validate("Applied Amount", 0);
         BankLedgerEntryNo := GetRecRefFieldFromFieldName(BankRecLineRecRef, 'Bank Ledger Entry No.').Value();
         if BankLedgerEntryNo <> 0 then
-            if BankAccountLedgerEntry.Get(BankLedgerEntryNo) then begin
-                BankAccountLedgerEntry.SetRecFilter();
-                BankAccReconciliationLine.SetRecFilter();
-                MatchBankRecLines.MatchManually(BankAccReconciliationLine, BankAccountLedgerEntry);
-            end;
+            if BankAccountLedgerEntry.Get(BankLedgerEntryNo) then
+                if ShouldMatch(BankAccountLedgerEntry) then begin
+                    BankAccountLedgerEntry.SetRecFilter();
+                    BankAccReconciliationLine.SetRecFilter();
+                    MatchBankRecLines.MatchManually(BankAccReconciliationLine, BankAccountLedgerEntry);
+                end;
+    end;
+
+    local procedure ShouldMatch(BankAccountLedgerEntry: Record "Bank Account Ledger Entry"): Boolean
+    var
+        CheckLedgerEntry: Record "Check Ledger Entry";
+    begin
+        if not BankAccountLedgerEntry.Open then
+            exit(false);
+        if BankAccountLedgerEntry."Statement No." <> '' then
+            exit(false);
+        if BankAccountLedgerEntry."Statement Line No." <> 0 then
+            exit(false);
+        CheckLedgerEntry.ReadIsolation := CheckLedgerEntry.ReadIsolation::ReadCommitted;
+        CheckLedgerEntry.SetRange("Bank Account Ledger Entry No.", BankAccountLedgerEntry."Entry No.");
+        CheckLedgerEntry.SetRange(Open, true);
+        if not CheckLedgerEntry.FindSet() then
+            exit(true);
+        repeat
+            if CheckLedgerEntry."Statement No." <> '' then
+                exit(false);
+            if CheckLedgerEntry."Statement Line No." <> 0 then
+                exit(false);
+            if CheckLedgerEntry."Statement Status" <> CheckLedgerEntry."Statement Status"::Open then
+                exit(false);
+        until CheckLedgerEntry.Next() = 0;
+        exit(true);
     end;
 
 

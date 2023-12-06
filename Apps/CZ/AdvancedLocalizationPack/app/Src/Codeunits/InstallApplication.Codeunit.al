@@ -1,3 +1,26 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft;
+
+using Microsoft.Assembly.Document;
+using Microsoft.Assembly.History;
+using Microsoft.Assembly.Setup;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Foundation.Company;
+using Microsoft.Inventory.Item;
+using Microsoft.Inventory.Item.Catalog;
+using Microsoft.Inventory.Journal;
+using Microsoft.Inventory.Ledger;
+using Microsoft.Inventory.Setup;
+using Microsoft.Inventory.Transfer;
+using Microsoft.Manufacturing.Capacity;
+using Microsoft.Manufacturing.Setup;
+using Microsoft.Utilities;
+using System.Upgrade;
+
 #pragma warning disable AL0432
 codeunit 31250 "Install Application CZA"
 {
@@ -231,7 +254,7 @@ codeunit 31250 "Install Application CZA"
         TransferRoute: Record "Transfer Route";
         TransferRouteDataTransfer: DataTransfer;
     begin
-        TransferRouteDataTransfer.SetTables(Database::"Transfer Route", Database::"Item Journal Line");
+        TransferRouteDataTransfer.SetTables(Database::"Transfer Route", Database::"Transfer Route");
         TransferRouteDataTransfer.AddFieldValue(TransferRoute.FieldNo("Gen. Bus. Post. Group Ship"), TransferRoute.FieldNo("Gen.Bus.Post.Group Ship CZA"));
         TransferRouteDataTransfer.AddFieldValue(TransferRoute.FieldNo("Gen. Bus. Post. Group Receive"), TransferRoute.FieldNo("Gen.Bus.Post.Group Receive CZA"));
         TransferRouteDataTransfer.CopyFields();

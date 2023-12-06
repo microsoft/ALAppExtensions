@@ -1,3 +1,19 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Registration;
+
+using Microsoft.CRM.BusinessRelation;
+using Microsoft.CRM.Contact;
+using Microsoft.Finance.VAT.Registration;
+using Microsoft.Foundation.Address;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using System.IO;
+using System.Reflection;
+using System.Security.AccessControl;
+
 table 11756 "Registration Log CZL"
 {
     Caption = 'Registration Log';

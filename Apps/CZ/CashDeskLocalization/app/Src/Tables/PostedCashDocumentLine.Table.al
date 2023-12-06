@@ -1,3 +1,25 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.CashDesk;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.CRM.Team;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Maintenance;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Enums;
+using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Utilities;
+
 table 11738 "Posted Cash Document Line CZP"
 {
     Caption = 'Posted Cash Document Line';

@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Documents;
+
+using Microsoft.Foundation.Attachment;
+
 page 31258 "Iss. Bank Statement CZB"
 {
     Caption = 'Issued Bank Statement';
@@ -78,7 +86,6 @@ page 31258 "Iss. Bank Statement CZB"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the posting status of the payment journal.';
-                    Visible = false;
                 }
                 field("Payment Reconciliation Status"; Rec."Payment Reconciliation Status")
                 {

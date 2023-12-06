@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GeneralLedger.Journal;
+
+using Microsoft.Finance.GeneralLedger.Reports;
+
 pageextension 11777 "General Journal Batches CZL" extends "General Journal Batches"
 {
     layout

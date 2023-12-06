@@ -1,4 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 #if not CLEAN22
+namespace Microsoft.Utilities;
+
+using Microsoft.Service.Document;
+
 #pragma warning disable AL0432
 codeunit 31160 "Sync.Dep.Fld-ServiceHeader CZL"
 {

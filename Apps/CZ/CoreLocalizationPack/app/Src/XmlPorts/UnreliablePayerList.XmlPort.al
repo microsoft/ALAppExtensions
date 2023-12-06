@@ -1,4 +1,4 @@
-xmlport 11760 "Unreliable Payer List CZL"
+﻿xmlport 11760 "Unreliable Payer List CZL"
 {
     Caption = 'Unreliable Payer List';
     DefaultNamespace = 'http://adis.mfcr.cz/rozhraniCRPDPH/';

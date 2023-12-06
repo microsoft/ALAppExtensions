@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Sales.Receivables;
+
 codeunit 31004 "Cust. Ledger Entry Handler CZZ"
 {
     var
@@ -16,7 +25,7 @@ codeunit 31004 "Cust. Ledger Entry Handler CZZ"
         IsRelatedToAdvanceLetter := IsRelatedToAdvanceLetter or (CustLedgerEntry."Advance Letter No. CZZ" <> '');
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Journal Line Handler CZL", 'OnBeforeGetReceivablesAccountNo', '', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Cust. Ledger Entry", 'OnBeforeGetReceivablesAccountNoCZL', '', false, false)]
     local procedure GetReceivablesAccountNo(CustLedgerEntry: Record "Cust. Ledger Entry"; var GLAccountNo: Code[20]; var IsHandled: Boolean)
     var
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
@@ -37,9 +46,7 @@ codeunit 31004 "Cust. Ledger Entry Handler CZZ"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"CustEntry-Apply Posted Entries", 'OnApplyCustEntryFormEntryOnAfterCheckEntryOpen', '', false, false)]
     local procedure CheckAdvanceOnApplyCustEntryFormEntryOnAfterCheckEntryOpen(ApplyingCustLedgEntry: Record "Cust. Ledger Entry")
     begin
-        if (ApplyingCustLedgEntry."Advance Letter No. CZZ" <> '') or
-           (ApplyingCustLedgEntry."Adv. Letter Template Code CZZ" <> '')
-        then
+        if ApplyingCustLedgEntry."Advance Letter No. CZZ" <> '' then
             Error(AppliedToAdvanceLetterErr);
     end;
 

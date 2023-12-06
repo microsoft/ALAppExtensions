@@ -1,9 +1,4 @@
-// ------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See License.txt in the project root for license information.
-// ------------------------------------------------------------------------------------------------
-
-permissionset 11732 "CZ Core Pack - Objects CZL"
+﻿permissionset 11732 "CZ Core Pack - Objects CZL"
 {
     Access = Public;
     Assignable = false;
@@ -253,6 +248,7 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   report "Adjust Exchange Rates CZL" = X,
                   report "All Payments on Hold CZL" = X,
                   report "Balance Sheet CZL" = X,
+#if not CLEAN24
                   report "Batch Post Purchase Inv. CZL" = X,
                   report "Batch Post Purchase Orders CZL" = X,
                   report "Batch Post Purch. Cr.Memos CZL" = X,
@@ -261,6 +257,7 @@ permissionset 11732 "CZ Core Pack - Objects CZL"
                   report "Batch Post Sales Invoices CZL" = X,
                   report "Batch Post Sales Orders CZL" = X,
                   report "Batch Post Sales Ret. Ord. CZL" = X,
+#endif
                   report "Calc. and Post VAT Settl. CZL" = X,
                   report "Cash Flow Date List CZL" = X,
                   report "Close Balance Sheet CZL" = X,

@@ -1,3 +1,19 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Documents;
+
+using Microsoft;
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.DirectDebit;
+using Microsoft.Bank.Payment;
+using Microsoft.Bank.Reconciliation;
+using Microsoft.Bank.Setup;
+using Microsoft.Foundation.Company;
+using System.Security.User;
+using System.Upgrade;
+
 #pragma warning disable AL0432,AL0603
 codeunit 31330 "Install Application CZB"
 {

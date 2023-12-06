@@ -1,3 +1,14 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.CashDesk;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using System.Utilities;
+
 report 11728 "Cash Desk Book CZP"
 {
     DefaultLayout = RDLC;
@@ -210,7 +221,6 @@ report 11728 "Cash Desk Book CZP"
         CashDocumentHeaderCZP: Record "Cash Document Header CZP";
         PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
         CompanyInformation: Record "Company Information";
-        TempCashDocumentHeaderCZP: Record "Cash Document Header CZP" temporary;
         FormatAddress: Codeunit "Format Address";
         CashDeskManagementCZP: Codeunit "Cash Desk Management CZP";
         BalanceToDate, Balance, Receipt, Payment : Decimal;
@@ -218,4 +228,7 @@ report 11728 "Cash Desk Book CZP"
         Sorting: Option PostingDate,CashDeskNo;
         CompanyAddress: array[8] of Text[150];
         EmptyDateFilterErr: Label 'Set up Date Filter.';
+
+    protected var
+        TempCashDocumentHeaderCZP: Record "Cash Document Header CZP" temporary;
 }

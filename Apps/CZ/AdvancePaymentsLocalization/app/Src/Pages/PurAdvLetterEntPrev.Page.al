@@ -1,3 +1,9 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
 page 31190 "Pur. Adv. Letter Ent.Prev. CZZ"
 {
     Caption = 'Purchase Adv. Letter Entries Preview CZZ';

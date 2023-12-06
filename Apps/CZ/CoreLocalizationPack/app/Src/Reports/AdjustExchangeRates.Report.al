@@ -1,3 +1,30 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Currency;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.Analysis;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Ledger;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.SalesTax;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Enums;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
+using Microsoft.Utilities;
+using System.Utilities;
+
 report 31004 "Adjust Exchange Rates CZL"
 {
     DefaultLayout = RDLC;
@@ -1167,7 +1194,6 @@ report 31004 "Adjust Exchange Rates CZL"
         UpdateAnalysisView: Codeunit "Update Analysis View";
         DimensionManagement: Codeunit DimensionManagement;
         DimensionBufferManagement: Codeunit "Dimension Buffer Management";
-        GenJournalLineHandlerCZL: Codeunit "Gen. Journal Line Handler CZL";
         WindowDialog: Dialog;
         TotalAdjBase: Decimal;
         TotalAdjBaseLCY: Decimal;
@@ -2581,9 +2607,9 @@ report 31004 "Adjust Exchange Rates CZL"
             exit(GLEntry."G/L Account No.");
 
         if SourceType = SourceType::Customer then
-            exit(GenJournalLineHandlerCZL.GetReceivablesAccNo(CustLedgerEntry));
+            exit(CustLedgerEntry.GetReceivablesAccNoCZL());
         if SourceType = SourceType::Vendor then
-            exit(GenJournalLineHandlerCZL.GetPayablesAccNo(VendorLedgerEntry));
+            exit(VendorLedgerEntry.GetPayablesAccNoCZL());
     end;
 
     [IntegrationEvent(true, false)]

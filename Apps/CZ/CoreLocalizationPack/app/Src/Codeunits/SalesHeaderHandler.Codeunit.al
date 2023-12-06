@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Document;
+
+using Microsoft.CRM.Contact;
+using Microsoft.Sales.Customer;
+#if not CLEAN22
+using Microsoft.Sales.Setup;
+#endif
+
 codeunit 11743 "Sales Header Handler CZL"
 {
 #if not CLEAN22

@@ -71,11 +71,32 @@ codeunit 10675 "SAF-T Export Mgt."
         SAFTExportHeader.validate(Status, SAFTExportHeader.Status::"In Progress");
         SAFTExportHeader.Validate("Execution Start Date/Time", TypeHelper.GetCurrentDateTimeInUserTimeZone());
         SAFTExportHeader.Validate("Execution End Date/Time", 0DT);
+        CalculateGLEntryTotals(SAFTExportHeader);
         SAFTExportHeader.Modify(true);
         Commit();
 
         StartExportLines(SAFTExportHeader);
         SAFTExportHeader.Find();
+    end;
+
+    local procedure CalculateGLEntryTotals(var SAFTExportHeader: Record "SAF-T Export Header")
+    var
+        GLEntry: Record "G/L Entry";
+        SAFTGLEntryByTrans: Query "SAF-T G/L Entry By Trans.";
+    begin
+        GLEntry.SetCurrentKey("Transaction No.");
+        GLEntry.SetRange("Posting Date", SAFTExportHeader."Starting Date", SAFTExportHeader."Ending Date");
+        GLEntry.CalcSums("Debit Amount", "Credit Amount");
+        SAFTExportHeader."Total G/L Entry Debit" := GLEntry."Debit Amount";
+        SAFTExportHeader."Total G/L Entry Credit" := GLEntry."Credit Amount";
+        SAFTExportHeader."Number of G/L Entries" := 0;
+
+        SAFTGLEntryByTrans.SetRange(Posting_Date, SAFTExportHeader."Starting Date", SAFTExportHeader."Ending Date");
+        if SAFTGLEntryByTrans.Open() then begin
+            while SAFTGLEntryByTrans.Read() do
+                SAFTExportHeader."Number of G/L Entries" += 1;
+            SAFTGLEntryByTrans.Close();
+        end;
     end;
 
     procedure DeleteExport(var SAFTExportHeader: Record "SAF-T Export Header")

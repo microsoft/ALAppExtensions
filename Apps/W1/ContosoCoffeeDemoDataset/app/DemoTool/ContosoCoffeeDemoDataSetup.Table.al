@@ -38,6 +38,13 @@ table 4768 "Contoso Coffee Demo Data Setup"
             Caption = 'Rounding Precision';
             InitValue = 0.01;
         }
+        field(7; "Language ID"; Integer)
+        {
+            Caption = 'Language ID';
+            Editable = false;
+            InitValue = 0;
+            TableRelation = "Windows Language";
+        }
     }
 
     keys

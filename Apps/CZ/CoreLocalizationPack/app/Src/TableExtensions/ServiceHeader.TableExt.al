@@ -1,3 +1,18 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Service.Document;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Setup;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Foundation.Address;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
+using System.Utilities;
+
 tableextension 11734 "Service Header CZL" extends "Service Header"
 {
     fields
@@ -337,7 +352,13 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
     procedure IsIntrastatTransactionCZL(): Boolean
     var
         CountryRegion: Record "Country/Region";
+        IsHandled: Boolean;
+        Result: Boolean;
     begin
+        OnBeforeIsIntrastatTransactionCZL(Rec, Result, IsHandled);
+        if IsHandled then
+            exit(Result);
+
         if "EU 3-Party Trade" then
             exit(false);
 #if not CLEAN22
@@ -374,6 +395,11 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeGetDefaulBankAccountNoCZL(var ServiceHeader: Record "Service Header"; var BankAccountNo: Code[20]; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeIsIntrastatTransactionCZL(ServiceHeader: Record "Service Header"; var Result: Boolean; var IsHandled: Boolean)
     begin
     end;
 }

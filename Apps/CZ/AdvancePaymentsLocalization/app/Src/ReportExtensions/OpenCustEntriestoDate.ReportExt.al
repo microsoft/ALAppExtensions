@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Sales.Receivables;
+
 reportextension 31003 "Open Cust. Entries to Date CZZ" extends "Open Cust. Entries to Date CZL"
 {
     dataset

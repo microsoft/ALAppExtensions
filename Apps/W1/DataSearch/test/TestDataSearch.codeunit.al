@@ -45,6 +45,31 @@ codeunit 139507 "Test Data Search"
     end;
 
     [Test]
+    [HandlerFunctions('DataSearchSetupListsPageHandler')]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestSetupListsToSearch()
+    var
+        DataSearchSetupTable: Record "Data Search Setup (Table)";
+        DataSearchPage: TestPage "Data Search";
+    begin
+        Init();
+        // Precondition: Reminders are not selected for search
+        DataSearchSetupTable.SetFilter("Table No.", '%1|%2', Database::"Reminder Header", Database::"Reminder Line");
+        DataSearchSetupTable.DeleteAll();
+
+        // Open Search, select to also search 'Reminders'
+        DataSearchPage.OpenEdit();
+        DataSearchPage.LinesPart.SetupLists.Invoke();
+        DataSearchPage.Close();
+
+        // Now both Reminder Header and Reminder Line should be active.
+        LibraryAssert.AreEqual(2, DataSearchSetupTable.Count(), 'Reminders not activated.');
+
+        // Cleanup
+        DataSearchSetupTable.DeleteAll();
+    end;
+
+    [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestSearchNothingFound()
     var
@@ -158,11 +183,11 @@ codeunit 139507 "Test Data Search"
         DataSearchSetupTable.Init();
         DataSearchSetupTable."Role Center ID" := DataSearchSetupTable.GetRoleCenterID();
         DataSearchSetupTable."Table No." := Database::"Sales Line";
-        DataSearchSetupTable.Insert(true);
+        DataSearchSetupTable.InsertRec(true);
         DataSearchSetupTable.Init();
         DataSearchSetupTable."Table No." := Database::"Sales Line Archive";
         DataSearchSetupTable."Table Subtype" := 0;
-        DataSearchSetupTable.Insert(true);
+        DataSearchSetupTable.InsertRec(true);
 
         LibrarySales.CreateCustomer(Customer);
         LibrarySales.CreateSalesOrder(SalesHeader);
@@ -181,8 +206,9 @@ codeunit 139507 "Test Data Search"
         LibraryAssert.AreEqual('Sales Orders - lines', DataSearchPage.LinesPart.Description.Value, 'wrong header');
         DataSearchPage.LinesPart.Next();
         // example:  '  Order 101017 20000: Description: Hello, Description 2: World'
-        LibraryAssert.AreEqual(StrSubstNo(
-            '  %1 %2 %3: Description: Hello, Description 2: World', SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No."),
+#pragma warning disable AA0217        
+        LibraryAssert.AreEqual(StrSubstNo('  %1 %2 %3: Description: Hello, Description 2: World', SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No."),
+#pragma warning restore AA0217        
             DataSearchPage.LinesPart.Description.Value, 'wrong line');
         DataSearchPage.LinesPart.Description.Drilldown(); // should open a sales order page which invokes the archive function
 
@@ -197,18 +223,18 @@ codeunit 139507 "Test Data Search"
         DataSearchSetupTable.Init();
         DataSearchSetupTable."Role Center ID" := DataSearchSetupTable.GetRoleCenterID();
         DataSearchSetupTable."Table No." := Database::"Sales Line Archive";
-        DataSearchSetupTable.Insert(true);
+        DataSearchSetupTable.InsertRec(true);
 
         DataSearchPage.TestSearchForSalesOrders.Invoke();
 
         DataSearchPage.LinesPart.First(); // the sales lines header
         DataSearchPage.LinesPart.Next();  // The first sales line
         i := 0;
-        while (i < 4) and (StrPos(DataSearchPage.LinesPart.Description.Value, 'Sales List Archive') < 1) do begin
+        while (i < 4) and (StrPos(DataSearchPage.LinesPart.Description.Value, 'Sales Order Archives') < 1) do begin
             DataSearchPage.LinesPart.Next();  // Maybe the sales line archive header
             i += 1;
         end;
-        LibraryAssert.AreEqual('Sales List Archive - lines', DataSearchPage.LinesPart.Description.Value, 'wrong header for archive');
+        LibraryAssert.AreEqual('Sales Order Archives - lines', DataSearchPage.LinesPart.Description.Value, 'wrong header for archive');
 
         DataSearchPage.LinesPart.Next();  // The first sales line archive
         // example:  '  Order 101017 1 1 20000: Description: Hello, Description 2: World'
@@ -220,13 +246,20 @@ codeunit 139507 "Test Data Search"
         DataSearchPage.Close();
     end;
 
+    [ModalPageHandler]
+    procedure DataSearchSetupListsPageHandler(var DataSearchSetupListsPage: TestPage "Data Search Setup (Lists)")
+    begin
+        DataSearchSetupListsPage.ShowAllLists.Invoke();
+        DataSearchSetupListsPage.GoToKey(Page::"Reminder List");
+        DataSearchSetupListsPage.ListIsEnabledCtrl.SetValue(true);
+    end;
+
     [PageHandler]
     procedure SalesOrderPageHandler(var SalesOrder: TestPage "Sales Order")
     begin
         SalesOrder."Archive Document".Invoke();
         SalesOrder.Close();
     end;
-
 
     [PageHandler]
     procedure SalesOrderArchivePageHandler(var SalesOrderArchive: TestPage "Sales Order Archive")

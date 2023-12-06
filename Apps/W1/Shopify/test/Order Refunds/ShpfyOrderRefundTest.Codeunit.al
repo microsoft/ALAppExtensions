@@ -6,13 +6,39 @@ codeunit 139611 "Shpfy Order Refund Test"
     var
         LibraryAssert: Codeunit "Library Assert";
 
+    trigger OnRun()
+    begin
+        // [FEATURE] [Account Schedule] [Chart]
+        IsInitialized := false;
+    end;
+
+    local procedure Initialize()
+    var
+        OrderRefundsHelper: Codeunit "Shpfy Order Refunds Helper";
+    begin
+        if IsInitialized then
+            exit;
+
+        ShopifyIds := OrderRefundsHelper.CreateShopifyDocuments();
+
+        IsInitialized := true;
+        Commit();
+    end;
+
+    local procedure ResetProccesOnRefund(ReFundId: Integer)
+    var
+        ShpfyDocLinkToDoc: Record "Shpfy Doc. Link To Doc.";
+    begin
+        ShpfyDocLinkToDoc.SetRange("Shopify Document Type", ShpfyDocLinkToDoc."Shopify Document Type"::"Shopify Shop Refund");
+        ShpfyDocLinkToDoc.SetRange("Shopify Document Id", ReFundId);
+        ShpfyDocLinkToDoc.DeleteAll();
+    end;
+
     [Test]
     procedure UnitTestCreateCrMemoFromRefundWithFullyRefundedItem()
     var
         SalesHeader: Record "Sales Header";
         RefundHeader: Record "Shpfy Refund Header";
-        OrderRefundsHelper: Codeunit "Shpfy Order Refunds Helper";
-        ShopifyIds: Dictionary of [Text, List Of [BigInteger]];
         RefundId: BigInteger;
         IReturnRefundProcess: Interface "Shpfy IReturnRefund Process";
         CanCreateDocument: boolean;
@@ -20,7 +46,7 @@ codeunit 139611 "Shpfy Order Refund Test"
     begin
         // [SCENARION] Create a Credit Memo from a Shopify Refund where the item is totally refunded.
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
-        ShopifyIds := OrderRefundsHelper.CreateShopifyDocuments();
+        Initialize();
 
         // [GIVEN] Set the process of the document: "Auto Create Credit Memo";
         IReturnRefundProcess := Enum::"Shpfy ReturnRefund ProcessType"::"Auto Create Credit Memo";
@@ -41,6 +67,8 @@ codeunit 139611 "Shpfy Order Refund Test"
         RefundHeader.Get(RefundId);
         SalesHeader.CalcFields("Amount Including VAT");
         LibraryAssert.AreEqual(RefundHeader."Total Refunded Amount", SalesHeader."Amount Including VAT", 'The SalesHeader."Amount Including VAT" must be equal to RefundHeader."Total Refunded Amount".');
+        // Tear down
+        ResetProccesOnRefund(RefundId);
     end;
 
     [Test]
@@ -48,8 +76,6 @@ codeunit 139611 "Shpfy Order Refund Test"
     var
         SalesHeader: Record "Sales Header";
         RefundHeader: Record "Shpfy Refund Header";
-        OrderRefundsHelper: Codeunit "Shpfy Order Refunds Helper";
-        ShopifyIds: Dictionary of [Text, List Of [BigInteger]];
         RefundId: BigInteger;
         IReturnRefundProcess: Interface "Shpfy IReturnRefund Process";
         CanCreateDocument: boolean;
@@ -57,7 +83,7 @@ codeunit 139611 "Shpfy Order Refund Test"
     begin
         // [SCENARION] Create a Credit Memo from a Shopify Refund where only the shipment is refunded.
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
-        ShopifyIds := OrderRefundsHelper.CreateShopifyDocuments();
+        Initialize();
 
         // [GIVEN] Set the process of the document: "Auto Create Credit Memo";
         IReturnRefundProcess := Enum::"Shpfy ReturnRefund ProcessType"::"Auto Create Credit Memo";
@@ -78,6 +104,8 @@ codeunit 139611 "Shpfy Order Refund Test"
         RefundHeader.Get(RefundId);
         SalesHeader.CalcFields("Amount Including VAT");
         LibraryAssert.AreNearlyEqual(RefundHeader."Total Refunded Amount", SalesHeader."Amount Including VAT", 0.5, 'The SalesHeader."Amount Including VAT" must be equal to RefundHeader."Total Refunded Amount".');
+        // Tear down
+        ResetProccesOnRefund(RefundId);
     end;
 
     [Test]
@@ -85,8 +113,6 @@ codeunit 139611 "Shpfy Order Refund Test"
     var
         SalesHeader: Record "Sales Header";
         RefundHeader: Record "Shpfy Refund Header";
-        OrderRefundsHelper: Codeunit "Shpfy Order Refunds Helper";
-        ShopifyIds: Dictionary of [Text, List Of [BigInteger]];
         RefundId: BigInteger;
         IReturnRefundProcess: Interface "Shpfy IReturnRefund Process";
         CanCreateDocument: boolean;
@@ -94,7 +120,7 @@ codeunit 139611 "Shpfy Order Refund Test"
     begin
         // [SCENARION] Create a Credit Memo from a Shopify Refund where the item is not refunded.
         Codeunit.Run(Codeunit::"Shpfy Initialize Test");
-        ShopifyIds := OrderRefundsHelper.CreateShopifyDocuments();
+        Initialize();
 
         // [GIVEN] Set the process of the document: "Auto Create Credit Memo";
         IReturnRefundProcess := Enum::"Shpfy ReturnRefund ProcessType"::"Auto Create Credit Memo";
@@ -115,5 +141,12 @@ codeunit 139611 "Shpfy Order Refund Test"
         RefundHeader.Get(RefundId);
         SalesHeader.CalcFields("Amount Including VAT");
         LibraryAssert.AreEqual(RefundHeader."Total Refunded Amount", SalesHeader."Amount Including VAT", 'The SalesHeader."Amount Including VAT" must be equal to RefundHeader."Total Refunded Amount".');
+
+        // Tear down
+        ResetProccesOnRefund(RefundId);
     end;
+
+    var
+        ShopifyIds: Dictionary of [Text, List Of [BigInteger]];
+        IsInitialized: Boolean;
 }

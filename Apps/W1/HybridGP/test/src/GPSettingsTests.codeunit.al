@@ -64,6 +64,7 @@ codeunit 139681 "GP Settings Tests"
         Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Vendor Classes", 'Migrate Vendor Classes - Incorrect value');
         Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Customer Classes", 'Migrate Customer Classes - Incorrect value');
         Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Item Classes", 'Migrate Item Classes - Incorrect value');
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate GL Module", 'Migrate GL Module - Incorrect value');
         Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Bank Module", 'Migrate Bank Module - Incorrect value');
         Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Payables Module", 'Migrate Payables Module - Incorrect value');
         Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Receivables Module", 'Migrate Receivables Module - Incorrect value');
@@ -486,6 +487,97 @@ codeunit 139681 "GP Settings Tests"
 
         // [THEN] IsAllPostMigrationDataCreated will be true
         Assert.IsTrue(GPConfiguration.IsAllPostMigrationDataCreated(), 'Should return true because all of the entries should be created.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGLModuleAutoSettings()
+    var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+    begin
+        // [SCENARIO] Settings are initiated for each company to be migrated from GP
+
+        // [GIVEN] Some records are created in the settings table
+        CreateSettingsTableEntries();
+
+        Clear(GPCompanyAdditionalSettings);
+        GPCompanyAdditionalSettings.Get('Company 2');
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate GL Module", 'Initial value for Migrate GL Module is incorrect.');
+
+        // Reset master data to default values
+        GPCompanyAdditionalSettings."Migrate Only GL Master" := false;
+        GPCompanyAdditionalSettings."Migrate Only Bank Master" := false;
+        GPCompanyAdditionalSettings."Migrate Only Inventory Master" := false;
+        GPCompanyAdditionalSettings."Migrate Only Payables Master" := false;
+        GPCompanyAdditionalSettings."Migrate Only Rec. Master" := false;
+
+        // [WHEN] The GL module setting is disabled
+        GPCompanyAdditionalSettings.Validate("Migrate GL Module", false);
+
+        // [THEN] The record will have the correct values
+        Assert.AreEqual('Company 2', GPCompanyAdditionalSettings.Name, 'Incorrect company settings found');
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Inactive Customers", 'Migrate Inactive Customers - Incorrect value');
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Inactive Vendors", 'Migrate Inactive Vendors - Incorrect value');
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Payables Module", 'Migrate Payables Module - Incorrect value');
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Receivables Module", 'Migrate Receivables Module - Incorrect value');
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Inventory Module", 'Migrate Inventory Module - Incorrect value');
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Bank Module", 'Migrate Bank Module - Incorrect value');
+        Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Open POs", 'Migrate Open POs - Incorrect value');
+        Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Vendor Classes", 'Migrate Vendor Classes - Incorrect value');
+        Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Customer Classes", 'Migrate Customer Classes - Incorrect value');
+        Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Item Classes", 'Migrate Item Classes - Incorrect value');
+        Assert.AreEqual(false, GPCompanyAdditionalSettings."Migrate Only GL Master", 'Migrate Only GL Master - Incorrect value');
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Only Bank Master", 'Migrate Only Bank Master - Incorrect value');
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Only Inventory Master", 'Migrate Only Inventory Master - Incorrect value');
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Only Payables Master", 'Migrate Only Payables Master - Incorrect value');
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate Only Rec. Master", 'Migrate Only Rec. Master - Incorrect value');
+
+        // [WHEN] Settings are re-enabled, the GL Module is also re-enabled
+
+        // Open POs
+        GPCompanyAdditionalSettings.Validate("Migrate Open POs", true);
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate GL Module", 'Migrate GL Module - Incorrect value (from Open POs)');
+        GPCompanyAdditionalSettings.Validate("Migrate GL Module", false);
+
+        // Customer Classes
+        GPCompanyAdditionalSettings.Validate("Migrate Customer Classes", true);
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate GL Module", 'Migrate GL Module - Incorrect value (from Customer Classes)');
+        GPCompanyAdditionalSettings.Validate("Migrate GL Module", false);
+
+        // Item Classes
+        GPCompanyAdditionalSettings.Validate("Migrate Item Classes", true);
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate GL Module", 'Migrate GL Module - Incorrect value (from Item Classes)');
+        GPCompanyAdditionalSettings.Validate("Migrate GL Module", false);
+
+        // Vendor Classes
+        GPCompanyAdditionalSettings.Validate("Migrate Vendor Classes", true);
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate GL Module", 'Migrate GL Module - Incorrect value (from Vendor Classes)');
+        GPCompanyAdditionalSettings.Validate("Migrate GL Module", false);
+
+        // GL Master
+        GPCompanyAdditionalSettings.Validate("Migrate Only GL Master", true);
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate GL Module", 'Migrate GL Module - Incorrect value (from GL Master)');
+        GPCompanyAdditionalSettings.Validate("Migrate GL Module", false);
+
+        // Bank Master
+        GPCompanyAdditionalSettings.Validate("Migrate Only Bank Master", false);
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate GL Module", 'Migrate GL Module - Incorrect value (from Bank Master)');
+        GPCompanyAdditionalSettings.Validate("Migrate GL Module", false);
+
+        // Inventory Master
+        GPCompanyAdditionalSettings.Validate("Migrate Only Inventory Master", false);
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate GL Module", 'Migrate GL Module - Incorrect value (from Inventory Master)');
+        GPCompanyAdditionalSettings.Validate("Migrate GL Module", false);
+
+        // Payables Master
+        GPCompanyAdditionalSettings.Validate("Migrate Only Payables Master", false);
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate GL Module", 'Migrate GL Module - Incorrect value (from Payables Master)');
+        GPCompanyAdditionalSettings.Validate("Migrate GL Module", false);
+
+        // Rec. Master
+        GPCompanyAdditionalSettings.Validate("Migrate Only Rec. Master", false);
+        Assert.AreEqual(true, GPCompanyAdditionalSettings."Migrate GL Module", 'Migrate GL Module - Incorrect value (from Rec. Master)');
+        GPCompanyAdditionalSettings.Validate("Migrate GL Module", false);
     end;
 
     [Test]

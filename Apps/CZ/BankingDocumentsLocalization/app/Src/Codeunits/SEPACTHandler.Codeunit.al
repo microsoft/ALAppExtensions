@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Documents;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.DirectDebit;
+using Microsoft.Bank.Payment;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+
 codeunit 31400 "SEPA CT Handler CZB"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"SEPA CT-Check Line", 'OnBeforeCheckGenJnlLine', '', false, false)]

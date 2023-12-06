@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Reminder;
+
+using Microsoft.Bank;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.Company;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.History;
+
 codeunit 11749 "Reminder Handler CZL"
 {
     var

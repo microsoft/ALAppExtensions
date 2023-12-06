@@ -1,3 +1,13 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Finance;
+using Microsoft.Finance.CashDesk;
+using Microsoft.Finance.GeneralLedger.Journal;
+
 codeunit 31065 "Cash Document-Post Handler CZZ"
 {
     SingleInstance = true;

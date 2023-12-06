@@ -91,17 +91,11 @@ pageextension 1442 "Headlines RC Accountant Ext." extends "Headline RC Accountan
     end;
 
     var
-        [InDataSet]
         LargestOrderVisible: Boolean;
-        [InDataSet]
         LargestOrderText: Text[250];
-        [InDataSet]
         LargestSaleVisible: Boolean;
-        [InDataSet]
         LargestSaleText: Text[250];
-        [InDataSet]
         SalesIncreaseVisible: Boolean;
-        [InDataSet]
         SalesIncreaseText: Text[250];
 
 }

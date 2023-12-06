@@ -1,3 +1,24 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.CashDesk;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.CRM.Team;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.GeneralLedger.Preview;
+using Microsoft.Finance.VAT.Calculation;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.HumanResources.Employee;
+using Microsoft.Inventory.Location;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+
 #pragma warning disable AL0432
 codeunit 11729 "Cash Document-Post CZP"
 {
@@ -47,12 +68,6 @@ codeunit 11729 "Cash Document-Post CZP"
             CashDocumentReleaseCZP.CheckCashDocument(Rec);
         OnRunOnAfterCheckCashDocument(CashDocumentHeaderCZP, NoCheckCashDocument);
 
-        if CashDocumentHeaderCZP.RecordLevelLocking then begin
-            CashDocumentLineCZP.LockTable();
-            GLEntry.LockTable();
-            if GLEntry.FindLast() then;
-        end;
-
         WindowDialog.Open(DialogMsg);
         // Insert posted cash document header
         WindowDialog.Update(1, StrSubstNo(ThreePlaceholdersTok, CashDocumentHeaderCZP."Cash Desk No.", CashDocumentHeaderCZP."Document Type", CashDocumentHeaderCZP."No."));
@@ -79,7 +94,6 @@ codeunit 11729 "Cash Document-Post CZP"
         PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP";
         PostedCashDocumentLineCZP: Record "Posted Cash Document Line CZP";
         SourceCodeSetup: Record "Source Code Setup";
-        GLEntry: Record "G/L Entry";
         CashDeskManagementCZP: Codeunit "Cash Desk Management CZP";
         GenJnlCheckLine: Codeunit "Gen. Jnl.-Check Line";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";

@@ -1,3 +1,11 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.FixedAssets.Insurance;
+
+using System.Security.User;
+
 codeunit 31314 "Ins. Jnl.CheckLine Handler CZL"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Insurance Jnl.-Check Line", 'OnRunCheckOnBeforeCheckDimIDComb', '', false, false)]

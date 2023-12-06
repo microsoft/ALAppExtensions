@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.Compensations;
+
+using Microsoft.EServices.EDocument;
+using Microsoft.Foundation.Attachment;
+using Microsoft.Utilities;
+using System.Automation;
+using System.Security.User;
+
 page 31272 "Compensation Card CZC"
 {
     Caption = 'Compensation Card';

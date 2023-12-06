@@ -32,7 +32,7 @@ codeunit 30179 "Shpfy Product Image Export"
             Rec.Modify();
         end;
         if (Hash <> Rec."Image Hash") then begin
-            ProductApi.UpdateShopifyProductImage(Rec, Item, BulkOperationInput, ParametersList);
+            ProductApi.UpdateShopifyProductImage(Rec, Item, BulkOperationInput, ParametersList, CurrRecordCount);
             Rec."Image Hash" := Hash;
             Rec.Modify();
         end;
@@ -41,6 +41,7 @@ codeunit 30179 "Shpfy Product Image Export"
     var
         Shop: Record "Shpfy Shop";
         ProductApi: Codeunit "Shpfy Product API";
+        CurrRecordCount: Integer;
         NullGuid: Guid;
         ParametersList: List of [Dictionary of [Text, Text]];
         BulkOperationInput: TextBuilder;
@@ -66,6 +67,11 @@ codeunit 30179 "Shpfy Product Image Export"
     begin
         Shop := ShopifyShop;
         ProductApi.SetShop(Shop);
+    end;
+
+    internal procedure SetRecordCount(RecordCount: Integer)
+    begin
+        CurrRecordCount := RecordCount;
     end;
 
     internal procedure GetBulkOperationInput(): TextBuilder

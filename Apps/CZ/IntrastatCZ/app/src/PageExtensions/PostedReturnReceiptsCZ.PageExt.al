@@ -17,9 +17,25 @@ pageextension 31354 "Posted Return Receipts CZ" extends "Posted Return Receipts"
         {
             Enabled = not IntrastatEnabled;
         }
+#pragma warning disable AL0432
+        modify("Intrastat Exclude CZL")
+#pragma warning restore AL0432
+        {
+            Enabled = not IntrastatEnabled;
+        }
 #endif
         addlast(Control1)
         {
+            field("Intrastat Exclude CZ"; Rec."Intrastat Exclude CZ")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Intrastat Exclude';
+                Visible = false;
+                ToolTip = 'Specifies that entry will be excluded from intrastat.';
+#if not CLEAN22
+                Enabled = IntrastatEnabled;
+#endif
+            }
             field("Physical Transfer CZ"; Rec."Physical Transfer CZ")
             {
                 ApplicationArea = SalesReturnOrder;

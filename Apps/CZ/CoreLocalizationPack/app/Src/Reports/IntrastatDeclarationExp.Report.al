@@ -1,4 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 #if not CLEAN22
+namespace Microsoft.Inventory.Intrastat;
+
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Company;
+using Microsoft.Foundation.Shipping;
+using System.IO;
+using System.Reflection;
+using System.Utilities;
+
 report 31107 "Intrastat Declaration Exp. CZL"
 {
     Caption = 'Intrastat Declaration Export';

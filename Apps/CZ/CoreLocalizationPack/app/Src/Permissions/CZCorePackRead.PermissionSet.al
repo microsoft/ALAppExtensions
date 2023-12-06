@@ -1,9 +1,4 @@
-// ------------------------------------------------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See License.txt in the project root for license information.
-// ------------------------------------------------------------------------------------------------
-
-permissionset 11730 "CZ Core Pack - Read CZL"
+﻿permissionset 11730 "CZ Core Pack - Read CZL"
 {
     Access = Internal;
     Assignable = false;

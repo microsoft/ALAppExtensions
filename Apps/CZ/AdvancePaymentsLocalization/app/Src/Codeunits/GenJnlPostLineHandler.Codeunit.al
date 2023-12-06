@@ -1,3 +1,15 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.AdvancePayments;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Purchases.Payables;
+using Microsoft.Sales.Receivables;
+
 codeunit 31003 "Gen.Jnl.-Post Line Handler CZZ"
 {
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterRunWithCheck', '', false, false)]
@@ -56,11 +68,9 @@ codeunit 31003 "Gen.Jnl.-Post Line Handler CZZ"
             // If the advance letter is posting then the manual application method must be used
             OldCustLedgerEntry.SetRange("Posting Date");
             OldCustLedgerEntry.SetFilter("Amount to Apply", '<>%1', 0);
-        end else begin
+        end else
             // If the advance letter is not posting then the customer ledger entries applied to advance letter mustn't be used for application
             OldCustLedgerEntry.SetRange("Advance Letter No. CZZ", '');
-            OldCustLedgerEntry.SetRange("Adv. Letter Template Code CZZ", '');
-        end;
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"CV Ledger Entry Buffer", 'OnAfterCopyFromVendLedgerEntry', '', false, false)]
@@ -89,12 +99,12 @@ codeunit 31003 "Gen.Jnl.-Post Line Handler CZZ"
             GenJournalLine."Account Type"::Customer:
                 begin
                     CustLedgerEntry.FindLast();
-                    SalesAdvLetterManagementCZZ.PostAdvancePayment(CustLedgerEntry, GenJournalLine, 0, GenJnlPostLine);
+                    SalesAdvLetterManagementCZZ.PostAdvancePayment(CustLedgerEntry, GenJournalLine, 0, GenJnlPostLine, CustLedgerEntry."Posting Date");
                 end;
             GenJournalLine."Account Type"::Vendor:
                 begin
                     VendorLedgerEntry.FindLast();
-                    PurchAdvLetterManagementCZZ.PostAdvancePayment(VendorLedgerEntry, GenJournalLine, 0, GenJnlPostLine);
+                    PurchAdvLetterManagementCZZ.PostAdvancePayment(VendorLedgerEntry, GenJournalLine, 0, GenJnlPostLine, VendorLedgerEntry."Posting Date");
                 end;
         end;
     end;

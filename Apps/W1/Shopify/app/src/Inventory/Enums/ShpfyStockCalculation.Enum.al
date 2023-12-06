@@ -11,7 +11,7 @@ enum 30135 "Shpfy Stock Calculation" implements "Shpfy Stock Calculation", "Shpf
                             "Shpfy IStock Available" = "Shpfy Can Not Have Stock";
     value(0; Disabled)
     {
-        Caption = 'Disabled';
+        Caption = 'Off';
         Implementation = "Shpfy Stock Calculation" = "Shpfy Disabled Value",
                          "Shpfy IStock Available" = "Shpfy Can Not Have Stock";
     }

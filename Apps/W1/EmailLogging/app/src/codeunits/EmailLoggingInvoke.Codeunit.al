@@ -4,6 +4,7 @@ using Microsoft.CRM.Segment;
 using Microsoft.CRM.Interaction;
 using Microsoft.CRM.Contact;
 using Microsoft.CRM.Team;
+using Microsoft.Foundation.NoSeries;
 
 codeunit 1685 "Email Logging Invoke"
 {
@@ -295,7 +296,7 @@ codeunit 1685 "Email Logging Invoke"
 
     local procedure LogMessageAsInteraction(var SourceEmailLoggingMessage: Codeunit "Email Logging Message"; var TargetEmailLoggingMessage: Codeunit "Email Logging Message"; var SegmentLine: Record "Segment Line"; var Attachment: Record Attachment; var ErrorMessage: Text): Boolean
     var
-        InteractionLogEntry: Record "Interaction Log Entry";
+        SequenceNoMgt: Codeunit "Sequence No. Mgt.";
         EntryNumbers: List of [Integer];
         AttachmentNo: Integer;
         NextInteractionLogEntryNo: Integer;
@@ -308,16 +309,10 @@ codeunit 1685 "Email Logging Invoke"
         if not SegmentLine.IsEmpty() then begin
             Session.LogMessage('0000FYY', NotEmptyRecipientTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
 
-            Attachment.Reset();
-            Attachment.LockTable();
-            if Attachment.FindLast() then
-                AttachmentNo := Attachment."No." + 1
-            else
-                AttachmentNo := 1;
-
+            AttachmentNo := SequenceNoMgt.GetNextSeqNo(Database::Attachment);
             Attachment.Init();
             Attachment."No." := AttachmentNo;
-            Attachment.Insert();
+            Attachment.InsertRecord();
 
             SegmentLine.Reset();
             SegmentLine.FindSet(true);
@@ -325,12 +320,9 @@ codeunit 1685 "Email Logging Invoke"
                 UpdateSegmentLine(SegmentLine, GetInteractionTemplateSetupEmails(), SourceEmailLoggingMessage, Attachment."No.");
             until SegmentLine.Next() = 0;
 
-            InteractionLogEntry.LockTable();
-            if InteractionLogEntry.FindLast() then
-                NextInteractionLogEntryNo := InteractionLogEntry."Entry No.";
             if SegmentLine.FindSet() then
                 repeat
-                    NextInteractionLogEntryNo := NextInteractionLogEntryNo + 1;
+                    NextInteractionLogEntryNo := SequenceNoMgt.GetNextSeqNo(Database::"Interaction Log Entry");
                     InsertInteractionLogEntry(SegmentLine, NextInteractionLogEntryNo);
                     EntryNumbers.Add(NextInteractionLogEntryNo);
                 until SegmentLine.Next() = 0;
@@ -423,7 +415,7 @@ codeunit 1685 "Email Logging Invoke"
         InteractionLogEntry."Correspondence Type" := InteractionLogEntry."Correspondence Type"::Email;
         InteractionLogEntry.CopyFromSegment(SegmentLine);
         InteractionLogEntry."E-Mail Logged" := true;
-        InteractionLogEntry.Insert();
+        InteractionLogEntry.InsertRecord();
         Session.LogMessage('0000FZA', UserCreatingInteractionLogEntryBasedOnEmailTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
     end;
 

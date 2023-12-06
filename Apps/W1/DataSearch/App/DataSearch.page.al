@@ -11,6 +11,7 @@ page 2680 "Data Search"
     ApplicationArea = All;
     AboutTitle = 'About Search in company data';
     AboutText = 'Enter one or more search words in the search field. To see which tables are being searched, select Results | Show tables to search.';
+    InherentEntitlements = X;
 
     layout
     {
@@ -21,9 +22,9 @@ page 2680 "Data Search"
                 ShowCaption = false;
                 field(SearchString; DisplaySearchString)
                 {
-                    Caption = 'Text to search for (enter at least 3 characters)';
+                    Caption = 'Search for (min. 3 characters)';
 #pragma warning disable AA0219
-                    ToolTip = 'Specify at least three characters to search for.';
+                    ToolTip = 'Specify at least three characters to search for. You can enter multiple search words, and we will only find data that contains all words.';
 #pragma warning restore AA0219
                     ApplicationArea = All;
                     Style = Subordinate;
@@ -50,6 +51,7 @@ page 2680 "Data Search"
             part(LinesPart; "Data Search lines")
             {
                 ApplicationArea = All;
+                UpdatePropagation = Both;
             }
             group(lines)
             {
@@ -58,6 +60,37 @@ page 2680 "Data Search"
                 ObsoleteTag = '23.0';
                 Visible = false;
                 ShowCaption = false;
+            }
+        }
+    }
+
+    actions
+    {
+        area(Processing)
+        {
+            action(Search)
+            {
+                ApplicationArea = All;
+                Caption = 'Start search';
+                ToolTip = 'Starts the search.';
+                Image = Find;
+                Enabled = SearchString <> '';
+
+                trigger OnAction()
+                begin
+                    LaunchDeltaSearch();
+                end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Search', Comment = 'Generated from the PromotedActionCategories property index 1.';
+
+                actionref(Contact_Promoted; Search)
+                {
+                }
             }
         }
     }
@@ -132,6 +165,28 @@ page 2680 "Data Search"
         Dimensions.Add('NumberOfSearchWords', Format(SearchStrings.Count()));
         Dimensions.Add('NumberOfTablesToSearch', Format(NoOfTablesToSearch));
         FeatureTelemetry.LogUsage('0000I9B', TelemetryCategoryLbl, DataSearchStartedTelemetryLbl, Dimensions);
+    end;
+
+    local procedure LaunchDeltaSearch()
+    var
+        ModifiedTablesSetup: List of [Integer];
+        TableTypeID: Integer;
+    begin
+        if SearchString = '' then
+            exit;
+        if CurrPage.LinesPart.Page.HasChangedSetupNotification() then begin
+            ModifiedTablesSetup := CurrPage.LinesPart.Page.GetModifiedSetup();
+            CurrPage.LinesPart.Page.RemoveResultsForModifiedSetup();
+            CurrPage.LinesPart.Page.RecallLastNotification();
+            if ModifiedTablesSetup.Count() > 0 then begin
+                CancelRunningTasks();
+                SearchInProgress := true;
+                DisplaySearchString := StrSubstNo(StatusSearchLbl, SearchString);
+                foreach TableTypeID in ModifiedTablesSetup do
+                    QueueSearchInBackground(TableTypeID);
+            end;
+        end else
+            LaunchSearch();
     end;
 
     local procedure QueueSearchInBackground(TableTypeID: Integer)
@@ -217,6 +272,6 @@ page 2680 "Data Search"
 
     procedure SetSearchString(NewSearchString: Text)
     begin
-        SearchString := NewSearchString;
+        SearchString := DelChr(NewSearchString, '<>', ' ');
     end;
 }

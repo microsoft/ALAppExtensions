@@ -178,6 +178,18 @@ table 10682 "SAF-T Export Header"
             Caption = 'Export Currency Information';
             InitValue = true;
         }
+        field(50; "Number of G/L Entries"; Integer)
+        {
+            Caption = 'Number of G/L Entries';
+        }
+        field(51; "Total G/L Entry Debit"; Decimal)
+        {
+            Caption = 'Total G/L Entry Debit';
+        }
+        field(52; "Total G/L Entry Credit"; Decimal)
+        {
+            Caption = 'Total G/L Entry Credit';
+        }
     }
 
     keys

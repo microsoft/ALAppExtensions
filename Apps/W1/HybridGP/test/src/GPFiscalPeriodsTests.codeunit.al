@@ -125,6 +125,44 @@ codeunit 139680 "GP Fiscal Periods Tests"
         Assert.RecordCount(AccountingPeriod, 4);
     end;
 
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGPLimitFiscalPeriods()
+    var
+        AccountingPeriod: Record "Accounting Period";
+        GPSY40101: Record "GP SY40101";
+        GPSY40100: Record "GP SY40100";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+    begin
+        // [SCENARIO] Fiscal Periods are migrated from GP
+        // [GIVEN] There are no records in the Accounting Period table
+        ClearTables();
+
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Oldest GL Year to Migrate", 2023);
+        GPCompanyAdditionalSettings.Modify();
+
+        // [GIVEN] Some records are created in the staging table
+        CreateNonCalendarPeriods(GPSY40101, GPSY40100);
+
+        // [WHEN] Fiscal Period migration code is called
+        MigrateData();
+
+        // [THEN] Accounting Periods are created
+        //     3 years with 12 periods per year = 36
+        AccountingPeriod.Reset();
+        Assert.RecordCount(AccountingPeriod, 36);
+
+        // [THEN] Accounting Periods are created as Open
+        AccountingPeriod.Reset();
+        AccountingPeriod.SetFilter(Closed, '1');
+        Assert.RecordCount(AccountingPeriod, 0);
+
+        AccountingPeriod.Reset();
+        AccountingPeriod.SetFilter(Closed, '0');
+        Assert.RecordCount(AccountingPeriod, 36);
+    end;
+
     local procedure ClearTables()
     var
         AccountingPeriod: Record "Accounting Period";

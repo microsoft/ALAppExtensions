@@ -13,7 +13,10 @@ page 2682 "Data Search Result Records"
     ShowFilter = false;
     SourceTable = Integer;
     SourceTableView = where(Number = filter('>0'));
-
+    InherentEntitlements = X;
+    InherentPermissions = X;
+    AnalysisModeEnabled = false;
+    
     layout
     {
         area(content)

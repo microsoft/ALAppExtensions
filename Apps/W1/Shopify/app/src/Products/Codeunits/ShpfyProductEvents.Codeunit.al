@@ -191,6 +191,8 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
+#if not CLEAN24
+    [Obsolete('This event is deprecated. Please use OnBeforeFindProductMapping', '24.0')]
     [IntegrationEvent(false, false)]
     /// <summary> 
     /// Raised Before Find Mapping.
@@ -202,6 +204,21 @@ codeunit 30177 "Shpfy Product Events"
     /// <param name="ItemVariant">Parameter of type Record "Item Variant".</param>
     /// <param name="Handled">Parameter of type Boolean.</param>
     internal procedure OnBeforeFindMapping(Direction: enum "Shpfy Mapping Direction"; var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var Item: Record Item; ItemVariant: Record "Item Variant"; var Handled: Boolean);
+    begin
+    end;
+#endif
+
+    [IntegrationEvent(false, false)]
+    /// <summary> 
+    /// Raised Before Find Mapping.
+    /// </summary>
+    /// <param name="Direction">Parameter of type enum "Shopify Mapping Direction".</param>
+    /// <param name="ShopifyProduct">Parameter of type Record "Shopify Product".</param>
+    /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
+    /// <param name="Item">Parameter of type Record Item.</param>
+    /// <param name="ItemVariant">Parameter of type Record "Item Variant".</param>
+    /// <param name="Handled">Parameter of type Boolean.</param>
+    internal procedure OnBeforeFindProductMapping(Direction: Enum "Shpfy Mapping Direction"; var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var Item: Record Item; var ItemVariant: Record "Item Variant"; var Handled: Boolean);
     begin
     end;
 

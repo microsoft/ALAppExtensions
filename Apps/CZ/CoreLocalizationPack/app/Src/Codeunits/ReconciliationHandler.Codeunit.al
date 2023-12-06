@@ -1,3 +1,17 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.GeneralLedger.Journal;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.HumanResources.Employee;
+using Microsoft.Intercompany.Partner;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+
 codeunit 31431 "Reconciliation Handler CZL"
 {
     [EventSubscriber(ObjectType::Page, Page::Reconciliation, 'OnAfterSetGenJnlLine', '', false, false)]

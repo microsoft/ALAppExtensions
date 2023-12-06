@@ -1,3 +1,23 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Sales.Reminder;
+
+using Microsoft.CRM.Interaction;
+using Microsoft.CRM.Segment;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.Company;
+using Microsoft.HumanResources.Employee;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Setup;
+using Microsoft.Utilities;
+using System.Email;
+using System.Globalization;
+using System.Security.User;
+using System.Utilities;
+
 report 31182 "Reminder CZL"
 {
     DefaultLayout = RDLC;

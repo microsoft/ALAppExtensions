@@ -1,3 +1,19 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Bank.Documents;
+
+using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Reconciliation;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.Attachment;
+using Microsoft.Foundation.Navigate;
+using Microsoft.Foundation.NoSeries;
+using System.Security.AccessControl;
+using System.Utilities;
+
 table 31254 "Iss. Bank Statement Header CZB"
 {
     Caption = 'Issued Bank Statement Header';
@@ -203,6 +219,7 @@ table 31254 "Iss. Bank Statement Header CZB"
         field(101; "Payment Journal Status"; Enum "Journal Status CZB")
         {
             Caption = 'Payment Journal Status';
+            Editable = false;
             DataClassification = CustomerContent;
         }
         field(110; "Search Rule Code"; Code[10])

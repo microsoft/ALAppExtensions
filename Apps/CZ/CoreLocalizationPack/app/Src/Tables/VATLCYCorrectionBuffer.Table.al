@@ -1,3 +1,19 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Finance.VAT.Calculation;
+
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Setup;
+using Microsoft.Foundation.Address;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Foundation.Enums;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+
 table 11727 "VAT LCY Correction Buffer CZL"
 {
     Caption = 'VAT LCY Correction Buffer';

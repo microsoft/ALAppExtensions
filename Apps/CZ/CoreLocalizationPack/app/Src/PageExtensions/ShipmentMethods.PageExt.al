@@ -1,4 +1,10 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 #if not CLEAN22
+namespace Microsoft.Foundation.Shipping;
+
 pageextension 31065 "Shipment Methods CZL" extends "Shipment Methods"
 {
     ObsoleteState = Pending;

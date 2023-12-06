@@ -1,3 +1,12 @@
+﻿// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
+namespace Microsoft.Inventory.Ledger;
+
+using Microsoft.Inventory.History;
+using Microsoft.Inventory.Reports;
+
 pageextension 31010 "Item Registers CZL" extends "Item Registers"
 {
     actions
