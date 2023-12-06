@@ -44,7 +44,8 @@ codeunit 1714 "Upgrade Bank Deposits"
         GeneralLedgerSetup: Record "General Ledger Setup";
         RecordRef: RecordRef;
     begin
-        GeneralLedgerSetup.Get();
+        if not GeneralLedgerSetup.Get() then
+            exit(true);
         RecordRef.GetTable(GeneralLedgerSetup);
         exit(RecordRef.Field(10120).Value); // "Bank Recon. with Auto. Match"
     end;

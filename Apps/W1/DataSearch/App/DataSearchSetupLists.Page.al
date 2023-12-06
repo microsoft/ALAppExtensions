@@ -22,7 +22,7 @@ page 2686 "Data Search Setup (Lists)"
             field(RoleName; AllProfile.Caption)
             {
                 ApplicationArea = All;
-                Caption = 'Choose among tables for role';
+                Caption = 'Choose among lists for role';
                 Editable = false;
                 ToolTip = 'Specifies which role the search setup is valid for.';
 

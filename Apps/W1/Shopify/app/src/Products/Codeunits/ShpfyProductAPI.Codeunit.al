@@ -538,6 +538,25 @@ codeunit 30176 "Shpfy Product API"
         ShopifyProduct."Updated At" := JsonHelper.GetValueAsDateTime(JResponse, 'data.productUpdate.product.updatedAt');
     end;
 
+    internal procedure UpdateProductStatus(ShopifyProduct: Record "Shpfy Product"; Status: Enum "Shpfy Product Status")
+    var
+        JResponse: JsonToken;
+        GraphQuery: TextBuilder;
+    begin
+        GraphQuery.Append('{"query":"mutation {productUpdate(input: {id: \"gid://shopify/Product/');
+        GraphQuery.Append(Format(ShopifyProduct.Id));
+        GraphQuery.Append('\"');
+        if ShopifyProduct.Status <> Status then begin
+            GraphQuery.Append(', status: ');
+            GraphQuery.Append(ConvertToProductStatus(Status));
+        end;
+        GraphQuery.Append('}) ');
+        GraphQuery.Append('{product {id}, userErrors {field, message}}');
+        GraphQuery.Append('}"}');
+
+        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
+    end;
+
     /// <summary> 
     /// Update Shopify Product Fields.
     /// </summary>

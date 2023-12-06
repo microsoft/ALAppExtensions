@@ -992,7 +992,7 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
         CheckLen(StatutoryReportingSetupCZL."Individual Title", StatutoryReportingSetupCZL.FieldCaption("Individual Title"), 10);
         NatPersTitle := StatutoryReportingSetupCZL."Individual Title";
         CompanyTradeName := StatutoryReportingSetupCZL."Company Trade Name";
-        City := CompanyInformation.City;
+        City := StatutoryReportingSetupCZL.City;
         CheckLen(StatutoryReportingSetupCZL.Street, StatutoryReportingSetupCZL.FieldCaption(Street), 38);
         Street := StatutoryReportingSetupCZL.Street;
         CheckLen(StatutoryReportingSetupCZL."House No.", StatutoryReportingSetupCZL.FieldCaption("House No."), 6);

@@ -28,26 +28,26 @@ page 7233 "Master Data Synch. Tables"
                 {
                     ApplicationArea = Suite;
                     Editable = false;
-                    ToolTip = 'Specifies the name of the integration table mapping entry.';
+                    ToolTip = 'Specifies the name of the table.';
                     Visible = false;
                 }
                 field(Status; Rec.Status)
                 {
                     ApplicationArea = Suite;
-                    ToolTip = 'Specifies if this mapping is enabled.';
+                    ToolTip = 'Specifies if synchronization is enabled for this table.';
                 }
                 field(TableCaptionValue; TableCaptionValue)
                 {
                     ApplicationArea = Suite;
                     Caption = 'Table';
                     Editable = false;
-                    ToolTip = 'Specifies the name of the business data table in Business Central to map to the integration table.';
+                    ToolTip = 'Specifies the table caption.';
                 }
                 field(TableFilterValue; TableFilter)
                 {
                     ApplicationArea = Suite;
                     Caption = 'Table Filter';
-                    ToolTip = 'Specifies a filter on the business data table in Dynamics 365 to control which records can be synchronized with the corresponding records in the integration table that is specified by the Integration Table ID field.';
+                    ToolTip = 'Specifies the filter on the table to control which records should be synchronized.';
                     visible = false;
 
                     trigger OnAssistEdit()
@@ -73,32 +73,32 @@ page 7233 "Master Data Synch. Tables"
                     ApplicationArea = Suite;
                     Caption = 'Integration Table';
                     Enabled = false;
-                    ToolTip = 'Specifies the ID of the integration table to map to the business table.';
+                    ToolTip = 'Specifies the caption of the table.';
                     Visible = false;
                 }
                 field("Table Config Template Code"; Rec."Table Config Template Code")
                 {
                     ApplicationArea = Suite;
-                    ToolTip = 'Specifies a configuration template to use when creating new records in the Dynamics 365 business table (specified by the Table ID field) during synchronization.';
+                    ToolTip = 'Specifies a configuration template to use when creating new records out of the table in the source company.';
                     Visible = false;
                 }
                 field("Synch. Int. Tbl. Mod. On Fltr."; Rec."Synch. Int. Tbl. Mod. On Fltr.")
                 {
                     ApplicationArea = Suite;
-                    ToolTip = 'Specifies a date/time filter that uses the date on which records were modified to determine which records to synchronize to the chosen source company. The filter is based on the SystemModifiedAt field on the Business Central table records.';
+                    ToolTip = 'Specifies a date/time that is used to determine which records to synchronize to the source company. Only records that have SystemModifiedAt value greater than this value, will be synchronized. This value keeps changing with every synchronization job.';
                     Visible = false;
                 }
                 field("Synch. Modified On Filter"; Rec."Synch. Modified On Filter")
                 {
                     Caption = 'Synchronize Changes Since';
                     ApplicationArea = Suite;
-                    ToolTip = 'Specifies a date/time filter that uses the date on which records were modified to determine which records to synchronize from the chosen source company. The filter is based on the Modified On field on the integration table records.';
+                    ToolTip = 'Specifies a date/time that is used to determine which records to synchronize from the source company. Only records that have SystemModifiedAt value greater than this value, will be synchronized. This value keeps changing with every synchronization job.';
                 }
                 field(IntegrationTableFilter; IntegrationTableFilterHint)
                 {
                     ApplicationArea = Suite;
                     Caption = 'Table Filter';
-                    ToolTip = 'Specifies a filter on the integration table to control which records can be synchronized with the corresponding records in the business data table that is specified by the Table field.';
+                    ToolTip = 'Specifies a filter on the table in the source company to control which records should be synchronized.';
 
                     trigger OnDrillDown()
                     var
@@ -119,7 +119,7 @@ page 7233 "Master Data Synch. Tables"
                 field("Synch. Only Coupled Records"; Rec."Synch. Only Coupled Records")
                 {
                     ApplicationArea = Suite;
-                    ToolTip = 'Specifies how to handle uncoupled records in Dynamics 365 Sales entities and Dynamics 365 tables when synchronization is performed by an integration synchronization job.';
+                    ToolTip = 'Specifies if synchronization jobs should synchronize only currently coupled records. To synchronize newly inserted records, uncheck this checkbox.';
                     Visible = false;
                 }
                 field("Disable Event Job Resch."; Rec."Disable Event Job Resch.")
@@ -131,13 +131,13 @@ page 7233 "Master Data Synch. Tables"
                 field("Deletion-Conflict Resolution"; Rec."Deletion-Conflict Resolution")
                 {
                     ApplicationArea = Suite;
-                    ToolTip = 'Specifies the action to take when a coupled record is deleted in one of the connected applications.';
+                    ToolTip = 'Specifies the action to take when a coupled record that is attempting to synchronize is deleted locally.';
                     Visible = false;
                 }
                 field("Update-Conflict Resolution"; Rec."Update-Conflict Resolution")
                 {
                     ApplicationArea = Suite;
-                    ToolTip = 'Specifies the action to take when a coupled record is updated in both of the connected applications.';
+                    ToolTip = 'Specifies the action to take when a coupled record is updated both in the source and in the local company.';
                     Visible = false;
                 }
             }
@@ -156,14 +156,14 @@ page 7233 "Master Data Synch. Tables"
                 Image = Relationship;
                 RunObject = Page "Master Data Synch. Fields";
                 RunPageLink = "Integration Table Mapping Name" = field(Name);
-                ToolTip = 'View fields that are synchronized.';
+                ToolTip = 'Shows the fields that are synchronized.';
             }
             action(ResetConfiguration)
             {
                 ApplicationArea = Suite;
                 Caption = 'Use Default Synchronization Setup';
                 Image = ResetStatus;
-                ToolTip = 'Resets the tables and synchronization jobs to the default values for a connection with the source company. All current mappings are deleted.';
+                ToolTip = 'Resets the tables, fields and synchronization jobs to the default values for the connection with the source company. All default synchronization table definitions are deleted and recreated.';
 
                 trigger OnAction()
                 var
@@ -200,7 +200,7 @@ page 7233 "Master Data Synch. Tables"
                 Caption = 'Synchronization Log';
                 Enabled = HasRecords;
                 Image = Log;
-                ToolTip = 'View the status of the individual synchronization jobs that have been run for this table. This includes synchronization jobs that have been run from the job queue and manual synchronization jobs that were performed on records from the Business Central client.';
+                ToolTip = 'View the status of the individual synchronization jobs that have been run for this table.';
 
                 trigger OnAction()
                 var
@@ -311,7 +311,7 @@ page 7233 "Master Data Synch. Tables"
                 Enabled = HasRecords;
                 Visible = DataSynchEnabled;
                 Image = Log;
-                ToolTip = 'View the status of jobs for uncoupling records. The jobs were run either from the job queue, or manually, in Business Central.';
+                ToolTip = 'View the status of jobs for uncoupling records.';
 
                 trigger OnAction()
                 var
@@ -345,7 +345,7 @@ page 7233 "Master Data Synch. Tables"
                 Enabled = HasRecords and (Rec."Parent Name" = '');
                 Visible = DataSynchEnabled;
                 Image = UnLinkAccount;
-                ToolTip = 'Delete couplings for the selected Business Central record types.';
+                ToolTip = 'Delete couplings for the selected tables.';
 
                 trigger OnAction()
                 var
@@ -398,7 +398,7 @@ page 7233 "Master Data Synch. Tables"
                 Enabled = HasRecords and (Rec."Parent Name" = '');
                 Visible = DataSynchEnabled;
                 Image = LinkAccount;
-                ToolTip = 'Make couplings between the selected Business Central record types based on matching criteria.';
+                ToolTip = 'Couple existing records in the selected tables based on matching criteria.';
 
                 trigger OnAction()
                 var

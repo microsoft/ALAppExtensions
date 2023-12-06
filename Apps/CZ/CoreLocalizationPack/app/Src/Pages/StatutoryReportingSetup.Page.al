@@ -84,6 +84,11 @@ page 31108 "Statutory Reporting Setup CZL"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies company''s apartment number.';
                 }
+                field(City; Rec.City)
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies company''s City.';
+                }
             }
             group(Representative)
             {

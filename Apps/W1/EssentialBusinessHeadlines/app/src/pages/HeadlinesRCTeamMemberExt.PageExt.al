@@ -38,8 +38,6 @@ pageextension 1446 "Headlines RC Team Member Ext." extends "Headline RC Team Mem
     end;
 
     var
-        [InDataSet]
         Headline1Visible: Boolean;
-        [InDataSet]
         Headline1Text: Text[250];
 }

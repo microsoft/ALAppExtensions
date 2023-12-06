@@ -270,6 +270,7 @@ codeunit 31017 "Upgrade Application CZL"
         UpgradeUseW1RegistrationNumber();
         UpgradeReportSelectionDirectTransfer();
         UpgradeEU3PartyTradePurchase();
+        UpgradeStatutoryReportingSetupCity();
     end;
 
     local procedure UpgradeGeneralLedgerSetup();
@@ -2548,6 +2549,24 @@ codeunit 31017 "Upgrade Application CZL"
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetReportPostedDirectTransferCZUpgradeTag());
     end;
 
+    local procedure UpgradeStatutoryReportingSetupCity()
+    var
+        CompanyInformation: Record "Company Information";
+        StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetStatutoryReportingSetupCityUpgradeTag()) then
+            exit;
+
+        if not CompanyInformation.Get() then
+            exit;
+        if not StatutoryReportingSetupCZL.Get() then
+            exit;
+
+        StatutoryReportingSetupCZL.City := CompanyInformation.City;
+        StatutoryReportingSetupCZL.Modify();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetStatutoryReportingSetupCityUpgradeTag());
+    end;
 
     local procedure InsertRepSelection(ReportUsage: Enum "Report Selection Usage"; Sequence: Code[10]; ReportID: Integer)
     var

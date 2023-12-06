@@ -5,6 +5,8 @@ page 41010 "Hist. Inventory Trx."
     PageType = Card;
     Caption = 'Historical Inventory Transaction';
     SourceTable = "Hist. Inventory Trx. Header";
+    ApplicationArea = All;
+    UsageCategory = None;
     Editable = false;
     DeleteAllowed = false;
     InsertAllowed = false;

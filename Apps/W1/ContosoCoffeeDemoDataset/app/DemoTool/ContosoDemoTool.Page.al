@@ -11,9 +11,6 @@ page 5194 "Contoso Demo Tool"
     DeleteAllowed = false;
     Editable = false;
     RefreshOnActivate = true;
-    Permissions =
-        tabledata "Service Mgt. Setup" = r,
-        tabledata "Manufacturing Setup" = r;
 
     layout
     {
@@ -117,28 +114,31 @@ page 5194 "Contoso Demo Tool"
     begin
         FeatureTelemetry.LogUptake('0000KZY', ContosoCoffeeDemoDatasetFeatureNameTok, Enum::"Feature Uptake Status"::Discovered);
         ContosoDemoTool.RefreshModules();
-        FilterModulesWithPermission();
+        FilterModulesWithApplicationAreas();
         FeatureTelemetry.LogUptake('0000KZZ', ContosoCoffeeDemoDatasetFeatureNameTok, Enum::"Feature Uptake Status"::"Set up");
     end;
 
-    local procedure FilterModulesWithPermission()
+    local procedure FilterModulesWithApplicationAreas()
     var
-        ServiceMgtSetup: Record "Service Mgt. Setup";
-        ManufacturingSetup: Record "Manufacturing Setup";
+        ApplicationAreaMgt: Codeunit "Application Area Mgmt. Facade";
+    begin
+        if not ApplicationAreaMgt.IsServiceEnabled() then
+            FilterOutModule(Enum::"Contoso Demo Data Module"::"Service Module");
+
+        if not ApplicationAreaMgt.IsManufacturingEnabled() then
+            FilterOutModule(Enum::"Contoso Demo Data Module"::"Manufacturing Module");
+    end;
+
+    local procedure FilterOutModule(Module: Enum "Contoso Demo Data Module")
+    var
         ModuleFilter: Text;
     begin
         ModuleFilter := Rec.GetFilter(Module);
 
-        if not ServiceMgtSetup.WritePermission() then
-            if ModuleFilter = '' then
-                Rec.SetFilter(Module, '<>%1', Enum::"Contoso Demo Data Module"::"Service Module")
-            else
-            Rec.SetFilter(Module, ModuleFilter + '&<>%1', Enum::"Contoso Demo Data Module"::"Service Module");
-
-        ModuleFilter := Rec.GetFilter(Module);
-
-        if not ManufacturingSetup.WritePermission() then
-            Rec.SetFilter(Module, ModuleFilter + '&<>%1', Enum::"Contoso Demo Data Module"::"Manufacturing Module");
+        if ModuleFilter = '' then
+            Rec.SetFilter(Module, '<>%1', Module)
+        else
+            Rec.SetFilter(Module, ModuleFilter + '&<>%1', Module);
     end;
 
     var

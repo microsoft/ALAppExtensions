@@ -46,9 +46,7 @@ codeunit 31021 "Vendor Ledg. Entry Handler CZZ"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"VendEntry-Apply Posted Entries", 'OnApplyVendEntryFormEntryOnAfterCheckEntryOpen', '', false, false)]
     local procedure CheckAdvanceOnApplyVendEntryFormEntryOnAfterCheckEntryOpen(ApplyingVendLedgEntry: Record "Vendor Ledger Entry")
     begin
-        if (ApplyingVendLedgEntry."Advance Letter No. CZZ" <> '') or
-           (ApplyingVendLedgEntry."Adv. Letter Template Code CZZ" <> '')
-        then
+        if ApplyingVendLedgEntry."Advance Letter No. CZZ" <> '' then
             Error(AppliedToAdvanceLetterErr);
     end;
 

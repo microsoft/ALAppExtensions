@@ -46,9 +46,7 @@ codeunit 31004 "Cust. Ledger Entry Handler CZZ"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"CustEntry-Apply Posted Entries", 'OnApplyCustEntryFormEntryOnAfterCheckEntryOpen', '', false, false)]
     local procedure CheckAdvanceOnApplyCustEntryFormEntryOnAfterCheckEntryOpen(ApplyingCustLedgEntry: Record "Cust. Ledger Entry")
     begin
-        if (ApplyingCustLedgEntry."Advance Letter No. CZZ" <> '') or
-           (ApplyingCustLedgEntry."Adv. Letter Template Code CZZ" <> '')
-        then
+        if ApplyingCustLedgEntry."Advance Letter No. CZZ" <> '' then
             Error(AppliedToAdvanceLetterErr);
     end;
 

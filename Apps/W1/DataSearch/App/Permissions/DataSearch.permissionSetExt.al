@@ -16,6 +16,7 @@ permissionsetextension 2681 "Data Search" extends "D365 BASIC"
         codeunit "Data Search Invocation" = X,
         codeunit "Data Search Object Mapping" = X,
         codeunit "Data Search Events" = X,
+        codeunit "Data Search Setup Changes" = X,
         page "Data Search" = X,
         page "Data Search Lines" = X,
         page "Data Search Result Records" = X,

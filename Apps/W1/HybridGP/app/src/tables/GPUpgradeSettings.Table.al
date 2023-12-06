@@ -1,3 +1,5 @@
+namespace Microsoft.DataMigration.GP;
+
 table 40150 "GP Upgrade Settings"
 {
     DataClassification = CustomerContent;

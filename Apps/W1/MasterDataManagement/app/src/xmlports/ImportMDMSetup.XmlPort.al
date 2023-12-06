@@ -74,6 +74,7 @@ xmlport 7231 ImportMDMSetup
                 }
                 fieldattribute(IntegrationTableMapping_OverwriteLocalChange; integrationTableMapping."Overwrite Local Change")
                 {
+                    FieldValidate = No;
                 }
                 fieldattribute(IntegrationTableMapping_ParentName; integrationTableMapping."Parent Name")
                 {

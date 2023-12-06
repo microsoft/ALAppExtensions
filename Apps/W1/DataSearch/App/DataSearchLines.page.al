@@ -49,7 +49,7 @@ page 2681 "Data Search lines"
 
                 trigger OnAction()
                 begin
-                    Page.RunModal(Page::"Data Search Setup (Table) List");
+                    RunSetupPage(Page::"Data Search Setup (Table) List");
                 end;
             }
             action(SetupLists)
@@ -61,7 +61,7 @@ page 2681 "Data Search lines"
 
                 trigger OnAction()
                 begin
-                    Page.RunModal(Page::"Data Search Setup (Lists)");
+                    RunSetupPage(Page::"Data Search Setup (Lists)");
                 end;
             }
         }
@@ -84,11 +84,14 @@ page 2681 "Data Search lines"
     end;
 
     var
+        ModifiedTablesSetup: List of [Integer];
+        RemovedTablesSetup: List of [Integer];
         GetStyleExprTxt: Text;
         MoreRecLbl: Label '%1: Show all results', Comment = '%1 is a table name, e.g. Customer';
         SearchString: Text;
         UnsortableDescription: Text;
         RoleCenterID: Integer;
+        LastChangedSetupNotification: Guid;
 
     internal procedure SetSearchParams(NewSearchString: Text; NewRoleCenterID: Integer)
     begin
@@ -124,6 +127,7 @@ page 2681 "Data Search lines"
             Rec.Init();
             Rec."Table No." := TableNo;
             Rec."Table Subtype" := TableSubtype;
+            Rec."Table/Type ID" := TableTypeID;
             Rec."Entry No." := 0;
             Rec."No. of Hits" := 2000000000 - DataSearchSetupTable."No. of Hits";
             Rec."Line Type" := Rec."Line Type"::Header;
@@ -138,6 +142,7 @@ page 2681 "Data Search lines"
                     Rec."Entry No." += 1;
                     Rec."Table No." := TableNo;
                     Rec."Table Subtype" := TableSubtype;
+                    Rec."Table/Type ID" := TableTypeID;
                     Rec."No. of Hits" := 2000000000 - DataSearchSetupTable."No. of Hits";
                     Clear(Rec."Parent ID");
                     Rec."Line Type" := Rec."Line Type"::MoreHeader;
@@ -148,6 +153,7 @@ page 2681 "Data Search lines"
                 Rec."Entry No." += 1;
                 Rec."Table No." := TableNo;
                 Rec."Table Subtype" := TableSubtype;
+                Rec."Table/Type ID" := TableTypeID;
                 Rec."No. of Hits" := 2000000000 - DataSearchSetupTable."No. of Hits";
                 Rec."Parent ID" := RecID;
                 Rec.Description := '  ' + CopyStr(NewResults.Values.Get(i), 1, MaxStrLen(Rec.Description) - 2);
@@ -165,6 +171,82 @@ page 2681 "Data Search lines"
         Rec.Reset();
         Rec.DeleteAll();
         SetDefaultView();
+        RecallLastNotification();
         CurrPage.Update(false);
+    end;
+
+    local procedure RunSetupPage(PageNo: Integer)
+    var
+        DataSearchSetupChanges: Codeunit "Data Search Setup Changes";
+        ChangedSetupNotification: Notification;
+        TrackChanges: Boolean;
+        SetupChangedMsg: Label 'You have made changes to the setup. Please select the Start search action for the new settings to take effect.';
+    begin
+        TrackChanges := SearchString <> '';
+        if TrackChanges then
+            RecallLastNotification();
+        BindSubscription(DataSearchSetupChanges);
+        Page.RunModal(PageNo);
+        if TrackChanges then
+            UnbindSubscription(DataSearchSetupChanges)
+        else
+            exit;
+        ModifiedTablesSetup := DataSearchSetupChanges.GetModifiedSetup();
+        RemovedTablesSetup := DataSearchSetupChanges.GetRemovedSetup();
+        if (ModifiedTablesSetup.Count() = 0) and (RemovedTablesSetup.Count() = 0) then
+            exit;
+        ChangedSetupNotification.Scope := ChangedSetupNotification.Scope::LocalScope;
+        ChangedSetupNotification.Message(SetupChangedMsg);
+        ChangedSetupNotification.Send();
+        LastChangedSetupNotification := ChangedSetupNotification.Id;
+    end;
+
+    internal procedure GetModifiedSetup(): List of [Integer];
+    begin
+        exit(ModifiedTablesSetup);
+    end;
+
+    internal procedure RemoveResultsForModifiedSetup();
+    begin
+        if (ModifiedTablesSetup.Count() = 0) and (RemovedTablesSetup.Count() = 0) then
+            exit;
+        Rec.Reset();
+        RemoveResultsForTableTypeIDList(ModifiedTablesSetup);
+        RemoveResultsForTableTypeIDList(RemovedTablesSetup);
+        SetDefaultView();
+        CurrPage.Update();
+        clear(ModifiedTablesSetup);
+        clear(RemovedTablesSetup);
+    end;
+
+    local procedure RemoveResultsForTableTypeIDList(var TablesSetup: List of [Integer])
+    var
+        TableTypeID: Integer;
+    begin
+        if TablesSetup.Count() = 0 then
+            exit;
+        foreach TableTypeID in TablesSetup do begin
+            Rec.SetRange("Table/Type ID", TableTypeID);
+            Rec.DeleteAll();
+        end;
+        Rec.SetRange("Table/Type ID");
+    end;
+
+    internal procedure HasChangedSetupNotification(): Boolean
+    var
+        NullGuid: Guid;
+    begin
+        exit(LastChangedSetupNotification <> NullGuid);
+    end;
+
+    internal procedure RecallLastNotification()
+    var
+        ChangedSetupNotification: Notification;
+    begin
+        if not HasChangedSetupNotification() then
+            exit;
+        ChangedSetupNotification.Id := LastChangedSetupNotification;
+        if ChangedSetupNotification.Recall() then;
+        Clear(LastChangedSetupNotification);
     end;
 }

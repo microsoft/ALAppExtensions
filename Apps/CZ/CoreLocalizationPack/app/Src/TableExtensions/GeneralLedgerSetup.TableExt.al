@@ -120,7 +120,8 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
                 CannotChangeFieldErr: Label 'You cannot change the contents of the %1 field because there are posted ledger entries.', Comment = '%1 = field caption';
                 DisableVATDateQst: Label 'Are you sure you want to disable VAT Date functionality?';
             begin
-                ReplaceVATDateMgtCZL.TestIsNotEnabled();
+                if ReplaceVATDateMgtCZL.IsEnabled() then
+                    exit;
                 if "Use VAT Date CZL" then begin
                     if ConfirmManagement.GetResponseOrDefault(StrSubstNo(InitVATDateQst, FieldCaption("Use VAT Date CZL"),
                       GLEntry.FieldCaption("VAT Date CZL"), GLEntry.FieldCaption("Posting Date")), true)

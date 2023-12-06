@@ -404,6 +404,7 @@ codeunit 30189 "Shpfy Variant API"
                 GraphQuery.Append(', compareAtPrice: null');
             end;
         if ShopifyVariant."Unit Cost" <> xShopifyVariant."Unit Cost" then begin
+            HasChange := true;
             GraphQuery.Append(', inventoryItem: {cost: \"');
             GraphQuery.Append(Format(ShopifyVariant."Unit Cost", 0, 9));
             GraphQuery.Append('\"}');

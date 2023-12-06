@@ -11,6 +11,7 @@ using Microsoft.CashFlow.Forecast;
 using Microsoft.CashFlow.Setup;
 using Microsoft.CashFlow.Worksheet;
 using Microsoft.EServices.EDocument;
+using Microsoft.Finance.CashDesk;
 using Microsoft.Finance.FinancialReports;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.VAT.Ledger;
@@ -29,7 +30,6 @@ using Microsoft.Sales.History;
 using Microsoft.Sales.Receivables;
 using System.Reflection;
 using System.Upgrade;
-using Microsoft.Finance.CashDesk;
 
 #pragma warning disable AL0432
 codeunit 31087 "Install Application CZZ"
@@ -251,6 +251,8 @@ codeunit 31087 "Install Application CZZ"
                     PurchAdvLetterHeaderCZZ."Currency Code" := PurchAdvanceLetterHeader."Currency Code";
                     PurchAdvLetterHeaderCZZ."Currency Factor" := PurchAdvanceLetterHeader."Currency Factor";
                     PurchAdvLetterHeaderCZZ."VAT Country/Region Code" := PurchAdvanceLetterHeader."VAT Country/Region Code";
+                    PurchAdvanceLetterHeader.CalcFields(Status);
+                    PurchAdvLetterHeaderCZZ.Status := GetStatus(PurchAdvanceLetterHeader.Status);
                     PurchAdvLetterHeaderCZZ."Automatic Post VAT Usage" := true;
                     PurchAdvLetterHeaderCZZ."Dimension Set ID" := PurchAdvanceLetterHeader."Dimension Set ID";
                     PurchAdvLetterHeaderCZZ."Incoming Document Entry No." := PurchAdvanceLetterHeader."Incoming Document Entry No.";

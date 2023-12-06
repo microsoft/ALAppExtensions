@@ -116,6 +116,7 @@ codeunit 6136 "E-Document Create Purch. Doc."
 
                 if Format(DocumentLine.Field(PurchaseLine.FieldNo(Type)).Value()) <> '0' then begin
                     EDocumentImportHelper.ProcessField(EDocument, DocumentLine, PurchaseLine.FieldNo("No."), TempDocumentLine.Field(PurchaseLine.FieldNo("No.")).Value());
+                    EDocumentImportHelper.ProcessField(EDocument, DocumentLine, PurchaseLine.FieldNo(Description), TempDocumentLine.Field(PurchaseLine.FieldNo(Description)).Value());
                     EDocumentImportHelper.ProcessField(EDocument, DocumentLine, PurchaseLine.FieldNo(Quantity), TempDocumentLine.Field(PurchaseLine.FieldNo(Quantity)).Value());
                     EDocumentImportHelper.ProcessField(EDocument, DocumentLine, PurchaseLine.FieldNo("Unit of Measure Code"), TempDocumentLine.Field(PurchaseLine.FieldNo("Unit of Measure Code")).Value());
                     EDocumentImportHelper.ProcessField(EDocument, DocumentLine, PurchaseLine.FieldNo("Direct Unit Cost"), TempDocumentLine.Field(PurchaseLine.FieldNo("Direct Unit Cost")).Value());

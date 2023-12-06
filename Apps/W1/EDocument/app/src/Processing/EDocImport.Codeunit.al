@@ -21,21 +21,23 @@ codeunit 6140 "E-Doc. Import"
         InStr: InStream;
         FileName: Text;
     begin
-        if Page.RunModal(Page::"E-Document Services", EDocumentService) = Action::LookupOK then begin
-            UploadIntoStream('', '', '', FileName, InStr);
+        if Page.RunModal(Page::"E-Document Services", EDocumentService) <> Action::LookupOK then
+            exit;
 
-            TempBlob.CreateOutStream(OutStr);
-            CopyStream(OutStr, InStr);
+        if not UploadIntoStream('', '', '', FileName, InStr) then
+            exit;
 
-            EDocument.Direction := EDocument.Direction::Incoming;
-            EDocument.Status := EDocument.Status::"In Progress";
-            if EDocument."Entry No" = 0 then
-                EDocument.Insert(true)
-            else
-                EDocument.Modify(true);
+        TempBlob.CreateOutStream(OutStr);
+        CopyStream(OutStr, InStr);
 
-            EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Imported);
-        end;
+        EDocument.Direction := EDocument.Direction::Incoming;
+        EDocument.Status := EDocument.Status::"In Progress";
+        if EDocument."Entry No" = 0 then
+            EDocument.Insert(true)
+        else
+            EDocument.Modify(true);
+
+        EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Imported);
     end;
 
     internal procedure GetBasicInfo(var EDocument: Record "E-Document")

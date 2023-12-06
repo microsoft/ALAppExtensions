@@ -302,12 +302,12 @@ codeunit 20352 "Connectivity App Definitions"
             Add app 'Bankfeed - Bank Statement Import & Reconciliation' to LT, DK, HU, GB
         ***************************************************/
 
-        AppId := '8051ee19-8246-489f-9f2c-4d89e1710f7e';
+        AppId := '74689c09-2ed3-4e69-a2e8-c9310a271b9a';
         AppName := 'Bankfeed - Bank Statement Import & Reconciliation';
         AppPublisher := 'Softera Baltic';
         AppDescription := 'Bank statement import & reconciliation.';
-        AppProviderSupportURL := 'https://www.softera.lt/en/supported-banks-softera-bankfeed/';
-        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.softera_baltic%7CAID.softeradokubank%7CPAPPID.8051ee19-8246-489f-9f2c-4d89e1710f7e';
+        AppProviderSupportURL := 'https://bankfeed.com/banks/';
+        AppSourceUrl := 'https://appsource.microsoft.com/en-us/product/dynamics-365-business-central/PUBID.softera_baltic%7CAID.softeradokubank%7CPAPPID.74689c09-2ed3-4e69-a2e8-c9310a271b9a';
         AppApprovedFor := 'LT,DK,HU,GB';
         AppWorksOn := 'W1,DK,GB';
 
@@ -337,7 +337,7 @@ codeunit 20352 "Connectivity App Definitions"
         AppPublisher := 'Sumango AS';
         AppDescription := 'AutoBank manage payments, recivables, refunds and reconciliation in all currencies directly from Business Central. Streamlines, simplifies and expands bank functionality without leaving your Business Central environment. Sumango AutoBank support banks in Norway, Sweden, Denmark, Finland, Germany, Portugal, United Kingdom and United States. Visit www.sumango.no for more information.';
         AppProviderSupportURL := 'https://oseberg.atlassian.net/wiki/spaces/Autobank/pages/2342191252/Integrated+banks';
-        AppSourceUrl := 'https://www.sumango.no';
+        AppSourceUrl := 'https://appsource.microsoft.com/nb-NO/product/dynamics-365-business-central/PUBID.sumango_as%7CAID.sumango_autobank%7CPAPPID.52508c8d-fb2b-49da-9657-f49859fd43cc';
         AppApprovedFor := 'NO,SE';
         AppWorksOn := 'NO,SE';
 

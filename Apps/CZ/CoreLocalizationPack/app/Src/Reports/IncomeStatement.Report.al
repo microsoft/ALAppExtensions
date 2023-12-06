@@ -853,12 +853,18 @@ report 11795 "Income Statement CZL"
             AccSchedName := AccSchedNameHidden;
         if ColumnLayoutNameHidden <> '' then
             ColumnLayoutName := ColumnLayoutNameHidden;
+
         if AccSchedName <> '' then
             if not AccScheduleName.Get(AccSchedName) then
                 AccSchedName := '';
-        if AccSchedName = '' then
+        if AccSchedName = '' then begin
+            AccScheduleName.SetRange("Acc. Schedule Type CZL", AccScheduleName."Acc. Schedule Type CZL"::"Income Statement");
+            if AccScheduleName.IsEmpty() then
+                AccScheduleName.SetRange("Acc. Schedule Type CZL");
             if AccScheduleName.FindFirst() then
                 AccSchedName := AccScheduleName.Name;
+        end;
+
         if AccScheduleName."Analysis View Name" <> '' then
             AnalysisView.Get(AccScheduleName."Analysis View Name")
         else begin

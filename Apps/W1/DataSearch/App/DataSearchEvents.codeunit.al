@@ -111,4 +111,13 @@ codeunit 2682 "Data Search Events"
     procedure OnGetTableSubTypeFromPage(PageNo: Integer; var TableSubtype: Integer)
     begin
     end;
+
+    /// <summary>
+    /// Allows the addition of additional filters for the specified <paramref name="RecordRef"/> during the search.
+    /// </summary>
+    /// <param name="RecordRef">The record on which the search is being conducted.</param>
+    [IntegrationEvent(false, false)]
+    procedure OnBeforeSearchTable(var RecordRef: RecordRef)
+    begin
+    end;
 }

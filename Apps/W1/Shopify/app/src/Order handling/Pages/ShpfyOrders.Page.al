@@ -1,3 +1,8 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Customer;
+
 /// <summary>
 /// Page Shpfy Orders (ID 30115).
 /// </summary>

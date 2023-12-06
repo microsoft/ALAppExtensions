@@ -21,7 +21,9 @@ codeunit 11294 "Import Company Size Codes"
         TotalLines: Integer;
         MatchesFound: Integer;
     begin
-        UploadIntoStream('', '', 'CSV Files|*.csv', FileName, InStream);
+        if not UploadIntoStream('', '', 'CSV Files|*.csv', FileName, InStream) then
+            exit;
+
         repeat
             if InStream.ReadText(Line) > 0 then begin
                 if ImportLine(Line) then

@@ -22,7 +22,12 @@ tableextension 11702 "Vendor CZL" extends Vendor
                 RegNoServiceConfigCZL: Record "Reg. No. Service Config CZL";
                 ResultRecordRef: RecordRef;
                 LogNotVerified: Boolean;
+                IsHandled: Boolean;
             begin
+                OnBeforeOnValidateRegistrationNoCZL(Rec, xRec, IsHandled);
+                if IsHandled then
+                    exit;
+
                 if not RegistrationNoMgtCZL.CheckRegistrationNo(GetRegistrationNoTrimmedCZL(), "No.", Database::Vendor) then
                     exit;
 
@@ -58,7 +63,12 @@ tableextension 11702 "Vendor CZL" extends Vendor
                 RegNoServiceConfigCZL: Record "Reg. No. Service Config CZL";
                 ResultRecordRef: RecordRef;
                 LogNotVerified: Boolean;
+                IsHandled: Boolean;
             begin
+                OnBeforeOnValidateRegistrationNoCZL(Rec, xRec, IsHandled);
+                if IsHandled then
+                    exit;
+
                 if not RegistrationNoMgtCZL.CheckRegistrationNo("Registration No. CZL", "No.", Database::Vendor) then
                     exit;
 
@@ -261,5 +271,10 @@ tableextension 11702 "Vendor CZL" extends Vendor
     procedure GetRegistrationNoTrimmedCZL(): Text[20]
     begin
         exit(CopyStr("Registration Number", 1, 20));
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeOnValidateRegistrationNoCZL(Vendor: Record "Vendor"; xVendor: Record "Vendor"; var IsHandled: Boolean)
+    begin
     end;
 }

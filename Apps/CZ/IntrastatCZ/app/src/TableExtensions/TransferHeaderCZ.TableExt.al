@@ -21,8 +21,9 @@ tableextension 31329 "Transfer Header CZ" extends "Transfer Header"
     var
         IntrastatReportSetup: Record "Intrastat Report Setup";
     begin
+        if not IntrastatReportSetup.Get() then
+            exit;
         if IsIntrastatTransactionCZL() and ShipOrReceiveInventoriableTypeItemsCZL() then begin
-            IntrastatReportSetup.Get();
             if IntrastatReportSetup."Transaction Type Mandatory CZ" then
                 TestField("Transaction Type");
             if IntrastatReportSetup."Transaction Spec. Mandatory CZ" then
