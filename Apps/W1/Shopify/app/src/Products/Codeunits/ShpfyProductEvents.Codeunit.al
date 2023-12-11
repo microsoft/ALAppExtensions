@@ -347,4 +347,21 @@ codeunit 30177 "Shpfy Product Events"
     internal procedure OnBeforeSendUpdateShopifyProductVariant(ShopifyShop: Record "Shpfy Shop"; var ShopifyVariant: Record "Shpfy Variant"; xShopifyVariant: Record "Shpfy Variant")
     begin
     end;
+
+    [IntegrationEvent(false, false)]
+    /// <summary> 
+    /// Raised Before Modify on Items.
+    /// </summary>
+    internal procedure OnDoUpdateItemVariantBeforeModify(Shop: Record "Shpfy Shop"; var ShopifyProduct: Record "Shpfy Product"; ShopifyVariant: var Item: Record Item; var IsModified: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    /// <summary> 
+    /// Raised Before Modify Items Variant.
+    /// </summary>
+    internal procedure OnDoUpdateItemVariantBeforeModify(Shop: Record "Shpfy Shop"; ShopifyVariant: Record "Shpfy Variant"; var ItemVariant: Record "Item Variant"; var IsModified: Boolean);
+    begin
+    end;
+
 }
