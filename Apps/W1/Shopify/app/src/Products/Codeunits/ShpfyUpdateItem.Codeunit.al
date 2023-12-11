@@ -86,8 +86,10 @@ codeunit 30188 "Shpfy Update Item"
                     Item."Vendor No." := Vendor."No.";
                 end;
         end;
+        ProductEvents.OnDoUpdateItemBeforeModify(Shop, ShopifyProduct, Item, IsModified);
         if IsModified then
             exit(item.Modify());
+        exit(false);
     end;
 
     /// <summary> 
@@ -97,11 +99,17 @@ codeunit 30188 "Shpfy Update Item"
     /// <param name="ItemVariant">Parameter of type Record "Item Variant".</param>
     /// <returns>Return value of type Boolean.</returns>
     local procedure DoUpdateItemVariant(ShopifyVariant: Record "Shpfy Variant"; var ItemVariant: Record "Item Variant"): Boolean
+    var
+        IsModified: Boolean;
     begin
         if ItemVariant.Description <> ShopifyVariant.Title then begin
             ItemVariant.Description := ShopifyVariant.Title;
-            exit(ItemVariant.Modify());
+            IsModified := true;
         end;
+        ProductEvents.OnDoUpdateItemVariantBeforeModify(Shop, ShopifyVariant, ItemVariant, IsModified);
+        if IsModified then
+            exit(item.Modify());
+        exit(false);
     end;
 
     /// <summary> 
