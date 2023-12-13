@@ -1089,7 +1089,7 @@ codeunit 148017 "FEC Audit File Export Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandlerYes')]
+    [HandlerFunctions('ConfirmHandlerYes')]
     procedure ExportCustomerDetailedBalanceTwoAdjustedInvoicesFCYSameAccount()
     var
         AuditFile: Record "Audit File";
@@ -1118,11 +1118,7 @@ codeunit 148017 "FEC Audit File Export Tests"
 
         // [GIVEN] Adjusted currency exchange rate on 31.12.2018 with updated exchange rate
         CreateCurrencyExchRate(CurrencyCode, WorkDate() - 1);
-#if not CLEAN20
-        LibraryERM.RunAdjustExchangeRatesSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#else
         LibraryERM.RunExchRateAdjustmentSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#endif
         // [GIVEN] An entry for "Cust2" on 01.01.2019
         CreatePostCustGenJnlLineOnDate(CustomerNo[2], '', WorkDate());
 
@@ -1143,7 +1139,7 @@ codeunit 148017 "FEC Audit File Export Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandlerYes')]
+    [HandlerFunctions('ConfirmHandlerYes')]
     procedure ExportCustomerDetailedBalanceTwoAdjustedInvoicesFCYDiffAccount()
     var
         AuditFile: Record "Audit File";
@@ -1173,11 +1169,7 @@ codeunit 148017 "FEC Audit File Export Tests"
 
         // [GIVEN] Adjusted currency exchange rate on 31.12.2018 with updated exchange rate
         CreateCurrencyExchRate(CurrencyCode, WorkDate() - 1);
-#if not CLEAN20
-        LibraryERM.RunAdjustExchangeRatesSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#else
         LibraryERM.RunExchRateAdjustmentSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#endif
 
         // [GIVEN] An entry for "Cust2" on 01.01.2019
         CreatePostCustGenJnlLineOnDate(CustomerNo[2], '', WorkDate());
@@ -1510,7 +1502,7 @@ codeunit 148017 "FEC Audit File Export Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandlerYes')]
+    [HandlerFunctions('ConfirmHandlerYes')]
     procedure ExportVendorDetailedBalanceTwoAdjustedInvoicesFCYSameAccount()
     var
         AuditFile: Record "Audit File";
@@ -1539,11 +1531,7 @@ codeunit 148017 "FEC Audit File Export Tests"
 
         // [GIVEN] Adjusted currency exchange rate on 31.12.2018 with updated exchange rate
         CreateCurrencyExchRate(CurrencyCode, WorkDate() - 1);
-#if not CLEAN20
-        LibraryERM.RunAdjustExchangeRatesSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#else
         LibraryERM.RunExchRateAdjustmentSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#endif
         // [GIVEN] An entry for "Vend2" on 01.01.2019
         CreatePostVendGenJnlLineOnDate(VendorNo[2], '', WorkDate());
 
@@ -1564,7 +1552,7 @@ codeunit 148017 "FEC Audit File Export Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandlerYes')]
+    [HandlerFunctions('ConfirmHandlerYes')]
     procedure ExportVendorDetailedBalanceTwoAdjustedInvoicesFCYDiffAccount()
     var
         AuditFile: Record "Audit File";
@@ -1593,11 +1581,7 @@ codeunit 148017 "FEC Audit File Export Tests"
 
         // [GIVEN] Adjusted currency exchange rate on 31.12.2018 with updated exchange rate
         CreateCurrencyExchRate(CurrencyCode, WorkDate() - 1);
-#if not CLEAN20
-        LibraryERM.RunAdjustExchangeRatesSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#else
         LibraryERM.RunExchRateAdjustmentSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#endif
         // [GIVEN] An entry for "Vend2" on 01.01.2019
         CreatePostVendGenJnlLineOnDate(VendorNo[2], '', WorkDate());
 
@@ -1872,7 +1856,7 @@ codeunit 148017 "FEC Audit File Export Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandlerYes')]
+    [HandlerFunctions('ConfirmHandlerYes')]
     procedure ExportBankAccountDetailedBalanceTwoAdjustedEntriesFCYSameAccount()
     var
         AuditFile: Record "Audit File";
@@ -1902,11 +1886,7 @@ codeunit 148017 "FEC Audit File Export Tests"
 
         // [GIVEN] Adjusted currency exchange rate on 31.12.2018 with updated exchange rate
         CreateCurrencyExchRate(CurrencyCode, WorkDate() - 1);
-#if not CLEAN20
-        LibraryERM.RunAdjustExchangeRatesSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#else
         LibraryERM.RunExchRateAdjustmentSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#endif
 
         // [GIVEN] An entry for "Bank2" on 01.01.2019
         CreatePostBankAccGenJnlLineOnDate(BankAccountNo[2], CurrencyCode, WorkDate());
@@ -1928,7 +1908,7 @@ codeunit 148017 "FEC Audit File Export Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandlerYes')]
+    [HandlerFunctions('ConfirmHandlerYes')]
     procedure ExportBankAccountDetailedBalanceTwoAdjustedEntriesFCYDiffAccount()
     var
         AuditFile: Record "Audit File";
@@ -1958,11 +1938,7 @@ codeunit 148017 "FEC Audit File Export Tests"
 
         // [GIVEN] Adjusted currency exchange rate on 31.12.2018 with updated exchange rate
         CreateCurrencyExchRate(CurrencyCode, WorkDate() - 1);
-#if not CLEAN20
-        LibraryERM.RunAdjustExchangeRatesSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#else
         LibraryERM.RunExchRateAdjustmentSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#endif
 
         // [GIVEN] An entry for "Bank2" on 01.01.2019
         CreatePostBankAccGenJnlLineOnDate(BankAccountNo[2], CurrencyCode, WorkDate());
@@ -3527,11 +3503,6 @@ codeunit 148017 "FEC Audit File Export Tests"
         ActivityLog."Detailed Info".CreateInStream(ErrorTextInStream);
         ErrorTextInStream.ReadText(ErrorText);
         Assert.AreEqual(ExpectedError, ErrorText, '');
-    end;
-
-    [MessageHandler]
-    procedure MessageHandler(Message: Text[1024])
-    begin
     end;
 
     [ConfirmHandler]

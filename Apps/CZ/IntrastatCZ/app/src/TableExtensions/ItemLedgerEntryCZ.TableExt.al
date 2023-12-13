@@ -6,8 +6,6 @@ namespace Microsoft.Inventory.Intrastat;
 
 using Microsoft.Inventory.Ledger;
 using Microsoft.Sales.Document;
-using Microsoft.Sales.Customer;
-using Microsoft.Purchases.Vendor;
 
 tableextension 31303 "Item Ledger Entry CZ" extends "Item Ledger Entry"
 {

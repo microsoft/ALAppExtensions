@@ -2,7 +2,7 @@
     "id":  "6f2c034f-5ebe-4eae-b34c-90a0d4e87687",
     "name":  "_Exclude_Business_Events_",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Business Events. Use business events to notify and trigger external systems",
     "description":  "Business Events. Use business events to notify and trigger external systems",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -17,7 +17,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  38500,
@@ -30,5 +30,5 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "23.3.0.0"
+    "application":  "24.0.0.0"
 }

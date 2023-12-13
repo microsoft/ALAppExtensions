@@ -2,6 +2,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Shared.Report;
+
+using System.Environment.Configuration;
+using System.Reflection;
 /// <summary>
 /// A dialog page for adding new report layouts.
 /// </summary>

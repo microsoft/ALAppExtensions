@@ -1,41 +1,37 @@
 {
-    "id":  "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
-    "name":  "E-Document Core",
-    "publisher":  "Microsoft",
-    "brief":  "The Dynamics 365 Business Central E-Documents module enables different models of electronic invoicing, available for additional localizations.",
-    "description":  "Business Central's E-Documents module is the foundation layer for all e-invoicing standards covering most common processes, but it can be used for other electronic documents. The module is easily extendable with the country-based e-invoicing apps. The E-Documents app covers both sales and purchase processes and can have different lifecycles from standard invoices in Business Central.",
-    "version":  "23.3.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2204541",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206603",
-    "dependencies":  [
-
-                     ],
+    "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
+    "name": "E-Document Core",
+    "publisher": "Microsoft",
+    "brief": "The Dynamics 365 Business Central E-Documents module enables different models of electronic invoicing, available for additional localizations.",
+    "description": "Business Central's E-Documents module is the foundation layer for all e-invoicing standards covering most common processes, but it can be used for other electronic documents. The module is easily extendable with the country-based e-invoicing apps. The E-Documents app covers both sales and purchase processes and can have different lifecycles from standard invoices in Business Central.",
+    "version": "24.0.0.0",
+    "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
+    "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo": "ExtensionLogo.png",
+    "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2206603",
+    "dependencies": [],
     "internalsVisibleTo":  [
-                               {
-                                   "id":  "e1d97edc-c239-46b4-8d84-6368bdf67c8c",
-                                   "name":  "E-Document Core Tests",
-                                   "publisher":  "Microsoft"
-                               }
-                           ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "23.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  6100,
-                         "to":  6170
-                     }
-                 ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "23.3.0.0",
-    "target":  "Cloud"
+        {
+            "id":  "e1d97edc-c239-46b4-8d84-6368bdf67c8c",
+            "name":  "E-Document Core Tests",
+            "publisher":  "Microsoft"
+        }
+    ],                     
+    "screenshots": [],
+    "platform": "24.0.0.0",
+    "idRanges": [
+        {
+            "from": 6100,
+            "to": 6170
+        }
+    ],
+    "resourceExposurePolicy": {
+        "allowDebugging": true,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    },
+    "application": "24.0.0.0",
+    "target": "Cloud"
 }

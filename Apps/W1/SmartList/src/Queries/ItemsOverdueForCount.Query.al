@@ -1,7 +1,7 @@
 query 2557 "Items Overdue For Count"
 {
     QueryType = Normal;
-    OrderBy = ascending (No);
+    OrderBy = ascending(No);
     Caption = 'Items Overdue For Count';
     QueryCategory = 'Item List';
 
@@ -9,7 +9,7 @@ query 2557 "Items Overdue For Count"
     {
         dataitem(Item; Item)
         {
-            DataItemTableFilter = "Next Counting Start Date" = filter (<> 0DT);
+            DataItemTableFilter = "Next Counting Start Date" = filter(<> 0DT);
             column(No; "No.")
             {
                 Caption = 'No.';
@@ -47,7 +47,6 @@ query 2557 "Items Overdue For Count"
     }
 
     trigger OnBeforeOpen()
-    var
     begin
         SetFilter(Next_Counting_Start_Date, '<%1', Today());
     end;

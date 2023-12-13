@@ -2,7 +2,7 @@
     "id":  "6555cb10-63ea-4ec0-99aa-8e6a4db67c87",
     "name":  "Core Localization Pack for Czech Tests",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Tests for the Core Localization Pack for Czech application.",
     "description":  "Tests for the Core Localization Pack for Czech application.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -16,25 +16,25 @@
                              "id":  "267b59d3-7302-44c5-ba77-c87000380514",
                              "name":  "Core Localization Pack for Czech",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "5095f467-0a01-4b99-99d1-9ff1237d286f",
                              "publisher":  "Microsoft",
                              "name":  "Library Variable Storage",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  148000,
@@ -47,5 +47,5 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "23.3.0.0"
+    "application":  "24.0.0.0"
 }

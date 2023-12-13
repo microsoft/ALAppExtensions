@@ -19,7 +19,6 @@ codeunit 20600 "App Area Mgmt BF"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Application Area Mgmt.", 'OnGetEssentialExperienceAppAreas', '', true, true)]
     local procedure OnGetEssentialExperienceAppAreas(var TempApplicationAreaSetup: Record "Application Area Setup" temporary)
-    var
     begin
         Clear(TempEssentialApplicationAreaSetup);
         TempEssentialApplicationAreaSetup := TempApplicationAreaSetup;

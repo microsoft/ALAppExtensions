@@ -222,7 +222,6 @@ page 2650 "Email Printer Settings"
     end;
 
     trigger OnDeleteRecord(): Boolean
-    var
     begin
         SetupPrinters.DeletePrinterSettings(ID);
         DeleteMode := true;

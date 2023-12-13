@@ -12,7 +12,9 @@ using Microsoft.Finance.GST.Base;
 using Microsoft.Finance.TaxBase;
 using Microsoft.Finance.TaxEngine.TaxTypeHandler;
 using Microsoft.Foundation.AuditCodes;
+#if not CLEAN22
 using Microsoft.Foundation.Enums;
+#endif
 using Microsoft.Foundation.NoSeries;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
@@ -404,7 +406,6 @@ codeunit 18390 "GST Transfer Order Receipt"
 
         GSTSetup.TestField("GST Tax Type");
         GSTSetup.TestField("Cess Tax Type");
-
         TransferHeader.Get(DocNo);
 
         TransferLine.Reset();

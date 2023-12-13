@@ -34,7 +34,7 @@ pageextension 18971 "Payment Journal VI" extends "Payment Journal"
         addafter("Void Check")
         {
 #if not CLEAN23
-#pragma warning disable AL0758
+#pragma warning disable AL0678
             action(Void_Check)
             {
                 ApplicationArea = Basic, Suite;
@@ -51,7 +51,7 @@ pageextension 18971 "Payment Journal VI" extends "Payment Journal"
                     VoidCheckVoucher();
                 end;
             }
-#pragma warning restore AL0758
+#pragma warning restore AL0678
 #endif            
             action("IN_Void_Check")
             {

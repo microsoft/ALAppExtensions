@@ -26,9 +26,9 @@ codeunit 147103 "CD Transfer"
         TearDownErr: Label 'Error in TearDown';
         TemporaryPackageNoIsNotEqualErr: Label 'Temporary CD Number must be equal to ''No''  in Package No. Information';
         DoYouWantPostDirectTransferMsg: Label 'Do you want to post the Direct Transfer?';
-        IncorrectConfirmDialogOpenedMsg: Label 'Incorrect confirm dialog opened: ';
+        IncorrectConfirmDialogOpenedMsg: Label 'Incorrect confirm dialog opened: %1', Comment = '%1 is the question shown in the confirm dialog';
         HasBeenDeletedMsg: Label 'is now deleted';
-        UnexpectedMsg: Label 'Unexpected message: ';
+        UnexpectedMsg: Label 'Unexpected message: %1', Comment = '%1 is the message shown in the message dialog';
 
     local procedure Initialize()
     var
@@ -562,7 +562,7 @@ codeunit 147103 "CD Transfer"
         if StrPos(Question, DoYouWantPostDirectTransferMsg) <> 0 then
             Reply := true
         else
-            Error(IncorrectConfirmDialogOpenedMsg + Question);
+            Error(IncorrectConfirmDialogOpenedMsg, Question);
     end;
 
     [ConfirmHandler]
@@ -584,7 +584,7 @@ codeunit 147103 "CD Transfer"
             temp:
                 ;
             else
-                Error(UnexpectedMsg + msg);
+                Error(UnexpectedMsg, msg);
         end;
     end;
 }

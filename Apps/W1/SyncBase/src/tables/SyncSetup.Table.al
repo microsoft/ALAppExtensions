@@ -5,6 +5,15 @@ table 2400 "Sync Setup"
     Caption = 'Sync Setup';
     DataClassification = SystemMetadata;
     ReplicateData = false;
+#if not CLEAN24
+    ObsoleteState = Pending;
+    ObsoleteReason = 'The extension is being obsoleted.';
+    ObsoleteTag = '24.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteReason = 'The extension is being obsoleted.';
+    ObsoleteTag = '27.0';
+#endif
 
     fields
     {
@@ -32,6 +41,8 @@ table 2400 "Sync Setup"
         }
     }
 
+#if not CLEAN24
+    [Obsolete('The extension is being obsoleted.', '24.0')]
     [Scope('Personalization')]
     procedure GetSingleInstance()
     begin
@@ -47,5 +58,6 @@ table 2400 "Sync Setup"
     begin
         "Max No. of sync attempts" := 10;
     end;
+#endif
 }
 

@@ -2,7 +2,7 @@
     "id":  "2654d7e7-9afd-4947-9e02-6bb8f3e0cd04",
     "name":  "Universal Print Integration",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Provides functionality for integrating with Microsoft 365 Universal Print.",
     "description":  "Provides functionality for using Microsoft 365 Universal Print to let users print to any printer managed by their organization from any device using their AAD credentials.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
@@ -10,8 +10,8 @@
     "help":  "https://go.microsoft.com/fwlink/?linkid=2206179",
     "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
     "logo":  "ExtensionLogo.png",
-    "application":  "23.3.0.0",
-    "platform":  "23.0.0.0",
+    "application":  "24.0.0.0",
+    "platform":  "24.0.0.0",
     "screenshots":  [
 
                     ],

@@ -78,7 +78,28 @@ page 6361 "EDoc Ext Connection Setup Card"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the company ID.';
-                    ShowMandatory = true;
+                }
+            }
+            group(Authorize)
+            {
+                field(AuthorizationStatusControl; 'Authorize')
+                {
+                    ShowCaption = false;
+                    ApplicationArea = Basic, Suite;
+                    Editable = false;
+                    ToolTip = 'Opens the OAuth 2.0 setup page where you can specify the data and authorize.';
+
+                    trigger OnDrillDown()
+                    var
+                        OAuth20SetupPage: Page "OAuth 2.0 Setup";
+                    begin
+                        Rec.TestField("Client ID");
+                        Rec.TestField("Client Secret");
+                        OAuth20Setup.FindLast();
+                        OAuth20SetupPage.SetRecord(OAuth20Setup);
+                        OAuth20SetupPage.RunModal();
+                        OAuth20Setup.Find();
+                    end;
                 }
             }
         }
@@ -105,6 +126,23 @@ page 6361 "EDoc Ext Connection Setup Card"
                     PageroAuth.OpenOAuthSetupPage();
                 end;
             }
+            action(RunJobQueue)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Set up Job Queue';
+                Image = Setup;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                ToolTip = 'Set up Job Queue.';
+
+                trigger OnAction()
+                var
+                    PageroJobHelper: Codeunit "Pagero Processing";
+                begin
+                    PageroJobHelper.SetUpJobQueueEntry();
+                end;
+            }
         }
     }
 
@@ -117,6 +155,8 @@ page 6361 "EDoc Ext Connection Setup Card"
             Rec."DocumentAPI Url" := DocumentAPITxt;
             Rec."Fileparts URL" := FilepartAPITxt;
             Rec.Insert();
+
+            InitPageroSetup();
         end;
 
         FeatureTelemetry.LogUptake('0000LST', ExternalServiceTok, Enum::"Feature Uptake Status"::Discovered);
@@ -124,7 +164,19 @@ page 6361 "EDoc Ext Connection Setup Card"
         ClientSecret := Rec."Client Secret";
     end;
 
+    procedure InitPageroSetup()
     var
+        OAuth20: Codeunit OAuth2;
+        RedirectUrl: Text;
+    begin
+        OAuth20.GetDefaultRedirectURL(RedirectUrl);
+        Rec.Validate("Redirect URL", CopyStr(RedirectUrl, 1, MaxStrLen(Rec."Redirect URL")));
+        Rec.Modify();
+    end;
+
+
+    var
+        OAuth20Setup: Record "OAuth 2.0 Setup";
         PageroAuth: Codeunit "Pagero Auth.";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         ExternalServiceTok: Label 'ExternalServiceConnector', Locked = true;

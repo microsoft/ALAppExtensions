@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.FixedAssets.FADepreciation;
 
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Period;
 
 codeunit 18634 "Fixed Asset Date Calculation"

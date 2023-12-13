@@ -236,6 +236,14 @@ table 30102 "Shpfy Shop"
             Caption = 'Export Customer to Shopify';
             DataClassification = CustomerContent;
             InitValue = true;
+            ObsoleteReason = 'Replaced with action "Add Customer to Shopify" in Shopify Customers page.';
+#if not CLEAN24
+            ObsoleteState = Pending;
+            ObsoleteTag = '24.0';
+#else
+                    ObsoleteState = Removed;
+                    ObsoleteTag = '27.0';
+#endif
         }
         field(30; "Shopify Can Update Customer"; Boolean)
         {
@@ -512,7 +520,7 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Return Location';
             DataClassification = CustomerContent;
-            TableRelation = Location WHERE("Use As In-Transit" = CONST(false));
+            TableRelation = Location where("Use As In-Transit" = const(false));
         }
         field(75; "Refund Acc. non-restock Items"; Code[20])
         {
@@ -549,13 +557,8 @@ table 30102 "Shpfy Shop"
             Editable = false;
             Access = Internal;
             ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
-#if not CLEAN21
-            ObsoleteTag = '21.0';
-            ObsoleteState = Pending;
-#else
             ObsoleteTag = '24.0';
             ObsoleteState = Removed;
-#endif
         }
         field(101; "Collection Last Import Version"; BigInteger)
         {
@@ -564,13 +567,8 @@ table 30102 "Shpfy Shop"
             Editable = false;
             Access = Internal;
             ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
-#if not CLEAN21
-            ObsoleteTag = '21.0';
-            ObsoleteState = Pending;
-#else
             ObsoleteTag = '24.0';
             ObsoleteState = Removed;
-#endif
         }
         field(102; "Product Last Export Version"; BigInteger)
         {
@@ -579,13 +577,8 @@ table 30102 "Shpfy Shop"
             Editable = false;
             Access = Internal;
             ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
-#if not CLEAN21
-            ObsoleteTag = '21.0';
-            ObsoleteState = Pending;
-#else
             ObsoleteTag = '24.0';
             ObsoleteState = Removed;
-#endif
         }
         field(103; "Product Last Import Version"; BigInteger)
         {
@@ -594,13 +587,8 @@ table 30102 "Shpfy Shop"
             Editable = false;
             Access = Internal;
             ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
-#if not CLEAN21
-            ObsoleteTag = '21.0';
-            ObsoleteState = Pending;
-#else
             ObsoleteTag = '24.0';
             ObsoleteState = Removed;
-#endif
         }
 #pragma warning disable AS0004
         field(104; "SKU Mapping"; Enum "Shpfy SKU Mapping")
@@ -707,6 +695,28 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             InitValue = true;
         }
+        field(117; "B2B Enabled"; Boolean)
+        {
+            Caption = 'B2B Enabled';
+            DataClassification = SystemMetadata;
+        }
+        field(118; "Can Update Shopify Companies"; Boolean)
+        {
+            Caption = 'Can Update Shopify Companies';
+            DataClassification = CustomerContent;
+            InitValue = false;
+        }
+        field(119; "Default Contact Permission"; Enum "Shpfy Default Cont. Permission")
+        {
+            Caption = 'Default Contact Permission';
+            DataClassification = CustomerContent;
+            InitValue = "Ordering Only";
+        }
+        field(120; "Auto Create Catalog"; Boolean)
+        {
+            Caption = 'Auto Create Catalog';
+            DataClassification = SystemMetadata;
+        }
         field(200; "Shop Id"; Integer)
         {
             DataClassification = SystemMetadata;
@@ -808,6 +818,11 @@ table 30102 "Shpfy Shop"
         end;
     end;
 
+    internal procedure GetEmptySyncTime(): DateTime
+    begin
+        exit(CreateDateTime(20040101D, 0T));
+    end;
+
     internal procedure GetLastSyncTime(Type: Enum "Shpfy Synchronization Type"): DateTime
     var
         SynchronizationInfo: Record "Shpfy Synchronization Info";
@@ -818,11 +833,17 @@ table 30102 "Shpfy Shop"
                 Rec.Modify();
             end;
             if SynchronizationInfo.Get(Format(Rec."Shop Id"), Type) then
-                exit(SynchronizationInfo."Last Sync Time");
+                if SynchronizationInfo."Last Sync Time" = 0DT then
+                    exit(GetEmptySyncTime())
+                else
+                    exit(SynchronizationInfo."Last Sync Time");
         end;
         if SynchronizationInfo.Get(Rec.Code, Type) then
-            exit(SynchronizationInfo."Last Sync Time");
-        exit(0DT);
+            if SynchronizationInfo."Last Sync Time" = 0DT then
+                exit(GetEmptySyncTime())
+            else
+                exit(SynchronizationInfo."Last Sync Time");
+        exit(GetEmptySyncTime());
     end;
 
     internal procedure SetLastSyncTime(Type: Enum "Shpfy Synchronization Type")
@@ -930,5 +951,23 @@ table 30102 "Shpfy Shop"
 
         RetentionPolicySetup.Validate(Enabled, true);
         RetentionPolicySetup.Modify(true);
+    end;
+
+    internal procedure GetB2BEnabled(): Boolean;
+    var
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        JsonHelper: Codeunit "Shpfy Json Helper";
+        JResponse: JsonToken;
+        JItem: JsonToken;
+    begin
+        CommunicationMgt.SetShop(Rec);
+        JResponse := CommunicationMgt.ExecuteGraphQL('{"query":"query { shop { name plan { partnerDevelopment shopifyPlus } } }"}');
+        if JResponse.SelectToken('$.data.shop.plan', JItem) then
+            if JItem.IsObject then begin
+                if JsonHelper.GetValueAsBoolean(JItem, 'shopifyPlus') then
+                    exit(true);
+                if JsonHelper.GetValueAsBoolean(JItem, 'partnerDevelopment') then
+                    exit(true);
+            end;
     end;
 }

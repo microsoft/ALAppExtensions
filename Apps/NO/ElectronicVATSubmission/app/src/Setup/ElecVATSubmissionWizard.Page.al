@@ -5,7 +5,9 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Finance.AuditFileExport;
+#if not CLEAN23
 using Microsoft.Finance.VAT.Setup;
+#endif
 using System.Environment;
 using System.Environment.Configuration;
 using System.Security.Authentication;

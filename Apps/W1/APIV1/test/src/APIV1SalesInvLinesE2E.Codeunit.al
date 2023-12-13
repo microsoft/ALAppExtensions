@@ -1328,7 +1328,6 @@ codeunit 139734 "APIV1 - Sales Inv. Lines E2E"
     end;
 
     procedure GetLineSubURL(DocumentId: Text; Sequence: Integer; ServiceLinesName: Text): Text
-    var
     begin
         EXIT(ServiceLinesName + '(''' + SalesInvoiceAggregator.GetIdFromDocumentIdAndSequence(DocumentId, Sequence) + ''')');
     end;

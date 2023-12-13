@@ -4583,7 +4583,6 @@ codeunit 18916 "TCS On Sales"
     end;
 
     local procedure GenerateTaxComponentsPercentage()
-    var
     begin
         Storage.Set(TCSPercentageLbl, Format(LibraryRandom.RandIntInRange(2, 4)));
         Storage.Set(NonPANTCSPercentageLbl, Format(LibraryRandom.RandIntInRange(6, 10)));
@@ -4738,7 +4737,6 @@ codeunit 18916 "TCS On Sales"
 
     [PageHandler]
     procedure CustomerInvoiceDiscountPageHandler(var CustInvDisc: TestPage "Cust. Invoice Discounts");
-    var
     begin
         CustInvDisc."Discount %".SetValue(LibraryRandom.RandIntInRange(1, 4));
         CustInvDisc.OK().Invoke();

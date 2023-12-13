@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Provides functionality to use the printer's email address to send print jobs to the printer.",
     "description":  "Provides functionality to use the printer's email address to send print jobs to the printer.",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=724013",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2118801",
@@ -19,7 +19,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "target":  "OnPrem",
     "idRanges":  [
                      {
@@ -32,7 +32,7 @@
                      }
                  ],
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2118801",
-    "application":  "23.3.0.0",
+    "application":  "24.0.0.0",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  true,
                                    "allowDownloadingSource":  true,

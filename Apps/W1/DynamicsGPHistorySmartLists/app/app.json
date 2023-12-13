@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "This extension will allow you to query your Dynamics GP history data with your Dynamics 365 Business Central cloud tenant.",
     "description":  "This extension will add queries for your Dynamics GP history data that is in your Dynamics 365 Business Central cloud tenant.  This will enable you to view and search your Dynamics GP history data, and provide you with anytime, anywhere access.",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=825900",
@@ -16,13 +16,13 @@
                              "id":  "feeb3504-556e-4790-b28d-a2b9ce302d81",
                              "name":  "Dynamics GP Intelligent Cloud",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  1,
@@ -35,5 +35,5 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "23.3.0.0"
+    "application":  "24.0.0.0"
 }

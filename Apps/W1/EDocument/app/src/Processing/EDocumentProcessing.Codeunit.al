@@ -9,6 +9,8 @@ using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.FinanceCharge;
 using Microsoft.Sales.History;
@@ -152,11 +154,22 @@ codeunit 6108 "E-Document Processing"
     end;
 
     local procedure GetDocSendingProfileForCustVend(CustomerNo: Code[20]; VendorNo: Code[20]) DocumentSendingProfile: Record "Document Sending Profile";
+    var
+        Customer: Record Customer;
+        Vendor: Record Vendor;
     begin
-        if CustomerNo <> '' then
-            DocumentSendingProfile.GetDefaultForCustomer(CustomerNo, DocumentSendingProfile)
-        else
-            DocumentSendingProfile.GetDefaultForVendor(VendorNo, DocumentSendingProfile);
+        if CustomerNo <> '' then begin
+            if Customer.Get(CustomerNo) then
+                if DocumentSendingProfile.Get(Customer."Document Sending Profile") then
+                    exit;
+        end else
+            if Vendor.Get(VendorNo) then
+                if DocumentSendingProfile.Get(Vendor."Document Sending Profile") then
+                    exit;
+
+        DocumentSendingProfile.SetRange(Default, true);
+        if not DocumentSendingProfile.FindFirst() then
+            Clear(DocumentSendingProfile);
     end;
 
     local procedure GetPostedRecord(var EDocument: Record "E-Document"; var RelatedRecord: Variant): Boolean

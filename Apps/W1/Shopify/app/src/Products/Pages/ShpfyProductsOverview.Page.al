@@ -23,7 +23,7 @@ page 30143 "Shpfy Products Overview"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the product in Shopify.';
                 }
-                field("Shop Code"; "Shop Code")
+                field("Shop Code"; Rec."Shop Code")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the shop in Shopify.';

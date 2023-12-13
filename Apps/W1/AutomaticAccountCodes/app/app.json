@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Automatic account codes are used to automate postings related to payroll overhead.",
     "description":  "When posting total salary expenses at the end of the month, automatic account codes can be used to assign a percentage of the total salary to automatically post as overhead expenses.",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2204541",
@@ -14,7 +14,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  4850,
@@ -26,6 +26,6 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "23.3.0.0",
+    "application":  "24.0.0.0",
     "target":  "Cloud"
 }

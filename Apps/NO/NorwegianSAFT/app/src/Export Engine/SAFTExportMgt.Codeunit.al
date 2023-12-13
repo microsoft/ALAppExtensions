@@ -8,7 +8,9 @@ using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Reporting;
+#if not CLEAN23
 using Microsoft.Finance.VAT.Setup;
+#endif
 using Microsoft.Foundation.Company;
 using Microsoft.Utilities;
 using System;

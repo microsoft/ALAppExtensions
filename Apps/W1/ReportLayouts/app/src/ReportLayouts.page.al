@@ -2,6 +2,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Shared.Report;
+
+using System.Reflection;
+using System.Environment.Configuration;
+using System.Integration;
 /// <summary>
 /// The report layouts page, used for adding/deleting/editing user and extension defined report layouts.
 /// </summary>

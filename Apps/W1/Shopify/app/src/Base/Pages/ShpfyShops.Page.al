@@ -42,4 +42,11 @@ page 30102 "Shpfy Shops"
             }
         }
     }
+
+    trigger OnOpenPage()
+    var
+        UpgradeMgt: Codeunit "Shpfy Upgrade Mgt.";
+    begin
+        UpgradeMgt.SetB2BEnabled();
+    end;
 }

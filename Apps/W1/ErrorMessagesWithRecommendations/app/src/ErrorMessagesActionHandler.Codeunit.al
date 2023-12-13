@@ -3,6 +3,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
+namespace Microsoft.Shared.Error;
+
+using System.Utilities;
+
 /// <summary>
 /// Exposes the functionality to handle recommended actions on the error messages page.
 /// </summary>

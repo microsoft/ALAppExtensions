@@ -18,7 +18,7 @@ tableextension 4853 "AutoAcc. Invoice Post. Buffer" extends "Invoice Post. Buffe
             ObsoleteReason = 'This table will be replaced by table Invoice Posting Buffer in new Invoice Posting implementation.';
 #if CLEAN23
             ObsoleteState = Removed;
-            ObsoleteTag = '23.0';
+            ObsoleteTag = '26.0';
 #else
             ObsoleteState = Pending;
             ObsoleteTag = '20.0';

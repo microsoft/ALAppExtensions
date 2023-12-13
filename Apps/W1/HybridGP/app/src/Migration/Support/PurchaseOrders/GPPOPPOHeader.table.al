@@ -1,9 +1,11 @@
 namespace Microsoft.DataMigration.GP;
 
+#if not CLEAN22
 using Microsoft.Purchases.Setup;
 using Microsoft.Foundation.Company;
-using Microsoft.Purchases.Document;
 using System.Integration;
+#endif
+using Microsoft.Purchases.Document;
 
 table 40102 "GP POPPOHeader"
 {

@@ -33,7 +33,7 @@ codeunit 1073 "MS - PayPal Webhook Management"
         MerchantsCustomerPaidTxt: Label 'The payment of the merchant''s customer was successfully processed.', Locked = true;
         ProcessingPaymentInBackgroundSessionTxt: Label 'Processing payment in a background session.', Locked = true;
         ProcessingPaymentInCurrentSessionTxt: Label 'Processing payment in the current session.', Locked = true;
-        WebhookSubscriptionNotFoundTxt: Label 'Webhook subscription is not found.', Locked = true;
+        WebhookSubscriptionNotFoundTxt: Label 'Webhook subscription is not found or it is not a PayPal notification.', Locked = true;
         NoRemainingPaymentsTxt: Label 'The payment is ignored because no payment remains.', Locked = true;
         OverpaymentTxt: Label 'The payment is ignored because of overpayment.', Locked = true;
         ProcessingWebhookNotificationTxt: Label 'Processing webhook notification.', Locked = true;
@@ -88,10 +88,9 @@ codeunit 1073 "MS - PayPal Webhook Management"
         TempPaymentRegistrationBuffer: Record 981 temporary;
         PaymentMethod: Record "Payment Method";
         PaymentRegistrationMgt: Codeunit "Payment Registration Mgt.";
-        O365SalesInvoicePayment: Codeunit "O365 Sales Invoice Payment";
         MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
     begin
-        if not O365SalesInvoicePayment.CollectRemainingPayments(InvoiceNo, TempPaymentRegistrationBuffer) then begin
+        if not CollectRemainingPayments(InvoiceNo, TempPaymentRegistrationBuffer) then begin
             Session.LogMessage('00008GO', NoRemainingPaymentsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             exit(false);
         end;
@@ -113,6 +112,14 @@ codeunit 1073 "MS - PayPal Webhook Management"
         OnAfterReceivePayPalOverpayment(TempPaymentRegistrationBuffer, AmountReceived);
 
         exit(false);
+    end;
+
+    procedure CollectRemainingPayments(SalesInvoiceDocumentNo: Code[20]; var PaymentRegistrationBuffer: Record "Payment Registration Buffer"): Boolean
+    begin
+        PaymentRegistrationBuffer.PopulateTable();
+        PaymentRegistrationBuffer.SetRange("Document Type", PaymentRegistrationBuffer."Document Type"::Invoice);
+        PaymentRegistrationBuffer.SetRange("Document No.", SalesInvoiceDocumentNo);
+        exit(PaymentRegistrationBuffer.FindFirst());
     end;
 
     [IntegrationEvent(false, false)]

@@ -278,9 +278,6 @@ Codeunit 148033 TestMatchFIKBankPmtApp
         BankAccReconciliationLine.INIT();
         BankAccReconciliationLine.VALIDATE("Bank Account No.", BankAccReconciliation."Bank Account No.");
         BankAccReconciliationLine.VALIDATE("Statement No.", BankAccReconciliation."Statement No.");
-#if not CLEAN21
-        BankAccReconciliationLine.VALIDATE(Type, BankAccReconciliationLine.Type::"Bank Account Ledger Entry");
-#endif
         BankAccReconciliationLine.VALIDATE("Transaction Text", CreateFIKDescription(InvoiceNo));
         BankAccReconciliationLine.VALIDATE(PaymentReference, InvoiceNo);
         BankAccReconciliationLine.VALIDATE("Statement Amount", Amount);

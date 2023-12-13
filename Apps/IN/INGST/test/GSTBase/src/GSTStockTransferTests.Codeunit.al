@@ -354,7 +354,6 @@ codeunit 18427 "GST Stock Transfer Tests"
     end;
 
     local procedure CreateTransferLocations(var FromLocation: Record Location; var ToLocation: Record Location; var InTransitLocation: Record Location)
-    var
     begin
         LibraryWarehouse.CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
         LibraryStorage.Set(FromLocationLbl, FromLocation.Code);
