@@ -108,7 +108,7 @@ codeunit 30188 "Shpfy Update Item"
         end;
         ProductEvents.OnDoUpdateItemVariantBeforeModify(Shop, ShopifyVariant, ItemVariant, IsModified);
         if IsModified then
-            exit(item.Modify());
+            exit(ItemVariant.Modify());
         exit(false);
     end;
 
