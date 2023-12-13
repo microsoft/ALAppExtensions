@@ -352,7 +352,11 @@ codeunit 30177 "Shpfy Product Events"
     /// <summary> 
     /// Raised Before Modify on Items.
     /// </summary>
-    internal procedure OnDoUpdateItemVariantBeforeModify(Shop: Record "Shpfy Shop"; var ShopifyProduct: Record "Shpfy Product"; ShopifyVariant: var Item: Record Item; var IsModified: Boolean);
+    /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
+    /// <param name="ShopifyProduct">Parameter of type Record "Shpfy Product".</param>
+    /// <param name="Item">Parameter of type Record "Item".</param>
+    /// <param name="IsModified">Parameter of type Boolean.</param>
+    internal procedure OnDoUpdateItemBeforeModify(var ShopifyShop: Record "Shpfy Shop"; var ShopifyProduct: Record "Shpfy Product"; var Item: Record Item; IsModified: Boolean);
     begin
     end;
 
@@ -360,7 +364,11 @@ codeunit 30177 "Shpfy Product Events"
     /// <summary> 
     /// Raised Before Modify Items Variant.
     /// </summary>
-    internal procedure OnDoUpdateItemVariantBeforeModify(Shop: Record "Shpfy Shop"; ShopifyVariant: Record "Shpfy Variant"; var ItemVariant: Record "Item Variant"; var IsModified: Boolean);
+    /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
+    /// <param name="ShopifyVariant">Parameter of type Record "Shpfy Variant".</param>
+    /// <param name="ItemVariant">Parameter of type Record "Shpfy Variant".</param>
+    /// <param name="IsModified">Parameter of type Boolean.</param>
+    internal procedure OnDoUpdateItemVariantBeforeModify(var ShopifyShop: Record "Shpfy Shop"; var ShopifyVariant: Record "Shpfy Variant"; var ItemVariant: Record "Item Variant"; var IsModified: Boolean);
     begin
     end;
 
