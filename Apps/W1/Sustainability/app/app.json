@@ -1,0 +1,33 @@
+{
+    "id": "b3780cd9-f8f8-4a83-a4d5-0c2ad87b28af",
+    "name": "Sustainability",
+    "publisher": "Microsoft",
+    "version": "24.0.0.0",
+    "brief": "Sustainability module will enable users to collect and report on their sustainability activities. Solution is the foundation that will be used for being compliant with some of ESG standards.",
+    "description": "Sustainability module will enable users to collect and report on their sustainability activities. Solution is the foundation that will be used for being compliant with some of ESG standards.",
+    "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
+    "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+    "help": "https://go.microsoft.com/fwlink/?linkid=2139719",
+    "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2139719",
+    "url": "https://go.microsoft.com/fwlink/?linkid=724011",
+    "logo": "./ExtensionLogo.png",
+    "dependencies": [],
+    "internalsVisibleTo": [],
+    "screenshots": [],
+    "platform": "24.0.0.0",
+    "application": "24.0.0.0",
+    "idRanges": [
+        {
+            "from": 5150,
+            "to": 5199
+        }
+    ],
+    "features": [
+        "TranslationFile"
+    ],
+    "resourceExposurePolicy": {
+        "allowDebugging": true,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    }
+}

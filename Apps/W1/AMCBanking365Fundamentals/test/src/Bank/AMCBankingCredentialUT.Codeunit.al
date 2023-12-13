@@ -598,7 +598,6 @@ codeunit 132558 "AMC Banking Credential UT"
     [ModalPageHandler]
     [Scope('OnPrem')]
     procedure AMCBankingSetupModalPageHandler(var AMCBankingSetupPage: TestPage "AMC Banking Setup")
-    var
     begin
         AMCBankingSetupPage."User Name".SetValue('demouser');
         AMCBankingSetupPage.Password.SetValue('Demo Password');

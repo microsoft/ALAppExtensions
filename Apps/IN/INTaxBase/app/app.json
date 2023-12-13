@@ -2,7 +2,7 @@
     "id":  "d3c551dd-5903-4194-b153-04ced9d29a2c",
     "name":  "India Tax Base",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Common Tax Setups",
     "description":  "Tax base contains common setups for GST, TDS and TCS.",
     "features":  [
@@ -19,14 +19,14 @@
                              "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
                              "publisher":  "Microsoft",
                              "name":  "Tax Engine",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "application":  "23.3.0.0",
-    "platform":  "23.0.0.0",
+    "application":  "24.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  18543,

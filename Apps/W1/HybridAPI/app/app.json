@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "This extension can help you set up and manage migration to Business Central online through an API.",
     "description":  "This extension can help you set up and manage migration to Business Central online through an API. Use automation to manage the cloud migration end-to-end without using UI.",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2009036",
@@ -15,14 +15,14 @@
                          {
                              "publisher":  "Microsoft",
                              "name":  "Intelligent Cloud Base",
-                             "version":  "23.3.0.0",
+                             "version":  "24.0.0.0",
                              "id":  "58623bfa-0559-4bc2-ae1c-0979c29fd9e0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  1,
@@ -35,5 +35,5 @@
                                    "includeSourceInSymbolFile":  true
                                },
     "target":  "Cloud",
-    "application":  "23.3.0.0"
+    "application":  "24.0.0.0"
 }

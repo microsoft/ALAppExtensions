@@ -12,7 +12,6 @@ codeunit 4031 SetupRemittanceReports
 {
     Subtype = Install;
     trigger OnInstallAppPerCompany()
-    var
     begin
         SetupReportSelections();
     end;

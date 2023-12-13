@@ -10,7 +10,9 @@ using Microsoft.Foundation.ExtendedText;
 using Microsoft.Foundation.Navigate;
 using Microsoft.Inventory.Item.Catalog;
 using Microsoft.Purchases.Document;
+#if not CLEAN23
 using Microsoft.Purchases.Pricing;
+#endif
 using Microsoft.Sales.Document;
 
 page 18493 "Subcontracting Order Subform"
@@ -868,7 +870,7 @@ page 18493 "Subcontracting Order Subform"
     end;
 
     var
-#if not CLEAN21
+#if not CLEAN23
         PurchHeader: Record "Purchase Header";
         PurchPriceCalcMgt: Codeunit "Purch. Price Calc. Mgt.";
 #endif
@@ -982,7 +984,7 @@ page 18493 "Subcontracting Order Subform"
         exit(true);
     end;
 
-#if not CLEAN21
+#if not CLEAN23
 #pragma warning disable AS0072
     [Obsolete('Replaced by the new implementation (V16) of price calculation.', '19.0')]
 #pragma warning restore AS0072

@@ -4,14 +4,14 @@
     "publisher":  "Microsoft",
     "brief":  "Enables a user to search data in predefined tables.",
     "description":  "Enables a user to search data in predefined tables. An administrator can select which tables and fields to search",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2204037",
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=220403",
     "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
     "logo":  "ExtensionLogo.png",
-    "application":  "23.3.0.0",
+    "application":  "24.0.0.0",
     "internalsVisibleTo":  [
                                {
                                    "id":  "c0146a0a-d0fe-4eec-8857-8a66551d010d",
@@ -22,7 +22,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  2680,

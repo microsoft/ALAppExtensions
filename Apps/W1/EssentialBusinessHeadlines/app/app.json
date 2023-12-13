@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Essential business headlines draw facts out of your data. Your people draw the conclusions.",
     "description":  "Displays headlines with actionable business insights on Role Center pages. The insights surface interesting facts from your business data so people don't need to go find them.",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=870429",
@@ -16,7 +16,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  1,
@@ -30,5 +30,5 @@
                                    "includeSourceInSymbolFile":  true
                                },
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=870429",
-    "application":  "23.3.0.0"
+    "application":  "24.0.0.0"
 }

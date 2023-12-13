@@ -68,7 +68,6 @@ codeunit 18466 "Subcontracting Post"
     end;
 
     local procedure InitSubconPosting(var PurchaseLine: Record "Purchase Line")
-    var
     begin
         if PurchaseLine.SubConSend then
             PurchaseLine.TestField("Delivery Challan Date");

@@ -42,7 +42,7 @@ codeunit 30165 "Shpfy Orders API"
         Clear(OrdersToImport);
         LastSyncTime := ShopifyShop.GetLastSyncTime("Shpfy Synchronization Type"::Orders);
         Parameters.Add('Time', Format(LastSyncTime, 0, 9));
-        if LastSyncTime = 0DT then
+        if LastSyncTime = Shop.GetEmptySyncTime() then
             GraphQLType := "Shpfy GraphQL Type"::GetOpenOrdersToImport
         else
             GraphQLType := "Shpfy GraphQL Type"::GetOrdersToImport;

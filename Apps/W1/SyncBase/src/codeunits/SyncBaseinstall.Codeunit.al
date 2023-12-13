@@ -1,3 +1,4 @@
+#if not CLEAN24
 namespace Microsoft.Integration.SyncBase;
 
 using Microsoft.Foundation.Company;
@@ -7,6 +8,9 @@ using System.Privacy;
 codeunit 2399 "Sync Base install"
 {
     Subtype = Install;
+    ObsoleteState = Pending;
+    ObsoleteReason = 'The extension is being obsoleted.';
+    ObsoleteTag = '24.0';
 
     trigger OnInstallAppPerCompany()
     begin
@@ -37,3 +41,4 @@ codeunit 2399 "Sync Base install"
         DataClassificationMgt.SetFieldToPersonal(Database::"Sync Mapping", SyncMapping.FieldNo("Internal ID"));
     end;
 }
+#endif

@@ -3771,6 +3771,29 @@ codeunit 18196 "GST Sales Tests"
         Assert.IsTrue(true, 'E-Invoice generated');
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,ConfirmationHandler')]
+    procedure VerifyNatureofSupplyforUnregisteredCustomer()
+    var
+        SalesHeader: Record "Sales Header";
+        GSTCustomeType: Enum "GST Customer Type";
+        GSTGroupType: Enum "GST Group Type";
+        DocumentType: Enum "Sales Document Type";
+        NatureofSupply: Enum "GST Nature of Supply";
+    begin
+        // [GIVEN] Created GST Setup for Registered Customer and Unregistered Customer
+        CreateGSTSetup(GSTCustomeType::Unregistered, GSTGroupType::Service, true);
+        LibrarySales.CreateSalesHeader(SalesHeader, DocumentType::Order, (Storage.Get(CustomerNoLbl)));
+        CreateGSTSetup(GSTCustomeType::Registered, GSTGroupType::Goods, true);
+
+        // [WHEN] Change Sell-to Customer with registerd Customer
+        SalesHeader.Validate("Sell-to Customer No.", (Storage.Get(CustomerNoLbl)));
+        SalesHeader.Modify();
+
+        // [THEN] Nature of Supply should be B2B
+        Assert.Equal(NatureofSupply::B2B, SalesHeader."Nature of Supply");
+    end;
+
     local procedure CountDetailedGstLedgerEntryLines(var DetailedGSTLedgerEntryCount: Integer; var DetailedGSTLedgerEntryInfoCount: Integer; PostedDocumentNo: code[20])
     var
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";

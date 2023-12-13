@@ -42,7 +42,6 @@ pageextension 20110 "AMC Bank Stmt Line Det. Ext" extends "Bank Statement Line D
     end;
 
     trigger OnAfterGetRecord()
-    var
     begin
         NameFldAMC := GetFieldNameAMC();
     end;

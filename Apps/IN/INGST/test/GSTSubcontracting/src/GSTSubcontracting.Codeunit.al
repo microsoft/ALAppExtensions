@@ -883,7 +883,6 @@ codeunit 18479 "GST Subcontracting"
         GSTVendorType: Enum "GST Vendor Type";
                            GSTGroupType: Enum "GST Group Type";
                            IntraState: Boolean)
-    var
     begin
         // Source Codes
         UpdateSourceCodes();
@@ -1736,7 +1735,6 @@ codeunit 18479 "GST Subcontracting"
     end;
 
     local procedure CreateDebitNoteRejectVE(var PurchaseLine: Record "Purchase Line")
-    var
     begin
         Report.Run(Report::"Create Vendor Exp. Debit Note", false, true, PurchaseLine);
     end;

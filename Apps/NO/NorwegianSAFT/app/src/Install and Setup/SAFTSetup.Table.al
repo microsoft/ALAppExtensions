@@ -6,7 +6,6 @@ namespace Microsoft.Finance.AuditFileExport;
 
 using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Finance.VAT.Setup;
-using Microsoft.Foundation.NoSeries;
 
 table 10670 "SAF-T Setup"
 {
@@ -23,10 +22,9 @@ table 10670 "SAF-T Setup"
         {
             DataClassification = CustomerContent;
             Caption = 'Dimension No. Series Code';
-            TableRelation = "No. Series";
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Replaced with Dimension No.';
-            ObsoleteTag = '17.0';
+            ObsoleteTag = '24.0';
         }
         field(3; "Last Tax Code"; Integer)
         {

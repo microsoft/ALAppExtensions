@@ -86,6 +86,7 @@ codeunit 30194 "Shpfy Transactions"
                 JsonHelper.GetValueIntoField(JToken, 'source_name', RecordRef, OrderTransaction.FieldNo("Source Name"));
                 JsonHelper.GetValueIntoField(JToken, 'amount', RecordRef, OrderTransaction.FieldNo(Amount));
                 JsonHelper.GetValueIntoField(JToken, 'currency', RecordRef, OrderTransaction.FieldNo(Currency));
+                JsonHelper.GetValueIntoField(JToken, 'payment_id', RecordRef, OrderTransaction.FieldNo("Payment Id"));
                 JsonHelper.GetValueIntoField(JToken, 'payment_details.credit_card_bin', RecordRef, OrderTransaction.FieldNo("Credit Card Bin"));
                 JsonHelper.GetValueIntoField(JToken, 'payment_details.avs_result_code', RecordRef, OrderTransaction.FieldNo("AVS Result Code"));
                 JsonHelper.GetValueIntoField(JToken, 'payment_details.cvv_result_code', RecordRef, OrderTransaction.FieldNo("CVV Result Code"));

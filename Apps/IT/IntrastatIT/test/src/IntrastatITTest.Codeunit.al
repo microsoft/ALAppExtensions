@@ -2829,14 +2829,12 @@ codeunit 139511 "Intrastat IT Test"
     [ModalPageHandler]
     [Scope('OnPrem')]
     procedure IntrastatReportChecklistModalPageHandler(var IntrastatReportChecklist: TestPage "Intrastat Report Checklist")
-    var
     begin
     end;
 
     [ModalPageHandler]
     [Scope('OnPrem')]
     procedure IntrastatReportSetupModalPageHandler(var IntrastatReportSetupPage: TestPage "Intrastat Report Setup")
-    var
     begin
     end;
 

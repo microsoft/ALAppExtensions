@@ -183,13 +183,11 @@ table 20101 "AMC Banking Setup"
     end;
 
     procedure GetDemoUserName(): Text[50]
-    var
     begin
         exit(CopyStr(DemoUserNameTxt, 1, 50));
     end;
 
     local procedure GetDemoPass(): Text
-    var
     begin
         exit(DemoPasswordTxt);
     end;

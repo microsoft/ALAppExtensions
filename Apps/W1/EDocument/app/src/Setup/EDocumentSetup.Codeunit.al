@@ -13,7 +13,6 @@ codeunit 6145 "E-Document Setup"
     Subtype = Install;
 
     trigger OnInstallAppPerCompany()
-    var
     begin
         InstallWorkFlowTableRelation();
         AddEDocumentLogToAllowedTables();

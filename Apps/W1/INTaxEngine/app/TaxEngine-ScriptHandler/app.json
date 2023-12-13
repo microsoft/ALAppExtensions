@@ -2,7 +2,7 @@
     "id":  "0382879d-7e2a-46fd-bfd6-2672e3b9add4",
     "name":  "Tax Engine Script Handler",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Provides scripting ability to Tax Engine.",
     "description":  "Script Handler Tests contains user interface elements and tables for scripting business logic in use cases.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -15,7 +15,7 @@
                              "id":  "52cd6cb4-0433-4e94-8e62-9d12fff1a02b",
                              "publisher":  "Microsoft",
                              "name":  "Tax Engine Core",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "internalsVisibleTo":  [
@@ -33,8 +33,8 @@
     "screenshots":  [
 
                     ],
-    "application":  "23.3.0.0",
-    "platform":  "23.0.0.0",
+    "application":  "24.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  20156,

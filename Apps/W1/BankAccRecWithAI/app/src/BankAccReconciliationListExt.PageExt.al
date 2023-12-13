@@ -2,7 +2,6 @@ namespace Microsoft.Bank.Reconciliation;
 
 using System.AI;
 using System.Environment;
-using System.Environment.Configuration;
 using System.Telemetry;
 
 pageextension 7254 BankAccReconciliationListExt extends "Bank Acc. Reconciliation List"
@@ -51,20 +50,11 @@ pageextension 7254 BankAccReconciliationListExt extends "Bank Acc. Reconciliatio
 
     trigger OnOpenPage()
     var
-        FeatureKey: Record "Feature Key";
-        FeatureManagementFacade: Codeunit "Feature Management Facade";
         EnvironmentInformation: Codeunit "Environment Information";
     begin
-        if not FeatureKey.Get(BankAccRecWithAILbl) then
-            CopilotActionsVisible := true
-        else
-            CopilotActionsVisible := FeatureManagementFacade.IsEnabled(BankAccRecWithAILbl);
-
-        if CopilotActionsVisible then
-            CopilotActionsVisible := EnvironmentInformation.IsSaaSInfrastructure();
+        CopilotActionsVisible := EnvironmentInformation.IsSaaSInfrastructure();
     end;
 
     var
         CopilotActionsVisible: Boolean;
-        BankAccRecWithAILbl: label 'BankAccRecWithAI', Locked = true;
 }

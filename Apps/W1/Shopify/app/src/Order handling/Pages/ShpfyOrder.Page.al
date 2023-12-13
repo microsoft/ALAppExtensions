@@ -1,6 +1,8 @@
 namespace Microsoft.Integration.Shopify;
 
+#if not CLEAN22
 using System.IO;
+#endif
 using Microsoft.Inventory.Item;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;

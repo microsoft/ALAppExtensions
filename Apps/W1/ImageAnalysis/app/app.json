@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Analyze images using Microsoft Cognitive Services.",
     "description":  "Uses Microsoft Cognitive Services to analyze images. Analyze images of an item, and assign item attributes and item category based on the results. Analyze images of a contact, and assign age and gender to the a contact profile questionnaire.",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=850308",
@@ -17,7 +17,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  1,
@@ -30,5 +30,5 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "23.3.0.0"
+    "application":  "24.0.0.0"
 }

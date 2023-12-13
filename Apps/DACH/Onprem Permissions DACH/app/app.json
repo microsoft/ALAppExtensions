@@ -2,7 +2,7 @@
     "id":  "66562109-c5eb-437e-bb8b-f4809337714e",
     "name":  "OnPrem Permissions (DACH)",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "This extension includes permission set for on premise systems.",
     "description":  "This extension includes permission set for on premise systems.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -17,12 +17,12 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  false,
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
     "target":  "OnPrem",
-    "application":  "23.3.0.0"
+    "application":  "24.0.0.0"
 }

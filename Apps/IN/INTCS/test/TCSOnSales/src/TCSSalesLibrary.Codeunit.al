@@ -97,7 +97,6 @@ codeunit 18920 "TCS Sales - Library"
         var SalesLine: Record "Sales Line";
         Type: Enum "Sales Line Type";
         LineDiscount: Boolean)
-    var
     begin
         LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Type,
         GetLineTypeNo(Type, SalesHeader."Posting Date"), LibraryRandom.RandDec(1, 2));
@@ -211,7 +210,6 @@ codeunit 18920 "TCS Sales - Library"
     end;
 
     local procedure CreateFADepreciationBook(var FADepreciationBook: Record "FA Depreciation Book"; var FixedAsset: Record "Fixed Asset"; DepreciationBookCode: Code[10])
-    var
     begin
         LibraryFixedAsset.CreateFADepreciationBook(FADepreciationBook, FixedAsset."No.", DepreciationBookCode);
         FADepreciationBook.Validate("Depreciation Starting Date", WorkDate());
@@ -313,7 +311,6 @@ codeunit 18920 "TCS Sales - Library"
         DocNo: Code[20];
         DocLineNo: Integer;
         ItemNo: Code[20])
-    var
     begin
         LibraryInventory.CreateItemChargeAssignment(
             ItemChargeAssignmentSales, SalesLine, DocType,

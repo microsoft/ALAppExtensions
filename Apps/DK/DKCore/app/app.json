@@ -2,7 +2,7 @@
     "id":  "40d64215-8abc-4d96-87dc-2894e5431115",
     "name":  "DK Core",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Provides standard local functionality in Business Central for Denmark.",
     "description":  "Provides standard local functionality in Business Central for Denmark.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -17,8 +17,8 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
-    "application":  "23.3.0.0",
+    "platform":  "24.0.0.0",
+    "application":  "24.0.0.0",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  false,
                                    "allowDownloadingSource":  true,

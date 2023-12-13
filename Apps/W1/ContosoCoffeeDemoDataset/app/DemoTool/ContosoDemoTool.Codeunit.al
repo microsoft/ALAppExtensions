@@ -87,7 +87,7 @@ codeunit 5193 "Contoso Demo Tool"
 
     internal procedure RefreshModules()
     var
-        ContosoDemoDataModuleRec: Record "Contoso Demo Data Module";
+        ContosoDemoDataModule: Record "Contoso Demo Data Module";
         ContosoModuleDependency: codeunit "Contoso Module Dependency";
         ModuleProvider: Interface "Contoso Demo Data Module";
         Dependency, Module : Enum "Contoso Demo Data Module";
@@ -95,11 +95,11 @@ codeunit 5193 "Contoso Demo Tool"
         foreach Module in Enum::"Contoso Demo Data Module".Ordinals() do begin
             ModuleProvider := Module;
 
-            if not ContosoDemoDataModuleRec.Get(Module) then begin
-                ContosoDemoDataModuleRec.Init();
-                ContosoDemoDataModuleRec.Validate(Name, Format(Module));
-                ContosoDemoDataModuleRec.Validate(Module, Module);
-                ContosoDemoDataModuleRec.Insert(true);
+            if not ContosoDemoDataModule.Get(Module) then begin
+                ContosoDemoDataModule.Init();
+                ContosoDemoDataModule.Validate(Name, Format(Module));
+                ContosoDemoDataModule.Validate(Module, Module);
+                ContosoDemoDataModule.Insert(true);
             end;
 
             foreach Dependency in ModuleProvider.GetDependencies() do
@@ -108,13 +108,13 @@ codeunit 5193 "Contoso Demo Tool"
     end;
 
     local procedure CheckLanguageBeforeGeneratingDemoData(): Boolean
-
     var
         ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
         Language: Codeunit "Language";
     begin
         ContosoCoffeeDemoDataSetup.InitRecord();
         ContosoCoffeeDemoDataSetup.Get();
+
         // If the language is not set, then it is the first run
         if ContosoCoffeeDemoDataSetup."Language ID" = 0 then
             exit(true);
@@ -130,6 +130,7 @@ codeunit 5193 "Contoso Demo Tool"
         ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
     begin
         ContosoCoffeeDemoDataSetup.Get();
+
         if ContosoCoffeeDemoDataSetup."Language ID" = 0 then begin
             ContosoCoffeeDemoDataSetup.Validate("Language ID", GlobalLanguage());
             ContosoCoffeeDemoDataSetup.Modify(true);

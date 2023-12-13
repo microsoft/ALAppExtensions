@@ -282,16 +282,6 @@ codeunit 1151 "COHUB Core"
         exit(URLHelper.GetFixedClientEndpointBaseUrl());
     end;
 
-    [Obsolete('Replaced with GetResourceURL', '19.0')]
-    procedure GetResoureUrl(): Text[100];
-    var
-    begin
-        if IsPPE() then
-            exit('https://api.businesscentral.dynamics-tie.com')
-        else
-            exit('https://api.businesscentral.dynamics.com');
-    end;
-
     procedure GetResourceUrl(): Text;
     var
         ResourceURL: Text;
@@ -385,7 +375,6 @@ codeunit 1151 "COHUB Core"
     end;
 
     procedure GetEnviromentManagementUrl(): Text;
-    var
     begin
         if IsPPE() then
             exit('https://tenantmanagement.smb.dynamics-tie.com/v3.0/tenant/')
