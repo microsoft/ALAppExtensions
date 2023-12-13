@@ -3771,7 +3771,6 @@ codeunit 18917 "TCS On Sales Documents"
         var SalesLine: Record "Sales Line";
         Type: Enum "Sales Line Type";
         LineDiscount: Boolean)
-    var
     begin
         LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Type,
         TCSSalesLibrary.GetLineTypeNo(Type, SalesHeader."Posting Date"), LibraryRandom.RandDec(3, 2));
@@ -3789,7 +3788,6 @@ codeunit 18917 "TCS On Sales Documents"
             var SalesLine: Record "Sales Line";
             Type: Enum "Sales Line Type";
             LineDiscount: Boolean)
-    var
     begin
         LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Type,
         TCSSalesLibrary.GetLineTypeNo(Type, SalesHeader."Posting Date"), LibraryRandom.RandDec(3, 2));
@@ -3969,7 +3967,6 @@ codeunit 18917 "TCS On Sales Documents"
     end;
 
     local procedure GenerateTaxComponentsPercentage()
-    var
     begin
         Storage.Set(TCSPercentageLbl, Format(LibraryRandom.RandIntInRange(2, 4)));
         Storage.Set(NonPANTCSPercentageLbl, Format(LibraryRandom.RandIntInRange(6, 10)));

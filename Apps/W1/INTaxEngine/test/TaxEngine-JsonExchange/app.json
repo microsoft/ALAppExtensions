@@ -2,7 +2,7 @@
     "id":  "44e82345-45d2-43f0-a175-06eaadf45457",
     "name":  "Tax Engine Json Exchange Tests",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Provide export and import functionality via JSON files.",
     "description":  "Json Exchange extension will be used where we want to import or export the configuration data of tax engine as json.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -15,20 +15,20 @@
                              "name":  "Tax Engine",
                              "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "name":  "Tests-TestLibraries",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0",
+                             "version":  "24.0.0.0",
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "application":  "23.3.0.0",
-    "platform":  "23.0.0.0",
+    "application":  "24.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  137700,

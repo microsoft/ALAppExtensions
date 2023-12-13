@@ -14,6 +14,10 @@ permissionset 30100 "Shpfy - Read"
 
     Permissions =
         tabledata "Shpfy Bulk Operation" = R,
+        tabledata "Shpfy Catalog" = R,
+        tabledata "Shpfy Catalog Price" = R,
+        tabledata "Shpfy Company" = R,
+        tabledata "Shpfy Company Location" = R,
         tabledata "Shpfy Credit Card Company" = R,
         tabledata "Shpfy Cue" = R,
         tabledata "Shpfy Customer" = R,
@@ -47,11 +51,6 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Product" = R,
 #if not CLEAN22
         tabledata "Shpfy Province" = R,
-#endif
-#if not CLEAN21
-#pragma warning disable AL0432
-        tabledata "Shpfy Registered Store" = R,
-#pragma warning restore AL0432
 #endif
         tabledata "Shpfy Registered Store New" = R,
         tabledata "Shpfy Refund Header" = R,

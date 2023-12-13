@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Support Customs Declaration Number tracking for Factura Invoice.",
     "description":  "Accurate tracking of Customs Declaration number from purchase to sales and printing this information in Factura Invoices.",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2153001",
@@ -22,7 +22,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "target":  "OnPrem",
-    "application":  "23.3.0.0"
+    "application":  "24.0.0.0"
 }

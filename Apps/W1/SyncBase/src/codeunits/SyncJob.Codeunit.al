@@ -1,3 +1,4 @@
+#if not CLEAN24
 namespace Microsoft.Integration.SyncBase;
 
 using System.Threading;
@@ -5,6 +6,10 @@ using System.Security.User;
 
 codeunit 2400 "Sync Job"
 {
+    ObsoleteState = Pending;
+    ObsoleteReason = 'The extension is being obsoleted.';
+    ObsoleteTag = '24.0';
+
     trigger OnRun()
     var
         JobQueueEntry: Record "Job Queue Entry";
@@ -142,3 +147,4 @@ codeunit 2400 "Sync Job"
     end;
 }
 
+#endif

@@ -1,7 +1,6 @@
 namespace Microsoft.Integration.Shopify;
 
 using System.Telemetry;
-using System.Text;
 using System.DateTime;
 
 /// <summary>
@@ -36,6 +35,7 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     ShowMandatory = true;
+                    Importance = Promoted;
                     ToolTip = 'Specifies the URL of the Shopify Shop.';
                     AboutTitle = 'Get people to your shop';
                     AboutText = 'Provide the URL that people will use to access your shop. For example, *https://myshop.myshopify.com*.';
@@ -50,6 +50,7 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     ShowMandatory = true;
+                    Importance = Promoted;
                     ToolTip = 'Specifies if the service is enabled.';
                     AboutTitle = 'Ready to connect the shop';
                     AboutText = 'We just need the shop name and URL to connect it to Shopify. When you have checked all shop settings, enable the connection here.';
@@ -66,6 +67,7 @@ page 30101 "Shpfy Shop Card"
                         if BulkOperationMgt.IsBulkOperationFeatureEnabled() then
 #endif
                             BulkOperationMgt.EnableBulkOperations(Rec);
+                        Rec."B2B Enabled" := Rec.GetB2BEnabled();
                         FeatureTelemetry.LogUptake('0000HUT', 'Shopify', Enum::"Feature Uptake Status"::"Set up");
                     end;
                 }
@@ -75,7 +77,7 @@ page 30101 "Shpfy Shop Card"
                     Caption = 'Has AccessKey';
                     Importance = Additional;
                     ShowMandatory = true;
-                    ToolTip = 'Is an access key available for this store.';
+                    ToolTip = 'Specifies if an access key is available for this store.';
                 }
                 field(CurrencyCode; Rec."Currency Code")
                 {
@@ -118,7 +120,7 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     Importance = Additional;
                     Caption = 'Allow Data Sync to Shopify';
-                    ToolTip = 'Specifices whether syncing data to Shopify is enabled.';
+                    ToolTip = 'Specifies whether syncing data to Shopify is enabled.';
                 }
                 field("API Version Expiry Date"; ApiVersionExpiryDate)
                 {
@@ -139,6 +141,7 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies in which direction items are synchronized.';
+                    Importance = Promoted;
                 }
                 field(AutoCreateUnknownItems; Rec."Auto Create Unknown Items")
                 {
@@ -194,7 +197,6 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether you want to synchronize marketing texts to Shopify.';
-                    Visible = EntityTextEnabled;
                 }
                 field(SyncItemAttributes; Rec."Sync Item Attributes")
                 {
@@ -221,8 +223,9 @@ page 30101 "Shpfy Shop Card"
                 }
                 field(SKUType; Rec."SKU Mapping")
                 {
-                    ApplicationArea = all;
+                    ApplicationArea = All;
                     ToolTip = 'Specifies if and based on what you want to create variants in D365BC.';
+                    Importance = Promoted;
                 }
                 field(SKUFieldSeparator; Rec."SKU Field Separator")
                 {
@@ -258,11 +261,13 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies which Customer Price Group is used to calculate the prices in Shopify.';
+                    Importance = Promoted;
                 }
                 field(CustomerDiscountGroup; Rec."Customer Discount Group")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies which Customer Discount Group is used to calculate the prices in Shopify.';
+                    Importance = Promoted;
                 }
                 field("Prices Including VAT"; Rec."Prices Including VAT")
                 {
@@ -319,16 +324,6 @@ page 30101 "Shpfy Shop Card"
                     ToolTip = 'Specifies if prices are synchronized to Shopify with product sync.';
                 }
             }
-#if not CLEAN21
-            group(InventorySync)
-            {
-                Caption = 'Inventory Synchronization';
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteReason = 'Inventory group moved to item group';
-                ObsoleteTag = '21.0';
-            }
-#endif
             group(CustomerSync)
             {
                 Caption = 'Customer Synchronization';
@@ -338,6 +333,7 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies how Shopify customers are synced to Business Central. If you choose none and there exists no mapping for that customer, the default customer will be used if exists.';
+                    Importance = Promoted;
                 }
                 field(CustomerMappingType; Rec."Customer Mapping Type")
                 {
@@ -375,22 +371,28 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the default customer when not creating a customer for each webshop user.';
+                    Importance = Promoted;
                 }
                 field(ShopifyCanUpdateCustomer; Rec."Shopify Can Update Customer")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether Shopify can update customers when synchronizing from Shopify.';
                 }
+#if not CLEAN24
                 field(ExportCustomerToShopify; Rec."Export Customer To Shopify")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies if you want to export all customers with a valid e-mail address from D365BC to Shopify.';
+                    Visible = false;
+                    ObsoleteReason = 'Replaced with action Add Customers in Shopify Customers page.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '24.0';
                 }
+#endif
                 field(CanUpdateShopifyCustomer; Rec."Can Update Shopify Customer")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether D365BC can update customers when synchronizing to Shopify.';
-                    Editable = Rec."Export Customer To Shopify";
                 }
 
                 field(NameSource; Rec."Name Source")
@@ -436,17 +438,18 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     ShowMandatory = true;
-                    ToolTip = 'G/L Account for posting the shipping cost.';
+                    ToolTip = 'Specifies the G/L Account for posting the shipping cost.';
+                    Importance = Promoted;
                 }
                 field(SoldGiftCardAccount; Rec."Sold Gift Card Account")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'G/L Account for to post the sold gift card amounts.';
+                    ToolTip = 'Specifies the G/L Account for to post the sold gift card amounts.';
                 }
                 field(TipAccount; Rec."Tip Account")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'G/L Account for post the received tip amount.';
+                    ToolTip = 'Specifies the G/L Account for post the received tip amount.';
                 }
                 field(ShopifyOrderNoOnDocLine; Rec."Shopify Order No. on Doc. Line")
                 {
@@ -481,6 +484,7 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     Caption = 'Process Type';
                     ToolTip = 'Specifies how returns and refunds from Shopify are handles in Business Central. The import process is always done within the import of a Shopify order.';
+                    Importance = Promoted;
 
                     trigger OnValidate()
                     begin
@@ -523,6 +527,25 @@ page 30101 "Shpfy Shop Card"
                             CurrPage.Update(true);
                         end;
                     }
+                }
+            }
+            group(B2B)
+            {
+                Visible = Rec."B2B Enabled";
+                field("Can Update Shopify Companies"; Rec."Can Update Shopify Companies")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies whether D365BC can update companies when synchronizing to Shopify.';
+                }
+                field("Default Customer Permission"; Rec."Default Contact Permission")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the default customer permission for new companies.';
+                }
+                field("Auto Create Catalog"; Rec."Auto Create Catalog")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies whether a catalog is automatically created for new companies.';
                 }
             }
         }
@@ -659,6 +682,19 @@ page 30101 "Shpfy Shop Card"
                     ReturnHeaders.Run();
                 end;
             }
+            action(Customers)
+            {
+                ApplicationArea = All;
+                Caption = 'Customers';
+                Image = Customer;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                RunObject = Page "Shpfy Customers";
+                RunPageLink = "Shop Id" = field("Shop Id");
+                ToolTip = 'Add, view or edit detailed information for the customers. ';
+            }
             action(CustomerTemplates)
             {
                 ApplicationArea = All;
@@ -672,31 +708,25 @@ page 30101 "Shpfy Shop Card"
                 RunPageLink = "Shop Code" = field(Code);
                 ToolTip = 'Set up a customer template and default customer per country.';
             }
+            action(Companies)
+            {
+                ApplicationArea = All;
+                Caption = 'Companies';
+                Image = Company;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                RunObject = Page "Shpfy Companies";
+                RunPageLink = "Shop Id" = field("Shop Id");
+                ToolTip = 'Add, view or edit detailed information for the companies. ';
+                Visible = Rec."B2B Enabled";
+            }
         }
         area(Processing)
         {
             group(Access)
             {
-#if not CLEAN21
-                action(RequestAccess)
-                {
-                    ApplicationArea = All;
-
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'Will be supported by the non-promoted action';
-                    ObsoleteTag = '21.0';
-                    Visible = false;
-                    Image = EncryptionKeys;
-                    Promoted = true;
-                    Caption = 'Request Access';
-                    ToolTip = 'Request Access to your Shopify store.';
-
-                    trigger OnAction()
-                    begin
-                        Rec.RequestAccessToken();
-                    end;
-                }
-#endif
                 action(RequestAccessNew)
                 {
                     ApplicationArea = All;
@@ -827,6 +857,24 @@ page 30101 "Shpfy Shop Card"
                         BackgroundSyncs.CustomerSync(Rec.Code);
                     end;
                 }
+                action(SyncCompanies)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Sync Companies';
+                    Image = ImportExport;
+                    Promoted = true;
+                    PromotedCategory = Category5;
+                    PromotedOnly = true;
+                    ToolTip = 'Synchronize the companies with Shopify. The way companies are synchronized depends on the B2B settings in the Shopify Shop Card.';
+                    Visible = Rec."B2B Enabled";
+
+                    trigger OnAction()
+                    var
+                        BackgroundSyncs: Codeunit "Shpfy Background Syncs";
+                    begin
+                        BackgroundSyncs.CompanySync(Rec.Code);
+                    end;
+                }
                 action(SyncPayouts)
                 {
                     ApplicationArea = All;
@@ -944,6 +992,18 @@ page 30101 "Shpfy Shop Card"
                         Rec.SetLastSyncTime("Shpfy Synchronization Type"::Orders, GetResetSyncTo(Rec.GetLastSyncTime("Shpfy Synchronization Type"::Orders)));
                     end;
                 }
+                action(ResetCompanies)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Reset Company Sync';
+                    Image = ClearFilter;
+                    Tooltip = 'Ensure all companies are synced when executing the sync, not just the changes since last sync.';
+
+                    trigger OnAction()
+                    begin
+                        Rec.SetLastSyncTime("Shpfy Synchronization Type"::Companies, GetResetSyncTo(Rec.GetLastSyncTime("Shpfy Synchronization Type"::Companies)));
+                    end;
+                }
             }
             action(CreateFulfillmentService)
             {
@@ -966,7 +1026,6 @@ page 30101 "Shpfy Shop Card"
 #if not CLEAN22
         NewTemplatesEnabled: Boolean;
 #endif
-        EntityTextEnabled: Boolean;
         IsReturnRefundsVisible: Boolean;
         ApiVersionExpiryDate: Date;
         ExpirationNotificationTxt: Label 'Shopify API version 30 days before expiry notification sent.', Locked = true;
@@ -979,7 +1038,6 @@ page 30101 "Shpfy Shop Card"
 #if not CLEAN22
         ShpfyTemplates: Codeunit "Shpfy Templates";
 #endif
-        EntityText: Codeunit "Entity Text";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         ShopMgt: Codeunit "Shpfy Shop Mgt.";
         ApiVersionExpiryDateTime: DateTime;
@@ -988,7 +1046,6 @@ page 30101 "Shpfy Shop Card"
 #if not CLEAN22
         NewTemplatesEnabled := ShpfyTemplates.NewTemplatesEnabled();
 #endif
-        EntityTextEnabled := EntityText.IsEnabled();
         if Rec.Enabled then begin
             ApiVersionExpiryDateTime := CommunicationMgt.GetApiVersionExpiryDate();
             ApiVersionExpiryDate := DT2Date(ApiVersionExpiryDateTime);

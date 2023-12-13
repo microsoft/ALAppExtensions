@@ -37,6 +37,7 @@ codeunit 2624 "Stat. Acc. Jnl. Line Post"
         NextEntryNo += 1;
         StatisticalLedgerEntry."Transaction No." := TransactionNumber;
         TransferStatisticalAccJournalLineTo(StatisticalAccJournalLine, StatisticalLedgerEntry);
+        OnBeforeInsertStatisticalLedgerEntry(StatisticalAccJournalLine, StatisticalLedgerEntry);
         StatisticalLedgerEntry.Insert(true);
     end;
 
@@ -51,5 +52,10 @@ codeunit 2624 "Stat. Acc. Jnl. Line Post"
         StatisticalLedgerEntry."Document No." := StatisticalAccJournalLine."Document No.";
         StatisticalLedgerEntry."Global Dimension 1 Code" := StatisticalAccJournalLine."Shortcut Dimension 1 Code";
         StatisticalLedgerEntry."Global Dimension 2 Code" := StatisticalAccJournalLine."Shortcut Dimension 2 Code";
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertStatisticalLedgerEntry(var StatisticalAccJournalLine: Record "Statistical Acc. Journal Line"; var StatisticalLedgerEntry: Record "Statistical Ledger Entry")
+    begin
     end;
 }

@@ -10,7 +10,6 @@ codeunit 20602 "Experience Tier BF"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Application Area Mgmt. Facade", 'OnValidateApplicationAreas', '', true, true)]
     local procedure OnValidateApplicationAreas(ExperienceTierSetup: Record "Experience Tier Setup"; TempApplicationAreaSetup: Record "Application Area Setup" temporary)
-    var
     begin
         if not ExperienceTierSetup."BF Basic" then
             exit;
@@ -35,7 +34,6 @@ codeunit 20602 "Experience Tier BF"
     end;
 
     local procedure SetExperienceAppAreas(var TempApplicationAreaSetup: Record "Application Area Setup" temporary)
-    var
     begin
         TempApplicationAreaSetup."BF Basic" := true; // Application Area belonging to this extension
         TempApplicationAreaSetup.Basic := true;

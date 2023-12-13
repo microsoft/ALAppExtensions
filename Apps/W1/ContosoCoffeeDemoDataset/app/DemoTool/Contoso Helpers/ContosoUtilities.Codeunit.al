@@ -1,10 +1,9 @@
 codeunit 5142 "Contoso Utilities"
 {
-    Access = Internal;
     InherentEntitlements = X;
     InherentPermissions = X;
 
-    procedure AdjustPrice(UnitPrice: Decimal): Decimal
+    internal procedure AdjustPrice(UnitPrice: Decimal): Decimal
     var
         ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
     begin
@@ -16,7 +15,7 @@ codeunit 5142 "Contoso Utilities"
         exit(Round(UnitPrice * ContosoCoffeeDemoDataSetup."Price Factor", ContosoCoffeeDemoDataSetup."Rounding Precision"));
     end;
 
-    procedure AdjustDate(OriginalDate: Date): Date
+    internal procedure AdjustDate(OriginalDate: Date): Date
     var
         ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
         TempDate: Date;
@@ -69,7 +68,7 @@ codeunit 5142 "Contoso Utilities"
         exit(TempBlob);
     end;
 
-    procedure RandBarcodeInt(): Integer
+    internal procedure RandBarcodeInt(): Integer
     begin
         exit(10000000 - 1 + Random(99999999 - 10000000 + 1));
     end;

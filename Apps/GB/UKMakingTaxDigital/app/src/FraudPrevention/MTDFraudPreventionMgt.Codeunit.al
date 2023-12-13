@@ -42,28 +42,6 @@ codeunit 10541 "MTD Fraud Prevention Mgt."
         ClientScreensTxt: Label 'width=%1&height=%2&scaling-factor=1&colour-depth=%3', Locked = true;
         ClientWindowTxt: Label 'width=%1&height=%2', Locked = true;
 
-#if not CLEAN21
-    [Obsolete('Not used anymore.', '21.0')]
-    internal procedure CheckInitDefaultHeadersList()
-    begin
-    end;
-
-    [Obsolete('Not used anymore.', '21.0')]
-    procedure CheckForMissingHeadersFromSetup()
-    begin
-    end;
-
-    [Obsolete('Not used anymore.', '21.0')]
-    procedure CheckForMissingHeadersAndConfirm(var ErrorMessage: Text): Boolean
-    begin
-    end;
-
-    [Obsolete('Not used anymore.', '21.0')]
-    procedure GenerateSampleValues(var TempSampleMTDDefaultFraudPrevHdr: Record "MTD Default Fraud Prev. Hdr" temporary)
-    begin
-    end;
-#endif
-
     internal procedure AddFraudPreventionHeaders(var RequestJSON: Text; ConfirmHeaders: Boolean)
     var
         MTDMissingFraudPrevHdr: Record "MTD Missing Fraud Prev. Hdr";

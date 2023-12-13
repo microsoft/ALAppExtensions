@@ -2,6 +2,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Shared.Error;
+
+using Microsoft.Finance.Dimension;
+using System.Utilities;
+using System.Reflection;
 codeunit 7906 "Dim. Code Same But Missing Err" implements ErrorMessageFix
 {
     Access = Internal;

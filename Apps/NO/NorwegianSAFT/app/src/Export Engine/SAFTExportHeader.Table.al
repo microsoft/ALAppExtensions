@@ -123,9 +123,9 @@ table 10682 "SAF-T Export Header"
         {
             DataClassification = CustomerContent;
             Caption = 'SAF-T File';
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Replaced with the SAF-T Export File table';
-            ObsoleteTag = '17.0';
+            ObsoleteTag = '24.0';
         }
         field(30; "Latest Data Check Date/Time"; DateTime)
         {

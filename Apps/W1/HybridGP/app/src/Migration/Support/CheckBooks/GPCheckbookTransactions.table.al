@@ -220,12 +220,4 @@ table 40101 "GP Checkbook Transactions"
             Clustered = true;
         }
     }
-
-#if not CLEAN21
-    [Obsolete('This method is obsolete. Code has been moved to GP Checkbook Migrator codeunit.', '21.0')]
-    procedure MoveStagingData(CheckbookId: Code[15]; PostingGroup: Code[20])
-    begin
-
-    end;
-#endif
 }

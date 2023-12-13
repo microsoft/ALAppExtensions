@@ -1,3 +1,4 @@
+#if not CLEAN23
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -9,7 +10,6 @@ using Microsoft.Finance.ReceivablesPayables;
 using Microsoft.Purchases.Document;
 using Microsoft.Sales.Document;
 
-#if not CLEAN23
 codeunit 4852 "Inv. Post. Buff. Subscribers"
 {
     Access = Internal;

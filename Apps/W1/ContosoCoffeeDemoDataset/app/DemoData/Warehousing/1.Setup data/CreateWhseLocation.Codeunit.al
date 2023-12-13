@@ -68,17 +68,17 @@ codeunit 4787 "Create Whse Location"
         CreateWhsePutAwayTemplate: Codeunit "Create Whse Put Away Template";
     begin
         if WhseDemoDataSetup."Location Bin" = '' then begin
-            ContosoWarehouse.InsertLocation(BasicLocation(), BasicLocationLbl, '', false, false, false, false, false, true, false, "Put-away Bin Policy"::"Put-away Template", "Pick Bin Policy"::"Bin Ranking", Enum::"Location Default Bin Selection"::"Fixed Bin", CreateWhsePutAwayTemplate.StandardTemplate(), false, 1, 1, true, false, false);
+            ContosoWarehouse.InsertLocation(BasicLocation(), BasicLocationLbl, '', false, false, false, false, false, true, false, "Put-away Bin Policy"::"Put-away Template", "Pick Bin Policy"::"Bin Ranking", Enum::"Location Default Bin Selection"::"Fixed Bin", CreateWhsePutAwayTemplate.StandardTemplate(), Enum::"Prod. Consump. Whse. Handling"::"No Warehouse Handling", Enum::"Prod. Output Whse. Handling"::"No Warehouse Handling", Enum::"Job Consump. Whse. Handling"::"No Warehouse Handling", Enum::"Asm. Consump. Whse. Handling"::"No Warehouse Handling", false, 1, 1, true, false, false);
             WhseDemoDataSetup.Validate("Location Bin", BasicLocation());
         end;
 
         if WhseDemoDataSetup."Location Adv Logistics" = '' then begin
-            ContosoWarehouse.InsertLocation(SimpleLocation(), SimpleLocationLbl, '', true, true, false, true, true, false, false, "Put-away Bin Policy"::"Default Bin", "Pick Bin Policy"::"Default Bin", Enum::"Location Default Bin Selection"::" ", '', false, 0, 0, false, false, false);
+            ContosoWarehouse.InsertLocation(SimpleLocation(), SimpleLocationLbl, '', true, true, false, true, true, false, false, "Put-away Bin Policy"::"Default Bin", "Pick Bin Policy"::"Default Bin", Enum::"Location Default Bin Selection"::" ", '', Enum::"Prod. Consump. Whse. Handling"::"Warehouse Pick (mandatory)", Enum::"Prod. Output Whse. Handling"::"No Warehouse Handling", Enum::"Job Consump. Whse. Handling"::"Warehouse Pick (mandatory)", Enum::"Asm. Consump. Whse. Handling"::"Warehouse Pick (mandatory)", false, 0, 0, false, false, false);
             WhseDemoDataSetup.Validate("Location Adv Logistics", SimpleLocation());
         end;
 
         if WhseDemoDataSetup."Location Directed Pick" = '' then begin
-            ContosoWarehouse.InsertLocation(AdvancedLocation(), AdvancedLocationLbl, '', true, true, true, true, true, true, true, "Put-away Bin Policy"::"Put-away Template", "Pick Bin Policy"::"Bin Ranking", Enum::"Location Default Bin Selection"::" ", CreateWhsePutAwayTemplate.StandardTemplate(), true, 1, 1, false, false, false);
+            ContosoWarehouse.InsertLocation(AdvancedLocation(), AdvancedLocationLbl, '', true, true, true, true, true, true, true, "Put-away Bin Policy"::"Put-away Template", "Pick Bin Policy"::"Bin Ranking", Enum::"Location Default Bin Selection"::" ", CreateWhsePutAwayTemplate.StandardTemplate(), Enum::"Prod. Consump. Whse. Handling"::"Warehouse Pick (mandatory)", Enum::"Prod. Output Whse. Handling"::"No Warehouse Handling", Enum::"Job Consump. Whse. Handling"::"Warehouse Pick (mandatory)", Enum::"Asm. Consump. Whse. Handling"::"Warehouse Pick (mandatory)", true, 1, 1, false, false, false);
             WhseDemoDataSetup.Validate("Location Directed Pick", AdvancedLocation());
         end;
 

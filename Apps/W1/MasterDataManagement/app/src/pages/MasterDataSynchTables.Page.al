@@ -11,6 +11,7 @@ page 7233 "Master Data Synch. Tables"
     Caption = 'Synchronization Tables';
     PageType = List;
     SourceTable = "Integration Table Mapping";
+    DelayedInsert = true;
     SourceTableView = where("Delete After Synchronization" = const(false),
                             Type = const(7230));
     UsageCategory = Lists;
@@ -36,12 +37,80 @@ page 7233 "Master Data Synch. Tables"
                     ApplicationArea = Suite;
                     ToolTip = 'Specifies if synchronization is enabled for this table.';
                 }
-                field(TableCaptionValue; TableCaptionValue)
+                field(TableCaptionValue; Rec."Table Caption")
                 {
                     ApplicationArea = Suite;
                     Caption = 'Table';
                     Editable = false;
                     ToolTip = 'Specifies the table caption.';
+
+                    trigger OnAssistEdit()
+                    var
+                        IntegrationTableMapping: Record "Integration Table Mapping";
+                        IntegrationFieldMapping: Record "Integration Field Mapping";
+                        AllObjWithCaption: Record AllObjWithCaption;
+                        TableMetadata: Record "Table Metadata";
+                        RecRef: RecordRef;
+                        ExistingSynchTableNos: List of [Integer];
+                        RelatedTablesToAdd: List of [Integer];
+                        RelatedTablesToAddText: Text;
+                        TableFilterTxt: Text;
+                        RelatedTableNo: Integer;
+                    begin
+                        if Rec."Table ID" <> 0 then
+                            exit;
+
+                        IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
+                        if IntegrationTableMapping.FindSet() then
+                            repeat
+                                if TableFilterTxt = '' then
+                                    TableFilterTxt := '<>' + Format(IntegrationTableMapping."Table ID")
+                                else
+                                    TableFilterTxt += '&<>' + Format(IntegrationTableMapping."Table ID");
+                                ExistingSynchTableNos.Add(IntegrationTableMapping."Table ID");
+                            until IntegrationTableMapping.Next() = 0;
+
+                        AllObjWithCaption.SetRange("Object Type", AllObjWithCaption."Object Type"::Table);
+                        AllObjWithCaption.SetFilter("Object ID", TableFilterTxt);
+                        if Page.RunModal(Page::"Table Objects", AllObjWithCaption) <> Action::LookupOK then
+                            exit;
+
+                        if not TableMetadata.Get(AllObjWithCaption."Object ID") then
+                            Error(TableMetadataNotFoundErr, AllObjWithCaption."Object ID");
+
+                        if not TableMetadata.DataPerCompany then
+                            Error(TableNotPerCompanyErr, AllObjWithCaption."Object Name");
+
+                        if TableMetadata.TableType <> TableMetadata.TableType::Normal then
+                            Error(TableNotOfTypeNormalErr, AllObjWithCaption."Object Name");
+
+                        RecRef.Open(AllObjWithCaption."Object ID");
+                        if not RecRef.WritePermission() then
+                            Error(TablePermissionMissingErr, AllObjWithCaption."Object Name");
+                        RecRef.Close();
+
+                        FindRelatedTables(ExistingSynchTableNos, RelatedTablesToAdd, RelatedTablesToAddText, AllObjWithCaption."Object ID");
+                        AddTable(IntegrationTableMapping, AllObjWithCaption."Object Name", AllObjWithCaption."Object ID");
+                        IntegrationFieldMapping.SetRange("Integration Table Mapping Name", IntegrationTableMapping.Name);
+
+                        if RelatedTablesToAdd.Count() > 0 then
+                            if Confirm(StrSubstno(RelatedTablesQst, RelatedTablesToAddText)) then begin
+                                IntegrationTableMapping.Validate(Status, IntegrationTableMapping.Status::Disabled);
+                                IntegrationTableMapping.Modify();
+                                foreach RelatedTableNo in RelatedTablesToAdd do
+                                    if TableMetadata.Get(RelatedTableNo) then
+                                        if (TableMetadata.TableType = TableMetadata.TableType::Normal) and TableMetadata.DataPerCompany then begin
+                                            AddTable(IntegrationTableMapping, TableMetadata.TableName, RelatedTableNo);
+                                            IntegrationTableMapping.Validate(Status, IntegrationTableMapping.Status::Disabled);
+                                            IntegrationTableMapping.Modify();
+                                        end;
+                                Message(StrSubstNo(RelatedTablesAddedMsg, AllObjWithCaption."Object Name", RelatedTablesToAddText));
+                                exit;
+                            end;
+
+                        Commit();
+                        Page.Run(Page::"Master Data Synch. Fields", IntegrationFieldMapping);
+                    end;
                 }
                 field(TableFilterValue; TableFilter)
                 {
@@ -54,11 +123,11 @@ page 7233 "Master Data Synch. Tables"
                     var
                         FilterPageBuilder: FilterPageBuilder;
                     begin
-                        FilterPageBuilder.AddTable(TableCaptionValue, Rec."Table ID");
+                        FilterPageBuilder.AddTable(Rec."Table Caption", Rec."Table ID");
                         if TableFilter <> '' then
-                            FilterPageBuilder.SetView(TableCaptionValue, TableFilter);
+                            FilterPageBuilder.SetView(Rec."Table Caption", TableFilter);
                         if FilterPageBuilder.RunModal() then begin
-                            TableFilter := FilterPageBuilder.GetView(TableCaptionValue, false);
+                            TableFilter := FilterPageBuilder.GetView(Rec."Table Caption", false);
                             Rec.SetTableFilter(TableFilter);
                         end;
                     end;
@@ -446,71 +515,6 @@ page 7233 "Master Data Synch. Tables"
         }
     }
 
-    trigger OnNewRecord(BelowxRec: Boolean)
-    var
-        IntegrationTableMapping: Record "Integration Table Mapping";
-        IntegrationFieldMapping: Record "Integration Field Mapping";
-        AllObjWithCaption: Record AllObjWithCaption;
-        TableMetadata: Record "Table Metadata";
-        RecRef: RecordRef;
-        ExistingSynchTableNos: List of [Integer];
-        RelatedTablesToAdd: List of [Integer];
-        RelatedTablesToAddText: Text;
-        TableFilterTxt: Text;
-        RelatedTableNo: Integer;
-    begin
-        IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
-        if IntegrationTableMapping.FindSet() then
-            repeat
-                if TableFilterTxt = '' then
-                    TableFilterTxt := '<>' + Format(IntegrationTableMapping."Table ID")
-                else
-                    TableFilterTxt += '&<>' + Format(IntegrationTableMapping."Table ID");
-                ExistingSynchTableNos.Add(IntegrationTableMapping."Table ID");
-            until IntegrationTableMapping.Next() = 0;
-
-        AllObjWithCaption.SetRange("Object Type", AllObjWithCaption."Object Type"::Table);
-        AllObjWithCaption.SetFilter("Object ID", TableFilterTxt);
-        if Page.RunModal(Page::"Table Objects", AllObjWithCaption) <> Action::LookupOK then
-            exit;
-
-        if not TableMetadata.Get(AllObjWithCaption."Object ID") then
-            Error(TableMetadataNotFoundErr, AllObjWithCaption."Object ID");
-
-        if not TableMetadata.DataPerCompany then
-            Error(TableNotPerCompanyErr, AllObjWithCaption."Object Name");
-
-        if TableMetadata.TableType <> TableMetadata.TableType::Normal then
-            Error(TableNotOfTypeNormalErr, AllObjWithCaption."Object Name");
-
-        RecRef.Open(AllObjWithCaption."Object ID");
-        if not RecRef.WritePermission() then
-            Error(TablePermissionMissingErr, AllObjWithCaption."Object Name");
-        RecRef.Close();
-
-        FindRelatedTables(ExistingSynchTableNos, RelatedTablesToAdd, RelatedTablesToAddText, AllObjWithCaption."Object ID");
-        AddTable(IntegrationTableMapping, AllObjWithCaption."Object Name", AllObjWithCaption."Object ID");
-        IntegrationFieldMapping.SetRange("Integration Table Mapping Name", IntegrationTableMapping.Name);
-
-        if RelatedTablesToAdd.Count() > 0 then
-            if Confirm(StrSubstno(RelatedTablesQst, RelatedTablesToAddText)) then begin
-                IntegrationTableMapping.Validate(Status, IntegrationTableMapping.Status::Disabled);
-                IntegrationTableMapping.Modify();
-                foreach RelatedTableNo in RelatedTablesToAdd do
-                    if TableMetadata.Get(RelatedTableNo) then
-                        if (TableMetadata.TableType = TableMetadata.TableType::Normal) and TableMetadata.DataPerCompany then begin
-                            AddTable(IntegrationTableMapping, TableMetadata.TableName, RelatedTableNo);
-                            IntegrationTableMapping.Validate(Status, IntegrationTableMapping.Status::Disabled);
-                            IntegrationTableMapping.Modify();
-                        end;
-                Message(StrSubstNo(RelatedTablesAddedMsg, AllObjWithCaption."Object Name", RelatedTablesToAddText));
-                exit;
-            end;
-
-        Commit();
-        Page.Run(Page::"Master Data Synch. Fields", IntegrationFieldMapping);
-    end;
-
     local procedure FindRelatedTables(var ExistingSynchTableNos: List of [Integer]; var RelatedTablesToAdd: List of [Integer]; var RelatedTablesToAddText: Text; TableId: Integer)
     var
         Field: Record Field;
@@ -572,7 +576,6 @@ page 7233 "Master Data Synch. Tables"
     trigger OnAfterGetRecord()
     begin
         IntegrationTableCaptionValue := ObjectTranslation.TranslateObject(ObjectTranslation."Object Type"::Table, Rec."Integration Table ID");
-        TableCaptionValue := ObjectTranslation.TranslateObject(ObjectTranslation."Object Type"::Table, Rec."Table ID");
         IntegrationFieldCaptionValue := GetFieldCaption();
         IntegrationFieldTypeValue := GetFieldType();
 
@@ -588,14 +591,16 @@ page 7233 "Master Data Synch. Tables"
     end;
 
     trigger OnInit()
+    var
+        MasterDataMgtUpgrade: Codeunit "Master Data Mgt. Upgrade";
     begin
         SetDataSynchEnabledState();
+        MasterDataMgtUpgrade.UpgradeSynchTableCaptions();
     end;
 
     var
         ObjectTranslation: Record "Object Translation";
         TypeHelper: Codeunit "Type Helper";
-        TableCaptionValue: Text[250];
         IntegrationFieldCaptionValue: Text;
         IntegrationFieldTypeValue: Text;
         IntegrationTableCaptionValue: Text[250];

@@ -62,7 +62,7 @@ table 4768 "Contoso Coffee Demo Data Setup"
             exit;
 
         Rec.Init();
-        Rec.Validate("Starting Year", Date2DMY(Today, 3) - 1);
+        Rec.Validate("Starting Year", Date2DMY(Today(), 3) - 1);
         Rec.Insert();
     end;
 }

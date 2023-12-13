@@ -762,7 +762,6 @@ codeunit 139600 "Test Essential Bus. Headlines"
     end;
 
     local procedure CreateInvoice(Customer: Record Customer);
-    var
     begin
         Clear(SalesHeader);
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Invoice, Customer."No.");

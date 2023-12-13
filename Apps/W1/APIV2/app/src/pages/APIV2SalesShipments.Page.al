@@ -57,15 +57,22 @@ page 30062 "APIV2 - Sales Shipments"
                 {
                     Caption = 'Customer Purchase Order Reference',;
                 }
+                field(customerId; Rec."Customer Id")
+                {
+                    Caption = 'Customer Id';
+                }
                 field(customerNumber; Rec."Sell-to Customer No.")
                 {
                     Caption = 'Customer No.';
-
                 }
                 field(customerName; Rec."Sell-to Customer Name")
                 {
                     Caption = 'Customer Name';
                     Editable = false;
+                }
+                field(billToCustomerId; Rec."Bill-to Customer Id")
+                {
+                    Caption = 'Bill-to Customer Id';
                 }
                 field(billToName; Rec."Bill-to Name")
                 {

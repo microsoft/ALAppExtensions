@@ -2,7 +2,7 @@
     "id":  "a98932e6-0fbc-4f74-a39b-f159b068d424",
     "name":  "Standard Import Export (SIE)",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "The Standard Import Export (SIE) extension makes it easy to import and export general ledger data in the format that the authorities in your country require.",
     "description":  "As a part of the audit reporting in Sweden, companies must be able to import and export general ledger data according to the standard import export (SIE) format. This feature enables using SIE format within Audit File Export app, where you can specify SIE dimensions and file types as well as the level of detail covered by import or export transactions.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -16,14 +16,14 @@
                              "id":  "a41b0c3e-bf1c-4c97-ad1b-b430a3933ada",
                              "name":  "Audit File Export",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
-    "application":  "23.3.0.0",
+    "platform":  "24.0.0.0",
+    "application":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  5314,

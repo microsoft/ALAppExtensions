@@ -2,7 +2,7 @@
     "id":  "8038abf4-6fc9-4212-ac03-1137b06ca8ca",
     "name":  "FI Core",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Provides standard local functionality in Business Central for Finland.",
     "description":  "Provides standard local functionality in Business Central for Finland.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -17,8 +17,8 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
-    "application":  "23.3.0.0",
+    "platform":  "24.0.0.0",
+    "application":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  13411,

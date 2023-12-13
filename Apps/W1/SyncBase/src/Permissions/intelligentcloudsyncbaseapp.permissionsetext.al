@@ -1,3 +1,4 @@
+#if not CLEAN24
 namespace Microsoft.Integration.SyncBase;
 
 using System.Security.AccessControl;
@@ -8,3 +9,4 @@ permissionsetextension 39475 "INTELLIGENT CLOUD - SyncBaseApp" extends "INTELLIG
                   tabledata "Sync Mapping" = R,
                   tabledata "Sync Setup" = R;
 }
+#endif

@@ -1,8 +1,8 @@
+#if not CLEAN22
 namespace Microsoft.CRM.EmailLoggin;
 
 using System.Environment.Configuration;
 
-#if not CLEAN22
 enumextension 1680 "Feature To Update - Email Log." extends "Feature To Update"
 {
     value(1680; EmailLoggingUsingGraphApi)

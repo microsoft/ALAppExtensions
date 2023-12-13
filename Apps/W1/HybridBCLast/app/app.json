@@ -2,7 +2,7 @@
     "id":  "6992416f-3f39-4d3c-8242-3fff61350bea",
     "name":  "Business Central Cloud Migration - Previous Release",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Enables data migration from the previous version of Dynamics BC (n-1) to the current release of Dynamics 365 Business Central SaaS.",
     "description":  "This extension will take you through the process to migrate data from your Business Central on-premises solution to your Dynamics 365 Business Central cloud tenant. This extension updates system and application tables. Once you have walked through the cloud migration wizard in assisted setup, you will be able to migrate your data from your on-premises environment to your cloud tenant.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -15,7 +15,7 @@
                          {
                              "publisher":  "Microsoft",
                              "name":  "Intelligent Cloud Base",
-                             "version":  "23.3.0.0",
+                             "version":  "24.0.0.0",
                              "id":  "58623bfa-0559-4bc2-ae1c-0979c29fd9e0"
                          }
                      ],
@@ -29,7 +29,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  1,
@@ -42,5 +42,5 @@
                                    "includeSourceInSymbolFile":  true
                                },
     "target":  "Cloud",
-    "application":  "23.3.0.0"
+    "application":  "24.0.0.0"
 }

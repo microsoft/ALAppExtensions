@@ -2,7 +2,7 @@
     "id":  "08d69832-9231-429e-be2c-8bab2c96905b",
     "name":  "Email - Current User Connector",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Enable users to use their own Microsoft 365 email account to send email in Business Central.",
     "description":  "This connector enables users to send email from their own email account. After you set up this connector, it will automatically find the email accounts specified for each user. You only need to set up this connector one time.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -15,13 +15,13 @@
                              "id":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
                              "publisher":  "Microsoft",
                              "name":  "System Application",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "e6328152-bb29-4664-9dae-3bc7eaae1fd8",
                              "name":  "Email - Outlook REST API",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "internalsVisibleTo":  [
@@ -34,7 +34,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  2,

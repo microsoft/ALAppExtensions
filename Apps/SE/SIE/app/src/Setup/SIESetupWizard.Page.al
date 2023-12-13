@@ -254,7 +254,6 @@ page 5314 "SIE Setup Wizard"
     }
 
     trigger OnQueryClosePage(CloseAction: action): Boolean;
-    var
     begin
         if GetLastErrorText() <> '' then
             exit(true);

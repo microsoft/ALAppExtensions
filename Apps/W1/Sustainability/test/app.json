@@ -1,0 +1,31 @@
+{
+    "id": "6723f320-28a1-40cc-bf4d-d4dce362cb39",
+    "name": "Sustainability Tests",
+    "publisher": "Microsoft",
+    "version": "24.0.0.0",
+    "brief": "Tests for Microsoft Sustainability app.",
+    "description": "Tests for Microsoft Sustainability app.",
+    "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
+    "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+    "help": "https://go.microsoft.com/fwlink/?linkid=2139719",
+    "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2139719",
+    "url": "https://go.microsoft.com/fwlink/?linkid=724011",
+    "logo": "./ExtensionLogo.png",
+    "dependencies": [],
+    "internalsVisibleTo": [],
+    "screenshots": [],
+    "platform": "24.0.0.0",
+    "application": "24.0.0.0",
+    "idRanges": [
+        {
+            "from": 135216,
+            "to": 135249
+        }
+    ],
+    "resourceExposurePolicy": {
+        "allowDebugging": true,
+        "allowDownloadingSource": true,
+        "includeSourceInSymbolFile": true
+    },
+    "target": "OnPrem"
+}

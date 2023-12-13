@@ -61,6 +61,23 @@ codeunit 18006 "GST Statistics"
             until PurchCrMemoLine.Next() = 0;
     end;
 
+    local procedure GetPurchaseRCMStatisticsAmount(
+        PurchaseHeader: Record "Purchase Header";
+        var RCMAmount: Decimal)
+    var
+        PurchaseLine: Record "Purchase Line";
+    begin
+        Clear(RCMAmount);
+
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.SetRange("Document no.", PurchaseHeader."No.");
+        PurchaseLine.SetRange("GST Reverse Charge", true);
+        if PurchaseLine.FindSet() then
+            repeat
+                RCMAmount += GetGSTAmount(PurchaseLine.RecordId());
+            until PurchaseLine.Next() = 0;
+    end;
+
     local procedure GetGSTAmount(RecID: RecordID): Decimal
     var
         TaxTransactionValue: Record "Tax Transaction Value";
@@ -176,22 +193,6 @@ codeunit 18006 "GST Statistics"
                 if (not PurchCrMemoLine."GST Reverse Charge") then
                     GSTAmount += GetGSTAmount(PurchCrMemoLine.RecordId());
             until PurchCrMemoLine.Next() = 0;
-    end;
-
-    local procedure GetPurchaseRCMStatisticsAmount(
-        PurchaseHeader: Record "Purchase Header";
-        var RCMAmount: Decimal)
-    var
-        PurchaseLine: Record "Purchase Line";
-    begin
-        Clear(RCMAmount);
-        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
-        PurchaseLine.SetRange("Document no.", PurchaseHeader."No.");
-        PurchaseLine.SetRange("GST Reverse Charge", true);
-        if PurchaseLine.FindSet() then
-            repeat
-                RCMAmount += GetGSTAmount(PurchaseLine.RecordId());
-            until PurchaseLine.Next() = 0;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetPurchaseHeaderGSTAmount', '', false, false)]

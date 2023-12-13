@@ -78,11 +78,6 @@ codeunit 30176 "Shpfy Product API"
         GraphQuery.Append(', published: true');
         GraphQuery.Append(', variants: {inventoryPolicy: ');
         GraphQuery.Append(ShopifyVariant."Inventory Policy".Names.Get(ShopifyVariant."Inventory Policy".Ordinals.IndexOf(ShopifyVariant."Inventory Policy".AsInteger())));
-        if ShopifyVariant.Title <> '' then begin
-            GraphQuery.Append(', title: \"');
-            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyVariant.Title));
-            GraphQuery.Append('\"');
-        end;
         if ShopifyVariant.Barcode <> '' then begin
             GraphQuery.Append(', barcode: \"');
             GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyVariant.Barcode));
@@ -376,10 +371,7 @@ codeunit 30176 "Shpfy Product API"
         Clear(ProductIds);
         GraphQLType := GraphQLType::GetProductIds;
         LastSyncTime := Shop.GetLastSyncTime("Shpfy Synchronization Type"::Products);
-        if LastSyncTime > 0DT then
-            Parameters.Add('Time', Format(LastSyncTime, 0, 9))
-        else
-            Parameters.Add('Time', '');
+        Parameters.Add('Time', Format(LastSyncTime, 0, 9));
         repeat
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
             if JsonHelper.GetJsonArray(JResponse, JProducts, 'data.products.edges') then begin

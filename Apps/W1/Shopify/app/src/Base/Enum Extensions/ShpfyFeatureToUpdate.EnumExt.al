@@ -1,8 +1,8 @@
+#if not CLEAN22
 namespace Microsoft.Integration.Shopify;
 
 using System.Environment.Configuration;
 
-#if not CLEAN22
 enumextension 30101 "Shpfy Feature To Update" extends "Feature To Update"
 {
     value(30101; ShopifyNewCustomerItemTemplates)

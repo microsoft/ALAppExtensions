@@ -188,7 +188,6 @@ codeunit 20126 "AMC Bank Process Statement"
     end;
 
     local procedure getNextLevels(var ElementXMLBuffer: Record "XML Buffer"; NextLevelName: Text; ParentEntryNo: Integer)
-    var
     begin
         ElementXMLBuffer.Reset();
         ElementXMLBuffer.SetRange("Parent Entry No.", ParentEntryNo);
@@ -341,7 +340,6 @@ codeunit 20126 "AMC Bank Process Statement"
     end;
 
     local procedure getChildsParentEntryNo(var ElementXMLBuffer: Record "XML Buffer"; ElementName: Text; ParentEntryNo: Integer): Integer
-    var
     begin
         ElementXMLBuffer.Reset();
         ElementXMLBuffer.SetRange("Parent Entry No.", ParentEntryNo);
@@ -355,7 +353,6 @@ codeunit 20126 "AMC Bank Process Statement"
     end;
 
     local procedure getChildsValue(var ElementXMLBuffer: Record "XML Buffer"; ElementName: Text; ParentEntryNo: Integer): Text
-    var
     begin
         ElementXMLBuffer.Reset();
         ElementXMLBuffer.SetRange("Parent Entry No.", ParentEntryNo);

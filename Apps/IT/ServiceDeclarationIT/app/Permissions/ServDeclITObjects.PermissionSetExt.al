@@ -4,8 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Service.Reports;
 
-using System.Security.AccessControl;
-
 permissionsetextension 12214 "Serv. Decl. IT - Objects" extends "Serv. Decl. - Objects"
 {
     Permissions =

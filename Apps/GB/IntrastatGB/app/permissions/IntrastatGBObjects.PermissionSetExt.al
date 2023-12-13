@@ -4,8 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Intrastat;
 
-using System.Security.AccessControl;
-
 permissionsetextension 10500 "Intrastat GB - Objects" extends "Intrastat Core - Objects"
 {
     Permissions =

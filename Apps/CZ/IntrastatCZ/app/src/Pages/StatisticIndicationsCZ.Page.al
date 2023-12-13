@@ -4,7 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Intrastat;
 
+#if not CLEAN22
 using System.Environment.Configuration;
+#endif
 
 page 31300 "Statistic Indications CZ"
 {

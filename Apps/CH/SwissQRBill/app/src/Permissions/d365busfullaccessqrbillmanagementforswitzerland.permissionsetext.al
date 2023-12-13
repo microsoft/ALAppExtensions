@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Bank.Payment;
 
-using Microsoft.Bank.Payment;
 using System.Security.AccessControl;
 
 permissionsetextension 11503 "D365 BUS FULL ACCESS - QR-Bill Management for Switzerland" extends "D365 BUS FULL ACCESS"

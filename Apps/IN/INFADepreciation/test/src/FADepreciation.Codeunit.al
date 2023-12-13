@@ -545,7 +545,6 @@ codeunit 18649 "FA Depreciation"
     end;
 
     local procedure Initialize()
-    var
     begin
         if IsInitialized then
             exit;
@@ -754,7 +753,6 @@ codeunit 18649 "FA Depreciation"
     end;
 
     local procedure CreateNewFixedAsset(var FixedAsset: Record "Fixed Asset"; FAClass: Code[10]; FASubClass: Code[10]; FALocation: Code[10]; FixedAssetBlock: Code[10]; AddlDep: Boolean)
-    var
     begin
         LibraryFixedAsset.CreateFAWithPostingGroup(FixedAsset);
         FixedAsset.Validate("Add. Depr. Applicable", AddlDep);
@@ -1302,7 +1300,6 @@ codeunit 18649 "FA Depreciation"
         var FAShitf: Record "Fixed Asset Shift";
         ShiftType: Enum "Shift Type";
         IndustryType: Enum "Industry type")
-    var
     begin
         FAShitf.Init();
         FAShitf.Validate("FA No.", FixedAsset."No.");
