@@ -166,7 +166,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
             }
             systemaction(Cancel)
             {
-                Caption = 'Discard';
+                Caption = 'Discard it';
                 ToolTip = 'Discard transfers to G/L Accounts proposed by Copilot.';
             }
         }

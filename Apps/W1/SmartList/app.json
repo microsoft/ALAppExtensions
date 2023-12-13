@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "SmartList",
     "description":  "View query information within Business Central list pages that dynamically renders data on the page based on query definition.",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?LinkId=847985",
     "help":  "https://go.microsoft.com/fwlink/?LinkId=849257",
@@ -17,7 +17,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "target":  "OnPrem",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  true,
@@ -33,5 +33,5 @@
                          "to":  3010
                      }
                  ],
-    "application":  "23.3.0.0"
+    "application":  "24.0.0.0"
 }

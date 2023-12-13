@@ -490,13 +490,6 @@ codeunit 4022 "GP Vendor Migrator"
         RemitAddress.Modify();
     end;
 
-#if not CLEAN21
-    [Obsolete('Method is not supported, it was using files', '21.0')]
-    procedure GetAll()
-    begin
-    end;
-#endif
-
     procedure PopulateStagingTable(JArray: JsonArray)
     begin
         GlobalDocumentNo := 'V00000';

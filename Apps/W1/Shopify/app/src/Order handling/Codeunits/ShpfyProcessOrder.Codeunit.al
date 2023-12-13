@@ -109,7 +109,7 @@ codeunit 30166 "Shpfy Process Order"
             SalesHeader."Ship-to Post Code" := CopyStr(ShopifyOrderHeader."Ship-to Post Code", 1, MaxStrLen(SalesHeader."Ship-to Post Code"));
             SalesHeader."Ship-to County" := CopyStr(ShopifyOrderHeader."Ship-to County", 1, MaxStrLen(SalesHeader."Ship-to County"));
             SalesHeader."Ship-to Contact" := ShopifyOrderHeader."Ship-to Contact Name";
-            SalesHeader.Validate("Prices Including VAT", ShopifyOrderHeader."VAT Included" and ProductPriceCalc.PricesIncludingVAT(ShopifyOrderHeader."Shop Code"));
+            SalesHeader.Validate("Prices Including VAT", ShopifyOrderHeader."VAT Included" and ProductPriceCalc.DoPricesIncludingVAT(ShopifyOrderHeader."Shop Code"));
             SalesHeader.Validate("Currency Code", ShopifyShop."Currency Code");
             SalesHeader."Shpfy Order Id" := ShopifyOrderHeader."Shopify Order Id";
             SalesHeader."Shpfy Order No." := ShopifyOrderHeader."Shopify Order No.";

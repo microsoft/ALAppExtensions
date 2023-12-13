@@ -6,7 +6,9 @@ namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Foundation.Company;
 using System.Utilities;
+#if not CLEAN23
 using Microsoft.Finance.VAT.Setup;
+#endif
 
 codeunit 10686 "Elec. VAT Validate Return"
 {

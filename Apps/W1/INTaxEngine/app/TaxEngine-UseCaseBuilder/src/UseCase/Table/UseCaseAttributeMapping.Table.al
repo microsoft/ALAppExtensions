@@ -86,7 +86,6 @@ table 20307 "Use Case Attribute Mapping"
     end;
 
     trigger OnDelete()
-    var
     begin
         SwitchStatementHelper.DeleteSwitchStatement("Case ID", "Switch Statement ID");
     end;

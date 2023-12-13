@@ -266,7 +266,6 @@ table 1853 "MS - Sales Forecast Setup"
     end;
 
     local procedure DeleteAPICredential(KeyId: Guid)
-    var
     begin
         // Clear the local key id
         Clear("API Key ID");

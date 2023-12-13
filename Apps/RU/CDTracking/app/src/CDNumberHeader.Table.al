@@ -103,11 +103,7 @@ table 14104 "CD Number Header"
     }
 
     trigger OnInsert()
-    var
-        PackageManagement: Codeunit "Package Management";
     begin
-        if not PackageManagement.IsEnabled() then
-            error(PackageNoIsNotEnabledErr);
     end;
 
     trigger OnDelete()
@@ -138,6 +134,5 @@ table 14104 "CD Number Header"
         CannotRenameErr: Label 'You cannot rename Custom Declaration %1.', Comment = '%1 - custom declaration number';
         ChangeLinesQst: Label 'You have changed the header. Do you want to change lines?';
         CannotDeleteErr: Label 'You cannot delete Custom Declaration %1.', Comment = '%1 - custom declaration number';
-        PackageNoIsNotEnabledErr: Label 'You must enable Package Tracking in Feature management to create Customs Declarations.';
 }
 

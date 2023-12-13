@@ -2,7 +2,7 @@
     "id":  "d6636d6f-155e-4490-9979-ec323a6b7c81",
     "name":  "Advance Payments Localization for Czech",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Provides functionality for advance payments in Business Central for the Czech Republic.",
     "description":  "The Advance Payments solution helps companies meet regulatory requirements for registration and posting advanced payments (prepayments) include VAT requirements in the Czech Republic.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -16,26 +16,26 @@
                              "id":  "267b59d3-7302-44c5-ba77-c87000380514",
                              "name":  "Core Localization Pack for Czech",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "bc0899d1-2cc9-4091-93f8-032538dbb70f",
                              "name":  "Cash Desk Localization for Czech",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "8730dafb-13cd-42c9-987c-decb6354269d",
                              "name":  "Banking Documents Localization for Czech",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
-    "application":  "23.3.0.0",
+    "platform":  "24.0.0.0",
+    "application":  "24.0.0.0",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  true,
                                    "allowDownloadingSource":  true,

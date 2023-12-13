@@ -67,7 +67,18 @@ page 1690 "Bank Deposit"
                 {
                     ApplicationArea = Basic, Suite;
                     Importance = Promoted;
-                    ToolTip = 'Specifies if the bank deposit should be posted as a single bank account ledger entry with the total amount.';
+                    ToolTip = 'Specifies if the bank deposit should be posted as a single bank account ledger entry with the total amount. When posting as lump sum, all entries wil be posted in the same transaction with the document number of the bank deposit.';
+
+                    trigger OnValidate()
+                    var
+                        GenJournalTemplate: Record "Gen. Journal Template";
+                    begin
+                        GenJournalTemplate.Get(Rec."Journal Template Name");
+                        if GenJournalTemplate."Force Doc. Balance" then begin
+                            CurrPage.Subform.Page.SetDepositIsLumpSum(Rec."Post as Lump Sum");
+                            CurrPage.Subform.Page.Update();
+                        end;
+                    end;
                 }
                 field("Document Date"; Rec."Document Date")
                 {

@@ -12,9 +12,13 @@ tableextension 41103 "GP Company Add. Settings Ext." extends "GP Company Additio
 
             trigger OnValidate()
             begin
-                if Rec."Migrate Vendor 1099" then
+                if Rec."Migrate Vendor 1099" then begin
                     if not Rec."Migrate Payables Module" then
                         Rec.Validate("Migrate Payables Module", true);
+
+                    if not Rec."Migrate GL Module" then
+                        Rec.Validate("Migrate GL Module", true);
+                end;
             end;
         }
         field(101; "1099 Tax Year"; Integer)
@@ -46,6 +50,14 @@ tableextension 41103 "GP Company Add. Settings Ext." extends "GP Company Additio
             trigger OnAfterValidate()
             begin
                 if not Rec."Migrate Payables Module" then
+                    Rec.Validate("Migrate Vendor 1099", false);
+            end;
+        }
+        modify("Migrate GL Module")
+        {
+            trigger OnAfterValidate()
+            begin
+                if not Rec."Migrate GL Module" then
                     Rec.Validate("Migrate Vendor 1099", false);
             end;
         }

@@ -2,7 +2,7 @@
     "id":  "769bbf93-6868-4281-aec1-1cef12e56a80",
     "name":  "Dynamics GP Intelligent Cloud - US Tests",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Tests for Dynamics GP Intelligent Cloud US",
     "description":  "Tests for Dynamics GP Intelligent Cloud US",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -16,26 +16,26 @@
                              "id":  "feeb3504-556e-4790-b28d-a2b9ce302d81",
                              "name":  "Dynamics GP Intelligent Cloud",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "abe5dab1-9b38-44fc-a5f2-747ca8f4551e",
                              "name":  "Dynamics GP Intelligent Cloud - US",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
-    "application":  "23.3.0.0",
+    "platform":  "24.0.0.0",
+    "application":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  139500,

@@ -140,6 +140,12 @@ table 30133 "Shpfy Order Transaction"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+        field(23; "Payment Id"; Text[250])
+        {
+            Caption = 'Payment Id';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
         field(101; "Sales Document No."; code[20])
         {
             Caption = 'Sales Document No.';

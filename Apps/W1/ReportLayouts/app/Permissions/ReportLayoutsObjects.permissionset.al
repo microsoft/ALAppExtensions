@@ -2,6 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace System.Security.AccessControl;
+
+using Microsoft.Shared.Report;
 permissionset 9660 "Report Layouts - Objects"
 {
     Assignable = false;

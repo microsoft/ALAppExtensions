@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "This extension will take you through the process to configure your Cloud Migration environment.",
     "description":  "This extension will take you through the process to configure and manage your Cloud Migration environment.  Once your Cloud Migration environment is configured, you will be able to manage data migrations from your on-premises solution to your Dynamics 365 Business Central cloud tenant.",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2009119",
@@ -16,13 +16,13 @@
                              "id":  "58623bfa-0559-4bc2-ae1c-0979c29fd9e0",
                              "name":  "Intelligent Cloud Base",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  1,
@@ -35,5 +35,5 @@
                                    "includeSourceInSymbolFile":  true
                                },
     "target":  "Cloud",
-    "application":  "23.3.0.0"
+    "application":  "24.0.0.0"
 }

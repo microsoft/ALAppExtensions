@@ -2,7 +2,7 @@
     "id":  "6f9d2a17-ea47-4289-8a4a-aa9551792530",
     "name":  "GST Reconcilation",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Contains features for reconciling Goods and Services Tax.",
     "description":  "GST Reconciliation provides features for reconciling GST on purchase invoices with vendor invoices.",
     "features":  [
@@ -18,26 +18,26 @@
                              "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
                              "publisher":  "Microsoft",
                              "name":  "Tax Engine",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "d3c551dd-5903-4194-b153-04ced9d29a2c",
                              "publisher":  "Microsoft",
                              "name":  "India Tax Base",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "e3cf5645-b42c-412a-ac9d-bd85793266e5",
                              "publisher":  "Microsoft",
                              "name":  "GST Base",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "application":  "23.3.0.0",
-    "platform":  "23.0.0.0",
+    "application":  "24.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  18280,

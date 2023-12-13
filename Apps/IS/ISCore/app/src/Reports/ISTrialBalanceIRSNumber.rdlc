@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="DataSource">
+      <ConnectionProperties>
+        <DataProvider>SQL</DataProvider>
+        <ConnectString />
+      </ConnectionProperties>
+      <rd:SecurityType>None</rd:SecurityType>
+    </DataSource>
+  </DataSources>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <Height>2in</Height>
+        <Style />
+      </Body>
+      <Width>6.5in</Width>
+      <Page>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <Code>Public Function BlankZero(ByVal Value As Decimal)
+    if Value = 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankPos(ByVal Value As Decimal)
+    if Value &gt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankZeroAndPos(ByVal Value As Decimal)
+    if Value &gt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNeg(ByVal Value As Decimal)
+    if Value &lt; 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+
+Public Function BlankNegAndZero(ByVal Value As Decimal)
+    if Value &lt;= 0 then
+        Return ""
+    end if
+    Return Value
+End Function
+</Code>
+  <Language>=User!Language</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportID>0eeb6585-38ae-40f1-885b-8d50088d51b4</rd:ReportID>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Fields>
+        <Field Name="TodayFormatted">
+          <DataField>TodayFormatted</DataField>
+        </Field>
+        <Field Name="PeriodText">
+          <DataField>PeriodText</DataField>
+        </Field>
+        <Field Name="CompanyName">
+          <DataField>CompanyName</DataField>
+        </Field>
+        <Field Name="GLFilter">
+          <DataField>GLFilter</DataField>
+        </Field>
+        <Field Name="EmptyString">
+          <DataField>EmptyString</DataField>
+        </Field>
+        <Field Name="TrialBalanceIRSNumberCaption">
+          <DataField>TrialBalanceIRSNumberCaption</DataField>
+        </Field>
+        <Field Name="PageNoCaption">
+          <DataField>PageNoCaption</DataField>
+        </Field>
+        <Field Name="NetChangeCaption">
+          <DataField>NetChangeCaption</DataField>
+        </Field>
+        <Field Name="StatusCaption">
+          <DataField>StatusCaption</DataField>
+        </Field>
+        <Field Name="NoCaption_GLAcc">
+          <DataField>NoCaption_GLAcc</DataField>
+        </Field>
+        <Field Name="GLAccNameCaption">
+          <DataField>GLAccNameCaption</DataField>
+        </Field>
+        <Field Name="DebitCaption">
+          <DataField>DebitCaption</DataField>
+        </Field>
+        <Field Name="CreditCaption">
+          <DataField>CreditCaption</DataField>
+        </Field>
+        <Field Name="IRSNumberCaption">
+          <DataField>IRSNumberCaption</DataField>
+        </Field>
+        <Field Name="No_GLAcc">
+          <DataField>No_GLAcc</DataField>
+        </Field>
+        <Field Name="GLAccName">
+          <DataField>GLAccName</DataField>
+        </Field>
+        <Field Name="NetChange_GLAcc">
+          <DataField>NetChange_GLAcc</DataField>
+        </Field>
+        <Field Name="NetChange_GLAccFormat">
+          <DataField>NetChange_GLAccFormat</DataField>
+        </Field>
+        <Field Name="NegativeNetChange_GLAcc">
+          <DataField>NegativeNetChange_GLAcc</DataField>
+        </Field>
+        <Field Name="NegativeNetChange_GLAccFormat">
+          <DataField>NegativeNetChange_GLAccFormat</DataField>
+        </Field>
+        <Field Name="BalanceAtDate_GLAcc">
+          <DataField>BalanceAtDate_GLAcc</DataField>
+        </Field>
+        <Field Name="BalanceAtDate_GLAccFormat">
+          <DataField>BalanceAtDate_GLAccFormat</DataField>
+        </Field>
+        <Field Name="NegativeBalanceAtDate_GLAcc">
+          <DataField>NegativeBalanceAtDate_GLAcc</DataField>
+        </Field>
+        <Field Name="NegativeBalanceAtDate_GLAccFormat">
+          <DataField>NegativeBalanceAtDate_GLAccFormat</DataField>
+        </Field>
+        <Field Name="IRSNumber_GLAcc">
+          <DataField>IRSNumber_GLAcc</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText />
+      </Query>
+    </DataSet>
+  </DataSets>
+</Report>

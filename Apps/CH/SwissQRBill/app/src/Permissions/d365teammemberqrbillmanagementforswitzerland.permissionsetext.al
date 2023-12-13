@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Bank.Payment;
 
-using Microsoft.Bank.Payment;
 using System.Security.AccessControl;
 
 permissionsetextension 11507 "D365 TEAM MEMBER - QR-Bill Management for Switzerland" extends "D365 TEAM MEMBER"

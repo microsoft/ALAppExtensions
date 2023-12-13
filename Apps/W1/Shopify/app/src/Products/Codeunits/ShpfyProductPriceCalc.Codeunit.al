@@ -1,6 +1,8 @@
 namespace Microsoft.Integration.Shopify;
 
+#if not CLEAN22
 using System.IO;
+#endif
 using Microsoft.Inventory.Item;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.Customer;
@@ -12,7 +14,7 @@ using Microsoft.Finance.VAT.Setup;
 codeunit 30182 "Shpfy Product Price Calc."
 {
     Access = Internal;
-    EventSubscriberInstance = Manual;
+    SingleInstance = true;
     Permissions =
 #if not CLEAN22
         tabledata "Config. Template Header" = r,
@@ -23,12 +25,22 @@ codeunit 30182 "Shpfy Product Price Calc."
         tabledata "Sales Header" = rimd,
         tabledata "Sales Line" = rmid,
         tabledata "VAT Posting Setup" = r;
-    SingleInstance = true;
 
     var
         TempSalesHeader: Record "Sales Header" temporary;
         Shop: Record "Shpfy Shop";
+        Catalog: Record "Shpfy Catalog";
         ProductEvents: Codeunit "Shpfy Product Events";
+        GenBusPostingGroup: Code[20];
+        VATBusPostingGroup: Code[20];
+        TaxAreaCode: Code[20];
+        TaxLiable: Boolean;
+        VATCountryRegionCode: Code[10];
+        CustomerPriceGroup: Code[10];
+        CustomerDiscGroup: Code[20];
+        CustomerPostingGroup: Code[20];
+        PricesIncludingVAT: Boolean;
+        AllowLineDisc: Boolean;
 
 
     /// <summary> 
@@ -91,44 +103,47 @@ codeunit 30182 "Shpfy Product Price Calc."
         TempSalesHeader."No." := Shop.Code;
         TempSalesHeader."Sell-to Customer No." := Shop.Code;
         TempSalesHeader."Bill-to Customer No." := Shop.Code;
-        TempSalesHeader."Gen. Bus. Posting Group" := Shop."Gen. Bus. Posting Group";
-        TempSalesHeader."VAT Bus. Posting Group" := Shop."VAT Bus. Posting Group";
-        TempSalesHeader."Tax Area Code" := Shop."Tax Area Code";
-        TempSalesHeader."Tax Liable" := Shop."Tax Liable";
-        TempSalesHeader."VAT Country/Region Code" := Shop."VAT Country/Region Code";
-        TempSalesHeader."Customer Price Group" := Shop."Customer Price Group";
-        TempSalesHeader."Customer Disc. Group" := Shop."Customer Discount Group";
-        TempSalesHeader."Customer Posting Group" := Shop."Customer Posting Group";
-        TempSalesHeader."Prices Including VAT" := Shop."Prices Including VAT";
-        TempSalesHeader."Allow Line Disc." := Shop."Allow Line Disc.";
+        TempSalesHeader."Gen. Bus. Posting Group" := GenBusPostingGroup;
+        TempSalesHeader."VAT Bus. Posting Group" := VATBusPostingGroup;
+        TempSalesHeader."Tax Area Code" := TaxAreaCode;
+        TempSalesHeader."Tax Liable" := TaxLiable;
+        TempSalesHeader."VAT Country/Region Code" := VATCountryRegionCode;
+        TempSalesHeader."Customer Price Group" := CustomerPriceGroup;
+        TempSalesHeader."Customer Disc. Group" := CustomerDiscGroup;
+        TempSalesHeader."Customer Posting Group" := CustomerPostingGroup;
+        TempSalesHeader."Prices Including VAT" := PricesIncludingVAT;
+        TempSalesHeader."Allow Line Disc." := AllowLineDisc;
         TempSalesHeader.Validate("Document Date", WorkDate());
         TempSalesHeader.Validate("Order Date", WorkDate());
         TempSalesHeader.Validate("Currency Code", Shop."Currency Code");
         TempSalesHeader.Insert(false);
     end;
 
-    internal procedure PricesIncludingVAT(ShopCode: Code[20]): Boolean
+    internal procedure DoPricesIncludingVAT(ShopCode: Code[20]): Boolean
     begin
         if Shop.Code <> ShopCode then
             Shop.Get(ShopCode);
         exit(Shop."Prices Including VAT");
     end;
 
-    /// <summary> 
-    /// Set Shop.
-    /// </summary>
-    /// <param name="Code">Parameter of type Code[20].</param>
-    internal procedure SetShop(Code: Code[20])
-    var
-        ShopifyShop: Record "Shpfy Shop";
+    internal procedure GetCurrencyCode(): Code[10]
     begin
-        ShopifyShop.Get(Code);
-        if (Shop.Code <> ShopifyShop.Code) or (Shop.SystemModifiedAt < ShopifyShop.SystemModifiedAt) then begin
-            Shop := ShopifyShop;
-            Clear(TempSalesHeader);
-            TempSalesHeader.DeleteAll();
-            CreateTempSalesHeader();
-        end;
+        exit(Shop."Currency Code");
+    end;
+
+    internal procedure GetAllowLineDisc(): Boolean
+    begin
+        exit(AllowLineDisc);
+    end;
+
+    internal procedure GetPricesIncludingVAT(): Boolean
+    begin
+        exit(PricesIncludingVAT);
+    end;
+
+    internal procedure GetVATBusPostingGroup(): Code[20]
+    begin
+        exit(VATBusPostingGroup);
     end;
 
     /// <summary> 
@@ -137,30 +152,67 @@ codeunit 30182 "Shpfy Product Price Calc."
     /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
     internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
     begin
-        SetShop(ShopifyShop.Code);
+        if (Shop.Code <> ShopifyShop.Code) or (Shop.SystemModifiedAt < ShopifyShop.SystemModifiedAt) then begin
+            Shop := ShopifyShop;
+            SetParameters(Shop);
+            Clear(TempSalesHeader);
+            TempSalesHeader.DeleteAll();
+            CreateTempSalesHeader();
+        end;
     end;
 
-    /// <summary> 
-    /// Set Shop.
-    /// </summary>
-    /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
-    internal procedure GetShop(Var ShopifyShopCode: Code[20])
+    internal procedure SetShopAndCatalog(ShopifyShop: Record "Shpfy Shop"; ShopifyCatalog: Record "Shpfy Catalog")
     begin
-        ShopifyShopCode := Shop.Code;
+        if (Shop.Code <> ShopifyShop.Code) or (Shop.SystemModifiedAt < ShopifyShop.SystemModifiedAt) then
+            Shop := ShopifyShop;
+
+        if (Catalog.Id <> ShopifyCatalog.Id) or (Catalog.SystemModifiedAt < ShopifyCatalog.SystemModifiedAt) then
+            Catalog := ShopifyCatalog;
+
+        SetParameters(Catalog);
+        Clear(TempSalesHeader);
+        TempSalesHeader.DeleteAll();
+        CreateTempSalesHeader();
     end;
 
-
-    [EventSubscriber(ObjectType::Table, Database::"Sales Line", 'OnBeforeGetSalesHeader', '', true, false)]
-    local procedure GetHeader(var SalesLine: Record "Sales Line"; var SalesHeader: Record "Sales Header"; var IsHanded: Boolean)
+    local procedure SetParameters(SourceRec: Variant)
     var
-        CustomerNo: Code[20];
+        ShopifyShop: Record "Shpfy Shop";
+        ShopifyCatalog: Record "Shpfy Catalog";
+        SourceRecordRef: RecordRef;
     begin
-        if SalesLine."System-Created Entry" and (SalesLine."Document Type" = SalesLine."Document Type"::Quote) then begin
-            CustomerNo := SalesLine."Sell-to Customer No.";
-            if CustomerNo = '' then
-                CustomerNo := SalesHeader."Sell-to Customer No.";
-            SalesHeader := TempSalesHeader;
-            IsHanded := true;
+        if SourceRec.IsRecord() then
+            SourceRecordRef.GetTable(SourceRec);
+
+        case SourceRecordRef.Number() of
+            Database::"Shpfy Shop":
+                begin
+                    SourceRecordRef.SetTable(ShopifyShop);
+                    GenBusPostingGroup := ShopifyShop."Gen. Bus. Posting Group";
+                    VATBusPostingGroup := ShopifyShop."VAT Bus. Posting Group";
+                    TaxAreaCode := ShopifyShop."Tax Area Code";
+                    TaxLiable := ShopifyShop."Tax Liable";
+                    VATCountryRegionCode := ShopifyShop."VAT Country/Region Code";
+                    CustomerPriceGroup := ShopifyShop."Customer Price Group";
+                    CustomerDiscGroup := ShopifyShop."Customer Discount Group";
+                    CustomerPostingGroup := ShopifyShop."Customer Posting Group";
+                    PricesIncludingVAT := ShopifyShop."Prices Including VAT";
+                    AllowLineDisc := ShopifyShop."Allow Line Disc.";
+                end;
+            Database::"Shpfy Catalog":
+                begin
+                    SourceRecordRef.SetTable(ShopifyCatalog);
+                    GenBusPostingGroup := ShopifyCatalog."Gen. Bus. Posting Group";
+                    VATBusPostingGroup := ShopifyCatalog."VAT Bus. Posting Group";
+                    TaxAreaCode := ShopifyCatalog."Tax Area Code";
+                    TaxLiable := ShopifyCatalog."Tax Liable";
+                    VATCountryRegionCode := ShopifyCatalog."VAT Country/Region Code";
+                    CustomerPriceGroup := ShopifyCatalog."Customer Price Group";
+                    CustomerDiscGroup := ShopifyCatalog."Customer Discount Group";
+                    CustomerPostingGroup := ShopifyCatalog."Customer Posting Group";
+                    PricesIncludingVAT := ShopifyCatalog."Prices Including VAT";
+                    AllowLineDisc := ShopifyCatalog."Allow Line Disc.";
+                end;
         end;
     end;
 }

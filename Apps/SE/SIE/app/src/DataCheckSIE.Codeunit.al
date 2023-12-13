@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.AuditFileExport;
 
-using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.Period;
 
 codeunit 5317 "Data Check SIE" implements "Audit File Export Data Check"

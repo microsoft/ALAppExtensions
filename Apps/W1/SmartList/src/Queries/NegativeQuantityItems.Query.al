@@ -1,7 +1,7 @@
 query 2556 "Negative Quantity Items"
 {
     QueryType = Normal;
-    OrderBy = ascending (No);
+    OrderBy = ascending(No);
     Caption = 'Negative Quantity Items';
     QueryCategory = 'Item List';
 
@@ -28,7 +28,6 @@ query 2556 "Negative Quantity Items"
     }
 
     trigger OnBeforeOpen()
-    var
     begin
         SetFilter(Inventory, '<%1', 0);
     end;

@@ -1,7 +1,9 @@
 namespace Microsoft.Integration.Shopify;
 
 using System.Integration;
+#if not CLEAN23
 using System.Environment.Configuration;
+#endif
 
 codeunit 30270 "Shpfy Bulk Operation Mgt."
 {

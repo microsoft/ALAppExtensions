@@ -79,10 +79,6 @@ page 1071 "MS - PayPal Standard Template"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Reset To Default';
                 Image = Restore;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 ToolTip = 'Resets values to default.';
 
                 trigger OnAction();
@@ -92,6 +88,15 @@ page 1071 "MS - PayPal Standard Template"
                     MSPayPalStandardMgt.TemplateAssignDefaultValues(Rec);
                     MESSAGE(SetToDefaultMsg);
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(ResetToDefault_Promoted; ResetToDefault)
+                {
+                }
             }
         }
     }

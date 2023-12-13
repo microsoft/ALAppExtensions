@@ -23,8 +23,103 @@ codeunit 5147 "Contoso Warehouse"
 
     procedure InsertLocation(Code: Code[10]; Name: Text[100]; Address: Text[100]; RequirePutAway: Boolean; RequirePick: Boolean; UseCrossDocking: Boolean; RequireReceive: Boolean; RequireShipment: Boolean; BinMandatory: Boolean; DirectedPutAwayAndPick: Boolean; PutAwayBinPolicy: Enum "Put-away Bin Policy"; PickBinPolicy: Enum "Pick Bin Policy"; DefaultBinSelection: Enum "Location Default Bin Selection"; PutAwayTemplateCode: Code[10]; AllowBreakBulk: Boolean; BinCapacityPolicy: Option; SpecialEquipment: Option; AlwaysCreatePutAwayLine: Boolean; AlwaysCreatePickLine: Boolean; UseAsInTransit: Boolean)
     var
-        Location: Record Location;
-        Exists: Boolean;
+        ProdConsumpWhseHandling: Enum "Prod. Consump. Whse. Handling";
+        ProdOutputWhseHandling: Enum "Prod. Output Whse. Handling";
+        JobConsumpWhseHandling: Enum "Job Consump. Whse. Handling";
+        AsmConsumpWhseHandling: Enum "Asm. Consump. Whse. Handling";
+    begin
+
+        case true of
+            not RequirePick and not RequireShipment:
+                begin
+                    ProdConsumpWhseHandling := ProdConsumpWhseHandling::"Warehouse Pick (optional)";
+                    AsmConsumpWhseHandling := AsmConsumpWhseHandling::"Warehouse Pick (optional)";
+                    JobConsumpWhseHandling := JobConsumpWhseHandling::"Warehouse Pick (optional)";
+                end;
+            not RequirePick and RequireShipment:
+                begin
+                    ProdConsumpWhseHandling := ProdConsumpWhseHandling::"Warehouse Pick (optional)";
+                    AsmConsumpWhseHandling := AsmConsumpWhseHandling::"Warehouse Pick (optional)";
+                    JobConsumpWhseHandling := JobConsumpWhseHandling::"Warehouse Pick (optional)";
+                end;
+            RequirePick and not RequireShipment:
+                begin
+                    ProdConsumpWhseHandling := ProdConsumpWhseHandling::"Inventory Pick/Movement";
+                    AsmConsumpWhseHandling := AsmConsumpWhseHandling::"Inventory Movement";
+                    JobConsumpWhseHandling := JobConsumpWhseHandling::"Inventory Pick";
+                end;
+            RequirePick and RequireShipment:
+                begin
+                    ProdConsumpWhseHandling := ProdConsumpWhseHandling::"Warehouse Pick (mandatory)";
+                    AsmConsumpWhseHandling := AsmConsumpWhseHandling::"Warehouse Pick (mandatory)";
+                    JobConsumpWhseHandling := JobConsumpWhseHandling::"Warehouse Pick (mandatory)";
+                end;
+        end;
+
+        case true of
+            not RequirePutaway and not RequireReceive,
+            not RequirePutaway and RequireReceive,
+            RequirePutaway and RequireReceive:
+                ProdOutputWhseHandling := ProdOutputWhseHandling::"No Warehouse Handling";
+            RequirePutaway and not RequireReceive:
+                ProdOutputWhseHandling := ProdOutputWhseHandling::"Inventory Put-away";
+
+        end;
+        InsertLocation(Code, Name, Address, RequirePutAway, RequirePick, UseCrossDocking, RequireReceive, RequireShipment, BinMandatory, DirectedPutAwayAndPick, PutAwayBinPolicy, PickBinPolicy, DefaultBinSelection, PutAwayTemplateCode, ProdConsumpWhseHandling, ProdOutputWhseHandling, JobConsumpWhseHandling, AsmConsumpWhseHandling, AllowBreakBulk, BinCapacityPolicy, SpecialEquipment, AlwaysCreatePutAwayLine, AlwaysCreatePickLine, UseAsInTransit);
+    end;
+
+    procedure InsertLocation(Code: Code[10];
+            Name:
+                Text[100];
+            Address:
+                Text[100];
+            RequirePutAway:
+                Boolean;
+            RequirePick:
+                Boolean;
+            UseCrossDocking:
+                Boolean;
+            RequireReceive:
+                Boolean;
+            RequireShipment:
+                Boolean;
+            BinMandatory:
+                Boolean;
+            DirectedPutAwayAndPick:
+                Boolean;
+            PutAwayBinPolicy:
+                Enum "Put-away Bin Policy";
+            PickBinPolicy:
+                Enum "Pick Bin Policy";
+            DefaultBinSelection:
+                Enum "Location Default Bin Selection";
+            PutAwayTemplateCode:
+                Code[10];
+            ProdConumpWhseHandling:
+                Enum "Prod. Consump. Whse. Handling";
+            ProdOutputWhseHandling:
+                Enum "Prod. Output Whse. Handling";
+            JobConsumpWhseHandling:
+                Enum "Job Consump. Whse. Handling";
+            AsmConsumpWhseHandling:
+                Enum "Asm. Consump. Whse. Handling";
+            AllowBreakBulk:
+                Boolean;
+            BinCapacityPolicy:
+                Option;
+            SpecialEquipment:
+                Option;
+            AlwaysCreatePutAwayLine:
+                Boolean;
+            AlwaysCreatePickLine:
+                Boolean;
+            UseAsInTransit:
+                Boolean)
+    var
+        Location:
+            Record Location;
+        Exists:
+                Boolean;
     begin
         if Location.Get(Code) then begin
             Exists := true;
@@ -54,6 +149,10 @@ codeunit 5147 "Contoso Warehouse"
         Location.Validate("Special Equipment", SpecialEquipment);
         Location.Validate("Always Create Put-away Line", AlwaysCreatePutAwayLine);
         Location.Validate("Always Create Pick Line", AlwaysCreatePickLine);
+        Location.Validate("Prod. Consump. Whse. Handling", ProdConumpWhseHandling);
+        Location.Validate("Prod. Output Whse. Handling", ProdOutputWhseHandling);
+        Location.Validate("Job Consump. Whse. Handling", JobConsumpWhseHandling);
+        Location.Validate("Asm. Consump. Whse. Handling", AsmConsumpWhseHandling);
 
         if Exists then
             Location.Modify(true)
@@ -63,7 +162,7 @@ codeunit 5147 "Contoso Warehouse"
 
     procedure InsertLocation(Code: Code[10]; Name: Text[100]; Address: Text[100]; UseAsInTransit: Boolean)
     begin
-        InsertLocation(Code, Name, Address, false, false, false, false, false, false, false, "Put-away Bin Policy"::"Default Bin", "Pick Bin Policy"::"Default Bin", Enum::"Location Default Bin Selection"::" ", '', false, 0, 0, false, false, UseAsInTransit);
+        InsertLocation(Code, Name, Address, false, false, false, false, false, false, false, "Put-away Bin Policy"::"Default Bin", "Pick Bin Policy"::"Default Bin", Enum::"Location Default Bin Selection"::" ", '', Enum::"Prod. Consump. Whse. Handling"::"No Warehouse Handling", Enum::"Prod. Output Whse. Handling"::"No Warehouse Handling", Enum::"Job Consump. Whse. Handling"::"No Warehouse Handling", Enum::"Asm. Consump. Whse. Handling"::"No Warehouse Handling", false, 0, 0, false, false, UseAsInTransit);
     end;
 
     procedure InsertBinType(Code: Code[10]; Description: Text[100]; Receive: Boolean; Ship: Boolean; PutAway: Boolean; Pick: Boolean)

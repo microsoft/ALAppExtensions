@@ -7,7 +7,6 @@ namespace Microsoft.Finance.TaxBase;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
-using Microsoft.Finance.Payroll;
 using Microsoft.Finance.ReceivablesPayables;
 using Microsoft.Finance.TaxEngine.TaxTypeHandler;
 using Microsoft.Finance.TaxEngine.UseCaseBuilder;

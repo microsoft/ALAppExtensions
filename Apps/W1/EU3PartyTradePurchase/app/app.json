@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "The app is used to provide support for the EU 3-Party trade purchase transactions.",
     "description":  "When receiving a purchase invoice from a customer in one EU country/region and the products are sent to a different EU country/region without entering country/region, then that transaction amount can be identified and reported separately.",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2235119",
@@ -21,7 +21,7 @@
                                    "publisher":  "Microsoft"
                                }
                            ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  4880,
@@ -33,6 +33,6 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "23.3.0.0",
+    "application":  "24.0.0.0",
     "target":  "Cloud"
 }

@@ -246,6 +246,112 @@ codeunit 139507 "Test Data Search"
         DataSearchPage.Close();
     end;
 
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGetPageIdForCustomer()
+    var
+        Customer: Record Customer;
+        DataSearchObjectMapping: Codeunit "Data Search Object Mapping";
+        LibrarySales: Codeunit "Library - Sales";
+        DisplayPageId: Integer;
+        DisplayTableNo: Integer;
+        DisplaySystemId: Guid;
+    begin
+        LibrarySales.CreateCustomer(Customer);
+
+        DataSearchObjectMapping.GetDisplayPageId(Database::Customer, Customer.SystemId, DisplayPageId, DisplayTableNo, DisplaySystemId);
+
+        LibraryAssert.AreEqual(Page::"Customer Card", DisplayPageId, 'Wrong card id');
+        LibraryAssert.AreEqual(DisplayTableNo, Database::Customer, 'Wrong display table no.');
+        LibraryAssert.AreEqual(DisplaySystemId, Customer.SystemId, 'Wrong system id for customer');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGetPageIdForSalesOrder()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        DataSearchObjectMapping: Codeunit "Data Search Object Mapping";
+        LibrarySales: Codeunit "Library - Sales";
+        DisplayPageId: Integer;
+        DisplayTableNo: Integer;
+        DisplaySystemId: Guid;
+    begin
+        LibrarySales.CreateCustomer(Customer);
+        LibrarySales.CreateSalesOrder(SalesHeader);
+
+        DataSearchObjectMapping.GetDisplayPageId(Database::"Sales Header", SalesHeader.SystemId, DisplayPageId, DisplayTableNo, DisplaySystemId);
+
+        LibraryAssert.AreEqual(Page::"Sales Order", DisplayPageId, 'Wrong card id');
+        LibraryAssert.AreEqual(DisplayTableNo, Database::"Sales Header", 'Wrong display table no.');
+        LibraryAssert.AreEqual(DisplaySystemId, SalesHeader.SystemId, 'Wrong system id for SalesHeader');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoCommit)]
+    procedure TestGetPageIdForSalesOrderLine()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        DataSearchObjectMapping: Codeunit "Data Search Object Mapping";
+        LibrarySales: Codeunit "Library - Sales";
+        DisplayPageId: Integer;
+        DisplayTableNo: Integer;
+        DisplaySystemId: Guid;
+    begin
+        LibrarySales.CreateCustomer(Customer);
+        LibrarySales.CreateSalesOrder(SalesHeader);
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindFirst();
+
+        DataSearchObjectMapping.GetDisplayPageId(Database::"Sales Line", SalesLine.SystemId, DisplayPageId, DisplayTableNo, DisplaySystemId);
+
+        LibraryAssert.AreEqual(Page::"Sales Order", DisplayPageId, 'Wrong card id');
+        LibraryAssert.AreEqual(DisplayTableNo, Database::"Sales Header", 'Wrong display table no.');
+        LibraryAssert.AreEqual(DisplaySystemId, SalesHeader.SystemId, 'Wrong system id for SalesHeader');
+    end;
+
+
+    /*
+    Expects the search setup in the format of (example):
+    [
+      {
+         "tableNo": 1234,
+         "tableSubtype": 0,
+         "tableSubtypeFieldNo": 3,
+         "tableSearchFieldNos": [ 1, 2, 5, 8 ]
+      }
+    ]
+    */
+    [Test]
+    [TransactionModel(TransactionModel::AutoCommit)]
+    procedure TestGetSetup()
+    var
+        DataSearchObjectMapping: Codeunit "Data Search Object Mapping";
+        jArray: JsonArray;
+        jObject: JsonObject;
+        jToken: JsonToken;
+        i: Integer;
+    begin
+        DataSearchObjectMapping.GetDataSearchSetup(jArray);
+
+        LibraryAssert.IsTrue(jArray.Count() > 0, 'Setup was empty');
+        jArray.Get(1, jToken);
+        jObject := jToken.AsObject();
+        jObject.Get('tableNo', jToken);
+        LibraryAssert.IsTrue(jToken.AsValue().AsInteger() > 0, 'No tableNo provided.');
+        jObject.Get('tableSubtype', jToken);
+        i := jToken.AsValue().AsInteger(); // to verify that it can be read as an integer
+        jObject.Get('tableSubtypeFieldNo', jToken);
+        i := jToken.AsValue().AsInteger(); // to verify that it can be read as an integer
+        jObject.Get('tableSearchFieldNos', jToken);
+        jArray := jToken.AsArray();
+        LibraryAssert.IsTrue(jArray.Count() > 0, 'tableSearchFieldNos not provided.');
+    end;
+
     [ModalPageHandler]
     procedure DataSearchSetupListsPageHandler(var DataSearchSetupListsPage: TestPage "Data Search Setup (Lists)")
     begin

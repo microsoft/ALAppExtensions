@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Test library for the _Exclude_Master_Data_Management extension.",
     "description":  "Test library for the _Exclude_Master_Data_Management extension.",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2206176",
@@ -16,18 +16,18 @@
                              "id":  "a01864f8-9c3f-42f6-8328-8d7be1ce3e20",
                              "name":  "_Exclude_Master_Data_Management",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "target":  "Cloud",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  false,
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "23.3.0.0"
+    "application":  "24.0.0.0"
 }

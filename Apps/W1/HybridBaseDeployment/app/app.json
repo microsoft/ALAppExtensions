@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "This extension will take you through the process to configure your Cloud Migration environment.",
     "description":  "This extension will take you through the process to configure your Cloud Migration environment.  Once your Cloud Migration environment is configured, you will be able to replicate data from your Dynamics 365 Business Central on-premises solution to your Dynamics 365 Business Central cloud tenant.  This will enable you to take full advantage of what the cloud has to offer your business such as, enhanced insights into your business, artificial intelligence, multiple device access, and anytime, anywhere access.",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2009036",
@@ -17,7 +17,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  1,
@@ -30,22 +30,22 @@
                                    "includeSourceInSymbolFile":  true
                                },
     "target":  "OnPrem",
-    "application":  "23.3.0.0",
+    "application":  "24.0.0.0",
     "internalsVisibleTo":  [
                                {
-                                   "id":  "57623bfa-0559-4bc2-ae1c-0979c29fc8d1",
-                                   "name":  "Business Central Cloud Migration API",
+                                   "id": "57623bfa-0559-4bc2-ae1c-0979c29fc8d1",
+                                   "name": "Business Central Cloud Migration API",
                                    "publisher":  "Microsoft"
                                },
                                {
-                                   "id":  "334ef79e-547e-4631-8ba1-7a7f18e14de6",
-                                   "name":  "Business Central Intelligent Cloud",
-                                   "publisher":  "Microsoft"
+                                    "id":  "334ef79e-547e-4631-8ba1-7a7f18e14de6",
+                                    "name":  "Business Central Intelligent Cloud",
+                                    "publisher":  "Microsoft"
                                },
                                {
-                                   "id":  "6992416f-3f39-4d3c-8242-3fff61350bea",
-                                   "name":  "Business Central Cloud Migration - Previous Release",
-                                   "publisher":  "Microsoft"
+                                    "id":  "6992416f-3f39-4d3c-8242-3fff61350bea",
+                                    "name": "Business Central Cloud Migration - Previous Release",
+                                    "publisher":  "Microsoft"
                                },
                                {
                                    "id":  "cf07faa6-4d21-428b-bfcf-8078c5b0e582",
@@ -53,13 +53,13 @@
                                    "publisher":  "Microsoft"
                                },
                                {
-                                   "id":  "c8e46b67-1f61-46e2-a3a5-0239429e26fb",
-                                   "name":  "Business Central Cloud Migration - Previous Release Tests",
-                                   "publisher":  "Microsoft"
+                                    "id":  "c8e46b67-1f61-46e2-a3a5-0239429e26fb",
+                                    "name":  "Business Central Cloud Migration - Previous Release Tests",
+                                    "publisher":  "Microsoft"
                                },
                                {
-                                   "id":  "82acac14-8067-499b-8cf0-f068448dff34",
-                                   "name":  "Dynamics GP Intelligent Cloud Tests",
+                                    "id":  "82acac14-8067-499b-8cf0-f068448dff34",
+                                    "name":  "Dynamics GP Intelligent Cloud Tests",
                                    "publisher":  "Microsoft"
                                }
                            ]

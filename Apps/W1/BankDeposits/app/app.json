@@ -2,7 +2,7 @@
     "id":  "7a129d06-5fd6-4fb6-b82b-0bf539c779d0",
     "name":  "_Exclude_Bank Deposits",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "_Exclude_Bank Deposits",
     "description":  "_Exclude_Bank Deposits",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -23,7 +23,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  1,
@@ -37,7 +37,7 @@
                                    "includeSourceInSymbolFile":  true
                                },
     "target":  "Cloud",
-    "application":  "23.3.0.0",
+    "application":  "24.0.0.0",
     "features":  [
                      "TranslationFile",
                      "GenerateCaptions"

@@ -9,8 +9,10 @@ using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Utilities;
+#if not CLEAN24
 using System.Environment.Configuration;
 using System.Media;
+#endif
 using System.Utilities;
 
 codeunit 10672 "SAF-T Mapping Helper"

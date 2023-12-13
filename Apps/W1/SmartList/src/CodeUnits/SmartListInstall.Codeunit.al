@@ -83,7 +83,6 @@ codeunit 2480 "SmartList Install"
     // end;
 
     local procedure ApplyEvaluationClassificationsForPrivacy()
-    var
     begin
         // Do classification here
     end;

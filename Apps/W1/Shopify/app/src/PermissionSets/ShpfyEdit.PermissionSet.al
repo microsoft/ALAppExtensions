@@ -14,6 +14,10 @@ permissionset 30102 "Shpfy - Edit"
 
     Permissions =
         tabledata "Shpfy Bulk Operation" = IMD,
+        tabledata "Shpfy Catalog" = IMD,
+        tabledata "Shpfy Catalog Price" = IMD,
+        tabledata "Shpfy Company" = IMD,
+        tabledata "Shpfy Company Location" = IMD,
         tabledata "Shpfy Credit Card Company" = IMD,
         tabledata "Shpfy Cue" = IMD,
         tabledata "Shpfy Customer" = IMD,
@@ -51,11 +55,6 @@ permissionset 30102 "Shpfy - Edit"
         tabledata "Shpfy Product" = IMD,
 #if not CLEAN22
         tabledata "Shpfy Province" = IMD,
-#endif
-#if not CLEAN21
-#pragma warning disable AL0432
-        tabledata "Shpfy Registered Store" = imd,
-#pragma warning restore AL0432
 #endif
         tabledata "Shpfy Registered Store New" = imd,
         tabledata "Shpfy Shipment Method Mapping" = IMD,

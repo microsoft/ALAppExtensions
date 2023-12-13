@@ -2,15 +2,9 @@ table 11700 "Stg VAT Posting Setup"
 {
     ReplicateData = false;
     Extensible = false;
-#if not CLEAN21
-    ObsoleteState = Pending;
-    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
-    ObsoleteTag = '21.0';
-#else
     ObsoleteState = Removed;
     ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
-    ObsoleteTag = '23.0';
-#endif
+    ObsoleteTag = '24.0';
 
     fields
     {

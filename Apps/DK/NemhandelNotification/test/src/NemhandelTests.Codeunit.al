@@ -12,9 +12,6 @@ codeunit 148012 "Nemhandel Tests"
     var
         Assert: Codeunit Assert;
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
-#if not CLEAN24
-        NemhandelStatusMgt: Codeunit "Nemhandel Status Mgt.";
-#endif
         CompanyStatusGlobal: Enum "Nemhandel Company Status";
         IsInitialized: Boolean;
 
@@ -26,10 +23,6 @@ codeunit 148012 "Nemhandel Tests"
         CompanyInformationPage: TestPage "Company Information";
     begin
         // [SCENARIO 464206] Notification about Nemhandel registration when company is registered in Nemhandelsregisteret.
-#if not CLEAN24
-        if not NemhandelStatusMgt.IsFeatureEnableDatePassed() then
-            exit;
-#endif
         Initialize();
 
         // [GIVEN] Company Information with CVR number which is registered in Nemhandelsregisteret.
@@ -81,10 +74,6 @@ codeunit 148012 "Nemhandel Tests"
         NotificationText: Text;
     begin
         // [SCENARIO 464206] Notification about Nemhandel registration when company registration in Nemhandelsregisteret has not been checked.
-#if not CLEAN24
-        if not NemhandelStatusMgt.IsFeatureEnableDatePassed() then
-            exit;
-#endif
         Initialize();
 
         // [GIVEN] Company Information with CVR number for which check if company is registered in Nemhandelsregisteret has not been made.
@@ -112,10 +101,6 @@ codeunit 148012 "Nemhandel Tests"
         NotificationText: Text;
     begin
         // [SCENARIO 464206] Notification about Nemhandel registration on Accountant Role Center when company is not registered in Nemhandelsregisteret.
-#if not CLEAN24
-        if not NemhandelStatusMgt.IsFeatureEnableDatePassed() then
-            exit;
-#endif
         Initialize();
         DisableForecastNotification();
 
@@ -144,10 +129,6 @@ codeunit 148012 "Nemhandel Tests"
         NotificationText: Text;
     begin
         // [SCENARIO 464206] Notification about Nemhandel registration on Business Manager Role Center when company is not registered in Nemhandelsregisteret.
-#if not CLEAN24
-        if not NemhandelStatusMgt.IsFeatureEnableDatePassed() then
-            exit;
-#endif
         Initialize();
 
         // [GIVEN] Company Information with CVR number which is not registered in Nemhandelsregisteret.
@@ -175,10 +156,6 @@ codeunit 148012 "Nemhandel Tests"
         NotificationText: Text;
     begin
         // [SCENARIO 464206] Notification about Nemhandel registration on Sales Manager Role Center when company is not registered in Nemhandelsregisteret.
-#if not CLEAN24
-        if not NemhandelStatusMgt.IsFeatureEnableDatePassed() then
-            exit;
-#endif
         Initialize();
 
         // [GIVEN] Company Information with CVR number which is not registered in Nemhandelsregisteret.
@@ -206,10 +183,6 @@ codeunit 148012 "Nemhandel Tests"
         NotificationText: Text;
     begin
         // [SCENARIO 464206] Notification about Nemhandel registration on Order Processor Role Center when company is not registered in Nemhandelsregisteret.
-#if not CLEAN24
-        if not NemhandelStatusMgt.IsFeatureEnableDatePassed() then
-            exit;
-#endif
         Initialize();
 
         // [GIVEN] Company Information with CVR number which is not registered in Nemhandelsregisteret.
@@ -237,10 +210,6 @@ codeunit 148012 "Nemhandel Tests"
         NotificationText: Text;
     begin
         // [SCENARIO 464206] Notification about Nemhandel registration on Security Admin Role Center when company is not registered in Nemhandelsregisteret.
-#if not CLEAN24
-        if not NemhandelStatusMgt.IsFeatureEnableDatePassed() then
-            exit;
-#endif
         Initialize();
 
         // [GIVEN] Company Information with CVR number which is not registered in Nemhandelsregisteret.
@@ -268,10 +237,6 @@ codeunit 148012 "Nemhandel Tests"
         NotificationText: Text;
     begin
         // [SCENARIO 464206] Notification about Nemhandel registration when set Registration No. when company is not registered in Nemhandelsregisteret.
-#if not CLEAN24
-        if not NemhandelStatusMgt.IsFeatureEnableDatePassed() then
-            exit;
-#endif
         Initialize();
 
         // [GIVEN] Company Information with blank CVR number.
@@ -303,10 +268,6 @@ codeunit 148012 "Nemhandel Tests"
         CompanyInformationPage: TestPage "Company Information";
     begin
         // [SCENARIO 464206] Notification about Nemhandel registration when change Registration No. from registered in Nemhandelsregisteret to not registered.
-#if not CLEAN24
-        if not NemhandelStatusMgt.IsFeatureEnableDatePassed() then
-            exit;
-#endif
         Initialize();
 
         // [GIVEN] Company Information with CVR number which is registered in Nemhandelsregisteret.
@@ -334,10 +295,6 @@ codeunit 148012 "Nemhandel Tests"
         CompanyInformationPage: TestPage "Company Information";
     begin
         // [SCENARIO 464206] Notification about Nemhandel registration when set Registration No. when company is registered in Nemhandelsregisteret.
-#if not CLEAN24
-        if not NemhandelStatusMgt.IsFeatureEnableDatePassed() then
-            exit;
-#endif
         Initialize();
 
         // [GIVEN] Company Information with CVR number which is not registered in Nemhandelsregisteret.
@@ -591,13 +548,14 @@ codeunit 148012 "Nemhandel Tests"
         CompanyStatusGlobal := NewStatus;
     end;
 
+#if not CLEAN24
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Nemhandel Status Mgt.", 'OnBeforeCheckFeatureEnableDate', '', false, false)]
     local procedure OnBeforeCheckFeatureEnableDate(var FeatureEnableDatePassed: Boolean; var IsHandled: Boolean)
     begin
         FeatureEnableDatePassed := true;
         IsHandled := true;
     end;
-
+#endif
     [EventSubscriber(ObjectType::Page, Page::"Company Information", 'OnAfterGetCompanyStatusCompanyInfoBckgrndTask', '', false, false)]
     local procedure MockStatusOnAfterGetCompanyStatusCompanyInfoBckgrndTask(var CompanyStatus: Enum "Nemhandel Company Status")
     begin

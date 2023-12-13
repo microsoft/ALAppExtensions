@@ -2,15 +2,15 @@
 	"folders": [
 		{
 			"name": "System",
-			"path": "..\\..\\..\\Modules\\System"
+			"path": "../../../BCApps/src/System Application/App"
 		},
 		{
 			"name": "BaseApp",
-			"path": "..\\..\\..\\Layers\\W1\\BaseApp"
+			"path": "../../../Layers/W1/BaseApp"
 		},
 		{
 			"name": "Application",
-			"path": "..\\..\\..\\Layers\\W1\\Application"
+			"path": "../../../Layers/W1/Application"
 		},
 		{
 			"name": "app",

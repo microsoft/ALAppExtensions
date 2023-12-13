@@ -92,6 +92,26 @@ table 1070 "MS - PayPal Standard Account"
         {
             Caption = 'Service URL';
         }
+        field(20; "Disable Webhook Notifications"; Boolean)
+        {
+            InitValue = true;
+
+            Caption = 'Disable Webhook Notifications';
+            trigger OnValidate()
+            var
+                MSPayPalStandardMgt: Codeunit "MS - PayPal Standard Mgt.";
+            begin
+                if "Disable Webhook Notifications" then
+                    exit;
+
+                if GuiAllowed() then
+                    if not Confirm(EnablePayPalWebhookPaymentRegistrationQst) then
+                        Error('');
+
+                if Confirm(UpdatePaymentRegistrationSetupQst) then
+                    MSPayPalStandardMgt.RunPaymentRegistrationSetupForce();
+            end;
+        }
     }
 
     keys
@@ -132,6 +152,8 @@ table 1070 "MS - PayPal Standard Account"
         WebhookSubscriptionDeletedTxt: Label 'The webhook subscription is deleted.', Locked = true;
         WebhookSubscriptionDoesNotExistTxt: Label 'The webhook subscription does not exist.', Locked = true;
         InvalidTargetURLErr: Label 'The target URL is not valid.';
+        EnablePayPalWebhookPaymentRegistrationQst: Label 'To enable PayPal payment notifications you must have a Business PayPal account.\\Do you want to enable the webhooks for automatic payment registrations from PayPal?';
+        UpdatePaymentRegistrationSetupQst: Label 'Would you like to update the Payment Registration setup that will be used to automatically register payments from PayPal?';
         HideDialogs: Boolean;
         SalesHeaderFilterLbl: Label '%1|%2|%3', Comment = '%1,%2 and %3 are Document Types.', Locked = true;
 
@@ -274,13 +296,13 @@ table 1070 "MS - PayPal Standard Account"
     var
         PaymentRegistrationSetup: Record "Payment Registration Setup";
     begin
-        if PaymentRegistrationSetup.GET(USERID()) then begin
+        if PaymentRegistrationSetup.Get(UserId()) then begin
             Session.LogMessage('00008HA', PaymentRegistrationSetupAlreadyExistsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
             exit;
         end;
-        if PaymentRegistrationSetup.GET() then begin
+        if PaymentRegistrationSetup.Get() then begin
             PaymentRegistrationSetup."User ID" := CopyStr(USERID(), 1, MaxStrLen(PaymentRegistrationSetup."User ID"));
-            if PaymentRegistrationSetup.INSERT(true) then begin
+            if PaymentRegistrationSetup.Insert(true) then begin
                 Session.LogMessage('00008HB', PaymentRegistrationSetupCreatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
                 exit;
             end;
