@@ -2,9 +2,9 @@
     "id":  "87990153-0e35-4e5d-ba61-2e93077d1699",
     "name":  "Review General Ledger Entries",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Review General Ledger Entries",
-    "description":  "Review General Ledger Entries",
+    "description":  "Exclude Review General Ledger Entries",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2206176",
@@ -17,8 +17,8 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
-    "application":  "23.3.0.0",
+    "platform":  "24.0.0.0",
+    "application":  "24.0.0.0",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  true,
                                    "allowDownloadingSource":  true,

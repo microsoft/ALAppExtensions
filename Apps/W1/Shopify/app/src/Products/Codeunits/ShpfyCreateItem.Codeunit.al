@@ -1,8 +1,10 @@
 namespace Microsoft.Integration.Shopify;
 
-using System.IO;
 using Microsoft.Inventory.Item;
+#if not CLEAN22
+using System.IO;
 using Microsoft.Finance.Dimension;
+#endif
 using Microsoft.Foundation.UOM;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Inventory.Item.Catalog;
@@ -58,7 +60,10 @@ codeunit 30171 "Shpfy Create Item"
             case Shop."SKU Mapping" of
                 Shop."SKU Mapping"::"Item No. + Variant Code",
                 Shop."SKU Mapping"::"Variant Code":
-                    CreateItemVariant(ShopifyProduct, Rec, Item);
+                    begin
+                        CreateItemVariant(ShopifyProduct, Rec, Item);
+                        CreateItemUnitOfMeasure(Rec, Item);
+                    end;
                 Shop."SKU Mapping"::"Item No.":
                     if IsNullGuid(Rec."Item SystemId") or (not Item.GetBySystemId(Rec."Item SystemId")) then
                         if ExistItem(ShopifyProduct, Rec, Item) then begin
@@ -231,7 +236,6 @@ codeunit 30171 "Shpfy Create Item"
         DimensionsTemplate: Record "Dimensions Template";
 #endif
         ItemCategory: Record "Item Category";
-        ItemUnitofMeasure: Record "Item Unit of Measure";
         ItemVariant: Record "Item Variant";
         Vendor: Record Vendor;
 #if not CLEAN22
@@ -276,28 +280,8 @@ codeunit 30171 "Shpfy Create Item"
 #endif
         Item.Description := ShopifyProduct.Title;
 
-        case ShopifyVariant."UoM Option Id" of
-            1:
-                Code := ShopifyVariant."Option 1 Value";
-            2:
-                Code := ShopifyVariant."Option 2 Value";
-            3:
-                Code := ShopifyVariant."Option 3 Value";
-        end;
-        if Code <> '' then begin
-            Code := FindUoMCode(ShopifyVariant);
-            if Code <> '' then begin
-                ItemUnitofMeasure.SetRange("Item No.", Item."No.");
-                ItemUnitofMeasure.SetRange(Code, Code);
-                if ItemUnitofMeasure.IsEmpty() then begin
-                    Clear(ItemUnitofMeasure);
-                    ItemUnitofMeasure."Item No." := Item."No.";
-                    ItemUnitofMeasure.Code := CopyStr(Code, 1, MaxStrLen(ItemUnitofMeasure.Code));
-                    ItemUnitofMeasure."Qty. per Unit of Measure" := 1;
-                    ItemUnitofMeasure.Insert();
-                end;
-            end;
-        end;
+        CreateItemUnitOfMeasure(ShopifyVariant, Item);
+
         if ShopifyVariant."Unit Cost" <> 0 then
             Item.Validate("Unit Cost", ShopifyVariant."Unit Cost");
 
@@ -327,6 +311,35 @@ codeunit 30171 "Shpfy Create Item"
 
         Clear(ItemVariant);
         CreateReferences(ShopifyProduct, ShopifyVariant, Item, ItemVariant);
+    end;
+
+    local procedure CreateItemUnitOfMeasure(ShopifyVariant: Record "Shpfy Variant"; Item: Record Item)
+    var
+        ItemUnitofMeasure: Record "Item Unit of Measure";
+        Code: Text;
+    begin
+        case ShopifyVariant."UoM Option Id" of
+            1:
+                Code := ShopifyVariant."Option 1 Value";
+            2:
+                Code := ShopifyVariant."Option 2 Value";
+            3:
+                Code := ShopifyVariant."Option 3 Value";
+        end;
+        if Code <> '' then begin
+            Code := FindUoMCode(ShopifyVariant);
+            if Code <> '' then begin
+                ItemUnitofMeasure.SetRange("Item No.", Item."No.");
+                ItemUnitofMeasure.SetRange(Code, Code);
+                if ItemUnitofMeasure.IsEmpty() then begin
+                    Clear(ItemUnitofMeasure);
+                    ItemUnitofMeasure."Item No." := Item."No.";
+                    ItemUnitofMeasure.Code := CopyStr(Code, 1, MaxStrLen(ItemUnitofMeasure.Code));
+                    ItemUnitofMeasure."Qty. per Unit of Measure" := 1;
+                    ItemUnitofMeasure.Insert();
+                end;
+            end;
+        end;
     end;
 
     local procedure CreateItemFromTemplate(var Item: Record Item; ItemTemplCode: Code[20]; ItemNo: Code[20])

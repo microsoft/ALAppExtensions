@@ -2,7 +2,7 @@
     "id":  "b7fc717e-b79c-4548-b6dc-e27f895171f1",
     "name":  "SAF-T Modification DK Tests",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Tests for the SAF-T Modification DK extension.",
     "description":  "Tests for the SAF-T Modification DK extension.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -16,38 +16,38 @@
                              "id":  "a41b0c3e-bf1c-4c97-ad1b-b430a3933ada",
                              "name":  "Audit File Export",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "4ce93371-6bd6-4027-a78f-021064ad250e",
                              "name":  "SAF-T",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "fed2a629-3c57-4250-b2b7-f3c7a9c53cd5",
                              "name":  "SAF-T Modification DK",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "5095f467-0a01-4b99-99d1-9ff1237d286f",
                              "publisher":  "Microsoft",
                              "name":  "Library Variable Storage",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
-    "application":  "23.3.0.0",
+    "platform":  "24.0.0.0",
+    "application":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  148057,

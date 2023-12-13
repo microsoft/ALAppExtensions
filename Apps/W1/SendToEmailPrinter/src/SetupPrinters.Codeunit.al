@@ -77,7 +77,6 @@ codeunit 2650 "Setup Printers"
     end;
 
     internal procedure IsPaperSizeCustom("Paper Size": Enum "Printer Paper Kind"): Boolean
-    var
     begin
         exit("Paper Size" = "Paper Size"::Custom);
     end;
@@ -138,7 +137,7 @@ codeunit 2650 "Setup Printers"
         if EmailPrinterSettings."Paper Unit" = EmailPrinterSettings."Paper Unit"::Inches then
             PaperTray.Add('units', PrinterUnit::Display.AsInteger());
     end;
-    
+
     procedure LearnMoreAction(PrivacyNotification: Notification)
     begin
         Hyperlink(PrintPrivacyUrlTxt);

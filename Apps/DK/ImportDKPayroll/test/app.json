@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Tests for the Payroll Data Import Definitions (DK) extension.",
     "description":  "Tests for the Payroll Data Import Definitions (DK) extension.",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=858752",
@@ -16,19 +16,19 @@
                              "id":  "a3c8a6e2-834a-4e73-b1f1-79e76b652659",
                              "name":  "Payroll Data Import Definitions (DK)",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  139500,
@@ -45,5 +45,5 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "23.3.0.0"
+    "application":  "24.0.0.0"
 }

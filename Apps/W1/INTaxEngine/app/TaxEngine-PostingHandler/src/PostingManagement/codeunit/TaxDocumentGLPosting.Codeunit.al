@@ -445,7 +445,6 @@ codeunit 20341 "Tax Document GL Posting"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterPostGenJnlLine', '', false, false)]
     local procedure OnAfterPostGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; Balancing: Boolean)
-    var
     begin
         if not IsNullGuid(GenJournalLine."Tax ID") then
             RevertGenJnlLineAmount(GenJournalLine, Balancing);

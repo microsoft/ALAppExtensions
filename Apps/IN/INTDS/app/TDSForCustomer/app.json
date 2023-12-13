@@ -2,7 +2,7 @@
     "id":  "3147530a-3d75-43c7-b5e9-b28f0faa5a3a",
     "name":  "TDS For Customer",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Contains features for Tax Deducted at Source by customers.",
     "description":  "TDS on customers lets you calculate TDS on customer payments using journals, and track TDS by customers on invoices.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -19,26 +19,26 @@
                              "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
                              "publisher":  "Microsoft",
                              "name":  "Tax Engine",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "d3c551dd-5903-4194-b153-04ced9d29a2c",
                              "publisher":  "Microsoft",
                              "name":  "India Tax Base",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "c529ebd1-996f-4f1d-b0a4-f3e53256d5ad",
                              "publisher":  "Microsoft",
                              "name":  "TDS Base",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "application":  "23.3.0.0",
-    "platform":  "23.0.0.0",
+    "application":  "24.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  18661,

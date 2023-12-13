@@ -49,13 +49,7 @@ permissionset 4032 "HybridGP - Read"
                     tabledata "GPSOPTrxHist" = R,
                     tabledata "GPSOPUserDefinedWorkHist" = R,
                     tabledata "GPSOPWorkflowWorkHist" = R,
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
                     tabledata "GPForecastTemp" = R,
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
 #if not CLEAN22
 #pragma warning disable AL0432
                     tabledata "GP POPPOHeader" = R,

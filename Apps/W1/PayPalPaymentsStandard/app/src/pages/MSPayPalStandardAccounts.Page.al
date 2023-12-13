@@ -1,7 +1,6 @@
 namespace Microsoft.Bank.PayPal;
 using System.Telemetry;
 
-
 page 1073 "MS - PayPal Standard Accounts"
 {
     Caption = 'PayPal Payments Standard Accounts';
@@ -58,9 +57,6 @@ page 1073 "MS - PayPal Standard Accounts"
                 ApplicationArea = Basic, Suite;
                 Caption = 'New';
                 Image = NewDocument;
-                Promoted = true;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 ToolTip = 'Creates a new PayPal Standard account.';
 
                 trigger OnAction();
@@ -71,6 +67,15 @@ page 1073 "MS - PayPal Standard Accounts"
                     MSPayPalStandardMgt.RegisterPayPalStandardTemplate(TempPaymentServiceSetup);
                     TempPaymentServiceSetup.OnCreatePaymentService(TempPaymentServiceSetup);
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_New)
+            {
+                actionref(NewAction_Promoted; NewAction)
+                {
+                }
             }
         }
     }

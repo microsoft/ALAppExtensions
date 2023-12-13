@@ -2,7 +2,7 @@
     "id":  "d9cd402d-304d-4156-9255-74e51b04ec1c",
     "name":  "GST Purchase Automation",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Contains GST On Purchase Automated Tests",
     "description":  "Contains GST On Purchase Automated Tests",
     "features":  [
@@ -18,44 +18,44 @@
                              "id":  "d3c551dd-5903-4194-b153-04ced9d29a2c",
                              "publisher":  "Microsoft",
                              "name":  "India Tax Base",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
                              "publisher":  "Microsoft",
                              "name":  "Tax Engine",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "db643212-b7fb-4dd4-b5a8-cb44ac714461",
                              "publisher":  "Microsoft",
                              "name":  "India GST",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "publisher":  "Microsoft",
                              "name":  "Library Assert",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "publisher":  "Microsoft",
                              "name":  "Tests-TestLibraries",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "f47f7494-1162-493e-bec0-b921397e8bf8",
                              "publisher":  "Microsoft",
                              "name":  "GST Base Tests",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "application":  "23.3.0.0",
-    "platform":  "23.0.0.0",
+    "application":  "24.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  18125,

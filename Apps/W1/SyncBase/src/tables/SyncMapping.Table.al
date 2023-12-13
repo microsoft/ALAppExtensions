@@ -5,6 +5,15 @@ table 2402 "Sync Mapping"
     Caption = 'Sync Mapping';
     DataClassification = SystemMetadata;
     ReplicateData = false;
+#if not CLEAN24
+    ObsoleteState = Pending;
+    ObsoleteReason = 'The extension is being obsoleted.';
+    ObsoleteTag = '24.0';
+#else
+    ObsoleteState = Removed;
+    ObsoleteReason = 'The extension is being obsoleted.';
+    ObsoleteTag = '27.0';
+#endif
 
     fields
     {

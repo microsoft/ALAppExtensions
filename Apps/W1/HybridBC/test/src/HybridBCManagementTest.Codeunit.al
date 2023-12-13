@@ -28,7 +28,6 @@ codeunit 139654 "HybridBC Management Test"
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridBCWizard: Codeunit "Hybrid BC Wizard";
         RunId: Text;
-        StartTime: DateTime;
         TriggerType: Text;
     begin
         // [GIVEN] A Webhook Subscription exists for DynamicsBC
@@ -36,17 +35,14 @@ codeunit 139654 "HybridBC Management Test"
 
         // [WHEN] A notification record is inserted
         TriggerType := 'Scheduled';
-        InsertNotification(SubscriptionId, RunId, StartTime, TriggerType, HybridReplicationSummary.ReplicationType::Diagnostic, '');
+        InsertNotification(SubscriptionId, RunId, TriggerType, HybridReplicationSummary.ReplicationType::Diagnostic, '');
 
         // [THEN] A Hybrid Replication Summary record is created
         HybridReplicationSummary.Get(RunId);
-        with HybridReplicationSummary do begin
-            Assert.AreEqual(Source, HybridBCWizard.ProductName(), 'Unexpected value in summary for source.');
-            Assert.AreEqual("Run ID", RunId, 'Unexpected value in summary for Run ID.');
-            Assert.AreEqual("Start Time", StartTime, 'Unexpected value in summary for Start Time.');
-            Assert.AreEqual("Trigger Type", "Trigger Type"::Scheduled, 'Unexpected value in summary for Trigger Type.');
-            Assert.AreEqual(ReplicationType, ReplicationType::Diagnostic, 'Unexpected value in summary for Replication Type.');
-        end;
+        Assert.AreEqual(HybridReplicationSummary.Source, HybridBCWizard.ProductName(), 'Unexpected value in summary for source.');
+        Assert.AreEqual(HybridReplicationSummary."Run ID", RunId, 'Unexpected value in summary for Run ID.');
+        Assert.AreEqual(HybridReplicationSummary."Trigger Type", HybridReplicationSummary."Trigger Type"::Scheduled, 'Unexpected value in summary for Trigger Type.');
+        Assert.AreEqual(HybridReplicationSummary.ReplicationType, HybridReplicationSummary.ReplicationType::Diagnostic, 'Unexpected value in summary for Replication Type.');
     end;
 
     [Test]
@@ -167,7 +163,6 @@ codeunit 139654 "HybridBC Management Test"
         HybridReplicationSummary: Record "Hybrid Replication Summary";
         HybridBCWizard: Codeunit "Hybrid BC Wizard";
         RunId: Text;
-        StartTime: DateTime;
         TriggerType: Text;
     begin
         // [GIVEN] A Webhook Subscription exists for DynamicsBC
@@ -175,18 +170,15 @@ codeunit 139654 "HybridBC Management Test"
 
         // [WHEN] A notification record is inserted
         TriggerType := 'Scheduled';
-        InsertNotification(SubscriptionId, RunId, StartTime, TriggerType, HybridReplicationSummary.ReplicationType::Diagnostic, 'INIT');
+        InsertNotification(SubscriptionId, RunId, TriggerType, HybridReplicationSummary.ReplicationType::Diagnostic, 'INIT');
 
         // [THEN] A Hybrid Replication Summary record is created
         HybridReplicationSummary.Get(RunId);
-        with HybridReplicationSummary do begin
-            Assert.AreEqual(Source, HybridBCWizard.ProductName(), 'Unexpected value in summary for source.');
-            Assert.AreEqual("Run ID", RunId, 'Unexpected value in summary for Run ID.');
-            Assert.AreEqual("Start Time", StartTime, 'Unexpected value in summary for Start Time.');
-            Assert.AreEqual("Trigger Type", "Trigger Type"::Scheduled, 'Unexpected value in summary for Trigger Type.');
-            Assert.AreEqual(ReplicationType, ReplicationType::Diagnostic, 'Unexpected value in summary for Replication Type.');
-            Assert.IsTrue(Details.HasValue(), 'Details should contain text.');
-        end;
+        Assert.AreEqual(HybridReplicationSummary.Source, HybridBCWizard.ProductName(), 'Unexpected value in summary for source.');
+        Assert.AreEqual(HybridReplicationSummary."Run ID", RunId, 'Unexpected value in summary for Run ID.');
+        Assert.AreEqual(HybridReplicationSummary."Trigger Type", HybridReplicationSummary."Trigger Type"::Scheduled, 'Unexpected value in summary for Trigger Type.');
+        Assert.AreEqual(HybridReplicationSummary.ReplicationType, HybridReplicationSummary.ReplicationType::Diagnostic, 'Unexpected value in summary for Replication Type.');
+        Assert.IsTrue(HybridReplicationSummary.Details.HasValue(), 'Details should contain text.');
     end;
 
     [Test]
@@ -272,7 +264,7 @@ codeunit 139654 "HybridBC Management Test"
         LibraryHybridManagement.SetDiagnosticRunsEnabled(true);
 
         IntelligentCloudSetup."Product ID" := HybridBCWizard.ProductId();
-        IF NOT IntelligentCloudSetup.Insert() then
+        if not IntelligentCloudSetup.Insert() then
             IntelligentCloudSetup.Modify();
 
         BindSubscription(LibraryHybridManagement);
@@ -285,11 +277,12 @@ codeunit 139654 "HybridBC Management Test"
             Json := ', "Code": "' + MessageCode + '"';
     end;
 
-    local procedure InsertNotification(SubscriptionId: Text; var RunId: Text; var StartTime: DateTime; var TriggerType: Text; ReplicationType: Integer; MessageCode: Code[10])
+    local procedure InsertNotification(SubscriptionId: Text; var RunId: Text; var TriggerType: Text; ReplicationType: Integer; MessageCode: Code[10])
     var
         WebhookNotification: Record "Webhook Notification";
         NotificationOutStream: OutStream;
         NotificationText: Text;
+        StartTime: DateTime;
     begin
         NotificationText := LibraryHybridManagement.GetNotificationPayload(SubscriptionId, RunId, StartTime, TriggerType, ReplicationType, AdditionalNotificationText(MessageCode));
         WebhookNotification.Init();

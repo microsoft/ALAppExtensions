@@ -118,6 +118,7 @@ codeunit 6364 "Pagero Auth."
         state := '';
         url :=
            StrSubstNo(CurrUrlWithStateTxt, OAuth20Mgt.GetAuthorizationURL(OAuth20Setup, GetToken(OAuth20Setup."Client ID", DataScope::Company)), state);
+
         OAuth2ControlAddIn.SetOAuth2Properties(url, state);
         OAuth2ControlAddIn.RunModal();
         auth_error := OAuth2ControlAddIn.GetAuthError();

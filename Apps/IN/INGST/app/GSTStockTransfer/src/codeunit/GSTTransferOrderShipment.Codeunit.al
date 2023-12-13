@@ -300,7 +300,6 @@ codeunit 18391 "GST Transfer Order Shipment"
 
         GSTSetup.TestField("GST Tax Type");
         GSTSetup.TestField("Cess Tax Type");
-
         TransferHeader.Get(DocNo);
         GeneralLedgerSetup.Get();
         Sign := GSTBaseValidation.GetSignTransfer(DocumentType::Quote, TransactionType::"Transfer");
@@ -347,6 +346,7 @@ codeunit 18391 "GST Transfer Order Shipment"
                                 DetailedGSTEntryBuffer."Non-Availment" := true;
                             end else
                                 DetailedGSTEntryBuffer."GST Input/Output Credit Amount" := Sign * TaxTransactionValue.Amount;
+
                             if TaxTransactionValue."Tax Type" = GSTSetup."Cess Tax Type" then
                                 DetailedGSTEntryBuffer."GST Component Code" := 'CESS'
                             else

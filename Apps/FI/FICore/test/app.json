@@ -2,7 +2,7 @@
     "id":  "5fa3b1f0-054d-4b96-a2af-cd57d4114930",
     "name":  "FI Core Tests",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Tests for the Core Localization for Finland.",
     "description":  "Tests for the Core Localization for Finland.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -16,20 +16,20 @@
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "8038abf4-6fc9-4212-ac03-1137b06ca8ca",
                              "name":  "FI Core",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
-    "application":  "23.3.0.0",
+    "platform":  "24.0.0.0",
+    "application":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  148150,

@@ -817,7 +817,6 @@ codeunit 20117 "AMC Bank Assisted Mgt."
 
     [EventSubscriber(ObjectType::Page, Page::"AMC Banking Setup", 'OnAfterGetCurrRecordEvent', '', true, true)]
     local procedure ShowAssistedSetupNotificationAMCBankingSetup(var Rec: Record "AMC Banking Setup")
-    var
     begin
         if (Rec."AMC Enabled") then begin
             if (UpgradeNotificationIsNeeded(AMCBankingMgt.GetDataExchDef_CT()) or

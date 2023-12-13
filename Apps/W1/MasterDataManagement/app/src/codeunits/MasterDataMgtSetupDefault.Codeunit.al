@@ -7,6 +7,7 @@ using System.Reflection;
 using Microsoft.Purchases.Vendor;
 using Microsoft.CRM.Contact;
 using Microsoft.Foundation.Address;
+using System.Globalization;
 using Microsoft.Finance.Currency;
 using Microsoft.Foundation.PaymentTerms;
 using Microsoft.Sales.Setup;
@@ -1251,6 +1252,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         IntegrationTableMapping."Coupling Codeunit ID" := Codeunit::"Master Data Mgt. Table Couple";
         IntegrationTableMapping."Uncouple Codeunit ID" := Codeunit::"Master Data Mgt. Tbl. Uncouple";
         IntegrationTableMapping."Update-Conflict Resolution" := "Integration Update Conflict Resolution"::"Get Update from Integration";
+        IntegrationTableMapping."Table Caption" := GetTableCaption(TableNo);
         IntegrationTableMapping.Modify();
     end;
 
@@ -1294,7 +1296,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         end;
     end;
 
-    local procedure GetFieldCaption(TableID: Integer; FieldID: Integer): Text
+    internal procedure GetFieldCaption(TableID: Integer; FieldID: Integer): Text
     var
         "Field": Record "Field";
         TypeHelper: Codeunit "Type Helper";
@@ -1303,6 +1305,16 @@ codeunit 7230 "Master Data Mgt. Setup Default"
             if TypeHelper.GetField(TableID, FieldID, Field) then
                 exit(Field."Field Caption");
         exit('');
+    end;
+
+    internal procedure GetTableCaption(TableID: Integer): Text[250]
+    var
+        ObjectTranslation: Record "Object Translation";
+    begin
+        if TableID = 0 then
+            exit('');
+
+        exit(ObjectTranslation.TranslateObject(ObjectTranslation."Object Type"::Table, TableID));
     end;
 
     local procedure SetIntegrationFieldMappingClearValueOnFailedSync(var IntegrationTableMapping: Record "Integration Table Mapping"; FieldNo: Integer)

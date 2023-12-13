@@ -212,7 +212,6 @@ codeunit 18914 "TCS on Sales Application"
     end;
 
     local procedure GenerateTaxComponentsPercentage()
-    var
     begin
         Storage.Set(TCSPercentageLbl, Format(LibraryRandom.RandIntInRange(2, 4)));
         Storage.Set(NonPANTCSPercentageLbl, Format(LibraryRandom.RandIntInRange(6, 10)));
@@ -226,7 +225,6 @@ codeunit 18914 "TCS on Sales Application"
     local procedure CreateGenJournalTemplateBatch(var GenJournalTemplate: Record "Gen. Journal Template";
         var GenJournalBatch: Record "Gen. Journal Batch";
         TemplateType: Enum "Gen. Journal Template Type")
-    var
     begin
         LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
         GenJournalTemplate.Validate(Type, TemplateType);

@@ -2,7 +2,7 @@
     "id":  "114e4e19-182b-42e2-b5a9-91d8b8ee8ce1",
     "name":  "_Exclude_Email Logging Using Graph API",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "_Exclude_Email Logging Using Graph API",
     "description":  "_Exclude_Email Logging Using Graph API",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -23,7 +23,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  1,
@@ -37,5 +37,5 @@
                                    "includeSourceInSymbolFile":  true
                                },
     "target":  "OnPrem",
-    "application":  "23.3.0.0"
+    "application":  "24.0.0.0"
 }

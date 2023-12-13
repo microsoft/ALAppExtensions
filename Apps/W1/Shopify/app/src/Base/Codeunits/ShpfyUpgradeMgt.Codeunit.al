@@ -23,9 +23,6 @@ codeunit 30106 "Shpfy Upgrade Mgt."
     trigger OnUpgradePerCompany()
     begin
         SetShpfyStockCalculation();
-#if not CLEAN21
-        MoveShpfyRegisteredStore();
-#endif
         SetAllowOutgoingRequests();
 #if CLEAN22
         MoveTemplatesData();
@@ -219,23 +216,6 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         exit(TemplateCode);
     end;
 
-#if not CLEAN21
-
-    local procedure MoveShpfyRegisteredStore()
-    var
-        RegisteredStore: Record "Shpfy Registered Store";
-        RegisteredStoreNew: Record "Shpfy Registered Store New";
-    begin
-        if RegisteredStoreNew.IsEmpty then
-            if RegisteredStore.FindSet() then
-                repeat
-                    RegisteredStoreNew.TransferFields(RegisteredStore, true);
-                    RegisteredStoreNew.SystemId := RegisteredStore.SystemId;
-                    RegisteredStoreNew.Insert(true, true);
-                until RegisteredStore.next() = 0;
-    end;
-#endif
-
     local procedure SetAllowOutgoingRequests()
     var
         Shop: Record "Shpfy Shop";
@@ -354,6 +334,29 @@ codeunit 30106 "Shpfy Upgrade Mgt."
             exit;
         ShpfyShop.ModifyAll("Auto Release Sales Orders", true);
         UpgradeTag.SetUpgradeTag(GetAutoReleaseSalesOrderTag());
+    end;
+
+    internal procedure SetB2BEnabled()
+    var
+        Shop: Record "Shpfy Shop";
+        UpgradeTag: Codeunit "Upgrade Tag";
+    begin
+        if UpgradeTag.HasUpgradeTag(GetShopifyB2BEnabledUpgradeTag()) then
+            exit;
+
+        Shop.SetRange(Enabled, true);
+        if Shop.FindSet() then
+            repeat
+                Shop."B2B Enabled" := Shop.GetB2BEnabled();
+                Shop.Modify();
+            until Shop.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(GetShopifyB2BEnabledUpgradeTag());
+    end;
+
+    local procedure GetShopifyB2BEnabledUpgradeTag(): Code[250]
+    begin
+        exit('MS-490178-ShopifyB2B-20231101');
     end;
 
     internal procedure GetAllowOutgoingRequestseUpgradeTag(): Code[250]

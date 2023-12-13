@@ -1315,7 +1315,6 @@ codeunit 139834 "APIV2 - Sales Inv. Lines E2E"
     end;
 
     procedure GetLineSubURL(LineId: Guid; ServiceLinesName: Text): Text
-    var
     begin
         exit(ServiceLinesName + '(' + LibraryGraphMgt.StripBrackets(Format(LineId)) + ')');
     end;

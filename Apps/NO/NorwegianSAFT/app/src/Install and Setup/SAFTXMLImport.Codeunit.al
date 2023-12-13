@@ -5,7 +5,9 @@
 namespace Microsoft.Finance.AuditFileExport;
 
 using Microsoft.Finance.VAT.Reporting;
+#if not CLEAN23
 using Microsoft.Finance.VAT.Setup;
+#endif
 using System.Environment;
 using System.IO;
 using System.Utilities;
@@ -360,31 +362,6 @@ codeunit 10671 "SAF-T XML Import"
         if XMLText = '' then
             Error(TenantMediaNoContentErr, TempTenantMedia.ID);
         TempXMLBuffer.LoadFromText(XMLText);
-    end;
-
-    [Obsolete('Replaced by ImportXmlFileIntoTenantMedia', '17.0')]
-    procedure ImportXmlFileIntoMediaResources(var MediaResources: Record "Media Resources")
-    var
-        TempBlob: Codeunit "Temp Blob";
-        FileManagement: Codeunit "File Management";
-        ImportFileInStream: InStream;
-        ImportFileOutStream: OutStream;
-        ClientFileName: Text;
-    begin
-        ClientFileName := FileManagement.BLOBImportWithFilter(TempBlob, SelectMappingTxt, '', 'XML file (*.xml)|*.xml', 'xml');
-        if ClientFileName = '' then
-            exit;
-
-        MediaResources.Init();
-        MediaResources.Code :=
-            COPYSTR(FileManagement.GetFileName(ClientFileName), 1, MAXSTRLEN(MediaResources.Code));
-        if MediaResources.Find() then
-            MediaResources.Delete();
-
-        TempBlob.CreateInStream(ImportFileInStream);
-        MediaResources.Blob.CreateOutStream(ImportFileOutStream);
-        CopyStream(ImportFileOutStream, ImportFileInStream);
-        MediaResources.Insert();
     end;
 
     procedure ImportXmlFileIntoTenantMedia(var TenantMedia: Record "Tenant Media")

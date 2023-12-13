@@ -1,8 +1,8 @@
+#if not CLEAN22
 namespace Microsoft.Integration.Shopify;
 
 using System.Environment.Configuration;
 
-#if not CLEAN22
 pageextension 30105 "Shpfy Templ. Data Update" extends "Schedule Feature Data Update"
 {
     ObsoleteReason = 'Feature "Shopify new customer an item templates" will be enabled by default in version 25';
@@ -38,7 +38,7 @@ pageextension 30105 "Shpfy Templ. Data Update" extends "Schedule Feature Data Up
                         Caption = 'Data upgrade';
                         ApplicationArea = All;
                         Visible = not CanUpgradeAllFields;
-                        ToolTip = 'What to do with the templates being used in the Shopify Shops';
+                        ToolTip = 'Specifies what to do with the templates being used in the Shopify Shops';
                         OptionCaption = 'Create templates (skip fields that are not available),Do not create templates. I will update the Shopify shops manually';
                         trigger OnValidate()
                         begin
@@ -53,7 +53,7 @@ pageextension 30105 "Shpfy Templ. Data Update" extends "Schedule Feature Data Up
                         Caption = 'Data upgrade';
                         ApplicationArea = All;
                         Visible = CanUpgradeAllFields;
-                        ToolTip = 'What to do with the templates being used in the Shopify Shops';
+                        ToolTip = 'Specifies what to do with the templates being used in the Shopify Shops';
                         OptionCaption = 'Create templates,Do not create any templates. I will update the Shopify shops manually';
                         trigger OnValidate()
                         begin

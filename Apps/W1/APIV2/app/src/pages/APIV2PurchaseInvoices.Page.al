@@ -706,7 +706,6 @@ page 30042 "APIV2 - Purchase Invoices"
     end;
 
     local procedure SetActionResponse(var ActionContext: WebServiceActionContext; InvoiceId: Guid)
-    var
     begin
         ActionContext.SetObjectType(ObjectType::Page);
         ActionContext.SetObjectId(Page::"APIV2 - Purchase Invoices");

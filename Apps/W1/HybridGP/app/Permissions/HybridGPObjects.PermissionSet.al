@@ -61,14 +61,8 @@ permissionset 4029 "HybridGP - Objects"
                     codeunit "GPForecastHandler" = X,
                     codeunit "GP PO Migrator" = X,
                     codeunit "GP Populate Hist. Tables" = X,
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
                     table "GPForecastTemp" = X,
                     codeunit "Install GP SmartLists" = X,
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
 #if not CLEAN22
 #pragma warning disable AL0432
                     table "GP POPPOHeader" = X,

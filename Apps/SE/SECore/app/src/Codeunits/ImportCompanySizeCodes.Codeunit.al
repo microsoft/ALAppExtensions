@@ -5,7 +5,6 @@
 namespace Microsoft.Finance.Analysis;
 
 using Microsoft.Purchases.Vendor;
-using System.Reflection;
 
 codeunit 11294 "Import Company Size Codes"
 {

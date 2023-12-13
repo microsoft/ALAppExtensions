@@ -2,7 +2,7 @@
     "id":  "a41b0c3e-bf1c-4c97-ad1b-b430a3933ada",
     "name":  "Audit File Export",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Audit File Export app provides an interface for dependent extensions that are used to export accounting and tax data in specific formats.",
     "description":  "Audit File Export is an app used for exporting the accounting and tax information of a company to the tax authorities. This app can work with different standardized audit file formats (SAF-T, SIE, etc.) for the electronic exchange of reliable accounting data between organizations and/or tax authorities (or external auditors).",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -17,8 +17,8 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
-    "application":  "23.3.0.0",
+    "platform":  "24.0.0.0",
+    "application":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  5260,

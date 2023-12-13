@@ -24,7 +24,6 @@ pageextension 20108 "AMC Bank Credit Trf. Reg. Ext" extends "Credit Transfer Reg
         IsAMCFundamentalsEnabled: Boolean;
 
     trigger OnOpenPage()
-    var
     begin
         IsAMCFundamentalsEnabled := AMCBankingMgt.IsAMCFundamentalsEnabled();
     end;

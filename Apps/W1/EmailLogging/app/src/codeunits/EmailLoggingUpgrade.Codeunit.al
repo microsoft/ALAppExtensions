@@ -1,9 +1,11 @@
 namespace Microsoft.CRM.EmailLoggin;
 
 using System.Upgrade;
+#if not CLEAN22
 using Microsoft.CRM.Outlook;
-using Microsoft.CRM.Setup;
 using System.Threading;
+#endif
+using Microsoft.CRM.Setup;
 
 codeunit 1688 "Email Logging Upgrade"
 {

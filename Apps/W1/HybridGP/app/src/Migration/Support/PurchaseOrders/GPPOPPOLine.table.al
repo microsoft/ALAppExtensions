@@ -2,7 +2,9 @@ namespace Microsoft.DataMigration.GP;
 
 using Microsoft.Purchases.Document;
 using Microsoft.Inventory.Item;
+#if not CLEAN22
 using System.Integration;
+#endif
 
 table 40103 "GP POPPOLine"
 {

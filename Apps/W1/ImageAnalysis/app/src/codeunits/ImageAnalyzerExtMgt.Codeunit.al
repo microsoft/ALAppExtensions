@@ -3,8 +3,10 @@ namespace Microsoft.Utility.ImageAnalysis;
 using System.AI;
 using System.Environment.Configuration;
 using System.Environment;
+#if not CLEAN23
 using Microsoft.Inventory.Item;
 using Microsoft.CRM.Contact;
+#endif
 using Microsoft.Utilities;
 using System.Security.User;
 using System.Globalization;

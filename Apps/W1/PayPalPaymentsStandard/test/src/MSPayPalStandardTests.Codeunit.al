@@ -773,6 +773,8 @@ codeunit 139500 "MS - PayPal Standard Tests"
         Initialize();
 
         SetupPaymentNotification(MSPayPalStandardAccount, SalesInvoiceHeader);
+        MSPayPalStandardAccount."Disable Webhook Notifications" := false;
+        MSPayPalStandardAccount.Modify();
 
         // Exercise
         TempPaymentServiceSetup.CreateReportingArgs(TempPaymentReportingArgument, SalesInvoiceHeader);

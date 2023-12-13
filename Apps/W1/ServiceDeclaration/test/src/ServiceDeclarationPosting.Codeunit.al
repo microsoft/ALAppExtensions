@@ -284,7 +284,6 @@ codeunit 139904 "Service Declaration Posting"
     end;
 
     local procedure Initialize()
-    var
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"Service Declaration Posting");
         LibrarySetupStorage.Restore();

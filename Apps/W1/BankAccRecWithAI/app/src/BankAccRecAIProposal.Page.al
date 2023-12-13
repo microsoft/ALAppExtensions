@@ -235,7 +235,7 @@ page 7250 "Bank Acc. Rec. AI Proposal"
             }
             systemaction(Attach)
             {
-                Caption = 'Attach';
+                Caption = '';
                 Enabled = ((BankAccNo <> '') and (not DisableAttachItButton));
                 ToolTip = 'Import bank transaction data either from a file or via an online bank statement provider';
 
@@ -251,7 +251,7 @@ page 7250 "Bank Acc. Rec. AI Proposal"
             }
             systemaction(Cancel)
             {
-                Caption = 'Discard';
+                Caption = 'Discard it';
                 ToolTip = 'Discard bank account reconciliation matches proposed by Copilot.';
             }
         }

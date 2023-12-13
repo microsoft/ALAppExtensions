@@ -15,12 +15,12 @@ pageextension 30123 "Shpfy Sales Shipment Update" extends "Posted Sales Shipment
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Shopify Fulfillment Id';
-                    Editable = (Rec."Shpfy Fulfillment Id" = 0) or (Rec."Shpfy Fulfillment Id" = -1);
-                    ToolTip = 'Specifies the Shopify Fulfillment ID.';
+                    Editable = (Rec."Shpfy Fulfillment Id" = 0) or (Rec."Shpfy Fulfillment Id" = -1) or (Rec."Shpfy Fulfillment Id" = -2);
+                    ToolTip = 'Specifies the Shopify Fulfillment ID. Helps track the status of shipments within Shopify, with 0 indicating readiness to synchronize, -1 indicating an error, and -2 indicating that the shipment is skipped.';
 
                     trigger OnValidate()
                     begin
-                        if (Rec."Shpfy Fulfillment Id" <> 0) and (Rec."Shpfy Fulfillment Id" <> -1) then
+                        if not (Rec."Shpfy Fulfillment Id" in [0, -1, -2]) then
                             Error(ValueNotAllowedErr);
                     end;
                 }
@@ -35,5 +35,5 @@ pageextension 30123 "Shpfy Sales Shipment Update" extends "Posted Sales Shipment
 
     var
         ShopifyTabVisible: Boolean;
-        ValueNotAllowedErr: Label 'Allowed values are 0 or -1';
+        ValueNotAllowedErr: Label 'Allowed values are 0, -1 or -2. 0 indicates readiness to synchronize, -1 indicates an error, and -2 indicates that the shipment is skipped.';
 }

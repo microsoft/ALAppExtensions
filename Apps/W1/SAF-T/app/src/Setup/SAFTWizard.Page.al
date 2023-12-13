@@ -420,7 +420,6 @@ page 5280 "SAF-T Wizard"
     }
 
     trigger OnQueryClosePage(CloseAction: action): Boolean;
-    var
     begin
         if GetLastErrorText() <> '' then
             exit(true);
@@ -547,7 +546,6 @@ page 5280 "SAF-T Wizard"
     end;
 
     local procedure FinishAction();
-    var
     begin
         FeatureTelemetry.LogUptake('0000KTD', SAFTExportTok, Enum::"Feature Uptake Status"::"Set up");
         SetupCompleted := true;
