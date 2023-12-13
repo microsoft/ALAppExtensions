@@ -11,7 +11,7 @@ Microsoft will ship the contributions in upcoming releases of [Microsoft Dynamic
 
 ## Contributing
 
-In this repository, we welcome contributions to **Microsoft's 1st party apps**.
+In this repository, we welcome contributions to **Microsoft's application add-ons**.
 
 * If you are looking to contribute to the **System Application** or **Developer Tools** you can do so in the [BCApps](https://github.com/microsoft/BCApps) repository. 
 * If you are looking to contribute to the **Base Application** you can do so in the [BusinessCentralApps](https://github.com/microsoft/BusinessCentralApps/) repository. Please note, that this repository is private but you can request access by filling out [this form](https://forms.office.com/pages/responsepage.aspx?id=v4j5cvGGr0GRqy180BHbR_Qj5hjzNeNOhBcvBoRIOltUOVBVTklZN1hBOTZJUU40OE5CUzNWNk1FQy4u). 
