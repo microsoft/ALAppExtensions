@@ -5,7 +5,7 @@
     "runs-on":  "windows-latest",
     "cacheImageName":  "",
     "UsePsSession":  false,
-    "artifact": "https://bcinsider.azureedge.net/sandbox/24.0.14618.0/base",
+    "artifact":  "https://bcinsider.azureedge.net/sandbox/24.0.14731.0/base",
     "country":  "base",
     "useProjectDependencies":  true,
     "repoVersion":  "24.0",
