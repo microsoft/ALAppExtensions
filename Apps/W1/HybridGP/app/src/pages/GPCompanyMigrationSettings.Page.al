@@ -156,6 +156,10 @@ page 40056 "GP Company Migration Settings"
                 {
                     ToolTip = 'Specify whether to disable auto posting Vendor batches.';
                 }
+                field("Skip Posting Item Batches"; Rec."Skip Posting Item Batches")
+                {
+                    ToolTip = 'Specify whether to disable auto posting Item batches.';
+                }
             }
         }
     }

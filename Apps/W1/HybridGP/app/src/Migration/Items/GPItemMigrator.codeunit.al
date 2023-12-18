@@ -19,6 +19,9 @@ codeunit 4019 "GP Item Migrator"
         CostingMethodOption: Option FIFO,LIFO,Specific,Average,Standard;
         SimpleInvJnlNameTxt: Label 'DEFAULT', Comment = 'The default name of the item journal', Locked = true;
         LastEntryNo: Integer;
+        ItemBatchCodePrefixTxt: Label 'GPITEM', Locked = true;
+        CurrentBatchNumber: Integer;
+        CurrentBatchLineNo: Integer;
 
 #if not CLEAN22
 #pragma warning disable AA0207
@@ -156,7 +159,6 @@ codeunit 4019 "GP Item Migrator"
         ItemJnlLine: Record "Item Journal Line";
         GPItem: Record "GP Item";
         GPItemTransaction: Record "GP Item Transactions";
-        AdjustItemInventory: Codeunit "Adjust Item Inventory";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         GPItemTransactionAverageQuery: Query "GP Item Transaction Average";
         GPItemTransactionStandardQuery: Query "GP Item Transaction Standard";
@@ -198,7 +200,6 @@ codeunit 4019 "GP Item Migrator"
                                         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPItemTransaction.RecordId));
                                         CreateNewItemTrackingLinesIfNecessary(GPItemTransaction, GPItem, ItemJnlLine);
                                     until GPItemTransaction.Next() = 0;
-                                    AdjustItemInventory.PostItemJnlLines(ItemJnlLine);
                                 end;
                             end;
                         end;
@@ -219,7 +220,6 @@ codeunit 4019 "GP Item Migrator"
                                         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPItemTransaction.RecordId));
                                         CreateNewItemTrackingLinesIfNecessary(GPItemTransaction, GPItem, ItemJnlLine);
                                     until GPItemTransaction.Next() = 0;
-                                    AdjustItemInventory.PostItemJnlLines(ItemJnlLine);
                                 end;
                             end;
                         end;
@@ -234,7 +234,6 @@ codeunit 4019 "GP Item Migrator"
                                         repeat
                                             DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPItemTransaction.RecordId));
                                             CreateItemJnlLine(ItemJnlLine, GPItem, GPItemTransaction, GPItemTransaction.Quantity, GPItemTransaction.DateReceived);
-                                            AdjustItemInventory.PostItemJnlLines(ItemJnlLine);
                                         until GPItemTransaction.Next() = 0;
                                 end;
                             else begin
@@ -252,7 +251,6 @@ codeunit 4019 "GP Item Migrator"
                                             DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPItemTransaction.RecordId));
                                             CreateNewItemTrackingLinesIfNecessary(GPItemTransaction, GPItem, ItemJnlLine);
                                         until GPItemTransaction.Next() = 0;
-                                        AdjustItemInventory.PostItemJnlLines(ItemJnlLine);
                                     end;
                                 end;
                             end;
@@ -300,25 +298,44 @@ codeunit 4019 "GP Item Migrator"
         end;
     end;
 
-    local procedure CreateItemBatch(TemplateName: Code[10]): Code[10]
+    local procedure GetCurrentBatchState()
     var
-        ItemJnlBatch: Record "Item Journal Batch";
+        ItemJournalBatch: Record "Item Journal Batch";
+        ItemJournalLine: Record "Item Journal Line";
     begin
-        ItemJnlBatch.Init();
-        ItemJnlBatch."Journal Template Name" := TemplateName;
-        ItemJnlBatch.Name := CreateBatchName();
-        ItemJnlBatch.Description := SimpleInvJnlNameTxt;
-        ItemJnlBatch.Insert();
+        CurrentBatchNumber := ItemJournalBatch.Count();
 
-        exit(ItemJnlBatch.Name);
+        if ItemJournalBatch.FindLast() then begin
+            ItemJournalLine.SetRange("Journal Template Name", ItemJournalBatch."Journal Template Name");
+            ItemJournalLine.SetRange("Journal Batch Name", ItemJournalBatch.Name);
+
+            CurrentBatchLineNo := ItemJournalLine.Count();
+        end;
     end;
 
-    local procedure CreateBatchName(): Code[10]
+    local procedure CreateOrGetItemBatch(TemplateName: Code[10]): Code[10]
     var
-        BatchName: Text;
+        ItemJnlBatch: Record "Item Journal Batch";
+        BatchName: Code[10];
     begin
-        BatchName := Format(CreateGuid());
-        exit(CopyStr(BatchName, 2, 10));
+        if CurrentBatchNumber = 0 then
+            CurrentBatchNumber := 1;
+
+        if CurrentBatchLineNo >= MaxBatchLineCount() then begin
+            CurrentBatchNumber := CurrentBatchNumber + 1;
+            CurrentBatchLineNo := 0;
+        end;
+
+        BatchName := CopyStr(ItemBatchCodePrefixTxt + Format(CurrentBatchNumber), 1, 10);
+        if not ItemJnlBatch.Get(TemplateName, BatchName) then begin
+            ItemJnlBatch.Init();
+            ItemJnlBatch."Journal Template Name" := TemplateName;
+            ItemJnlBatch.Name := BatchName;
+            ItemJnlBatch.Description := SimpleInvJnlNameTxt;
+            ItemJnlBatch.Insert();
+        end;
+
+        exit(BatchName);
     end;
 
     local procedure CreateItemJnlLine(var ItemJnlLine: Record "Item Journal Line"; GPItem: Record "GP Item"; GPItemTransaction: Record "GP Item Transactions"; Quantity: Decimal; PostingDate: Date)
@@ -326,13 +343,18 @@ codeunit 4019 "GP Item Migrator"
         AdjustItemInventory: Codeunit "Adjust Item Inventory";
         ItemTemplate: Code[10];
     begin
+        GetCurrentBatchState();
+
         ItemTemplate := AdjustItemInventory.SelectItemTemplateForAdjustment();
 
         ItemJnlLine.Init();
         ItemJnlLine.Validate("Journal Template Name", ItemTemplate);
-        ItemJnlLine.Validate("Journal Batch Name", CreateItemBatch(ItemTemplate));
+        ItemJnlLine.Validate("Journal Batch Name", CreateOrGetItemBatch(ItemTemplate));
         ItemJnlLine.Validate("Posting Date", PostingDate);
         ItemJnlLine."Document No." := CopyStr(GPItem.No, 1, 20);
+
+        CurrentBatchLineNo := CurrentBatchLineNo + 1;
+        ItemJnlLine."Line No." := CurrentBatchLineNo;
 
         if GPItemTransaction.Quantity > 0 then
             ItemJnlLine.Validate("Entry Type", ItemJnlLine."Entry Type"::"Positive Adjmt.")
@@ -515,5 +537,10 @@ codeunit 4019 "GP Item Migrator"
                 ItemDataMigrationFacade.CreateInventoryPostingSetupIfNeeded(PostingGroupCode, GPIV40400.ITMCLSDC, CopyStr(GPItemLocation.LOCNCODE, 1, MaxStrLen(InventoryPostingSetup."Location Code")));
                 ItemDataMigrationFacade.SetInventoryPostingSetupInventoryAccount(PostingGroupCode, CopyStr(GPItemLocation.LOCNCODE, 1, MaxStrLen(InventoryPostingSetup."Location Code")), AccountNumber);
             until GPItemLocation.Next() = 0;
+    end;
+
+    local procedure MaxBatchLineCount(): Integer
+    begin
+        exit(1000);
     end;
 }
