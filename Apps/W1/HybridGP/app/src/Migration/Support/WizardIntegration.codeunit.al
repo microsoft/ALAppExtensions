@@ -189,40 +189,44 @@ codeunit 4035 "Wizard Integration"
         FailoverToSession := not CanStartBackgroundJob();
 
         if not FailoverToSession then begin
+            SendStartSnapshotResultMessage('', StrSubstNo(TelemetrySnapshotToBeScheduledMsg, 'Job Queue'), false, false);
+
             CreateAndScheduleBackgroundJob(Codeunit::"GP Populate Hist. Tables",
                     TimeoutDuration,
                     MaxAttempts,
                     QueueCategory,
                     GPSnapshotJobDescriptionTxt);
 
-            SendStartSnapshotResultMessage('', StrSubstNo(TelemetrySnapshotScheduledMsg, 'Job Queue'), false);
+            SendStartSnapshotResultMessage('', StrSubstNo(TelemetrySnapshotScheduledMsg, 'Job Queue'), false, true);
             if GPConfiguration.Get() then begin
                 GPConfiguration."Historical Job Ran" := true;
                 GPConfiguration.Modify();
             end;
         end;
 
-        if FailoverToSession then
+        if FailoverToSession then begin
+            SendStartSnapshotResultMessage('', StrSubstNo(TelemetrySnapshotToBeScheduledMsg, 'Session'), false, false);
             if Session.StartSession(SessionId, Codeunit::"GP Populate Hist. Tables", CompanyName(), GPUpgradeSettings, TimeoutDuration) then begin
-                SendStartSnapshotResultMessage('', StrSubstNo(TelemetrySnapshotScheduledMsg, 'Session'), false);
+                SendStartSnapshotResultMessage('', StrSubstNo(TelemetrySnapshotScheduledMsg, 'Session'), false, true);
                 if GPConfiguration.Get() then begin
                     GPConfiguration."Historical Job Ran" := true;
                     GPConfiguration.Modify();
                 end;
             end else begin
-                SendStartSnapshotResultMessage('', TelemetrySnapshotFailedToStartSessionMsg, true);
+                SendStartSnapshotResultMessage('', TelemetrySnapshotFailedToStartSessionMsg, true, true);
                 exit;
             end;
+        end;
     end;
 
-    local procedure SendStartSnapshotResultMessage(TelemetryEventId: Text; MessageText: Text; IsError: Boolean)
+    local procedure SendStartSnapshotResultMessage(TelemetryEventId: Text; MessageText: Text; IsError: Boolean; ShouldShowMessage: Boolean)
     begin
         if IsError then
             Session.LogMessage(TelemetryEventId, MessageText, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetTelemetryCategory())
         else
             Session.LogMessage(TelemetryEventId, MessageText, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetTelemetryCategory());
 
-        if GuiAllowed() then
+        if ShouldShowMessage and GuiAllowed() then
             Message(MessageText);
     end;
 
@@ -256,6 +260,7 @@ codeunit 4035 "Wizard Integration"
 
     var
         GPSnapshotJobDescriptionTxt: Label 'Migrate GP Historical Snapshot';
+        TelemetrySnapshotToBeScheduledMsg: Label 'GP Historical Snapshot is about to be scheduled. Mode: %1', Locked = true;
         TelemetrySnapshotScheduledMsg: Label 'GP Historical Snapshot is now scheduled. Mode: %1', Locked = true;
         TelemetrySnapshotFailedToStartSessionMsg: Label 'GP Historical Snapshot could not start a new Session.', Locked = true;
 }

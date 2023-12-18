@@ -328,7 +328,7 @@ codeunit 4019 "GP Item Migrator"
 
         BatchName := CopyStr(ItemBatchCodePrefixTxt + Format(CurrentBatchNumber), 1, 10);
         if not ItemJnlBatch.Get(TemplateName, BatchName) then begin
-            ItemJnlBatch.Init();
+            Clear(ItemJnlBatch);
             ItemJnlBatch."Journal Template Name" := TemplateName;
             ItemJnlBatch.Name := BatchName;
             ItemJnlBatch.Description := SimpleInvJnlNameTxt;
@@ -347,7 +347,7 @@ codeunit 4019 "GP Item Migrator"
 
         ItemTemplate := AdjustItemInventory.SelectItemTemplateForAdjustment();
 
-        ItemJnlLine.Init();
+        Clear(ItemJnlLine);
         ItemJnlLine.Validate("Journal Template Name", ItemTemplate);
         ItemJnlLine.Validate("Journal Batch Name", CreateOrGetItemBatch(ItemTemplate));
         ItemJnlLine.Validate("Posting Date", PostingDate);

@@ -582,6 +582,18 @@ page 4050 "GP Migration Configuration"
 
     actions
     {
+        area(Promoted)
+        {
+            actionref(ResetAllActionRef; ResetAllAction)
+            {
+            }
+            actionref(SetDimensionsRef; SetDimensions)
+            {
+            }
+            actionref(GPUpgradeSettingsRef; GPUpgradeSettings)
+            {
+            }
+        }
         area(Processing)
         {
             action(ResetAllAction)
@@ -589,9 +601,6 @@ page 4050 "GP Migration Configuration"
                 ApplicationArea = All;
                 Caption = 'Reset Defaults';
                 ToolTip = 'Reset all companies to the default settings.';
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 Image = Setup;
 
                 trigger OnAction()
@@ -606,9 +615,6 @@ page 4050 "GP Migration Configuration"
                 ApplicationArea = All;
                 Caption = 'Set All Dimensions';
                 ToolTip = 'Attempt to set the Dimensions for all Companies.';
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 Image = Dimensions;
 
                 trigger OnAction()
@@ -632,17 +638,13 @@ page 4050 "GP Migration Configuration"
                     end;
                 end;
             }
-            action(GP)
+            action(GPUpgradeSettings)
             {
                 ApplicationArea = All;
                 Caption = 'Upgrade settings';
                 ToolTip = 'Change the settings for the GP upgrade.';
                 RunObject = page "GP Upgrade Settings";
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 Image = Setup;
-
             }
         }
     }
