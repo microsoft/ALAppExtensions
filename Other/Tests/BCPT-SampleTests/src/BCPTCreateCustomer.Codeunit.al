@@ -48,7 +48,7 @@ codeunit 149126 "BCPT Create Customer" implements "BCPT Test Param. Provider"
             CustomerTempl.Get(CustomerTemplateToUse);
             CustomerTemplMgt.ApplyCustomerTemplate(Customer, CustomerTempl)
         end else begin
-            Customer.Validate("Gen. Bus. Posting Group", LookUpGenProdPostingGroup());
+            Customer.Validate("Gen. Bus. Posting Group", LookUpGenBusPostingGroup());
             Customer.Validate("VAT Bus. Posting Group", FindVATPostingSetup());
             Customer.Validate("Customer Posting Group", FindCustomerPostingGroup);
             Customer.Validate("Payment Terms Code", FindPaymentTermsCode());
@@ -62,7 +62,7 @@ codeunit 149126 "BCPT Create Customer" implements "BCPT Test Param. Provider"
         Commit();
     end;
 
-    local procedure LookUpGenProdPostingGroup(): Code[20]
+    local procedure LookUpGenBusPostingGroup(): Code[20]
     var
         GeneralPostingSetup: Record "General Posting Setup";
     begin

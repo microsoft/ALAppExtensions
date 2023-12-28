@@ -47,7 +47,7 @@ codeunit 149125 "BCPT Create Vendor" implements "BCPT Test Param. Provider"
             VendorTempl.Get(VendorTemplateToUse);
             VendorTemplMgt.ApplyVendorTemplate(Vendor, VendorTempl)
         end else begin
-            Vendor.Validate("Gen. Bus. Posting Group", LookUpGenProdPostingGroup());
+            Vendor.Validate("Gen. Bus. Posting Group", LookUpGenBusPostingGroup());
             Vendor.Validate("VAT Bus. Posting Group", FindVATPostingSetup());
             Vendor.Validate("Vendor Posting Group", FindVendorPostingGroup);
             Vendor.Validate("Payment Terms Code", FindPaymentTermsCode());
@@ -61,7 +61,7 @@ codeunit 149125 "BCPT Create Vendor" implements "BCPT Test Param. Provider"
         Commit();
     end;
 
-    local procedure LookUpGenProdPostingGroup(): Code[20]
+    local procedure LookUpGenBusPostingGroup(): Code[20]
     var
         GeneralPostingSetup: Record "General Posting Setup";
     begin
