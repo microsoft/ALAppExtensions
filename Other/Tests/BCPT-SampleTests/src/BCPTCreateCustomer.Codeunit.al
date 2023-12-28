@@ -10,9 +10,9 @@ codeunit 149126 "BCPT Create Customer" implements "BCPT Test Param. Provider"
         BCPTTestContext: Codeunit "BCPT Test Context";
         CustomerTemplateToUse: Code[20];
         CustomerTemplateParamLbl: Label 'Customer Template';
-        ParamValidationErr: Label 'Parameter is not defined in the correct format. The expected format is "%1"';
+        ParamValidationErr: Label 'Parameter is not defined in the correct format. The expected format is "%1"', Comment = '%1 = Default Parameter';
 
-    local procedure InitTest();
+    local procedure InitTest()
     var
         SalesReceivablesSetup: Record "Sales & Receivables Setup";
         NoSeriesLine: Record "No. Series Line";
@@ -20,7 +20,7 @@ codeunit 149126 "BCPT Create Customer" implements "BCPT Test Param. Provider"
         SalesReceivablesSetup.Get();
         SalesReceivablesSetup.TestField("Customer Nos.");
         NoSeriesLine.SetRange("Series Code", SalesReceivablesSetup."Customer Nos.");
-        NoSeriesLine.findset(true);
+        NoSeriesLine.FindSet(true);
         repeat
             if NoSeriesLine."Ending No." <> '' then begin
                 NoSeriesLine."Ending No." := '';
@@ -28,7 +28,7 @@ codeunit 149126 "BCPT Create Customer" implements "BCPT Test Param. Provider"
                 NoSeriesLine.Modify(true);
             end;
         until NoSeriesLine.Next() = 0;
-        commit();
+        Commit(); //Commit to avoid deadlocks
 
         if Evaluate(CustomerTemplateToUse, BCPTTestContext.GetParameter(CustomerTemplateParamLbl)) then;
     end;
@@ -50,16 +50,16 @@ codeunit 149126 "BCPT Create Customer" implements "BCPT Test Param. Provider"
         end else begin
             Customer.Validate("Gen. Bus. Posting Group", LookUpGenBusPostingGroup());
             Customer.Validate("VAT Bus. Posting Group", FindVATPostingSetup());
-            Customer.Validate("Customer Posting Group", FindCustomerPostingGroup);
+            Customer.Validate("Customer Posting Group", FindCustomerPostingGroup());
             Customer.Validate("Payment Terms Code", FindPaymentTermsCode());
             Customer.Validate("Payment Method Code", FindPaymentMethod());
             Customer.Modify(true);
         end;
-        Commit();
+        Commit(); //Commit to avoid deadlocks
         CustContUpdate.OnModify(Customer);
 
         OnAfterCreateCustomer(Customer);
-        Commit();
+        Commit(); //Commit to avoid deadlocks
     end;
 
     local procedure LookUpGenBusPostingGroup(): Code[20]
@@ -69,7 +69,7 @@ codeunit 149126 "BCPT Create Customer" implements "BCPT Test Param. Provider"
         GeneralPostingSetup.Reset();
         GeneralPostingSetup.SetFilter("Gen. Prod. Posting Group", '<>%1', '');
         GeneralPostingSetup.SetFilter("Purch. Account", '<>%1', '');
-        if GeneralPostingSetup.FindFirst then
+        if GeneralPostingSetup.FindFirst() then
             exit(GeneralPostingSetup."Gen. Bus. Posting Group");
     end;
 
@@ -78,7 +78,7 @@ codeunit 149126 "BCPT Create Customer" implements "BCPT Test Param. Provider"
         CustomerPostingGroup: Record "Customer Posting Group";
     begin
         CustomerPostingGroup.SetFilter("Receivables Account", '<>%1', '');
-        if CustomerPostingGroup.FindFirst then
+        if CustomerPostingGroup.FindFirst() then
             exit(CustomerPostingGroup.Code);
     end;
 
@@ -90,7 +90,7 @@ codeunit 149126 "BCPT Create Customer" implements "BCPT Test Param. Provider"
         VATPostingSetup.SetFilter("VAT %", '<>%1', 0);
         VATPostingSetup.SetRange("VAT Calculation Type", VATPostingSetup."VAT Calculation Type"::"Normal VAT");
         VATPostingSetup.SetFilter("Sales VAT Account", '<>%1', '');
-        if VATPostingSetup.FindFirst then
+        if VATPostingSetup.FindFirst() then
             exit(VATPostingSetup."VAT Bus. Posting Group");
     end;
 
@@ -103,7 +103,7 @@ codeunit 149126 "BCPT Create Customer" implements "BCPT Test Param. Provider"
 
         if PaymentTerms.FieldActive("Due Date Calculation") then
             PaymentTerms.SetRange("Due Date Calculation", DateFormular_0D);
-        if PaymentTerms.FindFirst then
+        if PaymentTerms.FindFirst() then
             exit(PaymentTerms.Code);
     end;
 
@@ -112,13 +112,13 @@ codeunit 149126 "BCPT Create Customer" implements "BCPT Test Param. Provider"
         PaymentMethod: Record "Payment Method";
     begin
         PaymentMethod.SetRange("Bal. Account No.", '');
-        if PaymentMethod.FindFirst then
+        if PaymentMethod.FindFirst() then
             exit(PaymentMethod.Code)
     end;
 
     procedure GetDefaultParameters(): Text[1000]
     begin
-        exit(copystr(CustomerTemplateParamLbl + '=', 1, 1000));
+        exit(CopyStr(CustomerTemplateParamLbl + '=', 1, 1000));
     end;
 
     procedure ValidateParameters(Parameters: Text[1000])

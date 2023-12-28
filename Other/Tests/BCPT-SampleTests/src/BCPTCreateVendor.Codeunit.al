@@ -10,7 +10,7 @@ codeunit 149125 "BCPT Create Vendor" implements "BCPT Test Param. Provider"
         BCPTTestContext: Codeunit "BCPT Test Context";
         VendorTemplateToUse: Code[20];
         VendorTemplateParamLbl: Label 'Vendor Template';
-        ParamValidationErr: Label 'Parameter is not defined in the correct format. The expected format is "%1"';
+        ParamValidationErr: Label 'Parameter is not defined in the correct format. The expected format is "%1"', Comment = '%1 = Default Parameter';
 
     local procedure InitTest();
     var
@@ -20,7 +20,7 @@ codeunit 149125 "BCPT Create Vendor" implements "BCPT Test Param. Provider"
         PurchasesPayablesSetup.Get();
         PurchasesPayablesSetup.TestField("Vendor Nos.");
         NoSeriesLine.SetRange("Series Code", PurchasesPayablesSetup."Vendor Nos.");
-        NoSeriesLine.findset(true);
+        NoSeriesLine.FindSet(true);
         repeat
             if NoSeriesLine."Ending No." <> '' then begin
                 NoSeriesLine."Ending No." := '';
@@ -28,7 +28,7 @@ codeunit 149125 "BCPT Create Vendor" implements "BCPT Test Param. Provider"
                 NoSeriesLine.Modify(true);
             end;
         until NoSeriesLine.Next() = 0;
-        commit();
+        Commit(); //Commit to avoid deadlocks
 
         if Evaluate(VendorTemplateToUse, BCPTTestContext.GetParameter(VendorTemplateParamLbl)) then;
     end;
@@ -49,16 +49,16 @@ codeunit 149125 "BCPT Create Vendor" implements "BCPT Test Param. Provider"
         end else begin
             Vendor.Validate("Gen. Bus. Posting Group", LookUpGenBusPostingGroup());
             Vendor.Validate("VAT Bus. Posting Group", FindVATPostingSetup());
-            Vendor.Validate("Vendor Posting Group", FindVendorPostingGroup);
+            Vendor.Validate("Vendor Posting Group", FindVendorPostingGroup());
             Vendor.Validate("Payment Terms Code", FindPaymentTermsCode());
             Vendor.Validate("Payment Method Code", FindPaymentMethod());
             Vendor.Modify(true);
         end;
-        Commit();
+        Commit(); //Commit to avoid deadlocks
         VendContUpdate.OnModify(Vendor);
 
         OnAfterCreateVendor(Vendor);
-        Commit();
+        Commit(); //Commit to avoid deadlocks
     end;
 
     local procedure LookUpGenBusPostingGroup(): Code[20]
@@ -68,7 +68,7 @@ codeunit 149125 "BCPT Create Vendor" implements "BCPT Test Param. Provider"
         GeneralPostingSetup.Reset();
         GeneralPostingSetup.SetFilter("Gen. Prod. Posting Group", '<>%1', '');
         GeneralPostingSetup.SetFilter("Purch. Account", '<>%1', '');
-        if GeneralPostingSetup.FindFirst then
+        if GeneralPostingSetup.FindFirst() then
             exit(GeneralPostingSetup."Gen. Bus. Posting Group");
     end;
 
@@ -77,7 +77,7 @@ codeunit 149125 "BCPT Create Vendor" implements "BCPT Test Param. Provider"
         VendorPostingGroup: Record "Vendor Posting Group";
     begin
         VendorPostingGroup.SetFilter("Payables Account", '<>%1', '');
-        if VendorPostingGroup.FindFirst then
+        if VendorPostingGroup.FindFirst() then
             exit(VendorPostingGroup.Code);
     end;
 
@@ -89,7 +89,7 @@ codeunit 149125 "BCPT Create Vendor" implements "BCPT Test Param. Provider"
         VATPostingSetup.SetFilter("VAT %", '<>%1', 0);
         VATPostingSetup.SetRange("VAT Calculation Type", VATPostingSetup."VAT Calculation Type"::"Normal VAT");
         VATPostingSetup.SetFilter("Purchase VAT Account", '<>%1', '');
-        if VATPostingSetup.FindFirst then
+        if VATPostingSetup.FindFirst() then
             exit(VATPostingSetup."VAT Bus. Posting Group");
     end;
 
@@ -102,7 +102,7 @@ codeunit 149125 "BCPT Create Vendor" implements "BCPT Test Param. Provider"
 
         if PaymentTerms.FieldActive("Due Date Calculation") then
             PaymentTerms.SetRange("Due Date Calculation", DateFormular_0D);
-        if PaymentTerms.FindFirst then
+        if PaymentTerms.FindFirst() then
             exit(PaymentTerms.Code);
     end;
 
@@ -111,13 +111,13 @@ codeunit 149125 "BCPT Create Vendor" implements "BCPT Test Param. Provider"
         PaymentMethod: Record "Payment Method";
     begin
         PaymentMethod.SetRange("Bal. Account No.", '');
-        if PaymentMethod.FindFirst then
+        if PaymentMethod.FindFirst() then
             exit(PaymentMethod.Code)
     end;
 
     procedure GetDefaultParameters(): Text[1000]
     begin
-        exit(copystr(VendorTemplateParamLbl + '=', 1, 1000));
+        exit(CopyStr(VendorTemplateParamLbl + '=', 1, 1000));
     end;
 
     procedure ValidateParameters(Parameters: Text[1000])
