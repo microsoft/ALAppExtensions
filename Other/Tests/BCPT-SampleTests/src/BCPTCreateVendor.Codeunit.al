@@ -2,6 +2,7 @@ codeunit 149125 "BCPT Create Vendor" implements "BCPT Test Param. Provider"
 {
     trigger OnRun()
     begin
+        InitTest();
         CreateVendor();
     end;
 

@@ -2,6 +2,7 @@ codeunit 149126 "BCPT Create Customer" implements "BCPT Test Param. Provider"
 {
     trigger OnRun()
     begin
+        InitTest();
         CreateCustomer();
     end;
 
