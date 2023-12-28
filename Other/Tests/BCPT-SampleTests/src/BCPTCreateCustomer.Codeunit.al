@@ -1,24 +1,24 @@
-codeunit 149125 "BCPT Create Vendor" implements "BCPT Test Param. Provider"
+codeunit 149126 "BCPT Create Customer" implements "BCPT Test Param. Provider"
 {
     trigger OnRun()
     begin
-        CreateVendor();
+        CreateCustomer();
     end;
 
     var
         BCPTTestContext: Codeunit "BCPT Test Context";
-        VendorTemplateToUse: Code[20];
-        VendorTemplateParamLbl: Label 'Vendor Template';
+        CustomerTemplateToUse: Code[20];
+        CustomerTemplateParamLbl: Label 'Customer Template';
         ParamValidationErr: Label 'Parameter is not defined in the correct format. The expected format is "%1"';
 
     local procedure InitTest();
     var
-        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
         NoSeriesLine: Record "No. Series Line";
     begin
-        PurchasesPayablesSetup.Get();
-        PurchasesPayablesSetup.TestField("Vendor Nos.");
-        NoSeriesLine.SetRange("Series Code", PurchasesPayablesSetup."Vendor Nos.");
+        SalesReceivablesSetup.Get();
+        SalesReceivablesSetup.TestField("Customer Nos.");
+        NoSeriesLine.SetRange("Series Code", SalesReceivablesSetup."Customer Nos.");
         NoSeriesLine.findset(true);
         repeat
             if NoSeriesLine."Ending No." <> '' then begin
@@ -29,34 +29,35 @@ codeunit 149125 "BCPT Create Vendor" implements "BCPT Test Param. Provider"
         until NoSeriesLine.Next() = 0;
         commit();
 
-        if Evaluate(VendorTemplateToUse, BCPTTestContext.GetParameter(VendorTemplateParamLbl)) then;
+        if Evaluate(CustomerTemplateToUse, BCPTTestContext.GetParameter(CustomerTemplateParamLbl)) then;
     end;
 
-    local procedure CreateVendor()
+    local procedure CreateCustomer()
     var
-        Vendor: Record Vendor;
-        VendorTempl: Record "Vendor Templ.";
-        VendContUpdate: Codeunit "VendCont-Update";
-        VendorTemplMgt: Codeunit "Vendor Templ. Mgt.";
+        Customer: Record Customer;
+        CustomerTempl: Record "Customer Templ.";
+        CustContUpdate: Codeunit "CustCont-Update";
+        CustomerTemplMgt: Codeunit "Customer Templ. Mgt.";
     begin
-        Clear(Vendor);
-        Vendor.Insert(true);
-        Vendor.Validate(Name, Vendor."No.");
-        if VendorTemplateToUse <> '' then begin
-            VendorTempl.Get(VendorTemplateToUse);
-            VendorTemplMgt.ApplyVendorTemplate(Vendor, VendorTempl)
+        Clear(Customer);
+        Customer.Insert(true);
+        Customer.Validate(Name, Customer."No.");
+
+        if CustomerTemplateToUse <> '' then begin
+            CustomerTempl.Get(CustomerTemplateToUse);
+            CustomerTemplMgt.ApplyCustomerTemplate(Customer, CustomerTempl)
         end else begin
-            Vendor.Validate("Gen. Bus. Posting Group", LookUpGenProdPostingGroup());
-            Vendor.Validate("VAT Bus. Posting Group", FindVATPostingSetup());
-            Vendor.Validate("Vendor Posting Group", FindVendorPostingGroup);
-            Vendor.Validate("Payment Terms Code", FindPaymentTermsCode());
-            Vendor.Validate("Payment Method Code", FindPaymentMethod());
-            Vendor.Modify(true);
+            Customer.Validate("Gen. Bus. Posting Group", LookUpGenProdPostingGroup());
+            Customer.Validate("VAT Bus. Posting Group", FindVATPostingSetup());
+            Customer.Validate("Customer Posting Group", FindCustomerPostingGroup);
+            Customer.Validate("Payment Terms Code", FindPaymentTermsCode());
+            Customer.Validate("Payment Method Code", FindPaymentMethod());
+            Customer.Modify(true);
         end;
         Commit();
-        VendContUpdate.OnModify(Vendor);
+        CustContUpdate.OnModify(Customer);
 
-        OnAfterCreateVendor(Vendor);
+        OnAfterCreateCustomer(Customer);
         Commit();
     end;
 
@@ -71,13 +72,13 @@ codeunit 149125 "BCPT Create Vendor" implements "BCPT Test Param. Provider"
             exit(GeneralPostingSetup."Gen. Bus. Posting Group");
     end;
 
-    local procedure FindVendorPostingGroup(): Code[20]
+    local procedure FindCustomerPostingGroup(): Code[20]
     var
-        VendorPostingGroup: Record "Vendor Posting Group";
+        CustomerPostingGroup: Record "Customer Posting Group";
     begin
-        VendorPostingGroup.SetFilter("Payables Account", '<>%1', '');
-        if VendorPostingGroup.FindFirst then
-            exit(VendorPostingGroup.Code);
+        CustomerPostingGroup.SetFilter("Receivables Account", '<>%1', '');
+        if CustomerPostingGroup.FindFirst then
+            exit(CustomerPostingGroup.Code);
     end;
 
     local procedure FindVATPostingSetup(): Code[20]
@@ -87,7 +88,7 @@ codeunit 149125 "BCPT Create Vendor" implements "BCPT Test Param. Provider"
         VATPostingSetup.SetFilter("VAT Prod. Posting Group", '<>%1', '');
         VATPostingSetup.SetFilter("VAT %", '<>%1', 0);
         VATPostingSetup.SetRange("VAT Calculation Type", VATPostingSetup."VAT Calculation Type"::"Normal VAT");
-        VATPostingSetup.SetFilter("Purchase VAT Account", '<>%1', '');
+        VATPostingSetup.SetFilter("Sales VAT Account", '<>%1', '');
         if VATPostingSetup.FindFirst then
             exit(VATPostingSetup."VAT Bus. Posting Group");
     end;
@@ -116,21 +117,21 @@ codeunit 149125 "BCPT Create Vendor" implements "BCPT Test Param. Provider"
 
     procedure GetDefaultParameters(): Text[1000]
     begin
-        exit(copystr(VendorTemplateParamLbl + '=', 1, 1000));
+        exit(copystr(CustomerTemplateParamLbl + '=', 1, 1000));
     end;
 
     procedure ValidateParameters(Parameters: Text[1000])
     begin
-        if StrPos(Parameters, VendorTemplateParamLbl) > 0 then begin
-            Parameters := DelStr(Parameters, 1, StrLen(VendorTemplateParamLbl + '='));
-            if Evaluate(VendorTemplateToUse, Parameters) then
+        if StrPos(Parameters, CustomerTemplateParamLbl) > 0 then begin
+            Parameters := DelStr(Parameters, 1, StrLen(CustomerTemplateParamLbl + '='));
+            if Evaluate(CustomerTemplateToUse, Parameters) then
                 exit;
         end;
         Error(ParamValidationErr, GetDefaultParameters());
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnAfterCreateVendor(var Vendor: Record Vendor)
+    local procedure OnAfterCreateCustomer(var Customer: Record Customer)
     begin
     end;
 }
