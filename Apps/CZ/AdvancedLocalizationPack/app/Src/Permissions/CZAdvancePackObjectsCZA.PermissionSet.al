@@ -8,6 +8,7 @@
                   codeunit "Calculate Invent. Handler CZA" = X,
                   codeunit "Cancel FA Ldg.Ent. Handler CZA" = X,
                   codeunit "Data Class. Eval. Handler CZA" = X,
+                  codeunit "Copy Fixed Asset Handler CZA" = X,
                   codeunit "Default Dimension Handler CZA" = X,
                   codeunit "Dimension Auto.Create Mgt. CZA" = X,
                   codeunit "Dimension Auto.Update Mgt. CZA" = X,

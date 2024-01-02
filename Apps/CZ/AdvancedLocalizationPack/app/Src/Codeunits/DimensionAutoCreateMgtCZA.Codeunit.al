@@ -25,7 +25,12 @@ codeunit 31394 "Dimension Auto.Create Mgt. CZA"
         Customer: Record Customer;
         Vendor: Record Vendor;
         DimensionAutoUpdateMgtCZA: Codeunit "Dimension Auto.Update Mgt. CZA";
+        IsHandled: Boolean;
     begin
+        OnBeforeAutoCreateDimension(TableID, No, IsHandled);
+        if IsHandled then
+            exit;
+
         GeneralLedgerSetup.Get();
         AutoDefaultDimension.SetRange("Table ID", TableID);
         AutoDefaultDimension.SetRange("No.", '');
@@ -155,5 +160,10 @@ codeunit 31394 "Dimension Auto.Create Mgt. CZA"
         SignOutDimensionNotification.Message := SignOutMsg;
         SignOutDimensionNotification.Scope := NotificationScope::LocalScope;
         SignOutDimensionNotification.Send();
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeAutoCreateDimension(TableID: Integer; No: Code[20]; var IsHandled: Boolean)
+    begin
     end;
 }

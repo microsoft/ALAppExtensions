@@ -268,8 +268,9 @@ codeunit 6109 "E-Document Import Helper"
         if (CompanyInformation.GLN = '') and (CompanyInformation."VAT Registration No." = '') then
             EDocErrorHelper.LogErrorMessage(EDocument, CompanyInformation, CompanyInformation.FieldNo(GLN), MissingCompanyInfoSetupErr);
 
-        if not (CompanyInformation.GLN in ['', EDocument."Receiving Company GLN"]) then
-            EDocErrorHelper.LogErrorMessage(EDocument, CompanyInformation, CompanyInformation.FieldNo(GLN), StrSubstNo(InvalidCompanyInfoGLNErr, EDocument."Receiving Company GLN"));
+        if EDocument."Receiving Company GLN" <> '' then
+            if not (CompanyInformation.GLN in ['', EDocument."Receiving Company GLN"]) then
+                EDocErrorHelper.LogErrorMessage(EDocument, CompanyInformation, CompanyInformation.FieldNo(GLN), StrSubstNo(InvalidCompanyInfoGLNErr, EDocument."Receiving Company GLN"));
 
         if not (ExtractVatRegNo(CompanyInformation."VAT Registration No.", '') in ['', ExtractVatRegNo(EDocument."Receiving Company VAT Reg. No.", '')]) then
             EDocErrorHelper.LogErrorMessage(EDocument, CompanyInformation, CompanyInformation.FieldNo("VAT Registration No."), StrSubstNo(InvalidCompanyInfoVATRegNoErr, EDocument."Receiving Company VAT Reg. No."));
@@ -556,6 +557,17 @@ codeunit 6109 "E-Document Import Helper"
 
         if VendorNo <> '' then
             exit(VendorNo);
+    end;
+
+    /// <summary>
+    /// Use it to get a vendor by number, or rise an error if vendor does not exist
+    /// </summary>
+    /// <param name="VendorNo">Vendor's number</param>
+    /// <returns>Vendor record if exists or error.</returns>
+    procedure GetVendor(var EDocument: Record "E-Document"; VendorNo: Code[20]) Vendor: Record Vendor
+    begin
+        if not Vendor.Get(VendorNo) then
+            EDocErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(VendorNotFoundErr, EDocument."Bill-to/Pay-to Name"));
     end;
 
     local procedure TryFindLeastBlockedVendorNoByVendorBankAcc(var VendorBankAccount: record "Vendor Bank Account"): Code[20]
@@ -856,6 +868,7 @@ codeunit 6109 "E-Document Import Helper"
         InvalidCompanyInfoAddressErr: Label 'The customer''s address ''%1'' on the electronic document does not match the Address in the Company Information window.', Comment = '%1 = customer address, street name';
         UnableToApplyDiscountErr: Label 'The invoice discount of %1 cannot be applied. Invoice discount must be allowed on at least one invoice line and invoice total must not be 0.', Comment = '%1 - a decimal number';
         TotalsMismatchErr: Label 'The total amount %1 on the created document is different than the total amount %2 in the electronic document.', Comment = '%1 total amount, %2 expected total amount';
+        VendorNotFoundErr: Label 'Cannot find vendor ''%1'' based on the vendor''s name, address or VAT registration number on the electronic document. Make sure that a card for the vendor exists with the corresponding name, address or VAT Registration No.', Comment = '%1 Vendor name (e.g. London Postmaster)';
         NotSpecifiedUnitOfMeasureTxt: Label '<NONE>';
         VATRegistrationNoFilterTxt: Label '*%1', Comment = '%1 - Filter value', Locked = true;
 }

@@ -50,7 +50,6 @@ codeunit 13624 "OIOUBL-Initialize"
     local procedure CompanyInitialize()
     begin
         CreateElectronicProfiles();
-        CreateDocumentSendingProfile();
         CreateProfileCode();
         CreateRegionCode('DK');
         ApplyEvaluationClassificationsForPrivacy();

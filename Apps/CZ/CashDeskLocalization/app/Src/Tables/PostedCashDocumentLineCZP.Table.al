@@ -337,6 +337,61 @@ table 11738 "Posted Cash Document Line CZP"
             Editable = false;
             DataClassification = CustomerContent;
         }
+        field(110; "Non-Deductible VAT %"; Decimal)
+        {
+            Caption = 'Non-Deductible VAT %';
+            DecimalPlaces = 0 : 5;
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(111; "Non-Deductible VAT Base"; Decimal)
+        {
+            AutoFormatExpression = Rec."Currency Code";
+            Caption = 'Non-Deductible VAT Base';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(112; "Non-Deductible VAT Amount"; Decimal)
+        {
+            AutoFormatExpression = Rec."Currency Code";
+            Caption = 'Non-Deductible VAT Amount';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(113; "Non-Deductible VAT Base LCY"; Decimal)
+        {
+            AutoFormatExpression = Rec."Currency Code";
+            Caption = 'Non-Deductible VAT Base LCY';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(114; "Non-Deductible VAT Amount LCY"; Decimal)
+        {
+            AutoFormatExpression = Rec."Currency Code";
+            Caption = 'Non-Deductible VAT Amount LCY';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(115; "Non-Deductible VAT Base ACY"; Decimal)
+        {
+            AutoFormatExpression = Rec."Currency Code";
+            Caption = 'Non-Deductible VAT Base ACY';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(116; "Non-Deductible VAT Amount ACY"; Decimal)
+        {
+            AutoFormatExpression = Rec."Currency Code";
+            Caption = 'Non-Deductible VAT Amount ACY';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(117; "Non-Deductible VAT Diff."; Decimal)
+        {
+            Caption = 'Non-Deductible VAT Difference';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
         field(480; "Dimension Set ID"; Integer)
         {
             Caption = 'Dimension Set ID';

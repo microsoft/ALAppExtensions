@@ -168,7 +168,7 @@ report 31014 "Sales - Advance Letter CZZ"
             column(DocumentDate_SalesAdvanceLetterHeaderCaption; FieldCaption("Document Date"))
             {
             }
-            column(DocumentDate_SalesAdvanceLetterHeader; "Document Date")
+            column(DocumentDate_SalesAdvanceLetterHeader; Format("Document Date"))
             {
             }
             column(PmntSymbol1; PaymentSymbolLabel[1])
@@ -216,7 +216,7 @@ report 31014 "Sales - Advance Letter CZZ"
             column(AdvanceDueDate_SalesAdvancLetterHeaderCaption; FieldCaption("Advance Due Date"))
             {
             }
-            column(AdvanceDueDate_SalesAdvancLetterHeader; FormatDate("Advance Due Date"))
+            column(AdvanceDueDate_SalesAdvancLetterHeader; Format("Advance Due Date"))
             {
             }
             column(AmountIncludingVATLbl; AmountIncludingVATLbl)
@@ -409,11 +409,6 @@ report 31014 "Sales - Advance Letter CZZ"
           SalesAdvLetterHeaderCZZ."Constant Symbol", SalesAdvLetterHeaderCZZ.FieldCaption("Constant Symbol"),
           SalesAdvLetterHeaderCZZ."Specific Symbol", SalesAdvLetterHeaderCZZ.FieldCaption("Specific Symbol"));
         DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText(SalesAdvLetterHeaderCZZ."Language Code");
-    end;
-
-    local procedure FormatDate(DateValue: Date): Text
-    begin
-        exit(Format(DateValue, 0, '<Day>.<Month>.<Year4>'));
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

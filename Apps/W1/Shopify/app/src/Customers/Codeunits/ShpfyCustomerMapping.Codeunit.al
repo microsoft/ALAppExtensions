@@ -161,7 +161,7 @@ codeunit 30118 "Shpfy Customer Mapping"
     /// </summary>
     /// <param name="PhoneNo">Parameter of type Text.</param>
     /// <returns>Return variable "Text".</returns>
-    local procedure CreatePhoneFilter(PhoneNo: Text): Text
+    internal procedure CreatePhoneFilter(PhoneNo: Text): Text
     var
         FilterBuilder: TextBuilder;
         I: Integer;

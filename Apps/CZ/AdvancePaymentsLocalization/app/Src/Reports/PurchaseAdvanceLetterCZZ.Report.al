@@ -155,7 +155,7 @@ report 31016 "Purchase - Advance Letter CZZ"
             column(DocumentDate_PurchAdvanceLetterHeaderCaption; FieldCaption("Document Date"))
             {
             }
-            column(DocumentDate_PurchAdvanceLetterHeader; "Document Date")
+            column(DocumentDate_PurchAdvanceLetterHeader; Format("Document Date"))
             {
             }
             column(PaymentTerms; PaymentTerms.Description)

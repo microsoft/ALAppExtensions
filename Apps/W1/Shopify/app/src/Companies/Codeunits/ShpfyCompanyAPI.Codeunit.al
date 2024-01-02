@@ -212,4 +212,130 @@ codeunit 30286 "Shpfy Company API"
             exit(GraphQuery.ToText());
         end;
     end;
+
+    internal procedure RetrieveShopifyCompanyIds(var CompanyIds: Dictionary of [BigInteger, DateTime])
+    var
+        Id: BigInteger;
+        UpdatedAt: DateTime;
+        JCompanies: JsonArray;
+        JNode: JsonObject;
+        JItem: JsonToken;
+        JResponse: JsonToken;
+        Cursor: Text;
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        Parameters: Dictionary of [Text, Text];
+        LastSync: DateTime;
+    begin
+        GraphQLType := GraphQLType::GetCompanyIds;
+        LastSync := Shop.GetLastSyncTime("Shpfy Synchronization Type"::Companies);
+        Parameters.Add('LastSync', Format(LastSync, 0, 9));
+        repeat
+            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+            if JsonHelper.GetJsonArray(JResponse, JCompanies, 'data.companies.edges') then begin
+                foreach JItem in JCompanies do begin
+                    Cursor := JsonHelper.GetValueAsText(JItem.AsObject(), 'cursor');
+                    if JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
+                        Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'id'));
+                        UpdatedAt := JsonHelper.GetValueAsDateTime(JNode, 'updatedAt');
+                        CompanyIds.Add(Id, UpdatedAt);
+                    end;
+                end;
+                if Parameters.ContainsKey('After') then
+                    Parameters.Set('After', Cursor)
+                else
+                    Parameters.Add('After', Cursor);
+                GraphQLType := GraphQLType::GetNextCompanyIds;
+            end;
+        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.companies.pageInfo.hasNextPage');
+    end;
+
+    internal procedure RetrieveShopifyCompany(var ShopifyCompany: Record "Shpfy Company"; var TempShopifyCustomer: Record "Shpfy Customer" temporary): Boolean
+    var
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        Parameters: Dictionary of [Text, Text];
+        JCompany: JsonObject;
+        JCustomer: JsonObject;
+        JResponse: JsonToken;
+    begin
+        if ShopifyCompany.Id = 0 then
+            exit(false);
+
+        Parameters.Add('CompanyId', Format(ShopifyCompany.Id));
+        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::GetCompany, Parameters);
+
+        if not JsonHelper.GetJsonObject(JResponse, JCustomer, 'data.company.mainContact') then
+            exit(false)
+        else
+            UpdateShopifyCustomerFields(TempShopifyCustomer, JCustomer);
+
+        if JsonHelper.GetJsonObject(JResponse, JCompany, 'data.company') then
+            exit(UpdateShopifyCompanyFields(ShopifyCompany, JCompany));
+    end;
+
+    internal procedure UpdateShopifyCustomerFields(var TempShopifyCustomer: Record "Shpfy Customer" temporary; JCustomer: JsonObject)
+    var
+        PhoneNo: Text;
+    begin
+        Clear(TempShopifyCustomer);
+        TempShopifyCustomer."Shop Id" := Shop."Shop Id";
+        TempShopifyCustomer.Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JCustomer, 'customer.id'));
+        TempShopifyCustomer."First Name" := CopyStr(JsonHelper.GetValueAsText(JCustomer, 'customer.firstName', MaxStrLen(TempShopifyCustomer."First Name")), 1, MaxStrLen(TempShopifyCustomer."First Name"));
+        TempShopifyCustomer."Last Name" := CopyStr(JsonHelper.GetValueAsText(JCustomer, 'customer.lastName', MaxStrLen(TempShopifyCustomer."Last Name")), 1, MaxStrLen(TempShopifyCustomer."Last Name"));
+        TempShopifyCustomer.Email := CopyStr(JsonHelper.GetValueAsText(JCustomer, 'customer.email', MaxStrLen(TempShopifyCustomer.Email)), 1, MaxStrLen(TempShopifyCustomer.Email));
+        PhoneNo := JsonHelper.GetValueAsText(JCustomer, 'customer.phone');
+        PhoneNo := DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()'));
+        TempShopifyCustomer."Phone No." := CopyStr(PhoneNo, 1, MaxStrLen(TempShopifyCustomer."Phone No."));
+    end;
+
+    internal procedure UpdateShopifyCompanyFields(var ShopifyCompany: Record "Shpfy Company"; JCompany: JsonObject) Result: Boolean
+    var
+        CompanyLocation: Record "Shpfy Company Location";
+        UpdatedAt: DateTime;
+        JLocations: JsonArray;
+        JItem: JsonToken;
+        OutStream: OutStream;
+        PhoneNo: Text;
+    begin
+        UpdatedAt := JsonHelper.GetValueAsDateTime(JCompany, 'updatedAt');
+        if UpdatedAt <= ShopifyCompany."Updated At" then
+            exit(false);
+        Result := true;
+
+        ShopifyCompany."Updated At" := UpdatedAt;
+        ShopifyCompany."Created At" := JsonHelper.GetValueAsDateTime(JCompany, 'createdAt');
+        ShopifyCompany."Main Contact Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JCompany, 'mainContact.id'));
+        ShopifyCompany."Main Contact Customer Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JCompany, 'mainContact.customer.id'));
+        ShopifyCompany.Name := CopyStr(JsonHelper.GetValueAsText(JCompany, 'name', MaxStrLen(ShopifyCompany.Name)), 1, MaxStrLen(ShopifyCompany.Name));
+        if JsonHelper.GetValueAsText(JCompany, 'note') <> '' then begin
+            Clear(ShopifyCompany.Note);
+            ShopifyCompany.Note.CreateOutStream(OutStream, TextEncoding::UTF8);
+            OutStream.WriteText(JsonHelper.GetValueAsText(JCompany, 'note'));
+        end else
+            Clear(ShopifyCompany.Note);
+        ShopifyCompany.Modify();
+
+        if JsonHelper.GetJsonArray(JCompany, JLocations, 'locations.edges') then
+            if JLocations.Count = 1 then
+                if JLocations.Get(0, JItem) then begin
+                    ShopifyCompany."Location Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'node.id'));
+
+                    CompanyLocation.SetRange(Id, ShopifyCompany."Location Id");
+                    if not CompanyLocation.FindFirst() then begin
+                        CompanyLocation.Id := ShopifyCompany."Location Id";
+                        CompanyLocation."Company SystemId" := ShopifyCompany.SystemId;
+                        CompanyLocation.Name := 'Main';
+                        CompanyLocation.Insert();
+                    end;
+
+                    CompanyLocation.Address := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.address1', MaxStrLen(CompanyLocation.Address)), 1, MaxStrLen(CompanyLocation.Address));
+                    CompanyLocation."Address 2" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.address2', MaxStrLen(CompanyLocation."Address 2")), 1, MaxStrLen(CompanyLocation."Address 2"));
+                    CompanyLocation.Zip := CopyStr(JsonHelper.GetValueAsCode(JItem, 'node.billingAddress.zip', MaxStrLen(CompanyLocation.Zip)), 1, MaxStrLen(CompanyLocation.Zip));
+                    CompanyLocation.City := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.city', MaxStrLen(CompanyLocation.City)), 1, MaxStrLen(CompanyLocation.City));
+                    CompanyLocation."Country/Region Code" := CopyStr(JsonHelper.GetValueAsCode(JItem, 'node.billingAddress.countryCode', MaxStrLen(CompanyLocation."Country/Region Code")), 1, MaxStrLen(CompanyLocation."Country/Region Code"));
+                    PhoneNo := JsonHelper.GetValueAsText(JItem, 'node.billingAddress.phone');
+                    PhoneNo := CopyStr(DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()')), 1, MaxStrLen(CompanyLocation."Phone No."));
+                    CompanyLocation."Phone No." := CopyStr(PhoneNo, 1, MaxStrLen(CompanyLocation."Phone No."));
+                    CompanyLocation.Modify();
+                end;
+    end;
 }

@@ -8,7 +8,7 @@ codeunit 6204 "Trans. Storage Error Handler"
     TableNo = "Transact. Storage Task Entry";
     InherentEntitlements = X;
     InherentPermissions = X;
-    Permissions = tabledata "Transact. Storage Export State" = rim;
+    Permissions = tabledata "Transact. Storage Export State" = RIM;
 
     var
         TransactionStorageTok: Label 'Transaction Storage', Locked = true;

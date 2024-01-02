@@ -36,20 +36,26 @@ codeunit 6135 "E-Document WorkFlow Processing"
         exit(true);
     end;
 
-    internal procedure SendEDocument(var EDocument: Record "E-Document"; WorkflowStepInstance: Record "Workflow Step Instance"): Boolean
+    internal procedure SendEDocument(var EDocument: Record "E-Document"; WorkflowStepInstance: Record "Workflow Step Instance")
     var
         WorkflowStepArgument: Record "Workflow Step Argument";
         EDocumentService: Record "E-Document Service";
-        EDoucmentHelper: Codeunit "E-Document Processing";
-        FeatureTelemetry: Codeunit "Feature Telemetry";
-        EDocumentHelper: Codeunit "E-Document Processing";
+    begin
+        if not ValidateFlowStep(EDocument, WorkflowStepArgument, WorkflowStepInstance) then
+            exit;
+        EDocumentService.Get(WorkflowStepArgument."E-Document Service");
+        SendEDocument(EDocument, EDocumentService);
+    end;
+
+    internal procedure SendEDocument(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
+    var
         Telemetry: Codeunit Telemetry;
+        EDocumentHelper: Codeunit "E-Document Processing";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         FeatureTelemetry.LogUptake('0000KZ7', EDocumentHelper.GetEDocTok(), Enum::"Feature Uptake Status"::Used);
-        ValidateFlowStep(EDocument, WorkflowStepArgument, WorkflowStepInstance);
-        EDocumentService.Get(WorkflowStepArgument."E-Document Service");
-        EDoucmentHelper.GetTelemetryDimensions(EDocumentService, EDocument, TelemetryDimensions);
+        EDocumentHelper.GetTelemetryDimensions(EDocumentService, EDocument, TelemetryDimensions);
         Telemetry.LogMessage('0000LBB', EDocTelemetryProcessingStartScopeLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
 
         if IsEdocServiceUsingBatch(EDocumentService) then
@@ -182,19 +188,21 @@ codeunit 6135 "E-Document WorkFlow Processing"
             HandleNextEvent(EDocument);
     end;
 
-    local procedure ValidateFlowStep(var EDocument: Record "E-Document"; var WorkflowStepArgument: Record "Workflow Step Argument"; WorkflowStepInstance: Record "Workflow Step Instance")
+    local procedure ValidateFlowStep(var EDocument: Record "E-Document"; var WorkflowStepArgument: Record "Workflow Step Argument"; WorkflowStepInstance: Record "Workflow Step Instance"): Boolean
     var
         EDocErrorHelper: Codeunit "E-Document Error Helper";
     begin
         WorkflowStepArgument.Get(WorkflowStepInstance.Argument);
 
-        if WorkflowStepArgument."E-Document Service" = '' then
+        if WorkflowStepArgument."E-Document Service" = '' then begin
             EDocErrorHelper.LogErrorMessage(EDocument, WorkflowStepArgument, WorkflowStepArgument.FieldNo("E-Document Service"), 'E-Document Service must be specified in Workflow Argument');
-
+            exit(false);
+        end;
         if IsNullGuid(EDocument."Workflow Step Instance ID") then begin
             EDocument."Workflow Step Instance ID" := WorkflowStepInstance.ID;
             EDocument.Modify();
         end;
+        exit(true);
     end;
 
     local procedure IsEdocServiceUsingBatch(EDocumentService: Record "E-Document Service"): Boolean

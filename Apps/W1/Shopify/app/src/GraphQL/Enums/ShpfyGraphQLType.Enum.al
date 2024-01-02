@@ -360,4 +360,19 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
         Caption = 'Update Catalog Prices';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL UpdateCatalogPrices";
     }
+    value(70; GetCompanyIds)
+    {
+        Caption = 'Get Company Ids';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL CompanyIds";
+    }
+    value(71; GetNextCompanyIds)
+    {
+        Caption = 'Get Next Company Ids';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextCompanyIds";
+    }
+    value(72; GetCompany)
+    {
+        Caption = 'Get Company';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL Company";
+    }
 }

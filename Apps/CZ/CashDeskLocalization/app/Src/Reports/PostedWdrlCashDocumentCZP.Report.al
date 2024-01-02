@@ -97,9 +97,8 @@ report 11737 "Posted Wdrl. Cash Document CZP"
             column(CurrencyCode_PostedCashDocumentHeader; "Currency Code")
             {
             }
-            column(PostingDate_PostedCashDocumentHeader; "Posting Date")
+            column(PostingDate_PostedCashDocumentHeader; Format("Posting Date"))
             {
-                IncludeCaption = true;
             }
             column(PaymentPurpose_PostedCashDocumentHeader; "Payment Purpose")
             {
@@ -401,6 +400,7 @@ report 11737 "Posted Wdrl. Cash Document CZP"
         PKPLbl = 'PKP:';
         IssueDatetimeLbl = 'Issue Datetime:';
         CopyLbl = 'Copy';
+        PostingDateLbl = 'Posting Date';
     }
 
     var

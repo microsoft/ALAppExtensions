@@ -230,7 +230,7 @@ codeunit 148008 "Library - Purch. Advances CZZ"
         PurchAdvLetterManagementCZZ.CloseAdvanceLetter(PurchAdvLetterHeaderCZZ, PostingDate, VATDate, OriginalDocumentVATDate, CurrencyFactor, PurchAdvLetterHeaderCZZ."No.");
     end;
 
-    local procedure CreateGLAccount(var GLAccount: Record "G/L Account")
+    procedure CreateGLAccount(var GLAccount: Record "G/L Account")
     var
         GeneralPostingSetup: Record "General Posting Setup";
         VATPostingSetup: Record "VAT Posting Setup";
@@ -266,7 +266,7 @@ codeunit 148008 "Library - Purch. Advances CZZ"
         AddAdvLetterAccounsToVATPostingSetup(VATPostingSetup);
     end;
 
-    local procedure AddAdvLetterAccounsToVATPostingSetup(var VATPostingSetup: Record "VAT Posting Setup")
+    procedure AddAdvLetterAccounsToVATPostingSetup(var VATPostingSetup: Record "VAT Posting Setup")
     begin
         VATPostingSetup.Validate("Purch. Adv. Letter Account CZZ", GetNewGLAccountNo());
         VATPostingSetup.Validate("Purch. Adv.Letter VAT Acc. CZZ", GetNewGLAccountNo());

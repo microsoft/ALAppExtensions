@@ -394,8 +394,13 @@ table 31008 "Purch. Adv. Letter Header CZZ"
             begin
                 IsHandled := false;
                 OnValidatePostingDateOnBeforeAssignDocumentDate(Rec, xRec, IsHandled);
-                if not IsHandled then
-                    Validate("Document Date", "Posting Date");
+                if not IsHandled then begin
+                    PurchasesPayablesSetup.SetLoadFields("Link Doc. Date To Posting Date");
+                    PurchasesPayablesSetup.GetRecordOnce();
+
+                    if ("Incoming Document Entry No." = 0) and PurchasesPayablesSetup."Link Doc. Date To Posting Date" then
+                        ValidateDocumentDateWithPostingDate();
+                end;
 
                 GetSetup();
 #if not CLEAN22
@@ -441,14 +446,12 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 if not ReplaceVATDateMgtCZL.IsEnabled() then begin
                     if PurchasesPayablesSetup."Default VAT Date CZL" = PurchasesPayablesSetup."Default VAT Date CZL"::"Document Date" then
                         Validate("VAT Date", "Document Date");
-                end else begin
+                end else
 #pragma warning restore AL0432
 #endif
-                    GeneralLedgerSetup.UpdateVATDate("Document Date", Enum::"VAT Reporting Date"::"Document Date", "VAT Date");
-                    Validate("VAT Date");
-#if not CLEAN22
-                end;
-#endif
+                    if GeneralLedgerSetup."VAT Reporting Date" = GeneralLedgerSetup."VAT Reporting Date"::"Document Date" then
+                        Validate("VAT Date", "Document Date");
+
                 GeneralLedgerSetup.UpdateOriginalDocumentVATDateCZL("Document Date", Enum::"Default Orig.Doc. VAT Date CZL"::"Document Date", "Original Document VAT Date");
                 Validate("Original Document VAT Date");
             end;
@@ -1630,6 +1633,18 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         BatchProcessingMgt.BatchProcess(PurchAdvLetterHeaderCZZ, Codeunit::"P.Adv.Let.Doc.Man.Reopen CZZ", "Error Handling Options"::"Show Error", NoOfSelected, NoOfSkipped);
     end;
 
+    local procedure ValidateDocumentDateWithPostingDate()
+    var
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeValidateDocumentDateWithPostingDate(Rec, CurrFieldNo, IsHandled, xRec);
+        if IsHandled then
+            exit;
+
+        Validate("Document Date", "Posting Date");
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnValidatePaymentTermsCodeOnBeforeCalcDueDate(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var xPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; CalledByFieldNo: Integer; CallingFieldNo: Integer; var IsHandled: Boolean)
     begin
@@ -1807,6 +1822,11 @@ table 31008 "Purch. Adv. Letter Header CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeSetSecurityFilterOnRespCenter(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeValidateDocumentDateWithPostingDate(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; CurrFieldNo: Integer; var IsHandled: Boolean; xPurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
     begin
     end;
 }

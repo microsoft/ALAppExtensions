@@ -97,13 +97,11 @@ report 11734 "Receipt Cash Document CZP"
             column(CurrencyCode_CashDocumentHeader; "Currency Code")
             {
             }
-            column(VATDate_CashDocumentHeader; "VAT Date")
+            column(VATDate_CashDocumentHeader; Format("VAT Date"))
             {
-                IncludeCaption = true;
             }
-            column(DocumentDate_CashDocumentHeader; "Document Date")
+            column(DocumentDate_CashDocumentHeader; Format("Document Date"))
             {
-                IncludeCaption = true;
             }
             column(PaymentPurpose_CashDocumentHeader; "Payment Purpose")
             {
@@ -330,6 +328,8 @@ report 11734 "Receipt Cash Document CZP"
         CreatedLbl = 'Created by';
         ReleasedLbl = 'Released by';
         CopyLbl = 'Copy';
+        VATDateLbl = 'VAT Date';
+        DocumentDateLbl = 'Document Date';
     }
 
     var

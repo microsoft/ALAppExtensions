@@ -9,6 +9,9 @@ pageextension 13608 "Company Info. Nemhandel Status" extends "Company Informatio
     {
         modify("Registration No.")
         {
+            Editable = Rec."Registered with Nemhandel" <> "Nemhandel Company Status"::Registered;
+            ToolTip = 'Specifies the company''s CVR number. Once the CVR number that is registered in Nemhandelsregisteret is set, it cannot changed.';
+
             trigger OnAfterValidate()
             var
                 InputParams: Dictionary of [Text, Text];

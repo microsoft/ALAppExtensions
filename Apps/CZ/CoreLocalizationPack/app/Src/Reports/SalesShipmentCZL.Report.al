@@ -151,13 +151,13 @@ report 31191 "Sales Shipment CZL"
             column(DocumentDate_SalesShipmentHeaderCaption; FieldCaption("Document Date"))
             {
             }
-            column(DocumentDate_SalesShipmentHeader; "Document Date")
+            column(DocumentDate_SalesShipmentHeader; Format("Document Date"))
             {
             }
             column(ShipmentDate_SalesShipmentHeaderCaption; FieldCaption("Shipment Date"))
             {
             }
-            column(ShipmentDate_SalesShipmentHeader; "Shipment Date")
+            column(ShipmentDate_SalesShipmentHeader; Format("Shipment Date"))
             {
             }
             column(OrderNo_SalesShipmentHeaderCaption; FieldCaption("Order No."))
@@ -288,7 +288,7 @@ report 31191 "Sales Shipment CZL"
                     column(SerNo_TrackingSpecBuffer; TempTrackingSpecification."Serial No.")
                     {
                     }
-                    column(Expiration_TrackingSpecBuffer; TempTrackingSpecification."Expiration Date")
+                    column(Expiration_TrackingSpecBuffer; Format(TempTrackingSpecification."Expiration Date"))
                     {
                     }
                     column(Quantity_TrackingSpecBuffer; TempTrackingSpecification."Quantity (Base)")

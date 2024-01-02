@@ -82,6 +82,7 @@ codeunit 139629 "Library - E-Document"
         EDocService: Record "E-Document Service";
         EDocMappingTestRec: Record "E-Doc. Mapping Test Rec";
         EDocServiceStatus: Record "E-Document Service Status";
+        EDocServiceSupportedType: Record "E-Doc. Service Supported Type";
         EDocMapping: Record "E-Doc. Mapping";
         EDocLogs: Record "E-Document Log";
         EDocMappingLogs: Record "E-Doc. Mapping Log";
@@ -93,6 +94,7 @@ codeunit 139629 "Library - E-Document"
         WorkflowSetup.InitWorkflow();
         DocumentSendingProfile.DeleteAll();
         EDocService.DeleteAll();
+        EDocServiceSupportedType.DeleteAll();
         EDocument.DeleteAll();
         EDocServiceStatus.DeleteAll();
         EDocDataStorage.DeleteAll();
@@ -139,7 +141,7 @@ codeunit 139629 "Library - E-Document"
         DocumentSendingProfile.Modify();
     end;
 
-    procedure CreateFlowB2GForDocumentSendingProfile(DocSendingProfile: Code[20]; ServiceCode: Code[20]): Code[20]
+    procedure CreateFlowWithService(DocSendingProfile: Code[20]; ServiceCode: Code[20]): Code[20]
     var
         Workflow: Record Workflow;
         WorkflowStepResponse: Record "Workflow Step";
@@ -158,7 +160,7 @@ codeunit 139629 "Library - E-Document"
         WorkflowStepResponse.Get(Workflow.Code, SendEDocResponseEventID);
         WorkflowStepArgument.Get(WorkflowStepResponse.Argument);
 
-        WorkflowStepArgument."E-Document Service" := ServiceCode;
+        WorkflowStepArgument.Validate("E-Document Service", ServiceCode);
         WorkflowStepArgument.Modify();
 
         LibraryWorkflow.EnableWorkflow(Workflow);
@@ -179,7 +181,7 @@ codeunit 139629 "Library - E-Document"
         exit(Workflow.Code);
     end;
 
-    procedure CreateFlowB2G2BForDocumentSendingProfile(DocSendingProfile: Code[20]; ServiceCodeA: Code[20]; ServiceCodeB: Code[20]): Code[20]
+    procedure CreateFlowWithServices(DocSendingProfile: Code[20]; ServiceCodeA: Code[20]; ServiceCodeB: Code[20]): Code[20]
     var
         Workflow: Record Workflow;
         WorkflowStepResponse: Record "Workflow Step";
@@ -282,6 +284,9 @@ codeunit 139629 "Library - E-Document"
         EDocService."Document Format" := "E-Document Format"::Mock;
         EDocService."Service Integration" := "E-Document Integration"::Mock;
         EDocService.Insert();
+
+        CreateSupportedDocTypes(EDocService);
+
         exit(EDocService.Code);
     end;
 
@@ -302,6 +307,8 @@ codeunit 139629 "Library - E-Document"
         EDocService."Use Batch Processing" := UseBatching;
         EDocService.Insert();
 
+        CreateSupportedDocTypes(EDocService);
+
         // Lower case mapping
         //TransformationRule.Get(TransformationRule.GetLowercaseCode());
         CreateTransformationMapping(EDocMapping, TransformationRule, EDocService.Code);
@@ -312,13 +319,38 @@ codeunit 139629 "Library - E-Document"
         exit(EDocService.Code);
     end;
 
+    procedure CreateSupportedDocTypes(EDocService: Record "E-Document Service")
+    var
+        EDocServiceSupportedType: Record "E-Doc. Service Supported Type";
+    begin
+        EDocServiceSupportedType.Init();
+        EDocServiceSupportedType."E-Document Service Code" := EDocService.Code;
+        EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Sales Invoice";
+        EDocServiceSupportedType.Insert();
+
+        EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Sales Credit Memo";
+        EDocServiceSupportedType.Insert();
+
+        EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Service Invoice";
+        EDocServiceSupportedType.Insert();
+
+        EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Service Credit Memo";
+        EDocServiceSupportedType.Insert();
+
+        EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Issued Finance Charge Memo";
+        EDocServiceSupportedType.Insert();
+
+        EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Issued Reminder";
+        EDocServiceSupportedType.Insert();
+    end;
+
     procedure CreateTestReceiveServiceForEDoc(var EDocService: Record "E-Document Service")
     begin
         if not EDocService.Get('TESTRECEIVE') then begin
             EDocService.Init();
             EDocService.Code := 'TESTRECEIVE';
-            EDocService."Document Format" := "E-Document Format"::"Test Import Impl. Format";
-            EDocService."Service Integration" := "E-Document Integration"::"Test Import Impl. Integration";
+            EDocService."Document Format" := "E-Document Format"::Mock;
+            EDocService."Service Integration" := "E-Document Integration"::Mock;
             EDocService.Insert();
         end;
     end;
@@ -328,8 +360,8 @@ codeunit 139629 "Library - E-Document"
         if not EDocService.Get('BIERRRECEIVE') then begin
             EDocService.Init();
             EDocService.Code := 'BIERRRECEIVE';
-            EDocService."Document Format" := "E-Document Format"::"Import E-Doc. Basic Info Err.";
-            EDocService."Service Integration" := "E-Document Integration"::"Test Import Impl. Integration";
+            EDocService."Document Format" := "E-Document Format"::Mock;
+            EDocService."Service Integration" := "E-Document Integration"::Mock;
             EDocService.Insert();
         end;
     end;
@@ -339,8 +371,8 @@ codeunit 139629 "Library - E-Document"
         if not EDocService.Get('CIERRRECEIVE') then begin
             EDocService.Init();
             EDocService.Code := 'CIERRRECEIVE';
-            EDocService."Document Format" := "E-Document Format"::"Import E-Doc. Compl. Info Err.";
-            EDocService."Service Integration" := "E-Document Integration"::"Test Import Impl. Integration";
+            EDocService."Document Format" := "E-Document Format"::Mock;
+            EDocService."Service Integration" := "E-Document Integration"::Mock;
             EDocService.Insert();
         end;
     end;

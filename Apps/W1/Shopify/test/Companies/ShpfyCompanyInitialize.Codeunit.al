@@ -78,4 +78,22 @@ codeunit 139638 "Shpfy Company Initialize"
     begin
         exit(StrSubstNo(GraphQLTxt, CompanyLocationId));
     end;
+
+    internal procedure CompanyMainContactResponse(Id: BigInteger; FirstName: Text; LastName: Text; Email: Text; PhoneNo: Text): JsonObject
+    var
+        JResult: JsonObject;
+        ResultLbl: Label '{"id":"gid://shopify/CompanyContact/40665318","customer":{"id":"gid://shopify/Customer/%1","firstName":"%2","lastName":"%3","email":"%4","phone":"%5"}}', Comment = '%1 = CustomerId, %2 = FirstName, %3 = LastName, %4 = Email, %5 = PhoneNo', Locked = true;
+    begin
+        JResult.ReadFrom(StrSubstNo(ResultLbl, Id, FirstName, LastName, Email, PhoneNo));
+        exit(JResult);
+    end;
+
+    internal procedure CompanyResponse(Name: Text; CompanyContactId: BigInteger; CustomerId: BigInteger; CompanyLocationId: BigInteger): JsonObject
+    var
+        JResult: JsonObject;
+        ResultLbl: Label '{"name":"%1","id":"gid://shopify/Company/52199654","note":null,"createdAt":"2023-12-12T12:42:18Z","updatedAt":"2023-12-12T13:06:19Z","mainContact":{"id":"gid://shopify/CompanyContact/%2","customer":{"id":"gid://shopify/Customer/%3","firstName":"","lastName":"","email":"","phone":""}},"locations":{"edges":[{"node":{"id":"gid://shopify/CompanyLocation/%4","billingAddress":{"address1":"","address2":null,"city":"","countryCode":"","phone":"","zip":""}}}]}}', Comment = '%1 = Name, %2 = CompanyContactId, %3 = CustomerId, %4 = CompanyLocationId', Locked = true;
+    begin
+        JResult.ReadFrom(StrSubstNo(ResultLbl, Name, CompanyContactId, CustomerId, CompanyLocationId));
+        exit(JResult);
+    end;
 }

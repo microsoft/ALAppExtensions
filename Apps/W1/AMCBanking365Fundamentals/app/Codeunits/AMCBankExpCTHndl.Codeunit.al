@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
             BankFileName := "Data Exch. Def Code" + GetFileExtension();
 
         if FileManagement.BLOBExport(TempBlob, BankFileName, true) = '' then
-            LogInternalError(DownloadFromStreamErr, DataClassification::SystemMetadata, Verbosity::Error);
+            Session.LogMessage('0000M0N', DownloadFromStreamErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', AmcTelemetryCategoryTxt);
 
         Get("Entry No.");
         RecordRef.GetTable(Rec);
@@ -54,6 +54,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
         BankDataConvServSysErr: Label 'The AMC Banking has returned the following error message:';
         AddnlInfoTxt: Label 'For more information, go to %1.', Comment = '%1=Support URL';
         PaymentExportWebCallTxt: Label 'paymentExportBank', locked = true;
+        AmcTelemetryCategoryTxt: Label 'AMC', Locked = true;
         PayBankAcountNo: Code[20];
 
     [Scope('OnPrem')]
@@ -62,14 +63,14 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
         RequestBodyTempBlob: Codeunit "Temp Blob";
     begin
         if not DataExch."File Content".HasValue() then
-            LogInternalError(NoRequestBodyErr, DataClassification::SystemMetadata, Verbosity::Error);
+            Session.LogMessage('0000M0O', NoRequestBodyErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', AmcTelemetryCategoryTxt);
 
         RequestBodyTempBlob.FromRecord(DataExch, DataExch.FieldNo("File Content"));
 
         SendPaymentRequestToWebService(PaymentFileTempBlob, RequestBodyTempBlob, DataExch."Entry No.", AMCBankingMgt.GetAppCaller());
 
         if not PaymentFileTempBlob.HasValue() then
-            LogInternalError(NothingToExportErr, DataClassification::SystemMetadata, Verbosity::Error);
+            Session.LogMessage('0000M0P', NothingToExportErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', AmcTelemetryCategoryTxt);
     end;
 
     local procedure SendPaymentRequestToWebService(var PaymentFileTempBlob: Codeunit "Temp Blob"; var BodyTempBlob: Codeunit "Temp Blob"; DataExchEntryNo: Integer; AppCaller: Text[30])

@@ -194,13 +194,13 @@ report 31017 "Purchase - Advance VAT Doc.CZZ"
                 column(DocumentDate_DocumentHeaderCaption; FieldCaption("Document Date"))
                 {
                 }
-                column(DocumentDate_PurchAdvLetterEntry; TempPurchAdvLetterEntry."Posting Date")
+                column(DocumentDate_PurchAdvLetterEntry; Format(TempPurchAdvLetterEntry."Posting Date"))
                 {
                 }
                 column(VATDate_DocumentHeaderCaption; FieldCaption("VAT Date"))
                 {
                 }
-                column(VATDate_PurchAdvLetterEntry; TempPurchAdvLetterEntry."VAT Date")
+                column(VATDate_PurchAdvLetterEntry; Format(TempPurchAdvLetterEntry."VAT Date"))
                 {
                 }
                 column(PaymentTerms; PaymentTerms.Description)

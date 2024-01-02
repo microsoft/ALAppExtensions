@@ -288,6 +288,14 @@ codeunit 11729 "Cash Document-Post CZP"
         TempGenJournalLine.Amount := InitCashDocumentLineCZP."Amount Including VAT" * Sign;
         TempGenJournalLine."Amount (LCY)" := InitCashDocumentLineCZP."Amount Including VAT (LCY)" * Sign;
         TempGenJournalLine."VAT Difference" := InitCashDocumentLineCZP."VAT Difference" * Sign;
+        TempGenJournalLine."Non-Deductible VAT %" := InitCashDocumentLineCZP."Non-Deductible VAT %";
+        TempGenJournalLine."Non-Deductible VAT Base" := InitCashDocumentLineCZP."Non-Deductible VAT Base" * Sign;
+        TempGenJournalLine."Non-Deductible VAT Amount" := InitCashDocumentLineCZP."Non-Deductible VAT Amount" * Sign;
+        TempGenJournalLine."Non-Deductible VAT Base LCY" := InitCashDocumentLineCZP."Non-Deductible VAT Base LCY" * Sign;
+        TempGenJournalLine."Non-Deductible VAT Amount LCY" := InitCashDocumentLineCZP."Non-Deductible VAT Amount LCY" * Sign;
+        TempGenJournalLine."Non-Deductible VAT Base ACY" := InitCashDocumentLineCZP."Non-Deductible VAT Base ACY" * Sign;
+        TempGenJournalLine."Non-Deductible VAT Amount ACY" := InitCashDocumentLineCZP."Non-Deductible VAT Amount ACY" * Sign;
+        TempGenJournalLine."Non-Deductible VAT Diff." := InitCashDocumentLineCZP."Non-Deductible VAT Diff." * Sign;
         TempGenJournalLine."Gen. Posting Type" := InitCashDocumentLineCZP."Gen. Posting Type";
         TempGenJournalLine."Applies-to Doc. Type" := InitCashDocumentLineCZP."Applies-To Doc. Type";
         TempGenJournalLine."Applies-to Doc. No." := InitCashDocumentLineCZP."Applies-To Doc. No.";

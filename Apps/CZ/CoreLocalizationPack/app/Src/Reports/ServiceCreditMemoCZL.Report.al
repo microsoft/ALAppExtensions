@@ -182,25 +182,25 @@ report 31198 "Service Credit Memo CZL"
             column(PostingDate_ServiceCrMemoHeaderCaption; FieldCaption("Posting Date"))
             {
             }
-            column(PostingDate_ServiceCrMemoHeader; "Posting Date")
+            column(PostingDate_ServiceCrMemoHeader; Format("Posting Date"))
             {
             }
             column(VATDate_ServiceCrMemoHeaderCaption; FieldCaption("VAT Reporting Date"))
             {
             }
-            column(VATDate_ServiceCrMemoHeader; "VAT Reporting Date")
+            column(VATDate_ServiceCrMemoHeader; Format("VAT Reporting Date"))
             {
             }
             column(DueDate_ServiceCrMemoHeaderCaption; FieldCaption("Due Date"))
             {
             }
-            column(DueDate_ServiceCrMemoHeader; "Due Date")
+            column(DueDate_ServiceCrMemoHeader; Format("Due Date"))
             {
             }
             column(DocumentDate_ServiceCrMemoHeaderCaption; FieldCaption("Document Date"))
             {
             }
-            column(DocumentDate_ServiceCrMemoHeader; "Document Date")
+            column(DocumentDate_ServiceCrMemoHeader; Format("Document Date"))
             {
             }
             column(YourReference_ServiceCrMemoHeaderCaption; FieldCaption("Your Reference"))

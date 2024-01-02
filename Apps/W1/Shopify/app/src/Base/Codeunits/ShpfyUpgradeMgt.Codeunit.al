@@ -31,6 +31,7 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         LoggingModeUpgrade();
         LocationUpgrade();
         SyncPricesWithProductsUpgrade();
+        SendShippingConfirmationUpgrade();
     end;
 
 #if CLEAN22
@@ -354,6 +355,23 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         UpgradeTag.SetUpgradeTag(GetShopifyB2BEnabledUpgradeTag());
     end;
 
+    local procedure SendShippingConfirmationUpgrade()
+    var
+        Shop: Record "Shpfy Shop";
+        UpgradeTag: Codeunit "Upgrade Tag";
+    begin
+        if UpgradeTag.HasUpgradeTag(GetSendShippingConfirmationUpgradeTag()) then
+            exit;
+
+        if Shop.FindSet(true) then
+            repeat
+                Shop."Send Shipping Confirmation" := true;
+                Shop.Modify();
+            until Shop.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(GetSendShippingConfirmationUpgradeTag());
+    end;
+
     local procedure GetShopifyB2BEnabledUpgradeTag(): Code[250]
     begin
         exit('MS-490178-ShopifyB2B-20231101');
@@ -399,6 +417,11 @@ codeunit 30106 "Shpfy Upgrade Mgt."
     internal procedure GetSyncPricesWithProductsUpgradeTag(): Code[250]
     begin
         exit('MS-480542-SyncPricesWithProductsUpgradeTag-20230814');
+    end;
+
+    local procedure GetSendShippingConfirmationUpgradeTag(): Code[250]
+    begin
+        exit('MS-495193-SendShippingConfirmationUpgradeTag-20231221');
     end;
 
     local procedure GetDateBeforeFeature(): DateTime

@@ -215,16 +215,18 @@ codeunit 148103 "SAF-T XML Tests"
         i: Integer;
         j: Integer;
         EntryType: Integer;
+        DocNo: Code[20];
     begin
         // [SCENARIO 309923] The structure of the XML file with General Ledger Entries is correct
         // [SCENARIO 331600] "NumberOfEntries" contains the number of transactions
         // [SCENARIO 334997] "ReferenceNumber" xml node exports after "TaxInformation" section
+        // [SCENARIO 495176] "TransactionID" xml node contains the concatenated value of the "Posting Date" and "Document No." fields of the G/L Entry
 
         Initialize();
         SAFTTestHelper.SetupSAFT(SAFTMappingRange, SAFTMappingType::"Four Digit Standard Account", LibraryRandom.RandInt(5));
         SAFTTestHelper.MatchGLAccountsFourDigit(SAFTMappingRange.Code);
         SAFTTestHelper.CreateSAFTExportHeader(SAFTExportHeader, SAFTMappingRange.Code);
-        EntriesInTransactionNumber := LibraryRandom.RandInt(5);
+        EntriesInTransactionNumber := LibraryRandom.RandIntInRange(3, 5);
         JournalsNumber := LibraryRandom.RandInt(5);
         GLAccount.SetRange("Income/Balance", GLAccount."Income/Balance"::"Balance Sheet");
         GLAccount.FindFirst();
@@ -233,9 +235,10 @@ codeunit 148103 "SAF-T XML Tests"
         for i := 1 to JournalsNumber do begin
             SourceCode.SetRange("SAF-T Source Code", SAFTSourceCode.Code);
             SourceCode.FindFirst();
+            DocNo := LibraryUtility.GenerateGUID();
             for j := 1 to EntriesInTransactionNumber do
                 for EntryType := VATEntry.Type::Purchase to VATEntry.Type::Sale do begin
-                    SAFTTestHelper.MockVATEntry(VATEntry, SAFTExportHeader."Ending Date", EntryType, i);
+                    SAFTTestHelper.MockVATEntry(VATEntry, SAFTExportHeader."Ending Date", DocNo, EntryType, i);
                     SAFTTestHelper.MockGLEntryVATEntryLink(
                         SAFTTestHelper.MockGLEntry(
                             SAFTExportHeader."Ending Date", VATEntry."Document No.", GLAccount."No.",
@@ -2097,6 +2100,7 @@ codeunit 148103 "SAF-T XML Tests"
         GLEntry: Record "G/L Entry";
         SourceCode: Record "Source Code";
     begin
+        GLEntry.SetCurrentKey("Document No.", "Posting Date");
         GLEntry.SetRange("Posting Date", StartingDate, EndingDate);
         TempXMLBuffer.Reset();
         Assert.IsTrue(TempXMLBuffer.FindNodesByXPath(TempXMLBuffer, '/n1:AuditFile/n1:GeneralLedgerEntries'), 'No G/L entries exported.');
@@ -2114,20 +2118,23 @@ codeunit 148103 "SAF-T XML Tests"
             SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:Type', TempSAFTSourceCode.Code);
             GLEntry.SetRange("Source Code", SourceCode.Code);
             GLEntry.FindSet();
-            VerifyGLEntriesGroupedByTransactionNos(TempXMLBuffer, GLEntry, ExpectedEntriesInTransactionNumber, SAFTAnalysisType, DimValueCode);
+            VerifyGLEntriesGroupedByPostingDateAndDocNo(TempXMLBuffer, GLEntry, ExpectedEntriesInTransactionNumber, SAFTAnalysisType, DimValueCode);
             GLEntry.SetRange("Source Code");
         until TempSAFTSourceCode.Next() = 0;
     end;
 
-    local procedure VerifyGLEntriesGroupedByTransactionNos(var TempXMLBuffer: Record "XML Buffer" temporary; var GLEntry: Record "G/L Entry"; ExpectedEntriesInTransactionNumber: Integer; SAFTAnalysisType: Code[9]; DimValueCode: Code[20])
+    local procedure VerifyGLEntriesGroupedByPostingDateAndDocNo(var TempXMLBuffer: Record "XML Buffer" temporary; var GLEntry: Record "G/L Entry"; ExpectedEntriesInTransactionNumber: Integer; SAFTAnalysisType: Code[9]; DimValueCode: Code[20])
     var
         ActualEntriesInTransactionNumber: Integer;
         Step: Integer;
     begin
         repeat
             SAFTTestHelper.AssertElementName(TempXMLBuffer, 'n1:Transaction');
-            GLEntry.SetRange("Transaction No.", GLEntry."Transaction No.");
-            SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:TransactionID', format(GLEntry."Document No."));
+            GLEntry.SetRange("Posting Date", GLEntry."Posting Date");
+            GLEntry.SetRange("Document No.", GLEntry."Document No.");
+            SAFTTestHelper.AssertElementValue(
+                TempXMLBuffer, 'n1:TransactionID',
+                GLEntry."Document No." + Format(GLEntry."Posting Date", 0, '<Day,2><Month,2><Year,2>'));
             SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:Period', format(Date2DMY(GLEntry."Posting Date", 2)));
             SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:PeriodYear', format(Date2DMY(GLEntry."Posting Date", 3)));
             SAFTTestHelper.AssertElementValue(
@@ -2147,7 +2154,8 @@ codeunit 148103 "SAF-T XML Tests"
                 Step := GLEntry.Next();
                 ActualEntriesInTransactionNumber += 1;
             end;
-            GLEntry.SetRange("Transaction No.");
+            GLEntry.SetRange("Posting Date");
+            GLEntry.SetRange("Document No.");
             Assert.AreEqual(
                 ExpectedEntriesInTransactionNumber, ActualEntriesInTransactionNumber, 'Number of transactions not expected');
         until GLEntry.Next() = 0;
@@ -2176,15 +2184,14 @@ codeunit 148103 "SAF-T XML Tests"
     var
         VATPostingSetup: Record "VAT Posting Setup";
         VATEntry: Record "VAT Entry";
+        GLEntryVATEntryLinkRec: Record "G/L Entry - VAT Entry Link";
     begin
         GLEntry.TestField("VAT Bus. Posting Group");
         GLEntry.TestField("VAT Prod. Posting Group");
         VATPostingSetup.Get(GLEntry."VAT Bus. Posting Group", GLEntry."VAT Prod. Posting Group");
-        VATEntry.SetCurrentKey("Document No.", "Posting Date");
-        VATEntry.SetRange("Document No.", GLEntry."Document No.");
-        VATEntry.SetRange("Posting Date", GLEntry."Posting Date");
-        VATEntry.SetRange("Transaction No.", GLEntry."Transaction No.");
-        VATEntry.FindFirst();
+        GLEntryVATEntryLinkRec.SetRange("G/L Entry No.", GLEntry."Entry No.");
+        GLEntryVATEntryLinkRec.FindFirst();
+        VATEntry.Get(GLEntryVATEntryLinkRec."VAT Entry No.");
 
         SAFTTestHelper.AssertElementName(TempXMLBuffer, 'n1:TaxInformation');
         SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:TaxType', 'MVA');

@@ -42,7 +42,7 @@ codeunit 139605 "Shpfy Product Price Calc. Test"
 #else
         Item := ProductInitTest.CreateItem(Shop."Item Templ. Code", InitUnitCost, InitPrice);
 #endif
-#if not CLEAN21
+#if not CLEAN23
         ProductInitTest.CreateSalesPrice(Shop.Code, Item."No.", InitPrice);
         CustomerDiscountGroup := ProductInitTest.CreateSalesLineDiscount(Shop.Code, Item."No.", InitDiscountPerc);
 #else

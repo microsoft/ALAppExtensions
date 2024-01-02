@@ -108,6 +108,7 @@ codeunit 5291 "Mapping Helper SAF-T"
         SourceCodeSetup: Record "Source Code Setup";
         RecRef: RecordRef;
         FieldRef: FieldRef;
+        SourceCodeSAFT: Code[9];
     begin
         if not TempNameValueBuffer.FindSet() then
             exit;
@@ -120,8 +121,9 @@ codeunit 5291 "Mapping Helper SAF-T"
             FieldRef := RecRef.Field(TempNameValueBuffer.ID);
             if Format(FieldRef.Value()) <> '' then
                 if SourceCode.Get(FieldRef.Value()) then begin
-                    SourceCode.Validate("Source Code SAF-T", TempNameValueBuffer.Name);
-                    SourceCode.Modify(true);
+                    SourceCodeSAFT := CopyStr(TempNameValueBuffer.Name, 1, MaxStrLen(SourceCode."Source Code SAF-T"));
+                    SourceCode."Source Code SAF-T" := SourceCodeSAFT;
+                    if SourceCode.Modify() then;
                 end;
         until TempNameValueBuffer.Next() = 0;
     end;
@@ -133,8 +135,8 @@ codeunit 5291 "Mapping Helper SAF-T"
         SourceCode.SetRange("Source Code SAF-T", '');
         if SourceCode.FindSet() then
             repeat
-                SourceCode.Validate("Source Code SAF-T", GetAssortedSourceCodeSAFT());
-                SourceCode.Modify(true);
+                SourceCode."Source Code SAF-T" := GetAssortedSourceCodeSAFT();
+                if SourceCode.Modify() then;
             until SourceCode.Next() = 0;
     end;
 

@@ -182,6 +182,7 @@ report 31287 "Create General Journal CZB"
         GenJournalLine.SetRange("Journal Batch Name", BankAccount."Payment Jnl. Batch Name CZB");
         GenJournalLine.SetRange("Document No.", IssBankStatementHeaderCZB."No.");
         GenJournalLine.SetRange(Amount, 0);
+        OnDeleteGeneralJournalLinesOnAfterSetGenJournalLineFilters(GenJournalLine, IssBankStatementHeaderCZB, BankAccount);
         GenJournalLine.DeleteAll(true);
     end;
 
@@ -320,6 +321,7 @@ report 31287 "Create General Journal CZB"
         GenJournalLine.SetRange("Journal Batch Name", BankAccount."Payment Jnl. Batch Name CZB");
         GenJournalLine.SetRange("Document No.", IssBankStatementHeaderCZB."No.");
         GenJournalLine.SetFilter("Search Rule Code CZB", '<>%1', '');
+        OnApplyGeneralJournalLineOnAfterSetGenJournalLineFilters(GenJournalLine, IssBankStatementHeaderCZB, BankAccount);
         if GenJournalLine.FindSet() then begin
             Commit(); // the matching bank payment should not rollback already created general journal lines in case of error
             repeat
@@ -366,6 +368,16 @@ report 31287 "Create General Journal CZB"
 
     [IntegrationEvent(false, false)]
     local procedure OnCreateSummaryLineOnBeforeInsertGenJournalLine(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; BankAccount: Record "Bank Account"; LastLineNo: Integer; AmountTotal: Decimal; IsCreditAmount: Boolean; var GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnApplyGeneralJournalLineOnAfterSetGenJournalLineFilters(var GenJournalLine: Record "Gen. Journal Line"; IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; BankAccount: Record "Bank Account")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnDeleteGeneralJournalLinesOnAfterSetGenJournalLineFilters(var GenJournalLine: Record "Gen. Journal Line"; IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; BankAccount: Record "Bank Account")
     begin
     end;
 }

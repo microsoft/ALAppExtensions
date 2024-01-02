@@ -21,6 +21,7 @@ permissionset 6100 "E-Doc. Core - Objects"
         table "E-Document Service" = X,
         table "E-Document Service Status" = X,
         table "E-Doc. Service Data Exch. Def." = X,
+        table "E-Doc. Service Supported Type" = X,
         codeunit "E-Document Import Job" = X,
         codeunit "E-Doc. Integration Management" = X,
         codeunit "E-Doc. Mapping" = X,
@@ -30,6 +31,7 @@ permissionset 6100 "E-Doc. Core - Objects"
         codeunit "E-Document Helper" = X,
         codeunit "E-Document Processing" = X,
         codeunit "E-Document Import Helper" = X,
+        codeunit "E-Document Log Helper" = X,
         codeunit "E-Document Error Helper" = X,
         codeunit "E-Document Log" = X,
         codeunit "E-Doc. Export" = X,
@@ -68,5 +70,6 @@ permissionset 6100 "E-Doc. Core - Objects"
         page "E-Documents" = X,
         page "E-Document Service Status" = X,
         page "E-Document Integration Logs" = X,
-        page "E-Doc. Service Data Exch. Sub" = X;
+        page "E-Doc. Service Data Exch. Sub" = X,
+        page "E-Doc Service Supported Types" = X;
 }

@@ -29,8 +29,11 @@ tableextension 13608 "Company Info. Nemhandel Status" extends "Company Informati
                 if not NemhandelStatusMgt.IsFeatureEnableDatePassed() then
                     exit;
 #endif
-                if "Registered with Nemhandel" = "Nemhandel Company Status"::Registered then
+                if "Registered with Nemhandel" = "Nemhandel Company Status"::Registered then begin
+                    if Rec."Registration No." <> xRec."Registration No." then
+                        Error(CannotChangeRegistrationNoErr);
                     exit;
+                end;
 
                 "Registered with Nemhandel" := "Nemhandel Company Status"::Unknown;
                 if CurrFieldNo = FieldNo("Registration No.") then
@@ -40,4 +43,7 @@ tableextension 13608 "Company Info. Nemhandel Status" extends "Company Informati
             end;
         }
     }
+
+    var
+        CannotChangeRegistrationNoErr: Label 'Registration No. cannot be changed when CVR number is registered in Nemhandelsregisteret.';
 }

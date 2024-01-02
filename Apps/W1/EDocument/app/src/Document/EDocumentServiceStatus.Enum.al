@@ -24,4 +24,5 @@ enum 6106 "E-Document Service Status"
     value(13; "Sent") { Caption = 'Sent'; }
     value(14; "Approved") { Caption = 'Approved'; }
     value(15; "Rejected") { Caption = 'Rejected'; }
+    value(16; "Batch Imported") { Caption = 'Batch Imported'; }
 }

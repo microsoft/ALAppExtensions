@@ -17,7 +17,7 @@ codeunit 6134 "E-Doc. Integration Management"
         ErrorCount: Integer;
     begin
         Success := false;
-        if EDocumentService."Service Integration" = EDocumentService."Service Integration"::"No Integration" then
+        if not IsEDocumentInStateToSend(EDocument, EDocumentService) then
             exit;
 
         if not EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Exported) then begin
@@ -28,7 +28,7 @@ codeunit 6134 "E-Doc. Integration Management"
         ErrorCount := EDocumentErrorHelper.ErrorMessageCount(EDocument);
         Send(EDocumentService, EDocument, TempBlob, IsAsync, HttpRequest, HttpResponse);
         Success := EDocumentErrorHelper.ErrorMessageCount(EDocument) = ErrorCount;
-        SetDocumentStatusAndInsertLogs(EDocument, EDocumentService, TempBlob, HttpRequest, HttpResponse, IsAsync, Success);
+        SetDocumentStatusAndInsertLogs(EDocument, EDocumentService, 0, HttpRequest, HttpResponse, IsAsync, Success);
     end;
 
     internal procedure SendBatch(var EDocuments: Record "E-Document"; EDocumentService: Record "E-Document Service"; var IsAsync: Boolean) Success: Boolean
@@ -38,7 +38,6 @@ codeunit 6134 "E-Doc. Integration Management"
         HttpRequest: HttpRequestMessage;
         ErrorCount: Integer;
         BeforeSendEDocErrorCount: Dictionary of [Integer, Integer];
-        EDocDataStorageEntryNo: Integer;
     begin
         Success := false;
         if EDocumentService."Service Integration" = EDocumentService."Service Integration"::"No Integration" then
@@ -58,13 +57,11 @@ codeunit 6134 "E-Doc. Integration Management"
             BeforeSendEDocErrorCount.Add(EDocuments."Entry No", EDocumentErrorHelper.ErrorMessageCount(EDocuments));
         until EDocuments.Next() = 0;
         SendBatch(EDocumentService, EDocuments, TempBlob, IsAsync, HttpRequest, HttpResponse);
-        if TempBlob.HasValue() then
-            EDocDataStorageEntryNo := EDocumentLog.AddTempBlobToLog(TempBlob);
         EDocuments.FindSet();
         repeat
             BeforeSendEDocErrorCount.Get(EDocuments."Entry No", ErrorCount);
             Success := EDocumentErrorHelper.ErrorMessageCount(EDocuments) = ErrorCount;
-            SetDocumentStatusAndInsertLogs(EDocuments, EDocumentService, EDocDataStorageEntryNo, HttpRequest, HttpResponse, IsAsync, Success);
+            SetDocumentStatusAndInsertLogs(EDocuments, EDocumentService, 0, HttpRequest, HttpResponse, IsAsync, Success);
         until EDocuments.Next() = 0;
     end;
 
@@ -137,6 +134,27 @@ codeunit 6134 "E-Doc. Integration Management"
         EDocumentLog.InsertLogWithIntegration(EDocument, EDocumentService, Status, EDocDataStorageEntryNo, HttpRequest, HttpResponse);
     end;
 
+    local procedure IsEDocumentInStateToSend(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"): Boolean
+    var
+        EDocumentServiceStatus: Record "E-Document Service Status";
+        IsHandled, IsInStateToSend : Boolean;
+    begin
+        OnBeforeIsEDocumentInStateToSend(EDocument, EDocumentService, IsInStateToSend, IsHandled);
+        if IsHandled then
+            exit(IsInStateToSend);
+        if EDocumentService."Service Integration" = EDocumentService."Service Integration"::"No Integration" then
+            exit(false);
+
+        EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
+        if EDocumentServiceStatus.FindFirst() then
+            if not (EDocumentServiceStatus.Status in [Enum::"E-Document Service Status"::"Sending Error", Enum::"E-Document Service Status"::Exported]) then begin
+                Message(EDocumentSendErr, EDocumentServiceStatus.Status);
+                exit(false);
+            end;
+
+        exit(true);
+    end;
+
     local procedure Send(EDocService: Record "E-Document Service"; var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
     var
         EDocumentSend: Codeunit "E-Document Send";
@@ -149,11 +167,15 @@ codeunit 6134 "E-Doc. Integration Management"
 
         Clear(EDocumentSend);
         EDocumentSend.SetSource(EDocService, EDocument, TempBlob, HttpRequest, HttpResponse);
+
+        OnBeforeSendDocument(EDocument, EDocService, HttpRequest, HttpResponse);
         if not EDocumentSend.Run() then
             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, GetLastErrorText());
 
         EDocumentSend.GetRequestResponse(HttpRequest, HttpResponse);
         IsAsync := EDocumentSend.IsAsync();
+
+        OnAfterSendDocument(EDocument, EDocService, HttpRequest, HttpResponse);
 
         Telemetry.LogMessage('0000LBM', EDocTelemetrySendScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;
@@ -190,6 +212,7 @@ codeunit 6134 "E-Doc. Integration Management"
         EDocumentHelper: Codeunit "E-Document Processing";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         Telemetry: Codeunit Telemetry;
+        EDocumentSendErr: Label 'E-document is %1 and can not be sent in this state.', Comment = '%1 - Status';
         EDocumentBlobErr: Label 'Failed to get exported blob from EDocument %1', Comment = '%1 - The Edocument entry number';
         EDocTelemetrySendScopeStartLbl: Label 'E-Document Send: Start Scope', Locked = true;
         EDocTelemetrySendScopeEndLbl: Label 'E-Document Send: End Scope', Locked = true;
@@ -203,6 +226,21 @@ codeunit 6134 "E-Doc. Integration Management"
 
     [IntegrationEvent(false, false)]
     local procedure OnGetEDocumentApprovalReturnsFalse(EDocuments: Record "E-Document"; EDocumentService: Record "E-Document Service"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeIsEDocumentInStateToSend(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var IsInStateToSend: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeSendDocument(EDocuments: Record "E-Document"; EDocumentService: Record "E-Document Service"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterSendDocument(EDocuments: Record "E-Document"; EDocumentService: Record "E-Document Service"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
     begin
     end;
 }

@@ -92,13 +92,7 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
         exit(taskPrompt + StatementLines + LedgerLines);
     end;
 
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
     procedure BuildBankRecLedgerEntries(var LedgerLines: Text; var TempBankAccLedgerEntryMatchingBuffer: Record "Ledger Entry Matching Buffer" temporary): Text
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
     begin
         if (LedgerLines = '') then
             LedgerLines := '**Ledger Entries**:\n"""\n';
@@ -210,13 +204,7 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Match Bank Rec. Lines", 'OnFindBestMatches', '', false, false)]
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
     local procedure HandleOnFindBestMatches(var BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line"; var TempBankAccLedgerEntryMatchingBuffer: Record "Ledger Entry Matching Buffer" temporary; DaysTolerance: Integer; var TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary; var RemovedPreviouslyAssigned: Boolean; var Handled: Boolean)
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
     var
         BankAccReconciliation: Record "Bank Acc. Reconciliation";
         TempBankAccRecAIProposal: Record "Bank Acc. Rec. AI Proposal" temporary;
@@ -255,13 +243,7 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
         end;
     end;
 
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
     procedure BuildLedgerEntriesFilter(TopLedgerEntries: array[5] of Record "Ledger Entry Matching Buffer"; TopSimilarityScore: array[5] of Decimal): Text;
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
     var
         TopBankLedgerEntriesFilterTxt: Text;
         MatchThreshold: Decimal;
@@ -279,13 +261,7 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
         exit(TopBankLedgerEntriesFilterTxt);
     end;
 
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
     procedure CreateCompletionAndMatch(CompletionPromptTxt: Text; var BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line"; var TempBankAccLedgerEntryMatchingBuffer: Record "Ledger Entry Matching Buffer" temporary; var TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary; DaysTolerance: Integer): Integer
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
     var
         AzureOpenAI: Codeunit "Azure OpenAi";
         AOAIDeployments: Codeunit "AOAI Deployments";
@@ -318,13 +294,7 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
         exit(NumberOfFoundMatches);
     end;
 
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
     procedure ProcessCompletionAnswer(var CompletionAnswerTxt: Text; var BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line"; var TempBankAccLedgerEntryMatchingBuffer: Record "Ledger Entry Matching Buffer" temporary; var TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary; var NumberOfFoundMatches: Integer)
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
     var
         MatchedLedgerEntryNoTxt: Text;
         MatchedStatementLineNoTxt: Text;
@@ -385,16 +355,10 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
         end;
     end;
 
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
     procedure GenerateMatchProposals(var TempBankAccRecAIProposal: Record "Bank Acc. Rec. AI Proposal" temporary; var BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line"; var TempBankAccLedgerEntryMatchingBuffer: Record "Ledger Entry Matching Buffer" temporary; var TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary; DaysTolerance: Integer)
     var
         BankAccReconciliationLineCopy: Record "Bank Acc. Reconciliation Line";
         TopLedgerEntries: array[5] of Record "Ledger Entry Matching Buffer";
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
         LocalBankAccountLedgerEntry: Record "Bank Account Ledger Entry";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         CompletionTaskTxt: Text;
@@ -542,13 +506,7 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
         exit(false)
     end;
 
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
     procedure ApplyToProposedLedgerEntries(var TempBankAccRecAIProposal: Record "Bank Acc. Rec. AI Proposal" temporary; var TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary): Integer
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
     var
         BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
         BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line";
@@ -606,13 +564,7 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetRegisterBankAccRecCopilotCapabilityUpgradeTag());
     end;
 
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
     local procedure MatchIsAcceptable(var BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line"; var TempLedgerEntryMatchingBuffer: Record "Ledger Entry Matching Buffer" temporary; MatchedLineNoTxt: Text; MatchedEntryNoTxt: Text): Boolean
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
     var
         LocalBankAccReconciliationLine: Record "Bank Acc. Reconciliation Line";
         MatchedEntryNo: Integer;

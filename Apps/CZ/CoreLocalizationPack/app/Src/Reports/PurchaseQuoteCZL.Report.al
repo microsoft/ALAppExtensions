@@ -180,13 +180,13 @@ report 31184 "Purchase Quote CZL"
             column(DocumentDate_PurchaseHeaderCaption; FieldCaption("Document Date"))
             {
             }
-            column(DocumentDate_PurchaseHeader; "Document Date")
+            column(DocumentDate_PurchaseHeader; Format("Document Date"))
             {
             }
             column(RequestedReceiptDate_PurchaseHeaderCaption; FieldCaption("Requested Receipt Date"))
             {
             }
-            column(RequestedReceiptDate_PurchaseHeader; "Requested Receipt Date")
+            column(RequestedReceiptDate_PurchaseHeader; Format("Requested Receipt Date"))
             {
             }
             column(PaymentTerms; PaymentTerms.Description)

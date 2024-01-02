@@ -19,12 +19,12 @@ codeunit 139618 "E-Doc. Format Mock" implements "E-Document"
 
     procedure GetBasicInfoFromReceivedDocument(var EDocument: Record "E-Document"; var TempBlob: codeunit "Temp Blob");
     begin
-
+        OnGetBasicInfoFromReceivedDocument(EDocument, TempBlob);
     end;
 
     procedure GetCompleteInfoFromReceivedDocument(var EDocument: Record "E-Document"; var CreatedDocumentHeader: RecordRef; var CreatedDocumentLines: RecordRef; var TempBlob: codeunit "Temp Blob");
     begin
-
+        OnGetCompleteInfoFromReceivedDocument(EDocument, CreatedDocumentHeader, CreatedDocumentLines, TempBlob);
     end;
 
     [IntegrationEvent(false, false)]
@@ -39,6 +39,16 @@ codeunit 139618 "E-Doc. Format Mock" implements "E-Document"
 
     [IntegrationEvent(false, false)]
     local procedure OnCreateBatch(EDocService: Record "E-Document Service"; var EDocuments: Record "E-Document"; var SourceDocumentHeaders: RecordRef; var SourceDocumentsLines: RecordRef; var TempBlob: codeunit "Temp Blob");
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetBasicInfoFromReceivedDocument(var EDocument: Record "E-Document"; var TempBlob: codeunit "Temp Blob");
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetCompleteInfoFromReceivedDocument(var EDocument: Record "E-Document"; var CreatedDocumentHeader: RecordRef; var CreatedDocumentLines: RecordRef; var TempBlob: codeunit "Temp Blob");
     begin
     end;
 

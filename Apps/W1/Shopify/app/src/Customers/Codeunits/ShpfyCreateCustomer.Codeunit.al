@@ -29,6 +29,7 @@ codeunit 30110 "Shpfy Create Customer"
         Shop: Record "Shpfy Shop";
         CustomerEvents: Codeunit "Shpfy Customer Events";
         TemplateCode: Code[20];
+        NoMainLocationErr: Label 'No location with name Main found for Shopify company id: %1', Comment = 'Main should not be translated. %1 = Shopify company id';
 
     trigger OnRun()
     var
@@ -176,6 +177,47 @@ codeunit 30110 "Shpfy Create Customer"
         end;
         CustomerEvents.OnAfterFindCustomerTemplate(Shop, CountryCode, Result);
         exit(Result);
+    end;
+
+    internal procedure CreateCustomerFromCompany(var ShopifyCompany: Record "Shpfy Company"; TempShopifyCustomer: Record "Shpfy Customer" temporary)
+    var
+        Customer: Record Customer;
+        ShopifyCustomer: Record "Shpfy Customer";
+        CountryRegion: Record "Country/Region";
+        CompanyLocation: Record "Shpfy Company Location";
+    begin
+        if not CompanyLocation.Get(ShopifyCompany."Location Id") then begin
+            ShopifyCompany.Delete();
+            Commit();
+            Error(NoMainLocationErr, ShopifyCompany.Id);
+        end;
+
+        Customer.Validate(Name, ShopifyCompany.Name);
+        Customer.Validate("E-Mail", TempShopifyCustomer.Email);
+        Customer.Validate(Address, CompanyLocation.Address);
+        Customer.Validate("Address 2", CompanyLocation."Address 2");
+
+        CountryRegion.SetRange("ISO Code", CompanyLocation."Country/Region Code");
+        if CountryRegion.FindFirst() then
+            Customer.Validate("Country/Region Code", CountryRegion.Code)
+        else
+            Customer."Country/Region Code" := CompanyLocation."Country/Region Code";
+
+        Customer.Validate(City, CompanyLocation.City);
+        Customer.Validate("Post Code", CompanyLocation.Zip);
+
+        if CompanyLocation."Phone No." <> '' then
+            Customer.Validate("Phone No.", CompanyLocation."Phone No.");
+
+        Customer.Insert(true);
+
+        ShopifyCustomer.Copy(TempShopifyCustomer);
+        ShopifyCustomer."Customer SystemId" := Customer.SystemId;
+        ShopifyCustomer.Insert();
+
+        ShopifyCompany."Customer SystemId" := Customer.SystemId;
+        ShopifyCompany."Main Contact Customer Id" := ShopifyCustomer.Id;
+        ShopifyCompany.Modify();
     end;
 
     /// <summary> 

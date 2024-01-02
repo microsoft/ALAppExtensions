@@ -30,6 +30,13 @@ codeunit 6149 "E-Document Response"
         exit(GetResponseBooleanResult);
     end;
 
+    procedure GetRequestResponse(var HttpRequest2: HttpRequestMessage; var HttpResponse2: HttpResponseMessage)
+    begin
+        HttpRequest2 := HttpRequest;
+        HttpResponse2 := HttpResponse;
+    end;
+
+
     var
         EDocumentService: Record "E-Document Service";
         EdocumentServiceStatus: Record "E-Document Service Status";
