@@ -65,6 +65,7 @@ page 6125 "E-Document Logs"
                 Caption = 'Export File';
                 ToolTip = 'Exports file.';
                 Image = ExportAttachment;
+                Enabled = IsExportEnabled;
 
                 trigger OnAction()
                 begin
@@ -98,9 +99,20 @@ page 6125 "E-Document Logs"
                 end;
             }
         }
+        area(Promoted)
+        {
+            actionref(ExportFile_Promoted; ExportFile) { }
+            actionref(OpenMappingLogs_Promoted; OpenMappingLogs) { }
+        }
     }
 
+    trigger OnAfterGetCurrRecord()
+    begin
+        IsExportEnabled := Rec."E-Doc. Data Storage Entry No." <> 0;
+    end;
+
     var
+        IsExportEnabled: Boolean;
         RecordDoesNotHaveMappingLogsMsg: Label '%1 Log entry type does not support Mapping Logs.', Comment = '%1 - The log status indicating the type';
         NoMappingLogsFoundMsg: Label 'No Mapping Logs were found for this entry. Mapping Logs are only generated when E-Document Service %1 has defined export/import mapping rules.', Comment = '%1 - E-Document Service code';
 }

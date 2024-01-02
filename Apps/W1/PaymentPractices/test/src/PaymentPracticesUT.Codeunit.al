@@ -463,6 +463,36 @@ codeunit 134197 "Payment Practices UT"
         Assert.AreEqual(ExpectedAgreedPaymentTime, PaymentPracticeHeader."Average Actual Payment Period", 'Average Actual Payment Time is not equal to expected.');
     end;
 
+
+    [Test]
+    procedure ReportDataSetForVendorsByPeriod_DaysToZero()
+    var
+        PaymentPracticeHeader: Record "Payment Practice Header";
+        PaymentPeriod: Record "Payment Period";
+        VendorNo: Code[20];
+    begin
+        // [SCENARIO 493671] Payment is processed correctly for Payment Period with Days To = 0
+        Initialize();
+
+        // [GIVEN] Create a vendor
+        VendorNo := LibraryPurchase.CreateVendorNo();
+
+        // [GIVEN] Create a payment period with DaysTo = 0
+        PaymentPracticesLibrary.InitAndGetLastPaymentPeriod(PaymentPeriod);
+
+        // [GIVEN] Create a payment practice header for Current Year of type Vendor
+        PaymentPracticesLibrary.CreatePaymentPracticeHeaderSimple(PaymentPracticeHeader, "Paym. Prac. Header Type"::Vendor, "Paym. Prac. Aggregation Type"::Period);
+
+        // [GIVEN] Post an entry for the vendor in the period
+        MockVendorInvoiceAndPaymentInPeriod(VendorNo, WorkDate(), PaymentPeriod."Days From", PaymentPeriod."Days To");
+
+        // [WHEN] Lines were generated for Header
+        PaymentPractices.Generate(PaymentPracticeHeader);
+
+        // [THEN] Check that report dataset contains the line for the period correcly
+        PaymentPracticesLibrary.VerifyPeriodLine(PaymentPracticeHeader."No.", "Paym. Prac. Header Type"::Vendor, PaymentPeriod.Code, 100, 0);
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"Payment Practices UT");
@@ -523,7 +553,10 @@ codeunit 134197 "Payment Practices UT"
     begin
         PostingDate := StartingDate;
         DueDate := StartingDate;
-        PaymentPostingDate := PostingDate + LibraryRandom.RandIntInRange(PaidInDays_min, PaidInDays_max);
+        if PaidInDays_max <> 0 then
+            PaymentPostingDate := PostingDate + LibraryRandom.RandIntInRange(PaidInDays_min, PaidInDays_max)
+        else
+            PaymentPostingDate := PostingDate + PaidInDays_min + LibraryRandom.RandInt(10);
         InvoiceAmount := MockVendorInvoiceAndPayment(VendorNo, PostingDate, DueDate, PaymentPostingDate);
     end;
 

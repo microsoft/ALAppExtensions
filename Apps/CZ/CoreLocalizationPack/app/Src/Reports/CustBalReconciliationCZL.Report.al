@@ -150,22 +150,22 @@ report 11723 "Cust.- Bal. Reconciliation CZL"
             column(VendorCaptionLabel; VendorCaptionTxt)
             {
             }
-            column(SubjectText; StrSubstNo(SubjectTxt, Format(ReconcileDate, 0, DateFormatTok)))
+            column(SubjectText; StrSubstNo(SubjectTxt, Format(ReconcileDate)))
             {
             }
             column(HeaderText1; Header1Txt)
             {
             }
-            column(HeaderText2; StrSubstNo(Header2Txt, Format(ReconcileDate, 0, DateFormatTok)))
+            column(HeaderText2; StrSubstNo(Header2Txt, Format(ReconcileDate)))
             {
             }
-            column(ConfirmationText1; StrSubstNo(Confirmation1Txt, Format(ReturnDate, 0, DateFormatTok)))
+            column(ConfirmationText1; StrSubstNo(Confirmation1Txt, Format(ReturnDate)))
             {
             }
-            column(CityAndDate; StrSubstNo(CityOnDateTxt, CompanyInformation.City, Format(ReconcileDate, 0, DateFormatTok)))
+            column(CityAndDate; StrSubstNo(CityOnDateTxt, CompanyInformation.City, Format(ReconcileDate)))
             {
             }
-            column(ConfirmationText2; StrSubstNo(Confirmation2Txt, Format(ReconcileDate, 0, DateFormatTok)))
+            column(ConfirmationText2; StrSubstNo(Confirmation2Txt, Format(ReconcileDate)))
             {
             }
             column(AppendixText; AppendixTxt)
@@ -180,7 +180,7 @@ report 11723 "Cust.- Bal. Reconciliation CZL"
             column(AndLabel; andCaptionLbl)
             {
             }
-            column(AppendixHeaderText; StrSubstNo(AppendixHeaderTxt, Format(ReconcileDate, 0, DateFormatTok)))
+            column(AppendixHeaderText; StrSubstNo(AppendixHeaderTxt, Format(ReconcileDate)))
             {
             }
             column(ResponsibleEmployee; ResponsibleEmployee)
@@ -544,7 +544,6 @@ report 11723 "Cust.- Bal. Reconciliation CZL"
         AppendixHeaderTxt: Label 'Appendix to the reconciliation of receivables on %1 between', Comment = '%1 = Reconcile Date';
         ResponsibleEmployeeLbl: Label 'Responsible Employee: %1', Comment = '%1 = Employee Full Name';
         RemainingAmtLCYLbl: Label 'Remaining Amt. (%1)', Comment = '%1 = LCY Code';
-        DateFormatTok: Label '<Day>.<Month>.<Year4>', Locked = true;
 
     protected var
         TempCVLedgerEntryBuffer: Record "CV Ledger Entry Buffer" temporary;

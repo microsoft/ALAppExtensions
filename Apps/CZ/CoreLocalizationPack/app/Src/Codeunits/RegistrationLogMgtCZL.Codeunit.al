@@ -76,6 +76,7 @@ codeunit 11755 "Registration Log Mgt. CZL"
         VATSourceStatus: Text;
         CZCodeTok: Label 'CZ', Locked = true;
         VATRegistrationNoKeyTok: Label 'dic', Locked = true;
+        GroupVATRegistrationNoKeyTok: Label 'dicSkDph', Locked = true;
         NameKeyTok: Label 'obchodniJmeno', Locked = true;
         AddressKeyTok: Label 'sidlo', Locked = true;
         CityKeyTok: Label 'nazevObce', Locked = true;
@@ -88,6 +89,7 @@ codeunit 11755 "Registration Log Mgt. CZL"
         RegistrationListKeyTok: Label 'seznamRegistraci', Locked = true;
         VATSourceStatusKeyTok: Label 'stavZdrojeDph', Locked = true;
         ActiveSourceKeyTok: Label 'AKTIVNI', Locked = true;
+        NAKeyTok: Label 'N/A', Locked = true;
     begin
         NewRegistrationLogCZL."Entry No." := 0;
         NewRegistrationLogCZL.Status := NewRegistrationLogCZL.Status::Valid;
@@ -106,6 +108,12 @@ codeunit 11755 "Registration Log Mgt. CZL"
                 NewRegistrationLogCZL."Verified VAT Registration No." :=
                     CopyStr(Value, 1, MaxStrLen(NewRegistrationLogCZL."Verified VAT Registration No."))
             end;
+
+        // Group VAT Registration No.
+        if GetValue(ResponseObject, GroupVATRegistrationNoKeyTok, Value) then
+            if Value <> NAKeyTok then
+                NewRegistrationLogCZL."Verified VAT Registration No." :=
+                    CopyStr(Value, 1, MaxStrLen(NewRegistrationLogCZL."Verified VAT Registration No."));
 
         // Name
         if GetValue(ResponseObject, NameKeyTok, Value) then

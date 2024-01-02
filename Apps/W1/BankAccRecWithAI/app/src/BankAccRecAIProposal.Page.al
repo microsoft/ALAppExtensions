@@ -514,13 +514,7 @@ page 7250 "Bank Acc. Rec. AI Proposal"
         BankAccReconciliationLine.Copy(InputBankAccReconciliationLine);
     end;
 
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
     internal procedure SetTempBankAccLedgerEntryMatchingBuffer(var InputTempBankAccLedgerEntryMatchingBuffer: Record "Ledger Entry Matching Buffer" temporary);
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
     begin
         if not InputTempBankAccLedgerEntryMatchingBuffer.IsEmpty() then
             TempBankAccLedgerEntryMatchingBuffer.Copy(InputTempBankAccLedgerEntryMatchingBuffer, true);
@@ -588,14 +582,8 @@ page 7250 "Bank Acc. Rec. AI Proposal"
 
     var
         BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line";
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
         TempBankAccLedgerEntryMatchingBuffer: Record "Ledger Entry Matching Buffer" temporary;
         TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary;
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
         AutoMatchedLinesTxt: Text;
         LinesMatchedByCopilotTxt: Text;
         AutoMatchedLinesLbl: label '%1 of %2 lines (%3%)', Comment = '%1 - an integer; %2 - an integer; %3 a decimal between 0 and 100';

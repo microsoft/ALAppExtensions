@@ -14,6 +14,7 @@ page 6133 "E-Document Service"
     Caption = 'E-Document Service';
     SourceTable = "E-Document Service";
     DataCaptionFields = Code;
+    AdditionalSearchTerms = 'Edoc service,Electronic Document';
 
     layout
     {
@@ -200,6 +201,14 @@ page 6133 "E-Document Service"
                         Page.Run(SetupPage);
                 end;
             }
+            action(SupportedDocTypes)
+            {
+                Caption = 'Supported Document Types';
+                ToolTip = 'Setup Supported Document Types';
+                Image = Documents;
+                RunObject = Page "E-Doc Service Supported Types";
+                RunPageLink = "E-Document Service Code" = field(Code);
+            }
             action(Receive)
             {
                 Caption = 'Receive';
@@ -216,7 +225,8 @@ page 6133 "E-Document Service"
         }
         area(Promoted)
         {
-            actionref("Promoted Setup service integration"; SetupServiceIntegration) { }
+            actionref("Promoted Setup Service Integration"; SetupServiceIntegration) { }
+            actionref("Promoted Supported Doc Types"; SupportedDocTypes) { }
             actionref("Promoted Receive"; Receive) { }
         }
     }

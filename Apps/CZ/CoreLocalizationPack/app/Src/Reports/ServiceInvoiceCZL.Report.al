@@ -187,25 +187,25 @@ report 31197 "Service Invoice CZL"
             column(PostingDate_ServiceInvoiceHeaderCaption; FieldCaption("Posting Date"))
             {
             }
-            column(PostingDate_ServiceInvoiceHeader; "Posting Date")
+            column(PostingDate_ServiceInvoiceHeader; Format("Posting Date"))
             {
             }
             column(VATDate_ServiceInvoiceHeaderCaption; FieldCaption("VAT Reporting Date"))
             {
             }
-            column(VATDate_ServiceInvoiceHeader; "VAT Reporting Date")
+            column(VATDate_ServiceInvoiceHeader; Format("VAT Reporting Date"))
             {
             }
             column(DueDate_ServiceInvoiceHeaderCaption; FieldCaption("Due Date"))
             {
             }
-            column(DueDate_ServiceInvoiceHeader; "Due Date")
+            column(DueDate_ServiceInvoiceHeader; Format("Due Date"))
             {
             }
             column(DocumentDate_ServiceInvoiceHeaderCaption; FieldCaption("Document Date"))
             {
             }
-            column(DocumentDate_ServiceInvoiceHeader; "Document Date")
+            column(DocumentDate_ServiceInvoiceHeader; Format("Document Date"))
             {
             }
             column(PmntSymbol1; PaymentSymbolLabel[1])

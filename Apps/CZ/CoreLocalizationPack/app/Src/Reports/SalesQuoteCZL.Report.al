@@ -184,13 +184,13 @@ report 31186 "Sales Quote CZL"
             column(OrderDate_SalesHeaderCaption; FieldCaption("Order Date"))
             {
             }
-            column(OrderDate_SalesHeader; "Order Date")
+            column(OrderDate_SalesHeader; Format("Order Date"))
             {
             }
             column(RequestedDeliveryDate_SalesHeaderCaption; FieldCaption("Requested Delivery Date"))
             {
             }
-            column(RequestedDeliveryDate_SalesHeader; "Requested Delivery Date")
+            column(RequestedDeliveryDate_SalesHeader; Format("Requested Delivery Date"))
             {
             }
             column(PaymentTerms; PaymentTerms.Description)
@@ -226,12 +226,17 @@ report 31186 "Sales Quote CZL"
             column(QuoteValidUntilDate_SalesHeaderCaption; QuoteValidUntilDateLbl)
             {
             }
-            column(QuoteValidUntilDate_SalesHeader; "Quote Valid Until Date")
+            column(QuoteValidUntilDate_SalesHeader; Format("Quote Valid Until Date"))
             {
             }
-            column(QuoteValidUntilDateFormat_SalesHeader; FormatDate("Quote Valid Until Date"))
+#if not CLEAN24
+            column(QuoteValidUntilDateFormat_SalesHeader; Format("Quote Valid Until Date"))
             {
+                ObsoleteState = Pending;
+                ObsoleteTag = '24.0';
+                ObsoleteReason = 'The field is not use anymore. Use the field QuoteValidUntilDate_SalesHeader instead.';
             }
+#endif
             column(DocFooterText; DocFooterText)
             {
             }
@@ -564,11 +569,6 @@ report 31186 "Sales Quote CZL"
     begin
         FormatAddress.SalesHeaderBillTo(CustAddr, SalesHeader);
         FormatAddress.SalesHeaderShipTo(ShipToAddr, CustAddr, SalesHeader);
-    end;
-
-    local procedure FormatDate(DateValue: Date): Text
-    begin
-        exit(Format(DateValue, 0, '<Day>.<Month>.<Year4>'));
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

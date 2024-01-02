@@ -14,7 +14,7 @@ codeunit 6144 "E-Document Get Response"
 
     trigger OnRun()
     var
-        EDocumentServiceStatus: Record "E-Document Service Status";
+        EDocumentServiceStatus, EDocumentServiceStatus2 : Record "E-Document Service Status";
         EDocumentService: Record "E-Document Service";
         EDocument: Record "E-Document";
         EDocumentLog: Codeunit "E-Document Log";
@@ -28,6 +28,7 @@ codeunit 6144 "E-Document Get Response"
         if not IsEDocumentPendingResponse() then
             exit;
 
+        EdocumentServiceStatus.SetRange(Status, EdocumentServiceStatus.Status::"Pending Response");
         if EDocumentServiceStatus.FindSet() then
             repeat
                 EDocumentService.Get(EDocumentServiceStatus."E-Document Service Code");
@@ -39,6 +40,11 @@ codeunit 6144 "E-Document Get Response"
                     OnGetEdocumentResponseReturnsFalse(EDocument, EDocumentService, HttpRequest, HttpResponse, IsHandled);
                     if not IsHandled then
                         EDocumentLog.InsertLogWithIntegration(EDocument, EDocumentService, Enum::"E-Document Service Status"::"Pending Response", 0, HttpRequest, HttpResponse)
+                    else begin
+                        EDocumentServiceStatus2.Get(EDocument."Entry No", EDocumentService.Code);
+                        EDocumentLog.InsertLogWithIntegration(EDocument, EDocumentService, EDocumentServiceStatus2.Status, 0, HttpRequest, HttpResponse);
+                        EDocumentLog.UpdateServiceStatus(EDocument, EDocumentService, EDocumentServiceStatus2.Status);
+                    end;
                 end;
 
                 WorkflowManagement.HandleEventOnKnownWorkflowInstance(EDocumentWorkflowSetup.EDocStatusChanged(), EDocument, EDocument."Workflow Step Instance ID");
@@ -46,7 +52,7 @@ codeunit 6144 "E-Document Get Response"
             until EDocumentServiceStatus.Next() = 0;
 
         if IsEDocumentPendingResponse() then
-            EDocumentBackgroundjobs.GetEDocumentResponse();
+            EDocumentBackgroundjobs.GetEDocumentResponse(false);
     end;
 
     local procedure GetResponse(EDocService: Record "E-Document Service"; var EDocumentServiceStatus: Record "E-Document Service Status"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage) GetResponseResult: Boolean
@@ -71,6 +77,7 @@ codeunit 6144 "E-Document Get Response"
                     EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, GetLastErrorText());
                 until EDocumentServiceStatus.Next() = 0;
 
+        EDocumentResponse.GetRequestResponse(HttpRequest, HttpResponse);
         GetResponseResult := EDocumentResponse.GetResponseResult();
         Telemetry.LogMessage('0000LBR', EDocTelemetryGetResponseScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;

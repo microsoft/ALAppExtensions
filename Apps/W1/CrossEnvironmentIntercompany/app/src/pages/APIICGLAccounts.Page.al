@@ -26,30 +26,50 @@ page 30405 "API - IC G/L Accounts"
     {
         area(Content)
         {
-            field(id; Rec.SystemId)
+            repeater(Records)
             {
-                Caption = 'Id';
-            }
-            field(accountNumber; Rec."No.")
-            {
-                Caption = 'Account Number';
-            }
-            field(name; Rec.Name)
-            {
-                Caption = 'Name';
-            }
-            field(accountType; Rec."Account Type")
-            {
-                Caption = 'Account Type';
-            }
-            field(incomeBalance; Rec."Income/Balance")
-            {
-                Caption = 'Income/Balance';
-            }
-            field(blocked; Rec.Blocked)
-            {
-                Caption = 'Blocked';
+                field(id; Rec.SystemId)
+                {
+                    Caption = 'Id';
+                }
+                field(accountNumber; Rec."No.")
+                {
+                    Caption = 'Account Number';
+                }
+                field(name; Rec.Name)
+                {
+                    Caption = 'Name';
+                }
+                field(accountType; Rec."Account Type")
+                {
+                    Caption = 'Account Type';
+                }
+                field(accountTypeOrdinal; AccountTypeOrdinal)
+                {
+                    Caption = 'Account Type Ordinal';
+                }
+                field(incomeBalance; Rec."Income/Balance")
+                {
+                    Caption = 'Income/Balance';
+                }
+                field(incomeBalanceIndex; IncomeBalanceIndex)
+                {
+                    Caption = 'Income/Balance Index';
+                }
+                field(blocked; Rec.Blocked)
+                {
+                    Caption = 'Blocked';
+                }
             }
         }
     }
+
+    trigger OnAfterGetRecord()
+    begin
+        AccountTypeOrdinal := Rec."Account Type".AsInteger();
+        IncomeBalanceIndex := Rec."Income/Balance";
+    end;
+
+    var
+        AccountTypeOrdinal, IncomeBalanceIndex : Integer;
 }

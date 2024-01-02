@@ -26,7 +26,7 @@ codeunit 30103 "Shpfy Communication Mgt."
         QueryParamTooLongErr: Label 'Request length exceeded Shopify API limit.';
         ProductCreateQueryParamTooLongErr: Label 'Request length exceeded Shopify API limit. This may be due to longer marketing text or embed images.';
         RequestTelemetryLbl: Label '%1 request with ID %2 has been made to Shopify.', Comment = '%1 - method, %2 - request ID', Locked = true;
-        ApiVersionOutOfSupportErr: Label 'The Shopify API used by your current Shopify connector is no longer supported. To continue using the Shopify connector, please upgrade the Shopify connector and your Business Central environment.';
+        ApiVersionOutOfSupportErr: Label 'The Shopify Admin API used by your current Shopify connector is no longer supported. To continue using the Shopify connector, please upgrade the Shopify connector and your Business Central environment.';
         ApiVersionOutOfSupportTxt: Label 'Shopify API version %1 is out of support, expiry date was %2', Comment = '%1 - api version, %2 - expiry date', Locked = true;
         MissingApiVersionExpiryDateTxt: Label 'The api version expiry date has not been initialized.', Locked = true;
         ApiVersionExpiryDateAKVSecretNameLbl: Label 'ShopifyApiVersionExpiryDate', Locked = true;
@@ -627,6 +627,11 @@ codeunit 30103 "Shpfy Communication Mgt."
         end;
     end;
 
+    internal procedure GetApiVersion(): Text
+    begin
+        exit(VersionTok);
+    end;
+
     [NonDebuggable]
     internal procedure GetApiVersionExpiryDate(): DateTime
     var
@@ -671,7 +676,7 @@ codeunit 30103 "Shpfy Communication Mgt."
             if Evaluate(ApiVersionExpiryDate, Result) then
                 if IsolatedStorage.Get('ApiVersionCache(' + VersionTok + ')', DataScope::Module, Result) then
                     if Evaluate(ApiVersionCache, Result) then
-                        if Round((CurrentDateTime() - ApiVersionCache) / 1000 / 3600 / 24, 1) <= 30 then // 30 days lifetime for cache
+                        if Round((CurrentDateTime() - ApiVersionCache) / 1000 / 3600 / 24, 1) <= 10 then // 10 days lifetime for cache
                             exit(true);
     end;
 

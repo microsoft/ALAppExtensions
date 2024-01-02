@@ -1588,6 +1588,7 @@
                     <TablixCell>
                       <CellContents>
                         <Textbox Name="textbox62">
+                          <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
@@ -1616,6 +1617,7 @@
                           </Style>
                         </Textbox>
                         <ColSpan>3</ColSpan>
+                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                     <TablixCell />
@@ -1793,6 +1795,7 @@
                     <TablixCell>
                       <CellContents>
                         <Textbox Name="Cheque_No______ChequeNo______Dated______FORMAT_ChequeDate_">
+                          <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>

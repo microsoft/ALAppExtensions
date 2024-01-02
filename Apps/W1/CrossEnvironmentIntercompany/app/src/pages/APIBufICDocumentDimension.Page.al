@@ -26,37 +26,44 @@ page 30417 "API Buf IC Document Dimension"
     {
         area(Content)
         {
-            field(id; Rec.SystemId)
+            repeater(Records)
             {
-                Caption = 'Id';
-            }
-            field(tableId; Rec."Table ID")
-            {
-                Caption = 'Table Id';
-            }
-            field(transactionNumber; Rec."Transaction No.")
-            {
-                Caption = 'Transaction Number';
-            }
-            field(icPartnerCode; Rec."IC Partner Code")
-            {
-                Caption = 'Intercompany Partner Code';
-            }
-            field(transactionSource; Rec."Transaction Source")
-            {
-                Caption = 'Transaction Source';
-            }
-            field(lineNumber; Rec."Line No.")
-            {
-                Caption = 'Line Number';
-            }
-            field(dimensionCode; Rec."Dimension Code")
-            {
-                Caption = 'Dimension Code';
-            }
-            field(dimensionValueCode; Rec."Dimension Value Code")
-            {
-                Caption = 'Dimension Value Code';
+                field(id; Rec.SystemId)
+                {
+                    Caption = 'Id';
+                }
+                field(tableId; Rec."Table ID")
+                {
+                    Caption = 'Table Id';
+                }
+                field(transactionNumber; Rec."Transaction No.")
+                {
+                    Caption = 'Transaction Number';
+                }
+                field(icPartnerCode; Rec."IC Partner Code")
+                {
+                    Caption = 'Intercompany Partner Code';
+                }
+                field(transactionSource; Rec."Transaction Source")
+                {
+                    Caption = 'Transaction Source';
+                }
+                field(transactionSourceIndex; TransactionSourceIndex)
+                {
+                    Caption = 'Transaction Source Index';
+                }
+                field(lineNumber; Rec."Line No.")
+                {
+                    Caption = 'Line Number';
+                }
+                field(dimensionCode; Rec."Dimension Code")
+                {
+                    Caption = 'Dimension Code';
+                }
+                field(dimensionValueCode; Rec."Dimension Value Code")
+                {
+                    Caption = 'Dimension Value Code';
+                }
             }
         }
     }
@@ -74,7 +81,13 @@ page 30417 "API Buf IC Document Dimension"
             error(ThereAreNoNotificationsForSpecifiedIDErr);
     end;
 
+    trigger OnAfterGetRecord()
+    begin
+        TransactionSourceIndex := Rec."Transaction Source";
+    end;
+
     var
         IDShouldBeSpecifiedErr: Label 'Operation ID should be specified';
         ThereAreNoNotificationsForSpecifiedIDErr: Label 'There are no notifications for specified ID';
+        TransactionSourceIndex: Integer;
 }

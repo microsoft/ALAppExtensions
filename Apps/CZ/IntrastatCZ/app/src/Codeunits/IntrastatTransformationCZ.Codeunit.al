@@ -27,6 +27,8 @@ codeunit 31303 "Intrastat Transformation CZ"
         IntrastatStatisticsMonthTxt: Label 'INT_STAT_MONTH', Locked = true;
         IntrastatStatisticsYearDescTxt: Label 'Transforming intrastat Statistics Period to year.';
         IntrastatStatisticsYearTxt: Label 'INT_STAT_YEAR', Locked = true;
+        IntrastatItemDescriptionDescTxt: Label 'Shorten the item description to the required length.';
+        IntrastatItemDescriptionTxt: Label 'INT_ITEMDESC', Locked = true;
         ArrivalTok: Label 'A', MaxLength = 1, Locked = true;
         DispatchTok: Label 'D', MaxLength = 1, Locked = true;
 
@@ -50,6 +52,7 @@ codeunit 31303 "Intrastat Transformation CZ"
     var
         TransformationRule: Record "Transformation Rule";
     begin
+        TransformationRule.InsertRec(GetIntrastatItemDescriptionCode(), IntrastatItemDescriptionDescTxt, TransformationRule."Transformation Type"::Substring.AsInteger(), 1, 80, '', '');
         TransformationRule.InsertRec(GetIntrastatStatisticsMonthCode(), IntrastatStatisticsMonthDescTxt, TransformationRule."Transformation Type"::Substring.AsInteger(), 3, 2, '', '');
         TransformationRule.InsertRec(GetIntrastatStatisticsYearCode(), IntrastatStatisticsYearDescTxt, TransformationRule."Transformation Type"::Custom.AsInteger(), 0, 0, '', '');
         TransformationRule.InsertRec(GetIntrastatArrivalDispatchCode(), IntrastatArrivalDispatchDescTxt, TransformationRule."Transformation Type"::Custom.AsInteger(), 0, 0, '', '');
@@ -126,6 +129,11 @@ codeunit 31303 "Intrastat Transformation CZ"
     procedure GetIntrastatRoundToIntGreaterThanOneCode(): Code[20]
     begin
         exit(IntrastatRoundToIntGreaterThanOneTxt);
+    end;
+
+    procedure GetIntrastatItemDescriptionCode(): Code[20]
+    begin
+        exit(IntrastatItemDescriptionTxt);
     end;
 
     procedure GetIntrastatStatisticsMonthCode(): Code[20]

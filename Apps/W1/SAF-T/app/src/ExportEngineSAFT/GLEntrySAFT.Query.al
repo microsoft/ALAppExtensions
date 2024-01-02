@@ -11,7 +11,7 @@ query 5284 "G/L Entry SAF-T"
     QueryType = Normal;
     Access = Internal;
     DataAccessIntent = ReadOnly;
-    OrderBy = ascending(Transaction_No_);
+    OrderBy = ascending(Document_No_, Posting_Date);
 
     elements
     {

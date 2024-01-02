@@ -2139,7 +2139,7 @@ codeunit 1450 "MS - Yodlee Service Mgt."
             BankFeedTempBlob.CreateInStream(BankFeedJSONInStream);
             PendingTransactionsTempBlob.CreateOutStream(OutStreamWithAllTransactions);
             if not GetJsonStructure.JsonToXMLCreateDefaultRoot(BankFeedJSONInStream, OutStreamWithAllTransactions) then
-                LogInternalError(InvalidResponseErr, DataClassification::SystemMetadata, Verbosity::Error);
+                Session.LogMessage('0000M0I', InvalidResponseErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
             PendingTransactionsTempBlob.CreateInStream(InStreamWithAllTransactions);
             while not InStreamWithAllTransactions.EOS() do begin
                 InStreamWithAllTransactions.ReadText(TransactionResponseLine);

@@ -1119,7 +1119,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!PostingDate_PostedCashDocumentHeaderCaption.Value</Value>
+                                                    <Value>=Parameters!PostingDateLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
                                                     </Style>
@@ -3876,7 +3876,6 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                   </Style>
                 </Paragraph>
               </Paragraphs>
-              <Top>0in</Top>
               <Left>12cm</Left>
               <Height>0.5cm</Height>
               <Width>6cm</Width>
@@ -4072,14 +4071,14 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
       </DefaultValue>
       <Prompt>CopyLbl</Prompt>
     </ReportParameter>
-    <ReportParameter Name="PostingDate_PostedCashDocumentHeaderCaption">
+    <ReportParameter Name="PostingDateLbl">
       <DataType>String</DataType>
       <DefaultValue>
         <Values>
-          <Value>PostingDate_PostedCashDocumentHeaderCaption</Value>
+          <Value>PostingDateLbl</Value>
         </Values>
       </DefaultValue>
-      <Prompt>PostingDate_PostedCashDocumentHeaderCaption</Prompt>
+      <Prompt>PostingDateLbl</Prompt>
     </ReportParameter>
     <ReportParameter Name="PaymentPurpose_PostedCashDocumentHeaderCaption">
       <DataType>String</DataType>
@@ -4324,7 +4323,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>18</RowIndex>
-          <ParameterName>PostingDate_PostedCashDocumentHeaderCaption</ParameterName>
+          <ParameterName>PostingDateLbl</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>

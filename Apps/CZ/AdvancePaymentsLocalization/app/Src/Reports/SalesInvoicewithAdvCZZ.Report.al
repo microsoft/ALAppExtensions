@@ -217,25 +217,25 @@ report 31018 "Sales - Invoice with Adv. CZZ"
             column(PostingDate_SalesInvoiceHeaderCaption; FieldCaption("Posting Date"))
             {
             }
-            column(PostingDate_SalesInvoiceHeader; "Posting Date")
+            column(PostingDate_SalesInvoiceHeader; Format("Posting Date"))
             {
             }
             column(VATDate_SalesInvoiceHeaderCaption; FieldCaption("VAT Reporting Date"))
             {
             }
-            column(VATDate_SalesInvoiceHeader; "VAT Reporting Date")
+            column(VATDate_SalesInvoiceHeader; Format("VAT Reporting Date"))
             {
             }
             column(DueDate_SalesInvoiceHeaderCaption; FieldCaption("Due Date"))
             {
             }
-            column(DueDate_SalesInvoiceHeader; FormatDate("Due Date"))
+            column(DueDate_SalesInvoiceHeader; Format("Due Date"))
             {
             }
             column(DocumentDate_SalesInvoiceHeaderCaption; FieldCaption("Document Date"))
             {
             }
-            column(DocumentDate_SalesInvoiceHeader; "Document Date")
+            column(DocumentDate_SalesInvoiceHeader; Format("Document Date"))
             {
             }
             column(PmntSymbol1; PaymentSymbolLabel[1])
@@ -836,11 +836,6 @@ report 31018 "Sales - Invoice with Adv. CZZ"
     begin
         FormatAddress.SalesInvBillTo(CustAddr, SalesInvoiceHeader);
         FormatAddress.SalesInvShipTo(ShipToAddr, CustAddr, SalesInvoiceHeader);
-    end;
-
-    local procedure FormatDate(DateValue: Date): Text
-    begin
-        exit(Format(DateValue, 0, '<Day>.<Month>.<Year4>'));
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

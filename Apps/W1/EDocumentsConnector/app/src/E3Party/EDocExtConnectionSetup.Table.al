@@ -57,6 +57,11 @@ table 6361 "E-Doc. Ext. Connection Setup"
             Caption = 'Client Secret';
             DataClassification = EndUserIdentifiableInformation;
         }
+        field(12; "Send Mode"; Enum "E-Doc. Ext. Send Mode")
+        {
+            Caption = 'Send Mode';
+            DataClassification = EndUserIdentifiableInformation;
+        }
     }
 
     keys

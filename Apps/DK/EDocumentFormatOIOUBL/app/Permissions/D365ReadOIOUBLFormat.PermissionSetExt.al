@@ -4,10 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocument;
 
-enumextension 13910 OIOUBLFormat extends "E-Document Format"
+using System.Security.AccessControl;
+
+permissionsetextension 13910 "D365 Read - OIOUBL Format" extends "D365 READ"
 {
-    value(13910; "OIOUBL")
-    {
-        Implementation = "E-Document" = "OIOUBL Format";
-    }
+    IncludedPermissionSets = "EDocOIOUBL - Read";
 }

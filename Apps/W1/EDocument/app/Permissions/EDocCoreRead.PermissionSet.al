@@ -20,5 +20,6 @@ permissionset 6101 "E-Doc. Core - Read"
         tabledata "E-Document Service" = R,
         tabledata "E-Document Service Status" = R,
         tabledata "E-Document Integration Log" = R,
-        tabledata "E-Doc. Service Data Exch. Def." = R;
+        tabledata "E-Doc. Service Data Exch. Def." = R,
+        tabledata "E-Doc. Service Supported Type" = R;
 }

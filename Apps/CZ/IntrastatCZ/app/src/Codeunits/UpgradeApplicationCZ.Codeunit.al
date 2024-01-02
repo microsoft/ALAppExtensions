@@ -75,7 +75,8 @@ codeunit 31306 "Upgrade Application CZ"
         UpgradeTransferHeader();
         UpgradeTransferReceiptHeader();
         UpgradeTransferShipmentHeader();
-        UpgradeIntrastatDeliveryGroup()
+        UpgradeIntrastatDeliveryGroup();
+        UpgradeIntrastatDescription();
     end;
 
     local procedure UpgradeDirectTransHeader()
@@ -436,5 +437,22 @@ codeunit 31306 "Upgrade Application CZ"
         end;
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZ.GetIntrastatDeliveryGroupUpgradeTag());
+    end;
+
+    local procedure UpgradeIntrastatDescription()
+    var
+        IntrastatReportLine: Record "Intrastat Report Line";
+        DataExchFieldMapping: Record "Data Exch. Field Mapping";
+        IntrastatTransformationCZ: Codeunit "Intrastat Transformation CZ";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZ.GetIntrastatDescriptionUpgradeTag()) then
+            exit;
+
+        if DataExchFieldMapping.Get('INTRA-2022-CZ', 'DEFAULT', Database::"Intrastat Report Line", 15, IntrastatReportLine.FieldNo("Tariff Description")) then begin
+            DataExchFieldMapping.Validate("Transformation Rule", IntrastatTransformationCZ.GetIntrastatItemDescriptionCode());
+            DataExchFieldMapping.Modify();
+        end;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZ.GetIntrastatDescriptionUpgradeTag());
     end;
 }

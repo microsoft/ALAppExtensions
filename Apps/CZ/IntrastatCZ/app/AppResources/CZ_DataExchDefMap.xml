@@ -39,7 +39,7 @@
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>
             <FieldLookupRule>0</FieldLookupRule>
-            <Precision>0.00</Precision>
+            <Precision>0</Precision>
             <Direction />
             <ExportFromDateType>0</ExportFromDateType>
           </TransformationRules>
@@ -60,7 +60,7 @@
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>
             <FieldLookupRule>0</FieldLookupRule>
-            <Precision>0.00</Precision>
+            <Precision>0</Precision>
             <Direction />
             <ExportFromDateType>0</ExportFromDateType>
           </TransformationRules>
@@ -82,7 +82,7 @@
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>
             <FieldLookupRule>0</FieldLookupRule>
-            <Precision>0.00</Precision>
+            <Precision>0</Precision>
             <Direction />
             <ExportFromDateType>0</ExportFromDateType>
           </TransformationRules>
@@ -111,13 +111,33 @@
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>
             <FieldLookupRule>0</FieldLookupRule>
-            <Precision>0.00</Precision>
+            <Precision>0</Precision>
             <Direction />
             <ExportFromDateType>0</ExportFromDateType>
           </TransformationRules>
         </DataExchFieldMapping>
         <DataExchFieldMapping ColumnNo="14" FieldID="31300" Optional="true" />
-        <DataExchFieldMapping ColumnNo="15" FieldID="6" Optional="true" />
+        <DataExchFieldMapping ColumnNo="15" FieldID="6" Optional="true" TransformationRule="INT_ITEMDESC">
+          <TransformationRules>
+            <Code>INT_ITEMDESC</Code>
+            <Description>Shorten the item description to the required length.</Description>
+            <TransformationType>4</TransformationType>
+            <FindValue />
+            <ReplaceValue />
+            <StartPosition>1</StartPosition>
+            <Length>80</Length>
+            <DataFormat />
+            <DataFormattingCulture />
+            <NextTransformationRule />
+            <TableID>0</TableID>
+            <SourceFieldID>0</SourceFieldID>
+            <TargetFieldID>0</TargetFieldID>
+            <FieldLookupRule>0</FieldLookupRule>
+            <Precision>0</Precision>
+            <Direction />
+            <ExportFromDateType>0</ExportFromDateType>
+          </TransformationRules>
+        </DataExchFieldMapping>
         <DataExchFieldMapping ColumnNo="16" FieldID="21" Optional="true" TransformationRule="INT_ROUNDTOINTGTONE">
           <TransformationRules>
             <Code>INT_ROUNDTOINTGTONE</Code>
@@ -134,7 +154,7 @@
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>
             <FieldLookupRule>0</FieldLookupRule>
-            <Precision>0.00</Precision>
+            <Precision>0</Precision>
             <Direction />
             <ExportFromDateType>0</ExportFromDateType>
           </TransformationRules>
@@ -155,7 +175,7 @@
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>
             <FieldLookupRule>0</FieldLookupRule>
-            <Precision>0.00</Precision>
+            <Precision>0</Precision>
             <Direction />
             <ExportFromDateType>0</ExportFromDateType>
           </TransformationRules>
@@ -176,7 +196,7 @@
             <SourceFieldID>0</SourceFieldID>
             <TargetFieldID>0</TargetFieldID>
             <FieldLookupRule>0</FieldLookupRule>
-            <Precision>0.00</Precision>
+            <Precision>0</Precision>
             <Direction />
             <ExportFromDateType>0</ExportFromDateType>
           </TransformationRules>

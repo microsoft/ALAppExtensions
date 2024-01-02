@@ -81,6 +81,7 @@ table 6124 "E-Document Log"
 
     var
         EDOCLogFileTxt: Label 'E-Document_Log_%1', Locked = true;
+        EDocLogEntryNoExportMsg: Label 'E-Document log entry does not contain data to export.';
 
     internal procedure ExportDataStorage()
     var
@@ -88,6 +89,9 @@ table 6124 "E-Document Log"
         InStr: InStream;
         FileName: Text;
     begin
+        if "E-Doc. Data Storage Entry No." = 0 then
+            Error(EDocLogEntryNoExportMsg);
+
         EDocDataStorage.Get("E-Doc. Data Storage Entry No.");
         EDocDataStorage.CalcFields("Data Storage");
         if not EDocDataStorage."Data Storage".HasValue() then

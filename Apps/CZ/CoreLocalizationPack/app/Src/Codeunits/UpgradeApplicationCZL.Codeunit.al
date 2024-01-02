@@ -2288,6 +2288,9 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceVATDateCZLServiceUpgradeTag()) then
             exit;
 
+        if not (ServiceHeader.WritePermission() and ServiceInvoiceHeader.WritePermission() and ServiceCrMemoHeader.WritePermission()) then
+            exit;
+
         ReplaceVATDateCZLDataTransfer.SetTables(Database::"Service Header", Database::"Service Header");
         ReplaceVATDateCZLDataTransfer.AddSourceFilter(ServiceHeader.FieldNo("VAT Date CZL"), '<>%1', 0D);
         ReplaceVATDateCZLDataTransfer.AddFieldValue(ServiceHeader.FieldNo("VAT Date CZL"), ServiceHeader.FieldNo("VAT Reporting Date"));

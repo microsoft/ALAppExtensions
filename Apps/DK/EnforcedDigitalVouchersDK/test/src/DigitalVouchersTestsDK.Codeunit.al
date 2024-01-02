@@ -8,7 +8,7 @@ codeunit 148016 "Digital Vouchers Tests DK"
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
-        NotAllowedToChangeDigitalVoucherEntrySetupErr: Label 'You are not allowed to change the Digital Voucher Entry Setup for this entry type.';
+        NotAllowedToChangeWhenEnforcedErr: Label 'You are not allowed to change make this change when the feature is enforced.';
         CannotChangeEnforcedAppErr: Label 'You cannot perform this action because the Digital Voucher functionality is enforced in your application.';
 
     trigger OnRun()
@@ -54,7 +54,7 @@ codeunit 148016 "Digital Vouchers Tests DK"
         DigitalVoucherEntrySetup.Get(DigitalVoucherEntrySetup."Entry Type"::"Sales Document");
         DigitalVoucherEntrySetup.TestField("Check Type", DigitalVoucherEntrySetup."Check Type"::Attachment);
         DigitalVoucherEntrySetup.Get(DigitalVoucherEntrySetup."Entry Type"::"General Journal");
-        DigitalVoucherEntrySetup.TestField("Check Type", DigitalVoucherEntrySetup."Check Type"::Attachment);
+        DigitalVoucherEntrySetup.TestField("Check Type", DigitalVoucherEntrySetup."Check Type"::"No Check");
         DigitalVoucherEntrySetup.Get(DigitalVoucherEntrySetup."Entry Type"::"Purchase Journal");
         DigitalVoucherEntrySetup.TestField("Check Type", DigitalVoucherEntrySetup."Check Type"::Attachment);
         DigitalVoucherEntrySetup.Get(DigitalVoucherEntrySetup."Entry Type"::"Sales Journal");
@@ -102,42 +102,197 @@ codeunit 148016 "Digital Vouchers Tests DK"
     end;
 
     [Test]
-    procedure EditDigitalVoucherEntrySetup()
+    procedure ChangeCheckTypeForGeneralJournalWhenEnforced()
     var
         DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
         DigVouchersEnableEnforce: Codeunit "Dig. Vouchers Enable Enforce";
+        DigitalVoucherEntrySetupPage: TestPage "Digital Voucher Entry Setup";
     begin
-        // [SCENARIO 475787] Stan can either edit or not edit certain digital voucher entry setup
+        // [SCENARIO 493264] Stan can change the check type for general journal when the feature is enforced
 
         Initialize();
         BindSubscription(DigVouchersEnableEnforce);
-
+        DigitalVoucherEntrySetupPage.OpenEdit();
+        DigitalVoucherEntrySetupPage.Filter.SetFilter("Entry Type", Format(DigitalVoucherEntrySetup."Entry Type"::"General Journal"));
+        DigitalVoucherEntrySetupPage."Check Type".SetValue(Format(DigitalVoucherEntrySetup."Check Type"::"No Check"));
+        DigitalVoucherEntrySetupPage.Close();
         DigitalVoucherEntrySetup.Get(DigitalVoucherEntrySetup."Entry Type"::"General Journal");
-        DigitalVoucherEntrySetup.Validate("Check Type", DigitalVoucherEntrySetup."Check Type"::"No Check");
         DigitalVoucherEntrySetup.TestField("Check Type", DigitalVoucherEntrySetup."Check Type"::"No Check");
+        UnbindSubscription(DigVouchersEnableEnforce);
+    end;
 
+    [Test]
+    procedure ChangeCheckTypeForSalesJournalWhenEnforced()
+    var
+        DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
+        DigVouchersEnableEnforce: Codeunit "Dig. Vouchers Enable Enforce";
+        DigitalVoucherEntrySetupPage: TestPage "Digital Voucher Entry Setup";
+    begin
+        // [SCENARIO 493264] Stan can change the check type for sales journal when the feature is enforced
+
+        Initialize();
+        BindSubscription(DigVouchersEnableEnforce);
+        DigitalVoucherEntrySetupPage.OpenEdit();
+        DigitalVoucherEntrySetupPage.Filter.SetFilter("Entry Type", Format(DigitalVoucherEntrySetup."Entry Type"::"Sales Journal"));
+        DigitalVoucherEntrySetupPage."Check Type".SetValue(Format(DigitalVoucherEntrySetup."Check Type"::"No Check"));
+        DigitalVoucherEntrySetupPage.Close();
         DigitalVoucherEntrySetup.Get(DigitalVoucherEntrySetup."Entry Type"::"Sales Journal");
-        DigitalVoucherEntrySetup.Validate("Check Type", DigitalVoucherEntrySetup."Check Type"::"No Check");
         DigitalVoucherEntrySetup.TestField("Check Type", DigitalVoucherEntrySetup."Check Type"::"No Check");
+        UnbindSubscription(DigVouchersEnableEnforce);
+    end;
 
-        DigitalVoucherEntrySetup.Get(DigitalVoucherEntrySetup."Entry Type"::"Purchase Journal");
-        DigitalVoucherEntrySetup.Validate("Check Type", DigitalVoucherEntrySetup."Check Type"::"No Check");
-        asserterror DigitalVoucherEntrySetup.Modify(true);
-        Assert.ExpectedErrorCode('Dialog');
-        Assert.ExpectedError(NotAllowedToChangeDigitalVoucherEntrySetupErr);
+    [Test]
+    procedure CannotChangeCheckTypeForPurchaseJournalWhenEnforced()
+    var
+        DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
+        DigVouchersEnableEnforce: Codeunit "Dig. Vouchers Enable Enforce";
+        DigitalVoucherEntrySetupPage: TestPage "Digital Voucher Entry Setup";
+    begin
+        // [SCENARIO 493264] Stan cannot change the check type for purchase journal when the feature is enforced
 
+        Initialize();
+        BindSubscription(DigVouchersEnableEnforce);
+        DigitalVoucherEntrySetupPage.OpenEdit();
+        DigitalVoucherEntrySetupPage.Filter.SetFilter("Entry Type", Format(DigitalVoucherEntrySetup."Entry Type"::"Purchase Journal"));
+        DigitalVoucherEntrySetupPage."Check Type".SetValue(Format(DigitalVoucherEntrySetup."Check Type"::"No Check"));
+        asserterror DigitalVoucherEntrySetupPage.Close();
+        Assert.ExpectedError(NotAllowedToChangeWhenEnforcedErr);
+        UnbindSubscription(DigVouchersEnableEnforce);
+    end;
+
+    [Test]
+    procedure CannotChangeCheckTypeForPurchaseDocumentWhenEnforced()
+    var
+        DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
+        DigVouchersEnableEnforce: Codeunit "Dig. Vouchers Enable Enforce";
+        DigitalVoucherEntrySetupPage: TestPage "Digital Voucher Entry Setup";
+    begin
+        // [SCENARIO 493264] Stan cannot change the check type for purchase document when the feature is enforced
+
+        Initialize();
+        BindSubscription(DigVouchersEnableEnforce);
+        DigitalVoucherEntrySetupPage.OpenEdit();
+        DigitalVoucherEntrySetupPage.Filter.SetFilter("Entry Type", Format(DigitalVoucherEntrySetup."Entry Type"::"Purchase Document"));
+        DigitalVoucherEntrySetupPage."Check Type".SetValue(Format(DigitalVoucherEntrySetup."Check Type"::"No Check"));
+        asserterror DigitalVoucherEntrySetupPage.Close();
+        Assert.ExpectedError(NotAllowedToChangeWhenEnforcedErr);
+        UnbindSubscription(DigVouchersEnableEnforce);
+    end;
+
+    [Test]
+    procedure CannotChangeCheckTypeForSalesDocumentWhenEnforced()
+    var
+        DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
+        DigVouchersEnableEnforce: Codeunit "Dig. Vouchers Enable Enforce";
+        DigitalVoucherEntrySetupPage: TestPage "Digital Voucher Entry Setup";
+    begin
+        // [SCENARIO 493264] Stan cannot change the check type for sales document when the feature is enforced
+
+        Initialize();
+        BindSubscription(DigVouchersEnableEnforce);
+        DigitalVoucherEntrySetupPage.OpenEdit();
+        DigitalVoucherEntrySetupPage.Filter.SetFilter("Entry Type", Format(DigitalVoucherEntrySetup."Entry Type"::"Sales Document"));
+        DigitalVoucherEntrySetupPage."Check Type".SetValue(Format(DigitalVoucherEntrySetup."Check Type"::"No Check"));
+        asserterror DigitalVoucherEntrySetupPage.Close();
+        Assert.ExpectedError(NotAllowedToChangeWhenEnforcedErr);
+        UnbindSubscription(DigVouchersEnableEnforce);
+    end;
+
+    [Test]
+    procedure CannotChangeGenerateAutomaticallyForPurchaseJournalWhenEnforced()
+    var
+        DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
+        DigVouchersEnableEnforce: Codeunit "Dig. Vouchers Enable Enforce";
+        DigitalVoucherEntrySetupPage: TestPage "Digital Voucher Entry Setup";
+    begin
+        // [SCENARIO 493264] Stan cannot change the generate automatically option for purchase journal when the feature is enforced
+
+        Initialize();
+        BindSubscription(DigVouchersEnableEnforce);
+        DigitalVoucherEntrySetupPage.OpenEdit();
+        DigitalVoucherEntrySetupPage.Filter.SetFilter("Entry Type", Format(DigitalVoucherEntrySetup."Entry Type"::"Purchase Journal"));
+        DigitalVoucherEntrySetupPage."Generate Automatically".SetValue(true);
+        asserterror DigitalVoucherEntrySetupPage.Close();
+        Assert.ExpectedError(NotAllowedToChangeWhenEnforcedErr);
+        UnbindSubscription(DigVouchersEnableEnforce);
+    end;
+
+    [Test]
+    procedure CannotChangeGenerateAutomaticallyForPurchaseDocumentWhenEnforced()
+    var
+        DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
+        DigVouchersEnableEnforce: Codeunit "Dig. Vouchers Enable Enforce";
+        DigitalVoucherEntrySetupPage: TestPage "Digital Voucher Entry Setup";
+    begin
+        // [SCENARIO 493264] Stan cannot change the generate automatically option for purchase document when the feature is enforced
+
+        Initialize();
+        BindSubscription(DigVouchersEnableEnforce);
+        DigitalVoucherEntrySetupPage.OpenEdit();
+        DigitalVoucherEntrySetupPage.Filter.SetFilter("Entry Type", Format(DigitalVoucherEntrySetup."Entry Type"::"Purchase Document"));
+        DigitalVoucherEntrySetupPage."Generate Automatically".SetValue(true);
+        asserterror DigitalVoucherEntrySetupPage.Close();
+        Assert.ExpectedError(NotAllowedToChangeWhenEnforcedErr);
+        UnbindSubscription(DigVouchersEnableEnforce);
+    end;
+
+    [Test]
+    procedure ChangeGenerateAutomaticallyForSalesDocumentWhenEnforced()
+    var
+        DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
+        DigVouchersEnableEnforce: Codeunit "Dig. Vouchers Enable Enforce";
+        DigitalVoucherEntrySetupPage: TestPage "Digital Voucher Entry Setup";
+    begin
+        // [SCENARIO 493264] Stan can change the generate automatically option for sales document when the feature is enforced
+
+        Initialize();
+        BindSubscription(DigVouchersEnableEnforce);
+        DigitalVoucherEntrySetupPage.OpenEdit();
+        DigitalVoucherEntrySetupPage.Filter.SetFilter("Entry Type", Format(DigitalVoucherEntrySetup."Entry Type"::"Sales Document"));
+        DigitalVoucherEntrySetupPage."Generate Automatically".SetValue(true);
+        DigitalVoucherEntrySetupPage.Close();
         DigitalVoucherEntrySetup.Get(DigitalVoucherEntrySetup."Entry Type"::"Sales Document");
-        DigitalVoucherEntrySetup.Validate("Check Type", DigitalVoucherEntrySetup."Check Type"::"No Check");
-        asserterror DigitalVoucherEntrySetup.Modify(true);
-        Assert.ExpectedErrorCode('Dialog');
-        Assert.ExpectedError(NotAllowedToChangeDigitalVoucherEntrySetupErr);
+        DigitalVoucherEntrySetup.TestField("Generate Automatically", true);
+        UnbindSubscription(DigVouchersEnableEnforce);
+    end;
 
-        DigitalVoucherEntrySetup.Get(DigitalVoucherEntrySetup."Entry Type"::"Purchase Document");
-        DigitalVoucherEntrySetup.Validate("Check Type", DigitalVoucherEntrySetup."Check Type"::"No Check");
-        asserterror DigitalVoucherEntrySetup.Modify(true);
-        Assert.ExpectedErrorCode('Dialog');
-        Assert.ExpectedError(NotAllowedToChangeDigitalVoucherEntrySetupErr);
+    [Test]
+    procedure ChangeGenerateAutomaticallyForSalesJournalWhenEnforced()
+    var
+        DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
+        DigVouchersEnableEnforce: Codeunit "Dig. Vouchers Enable Enforce";
+        DigitalVoucherEntrySetupPage: TestPage "Digital Voucher Entry Setup";
+    begin
+        // [SCENARIO 493264] Stan can change the generate automatically option for sales journal when the feature is enforced
 
+        Initialize();
+        BindSubscription(DigVouchersEnableEnforce);
+        DigitalVoucherEntrySetupPage.OpenEdit();
+        DigitalVoucherEntrySetupPage.Filter.SetFilter("Entry Type", Format(DigitalVoucherEntrySetup."Entry Type"::"Sales Journal"));
+        DigitalVoucherEntrySetupPage."Generate Automatically".SetValue(true);
+        DigitalVoucherEntrySetupPage.Close();
+        DigitalVoucherEntrySetup.Get(DigitalVoucherEntrySetup."Entry Type"::"Sales Journal");
+        DigitalVoucherEntrySetup.TestField("Generate Automatically", true);
+        UnbindSubscription(DigVouchersEnableEnforce);
+    end;
+
+    [Test]
+    procedure ChangeGenerateAutomaticallyForGeneralJournalWhenEnforced()
+    var
+        DigitalVoucherEntrySetup: Record "Digital Voucher Entry Setup";
+        DigVouchersEnableEnforce: Codeunit "Dig. Vouchers Enable Enforce";
+        DigitalVoucherEntrySetupPage: TestPage "Digital Voucher Entry Setup";
+    begin
+        // [SCENARIO 493264] Stan can change the generate automatically option for general journal when the feature is enforced
+
+        Initialize();
+        BindSubscription(DigVouchersEnableEnforce);
+        DigitalVoucherEntrySetupPage.OpenEdit();
+        DigitalVoucherEntrySetupPage.Filter.SetFilter("Entry Type", Format(DigitalVoucherEntrySetup."Entry Type"::"General Journal"));
+        DigitalVoucherEntrySetupPage."Generate Automatically".SetValue(true);
+        DigitalVoucherEntrySetupPage.Close();
+        DigitalVoucherEntrySetup.Get(DigitalVoucherEntrySetup."Entry Type"::"General Journal");
+        DigitalVoucherEntrySetup.TestField("Generate Automatically", true);
         UnbindSubscription(DigVouchersEnableEnforce);
     end;
 

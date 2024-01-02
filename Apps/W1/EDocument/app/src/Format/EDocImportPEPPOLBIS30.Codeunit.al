@@ -9,6 +9,7 @@ using Microsoft.Finance.GeneralLedger.Setup;
 
 codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
 {
+
     procedure ParseBasicInfo(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob")
     var
         TempXMLBuffer: Record "XML Buffer" temporary;
@@ -56,25 +57,12 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
     local procedure ParseInvoiceBasicInfo(var EDocument: Record "E-Document"; var TempXMLBuffer: Record "XML Buffer" temporary)
     var
         DueDate, IssueDate : Text;
-        VednorNo: Code[20];
-        VATRegistrationNo: Text[20];
         Currency: Text[10];
     begin
         EDocument."Document Type" := EDocument."Document Type"::"Purchase Invoice";
-
-        // Vendor
-        VATRegistrationNo := CopyStr(GetNodeByPath(TempXMLBuffer, '/Invoice/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID'), 1, MaxStrLen(VATRegistrationNo));
-        VednorNo := EDocumentImportHelper.FindVendor('', '', VATRegistrationNo);
-
-        EDocument."Bill-to/Pay-to No." := VednorNo;
-        EDocument."Bill-to/Pay-to Name" := GetVendorName(VednorNo);
-
         EDocument."Incoming E-Document No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/Invoice/cbc:ID'), 1, MaxStrLen(EDocument."Document No."));
-
-        EDocument."Receiving Company Name" := CopyStr(GetNodeByPath(TempXMLBuffer, '/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyName/cbc:Name'), 1, MaxStrLen(EDocument."Receiving Company Name"));
-        EDocument."Receiving Company Address" := CopyStr(GetNodeByPath(TempXMLBuffer, '/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:StreetName'), 1, MaxStrLen(EDocument."Receiving Company Address"));
-        EDocument."Receiving Company GLN" := CopyStr(GetNodeByPath(TempXMLBuffer, '/Invoice/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID'), 1, MaxStrLen(EDocument."Receiving Company GLN"));
-        EDocument."Receiving Company VAT Reg. No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID'), 1, MaxStrLen(EDocument."Receiving Company VAT Reg. No."));
+        ParseAccountingSupplierParty(EDocument, TempXMLBuffer, 'Invoice');
+        ParseAccountingCustomerParty(EDocument, TempXMLBuffer, 'Invoice');
 
         DueDate := GetNodeByPath(TempXMLBuffer, '/Invoice/cbc:DueDate');
         if DueDate <> '' then
@@ -94,25 +82,12 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
     local procedure ParseCreditMemoBasicInfo(var EDocument: Record "E-Document"; var TempXMLBuffer: Record "XML Buffer" temporary)
     var
         DueDate, IssueDate : Text;
-        VATRegistrationNo: Text[20];
-        VednorNo: Code[20];
         Currency: Text[10];
     begin
         EDocument."Document Type" := EDocument."Document Type"::"Purchase Credit Memo";
-
-        // Vendor
-        VATRegistrationNo := CopyStr(GetNodeByPath(TempXMLBuffer, '/CreditNote/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID'), 1, MaxStrLen(VATRegistrationNo));
-        VednorNo := EDocumentImportHelper.FindVendor('', '', VATRegistrationNo);
-
-        EDocument."Bill-to/Pay-to No." := VednorNo;
-        EDocument."Bill-to/Pay-to Name" := GetVendorName(VednorNo);
-
         EDocument."Incoming E-Document No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/CreditNote/cbc:ID'), 1, MaxStrLen(EDocument."Document No."));
-
-        EDocument."Receiving Company Name" := CopyStr(GetNodeByPath(TempXMLBuffer, '/CreditNote/cac:AccountingCustomerParty/cac:Party/cac:PartyName/cbc:Name'), 1, MaxStrLen(EDocument."Receiving Company Name"));
-        EDocument."Receiving Company Address" := CopyStr(GetNodeByPath(TempXMLBuffer, '/CreditNote/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:StreetName'), 1, MaxStrLen(EDocument."Receiving Company Address"));
-        EDocument."Receiving Company GLN" := CopyStr(GetNodeByPath(TempXMLBuffer, '/CreditNote/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID'), 1, MaxStrLen(EDocument."Receiving Company GLN"));
-        EDocument."Receiving Company VAT Reg. No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/CreditNote/cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID'), 1, MaxStrLen(EDocument."Receiving Company VAT Reg. No."));
+        ParseAccountingSupplierParty(EDocument, TempXMLBuffer, 'CreditNote');
+        ParseAccountingCustomerParty(EDocument, TempXMLBuffer, 'CreditNote');
 
         DueDate := GetNodeByPath(TempXMLBuffer, '/CreditNote/cac:PaymentMeans/cbc:PaymentDueDate');
         if DueDate <> '' then
@@ -127,6 +102,38 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
         Currency := CopyStr(GetNodeByPath(TempXMLBuffer, '/CreditNote/cbc:DocumentCurrencyCode'), 1, MaxStrLen(EDocument."Currency Code"));
         if LCYCode <> Currency then
             EDocument."Currency Code" := Currency;
+    end;
+
+    local procedure ParseAccountingSupplierParty(var EDocument: Record "E-Document"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentType: Text)
+    var
+        Vendor: Record Vendor;
+        VendorName, VendorAddress : Text;
+        VATRegistrationNo: Text[20];
+        VendorNo: Code[20];
+    begin
+        // Vendor
+        VATRegistrationNo := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID'), 1, MaxStrLen(VATRegistrationNo));
+        VendorNo := EDocumentImportHelper.FindVendor('', '', VATRegistrationNo);
+        if VendorNo = '' then begin
+            VendorName := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name'), 1, MaxStrLen(VATRegistrationNo));
+            VendorAddress := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName'), 1, MaxStrLen(VATRegistrationNo));
+            VendorNo := EDocumentImportHelper.FindVendorByNameAndAddress(VendorName, VendorAddress);
+            EDocument."Bill-to/Pay-to Name" := CopyStr(VendorName, 1, MaxStrLen(EDocument."Bill-to/Pay-to Name"));
+        end;
+
+        Vendor := EDocumentImportHelper.GetVendor(EDocument, VendorNo);
+        if Vendor."No." <> '' then begin
+            EDocument."Bill-to/Pay-to No." := Vendor."No.";
+            EDocument."Bill-to/Pay-to Name" := Vendor.Name;
+        end;
+    end;
+
+    local procedure ParseAccountingCustomerParty(var EDocument: Record "E-Document"; var TempXMLBuffer: Record "XML Buffer" temporary; DocumentType: Text)
+    begin
+        EDocument."Receiving Company Name" := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cac:PartyName/cbc:Name'), 1, MaxStrLen(EDocument."Receiving Company Name"));
+        EDocument."Receiving Company Address" := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:StreetName'), 1, MaxStrLen(EDocument."Receiving Company Address"));
+        EDocument."Receiving Company GLN" := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID'), 1, MaxStrLen(EDocument."Receiving Company GLN"));
+        EDocument."Receiving Company VAT Reg. No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/' + DocumentType + '/cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID'), 1, MaxStrLen(EDocument."Receiving Company VAT Reg. No."));
     end;
 
     local procedure CreateInvoice(var EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: record "Purchase Line" temporary; var TempXMLBuffer: Record "XML Buffer" temporary)
@@ -193,8 +200,8 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
         if TempXMLBuffer.FindSet() then
             repeat
                 case TempXMLBuffer.Path of
-                    DocumentText + '/cac:AllowanceCharge':
-                        begin
+                    DocumentText + '/cac:AllowanceCharge/cbc:ChargeIndicator':
+                        if TempXMLBuffer.Value = 'true' then begin
                             SetGLAccountAndInsertLine(EDocument, PurchaseLine, LineNo);
 
                             PurchaseLine.Init();
@@ -428,16 +435,6 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
             'G/L ACCOUNT':
                 PurchaseLine.Type := PurchaseLine.Type::"G/L Account";
         end;
-    end;
-
-    local procedure GetVendorName(VendorNo: Code[20]): Text[100]
-    var
-        Vendor: Record Vendor;
-    begin
-        if VendorNo = '' then
-            exit('');
-        if Vendor.Get(VendorNo) then
-            exit(Vendor.Name);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"E-Document Log", 'OnBeforeExportDataStorage', '', false, false)]

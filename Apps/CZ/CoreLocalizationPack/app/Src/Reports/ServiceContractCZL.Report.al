@@ -145,7 +145,7 @@ report 31196 "Service Contract CZL"
             column(StartingDate_ServiceContractHeaderCaption; FieldCaption("Starting Date"))
             {
             }
-            column(StartingDate_ServiceContractHeader; "Starting Date")
+            column(StartingDate_ServiceContractHeader; Format("Starting Date"))
             {
             }
             column(InvoicePeriod_ServiceContractHeaderCaption; FieldCaption("Invoice Period"))
@@ -157,7 +157,7 @@ report 31196 "Service Contract CZL"
             column(NextInvoiceDate_ServiceContractHeaderCaption; FieldCaption("Next Invoice Date"))
             {
             }
-            column(NextInvoiceDate_ServiceContractHeader; "Next Invoice Date")
+            column(NextInvoiceDate_ServiceContractHeader; Format("Next Invoice Date"))
             {
             }
             column(AnnualAmount_ServiceContractHeaderCaption; FieldCaption("Annual Amount"))

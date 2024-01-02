@@ -11,6 +11,7 @@ page 6128 "E-Document Integration Logs"
     SourceTable = "E-Document Integration Log";
     PageType = List;
     Editable = false;
+    SourceTableView = sorting("Entry No.") order(descending);
 
     layout
     {

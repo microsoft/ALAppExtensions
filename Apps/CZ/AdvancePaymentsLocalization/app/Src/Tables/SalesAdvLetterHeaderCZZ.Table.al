@@ -369,7 +369,11 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
             trigger OnValidate()
             begin
-                Validate("Document Date", "Posting Date");
+                SalesReceivablesSetup.SetLoadFields("Link Doc. Date To Posting Date");
+                SalesReceivablesSetup.GetRecordOnce();
+
+                if ("Incoming Document Entry No." = 0) and SalesReceivablesSetup."Link Doc. Date To Posting Date" then
+                    ValidateDocumentDateWithPostingDate();
 
                 GetSetup();
 #if not CLEAN22
@@ -413,14 +417,11 @@ table 31004 "Sales Adv. Letter Header CZZ"
                 if not ReplaceVATDateMgtCZL.IsEnabled() then begin
                     if SalesReceivablesSetup."Default VAT Date CZL" = SalesReceivablesSetup."Default VAT Date CZL"::"Document Date" then
                         Validate("VAT Date", "Document Date");
-                end else begin
+                end else
 #pragma warning restore AL0432
 #endif
-                    GeneralLedgerSetup.UpdateVATDate("Document Date", Enum::"VAT Reporting Date"::"Document Date", "VAT Date");
-                    Validate("VAT Date");
-#if not CLEAN22
-                end;
-#endif
+                    if GeneralLedgerSetup."VAT Reporting Date" = GeneralLedgerSetup."VAT Reporting Date"::"Document Date" then
+                        Validate("VAT Date", "Document Date");
             end;
         }
         field(36; "VAT Date"; Date)
@@ -1643,6 +1644,18 @@ table 31004 "Sales Adv. Letter Header CZZ"
         BatchProcessingMgt.BatchProcess(SalesAdvLetterHeaderCZZ, Codeunit::"S.Adv.Let.Doc.Man.Reopen CZZ", "Error Handling Options"::"Show Error", NoOfSelected, NoOfSkipped);
     end;
 
+    local procedure ValidateDocumentDateWithPostingDate()
+    var
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeValidateDocumentDateWithPostingDate(Rec, CurrFieldNo, IsHandled, xRec);
+        if IsHandled then
+            exit;
+
+        Validate("Document Date", "Posting Date");
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeValidateBillToPostCode(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var PostCodeRec: Record "Post Code")
     begin
@@ -1778,14 +1791,6 @@ table 31004 "Sales Adv. Letter Header CZZ"
     begin
     end;
 
-#if not CLEAN21
-    [Obsolete('Replaced by CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])', '21.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCreateDimTableIDs(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; CallingFieldNo: Integer; var TableID: array[10] of Integer; var No: array[10] of Code[20])
-    begin
-    end;
-
-#endif
     [IntegrationEvent(true, false)]
     local procedure OnBeforeTestStatusOpen(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
     begin
@@ -1873,6 +1878,11 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeSetSecurityFilterOnRespCenter(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeValidateDocumentDateWithPostingDate(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; CurrFieldNo: Integer; var IsHandled: Boolean; xSalesAdvLetterHeader: Record "Sales Adv. Letter Header CZZ")
     begin
     end;
 }

@@ -228,6 +228,16 @@ codeunit 148099 "SAF-T Test Helper"
     end;
 
     procedure MockVATEntry(var VATEntry: Record "VAT Entry"; PostingDate: Date; Type: Integer; TransactionNo: Integer)
+    begin
+        MockVATEntryCustom(VATEntry, PostingDate, LibraryUtility.GenerateGUID(), Type, TransactionNo);
+    end;
+
+    procedure MockVATEntry(var VATEntry: Record "VAT Entry"; PostingDate: Date; DocumentNo: Code[20]; Type: Integer; TransactionNo: Integer)
+    begin
+        MockVATEntryCustom(VATEntry, PostingDate, DocumentNo, Type, TransactionNo);
+    end;
+
+    local procedure MockVATEntryCustom(var VATEntry: Record "VAT Entry"; PostingDate: Date; DocumentNo: Code[20]; Type: Integer; TransactionNo: Integer)
     var
         VATPostingSetup: Record "VAT Posting Setup";
     begin
@@ -236,7 +246,7 @@ codeunit 148099 "SAF-T Test Helper"
         VATEntry."Posting Date" := PostingDate;
         VATEntry."VAT Reporting Date" := PostingDate;
         VATEntry."Transaction No." := TransactionNo;
-        VATEntry."Document No." := LibraryUtility.GenerateGUID();
+        VATEntry."Document No." := DocumentNo;
         VATEntry.Type := Type;
         LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
         VATEntry."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";

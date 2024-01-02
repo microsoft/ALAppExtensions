@@ -5,6 +5,8 @@ codeunit 139637 "Shpfy Company API Test"
 
     var
         LibraryAssert: Codeunit "Library Assert";
+        LibraryRandom: Codeunit "Library - Random";
+        CompanyInitialize: Codeunit "Shpfy Company Initialize";
 
     [Test]
     procedure UnitTestCreateCompanyGraphQuery()
@@ -12,7 +14,6 @@ codeunit 139637 "Shpfy Company API Test"
         ShopifyCompany: Record "Shpfy Company";
         CompanyLocation: Record "Shpfy Company Location";
         CompanyAPI: Codeunit "Shpfy Company API";
-        CompanyInitialize: Codeunit "Shpfy Company Initialize";
         GraphQL: Text;
     begin
         // Creating Test data.
@@ -35,7 +36,6 @@ codeunit 139637 "Shpfy Company API Test"
     var
         ShopifyCompany: Record "Shpfy Company";
         CompanyAPI: Codeunit "Shpfy Company API";
-        CompanyInitialize: Codeunit "Shpfy Company Initialize";
         GraphQL: Text;
     begin
         // Creating Test data.
@@ -58,7 +58,6 @@ codeunit 139637 "Shpfy Company API Test"
         ShopifyCompany: Record "Shpfy Company";
         CompanyLocation: Record "Shpfy Company Location";
         CompanyAPI: Codeunit "Shpfy Company API";
-        CompanyInitialize: Codeunit "Shpfy Company Initialize";
         GraphQL: Text;
     begin
         // Creating Test data.
@@ -74,5 +73,73 @@ codeunit 139637 "Shpfy Company API Test"
 
         // [THEN] CompanyInitialize.CreateCustomerGraphQLResult() = GraphQL.
         LibraryAssert.AreEqual(CompanyInitialize.CreateGraphQueryUpdateCompanyLocationResult(CompanyLocation.Id), GraphQL, 'CreateGraphQueryUpdateCompanyLocation');
+    end;
+
+    [Test]
+    procedure UnitTestUpdateShopifyCustomerFields()
+    var
+        ShopifyCustomer: Record "Shpfy Customer";
+        CompanyAPI: Codeunit "Shpfy Company API";
+        JResponse: JsonObject;
+        Id: BigInteger;
+        FirstName: Text;
+        LastName: Text;
+        Email: Text;
+        PhoneNo: Text;
+    begin
+        // Creating Test data.
+        Id := LibraryRandom.RandIntInRange(100000, 999999);
+        FirstName := LibraryRandom.RandText(MaxStrLen(ShopifyCustomer."First Name"));
+        LastName := LibraryRandom.RandText(MaxStrLen(ShopifyCustomer."Last Name"));
+        Email := LibraryRandom.RandText(MaxStrLen(ShopifyCustomer."Email"));
+        PhoneNo := Format(LibraryRandom.RandIntInRange(10000000, 99999999));
+        JResponse := CompanyInitialize.CompanyMainContactResponse(Id, FirstName, LastName, Email, PhoneNo);
+
+        // [SCENARIO] Extracting the company main contact from the Shopify response.
+        // [GIVEN] JResponse with Company main contact
+
+        // [WHEN] Invoke CompanyAPI.UpdateShopifyCustomerFields
+        CompanyAPI.UpdateShopifyCustomerFields(ShopifyCustomer, JResponse);
+
+        // [THEN] Shopify customer fields are updated.
+        LibraryAssert.AreEqual(ShopifyCustomer.Id, Id, 'Id');
+        LibraryAssert.AreEqual(ShopifyCustomer."First Name", FirstName, 'First Name');
+        LibraryAssert.AreEqual(ShopifyCustomer."Last Name", LastName, 'Last Name');
+        LibraryAssert.AreEqual(ShopifyCustomer."Email", Email, 'Email');
+        LibraryAssert.AreEqual(ShopifyCustomer."Phone No.", PhoneNo, 'Phone');
+    end;
+
+    [Test]
+    procedure UnitTestUpdateShopifyCompanyFields()
+    var
+        ShopifyCompany: Record "Shpfy Company";
+        CompanyAPI: Codeunit "Shpfy Company API";
+        JResponse: JsonObject;
+        Name: Text;
+        Result: Boolean;
+        CompanyContactId: BigInteger;
+        CustomerId: BigInteger;
+        CompanyLocationId: BigInteger;
+    begin
+        // Creating Test data.
+        ShopifyCompany.Insert();
+        Name := LibraryRandom.RandText(MaxStrLen(ShopifyCompany.Name));
+        CompanyContactId := LibraryRandom.RandIntInRange(100000, 999999);
+        CustomerId := LibraryRandom.RandIntInRange(100000, 999999);
+        CompanyLocationId := LibraryRandom.RandIntInRange(100000, 999999);
+        JResponse := CompanyInitialize.CompanyResponse(Name, CompanyContactId, CustomerId, CompanyLocationId);
+
+        // [SCENARIO] Extracting the company from the Shopify response.
+        // [GIVEN] JResponse with Company
+
+        // [WHEN] Invoke CompanyAPI.UpdateShopifyCompanyFields
+        Result := CompanyAPI.UpdateShopifyCompanyFields(ShopifyCompany, JResponse);
+
+        // [THEN] Shopify company fields are updated.
+        LibraryAssert.IsTrue(Result, 'Result');
+        LibraryAssert.AreEqual(ShopifyCompany.Name, Name, 'Name');
+        LibraryAssert.AreEqual(ShopifyCompany."Main Contact Id", CompanyContactId, 'Company Contact Id');
+        LibraryAssert.AreEqual(ShopifyCompany."Main Contact Customer Id", CustomerId, 'Customer Id');
+        LibraryAssert.AreEqual(ShopifyCompany."Location Id", CompanyLocationId, 'Company Location Id');
     end;
 }

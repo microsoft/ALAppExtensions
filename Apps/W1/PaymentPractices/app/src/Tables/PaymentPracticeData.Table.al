@@ -150,7 +150,10 @@ table 686 "Payment Practice Data"
             PaymentPracticeLine."Aggregation Type"::Period:
                 begin
                     PaymentPeriod.Get(PaymentPracticeLine."Payment Period Code");
-                    Rec.SetRange("Actual Payment Days", PaymentPeriod."Days From", PaymentPeriod."Days To");
+                    if PaymentPeriod."Days To" <> 0 then
+                        Rec.SetRange("Actual Payment Days", PaymentPeriod."Days From", PaymentPeriod."Days To")
+                    else
+                        Rec.SetFilter("Actual Payment Days", '>=%1', PaymentPeriod."Days From");
                     Rec.SetRange("Invoice Is Open", false);
                 end;
         end;

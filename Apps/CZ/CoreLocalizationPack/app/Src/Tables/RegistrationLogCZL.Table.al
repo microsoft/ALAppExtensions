@@ -170,8 +170,9 @@ table 11756 "Registration Log CZL"
 
     local procedure ApplyDetailChanges(var RecordRef: RecordRef) Result: Boolean
     var
-        RegistrationLogDetail: Record "Registration Log Detail CZL";
         DummyCustomer: Record Customer;
+        PostCode: Record "Post Code";
+        RegistrationLogDetail: Record "Registration Log Detail CZL";
         VATRegLogSuppression: Codeunit "VAT Reg. Log Suppression CZL";
         IsHandled: Boolean;
     begin
@@ -191,7 +192,13 @@ table 11756 "Registration Log CZL"
                     RegistrationLogDetail."Field Name"::City:
                         ValidateField(RecordRef, DummyCustomer.FieldName(City), RegistrationLogDetail.Response, false);
                     RegistrationLogDetail."Field Name"::"Post Code":
-                        ValidateField(RecordRef, DummyCustomer.FieldName("Post Code"), RegistrationLogDetail.Response, false);
+                        begin
+                            ValidateField(RecordRef, DummyCustomer.FieldName("Post Code"), RegistrationLogDetail.Response, false);
+                            if FindPostCode(RegistrationLogDetail.Response, PostCode) then begin
+                                ValidateField(RecordRef, DummyCustomer.FieldName("Country/Region Code"), PostCode."Country/Region Code", false);
+                                ValidateField(RecordRef, DummyCustomer.FieldName("County"), PostCode.County, false);
+                            end;
+                        end;
                     RegistrationLogDetail."Field Name"::"VAT Registration No.":
                         begin
                             BindSubscription(VATRegLogSuppression);
@@ -206,6 +213,21 @@ table 11756 "Registration Log CZL"
             ShowDetailUpdatedMessage(RecordRef.Number());
         end;
         OnAfterApplyDetailChanges(RecordRef, Result);
+    end;
+
+    local procedure FindPostCode(PostCode: Text; var PostCodeRec: Record "Post Code"): Boolean
+    begin
+        PostCodeRec.SetRange("Code", PostCode);
+        if PostCodeRec.FindFirst() then
+            exit(true);
+        PostCodeRec.SetRange("Code", FormatPostCode(PostCode));
+        if PostCodeRec.FindFirst() then
+            exit(true);
+    end;
+
+    local procedure FormatPostCode(PostCode: Text): Code[20]
+    begin
+        exit(StrSubstNo('%1 %2', CopyStr(PostCode, 1, 3), CopyStr(PostCode, 4, 2)));
     end;
 
     local procedure ValidateField(var RecordRef: RecordRef; FieldName: Text; Value: Text; Validate: Boolean)
