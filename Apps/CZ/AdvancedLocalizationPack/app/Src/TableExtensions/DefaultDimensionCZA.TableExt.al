@@ -16,10 +16,13 @@ tableextension 31266 "Default Dimension CZA" extends "Default Dimension"
             DataClassification = CustomerContent;
 
             trigger OnValidate()
+            var
+                DimensionAutoCreateMgtCZA: Codeunit "Dimension Auto.Create Mgt. CZA";
             begin
                 TestField("No.", '');
                 if not ("Value Posting" in ["Value Posting"::"Code Mandatory", "Value Posting"::"Same Code"]) then
                     FieldError("Value Posting");
+                DimensionAutoCreateMgtCZA.CreateAndSendSignOutNotification();
             end;
         }
         field(31271; "Dim. Description Field ID CZA"; Integer)

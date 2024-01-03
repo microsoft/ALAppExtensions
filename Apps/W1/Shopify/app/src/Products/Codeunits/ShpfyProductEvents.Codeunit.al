@@ -371,5 +371,4 @@ codeunit 30177 "Shpfy Product Events"
     internal procedure OnDoUpdateItemVariantBeforeModify(var ShopifyShop: Record "Shpfy Shop"; var ShopifyVariant: Record "Shpfy Variant"; var ItemVariant: Record "Item Variant"; var IsModifiedByEvent: Boolean);
     begin
     end;
-
 }

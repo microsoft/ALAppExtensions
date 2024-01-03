@@ -105,7 +105,7 @@ codeunit 6140 "E-Doc. Import"
         HttpResponse: HttpResponseMessage;
         HttpRequest: HttpRequestMessage;
         I, EDocBatchDataStorageEntryNo, EDocCount : Integer;
-        HasErrors: Boolean;
+        HasErrors, IsCreated, IsProcessed : Boolean;
     begin
         EDocIntegration := EDocService."Service Integration";
         EDocIntegration.ReceiveDocument(TempBlob, HttpRequest, HttpResponse);
@@ -113,31 +113,39 @@ codeunit 6140 "E-Doc. Import"
         if not TempBlob.HasValue() then
             exit;
 
-        if EDocService."Use Batch Processing" then
-            EDocCount := EDocIntegration.GetDocumentCountInBatch(TempBlob)
-        else
-            EDocCount := 1;
+        EDocCount := EDocIntegration.GetDocumentCountInBatch(TempBlob);
+
+        if EDocCount = 0 then
+            exit;
 
         HasErrors := false;
         for I := 1 to EDocCount do begin
-            EDocument.Init();
-            EDocument."Entry No" := 0;
-            EDocument.Status := EDocument.Status::"In Progress";
-            EDocument.Direction := EDocument.Direction::Incoming;
-            if EDocCount <> 1 then
-                EDocument."Index In Batch" := I;
-            EDocument.Insert();
+            OnBeforeInsertImportedEdocument(EDocument, EDocService, TempBlob, EDocCount, HttpRequest, HttpResponse, IsCreated, IsProcessed);
 
-            if I = 1 then begin
-                EDocumentLogRecord.Get(EDocumentLog.InsertLog(EDocument, EDocService, TempBlob, Enum::"E-Document Service Status"::Imported));
-                EDocBatchDataStorageEntryNo := EDocumentLogRecord."E-Doc. Data Storage Entry No.";
-            end else begin
-                EDocumentLogRecord.Get(EDocumentLog.InsertLog(EDocument, EDocService, Enum::"E-Document Service Status"::Imported));
-                EDocumentLog.SetDataStorage(EDocumentLogRecord, EDocBatchDataStorageEntryNo);
+            if not IsCreated then begin
+                EDocument.Init();
+                EDocument."Entry No" := 0;
+                EDocument.Status := EDocument.Status::"In Progress";
+                EDocument.Direction := EDocument.Direction::Incoming;
+                if EDocCount <> 1 then
+                    EDocument."Index In Batch" := I;
+                EDocument.Insert();
+                if EDocCount = 1 then begin
+                    EDocumentLogRecord.Get(EDocumentLog.InsertLog(EDocument, EDocService, TempBlob, Enum::"E-Document Service Status"::Imported));
+                    EDocBatchDataStorageEntryNo := EDocumentLogRecord."E-Doc. Data Storage Entry No.";
+                end else begin
+                    EDocumentLogRecord.Get(EDocumentLog.InsertLog(EDocument, EDocService, Enum::"E-Document Service Status"::"Batch Imported"));
+                    EDocumentLog.SetDataStorage(EDocumentLogRecord, EDocBatchDataStorageEntryNo);
+                end;
+
+                EDocumentLog.InsertIntegrationLog(EDocument, EDocService, HttpRequest, HttpResponse);
+
+                OnAfterInsertImportedEdocument(EDocument, EDocService, TempBlob, EDocCount, HttpRequest, HttpResponse);
             end;
-            EDocumentLog.InsertIntegrationLog(EDocument, EDocService, HttpRequest, HttpResponse);
 
-            ProcessImportedDocument(EDocument, EDocService, TempBlob, EDocService."Update Order", EDocService."Create Journal Lines");
+
+            if not IsProcessed then
+                ProcessImportedDocument(EDocument, EDocService, TempBlob, EDocService."Update Order", EDocService."Create Journal Lines");
 
             if EDocErrorHelper.HasErrors(EDocument) then begin
                 EDocument2 := EDocument;
@@ -450,6 +458,16 @@ codeunit 6140 "E-Doc. Import"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCreateJournalLine(var EDocument: Record "E-Document"; var JnlLine: RecordRef)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInsertImportedEdocument(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocCount: Integer; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertImportedEdocument(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocCount: Integer; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage; var IsCreated: Boolean; var IsProcessed: Boolean)
     begin
     end;
 }

@@ -27,14 +27,6 @@ codeunit 31392 "Default Dimension Handler CZA"
             Rec.TestField(Rec."Automatic Create CZA", false);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"DimensionManagement", 'OnBeforeUpdateDefaultDim', '', false, false)]
-    local procedure AutoCreateValueOnBeforeUpdateDefaultDim(TableID: Integer; No: Code[20]; var GlobalDim1Code: Code[20]; var GlobalDim2Code: Code[20]; var IsHandled: Boolean);
-    var
-        DimensionAutoCreateMgt: Codeunit "Dimension Auto.Create Mgt. CZA";
-    begin
-        DimensionAutoCreateMgt.AutoCreateDimension(TableID, No);
-    end;
-
     [EventSubscriber(ObjectType::Table, Database::"Default Dimension", 'OnAfterModifyEvent', '', false, false)]
     local procedure AutomaticCreateOnAfterModifyEvent(var Rec: Record "Default Dimension"; var xRec: Record "Default Dimension")
     begin

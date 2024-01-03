@@ -36,6 +36,7 @@ codeunit 30190 "Shpfy Export Shipments"
 
     local procedure CreateShopifyFulfillment(var SalesShipmentHeader: Record "Sales Shipment Header"; LocationId: BigInteger);
     var
+        Shop: Record "Shpfy Shop";
         ShopifyOrderHeader: Record "Shpfy Order Header";
         OrderFulfillments: Codeunit "Shpfy Order Fulfillments";
         JsonHelper: Codeunit "Shpfy Json Helper";
@@ -45,7 +46,8 @@ codeunit 30190 "Shpfy Export Shipments"
     begin
         if ShopifyOrderHeader.Get(SalesShipmentHeader."Shpfy Order Id") then begin
             ShopifyCommunicationMgt.SetShop(ShopifyOrderHeader."Shop Code");
-            FulfillmentOrderRequest := CreateFulfillmentOrderRequest(SalesShipmentHeader, LocationId);
+            Shop.Get(ShopifyOrderHeader."Shop Code");
+            FulfillmentOrderRequest := CreateFulfillmentOrderRequest(SalesShipmentHeader, Shop, LocationId);
             if FulfillmentOrderRequest <> '' then begin
                 JResponse := ShopifyCommunicationMgt.ExecuteGraphQL(FulfillmentOrderRequest);
                 JFulfillment := JsonHelper.GetJsonToken(JResponse, 'data.fulfillmentCreateV2.fulfillment');
@@ -59,7 +61,7 @@ codeunit 30190 "Shpfy Export Shipments"
         end;
     end;
 
-    internal procedure CreateFulfillmentOrderRequest(SalesShipmentHeader: Record "Sales Shipment Header"; LocationId: BigInteger) Request: Text;
+    internal procedure CreateFulfillmentOrderRequest(SalesShipmentHeader: Record "Sales Shipment Header"; Shop: Record "Shpfy Shop"; LocationId: BigInteger) Request: Text;
     var
         SalesShipmentLine: Record "Sales Shipment Line";
         ShippingAgent: Record "Shipping Agent";
@@ -102,7 +104,10 @@ codeunit 30190 "Shpfy Export Shipments"
             TempFulfillmentOrderLine.Reset();
             if TempFulfillmentOrderLine.FindSet() then begin
                 GraphQuery.Append('{"query": "mutation {fulfillmentCreateV2( fulfillment: {');
-                GraphQuery.Append('notifyCustomer: true, ');
+                if GetNotifyCustomer(Shop, SalesShipmentHeader, LocationId) then
+                    GraphQuery.Append('notifyCustomer: true, ')
+                else
+                    GraphQuery.Append('notifyCustomer: false, ');
                 if SalesShipmentHeader."Package Tracking No." <> '' then begin
                     GraphQuery.Append('trackingInfo: {');
                     if SalesShipmentHeader."Shipping Agent Code" <> '' then begin
@@ -123,7 +128,7 @@ codeunit 30190 "Shpfy Export Shipments"
                     GraphQuery.Append('number: \"');
                     GraphQuery.Append(SalesShipmentHeader."Package Tracking No.");
                     GraphQuery.Append('\",');
-                    ShippingEvents.BeforeRetrieveTrackingUrl(SalesShipmentHeader, TrackingUrl, IsHandled);
+                    ShippingEvents.OnBeforeRetrieveTrackingUrl(SalesShipmentHeader, TrackingUrl, IsHandled);
                     if not IsHandled then
                         if ShippingAgent."Internet Address" <> '' then
                             TrackingUrl := ShippingAgent.GetTrackingInternetAddr(SalesShipmentHeader."Package Tracking No.");
@@ -178,5 +183,17 @@ codeunit 30190 "Shpfy Export Shipments"
             if FulfillmentOrderLine.FindFirst() then
                 exit(true);
         end;
+    end;
+
+    local procedure GetNotifyCustomer(Shop: Record "Shpfy Shop"; SalesShipmmentHeader: Record "Sales Shipment Header"; LocationId: BigInteger): Boolean
+    var
+        IsHandled: Boolean;
+        NotifyCustomer: Boolean;
+    begin
+        ShippingEvents.OnGetNotifyCustomer(SalesShipmmentHeader, LocationId, NotifyCustomer, IsHandled);
+        if IsHandled then
+            exit(NotifyCustomer)
+        else
+            exit(Shop."Send Shipping Confirmation");
     end;
 }

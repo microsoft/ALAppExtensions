@@ -97,9 +97,8 @@ report 11736 "Posted Rcpt. Cash Document CZP"
             column(CurrencyCode_PostedCashDocumentHeader; "Currency Code")
             {
             }
-            column(PostingDate_PostedCashDocumentHeader; "Posting Date")
+            column(PostingDate_PostedCashDocumentHeader; Format("Posting Date"))
             {
-                IncludeCaption = true;
             }
             column(PaymentPurpose_PostedCashDocumentHeader; "Payment Purpose")
             {
@@ -401,6 +400,7 @@ report 11736 "Posted Rcpt. Cash Document CZP"
         FIKLbl = 'FIK:';
         PKPLbl = 'PKP:';
         CopyLbl = 'Copy';
+        PostingDateLbl = 'Posting Date';
     }
 
     var

@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.CashDesk;
 
 using Microsoft.Finance.Currency;
+using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Utilities;
 using System.Automation;
@@ -77,7 +78,8 @@ page 31160 "Cash Document CZP"
                 field("VAT Date"; Rec."VAT Date")
                 {
                     ApplicationArea = Basic, Suite;
-                    Editable = DateEditable;
+                    Editable = VATDateEnabled;
+                    Visible = VATDateEnabled;
                     ToolTip = 'Specifies the VAT date. This date must be shown on the VAT statement.';
                 }
                 field("Paid To"; Rec."Paid To")
@@ -824,6 +826,11 @@ page 31160 "Cash Document CZP"
         }
     }
 
+    trigger OnOpenPage()
+    begin
+        VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
+    end;
+
     trigger OnAfterGetCurrRecord()
     begin
         SetShowMandatoryConditions();
@@ -867,6 +874,7 @@ page 31160 "Cash Document CZP"
     end;
 
     var
+        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         ChangeExchangeRate: Page "Change Exchange Rate";
         NavigateAfterPost: Option "Posted Document","New Document","Do Nothing";
         NavigateAfterRelease: Option "Released Document","New Document","Do Nothing";
@@ -881,6 +889,7 @@ page 31160 "Cash Document CZP"
         OpenPostedCashDocQst: Label 'The cash document has been posted and moved to the Posted Cash Documents window.\\Do you want to open the posted cash document?';
         DocumentIsPosted: Boolean;
         DocumentIsReleased: Boolean;
+        VATDateEnabled: Boolean;
 
     local procedure PostDocument(PostingCodeunitID: Integer; Navigate: Option)
     var

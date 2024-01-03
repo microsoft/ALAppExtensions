@@ -209,13 +209,13 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                 column(DocumentDate_DocumentHeaderCaption; FieldCaption("Document Date"))
                 {
                 }
-                column(DocumentDate_SalesAdvLetterEntry; TempSalesAdvLetterEntry."Posting Date")
+                column(DocumentDate_SalesAdvLetterEntry; Format(TempSalesAdvLetterEntry."Posting Date"))
                 {
                 }
                 column(VATDate_DocumentHeaderCaption; FieldCaption("VAT Date"))
                 {
                 }
-                column(VATDate_SalesAdvLetterEntry; TempSalesAdvLetterEntry."VAT Date")
+                column(VATDate_SalesAdvLetterEntry; Format(TempSalesAdvLetterEntry."VAT Date"))
                 {
                 }
                 column(PaymentTerms; PaymentTerms.Description)

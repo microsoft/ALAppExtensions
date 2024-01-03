@@ -215,19 +215,19 @@ report 31204 "Blanket Purchase Order CZL"
             column(DocumentDate_PurchaseHeaderCaption; FieldCaption("Document Date"))
             {
             }
-            column(DocumentDate_PurchaseHeader; "Document Date")
+            column(DocumentDate_PurchaseHeader; Format("Document Date"))
             {
             }
             column(ExpectedReceiptDate_PurchaseHeaderCaption; FieldCaption("Expected Receipt Date"))
             {
             }
-            column(ExpectedReceiptDate_PurchaseHeader; "Expected Receipt Date")
+            column(ExpectedReceiptDate_PurchaseHeader; Format("Expected Receipt Date"))
             {
             }
             column(OrderDate_PurchaseHeaderCaption; FieldCaption("Order Date"))
             {
             }
-            column(OrderDate_PurchaseHeader; FormatDate("Order Date"))
+            column(OrderDate_PurchaseHeader; Format("Order Date"))
             {
             }
             column(PaymentTerms; PaymentTerms.Description)
@@ -563,11 +563,6 @@ report 31204 "Blanket Purchase Order CZL"
     begin
         FormatAddress.PurchHeaderBuyFrom(VendAddr, PurchaseHeader);
         FormatAddress.PurchHeaderShipTo(ShipToAddr, PurchaseHeader);
-    end;
-
-    local procedure FormatDate(DateValue: Date): Text
-    begin
-        exit(Format(DateValue, 0, '<Day>.<Month>.<Year4>'));
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

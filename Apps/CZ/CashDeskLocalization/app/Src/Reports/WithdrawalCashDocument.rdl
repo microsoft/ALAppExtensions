@@ -1120,7 +1120,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!DocumentDate_CashDocumentHeaderCaption.Value</Value>
+                                                    <Value>=Parameters!DocumentDateLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
                                                     </Style>
@@ -1257,7 +1257,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Parameters!VATDate_CashDocumentHeaderCaption.Value</Value>
+                                                    <Value>=Parameters!VATDateLbl.Value</Value>
                                                     <Style>
                                                       <FontSize>9pt</FontSize>
                                                     </Style>
@@ -1351,7 +1351,7 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
                               </TablixRowHierarchy>
                               <DataSetName>DataSet_Result</DataSetName>
                               <Left>0.00001cm</Left>
-                              <Height>5.70014cm</Height>
+                              <Height>5.70012cm</Height>
                               <Width>17.99996cm</Width>
                               <Style>
                                 <Border>
@@ -3682,23 +3682,23 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
       </DefaultValue>
       <Prompt>CopyLbl</Prompt>
     </ReportParameter>
-    <ReportParameter Name="VATDate_CashDocumentHeaderCaption">
+    <ReportParameter Name="VATDateLbl">
       <DataType>String</DataType>
       <DefaultValue>
         <Values>
-          <Value>VATDate_CashDocumentHeaderCaption</Value>
+          <Value>VATDateLbl</Value>
         </Values>
       </DefaultValue>
-      <Prompt>VATDate_CashDocumentHeaderCaption</Prompt>
+      <Prompt>VATDateLbl</Prompt>
     </ReportParameter>
-    <ReportParameter Name="DocumentDate_CashDocumentHeaderCaption">
+    <ReportParameter Name="DocumentDateLbl">
       <DataType>String</DataType>
       <DefaultValue>
         <Values>
-          <Value>DocumentDate_CashDocumentHeaderCaption</Value>
+          <Value>DocumentDateLbl</Value>
         </Values>
       </DefaultValue>
-      <Prompt>DocumentDate_CashDocumentHeaderCaption</Prompt>
+      <Prompt>DocumentDateLbl</Prompt>
     </ReportParameter>
     <ReportParameter Name="PaymentPurpose_CashDocumentHeaderCaption">
       <DataType>String</DataType>
@@ -3887,12 +3887,12 @@ Cstr(First(Fields!LogoPositiononDocuments_SalesReceivablesSetup.Value, "DataSet_
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>14</RowIndex>
-          <ParameterName>VATDate_CashDocumentHeaderCaption</ParameterName>
+          <ParameterName>VATDateLbl</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>15</RowIndex>
-          <ParameterName>DocumentDate_CashDocumentHeaderCaption</ParameterName>
+          <ParameterName>DocumentDateLbl</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>

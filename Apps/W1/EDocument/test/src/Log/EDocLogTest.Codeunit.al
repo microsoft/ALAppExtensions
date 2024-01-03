@@ -259,7 +259,7 @@ codeunit 139616 "E-Doc Log Test"
     end;
 
     [Test]
-    procedure ExportEDocBatchMappingSuccess()
+    procedure ExportEDocBatchThresholdSuccess()
     var
         SalesInvHeader: Record "Sales Invoice Header";
         EDocMapping: Record "E-Doc. Mapping";
@@ -320,7 +320,7 @@ codeunit 139616 "E-Doc Log Test"
         Assert.AreEqual(8, EDocLog.Count(), IncorrectValueErr);
 
         EDocDataStorage.FindSet();
-        Assert.AreEqual(2, EDocDataStorage.Count(), IncorrectValueErr);
+        Assert.AreEqual(1, EDocDataStorage.Count(), IncorrectValueErr);
         Assert.AreEqual(4, EDocDataStorage."Data Storage Size", IncorrectValueErr);
 
         // [THEN] Each log contains correct information
@@ -460,7 +460,136 @@ codeunit 139616 "E-Doc Log Test"
     end;
 
     [Test]
-    procedure ExporEDocBatchtRecurrentFailure()
+    procedure ExportEDocBatchtRecurrentSuccess()
+    var
+        EDocMapping: Record "E-Doc. Mapping";
+        TransformationRule: Record "Transformation Rule";
+        EDocumentA, EDocumentB : Record "E-Document";
+        EDocumentService, EDocumentService2 : Record "E-Document Service";
+        EDocServiceStatus: Record "E-Document Service Status";
+        EDocDataStorage: Record "E-Doc. Data Storage";
+        EDocLog: Record "E-Document Log";
+        EDocMappingLog: Record "E-Doc. Mapping Log";
+        EDocLogTest: Codeunit "E-Doc Log Test";
+        EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
+        ServiceCode: Code[20];
+    begin
+        // [FEATURE] [E-Document] [Log]
+        // [SCENARIO] EDocument Log on EDocument when send in recurrent batch.
+        // There are no errors during export for documents
+        // ---------------------------------------------------------------------------
+        // [Expected Outcomes]
+        // [1] Initialize the test environment.
+        // [2] Create E-Documents and a service with recurrent batch settings.
+        // [3] Post two sales documents
+        // [4] Validate the state of Document A, including logs and service status, after a successful export.
+        // [5] Validate logs, data storage, and fields for Document A's successful export.
+        // [6] Validate the state of Document A, including logs and service status, after a successful export.
+        // [7] Validate logs, data storage, and fields for Document B's successful export.
+        // [8] Ensure mapping logs are created.
+
+        // [GIVEN] A flow to send to service with recurrent batch 
+        Initialize();
+
+        BindSubscription(EDocLogTest); // Bind subscription to get events to insert into blobs
+
+        TransformationRule.Get(TransformationRule.GetLowercaseCode());
+        ServiceCode := LibraryEDoc.CreateServiceWithMapping(EDocMapping, TransformationRule, true);
+        LibraryEDoc.CreateSimpleFlow(ServiceCode);
+        LibraryJobQueue.SetDoNotHandleCodeunitJobQueueEnqueueEvent(true);
+
+        EDocumentService.Get(ServiceCode);
+        EDocumentService."Batch Mode" := EDocumentService."Batch Mode"::Recurrent;
+        EDocumentService."Batch Minutes between runs" := 1;
+        EDocumentService."Batch Start Time" := Time();
+        EDocumentService.Modify();
+
+        // [WHEN] Post two documents
+        LibraryEDoc.PostSalesDocument();
+        EDocumentA.FindLast();
+        LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocumentA.RecordId());
+
+        LibraryEDoc.PostSalesDocument();
+        EDocumentB.FindLast();
+        LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocumentB.RecordId());
+
+        // [THEN] Two documents are pending batch for the service
+        EDocServiceStatus.SetRange("E-Document Service Code", ServiceCode);
+        EDocServiceStatus.SetRange(Status, EDocServiceStatus.Status::"Pending Batch");
+        Assert.RecordCount(EDocServiceStatus, 2);
+
+        // [Given] Run recurrent batch job
+        EDocumentBackgroundJobs.HandleRecurrentBatchJob(EDocumentService);
+        LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocumentService.RecordId());
+
+        // Document A is successfully processed
+        EDocumentA.Get(EDocumentA."Entry No");
+        Assert.AreEqual(Enum::"E-Document Status"::Processed, EDocumentA.Status, IncorrectValueErr);
+
+        // [THEN] EDocServiceStatus is set to Sent for Document A
+        EDocServiceStatus.SetRange("E-Document Entry No", EDocumentA."Entry No");
+        EDocServiceStatus.SetRange(Status);
+        EDocServiceStatus.FindFirst();
+        Assert.AreEqual(Enum::"E-Document Service Status"::Sent, EDocServiceStatus.Status, IncorrectValueErr);
+
+        // [THEN] There are four logs for Document A that was successfully sent
+        EDocLog.SetRange("E-Doc. Entry No", EDocumentA."Entry No");
+        Assert.RecordCount(EDocLog, 4);
+
+        AssertEDocLogState(EDocumentA, EDocLog, EDocumentService2, Enum::"E-Document Service Status"::Created);
+        AssertEDocLogState(EDocumentA, EDocLog, EDocumentService, Enum::"E-Document Service Status"::"Pending Batch");
+        AssertEDocLogState(EDocumentA, EDocLog, EDocumentService, Enum::"E-Document Service Status"::"Exported");
+
+        // [THEN] Mapping log exists for Exported log
+        EDocMappingLog.SetRange("E-Doc Log Entry No.", EDocLog."Entry No.");
+        EDocMappingLog.FindSet();
+
+        // [THEN] Data storage is created for the exported document, and for temp blob at send
+        // [THEN] Exported Blob has size 4
+        EDocDataStorage.FindSet();
+        Assert.AreEqual(1, EDocDataStorage.Count(), IncorrectValueErr);
+        EDocDataStorage.Get(EDocLog."E-Doc. Data Storage Entry No.");
+        Assert.AreEqual(4, EDocDataStorage."Data Storage Size", IncorrectValueErr);
+
+        // [THEN] Fields on document log is correctly for Sent log
+        AssertEDocLogState(EDocumentA, EDocLog, EDocumentService, Enum::"E-Document Service Status"::"Sent");
+        EDocLog.SetRange(Status);
+
+        // Document B is processed
+        EDocumentB.Get(EDocumentB."Entry No");
+        Assert.AreEqual(Enum::"E-Document Status"::Processed, EDocumentB.Status, IncorrectValueErr);
+
+        // [THEN] EDocServiceStatus is set to sent for Document B
+        EDocServiceStatus.SetRange("E-Document Entry No", EDocumentB."Entry No");
+        EDocServiceStatus.FindFirst();
+        Assert.AreEqual(Enum::"E-Document Service Status"::"Sent", EDocServiceStatus.Status, IncorrectValueErr);
+
+        // [THEN] There are 3 logs for document B
+        EDocLog.SetRange("E-Doc. Entry No", EDocumentB."Entry No");
+        Assert.RecordCount(EDocLog, 4);
+
+        AssertEDocLogState(EDocumentB, EDocLog, EDocumentService2, Enum::"E-Document Service Status"::Created);
+        AssertEDocLogState(EDocumentB, EDocLog, EDocumentService, Enum::"E-Document Service Status"::"Pending Batch");
+        AssertEDocLogState(EDocumentB, EDocLog, EDocumentService, Enum::"E-Document Service Status"::"Exported");
+
+        // [THEN] Mapping log exists for Exported log
+        EDocMappingLog.SetRange("E-Doc Log Entry No.", EDocLog."Entry No.");
+        EDocMappingLog.FindSet();
+
+        // [THEN] Data storage is created for document B, and for temp blob at send
+        // [THEN] Exported Blob has size 4
+        EDocDataStorage.FindSet();
+        Assert.AreEqual(1, EDocDataStorage.Count(), IncorrectValueErr);
+        EDocDataStorage.Get(EDocLog."E-Doc. Data Storage Entry No.");
+        Assert.AreEqual(4, EDocDataStorage."Data Storage Size", IncorrectValueErr);
+
+        // [THEN] Fields on document B log is correctly for Sent log
+        AssertEDocLogState(EDocumentB, EDocLog, EDocumentService, Enum::"E-Document Service Status"::"Sent");
+        EDocLog.SetRange(Status);
+    end;
+
+    [Test]
+    procedure ExportEDocBatchtRecurrentFailure()
     var
         EDocMapping: Record "E-Doc. Mapping";
         TransformationRule: Record "Transformation Rule";
@@ -548,16 +677,12 @@ codeunit 139616 "E-Doc Log Test"
         // [THEN] Data storage is created for the exported document, and for temp blob at send
         // [THEN] Exported Blob has size 4
         EDocDataStorage.FindSet();
-        Assert.AreEqual(2, EDocDataStorage.Count(), IncorrectValueErr);
+        Assert.AreEqual(1, EDocDataStorage.Count(), IncorrectValueErr);
         EDocDataStorage.Get(EDocLog."E-Doc. Data Storage Entry No.");
         Assert.AreEqual(4, EDocDataStorage."Data Storage Size", IncorrectValueErr);
 
         // [THEN] Fields on document log is correctly for Sent log
         AssertEDocLogState(EDocumentA, EDocLog, EDocumentService, Enum::"E-Document Service Status"::"Sent");
-
-        // [THEN] Exported Blob has size 4
-        EDocDataStorage.Get(EDocLog."E-Doc. Data Storage Entry No.");
-        Assert.AreEqual(4, EDocDataStorage."Data Storage Size", IncorrectValueErr);
 
         // Document B has gotten an error
         EDocumentB.Get(EDocumentB."Entry No");
@@ -634,6 +759,7 @@ codeunit 139616 "E-Doc Log Test"
 
         HttpRequest.Content.WriteFrom('Test request');
         HttpResponse.Content.WriteFrom('Test response');
+        HttpResponse.Headers.Add('Accept', '*');
 
         EDocument.Insert();
         EDocumentService.Code := 'Test Service 1';

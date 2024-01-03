@@ -144,13 +144,13 @@ report 31182 "Reminder CZL"
             column(PostingDate_IssuedReminderHeaderCaption; FieldCaption("Posting Date"))
             {
             }
-            column(PostingDate_IssuedReminderHeader; "Posting Date")
+            column(PostingDate_IssuedReminderHeader; Format("Posting Date"))
             {
             }
             column(DocumentDate_IssuedReminderHeaderCaption; FieldCaption("Document Date"))
             {
             }
-            column(DocumentDate_IssuedReminderHeader; "Document Date")
+            column(DocumentDate_IssuedReminderHeader; Format("Document Date"))
             {
             }
             column(CurrencyCode_IssuedReminderHeader; "Currency Code")
@@ -197,7 +197,7 @@ report 31182 "Reminder CZL"
                     column(DocumentDate_IssuedReminderLineCaption; FieldCaption("Document Date"))
                     {
                     }
-                    column(DocumentDate_IssuedReminderLine; "Document Date")
+                    column(DocumentDate_IssuedReminderLine; Format("Document Date"))
                     {
                     }
                     column(DocumentType_IssuedReminderLineCaption; FieldCaption("Document Type"))
@@ -215,7 +215,7 @@ report 31182 "Reminder CZL"
                     column(DueDate_IssuedReminderLineCaption; FieldCaption("Due Date"))
                     {
                     }
-                    column(DueDate_IssuedReminderLine; FormatDate("Due Date"))
+                    column(DueDate_IssuedReminderLine; Format("Due Date"))
                     {
                     }
                     column(OriginalAmount_IssuedReminderLineCaption; FieldCaption("Original Amount"))
@@ -294,7 +294,7 @@ report 31182 "Reminder CZL"
                     DataItemLink = "Reminder No." = field("No.");
                     DataItemLinkReference = "Issued Reminder Header";
                     DataItemTableView = sorting("Reminder No.", "Line No.");
-                    column(DocumentDate_NotDueLine; "Document Date")
+                    column(DocumentDate_NotDueLine; Format("Document Date"))
                     {
                     }
                     column(DocumentType_NotDueLine; "Document Type")
@@ -303,7 +303,7 @@ report 31182 "Reminder CZL"
                     column(DocumentNo_NotDueLine; "Document No.")
                     {
                     }
-                    column(DueDate_NotDueLine; FormatDate("Due Date"))
+                    column(DueDate_NotDueLine; Format("Due Date"))
                     {
                     }
                     column(OriginalAmount_NotDueLine; "Original Amount")
@@ -515,10 +515,5 @@ report 31182 "Reminder CZL"
         MailManagement: Codeunit "Mail Management";
     begin
         exit(CurrReport.Preview or MailManagement.IsHandlingGetEmailBody());
-    end;
-
-    local procedure FormatDate(DateValue: Date): Text
-    begin
-        exit(Format(DateValue, 0, '<Day>.<Month>.<Year4>'));
     end;
 }

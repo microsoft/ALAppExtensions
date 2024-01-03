@@ -23,5 +23,6 @@ permissionset 6103 "E-Doc. Core - Basic"
         tabledata "E-Document Service" = im,
         tabledata "E-Document Service Status" = im,
         tabledata "E-Document Integration Log" = im,
-        tabledata "E-Doc. Service Data Exch. Def." = im;
+        tabledata "E-Doc. Service Data Exch. Def." = im,
+        tabledata "E-Doc. Service Supported Type" = im;
 }

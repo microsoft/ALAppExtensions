@@ -14,13 +14,7 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
     InherentPermissions = X;
     InherentEntitlements = X;
 
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
     procedure GetMostAppropriateGLAccountNos(var BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line"; var TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary): Dictionary of [Integer, Code[20]];
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
     var
         GLAccount: Record "G/L Account";
         TexttoAccountMapping: Record "Text-to-Account Mapping";
@@ -233,13 +227,7 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
         exit(GLAccountsTxt);
     end;
 
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
     procedure BuildBankRecStatementLines(var BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line"; var TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary): Text
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
     var
         BankRecAIMatchingImpl: Codeunit "Bank Rec. AI Matching Impl.";
         StatementLines: Text;
@@ -264,13 +252,7 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
         exit(StatementLines);
     end;
 
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
     procedure GenerateTransferToGLAccountProposals(var TempBankAccRecAIProposal: Record "Bank Acc. Rec. AI Proposal" temporary; var BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line"; var TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary)
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
     var
         GLAccount: Record "G/L Account";
         MostSuitableGLAccountCodes: Dictionary of [Integer, Code[20]];
@@ -314,13 +296,7 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
         until BankAccReconciliationLine.Next() = 0;
     end;
 
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
     procedure PostNewPaymentsToProposedGLAccounts(var TempBankAccRecAIProposal: Record "Bank Acc. Rec. AI Proposal" temporary; var TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary): Integer
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
     var
         SourceCodeSetup: Record "Source Code Setup";
         GenJnlLine: Record "Gen. Journal Line";

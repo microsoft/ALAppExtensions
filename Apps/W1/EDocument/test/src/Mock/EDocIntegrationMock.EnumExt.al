@@ -4,8 +4,4 @@ enumextension 139616 "E-Doc Integration Mock" extends "E-Document Integration"
     {
         Implementation = "E-Document Integration" = "E-Doc. Integration Mock";
     }
-    value(6160; "Test Import Impl. Integration")
-    {
-        Implementation = "E-Document Integration" = "Test Import E-Doc. Integration";
-    }
 }

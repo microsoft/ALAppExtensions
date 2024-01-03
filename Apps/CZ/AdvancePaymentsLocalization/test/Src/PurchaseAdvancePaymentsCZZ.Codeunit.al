@@ -675,6 +675,9 @@ codeunit 148108 "Purchase Advance Payments CZZ"
         // [SCENARIO] Link purchase advance letter with reverse charge to invoice
         Initialize();
 
+        // [GIVEN] Posting of VAT documents for reverse charge has been enabled
+        SetPostVATDocForReverseCharge(true);
+
         // [GIVEN] Purchase advance letter has been created
         // [GIVEN] Purchase advance letter line with reverse charge has been created
         CreatePurchAdvLetterWithReverseCharge(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ);
@@ -724,6 +727,8 @@ codeunit 148108 "Purchase Advance Payments CZZ"
         // [THEN] Purchase advance letter will be closed
         PurchAdvLetterHeaderCZZ.Get(PurchAdvLetterHeaderCZZ."No.");
         PurchAdvLetterHeaderCZZ.TestField(Status, PurchAdvLetterHeaderCZZ.Status::Closed);
+
+        SetPostVATDocForReverseCharge(false);
     end;
 
     [Test]
@@ -1805,6 +1810,839 @@ codeunit 148108 "Purchase Advance Payments CZZ"
         PurchAdvLetterHeaderCZZ.TestField(Status, PurchAdvLetterHeaderCZZ.Status::Closed);
     end;
 
+    [Test]
+    [HandlerFunctions('ModalVATDocumentHandler')]
+    procedure VATPaymentToPurchAdvLetterWithTwoVATRates()
+    var
+        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        PurchAdvLetterLineCZZ1: Record "Purch. Adv. Letter Line CZZ";
+        PurchAdvLetterLineCZZ2: Record "Purch. Adv. Letter Line CZZ";
+        PurchAdvLetterEntryCZZ1: Record "Purch. Adv. Letter Entry CZZ";
+        PurchAdvLetterEntryCZZ2: Record "Purch. Adv. Letter Entry CZZ";
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        // [SCENARIO] VAT payment to purchase advance letter with two VAT rates
+        Initialize();
+
+        // [GIVEN] Purchase advance letter has been created
+        // [GIVEN] Purchase advance letter line with normal VAT has been created
+        CreatePurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ1);
+
+        // [GIVEN] Second purchase advance letter line with normal VAT has been created
+        FindNextVATPostingSetup(VATPostingSetup);
+        LibraryPurchAdvancesCZZ.CreatePurchAdvLetterLine(
+            PurchAdvLetterLineCZZ2, PurchAdvLetterHeaderCZZ, VATPostingSetup."VAT Prod. Posting Group", LibraryRandom.RandDec(1000, 2));
+
+        // [GIVEN] Purchase advance letter has been released
+        ReleasePurchAdvLetter(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase advance letter has been paid in full by the general journal
+        PurchAdvLetterHeaderCZZ.CalcFields("Amount Including VAT");
+        CreateAndPostPaymentPurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterHeaderCZZ."Amount Including VAT");
+
+        // [WHEN] Post purchase advance payment VAT
+        PostPurchAdvancePaymentVAT(PurchAdvLetterHeaderCZZ);
+
+        // [THEN] Two purchase advance letter entries of "VAT Payment" type will exist
+        PurchAdvLetterEntryCZZ1.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
+        PurchAdvLetterEntryCZZ1.SetRange("Entry Type", PurchAdvLetterEntryCZZ1."Entry Type"::"VAT Payment");
+        Assert.RecordCount(PurchAdvLetterEntryCZZ1, 2);
+
+        // [THEN] Sum of amounts in purchase advance letter entries will be the same as in entry with "Payment" type
+        PurchAdvLetterEntryCZZ2.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
+        PurchAdvLetterEntryCZZ2.SetRange("Entry Type", PurchAdvLetterEntryCZZ2."Entry Type"::Payment);
+        PurchAdvLetterEntryCZZ2.FindLast();
+        PurchAdvLetterEntryCZZ1.CalcSums(Amount);
+        Assert.AreEqual(PurchAdvLetterEntryCZZ1.Amount, PurchAdvLetterEntryCZZ2.Amount, 'The sum of amounts in purchase advance letter entries must be the same as in entry with "Payment" type.');
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalVATDocumentHandler')]
+    procedure UnlinkAdvancePaymentFromPurchAdvLetterWithTwoLines()
+    var
+        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        PurchAdvLetterLineCZZ1: Record "Purch. Adv. Letter Line CZZ";
+        PurchAdvLetterLineCZZ2: Record "Purch. Adv. Letter Line CZZ";
+        PurchAdvLetterEntryCZZ1: Record "Purch. Adv. Letter Entry CZZ";
+        PurchAdvLetterEntryCZZ2: Record "Purch. Adv. Letter Entry CZZ";
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        // [SCENARIO] Unlink advance payment from purchase advance letter with two lines
+        Initialize();
+
+        // [GIVEN] Purchase advance letter has been created
+        // [GIVEN] Purchase advance letter line with normal VAT has been created
+        CreatePurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ1);
+
+        // [GIVEN] Second purchase advance letter line with normal VAT has been created
+        FindNextVATPostingSetup(VATPostingSetup);
+        LibraryPurchAdvancesCZZ.CreatePurchAdvLetterLine(
+            PurchAdvLetterLineCZZ2, PurchAdvLetterHeaderCZZ, VATPostingSetup."VAT Prod. Posting Group", LibraryRandom.RandDec(1000, 2));
+
+        // [GIVEN] Purchase advance letter has been released
+        ReleasePurchAdvLetter(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase advance letter has been paid in full by the general journal
+        PurchAdvLetterHeaderCZZ.CalcFields("Amount Including VAT");
+        CreateAndPostPaymentPurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterHeaderCZZ."Amount Including VAT");
+
+        // [GIVEN] Purchase advance payment VAT has been posted
+        PostPurchAdvancePaymentVAT(PurchAdvLetterHeaderCZZ);
+
+        // [WHEN] Unlink advance letter from payment
+        FindLastPaymentAdvanceLetterEntry(PurchAdvLetterHeaderCZZ."No.", PurchAdvLetterEntryCZZ1);
+        LibraryPurchAdvancesCZZ.UnlinkPurchAdvancePayment(PurchAdvLetterEntryCZZ1);
+
+        // [THEN] Purchase advance letter entries of "Payment" and "VAT Payment" type with opposite sign will exist
+        PurchAdvLetterEntryCZZ2.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
+        PurchAdvLetterEntryCZZ2.Find('+');
+        Assert.AreEqual(PurchAdvLetterEntryCZZ2."Entry Type"::Payment, PurchAdvLetterEntryCZZ2."Entry Type", 'The purchase advance letter entry must be of type "Payment".');
+        Assert.AreEqual(-PurchAdvLetterEntryCZZ1.Amount, PurchAdvLetterEntryCZZ2.Amount, 'The amount must have the opposite sign.');
+        Assert.AreEqual(PurchAdvLetterEntryCZZ1."Entry No.", PurchAdvLetterEntryCZZ2."Related Entry", 'The entry must be related to entry of "Payment" type');
+
+        PurchAdvLetterEntryCZZ2.Next(-1);
+        Assert.AreEqual(PurchAdvLetterEntryCZZ2."Entry Type"::"VAT Payment", PurchAdvLetterEntryCZZ2."Entry Type", 'The purchase advance letter entry must be of type "VAT Payment".');
+        Assert.AreEqual(-PurchAdvLetterLineCZZ2."Amount Including VAT", PurchAdvLetterEntryCZZ2.Amount, 'The amount must have the opposite sign.');
+
+        PurchAdvLetterEntryCZZ2.Next(-1);
+        Assert.AreEqual(PurchAdvLetterEntryCZZ2."Entry Type"::"VAT Payment", PurchAdvLetterEntryCZZ2."Entry Type", 'The purchase advance letter entry must be of type "VAT Payment".');
+        Assert.AreEqual(-PurchAdvLetterLineCZZ1."Amount Including VAT", PurchAdvLetterEntryCZZ2.Amount, 'The amount must have the opposite sign.');
+
+        PurchAdvLetterEntryCZZ2.SetFilter("Entry Type", '%1|%2',
+            PurchAdvLetterEntryCZZ2."Entry Type"::Payment, PurchAdvLetterEntryCZZ2."Entry Type"::"VAT Payment");
+        PurchAdvLetterEntryCZZ2.CalcSums(Amount);
+        Assert.AreEqual(0, PurchAdvLetterEntryCZZ2.Amount, 'The sum of amounts in purchase advance letter entries must be zero.');
+
+        // [THEN] Purchase advance letter status will be "To Pay"
+        PurchAdvLetterHeaderCZZ.Get(PurchAdvLetterHeaderCZZ."No.");
+        PurchAdvLetterHeaderCZZ.TestField(Status, PurchAdvLetterHeaderCZZ.Status::"To Pay");
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalVATDocumentHandler')]
+    procedure CreatePurchAdvLetterWithTwoLinesAndLinkToInvoice()
+    var
+        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        PurchAdvLetterLineCZZ1: Record "Purch. Adv. Letter Line CZZ";
+        PurchAdvLetterLineCZZ2: Record "Purch. Adv. Letter Line CZZ";
+        PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        VATEntry: Record "VAT Entry";
+        VATPostingSetup: Record "VAT Posting Setup";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] Create purchase advance letter with two lines and link to invoice with line which is the same as first line in advance letter
+        Initialize();
+
+        // [GIVEN] Purchase advance letter has been created
+        // [GIVEN] Purchase advance letter line with normal VAT has been created
+        CreatePurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ1);
+
+        // [GIVEN] Second purchase advance letter line with normal VAT has been created
+        FindNextVATPostingSetup(VATPostingSetup);
+        LibraryPurchAdvancesCZZ.CreatePurchAdvLetterLine(
+            PurchAdvLetterLineCZZ2, PurchAdvLetterHeaderCZZ, VATPostingSetup."VAT Prod. Posting Group", LibraryRandom.RandDec(1000, 2));
+
+        // [GIVEN] Purchase advance letter has been released
+        ReleasePurchAdvLetter(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase advance letter has been paid in full by the general journal
+        PurchAdvLetterHeaderCZZ.CalcFields("Amount Including VAT");
+        CreateAndPostPaymentPurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterHeaderCZZ."Amount Including VAT");
+
+        // [GIVEN] Purchase advance payment VAT has been posted
+        PostPurchAdvancePaymentVAT(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase invoice has been created
+        // [GIVEN] Purchase invoice line has been created
+        LibraryPurchAdvancesCZZ.CreatePurchInvoice(
+            PurchaseHeader, PurchaseLine, PurchAdvLetterHeaderCZZ."Pay-to Vendor No.", PurchAdvLetterHeaderCZZ."Posting Date",
+            PurchAdvLetterLineCZZ1."VAT Bus. Posting Group", PurchAdvLetterLineCZZ1."VAT Prod. Posting Group", '', 0,
+            true, PurchAdvLetterLineCZZ1."Amount Including VAT");
+
+        // [GIVEN] Whole advance letter has been linked to purchase invoice
+        LibraryPurchAdvancesCZZ.LinkPurchAdvanceLetterToDocument(
+            PurchAdvLetterHeaderCZZ, Enum::"Adv. Letter Usage Doc.Type CZZ"::"Purchase Invoice", PurchaseHeader."No.",
+            PurchAdvLetterLineCZZ1."Amount Including VAT", PurchAdvLetterLineCZZ1."Amount Including VAT (LCY)");
+
+        // [WHEN] Post purchase invoice
+        PostedDocumentNo := PostPurchaseDocument(PurchaseHeader);
+
+        // [THEN] VAT entries of purchase invoice will exist
+        VATEntry.Reset();
+        VATEntry.SetRange("Document No.", PostedDocumentNo);
+        VATEntry.SetRange("Posting Date", PurchaseHeader."Posting Date");
+        VATEntry.SetRange("Advance Letter No. CZZ", '');
+        Assert.RecordIsNotEmpty(VATEntry);
+
+        // [THEN] VAT entries of advance letter will exist
+        VATEntry.SetRange("Advance Letter No. CZZ", PurchAdvLetterHeaderCZZ."No.");
+        Assert.RecordIsNotEmpty(VATEntry);
+
+        // [THEN] Sum of base and VAT amounts in VAT entries will be zero
+        VATEntry.SetRange("Advance Letter No. CZZ");
+        VATEntry.CalcSums(Base, Amount);
+        Assert.AreEqual(0, VATEntry.Base, 'The sum of base amount in VAT Entries must be zero.');
+        Assert.AreEqual(0, VATEntry.Amount, 'The sum of VAT amount in VAT Entries must be zero.');
+
+        // [THEN] Only one purchase advance letter entry of "VAT Usage" type will exist
+        PurchAdvLetterEntryCZZ.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
+        PurchAdvLetterEntryCZZ.SetRange("Entry Type", PurchAdvLetterEntryCZZ."Entry Type"::"VAT Usage");
+        Assert.RecordCount(PurchAdvLetterEntryCZZ, 1);
+
+        // [THEN] Sum of amounts in purchase advance letter entries of "VAT payment" and "VAT usage" type will be zero
+        PurchAdvLetterEntryCZZ.FindFirst();
+        PurchAdvLetterEntryCZZ.SetRange("VAT Bus. Posting Group", PurchAdvLetterEntryCZZ."VAT Bus. Posting Group");
+        PurchAdvLetterEntryCZZ.SetRange("VAT Prod. Posting Group", PurchAdvLetterEntryCZZ."VAT Prod. Posting Group");
+        PurchAdvLetterEntryCZZ.SetFilter("Entry Type", '%1|%2',
+            PurchAdvLetterEntryCZZ."Entry Type"::"VAT Usage", PurchAdvLetterEntryCZZ."Entry Type"::"VAT Payment");
+        PurchAdvLetterEntryCZZ.CalcSums(Amount);
+        Assert.AreEqual(0, PurchAdvLetterEntryCZZ.Amount, 'The sum of amounts in purchase advance letter entries must be zero.');
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalVATDocumentHandler')]
+    procedure CreatePurchAdvLetterWithTwoLinesAndLinkToInvoice2()
+    var
+        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        PurchAdvLetterLineCZZ1: Record "Purch. Adv. Letter Line CZZ";
+        PurchAdvLetterLineCZZ2: Record "Purch. Adv. Letter Line CZZ";
+        PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        VATEntry: Record "VAT Entry";
+        VATPostingSetup: Record "VAT Posting Setup";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] Create purchase advance letter with two lines and link to invoice with line which is the same as second line in advance letter
+        Initialize();
+
+        // [GIVEN] Purchase advance letter has been created
+        // [GIVEN] Purchase advance letter line with normal VAT has been created
+        CreatePurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ1);
+
+        // [GIVEN] Second purchase advance letter line with normal VAT has been created
+        FindNextVATPostingSetup(VATPostingSetup);
+        LibraryPurchAdvancesCZZ.CreatePurchAdvLetterLine(
+            PurchAdvLetterLineCZZ2, PurchAdvLetterHeaderCZZ, VATPostingSetup."VAT Prod. Posting Group", LibraryRandom.RandDec(1000, 2));
+
+        // [GIVEN] Purchase advance letter has been released
+        ReleasePurchAdvLetter(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase advance letter has been paid in full by the general journal
+        PurchAdvLetterHeaderCZZ.CalcFields("Amount Including VAT");
+        CreateAndPostPaymentPurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterHeaderCZZ."Amount Including VAT");
+
+        // [GIVEN] Purchase advance payment VAT has been posted
+        PostPurchAdvancePaymentVAT(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase invoice has been created
+        // [GIVEN] Purchase invoice line has been created
+        LibraryPurchAdvancesCZZ.CreatePurchInvoice(
+            PurchaseHeader, PurchaseLine, PurchAdvLetterHeaderCZZ."Pay-to Vendor No.", PurchAdvLetterHeaderCZZ."Posting Date",
+            PurchAdvLetterLineCZZ2."VAT Bus. Posting Group", PurchAdvLetterLineCZZ2."VAT Prod. Posting Group", '', 0,
+            true, PurchAdvLetterLineCZZ2."Amount Including VAT");
+
+        // [GIVEN] Whole advance letter has been linked to purchase invoice
+        LibraryPurchAdvancesCZZ.LinkPurchAdvanceLetterToDocument(
+            PurchAdvLetterHeaderCZZ, Enum::"Adv. Letter Usage Doc.Type CZZ"::"Purchase Invoice", PurchaseHeader."No.",
+            PurchAdvLetterLineCZZ2."Amount Including VAT", PurchAdvLetterLineCZZ2."Amount Including VAT (LCY)");
+
+        // [WHEN] Post purchase invoice
+        PostedDocumentNo := PostPurchaseDocument(PurchaseHeader);
+
+        // [THEN] VAT entries of purchase invoice will exist
+        VATEntry.Reset();
+        VATEntry.SetRange("Document No.", PostedDocumentNo);
+        VATEntry.SetRange("Posting Date", PurchaseHeader."Posting Date");
+        VATEntry.SetRange("Advance Letter No. CZZ", '');
+        Assert.RecordIsNotEmpty(VATEntry);
+
+        // [THEN] VAT entries of advance letter will exist
+        VATEntry.SetRange("Advance Letter No. CZZ", PurchAdvLetterHeaderCZZ."No.");
+        Assert.RecordIsNotEmpty(VATEntry);
+
+        // [THEN] Sum of base and VAT amounts in VAT entries will be zero
+        VATEntry.SetRange("Advance Letter No. CZZ");
+        VATEntry.CalcSums(Base, Amount);
+        Assert.AreEqual(0, VATEntry.Base, 'The sum of base amount in VAT Entries must be zero.');
+        Assert.AreEqual(0, VATEntry.Amount, 'The sum of VAT amount in VAT Entries must be zero.');
+
+        // [THEN] Only one purchase advance letter entry of "VAT Usage" type will exist
+        PurchAdvLetterEntryCZZ.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
+        PurchAdvLetterEntryCZZ.SetRange("Entry Type", PurchAdvLetterEntryCZZ."Entry Type"::"VAT Usage");
+        Assert.RecordCount(PurchAdvLetterEntryCZZ, 1);
+
+        // [THEN] Sum of amounts in purchase advance letter entries of "VAT payment" and "VAT usage" type will be zero
+        PurchAdvLetterEntryCZZ.FindFirst();
+        PurchAdvLetterEntryCZZ.SetRange("VAT Bus. Posting Group", PurchAdvLetterEntryCZZ."VAT Bus. Posting Group");
+        PurchAdvLetterEntryCZZ.SetRange("VAT Prod. Posting Group", PurchAdvLetterEntryCZZ."VAT Prod. Posting Group");
+        PurchAdvLetterEntryCZZ.SetFilter("Entry Type", '%1|%2',
+            PurchAdvLetterEntryCZZ."Entry Type"::"VAT Usage", PurchAdvLetterEntryCZZ."Entry Type"::"VAT Payment");
+        PurchAdvLetterEntryCZZ.CalcSums(Amount);
+        Assert.AreEqual(0, PurchAdvLetterEntryCZZ.Amount, 'The sum of amounts in purchase advance letter entries must be zero.');
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalVATDocumentHandler')]
+    procedure VATPaymentToPurchAdvLetterWithTwoVATRatesPartiallyPaid()
+    var
+        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        PurchAdvLetterLineCZZ1: Record "Purch. Adv. Letter Line CZZ";
+        PurchAdvLetterLineCZZ2: Record "Purch. Adv. Letter Line CZZ";
+        PurchAdvLetterEntryCZZ1: Record "Purch. Adv. Letter Entry CZZ";
+        PurchAdvLetterEntryCZZ2: Record "Purch. Adv. Letter Entry CZZ";
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        // [SCENARIO] VAT payment to purchase advance letter with two VAT rates partially paid
+        Initialize();
+
+        // [GIVEN] Purchase advance letter has been created
+        // [GIVEN] Purchase advance letter line with normal VAT has been created
+        CreatePurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ1);
+
+        // [GIVEN] Second purchase advance letter line with normal VAT has been created
+        FindNextVATPostingSetup(VATPostingSetup);
+        LibraryPurchAdvancesCZZ.CreatePurchAdvLetterLine(
+            PurchAdvLetterLineCZZ2, PurchAdvLetterHeaderCZZ, VATPostingSetup."VAT Prod. Posting Group", LibraryRandom.RandDec(1000, 2));
+
+        // [GIVEN] Purchase advance letter has been released
+        ReleasePurchAdvLetter(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase advance letter has been half paid by the general journal
+        PurchAdvLetterHeaderCZZ.CalcFields("Amount Including VAT");
+        CreateAndPostPaymentPurchAdvLetter(PurchAdvLetterHeaderCZZ,
+            Round(PurchAdvLetterLineCZZ1."Amount Including VAT" / 2) +
+            Round(PurchAdvLetterLineCZZ2."Amount Including VAT" / 2));
+
+        // [WHEN] Post purchase advance payment VAT
+        PostPurchAdvancePaymentVAT(PurchAdvLetterHeaderCZZ);
+
+        // [THEN] Two purchase advance letter entries of "VAT Payment" type will exist
+        PurchAdvLetterEntryCZZ1.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
+        PurchAdvLetterEntryCZZ1.SetRange("Entry Type", PurchAdvLetterEntryCZZ1."Entry Type"::"VAT Payment");
+        Assert.RecordCount(PurchAdvLetterEntryCZZ1, 2);
+
+        // [THEN] Sum of amounts in purchase advance letter entries will be the same as in entry with "Payment" type
+        PurchAdvLetterEntryCZZ2.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
+        PurchAdvLetterEntryCZZ2.SetRange("Entry Type", PurchAdvLetterEntryCZZ2."Entry Type"::Payment);
+        PurchAdvLetterEntryCZZ2.FindLast();
+        PurchAdvLetterEntryCZZ1.CalcSums(Amount);
+        Assert.AreEqual(PurchAdvLetterEntryCZZ1.Amount, PurchAdvLetterEntryCZZ2.Amount, 'The sum of amounts in purchase advance letter entries must be the same as in entry with "Payment" type.');
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalVATDocumentHandler')]
+    procedure CreatePurchAdvLetterWithTwoLinesAndLinkToInvoiceWithLowerAmount()
+    var
+        GLAccount: Record "G/L Account";
+        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        PurchAdvLetterLineCZZ1: Record "Purch. Adv. Letter Line CZZ";
+        PurchAdvLetterLineCZZ2: Record "Purch. Adv. Letter Line CZZ";
+        PurchAdvLetterEntryCZZ1: Record "Purch. Adv. Letter Entry CZZ";
+        PurchAdvLetterEntryCZZ2: Record "Purch. Adv. Letter Entry CZZ";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine1: Record "Purchase Line";
+        PurchaseLine2: Record "Purchase Line";
+        VATEntry: Record "VAT Entry";
+        VATPostingSetup: Record "VAT Posting Setup";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] Create purchase advance letter with two lines and link to invoice with amount lower than advance letter
+        Initialize();
+
+        // [GIVEN] Purchase advance letter has been created
+        // [GIVEN] Purchase advance letter line with normal VAT has been created
+        CreatePurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ1);
+
+        // [GIVEN] Second purchase advance letter line with normal VAT has been created
+        FindNextVATPostingSetup(VATPostingSetup);
+        LibraryPurchAdvancesCZZ.CreatePurchAdvLetterLine(
+            PurchAdvLetterLineCZZ2, PurchAdvLetterHeaderCZZ, VATPostingSetup."VAT Prod. Posting Group", LibraryRandom.RandDec(1000, 2));
+
+        // [GIVEN] Purchase advance letter has been released
+        ReleasePurchAdvLetter(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase advance letter has been paid in full by the general journal
+        PurchAdvLetterHeaderCZZ.CalcFields("Amount Including VAT");
+        CreateAndPostPaymentPurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterHeaderCZZ."Amount Including VAT");
+
+        // [GIVEN] Purchase advance payment VAT has been posted
+        PostPurchAdvancePaymentVAT(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase invoice has been created
+        // [GIVEN] First purchase invoice line with amount lower than first line of advance letter has been created
+        LibraryPurchAdvancesCZZ.CreatePurchInvoice(
+            PurchaseHeader, PurchaseLine1, PurchAdvLetterHeaderCZZ."Pay-to Vendor No.", PurchAdvLetterHeaderCZZ."Posting Date",
+            PurchAdvLetterLineCZZ1."VAT Bus. Posting Group", PurchAdvLetterLineCZZ1."VAT Prod. Posting Group", '', 0,
+            true, PurchAdvLetterLineCZZ1."Amount Including VAT" - 1);
+
+        // [GIVEN] Second purchase invoice line with amount lower than second line of advance letter has been created
+        LibraryPurchAdvancesCZZ.CreateGLAccount(GLAccount);
+        GLAccount.Validate("VAT Bus. Posting Group", PurchAdvLetterLineCZZ2."VAT Bus. Posting Group");
+        GLAccount.Validate("VAT Prod. Posting Group", PurchAdvLetterLineCZZ2."VAT Prod. Posting Group");
+        GLAccount.Modify(true);
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine2, PurchaseHeader, PurchaseLine2.Type::"G/L Account", GLAccount."No.", 1);
+        PurchaseLine2.Validate("Direct Unit Cost", PurchAdvLetterLineCZZ2."Amount Including VAT" - 1);
+        PurchaseLine2.Modify(true);
+
+        // [GIVEN] Whole advance letter has been linked to purchase invoice
+        PurchAdvLetterHeaderCZZ.CalcFields("Amount Including VAT", "Amount Including VAT (LCY)");
+        LibraryPurchAdvancesCZZ.LinkPurchAdvanceLetterToDocument(
+            PurchAdvLetterHeaderCZZ, Enum::"Adv. Letter Usage Doc.Type CZZ"::"Purchase Invoice", PurchaseHeader."No.",
+            PurchAdvLetterHeaderCZZ."Amount Including VAT", PurchAdvLetterHeaderCZZ."Amount Including VAT (LCY)");
+
+        // [WHEN] Post purchase invoice
+        PostedDocumentNo := PostPurchaseDocument(PurchaseHeader);
+
+        // [THEN] VAT entries of purchase invoice will exist
+        VATEntry.Reset();
+        VATEntry.SetRange("Document No.", PostedDocumentNo);
+        VATEntry.SetRange("Posting Date", PurchaseHeader."Posting Date");
+        VATEntry.SetRange("Advance Letter No. CZZ", '');
+        Assert.RecordIsNotEmpty(VATEntry);
+
+        // [THEN] VAT entries of advance letter will exist
+        VATEntry.SetRange("Advance Letter No. CZZ", PurchAdvLetterHeaderCZZ."No.");
+        Assert.RecordIsNotEmpty(VATEntry);
+
+        // [THEN] Sum of base and VAT amounts in VAT entries will be zero
+        VATEntry.SetRange("Advance Letter No. CZZ");
+        VATEntry.CalcSums(Base, Amount);
+        Assert.AreEqual(0, VATEntry.Base, 'The sum of base amount in VAT Entries must be zero.');
+        Assert.AreEqual(0, VATEntry.Amount, 'The sum of VAT amount in VAT Entries must be zero.');
+
+        // [THEN] One purchase advance letter entry of "Usage" type will exist
+        PurchAdvLetterEntryCZZ1.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
+        PurchAdvLetterEntryCZZ1.SetRange("Entry Type", PurchAdvLetterEntryCZZ1."Entry Type"::Usage);
+        Assert.RecordCount(PurchAdvLetterEntryCZZ1, 1);
+
+        // [THEN] Two purchase advance letter entries of "VAT Usage" type will exist
+        PurchAdvLetterEntryCZZ2.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
+        PurchAdvLetterEntryCZZ2.SetRange("Entry Type", PurchAdvLetterEntryCZZ2."Entry Type"::"VAT Usage");
+        Assert.RecordCount(PurchAdvLetterEntryCZZ2, 2);
+
+        // [THEN] Sum of amounts in purchase advance letter entries of "VAT Usage" type will be the same as in Usage type of entry
+        PurchAdvLetterEntryCZZ1.FindFirst();
+        PurchAdvLetterEntryCZZ2.CalcSums(Amount);
+        Assert.AreEqual(PurchAdvLetterEntryCZZ1.Amount, PurchAdvLetterEntryCZZ2.Amount, 'The sum of amounts in purchase advance letter entries must be the same as in entry with "Usage" type.');
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalVATDocumentHandler')]
+    procedure CreatePurchAdvLetterWithTwoDiffVATRatesAndLinkToInvoiceWithOneVATRate()
+    var
+        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        PurchAdvLetterLineCZZ1: Record "Purch. Adv. Letter Line CZZ";
+        PurchAdvLetterLineCZZ2: Record "Purch. Adv. Letter Line CZZ";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        VATEntry: Record "VAT Entry";
+        VATPostingSetup: Record "VAT Posting Setup";
+        PostedDocumentNo: Code[20];
+        VATEntryCount: Integer;
+    begin
+        // [SCENARIO] Create purchase advance letter with two lines with different VAT rates and link to invoice with
+        //            with line which is the same as first line in advance letter and one VAT rate
+        Initialize();
+
+        // [GIVEN] Purchase advance letter has been created
+        // [GIVEN] Purchase advance letter line with normal VAT has been created
+        CreatePurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ1);
+
+        // [GIVEN] Second purchase advance letter line with reverse charge has been created
+        LibraryPurchAdvancesCZZ.FindVATPostingSetupEU(VATPostingSetup);
+        LibraryPurchAdvancesCZZ.CreatePurchAdvLetterLine(
+            PurchAdvLetterLineCZZ2, PurchAdvLetterHeaderCZZ, VATPostingSetup."VAT Prod. Posting Group", LibraryRandom.RandDec(1000, 2));
+
+        // [GIVEN] Purchase advance letter has been released
+        ReleasePurchAdvLetter(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase advance letter has been paid in full by the general journal
+        PurchAdvLetterHeaderCZZ.CalcFields("Amount Including VAT");
+        CreateAndPostPaymentPurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterHeaderCZZ."Amount Including VAT");
+
+        // [GIVEN] Purchase advance payment VAT has been posted
+        PostPurchAdvancePaymentVAT(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase invoice has been created
+        // [GIVEN] Purchase invoice line by first line of advance letter has been created
+        LibraryPurchAdvancesCZZ.CreatePurchInvoice(
+            PurchaseHeader, PurchaseLine, PurchAdvLetterHeaderCZZ."Pay-to Vendor No.", PurchAdvLetterHeaderCZZ."Posting Date",
+            PurchAdvLetterLineCZZ1."VAT Bus. Posting Group", PurchAdvLetterLineCZZ1."VAT Prod. Posting Group", '', 0,
+            true, PurchAdvLetterLineCZZ1."Amount Including VAT");
+
+        // [GIVEN] Whole advance letter has been linked to purchase invoice
+        LibraryPurchAdvancesCZZ.LinkPurchAdvanceLetterToDocument(
+            PurchAdvLetterHeaderCZZ, Enum::"Adv. Letter Usage Doc.Type CZZ"::"Purchase Invoice", PurchaseHeader."No.",
+            PurchAdvLetterLineCZZ1."Amount Including VAT", PurchAdvLetterLineCZZ1."Amount Including VAT (LCY)");
+
+        // [WHEN] Post purchase invoice
+        PostedDocumentNo := PostPurchaseDocument(PurchaseHeader);
+
+        // [THEN] VAT entries of purchase invoice will exist
+        VATEntry.Reset();
+        VATEntry.SetRange("VAT Bus. Posting Group", PurchAdvLetterLineCZZ1."VAT Bus. Posting Group");
+        VATEntry.SetRange("VAT Prod. Posting Group", PurchAdvLetterLineCZZ1."VAT Prod. Posting Group");
+        VATEntry.SetRange("Document No.", PostedDocumentNo);
+        VATEntry.SetRange("Posting Date", PurchaseHeader."Posting Date");
+        VATEntry.SetRange("Advance Letter No. CZZ", '');
+        Assert.RecordIsNotEmpty(VATEntry);
+
+        // [THEN] VAT entries of advance letter will exist
+        VATEntry.SetRange("Advance Letter No. CZZ", PurchAdvLetterHeaderCZZ."No.");
+        Assert.RecordIsNotEmpty(VATEntry);
+
+        // [THEN] Sum of base and VAT amounts in VAT entries will be zero
+        VATEntry.SetRange("Advance Letter No. CZZ");
+        VATEntry.CalcSums(Base, Amount);
+        Assert.AreEqual(0, VATEntry.Base, 'The sum of base amount in VAT Entries must be zero.');
+        Assert.AreEqual(0, VATEntry.Amount, 'The sum of VAT amount in VAT Entries must be zero.');
+
+        // [THEN] All VAT entries will have the same VAT posting group
+        VATEntryCount := VATEntry.Count();
+        VATEntry.FindFirst();
+        VATEntry.SetRange("VAT Bus. Posting Group", VATEntry."VAT Bus. Posting Group");
+        VATEntry.SetRange("VAT Prod. Posting Group", VATEntry."VAT Prod. Posting Group");
+        Assert.RecordCount(VATEntry, VATEntryCount);
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalVATDocumentHandler')]
+    procedure CreatePurchAdvLetterWithTwoDiffVATRatesAndLinkToInvoiceWithOneVATRate2()
+    var
+        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        PurchAdvLetterLineCZZ1: Record "Purch. Adv. Letter Line CZZ";
+        PurchAdvLetterLineCZZ2: Record "Purch. Adv. Letter Line CZZ";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        VATEntry: Record "VAT Entry";
+        VATPostingSetup: Record "VAT Posting Setup";
+        PostedDocumentNo: Code[20];
+        VATEntryCount: Integer;
+    begin
+        // [SCENARIO] Create purchase advance letter with two lines with different VAT rates and link to invoice with line which is the same as second line in advance letter and one VAT rate
+        Initialize();
+
+        // [GIVEN] Posting of VAT documents for reverse charge has been enabled
+        SetPostVATDocForReverseCharge(true);
+
+        // [GIVEN] Purchase advance letter has been created
+        // [GIVEN] Purchase advance letter line with normal VAT has been created
+        CreatePurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ1);
+
+        // [GIVEN] Second purchase advance letter line with reverse charge has been created
+        LibraryPurchAdvancesCZZ.FindVATPostingSetupEU(VATPostingSetup);
+        LibraryPurchAdvancesCZZ.CreatePurchAdvLetterLine(
+            PurchAdvLetterLineCZZ2, PurchAdvLetterHeaderCZZ, VATPostingSetup."VAT Prod. Posting Group", LibraryRandom.RandDec(1000, 2));
+
+        // [GIVEN] Purchase advance letter has been released
+        ReleasePurchAdvLetter(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase advance letter has been paid in full by the general journal
+        PurchAdvLetterHeaderCZZ.CalcFields("Amount Including VAT");
+        CreateAndPostPaymentPurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterHeaderCZZ."Amount Including VAT");
+
+        // [GIVEN] Purchase advance payment VAT has been posted
+        PostPurchAdvancePaymentVAT(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase invoice has been created
+        // [GIVEN] Purchase invoice line by first line of advance letter has been created
+        LibraryPurchAdvancesCZZ.CreatePurchInvoice(
+            PurchaseHeader, PurchaseLine, PurchAdvLetterHeaderCZZ."Pay-to Vendor No.", PurchAdvLetterHeaderCZZ."Posting Date",
+            PurchAdvLetterLineCZZ2."VAT Bus. Posting Group", PurchAdvLetterLineCZZ2."VAT Prod. Posting Group", '', 0,
+            true, PurchAdvLetterLineCZZ2."Amount Including VAT");
+
+        // [GIVEN] Whole advance letter has been linked to purchase invoice
+        LibraryPurchAdvancesCZZ.LinkPurchAdvanceLetterToDocument(
+            PurchAdvLetterHeaderCZZ, Enum::"Adv. Letter Usage Doc.Type CZZ"::"Purchase Invoice", PurchaseHeader."No.",
+            PurchAdvLetterLineCZZ2."Amount Including VAT", PurchAdvLetterLineCZZ2."Amount Including VAT (LCY)");
+
+        // [WHEN] Post purchase invoice
+        PostedDocumentNo := PostPurchaseDocument(PurchaseHeader);
+
+        // [THEN] VAT entries of purchase invoice will exist
+        VATEntry.Reset();
+        VATEntry.SetRange("VAT Bus. Posting Group", PurchAdvLetterLineCZZ2."VAT Bus. Posting Group");
+        VATEntry.SetRange("VAT Prod. Posting Group", PurchAdvLetterLineCZZ2."VAT Prod. Posting Group");
+        VATEntry.SetRange("Document No.", PostedDocumentNo);
+        VATEntry.SetRange("Posting Date", PurchaseHeader."Posting Date");
+        VATEntry.SetRange("Advance Letter No. CZZ", '');
+        Assert.RecordIsNotEmpty(VATEntry);
+
+        // [THEN] VAT entries of advance letter will exist
+        VATEntry.SetRange("Advance Letter No. CZZ", PurchAdvLetterHeaderCZZ."No.");
+        Assert.RecordIsNotEmpty(VATEntry);
+
+        // [THEN] Sum of base and VAT amounts in VAT entries will be zero
+        VATEntry.SetRange("Advance Letter No. CZZ");
+        VATEntry.CalcSums(Base, Amount);
+        Assert.AreEqual(0, VATEntry.Base, 'The sum of base amount in VAT Entries must be zero.');
+        Assert.AreEqual(0, VATEntry.Amount, 'The sum of VAT amount in VAT Entries must be zero.');
+
+        // [THEN] All VAT entries will have the same VAT posting group
+        VATEntryCount := VATEntry.Count();
+        VATEntry.FindFirst();
+        VATEntry.SetRange("VAT Bus. Posting Group", VATEntry."VAT Bus. Posting Group");
+        VATEntry.SetRange("VAT Prod. Posting Group", VATEntry."VAT Prod. Posting Group");
+        Assert.RecordCount(VATEntry, VATEntryCount);
+
+        SetPostVATDocForReverseCharge(false);
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalVATDocumentHandler')]
+    procedure CreatePurchAdvLetterWithTwoDiffVATRatesAndLinkToInvoiceWithOneVATRate3()
+    var
+        PurchAdvLetterEntryCZZ1: Record "Purch. Adv. Letter Entry CZZ";
+        PurchAdvLetterEntryCZZ2: Record "Purch. Adv. Letter Entry CZZ";
+        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        PurchAdvLetterLineCZZ1: Record "Purch. Adv. Letter Line CZZ";
+        PurchAdvLetterLineCZZ2: Record "Purch. Adv. Letter Line CZZ";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        // [SCENARIO] Create purchase advance letter with two lines with different VAT rates and link to invoice with line which has the higher amount as first line in advance letter and one VAT rate
+        Initialize();
+
+        // [GIVEN] Posting of VAT documents for reverse charge has been enabled
+        SetPostVATDocForReverseCharge(true);
+
+        // [GIVEN] Purchase advance letter has been created
+        // [GIVEN] Purchase advance letter line with normal VAT has been created
+        CreatePurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ1);
+
+        // [GIVEN] Second purchase advance letter line with reverse charge has been created
+        LibraryPurchAdvancesCZZ.FindVATPostingSetupEU(VATPostingSetup);
+        LibraryPurchAdvancesCZZ.CreatePurchAdvLetterLine(
+            PurchAdvLetterLineCZZ2, PurchAdvLetterHeaderCZZ, VATPostingSetup."VAT Prod. Posting Group", LibraryRandom.RandDec(1000, 2));
+
+        // [GIVEN] Purchase advance letter has been released
+        ReleasePurchAdvLetter(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase advance letter has been paid in full by the general journal
+        PurchAdvLetterHeaderCZZ.CalcFields("Amount Including VAT", "Amount Including VAT (LCY)");
+        CreateAndPostPaymentPurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterHeaderCZZ."Amount Including VAT");
+
+        // [GIVEN] Purchase advance payment VAT has been posted
+        PostPurchAdvancePaymentVAT(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase invoice has been created
+        // [GIVEN] Purchase invoice line with amount higher than first line of advance letter has been created
+        LibraryPurchAdvancesCZZ.CreatePurchInvoice(
+            PurchaseHeader, PurchaseLine, PurchAdvLetterHeaderCZZ."Pay-to Vendor No.", PurchAdvLetterHeaderCZZ."Posting Date",
+            PurchAdvLetterLineCZZ1."VAT Bus. Posting Group", PurchAdvLetterLineCZZ1."VAT Prod. Posting Group", '', 0,
+            true, PurchAdvLetterLineCZZ1."Amount Including VAT" + 1);
+
+        // [GIVEN] Whole advance letter has been linked to purchase invoice
+        LibraryPurchAdvancesCZZ.LinkPurchAdvanceLetterToDocument(
+            PurchAdvLetterHeaderCZZ, Enum::"Adv. Letter Usage Doc.Type CZZ"::"Purchase Invoice", PurchaseHeader."No.",
+            PurchAdvLetterHeaderCZZ."Amount Including VAT", PurchAdvLetterHeaderCZZ."Amount Including VAT (LCY)");
+
+        // [WHEN] Post purchase invoice
+        PostPurchaseDocument(PurchaseHeader);
+
+        // [THEN] Amount in purchase advance letter entry of "VAT Payment" type will be the sames as in entry with "VAT Usage" type of the same VAT posting group as in first line of advance letter
+        PurchAdvLetterEntryCZZ1.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
+        PurchAdvLetterEntryCZZ1.SetRange("VAT Bus. Posting Group", PurchAdvLetterLineCZZ1."VAT Bus. Posting Group");
+        PurchAdvLetterEntryCZZ1.SetRange("VAT Prod. Posting Group", PurchAdvLetterLineCZZ1."VAT Prod. Posting Group");
+        PurchAdvLetterEntryCZZ1.SetRange("Entry Type", PurchAdvLetterEntryCZZ1."Entry Type"::"VAT Payment");
+        PurchAdvLetterEntryCZZ1.FindFirst();
+
+        PurchAdvLetterEntryCZZ2.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
+        purchAdvLetterEntryCZZ2.SetRange("VAT Bus. Posting Group", PurchaseLine."VAT Bus. Posting Group");
+        purchAdvLetterEntryCZZ2.SetRange("VAT Prod. Posting Group", PurchaseLine."VAT Prod. Posting Group");
+        purchAdvLetterEntryCZZ2.SetRange("Entry Type", purchAdvLetterEntryCZZ2."Entry Type"::"VAT Usage");
+        PurchAdvLetterEntryCZZ2.FindFirst();
+        Assert.AreEqual(PurchAdvLetterEntryCZZ1.Amount, -PurchAdvLetterEntryCZZ2.Amount, 'The amount in purchase advance letter entry of "VAT Payment" type must be the same as in entry with "VAT Usage" type.');
+
+        // [THEN] Purchase advance letter entry of "VAT Usage" type with the same VAT posting group as in second line of advance letter will exist
+        PurchAdvLetterEntryCZZ2.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
+        purchAdvLetterEntryCZZ2.SetRange("VAT Bus. Posting Group", PurchAdvLetterLineCZZ2."VAT Bus. Posting Group");
+        purchAdvLetterEntryCZZ2.SetRange("VAT Prod. Posting Group", PurchAdvLetterLineCZZ2."VAT Prod. Posting Group");
+        purchAdvLetterEntryCZZ2.SetRange("Entry Type", purchAdvLetterEntryCZZ2."Entry Type"::"VAT Usage");
+        Assert.RecordIsNotEmpty(PurchAdvLetterEntryCZZ2);
+
+        SetPostVATDocForReverseCharge(false);
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalVATDocumentHandler')]
+    procedure CreatePurchAdvLetterWithTwoDiffVATRatesAndLinkToInvoiceWithOneVATRate4()
+    var
+        PurchAdvLetterEntryCZZ1: Record "Purch. Adv. Letter Entry CZZ";
+        PurchAdvLetterEntryCZZ2: Record "Purch. Adv. Letter Entry CZZ";
+        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        PurchAdvLetterLineCZZ1: Record "Purch. Adv. Letter Line CZZ";
+        PurchAdvLetterLineCZZ2: Record "Purch. Adv. Letter Line CZZ";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        // [SCENARIO] Create purchase advance letter with two lines with different VAT rates and link to invoice with line which has the higher amount as second line in advance letter and one VAT rate
+        Initialize();
+
+        // [GIVEN] Posting of VAT documents for reverse charge has been enabled
+        SetPostVATDocForReverseCharge(true);
+
+        // [GIVEN] Purchase advance letter has been created
+        // [GIVEN] Purchase advance letter line with normal VAT has been created
+        CreatePurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ1);
+
+        // [GIVEN] Second purchase advance letter line with reverse charge has been created
+        LibraryPurchAdvancesCZZ.FindVATPostingSetupEU(VATPostingSetup);
+        LibraryPurchAdvancesCZZ.CreatePurchAdvLetterLine(
+            PurchAdvLetterLineCZZ2, PurchAdvLetterHeaderCZZ, VATPostingSetup."VAT Prod. Posting Group", LibraryRandom.RandDec(1000, 2));
+
+        // [GIVEN] Purchase advance letter has been released
+        ReleasePurchAdvLetter(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase advance letter has been paid in full by the general journal
+        PurchAdvLetterHeaderCZZ.CalcFields("Amount Including VAT", "Amount Including VAT (LCY)");
+        CreateAndPostPaymentPurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterHeaderCZZ."Amount Including VAT");
+
+        // [GIVEN] Purchase advance payment VAT has been posted
+        PostPurchAdvancePaymentVAT(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase invoice has been created
+        // [GIVEN] Purchase invoice line with amount higher than second line of advance letter has been created
+        LibraryPurchAdvancesCZZ.CreatePurchInvoice(
+            PurchaseHeader, PurchaseLine, PurchAdvLetterHeaderCZZ."Pay-to Vendor No.", PurchAdvLetterHeaderCZZ."Posting Date",
+            PurchAdvLetterLineCZZ2."VAT Bus. Posting Group", PurchAdvLetterLineCZZ2."VAT Prod. Posting Group", '', 0,
+            true, PurchAdvLetterLineCZZ2."Amount Including VAT" + 1);
+
+        // [GIVEN] Whole advance letter has been linked to purchase invoice
+        LibraryPurchAdvancesCZZ.LinkPurchAdvanceLetterToDocument(
+            PurchAdvLetterHeaderCZZ, Enum::"Adv. Letter Usage Doc.Type CZZ"::"Purchase Invoice", PurchaseHeader."No.",
+            PurchAdvLetterHeaderCZZ."Amount Including VAT", PurchAdvLetterHeaderCZZ."Amount Including VAT (LCY)");
+
+        // [WHEN] Post purchase invoice
+        PostPurchaseDocument(PurchaseHeader);
+
+        // [THEN] Amount in purchase advance letter entry of "VAT Payment" type will be the same as in entry with "VAT Usage" type of the same VAT posting group as in second line of advance letter
+        PurchAdvLetterEntryCZZ1.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
+        PurchAdvLetterEntryCZZ1.SetRange("VAT Bus. Posting Group", PurchAdvLetterLineCZZ2."VAT Bus. Posting Group");
+        PurchAdvLetterEntryCZZ1.SetRange("VAT Prod. Posting Group", PurchAdvLetterLineCZZ2."VAT Prod. Posting Group");
+        PurchAdvLetterEntryCZZ1.SetRange("Entry Type", PurchAdvLetterEntryCZZ1."Entry Type"::"VAT Payment");
+        PurchAdvLetterEntryCZZ1.FindFirst();
+
+        PurchAdvLetterEntryCZZ2.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
+        purchAdvLetterEntryCZZ2.SetRange("VAT Bus. Posting Group", PurchaseLine."VAT Bus. Posting Group");
+        purchAdvLetterEntryCZZ2.SetRange("VAT Prod. Posting Group", PurchaseLine."VAT Prod. Posting Group");
+        purchAdvLetterEntryCZZ2.SetRange("Entry Type", purchAdvLetterEntryCZZ2."Entry Type"::"VAT Usage");
+        PurchAdvLetterEntryCZZ2.FindFirst();
+        Assert.AreEqual(PurchAdvLetterEntryCZZ1.Amount, -PurchAdvLetterEntryCZZ2.Amount, 'The amount in purchase advance letter entry of "VAT Payment" type must be the same as in entry with "VAT Usage" type.');
+
+        // [THEN] Purchase advance letter entry of "VAT Usage" type with the same VAT posting group as in first line of advance letter will exist
+        PurchAdvLetterEntryCZZ2.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
+        purchAdvLetterEntryCZZ2.SetRange("VAT Bus. Posting Group", PurchAdvLetterLineCZZ1."VAT Bus. Posting Group");
+        purchAdvLetterEntryCZZ2.SetRange("VAT Prod. Posting Group", PurchAdvLetterLineCZZ1."VAT Prod. Posting Group");
+        purchAdvLetterEntryCZZ2.SetRange("Entry Type", purchAdvLetterEntryCZZ2."Entry Type"::"VAT Usage");
+        Assert.RecordIsNotEmpty(PurchAdvLetterEntryCZZ2);
+
+        SetPostVATDocForReverseCharge(false);
+    end;
+
+    [Test]
+    [HandlerFunctions('ModalVATDocumentHandler')]
+    procedure CreatePurchAdvLetterWithTwoDiffVATRatesAndLinkToInvoice()
+    var
+        GLAccount: Record "G/L Account";
+        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        PurchAdvLetterLineCZZ1: Record "Purch. Adv. Letter Line CZZ";
+        PurchAdvLetterLineCZZ2: Record "Purch. Adv. Letter Line CZZ";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine1: Record "Purchase Line";
+        PurchaseLine2: Record "Purchase Line";
+        VATEntry: Record "VAT Entry";
+        VATPostingSetup: Record "VAT Posting Setup";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] Create purchase advance letter with two lines with different VAT rates and link to invoice with two lines which have the lower amounts as lines in advance letter
+        Initialize();
+
+        // [GIVEN] Posting of VAT documents for reverse charge has been enabled
+        SetPostVATDocForReverseCharge(true);
+
+        // [GIVEN] Purchase advance letter has been created
+        // [GIVEN] Purchase advance letter line with normal VAT has been created
+        CreatePurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ1);
+
+        // [GIVEN] Second purchase advance letter line with reverse charge has been created
+        LibraryPurchAdvancesCZZ.FindVATPostingSetupEU(VATPostingSetup);
+        LibraryPurchAdvancesCZZ.CreatePurchAdvLetterLine(
+            PurchAdvLetterLineCZZ2, PurchAdvLetterHeaderCZZ, VATPostingSetup."VAT Prod. Posting Group", LibraryRandom.RandDec(1000, 2));
+
+        // [GIVEN] Purchase advance letter has been released
+        ReleasePurchAdvLetter(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase advance letter has been paid in full by the general journal
+        PurchAdvLetterHeaderCZZ.CalcFields("Amount Including VAT", "Amount Including VAT (LCY)");
+        CreateAndPostPaymentPurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterHeaderCZZ."Amount Including VAT");
+
+        // [GIVEN] Purchase advance payment VAT has been posted
+        PostPurchAdvancePaymentVAT(PurchAdvLetterHeaderCZZ);
+
+        // [GIVEN] Purchase invoice has been created
+        // [GIVEN] First purchase invoice line with amount lower than first line of advance letter has been created
+        LibraryPurchAdvancesCZZ.CreatePurchInvoice(
+            PurchaseHeader, PurchaseLine1, PurchAdvLetterHeaderCZZ."Pay-to Vendor No.", PurchAdvLetterHeaderCZZ."Posting Date",
+            PurchAdvLetterLineCZZ1."VAT Bus. Posting Group", PurchAdvLetterLineCZZ1."VAT Prod. Posting Group", '', 0,
+            true, PurchAdvLetterLineCZZ1."Amount Including VAT" - 1);
+
+        // [GIVEN] Second purchase invoice line with amount lower than second line of advance letter has been created
+        LibraryPurchAdvancesCZZ.CreateGLAccount(GLAccount);
+        GLAccount.Validate("VAT Bus. Posting Group", PurchAdvLetterLineCZZ2."VAT Bus. Posting Group");
+        GLAccount.Validate("VAT Prod. Posting Group", PurchAdvLetterLineCZZ2."VAT Prod. Posting Group");
+        GLAccount.Modify(true);
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine2, PurchaseHeader, PurchaseLine2.Type::"G/L Account", GLAccount."No.", 1);
+        PurchaseLine2.Validate("Direct Unit Cost", PurchAdvLetterLineCZZ2."Amount Including VAT" - 1);
+        PurchaseLine2.Modify(true);
+
+        // [GIVEN] Whole advance letter has been linked to purchase invoice
+        LibraryPurchAdvancesCZZ.LinkPurchAdvanceLetterToDocument(
+            PurchAdvLetterHeaderCZZ, Enum::"Adv. Letter Usage Doc.Type CZZ"::"Purchase Invoice", PurchaseHeader."No.",
+            PurchAdvLetterHeaderCZZ."Amount Including VAT", PurchAdvLetterHeaderCZZ."Amount Including VAT (LCY)");
+
+        // [WHEN] Post purchase invoice
+        PostedDocumentNo := PostPurchaseDocument(PurchaseHeader);
+
+        // [THEN] VAT entries of purchase invoice will exist
+        VATEntry.Reset();
+        VATEntry.SetRange("Document No.", PostedDocumentNo);
+        VATEntry.SetRange("Posting Date", PurchaseHeader."Posting Date");
+        VATEntry.SetRange("Advance Letter No. CZZ", '');
+        Assert.RecordIsNotEmpty(VATEntry);
+
+        // [THEN] VAT entries of advance letter will exist
+        VATEntry.SetRange("Advance Letter No. CZZ", PurchAdvLetterHeaderCZZ."No.");
+        Assert.RecordIsNotEmpty(VATEntry);
+
+        // [THEN] Sum of base and VAT amounts in VAT entries will be zero
+        VATEntry.SetRange("Advance Letter No. CZZ");
+        VATEntry.CalcSums(Base, Amount);
+        Assert.AreEqual(0, VATEntry.Base, 'The sum of base amount in VAT Entries must be zero.');
+        Assert.AreEqual(0, VATEntry.Amount, 'The sum of VAT amount in VAT Entries must be zero.');
+
+        // [THEN] Sum of base and VAT amount in VAT entries with the same VAT posting group as in first line of advance letter will be zero
+        VATEntry.SetRange("VAT Bus. Posting Group", PurchAdvLetterLineCZZ1."VAT Bus. Posting Group");
+        VATEntry.SetRange("VAT Prod. Posting Group", PurchAdvLetterLineCZZ1."VAT Prod. Posting Group");
+        VATEntry.CalcSums(Base, Amount);
+        Assert.AreEqual(0, VATEntry.Base, 'The sum of base amount in VAT Entries must be zero.');
+        Assert.AreEqual(0, VATEntry.Amount, 'The sum of VAT amount in VAT Entries must be zero.');
+
+        // [THEN] Sum of base and VAT amount in VAT entries with the same VAT posting group as in second line of advance letter will be zero
+        VATEntry.SetRange("VAT Bus. Posting Group", PurchAdvLetterLineCZZ2."VAT Bus. Posting Group");
+        VATEntry.SetRange("VAT Prod. Posting Group", PurchAdvLetterLineCZZ2."VAT Prod. Posting Group");
+        VATEntry.CalcSums(Base, Amount);
+        Assert.AreEqual(0, VATEntry.Base, 'The sum of base amount in VAT Entries must be zero.');
+        Assert.AreEqual(0, VATEntry.Amount, 'The sum of VAT amount in VAT Entries must be zero.');
+
+        SetPostVATDocForReverseCharge(false);
+    end;
+
     local procedure CreatePurchAdvLetterBase(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ"; VendorNo: Code[20]; CurrencyCode: Code[10]; VATPostingSetup: Record "VAT Posting Setup")
     var
         Vendor: Record Vendor;
@@ -2029,6 +2867,21 @@ codeunit 148108 "Purchase Advance Payments CZZ"
     local procedure PostCashDocument(var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
     begin
         LibraryCashDocumentCZP.PostCashDocumentCZP(CashDocumentHeaderCZP);
+    end;
+
+    local procedure SetPostVATDocForReverseCharge(Value: Boolean)
+    begin
+        AdvanceLetterTemplateCZZ."Post VAT Doc. for Rev. Charge" := Value;
+        AdvanceLetterTemplateCZZ.Modify();
+    end;
+
+    local procedure FindNextVATPostingSetup(var VATPostingSetup: Record "VAT Posting Setup")
+    begin
+        LibraryERM.FindVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
+        if VATPostingSetup.Next() = 0 then
+            LibraryERM.CreateVATPostingSetupWithAccounts(
+                VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT", LibraryRandom.RandDecInDecimalRange(10, 25, 0));
+        LibraryPurchAdvancesCZZ.AddAdvLetterAccounsToVATPostingSetup(VATPostingSetup);
     end;
 
     local procedure SetExpectedConfirm(Question: Text; Reply: Boolean)

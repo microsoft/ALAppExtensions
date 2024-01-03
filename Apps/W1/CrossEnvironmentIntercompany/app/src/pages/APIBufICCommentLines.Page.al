@@ -26,41 +26,52 @@ page 30416 "API Buf IC Comment Lines"
     {
         area(Content)
         {
-            field(id; Rec.SystemId)
+            repeater(Records)
             {
-                Caption = 'Id';
-            }
-            field(tableName; Rec."Table Name")
-            {
-                Caption = 'Table Name';
-            }
-            field(transactionNumber; Rec."Transaction No.")
-            {
-                Caption = 'Transaction Number';
-            }
-            field(icPartnerCode; Rec."IC Partner Code")
-            {
-                Caption = 'Intercompany Partner Code';
-            }
-            field(lineNumber; Rec."Line No.")
-            {
-                Caption = 'Line Number';
-            }
-            field(date; Rec.Date)
-            {
-                Caption = 'Date';
-            }
-            field(comment; Rec.Comment)
-            {
-                Caption = 'Comment';
-            }
-            field(transactionSource; Rec."Transaction Source")
-            {
-                Caption = 'Transaction Source';
-            }
-            field(createdByIcPartnerCode; Rec."Created By IC Partner Code")
-            {
-                Caption = 'Created By Intercompany Partner Code';
+                field(id; Rec.SystemId)
+                {
+                    Caption = 'Id';
+                }
+                field(tableName; Rec."Table Name")
+                {
+                    Caption = 'Table Name';
+                }
+                field(tableNameIndex; TableNameIndex)
+                {
+                    Caption = 'Table Name Index';
+                }
+                field(transactionNumber; Rec."Transaction No.")
+                {
+                    Caption = 'Transaction Number';
+                }
+                field(icPartnerCode; Rec."IC Partner Code")
+                {
+                    Caption = 'Intercompany Partner Code';
+                }
+                field(lineNumber; Rec."Line No.")
+                {
+                    Caption = 'Line Number';
+                }
+                field(date; Rec.Date)
+                {
+                    Caption = 'Date';
+                }
+                field(comment; Rec.Comment)
+                {
+                    Caption = 'Comment';
+                }
+                field(transactionSource; Rec."Transaction Source")
+                {
+                    Caption = 'Transaction Source';
+                }
+                field(transactionSourceIndex; TransactionSourceIndex)
+                {
+                    Caption = 'Transaction Source Index';
+                }
+                field(createdByIcPartnerCode; Rec."Created By IC Partner Code")
+                {
+                    Caption = 'Created By Intercompany Partner Code';
+                }
             }
         }
     }
@@ -78,7 +89,14 @@ page 30416 "API Buf IC Comment Lines"
             error(ThereAreNoNotificationsForSpecifiedIDErr);
     end;
 
+    trigger OnAfterGetRecord()
+    begin
+        TableNameIndex := Rec."Table Name";
+        TransactionSourceIndex := Rec."Transaction Source";
+    end;
+
     var
         IDShouldBeSpecifiedErr: Label 'Operation ID should be specified';
         ThereAreNoNotificationsForSpecifiedIDErr: Label 'There are no notifications for specified ID';
+        TableNameIndex, TransactionSourceIndex : Integer;
 }

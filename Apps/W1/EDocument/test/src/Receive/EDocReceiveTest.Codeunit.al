@@ -20,7 +20,8 @@ codeunit 139628 "E-Doc. Receive Test"
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryJournals: Codeunit "Library - Journals";
-        PurchOrderTestBuffer: Codeunit "Purch. Doc. Test Buffer";
+        PurchOrderTestBuffer: Codeunit "E-Doc. Test Buffer";
+        EDocImplState: Codeunit "E-Doc. Impl. State";
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
         GetBasicInfoErr: Label 'Test Get Basic Info From Received Document Error.', Locked = true;
@@ -36,9 +37,11 @@ codeunit 139628 "E-Doc. Receive Test"
     begin
         // [FEATURE] [E-Document] [Receive]
         // [SCENARIO] Receive single e-document and create purchase invoice
+        Initialize();
 
         // [GIVEN] e-Document service to receive one single purchase invoice
         LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService);
+        BindSubscription(EDocImplState);
 
         EDocService."Lookup Account Mapping" := false;
         EDocService."Lookup Item GTIN" := false;
@@ -106,9 +109,11 @@ codeunit 139628 "E-Doc. Receive Test"
     begin
         // [FEATURE] [E-Document] [Receive]
         // [SCENARIO] Receive multimple e-documents in one file and create multiple purchase invoices
+        Initialize();
 
         // [GIVEN] e-Document service to receive multiple purchase invoices
         LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService);
+        BindSubscription(EDocImplState);
 
         EDocService."Lookup Account Mapping" := false;
         EDocService."Lookup Item GTIN" := false;
@@ -192,9 +197,11 @@ codeunit 139628 "E-Doc. Receive Test"
     begin
         // [FEATURE] [E-Document] [Receive]
         // [SCENARIO] Receive single e-document and create purchase credit memo
+        Initialize();
 
         // [GIVEN] e-Document service to receive one single purchase credit memo
         LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService);
+        BindSubscription(EDocImplState);
 
         EDocService."Lookup Account Mapping" := false;
         EDocService."Lookup Item GTIN" := false;
@@ -272,9 +279,11 @@ codeunit 139628 "E-Doc. Receive Test"
     begin
         // [FEATURE] [E-Document] [Receive]
         // [SCENARIO] Receive multiple e-documents in one file and create multiple purchase credit memos
+        Initialize();
 
         // [GIVEN] e-Document service to receive multiple purchase credit memos
         LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService);
+        BindSubscription(EDocImplState);
 
         EDocService."Lookup Account Mapping" := false;
         EDocService."Lookup Item GTIN" := false;
@@ -365,6 +374,7 @@ codeunit 139628 "E-Doc. Receive Test"
     begin
         // [FEATURE] [E-Document] [Receive]
         // [SCENARIO] Receive single e-document and create journal line
+        Initialize();
 
         // [GIVEN] e-Document service to receive one single purchase invoice
         LibraryJournals.CreateGenJournalBatch(GenJnlBatch);
@@ -377,6 +387,7 @@ codeunit 139628 "E-Doc. Receive Test"
         PurchSetup.Modify(true);
 
         LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService);
+        BindSubscription(EDocImplState);
 
         EDocService."Lookup Account Mapping" := false;
         EDocService."Lookup Item GTIN" := false;
@@ -439,6 +450,7 @@ codeunit 139628 "E-Doc. Receive Test"
     begin
         // [FEATURE] [E-Document] [Receive]
         // [SCENARIO] Receive multiple e-documents and create multiple journal lines
+        Initialize();
 
         // [GIVEN] e-Document service to receive multiple purchase invoices
         LibraryJournals.CreateGenJournalBatch(GenJnlBatch);
@@ -451,6 +463,7 @@ codeunit 139628 "E-Doc. Receive Test"
         PurchSetup.Modify(true);
 
         LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService);
+        BindSubscription(EDocImplState);
 
         EDocService."Lookup Account Mapping" := false;
         EDocService."Lookup Item GTIN" := false;
@@ -518,6 +531,7 @@ codeunit 139628 "E-Doc. Receive Test"
     begin
         // [FEATURE] [E-Document] [Receive]
         // [SCENARIO] Receive single e-document and create journal line
+        Initialize();
 
         // [GIVEN] e-Document service to receive one single purchase credit memo
         LibraryJournals.CreateGenJournalBatch(GenJnlBatch);
@@ -530,6 +544,7 @@ codeunit 139628 "E-Doc. Receive Test"
         PurchSetup.Modify(true);
 
         LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService);
+        BindSubscription(EDocImplState);
 
         EDocService."Lookup Account Mapping" := false;
         EDocService."Lookup Item GTIN" := false;
@@ -592,6 +607,7 @@ codeunit 139628 "E-Doc. Receive Test"
     begin
         // [FEATURE] [E-Document] [Receive]
         // [SCENARIO] Receive multiple e-documents and create multiple journal lines
+        Initialize();
 
         // [GIVEN] e-Document service to receive multiple purchase credit memos
         LibraryJournals.CreateGenJournalBatch(GenJnlBatch);
@@ -604,6 +620,7 @@ codeunit 139628 "E-Doc. Receive Test"
         PurchSetup.Modify(true);
 
         LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService);
+        BindSubscription(EDocImplState);
 
         EDocService."Lookup Account Mapping" := false;
         EDocService."Lookup Item GTIN" := false;
@@ -669,9 +686,12 @@ codeunit 139628 "E-Doc. Receive Test"
     begin
         // [FEATURE] [E-Document] [Receive]
         // [SCENARIO] Receive single e-document and try to get besic info
+        Initialize();
 
         // [GIVEN] e-Document service to raised receiving error
         LibraryEDoc.CreateGetBasicInfoErrorReceiveServiceForEDoc(EDocService);
+        BindSubscription(EDocImplState);
+        EDocImplState.SetThrowBasicInfoError();
 
         // [GIVEN] purchase invoice
         LibraryPurchase.CreateVendorWithAddress(Vendor);
@@ -711,9 +731,12 @@ codeunit 139628 "E-Doc. Receive Test"
     begin
         // [FEATURE] [E-Document] [Receive]
         // [SCENARIO] Receive single e-document and try to get besic info
+        Initialize();
 
         // [GIVEN] e-Document service to raised receiving error
         LibraryEDoc.CreateGetCompleteInfoErrorReceiveServiceForEDoc(EDocService);
+        BindSubscription(EDocImplState);
+        EDocImplState.SetThrowCompleteInfoError();
 
         // [GIVEN] purchase invoice
         LibraryPurchase.CreateVendorWithAddress(Vendor);
@@ -742,10 +765,16 @@ codeunit 139628 "E-Doc. Receive Test"
         PurchaseHeader.Delete(true);
     end;
 
+
     [ConfirmHandler]
     procedure ConfirmHandler(Message: Text[1024]; var Reply: Boolean)
     begin
         Reply := false;
+    end;
+
+    local procedure Initialize()
+    begin
+        Clear(EDocImplState);
     end;
 
     local procedure CheckPurchaseHeadersAreEqual(var PurchHeader1: Record "Purchase Header"; var PurchHeader2: Record "Purchase Header")

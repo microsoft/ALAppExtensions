@@ -211,25 +211,25 @@ report 31190 "Sales Credit Memo CZL"
             column(PostingDate_SalesCrMemoHeaderCaption; FieldCaption("Posting Date"))
             {
             }
-            column(PostingDate_SalesCrMemoHeader; "Posting Date")
+            column(PostingDate_SalesCrMemoHeader; Format("Posting Date"))
             {
             }
             column(VATDate_SalesCrMemoHeaderCaption; FieldCaption("VAT Reporting Date"))
             {
             }
-            column(VATDate_SalesCrMemoHeader; "VAT Reporting Date")
+            column(VATDate_SalesCrMemoHeader; Format("VAT Reporting Date"))
             {
             }
             column(DueDate_SalesCrMemoHeaderCaption; FieldCaption("Due Date"))
             {
             }
-            column(DueDate_SalesCrMemoHeader; FormatDate("Due Date"))
+            column(DueDate_SalesCrMemoHeader; Format("Due Date"))
             {
             }
             column(DocumentDate_SalesCrMemoHeaderCaption; FieldCaption("Document Date"))
             {
             }
-            column(DocumentDate_SalesCrMemoHeader; "Document Date")
+            column(DocumentDate_SalesCrMemoHeader; Format("Document Date"))
             {
             }
             column(PmntSymbol1; PaymentSymbolLabel[1])
@@ -713,11 +713,6 @@ report 31190 "Sales Credit Memo CZL"
     begin
         FormatAddress.SalesCrMemoBillTo(CustAddr, SalesCrMemoHeader);
         FormatAddress.SalesCrMemoShipTo(ShipToAddr, CustAddr, SalesCrMemoHeader);
-    end;
-
-    local procedure FormatDate(DateValue: Date): Text
-    begin
-        exit(Format(DateValue, 0, '<Day>.<Month>.<Year4>'));
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

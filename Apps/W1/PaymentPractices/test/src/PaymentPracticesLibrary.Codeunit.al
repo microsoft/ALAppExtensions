@@ -80,6 +80,13 @@ codeunit 134196 "Payment Practices Library"
         end;
     end;
 
+    procedure InitAndGetLastPaymentPeriod(var PaymentPeriod: Record "Payment Period")
+    begin
+        PaymentPeriod.SetupDefaults();
+        PaymentPeriod.SetRange("Days To", 0);
+        PaymentPeriod.FindLast();
+    end;
+
     procedure SetCompanySize(var Vendor: Record Vendor; CompanySizeCode: Code[20])
     begin
         Vendor."Company Size Code" := CompanySizeCode;

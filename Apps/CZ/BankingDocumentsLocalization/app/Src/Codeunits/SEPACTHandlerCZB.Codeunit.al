@@ -72,6 +72,18 @@ codeunit 31400 "SEPA CT Handler CZB"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"SEPA CT-Fill Export Buffer", 'OnFillExportBufferOnAfterGetMessageID', '', false, false)]
+    local procedure FillDocumentNoOnFillExportBufferOnAfterGetMessageID(var TempGenJnlLine: Record "Gen. Journal Line" temporary; var MessageID: Code[20])
+    begin
+        MessageID := TempGenJnlLine."Document No.";
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Bank Account", 'OnBeforeGetCreditTransferMessageNo', '', false, false)]
+    local procedure SkipOnBeforeGetCreditTransferMessageNo(var IsHandled: Boolean)
+    begin
+        IsHandled := true;
+    end;
+
     local procedure AddFieldEmptyError(var GenJournalLine: Record "Gen. Journal Line"; TableCaption: Text; FieldCaption: Text; KeyValue: Text)
     var
         ErrorText: Text;

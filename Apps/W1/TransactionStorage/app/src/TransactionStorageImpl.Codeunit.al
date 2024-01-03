@@ -5,6 +5,9 @@ using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Foundation.Company;
+#if not CLEAN24
+using System.Azure.KeyVault;
+#endif
 using System.Environment;
 using System.Telemetry;
 
@@ -14,9 +17,9 @@ codeunit 6203 "Transaction Storage Impl."
     TableNo = "Transact. Storage Task Entry";
     InherentEntitlements = X;
     InherentPermissions = X;
-    Permissions = tabledata "Transact. Storage Export State" = rim,
-                  tabledata "Transact. Storage Task Entry" = rim,
-                  tabledata "Transaction Storage Setup" = ri,
+    Permissions = tabledata "Transact. Storage Export State" = RIM,
+                  tabledata "Transact. Storage Task Entry" = RIM,
+                  tabledata "Transaction Storage Setup" = RI,
                   tabledata "G/L Entry" = r,
                   tabledata "Incoming Document" = r,
                   tabledata Company = r,
@@ -25,6 +28,10 @@ codeunit 6203 "Transaction Storage Impl."
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
         TransactionStorageTok: Label 'Transaction Storage', Locked = true;
+#if not CLEAN24
+        TransactionStorageFeatureEnabledKeyTok: Label 'TransactionStorage-Enabled', Locked = true;
+        CannotGetStorageNameFromKeyVaultErr: Label 'Cannot get storage account name from Azure Key Vault using key %1', Locked = true;
+#endif
         TimeDeadlineExceededErr: Label 'A time deadline of %1 hours for the export has been exceeded. The export has been stopped.', Comment = '%1 = number of hours';
 
     trigger OnRun()
@@ -49,7 +56,7 @@ codeunit 6203 "Transaction Storage Impl."
         TaskDate: Date;
     begin
 #if not CLEAN24
-        if not IsFeatureEnableDatePassed() then
+        if not IsFeatureEnabled() then
             exit;
 #endif
         if not IsSaaSProductionCompany() then
@@ -61,9 +68,7 @@ codeunit 6203 "Transaction Storage Impl."
         TransactStorageExportState.ResetSetup();
         if not TransactionStorageSetup.Get() then
             TransactionStorageSetup.Insert();
-        TaskDate := Today();
-        if Time > TransactionStorageSetup."Earliest Start Time" then
-            TaskDate += 1;
+        TaskDate := GetTaskDate(TransactionStorageSetup."Earliest Start Time");
         TaskDateTime := CreateDateTime(TaskDate, TransactionStorageSetup."Earliest Start Time");
         CreateTaskToExport(TaskDateTime, true);
     end;
@@ -79,9 +84,23 @@ codeunit 6203 "Transaction Storage Impl."
                 Codeunit::"Transaction Storage Impl.", Codeunit::"Trans. Storage Error Handler", true, CompanyName(),
                 TaskDateTime, TransactStorageTaskEntry.RecordId);
         TransactStorageTaskEntry.Status := TransactStorageTaskEntry.Status::Scheduled;
+        TransactStorageTaskEntry."Scheduled Date/Time" := TaskDateTime;
         TransactStorageTaskEntry."Is First Attempt" := IsFirstAttempt;
         TransactStorageTaskEntry.Modify();
         FeatureTelemetry.LogUsage('0000LNC', TransactionStorageTok, 'A new task has been scheduled to export data.');
+    end;
+
+    local procedure GetTaskDate(EarliestStartTime: Time) TaskDate: Date
+    var
+        TransactStorageTaskEntry: Record "Transact. Storage Task Entry";
+    begin
+        TaskDate := Today();
+        if Time > EarliestStartTime then
+            TaskDate += 1;
+        TransactStorageTaskEntry.SetFilter(Status, '<>%1', Enum::"Trans. Storage Export Status"::Failed);
+        if TransactStorageTaskEntry.FindLast() then
+            if DT2Date(TransactStorageTaskEntry."Starting Date/Time") + 1 > TaskDate then
+                TaskDate := DT2Date(TransactStorageTaskEntry."Starting Date/Time") + 1;
     end;
 
     procedure CheckTimeDeadline(TransactStorageTaskEntry: Record "Transact. Storage Task Entry")
@@ -179,20 +198,17 @@ codeunit 6203 "Transaction Storage Impl."
     end;
 
 #if not CLEAN24
-    local procedure IsFeatureEnableDatePassed(): Boolean
+    [NonDebuggable]
+    local procedure IsFeatureEnabled(): Boolean
     var
-        FeatureEnableDatePassed: Boolean;
-        IsHandled: Boolean;
+        AzureKeyVault: Codeunit "Azure Key Vault";
+        FeatureEnabledValue: Text;
     begin
-        OnBeforeCheckFeatureEnableDate(FeatureEnableDatePassed, IsHandled);
-        if IsHandled then
-            exit(FeatureEnableDatePassed);
-        exit(CurrentDateTime() > GetFeatureEnableDateTime());
-    end;
-
-    local procedure GetFeatureEnableDateTime(): DateTime
-    begin
-        exit(CreateDateTime(20240101D, 0T));    // 1 January 2024
+        if not AzureKeyVault.GetAzureKeyVaultSecret(TransactionStorageFeatureEnabledKeyTok, FeatureEnabledValue) then begin
+            FeatureTelemetry.LogError('0000LZM', TransactionStorageTok, '', StrSubstNo(CannotGetStorageNameFromKeyVaultErr, TransactionStorageFeatureEnabledKeyTok));
+            exit(false);
+        end;
+        exit(FeatureEnabledValue = 'True');
     end;
 #endif
     [InternalEvent(false)]

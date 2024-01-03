@@ -16,14 +16,8 @@ using System.Telemetry;
 
 codeunit 1070 "MS - PayPal Standard Mgt."
 {
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
     Permissions = TableData "Payment Method" = rimd, TableData "Payment Reporting Argument" = rimd;
     TableNo = "Payment Reporting Argument";
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
     trigger OnRun();
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
@@ -90,13 +84,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         exit(PayPalTelemetryTok);
     end;
 
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
     local procedure GenerateHyperlink(var PaymentReportingArgument: Record "Payment Reporting Argument"): Boolean;
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
         MsPayPalStandardAccount: Record "MS - PayPal Standard Account";
@@ -187,13 +175,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         exit(TypeHelper.UriEscapeDataString(Uri));
     end;
 
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
     local procedure SetCaptionBasedOnLanguage(var PaymentReportingArgument: Record "Payment Reporting Argument");
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
     var
         Language: Record "Language";
         CurrentLanguage: Integer;
@@ -356,14 +338,8 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         PAGE.RUNMODAL(PAGE::"MS - PayPal Standard Setup", MSPayPalStandardAccount);
     end;
 
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]
     local procedure RegisterServiceConnection(var ServiceConnection: Record "Service Connection");
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
     var
         MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
         MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";

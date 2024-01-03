@@ -146,7 +146,7 @@ report 31194 "Service Order CZL"
             column(OrderDate_ServiceHeaderCaption; FieldCaption("Order Date"))
             {
             }
-            column(OrderDate_ServiceHeader; "Order Date")
+            column(OrderDate_ServiceHeader; Format("Order Date"))
             {
             }
             column(YourReference_ServiceHeaderCaption; FieldCaption("Your Reference"))
@@ -295,7 +295,7 @@ report 31194 "Service Order CZL"
                     column(ResponseDate_ServiceItemLineCaption; FieldCaption("Response Date"))
                     {
                     }
-                    column(ResponseDate_ServiceItemLine; "Response Date")
+                    column(ResponseDate_ServiceItemLine; Format("Response Date"))
                     {
                     }
                     column(ResponseTime_ServiceItemLineCaption; FieldCaption("Response Time"))

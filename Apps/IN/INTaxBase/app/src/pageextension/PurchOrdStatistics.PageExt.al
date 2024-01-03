@@ -23,12 +23,25 @@ pageextension 18567 "Purch. Ord. Statistics" extends "Purchase Order Statistics"
     }
 
     trigger OnAfterGetRecord()
+    begin
+        FormatLine();
+    end;
+
+    local procedure GetTotalInclTaxAmount()
     var
         CalcStatistics: Codeunit "Calculate Statistics";
     begin
         CalcStatistics.GetPurchaseStatisticsAmount(Rec, TotalInclTaxAmount);
+        Calculated := true;
+    end;
+
+    local procedure FormatLine()
+    begin
+        if not Calculated then
+            GetTotalInclTaxAmount();
     end;
 
     var
         TotalInclTaxAmount: Decimal;
+        Calculated: Boolean;
 }

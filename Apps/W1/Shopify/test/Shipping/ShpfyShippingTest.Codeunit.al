@@ -12,6 +12,7 @@ codeunit 139606 "Shpfy Shipping Test"
     var
         SalesShipmentHeader: Record "Sales Shipment Header";
         SalesShipmentLine: Record "Sales Shipment Line";
+        Shop: Record "Shpfy Shop";
         ExportShipments: Codeunit "Shpfy Export Shipments";
         JsonHelper: Codeunit "Shpfy Json Helper";
         FulfillmentRequest: Text;
@@ -23,14 +24,15 @@ codeunit 139606 "Shpfy Shipping Test"
         LocationId: BigInteger;
     begin
         // [SCENARIO] Export a Sales Shipment record into a Json token that contains the shipping info
-        // [GIVEN] A random Sales Shipment, a random LocationId
+        // [GIVEN] A random Sales Shipment, a random LocationId, a random Shop
+        Shop.Init();
         LocationId := Any.IntegerInRange(10000, 99999);
         ShopifyOrderId := CreateRandomShopifyOrder(LocationId);
         ShopifyFulfillmentOrderId := CreateShopifyFulfillmentOrder(ShopifyOrderId);
         CreateRandomSalesShipment(SalesShipmentHeader, ShopifyOrderId);
 
         // [WHEN] Invoke the function CreateFulfillmentRequest()
-        FulfillmentRequest := ExportShipments.CreateFulfillmentOrderRequest(SalesShipmentHeader, LocationId);
+        FulfillmentRequest := ExportShipments.CreateFulfillmentOrderRequest(SalesShipmentHeader, Shop, LocationId);
 
         // [THEN] We must find the correct fulfilment data in the json token
         LibraryAssert.IsTrue(FulfillmentRequest.Contains(Format(ShopifyFulfillmentOrderId)), 'Fulfillmentorder Id Check');

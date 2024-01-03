@@ -186,13 +186,13 @@ report 31187 "Sales Order Confirmation CZL"
             column(OrderDate_SalesHeaderCaption; FieldCaption("Order Date"))
             {
             }
-            column(OrderDate_SalesHeader; "Order Date")
+            column(OrderDate_SalesHeader; Format("Order Date"))
             {
             }
             column(ShipmentDate_SalesHeaderCaption; FieldCaption("Shipment Date"))
             {
             }
-            column(ShipmentDate_SalesHeader; "Shipment Date")
+            column(ShipmentDate_SalesHeader; Format("Shipment Date"))
             {
             }
             column(PaymentTerms; PaymentTerms.Description)
@@ -225,12 +225,20 @@ report 31187 "Sales Order Confirmation CZL"
             column(AmountIncludingVAT_SalesHeader; "Amount Including VAT")
             {
             }
+#if not CLEAN24
             column(DueDate_SalesHeaderCaption; FieldCaption("Due Date"))
             {
+                ObsoleteState = Pending;
+                ObsoleteTag = '24.0';
+                ObsoleteReason = 'The field is not use anymore.';
             }
-            column(DueDateFormat_SalesHeader; FormatDate("Due Date"))
+            column(DueDateFormat_SalesHeader; Format("Due Date"))
             {
+                ObsoleteState = Pending;
+                ObsoleteTag = '24.0';
+                ObsoleteReason = 'The field is not use anymore.';
             }
+#endif
             column(DocFooterText; DocFooterText)
             {
             }
@@ -589,11 +597,6 @@ report 31187 "Sales Order Confirmation CZL"
     begin
         FormatAddress.SalesHeaderBillTo(CustAddr, SalesHeader);
         FormatAddress.SalesHeaderShipTo(ShipToAddr, CustAddr, SalesHeader);
-    end;
-
-    local procedure FormatDate(DateValue: Date): Text
-    begin
-        exit(Format(DateValue, 0, '<Day>.<Month>.<Year4>'));
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

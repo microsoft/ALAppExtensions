@@ -50,6 +50,9 @@ table 30102 "Shpfy Shop"
                     if not "Shopify URL".ToLower().StartsWith('https://') then
                         "Shopify URL" := CopyStr('https://' + "Shopify URL", 1, MaxStrLen("Shopify URL"));
 
+                    if "Shopify URL".ToLower().StartsWith('https://admin.shopify.com/store/') then
+                        "Shopify URL" := CopyStr('https://' + "Shopify URL".Replace('https://admin.shopify.com/store/', '').Split('/').Get(1) + '.myshopify.com', 1, MaxStrLen("Shopify URL"));
+
                     if not AuthenticationMgt.IsValidShopUrl("Shopify URL") then
                         Error(InvalidShopUrlErr);
                 end;
@@ -705,6 +708,12 @@ table 30102 "Shpfy Shop"
             Caption = 'Can Update Shopify Companies';
             DataClassification = CustomerContent;
             InitValue = false;
+
+            trigger OnValidate()
+            begin
+                if "Can Update Shopify Companies" then
+                    "Shopify Can Update Companies" := false;
+            end;
         }
         field(119; "Default Contact Permission"; Enum "Shpfy Default Cont. Permission")
         {
@@ -715,7 +724,36 @@ table 30102 "Shpfy Shop"
         field(120; "Auto Create Catalog"; Boolean)
         {
             Caption = 'Auto Create Catalog';
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
+        }
+        field(121; "Company Import From Shopify"; Enum "Shpfy Company Import Range")
+        {
+            Caption = 'Company Import from Shopify';
+            DataClassification = CustomerContent;
+            InitValue = WithOrderImport;
+        }
+        field(122; "Shopify Can Update Companies"; Boolean)
+        {
+            Caption = 'Shopify Can Update Companies';
+            DataClassification = CustomerContent;
+            InitValue = false;
+
+            trigger OnValidate()
+            begin
+                if "Shopify Can Update Companies" then
+                    "Can Update Shopify Companies" := false;
+            end;
+        }
+        field(123; "Auto Create Unknown Companies"; Boolean)
+        {
+            Caption = 'Auto Create Unknown Companies';
+            DataClassification = CustomerContent;
+        }
+        field(124; "Send Shipping Confirmation"; Boolean)
+        {
+            Caption = 'Send Shipping Confirmation';
+            DataClassification = CustomerContent;
+            InitValue = true;
         }
         field(200; "Shop Id"; Integer)
         {

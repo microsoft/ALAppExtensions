@@ -79,6 +79,7 @@ codeunit 139511 "SAF-T Tests"
         TempBlob: Codeunit "Temp Blob";
     begin
         // [SCENARIO 452704] Export General Ledger Entries.
+        // [SCENARIO 495176] "TransactionID" xml node contains the concatenated value of the "Posting Date" and "Document No." fields of the G/L Entry
         Initialize();
         GLEntry.DeleteAll();
 
@@ -302,6 +303,84 @@ codeunit 139511 "SAF-T Tests"
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/MasterFiles/Suppliers/Supplier/ClosingDebitBalance', GetSAFTMonetaryDecimal(OpeningAmount + AmountInPeriod));
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandlerYes,MessageHandler')]
+    procedure GLEntriesGroupedByDocNoAndPostingDate()
+    var
+        GLAccountMappingLine: Record "G/L Account Mapping Line";
+        AuditFileExportHeader: Record "Audit File Export Header";
+        GenJournalLine: Record "Gen. Journal Line";
+        GLEntry: Record "G/L Entry";
+        BankAccLedgEntry: Record "Bank Account Ledger Entry";
+        TempBlob: Codeunit "Temp Blob";
+        NamespacePrefix: Text;
+        NamespaceUri: Text;
+        DocNo: array[2] of Code[20];
+        PostingDate: array[2] of Date;
+        i: Integer;
+        j: Integer;
+        EntryNo: Integer;
+    begin
+        // [SCENARIO 49517] G/L Entries are grouped by Document No. and Posting Date in the SAF-T xml file
+
+        Initialize();
+        GLEntry.DeleteAll();
+        BankAccLedgEntry.DeleteAll();
+
+        // [GIVEN] Audit File Export Format "SAF-T" set up.
+
+        // [GIVEN] G/L Account Mapping which has all G/L Accounts mapped.
+        SAFTTestsHelper.CreateGLAccMappingWithLine(GLAccountMappingLine);
+
+        // [GIVEN] Four documents posted. Each document has two G/L entries - for the primary and for the balanced G/L Account No.
+        // [GIVEN] Posting Date = 01.01.2023, Doc No. = G001
+        // [GIVEN] Posting Date = 01.01.2023, Doc No. = G002
+        // [GIVEN] Posting Date = 01.02.2023, Doc No. = G001
+        // [GIVEN] Posting Date = 01.02.2023, Doc No. = G002
+        for i := 1 to ArrayLen(DocNo) do begin
+            PostingDate[i] := CalcDate('<' + format(i) + 'M>', WorkDate());
+            DocNo[i] := LibraryUtility.GenerateGUID();
+        end;
+        for i := 1 to ArrayLen(PostingDate) do
+            for j := 1 to ArrayLen(DocNo) do
+                CreateAndPostGenJnlLineWithPostingDateDocNo(
+                    GenJournalLine, PostingDate[i], DocNo[j], "Gen. Journal Account Type"::"G/L Account", GLAccountMappingLine."G/L Account No.", LibraryRandom.RandDecInRange(100, 200, 2));
+
+        // [GIVEN] Audit File Export document with "Split By Month" option enabled
+        SAFTTestsHelper.CreateAuditFileExportDoc(AuditFileExportHeader, PostingDate[1], PostingDate[2], false);
+        AuditFileExportHeader.Validate("Split By Month", true);
+        AuditFileExportHeader.Modify(true);
+
+        // [WHEN] Start export.
+        SAFTTestsHelper.StartExport(AuditFileExportHeader);
+
+        // [THEN] The second and third files contain G/L entries for the certain month
+        // [THEN] Both file contain two TransactionID xml nodes:
+        // [THEN] Second one - G00101012023 and G00201012023, third one - G00101022023 and G00201022023
+        // [THEN] Each TransactionID node contains two RecordID xml nodes with the same value as Entry No. of the G/L Entry
+        for i := 2 to ArrayLen(PostingDate) + 1 do begin
+            Clear(TempBlob);
+            GetAuditFileContent(AuditFileExportHeader.ID, i, TempBlob);
+            XmlDataHandlingSAFTTest.GetAuditFileNamespace(NamespacePrefix, NamespaceUri);
+            LibraryXPathXMLReader.InitializeWithBlob(TempBlob, NamespaceUri);
+            EntryNo := 0;
+            for j := 1 to ArrayLen(DocNo) do begin
+                LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
+                    '/AuditFile/GeneralLedgerEntries/Journal/Transaction/TransactionID',
+                    DocNo[j] + Format(PostingDate[i - 1], 0, '<Day,2><Month,2><Year,2>'), j - 1);
+                GLEntry.SetRange("Posting Date", PostingDate[i - 1]);
+                GLEntry.SetRange("Document No.", DocNo[j]);
+                GLEntry.FindSet();
+                repeat
+                    LibraryXPathXMLReader.VerifyNodeValueByXPathWithIndex(
+                        '/AuditFile/GeneralLedgerEntries/Journal/Transaction/Line/RecordID',
+                        Format(GLEntry."Entry No."), EntryNo);
+                    EntryNo += 1;
+                until GLEntry.Next() = 0;
+            end;
+        end;
+    end;
+
     local procedure Initialize()
     begin
         if IsInitialized then
@@ -316,19 +395,38 @@ codeunit 139511 "SAF-T Tests"
 
     local procedure CreateAndPostGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; AccountType: Enum "Gen. Journal Account Type"; AccountNo: Code[20]; Amount: Decimal)
     var
-        GenJournalTemplate: Record "Gen. Journal Template";
         GenJournalBatch: Record "Gen. Journal Batch";
+    begin
+        CreateGenJnlBatch(GenJournalBatch);
+        LibraryERM.CreateGeneralJnlLine(
+            GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name,
+            "Gen. Journal Document Type"::Payment, AccountType, AccountNo, Amount);
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+    end;
+
+    local procedure CreateAndPostGenJnlLineWithPostingDateDocNo(var GenJournalLine: Record "Gen. Journal Line"; PostingDate: Date; DocNo: Code[20]; AccountType: Enum "Gen. Journal Account Type"; AccountNo: Code[20]; Amount: Decimal)
+    var
+        GenJournalBatch: Record "Gen. Journal Batch";
+    begin
+        CreateGenJnlBatch(GenJournalBatch);
+        LibraryERM.CreateGeneralJnlLine(
+            GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name,
+            "Gen. Journal Document Type"::Payment, AccountType, AccountNo, Amount);
+        GenJournalLine.Validate("Posting Date", PostingDate);
+        GenJournalLine.Validate("Document No.", DocNo);
+        GenJournalLine.Modify(true);
+        LibraryERM.PostGeneralJnlLine(GenJournalLine);
+    end;
+
+    local procedure CreateGenJnlBatch(var GenJournalBatch: Record "Gen. Journal Batch")
+    var
+        GenJournalTemplate: Record "Gen. Journal Template";
     begin
         LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
         LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
         GenJournalBatch.Validate("Bal. Account Type", "Gen. Journal Account Type"::"Bank Account");
         GenJournalBatch.Validate("Bal. Account No.", LibraryERM.CreateBankAccountNo());
         GenJournalBatch.Modify(true);
-
-        LibraryERM.CreateGeneralJnlLine(
-            GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name,
-            "Gen. Journal Document Type"::Payment, AccountType, AccountNo, Amount);
-        LibraryERM.PostGeneralJnlLine(GenJournalLine);
     end;
 
     local procedure CreateAndPostSalesOrder(var SalesInvoiceLine: Record "Sales Invoice Line")
@@ -431,7 +529,9 @@ codeunit 139511 "SAF-T Tests"
     begin
         XmlDataHandlingSAFTTest.GetAuditFileNamespace(NamespacePrefix, NamespaceUri);
         LibraryXPathXMLReader.InitializeWithBlob(TempBlob, NamespaceUri);
-        LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/GeneralLedgerEntries/Journal/Transaction/TransactionID', GenJournalLine."Document No.");
+        LibraryXPathXMLReader.VerifyNodeValueByXPath(
+            '/AuditFile/GeneralLedgerEntries/Journal/Transaction/TransactionID',
+            GenJournalLine."Document No." + Format(GenJournalLine."Posting Date", 0, '<Day,2><Month,2><Year,2>'));
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/GeneralLedgerEntries/Journal/Transaction/TransactionDate', Format(GenJournalLine."Document Date", 0, 9));
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/GeneralLedgerEntries/Journal/Transaction/TransactionType', Format(GenJournalLine."Document Type"));
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/GeneralLedgerEntries/Journal/Transaction/Line/CreditAmount/Amount', GetSAFTMonetaryDecimal(GenJournalLine."Amount (LCY)"));
@@ -451,6 +551,9 @@ codeunit 139511 "SAF-T Tests"
         SalesInvoiceHeader.CalcFields(Amount, "Amount Including VAT");
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/SalesInvoices/Invoice/InvoiceNo', SalesInvoiceLine."Document No.");
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/SalesInvoices/Invoice/InvoiceDate', Format(SalesInvoiceHeader."Document Date", 0, 9));
+        LibraryXPathXMLReader.VerifyNodeValueByXPath(
+            '/AuditFile/SourceDocuments/SalesInvoices/Invoice/TransactionID',
+            SalesInvoiceHeader."No." + Format(SalesInvoiceHeader."Posting Date", 0, '<Day,2><Month,2><Year,2>'));
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/SalesInvoices/Invoice/Line/ProductCode', SalesInvoiceLine."No.");
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/SalesInvoices/Invoice/Line/Quantity', Format(SalesInvoiceLine.Quantity, 0, 9));
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/SalesInvoices/Invoice/Line/UnitPrice', GetSAFTMonetaryDecimal(SalesInvoiceLine."Unit Price"));
@@ -462,6 +565,9 @@ codeunit 139511 "SAF-T Tests"
         PurchInvHeader.CalcFields(Amount, "Amount Including VAT");
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/PurchaseInvoices/Invoice/InvoiceNo', PurchInvLine."Document No.");
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/PurchaseInvoices/Invoice/InvoiceDate', Format(PurchInvHeader."Document Date", 0, 9));
+        LibraryXPathXMLReader.VerifyNodeValueByXPath(
+            '/AuditFile/SourceDocuments/PurchaseInvoices/Invoice/TransactionID',
+            PurchInvHeader."No." + Format(PurchInvHeader."Posting Date", 0, '<Day,2><Month,2><Year,2>'));
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/PurchaseInvoices/Invoice/Line/ProductCode', PurchInvLine."No.");
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/PurchaseInvoices/Invoice/Line/Quantity', Format(PurchInvLine.Quantity, 0, 9));
         LibraryXPathXMLReader.VerifyNodeValueByXPath('/AuditFile/SourceDocuments/PurchaseInvoices/Invoice/Line/UnitPrice', GetSAFTMonetaryDecimal(PurchInvLine."Direct Unit Cost"));

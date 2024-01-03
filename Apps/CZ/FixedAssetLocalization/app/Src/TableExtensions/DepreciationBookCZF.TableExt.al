@@ -5,6 +5,7 @@
 namespace Microsoft.FixedAssets;
 
 using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.Posting;
 
 tableextension 31246 "Depreciation Book CZF" extends "Depreciation Book"
 {
@@ -60,4 +61,29 @@ tableextension 31246 "Depreciation Book CZF" extends "Depreciation Book"
             end;
         }
     }
+
+    trigger OnAfterInsert()
+    begin
+        if FAPostingTypeSetup.Get(Code, Enum::"FA Posting Type Setup Type"::Appreciation) then begin
+            FAPostingTypeSetup."Include in Gain/Loss Calc." := true;
+            FAPostingTypeSetup.Modify();
+        end;
+        if FAPostingTypeSetup.Get(Code, Enum::"FA Posting Type Setup Type"::"Write-Down") then begin
+            FAPostingTypeSetup."Part of Depreciable Basis" := true;
+            FAPostingTypeSetup.Modify();
+        end;
+        if FAPostingTypeSetup.Get(Code, Enum::"FA Posting Type Setup Type"::"Custom 1") then begin
+            FAPostingTypeSetup.Init();
+            FAPostingTypeSetup."Include in Gain/Loss Calc." := true;
+            FAPostingTypeSetup.Sign := FAPostingTypeSetup.Sign::Credit;
+            FAPostingTypeSetup.Modify();
+        end;
+        if FAPostingTypeSetup.Get(Code, Enum::"FA Posting Type Setup Type"::"Custom 2") then begin
+            FAPostingTypeSetup.Init();
+            FAPostingTypeSetup."Include in Gain/Loss Calc." := true;
+            FAPostingTypeSetup."Acquisition Type" := true;
+            FAPostingTypeSetup.Sign := FAPostingTypeSetup.Sign::Debit;
+            FAPostingTypeSetup.Modify();
+        end;
+    end;
 }

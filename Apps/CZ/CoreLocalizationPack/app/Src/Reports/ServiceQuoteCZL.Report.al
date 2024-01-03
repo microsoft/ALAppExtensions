@@ -150,7 +150,7 @@ report 31193 "Service Quote CZL"
             column(OrderDate_ServiceHeaderCaption; FieldCaption("Order Date"))
             {
             }
-            column(OrderDate_ServiceHeader; "Order Date")
+            column(OrderDate_ServiceHeader; Format("Order Date"))
             {
             }
             column(YourReference_ServiceHeaderCaption; FieldCaption("Your Reference"))

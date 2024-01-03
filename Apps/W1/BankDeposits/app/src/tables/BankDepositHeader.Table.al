@@ -430,7 +430,7 @@ table 1690 "Bank Deposit Header"
         IsHandled := false;
         OnBeforeGetNoSeriesCode(Rec, SalesReceivablesSetup, NoSeriesCode, IsHandled);
         if IsHandled then
-            exit;
+            exit(NoSeriesCode);
 
         NoSeriesCode := SalesReceivablesSetup."Bank Deposit Nos.";
         OnAfterGetNoSeriesCode(Rec, NoSeriesCode);

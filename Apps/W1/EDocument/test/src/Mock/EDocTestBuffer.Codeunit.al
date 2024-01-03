@@ -1,4 +1,4 @@
-codeunit 139625 "Purch. Doc. Test Buffer"
+codeunit 139625 "E-Doc. Test Buffer"
 {
     SingleInstance = true;
 
@@ -33,7 +33,7 @@ codeunit 139625 "Purch. Doc. Test Buffer"
             until PurchLine.Next() = 0;
     end;
 
-    procedure GetTempVariables(var TmpPurchHeader2: Record "Purchase Header" temporary; var TmpPurchLine2: Record "Purchase Line" temporary)
+    procedure GetPurchaseDocToTempVariables(var TmpPurchHeader2: Record "Purchase Header" temporary; var TmpPurchLine2: Record "Purchase Line" temporary)
     begin
         TmpPurchHeader2.Copy(TmpPurchHeader, true);
         TmpPurchLine2.Copy(TmpPurchLine, true);
