@@ -70,6 +70,10 @@ page 4094 "GP Customer Transactions"
                     ApplicationArea = All;
                     ToolTip = 'PYMTRMID';
                 }
+                field(NOTEINDX; Rec.NOTEINDX)
+                {
+                    ToolTip = 'Note Index';
+                }
             }
         }
     }

@@ -8,6 +8,7 @@ codeunit 139662 "GP Item Tests"
 
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPSY03900: Record "GP SY03900";
         Assert: Codeunit Assert;
         ItemDataMigrationFacade: Codeunit "Item Data Migration Facade";
         GPItemMigrator: Codeunit "GP Item Migrator";
@@ -19,6 +20,7 @@ codeunit 139662 "GP Item Tests"
     var
         GPItem: Record "GP Item";
         Item: Record "Item";
+        RecordLink: Record "Record Link";
         HelperFunctions: Codeunit "Helper Functions";
     begin
         // [SCENARIO] Items are migrated from GP
@@ -66,6 +68,12 @@ codeunit 139662 "GP Item Tests"
             Assert.AreEqual(GPItem.PurchUnitOfMeasure, Item."Purch. Unit of Measure", 'Purch. Unit of Measure not set.');
             GPItem.Next();
         until Item.Next() = 0;
+
+        // Record notes
+        Item.Get('4'' STEPLADDER');
+        RecordLink.SetRange("Record ID", Item.RecordId());
+        Assert.AreEqual(true, RecordLink.FindFirst(), 'Record note was not migrated');
+        Assert.AreEqual(true, RecordLink.Note.HasValue(), 'Record note does not have a value');
     end;
 
     [Test]
@@ -384,6 +392,13 @@ codeunit 139662 "GP Item Tests"
         GPItem.PurchUnitOfMeasure := 'Each';
         GPItem.Insert();
 
+        Clear(GPSY03900);
+        GPSY03900.NOTEINDX := 3;
+        GPSY03900.DATE1 := System.CurrentDateTime();
+        GPSY03900.TXTFIELD := 'Note text';
+        GPSY03900.DEX_ROW_ID := 3;
+        GPSY03900.Insert();
+
         GPItem.Init();
         GPItem.No := 'ITEM INACTIVE';
         GPItem.Description := 'Inactive item';
@@ -401,7 +416,7 @@ codeunit 139662 "GP Item Tests"
         GPItem.Insert();
 
 #pragma warning disable AA0139
-        GPIV00101.Init();
+        Clear(GPIV00101);
         GPIV00101.ITEMNMBR := GPItem.No;
         GPIV00101.INACTIVE := true;
         GPIV00101.Insert();
@@ -489,6 +504,7 @@ codeunit 139662 "GP Item Tests"
         GPIV00101.Init();
         GPIV00101.ITEMNMBR := '4'' STEPLADDER';
         GPIV00101.ITMCLSCD := 'TEST-2';
+        GPIV00101.NOTEINDX := 3;
         GPIV00101.Insert();
     end;
 }

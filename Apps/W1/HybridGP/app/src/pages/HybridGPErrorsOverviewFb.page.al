@@ -6,10 +6,6 @@ page 40132 "Hybrid GP Errors Overview Fb"
 {
     Caption = 'GP Upgrade Errors';
     PageType = CardPart;
-    InsertAllowed = false;
-    DelayedInsert = false;
-    ModifyAllowed = false;
-    SourceTable = "GP Migration Error Overview";
 
     layout
     {
@@ -51,23 +47,46 @@ page 40132 "Hybrid GP Errors Overview Fb"
                     end;
                 }
             }
+            cuegroup(MigrationLog)
+            {
+                ShowCaption = false;
+
+                field("Migration Log"; MigrationLogCount)
+                {
+                    Caption = 'Migration Log';
+                    ApplicationArea = All;
+                    ToolTip = 'Indicates the number of migration log entries.';
+
+                    trigger OnDrillDown()
+                    begin
+                        Page.Run(Page::"GP Migration Log");
+                    end;
+                }
+            }
         }
     }
     trigger OnAfterGetRecord()
+    var
+        GPMigrationErrorOverview: Record "GP Migration Error Overview";
     begin
-        MigrationErrorCount := Rec.Count();
+        MigrationErrorCount := GPMigrationErrorOverview.Count();
     end;
 
     trigger OnAfterGetCurrRecord()
     var
+        GPMigrationErrorOverview: Record "GP Migration Error Overview";
         HybridCompanyUpgrade: Record "Hybrid Company Status";
+        GPMigrationLog: Record "GP Migration Log";
     begin
-        MigrationErrorCount := Rec.Count();
+        MigrationErrorCount := GPMigrationErrorOverview.Count();
         HybridCompanyUpgrade.SetRange("Upgrade Status", HybridCompanyUpgrade."Upgrade Status"::Failed);
         FailedCompanyCount := HybridCompanyUpgrade.Count();
+
+        MigrationLogCount := GPMigrationLog.Count();
     end;
 
     var
         MigrationErrorCount: Integer;
         FailedCompanyCount: Integer;
+        MigrationLogCount: Integer;
 }

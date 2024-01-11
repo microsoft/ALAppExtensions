@@ -81,7 +81,10 @@ codeunit 4019 "GP Item Migrator"
 
     procedure MigrateItemDetails(GPItem: Record "GP Item"; ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
     var
+        GPIV00101: Record "GP IV00101";
+        Item: Record Item;
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
+        HelperFunctions: Codeunit "Helper Functions";
     begin
         if not ItemDataMigrationFacade.CreateItemIfNeeded(CopyStr(GPItem.No, 1, 20), GPItem.Description, GPItem.ShortName, ConvertItemType(GPItem.ItemType)) then
             exit;
@@ -103,6 +106,12 @@ codeunit 4019 "GP Item Migrator"
         ItemDataMigrationFacade.SetPurchUnitOfMeasure(GPItem.PurchUnitOfMeasure);
         ItemDataMigrationFacade.SetItemTrackingCode(GPItem.ItemTrackingCode);
         ItemDataMigrationFacade.ModifyItem(true);
+
+        GPIV00101.SetLoadFields(NOTEINDX);
+        if GPIV00101.Get(GPItem.No) then
+            if GPIV00101.NOTEINDX > 0 then
+                if Item.Get(GPItem.No) then
+                    HelperFunctions.MigrateRecordNote(GPIV00101.NOTEINDX, Item.RecordId(), 'GP Item: ' + Item."No.");
     end;
 
 #if not CLEAN22

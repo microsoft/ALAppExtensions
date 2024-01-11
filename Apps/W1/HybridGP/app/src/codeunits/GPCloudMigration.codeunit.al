@@ -319,6 +319,7 @@ codeunit 4025 "GP Cloud Migration"
         UpdateOrInsertRecord(Database::"GP Payment Terms", 'SY03300');
         UpdateOrInsertRecord(Database::"GP Bank MSTR", 'SY04100');
         UpdateOrInsertRecord(Database::"GP SY06000", 'SY06000');
+        UpdateOrInsertRecord(Database::"GP SY03900", 'SY03900');
         UpdateOrInsertRecord(Database::"GP SY40100", 'SY40100');
         UpdateOrInsertRecord(Database::"GP SY40101", 'SY40101');
     end;

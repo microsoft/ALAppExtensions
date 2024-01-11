@@ -65,6 +65,10 @@ page 4097 "GP Vendor Transactions"
                     ApplicationArea = All;
                     ToolTip = 'PYMTRMID';
                 }
+                field(NOTEINDX; Rec.NOTEINDX)
+                {
+                    ToolTip = 'Note Index';
+                }
             }
         }
     }

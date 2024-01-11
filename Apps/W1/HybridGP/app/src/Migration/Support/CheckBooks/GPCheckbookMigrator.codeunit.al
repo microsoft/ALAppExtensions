@@ -15,6 +15,7 @@ codeunit 40025 "GP Checkbook Migrator"
         GPCheckbookMSTR: Record "GP Checkbook MSTR";
         BankAccount: Record "Bank Account";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        HelperFunctions: Codeunit "Helper Functions";
         MigrateInactiveCheckbooks: Boolean;
     begin
         MigrateInactiveCheckbooks := GPCompanyAdditionalSettings.GetMigrateInactiveCheckbooks();
@@ -33,6 +34,9 @@ codeunit 40025 "GP Checkbook Migrator"
                     BankAccount."Bank Acc. Posting Group" := GetOrCreateBankAccPostingGroup(GPCheckbookMSTR.ACTINDX);
                     UpdateBankInfo(DelChr(GPCheckbookMSTR.BANKID, '>', ' '), BankAccount);
                     BankAccount.Insert(true);
+
+                    if GPCheckbookMSTR.NOTEINDX > 0 then
+                        HelperFunctions.MigrateRecordNote(GPCheckbookMSTR.NOTEINDX, BankAccount.RecordId(), 'GP Bank Account: ' + BankAccount."No.");
 
                     if not GPCompanyAdditionalSettings.GetMigrateOnlyBankMaster() then
                         CreateTransactions(BankAccount."No.", BankAccount."Bank Acc. Posting Group", GPCheckbookMSTR.CHEKBKID,

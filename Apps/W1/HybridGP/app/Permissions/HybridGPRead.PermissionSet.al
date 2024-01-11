@@ -118,5 +118,7 @@ permissionset 4032 "HybridGP - Read"
                     tabledata "GP PM10200" = R,
                     tabledata "GP PM30300" = R,
                     tabledata "GP RM20201" = R,
-                    tabledata "GP RM30201" = R;
+                    tabledata "GP RM30201" = R,
+                    tabledata "GP SY03900" = R,
+                    tabledata "GP Migration Log" = R;
 }

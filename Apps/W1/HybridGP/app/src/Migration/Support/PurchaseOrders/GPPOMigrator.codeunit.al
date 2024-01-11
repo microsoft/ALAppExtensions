@@ -21,6 +21,7 @@ codeunit 40108 "GP PO Migrator"
         GPCodeTxt: Label 'GP', Locked = true;
         ItemJournalBatchNameTxt: Label 'GPPOITEMS', Comment = 'Item journal batch name for item adjustments', Locked = true;
         SimpleInvJnlNameTxt: Label 'DEFAULT', Comment = 'The default name of the item journal', Locked = true;
+        MigrationLogAreaTxt: Label 'PO', Locked = true;
         ItemJnlBatchLineNo: Integer;
         PostPurchaseOrderNoList: List of [Text];
         InitialAutomaticCostAdjustmentType: Enum "Automatic Cost Adjustment Type";
@@ -35,10 +36,14 @@ codeunit 40108 "GP PO Migrator"
         GeneralLedgerSetup: Record "General Ledger Setup";
         Vendor: Record Vendor;
         InventorySetup: Record "Inventory Setup";
+        GPMigrationLog: Record "GP Migration Log";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
+        HelperFunctions: Codeunit "Helper Functions";
         PurchaseDocumentType: Enum "Purchase Document Type";
         PurchaseDocumentStatus: Enum "Purchase Document Status";
         CountryCode: Code[10];
+        RecordNoteTxt: Text;
+        RecordNoteDate: Date;
     begin
         if InventorySetup.Get() then
             InitialAutomaticCostAdjustmentType := InventorySetup."Automatic Cost Adjustment";
@@ -96,8 +101,12 @@ codeunit 40108 "GP PO Migrator"
                 PurchaseLine.SetRange("Document Type", PurchaseLine."Document Type"::Order);
                 PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
                 if PurchaseLine.IsEmpty() then
-                    PurchaseHeader.Delete();
-            end;
+                    PurchaseHeader.Delete()
+                else
+                    if GPPOP10100.GetRecordNotesText(RecordNoteTxt, RecordNoteDate) then
+                        HelperFunctions.MigrateRecordNoteDetail(RecordNoteTxt, CreateDateTime(RecordNoteDate, 0T), PurchaseHeader.RecordId(), 'PO: ' + PurchaseHeader."No.");
+            end else
+                GPMigrationLog.InsertLog(MigrationLogAreaTxt, GPPOP10100.PONUMBER, 'PO was skipped because the Vendor has not been migrated.');
         until GPPOP10100.Next() = 0;
 
         PostReceivedPurchaseLines();
@@ -199,6 +208,7 @@ codeunit 40108 "GP PO Migrator"
     var
         PurchaseLine: Record "Purchase Line";
         Item: Record Item;
+        HelperFunctions: Codeunit "Helper Functions";
         PurchaseDocumentType: Enum "Purchase Document Type";
         PurchaseLineType: Enum "Purchase Line Type";
         ItemNo: Code[20];
@@ -207,6 +217,8 @@ codeunit 40108 "GP PO Migrator"
         AdjustedQuantityReceived: Decimal;
         AdjustedQuantityInvoiced: Decimal;
         QuantityOverReceipt: Decimal;
+        RecordNoteTxt: Text;
+        RecordNoteDate: Date;
     begin
         // Not generating an invoice so zero out the Invoice quantity and adjust the other counts accordingly.
         // Update Qty. to Receive to equal the adjusted amount received.
@@ -286,6 +298,9 @@ codeunit 40108 "GP PO Migrator"
 
         if PurchaseLine.Quantity > 0 then begin
             PurchaseLine.Insert(true);
+
+            if GPPOP10110.GetRecordNotesText(RecordNoteTxt, RecordNoteDate) then
+                HelperFunctions.MigrateRecordNoteDetail(RecordNoteTxt, CreateDateTime(RecordNoteDate, 0T), PurchaseLine.RecordId(), 'PO Line: ' + PurchaseLine."Document No." + ', ' + PurchaseLine."No." + ', ' + Format(PurchaseLine."Line No."));
 
             if IsInventoryItem and (PurchaseLine."Qty. to Receive (Base)" > 0) then begin
                 if not PostPurchaseOrderNoList.Contains(PONumber) then

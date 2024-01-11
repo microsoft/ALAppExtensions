@@ -1,6 +1,7 @@
 namespace Microsoft.DataMigration.GP;
 
 using System.Integration;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Sales.Customer;
 using Microsoft.Foundation.Company;
 
@@ -89,8 +90,11 @@ codeunit 4018 "GP Customer Migrator"
         MigrationGPCustomer: Record "GP Customer";
         MigrationGPCustTrans: Record "GP Customer Transactions";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPRM20101: Record "GP RM20101";
+        GenJournalLine: Record "Gen. Journal Line";
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
+        HelperFunctions: Codeunit "Helper Functions";
         PaymentTermsFormula: DateFormula;
         ReceivablesAccountNo: Code[20];
     begin
@@ -199,6 +203,19 @@ codeunit 4018 "GP Customer Migrator"
                 end;
                 Sender.SetGeneralJournalLinePaymentTerms(CopyStr(MigrationGPCustTrans.PYMTRMID, 1, 10));
                 Sender.SetGeneralJournalLineExternalDocumentNo(CopyStr(MigrationGPCustTrans.DOCNUMBR.Trim(), 1, 35));
+            until MigrationGPCustTrans.Next() = 0;
+
+        // Record notes
+        Clear(MigrationGPCustTrans);
+        MigrationGPCustTrans.SetRange(CUSTNMBR, MigrationGPCustomer.CUSTNMBR);
+        MigrationGPCustTrans.SetFilter(NOTEINDX, '>%1', 0);
+        if MigrationGPCustTrans.FindSet() then
+            repeat
+                Clear(GenJournalLine);
+                GenJournalLine.SetRange("Journal Batch Name", CustomerBatchNameTxt);
+                GenJournalLine.SetRange("Document No.", MigrationGPCustTrans.GLDocNo);
+                if GenJournalLine.FindFirst() then
+                    HelperFunctions.MigrateRecordNote(MigrationGPCustTrans.NOTEINDX, GenJournalLine.RecordId(), 'GP Customer transaction: ' + Format(GenJournalLine."Document Type") + ' ' + GenJournalLine."Document No.");
             until MigrationGPCustTrans.Next() = 0;
     end;
 #pragma warning restore AA0207
@@ -343,7 +360,7 @@ codeunit 4018 "GP Customer Migrator"
         CustomerDataMigrationFacade.SetEmail(COPYSTR(MigrationGPCustomer.INET1, 1, 80));
         CustomerDataMigrationFacade.SetHomePage(COPYSTR(MigrationGPCustomer.INET2, 1, 80));
 
-        GPRM00101.SetLoadFields(ADRSCODE);
+        GPRM00101.SetLoadFields(ADRSCODE, NOTEINDX);
         if GPRM00101.Get(MigrationGPCustomer.CUSTNMBR) then
             if GPSY01200.Get(CustomerEmailTypeCodeLbl, GPRM00101.CUSTNMBR, GPRM00101.ADRSCODE) then
                 CustomerDataMigrationFacade.SetEmail(CopyStr(GPSY01200.GetAllEmailAddressesText(MaxStrLen(Customer."E-Mail")), 1, MaxStrLen(Customer."E-Mail")));
@@ -383,6 +400,10 @@ codeunit 4018 "GP Customer Migrator"
         end;
 
         CustomerDataMigrationFacade.ModifyCustomer(true);
+
+        if GPRM00101.NOTEINDX > 0 then
+            if Customer.Get(MigrationGPCustomer.CUSTNMBR) then
+                HelperFunctions.MigrateRecordNote(GPRM00101.NOTEINDX, Customer.RecordId(), 'GP Customer: ' + Customer."No.");
     end;
 
     local procedure MigrateCustomerAddresses(MigrationGPCustomer: Record "GP Customer")

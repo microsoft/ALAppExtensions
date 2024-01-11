@@ -94,6 +94,51 @@ table 40138 "GP POP10110"
             Caption = 'PRMDATE';
             DataClassification = CustomerContent;
         }
+        field(27; POLNEARY_1; Decimal)
+        {
+            Caption = 'Item Number Note Index';
+            DataClassification = CustomerContent;
+        }
+        field(28; POLNEARY_2; Decimal)
+        {
+            Caption = 'Location Code Note Index';
+            DataClassification = CustomerContent;
+        }
+        field(29; POLNEARY_3; Decimal)
+        {
+            Caption = 'Line Comment Note Index';
+            DataClassification = CustomerContent;
+        }
+        field(30; POLNEARY_4; Decimal)
+        {
+            Caption = 'Inventory Index Note Index';
+            DataClassification = CustomerContent;
+        }
+        field(31; POLNEARY_5; Decimal)
+        {
+            Caption = 'PO Line Note Index';
+            DataClassification = CustomerContent;
+        }
+        field(32; POLNEARY_6; Decimal)
+        {
+            Caption = 'Item Tax Schedule Note Index';
+            DataClassification = CustomerContent;
+        }
+        field(33; POLNEARY_7; Decimal)
+        {
+            Caption = 'Site Tax Schedule Note Index';
+            DataClassification = CustomerContent;
+        }
+        field(34; POLNEARY_8; Decimal)
+        {
+            Caption = 'Landed Cost Group ID Note Index';
+            DataClassification = CustomerContent;
+        }
+        field(35; POLNEARY_9; Decimal)
+        {
+            Caption = 'Shipping Method Note Index';
+            DataClassification = CustomerContent;
+        }
         field(40; BRKFLD1; Integer)
         {
             Caption = 'BRKFLD1';
@@ -128,4 +173,47 @@ table 40138 "GP POP10110"
             Clustered = true;
         }
     }
+
+    internal procedure GetRecordNotesText(var RecordNotesTxt: Text; var RecordNoteDate: Date): Boolean
+    var
+        HelperFunctions: Codeunit "Helper Functions";
+        NoteTextBuilder: TextBuilder;
+        EntryNoteTxt: Text;
+    begin
+        RecordNoteDate := Today();
+
+        if HelperFunctions.GetRecordNoteDetails(Rec.POLNEARY_1, EntryNoteTxt, RecordNoteDate) then
+            NoteTextBuilder.AppendLine('[Item Number] - ' + EntryNoteTxt);
+
+        if HelperFunctions.GetRecordNoteDetails(Rec.POLNEARY_2, EntryNoteTxt, RecordNoteDate) then
+            NoteTextBuilder.AppendLine('[Location Code] - ' + EntryNoteTxt);
+
+        if HelperFunctions.GetRecordNoteDetails(Rec.POLNEARY_3, EntryNoteTxt, RecordNoteDate) then
+            NoteTextBuilder.AppendLine('[Line Comment] - ' + EntryNoteTxt);
+
+        if HelperFunctions.GetRecordNoteDetails(Rec.POLNEARY_4, EntryNoteTxt, RecordNoteDate) then
+            NoteTextBuilder.AppendLine('[Inventory] - ' + EntryNoteTxt);
+
+        if HelperFunctions.GetRecordNoteDetails(Rec.POLNEARY_5, EntryNoteTxt, RecordNoteDate) then
+            NoteTextBuilder.AppendLine('[PO Line] - ' + EntryNoteTxt);
+
+        if HelperFunctions.GetRecordNoteDetails(Rec.POLNEARY_6, EntryNoteTxt, RecordNoteDate) then
+            NoteTextBuilder.AppendLine('[Item Tax Schedule] - ' + EntryNoteTxt);
+
+        if HelperFunctions.GetRecordNoteDetails(Rec.POLNEARY_7, EntryNoteTxt, RecordNoteDate) then
+            NoteTextBuilder.AppendLine('[Site Tax Schedule] - ' + EntryNoteTxt);
+
+        if HelperFunctions.GetRecordNoteDetails(Rec.POLNEARY_8, EntryNoteTxt, RecordNoteDate) then
+            NoteTextBuilder.AppendLine('[Landed Cost Group Id] - ' + EntryNoteTxt);
+
+        if HelperFunctions.GetRecordNoteDetails(Rec.POLNEARY_9, EntryNoteTxt, RecordNoteDate) then
+            NoteTextBuilder.AppendLine('[Shipping Method] - ' + EntryNoteTxt);
+
+        RecordNotesTxt := NoteTextBuilder.ToText();
+
+        if RecordNotesTxt = '' then
+            exit(false);
+
+        exit(true);
+    end;
 }

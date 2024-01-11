@@ -15,6 +15,10 @@ table 40116 "GP IV00101"
         {
             DataClassification = CustomerContent;
         }
+        field(3; NOTEINDX; Decimal)
+        {
+            DataClassification = CustomerContent;
+        }
         field(5; ITEMTYPE; Integer)
         {
             DataClassification = CustomerContent;

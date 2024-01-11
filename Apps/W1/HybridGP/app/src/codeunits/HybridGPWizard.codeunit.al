@@ -2,6 +2,7 @@ namespace Microsoft.DataMigration.GP;
 
 using Microsoft.DataMigration;
 using System.Environment;
+using System.Environment.Configuration;
 
 codeunit 4015 "Hybrid GP Wizard"
 {
@@ -143,6 +144,8 @@ codeunit 4015 "Hybrid GP Wizard"
         HybridCompany: Record "Hybrid Company";
         HybridCompanyStatus: Record "Hybrid Company Status";
         HybridReplicationDetail: Record "Hybrid Replication Detail";
+        GPMigrationLog: Record "GP Migration Log";
+        RecordLink: Record "Record Link";
     begin
         GPCompanyMigrationSettings.Reset();
         if GPCompanyMigrationSettings.FindSet() then
@@ -159,6 +162,12 @@ codeunit 4015 "Hybrid GP Wizard"
 
         if not HybridReplicationDetail.IsEmpty() then
             HybridReplicationDetail.DeleteAll();
+
+        if not GPMigrationLog.IsEmpty() then
+            GPMigrationLog.DeleteAll();
+            
+        if not RecordLink.IsEmpty() then
+            RecordLink.DeleteAll();
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Company", 'OnAfterDeleteEvent', '', false, false)]
@@ -169,6 +178,8 @@ codeunit 4015 "Hybrid GP Wizard"
         HybridCompany: Record "Hybrid Company";
         HybridCompanyStatus: Record "Hybrid Company Status";
         HybridReplicationDetail: Record "Hybrid Replication Detail";
+        GPMigrationLog: Record "GP Migration Log";
+        RecordLink: Record "Record Link";
     begin
         if Rec.IsTemporary() then
             exit;
@@ -188,6 +199,14 @@ codeunit 4015 "Hybrid GP Wizard"
         HybridReplicationDetail.SetRange("Company Name", Rec.Name);
         if not HybridReplicationDetail.IsEmpty() then
             HybridReplicationDetail.DeleteAll();
+
+        GPMigrationLog.SetRange("Company Name", Rec.Name);
+        if not GPMigrationLog.IsEmpty() then
+            GPMigrationLog.DeleteAll();
+            
+        RecordLink.SetRange(Company, Rec.Name);
+        if not RecordLink.IsEmpty() then
+            RecordLink.DeleteAll();
     end;
 
     local procedure ProcessesAreRunning(): Boolean

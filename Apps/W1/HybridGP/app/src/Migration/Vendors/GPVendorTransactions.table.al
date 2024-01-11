@@ -62,6 +62,10 @@ table 4097 "GP Vendor Transactions"
             Caption = 'Payment Terms ID';
             DataClassification = CustomerContent;
         }
+        field(12; NOTEINDX; Decimal)
+        {
+            DataClassification = CustomerContent;
+        }
     }
 
     keys
@@ -69,6 +73,9 @@ table 4097 "GP Vendor Transactions"
         key(Key1; Id)
         {
             Clustered = true;
+        }
+        key(Key2; NOTEINDX)
+        {
         }
     }
 

@@ -67,6 +67,10 @@ table 4094 "GP Customer Transactions"
             Caption = 'Payment Terms ID';
             DataClassification = CustomerContent;
         }
+        field(12; NOTEINDX; Decimal)
+        {
+            DataClassification = CustomerContent;
+        }
     }
 
     keys
@@ -74,6 +78,9 @@ table 4094 "GP Customer Transactions"
         key(Key1; Id)
         {
             Clustered = true;
+        }
+        key(Key2; NOTEINDX)
+        {
         }
     }
 

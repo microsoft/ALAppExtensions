@@ -426,6 +426,7 @@ codeunit 40125 "GP Populate Combined Tables"
 
             GPCustomerTransactions.SLPRSNID := CopyStr(GPRM20101.SLPRSNID.Trim(), 1, MaxStrLen(GPCustomerTransactions.SLPRSNID));
             GPCustomerTransactions.PYMTRMID := CopyStr(GPRM20101.PYMTRMID.Trim(), 1, MaxStrLen(GPCustomerTransactions.PYMTRMID));
+            GPCustomerTransactions.NOTEINDX := GPRM20101.NOTEINDX;
             GPCustomerTransactions.Insert();
         until GPRM20101.Next() = 0;
     end;
@@ -622,6 +623,8 @@ codeunit 40125 "GP Populate Combined Tables"
                 else
                     GPVendorTransactions.TransType := 0;
             end;
+
+            GPVendorTransactions.NOTEINDX := GPPM20000.NOTEINDX;
 
             GPVendorTransactions.Insert();
         until GPPM20000.Next() = 0;
