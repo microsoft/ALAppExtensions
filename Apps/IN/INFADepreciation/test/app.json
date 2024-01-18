@@ -2,7 +2,7 @@
     "id":  "00406151-0d06-485e-a3d6-15285cfec590",
     "name":  "Fixed Asset Depreciation Tests",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Tests for Fixed Assets Depriciaton",
     "description":  "Tests for Fixed Assets Depriciaton",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -15,26 +15,26 @@
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "publisher":  "Microsoft",
                              "name":  "Library Assert",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "publisher":  "Microsoft",
                              "name":  "Tests-TestLibraries",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "1150dd8d-51da-485a-bd4a-1ee98d78c21a",
                              "publisher":  "Microsoft",
                              "name":  "Fixed Asset Depreciation for India",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
-    "application":  "23.3.0.0",
+    "platform":  "24.0.0.0",
+    "application":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  18645,

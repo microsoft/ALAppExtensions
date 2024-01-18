@@ -29,10 +29,6 @@ codeunit 4026 "W1 Management"
         PleaseWaitForUpgradeToBeTriggeredErr: Label 'The upgrade has been scheduled at %1. Please wait for %2 minutes for the task to start. You can check if the upgrade was scheduled and track the progress in on the Operations tab in the Business Central admin center. If the task does not start during this time, start the process again.', Comment = '%1 - Time upgrade action was invoked. %2 Time in minutes to wait.';
         CheckUpgradeStatusInTenantAdminCenterMsg: Label 'The upgrade was scheduled at %1. You can see if the upgrade has run on the Operations tab in the Business Central admin center. In case the upgrade fails, we will have restored the tenant to the point before the upgrade, so you can fix any issues and start a new upgrade run.', Comment = '%1 - Time upgrade action was invoked.';
         SettingTheHybridReplicationSummaryToCompletedTxt: Label 'Updating Hybrid Replication Summary records to completed.', Locked = true;
-#if not CLEAN21
-        UpgradeEngineSelectQst: Label 'AL Code,Invoke Full Upgrade (New)';
-        UseLegacyUpgradeEngineWasChangedTxt: Label 'The setting for using the legacy upgrade engine was changed to %1', Locked = true;
-#endif
 
     trigger OnRun()
     begin
@@ -446,36 +442,6 @@ codeunit 4026 "W1 Management"
 
         exit(HybridCompanyStatus."Upgrade Status" = HybridCompanyStatus."Upgrade Status"::Pending);
     end;
-
-#if not CLEAN21
-#pragma warning disable AS0072
-    [Obsolete('No longer supported.', '21.0')]
-    procedure ChangeUpgradeEngine()
-    var
-        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
-        HybridBCLastManagement: Codeunit "Hybrid BC Last Management";
-        Selection: Integer;
-        CurrentlySelected: Integer;
-    begin
-        if not HybridBCLastManagement.GetBCLastProductEnabled() then
-            exit;
-
-        IntelligentCloudSetup.Get();
-
-        CurrentlySelected := 1;
-        if IntelligentCloudSetup."Use Legacy Upgrade Engine" then
-            CurrentlySelected := 1;
-
-        Selection := StrMenu(UpgradeEngineSelectQst, CurrentlySelected);
-        if Selection = 0 then
-            exit;
-
-        IntelligentCloudSetup."Use Legacy Upgrade Engine" := Selection = 1;
-        IntelligentCloudSetup.Modify();
-        Session.LogMessage('0000IG9', StrSubstNo(UseLegacyUpgradeEngineWasChangedTxt, Format(IntelligentCloudSetup."Use Legacy Upgrade Engine", 0, 9)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
-    end;
-#pragma warning restore AS0072
-#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Deployment", 'OnHandleVerifyCanStartUpgrade', '', false, false)]
     local procedure HandleVerifyCanStartUpgrade(var CanStartUpgrade: Boolean; var Handled: Boolean)

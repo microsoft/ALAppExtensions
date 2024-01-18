@@ -2,7 +2,7 @@
     "id":  "a20e1072-e9ce-427d-bf29-3483311f69bf",
     "name":  "TCS on Sales",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Contains features for TCS on Sales.",
     "description":  "TCS on Sales lets you calculate TCS on sales transactions through sales invoices, sales orders, and journal vouchers.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -19,26 +19,26 @@
                              "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
                              "publisher":  "Microsoft",
                              "name":  "Tax Engine",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "d3c551dd-5903-4194-b153-04ced9d29a2c",
                              "publisher":  "Microsoft",
                              "name":  "India Tax Base",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "a34a9295-94ef-4c4c-b175-367e76e5dd99",
                              "publisher":  "Microsoft",
                              "name":  "TCS Base",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "application":  "23.3.0.0",
-    "platform":  "23.0.0.0",
+    "application":  "24.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  18838,

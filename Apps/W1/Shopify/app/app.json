@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Seamless connection between Shopify and Dynamics 365 Business Central will synchronize order, stock, and customer information to ensure that merchants can fulfill orders faster and better serve their customers.",
     "description":  "Connecting Dynamics 365 Business Central with Shopify will help merchants implement more agile online business processes, while keeping people focused on selling. With support for multitier pricing structures and multiple currencies, companies, and entities, Business Central will support multiple Shopify store scenarios with ease. By connecting Shopify and Business Central, you will improve visibility into stock, pricing, existing customers and order history, order status, billing, and payments.",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2179727",
@@ -17,11 +17,11 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  30100,
-                         "to":  30299
+                         "to":  30350
                      }
                  ],
     "internalsVisibleTo":  [
@@ -41,6 +41,6 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "23.3.0.0",
+    "application":  "24.0.0.0",
     "target":  "OnPrem"
 }

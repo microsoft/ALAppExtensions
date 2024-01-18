@@ -1,6 +1,8 @@
 namespace Microsoft.Integration.Shopify;
 
+#if not CLEAN22
 using System.IO;
+#endif
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.ExtendedText;
 using Microsoft.Foundation.Shipping;

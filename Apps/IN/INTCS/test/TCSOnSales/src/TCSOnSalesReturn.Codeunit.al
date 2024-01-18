@@ -495,7 +495,6 @@ codeunit 18919 "TCS on Sales Return"
     end;
 
     local procedure GenerateTaxComponentsPercentage()
-    var
     begin
         Storage.Set(TCSPercentageLbl, Format(LibraryRandom.RandIntInRange(2, 4)));
         Storage.Set(NonPANTCSPercentageLbl, Format(LibraryRandom.RandIntInRange(6, 10)));

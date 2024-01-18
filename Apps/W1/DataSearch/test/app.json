@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Data Search Tests.",
     "description":  "Data Search Tests.",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2206906",
@@ -16,37 +16,37 @@
                              "id":  "ac14293f-1eb7-4a7b-9936-b280da31970b",
                              "name":  "Data Search",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
                              "name":  "Library Assert",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
-    "application":  "23.3.0.0",
+    "platform":  "24.0.0.0",
+    "application":  "24.0.0.0",
     "idRanges":  [
-                     {
-                         "from":  139507,
-                         "to":  139509
-                     }
-                 ],
+        {
+            "from":  139507,
+            "to":  139509
+        }
+    ],
     "target":  "OnPrem",
     "features":  [
-                     "TranslationFile"
-                 ],
-    "resourceExposurePolicy":  {
+        "TranslationFile"
+    ],
+"resourceExposurePolicy":  {
                                    "allowDebugging":  false,
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true

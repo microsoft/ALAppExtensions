@@ -1,3 +1,4 @@
+#if not CLEAN22
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -7,7 +8,6 @@ namespace Microsoft.Finance.AutomaticAccounts;
 using System.Environment;
 using System.Environment.Configuration;
 
-#if not CLEAN22
 codeunit 4853 "Auto. Acc. Codes Feature Mgt."
 {
     Permissions = TableData "Feature Key" = rm;

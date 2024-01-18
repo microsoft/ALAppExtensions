@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -112,7 +112,7 @@ codeunit 10674 "SAF-T XML Helper"
     begin
         SAFTExportLine.CalcFields("SAF-T File");
         if not SAFTExportLine."SAF-T File".HasValue() then
-            LogInternalError(NoFileGeneratedErr, DataClassification::SystemMetadata, Verbosity::Error);
+            Session.LogMessage('0000M0M', NoFileGeneratedErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', 'SAF-T');
         EntryTempBlob.FromRecord(SAFTExportLine, SAFTExportLine.FieldNo("SAF-T File"));
         FileManagement.BLOBExportToServerFile(EntryTempBlob, FilePath);
     end;

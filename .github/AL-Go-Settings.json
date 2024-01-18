@@ -5,10 +5,10 @@
     "runs-on":  "windows-latest",
     "cacheImageName":  "",
     "UsePsSession":  false,
-    "artifact":  "bcinsider//23.3.14424.0/base",
+    "artifact":  "https://bcinsider.azureedge.net/sandbox/24.0.15365.0/base",
     "country":  "base",
     "useProjectDependencies":  true,
-    "repoVersion":  "23.3",
+    "repoVersion":  "24.0",
     "cleanModePreprocessorSymbols":  [
                                          "CLEAN17",
                                          "CLEAN18",

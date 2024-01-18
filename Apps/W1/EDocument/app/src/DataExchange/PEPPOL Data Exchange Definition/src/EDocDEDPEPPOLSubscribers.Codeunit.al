@@ -714,98 +714,77 @@ codeunit 6162 "E-Doc. DED PEPPOL Subscribers"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"E-Document Service", 'OnAfterValidateEvent', 'Document Format', false, false)]
+    local procedure OnAfterValidateDocumentFormat(var Rec: Record "E-Document Service"; var xRec: Record "E-Document Service"; CurrFieldNo: Integer)
+    var
+        EDocServiceSupportedType: Record "E-Doc. Service Supported Type";
+    begin
+        if Rec."Document Format" = Rec."Document Format"::"Data Exchange" then begin
+            EDocServiceSupportedType.SetRange("E-Document Service Code", Rec.Code);
+            if EDocServiceSupportedType.IsEmpty() then begin
+                EDocServiceSupportedType.Init();
+                EDocServiceSupportedType."E-Document Service Code" := Rec.Code;
+                EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Sales Invoice";
+                EDocServiceSupportedType.Insert();
+
+                EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Sales Credit Memo";
+                EDocServiceSupportedType.Insert();
+
+                EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Service Invoice";
+                EDocServiceSupportedType.Insert();
+
+                EDocServiceSupportedType."Source Document Type" := EDocServiceSupportedType."Source Document Type"::"Service Credit Memo";
+                EDocServiceSupportedType.Insert();
+            end;
+        end;
+    end;
+
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
-        SalesInvoiceLine:
-                Record "Sales Invoice Line";
-        SalesCrMemoHeader:
-                Record "Sales Cr.Memo Header";
-        SalesCrMemoLine:
-                Record "Sales Cr.Memo Line";
-        ServiceInvoiceHeader:
-                Record "Service Invoice Header";
-        ServiceInvoiceLine:
-                Record "Service Invoice Line";
-        ServiceCrMemoHeader:
-                Record "Service Cr.Memo Header";
-        ServiceCrMemoLine:
-                Record "Service Cr.Memo Line";
-        SalesHeader:
-                Record "Sales Header";
-        SalesLine:
-                Record "Sales Line";
-        TempVATAmtLine:
-                Record "VAT Amount Line" temporary;
-        TempSalesLineRounding:
-                Record "Sales Line" temporary;
-        TempVATProductPostingGroup:
-                Record "VAT Product Posting Group" temporary;
-        PEPPOLMgt:
-                Codeunit "PEPPOL Management";
-        ProcessedDocType:
-                Enum "E-Document Type";
-        TaxAmountLCY, TaxCurrencyCodeLCY, TaxTotalCurrencyIDLCY :
-                Text;
-        SupplierEndpointID, SupplierSchemeID, SupplierName :
-                Text;
-        StreetName, AdditionalStreetName, CityName, PostalZone, CountrySubentity, IdentificationCode, DummyVar :
-                Text;
-        CompanyID, CompanyIDSchemeID, TaxSchemeID :
-                Text;
-        CustPartyTaxSchemeCompanyID, CustPartyTaxSchemeCompIDSchID, CustTaxSchemeID :
-                Text;
-        PartyLegalEntityRegName, PartyLegalEntityCompanyID, PartyLegalEntitySchemeID, SupplierRegAddrCityName, SupplierRegAddrCountryIdCode, SupplRegAddrCountryIdListId :
-                Text;
-        CustPartyLegalEntityRegName, CustPartyLegalEntityCompanyID, CustPartyLegalEntityIDSchemeID :
-                Text;
-        CustomerEndpointID, CustomerSchemeID, CustomerPartyIdentificationID, CustomerPartyIDSchemeID, CustomerName :
-                Text;
-        ContactName, Telephone, Telefax, ElectronicMail :
-                Text;
-        CustContactName, CustContactTelephone, CustContactTelefax, CustContactElectronicMail :
-                Text;
-        TaxRepPartyNameName, PayeePartyTaxSchemeCompanyID, PayeePartyTaxSchCompIDSchemeID, PayeePartyTaxSchemeTaxSchemeID :
-                Text;
-        PaymentMeansCode, PaymentChannelCode, PaymentID, PrimaryAccountNumberID, NetworkID, PayeeFinancialAccountID, FinancialInstitutionBranchID :
-                Text;
-        ActualDeliveryDate, DeliveryID, DeliveryIDSchemeID :
-                Text;
-        PaymentTermsNote:
-                Text;
-        ChargeIndicator, AllowanceChargeReasonCode, AllowanceChargeReason, Amount, AllowanceChargeCurrencyID, TaxCategoryID, Percent, AllowanceChargeTaxSchemeID :
-                Text;
-        TaxAmount, TaxTotalCurrencyID :
-                Text;
-        TaxableAmount, TaxAmountCurrencyID, SubtotalTaxAmount, TaxSubtotalCurrencyID, TransactionCurrencyTaxAmount, TransCurrTaxAmtCurrencyID, TaxTotalTaxCategoryID, TaxCategoryPercent, TaxTotalTaxSchemeID, TaxExemptionReason :
-                Text;
-        LineExtensionAmount, LegalMonetaryTotalCurrencyID, TaxExclusiveAmount, TaxExclusiveAmountCurrencyID, TaxInclusiveAmount, TaxInclusiveAmountCurrencyID, AllowanceTotalAmount, AllowanceTotalAmountCurrencyID, ChargeTotalAmount, ChargeTotalAmountCurrencyID, PrepaidAmount, PrepaidCurrencyID, PayableRoundingAmount, PayableRndingAmountCurrencyID, PayableAmount, PayableAmountCurrencyID :
-                Text;
-        DocCurrencyCode:
-                Text;
-        LnAllowanceChargeIndicator, LnAllowanceChargeReason, LnAllowanceChargeAmount, LnAllowanceChargeAmtCurrID :
-                Text;
-        Description, Name, SellersItemIdentificationID, StandardItemIdentificationID, StdItemIdIDSchemeID, OriginCountryIdCode, OriginCountryIdCodeListID :
-                Text;
-        ClassifiedTaxCategoryID, InvoiceLineTaxPercent, ClassifiedTaxCategorySchemeID, AdditionalItemPropertyName, AdditionalItemPropertyValue :
-                Text;
-        InvoiceLinePriceAmount, InvLinePriceAmountCurrencyID, BaseQuantity, UnitCodeBaseQty :
-                Text;
-        InvoiceDocRefID, InvoiceDocRefIssueDate :
-                Text;
-        DataExchEntryNo:
-                Integer;
-        TaxSubtotalLoopNumber, AllowanceChargeLoopNumber :
-                Integer;
-        CacNamespaceURILbl:
-                Label 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2', Locked = true;
-        CbcNamespaceURILbl:
-                Label 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2', Locked = true;
-        CctsNamespaceURILbl:
-                Label 'urn:un:unece:uncefact:documentation:2', Locked = true;
-        QdtNamespaceURILbl:
-                Label 'urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2', Locked = true;
-        UdtNamespaceURILbl:
-                Label 'urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2', Locked = true;
-        UoMforPieceINUNECERec20ListIDTxt:
-                Label 'EA', Locked = true;
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        SalesCrMemoLine: Record "Sales Cr.Memo Line";
+        ServiceInvoiceHeader: Record "Service Invoice Header";
+        ServiceInvoiceLine: Record "Service Invoice Line";
+        ServiceCrMemoHeader: Record "Service Cr.Memo Header";
+        ServiceCrMemoLine: Record "Service Cr.Memo Line";
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TempVATAmtLine: Record "VAT Amount Line" temporary;
+        TempSalesLineRounding: Record "Sales Line" temporary;
+        TempVATProductPostingGroup: Record "VAT Product Posting Group" temporary;
+        PEPPOLMgt: Codeunit "PEPPOL Management";
+        ProcessedDocType: Enum "E-Document Type";
+        TaxAmountLCY, TaxCurrencyCodeLCY, TaxTotalCurrencyIDLCY : Text;
+        SupplierEndpointID, SupplierSchemeID, SupplierName : Text;
+        StreetName, AdditionalStreetName, CityName, PostalZone, CountrySubentity, IdentificationCode, DummyVar : Text;
+        CompanyID, CompanyIDSchemeID, TaxSchemeID : Text;
+        CustPartyTaxSchemeCompanyID, CustPartyTaxSchemeCompIDSchID, CustTaxSchemeID : Text;
+        PartyLegalEntityRegName, PartyLegalEntityCompanyID, PartyLegalEntitySchemeID, SupplierRegAddrCityName, SupplierRegAddrCountryIdCode, SupplRegAddrCountryIdListId : Text;
+        CustPartyLegalEntityRegName, CustPartyLegalEntityCompanyID, CustPartyLegalEntityIDSchemeID : Text;
+        CustomerEndpointID, CustomerSchemeID, CustomerPartyIdentificationID, CustomerPartyIDSchemeID, CustomerName : Text;
+        ContactName, Telephone, Telefax, ElectronicMail : Text;
+        CustContactName, CustContactTelephone, CustContactTelefax, CustContactElectronicMail : Text;
+        TaxRepPartyNameName, PayeePartyTaxSchemeCompanyID, PayeePartyTaxSchCompIDSchemeID, PayeePartyTaxSchemeTaxSchemeID : Text;
+        PaymentMeansCode, PaymentChannelCode, PaymentID, PrimaryAccountNumberID, NetworkID, PayeeFinancialAccountID, FinancialInstitutionBranchID : Text;
+        ActualDeliveryDate, DeliveryID, DeliveryIDSchemeID : Text;
+        PaymentTermsNote: Text;
+        ChargeIndicator, AllowanceChargeReasonCode, AllowanceChargeReason, Amount, AllowanceChargeCurrencyID, TaxCategoryID, Percent, AllowanceChargeTaxSchemeID : Text;
+        TaxAmount, TaxTotalCurrencyID : Text;
+        TaxableAmount, TaxAmountCurrencyID, SubtotalTaxAmount, TaxSubtotalCurrencyID, TransactionCurrencyTaxAmount, TransCurrTaxAmtCurrencyID, TaxTotalTaxCategoryID, TaxCategoryPercent, TaxTotalTaxSchemeID, TaxExemptionReason : Text;
+        LineExtensionAmount, LegalMonetaryTotalCurrencyID, TaxExclusiveAmount, TaxExclusiveAmountCurrencyID, TaxInclusiveAmount, TaxInclusiveAmountCurrencyID, AllowanceTotalAmount, AllowanceTotalAmountCurrencyID, ChargeTotalAmount, ChargeTotalAmountCurrencyID, PrepaidAmount, PrepaidCurrencyID, PayableRoundingAmount, PayableRndingAmountCurrencyID, PayableAmount, PayableAmountCurrencyID : Text;
+        DocCurrencyCode: Text;
+        LnAllowanceChargeIndicator, LnAllowanceChargeReason, LnAllowanceChargeAmount, LnAllowanceChargeAmtCurrID : Text;
+        Description, Name, SellersItemIdentificationID, StandardItemIdentificationID, StdItemIdIDSchemeID, OriginCountryIdCode, OriginCountryIdCodeListID : Text;
+        ClassifiedTaxCategoryID, InvoiceLineTaxPercent, ClassifiedTaxCategorySchemeID, AdditionalItemPropertyName, AdditionalItemPropertyValue : Text;
+        InvoiceLinePriceAmount, InvLinePriceAmountCurrencyID, BaseQuantity, UnitCodeBaseQty : Text;
+        InvoiceDocRefID, InvoiceDocRefIssueDate : Text;
+        DataExchEntryNo: Integer;
+        TaxSubtotalLoopNumber, AllowanceChargeLoopNumber : Integer;
+        CacNamespaceURILbl: Label 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2', Locked = true;
+        CbcNamespaceURILbl: Label 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2', Locked = true;
+        CctsNamespaceURILbl: Label 'urn:un:unece:uncefact:documentation:2', Locked = true;
+        QdtNamespaceURILbl: Label 'urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2', Locked = true;
+        UdtNamespaceURILbl: Label 'urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2', Locked = true;
+        UoMforPieceINUNECERec20ListIDTxt: Label 'EA', Locked = true;
 }

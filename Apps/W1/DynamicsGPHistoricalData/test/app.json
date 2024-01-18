@@ -2,7 +2,7 @@
     "id":  "b199fc6d-1967-40c7-8d1c-ecdfa54009ed",
     "name":  "Dynamics GP Historical Data Tests",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Tests for the Dynamics GP Historical Data extension.",
     "description":  "Tests for the Dynamics GP Historical Data extension.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -16,20 +16,20 @@
                              "id":  "7c7d97ca-3598-40f5-b263-f713f49bd2a5",
                              "name":  "Dynamics GP Historical Data",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
-    "application":  "23.3.0.0",
+    "platform":  "24.0.0.0",
+    "application":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  139410,

@@ -50,16 +50,6 @@ page 30042 "APIV2 - Purchase Invoices"
                         RegisterFieldSet(Rec.FieldNo("No."));
                     end;
                 }
-                field(invoiceDate; Rec."Document Date")
-                {
-                    Caption = 'Invoice Date';
-
-                    trigger OnValidate()
-                    begin
-                        RegisterFieldSet(Rec.FieldNo("Document Date"));
-                        WORKDATE(Rec."Document Date"); // TODO: replicate page logic and set other dates appropriately
-                    end;
-                }
                 field(postingDate; Rec."Posting Date")
                 {
                     Caption = 'Posting Date';
@@ -69,6 +59,17 @@ page 30042 "APIV2 - Purchase Invoices"
                         RegisterFieldSet(Rec.FieldNo("Posting Date"));
                     end;
                 }
+                field(invoiceDate; Rec."Document Date")
+                {
+                    Caption = 'Invoice Date';
+
+                    trigger OnValidate()
+                    begin
+                        RegisterFieldSet(Rec.FieldNo("Document Date"));
+                        WorkDate(Rec."Document Date");
+                    end;
+                }
+
                 field(dueDate; Rec."Due Date")
                 {
                     Caption = 'Due Date';
@@ -706,7 +707,6 @@ page 30042 "APIV2 - Purchase Invoices"
     end;
 
     local procedure SetActionResponse(var ActionContext: WebServiceActionContext; InvoiceId: Guid)
-    var
     begin
         ActionContext.SetObjectType(ObjectType::Page);
         ActionContext.SetObjectId(Page::"APIV2 - Purchase Invoices");

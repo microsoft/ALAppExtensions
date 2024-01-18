@@ -4,15 +4,15 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector;
 
-using System.Security.Authentication;
 using System.Telemetry;
+using System.Environment;
 
 page 6361 "EDoc Ext Connection Setup Card"
 {
     PageType = Card;
     SourceTable = "E-Doc. Ext. Connection Setup";
     ApplicationArea = Basic, Suite;
-    UsageCategory = Administration;
+    UsageCategory = None;
     Caption = 'E-Document External Connection Setup';
 
     layout
@@ -27,12 +27,12 @@ page 6361 "EDoc Ext Connection Setup Card"
                     ToolTip = 'Specifies the client ID token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
+                    Visible = not IsSaaS;
+                    ShowMandatory = true;
 
                     trigger OnValidate()
                     begin
-                        PageroAuth.SetToken(Rec."Client ID", ClientID, DataScope::Company);
-                        ClientID := Rec."Client ID";
-                        PageroAuth.UpdatePageroOAuthSetupsWithClientIDAndSecret(Rec."Client ID", Rec."Client Secret", ClientIDText, ClientSecretText);
+                        PageroAuth.SetClientId(Rec."Client ID", ClientID);
                     end;
                 }
                 field(ClientSecret; ClientSecret)
@@ -41,23 +41,25 @@ page 6361 "EDoc Ext Connection Setup Card"
                     ToolTip = 'Specifies the client secret token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
+                    Visible = not IsSaaS;
+                    ShowMandatory = true;
 
                     trigger OnValidate()
                     begin
-                        PageroAuth.SetToken(Rec."Client Secret", ClientSecret, DataScope::Company);
-                        ClientSecret := Rec."Client Secret";
-                        PageroAuth.UpdatePageroOAuthSetupsWithClientIDAndSecret(Rec."Client ID", Rec."Client Secret", ClientIDText, ClientSecretText);
+                        PageroAuth.SetClientSecret(Rec."Client Secret", ClientSecret);
                     end;
                 }
                 field("Authentication URL"; Rec."Authentication URL")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the URL to connect to Pagero Online.';
+                    Visible = not IsSaaS;
                 }
                 field("Redirect URL"; Rec."Redirect URL")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the redirect URL.';
+                    Visible = not IsSaaS;
                 }
                 field("FileAPI URL"; Rec."FileAPI URL")
                 {
@@ -78,6 +80,12 @@ page 6361 "EDoc Ext Connection Setup Card"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the company ID.';
+                    ShowMandatory = true;
+                }
+                field("Send Mode"; Rec."Send Mode")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the send mode.';
                     ShowMandatory = true;
                 }
             }
@@ -109,35 +117,30 @@ page 6361 "EDoc Ext Connection Setup Card"
     }
 
     trigger OnOpenPage()
+    var
+        EnvironmentInfo: Codeunit "Environment Information";
+
     begin
-        if not Rec.Get() then begin
-            Rec."OAuth Feature GUID" := CreateGuid();
-            Rec."Authentication URL" := AuthURLTxt;
-            Rec."FileAPI URL" := FileAPITxt;
-            Rec."DocumentAPI Url" := DocumentAPITxt;
-            Rec."Fileparts URL" := FilepartAPITxt;
-            Rec.Insert();
-        end;
+        IsSaaS := EnvironmentInfo.IsSaaS();
+
+        PageroAuth.InitConnectionSetup();
+        PageroAuth.IsClientCredsSet(ClientID, ClientSecret);
 
         FeatureTelemetry.LogUptake('0000LST', ExternalServiceTok, Enum::"Feature Uptake Status"::Discovered);
-        ClientID := Rec."Client ID";
-        ClientSecret := Rec."Client Secret";
+    end;
+
+    trigger OnClosePage()
+    var
+    begin
+        Rec.TestField("Company Id");
+        Rec.TestField("Send Mode");
     end;
 
     var
         PageroAuth: Codeunit "Pagero Auth.";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        [NonDebuggable]
+        ClientID, ClientSecret : Text;
+        IsSaaS: Boolean;
         ExternalServiceTok: Label 'ExternalServiceConnector', Locked = true;
-        [NonDebuggable]
-        ClientID: Text;
-        [NonDebuggable]
-        ClientSecret: Text;
-        [NonDebuggable]
-        ClientIDText: Text;
-        [NonDebuggable]
-        ClientSecretText: Text;
-        AuthURLTxt: Label 'https://auth.pageroonline.com/oauth2', Locked = true;
-        FileAPITxt: Label 'https://api.pageroonline.com/file/v1/files', Locked = true;
-        DocumentAPITxt: Label 'https://api.pageroonline.com/document/v1/documents', Locked = true;
-        FilepartAPITxt: Label 'https://api.pageroonline.com/file/v1/fileparts', Locked = true;
 }

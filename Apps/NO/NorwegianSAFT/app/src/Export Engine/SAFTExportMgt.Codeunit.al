@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -8,7 +8,9 @@ using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Reporting;
+#if not CLEAN23
 using Microsoft.Finance.VAT.Setup;
+#endif
 using Microsoft.Foundation.Company;
 using Microsoft.Utilities;
 using System;
@@ -36,6 +38,7 @@ codeunit 10675 "SAF-T Export Mgt."
         RestartExportQst: Label 'Do you want to restart the export to get a new SAF-T file?';
         SetStartDateTimeAsCurrentQst: Label 'The Earliest Start Date/Time field is not filled in. Do you want to proceed and start the export immediately?';
         SAFTExportTxt: Label 'SAF-T Export';
+        SAFTExportTelemetryCategoryTxt: Label 'SAF-T', Locked = true;
         StartingExportTxt: Label 'Starting SAF-T export with ID: %1, Parallel: %2, Split By Month: %3', Comment = '%1 - integer; %2,%3 - boolean';
         CancellingExportTxt: Label 'Cancelling SAF-T Export with ID: %1, Task ID: %2', Comment = '%1 - integer; %2 - GUID';
         NotPossibleToScheduleMsg: Label 'You are not allowed to schedule the SAF-T file generation';
@@ -242,11 +245,11 @@ codeunit 10675 "SAF-T Export Mgt."
                 exit;
             CalcFields("Detailed Info");
             if not "Detailed Info".HasValue() then
-                LogInternalError(NoErrorMessageErr, DataClassification::SystemMetadata, Verbosity::Error);
+                Session.LogMessage('0000M0J', NoErrorMessageErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SAFTExportTelemetryCategoryTxt);
             "Detailed Info".CreateInStream(Stream);
             Stream.ReadText(ErrorMessage);
             if ErrorMessage = '' then
-                LogInternalError(NoErrorMessageErr, DataClassification::SystemMetadata, Verbosity::Error);
+                Session.LogMessage('0000M0K', NoErrorMessageErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SAFTExportTelemetryCategoryTxt);
             Message(ErrorMessage);
         end;
     end;
@@ -535,7 +538,7 @@ codeunit 10675 "SAF-T Export Mgt."
     begin
         SAFTExportFile.SetRange("Export ID", SAFTExportHeader.ID);
         if not SAFTExportFile.FindSet() then
-            LogInternalError(NoZipFileGeneratedErr, DataClassification::SystemMetadata, Verbosity::Error);
+            Session.LogMessage('0000M0L', NoZipFileGeneratedErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', SAFTExportTelemetryCategoryTxt);
         repeat
             SAFTExportFile.CalcFields("SAF-T File");
             SAFTExportFile."SAF-T File".CreateInStream(ZipFileInStream);

@@ -166,7 +166,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
             }
             systemaction(Cancel)
             {
-                Caption = 'Discard';
+                Caption = 'Discard it';
                 ToolTip = 'Discard transfers to G/L Accounts proposed by Copilot.';
             }
         }
@@ -322,13 +322,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
 
     var
         BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line";
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
         TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary;
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
         AutoMatchedLinesTxt: Text;
         LinesMatchedByCopilotTxt: Text;
         AutoMatchedLinesLbl: label '%1 of %2 lines (%3%)', Comment = '%1 - an integer; %2 - an integer; %3 a decimal between 0 and 100';

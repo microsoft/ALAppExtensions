@@ -5,15 +5,60 @@
 namespace Microsoft.EServices.EDocumentConnector;
 
 using System.Security.Authentication;
-using System.Reflection;
+using System.Privacy;
+using System.Azure.KeyVault;
+using System.Environment;
 
 codeunit 6364 "Pagero Auth."
 {
     Access = Internal;
+    Permissions = tabledata "OAuth 2.0 Setup" = im;
 
-    trigger OnRun()
+    procedure InitConnectionSetup()
+    var
+        EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
+        OAuth20: Codeunit OAuth2;
+        RedirectUrl: Text;
     begin
+        if not EDocExtConnectionSetup.Get() then begin
+            EDocExtConnectionSetup."OAuth Feature GUID" := CreateGuid();
+            EDocExtConnectionSetup."Authentication URL" := AuthURLTxt;
+            EDocExtConnectionSetup."FileAPI URL" := FileAPITxt;
+            EDocExtConnectionSetup."DocumentAPI Url" := DocumentAPITxt;
+            EDocExtConnectionSetup."Fileparts URL" := FilepartAPITxt;
+            OAuth20.GetDefaultRedirectURL(RedirectUrl);
+            EDocExtConnectionSetup.Validate("Redirect URL", CopyStr(RedirectUrl, 1, MaxStrLen(EDocExtConnectionSetup."Redirect URL")));
+            EDocExtConnectionSetup.Insert();
+        end;
+    end;
 
+    [NonDebuggable]
+    procedure SetClientId(var ClienId: Guid; ClientID: Text)
+    var
+    begin
+        SetIsolatedStorageValue(ClienId, ClientID, DataScope::Company);
+    end;
+
+    [NonDebuggable]
+    procedure SetClientSecret(var ClienSecret: Guid; ClientSecret: Text)
+    begin
+        SetIsolatedStorageValue(ClienSecret, ClientSecret, DataScope::Company);
+    end;
+
+    [NonDebuggable]
+    procedure IsClientCredsSet(var ClientId: Text; var ClientSecret: Text): Boolean
+    var
+        EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
+    begin
+        EDocExtConnectionSetup.Get();
+
+        if EnvironmentInfo.IsSaaS() then
+            exit(true);
+
+        if HasToken(EDocExtConnectionSetup."Client ID", DataScope::Company) then
+            ClientId := '*';
+        if HasToken(EDocExtConnectionSetup."Client Secret", DataScope::Company) then
+            ClientSecret := '*';
     end;
 
     procedure OpenOAuthSetupPage()
@@ -25,7 +70,22 @@ codeunit 6364 "Pagero Auth."
         Page.RunModal(Page::"OAuth 2.0 Setup", OAuth20Setup);
     end;
 
-    procedure RefreshAccessToken(var HttpError: Text): Boolean;
+    [NonDebuggable]
+    procedure GetAuthBearerTxt(): SecretText;
+    var
+        OAuth20Setup: Record "OAuth 2.0 Setup";
+        HttpError: Text;
+    begin
+        GetOAuth2Setup(OAuth20Setup);
+        if OAuth20Setup."Access Token Due DateTime" < CurrentDateTime() + 60 * 1000 then
+            if not RefreshAccessToken(HttpError) then
+                Error(HttpError);
+
+        exit(StrSubstNo(BearerTxt, GetToken(OAuth20Setup."Access Token", OAuth20Setup.GetTokenDataScope())));
+    end;
+
+    [NonDebuggable]
+    local procedure RefreshAccessToken(var HttpError: Text): Boolean;
     var
         OAuth20Setup: Record "OAuth 2.0 Setup";
     begin
@@ -34,90 +94,218 @@ codeunit 6364 "Pagero Auth."
     end;
 
     [NonDebuggable]
+    local procedure InitOAuthSetup(var OAuth20Setup: Record "OAuth 2.0 Setup")
+    var
+        EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
+        Exists: Boolean;
+    begin
+        EDocExtConnectionSetup.Get();
+
+        if OAuth20Setup.Get(GetAuthSetupCode()) then
+            Exists := true;
+
+        OAuth20Setup.Code := GetAuthSetupCode();
+        OAuth20Setup."Client ID" := CreateGuid();
+        OAuth20Setup."Client Secret" := CreateGuid();
+        OAuth20Setup."Service URL" := EDocExtConnectionSetup."Authentication URL";
+        OAuth20Setup.Description := 'Pagero Online';
+        OAuth20Setup."Redirect URL" := EDocExtConnectionSetup."Redirect URL";
+        OAuth20Setup.Scope := 'all';
+        OAuth20Setup."Authorization URL Path" := AuthorizationURLPathTxt;
+        OAuth20Setup."Access Token URL Path" := AccessTokenURLPathTxt;
+        OAuth20Setup."Refresh Token URL Path" := RefreshTokenURLPathTxt;
+        OAuth20Setup."Authorization Response Type" := AuthorizationResponseTypeTxt;
+        OAuth20Setup."Token DataScope" := OAuth20Setup."Token DataScope"::Company;
+        OAuth20Setup."Daily Limit" := 1000;
+        OAuth20Setup."Feature GUID" := EDocExtConnectionSetup."OAuth Feature GUID";
+        OAuth20Setup."User ID" := CopyStr(UserId(), 1, MaxStrLen(OAuth20Setup."User ID"));
+        if not Exists then
+            OAuth20Setup.Insert()
+        else
+            OAuth20Setup.Modify();
+    end;
+
+    [NonDebuggable]
+    local procedure GetOAuth2Setup(var OAuth20Setup: Record "OAuth 2.0 Setup"): Boolean;
+    var
+        ExternalConnectionSetup: Record "E-Doc. Ext. Connection Setup";
+    begin
+        if not ExternalConnectionSetup.Get() then
+            Error(MissingAuthErr);
+
+        ExternalConnectionSetup.TestField("OAuth Feature GUID");
+
+        OAuth20Setup.Get(GetAuthSetupCode());
+        exit(true);
+    end;
+
+    [NonDebuggable]
+    local procedure CheckOAuthConsistencySetup(OAuth20Setup: Record "OAuth 2.0 Setup")
+    begin
+        OAuth20Setup.TestField("Authorization URL Path", AuthorizationURLPathTxt);
+        OAuth20Setup.TestField("Access Token URL Path", AccessTokenURLPathTxt);
+        OAuth20Setup.TestField("Refresh Token URL Path", RefreshTokenURLPathTxt);
+        OAuth20Setup.TestField("Authorization Response Type", AuthorizationResponseTypeTxt);
+        OAuth20Setup.TestField("Daily Limit");
+    end;
+
+    [NonDebuggable]
+    local procedure SaveTokens(var OAuth20Setup: Record "OAuth 2.0 Setup"; TokenDataScope: DataScope; AccessToken: Text; RefreshToken: Text)
+    begin
+        SetIsolatedStorageValue(OAuth20Setup."Access Token", AccessToken, TokenDataScope);
+        SetIsolatedStorageValue(OAuth20Setup."Refresh Token", RefreshToken, TokenDataScope);
+
+        OAuth20Setup.Modify();
+    end;
+
+    [NonDebuggable]
+    local procedure SetIsolatedStorageValue(var ValueKey: Guid; Value: Text; TokenDataScope: DataScope) NewToken: Boolean
+    begin
+        if IsNullGuid(ValueKey) then
+            NewToken := true;
+        if NewToken then
+            ValueKey := CreateGuid();
+
+        IsolatedStorage.Set(ValueKey, Value, TokenDataScope);
+    end;
+
+    [NonDebuggable]
+    local procedure GetToken(TokenKey: Text; TokenDataScope: DataScope) TokenValue: Text
+    begin
+        if not HasToken(TokenKey, TokenDataScope) then
+            exit('');
+
+        IsolatedStorage.Get(TokenKey, TokenDataScope, TokenValue);
+    end;
+
+    [NonDebuggable]
+    local procedure HasToken(TokenKey: Text; TokenDataScope: DataScope): Boolean
+    begin
+        exit(IsolatedStorage.Contains(TokenKey, TokenDataScope));
+    end;
+
+    [NonDebuggable]
+    local procedure GetAuthSetupCode(): Code[20]
+    begin
+        exit(PageroOAuthCodeLbl);
+    end;
+
+    [NonDebuggable]
+    local procedure GetClientId(): Text
+    var
+        EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
+        AzureKeyVault: Codeunit "Azure Key Vault";
+        Secret: Text;
+    begin
+
+        if EnvironmentInfo.IsSaaS() then begin
+            AzureKeyVault.GetAzureKeyVaultSecret('pagero-client-id', Secret);
+            exit(Secret);
+        end;
+
+        if EDocExtConnectionSetup.Get() then
+            exit(GetToken(EDocExtConnectionSetup."Client ID", DataScope::Company));
+    end;
+
+    [NonDebuggable]
+    local procedure GetClientSecret(): Text
+    var
+        EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
+        AzureKeyVault: Codeunit "Azure Key Vault";
+        Secret: Text;
+    begin
+        if EnvironmentInfo.IsSaaS() then begin
+            AzureKeyVault.GetAzureKeyVaultSecret('pagero-client-secret', Secret);
+            exit(Secret);
+        end;
+
+        if EDocExtConnectionSetup.Get() then
+            exit(GetToken(EDocExtConnectionSetup."Client Secret", DataScope::Company));
+    end;
+
+    [NonDebuggable]
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeRequestAccessToken', '', true, true)]
     local procedure OnBeforeRequestAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; AuthorizationCode: Text; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
     var
-        PageroSetup: Record "E-Doc. Ext. Connection Setup";
+        EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
         RequestJSON: Text;
         AccessToken: Text;
         RefreshToken: Text;
         TokenDataScope: DataScope;
     begin
-        if not PageroSetup.Get() then
+        if not EDocExtConnectionSetup.Get() then
             exit;
 
-        // if Processed then exit;
         Processed := true;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
-
         TokenDataScope := OAuth20Setup.GetTokenDataScope();
+        Result := OAuth20Mgt.RequestAccessTokenWithContentType(OAuth20Setup, RequestJSON, MessageText, AuthorizationCode, GetClientId(), GetClientSecret(), AccessToken, RefreshToken, true);
 
-        Result :=
-            OAuth20Mgt.RequestAccessTokenWithContentType(
-                OAuth20Setup, RequestJSON, MessageText, AuthorizationCode,
-                GetToken(OAuth20Setup."Client ID", DataScope::Company),
-                GetToken(OAuth20Setup."Client Secret", DataScope::Company),
-                AccessToken, RefreshToken, true);
+        if not Result then
+            Error(AuthenticationFailedErr);
 
-        if Result then
-            SaveTokens(OAuth20Setup, TokenDataScope, AccessToken, RefreshToken);
+        SaveTokens(OAuth20Setup, TokenDataScope, AccessToken, RefreshToken);
+        Message(AuthorizationSuccessfulTxt);
     end;
 
     [NonDebuggable]
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeRefreshAccessToken', '', true, true)]
     local procedure OnBeforeRefreshAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
     var
-        // EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
+        EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
         RequestJSON: Text;
         AccessToken: Text;
         RefreshToken: Text;
         TokenDataScope: DataScope;
         OldServiceUrl: Text[250];
     begin
+        if not EDocExtConnectionSetup.Get() then
+            exit;
         if not GetOAuth2Setup(OAuth20Setup) or Processed then
             exit;
-        Processed := true;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
+
+        Processed := true;
 
         TokenDataScope := OAuth20Setup.GetTokenDataScope();
         RefreshToken := GetToken(OAuth20Setup."Refresh Token", TokenDataScope);
         OldServiceUrl := OAuth20Setup."Service URL";
-        // EDocExtConnectionSetup.Get();
-        // OAuth20Setup."Service URL" := EDocExtConnectionSetup."Authentication URL";
-        Result :=
-            OAuth20Mgt.RefreshAccessTokenWithContentType(
-                OAuth20Setup, RequestJSON, MessageText,
-                GetToken(OAuth20Setup."Client ID", DataScope::Company),
-                GetToken(OAuth20Setup."Client Secret", DataScope::Company),
-                AccessToken, RefreshToken, true);
+
+        Result := OAuth20Mgt.RefreshAccessTokenWithContentType(OAuth20Setup, RequestJSON, MessageText, GetClientId(), GetClientSecret(), AccessToken, RefreshToken, true);
+
         OAuth20Setup."Service URL" := OldServiceUrl;
 
-        if Result then
-            SaveTokens(OAuth20Setup, TokenDataScope, AccessToken, RefreshToken);
+        if not Result then
+            Error(AuthenticationFailedErr);
+
+        SaveTokens(OAuth20Setup, TokenDataScope, AccessToken, RefreshToken);
     end;
 
     [NonDebuggable]
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeRequestAuthoizationCode', '', true, true)]
     local procedure OnBeforeRequestAuthoizationCode(OAuth20Setup: Record "OAuth 2.0 Setup"; var Processed: Boolean)
     var
-        ExternalConnectionSetup: Record "E-Doc. Ext. Connection Setup";
-
+        EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
+        CustConcentMgt: Codeunit "Customer Consent Mgt.";
         OAuth2ControlAddIn: Page OAuth2ControlAddIn;
         auth_error: Text;
         AuthorizationCode: Text;
         url: Text;
         state: Text;
     begin
-        if not ExternalConnectionSetup.Get() or Processed then
+        if not EDocExtConnectionSetup.Get() or Processed then
             exit;
         Processed := true;
 
         CheckOAuthConsistencySetup(OAuth20Setup);
-        state := '';
-        url :=
-           StrSubstNo(CurrUrlWithStateTxt, OAuth20Mgt.GetAuthorizationURL(OAuth20Setup, GetToken(OAuth20Setup."Client ID", DataScope::Company)), state);
+        if not CustConcentMgt.ConfirmUserConsentToOpenExternalLink() then
+            exit;
+
+        state := Format(CreateGuid(), 0, 4);
+        url := StrSubstNo(CurrUrlWithStateTxt, OAuth20Mgt.GetAuthorizationURL(OAuth20Setup, GetClientId()), state);
+
         OAuth2ControlAddIn.SetOAuth2Properties(url, state);
         OAuth2ControlAddIn.RunModal();
         auth_error := OAuth2ControlAddIn.GetAuthError();
@@ -148,147 +336,14 @@ codeunit 6364 "Pagero Auth."
         CheckOAuthConsistencySetup(OAuth20Setup);
         TokenValue := GetToken(OAuth20Setup."Access Token", OAuth20Setup.GetTokenDataScope());
 
-        Result :=
-            OAuth20Mgt.InvokeRequest(
-                OAuth20Setup, RequestJSON, ResponseJSON, HttpError, TokenValue, RetryOnCredentialsFailure);
+        Result := OAuth20Mgt.InvokeRequest(OAuth20Setup, RequestJSON, ResponseJSON, HttpError, TokenValue, RetryOnCredentialsFailure);
 
         if RequestJsonObj.ReadFrom(RequestJSON) then;
         if ResponseJsonObj.ReadFrom(ResponseJSON) then;
-
-    end;
-
-    procedure InitOAuthSetup(var OAuth20Setup: Record "OAuth 2.0 Setup")
-    var
-        ExternalConnectionSetup: Record "E-Doc. Ext. Connection Setup";
-        NewCode: Code[20];
-    begin
-        ExternalConnectionSetup.Get();
-        with OAuth20Setup do begin
-            if not OAuth20Setup.FindFirstOAuth20SetupByFeatureAndCurrUser(ExternalConnectionSetup."OAuth Feature GUID") then begin
-                SetRange("User ID");
-                if FindLast() then
-                    NewCode := IncStr(Code)
-                else
-                    NewCode := 'Pagero';
-                Code := NewCode;
-                Status := Status::Disabled;
-                while not Insert() do
-                    Code := IncStr(Code);
-            end;
-            "Service URL" := ExternalConnectionSetup."Authentication URL";
-            Description := 'Pagero Online';
-            "Redirect URL" := ExternalConnectionSetup."Redirect URL";
-            "Client ID" := ExternalConnectionSetup."Client ID";
-            "Client Secret" := ExternalConnectionSetup."Client Secret";
-            Scope := 'all';
-            "Authorization URL Path" := AuthorizationURLPathTxt;
-            "Access Token URL Path" := AccessTokenURLPathTxt;
-            "Refresh Token URL Path" := RefreshTokenURLPathTxt;
-            "Authorization Response Type" := AuthorizationResponseTypeTxt;
-            "Token DataScope" := "Token DataScope"::UserAndCompany;
-            "Daily Limit" := 1000;
-            "Feature GUID" := ExternalConnectionSetup."OAuth Feature GUID";
-            "User ID" := CopyStr(UserId(), 1, MaxStrLen("User ID"));
-            Modify();
-        end;
-    end;
-
-    procedure GetOAuth2Setup(var OAuth20Setup: Record "OAuth 2.0 Setup"): Boolean;
-    var
-        ExternalConnectionSetup: Record "E-Doc. Ext. Connection Setup";
-    begin
-
-        if not ExternalConnectionSetup.Get() then
-            exit(false);
-        ExternalConnectionSetup.TestField("OAuth Feature GUID");
-        if not OAuth20Setup.FindFirstOAuth20SetupByFeatureAndCurrUser(ExternalConnectionSetup."OAuth Feature GUID") then
-            InitOAuthSetup(OAuth20Setup);
-        exit(true);
-    end;
-
-    procedure UpdatePageroOAuthSetupsWithClientIDAndSecret(ClientID: Guid; ClientSecret: Guid; CleintIDText: Text; ClientSecretText: Text)
-    var
-        OAuth20Setup: Record "OAuth 2.0 Setup";
-        EDocExtConnectionSetup: Record "E-Doc. Ext. Connection Setup";
-    begin
-        EDocExtConnectionSetup.Get();
-        EDocExtConnectionSetup.TestField("OAuth Feature GUID");
-        if not OAuth20Setup.FindSetOAuth20SetupByFeature(EDocExtConnectionSetup."OAuth Feature GUID") then
-            exit;
-        repeat
-            OAuth20Setup."Client ID" := ClientID;
-            OAuth20Setup."Client Secret" := ClientSecret;
-            OAuth20Setup.Modify();
-        until OAuth20Setup.Next() = 0;
-    end;
-
-
-    [NonDebuggable]
-    local procedure CheckOAuthConsistencySetup(OAuth20Setup: Record "OAuth 2.0 Setup")
-    begin
-        with OAuth20Setup do begin
-            TestField("Authorization URL Path", AuthorizationURLPathTxt);
-            TestField("Access Token URL Path", AccessTokenURLPathTxt);
-            TestField("Refresh Token URL Path", RefreshTokenURLPathTxt);
-            TestField("Authorization Response Type", AuthorizationResponseTypeTxt);
-            TestField("Daily Limit");
-        end;
-    end;
-
-    [NonDebuggable]
-    procedure GetAuthBearerTxt(): Text;
-    var
-        OAuth20Setup: Record "OAuth 2.0 Setup";
-    begin
-        GetOAuth2Setup(OAuth20Setup);
-        exit(
-            StrSubstNo(BearerTxt, GetToken(OAuth20Setup."Access Token", OAuth20Setup.GetTokenDataScope())));
-    end;
-
-    [NonDebuggable]
-    local procedure SaveTokens(var OAuth20Setup: Record "OAuth 2.0 Setup"; TokenDataScope: DataScope; AccessToken: Text; RefreshToken: Text)
-    var
-        TypeHelper: Codeunit "Type Helper";
-        NewAccessTokenDateTime: DateTime;
-    begin
-        SetToken(OAuth20Setup."Access Token", AccessToken, TokenDataScope);
-        SetToken(OAuth20Setup."Refresh Token", RefreshToken, TokenDataScope);
-        NewAccessTokenDateTime := TypeHelper.AddHoursToDateTime(CurrentDateTime(), 2);
-        if OAuth20Setup."Access Token Due DateTime" = 0DT then
-            OAuth20Setup."Access Token Due DateTime" := NewAccessTokenDateTime
-        else
-            if OAuth20Setup."Access Token Due DateTime" < NewAccessTokenDateTime then
-                OAuth20Setup."Access Token Due DateTime" := NewAccessTokenDateTime;
-        OAuth20Setup.Modify();
-        Commit();
-    end;
-
-    [NonDebuggable]
-    internal procedure SetToken(var TokenKey: Guid; TokenValue: Text; TokenDataScope: DataScope) NewToken: Boolean
-    begin
-        if IsNullGuid(TokenKey) then
-            NewToken := true;
-        if NewToken then
-            TokenKey := CreateGuid();
-
-        IsolatedStorage.Set(TokenKey, TokenValue, TokenDataScope);
-    end;
-
-    [NonDebuggable]
-    local procedure GetToken(TokenKey: Guid; TokenDataScope: DataScope) TokenValue: Text
-    begin
-        if not HasToken(TokenKey, TokenDataScope) then
-            exit('');
-
-        IsolatedStorage.Get(TokenKey, TokenDataScope, TokenValue);
-    end;
-
-    local procedure HasToken(TokenKey: Guid; TokenDataScope: DataScope): Boolean
-    begin
-        exit(not IsNullGuid(TokenKey) and IsolatedStorage.Contains(TokenKey, TokenDataScope));
     end;
 
     var
+        EnvironmentInfo: Codeunit "Environment Information";
         OAuth20Mgt: Codeunit "OAuth 2.0 Mgt.";
         AuthorizationURLPathTxt: Label '/authorize', Locked = true;
         AccessTokenURLPathTxt: Label '/token', Locked = true;
@@ -296,4 +351,12 @@ codeunit 6364 "Pagero Auth."
         AuthorizationResponseTypeTxt: Label 'code', Locked = true;
         CurrUrlWithStateTxt: Label '%1&state=%2', Comment = '%1 = base url, %2 = guid', Locked = true;
         BearerTxt: Label 'Bearer %1', Comment = '%1 = text value', Locked = true;
+        AuthURLTxt: Label 'https://auth.pageroonline.com/oauth2', Locked = true;
+        FileAPITxt: Label 'https://api.pageroonline.com/file/v1/files', Locked = true;
+        DocumentAPITxt: Label 'https://api.pageroonline.com/document/v1/documents', Locked = true;
+        FilepartAPITxt: Label 'https://api.pageroonline.com/file/v1/fileparts', Locked = true;
+        PageroOAuthCodeLbl: Label 'EDocPagero', Locked = true;
+        AuthorizationSuccessfulTxt: Label 'Authorization successful.';
+        MissingAuthErr: Label 'You must set up authentication to the service integration in the E-Document service card.';
+        AuthenticationFailedErr: Label 'Authentication failed, check your credentials in the E-Document service card.';
 }

@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Tests for the _Exclude_Bank Deposits extension.",
     "description":  "Tests for the _Exclude_Bank Deposits extension.",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2206176",
@@ -16,30 +16,30 @@
                              "id":  "7a129d06-5fd6-4fb6-b82b-0bf539c779d0",
                              "name":  "_Exclude_Bank Deposits",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "5095f467-0a01-4b99-99d1-9ff1237d286f",
                              "publisher":  "Microsoft",
                              "name":  "Library Variable Storage",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "target":  "Cloud",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  false,
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "23.3.0.0"
+    "application":  "24.0.0.0"
 }

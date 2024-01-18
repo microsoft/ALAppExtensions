@@ -15,6 +15,7 @@ page 6121 "E-Document"
     InsertAllowed = false;
     DeleteAllowed = false;
     ModifyAllowed = false;
+    AdditionalSearchTerms = 'Edoc,Electronic Document';
 
     layout
     {
@@ -179,17 +180,8 @@ page 6121 "E-Document"
                     Visible = Rec.Direction = Rec.Direction::Outgoing;
 
                     trigger OnAction()
-                    var
-                        EDocService: Record "E-Document Service";
-                        EDocServices: Page "E-Document Services";
-                        IsAsync: Boolean;
                     begin
-                        EDocServices.LookupMode(true);
-                        if EDocServices.RunModal() = Action::LookupOK then begin
-                            EDocServices.GetRecord(EDocService);
-                            EDocumentErrorHelper.ClearErrorMessages(Rec);
-                            if EDocIntegrationManagement.Send(Rec, EDocService, IsAsync) then;
-                        end
+                        SendEDocument();
                     end;
                 }
                 action(Recreate)
@@ -380,7 +372,25 @@ page 6121 "E-Document"
         CurrPage.ErrorMessagesPart.Page.Update(false);
     end;
 
+    local procedure SendEDocument()
     var
+        EDocService: Record "E-Document Service";
+        EDocServices: Page "E-Document Services";
+        IsAsync: Boolean;
+    begin
+        EDocServices.LookupMode(true);
+        if EDocServices.RunModal() <> Action::LookupOK then
+            exit;
+        EDocServices.GetRecord(EDocService);
+        EDocumentErrorHelper.ClearErrorMessages(Rec);
+        if not EDocIntegrationManagement.Send(Rec, EDocService, IsAsync) then
+            exit;
+        if IsAsync then
+            EDocumentBackgroundjobs.GetEDocumentResponse();
+    end;
+
+    var
+        EDocumentBackgroundjobs: Codeunit "E-Document Background Jobs";
         EDocIntegrationManagement: Codeunit "E-Doc. Integration Management";
         EDocImport: Codeunit "E-Doc. Import";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";

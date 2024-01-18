@@ -995,13 +995,11 @@ page 30012 "APIV2 - Sales Invoices"
     end;
 
     local procedure SetActionResponse(var ActionContext: WebServiceActionContext; InvoiceId: Guid)
-    var
     begin
         SetActionResponse(ActionContext, Page::"APIV2 - Sales Invoices", InvoiceId);
     end;
 
     local procedure SetActionResponse(var ActionContext: WebServiceActionContext; PageId: Integer; DocumentId: Guid)
-    var
     begin
         ActionContext.SetObjectType(ObjectType::Page);
         ActionContext.SetObjectId(PageId);

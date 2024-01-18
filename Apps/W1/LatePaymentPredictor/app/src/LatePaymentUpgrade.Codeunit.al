@@ -16,7 +16,6 @@ codeunit 1958 "Late Payment Upgrade"
     end;
 
     trigger OnValidateUpgradePerCompany()
-    var
     begin
         VerifySecretsUpgradeToIsolatedStorage();
     end;

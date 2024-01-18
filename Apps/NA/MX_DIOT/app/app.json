@@ -2,7 +2,7 @@
     "id":  "adc18994-073b-4840-a144-2a5e3a0d9d1e",
     "name":  "DIOT - Localization for Mexico",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Easily configure and create DIOT file.",
     "description":  "As part of tax reporting in Mexico, companies must be able to produce Declaración Informativa de Operaciones con Terceros (DIOT) in a specific format to be sent to Mexican SAT. This feature enables easy export of DIOT files from Dynamics 365 Business Central.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -17,11 +17,11 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  true,
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "23.3.0.0"
+    "application":  "24.0.0.0"
 }

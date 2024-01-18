@@ -18,10 +18,31 @@ report 30106 "Shpfy Add Item to Shopify"
             RequestFilterFields = "No.", "Item Category Code";
             trigger OnPreDataItem()
             var
-                NoShopSellectedErr: Label 'You must select a shop to add the items to.';
+                Shop: Record "Shpfy Shop";
+                ShopLocation: Record "Shpfy Shop Location";
+                MissingSKUMappingErrorInfo: ErrorInfo;
             begin
                 if ShopCode = '' then
                     Error(NoShopSellectedErr);
+
+                if Shop.Get(ShopCode) then
+                    if Shop."SKU Mapping" = Shop."SKU Mapping"::" " then begin
+                        ShopLocation.SetRange("Shop Code", ShopCode);
+                        ShopLocation.SetRange("Is Fulfillment Service", true);
+                        ShopLocation.SetRange("Default Product Location", true);
+                        if not ShopLocation.IsEmpty() then begin
+                            MissingSKUMappingErrorInfo.DataClassification := MissingSKUMappingErrorInfo.DataClassification::SystemMetadata;
+                            MissingSKUMappingErrorInfo.ErrorType := MissingSKUMappingErrorInfo.ErrorType::Client;
+                            MissingSKUMappingErrorInfo.Verbosity := MissingSKUMappingErrorInfo.Verbosity::Error;
+                            MissingSKUMappingErrorInfo.Message := MissingSKUMappingErr;
+                            MissingSKUMappingErrorInfo.RecordId(Shop.RecordId());
+                            MissingSKUMappingErrorInfo.FieldNo(Shop.FieldNo("SKU Mapping"));
+                            MissingSKUMappingErrorInfo.AddNavigationAction(ChangeSKUMappingLbl);
+                            MissingSKUMappingErrorInfo.PageNo(Page::"Shpfy Shop Card");
+                            MissingSKUMappingErrorInfo.AddAction(ChangeDefaultLocationLbl, Codeunit::"Shpfy Create Product", 'ChangeDefaultProductLocation');
+                            Error(MissingSKUMappingErrorInfo);
+                        end;
+                    end;
 
                 Clear(ShopifyCreateProduct);
                 ShopifyCreateProduct.SetShop(ShopCode);
@@ -35,14 +56,16 @@ report 30106 "Shpfy Add Item to Shopify"
 
             trigger OnAfterGetRecord()
             begin
-                if GuiAllowed then begin
-                    CurrItemNo := Item."No.";
-                    ProcessDialog.Update();
+                if not Item.Blocked and not Item."Sales Blocked" then begin
+                    if GuiAllowed then begin
+                        CurrItemNo := Item."No.";
+                        ProcessDialog.Update();
+                    end;
+
+                    ShopifyCreateProduct.Run(Item);
+
+                    ProductFilter += Format(ShopifyCreateProduct.GetProductId()) + '|';
                 end;
-
-                ShopifyCreateProduct.Run(Item);
-
-                ProductFilter += Format(ShopifyCreateProduct.GetProductId()) + '|';
             end;
 
             trigger OnPostDataItem()
@@ -156,10 +179,12 @@ report 30106 "Shpfy Add Item to Shopify"
         SyncInventoryVisible: Boolean;
         SyncImagesVisible: Boolean;
         ProcessMsg: Label 'Adding item #1####################', Comment = '#1 = Item no.';
+        NoShopSellectedErr: Label 'You must select a shop to add the items to.';
         ProcessDialog: Dialog;
         ProductFilter: Text;
-
-
+        MissingSKUMappingErr: Label 'You selected Business Central Fullment Services as default location. Inventory is stocked at Business Central Fulfilment Services for created products. This setting requires SKU field in the products.';
+        ChangeDefaultLocationLbl: Label 'Change default location';
+        ChangeSKUMappingLbl: Label 'Change SKU mapping';
 
     /// <summary> 
     /// Set Shop.

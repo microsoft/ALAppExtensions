@@ -1,8 +1,8 @@
 {
     "id":  "16319982-4995-4fb1-8fb2-2b1e13773e3b",
-    "platform":  "23.0.0.0",
-    "application":  "23.3.0.0",
-    "version":  "23.3.0.0",
+    "platform":  "24.0.0.0",
+    "application":  "24.0.0.0",
+    "version":  "24.0.0.0",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2101583",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  false,

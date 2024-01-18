@@ -1,3 +1,4 @@
+#if not CLEAN24
 namespace Microsoft.Integration.SyncBase;
 
 using System.Security.AccessControl;
@@ -8,3 +9,4 @@ permissionsetextension 12127 "D365 BASIC - SyncBaseApp" extends "D365 BASIC"
                   tabledata "Sync Mapping" = R,
                   tabledata "Sync Setup" = R;
 }
+#endif

@@ -4,7 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Intrastat;
 
+#if not CLEAN22
 using System.Environment.Configuration;
+#endif
 
 page 31301 "Intrastat Delivery Groups CZ"
 {

@@ -443,7 +443,6 @@ codeunit 18918 "TCS On Sales Journal"
     end;
 
     local procedure CreateSalesJournalTemplate(Var GenJournalTemplate: Record "Gen. Journal Template")
-    var
     begin
         LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
         GenJournalTemplate.Validate(Type, GenJournalTemplate.Type::Sales);
@@ -451,7 +450,6 @@ codeunit 18918 "TCS On Sales Journal"
     end;
 
     local procedure CreateCurrencyWithExchangeRate(var Currency: Record Currency)
-    var
     begin
         LibraryERM.CreateCurrency(Currency);
         LibraryERM.CreateExchangeRate(Currency.Code, WorkDate(), 100, LibraryRandom.RandDecInDecimalRange(70, 80, 2));
@@ -509,7 +507,6 @@ codeunit 18918 "TCS On Sales Journal"
     end;
 
     local procedure GenerateTaxComponentsPercentage()
-    var
     begin
         Storage.Set(TCSPercentageLbl, Format(LibraryRandom.RandIntInRange(2, 4)));
         Storage.Set(NonPANTCSPercentageLbl, Format(LibraryRandom.RandIntInRange(6, 10)));

@@ -18,7 +18,6 @@ codeunit 30004 "APIV2 - Aut. Create New Users"
 
 
     procedure CreateNewUsersFromAzureADInBackground(): Guid
-    var
     begin
         exit(APIV2JobQueueManagement.CreateAndScheduleBackgroundJob(Codeunit::"APIV2 - Aut. Create New Users", GetJobQueueCategory(), JobQueueDescriptionLbl));
     end;

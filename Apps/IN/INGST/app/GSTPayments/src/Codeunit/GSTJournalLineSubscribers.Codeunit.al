@@ -18,7 +18,9 @@ using Microsoft.FixedAssets.Journal;
 using Microsoft.FixedAssets.Ledger;
 using Microsoft.Inventory.Location;
 using Microsoft.Purchases.Document;
+#if not CLEAN23
 using Microsoft.Purchases.Payables;
+#endif
 using Microsoft.Purchases.Posting;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;

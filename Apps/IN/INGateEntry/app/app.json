@@ -2,7 +2,7 @@
     "id":  "2dc39818-e0f0-42b6-99eb-ba29dc5f4102",
     "name":  "India Gate Entry",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "Contains Gate Entry Functionality",
     "description":  "This feature contains Gate Entry Functionality",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -15,20 +15,20 @@
                              "id":  "d3c551dd-5903-4194-b153-04ced9d29a2c",
                              "publisher":  "Microsoft",
                              "name":  "India Tax Base",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "db643212-b7fb-4dd4-b5a8-cb44ac714461",
                              "publisher":  "Microsoft",
                              "name":  "India GST",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
-    "application":  "23.3.0.0",
+    "platform":  "24.0.0.0",
+    "application":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  18601,

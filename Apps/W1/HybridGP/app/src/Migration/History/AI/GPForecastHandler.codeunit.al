@@ -15,13 +15,7 @@ codeunit 4034 "GPForecastHandler"
 
     var
         TempGPTimeSeriesBuffer: Record "Time Series Buffer" temporary;
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
         TempGPForecastTemp: Record "GPForecastTemp" temporary;
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
         CashFlowSetup: Record "Cash Flow Setup";
         MSSalesForecastSetup: Record "MS - Sales Forecast Setup";
         TimeSeriesManagement: Codeunit "Time Series Management";

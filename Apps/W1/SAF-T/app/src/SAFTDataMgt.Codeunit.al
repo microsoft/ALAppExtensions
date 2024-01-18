@@ -25,7 +25,9 @@ using Microsoft.Sales.History;
 using Microsoft.Sales.Receivables;
 using Microsoft.Service.History;
 using System.Environment;
+#if not CLEAN23
 using System.Environment.Configuration;
+#endif
 
 codeunit 5280 "SAF-T Data Mgt."
 {

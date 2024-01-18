@@ -152,7 +152,7 @@ codeunit 30178 "Shpfy Product Export"
                     Result.Append(Translator.GetAttributeTitle(Shop."Language Code"));
                     Result.Append('  </div>');
                     Result.Append('  <table>');
-                    Repeat
+                    repeat
                         if ItemAttribute.Get(ItemAttributeValueMapping."Item Attribute ID") and (not ItemAttribute.Blocked) then begin
                             Result.Append('    <tr>');
                             Result.Append('      <td class="attributeName">');
@@ -277,9 +277,7 @@ codeunit 30178 "Shpfy Product Export"
                     ShopifyProduct.Status := ShopifyProduct.Status::Archived;
                 Shop."Action for Removed Products"::StatusToDraft:
                     ShopifyProduct.Status := ShopifyProduct.Status::Draft;
-            end
-        else
-            ShopifyProduct.Status := ShopifyProduct.Status::Active;
+            end;
     end;
 
     /// <summary> 
@@ -563,7 +561,7 @@ codeunit 30178 "Shpfy Product Export"
                             if not IsNullGuid((ShopifyVariant."Item Variant SystemId")) then
                                 if ItemVariant.GetBySystemId(ShopifyVariant."Item Variant SystemId") then;
                             Clear(ItemUnitofMeasure);
-                            if Shop."UoM as Variant" then
+                            if Shop."UoM as Variant" then begin
                                 case ShopifyVariant."UoM Option Id" of
                                     1:
                                         if ItemUnitofMeasure.Get(Item."No.", ShopifyVariant."Option 1 Value") then
@@ -575,7 +573,9 @@ codeunit 30178 "Shpfy Product Export"
                                         if ItemUnitofMeasure.Get(Item."No.", ShopifyVariant."Option 3 Value") then
                                             ;
                                 end;
-                            UpdateProductVariant(ShopifyVariant, Item, ItemVariant, ItemUnitofMeasure);
+                                UpdateProductVariant(ShopifyVariant, Item, ItemVariant, ItemUnitofMeasure);
+                            end else
+                                UpdateProductVariant(ShopifyVariant, Item, ItemVariant);
                         end;
                 until ShopifyVariant.Next() = 0;
             ItemVariant.SetRange("Item No.", Item."No.");

@@ -1,23 +1,23 @@
 namespace Microsoft.Bank.PayPal;
 
 using Microsoft.Bank.BankAccount;
+using Microsoft.Bank.Payment;
 using Microsoft.Bank.Setup;
-using System.Telemetry;
 using Microsoft.Foundation.Company;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Utilities;
+using System.Integration;
 using System.Environment;
 using System.Environment.Configuration;
-using System.Integration;
 using System.Globalization;
 using System.Reflection;
+using System.Telemetry;
 
 codeunit 1070 "MS - PayPal Standard Mgt."
 {
     Permissions = TableData "Payment Method" = rimd, TableData "Payment Reporting Argument" = rimd;
     TableNo = "Payment Reporting Argument";
-
     trigger OnRun();
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
@@ -47,7 +47,8 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         TermsOfServiceURLTxt: Label 'https://www.paypal.com/%1/webapps/mpp/ua/useragreement-full', Locked = true;
         LogoURLTxt: Label 'https://bc-cdn.dynamics.com/common/images/extensionslogos/paypal_colour_v1.png', Locked = true;
         PayPalBaseURLTok: Label 'https://www.paypal.com/us/cgi-bin/webscr?cmd=_xclick&charset=UTF-8&page_style=primary', Locked = true;
-        PayPalMandatoryParametersTok: Label 'business=%1&amount=%2&item_name=%3&invoice=%4&currency_code=%5&notify_url=%6', Locked = true;
+        PayPalMandatoryParametersTok: Label 'business=%1&amount=%2&item_name=%3&invoice=%4&currency_code=%5', Locked = true;
+        PayPalNotifyURLTok: Label '&notify_url=%1', Locked = true;
         TargetURLCannotBeChangedInDemoCompanyErr: Label 'You cannot change the target URL in the demonstration company.';
         SandboxPayPalBaseURLTok: Label 'https://www.sandbox.paypal.com/us/cgi-bin/webscr?cmd=_xclick&charset=UTF-8&page_style=primary', Locked = true;
         PayPalHomepageLinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=836564', Locked = true;
@@ -69,6 +70,12 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         InvoiceNoFormatTxt: Label '%1 (%2 %3)', Locked = true;
         PaymentReportingArgumentFormatTxt: Label '%1 (%2)', Locked = true;
         UrlJoinPlaceholderLbl: Label '%1&%2', Comment = '%1 - First part of the URL, %2 additional query', Locked = true;
+        PayPalDocumentationHyperlinkLbl: Label 'https://go.microsoft.com/fwlink/?linkid=2248494', Locked = true;
+        PayPalWebhookNotificationsTxt: Label 'PayPal Webhooks';
+        PayPalWebhookNotificationsDescriptionTxt: Label 'Notify about setting up automatic payment registration when document is paid by PayPal.';
+        SetupWebhooksNotificationMsg: Label 'If you have a Business PayPal account you can automatically register payments and close open documents. Would you like to learn more?';
+        LearnMoreMsg: Label 'Learn more';
+        DontShowAgainMsg: Label 'Don''t show again';
         PayPalTelemetryTok: Label 'PayPal', Locked = true;
         HyperlinkGeneratedTok: Label 'Hyperlink generated', Locked = true;
 
@@ -77,7 +84,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         exit(PayPalTelemetryTok);
     end;
 
-    local procedure GenerateHyperlink(var PaymentReportingArgument: Record 1062): Boolean;
+    local procedure GenerateHyperlink(var PaymentReportingArgument: Record "Payment Reporting Argument"): Boolean;
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
         MsPayPalStandardAccount: Record "MS - PayPal Standard Account";
@@ -111,8 +118,12 @@ codeunit 1070 "MS - PayPal Standard Mgt."
                         UriEscapeDataString(FORMAT(SalesInvoiceHeader."Amount Including VAT", 0, 9)),
                         UriEscapeDataString(STRSUBSTNO(InvoiceTxt, InvoiceNo)),
                         UriEscapeDataString(SalesInvoiceHeader."No."),
-                        UriEscapeDataString(PaymentReportingArgument.GetCurrencyCode(SalesInvoiceHeader."Currency Code")),
-                        UriEscapeDataString(GetNotifyURL()));
+                        UriEscapeDataString(PaymentReportingArgument.GetCurrencyCode(SalesInvoiceHeader."Currency Code"))
+                        );
+
+                    if (not MsPayPalStandardAccount."Disable Webhook Notifications") then
+                        QueryString += StrSubstNo(PayPalNotifyURLTok, UriEscapeDataString(GetNotifyURL()));
+
                     BaseURL := MsPayPalStandardAccount.GetTargetURL();
                     if BaseURL = '' then begin
                         Session.LogMessage('00007ZW', PayPalTargetURLIsEmptyTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', PayPalTelemetryCategoryTok);
@@ -152,6 +163,11 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         end;
     end;
 
+    local procedure GetSetupWebhooksNotificationID(): Guid
+    begin
+        exit('be1a2bc8-8c31-1eda-23ab-b153cd645355');
+    end;
+
     local procedure UriEscapeDataString(Uri: Text): Text;
     var
         TypeHelper: Codeunit "Type Helper";
@@ -159,7 +175,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         exit(TypeHelper.UriEscapeDataString(Uri));
     end;
 
-    local procedure SetCaptionBasedOnLanguage(var PaymentReportingArgument: Record 1062);
+    local procedure SetCaptionBasedOnLanguage(var PaymentReportingArgument: Record "Payment Reporting Argument");
     var
         Language: Record "Language";
         CurrentLanguage: Integer;
@@ -208,6 +224,18 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         RegisterPayPalPaymentMethod(PaymentMethod);
     end;
 
+    internal procedure RunPaymentRegistrationSetupForce()
+    var
+        PaymentRegistrationMgt: Codeunit "Payment Registration Mgt.";
+        SetupOK: Boolean;
+    begin
+        SetupOK := PAGE.RunModal(PAGE::"Payment Registration Setup") = ACTION::LookupOK;
+        if not SetupOK then
+            exit;
+
+        PaymentRegistrationMgt.RunSetup();
+    end;
+
     local procedure RegisterPayPalPaymentMethod(var PaymentMethod: Record "Payment Method");
     begin
         if PaymentMethod.GET(PayPalPaymentMethodCodeTok) then begin
@@ -215,7 +243,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
             exit;
         end;
 
-        PaymentMethod.INIT();
+        PaymentMethod.Init();
         PaymentMethod.Code := PayPalPaymentMethodCodeTok;
         PaymentMethod.Description := PayPalPaymentMethodDescTok;
         PaymentMethod."Bal. Account Type" := PaymentMethod."Bal. Account Type"::"G/L Account";
@@ -311,7 +339,7 @@ codeunit 1070 "MS - PayPal Standard Mgt."
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]
-    local procedure RegisterServiceConnection(var ServiceConnection: Record 1400);
+    local procedure RegisterServiceConnection(var ServiceConnection: Record "Service Connection");
     var
         MSPayPalStandardAccount: Record "MS - PayPal Standard Account";
         MSPayPalStandardTemplate: Record "MS - PayPal Standard Template";
@@ -386,9 +414,42 @@ codeunit 1070 "MS - PayPal Standard Mgt."
         exit(PayPalBaseURLTok);
     end;
 
+    internal procedure SendSendSetupWebhooksNotification()
+    var
+        MyNotifications: Record "My Notifications";
+        SendSetupWebhooksNotification: Notification;
+    begin
+        if MyNotifications.Get(UserId(), GetSetupWebhooksNotificationID()) then
+            if MyNotifications.Enabled = false then
+                exit;
+
+        SendSetupWebhooksNotification.Id := GetSetupWebhooksNotificationID();
+        if SendSetupWebhooksNotification.Recall() then;
+
+        SendSetupWebhooksNotification.Message(SetupWebhooksNotificationMsg);
+        SendSetupWebhooksNotification.Scope(NotificationScope::LocalScope);
+        SendSetupWebhooksNotification.AddAction(LearnMoreMsg, Codeunit::"MS - PayPal Standard Mgt.", 'WebhooksLearnMore');
+        SendSetupWebhooksNotification.AddAction(DontShowAgainMsg, Codeunit::"MS - PayPal Standard Mgt.", 'DontShowAgainWebhooks');
+        SendSetupWebhooksNotification.Send();
+    end;
+
     procedure GetSandboxURL(): Text;
     begin
         exit(SandboxPayPalBaseURLTok);
+    end;
+
+    procedure WebhooksLearnMore(Notification: Notification)
+    begin
+        Hyperlink(PayPalDocumentationHyperlinkLbl);
+    end;
+
+    procedure DontShowAgainWebhooks(Notification: Notification)
+    var
+        MyNotifications: Record "My Notifications";
+    begin
+        if not MyNotifications.SetStatus(GetSetupWebhooksNotificationID(), false) then
+            MyNotifications.InsertDefault(
+              GetSetupWebhooksNotificationID(), PayPalWebhookNotificationsTxt, PayPalWebhookNotificationsDescriptionTxt, false);
     end;
 
     local procedure GetNotifyURL(): Text;

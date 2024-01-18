@@ -24,11 +24,5 @@ pageextension 20637 "PurchOrder From SalesOrder BF" extends "Purch. Order From S
         {
             ApplicationArea = Advanced, BFOrders;
         }
-#if not CLEAN21
-        modify(Timeline)
-        {
-            ApplicationArea = Advanced, BFOrders;
-        }
-#endif
     }
 }

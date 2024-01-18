@@ -3,8 +3,8 @@
     "name":  "E-Document format for OIOUBL",
     "publisher":  "Microsoft",
     "brief":  "E-Document format for OIOUBL.",
-    "description":  "OIOUBL is a customization for Danish business requirements of the international UBL standard. This app supports OIOUBL 3.0 format for working with E-documents app.",
-    "version":  "23.3.0.0",
+    "description":  ": OIOUBL is a customization for Danish business requirements of the international UBL standard. This app supports OIOUBL 3.0 format for working with E-documents app.",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=2194213",
@@ -12,27 +12,27 @@
     "logo":  "ExtensionLogo.png",
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206603",
     "dependencies":  [
-                         {
-                             "id":  "ac762be1-e90f-4a72-b519-612a5e3ddc2e",
-                             "publisher":  "Microsoft",
-                             "name":  "OIOUBL",
-                             "version":  "23.3.0.0"
-                         },
-                         {
-                             "id":  "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
-                             "name":  "E-Document Core",
-                             "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
-                         }
+        {
+        "id":  "ac762be1-e90f-4a72-b519-612a5e3ddc2e",
+        "publisher":  "Microsoft",
+        "name":  "OIOUBL",
+        "version":  "24.0.0.0"
+    },
+    {
+        "id":  "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
+        "name":  "E-Document Core",
+        "publisher":  "Microsoft",   
+        "version":  "24.0.0.0"
+    }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  13910,
-                         "to":  13912
+                         "to":  13913
                      }
                  ],
     "resourceExposurePolicy":  {
@@ -40,6 +40,6 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "23.3.0.0",
+    "application":  "24.0.0.0",
     "target":  "OnPrem"
-}
+    }

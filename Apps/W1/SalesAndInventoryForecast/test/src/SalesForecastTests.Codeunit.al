@@ -922,11 +922,13 @@ codeunit 139540 "Sales Forecast Tests"
         MSSalesForecast: Record "MS - Sales Forecast";
         MSSalesForecastParameter: Record "MS - Sales Forecast Parameter";
         JobQueueEntry: Record "Job Queue Entry";
+        LibraryERM: Codeunit "Library - ERM";
         LibraryPermissions: Codeunit "Library - Permissions";
         LibraryNotificationMgt: Codeunit "Library - Notification Mgt.";
     begin
         LibraryPermissions.SetTestabilitySoftwareAsAService(true);
         LibraryNotificationMgt.DisableAllNotifications(); // do not get polluted by Image analysis notifications
+        LibraryERM.SetEnableDataCheck(false);
 
         MSSalesForecastSetup.DeleteAll();
         MSSalesForecast.DeleteAll();

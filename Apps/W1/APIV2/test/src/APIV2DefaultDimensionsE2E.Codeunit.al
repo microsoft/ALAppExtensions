@@ -909,7 +909,6 @@ codeunit 139832 "APIV2 - Default Dimensions E2E"
     end;
 
     local procedure VerifyDefaultDimensionResponseBody(Response: Text; ParentId: Text; ParentType: Enum "Default Dimension Parent Type"; DimensionId: Text; DimensionCode: Text; DimensionValueId: Text; DimensionValueCode: Text; ValuePosting: Text)
-    var
     begin
         Assert.AreNotEqual('', Response, EmptyResponseErr);
         if ParentId <> '' then

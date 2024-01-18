@@ -34,7 +34,6 @@ table 6103 "E-Document Service"
             Caption = 'Service Integration';
             DataClassification = SystemMetadata;
         }
-
         field(5; "Use Batch Processing"; Boolean)
         {
             Caption = 'Use Batch Processing';
@@ -147,7 +146,7 @@ table 6103 "E-Document Service"
         {
             Caption = 'Auto Import';
             DataClassification = SystemMetadata;
-            InitValue = true;
+            InitValue = false;
         }
         field(19; "Import Start Time"; Time)
         {
@@ -204,6 +203,18 @@ table 6103 "E-Document Service"
             Clustered = true;
         }
     }
+
+    trigger OnDelete()
+    var
+        EDocServiceSupportedType: Record "E-Doc. Service Supported Type";
+        EDocBackgroundJobs: Codeunit "E-Document Background Jobs";
+    begin
+        EDocServiceSupportedType.SetRange("E-Document Service Code", Rec.Code);
+        EDocServiceSupportedType.DeleteAll();
+
+        EDocBackgroundJobs.RemoveJob(Rec."Batch Recurrent Job Id");
+        EDocBackgroundJobs.RemoveJob(Rec."Import Recurrent Job Id");
+    end;
 
     internal procedure ToString(): Text
     begin

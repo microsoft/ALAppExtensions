@@ -9,12 +9,20 @@ using Microsoft.Bank.BankAccount;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
+using System.Environment;
+using Microsoft.Finance.GeneralLedger.Posting;
+using Microsoft.Foundation.Company;
 using System.Environment.Configuration;
 using System.IO;
 using System.Security.AccessControl;
 
 codeunit 13601 "DK Core Event Subscribers"
 {
+    Permissions = TableData "Company Information" = r;
+
+    var
+        CannotPostWithoutCVRNumberErr: Label 'You cannot post without a valid CVR number filled in. Open the Company Information page and enter a CVR number in the Registration No. field.';
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade User Groups", 'OnBeforeUpgradeUserGroups', '', false, false)]
     local procedure TransferCustomPermissionsPerPlan()
     var
@@ -100,6 +108,22 @@ codeunit 13601 "DK Core Event Subscribers"
             VATSetupPostingGroups.AddOrUpdateProdPostingGrp(VATSetupPostingGroups.GetLabelTok('STANDARDTok'), VATSetupPostingGroups.GetLabelTxt('STANDARDTxt'), 25, '24010', '24020', false, true);
             VATSetupPostingGroups.AddOrUpdateProdPostingGrp(VATSetupPostingGroups.GetLabelTok('ZEROTok'), VATSetupPostingGroups.GetLabelTxt('ZEROTxt'), 0, '24010', '24020', false, true);
         end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeStartOrContinuePosting', '', false, false)]
+    local procedure CheckCVRNumberOnBeforeStartOrContinuePosting()
+    var
+        CompanyInformation: Record "Company Information";
+        EnvironmentInformation: Codeunit "Environment Information";
+    begin
+        if not EnvironmentInformation.IsSaaSInfrastructure() then
+            exit;
+        if EnvironmentInformation.IsSandbox() then
+            exit;
+
+        CompanyInformation.Get();
+        if CompanyInformation."Registration No." = '' then
+            Error(CannotPostWithoutCVRNumberErr);
     end;
 
     local procedure ValidateBankAcc(var BankAccountNo: Text[30]; var BankBranchNo: Text[20]; FieldToValidate: Text)

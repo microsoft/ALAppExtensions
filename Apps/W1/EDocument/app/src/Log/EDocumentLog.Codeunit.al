@@ -72,7 +72,8 @@ codeunit 6132 "E-Document Log"
     internal procedure InsertLogWithIntegration(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; EDocumentServiceStatus: Enum "E-Document Service Status"; EDocDataStorageEntryNo: Integer; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
     begin
         InsertLog(EDocument, EDocumentService, EDocDataStorageEntryNo, EDocumentServiceStatus);
-        InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
+        if (HttpRequest.GetRequestUri() <> '') and (HttpResponse.Headers.Keys().Count > 0) then
+            InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
     end;
 
     internal procedure UpdateServiceStatus(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; EDocumentStatus: Enum "E-Document Service Status")
@@ -232,8 +233,14 @@ codeunit 6132 "E-Document Log"
         EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
         EDocServiceCount := EDocumentServiceStatus.Count;
 
-        EDocumentServiceStatus.SetFilter(Status, '%1|%2|%3|%4|%5|%6', EDocumentServiceStatus.Status::Sent, EDocumentServiceStatus.Status::Exported, EDocumentServiceStatus.Status::"Imported Document Created",
-            EDocumentServiceStatus.Status::"Journal Line Created", EDocumentServiceStatus.Status::"Order Updated", EDocumentServiceStatus.Status::Approved);
+        EDocumentServiceStatus.SetFilter(Status, '%1|%2|%3|%4|%5|%6|%7',
+            EDocumentServiceStatus.Status::Sent,
+            EDocumentServiceStatus.Status::Exported,
+            EDocumentServiceStatus.Status::"Imported Document Created",
+            EDocumentServiceStatus.Status::"Journal Line Created",
+            EDocumentServiceStatus.Status::"Order Updated",
+            EDocumentServiceStatus.Status::Approved,
+            EDocumentServiceStatus.Status::Canceled);
         if EDocumentServiceStatus.Count = EDocServiceCount then
             EDocument.Status := EDocument.Status::Processed
         else
@@ -247,7 +254,12 @@ codeunit 6132 "E-Document Log"
         EDocumentServiceStatus: Record "E-Document Service Status";
     begin
         EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
-        EDocumentServiceStatus.SetFilter(Status, '%1|%2|%3|%4|%5', EDocumentServiceStatus.Status::"Sending Error", EDocumentServiceStatus.Status::"Export Error", EDocumentServiceStatus.Status::"Cancel Error", EDocumentServiceStatus.Status::"Imported Document Processing Error", EDocumentServiceStatus.Status::Rejected);
+        EDocumentServiceStatus.SetFilter(Status, '%1|%2|%3|%4|%5',
+            EDocumentServiceStatus.Status::"Sending Error",
+            EDocumentServiceStatus.Status::"Export Error",
+            EDocumentServiceStatus.Status::"Cancel Error",
+            EDocumentServiceStatus.Status::"Imported Document Processing Error",
+            EDocumentServiceStatus.Status::Rejected);
 
         if EDocumentServiceStatus.IsEmpty() then
             exit(false);

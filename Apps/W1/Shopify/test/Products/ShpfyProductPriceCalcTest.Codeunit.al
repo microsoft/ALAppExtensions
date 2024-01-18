@@ -1,4 +1,3 @@
-#if not CLEAN23
 /// <summary>
 /// Codeunit Shpfy Product Price Calc. Test (ID 139605).
 /// </summary>
@@ -6,18 +5,11 @@ codeunit 139605 "Shpfy Product Price Calc. Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;
-    ObsoleteReason = 'Empty codeunit.';
-    ObsoleteState = Pending;
-    ObsoleteTag = '23.0';
 
-#if not CLEAN21
     var
         Any: Codeunit Any;
         LibraryAssert: Codeunit "Library Assert";
 
-#pragma warning disable AS0072
-    [Obsolete('Test is no longer relevant.', '21.0')]
-#pragma warning restore AS0072
     [Test]
     procedure UnitTestCalcPriceTest()
     var
@@ -50,8 +42,12 @@ codeunit 139605 "Shpfy Product Price Calc. Test"
 #else
         Item := ProductInitTest.CreateItem(Shop."Item Templ. Code", InitUnitCost, InitPrice);
 #endif
+#if not CLEAN23
         ProductInitTest.CreateSalesPrice(Shop.Code, Item."No.", InitPrice);
         CustomerDiscountGroup := ProductInitTest.CreateSalesLineDiscount(Shop.Code, Item."No.", InitDiscountPerc);
+#else
+        CustomerDiscountGroup := ProductInitTest.CreatePriceList(Shop.Code, Item."No.", InitPrice, InitDiscountPerc);
+#endif
 
         // [SCENARIO] Doing the price calculation of an product for a shop where the fields "Customer Price Group" and Customer Discount Group" are not filled in.
         // [SCENARIO] After modify de "Customer Discount Group" for the same shop, we must get a discounted price.
@@ -82,6 +78,4 @@ codeunit 139605 "Shpfy Product Price Calc. Test"
         // [THEN] InitPrice - InitDiscountPerc = Price
         LibraryAssert.AreNearlyEqual(InitPrice * (1 - InitDiscountPerc / 100), Price, 0.01, 'Discount Price');
     end;
-#endif
 }
-#endif

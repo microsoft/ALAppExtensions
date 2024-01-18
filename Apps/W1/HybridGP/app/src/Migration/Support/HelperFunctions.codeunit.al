@@ -1,6 +1,5 @@
 namespace Microsoft.DataMigration.GP;
 
-using System.Environment;
 using System.Reflection;
 using System.Utilities;
 using System.Integration;
@@ -10,7 +9,6 @@ using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Location;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Finance.VAT.Setup;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Inventory.Setup;
 using Microsoft.Finance.GeneralLedger.Ledger;
@@ -110,25 +108,6 @@ codeunit 4037 "Helper Functions"
         CloudMigrationTok: Label 'CloudMigration', Locked = true;
         GeneralTemplateNameTxt: Label 'GENERAL', Locked = true;
         NotAllJournalLinesPostedMsg: Label 'Not all journal lines were posted. Number of unposted lines - %1.', Comment = '%1 Number of unposted lines';
-
-#if not CLEAN21
-    [Obsolete('Method is not supported, it was using files', '21.0')]
-    procedure GetEntities(EntityName: Text; var JArray: JsonArray): Boolean
-    begin
-        exit(false);
-    end;
-
-    [Obsolete('Method is not supported, it was using files', '21.0')]
-    procedure GetEntitiesAsJToken(EntityName: Text; var JToken: JsonToken): Boolean
-    begin
-        exit(false);
-    end;
-
-    [Obsolete('Method is not supported, it was using files', '21.0')]
-    procedure GetObjectCount(EntityName: Text; var ObjectCount: Integer)
-    begin
-    end;
-#endif
 
     procedure GetTextFromJToken(JToken: JsonToken; Path: Text): Text
     var
@@ -927,13 +906,6 @@ codeunit 4037 "Helper Functions"
                 end;
             until GPCodes.Next() = 0;
     end;
-
-#if not CLEAN21
-    [Obsolete('Method is not supported, it was using files', '21.0')]
-    procedure GetDimensionInfo()
-    begin
-    end;
-#endif
 
     procedure AnyCompaniesWithTooManySegments(var CompanyList: List of [Text])
     var

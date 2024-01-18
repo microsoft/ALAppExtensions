@@ -47,6 +47,7 @@ table 40150 "GP Upgrade Settings"
         }
         field(8; "One Step Upgrade"; Boolean)
         {
+            InitValue = true;
             DataClassification = CustomerContent;
             Caption = 'Run upgrade after replication';
         }
@@ -74,6 +75,7 @@ table 40150 "GP Upgrade Settings"
     begin
         if not GPUpgradeSettings.Get() then begin
             GPUpgradeSettings."Upgrade Duration" := HybridGPManagement.GetDefaultJobTimeout();
+            GPUpgradeSettings."One Step Upgrade" := true;
             GPUpgradeSettings."One Step Upgrade Delay" := GetUpgradeDelay();
             GPUpgradeSettings.Insert();
             GPUpgradeSettings.Get();

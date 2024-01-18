@@ -6,11 +6,11 @@ namespace Microsoft.Finance.TaxEngine.JsonExchange;
 
 using Microsoft.Finance.TaxEngine.TaxTypeHandler;
 using Microsoft.Finance.TaxEngine.UseCaseBuilder;
+using Microsoft.RoleCenters;
 using System.Environment.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Media;
-using Microsoft.RoleCenters;
 
 codeunit 20366 "Tax Engine Assisted Setup"
 {

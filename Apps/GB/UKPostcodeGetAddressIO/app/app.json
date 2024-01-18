@@ -4,7 +4,7 @@
     "publisher":  "Microsoft",
     "brief":  "Get accurate addresses in United Kingdom based on post codes",
     "description":  "Accurate addresses are a must if you ship goods or delivering marketing materials. This extension connects to an external service to verify and get the correct address based on a local address database. Whenever you specify a customer, vendor, contact, or any address in the United Kingdom, this extension helps you make verify that you got the right address.",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
     "help":  "https://go.microsoft.com/fwlink/?linkid=839464",
@@ -22,7 +22,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "target":  "OnPrem",
-    "application":  "23.3.0.0"
+    "application":  "24.0.0.0"
 }

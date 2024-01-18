@@ -18,7 +18,6 @@ page 1693 "Bank Deposit Subform"
     PageType = ListPart;
     SourceTable = "Gen. Journal Line";
     Permissions = tabledata "Bank Deposit Header" = r;
-
     layout
     {
         area(content)
@@ -94,6 +93,7 @@ page 1693 "Bank Deposit Subform"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the number of the bank deposit document.';
+                    Editable = not DepositIsLumpSum;
                 }
                 field("Credit Amount"; Rec."Credit Amount")
                 {
@@ -392,10 +392,16 @@ page 1693 "Bank Deposit Subform"
     var
         BankDepositHeader: Record "Bank Deposit Header";
         TotalDepositLines: Decimal;
+        DepositIsLumpSum: Boolean;
         DocumentTypeErr: Label 'Document Type should be Payment, Refund or blank.';
 
     protected var
         ShortcutDimCode: array[8] of Code[20];
+
+    internal procedure SetDepositIsLumpSum(NewDepositIsLumpSum: Boolean)
+    begin
+        DepositIsLumpSum := NewDepositIsLumpSum;
+    end;
 
     local procedure GetLinesTotal(): Decimal
     begin

@@ -2,7 +2,7 @@
     "id":  "abe5dab1-9b38-44fc-a5f2-747ca8f4551e",
     "name":  "Dynamics GP Intelligent Cloud - US",
     "publisher":  "Microsoft",
-    "version":  "23.3.0.0",
+    "version":  "24.0.0.0",
     "brief":  "This extension migrates US specific information during a GP migration.",
     "description":  "This extension migrates US specific information during a GP migration, such as Vendor 1099 data.",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -16,20 +16,20 @@
                              "id":  "58623bfa-0559-4bc2-ae1c-0979c29fd9e0",
                              "name":  "Intelligent Cloud Base",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          },
                          {
                              "id":  "feeb3504-556e-4790-b28d-a2b9ce302d81",
                              "name":  "Dynamics GP Intelligent Cloud",
                              "publisher":  "Microsoft",
-                             "version":  "23.3.0.0"
+                             "version":  "24.0.0.0"
                          }
                      ],
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
-    "application":  "23.3.0.0",
+    "platform":  "24.0.0.0",
+    "application":  "24.0.0.0",
     "resourceExposurePolicy":  {
                                    "allowDebugging":  true,
                                    "allowDownloadingSource":  true,
