@@ -203,4 +203,48 @@ codeunit 30169 "Shpfy Payments"
             end;
         end;
     end;
+
+    internal procedure UpdateDisputeStatus()
+    var
+        PaymentTransaction: Record "Shpfy Payment Transaction";
+        OrderId: BigInteger;
+        JDisputes: JsonArray;
+        JItem: JsonToken;
+        JResponse: JsonToken;
+        Url: Text;
+        UrlTxt: Label 'shopify_payments/disputes.json?limit=250', Locked = true;
+        DisputeStatus: Enum "Shpfy Pay. Trans. Disp. Status";
+    begin
+        Url := CommunicationMgt.CreateWebRequestURL(UrlTxt);
+
+        repeat
+            JResponse := CommunicationMgt.ExecuteWebRequest(Url, 'GET', JResponse, Url);
+
+            if JsonHelper.GetJsonArray(JResponse, JDisputes, 'disputes') then
+                foreach JItem in JDisputes do begin
+                    OrderId := JsonHelper.GetValueAsBigInteger(JItem, 'order_id');
+                    DisputeStatus := ConvertToDisputeStatus(JsonHelper.GetValueAsText(JItem, 'status'));
+
+                    PaymentTransaction.SetRange("Source Order Id", OrderId);
+                    PaymentTransaction.SetRange(Type, PaymentTransaction.Type::Dispute);
+                    if PaymentTransaction.Findset() then
+                        repeat
+                            if PaymentTransaction."Dispute Status" <> DisputeStatus then begin
+                                PaymentTransaction."Dispute Status" := DisputeStatus;
+                                PaymentTransaction."Dispute Finalized On" := JsonHelper.GetValueAsDateTime(JItem, 'finalized_on');
+                                PaymentTransaction.Modify();
+                            end;
+                        until PaymentTransaction.Next() = 0;
+                end;
+        until Url = '';
+    end;
+
+    local procedure ConvertToDisputeStatus(Value: Text): Enum "Shpfy Pay. Trans. Disp. Status"
+    begin
+        Value := CommunicationMgt.ConvertToCleanOptionValue(Value);
+        if Enum::"Shpfy Pay. Trans. Disp. Status".Names().Contains(Value) then
+            exit(Enum::"Shpfy Pay. Trans. Disp. Status".FromInteger(Enum::"Shpfy Pay. Trans. Disp. Status".Ordinals().Get(Enum::"Shpfy Pay. Trans. Disp. Status".Names().IndexOf(Value))))
+        else
+            exit(Enum::"Shpfy Pay. Trans. Disp. Status"::Unknown);
+    end;
 }

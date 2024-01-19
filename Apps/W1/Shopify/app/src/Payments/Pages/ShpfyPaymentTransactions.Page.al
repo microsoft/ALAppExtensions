@@ -78,6 +78,17 @@ page 30124 "Shpfy Payment Transactions"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the id the order transaction that resulted in this balance transaction.';
                 }
+                field("Dispute Status"; Rec."Dispute Status")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the Dispute Status of the payment transaction.';
+                }
+                field("Dispute Finalized On"; Rec."Dispute Finalized On")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the Dispute Finalized On of the payment transaction.';
+
+                }
             }
         }
     }
