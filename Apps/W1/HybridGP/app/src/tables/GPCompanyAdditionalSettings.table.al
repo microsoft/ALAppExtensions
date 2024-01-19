@@ -431,6 +431,11 @@ table 40105 "GP Company Additional Settings"
                 end;
             end;
         }
+        field(41; "Skip Posting Item Batches"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = false;
+        }
     }
 
     keys
@@ -577,7 +582,8 @@ table 40105 "GP Company Additional Settings"
         exit(Rec."Skip Posting Account Batches" and
              Rec."Skip Posting Customer Batches" and
              Rec."Skip Posting Vendor Batches" and
-             Rec."Skip Posting Bank Batches");
+             Rec."Skip Posting Bank Batches" and
+             Rec."Skip Posting Item Batches");
     end;
 
     procedure GetSkipPostingAccountBatches(): Boolean
@@ -602,6 +608,12 @@ table 40105 "GP Company Additional Settings"
     begin
         GetSingleInstance();
         exit(Rec."Skip Posting Bank Batches");
+    end;
+
+    procedure GetSkipPostingItemBatches(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Skip Posting Item Batches");
     end;
 
     // Other
