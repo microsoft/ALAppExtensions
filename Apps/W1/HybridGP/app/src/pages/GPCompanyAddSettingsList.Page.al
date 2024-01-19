@@ -219,6 +219,12 @@ page 4051 "GP Company Add. Settings List"
                     ToolTip = 'Specify whether to disable auto posting Bank batches.';
                     ApplicationArea = All;
                 }
+                field("Skip Posting Item Batches"; Rec."Skip Posting Item Batches")
+                {
+                    Caption = 'Skip Posting Item Trx.';
+                    ToolTip = 'Specify whether to disable auto posting Item batches.';
+                    ApplicationArea = All;
+                }
             }
         }
     }
