@@ -1,4 +1,4 @@
-report 30120 "VTK Sync Disputes"
+report 30120 "Shpfy Sync Disputes"
 {
     ApplicationArea = All;
     Caption = 'Shopify Sync Disputes';
