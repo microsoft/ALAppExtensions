@@ -992,7 +992,6 @@ page 30101 "Shpfy Shop Card"
                         BackgroundSyncs.InventorySync(Rec);
                         BackgroundSyncs.ProductImagesSync(Rec, '');
                         BackgroundSyncs.ProductPricesSync(Rec);
-                        BackgroundSyncs.DisputesSync(Rec.Code);
                     end;
                 }
             }
