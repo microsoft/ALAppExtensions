@@ -1,6 +1,6 @@
 enum 30150 "Shpfy Pay. Trans. Disp. Status"
 {
-    Caption = 'Shopify Payment Transaction Dispute status';
+    Caption = 'Shopify Payment Transaction Dispute Status';
     Extensible = true;
 
     value(0; Unknown)
@@ -25,7 +25,7 @@ enum 30150 "Shpfy Pay. Trans. Disp. Status"
     }
     value(5; "Won")
     {
-        Caption = 'Chargeback Won';
+        Caption = 'Won';
     }
     value(6; "Lost")
     {

@@ -9,10 +9,10 @@ report 30120 "Shpfy Sync Disputes"
     {
         dataitem(Shop; "Shpfy Shop")
         {
-            DataItemTableView = where(Enabled = const(true));
+            RequestFilterFields = Code;
             trigger OnAfterGetRecord()
             var
-                Sync: codeunit "Shpfy Payments";
+                Sync: Codeunit "Shpfy Payments";
             begin
                 Sync.SetShop(Shop);
                 Sync.UpdateDisputeStatus();
