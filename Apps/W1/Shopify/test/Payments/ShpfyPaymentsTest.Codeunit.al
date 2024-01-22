@@ -53,4 +53,61 @@ codeunit 139566 "Shpfy Payments Test"
         JPayment.Add('processed_at', Format(CurrentDateTime - 1, 0, 9));
         exit(JPayment.AsToken());
     end;
+
+    [Test]
+    procedure UnitTestImportDisputeStatus()
+    var
+        TestPayments: Codeunit "Shpfy Payments";
+        PaymentTransaction: Record "Shpfy Payment Transaction";
+        DisputeToken: JsonToken;
+        ShpfyPaytransDispStatus: enum::"Shpfy Pay. Trans. Disp. Status";
+        finalizedOn: DateTime;
+    begin
+        // [SCENARIO] Extract the data out json token that contains a Dipsute info into the "Shpfy Payment Transaction" record.
+        // [GIVEN] A random Generated Dispute
+        Id := Any.IntegerInRange(10000, 99999);
+        MockPaymentTransaction(Id);
+        DisputeToken := GetRandomDisputeAsJsonToken(Id, ShpfyPaytransDispStatus, finalizedOn);
+
+        // [WHEN] Invoke the function UpdateDisputeStatus(JToken)
+        TestPayments.UpdateDisputeStatus(DisputeToken);
+
+        // Assert
+        LibraryAssert.IsTrue(PaymentTransaction.get(Id), 'At least one "Shpfy Payment Transaction" record should be found');
+
+        LibraryAssert.AreEqual(ShpfyPaytransDispStatus, PaymentTransaction."Dispute Status", PaymentTransaction."Dispute Status", 'Dispute status should be updated to "won"');
+        LibraryAssert.AreEqual(finalizedOn, PaymentTransaction."Dispute Finalized On", 'Dispute finalized on should be updated');
+    end;
+
+    local procedure GetRandomDisputeAsJsonToken(id: Guid; var ShpfyPaytransDispStatus: enum::"Shpfy Pay. Trans. Disp. Status"; var finalizedOn: DateTime): JsonToken
+    var
+        DisputeObject: JsonObject;
+    begin
+        ShpfyPaytransDispStatus := Enum::"Shpfy Pay. Trans. Disp. Status".FromInteger(Any.IntegerInRange(0, 6));
+        finalizedOn := CurrentDateTime - 1;
+
+        DisputeObject.Add('id', id);
+        DisputeObject.Add('order_id', Any.IntegerInRange(10000, 99999));
+        DisputeObject.Add('type', 'chargeback');
+        DisputeObject.Add('amount', Any.DecimalInRange(100, 2););
+        DisputeObject.Add('currency', Any.IntegerInRange(10000, 99999));
+        DisputeObject.Add('reason', 'fraudulent');
+        DisputeObject.Add('network_reason_code', Any.IntegerInRange(10000, 99999));
+        DisputeObject.Add('status', Format(ShpfyPaytransDispStatus));
+        DisputeObject.Add('evidence_due_by', Format(CurrentDateTime - 1, 0, 9));
+        DisputeObject.Add('evidence_sent_on', Format(CurrentDateTime - 1, 0, 9));
+        DisputeObject.Add('finalized_on', Format(finalizedOn, 0, 9));
+        DisputeObject.Add('initiated_at', Format(CurrentDateTime - 1, 0, 9));
+
+        exit(DisputeObject.AsToken());
+    end;
+
+    local procedure MockPaymentTransaction(Id: Guid)
+    var
+        PaymentTransaction: Record "Shpfy Payment Transaction";
+    begin
+        PaymentTransaction.Init();
+        PaymentTransaction.Id := Id;
+        PaymentTransaction.Insert();
+    end;
 }
