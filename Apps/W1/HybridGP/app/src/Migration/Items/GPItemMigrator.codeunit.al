@@ -317,7 +317,7 @@ codeunit 4019 "GP Item Migrator"
         if CurrentBatchNumber = 0 then
             CurrentBatchNumber := 1;
 
-        if CurrentBatchLineNo >= MaxBatchLineCount() then begin
+        if CurrentBatchLineNo >= GetMaxBatchLineCount() then begin
             CurrentBatchNumber := CurrentBatchNumber + 1;
             CurrentBatchLineNo := 0;
         end;
@@ -544,8 +544,24 @@ codeunit 4019 "GP Item Migrator"
             until GPItemLocation.Next() = 0;
     end;
 
-    local procedure MaxBatchLineCount(): Integer
+    local procedure GetMaxBatchLineCount(): Integer
+    var
+        IsHandled: Boolean;
+        MaxLineCount: Integer;
+        NewMaxLineCount: Integer;
     begin
-        exit(10000);
+        MaxLineCount := 10000;
+
+        OnBeforeGetMaxItemBatchLineCount(IsHandled, NewMaxLineCount);
+        if IsHandled then
+            if NewMaxLineCount > 0 then
+                MaxLineCount := NewMaxLineCount;
+
+        exit(MaxLineCount);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetMaxItemBatchLineCount(var IsHandled: Boolean; var NewMaxLineCount: Integer)
+    begin
     end;
 }
