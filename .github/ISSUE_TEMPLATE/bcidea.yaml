@@ -1,5 +1,5 @@
-name: Suggest a feature for contribution
-description: Suggest a feature you would like to implement, which is based on a BC idea.
+name: Implement a BC Idea
+description: Suggest a BC Idea you would like to implement.
 title: "[BC Idea]: "
 labels: ["bcidea"]
 body:
@@ -32,3 +32,12 @@ body:
       placeholder: Description of BC Idea
     validations:
       required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: I will provide the implementation for this BC Idea
+      description: | 
+        To provide the implementation for a BC idea, select this checkbox and then Get started. Thanks for contributing. 
+      options:
+        - label: I will provide the implementation for this BC Idea
+          required: true
