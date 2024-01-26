@@ -66,17 +66,17 @@ codeunit 139566 "Shpfy Payments Test"
         // [SCENARIO] Extract the data out json token that contains a Dipsute info into the "Shpfy Payment Transaction" record.
         // [GIVEN] A random Generated Dispute
         Id := Any.IntegerInRange(10000, 99999);
-        MockPaymentTransaction(Id);
+        MockPaymentTransaction(Id, PaymentTransaction);
         DisputeToken := GetRandomDisputeAsJsonToken(Id, ShpfyPaytransDispStatus, finalizedOn);
 
         // [WHEN] Invoke the function UpdateDisputeStatus(JToken)
-        TestPayments.UpdateDisputeStatus(DisputeToken);
+        TestPayments.UpdateDisputeStatus(PaymentTransaction, DisputeToken);
 
         // Assert
         LibraryAssert.IsTrue(PaymentTransaction.get(Id), 'At least one "Shpfy Payment Transaction" record should be found');
 
-        LibraryAssert.AreEqual(ShpfyPaytransDispStatus, PaymentTransaction."Dispute Status", PaymentTransaction."Dispute Status", 'Dispute status should be updated to "won"');
-        LibraryAssert.AreEqual(finalizedOn, PaymentTransaction."Dispute Finalized On", 'Dispute finalized on should be updated');
+        LibraryAssert.AreEqual(ShpfyPaytransDispStatus, PaymentTransaction."Dispute Status", PaymentTransaction."Dispute Status", 'Dispute status should match the generated one');
+        LibraryAssert.AreEqual(finalizedOn, PaymentTransaction."Dispute Finalized On", 'Dispute finalized on should match the generated one');
     end;
 
     local procedure GetRandomDisputeAsJsonToken(id: Guid; var ShpfyPaytransDispStatus: enum::"Shpfy Pay. Trans. Disp. Status"; var finalizedOn: DateTime): JsonToken
@@ -102,9 +102,7 @@ codeunit 139566 "Shpfy Payments Test"
         exit(DisputeObject.AsToken());
     end;
 
-    local procedure MockPaymentTransaction(Id: Guid)
-    var
-        PaymentTransaction: Record "Shpfy Payment Transaction";
+    local procedure MockPaymentTransaction(Id: Guid; var PaymentTransaction: Record "Shpfy Payment Transaction")
     begin
         PaymentTransaction.Init();
         PaymentTransaction.Id := Id;

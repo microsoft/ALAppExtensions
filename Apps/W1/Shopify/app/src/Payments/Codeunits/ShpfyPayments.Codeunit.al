@@ -206,42 +206,37 @@ codeunit 30169 "Shpfy Payments"
 
     internal procedure UpdateDisputeStatus()
     var
-        JDisputes: JsonArray;
-        JItem: JsonToken;
+        PaymentTransaction: Record "Shpfy Payment Transaction";
+        DisputeToken: JsonToken;
         JResponse: JsonToken;
         Url: Text;
-        UrlTxt: Label 'shopify_payments/disputes.json?limit=250', Locked = true;
+        UrlTxt: Label 'shopify_payments/disputes/%1.json', Locked = true;
     begin
-        Url := CommunicationMgt.CreateWebRequestURL(UrlTxt);
+        PaymentTransaction.SetRange(Type, PaymentTransaction.Type::Dispute);
+        PaymentTransaction.SetFilter("Dispute Status", '<>%1&<>%2', PaymentTransaction."Dispute Status"::Won, PaymentTransaction."Dispute Status"::Lost);
 
-        repeat
-            JResponse := CommunicationMgt.ExecuteWebRequest(Url, 'GET', JResponse, Url);
-
-            if JsonHelper.GetJsonArray(JResponse, JDisputes, 'disputes') then
-                foreach JItem in JDisputes do
-                    UpdateDisputeStatus(JItem);
-        until Url = '';
+        if PaymentTransaction.FindSet() then
+            repeat
+                Url := CommunicationMgt.CreateWebRequestURL(StrSubstNo(UrlTxt, PaymentTransaction.Id));
+                JResponse := CommunicationMgt.ExecuteWebRequest(Url, 'GET', JResponse);
+                DisputeToken := JsonHelper.GetJsonToken(JResponse, 'dispute');
+                UpdateDisputeStatus(PaymentTransaction, DisputeToken);
+            until PaymentTransaction.Next() = 0;
     end;
 
-    internal procedure UpdateDisputeStatus(DisputeToken: JsonToken)
+    internal procedure UpdateDisputeStatus(PaymentTransaction: Record "Shpfy Payment Transaction"; DisputeToken: JsonToken)
     var
         PaymentTransaction: Record "Shpfy Payment Transaction";
         DisputeStatus: Enum "Shpfy Pay. Trans. Disp. Status";
         OrderId: BigInteger;
     begin
-        OrderId := JsonHelper.GetValueAsBigInteger(DisputeToken, 'order_id');
         DisputeStatus := ConvertToDisputeStatus(JsonHelper.GetValueAsText(DisputeToken, 'status'));
 
-        PaymentTransaction.SetRange("Source Order Id", OrderId);
-        PaymentTransaction.SetRange(Type, PaymentTransaction.Type::Dispute);
-        if PaymentTransaction.Findset() then
-            repeat
-                if PaymentTransaction."Dispute Status" <> DisputeStatus then begin
-                    PaymentTransaction."Dispute Status" := DisputeStatus;
-                    PaymentTransaction."Dispute Finalized On" := JsonHelper.GetValueAsDateTime(DisputeToken, 'finalized_on');
-                    PaymentTransaction.Modify();
-                end;
-            until PaymentTransaction.Next() = 0;
+        if PaymentTransaction."Dispute Status" <> DisputeStatus then begin
+            PaymentTransaction."Dispute Status" := DisputeStatus;
+            PaymentTransaction."Dispute Finalized On" := JsonHelper.GetValueAsDateTime(DisputeToken, 'finalized_on');
+            PaymentTransaction.Modify();
+        end;
     end;
 
     local procedure ConvertToDisputeStatus(Value: Text): Enum "Shpfy Pay. Trans. Disp. Status"
