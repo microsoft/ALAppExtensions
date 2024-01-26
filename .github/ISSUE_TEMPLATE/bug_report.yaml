@@ -1,4 +1,4 @@
-name: Report and address a bug
+name: Fix a bug
 description: Create a bug report for a product defect you would like to address yourself
 title: "[Bug]: "
 labels: ["bug"]
@@ -47,4 +47,13 @@ body:
       description: If needed add any other context about the problem here or include screenshots
       placeholder: Additional context, screenshots, log output, etc.
     validations:
-      required: true
+      required: false
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: I will provide a fix for a bug
+      description: | 
+        To provide a fix for a bug, select this checkbox and then Get started. Thanks for contributing. 
+      options:
+        - label: I will provide a fix for a bug
+          required: true
