@@ -204,45 +204,110 @@ codeunit 30169 "Shpfy Payments"
         end;
     end;
 
-    internal procedure UpdateDisputeStatus()
+    internal procedure ImportNewDisputes()
     var
-        PaymentTransaction: Record "Shpfy Payment Transaction";
+        Dispute: Record "Shpfy Dispute";
+        SinceId: BigInteger;
+        JDisputes: JsonArray;
+        JItem: JsonToken;
+        JResponse: JsonToken;
+        Url: Text;
+        UrlTxt: Label 'shopify_payments/disputes.json?since_id=%1', Locked = true;
+    begin
+        if Dispute.FindLast() then
+            SinceId := Dispute.Id;
+
+        Url := CommunicationMgt.CreateWebRequestURL(StrSubstNo(UrlTxt, SinceId));
+
+        repeat
+            JResponse := CommunicationMgt.ExecuteWebRequest(Url, 'GET', JResponse, Url);
+
+            if JsonHelper.GetJsonArray(JResponse, JDisputes, 'disputes') then
+                foreach JItem in JDisputes do begin
+                    ImportDisputeData(JItem);
+                end;
+        until Url = '';
+    end;
+
+    internal procedure UpdateUnfinishedDisputes()
+    var
+        Dispute: Record "Shpfy Dispute";
         DisputeToken: JsonToken;
         JResponse: JsonToken;
         Url: Text;
         UrlTxt: Label 'shopify_payments/disputes/%1.json', Locked = true;
     begin
-        PaymentTransaction.SetRange(Type, PaymentTransaction.Type::Dispute);
-        PaymentTransaction.SetFilter("Dispute Status", '<>%1&<>%2', PaymentTransaction."Dispute Status"::Won, PaymentTransaction."Dispute Status"::Lost);
+        Dispute.SetFilter("Status", '<>%1&<>%2', Dispute."Status"::Won, Dispute."Status"::Lost);
 
-        if PaymentTransaction.FindSet() then
+        if Dispute.FindSet() then
             repeat
-                Url := CommunicationMgt.CreateWebRequestURL(StrSubstNo(UrlTxt, PaymentTransaction.Id));
+                Url := CommunicationMgt.CreateWebRequestURL(StrSubstNo(UrlTxt, Dispute.Id));
                 JResponse := CommunicationMgt.ExecuteWebRequest(Url, 'GET', JResponse);
                 DisputeToken := JsonHelper.GetJsonToken(JResponse, 'dispute');
-                UpdateDisputeStatus(PaymentTransaction, DisputeToken);
-            until PaymentTransaction.Next() = 0;
+                ImportDisputeData(DisputeToken);
+            until Dispute.Next() = 0;
     end;
 
-    internal procedure UpdateDisputeStatus(PaymentTransaction: Record "Shpfy Payment Transaction"; DisputeToken: JsonToken)
+    internal procedure ImportDisputeData(DisputeToken: JsonToken)
     var
-        DisputeStatus: Enum "Shpfy Pay. Trans. Disp. Status";
+        Id: BigInteger;
+        RecordRef: RecordRef;
+        Dispute: Record "Shpfy Dispute";
+        DisputeStatus: Enum "Shpfy Dispute Status";
     begin
+        Id := JsonHelper.GetValueAsBigInteger(DisputeToken, 'id');
         DisputeStatus := ConvertToDisputeStatus(JsonHelper.GetValueAsText(DisputeToken, 'status'));
 
-        if PaymentTransaction."Dispute Status" <> DisputeStatus then begin
-            PaymentTransaction."Dispute Status" := DisputeStatus;
-            PaymentTransaction."Dispute Finalized On" := JsonHelper.GetValueAsDateTime(DisputeToken, 'finalized_on');
-            PaymentTransaction.Modify();
+        Clear(Dispute);
+        if not Dispute.Get(Id) then begin
+            RecordRef.Open(Database::"Shpfy Dispute");
+            RecordRef.Init();
+            JsonHelper.GetValueIntoField(DisputeToken, 'order_id', RecordRef, Dispute.FieldNo("Source Order Id"));
+            JsonHelper.GetValueIntoField(DisputeToken, 'currency', RecordRef, Dispute.FieldNo(Currency));
+            JsonHelper.GetValueIntoField(DisputeToken, 'amount', RecordRef, Dispute.FieldNo(Amount));
+            JsonHelper.GetValueIntoField(DisputeToken, 'evidence_due_by', RecordRef, Dispute.FieldNo("Evidence Due By"));
+            JsonHelper.GetValueIntoField(DisputeToken, 'evidence_sent_on', RecordRef, Dispute.FieldNo("Evidence Sent On"));
+            JsonHelper.GetValueIntoField(DisputeToken, 'finalized_on', RecordRef, Dispute.FieldNo("Finalized On"));
+            RecordRef.SetTable(Dispute);
+            RecordRef.Close();
+            Dispute.Id := Id;
+            Dispute.Status := ConvertToDisputeStatus(JsonHelper.GetValueAsText(DisputeToken, 'status'));
+            Dispute.Type := ConvertToDisputeType(JsonHelper.GetValueAsText(DisputeToken, 'type'));
+            Dispute.Reason := ConvertToDisputeReason(JsonHelper.GetValueAsText(DisputeToken, 'reason'));
+            Dispute.Insert();
+        end else begin
+            Dispute.Status := ConvertToDisputeStatus(JsonHelper.GetValueAsText(DisputeToken, 'status'));
+            Dispute."Evidence Sent On" := JsonHelper.GetValueAsDateTime(DisputeToken, 'evidence_due_by');
+            Dispute."Finalized On" := JsonHelper.GetValueAsDateTime(DisputeToken, 'finalized_on');
+
+            Dispute.Modify();
         end;
     end;
 
-    local procedure ConvertToDisputeStatus(Value: Text): Enum "Shpfy Pay. Trans. Disp. Status"
+    local procedure ConvertToDisputeStatus(Value: Text): Enum "Shpfy Dispute Status"
     begin
         Value := CommunicationMgt.ConvertToCleanOptionValue(Value);
-        if Enum::"Shpfy Pay. Trans. Disp. Status".Names().Contains(Value) then
-            exit(Enum::"Shpfy Pay. Trans. Disp. Status".FromInteger(Enum::"Shpfy Pay. Trans. Disp. Status".Ordinals().Get(Enum::"Shpfy Pay. Trans. Disp. Status".Names().IndexOf(Value))))
+        if Enum::"Shpfy Dispute Status".Names().Contains(Value) then
+            exit(Enum::"Shpfy Dispute Status".FromInteger(Enum::"Shpfy Dispute Status".Ordinals().Get(Enum::"Shpfy Dispute Status".Names().IndexOf(Value))))
         else
-            exit(Enum::"Shpfy Pay. Trans. Disp. Status"::Unknown);
+            exit(Enum::"Shpfy Dispute Status"::Unknown);
+    end;
+
+    local procedure ConvertToDisputeType(Value: Text): Enum "Shpfy Dispute Type"
+    begin
+        Value := CommunicationMgt.ConvertToCleanOptionValue(Value);
+        if Enum::"Shpfy Dispute Type".Names().Contains(Value) then
+            exit(Enum::"Shpfy Dispute Type".FromInteger(Enum::"Shpfy Dispute Type".Ordinals().Get(Enum::"Shpfy Dispute Type".Names().IndexOf(Value))))
+        else
+            exit(Enum::"Shpfy Dispute Type"::Unknown);
+    end;
+
+    local procedure ConvertToDisputeReason(Value: Text): Enum "Shpfy Dispute Reason"
+    begin
+        Value := CommunicationMgt.ConvertToCleanOptionValue(Value);
+        if Enum::"Shpfy Dispute Status".Names().Contains(Value) then
+            exit(Enum::"Shpfy Dispute Reason".FromInteger(Enum::"Shpfy Dispute Reason".Ordinals().Get(Enum::"Shpfy Dispute Reason".Names().IndexOf(Value))))
+        else
+            exit(Enum::"Shpfy Dispute Reason"::Unknown);
     end;
 }

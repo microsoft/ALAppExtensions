@@ -802,6 +802,21 @@ page 30113 "Shpfy Order"
                     Page.Run(Page::"Shpfy Data Capture List", DataCapture);
                 end;
             }
+            action(Disputes)
+            {
+                ApplicationArea = All;
+                Caption = 'Show Related Disputes';
+                Image = Entry;
+                ToolTip = 'View the disputes related to order of the selected transaction.';
+
+                trigger OnAction();
+                var
+                    Dispute: Record "Shpfy Dispute";
+                begin
+                    Dispute.SetRange("Source Order Id", Rec."Shopify Order Id");
+                    Page.Run(Page::"Shpfy Disputes", Dispute);
+                end;
+            }
         }
     }
 

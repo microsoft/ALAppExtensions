@@ -1,6 +1,7 @@
-enum 30150 "Shpfy Pay. Trans. Disp. Status"
+namespace Microsoft.Integration.Shopify;
+enum 30150 "Shpfy Dispute Status"
 {
-    Caption = 'Shopify Payment Transaction Dispute Status';
+    Caption = 'Shopify Dispute Status';
     Extensible = true;
 
     value(0; Unknown)

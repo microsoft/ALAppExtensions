@@ -69,8 +69,8 @@ codeunit 139566 "Shpfy Payments Test"
         MockPaymentTransaction(Id, PaymentTransaction);
         DisputeToken := GetRandomDisputeAsJsonToken(Id, ShpfyPaytransDispStatus, finalizedOn);
 
-        // [WHEN] Invoke the function UpdateDisputeStatus(JToken)
-        TestPayments.UpdateDisputeStatus(PaymentTransaction, DisputeToken);
+        // [WHEN] Invoke the function ImportDisputeData(JToken)
+        TestPayments.ImportDisputeData(DisputeToken);
 
         // Assert
         LibraryAssert.IsTrue(PaymentTransaction.get(Id), 'At least one "Shpfy Payment Transaction" record should be found');

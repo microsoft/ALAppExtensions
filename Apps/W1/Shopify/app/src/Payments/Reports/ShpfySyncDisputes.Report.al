@@ -15,7 +15,8 @@ report 30120 "Shpfy Sync Disputes"
                 Sync: Codeunit "Shpfy Payments";
             begin
                 Sync.SetShop(Shop);
-                Sync.UpdateDisputeStatus();
+                Sync.UpdateUnfinishedDisputes();
+                Sync.ImportNewDisputes();
             end;
         }
     }

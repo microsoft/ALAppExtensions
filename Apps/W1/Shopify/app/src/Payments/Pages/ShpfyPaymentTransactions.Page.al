@@ -78,17 +78,6 @@ page 30124 "Shpfy Payment Transactions"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the id the order transaction that resulted in this balance transaction.';
                 }
-                field("Dispute Status"; Rec."Dispute Status")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the Dispute Status of the payment transaction.';
-                }
-                field("Dispute Finalized On"; Rec."Dispute Finalized On")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the Dispute Finalized On of the payment transaction.';
-
-                }
             }
         }
     }
@@ -111,6 +100,21 @@ page 30124 "Shpfy Payment Transactions"
                     DataCapture.SetRange("Linked To Table", Database::"Shpfy Payment Transaction");
                     DataCapture.SetRange("Linked To Id", Rec.SystemId);
                     Page.Run(Page::"Shpfy Data Capture List", DataCapture);
+                end;
+            }
+            action(Disputes)
+            {
+                ApplicationArea = All;
+                Caption = 'Show Related Disputes';
+                Image = Entry;
+                ToolTip = 'View the disputes related to order of the selected transaction.';
+
+                trigger OnAction();
+                var
+                    Dispute: Record "Shpfy Dispute";
+                begin
+                    Dispute.SetRange("Source Order Id", Rec."Source Order Id");
+                    Page.Run(Page::"Shpfy Disputes", Dispute);
                 end;
             }
         }

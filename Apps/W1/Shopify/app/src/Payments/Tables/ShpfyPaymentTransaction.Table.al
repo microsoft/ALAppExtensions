@@ -93,16 +93,6 @@ table 30124 "Shpfy Payment Transaction"
             Caption = 'Invoice No.';
             FieldClass = FlowField;
         }
-        field(200; "Dispute Status"; Enum "Shpfy Pay. Trans. Disp. Status")
-        {
-            Caption = 'Dispute Status';
-            DataClassification = CustomerContent;
-        }
-        field(201; "Dispute Finalized On"; DateTime)
-        {
-            Caption = 'Dispute Finalized On';
-            DataClassification = CustomerContent;
-        }
     }
     keys
     {
