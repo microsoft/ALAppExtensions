@@ -60,8 +60,9 @@ codeunit 139566 "Shpfy Payments Test"
         TestPayments: Codeunit "Shpfy Payments";
         PaymentTransaction: Record "Shpfy Payment Transaction";
         DisputeToken: JsonToken;
-        ShpfyPaytransDispStatus: enum::"Shpfy Pay. Trans. Disp. Status";
+        ShpfyPaytransDispStatus: enum "Shpfy Dispute Status";
         finalizedOn: DateTime;
+        Id: BigInteger;
     begin
         // [SCENARIO] Extract the data out json token that contains a Dipsute info into the "Shpfy Payment Transaction" record.
         // [GIVEN] A random Generated Dispute
@@ -79,11 +80,11 @@ codeunit 139566 "Shpfy Payments Test"
         LibraryAssert.AreEqual(finalizedOn, PaymentTransaction."Dispute Finalized On", 'Dispute finalized on should match the generated one');
     end;
 
-    local procedure GetRandomDisputeAsJsonToken(id: Guid; var ShpfyPaytransDispStatus: enum::"Shpfy Pay. Trans. Disp. Status"; var finalizedOn: DateTime): JsonToken
+    local procedure GetRandomDisputeAsJsonToken(id: BigInteger; var ShpfyPaytransDispStatus: enum "Shpfy Dispute Status"; var finalizedOn: DateTime): JsonToken
     var
         DisputeObject: JsonObject;
     begin
-        ShpfyPaytransDispStatus := Enum::"Shpfy Pay. Trans. Disp. Status".FromInteger(Any.IntegerInRange(0, 6));
+        ShpfyPaytransDispStatus := Enum::"Shpfy Dispute Status".FromInteger(Any.IntegerInRange(0, 6));
         finalizedOn := CurrentDateTime - 1;
 
         DisputeObject.Add('id', id);
@@ -102,7 +103,7 @@ codeunit 139566 "Shpfy Payments Test"
         exit(DisputeObject.AsToken());
     end;
 
-    local procedure MockPaymentTransaction(Id: Guid; var PaymentTransaction: Record "Shpfy Payment Transaction")
+    local procedure MockPaymentTransaction(Id: BigInteger; var PaymentTransaction: Record "Shpfy Payment Transaction")
     begin
         PaymentTransaction.Init();
         PaymentTransaction.Id := Id;
