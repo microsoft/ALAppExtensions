@@ -17,7 +17,7 @@
     "screenshots":  [
 
                     ],
-    "platform":  "23.0.0.0",
+    "platform":  "24.0.0.0",
     "idRanges":  [
                      {
                          "from":  30100,
@@ -41,6 +41,6 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "23.0.0.0",
+    "application":  "24.0.0.0",
     "target":  "OnPrem"
 }
