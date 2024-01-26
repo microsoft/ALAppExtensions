@@ -223,9 +223,8 @@ codeunit 30169 "Shpfy Payments"
             JResponse := CommunicationMgt.ExecuteWebRequest(Url, 'GET', JResponse, Url);
 
             if JsonHelper.GetJsonArray(JResponse, JDisputes, 'disputes') then
-                foreach JItem in JDisputes do begin
+                foreach JItem in JDisputes do
                     ImportDisputeData(JItem);
-                end;
         until Url = '';
     end;
 
