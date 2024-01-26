@@ -62,6 +62,8 @@ codeunit 139665 "GP Item Transaction Tests"
             Migrate(GPItem);
         until GPItem.Next() = 0;
 
+        HelperFunctions.PostGLTransactions();
+
         // [THEN] A Item is created for all staging table entries
         Assert.RecordCount(Item, GPItem.Count());
 
@@ -229,6 +231,8 @@ codeunit 139665 "GP Item Transaction Tests"
         GLAccount: Record "G/L Account";
         GenProductPostingGroup: Record "Gen. Product Posting Group";
         GeneralPostingSetup: Record "General Posting Setup";
+        ItemJournalBatch: Record "Item Journal Batch";
+        ItemJournalLine: Record "Item Journal Line";
     begin
         GPItem.DeleteAll();
         GPItemTransaction.DeleteAll();
@@ -245,6 +249,8 @@ codeunit 139665 "GP Item Transaction Tests"
         GLAccount.DeleteAll();
         GenProductPostingGroup.DeleteAll();
         GeneralPostingSetup.DeleteAll();
+        ItemJournalLine.DeleteAll();
+        ItemJournalBatch.DeleteAll();
     end;
 
     local procedure Migrate(GPItem: Record "GP Item")

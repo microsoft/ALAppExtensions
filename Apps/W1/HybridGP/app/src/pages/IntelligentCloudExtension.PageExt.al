@@ -24,7 +24,7 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
             part("Show Detail Snapshot Errors"; "Hist. Migration Status Factbox")
             {
                 ApplicationArea = Basic, Suite;
-                Visible = false;
+                Visible = FactBoxesVisible;
             }
         }
     }
@@ -74,9 +74,6 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                         exit;
                     end;
 
-                    if not TaskScheduler.CanCreateTask() then
-                        Error(HistoricalSnapshotJobNeedPermissionsMsg);
-
                     if Confirm(ConfirmRerunQst) then begin
                         if not GPHistSourceProgress.IsEmpty() then begin
                             HistMigrationCurrentStatus.EnsureInit();
@@ -85,7 +82,6 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                         end;
 
                         WizardIntegration.ScheduleGPHistoricalSnapshotMigration();
-                        Message(SnapshotJobRunningMsg);
                     end;
                 end;
             }
@@ -108,7 +104,6 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
 
         HybridCompany.SetRange(Replicate, true);
         HasCompletedSetupWizard := not HybridCompany.IsEmpty();
-
         GPConfiguration.GetSingleInstance();
 
         if GetHasCompletedMigration() then
@@ -144,8 +139,6 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
         DetailSnapshotNotConfiguredMsg: Label 'GP Historical Snapshot is not configured to migrate.';
         ConfirmRerunQst: Label 'Are you sure you want to rerun the GP Historical Snapshot migration?';
         ResetPreviousRunQst: Label 'Do you want to reset your previous GP Historical Snapshot migration? Choose No if you want to continue progress from the previous attempt.';
-        SnapshotJobRunningMsg: Label 'The GP Historical Snapshot job is running.';
         HistoricalDataJobNotRanMsg: Label 'The GP Historical Snapshot job has not ran.';
-        HistoricalSnapshotJobNeedPermissionsMsg: Label 'The GP Historical Snapshot job cannot be started. Your user needs permission to create a scheduled task.';
         HistoricalDataStartJobMsg: Label 'Start GP Historical Snapshot job.';
 }
