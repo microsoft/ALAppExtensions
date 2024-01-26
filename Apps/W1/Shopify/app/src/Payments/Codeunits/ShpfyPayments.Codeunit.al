@@ -227,7 +227,6 @@ codeunit 30169 "Shpfy Payments"
     internal procedure UpdateDisputeStatus(PaymentTransaction: Record "Shpfy Payment Transaction"; DisputeToken: JsonToken)
     var
         DisputeStatus: Enum "Shpfy Pay. Trans. Disp. Status";
-        OrderId: BigInteger;
     begin
         DisputeStatus := ConvertToDisputeStatus(JsonHelper.GetValueAsText(DisputeToken, 'status'));
 
