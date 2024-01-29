@@ -1,0 +1,360 @@
+{
+  "name": "Ruleset for 1st party extensions",
+  "description": "This ruleset applies to 1st party extensions",
+  "generalAction": "Error",
+  "includedRuleSets": [
+    {
+      "action": "Default",
+      "path": "./ruleset.json"
+    }
+  ],
+  "rules": [
+    {
+      "id": "AL0792",
+      "action": "Warning"
+    },
+    {
+      "id": "AD0001",
+      "action": "Error",
+      "justification": "Analyzer exceptions should be an error as they can prevent other rules from being validated properly."
+    },
+    {
+      "id": "AL0254",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0424",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0432",
+      "action": "Warning",
+      "justification": "Element is marked for removal."
+    },
+    {
+      "id": "AL0468",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0603",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0520",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0604",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0605",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0606",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0607",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0611",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0634",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0655",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0659",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0667",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0679",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0685",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0717",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0719",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0729",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0748",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0749",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0755",
+      "action": "Warning"
+    },
+    {
+      "id": "AL1025",
+      "action": "Warning"
+    },
+    {
+      "id": "AL1026",
+      "action": "Warning"
+    },
+    {
+      "id": "AS0011",
+      "action": "Warning"
+    },
+    {
+      "id": "AS0014",
+      "action": "Warning"
+    },
+    {
+      "id": "AS0015",
+      "action": "Warning"
+    },
+    {
+      "id": "AS0016",
+      "action": "Warning"
+    },
+    {
+      "id": "AS0079",
+      "action": "Warning"
+    },
+    {
+      "id": "AS0094",
+      "action": "Warning"
+    },
+    {
+      "id": "AS0099",
+      "action": "Warning"
+    },
+    {
+      "id": "AS0103",
+      "action": "Warning"
+    },
+    {
+      "id": "AS0104",
+      "action": "Warning"
+    },
+    {
+      "id": "AS0111",
+      "action": "Warning"
+    },
+    {
+      "id": "AS0112",
+      "action": "Warning"
+    },
+    {
+      "id": "AS0113",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0051",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0052",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0053",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0073",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0094",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0131",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0139",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0150",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0175",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0181",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0189",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0198",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0199",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0202",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0204",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0205",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0206",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0207",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0210",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0214",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0215",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0217",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0218",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0219",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0221",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0225",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0228",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0232",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0233",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0240",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0241",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0242",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0244",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0245",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0247",
+      "action": "None",
+      "justification": "Elevate when the all apps are namespaced."
+    },
+    {
+      "id": "AA0470",
+      "action": "Warning"
+    },
+    {
+      "id": "PTE0002",
+      "action": "Warning"
+    },
+    {
+      "id": "PTE0004",
+      "action": "Warning"
+    },
+    {
+      "id": "PTE0010",
+      "action": "Warning"
+    },
+    {
+      "id": "PTE0014",
+      "action": "Warning"
+    },
+    {
+      "id": "PTE0015",
+      "action": "Warning"
+    },
+    {
+      "id": "PTE0017",
+      "action": "Warning"
+    },
+    {
+      "id": "PTE0018",
+      "action": "Warning"
+    },
+    {
+      "id": "PTE0019",
+      "action": "Warning"
+    },
+    {
+      "id": "PTE0020",
+      "action": "Warning"
+    },
+    {
+      "id": "AW0005",
+      "action": "Warning"
+    },
+    {
+      "id": "AW0011",
+      "action": "Warning"
+    }
+  ]
+}
