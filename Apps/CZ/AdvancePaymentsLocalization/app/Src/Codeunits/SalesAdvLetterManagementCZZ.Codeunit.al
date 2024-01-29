@@ -408,6 +408,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         GenJournalLine: Record "Gen. Journal Line";
         VATPostingSetup: Record "VAT Posting Setup";
         CustLedgerEntry: Record "Cust. Ledger Entry";
+        DocumentTypeHandlerCZZ: Codeunit "Document Type Handler CZZ";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         NoSeriesManagement: Codeunit NoSeriesManagement;
         VATPostingSetupHandlerCZZ: Codeunit "VAT Posting Setup Handler CZZ";
@@ -471,7 +472,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
 
         SalesAdvLetterEntryCZZ2.CalcSums(Amount);
         TempAdvancePostingBufferCZZ.CalcSums(Amount);
-        if (SalesAdvLetterEntryCZZ.Amount - SalesAdvLetterEntryCZZ2.Amount) < TempAdvancePostingBufferCZZ.Amount then
+        if Abs(SalesAdvLetterEntryCZZ.Amount - SalesAdvLetterEntryCZZ2.Amount) < Abs(TempAdvancePostingBufferCZZ.Amount) then
             Error(ExceededAmountErr);
 
         GetCurrency(SalesAdvLetterEntryCZZ."Currency Code");
@@ -524,8 +525,10 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 OnPostAdvancePaymentVATOnBeforeGenJnlPostLine(SalesAdvLetterHeaderCZZ, SalesAdvLetterEntryCZZ, GenJournalLine);
 
                 BindSubscription(VATPostingSetupHandlerCZZ);
+                BindSubscription(DocumentTypeHandlerCZZ);
                 GenJnlPostLine.RunWithCheck(GenJournalLine);
                 UnbindSubscription(VATPostingSetupHandlerCZZ);
+                UnbindSubscription(DocumentTypeHandlerCZZ);
 
 #if not CLEAN22
 #pragma warning disable AL0432
@@ -742,6 +745,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         CustLedgerEntryAdv: Record "Cust. Ledger Entry";
         CustLedgerEntry: Record "Cust. Ledger Entry";
         AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
+        DocumentTypeHandlerCZZ: Codeunit "Document Type Handler CZZ";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         VATPostingSetupHandlerCZZ: Codeunit "VAT Posting Setup Handler CZZ";
         GenJnlCheckLnHandlerCZZ: Codeunit "Gen.Jnl.-Check Ln. Handler CZZ";
@@ -799,8 +803,10 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 GenJournalLine."VAT Amount (LCY)" := -SalesAdvLetterEntryCZZ2."VAT Amount (LCY)";
                 GenJournalLine."VAT Base Amount (LCY)" := -SalesAdvLetterEntryCZZ2."VAT Base Amount (LCY)";
                 BindSubscription(VATPostingSetupHandlerCZZ);
+                BindSubscription(DocumentTypeHandlerCZZ);
                 GenJnlPostLine.RunWithCheck(GenJournalLine);
                 UnbindSubscription(VATPostingSetupHandlerCZZ);
+                UnbindSubscription(DocumentTypeHandlerCZZ);
 
 #if not CLEAN22
 #pragma warning disable AL0432
@@ -1099,6 +1105,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         GenJournalLine: Record "Gen. Journal Line";
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
         CustLedgerEntry2: Record "Cust. Ledger Entry";
+        DocumentTypeHandlerCZZ: Codeunit "Document Type Handler CZZ";
         GenJnlCheckLnHandlerCZZ: Codeunit "Gen.Jnl.-Check Ln. Handler CZZ";
         RemainingAmount: Decimal;
         RemainingAmountLCY: Decimal;
@@ -1161,8 +1168,10 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
             GenJournalLine."Applies-to ID" := ApplId;
 
             OnBeforePostReversePayment(GenJournalLine, SalesAdvLetterHeaderCZZ);
+            BindSubscription(DocumentTypeHandlerCZZ);
             GenJnlPostLine.RunWithCheck(GenJournalLine);
             UnbindSubscription(GenJnlCheckLnHandlerCZZ);
+            UnbindSubscription(DocumentTypeHandlerCZZ);
             OnAfterPostReversePayment(GenJournalLine, SalesAdvLetterHeaderCZZ);
 
             CustLedgerEntry2.FindLast();
@@ -1196,6 +1205,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         GenJournalLine: Record "Gen. Journal Line";
         VATPostingSetup: Record "VAT Posting Setup";
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+        DocumentTypeHandlerCZZ: Codeunit "Document Type Handler CZZ";
         VATPostingSetupHandlerCZZ: Codeunit "VAT Posting Setup Handler CZZ";
         CalcVATAmountLCY: Decimal;
         CalcAmountLCY: Decimal;
@@ -1264,8 +1274,10 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                     CalculateAmountLCY(GenJournalLine);
                 if not Preview then begin
                     BindSubscription(VATPostingSetupHandlerCZZ);
+                    BindSubscription(DocumentTypeHandlerCZZ);
                     GenJnlPostLine.RunWithCheck(GenJournalLine);
                     UnbindSubscription(VATPostingSetupHandlerCZZ);
+                    UnbindSubscription(DocumentTypeHandlerCZZ);
                 end;
 
 #if not CLEAN22
@@ -1907,6 +1919,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         GenJournalLine: Record "Gen. Journal Line";
         AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
         VATEntry: Record "VAT Entry";
+        DocumentTypeHandlerCZZ: Codeunit "Document Type Handler CZZ";
         NoSeriesManagement: Codeunit NoSeriesManagement;
         VATPostingSetupHandlerCZZ: Codeunit "VAT Posting Setup Handler CZZ";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
@@ -1986,8 +1999,10 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 if GenJournalLine."Currency Code" <> '' then
                     CalculateAmountLCY(GenJournalLine);
                 BindSubscription(VATPostingSetupHandlerCZZ);
+                BindSubscription(DocumentTypeHandlerCZZ);
                 GenJnlPostLine.RunWithCheck(GenJournalLine);
                 UnbindSubscription(VATPostingSetupHandlerCZZ);
+                UnbindSubscription(DocumentTypeHandlerCZZ);
 
 #if not CLEAN22
 #pragma warning disable AL0432
@@ -2111,6 +2126,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         VATPostingSetup: Record "VAT Posting Setup";
         CustLedgerEntry: Record "Cust. Ledger Entry";
         CustLedgerEntryInv: Record "Cust. Ledger Entry";
+        DocumentTypeHandlerCZZ: Codeunit "Document Type Handler CZZ";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         VATPostingSetupHandlerCZZ: Codeunit "VAT Posting Setup Handler CZZ";
         GenJnlCheckLnHandlerCZZ: Codeunit "Gen.Jnl.-Check Ln. Handler CZZ";
@@ -2196,8 +2212,10 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                             GenJournalLine."VAT Base Amount (LCY)" := GenJournalLine."Amount (LCY)" - GenJournalLine."VAT Amount (LCY)";
                         end;
                         BindSubscription(VATPostingSetupHandlerCZZ);
+                        BindSubscription(DocumentTypeHandlerCZZ);
                         GenJnlPostLine.RunWithCheck(GenJournalLine);
                         UnbindSubscription(VATPostingSetupHandlerCZZ);
+                        UnbindSubscription(DocumentTypeHandlerCZZ);
 
 #if not CLEAN22
 #pragma warning disable AL0432

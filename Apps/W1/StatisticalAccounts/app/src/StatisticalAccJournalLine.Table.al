@@ -154,13 +154,17 @@ table 2631 "Statistical Acc. Journal Line"
     var
         SourceCodeSetup: Record "Source Code Setup";
         DimensionManagement: Codeunit DimensionManagement;
+        OldDimSetID: Integer;
     begin
         "Shortcut Dimension 1 Code" := '';
         "Shortcut Dimension 2 Code" := '';
+        OldDimSetID := "Dimension Set ID";
 
         "Dimension Set ID" :=
           DimensionManagement.GetRecDefaultDimID(
             Rec, CurrFieldNo, DefaultDimSource, SourceCodeSetup.GetSourceCodeSetupSafe(), "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
+
+        OnAfterCreateDimensions(Rec, xRec, CurrFieldNo, OldDimSetID, DefaultDimSource);
     end;
 
     local procedure InitDefaultDimensionSources(var DefaultDimensionSource: List of [Dictionary of [Integer, Code[20]]])
@@ -279,4 +283,9 @@ table 2631 "Statistical Acc. Journal Line"
     var
         DimensionSetLabelTxt: Label '%1 %2 %3', Locked = true;
         StatisticalAccountIsBlockedErr: Label 'Statistical account %1 is blocked. Journal line %2.', Comment = '%1 number of statistical account. %2 number of journal line';
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreateDimensions(var StatisticalAccJournalLine: Record "Statistical Acc. Journal Line"; xStatisticalAccJournalLine: Record "Statistical Acc. Journal Line"; CurrentFieldNo: Integer; OldDimSetID: Integer; DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    begin
+    end;
 }

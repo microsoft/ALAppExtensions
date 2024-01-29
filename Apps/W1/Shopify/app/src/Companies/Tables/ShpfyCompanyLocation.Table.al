@@ -52,7 +52,7 @@ table 30151 "Shpfy Company Location"
             Caption = 'Phone No.';
             DataClassification = CustomerContent;
         }
-        field(9; Name; Text[50])
+        field(9; Name; Text[100])
         {
             Caption = 'Name';
             DataClassification = CustomerContent;

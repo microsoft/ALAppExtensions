@@ -68,7 +68,7 @@ codeunit 4810 IntrastatReportManagement
                             if ReturnRcptHeader."Rcvd.-from Count./Region Code" <> '' then
                                 CountryCode := ReturnRcptHeader."Rcvd.-from Count./Region Code"
                             else
-                                CountryCode := ReturnRcptHeader."Sell-to Country/Region Code";
+                                CountryCode := ReturnRcptHeader."Ship-to Country/Region Code";
                         IntrastatReportSetup."Shipments Based On"::"Sell-to Country":
                             CountryCode := ReturnRcptHeader."Sell-to Country/Region Code";
                         IntrastatReportSetup."Shipments Based On"::"Bill-to Country":
@@ -628,7 +628,7 @@ codeunit 4810 IntrastatReportManagement
                 DataExch."Data Exch. Def Code" := DataExchMapping."Data Exch. Def Code";
                 DataExch."Data Exch. Line Def Code" := DataExchMapping."Data Exch. Line Def Code";
                 DataExch."Table Filters".CreateOutStream(OutStreamFilters);
-                OutStreamFilters.WriteText(IntrastatReportLine.GetView());
+                OutStreamFilters.WriteText(IntrastatReportLine.GetView(false));
                 if DataExch.Insert(true) then
                     DataExch.ExportFromDataExch(DataExchMapping);
                 DataExch.Modify(true);

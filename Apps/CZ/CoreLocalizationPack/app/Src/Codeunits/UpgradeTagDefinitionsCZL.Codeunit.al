@@ -37,6 +37,9 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
         PerCompanyUpgradeTags.Add(GetReportPostedDirectTransferCZUpgradeTag());
         PerCompanyUpgradeTags.Add(GetEU3PartyTradePurchaseUpgradeTag());
         PerCompanyUpgradeTags.Add(GetStatutoryReportingSetupCityUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetSubstCustVendPostingGroupUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetVATStatementReportExtensionUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetAllowVATPostingUpgradeTag());
     end;
 
     procedure GetDataVersion174PerDatabaseUpgradeTag(): Code[250]
@@ -152,5 +155,20 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
     procedure GetStatutoryReportingSetupCityUpgradeTag(): Code[250]
     begin
         exit('CZL-491441-StatutoryReportingSetupCityUpgradeTag-20231114');
+    end;
+
+    procedure GetSubstCustVendPostingGroupUpgradeTag(): Code[250]
+    begin
+        exit('CZL-495863-SubstCustVendPostingGroupUpgradeTag-20240105');
+    end;
+
+    procedure GetVATStatementReportExtensionUpgradeTag(): Code[250]
+    begin
+        exit('CZL-495496-VATStatementReportExtensionUpgradeTag-20240102');
+    end;
+
+    procedure GetAllowVATPostingUpgradeTag(): Code[250]
+    begin
+        exit('CZL-495916-AllowVATPostingUpgradeTag-20240109');
     end;
 }

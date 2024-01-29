@@ -20,6 +20,7 @@ codeunit 139638 "Shpfy Company Initialize"
         CompanyLocation.Init();
         CompanyLocation.Id := Any.IntegerInRange(1, 99999);
         CompanyLocation."Company SystemId" := ShopifyCompany.SystemId;
+        CompanyLocation.Name := 'Address';
         CompanyLocation.Address := 'Address';
         CompanyLocation."Address 2" := 'Address 2';
         CompanyLocation."Phone No." := '111';
@@ -62,7 +63,7 @@ codeunit 139638 "Shpfy Company Initialize"
 
     internal procedure CreateCompanyGraphQLResult(): Text
     begin
-        exit('{"query":"mutation {companyCreate(input: {company: {name: \"Name\"}, companyLocation: {billingSameAsShipping: true,name: \"Main\", phone: \"111\", shippingAddress: {address1: \"Address\", address2: \"Address 2\", zip: \"1111\", city: \"City\", phone: \"111\", countryCode: US}}}) {company {id, name, locations(first: 1) {edges {node {id, name}}}, contactRoles(first:10) {edges {node {id,name}}}}, userErrors {field, message}}}"}');
+        exit('{"query":"mutation {companyCreate(input: {company: {name: \"Name\"}, companyLocation: {billingSameAsShipping: true,name: \"Address\", phone: \"111\", shippingAddress: {address1: \"Address\", address2: \"Address 2\", zip: \"1111\", city: \"City\", phone: \"111\", countryCode: US}}}) {company {id, name, locations(first: 1) {edges {node {id, name}}}, contactRoles(first:10) {edges {node {id,name}}}}, userErrors {field, message}}}"}');
     end;
 
     internal procedure CreateGraphQueryUpdateCompanyResult(CompanyId: BigInteger): Text

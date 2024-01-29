@@ -59,6 +59,13 @@ codeunit 14600 "IS Core"
         DataClassificationEvalData.SetTableFieldsToNormal(DATABASE::"IS IRS Types");
     end;
 
+    internal procedure BlockDeletingPostedDocument(PostingDate: Date)
+    var
+        ISPostedDocumentDeletion: codeunit "IS Docs Retention Period";
+    begin
+        ISPostedDocumentDeletion.CheckDocumentDeletionAllowedByLaw(PostingDate);
+    end;
+
     var
         ReminderMsg: Label 'Reminder to read legal restrictions on form and print/send statement';
 }

@@ -44,7 +44,7 @@ codeunit 7251 "Bank Acc. Rec. Trans. to Acc."
 
         FeatureTelemetry.LogUptake('0000LEV', BankRecAIMatchingImpl.FeatureName(), Enum::"Feature Uptake Status"::"Set up");
         FeatureTelemetry.LogUptake('0000LEW', BankRecAIMatchingImpl.FeatureName(), Enum::"Feature Uptake Status"::Used);
-        FeatureTelemetry.LogUsage('0000LEX', BankRecAIMatchingImpl.FeatureName(), 'Transfer to G/L Account proposals');
+        FeatureTelemetry.LogUsage('0000LEX', BankRecAIMatchingImpl.FeatureName(), 'Post Difference to G/L Account proposals');
 
         // for bank account reconciliation lines whose description is mapped to a G/L Account in Text-to Account Mapping, add the result immediately
         // mark bank account reconciliation lines whose description is not mapped to a G/L Account in Text-to Account Mapping

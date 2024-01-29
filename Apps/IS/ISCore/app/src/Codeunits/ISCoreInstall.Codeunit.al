@@ -7,6 +7,7 @@ namespace Microsoft.Finance;
 #if not CLEAN24
 using System.Upgrade;
 #endif
+using Microsoft.Finance.GeneralLedger.Setup;
 
 codeunit 14601 "IS Core Install"
 {
@@ -18,6 +19,7 @@ codeunit 14601 "IS Core Install"
 #if not CLEAN24
         InsertISCoreAppSetup();
 #endif
+        UpdateGeneralLedgserSetup();
     end;
 
 #if not CLEAN24
@@ -38,4 +40,14 @@ codeunit 14601 "IS Core Install"
         end;
     end;
 #endif
+
+    internal procedure UpdateGeneralLedgserSetup()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        DocsRetentionPeriodDef: Enum "Docs - Retention Period Def.";
+    begin
+        GeneralLedgerSetup.Get();
+        GeneralLedgerSetup.Validate("Document Retention Period", DocsRetentionPeriodDef::"IS Docs Retention Period");
+        GeneralLedgerSetup.Modify();
+    end;
 }

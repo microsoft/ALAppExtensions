@@ -463,8 +463,8 @@ codeunit 30103 "Shpfy Communication Mgt."
 
     local procedure ResponseHasUserError(Response: Text): Boolean;
     begin
-        if Response.Contains('"userErrors":') then
-            if not Response.Contains('"userErrors":[]') then
+        if Response.Contains('"userErrors":') or Response.Contains('"orderCancelUserErrors":') then
+            if not Response.Contains('"userErrors":[]') and not Response.Contains('"orderCancelUserErrors":[]') then
                 exit(true);
     end;
 
@@ -639,19 +639,21 @@ codeunit 30103 "Shpfy Communication Mgt."
         Month: Integer;
         Year: Integer;
         ApiVersionExpiryDate: DateTime;
-        Result: List of [Text];
+        Result: Text;
+        ResultList: List of [Text];
     begin
         if not GetApiVersionCache(ApiVersionExpiryDate) then begin
-            Result := GetApiVersionExpiryDateFromAKV().Split('-');
-            if Result.Count <> 3 then
+            Result := GetApiVersionExpiryDateFromAKV();
+            ResultList := Result.Split('-');
+            if ResultList.Count <> 3 then
                 ApiVersionExpiryDate := CreateDateTime(CalcDate('<+1Y>', Today()), 0T)
             else begin
-                Evaluate(Day, Result.Get(3));
-                Evaluate(Month, Result.Get(2));
-                Evaluate(Year, Result.Get(1));
+                Evaluate(Day, ResultList.Get(3));
+                Evaluate(Month, ResultList.Get(2));
+                Evaluate(Year, ResultList.Get(1));
                 ApiVersionExpiryDate := CreateDateTime(DMY2Date(Day, Month, Year), 0T);
             end;
-            SetApiVersionCache(Format(ApiVersionExpiryDate));
+            SetApiVersionCache(Result);
         end;
 
         exit(ApiVersionExpiryDate);
@@ -662,22 +664,36 @@ codeunit 30103 "Shpfy Communication Mgt."
     internal procedure SetApiVersionCache(ApiVersionExpiryDate: Text)
     begin
         IsolatedStorage.Set('ApiVersionExpiryDate(' + VersionTok + ')', ApiVersionExpiryDate, DataScope::Module);
-        IsolatedStorage.Set('ApiVersionCache(' + VersionTok + ')', Format(CurrentDateTime()), DataScope::Module);
+        IsolatedStorage.Set('ApiVersionCache(' + VersionTok + ')', Format(CurrentDateTime(), 0, 9), DataScope::Module);
     end;
 
     [NonDebuggable]
     [Scope('OnPrem')]
     internal procedure GetApiVersionCache(var ApiVersionExpiryDate: DateTime): Boolean
     var
+        Day: Integer;
+        Month: Integer;
+        Year: Integer;
         Result: Text;
+        ResultList: List of [Text];
         ApiVersionCache: DateTime;
     begin
-        if IsolatedStorage.Get('ApiVersionExpiryDate(' + VersionTok + ')', DataScope::Module, Result) then
-            if Evaluate(ApiVersionExpiryDate, Result) then
-                if IsolatedStorage.Get('ApiVersionCache(' + VersionTok + ')', DataScope::Module, Result) then
-                    if Evaluate(ApiVersionCache, Result) then
-                        if Round((CurrentDateTime() - ApiVersionCache) / 1000 / 3600 / 24, 1) <= 10 then // 10 days lifetime for cache
-                            exit(true);
+        if IsolatedStorage.Get('ApiVersionExpiryDate(' + VersionTok + ')', DataScope::Module, Result) then begin
+            ResultList := Result.Split('-');
+            if ResultList.Count <> 3 then
+                exit(false);
+            if not Evaluate(Day, ResultList.Get(3)) then
+                exit(false);
+            if not Evaluate(Month, ResultList.Get(2)) then
+                exit(false);
+            if not Evaluate(Year, ResultList.Get(1)) then
+                exit(false);
+            ApiVersionExpiryDate := CreateDateTime(DMY2Date(Day, Month, Year), 0T);
+            if IsolatedStorage.Get('ApiVersionCache(' + VersionTok + ')', DataScope::Module, Result) then
+                if Evaluate(ApiVersionCache, Result, 9) then
+                    if Round((CurrentDateTime() - ApiVersionCache) / 1000 / 3600 / 24, 1) <= 10 then // 10 days lifetime for cache
+                        exit(true);
+        end;
     end;
 
     [NonDebuggable]
@@ -729,6 +745,14 @@ codeunit 30103 "Shpfy Communication Mgt."
 
         PropertyValue := JToken.AsValue().AsText();
         exit(true);
+    end;
+
+    internal procedure ConvertBooleanToText(Value: Boolean): Text
+    begin
+        if Value then
+            exit('true')
+        else
+            exit('false');
     end;
 }
 

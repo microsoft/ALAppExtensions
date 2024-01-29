@@ -158,13 +158,18 @@ table 30121 "Shpfy Orders to Import"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+        field(23; "Purchasing Entity"; Enum "Shpfy Order Purchasing Entity")
+        {
+            Caption = 'Purchasing Entity';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
         field(100; "Import Action"; enum "Shpfy Import Action")
         {
             Caption = 'Import Action';
             DataClassification = CustomerContent;
             Editable = false;
         }
-
         field(102; "Has Error"; Boolean)
         {
             Caption = 'Has Error';

@@ -16,10 +16,9 @@ codeunit 148103 "Dim. Automatic Creation CZA"
         Dimension: Record Dimension;
         DefaultDimension: Record "Default Dimension";
         DimensionValue: Record "Dimension Value";
-        LibraryJob: Codeunit "Library - Job";
+        DimensionAutoCreateMgtCZA: Codeunit "Dimension Auto.Create Mgt. CZA";
         LibraryFixedAsset: Codeunit "Library - Fixed Asset";
         LibraryWarehouse: Codeunit "Library - Warehouse";
-
         LibraryDimension: Codeunit "Library - Dimension";
         LibraryRandom: Codeunit "Library - Random";
         Assert: Codeunit Assert;
@@ -56,11 +55,13 @@ codeunit 148103 "Dim. Automatic Creation CZA"
         LibraryDimension.CreateDefaultDimension(DefaultDimension, Database::Job, '', Dimension.Code, '');
         CreateDefaultDimensionAutomaticCreation(DefaultDimension);
         DefaultDimension.Modify(true);
+        Commit();
 
         // [WHEN] Create new Job.
         Job.Init();
         Job."No." := CopyStr(LibraryRandom.RandText(10), 1, 10);
         Job.Insert(true);
+        DimensionAutoCreateMgtCZA.AutoCreateDimension(Database::Job, Job."No.");
 
         // [THEN] Default Dimension of new created job must be equal to Job No.
         DefaultDimension.Get(Database::Job, Job."No.", Dimension.Code);
@@ -82,9 +83,11 @@ codeunit 148103 "Dim. Automatic Creation CZA"
         LibraryDimension.CreateDefaultDimension(DefaultDimension, Database::Location, '', Dimension.Code, '');
         CreateDefaultDimensionAutomaticCreation(DefaultDimension);
         DefaultDimension.Modify(true);
+        Commit();
 
         // [WHEN] Create new Location.
         LibraryWarehouse.CreateLocation(Location);
+        DimensionAutoCreateMgtCZA.AutoCreateDimension(Database::Location, Location.Code);
 
         // [THEN] Default Dimension of new created Location must be equal to location Code.
         DefaultDimension.Get(Database::Location, Location.Code, Dimension.Code);
@@ -106,9 +109,11 @@ codeunit 148103 "Dim. Automatic Creation CZA"
         LibraryDimension.CreateDefaultDimension(DefaultDimension, Database::"Fixed Asset", '', Dimension.Code, '');
         CreateDefaultDimensionAutomaticCreation(DefaultDimension);
         DefaultDimension.Modify(true);
+        Commit();
 
         // [WHEN] Create new Fixed Asseet.
         LibraryFixedAsset.CreateFixedAsset(FixedAsset);
+        DimensionAutoCreateMgtCZA.AutoCreateDimension(Database::"Fixed Asset", FixedAsset."No.");
 
         // [THEN] Default Dimension of new created fixed asset must be equal to fixed asset No.
         DefaultDimension.Get(Database::"Fixed Asset", FixedAsset."No.", Dimension.Code);
@@ -133,9 +138,13 @@ codeunit 148103 "Dim. Automatic Creation CZA"
         DefaultDimension."Dim. Description Update CZA" := DefaultDimension."Dim. Description Update CZA"::Create;
         DefaultDimension."Dim. Description Format CZA" := JobDescriptionTok;
         DefaultDimension.Modify(true);
+        Commit();
 
         // [WHEN] Create new Job.
-        LibraryJob.CreateJob(Job);
+        Job.Init();
+        Job."No." := CopyStr(LibraryRandom.RandText(10), 1, 10);
+        Job.Insert(true);
+        DimensionAutoCreateMgtCZA.AutoCreateDimension(Database::"Job", Job."No.");
 
         // [THEN] Dimension Value Name must be equal to default description setup.
         DimensionValue.Get(Dimension.Code, Job."No.");
@@ -161,9 +170,13 @@ codeunit 148103 "Dim. Automatic Creation CZA"
         DefaultDimension."Dim. Description Update CZA" := DefaultDimension."Dim. Description Update CZA"::Update;
         DefaultDimension."Dim. Description Format CZA" := JobDescriptionTok;
         DefaultDimension.Modify(true);
+        Commit();
 
         // [WHEN] Create new Job and modify description.
-        LibraryJob.CreateJob(Job);
+        Job.Init();
+        Job."No." := CopyStr(LibraryRandom.RandText(10), 1, 10);
+        Job.Insert(true);
+        DimensionAutoCreateMgtCZA.AutoCreateDimension(Database::"Job", Job."No.");
         JobModifyDescritpion := CopyStr(LibraryRandom.RandText(20), 1, MaxStrLen(JobModifyDescritpion));
         Job.Validate(Description, JobModifyDescritpion);
         Job.Modify();
@@ -173,10 +186,10 @@ codeunit 148103 "Dim. Automatic Creation CZA"
         Assert.AreEqual(DimensionValue.Name, StrSubstNo(JobDescriptionTok, Job.Description), DimensionNameErr);
     end;
 
-    local procedure CreateDefaultDimensionAutomaticCreation(var DefaultDimension: Record "Default Dimension")
+    local procedure CreateDefaultDimensionAutomaticCreation(var VarDefaultDimension: Record "Default Dimension")
     begin
-        DefaultDimension."Automatic Create CZA" := true;
-        DefaultDimension."Auto. Create Value Posting CZA" := DefaultDimension."Auto. Create Value Posting CZA"::"Same Code";
-        DefaultDimension."Value Posting" := DefaultDimension."Value Posting"::"Code Mandatory";
+        VarDefaultDimension."Automatic Create CZA" := true;
+        VarDefaultDimension."Auto. Create Value Posting CZA" := VarDefaultDimension."Auto. Create Value Posting CZA"::"Same Code";
+        VarDefaultDimension."Value Posting" := VarDefaultDimension."Value Posting"::"Code Mandatory";
     end;
 }

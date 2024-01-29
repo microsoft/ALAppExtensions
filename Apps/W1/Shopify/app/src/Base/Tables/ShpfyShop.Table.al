@@ -179,7 +179,6 @@ table 30102 "Shpfy Shop"
             trigger OnValidate()
             var
                 ErrorInfo: ErrorInfo;
-                AutoCreateErrorMsg: Label 'You cannot turn "%1" off if "%2" is set to the value of "%3".', Comment = '%1 = Field Caption of "Auto Create Orders", %2 = Field Caption of "Return and Refund Process", %3 = Field Value of "Return and Refund Process"';
             begin
                 if Rec."Return and Refund Process" = "Shpfy ReturnRefund ProcessType"::"Auto Create Credit Memo" then
                     if not Rec."Auto Create Orders" then begin
@@ -755,6 +754,17 @@ table 30102 "Shpfy Shop"
             DataClassification = CustomerContent;
             InitValue = true;
         }
+        field(125; "Default Company No."; Code[20])
+        {
+            Caption = 'Default Company No.';
+            DataClassification = CustomerContent;
+            TableRelation = Customer;
+        }
+        field(126; "Company Mapping Type"; Enum "Shpfy Company Mapping")
+        {
+            Caption = 'Company Mapping Type';
+            DataClassification = CustomerContent;
+        }
         field(200; "Shop Id"; Integer)
         {
             DataClassification = SystemMetadata;
@@ -780,6 +790,7 @@ table 30102 "Shpfy Shop"
     var
         InvalidShopUrlErr: Label 'The URL must refer to the internal shop location at myshopify.com. It must not be the public URL that customers use, such as myshop.com.';
         CurrencyExchangeRateNotDefinedErr: Label 'The specified currency must have exchange rates configured. If your online shop uses the same currency as Business Central then leave the field empty.';
+        AutoCreateErrorMsg: Label 'You cannot turn "%1" off if "%2" is set to the value of "%3".', Comment = '%1 = Field Caption of "Auto Create Orders", %2 = Field Caption of "Return and Refund Process", %3 = Field Value of "Return and Refund Process"';
 
     [NonDebuggable]
     [Scope('OnPrem')]

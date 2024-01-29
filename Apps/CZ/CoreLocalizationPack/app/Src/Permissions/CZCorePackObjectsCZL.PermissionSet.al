@@ -337,7 +337,11 @@
                   report "VAT Documents List CZL" = X,
                   report "VAT Exceptions CZL" = X,
                   report "VAT Register CZL" = X,
+#if not CLEAN24
+#pragma warning disable AL0432
                   report "VAT Statement CZL" = X,
+#pragma warning restore AL0432
+#endif
                   report "Vendor-Bal. Reconciliation CZL" = X,
                   report "VIES Declaration CZL" = X,
                   report "VIES Declaration - Test CZL" = X,

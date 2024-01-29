@@ -75,6 +75,7 @@ using System.Email;
 using System.Environment;
 using System.Threading;
 using System.Visualization;
+using System.Integration.PowerBI;
 
 page 31210 "Accountant CZ Role Center CZL"
 {
@@ -144,6 +145,10 @@ page 31210 "Accountant CZ Role Center CZL"
             part("Report Inbox Part"; "Report Inbox Part")
             {
                 AccessByPermission = tabledata "Report Inbox" = IMD;
+                ApplicationArea = Basic, Suite;
+            }
+            part(PowerBIEmbeddedReportPart; "Power BI Embedded Report Part")
+            {
                 ApplicationArea = Basic, Suite;
             }
             systempart(MyNotes; MyNotes)
@@ -1314,7 +1319,7 @@ page 31210 "Accountant CZ Role Center CZL"
                     Caption = 'VAT Statement';
                     Ellipsis = true;
                     Image = Report;
-                    RunObject = report "VAT Statement CZL";
+                    RunObject = report "VAT Statement";
                     ToolTip = 'View a statement of posted VAT and calculate the duty liable to the customs authorities for the selected period.';
                 }
                 action("VAT Exceptions")

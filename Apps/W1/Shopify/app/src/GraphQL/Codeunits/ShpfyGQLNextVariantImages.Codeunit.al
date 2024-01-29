@@ -1,7 +1,7 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Codeunit Shpfy GQL NextVariantImages (ID 70007686) implements Interface Shpfy IGarphQL.
+/// Codeunit Shpfy GQL NextVariantImages (ID 70007686) implements Interface Shpfy IGraphQL.
 /// </summary>
 codeunit 30142 "Shpfy GQL NextVariantImages" implements "Shpfy IGraphQL"
 {

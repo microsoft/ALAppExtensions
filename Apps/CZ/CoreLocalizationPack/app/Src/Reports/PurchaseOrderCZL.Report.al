@@ -607,6 +607,7 @@ report 31185 "Purchase Order CZL"
 
     local procedure FormatAddressFields(PurchaseHeader: Record "Purchase Header")
     begin
+        FormatAddress.SetLanguageCode(PurchaseHeader."Language Code");
         FormatAddress.PurchHeaderBuyFrom(VendAddr, PurchaseHeader);
         FormatAddress.PurchHeaderShipTo(ShipToAddr, PurchaseHeader);
     end;

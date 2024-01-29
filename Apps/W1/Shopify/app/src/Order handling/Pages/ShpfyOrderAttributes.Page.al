@@ -20,12 +20,23 @@ page 30114 "Shpfy Order Attributes"
                 field("Key"; Rec."Key")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The key or name of the attribute.';
+                    ToolTip = 'Specifies the key or name of the attribute.';
                 }
+#if not CLEAN24
                 field(Value; Rec.Value)
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The value of the attribute.';
+                    ToolTip = 'Specifies the value of the attribute.';
+                    Visible = false;
+                    ObsoleteReason = 'Replace with "Attribute Value" field.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '24.0';
+                }
+#endif
+                field("Attribute Value"; Rec."Attribute Value")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the value of the attribute.';
                 }
             }
         }
