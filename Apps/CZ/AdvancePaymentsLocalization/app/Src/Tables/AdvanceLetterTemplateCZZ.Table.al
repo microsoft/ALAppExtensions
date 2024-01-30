@@ -150,6 +150,7 @@ table 31003 "Advance Letter Template CZZ"
         {
             Caption = 'Post VAT Document for Reverse Charge';
             DataClassification = CustomerContent;
+            InitValue = true;
         }
     }
     keys

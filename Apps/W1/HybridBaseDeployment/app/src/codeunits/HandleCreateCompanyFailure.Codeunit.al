@@ -9,7 +9,6 @@ codeunit 4012 "Handle Create Company Failure"
     begin
         ErrorMessage := GetLastErrorText();
         UpdateIntelligentCloudSetup(ErrorMessage);
-        Error(CompanyCreationFailedErr, ErrorMessage);
     end;
 
     procedure UpdateIntelligentCloudSetup(ErrorMessage: Text)
@@ -24,7 +23,4 @@ codeunit 4012 "Handle Create Company Failure"
                 Commit();
             end;
     end;
-
-    var
-        CompanyCreationFailedErr: Label 'Failed to create company for the Data Migration setup.\\\\%1', Comment = '%1 - Error message';
 }

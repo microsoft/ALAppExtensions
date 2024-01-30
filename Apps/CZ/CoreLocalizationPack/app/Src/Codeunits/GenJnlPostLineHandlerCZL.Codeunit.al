@@ -19,6 +19,9 @@ using System.Security.User;
 
 codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
 {
+    Permissions = tabledata "VAT Entry" = d,
+                  tabledata "G/L Entry - VAT Entry Link" = d;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeInsertGlobalGLEntry', '', false, false)]
     local procedure UserChecksAllowedOnBeforeInsertGlobalGLEntry(var GlobalGLEntry: Record "G/L Entry")
     var

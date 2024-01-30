@@ -1842,7 +1842,7 @@ table 11733 "Cash Document Line CZP"
         GenJournalLine."Currency Code" := CashDocumentHeaderCZP."Currency Code";
         GenJournalLine."Currency Factor" := CashDocumentHeaderCZP."Currency Factor";
         GenJournalLine."Posting Date" := CashDocumentHeaderCZP."Posting Date";
-        GenJournalLine.Amount := Amount;
+        GenJournalLine.Amount := "Amount Including VAT";
         GenJournalLine."VAT Amount" := "VAT Amount";
         GenJournalLine."VAT Base Amount" := "VAT Base Amount";
         GenJournalLine."Non-Deductible VAT %" := "Non-Deductible VAT %";

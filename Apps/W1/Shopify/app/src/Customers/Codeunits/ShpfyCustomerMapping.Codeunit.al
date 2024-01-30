@@ -3,7 +3,7 @@ namespace Microsoft.Integration.Shopify;
 using Microsoft.Sales.Customer;
 
 /// <summary>
-/// Codeunit Shpfy Customer Mapping (ID 3018).
+/// Codeunit Shpfy Customer Mapping (ID 30118).
 /// </summary>
 codeunit 30118 "Shpfy Customer Mapping"
 {

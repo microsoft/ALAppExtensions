@@ -584,13 +584,13 @@ page 4050 "GP Migration Configuration"
     {
         area(Promoted)
         {
-            actionref(ResetAllActionRef; ResetAllAction)
+            actionref(ResetAllAction_Promoted; ResetAllAction)
             {
             }
-            actionref(SetDimensionsRef; SetDimensions)
+            actionref(SetDimensions_Promoted; SetDimensions)
             {
             }
-            actionref(GPUpgradeSettingsRef; GPUpgradeSettings)
+            actionref(GP_Promoted; GP)
             {
             }
         }
@@ -638,7 +638,7 @@ page 4050 "GP Migration Configuration"
                     end;
                 end;
             }
-            action(GPUpgradeSettings)
+            action(GP)
             {
                 ApplicationArea = All;
                 Caption = 'Upgrade settings';

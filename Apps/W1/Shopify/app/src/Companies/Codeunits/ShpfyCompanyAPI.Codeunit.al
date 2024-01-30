@@ -105,7 +105,7 @@ codeunit 30286 "Shpfy Company API"
             AddFieldToGraphQuery(GraphQuery, 'name', ShopifyCompany.Name);
         GraphQuery.Remove(GraphQuery.Length - 1, 2);
         GraphQuery.Append('}, companyLocation: {billingSameAsShipping: true,');
-        AddFieldToGraphQuery(GraphQuery, 'name', 'Main');
+        AddFieldToGraphQuery(GraphQuery, 'name', CompanyLocation.Name);
         if CompanyLocation."Phone No." <> '' then
             AddFieldToGraphQuery(GraphQuery, 'phone', CompanyLocation."Phone No.");
         GraphQuery.Append('shippingAddress: {');
@@ -323,7 +323,7 @@ codeunit 30286 "Shpfy Company API"
                     if not CompanyLocation.FindFirst() then begin
                         CompanyLocation.Id := ShopifyCompany."Location Id";
                         CompanyLocation."Company SystemId" := ShopifyCompany.SystemId;
-                        CompanyLocation.Name := 'Main';
+                        CompanyLocation.Name := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.name'), 1, MaxStrLen(CompanyLocation.Name));
                         CompanyLocation.Insert();
                     end;
 

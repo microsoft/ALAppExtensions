@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEAN24
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -16,6 +17,9 @@ report 11769 "VAT Statement CZL"
     ApplicationArea = Basic, Suite;
     Caption = 'VAT Statement CZ';
     UsageCategory = ReportsAndAnalysis;
+    ObsoleteState = Pending;
+    ObsoleteTag = '24.0';
+    ObsoleteReason = 'This report is replaced by the extension of VAT Statement report (11703).';
 
     dataset
     {
@@ -626,3 +630,4 @@ report 11769 "VAT Statement CZL"
     begin
     end;
 }
+#endif

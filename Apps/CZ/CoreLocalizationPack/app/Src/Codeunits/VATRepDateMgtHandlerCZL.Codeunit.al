@@ -108,7 +108,7 @@ codeunit 31129 "VAT Rep. Date Mgt. Handler CZL"
         if VATEntry."Original Doc. VAT Date CZL" > VATEntry."VAT Reporting Date" then
             VATEntry.FieldError("Original Doc. VAT Date CZL", StrSubstNo(MustBeLessOrEqualErr, VATEntry.FieldCaption(VATEntry."VAT Reporting Date")));
         VATDateHandler.VATPeriodCZLCheck(VATEntry."VAT Reporting Date");
-        if VATDateHandler.VATDateNotAllowed(VATEntry."VAT Reporting Date") then
+        if not VATDateHandler.IsVATDateInAllowedPeriod(VATEntry."VAT Reporting Date") then
             Error(VATDateNotAllowedErr);
     end;
 

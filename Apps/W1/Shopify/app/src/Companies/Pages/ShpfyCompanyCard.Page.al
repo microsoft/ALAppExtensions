@@ -55,17 +55,45 @@ page 30157 "Shpfy Company Card"
                 field(CustomerNo; CustomerNo)
                 {
                     ApplicationArea = All;
+                    AssistEdit = true;
                     Caption = 'Customer No.';
                     TableRelation = Customer;
                     ToolTip = 'Specifies the mapped customer number.';
-                    Editable = false;
+
+                    trigger OnValidate()
+                    begin
+                        if CustomerNo <> '' then begin
+                            Customer.Get(CustomerNo);
+                            Rec."Customer SystemId" := Customer.SystemId;
+                            GetMappedCustomer();
+                        end;
+                    end;
+
+                    trigger OnAssistEdit()
+                    var
+                        CustomerList: Page "Customer List";
+                    begin
+                        CustomerList.LookupMode := true;
+                        CustomerList.SetRecord(Customer);
+                        if CustomerList.RunModal() = Action::LookupOK then begin
+                            CustomerList.GetRecord(Customer);
+                            Rec."Customer SystemId" := Customer.SystemId;
+                            CustomerNo := Customer."No.";
+                            Rec.Modify();
+                        end;
+                    end;
                 }
                 field(CustomerName; Customer."Name")
                 {
                     ApplicationArea = All;
                     Caption = 'Customer Name';
                     ToolTip = 'Specifies the customer''s name.';
-                    Editable = false;
+                }
+                field(Address; Customer.Address)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Customer Address';
+                    ToolTip = 'Specifies the customer''s address.';
                 }
             }
 

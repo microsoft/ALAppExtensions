@@ -200,7 +200,7 @@ codeunit 5012 "Service Declaration Mgt."
         if not Customer.Get(CustNo) then
             exit(false);
         CompanyInformation.Get();
-        exit(Customer."Country/Region Code" <> CompanyInformation."Country/Region Code");
+        exit(not (Customer."Country/Region Code" in ['', CompanyInformation."Country/Region Code"]));
     end;
 
     local procedure IsPurchDocApplicableForServDecl(PurchHeader: Record "Purchase Header"): Boolean
@@ -230,7 +230,7 @@ codeunit 5012 "Service Declaration Mgt."
         if not Vendor.Get(VendNo) then
             exit(false);
         CompanyInformation.Get();
-        exit(Vendor."Country/Region Code" <> CompanyInformation."Country/Region Code");
+        exit(not (Vendor."Country/Region Code" in ['', CompanyInformation."Country/Region Code"]));
     end;
 
     local procedure GetServiceDeclarationFeatureKeyId(): Text[50]

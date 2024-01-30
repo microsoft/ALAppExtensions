@@ -30,20 +30,20 @@ codeunit 30113 "Shpfy Cust. By Email/Phone" implements "Shpfy ICustomer Mapping"
     /// <returns>Return value of type Code[20].</returns>
     internal procedure DoMapping(CustomerId: BigInteger; JCustomerInfo: JsonObject; ShopCode: Code[20]; TemplateCode: Code[20]; AllowCreate: Boolean): Code[20];
     var
-        Customer: Record "Shpfy Customer";
+        ShopifyCustomer: Record "Shpfy Customer";
         CustomerAddress: Record "Shpfy Customer Address";
         CustomerImport: Codeunit "Shpfy Customer Import";
         CreateCustomer: Codeunit "Shpfy Create Customer";
     begin
-        Customer.SetAutoCalcFields("Customer No.");
-        if Customer.Get(CustomerId) then begin
-            if not IsNullGuid(Customer."Customer SystemId") then begin
-                Customer.CalcFields("Customer No.");
-                if Customer."Customer No." = '' then begin
-                    Clear(Customer."Customer SystemId");
-                    Customer.Modify();
+        ShopifyCustomer.SetAutoCalcFields("Customer No.");
+        if ShopifyCustomer.Get(CustomerId) then begin
+            if not IsNullGuid(ShopifyCustomer."Customer SystemId") then begin
+                ShopifyCustomer.CalcFields("Customer No.");
+                if ShopifyCustomer."Customer No." = '' then begin
+                    Clear(ShopifyCustomer."Customer SystemId");
+                    ShopifyCustomer.Modify();
                 end else
-                    exit(Customer."Customer No.");
+                    exit(ShopifyCustomer."Customer No.");
             end;
             if AllowCreate then begin
                 CustomerAddress.SetRange("Customer Id", CustomerId);
@@ -53,8 +53,8 @@ codeunit 30113 "Shpfy Cust. By Email/Phone" implements "Shpfy ICustomer Mapping"
                     CreateCustomer.SetTemplateCode(TemplateCode);
                     CustomerAddress.SetRecFilter();
                     CreateCustomer.Run(CustomerAddress);
-                    Customer.CalcFields("Customer No.");
-                    exit(Customer."Customer No.");
+                    ShopifyCustomer.CalcFields("Customer No.");
+                    exit(ShopifyCustomer."Customer No.");
                 end;
             end;
 
@@ -64,10 +64,10 @@ codeunit 30113 "Shpfy Cust. By Email/Phone" implements "Shpfy ICustomer Mapping"
             CustomerImport.SetCustomer(CustomerId);
             CustomerImport.SetAllowCreate(AllowCreate);
             CustomerImport.Run();
-            CustomerImport.GetCustomer(Customer);
-            if Customer.Find() then
-                Customer.CalcFields("Customer No.");
-            exit(Customer."Customer No.");
+            CustomerImport.GetCustomer(ShopifyCustomer);
+            if ShopifyCustomer.Find() then
+                ShopifyCustomer.CalcFields("Customer No.");
+            exit(ShopifyCustomer."Customer No.");
         end;
         exit('');
     end;

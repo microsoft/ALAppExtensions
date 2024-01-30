@@ -3,7 +3,7 @@
     "name": "Contoso Coffee Demo Dataset",
     "publisher": "Microsoft",
     "version": "24.0.0.0",
-    "brief": "To help partners demonstrate the premium capabilities of Business Central, we are making new and extensive demo data available for various scenarios.",
+    "brief": "To help partners demonstrate the capabilities of Business Central, we are making new and extensive demo data available for various scenarios.",
     "description": "Presales specialists can run the tool on top of Cronus or My Company and get the setup and demo data they'll need when they demonstrate various scenarios.",
     "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
@@ -28,7 +28,7 @@
         },
         {
             "from": 5100,
-            "to": 5200
+            "to": 5300
         }
     ],
     "resourceExposurePolicy": {
@@ -36,5 +36,8 @@
         "allowDownloadingSource": false,
         "includeSourceInSymbolFile": false
     },
+    "features": [
+        "TranslationFile"
+    ],
     "contextSensitiveHelpUrl": "https://learn.microsoft.com/en-us/dynamics365/business-central/contoso-coffee/contoso-coffee-intro"
 }

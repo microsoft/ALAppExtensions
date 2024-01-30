@@ -493,6 +493,70 @@ codeunit 134197 "Payment Practices UT"
         PaymentPracticesLibrary.VerifyPeriodLine(PaymentPracticeHeader."No.", "Paym. Prac. Header Type"::Vendor, PaymentPeriod.Code, 100, 0);
     end;
 
+    [Test]
+    procedure PaymentPracticeHeader_EmptyDate()
+    var
+        PaymentPracticeHeader: Record "Payment Practice Header";
+    begin
+        // [SCENARIO 492413] Payment Practice header with empty date is not allowed to generate
+        Initialize();
+
+        // [GIVEN] Create a payment practice header with Starting Date = 0D
+        PaymentPracticesLibrary.CreatePaymentPracticeHeader(PaymentPracticeHeader, "Paym. Prac. Header Type"::Vendor, "Paym. Prac. Aggregation Type"::"Company Size", 0D, 0D);
+
+        // [WHEN] Generate payment practices for vendors by size
+        asserterror PaymentPractices.Generate(PaymentPracticeHeader);
+
+        // [THEN] Error occurs for empty date
+        Assert.ExpectedErrorCode('TestField');
+    end;
+
+    [Test]
+    procedure PaymentPracticeHeader_ValidDates()
+    var
+        PaymentPracticeHeader: Record "Payment Practice Header";
+    begin
+        // [SCENARIO 492413] Payment Practice header can't accept starting date > ending date
+        Initialize();
+
+        // [GIVEN] Create a payment practice header with Starting Date = 0D and Ending date = 01/01/2020
+        PaymentPracticesLibrary.CreatePaymentPracticeHeader(PaymentPracticeHeader, "Paym. Prac. Header Type"::Vendor, "Paym. Prac. Aggregation Type"::"Company Size", 0D, WorkDate());
+
+        // [WHEN] Assigning Startin Date = 10/01/2020
+        asserterror PaymentPracticeHeader.Validate("Starting Date", WorkDate() + LibraryRandom.RandInt(10));
+
+        // [THEN] Error occurs for invalid dates
+        Assert.ExpectedError('Starting Date must be less than or equal to Ending Date.');
+    end;
+
+    [Test]
+    procedure PaymentPracticeLine_ModifiedManually()
+    var
+        PaymentPracticeHeader: Record "Payment Practice Header";
+        PaymentPracticeLine: Record "Payment Practice Line";
+    begin
+        // [SCENARIO 492413] Payment Practice Line "Modified Manually" gets changed when validating numerical values
+        Initialize();
+
+        // [GIVEN] Create vendor with size code
+        PaymentPracticesLibrary.CreateVendorNoWithSizeAndExcl(CompanySizeCodes[1], false);
+
+        // [GIVEN] Generate payment practices for vendors by size
+        PaymentPracticesLibrary.CreatePaymentPracticeHeaderSimple(PaymentPracticeHeader);
+        PaymentPractices.Generate(PaymentPracticeHeader);
+
+        // [GIVEN] Find the generated line
+        PaymentPracticeLine.SetRange("Header No.", PaymentPracticeHeader."No.");
+        PaymentPracticeLine.FindFirst();
+
+        // [WHEN] Modify Pct Paid in Period in line
+        PaymentPracticeLine.Validate("Pct Paid in Period", LibraryRandom.RandDecInDecimalRange(0, 50, 2));
+        PaymentPracticeLine.Modify();
+
+        // [THEN] "Modified Manually" = true
+        PaymentPracticeLine.TestField("Modified Manually");
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"Payment Practices UT");

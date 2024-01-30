@@ -373,7 +373,9 @@ codeunit 4001 "Hybrid Cloud Management"
         Commit();
         ReplicationRunCompletedArg.DeleteAll();
 
-        GetLastReplicationSummary(LastHybridReplicationSummary);
+        if not GetLastReplicationSummary(LastHybridReplicationSummary) then
+            exit;
+
         LastHybridReplicationSummary."Data Repair Status" := LastHybridReplicationSummary."Data Repair Status"::Completed;
         LastHybridReplicationSummary.Modify();
     end;

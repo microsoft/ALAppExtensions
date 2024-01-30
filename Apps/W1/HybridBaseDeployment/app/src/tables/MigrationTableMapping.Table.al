@@ -69,6 +69,7 @@ table 4009 "Migration Table Mapping"
             var
                 ApplicationObjectMetadata: Record "Application Object Metadata";
                 TableNameFilterTxt: Label '@%1*', Comment = '%1 - the table name', Locked = true;
+                TableFound: Boolean;
             begin
                 if Rec."Target Table Type" = Rec."Target Table Type"::"Table Extension" then
                     exit;
@@ -81,11 +82,17 @@ table 4009 "Migration Table Mapping"
                     ApplicationObjectMetadata.SetRange("Object Type", ApplicationObjectMetadata."Object Type"::"TableExtension");
 
                 ApplicationObjectMetadata.SetCurrentKey("Object Name");
-                ApplicationObjectMetadata.SetFilter("Object Name", StrSubstNo(TableNameFilterTxt, "Table Name"));
-                if ApplicationObjectMetadata.FindFirst() then
-                    Rec.Validate("Table ID", ApplicationObjectMetadata."Object ID")
-                else
+                ApplicationObjectMetadata.SetRange("Object Name", "Table Name");
+                TableFound := ApplicationObjectMetadata.FindFirst();
+                if not TableFound then begin
+                    ApplicationObjectMetadata.SetFilter("Object Name", StrSubstNo(TableNameFilterTxt, "Table Name"));
+                    TableFound := ApplicationObjectMetadata.FindFirst();
+                end;
+
+                if not TableFound then
                     Error(InvalidTableNameErr);
+
+                Rec.Validate("Table ID", ApplicationObjectMetadata."Object ID")
             end;
         }
 

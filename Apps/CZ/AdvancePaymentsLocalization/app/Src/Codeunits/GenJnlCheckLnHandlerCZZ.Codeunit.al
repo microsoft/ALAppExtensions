@@ -34,4 +34,10 @@ codeunit 31109 "Gen.Jnl.-Check Ln. Handler CZZ"
     begin
         GenJnlLine.Correction := false;
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnNextTransactionNoNeeded', '', false, false)]
+    local procedure SuppressNextTransactionOnNextTransactionNoNeeded(var NewTransaction: Boolean)
+    begin
+        NewTransaction := false;
+    end;
 }

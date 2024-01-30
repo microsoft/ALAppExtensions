@@ -29,4 +29,8 @@ enum 11744 "Reg. Log Detail Field CZL"
     {
         Caption = 'VAT Registration No.';
     }
+    value(5; "Country/Region Code")
+    {
+        Caption = 'Country/Region Code';
+    }
 }

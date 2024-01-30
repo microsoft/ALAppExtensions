@@ -5,6 +5,7 @@
 namespace Microsoft.Inventory.Intrastat;
 
 using Microsoft.FixedAssets.FixedAsset;
+using Microsoft.FixedAssets.Ledger;
 #if not CLEAN24
 using Microsoft.Foundation.Company;
 #endif
@@ -649,6 +650,8 @@ codeunit 31302 IntrastatReportManagementCZ
         end;
     end;
 
+#if not CLEAN24
+    [Obsolete('Generates false quantity in a period where an item is not moved', '24.0')]
     [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnBeforeInsertValueEntryLine', '', false, false)]
     local procedure OnBeforeInsertValueEntryLine(var IntrastatReportLine: Record "Intrastat Report Line"; ItemLedgerEntry: Record "Item Ledger Entry"; var IsHandled: Boolean)
     var
@@ -692,7 +695,7 @@ codeunit 31302 IntrastatReportManagementCZ
                     1, RoundingDirection);
         end;
     end;
-
+#endif
     procedure GetDocument(DocumentType: Enum "Item Ledger Document Type"; DocumentNo: Code[20]; var SalesHeader: Record "Sales Header") IsDocumentExist: Boolean
     var
         PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
@@ -907,6 +910,15 @@ codeunit 31302 IntrastatReportManagementCZ
         if (IntrastatCurrencyFactor <> 0) and (DocumentCurrencyFactor <> 0) then
             exit(Amount * DocumentCurrencyFactor / IntrastatCurrencyFactor);
         exit(Amount);
+    end;
+
+    [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnAfterGetIntrastatReportLineType', '', false, false)]
+    local procedure SetReceiptForCustom2OnAfterGetIntrastatReportLineType(FALedgerEntry: Record "FA Ledger Entry"; var IntrastatReportLineType: Enum "Intrastat Report Line Type")
+    begin
+        if (FALedgerEntry."FA Posting Type" = FALedgerEntry."FA Posting Type"::"Custom 2") and
+           (FALedgerEntry."Document Type" = FALedgerEntry."Document Type"::Invoice)
+        then
+            IntrastatReportLineType := Enum::"Intrastat Report Line Type"::Receipt;
     end;
     #endregion
 

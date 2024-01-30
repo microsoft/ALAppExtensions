@@ -8,6 +8,7 @@ page 688 "Payment Practice Lines"
 {
     ApplicationArea = All;
     Caption = 'Lines';
+    InsertAllowed = false;
     PageType = ListPart;
     SourceTable = "Payment Practice Line";
 
@@ -19,30 +20,36 @@ page 688 "Payment Practice Lines"
             {
                 field("Line No."; Rec."Line No.")
                 {
+                    Editable = false;
                     ToolTip = 'Specifies the number of the payment practice line.';
                 }
                 field("Aggregation Type"; Rec."Aggregation Type")
                 {
+                    Editable = false;
                     ToolTip = 'Specifies the type of aggregation.';
                     Visible = false;
                 }
                 field("Source Type"; Rec."Source Type")
                 {
+                    Editable = false;
                     ToolTip = 'Specifies the source for the payment data.';
                     Visible = HeaderType = HeaderType::"Vendor+Customer";
                 }
                 field("Company Size Code"; Rec."Company Size Code")
                 {
+                    Editable = false;
                     ToolTip = 'Specifies the company size code.';
                     Visible = AggregationType = AggregationType::"Company Size";
                 }
                 field("Payment Period Code"; Rec."Payment Period Code")
                 {
+                    Editable = false;
                     ToolTip = 'Specifies the payment period code.';
                     Visible = false;
                 }
                 field("Payment Period Description"; Rec."Payment Period Description")
                 {
+                    Editable = false;
                     ToolTip = 'Specifies the payment period description.';
                     Visible = AggregationType = AggregationType::Period;
                 }

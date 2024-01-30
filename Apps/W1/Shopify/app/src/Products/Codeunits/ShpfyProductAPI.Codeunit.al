@@ -499,9 +499,11 @@ codeunit 30176 "Shpfy Product API"
             GraphQuery.Append(ConvertToProductStatus(ShopifyProduct.Status));
         end;
         Data := ShopifyProduct.GetCommaSeparatedTags();
-        GraphQuery.Append(', tags: \"');
-        GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(Data));
-        GraphQuery.Append('\"');
+        if Data <> '' then begin
+            GraphQuery.Append(', tags: \"');
+            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(Data));
+            GraphQuery.Append('\"');
+        end;
         if ShopifyProduct.Vendor <> xShopifyProduct.Vendor then begin
             GraphQuery.Append(', vendor: \"');
             GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyProduct.Vendor));

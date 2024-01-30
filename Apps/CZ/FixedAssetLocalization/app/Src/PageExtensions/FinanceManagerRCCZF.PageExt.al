@@ -54,6 +54,20 @@ pageextension 31143 "Finance Manager RC CZF" extends "Finance Manager Role Cente
                 RunObject = report "FA Physical Inventory List CZF";
                 ToolTip = 'Print or preview FA Physical Inventory List report.';
             }
+            action(FixedAssetCardCZF)
+            {
+                ApplicationArea = FixedAssets;
+                Caption = 'Fixed Asset Card';
+                RunObject = report "Fixed Asset Card CZF";
+                ToolTip = 'Print or preview Fixed Asset Card report.';
+            }
+            action(FixedAssetBookValue1CZF)
+            {
+                ApplicationArea = FixedAssets;
+                Caption = 'Fixed Asset Book Value 01';
+                RunObject = report "Fixed Asset - Book Value 1 CZF";
+                ToolTip = 'Print or preview Fixed Asset - Book Value 1 report.';
+            }
         }
     }
 }

@@ -387,7 +387,7 @@ table 4812 "Intrastat Report Line"
                     IntrastatReportHeader.CheckEUServAndCorrection("Intrastat No.", true, false);
             end;
         }
-#pragma warning disable AS0086
+
         field(44; "Corrected Intrastat Report No."; Code[20])
         {
             Caption = 'Corrected Intrastat Report No.';
@@ -417,7 +417,7 @@ table 4812 "Intrastat Report Line"
                 end;
             end;
         }
-#pragma warning restore AS0086
+
         field(45; "Country/Region of Payment Code"; Code[10])
         {
             Caption = 'Country/Region of Payment Code';

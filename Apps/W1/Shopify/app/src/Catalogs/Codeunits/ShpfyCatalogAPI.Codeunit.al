@@ -1,5 +1,7 @@
 namespace Microsoft.Integration.Shopify;
 
+using Microsoft.Finance.GeneralLedger.Setup;
+
 /// <summary>
 /// Codeunit Shpfy Catalog API (ID 30290).
 /// </summary>
@@ -32,6 +34,7 @@ codeunit 30290 "Shpfy Catalog API"
             Catalog."Company SystemId" := ShopifyCompany.SystemId;
             Catalog.Insert();
             CreatePublication(Catalog);
+            CreatePriceList(Catalog);
         end;
     end;
 
@@ -42,6 +45,23 @@ codeunit 30290 "Shpfy Catalog API"
     begin
         Parameters.Add('CatalogId', Format(Catalog.Id));
         CommunicationMgt.ExecuteGraphQL(GraphQLType::CreatePublication, Parameters);
+    end;
+
+    internal procedure CreatePriceList(var Catalog: Record "Shpfy Catalog")
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        Parameters: Dictionary of [Text, Text];
+    begin
+        Parameters.Add('Name', Format(Catalog.Name));
+        Parameters.Add('CatalogId', Format(Catalog.Id));
+        if Shop."Currency Code" <> '' then
+            Parameters.Add('Currency', Shop."Currency Code")
+        else begin
+            GeneralLedgerSetup.Get();
+            Parameters.Add('Currency', GeneralLedgerSetup."LCY Code");
+        end;
+        CommunicationMgt.ExecuteGraphQL(GraphQLType::CreatePriceList, Parameters);
     end;
 
     internal procedure GetCatalogs(ShopifyCompany: Record "Shpfy Company")
@@ -106,7 +126,7 @@ codeunit 30290 "Shpfy Catalog API"
             if (Price < CompareAtPrice) then begin
                 HasChange := true;
                 JCompareAtPrice.Add('amount', Format(CompareAtPrice, 0, 9));
-                JPrice.Add('currencyCode', TempCatalogPrice."Price List Currency");
+                JCompareAtPrice.Add('currencyCode', TempCatalogPrice."Price List Currency");
                 JSetPrice.Add('compareAtPrice', JCompareAtPrice);
             end else begin
                 HasChange := true;

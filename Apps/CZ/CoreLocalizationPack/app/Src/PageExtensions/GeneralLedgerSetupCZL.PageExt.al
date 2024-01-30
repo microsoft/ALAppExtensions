@@ -3,9 +3,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.GeneralLedger.Setup;
-#if not CLEAN22
+
 using Microsoft.Finance.VAT.Calculation;
-#endif
+using Microsoft.Finance.VAT.Setup;
 
 pageextension 11717 "General Ledger Setup CZL" extends "General Ledger Setup"
 {
@@ -56,15 +56,69 @@ pageextension 11717 "General Ledger Setup CZL" extends "General Ledger Setup"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the default original document VAT date type for purchase document (posting date, document date, VAT date or blank).';
                 }
+#if not CLEAN24
                 field("Allow VAT Posting From CZL"; Rec."Allow VAT Posting From CZL")
                 {
                     ApplicationArea = Basic, Suite;
+                    Caption = 'Allow VAT Posting From (Obsolete)';
                     ToolTip = 'Specifies the earliest VAT date on which posting to the company is allowed.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '24.0';
+                    ObsoleteReason = 'Replaced by "Allow VAT Date From" field from "VAT Setup" table.';
+#if not CLEAN22
+                    Visible = not ReplaceVATDateEnabled;
+#else
+                    Visible = false;
+#endif
                 }
                 field("Allow VAT Posting To CZL"; Rec."Allow VAT Posting To CZL")
                 {
                     ApplicationArea = Basic, Suite;
+                    Caption = 'Allow VAT Posting To (Obsolete)';
                     ToolTip = 'Specifies the latest VAT date on which posting to the company is allowed.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '24.0';
+                    ObsoleteReason = 'Replaced by "Allow VAT Date To" field from "VAT Setup" table.';
+#if not CLEAN22
+                    Visible = not ReplaceVATDateEnabled;
+#else
+                    Visible = false;
+#endif
+                }
+#endif
+                field("Allow VAT Date From CZL"; VATSetup."Allow VAT Date From")
+                {
+                    ApplicationArea = VAT;
+                    Caption = 'Allow VAT Date From';
+                    ToolTip = 'Specifies the earliest date on which VAT posting to the company books is allowed.';
+#if not CLEAN22
+                    Visible = IsVATDateEnabled and ReplaceVATDateEnabled;
+#else
+                    Visible = IsVATDateEnabled;
+#endif
+
+                    trigger OnValidate()
+                    begin
+                        VATSetup.Validate("Allow VAT Date From");
+                        VATSetup.Modify();
+                    end;
+                }
+                field("Allow VAT Date To CZL"; VATSetup."Allow VAT Date To")
+                {
+                    ApplicationArea = VAT;
+                    Caption = 'Allow VAT Date To';
+                    ToolTip = 'Specifies the last date on which VAT posting to the company books is allowed.';
+#if not CLEAN22
+                    Visible = IsVATDateEnabled and ReplaceVATDateEnabled;
+#else
+                    Visible = IsVATDateEnabled;
+#endif
+
+                    trigger OnValidate()
+                    begin
+                        VATSetup.Validate("Allow VAT Date To");
+                        VATSetup.Modify();
+                    end;
                 }
             }
         }
@@ -111,16 +165,28 @@ pageextension 11717 "General Ledger Setup CZL" extends "General Ledger Setup"
         }
 #endif
     }
-#if not CLEAN22
     trigger OnOpenPage()
+    var
+        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
     begin
+#if not CLEAN22
         ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
+#endif
+        IsVATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
+    end;
+
+    trigger OnAfterGetRecord()
+    begin
+        VATSetup.Get();
     end;
 
     var
+        VATSetup: Record "VAT Setup";
+#if not CLEAN22
 #pragma warning disable AL0432
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
 #pragma warning restore AL0432
         ReplaceVATDateEnabled: Boolean;
 #endif
+        IsVATDateEnabled: Boolean;
 }

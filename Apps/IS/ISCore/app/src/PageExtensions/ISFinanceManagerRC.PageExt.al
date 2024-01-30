@@ -65,7 +65,5 @@ pageextension 14605 "IS Finance Manager RC" extends "Finance Manager Role Center
                 RunObject = page "IS IRS Numbers";
             }
         }
-
-
     }
 }

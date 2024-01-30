@@ -22,7 +22,9 @@ codeunit 30106 "Shpfy Upgrade Mgt."
 
     trigger OnUpgradePerCompany()
     begin
+#if not CLEAN22
         SetShpfyStockCalculation();
+#endif
         SetAllowOutgoingRequests();
 #if CLEAN22
         MoveTemplatesData();
@@ -32,6 +34,7 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         LocationUpgrade();
         SyncPricesWithProductsUpgrade();
         SendShippingConfirmationUpgrade();
+        OrderAttributeValueUpgrade();
     end;
 
 #if CLEAN22
@@ -312,10 +315,15 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         UpgradeTag.SetUpgradeTag(GetSyncPricesWithProductsUpgradeTag());
     end;
 
+#if not CLEAN22
     internal procedure SetShpfyStockCalculation()
     var
         ShopLocation: Record "Shpfy Shop Location";
+        UpgradeTag: Codeunit "Upgrade Tag";
     begin
+        if UpgradeTag.HasUpgradeTag(GetStockCalculationUpgradeTag()) then
+            exit;
+
         if ShopLocation.FindSet() then
             repeat
                 if ShopLocation.Disabled then begin
@@ -324,7 +332,10 @@ codeunit 30106 "Shpfy Upgrade Mgt."
                     ShopLocation.Modify();
                 end;
             until ShopLocation.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(GetStockCalculationUpgradeTag());
     end;
+#endif
 
     internal procedure SetAutoReleaseSalesOrder()
     var
@@ -370,6 +381,25 @@ codeunit 30106 "Shpfy Upgrade Mgt."
             until Shop.Next() = 0;
 
         UpgradeTag.SetUpgradeTag(GetSendShippingConfirmationUpgradeTag());
+    end;
+
+    local procedure OrderAttributeValueUpgrade()
+    var
+        OrderAttribute: Record "Shpfy Order Attribute";
+        UpgradeTag: Codeunit "Upgrade Tag";
+        OrderAttributeDataTransfer: DataTransfer;
+    begin
+        if UpgradeTag.HasUpgradeTag(GetOrderAttributeValueUpgradeTag()) then
+            exit;
+
+        if not OrderAttribute.IsEmpty() then begin
+            OrderAttributeDataTransfer.SetTables(Database::"Shpfy Order Attribute", Database::"Shpfy Order Attribute");
+            OrderAttributeDataTransfer.AddFieldValue(OrderAttribute.FieldNo(Value), OrderAttribute.FieldNo("Attribute Value"));
+            OrderAttributeDataTransfer.UpdateAuditFields := false;
+            OrderAttributeDataTransfer.CopyFields();
+        end;
+
+        UpgradeTag.SetUpgradeTag(GetOrderAttributeValueUpgradeTag());
     end;
 
     local procedure GetShopifyB2BEnabledUpgradeTag(): Code[250]
@@ -422,6 +452,18 @@ codeunit 30106 "Shpfy Upgrade Mgt."
     local procedure GetSendShippingConfirmationUpgradeTag(): Code[250]
     begin
         exit('MS-495193-SendShippingConfirmationUpgradeTag-20231221');
+    end;
+
+#if not CLEAN22
+    local procedure GetStockCalculationUpgradeTag(): Code[250]
+    begin
+        exit('MS-495993-StockCalculationUpgradeTag-20240108');
+    end;
+#endif
+
+    local procedure GetOrderAttributeValueUpgradeTag(): Code[250]
+    begin
+        exit('MS-497909-OrderAttributeValueUpgradeTag-20240125');
     end;
 
     local procedure GetDateBeforeFeature(): DateTime

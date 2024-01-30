@@ -282,6 +282,7 @@ codeunit 31362 "Match Bank Payment CZB"
             SearchRuleLineCZB."Banking Transaction Type"::Debit:
                 CustLedgerEntry.SetRange(Positive, false);
         end;
+        OnFillMatchBankPaymentBufferCustomerOnAfterCustLedgerEntrySetFilters(CustLedgerEntry, SearchRuleLineCZB, GenJournalLine);
         if CustLedgerEntry.FindSet() then
             repeat
                 TempMatchBankPaymentBufferCZB.InsertFromCustomerLedgerEntry(CustLedgerEntry, true, UsePaymentDiscounts);
@@ -347,6 +348,7 @@ codeunit 31362 "Match Bank Payment CZB"
             SearchRuleLineCZB."Banking Transaction Type"::Credit:
                 VendorLedgerEntry.SetRange(Positive, false);
         end;
+        OnFillMatchBankPaymentBufferVendorOnAfterVendorLedgerEntrySetFilters(VendorLedgerEntry, SearchRuleLineCZB, GenJournalLine);
         if VendorLedgerEntry.FindSet() then
             repeat
                 TempMatchBankPaymentBufferCZB.InsertFromVendorLedgerEntry(VendorLedgerEntry, true, UsePaymentDiscounts);
@@ -406,6 +408,7 @@ codeunit 31362 "Match Bank Payment CZB"
             SearchRuleLineCZB."Banking Transaction Type"::Credit:
                 EmployeeLedgerEntry.SetRange(Positive, false);
         end;
+        OnFillMatchBankPaymentBufferEmployeeOnAfterEmployeeLedgerEntrySetFilters(EmployeeLedgerEntry, SearchRuleLineCZB, GenJournalLine);
         if EmployeeLedgerEntry.FindSet() then
             repeat
                 TempMatchBankPaymentBufferCZB.InsertFromEmployeeLedgerEntry(EmployeeLedgerEntry);
@@ -449,6 +452,21 @@ codeunit 31362 "Match Bank Payment CZB"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterValidateGenJournalLine(var TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; var GenJournalLine: Record "Gen. Journal Line"; SearchRuleLineCZB: Record "Search Rule Line CZB")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnFillMatchBankPaymentBufferCustomerOnAfterCustLedgerEntrySetFilters(var CustLedgerEntry: Record "Cust. Ledger Entry"; SearchRuleLineCZB: Record "Search Rule Line CZB"; var GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnFillMatchBankPaymentBufferVendorOnAfterVendorLedgerEntrySetFilters(var VendorLedgerEntry: Record "Vendor Ledger Entry"; SearchRuleLineCZB: Record "Search Rule Line CZB"; var GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnFillMatchBankPaymentBufferEmployeeOnAfterEmployeeLedgerEntrySetFilters(var EmployeeLedgerEntry: Record "Employee Ledger Entry"; SearchRuleLineCZB: Record "Search Rule Line CZB"; var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
 #if not CLEAN23

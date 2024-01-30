@@ -2435,6 +2435,7 @@ codeunit 18430 "GST Application Handler"
     var
         Customer: Record Customer;
         Vendor: Record Vendor;
+        VendLedgEntry: Record "Vendor Ledger Entry";
         AppliedForeignCurrAmt: Decimal;
         VendNo: Code[20];
         CustNo: Code[20];
@@ -2461,7 +2462,11 @@ codeunit 18430 "GST Application Handler"
                         if GenJnlLine."Document Type" in [GenJnlLine."Document Type"::Invoice, GenJnlLine."Document Type"::Payment] then
                             if OldCVLedgEntryBuf."Currency Code" <> '' then begin
                                 if (NewCVLedgEntryBuf."Original Currency Factor" > OldCVLedgEntryBuf."Original Currency Factor") or (NewCVLedgEntryBuf."Original Currency Factor" < OldCVLedgEntryBuf."Original Currency Factor") then begin
-                                    AppliedForeignCurrAmt := Round(AppliedAmt / NewCVLedgEntryBuf."Adjusted Currency Factor");
+                                    VendLedgEntry.Get(OldCVLedgEntryBuf."Entry No.");
+                                    if VendLedgEntry."GST Reverse Charge" then
+                                        AppliedForeignCurrAmt := Round(AppliedAmt / OldCVLedgEntryBuf."Adjusted Currency Factor")
+                                    else
+                                        AppliedForeignCurrAmt := Round(AppliedAmt / NewCVLedgEntryBuf."Adjusted Currency Factor");
                                     PostGSTPurchaseApplication(GenJnlLine, NewCVLedgEntryBuf, OldCVLedgEntryBuf, AppliedForeignCurrAmt);
                                 end else
                                     PostGSTPurchaseApplication(GenJnlLine, NewCVLedgEntryBuf, OldCVLedgEntryBuf, AppliedAmtLCY);

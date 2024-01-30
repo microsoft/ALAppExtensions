@@ -371,4 +371,15 @@ codeunit 30177 "Shpfy Product Events"
     internal procedure OnDoUpdateItemVariantBeforeModify(var ShopifyShop: Record "Shpfy Shop"; var ShopifyVariant: Record "Shpfy Variant"; var ItemVariant: Record "Item Variant"; var IsModifiedByEvent: Boolean);
     begin
     end;
+
+    [IntegrationEvent(false, false)]
+    /// <summary> 
+    /// Raised After Modify Item Picture.
+    /// </summary>
+    /// <param name="Item">Parameter of type Record Item.</param>
+    /// <param name="ImageUrl">Parameter of type Text.</param>
+    /// <param name="InStream">Parameter of type InStream.</param>
+    internal procedure OnAfterUpdateItemPicture(var Item: Record Item; ImageUrl: Text; InStream: InStream)
+    begin
+    end;
 }

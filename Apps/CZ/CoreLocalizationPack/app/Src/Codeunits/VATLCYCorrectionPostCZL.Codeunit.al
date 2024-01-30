@@ -189,7 +189,7 @@ codeunit 31013 "VAT LCY Correction-Post CZL"
             VATLCYCorrectionBufferCZL.TestField("VAT Date", VATLCYCorrectionBufferCZL."Posting Date")
         else begin
             VATLCYCorrectionBufferCZL.TestField("VAT Date");
-            if VATDateHandlerCZL.VATDateNotAllowed(VATLCYCorrectionBufferCZL."VAT Date") then
+            if not VATDateHandlerCZL.IsVATDateInAllowedPeriod(VATLCYCorrectionBufferCZL."VAT Date") then
                 VATLCYCorrectionBufferCZL.FieldError("VAT Date", StrSubstNo(VATRangeErr, VATLCYCorrectionBufferCZL."VAT Date"));
             VATDateHandlerCZL.VATPeriodCZLCheck(VATLCYCorrectionBufferCZL."VAT Date");
         end;
