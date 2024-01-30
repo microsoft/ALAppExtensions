@@ -57,5 +57,6 @@
                               ".github/workflows/PullRequestHandler.yaml",
                               ".github/workflows/_BuildALGoProject.yaml"
                           ],
+    "UpdateALGoSystemFilesEnvironment":  "Official-Build",
     "PullRequestTrigger":  "pull_request"
 }
