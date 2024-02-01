@@ -9,7 +9,7 @@ page 4751 "Recommended App Card"
     Caption = 'Recommended App Card';
     PageType = Card;
     SourceTable = "Recommended Apps";
-    DataCaptionExpression = Name;
+    DataCaptionExpression = Rec.Name;
     Editable = false;
     InsertAllowed = false;
     DeleteAllowed = false;

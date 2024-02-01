@@ -308,6 +308,8 @@ page 7250 "Bank Acc. Rec. AI Proposal"
         BankAccReconciliationLine.Reset();
         BankAccReconciliationLine.FilterBankRecLinesByDate(BankAccReconciliation, false);
         GenerateCopilotMatchProposals();
+        if not Rec.Insert() then
+            Rec.Modify();
         PageCaptionLbl := StrSubstNo(ContentAreaCaptionTxt, BankAccNo, StatementNo, StatementDate);
     end;
 

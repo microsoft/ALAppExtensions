@@ -2,6 +2,7 @@ namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Foundation.Company;
 using System.DataAdministration;
+using System.Environment.Configuration;
 using System.Upgrade;
 
 codeunit 30273 "Shpfy Installer"
@@ -72,5 +73,30 @@ codeunit 30273 "Shpfy Installer"
     local procedure AddAllowedTablesOnAfterSystemInitialization()
     begin
         AddRetentionPolicyAllowedTables();
+    end;
+
+    [EventSubscriber(ObjectType::Report, Report::"Copy Company", 'OnAfterCreatedNewCompanyByCopyCompany', '', false, false)]
+    local procedure ShpfyOnAfterCreatedNewCompanyByCopyCompany(NewCompanyName: Text[30])
+    var
+        ShpfyShop: Record "Shpfy Shop";
+    begin
+        ShpfyShop.ChangeCompany(NewCompanyName);
+        if ShpfyShop.FindSet() then
+            repeat
+                ShpfyShop.Validate(Enabled, false);
+                ShpfyShop.Modify();
+            until ShpfyShop.Next() = 0;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Environment Cleanup", 'OnClearCompanyConfig', '', false, false)]
+    local procedure ShpfyOnClearCompanyConfiguration(CompanyName: Text; SourceEnv: Enum "Environment Type"; DestinationEnv: Enum "Environment Type")
+    var
+        ShpfyShop: Record "Shpfy Shop";
+    begin
+        if ShpfyShop.FindSet() then
+            repeat
+                ShpfyShop.Validate(Enabled, false);
+                ShpfyShop.Modify();
+            until ShpfyShop.Next() = 0;
     end;
 }

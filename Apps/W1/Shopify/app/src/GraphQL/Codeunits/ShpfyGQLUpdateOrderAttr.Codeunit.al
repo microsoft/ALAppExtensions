@@ -1,7 +1,7 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Codeunit Shpfy GQL UpdateOrderAttr (ID 30149) implements Interface Shpfy IGarphQL.
+/// Codeunit Shpfy GQL UpdateOrderAttr (ID 30149) implements Interface Shpfy IGraphQL.
 /// </summary>
 codeunit 30149 "Shpfy GQL UpdateOrderAttr" implements "Shpfy IGraphQL"
 {

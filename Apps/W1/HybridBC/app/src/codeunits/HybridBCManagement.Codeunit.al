@@ -152,14 +152,7 @@ codeunit 4008 "Hybrid BC Management"
 
     [EventSubscriber(ObjectType::Page, Page::"Cloud Mig - Select Tables", 'OnCanChangeSetup', '', false, false)]
     local procedure OnCanChangeSetup(var CanChangeSetup: Boolean)
-    var
-        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
     begin
-        if not IntelligentCloudSetup.Get() then begin
-            IntelligentCloudSetup."Product ID" := 'DynamicsBC';
-            IntelligentCloudSetup.Insert();
-        end;
-
         if not GetBCProductEnabled() then
             exit;
 

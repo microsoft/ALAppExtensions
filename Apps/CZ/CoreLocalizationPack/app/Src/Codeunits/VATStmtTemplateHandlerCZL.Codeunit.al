@@ -23,12 +23,4 @@ codeunit 11780 "VAT Stmt. Template Handler CZL"
         Rec.DeleteCommentsAndAttachmentsCZL();
         Rec.DeleteVATAttributesCZL();
     end;
-
-    [EventSubscriber(ObjectType::Table, Database::"VAT Statement Template", 'OnAfterValidateEvent', 'Page ID', false, false)]
-    local procedure UpdateVATStatementReportIDOnAfterValidatePageID(var Rec: Record "VAT Statement Template"; CurrFieldNo: Integer)
-    begin
-        if CurrFieldNo = 0 then
-            if Rec."VAT Statement Report ID" = Report::"VAT Statement" then
-                Rec."VAT Statement Report ID" := Report::"VAT Statement CZL";
-    end;
 }

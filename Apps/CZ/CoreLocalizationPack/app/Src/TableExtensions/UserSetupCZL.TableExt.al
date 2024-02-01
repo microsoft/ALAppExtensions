@@ -5,7 +5,9 @@
 namespace System.Security.User;
 
 using Microsoft.Finance.Dimension;
+#if not CLEAN24
 using Microsoft.Finance.GeneralLedger.Setup;
+#endif
 using Microsoft.HumanResources.Employee;
 
 tableextension 11717 "User Setup CZL" extends "User Setup"
@@ -56,6 +58,15 @@ tableextension 11717 "User Setup CZL" extends "User Setup"
         {
             Caption = 'Allow VAT Posting From';
             DataClassification = CustomerContent;
+#if not CLEAN24
+            ObsoleteState = Pending;
+            ObsoleteTag = '24.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '27.0';
+#endif
+            ObsoleteReason = 'Replaced by "Allow VAT Date From" field.';
+#if not CLEAN24
 
             trigger OnValidate()
             var
@@ -64,11 +75,21 @@ tableextension 11717 "User Setup CZL" extends "User Setup"
                 GLSetup.Get();
                 GLSetup.TestIsVATDateEnabledCZL();
             end;
+#endif
         }
         field(11779; "Allow VAT Posting To CZL"; Date)
         {
             Caption = 'Allow VAT Posting To';
             DataClassification = CustomerContent;
+#if not CLEAN24
+            ObsoleteState = Pending;
+            ObsoleteTag = '24.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '27.0';
+#endif
+            ObsoleteReason = 'Replaced by "Allow VAT Date To" field.';
+#if not CLEAN24
 
             trigger OnValidate()
             var
@@ -77,6 +98,7 @@ tableextension 11717 "User Setup CZL" extends "User Setup"
                 GLSetup.Get();
                 GLSetup.TestIsVATDateEnabledCZL();
             end;
+#endif
         }
         field(11780; "Allow Complete Job CZL"; Boolean)
         {

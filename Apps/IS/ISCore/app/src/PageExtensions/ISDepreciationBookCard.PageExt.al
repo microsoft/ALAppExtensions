@@ -29,7 +29,5 @@ pageextension 14603 "IS Depreciation Book Card" extends "Depreciation Book Card"
 #endif
             }
         }
-
-
     }
 }

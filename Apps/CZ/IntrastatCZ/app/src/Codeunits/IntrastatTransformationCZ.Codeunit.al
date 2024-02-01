@@ -136,6 +136,11 @@ codeunit 31303 "Intrastat Transformation CZ"
         exit(IntrastatItemDescriptionTxt);
     end;
 
+    internal procedure GetIntrastatItemDescriptionDescCode(): Text[100]
+    begin
+        exit(IntrastatItemDescriptionDescTxt);
+    end;
+
     procedure GetIntrastatStatisticsMonthCode(): Code[20]
     begin
         exit(IntrastatStatisticsMonthTxt);

@@ -28,7 +28,7 @@ codeunit 30124 "Shpfy Update Customer"
     var
         Shop: Record "Shpfy Shop";
         CustomerEvents: Codeunit "Shpfy Customer Events";
-        NoMainLocationErr: Label 'No location with name Main found for Shopify company id: %1', Comment = 'Main should not be translated. %1 = Shopify company id';
+        NoLocationErr: Label 'No location was found for Shopify company id: %1', Comment = 'Shopify should not be translated. %1 = Shopify company id';
 
     trigger OnRun()
     var
@@ -141,7 +141,7 @@ codeunit 30124 "Shpfy Update Customer"
             exit;
 
         if not CompanyLocation.Get(ShopifyCompany."Location Id") then
-            Error(NoMainLocationErr, ShopifyCompany.Id);
+            Error(NoLocationErr, ShopifyCompany.Id);
 
         Customer.Validate(Name, ShopifyCompany.Name);
         Customer.Validate(Address, CompanyLocation.Address);

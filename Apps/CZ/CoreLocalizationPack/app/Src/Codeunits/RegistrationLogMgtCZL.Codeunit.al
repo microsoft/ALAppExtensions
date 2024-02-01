@@ -62,6 +62,7 @@ codeunit 11755 "Registration Log Mgt. CZL"
         NewRegistrationLogCZL."Verified Address" := '';
         NewRegistrationLogCZL."Verified City" := '';
         NewRegistrationLogCZL."Verified Post Code" := '';
+        NewRegistrationLogCZL."Verified Country/Region Code" := '';
         NewRegistrationLogCZL."Verified VAT Registration No." := '';
         NewRegistrationLogCZL.Insert(true);
     end;
@@ -84,12 +85,14 @@ codeunit 11755 "Registration Log Mgt. CZL"
         StreetKeyTok: Label 'nazevUlice', Locked = true;
         QuarterKeyTok: Label 'nazevCastiObce', Locked = true;
         HouseNoKeyTok: Label 'cisloDomovni', Locked = true;
-        OrientationNoNoKeyTok: Label 'cisloOrientacni', Locked = true;
+        OrientationNoKeyTok: Label 'cisloOrientacni', Locked = true;
+        OrientationNoLetterKeyTok: Label 'cisloOrientacniPismeno', Locked = true;
         AddressTextKeyTok: Label 'textovaAdresa', Locked = true;
         RegistrationListKeyTok: Label 'seznamRegistraci', Locked = true;
         VATSourceStatusKeyTok: Label 'stavZdrojeDph', Locked = true;
         ActiveSourceKeyTok: Label 'AKTIVNI', Locked = true;
         NAKeyTok: Label 'N/A', Locked = true;
+        CountryCodeKeyTok: Label 'kodStatu', Locked = true;
     begin
         NewRegistrationLogCZL."Entry No." := 0;
         NewRegistrationLogCZL.Status := NewRegistrationLogCZL.Status::Valid;
@@ -122,6 +125,11 @@ codeunit 11755 "Registration Log Mgt. CZL"
 
         // Address information
         if GetValue(ResponseObject, AddressKeyTok, AddressObject) then begin
+            // Country Code
+            if GetValue(AddressObject, CountryCodeKeyTok, Value) then
+                NewRegistrationLogCZL."Verified Country/Region Code" :=
+                    CopyStr(Value, 1, MaxStrLen(NewRegistrationLogCZL."Verified Country/Region Code"));
+
             // City
             if GetValue(AddressObject, CityKeyTok, Value) then
                 NewRegistrationLogCZL."Verified City" :=
@@ -130,7 +138,7 @@ codeunit 11755 "Registration Log Mgt. CZL"
             // Post Code
             if GetValue(AddressObject, PostCodeKeyTok, Value) then
                 NewRegistrationLogCZL."Verified Post Code" :=
-                  CopyStr(Value, 1, MaxStrLen(NewRegistrationLogCZL."Verified Post Code"));
+                  FormatPostCode(CopyStr(Value, 1, MaxStrLen(NewRegistrationLogCZL."Verified Post Code")));
 
             if GetValue(AddressObject, StreetKeyTok, Value) then
                 Address[1] := Value;  // Street
@@ -138,8 +146,10 @@ codeunit 11755 "Registration Log Mgt. CZL"
                 Address[2] := Value;  // Quarter
             if GetValue(AddressObject, HouseNoKeyTok, Value) then
                 Address[3] := Value;  // House No.
-            if GetValue(AddressObject, OrientationNoNoKeyTok, Value) then
+            if GetValue(AddressObject, OrientationNoKeyTok, Value) then
                 Address[4] := Value;  // Orientation No.
+            if GetValue(AddressObject, OrientationNoLetterKeyTok, Value) then
+                Address[5] := Value;  // Orientation No. Letter
             if GetValue(AddressObject, AddressTextKeyTok, Value) then
                 AddressText := Value;  // Address Text
         end;
@@ -217,6 +227,15 @@ codeunit 11755 "Registration Log Mgt. CZL"
     end;
 #endif
 
+    local procedure FormatPostCode(PostCode: Text): Code[20]
+    var
+        PostCodeTok: Label '%1 %2', Locked = true;
+    begin
+        if StrLen(PostCode) <> 5 then
+            exit(CopyStr(PostCode, 1, 20));
+        exit(StrSubstNo(PostCodeTok, CopyStr(PostCode, 1, 3), CopyStr(PostCode, 4, 2)));
+    end;
+
     local procedure FormatAddress(Address: array[10] of Text): Text
     var
         DummyRegistrationLog: Record "Registration Log CZL";
@@ -227,6 +246,8 @@ codeunit 11755 "Registration Log Mgt. CZL"
         FormatedAddress := Address[1];
         if FormatedAddress = '' then
             FormatedAddress := Address[2];
+        if (Address[4] <> '') and (Address[5] <> '') then
+            Address[4] += Address[5];
         if (Address[3] <> '') and (Address[4] <> '') then
             FormatedAddress := CopyStr(StrSubstNo(ThreePlaceholdersTok, FormatedAddress, Address[3], Address[4]), 1, MaxStrLen(DummyRegistrationLog."Verified Address"));
         if (Address[3] <> '') xor (Address[4] <> '') then begin

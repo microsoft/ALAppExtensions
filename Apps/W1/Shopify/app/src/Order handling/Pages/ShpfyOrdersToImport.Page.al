@@ -42,6 +42,11 @@ page 30121 "Shpfy Orders to Import"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the action to take for this order.';
                 }
+                field(PurchasingEntity; Rec."Purchasing Entity")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the purchasing entity from Shopify.';
+                }
                 field(NumberOfItems; Rec."Total Quantity of Items")
                 {
                     ApplicationArea = All;

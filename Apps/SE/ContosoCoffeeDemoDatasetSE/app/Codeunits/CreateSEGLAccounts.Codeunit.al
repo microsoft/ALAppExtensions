@@ -71,4 +71,45 @@ codeunit 11299 "Create SE GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.FinishedGoodsName(), '1450');
         ContosoGLAccount.AddAccountForLocalization(MfgGLAccount.WIPAccountFinishedGoodsName(), '1440');
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create FA GL Account", 'OnAfterAddGLAccountsForLocalization', '', false, false)]
+    local procedure ModifyFixedAssetGLAccounts()
+    var
+        ContosoGLAccount: Codeunit "Contoso GL Account";
+        FAGLAccount: Codeunit "Create FA GL Account";
+    begin
+        ContosoGLAccount.AddAccountForLocalization(FAGLAccount.IncreasesDuringTheYearName(), '1215');
+        ContosoGLAccount.AddAccountForLocalization(FAGLAccount.DecreasesDuringTheYearName(), '1216');
+        ContosoGLAccount.AddAccountForLocalization(FAGLAccount.AccumDepreciationBuildingsName(), '1219');
+
+        ContosoGLAccount.AddAccountForLocalization(FAGLAccount.MiscellaneousName(), '6450');
+
+        ContosoGLAccount.AddAccountForLocalization(FAGLAccount.DepreciationEquipmentName(), '7830');
+        ContosoGLAccount.AddAccountForLocalization(FAGLAccount.GainsAndLossesName(), '7891');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create HR GL Account", 'OnAfterAddGLAccountsForLocalization', '', false, false)]
+    local procedure ModifyHumanResourcesGLAccounts()
+    var
+        ContosoGLAccount: Codeunit "Contoso GL Account";
+        HRGLAccount: Codeunit "Create HR GL Account";
+    begin
+        ContosoGLAccount.AddAccountForLocalization(HRGLAccount.EmployeesPayableName(), '7100');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create Job GL Account", 'OnAfterAddGLAccountsForLocalization', '', false, false)]
+    local procedure ModifyJobGLAccounts()
+    var
+        ContosoGLAccount: Codeunit "Contoso GL Account";
+        JobGLAccount: Codeunit "Create Job GL Account";
+    begin
+        ContosoGLAccount.AddAccountForLocalization(JobGLAccount.WIPInvoicedSalesName(), '1433');
+        ContosoGLAccount.AddAccountForLocalization(JobGLAccount.WIPJobCostsName(), '1436');
+
+        ContosoGLAccount.AddAccountForLocalization(JobGLAccount.JobSalesAppliedName(), '3057');
+        ContosoGLAccount.AddAccountForLocalization(JobGLAccount.RecognizedSalesName(), '3085');
+
+        ContosoGLAccount.AddAccountForLocalization(JobGLAccount.JobCostsAppliedName(), '4065');
+        ContosoGLAccount.AddAccountForLocalization(JobGLAccount.RecognizedCostsName(), '4300');
+    end;
 }

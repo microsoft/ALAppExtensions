@@ -140,9 +140,12 @@ codeunit 134196 "Payment Practices Library"
         Assert.AreNearlyEqual(PctInPeriodAmountExpected, PaymentPracticeLine."Pct Paid in Period (Amount)", 0.1, '"Pct Paid in Period (Amount)" is not as expected');
     end;
 
+#if not CLEAN24
+    [Obsolete('Not used', '24.0')]
     procedure VerifyPeriodLine()
     begin
     end;
+#endif
 
     procedure VerifyBufferCount(PaymentPracticeHeader: Record "Payment Practice Header"; NumberOfLines: Integer; SourceType: Enum "Paym. Prac. Header Type")
     var

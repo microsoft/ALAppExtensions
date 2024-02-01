@@ -212,7 +212,7 @@ page 31136 "VAT Statement Preview Line CZL"
         Currency: Record Currency;
         GLEntry: Record "G/L Entry";
         VATEntry: Record "VAT Entry";
-        VATStatementCZL: Report "VAT Statement CZL";
+        VATStatement: Report "VAT Statement";
 #if not CLEAN24
 #pragma warning disable AL0432
         EU3PartyTradeFeatMgt: Codeunit "EU3 Party Trade Feat Mgt. CZL";
@@ -240,7 +240,7 @@ page 31136 "VAT Statement Preview Line CZL"
 
         if VATStatementLine.Type = VATStatementLine.Type::"VAT Entry Totaling" then
             VATStatementLine.TestField("Amount Type");
-        VATStatementCZL.CalcLineTotal(VATStatementLine, ColumnValue, Level);
+        VATStatement.CalcLineTotal(VATStatementLine, ColumnValue, Level);
         case VATStatementLine."Show CZL" of
             VATStatementLine."Show CZL"::"Zero If Negative":
                 if ColumnValue < 0 then
@@ -259,7 +259,7 @@ page 31136 "VAT Statement Preview Line CZL"
         VATStatementReportSelection := NewSelection;
         VATStatementReportPeriodSelection := NewPeriodSelection;
         UseAmtsInAddCurr := NewUseAmtsInAddCurr;
-        VATStatementCZL.InitializeRequest(VATStatementName, Rec, VATStatementReportSelection, VATStatementReportPeriodSelection, false, UseAmtsInAddCurr, SettlementNoFilter2);
+        VATStatement.InitializeRequestCZL(VATStatementName, Rec, VATStatementReportSelection, VATStatementReportPeriodSelection, false, UseAmtsInAddCurr, SettlementNoFilter2, 0);
         SettlementNoFilter := SettlementNoFilter2;
         OnUpdateFormOnBeforePageUpdate(VATStatementName, Rec, VATStatementReportSelection, VATStatementReportPeriodSelection, false, UseAmtsInAddCurr, SettlementNoFilter2);
         CurrPage.Update();

@@ -3,24 +3,58 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace System.Security.User;
+#if not CLEAN24
+
+using Microsoft.Finance.VAT.Calculation;
+#endif
 
 pageextension 11721 "User Setup CZL" extends "User Setup"
 {
     layout
     {
+#if not CLEAN22
+        modify("Allow VAT From")
+        {
+            Visible = ReplaceVATDateEnabled;
+        }
+        modify("Allow VAT To")
+        {
+            Visible = ReplaceVATDateEnabled;
+        }
+#endif
+#if not CLEAN24
         addafter("Allow Posting To")
         {
             field("Allow VAT Posting From CZL"; Rec."Allow VAT Posting From CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'Allow VAT Posting From (Obsolete)';
                 ToolTip = 'Specifies the earliest VAT date on which the user is allowed to post to the company.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '24.0';
+                ObsoleteReason = 'Replaced by "Allow VAT Date From" field.';
+#if not CLEAN22
+                Visible = not ReplaceVATDateEnabled;
+#else
+                Visible = false;
+#endif
             }
             field("Allow VAT Posting To CZL"; Rec."Allow VAT Posting To CZL")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'Allow VAT Posting To (Obsolete)';
                 ToolTip = 'Specifies the latest VAT date on which the user is allowed to post to the company.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '24.0';
+                ObsoleteReason = 'Replaced by "Allow VAT Date To" field.';
+#if not CLEAN22
+                Visible = not ReplaceVATDateEnabled;
+#else
+                Visible = false;
+#endif
             }
         }
+#endif
         addlast(Control1)
         {
             field("Employee No. CZL"; Rec."Employee No. CZL")
@@ -193,4 +227,17 @@ pageextension 11721 "User Setup CZL" extends "User Setup"
             }
         }
     }
+#if not CLEAN22
+
+    trigger OnOpenPage()
+    begin
+        ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
+    end;
+
+    var
+#pragma warning disable AL0432
+        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
+#pragma warning restore AL0432
+        ReplaceVATDateEnabled: Boolean;
+#endif
 }

@@ -599,9 +599,82 @@ page 30113 "Shpfy Order"
                     begin
                         CurrPage.Update(true);
                         Shop.Get(Rec."Shop Code");
-                        OrderMapping.MapHeaderFields(Rec, Shop, true);
+                        if not Rec.B2B then
+                            OrderMapping.MapHeaderFields(Rec, Shop, true)
+                        else
+                            OrderMapping.MapB2BHeaderFields(Rec, Shop, true);
                         CurrPage.Update(false);
                     end;
+                }
+                action(MarkAsPaid)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Mark as Paid';
+                    Image = Payment;
+                    Promoted = true;
+                    PromotedCategory = Process;
+                    PromotedIsBig = true;
+                    PromotedOnly = true;
+                    Enabled = not Rec."Fully Paid";
+                    ToolTip = 'Mark the Shopify order as paid.';
+
+                    trigger OnAction()
+                    var
+                        OrdersApi: Codeunit "Shpfy Orders API";
+                        ErrorInfo: ErrorInfo;
+                    begin
+                        if OrdersApi.MarkAsPaid(Rec."Shopify Order Id", Rec."Shop Code") then
+                            Message(MarkAsPaidMsg)
+                        else begin
+                            ErrorInfo.Message := MarkAsPaidFailedErr;
+                            ErrorInfo.AddNavigationAction(LogEntriesLbl);
+                            ErrorInfo.PageNo(Page::"Shpfy Log Entries");
+                            Error(ErrorInfo);
+                        end;
+                    end;
+                }
+                action(CancelOrder)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Cancel Order';
+                    Image = Cancel;
+                    Promoted = true;
+                    PromotedCategory = Process;
+                    PromotedIsBig = true;
+                    PromotedOnly = true;
+                    ToolTip = 'Cancel the Shopify order.';
+
+                    trigger OnAction()
+                    var
+                        CancelOrder: Page "Shpfy Cancel Order";
+                        ErrorInfo: ErrorInfo;
+                    begin
+                        CancelOrder.LookupMode := true;
+                        CancelOrder.SetRec(Rec);
+                        CancelOrder.RunModal();
+                        if CancelOrder.GetResult() then
+                            Message(OrderCancelledMsg)
+                        else begin
+                            ErrorInfo.Message := OrderCancelFailedErr;
+                            ErrorInfo.AddNavigationAction(LogEntriesLbl);
+                            ErrorInfo.PageNo(Page::"Shpfy Log Entries");
+                            Error(ErrorInfo);
+                        end;
+                    end;
+                }
+                action(ResolveOrderProcessingConflicts)
+                {
+                    ApplicationArea = All;
+                    Enabled = Rec."Has Order State Error";
+                    Caption = 'Resolve conflicts';
+                    ToolTip = 'An order from Shopify will be marked with conflicts if it has been already processed in Business Central and new changes are detected in Shopify. In this page you can inspect the changes and resolve the conflicts appropriately.';
+                    RunObject = page "Shpfy Resolve Order Conflicts";
+                    Image = TaskList;
+                    RunPageOnRec = true;
+                    Promoted = true;
+                    PromotedCategory = Process;
+                    PromotedIsBig = true;
+                    PromotedOnly = true;
                 }
             }
         }
@@ -822,6 +895,11 @@ page 30113 "Shpfy Order"
 
     var
         CreateShopifyMsg: Label 'Create sales document from Shopify order %1?', Comment = '%1 = Order No.';
+        MarkAsPaidMsg: Label 'The order has been marked as paid.';
+        MarkAsPaidFailedErr: Label 'The order could not be marked as paid. You can see the error message from Shopify Log Entries.';
+        OrderCancelledMsg: Label 'Order has been cancelled successfully.';
+        OrderCancelFailedErr: Label 'The order could not be cancelled. You can see the error message from Shopify Log Entries.';
+        LogEntriesLbl: Label 'Log Entries';
         WorkDescription: Text;
 #if not CLEAN22
         NewTemplatesEnabled: Boolean;

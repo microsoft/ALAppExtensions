@@ -268,7 +268,7 @@ Codeunit 148003 "Library - Tax CZL"
 
     procedure PrintVATStatement(var VATStatementLine: Record "VAT Statement Line"; ShowRequestPage: Boolean)
     begin
-        Report.Run(Report::"VAT Statement CZL", ShowRequestPage, false, VATStatementLine);
+        Report.Run(Report::"VAT Statement", ShowRequestPage, false, VATStatementLine);
     end;
 
     procedure PrintTestVATControlReport(var VATCtrlReportHeaderCZL: Record "VAT Ctrl. Report Header CZL")

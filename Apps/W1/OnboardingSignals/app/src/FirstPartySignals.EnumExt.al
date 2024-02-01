@@ -5,6 +5,7 @@
 
 enumextension 20370 "First Party Signals" extends "Onboarding Signal Type"
 {
+#pragma warning disable PTE0023 // The IDs should have been in the range [20370..20379]
     value(0; "Purchase Invoice")
     {
         Implementation = "Onboarding Signal" = "Purchase Invoice Signal";
@@ -24,4 +25,5 @@ enumextension 20370 "First Party Signals" extends "Onboarding Signal Type"
     {
         Implementation = "Onboarding Signal" = "Customer Payment Signal";
     }
+#pragma warning restore PTE0023 // The IDs should have been in the range [20370..20379]
 }

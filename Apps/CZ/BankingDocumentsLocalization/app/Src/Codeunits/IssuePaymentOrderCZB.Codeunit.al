@@ -38,6 +38,7 @@ codeunit 31353 "Issue Payment Order CZB"
         IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
         User: Record User;
         NoSeriesManagement: Codeunit NoSeriesManagement;
+        RecordLinkManagement: Codeunit "Record Link Management";
         IsHandled: Boolean;
     begin
         OnBeforeIssuePaymentOrder(PaymentOrderHeaderCZB);
@@ -81,6 +82,7 @@ codeunit 31353 "Issue Payment Order CZB"
         OnBeforeIssuedPaymentOrderHeaderInsert(IssPaymentOrderHeaderCZB, PaymentOrderHeaderCZB);
         IssPaymentOrderHeaderCZB.Insert();
         OnAfterIssuedPaymentOrderHeaderInsert(IssPaymentOrderHeaderCZB, PaymentOrderHeaderCZB);
+        RecordLinkManagement.CopyLinks(PaymentOrderHeaderCZB, IssPaymentOrderHeaderCZB);
 
         // insert lines
         if PaymentOrderLineCZB.FindSet() then
@@ -101,6 +103,8 @@ codeunit 31353 "Issue Payment Order CZB"
 
         // delete non issued payment order
         PaymentOrderHeaderCZB.SuspendStatusCheck(true);
+        if PaymentOrderHeaderCZB.HasLinks() then
+            PaymentOrderHeaderCZB.DeleteLinks();
         PaymentOrderHeaderCZB.Delete(true);
     end;
 

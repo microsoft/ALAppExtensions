@@ -75,10 +75,17 @@ tableextension 4815 "Intrastat Report Sales Head." extends "Sales Header"
             Validate("Transport Method", '');
             Validate("Transaction Type", '');
         end;
+
+        OnAfterUpdateIntrastatFields(Rec, Customer, IntrastatReportSetup, FieldNo);
     end;
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeUpdateIntrastatFields(var SalesHeader: Record "Sales Header"; FieldNo: Integer; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateIntrastatFields(var SalesHeader: Record "Sales Header"; var Customer: Record Customer; var IntrastatReportSetup: Record "Intrastat Report Setup"; FieldNo: Integer);
     begin
     end;
 }

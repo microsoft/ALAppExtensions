@@ -140,8 +140,10 @@ codeunit 18632 "Depr Calculation Subscribers"
                     NumberOfDays := DepreciationCalc.DeprDays(FirstDeprDate, UntilDate, Year365Days);
             end;
 
-        if DeprBook."FA Book Type" = DeprBook."FA Book Type"::"Income Tax" then
+        if (DeprBook."FA Book Type" = DeprBook."FA Book Type"::"Income Tax") or (DeprBook."Fiscal Year 365 Days") then
             NumberOfDays := CalculateDeprDays(FirstDeprDate, UntilDate);
+
+        OnAfterCalculateNumberofDays(FixedAsset, DeprBook, NumberofDays, FirstDeprDate, UntilDate, Year365Days);
 
         if NumberofDays > 0 then
             IsHandled := true;
@@ -179,6 +181,8 @@ codeunit 18632 "Depr Calculation Subscribers"
             if NumberOfDays <= DeprBook."No. of Days Seasonal" then
                 DaysInFiscalYear := DeprBook."No. of Days Seasonal";
         end;
+
+        OnAfterUpdateDaysInFiscalYear(FixedAsset, DeprBook, NumberofDays, DaysInFiscalYear);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Table Depr. Calculation", 'OnBeforeValidateYear365Days', '', false, false)]
@@ -312,6 +316,8 @@ codeunit 18632 "Depr Calculation Subscribers"
             exit;
 
         DaysInFiscalYear := CheckDaysInFiscalYear(DeprBook.Code, FADepBook, UntilDate);
+
+        OnAfterCheckingDaysInFiscalYear(DeprBook, FADepBook, UntilDate, DaysInFiscalYear, Year365Days);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Normal Depreciation", 'OnAfterCalculateFinalAmount', '', false, false)]
@@ -534,7 +540,12 @@ codeunit 18632 "Depr Calculation Subscribers"
         DeprYears2: Decimal;
         FinalRoundingAmount2: Decimal;
         EndingBookValue2: Decimal;
+        IsHandled: Boolean;
     begin
+        OnBeforeTransferValuesShift(FixedAsset, EntryAmounts, DeprMethod, Year365Days, IntegerStore, CodeStore, DateStore, DecimalStore, IsHandled);
+        if IsHandled then
+            exit;
+
         FixedAssetShift.Reset();
         FixedAssetShift.SetRange("FA No.", FixedAsset."No.");
         FixedAssetShift.SetRange("Calculate FA Depreciation", true);
@@ -638,6 +649,8 @@ codeunit 18632 "Depr Calculation Subscribers"
                 FixedAssetShift."Depreciation Starting Date", FixedAssetShift."Depreciation Ending Date", true) / DaysInFiscalYear2;
         end;
         DecimalStore.Set(DeprYearsLbl, DeprYears2);
+
+        OnAfterTransferValuesShift(FixedAsset, EntryAmounts, DeprMethod, Year365Days, IntegerStore, CodeStore, DateStore, DecimalStore);
     end;
 
     local procedure ConvertDeprMethod(FixedAssetShift: Record "Fixed Asset Shift"): Option
@@ -692,5 +705,30 @@ codeunit 18632 "Depr Calculation Subscribers"
             exit(FixedAssetDateCalculation.GetDaysInFiscalYear(UntilDate));
 
         exit(360);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCalculateNumberofDays(FixedAsset: Record "Fixed Asset"; DeprBook: Record "Depreciation Book"; var NumberofDays: Integer; FirstDeprDate: date; var UntilDate: Date; Year365Days: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCheckingDaysInFiscalYear(DeprBook: Record "Depreciation Book"; FADepBook: Record "FA Depreciation Book"; UntilDate: Date; var DaysInFiscalYear: Integer; Year365Days: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateDaysInFiscalYear(FixedAsset: Record "Fixed Asset"; DeprBook: Record "Depreciation Book"; var NumberofDays: Integer; var DaysInFiscalYear: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeTransferValuesShift(FixedAsset: Record "Fixed Asset"; var EntryAmounts: array[4] of Decimal; var DeprMethod: Option StraightLine,DB1,DB2,DB1SL,DB2SL,"User-Defined",Manual,BelowZero; Year365Days: Boolean; IntegerStore: Dictionary of [Text, Integer]; CodeStore: Dictionary of [Text, Code[10]]; DateStore: Dictionary of [Text, Date]; DecimalStore: Dictionary of [Text, Decimal]; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterTransferValuesShift(FixedAsset: Record "Fixed Asset"; var EntryAmounts: array[4] of Decimal; var DeprMethod: Option StraightLine,DB1,DB2,DB1SL,DB2SL,"User-Defined",Manual,BelowZero; Year365Days: Boolean; IntegerStore: Dictionary of [Text, Integer]; CodeStore: Dictionary of [Text, Code[10]]; DateStore: Dictionary of [Text, Date]; DecimalStore: Dictionary of [Text, Decimal])
+    begin
     end;
 }

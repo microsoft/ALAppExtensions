@@ -13,11 +13,11 @@ pageextension 7253 BankAccReconciliationExt extends "Bank Acc. Reconciliation"
             action("Transfer to G/L Account")
             {
                 ApplicationArea = All;
-                Caption = 'Transfer to G/L Account';
+                Caption = 'Post Difference to G/L Account';
 #pragma warning disable AL0482
                 Image = SparkleFilled;
 #pragma warning restore AL0482
-                ToolTip = 'Find suitable G/L Accounts for selected statement lines, post new payments and reconcile statement lines with the new payments';
+                ToolTip = 'Find suitable G/L Accounts for selected statement lines, post their differences as new payments and reconcile statement lines with the new payments';
                 Visible = CopilotActionsVisible;
 
                 trigger OnAction()
