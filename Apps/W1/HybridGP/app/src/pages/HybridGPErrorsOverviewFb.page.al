@@ -4,18 +4,22 @@ using Microsoft.DataMigration;
 
 page 40132 "Hybrid GP Errors Overview Fb"
 {
-    Caption = 'GP Upgrade Errors';
+    Caption = 'GP Migration Overview';
     PageType = CardPart;
-    InsertAllowed = false;
-    DelayedInsert = false;
-    ModifyAllowed = false;
-    SourceTable = "GP Migration Error Overview";
 
     layout
     {
         area(Content)
         {
             cuegroup(Statistics)
+            {
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Reorganization of tiles';
+                ObsoleteTag = '25.0';
+                Visible = false;
+            }
+
+            cuegroup(Errors)
             {
                 ShowCaption = false;
 
@@ -32,10 +36,6 @@ page 40132 "Hybrid GP Errors Overview Fb"
                         Page.Run(Page::"GP Migration Error Overview");
                     end;
                 }
-            }
-            cuegroup(FailedCompanies)
-            {
-                ShowCaption = false;
 
                 field("Failed Companies"; FailedCompanyCount)
                 {
@@ -51,23 +51,95 @@ page 40132 "Hybrid GP Errors Overview Fb"
                     end;
                 }
             }
+
+            cuegroup(Other)
+            {
+                ShowCaption = false;
+
+                field("Failed Batches"; FailedBatchCount)
+                {
+                    Caption = 'Failed Batches';
+                    ApplicationArea = All;
+                    Style = Unfavorable;
+                    StyleExpr = (FailedBatchCount > 0);
+                    ToolTip = 'Indicates the total number of failed batches, for all migrated companies.';
+
+                    trigger OnDrillDown()
+                    begin
+                        Message(FailedBatchMsg);
+                    end;
+                }
+
+                field("Migration Log"; MigrationLogCount)
+                {
+                    Caption = 'Migration Log';
+                    ApplicationArea = All;
+                    ToolTip = 'Indicates the number of migration log entries.';
+
+                    trigger OnDrillDown()
+                    begin
+                        Page.Run(Page::"GP Migration Log");
+                    end;
+                }
+            }
         }
     }
+
     trigger OnAfterGetRecord()
+    var
+        GPMigrationErrorOverview: Record "GP Migration Error Overview";
     begin
-        MigrationErrorCount := Rec.Count();
+        MigrationErrorCount := GPMigrationErrorOverview.Count();
     end;
 
     trigger OnAfterGetCurrRecord()
     var
-        HybridCompanyUpgrade: Record "Hybrid Company Status";
+        GPMigrationErrorOverview: Record "GP Migration Error Overview";
+        HybridCompanyStatus: Record "Hybrid Company Status";
+        GPMigrationLog: Record "GP Migration Log";
+        HelperFunctions: Codeunit "Helper Functions";
+        TotalGLBatchCount: Integer;
+        TotalItemBatchCount: Integer;
+        CompanyHasFailedBatches: Boolean;
     begin
-        MigrationErrorCount := Rec.Count();
-        HybridCompanyUpgrade.SetRange("Upgrade Status", HybridCompanyUpgrade."Upgrade Status"::Failed);
-        FailedCompanyCount := HybridCompanyUpgrade.Count();
+        FailedBatchCount := 0;
+        FailedBatchMsg := 'One or more batches failed to post.\';
+
+        MigrationErrorCount := GPMigrationErrorOverview.Count();
+        HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Failed);
+        FailedCompanyCount := HybridCompanyStatus.Count();
+        MigrationLogCount := GPMigrationLog.Count();
+
+        HybridCompanyStatus.Reset();
+        HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Completed);
+        if HybridCompanyStatus.FindSet() then
+            repeat
+                TotalGLBatchCount := 0;
+                TotalItemBatchCount := 0;
+
+                HelperFunctions.GetUnpostedBatchCountForCompany(HybridCompanyStatus.Name, TotalGLBatchCount, TotalItemBatchCount);
+                FailedBatchCount := FailedBatchCount + TotalGLBatchCount + TotalItemBatchCount;
+                CompanyHasFailedBatches := (TotalGLBatchCount > 0) or (TotalItemBatchCount > 0);
+                if CompanyHasFailedBatches then begin
+                    if (TotalGLBatchCount > 0) and (TotalItemBatchCount > 0) then
+                        FailedBatchMsg := FailedBatchMsg + HybridCompanyStatus.Name + ': GL batches: ' + Format(TotalGLBatchCount) + ', Item batches: ' + Format(TotalItemBatchCount) + '\';
+
+                    if (TotalGLBatchCount > 0) and (TotalItemBatchCount = 0) then
+                        FailedBatchMsg := FailedBatchMsg + HybridCompanyStatus.Name + ': GL batches: ' + Format(TotalGLBatchCount) + '\';
+
+                    if (TotalGLBatchCount = 0) and (TotalItemBatchCount > 0) then
+                        FailedBatchMsg := FailedBatchMsg + HybridCompanyStatus.Name + ': Item batches: ' + Format(TotalItemBatchCount) + '\';
+                end;
+            until HybridCompanyStatus.Next() = 0;
+
+        if FailedBatchCount = 0 then
+            FailedBatchMsg := 'No failed batches';
     end;
 
     var
         MigrationErrorCount: Integer;
         FailedCompanyCount: Integer;
+        FailedBatchCount: Integer;
+        FailedBatchMsg: Text;
+        MigrationLogCount: Integer;
 }

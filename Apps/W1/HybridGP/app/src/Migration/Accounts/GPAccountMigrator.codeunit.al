@@ -14,6 +14,7 @@ codeunit 4017 "GP Account Migrator"
         PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
         DescriptionTrxTxt: Label 'Migrated transaction', Locked = true;
         BeginningBalanceTrxTxt: Label 'Beginning Balance', Locked = true;
+        MigrationLogAreaTxt: Label 'Account', Locked = true;
 
 #if not CLEAN22
 #pragma warning disable AA0207
@@ -28,6 +29,7 @@ codeunit 4017 "GP Account Migrator"
     var
         GPAccount: Record "GP Account";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPMigrationLog: Record "GP Migration Log";
         AccountNum: Code[20];
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Account" then
@@ -39,8 +41,10 @@ codeunit 4017 "GP Account Migrator"
         GPAccount.Get(RecordIdToMigrate);
 
         AccountNum := CopyStr(GPAccount.AcctNum.Trim(), 1, 20);
-        if AccountNum = '' then
+        if AccountNum = '' then begin
+            GPMigrationLog.InsertLog(MigrationLogAreaTxt, 'Account Index: ' + Format(GPAccount.AcctIndex), 'Account is skipped because there is no account number.');
             exit;
+        end;
 
         MigrateAccountDetails(GPAccount, Sender);
     end;

@@ -104,12 +104,14 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
 
         HybridCompany.SetRange(Replicate, true);
         HasCompletedSetupWizard := not HybridCompany.IsEmpty();
-        GPConfiguration.GetSingleInstance();
 
-        if GetHasCompletedMigration() then
-            if GPCompanyAdditionalSettings.GetMigrateHistory() then
-                if not GPConfiguration.HasHistoricalJobRan() then
-                    ShowGPHistoricalJobNeedsToRunNotification();
+        if HybridCompany.Get(CompanyName()) then begin
+            GPConfiguration.GetSingleInstance();
+            if GetHasCompletedMigration() then
+                if GPCompanyAdditionalSettings.GetMigrateHistory() then
+                    if not GPConfiguration.HasHistoricalJobRan() then
+                        ShowGPHistoricalJobNeedsToRunNotification();
+        end;
     end;
 
     local procedure GetHasCompletedMigration(): Boolean

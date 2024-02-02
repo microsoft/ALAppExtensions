@@ -448,19 +448,21 @@ table 40105 "GP Company Additional Settings"
 
     procedure GetSingleInstance()
     var
-        CurrentCompanyName: Text[50];
+        HybridCompany: Record "Hybrid Company";
+        CurrentCompanyName: Text[30];
     begin
-#pragma warning disable AA0139
-        CurrentCompanyName := CompanyName();
+        CurrentCompanyName := CopyStr(CompanyName(), 1, MaxStrLen(CurrentCompanyName));
 
-        if Name = CurrentCompanyName then
+        if Rec.Name = CurrentCompanyName then
+            exit;
+
+        if not HybridCompany.Get(CurrentCompanyName) then
             exit;
 
         if not Rec.Get(CurrentCompanyName) then begin
             Rec.Name := CurrentCompanyName;
             Rec.Insert();
         end;
-#pragma warning restore AA0139
     end;
 
     // Modules
