@@ -340,7 +340,6 @@ codeunit 4018 "GP Customer Migrator"
             CustomerDataMigrationFacade.SetGenBusPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
         end;
 
-        CustomerDataMigrationFacade.SetEmail(COPYSTR(MigrationGPCustomer.INET1, 1, 80));
         CustomerDataMigrationFacade.SetHomePage(COPYSTR(MigrationGPCustomer.INET2, 1, 80));
 
         GPRM00101.SetLoadFields(ADRSCODE);

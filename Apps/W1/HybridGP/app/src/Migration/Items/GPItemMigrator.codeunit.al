@@ -19,7 +19,7 @@ codeunit 4019 "GP Item Migrator"
         CostingMethodOption: Option FIFO,LIFO,Specific,Average,Standard;
         SimpleInvJnlNameTxt: Label 'DEFAULT', Comment = 'The default name of the item journal', Locked = true;
         LastEntryNo: Integer;
-        ItemBatchCodePrefixTxt: Label 'GPITEM', Locked = true;
+        ItemBatchCodePrefixTxt: Label 'GPITM', Locked = true;
         CurrentBatchNumber: Integer;
         CurrentBatchLineNo: Integer;
 
@@ -197,7 +197,6 @@ codeunit 4019 "GP Item Migrator"
                                 if GPItemTransaction.FindSet() then begin
                                     CreateItemJnlLine(ItemJnlLine, GPItem, GPItemTransaction, GPItemTransactionAverageQuery.Quantity, WorkDate());
                                     repeat
-                                        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPItemTransaction.RecordId));
                                         CreateNewItemTrackingLinesIfNecessary(GPItemTransaction, GPItem, ItemJnlLine);
                                     until GPItemTransaction.Next() = 0;
                                 end;
@@ -217,7 +216,6 @@ codeunit 4019 "GP Item Migrator"
                                 if GPItemTransaction.FindSet() then begin
                                     CreateItemJnlLine(ItemJnlLine, GPItem, GPItemTransaction, GPItemTransactionStandardQuery.Quantity, WorkDate());
                                     repeat
-                                        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPItemTransaction.RecordId));
                                         CreateNewItemTrackingLinesIfNecessary(GPItemTransaction, GPItem, ItemJnlLine);
                                     until GPItemTransaction.Next() = 0;
                                 end;
@@ -232,7 +230,6 @@ codeunit 4019 "GP Item Migrator"
                                     GPItemTransaction.SetRange(No, GPItem.No);
                                     if GPItemTransaction.FindSet() then
                                         repeat
-                                            DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPItemTransaction.RecordId));
                                             CreateItemJnlLine(ItemJnlLine, GPItem, GPItemTransaction, GPItemTransaction.Quantity, GPItemTransaction.DateReceived);
                                         until GPItemTransaction.Next() = 0;
                                 end;
@@ -248,7 +245,6 @@ codeunit 4019 "GP Item Migrator"
                                     if GPItemTransaction.FindSet() then begin
                                         CreateItemJnlLine(ItemJnlLine, GPItem, GPItemTransaction, GPItemTransactionQuery.Quantity, GPItemTransaction.DateReceived);
                                         repeat
-                                            DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPItemTransaction.RecordId));
                                             CreateNewItemTrackingLinesIfNecessary(GPItemTransaction, GPItem, ItemJnlLine);
                                         until GPItemTransaction.Next() = 0;
                                     end;
@@ -321,7 +317,7 @@ codeunit 4019 "GP Item Migrator"
         if CurrentBatchNumber = 0 then
             CurrentBatchNumber := 1;
 
-        if CurrentBatchLineNo >= MaxBatchLineCount() then begin
+        if CurrentBatchLineNo >= GetMaxBatchLineCount() then begin
             CurrentBatchNumber := CurrentBatchNumber + 1;
             CurrentBatchLineNo := 0;
         end;
@@ -340,9 +336,15 @@ codeunit 4019 "GP Item Migrator"
 
     local procedure CreateItemJnlLine(var ItemJnlLine: Record "Item Journal Line"; GPItem: Record "GP Item"; GPItemTransaction: Record "GP Item Transactions"; Quantity: Decimal; PostingDate: Date)
     var
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         AdjustItemInventory: Codeunit "Adjust Item Inventory";
         ItemTemplate: Code[10];
     begin
+        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPItemTransaction.RecordId));
+
+        if GPItemTransaction.Quantity = 0 then
+            exit;
+
         GetCurrentBatchState();
 
         ItemTemplate := AdjustItemInventory.SelectItemTemplateForAdjustment();
@@ -382,11 +384,14 @@ codeunit 4019 "GP Item Migrator"
     var
         ReservationEntry: Record "Reservation Entry";
         TempTrackingSpecification: Record "Tracking Specification" temporary;
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         CreateReserveEntry: Codeunit "Create Reserv. Entry";
         ExpirationDate: Date;
     begin
         if GPItem.ItemTrackingCode = '' then
             exit;
+
+        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPItemTransactions.RecordId));
 
         TempTrackingSpecification.InitFromItemJnlLine(ItemJnlLine);
 
@@ -539,8 +544,24 @@ codeunit 4019 "GP Item Migrator"
             until GPItemLocation.Next() = 0;
     end;
 
-    local procedure MaxBatchLineCount(): Integer
+    local procedure GetMaxBatchLineCount(): Integer
+    var
+        IsHandled: Boolean;
+        MaxLineCount: Integer;
+        NewMaxLineCount: Integer;
     begin
-        exit(1000);
+        MaxLineCount := 10000;
+
+        OnBeforeGetMaxItemBatchLineCount(IsHandled, NewMaxLineCount);
+        if IsHandled then
+            if NewMaxLineCount > 0 then
+                MaxLineCount := NewMaxLineCount;
+
+        exit(MaxLineCount);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetMaxItemBatchLineCount(var IsHandled: Boolean; var NewMaxLineCount: Integer)
+    begin
     end;
 }
