@@ -23,6 +23,10 @@
                      {
                       "from": 13610,
                       "to": 13620
+                     },
+                     {
+                      "from": 13668,
+                      "to": 13668
                      }
                  ],
     "resourceExposurePolicy":  {
@@ -31,5 +35,5 @@
                                    "includeSourceInSymbolFile":  true
                                },
 
-    "target":  "Cloud"
+    "target":  "OnPrem"
 }

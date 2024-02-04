@@ -167,7 +167,7 @@ codeunit 1850 "Sales Forecast Handler"
             Status::"Out of limit":
                 Error(OutOfLimitErr);
             Status::"Failed Time Series initialization":
-                LogInternalError(FailedTimeSeriesInitializationErr, DataClassification::SystemMetadata, Verbosity::Error);
+                Session.LogMessage('0000M0U', FailedTimeSeriesInitializationErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', 'Sales & Inventory Forecast');
         end;
     end;
 

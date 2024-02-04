@@ -200,7 +200,7 @@ codeunit 5012 "Service Declaration Mgt."
         if not Customer.Get(CustNo) then
             exit(false);
         CompanyInformation.Get();
-        exit(Customer."Country/Region Code" <> CompanyInformation."Country/Region Code");
+        exit(not (Customer."Country/Region Code" in ['', CompanyInformation."Country/Region Code"]));
     end;
 
     local procedure IsPurchDocApplicableForServDecl(PurchHeader: Record "Purchase Header"): Boolean
@@ -230,7 +230,7 @@ codeunit 5012 "Service Declaration Mgt."
         if not Vendor.Get(VendNo) then
             exit(false);
         CompanyInformation.Get();
-        exit(Vendor."Country/Region Code" <> CompanyInformation."Country/Region Code");
+        exit(not (Vendor."Country/Region Code" in ['', CompanyInformation."Country/Region Code"]));
     end;
 
     local procedure GetServiceDeclarationFeatureKeyId(): Text[50]
@@ -325,9 +325,9 @@ codeunit 5012 "Service Declaration Mgt."
             exit;
         if Item.Type = Item.Type::Service then begin
             SalesLine."Service Transaction Type Code" := Item."Service Transaction Type Code";
-            if SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.") then
-                SalesLine."Applicable For Serv. Decl." :=
-                  SalesHeader."Applicable For Serv. Decl." and (not Item."Exclude From Service Decl.");
+            SalesHeader := SalesLine.GetSalesHeader();
+            SalesLine."Applicable For Serv. Decl." :=
+              SalesHeader."Applicable For Serv. Decl." and (not Item."Exclude From Service Decl.");
         end;
     end;
 
@@ -360,9 +360,9 @@ codeunit 5012 "Service Declaration Mgt."
         if not IsFeatureEnabled() then
             exit;
         SalesLine."Service Transaction Type Code" := Resource."Service Transaction Type Code";
-        if SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.") then
-            SalesLine."Applicable For Serv. Decl." :=
-              SalesHeader."Applicable For Serv. Decl." and (not Resource."Exclude From Service Decl.");
+        SalesHeader := SalesLine.GetSalesHeader();
+        SalesLine."Applicable For Serv. Decl." :=
+          SalesHeader."Applicable For Serv. Decl." and (not Resource."Exclude From Service Decl.");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Line", 'OnAfterAssignResourceValues', '', false, false)]
@@ -394,9 +394,9 @@ codeunit 5012 "Service Declaration Mgt."
             exit;
         if not ServiceDeclarationSetup.Get() then
             exit;
-        if SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.") then
-            SalesLine."Applicable For Serv. Decl." :=
-              SalesHeader."Applicable For Serv. Decl." and ServiceDeclarationSetup."Report Item Charges" and (not ItemCharge."Exclude From Service Decl.");
+        SalesHeader := SalesLine.GetSalesHeader();
+        SalesLine."Applicable For Serv. Decl." :=
+          SalesHeader."Applicable For Serv. Decl." and ServiceDeclarationSetup."Report Item Charges" and (not ItemCharge."Exclude From Service Decl.");
         SalesLine."Service Transaction Type Code" := ItemCharge."Service Transaction Type Code";
     end;
 
@@ -412,9 +412,9 @@ codeunit 5012 "Service Declaration Mgt."
             exit;
         if Item.Type = Item.Type::Service then begin
             PurchLine."Service Transaction Type Code" := Item."Service Transaction Type Code";
-            if PurchHeader.Get(PurchLine."Document Type", PurchLine."Document No.") then
-                PurchLine."Applicable For Serv. Decl." :=
-                  PurchHeader."Applicable For Serv. Decl." and (not Item."Exclude From Service Decl.");
+            PurchHeader := PurchLine.GetPurchHeader();
+            PurchLine."Applicable For Serv. Decl." :=
+              PurchHeader."Applicable For Serv. Decl." and (not Item."Exclude From Service Decl.");
         end;
     end;
 
@@ -430,9 +430,9 @@ codeunit 5012 "Service Declaration Mgt."
         if not IsFeatureEnabled() then
             exit;
         PurchaseLine."Service Transaction Type Code" := Resource."Service Transaction Type Code";
-        if PurchHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.") then
-            PurchaseLine."Applicable For Serv. Decl." :=
-              PurchHeader."Applicable For Serv. Decl." and (not Resource."Exclude From Service Decl.");
+        PurchHeader := PurchaseLine.GetPurchHeader();
+        PurchaseLine."Applicable For Serv. Decl." :=
+          PurchHeader."Applicable For Serv. Decl." and (not Resource."Exclude From Service Decl.");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterAssignItemChargeValues', '', false, false)]
@@ -448,9 +448,9 @@ codeunit 5012 "Service Declaration Mgt."
             exit;
         if not ServiceDeclarationSetup.Get() then
             exit;
-        if PurchHeader.Get(PurchLine."Document Type", PurchLine."Document No.") then
-            PurchLine."Applicable For Serv. Decl." :=
-              PurchHeader."Applicable For Serv. Decl." and ServiceDeclarationSetup."Report Item Charges" and (not ItemCharge."Exclude From Service Decl.");
+        PurchHeader := PurchLine.GetPurchHeader();
+        PurchLine."Applicable For Serv. Decl." :=
+          PurchHeader."Applicable For Serv. Decl." and ServiceDeclarationSetup."Report Item Charges" and (not ItemCharge."Exclude From Service Decl.");
         PurchLine."Service Transaction Type Code" := ItemCharge."Service Transaction Type Code";
     end;
 

@@ -1486,18 +1486,16 @@ xmlport 11766 "VAT Statement DPHDP3 CZL"
 
     local procedure GetColumnValue(var VATStatementLine: Record "VAT Statement Line") ColumnValue: Decimal
     var
-        VATStatementCZL: Report "VAT Statement CZL";
+        VATStatement: Report "VAT Statement";
     begin
-        VATStatementCZL.InitializeRequest(
+        VATStatement.InitializeRequestCZL(
           VATStatementName, VATStatementLine, Selection,
           PeriodSelection, PrintInIntegers, UseAmtsInAddCurr,
-          SettlementNoFilter);
+          SettlementNoFilter, RoundingDirection);
 
-        VATStatementCZL.SetRoundingDirection(RoundingDirection);
-
-        VATStatementCZL.CalcLineTotal(VATStatementLine, ColumnValue, 0);
+        VATStatement.CalcLineTotal(VATStatementLine, ColumnValue, 0);
         if PrintInIntegers then
-            ColumnValue := VATStatementCZL.RoundAmount(ColumnValue);
+            ColumnValue := Round(ColumnValue, 1, VATStatement.GetAmtRoundingDirectionCZL());
 
         ColumnValue := ColumnValue;
 

@@ -122,12 +122,20 @@ page 30101 "Shpfy Shop Card"
                     Caption = 'Allow Data Sync to Shopify';
                     ToolTip = 'Specifies whether syncing data to Shopify is enabled.';
                 }
+                field("Shopify Admin API Version"; ApiVersion)
+                {
+                    ApplicationArea = All;
+                    Importance = Additional;
+                    Caption = 'Shopify Admin API Version';
+                    ToolTip = 'Specifies the version of Shopify Admin API used by current version of the Shopify connector.';
+                    Editable = false;
+                }
                 field("API Version Expiry Date"; ApiVersionExpiryDate)
                 {
                     ApplicationArea = All;
                     Importance = Additional;
-                    Caption = 'End of Support';
-                    ToolTip = 'Specifies end of support date for the current version. After this date Shopify connector will stop working.';
+                    Caption = 'Update API Version Before';
+                    ToolTip = 'Specifies the date on which Business Central will no longer support Shopify Admin API version. To continue to use your integration, upgrade to the latest version of Business Central before this date.';
                     Editable = false;
                 }
             }
@@ -473,6 +481,11 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the tax area source and the sequence to be followed.';
                 }
+                field(SendShippingConfirmation; Rec."Send Shipping Confirmation")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies whether the customer is notified when the shipment is synchronized to Shopify.';
+                }
             }
             group(ReturnsAndRefunds)
             {
@@ -529,13 +542,38 @@ page 30101 "Shpfy Shop Card"
                     }
                 }
             }
-            group(B2B)
+            group("B2B Company Synchronization")
             {
                 Visible = Rec."B2B Enabled";
                 field("Can Update Shopify Companies"; Rec."Can Update Shopify Companies")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether D365BC can update companies when synchronizing to Shopify.';
+                }
+                field("Shopify Can Update Companies"; Rec."Shopify Can Update Companies")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies whether Shopify can update companies when synchronizing from Shopify.';
+                }
+                field("Company Import From Shopify"; Rec."Company Import From Shopify")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies how Shopify companies are synced to Business Central.';
+                }
+                field("Auto Create Unknown Companies"; Rec."Auto Create Unknown Companies")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies if unknown companies are automatically created in D365BC when synchronizing from Shopify.';
+                }
+                field("Default Company No."; Rec."Default Company No.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the default customer when not creating a company for each B2B company.';
+                }
+                field("Company Mapping Type"; Rec."Company Mapping Type")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies how to map companies.';
                 }
                 field("Default Customer Permission"; Rec."Default Contact Permission")
                 {
@@ -719,7 +757,21 @@ page 30101 "Shpfy Shop Card"
                 PromotedOnly = true;
                 RunObject = Page "Shpfy Companies";
                 RunPageLink = "Shop Id" = field("Shop Id");
-                ToolTip = 'Add, view or edit detailed information for the companies. ';
+                ToolTip = 'Add, view or edit detailed information for the companies.';
+                Visible = Rec."B2B Enabled";
+            }
+            action(Catalogs)
+            {
+                ApplicationArea = All;
+                Caption = 'Catalogs';
+                Image = ItemGroup;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                RunObject = Page "Shpfy Catalogs";
+                RunPageLink = "Shop Code" = field(Code);
+                ToolTip = 'View a list of Shopify catalogs for the shop.';
                 Visible = Rec."B2B Enabled";
             }
         }
@@ -1027,6 +1079,7 @@ page 30101 "Shpfy Shop Card"
         NewTemplatesEnabled: Boolean;
 #endif
         IsReturnRefundsVisible: Boolean;
+        ApiVersion: Text;
         ApiVersionExpiryDate: Date;
         ExpirationNotificationTxt: Label 'Shopify API version 30 days before expiry notification sent.', Locked = true;
         BlockedNotificationTxt: Label 'Shopify API version expired notification sent.', Locked = true;
@@ -1047,6 +1100,7 @@ page 30101 "Shpfy Shop Card"
         NewTemplatesEnabled := ShpfyTemplates.NewTemplatesEnabled();
 #endif
         if Rec.Enabled then begin
+            ApiVersion := CommunicationMgt.GetApiVersion();
             ApiVersionExpiryDateTime := CommunicationMgt.GetApiVersionExpiryDate();
             ApiVersionExpiryDate := DT2Date(ApiVersionExpiryDateTime);
             if CurrentDateTime() > ApiVersionExpiryDateTime then begin

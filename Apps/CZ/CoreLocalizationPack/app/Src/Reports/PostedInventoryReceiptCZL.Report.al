@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.History;
 
+using Microsoft.CRM.Team;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Company;
 using Microsoft.Inventory.Document;
@@ -78,6 +79,22 @@ report 11751 "Posted Inventory Receipt CZL"
             column(RegisterUserID; GetRegisterUserIDCZL())
             {
             }
+            column(PostingDescription_InvtReceiptHeader; "Posting Description")
+            {
+                IncludeCaption = true;
+            }
+            column(SalespersonCode_InvtReceiptHeader; SalespersonPurchaser.Code)
+            {
+                IncludeCaption = true;
+            }
+            column(SalespersonName_InvtReceiptHeader; SalespersonPurchaser.Name)
+            {
+                IncludeCaption = true;
+            }
+            column(ExternalDocumentNo_InvtReceiptHeader; "External Document No.")
+            {
+                IncludeCaption = true;
+            }
             dataitem("Invt. Receipt Line"; "Invt. Receipt Line")
             {
                 DataItemLink = "Document No." = field("No.");
@@ -112,6 +129,18 @@ report 11751 "Posted Inventory Receipt CZL"
                 {
                     IncludeCaption = true;
                 }
+                column(VariantCode_InvtReceiptLine; "Variant Code")
+                {
+                    IncludeCaption = true;
+                }
+                column(BinCode_InvtReceiptLine; "Bin Code")
+                {
+                    IncludeCaption = true;
+                }
+                column(ItemCategoryCode_InvtReceiptLine; "Item Category Code")
+                {
+                    IncludeCaption = true;
+                }
 
                 trigger OnAfterGetRecord()
                 begin
@@ -124,6 +153,7 @@ report 11751 "Posted Inventory Receipt CZL"
             begin
                 CurrReport.Language := LanguageMGt.GetLanguageIdOrDefault("Language Code");
                 CurrReport.FormatRegion := LanguageMGt.GetFormatRegionOrDefault("Format Region");
+                SalespersonPurchaser.Get("Purchaser Code");
 
                 if not IsReportInPreviewMode() then
                     Codeunit.Run(Codeunit::"Posted Invt. Rcpt.-Printed CZL", "Invt. Receipt Header");
@@ -140,6 +170,7 @@ report 11751 "Posted Inventory Receipt CZL"
     }
 
     var
+        SalespersonPurchaser: Record "Salesperson/Purchaser";
         FormatAddress: Codeunit "Format Address";
         LanguageMGt: Codeunit Language;
         CompanyAddr: array[8] of Text[100];

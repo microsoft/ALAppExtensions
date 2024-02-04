@@ -270,6 +270,8 @@ tableextension 11723 "Gen. Journal Line CZL" extends "Gen. Journal Line"
                 Vend: Record Vendor;
             begin
                 TestField("Original Doc. Partner Type CZL");
+                "Country/Region Code" := '';
+                "VAT Registration No." := '';
                 if "Original Doc. Partner No. CZL" <> '' then
                     case "Original Doc. Partner Type CZL" of
                         "Original Doc. Partner Type CZL"::Customer:
@@ -285,10 +287,6 @@ tableextension 11723 "Gen. Journal Line CZL" extends "Gen. Journal Line"
                                 Validate("VAT Registration No.", Vend."VAT Registration No.");
                             end;
                     end
-                else begin
-                    Validate("Country/Region Code", '');
-                    Validate("VAT Registration No.", '');
-                end;
             end;
         }
         field(31112; "Original Doc. VAT Date CZL"; Date)

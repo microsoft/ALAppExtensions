@@ -10,7 +10,7 @@ codeunit 13613 "Elec. VAT Decl. Submit"
     var
         ElecVATDeclArchiving: Codeunit "Elec. VAT Decl. Archiving";
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        SubmissionSuccessfulQst: Label 'VAT Return draft submitted successfully. You need confirm the draft as final on skat.dk website.\Do you want to open the submitted draft in your browser?';
+        SubmissionSuccessfulMsg: Label 'VAT Return draft submitted successfully. You need confirm the draft as final on skat.dk website.';
         FeatureNameTxt: Label 'Electronic VAT Declaration DK', Locked = true;
         VATReturnSubmittedTxt: Label 'VAT Return Created', Locked = true;
 
@@ -21,21 +21,20 @@ codeunit 13613 "Elec. VAT Decl. Submit"
         HttpResponse: Interface "Elec. VAT Decl. Response";
     begin
         HttpResponse := ElecVATDeclSKATAPI.SubmitVATReturn(Rec, SubmissionTempBlob);
-        ShowDeepLink(HttpResponse);
+        GetDeeplink(HttpResponse);
         ElecVATDeclArchiving.ArchiveSubmissionMessageBlob(SubmissionTempBlob, Rec);
         FeatureTelemetry.LogUsage('0000LRB', FeatureNameTxt, VATReturnSubmittedTxt);
     end;
 
-    local procedure ShowDeepLink(HttpResponse: Interface "Elec. VAT Decl. Response")
+    local procedure GetDeeplink(HttpResponse: Interface "Elec. VAT Decl. Response")
     var
         ElecVATDeclXml: Codeunit "Elec. VAT Decl. Xml";
-        ConfirmManagement: Codeunit "Confirm Management";
         DeepLinkNode: XmlNode;
         DeepLink: Text;
     begin
         DeepLinkNode := ElecVATDeclXml.GetDeeplinkNodeFromResponseText(HttpResponse.GetResponseBodyAsText());
         DeepLink := DeepLinkNode.AsXmlElement().InnerText();
-        if ConfirmManagement.GetResponse(SubmissionSuccessfulQst, true) then
-            HyperLink(DeepLink);
+        if (DeepLink <> '') and GuiAllowed() then
+            Message(SubmissionSuccessfulMsg);
     end;
 }

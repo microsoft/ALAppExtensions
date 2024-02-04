@@ -13,6 +13,7 @@ using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.FixedAssets.Depreciation;
 using Microsoft.FixedAssets.FixedAsset;
@@ -141,7 +142,7 @@ table 11733 "Cash Document Line CZP"
                 IsHandled := false;
                 BreakValidation := false;
                 OnValidateAccountNoOnAfterInitRec(Rec, xRec, TempCashDocumentLineCZP, IsHandled, BreakValidation);
-                if BreakValidation  then
+                if BreakValidation then
                     exit;
                 if not IsHandled then
                     if "Account No." = '' then
@@ -725,6 +726,8 @@ table 11733 "Cash Document Line CZP"
                 end;
                 "VAT Difference" := "VAT Amount" - CalcVATAmount();
 
+                ValidateNonDeductibleVATPct();
+
                 if CurrFieldNo = FieldNo("VAT Amount") then
                     if Abs("VAT Difference") > Currency."Max. VAT Difference Allowed" then
                         Error(MustNotBeMoreThanErr, FieldCaption("VAT Difference"), Currency."Max. VAT Difference Allowed");
@@ -908,6 +911,66 @@ table 11733 "Cash Document Line CZP"
         field(101; "EET Transaction"; Boolean)
         {
             Caption = 'EET Transaction';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(110; "Non-Deductible VAT %"; Decimal)
+        {
+            Caption = 'Non-Deductible VAT %';
+            DecimalPlaces = 0 : 5;
+            Editable = false;
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                CalculateNonDeductibleVAT();
+            end;
+        }
+        field(111; "Non-Deductible VAT Base"; Decimal)
+        {
+            AutoFormatExpression = Rec."Currency Code";
+            Caption = 'Non-Deductible VAT Base';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(112; "Non-Deductible VAT Amount"; Decimal)
+        {
+            AutoFormatExpression = Rec."Currency Code";
+            Caption = 'Non-Deductible VAT Amount';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(113; "Non-Deductible VAT Base LCY"; Decimal)
+        {
+            AutoFormatExpression = Rec."Currency Code";
+            Caption = 'Non-Deductible VAT Base LCY';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(114; "Non-Deductible VAT Amount LCY"; Decimal)
+        {
+            AutoFormatExpression = Rec."Currency Code";
+            Caption = 'Non-Deductible VAT Amount LCY';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(115; "Non-Deductible VAT Base ACY"; Decimal)
+        {
+            AutoFormatExpression = Rec."Currency Code";
+            Caption = 'Non-Deductible VAT Base ACY';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(116; "Non-Deductible VAT Amount ACY"; Decimal)
+        {
+            AutoFormatExpression = Rec."Currency Code";
+            Caption = 'Non-Deductible VAT Amount ACY';
+            Editable = false;
+            DataClassification = CustomerContent;
+        }
+        field(117; "Non-Deductible VAT Diff."; Decimal)
+        {
+            Caption = 'Non-Deductible VAT Difference';
             Editable = false;
             DataClassification = CustomerContent;
         }
@@ -1100,6 +1163,8 @@ table 11733 "Cash Document Line CZP"
             Validate("Amount Including VAT", Amount)
         else
             Validate("VAT Base Amount", Amount);
+
+        ValidateNonDeductibleVATPct();
 
         if (Amount <> xRec.Amount) and (xRec.Amount <> 0) or (xRec."Applies-To Doc. No." <> '') or (xRec."Applies-to ID" <> '') then begin
             CashDocumentPostCZP.InitGenJnlLine(CashDocumentHeaderCZP, Rec);
@@ -1732,6 +1797,58 @@ table 11733 "Cash Document Line CZP"
         end;
     end;
 
+    local procedure ValidateNonDeductibleVATPct()
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        NonDeductibleVAT: Codeunit "Non-Deductible VAT";
+    begin
+        GetCashDocumentHeaderCZP();
+        InitGenJournalLine(GenJournalLine);
+        NonDeductibleVAT.ValidateNonDedVATPctInGenJnlLine(GenJournalLine);
+        CopyNonDeductibleVATFromGenJournalLine(GenJournalLine);
+    end;
+
+    local procedure CalculateNonDeductibleVAT()
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        NonDeductibleVAT: Codeunit "Non-Deductible VAT";
+    begin
+        GetCashDocumentHeaderCZP();
+        InitGenJournalLine(GenJournalLine);
+        NonDeductibleVAT.Calculate(GenJournalLine, Currency);
+        CopyNonDeductibleVATFromGenJournalLine(GenJournalLine);
+    end;
+
+    local procedure CopyNonDeductibleVATFromGenJournalLine(GenJournalLine: Record "Gen. Journal Line")
+    begin
+        "Non-Deductible VAT %" := GenJournalLine."Non-Deductible VAT %";
+        "Non-Deductible VAT Base" := GenJournalLine."Non-Deductible VAT Base";
+        "Non-Deductible VAT Amount" := GenJournalLine."Non-Deductible VAT Amount";
+        "Non-Deductible VAT Base LCY" := GenJournalLine."Non-Deductible VAT Base LCY";
+        "Non-Deductible VAT Amount LCY" := GenJournalLine."Non-Deductible VAT Amount LCY";
+        "Non-Deductible VAT Base ACY" := GenJournalLine."Non-Deductible VAT Base ACY";
+        "Non-Deductible VAT Amount ACY" := GenJournalLine."Non-Deductible VAT Amount ACY";
+        "Non-Deductible VAT Diff." := GenJournalLine."Non-Deductible VAT Diff.";
+    end;
+
+    local procedure InitGenJournalLine(var GenJournalLine: Record "Gen. Journal Line")
+    begin
+        GetCashDocumentHeaderCZP();
+        GenJournalLine.Init();
+        GenJournalLine."VAT Calculation Type" := "VAT Calculation Type";
+        GenJournalLine."VAT Bus. Posting Group" := "VAT Bus. Posting Group";
+        GenJournalLine."VAT Prod. Posting Group" := "VAT Prod. Posting Group";
+        GenJournalLine."Gen. Posting Type" := "Gen. Posting Type";
+        GenJournalLine."Currency Code" := CashDocumentHeaderCZP."Currency Code";
+        GenJournalLine."Currency Factor" := CashDocumentHeaderCZP."Currency Factor";
+        GenJournalLine."Posting Date" := CashDocumentHeaderCZP."Posting Date";
+        GenJournalLine.Amount := "Amount Including VAT";
+        GenJournalLine."VAT Amount" := "VAT Amount";
+        GenJournalLine."VAT Base Amount" := "VAT Base Amount";
+        GenJournalLine."Non-Deductible VAT %" := "Non-Deductible VAT %";
+        OnAfterInitGenJournalLine(GenJournalLine);
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeIsEETTransaction(CashDocumentLineCZP: Record "Cash Document Line CZP"; var EETTransaction: Boolean; var IsHandled: Boolean)
     begin
@@ -1824,6 +1941,11 @@ table 11733 "Cash Document Line CZP"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterSignAmount(var CashDocumentLineCZP: Record "Cash Document Line CZP"; var Sign: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInitGenJournalLine(var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
 }

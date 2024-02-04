@@ -27,6 +27,7 @@ codeunit 148054 "VAT Date CZL"
         VATPostingSetup: Record "VAT Posting Setup";
         UserSetup: Record "User Setup";
         VATStatementTemplate: Record "VAT Statement Template";
+        VATSetup: Record "VAT Setup";
         LibraryERM: Codeunit "Library - ERM";
 #if not CLEAN22
         LibrarySales: Codeunit "Library - Sales";
@@ -61,9 +62,12 @@ codeunit 148054 "VAT Date CZL"
         if isInitialized then
             exit;
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"VAT Date CZL");
-
+#if not CLEAN24
         UserSetup.ModifyAll(UserSetup."Allow VAT Posting From CZL", 0D);
         UserSetup.ModifyAll(UserSetup."Allow VAT Posting To CZL", 0D);
+#endif
+        UserSetup.ModifyAll(UserSetup."Allow VAT Date From", 0D);
+        UserSetup.ModifyAll(UserSetup."Allow VAT Date To", 0D);
 
         GeneralLedgerSetup.Get();
 #if not CLEAN22
@@ -74,9 +78,16 @@ codeunit 148054 "VAT Date CZL"
         GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::Enabled;
         GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL"::Blank;
 #endif
+#if not CLEAN24
         GeneralLedgerSetup."Allow VAT Posting From CZL" := 0D;
         GeneralLedgerSetup."Allow VAT Posting To CZL" := 0D;
+#endif
         GeneralLedgerSetup.Modify();
+
+        VATSetup.Get();
+        VATSetup."Allow VAT Date From" := 0D;
+        VATSetup."Allow VAT Date To" := 0D;
+        VATSetup.Modify();
 
         SalesReceivablesSetup.Get();
         SalesReceivablesSetup."Order Nos." := LibraryERM.CreateNoSeriesCode();

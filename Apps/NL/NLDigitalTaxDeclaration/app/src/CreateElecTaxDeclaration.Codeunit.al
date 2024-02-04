@@ -222,9 +222,11 @@ codeunit 11421 "Create Elec. Tax Declaration"
         VATReportArchive: Record "VAT Report Archive";
         TempBlob: Codeunit "Temp Blob";
         BlobOutStream: OutStream;
+        XMLDocText: Text;
     begin
         TempBlob.CreateOutStream(BlobOutStream, TextEncoding::UTF8);
-        XMLDoc.WriteTo(BlobOutStream);
+        XMLDoc.WriteTo(XMLDocText);
+        BlobOutStream.WriteText(XMLDocText);
         VATReportArchive.ArchiveSubmissionMessage(VATReportHeader."VAT Report Config. Code", VATReportHeader."No.", TempBlob);
     end;
 

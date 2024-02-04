@@ -155,7 +155,7 @@ report 31199 "Service Shipment CZL"
             column(DocumentDate_ServiceShipmentHeaderCaption; FieldCaption("Document Date"))
             {
             }
-            column(DocumentDate_ServiceShipmentHeader; "Document Date")
+            column(DocumentDate_ServiceShipmentHeader; Format("Document Date"))
             {
             }
             column(OrderNoLbl; OrderNoLbl)
@@ -340,7 +340,7 @@ report 31199 "Service Shipment CZL"
                         column(SerNo_TrackingSpecBuffer; TempTrackingSpecification."Serial No.")
                         {
                         }
-                        column(Expiration_TrackingSpecBuffer; TempTrackingSpecification."Expiration Date")
+                        column(Expiration_TrackingSpecBuffer; Format(TempTrackingSpecification."Expiration Date"))
                         {
                         }
                         column(Quantity_TrackingSpecBuffer; TempTrackingSpecification."Quantity (Base)")

@@ -1,11 +1,9 @@
 enumextension 139616 "E-Doc Integration Mock" extends "E-Document Integration"
 {
+#pragma warning disable PTE0023 // The IDs should have been in the range [139500..139899]
     value(6151; "Mock")
     {
         Implementation = "E-Document Integration" = "E-Doc. Integration Mock";
     }
-    value(6160; "Test Import Impl. Integration")
-    {
-        Implementation = "E-Document Integration" = "Test Import E-Doc. Integration";
-    }
+#pragma warning restore PTE0023 // The IDs should have been in the range [139500..139899]
 }

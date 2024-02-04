@@ -293,6 +293,21 @@ page 4050 "GP Migration Configuration"
                             until GPCompanyAdditionalSettings.Next() = 0;
                     end;
                 }
+                field("Skip Posting Item Batches"; Rec."Skip Posting Item Batches")
+                {
+                    Caption = 'Item Batches';
+                    ToolTip = 'Specify whether to disable auto posting Item batches.';
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Skip Posting Item Batches", Rec."Skip Posting Item Batches");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
             }
 
             group(Inactives)
@@ -567,6 +582,18 @@ page 4050 "GP Migration Configuration"
 
     actions
     {
+        area(Promoted)
+        {
+            actionref(ResetAllAction_Promoted; ResetAllAction)
+            {
+            }
+            actionref(SetDimensions_Promoted; SetDimensions)
+            {
+            }
+            actionref(GP_Promoted; GP)
+            {
+            }
+        }
         area(Processing)
         {
             action(ResetAllAction)
@@ -574,9 +601,6 @@ page 4050 "GP Migration Configuration"
                 ApplicationArea = All;
                 Caption = 'Reset Defaults';
                 ToolTip = 'Reset all companies to the default settings.';
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 Image = Setup;
 
                 trigger OnAction()
@@ -591,9 +615,6 @@ page 4050 "GP Migration Configuration"
                 ApplicationArea = All;
                 Caption = 'Set All Dimensions';
                 ToolTip = 'Attempt to set the Dimensions for all Companies.';
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 Image = Dimensions;
 
                 trigger OnAction()
@@ -624,7 +645,6 @@ page 4050 "GP Migration Configuration"
                 ToolTip = 'Change the settings for the GP upgrade.';
                 RunObject = page "GP Upgrade Settings";
                 Image = Setup;
-
             }
         }
     }
@@ -692,6 +712,7 @@ page 4050 "GP Migration Configuration"
                     GPCompanyAdditionalSettingsEachCompany.Validate("Skip Posting Bank Batches", Rec."Skip Posting Bank Batches");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Skip Posting Customer Batches", Rec."Skip Posting Customer Batches");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Skip Posting Vendor Batches", Rec."Skip Posting Vendor Batches");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Skip Posting Item Batches", Rec."Skip Posting Item Batches");
 
                     GPCompanyAdditionalSettingsEachCompany.Insert(true);
                 end;
@@ -755,6 +776,7 @@ page 4050 "GP Migration Configuration"
         Rec.Validate("Skip Posting Bank Batches", GPCompanyAdditionalSettingsInit."Skip Posting Bank Batches");
         Rec.Validate("Skip Posting Customer Batches", GPCompanyAdditionalSettingsInit."Skip Posting Customer Batches");
         Rec.Validate("Skip Posting Vendor Batches", GPCompanyAdditionalSettingsInit."Skip Posting Vendor Batches");
+        Rec.Validate("Skip Posting Item Batches", GPCompanyAdditionalSettingsInit."Skip Posting Item Batches");
 
         EnableDisableAllHistTrx := Rec."Migrate Hist. GL Trx." and
                                                         Rec."Migrate Hist. AR Trx." and

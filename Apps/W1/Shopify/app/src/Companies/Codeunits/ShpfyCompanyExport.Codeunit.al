@@ -90,7 +90,7 @@ codeunit 30284 "Shpfy Company Export"
 
         ShopifyCompany.Name := Customer.Name;
 
-        CompanyLocation.Name := 'Main';
+        CompanyLocation.Name := Customer.Address;
         CompanyLocation.Address := Customer.Address;
         CompanyLocation."Address 2" := Customer."Address 2";
         CompanyLocation.Zip := Customer."Post Code";

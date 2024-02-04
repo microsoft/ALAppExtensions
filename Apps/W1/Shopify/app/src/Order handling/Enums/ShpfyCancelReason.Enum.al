@@ -28,6 +28,14 @@ enum 30116 "Shpfy Cancel Reason"
     {
         Caption = 'Other';
     }
+    value(5; Staff)
+    {
+        Caption = 'Staff';
+    }
+    value(6; Declined)
+    {
+        Caption = 'Declined';
+    }
     value(99; Unknown)
     {
         Caption = 'Unknown';

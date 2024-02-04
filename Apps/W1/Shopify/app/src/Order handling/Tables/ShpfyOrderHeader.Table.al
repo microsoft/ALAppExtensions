@@ -559,7 +559,37 @@ table 30118 "Shpfy Order Header"
             Caption = 'Return Status';
             DataClassification = SystemMetadata;
         }
-
+        field(117; "Company Id"; BigInteger)
+        {
+            Caption = 'Company Id';
+            DataClassification = SystemMetadata;
+        }
+        field(118; "Company Main Contact Id"; BigInteger)
+        {
+            Caption = 'Company Main Contact Id';
+            DataClassification = SystemMetadata;
+        }
+        field(119; "Company Main Contact Email"; Text[100])
+        {
+            Caption = 'Company Main Contact Email';
+            DataClassification = SystemMetadata;
+        }
+        field(120; "Company Main Contact Phone No."; Text[50])
+        {
+            Caption = 'Company Main Contact Phone No.';
+            DataClassification = SystemMetadata;
+            ExtendedDatatype = PhoneNo;
+        }
+        field(121; "Company Main Contact Cust. Id"; BigInteger)
+        {
+            Caption = 'Company Main Contact Customer Id';
+            DataClassification = SystemMetadata;
+        }
+        field(122; B2B; Boolean)
+        {
+            Caption = 'B2B';
+            DataClassification = SystemMetadata;
+        }
         field(500; "Shop Code"; Code[20])
         {
             Caption = 'Shop Code';
@@ -711,6 +741,11 @@ table 30118 "Shpfy Order Header"
         {
             Caption = 'Ship-to Contact No.';
             DataClassification = CustomerContent;
+        }
+        field(1020; "Has Order State Error"; Boolean)
+        {
+            Caption = 'Has Order State Error';
+            DataClassification = SystemMetadata;
         }
     }
     keys

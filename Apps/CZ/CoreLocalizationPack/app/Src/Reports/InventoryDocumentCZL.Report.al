@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Document;
 
+using Microsoft.CRM.Team;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Company;
 using Microsoft.Inventory.Item;
@@ -78,6 +79,22 @@ report 11752 "Inventory Document CZL"
             {
                 IncludeCaption = true;
             }
+            column(PostingDescription_InvtDocumentHeader; "Posting Description")
+            {
+                IncludeCaption = true;
+            }
+            column(SalespersonCode_InvtDocumentHeader; SalespersonPurchaser.Code)
+            {
+                IncludeCaption = true;
+            }
+            column(SalespersonName_InvtDocumentHeader; SalespersonPurchaser.Name)
+            {
+                IncludeCaption = true;
+            }
+            column(ExternalDocumentNo_InvtDocumentHeader; "External Document No.")
+            {
+                IncludeCaption = true;
+            }
             dataitem("Invt. Document Line"; "Invt. Document Line")
             {
                 DataItemLink = "Document No." = field("No.");
@@ -112,6 +129,18 @@ report 11752 "Inventory Document CZL"
                 {
                     IncludeCaption = true;
                 }
+                column(VariantCode_InvtShipmentLine; "Variant Code")
+                {
+                    IncludeCaption = true;
+                }
+                column(BinCode_InvtShipmentLine; "Bin Code")
+                {
+                    IncludeCaption = true;
+                }
+                column(ItemCategoryCode_InvtShipmentLine; "Item Category Code")
+                {
+                    IncludeCaption = true;
+                }
 
                 trigger OnAfterGetRecord()
                 begin
@@ -124,6 +153,7 @@ report 11752 "Inventory Document CZL"
             begin
                 CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
                 CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
+                SalespersonPurchaser.Get("Salesperson/Purchaser Code");
 
                 if not IsReportInPreviewMode() then
                     Codeunit.Run(Codeunit::"Invt. Document-Printed CZL", "Invt. Document Header");
@@ -141,6 +171,7 @@ report 11752 "Inventory Document CZL"
     }
 
     var
+        SalespersonPurchaser: Record "Salesperson/Purchaser";
         FormatAddress: Codeunit "Format Address";
         LanguageMgt: Codeunit Language;
         CompanyAddr: array[8] of Text[100];

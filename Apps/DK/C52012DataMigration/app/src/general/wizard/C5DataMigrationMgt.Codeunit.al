@@ -23,6 +23,7 @@ codeunit 1860 "C5 Data Migration Mgt."
 
     procedure ImportC5Data(): Boolean
     var
+        C5MigrationDashboardMgt: Codeunit "C5 Migr. Dashboard Mgt";
         ServerFile: Text;
         ZipInStream: InStream;
     begin
@@ -30,10 +31,10 @@ codeunit 1860 "C5 Data Migration Mgt."
             exit(false);
 
         if not StoreStreamFileOnBlob(ZipInStream) then
-            LogInternalError(SomethingWentWrongErr, DataClassification::SystemMetadata, Verbosity::Error);
+            Session.LogMessage('0000M0G', SomethingWentWrongErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', C5MigrationDashboardMgt.GetC5MigrationTypeTxt());
 
         if not Codeunit.Run(Codeunit::"C5 Schema Reader") then
-            LogInternalError(GetLastErrorText(), DataClassification::CustomerContent, Verbosity::Error);
+            Session.LogMessage('0000M0H', GetLastErrorText(), Verbosity::Error, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', C5MigrationDashboardMgt.GetC5MigrationTypeTxt());
         exit(true);
     end;
 

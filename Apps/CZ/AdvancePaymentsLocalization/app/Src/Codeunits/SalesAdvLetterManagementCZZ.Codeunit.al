@@ -408,6 +408,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         GenJournalLine: Record "Gen. Journal Line";
         VATPostingSetup: Record "VAT Posting Setup";
         CustLedgerEntry: Record "Cust. Ledger Entry";
+        DocumentTypeHandlerCZZ: Codeunit "Document Type Handler CZZ";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         NoSeriesManagement: Codeunit NoSeriesManagement;
         VATPostingSetupHandlerCZZ: Codeunit "VAT Posting Setup Handler CZZ";
@@ -463,16 +464,16 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
             VATDocumentCZZ.GetDocument(DocumentNo, PostingDate, VATDate, TempAdvancePostingBufferCZZ);
             if (DocumentNo = '') or (PostingDate = 0D) or (VATDate = 0D) then
                 Error(DocumentNoOrDatesEmptyErr);
-
-            TempAdvancePostingBufferCZZ.SetFilter(Amount, '<>0');
-            if TempAdvancePostingBufferCZZ.IsEmpty() then
-                Error(NothingToPostErr);
-
-            SalesAdvLetterEntryCZZ2.CalcSums(Amount);
-            TempAdvancePostingBufferCZZ.CalcSums(Amount);
-            if (SalesAdvLetterEntryCZZ.Amount - SalesAdvLetterEntryCZZ2.Amount) < TempAdvancePostingBufferCZZ.Amount then
-                Error(ExceededAmountErr);
         end;
+
+        TempAdvancePostingBufferCZZ.SetFilter(Amount, '<>0');
+        if TempAdvancePostingBufferCZZ.IsEmpty() then
+            Error(NothingToPostErr);
+
+        SalesAdvLetterEntryCZZ2.CalcSums(Amount);
+        TempAdvancePostingBufferCZZ.CalcSums(Amount);
+        if Abs(SalesAdvLetterEntryCZZ.Amount - SalesAdvLetterEntryCZZ2.Amount) < Abs(TempAdvancePostingBufferCZZ.Amount) then
+            Error(ExceededAmountErr);
 
         GetCurrency(SalesAdvLetterEntryCZZ."Currency Code");
 
@@ -524,8 +525,10 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 OnPostAdvancePaymentVATOnBeforeGenJnlPostLine(SalesAdvLetterHeaderCZZ, SalesAdvLetterEntryCZZ, GenJournalLine);
 
                 BindSubscription(VATPostingSetupHandlerCZZ);
+                BindSubscription(DocumentTypeHandlerCZZ);
                 GenJnlPostLine.RunWithCheck(GenJournalLine);
                 UnbindSubscription(VATPostingSetupHandlerCZZ);
+                UnbindSubscription(DocumentTypeHandlerCZZ);
 
 #if not CLEAN22
 #pragma warning disable AL0432
@@ -578,27 +581,16 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
 
         SalesAdvLetterHeaderCZZ.Get(AdvanceNo);
         SalesAdvLetterHeaderCZZ.CalcFields("Amount Including VAT");
-        GetCurrency(SalesAdvLetterHeaderCZZ."Currency Code");
 
         Coeff := Amount / SalesAdvLetterHeaderCZZ."Amount Including VAT";
 
-        BufferAdvanceLines(AdvanceNo, TempAdvancePostingBufferCZZ);
+        BufferAdvanceLines(SalesAdvLetterHeaderCZZ, TempAdvancePostingBufferCZZ);
         TempAdvancePostingBufferCZZ.SetFilter(Amount, '<>0');
         if TempAdvancePostingBufferCZZ.FindSet() then
             repeat
                 AdvancePostingBufferCZZ.Init();
-                AdvancePostingBufferCZZ."VAT Bus. Posting Group" := TempAdvancePostingBufferCZZ."VAT Bus. Posting Group";
-                AdvancePostingBufferCZZ."VAT Prod. Posting Group" := TempAdvancePostingBufferCZZ."VAT Prod. Posting Group";
-                AdvancePostingBufferCZZ."VAT Calculation Type" := TempAdvancePostingBufferCZZ."VAT Calculation Type";
-                AdvancePostingBufferCZZ."VAT %" := TempAdvancePostingBufferCZZ."VAT %";
-                AdvancePostingBufferCZZ.Amount := Round(TempAdvancePostingBufferCZZ.Amount * Coeff, CurrencyGlob."Amount Rounding Precision");
-                case TempAdvancePostingBufferCZZ."VAT Calculation Type" of
-                    TempAdvancePostingBufferCZZ."VAT Calculation Type"::"Normal VAT":
-                        AdvancePostingBufferCZZ."VAT Amount" := Round(AdvancePostingBufferCZZ.Amount * TempAdvancePostingBufferCZZ."VAT %" / (100 + TempAdvancePostingBufferCZZ."VAT %"));
-                    TempAdvancePostingBufferCZZ."VAT Calculation Type"::"Reverse Charge VAT":
-                        AdvancePostingBufferCZZ."VAT Amount" := 0;
-                end;
-                AdvancePostingBufferCZZ."VAT Base Amount" := AdvancePostingBufferCZZ.Amount - AdvancePostingBufferCZZ."VAT Amount";
+                AdvancePostingBufferCZZ := TempAdvancePostingBufferCZZ;
+                AdvancePostingBufferCZZ.RecalcAmountsByCoefficient(Coeff);
                 AdvancePostingBufferCZZ.UpdateLCYAmounts(SalesAdvLetterHeaderCZZ."Currency Code", CurrencyFactor);
                 AdvancePostingBufferCZZ.Insert();
             until TempAdvancePostingBufferCZZ.Next() = 0;
@@ -630,33 +622,25 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         GenJournalLine."VAT Amount (LCY)" := GenJournalLine."Amount (LCY)" - GenJournalLine."VAT Base Amount (LCY)";
     end;
 
-    local procedure BufferAdvanceLines(AdvanceNo: Code[20]; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
+    local procedure BufferAdvanceLines(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
     var
+        AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
         SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ";
+        TempAdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ" temporary;
     begin
         AdvancePostingBufferCZZ.Reset();
         AdvancePostingBufferCZZ.DeleteAll();
 
-        SalesAdvLetterLineCZZ.SetRange("Document No.", AdvanceNo);
+        AdvanceLetterTemplateCZZ.Get(SalesAdvLetterHeaderCZZ."Advance Letter Code");
+
+        SalesAdvLetterLineCZZ.SetRange("Document No.", SalesAdvLetterHeaderCZZ."No.");
         SalesAdvLetterLineCZZ.SetFilter(Amount, '<>0');
+        if not AdvanceLetterTemplateCZZ."Post VAT Doc. for Rev. Charge" then
+            SalesAdvLetterLineCZZ.SetFilter("VAT Calculation Type", '<>%1', SalesAdvLetterLineCZZ."VAT Calculation Type"::"Reverse Charge VAT");
         if SalesAdvLetterLineCZZ.FindSet() then
             repeat
-                AdvancePostingBufferCZZ.Init();
-                AdvancePostingBufferCZZ."VAT Bus. Posting Group" := SalesAdvLetterLineCZZ."VAT Bus. Posting Group";
-                AdvancePostingBufferCZZ."VAT Prod. Posting Group" := SalesAdvLetterLineCZZ."VAT Prod. Posting Group";
-                if AdvancePostingBufferCZZ.Find() then begin
-                    AdvancePostingBufferCZZ.Amount += SalesAdvLetterLineCZZ."Amount Including VAT";
-                    AdvancePostingBufferCZZ."VAT Base Amount" += SalesAdvLetterLineCZZ.Amount;
-                    AdvancePostingBufferCZZ."VAT Amount" += SalesAdvLetterLineCZZ."VAT Amount";
-                    AdvancePostingBufferCZZ.Modify();
-                end else begin
-                    AdvancePostingBufferCZZ."VAT Calculation Type" := SalesAdvLetterLineCZZ."VAT Calculation Type";
-                    AdvancePostingBufferCZZ."VAT %" := SalesAdvLetterLineCZZ."VAT %";
-                    AdvancePostingBufferCZZ.Amount := SalesAdvLetterLineCZZ."Amount Including VAT";
-                    AdvancePostingBufferCZZ."VAT Base Amount" := SalesAdvLetterLineCZZ.Amount;
-                    AdvancePostingBufferCZZ."VAT Amount" := SalesAdvLetterLineCZZ."VAT Amount";
-                    AdvancePostingBufferCZZ.Insert();
-                end;
+                TempAdvancePostingBufferCZZ.PrepareForSalesAdvLetterLine(SalesAdvLetterLineCZZ);
+                AdvancePostingBufferCZZ.Update(TempAdvancePostingBufferCZZ);
             until SalesAdvLetterLineCZZ.Next() = 0;
     end;
 
@@ -761,6 +745,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         CustLedgerEntryAdv: Record "Cust. Ledger Entry";
         CustLedgerEntry: Record "Cust. Ledger Entry";
         AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
+        DocumentTypeHandlerCZZ: Codeunit "Document Type Handler CZZ";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         VATPostingSetupHandlerCZZ: Codeunit "VAT Posting Setup Handler CZZ";
         GenJnlCheckLnHandlerCZZ: Codeunit "Gen.Jnl.-Check Ln. Handler CZZ";
@@ -818,8 +803,10 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 GenJournalLine."VAT Amount (LCY)" := -SalesAdvLetterEntryCZZ2."VAT Amount (LCY)";
                 GenJournalLine."VAT Base Amount (LCY)" := -SalesAdvLetterEntryCZZ2."VAT Base Amount (LCY)";
                 BindSubscription(VATPostingSetupHandlerCZZ);
+                BindSubscription(DocumentTypeHandlerCZZ);
                 GenJnlPostLine.RunWithCheck(GenJournalLine);
                 UnbindSubscription(VATPostingSetupHandlerCZZ);
+                UnbindSubscription(DocumentTypeHandlerCZZ);
 
 #if not CLEAN22
 #pragma warning disable AL0432
@@ -1118,6 +1105,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         GenJournalLine: Record "Gen. Journal Line";
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
         CustLedgerEntry2: Record "Cust. Ledger Entry";
+        DocumentTypeHandlerCZZ: Codeunit "Document Type Handler CZZ";
         GenJnlCheckLnHandlerCZZ: Codeunit "Gen.Jnl.-Check Ln. Handler CZZ";
         RemainingAmount: Decimal;
         RemainingAmountLCY: Decimal;
@@ -1180,8 +1168,10 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
             GenJournalLine."Applies-to ID" := ApplId;
 
             OnBeforePostReversePayment(GenJournalLine, SalesAdvLetterHeaderCZZ);
+            BindSubscription(DocumentTypeHandlerCZZ);
             GenJnlPostLine.RunWithCheck(GenJournalLine);
             UnbindSubscription(GenJnlCheckLnHandlerCZZ);
+            UnbindSubscription(DocumentTypeHandlerCZZ);
             OnAfterPostReversePayment(GenJournalLine, SalesAdvLetterHeaderCZZ);
 
             CustLedgerEntry2.FindLast();
@@ -1215,6 +1205,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         GenJournalLine: Record "Gen. Journal Line";
         VATPostingSetup: Record "VAT Posting Setup";
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+        DocumentTypeHandlerCZZ: Codeunit "Document Type Handler CZZ";
         VATPostingSetupHandlerCZZ: Codeunit "VAT Posting Setup Handler CZZ";
         CalcVATAmountLCY: Decimal;
         CalcAmountLCY: Decimal;
@@ -1240,12 +1231,12 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         GetCurrency(SalesAdvLetterEntryCZZ."Currency Code");
         SalesAdvLetterHeaderCZZ.Get(SalesAdvLetterEntryCZZ."Sales Adv. Letter No.");
 
-        BufferAdvanceVATLines(SalesAdvLetterEntryCZZ, TempAdvancePostingBufferCZZ1, 0D, true);
+        BufferAdvanceVATLines(SalesAdvLetterEntryCZZ, TempAdvancePostingBufferCZZ1, 0D);
 
         SuggestUsageVAT(SalesAdvLetterEntryCZZ, TempAdvancePostingBufferCZZ1, InvoiceNo, ReverseAmount, Preview);
 
         if SalesAdvLetterEntryCZZ."Currency Code" <> '' then begin
-            BufferAdvanceVATLines(SalesAdvLetterEntryCZZ, TempAdvancePostingBufferCZZ2, 0D, true);
+            BufferAdvanceVATLines(SalesAdvLetterEntryCZZ, TempAdvancePostingBufferCZZ2, 0D);
             TempAdvancePostingBufferCZZ2.CalcSums(Amount);
             AmountToUse := TempAdvancePostingBufferCZZ2.Amount;
         end;
@@ -1283,8 +1274,10 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                     CalculateAmountLCY(GenJournalLine);
                 if not Preview then begin
                     BindSubscription(VATPostingSetupHandlerCZZ);
+                    BindSubscription(DocumentTypeHandlerCZZ);
                     GenJnlPostLine.RunWithCheck(GenJournalLine);
                     UnbindSubscription(VATPostingSetupHandlerCZZ);
+                    UnbindSubscription(DocumentTypeHandlerCZZ);
                 end;
 
 #if not CLEAN22
@@ -1370,7 +1363,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 end;
 
             if Continue then begin
-                BufferAdvanceVATLines(SalesAdvLetterEntryCZZ, TempAdvancePostingBufferCZZ2, 0D, true);
+                BufferAdvanceVATLines(SalesAdvLetterEntryCZZ, TempAdvancePostingBufferCZZ2, 0D);
 
                 if Preview then
                     repeat
@@ -1603,9 +1596,15 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
             SalesAdvLetterEntryCZZ."Global Dimension 1 Code", SalesAdvLetterEntryCZZ."Global Dimension 2 Code", SalesAdvLetterEntryCZZ."Dimension Set ID", Preview);
     end;
 
+    local procedure BufferAdvanceVATLines(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ"; BalanceAtDate: Date)
+    begin
+        BufferAdvanceVATLines(SalesAdvLetterEntryCZZ, AdvancePostingBufferCZZ, BalanceAtDate, true);
+    end;
+
     local procedure BufferAdvanceVATLines(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ"; BalanceAtDate: Date; ResetBuffer: Boolean)
     var
         SalesAdvLetterEntryCZZ2: Record "Sales Adv. Letter Entry CZZ";
+        TempAdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ" temporary;
     begin
         if ResetBuffer then begin
             AdvancePostingBufferCZZ.Reset();
@@ -1620,32 +1619,15 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
             SalesAdvLetterEntryCZZ2.SetFilter("Posting Date", '..%1', BalanceAtDate);
         if SalesAdvLetterEntryCZZ2.FindSet() then
             repeat
-                if SalesAdvLetterEntryCZZ2."Entry Type" in [SalesAdvLetterEntryCZZ2."Entry Type"::Payment,
-                    SalesAdvLetterEntryCZZ2."Entry Type"::Usage, SalesAdvLetterEntryCZZ2."Entry Type"::Close] then
+                if SalesAdvLetterEntryCZZ2."Entry Type" in
+                  [SalesAdvLetterEntryCZZ2."Entry Type"::Payment,
+                   SalesAdvLetterEntryCZZ2."Entry Type"::Usage,
+                   SalesAdvLetterEntryCZZ2."Entry Type"::Close]
+                then
                     BufferAdvanceVATLines(SalesAdvLetterEntryCZZ2, AdvancePostingBufferCZZ, BalanceAtDate, false)
                 else begin
-                    AdvancePostingBufferCZZ.Init();
-                    AdvancePostingBufferCZZ."VAT Bus. Posting Group" := SalesAdvLetterEntryCZZ2."VAT Bus. Posting Group";
-                    AdvancePostingBufferCZZ."VAT Prod. Posting Group" := SalesAdvLetterEntryCZZ2."VAT Prod. Posting Group";
-                    if AdvancePostingBufferCZZ.Find() then begin
-                        AdvancePostingBufferCZZ.Amount += SalesAdvLetterEntryCZZ2.Amount;
-                        AdvancePostingBufferCZZ."VAT Base Amount" += SalesAdvLetterEntryCZZ2."VAT Base Amount";
-                        AdvancePostingBufferCZZ."VAT Amount" += SalesAdvLetterEntryCZZ2."VAT Amount";
-                        AdvancePostingBufferCZZ."Amount (ACY)" += SalesAdvLetterEntryCZZ2."Amount (LCY)";
-                        AdvancePostingBufferCZZ."VAT Base Amount (ACY)" += SalesAdvLetterEntryCZZ2."VAT Base Amount (LCY)";
-                        AdvancePostingBufferCZZ."VAT Amount (ACY)" += SalesAdvLetterEntryCZZ2."VAT Amount (LCY)";
-                        AdvancePostingBufferCZZ.Modify();
-                    end else begin
-                        AdvancePostingBufferCZZ."VAT Calculation Type" := SalesAdvLetterEntryCZZ2."VAT Calculation Type";
-                        AdvancePostingBufferCZZ."VAT %" := SalesAdvLetterEntryCZZ2."VAT %";
-                        AdvancePostingBufferCZZ.Amount := SalesAdvLetterEntryCZZ2.Amount;
-                        AdvancePostingBufferCZZ."VAT Base Amount" := SalesAdvLetterEntryCZZ2."VAT Base Amount";
-                        AdvancePostingBufferCZZ."VAT Amount" := SalesAdvLetterEntryCZZ2."VAT Amount";
-                        AdvancePostingBufferCZZ."Amount (ACY)" := SalesAdvLetterEntryCZZ2."Amount (LCY)";
-                        AdvancePostingBufferCZZ."VAT Base Amount (ACY)" := SalesAdvLetterEntryCZZ2."VAT Base Amount (LCY)";
-                        AdvancePostingBufferCZZ."VAT Amount (ACY)" := SalesAdvLetterEntryCZZ2."VAT Amount (LCY)";
-                        AdvancePostingBufferCZZ.Insert();
-                    end;
+                    TempAdvancePostingBufferCZZ.PrepareForSalesAdvLetterEntry(SalesAdvLetterEntryCZZ2);
+                    AdvancePostingBufferCZZ.Update(TempAdvancePostingBufferCZZ);
                 end;
             until SalesAdvLetterEntryCZZ2.Next() = 0;
     end;
@@ -1937,6 +1919,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         GenJournalLine: Record "Gen. Journal Line";
         AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
         VATEntry: Record "VAT Entry";
+        DocumentTypeHandlerCZZ: Codeunit "Document Type Handler CZZ";
         NoSeriesManagement: Codeunit NoSeriesManagement;
         VATPostingSetupHandlerCZZ: Codeunit "VAT Posting Setup Handler CZZ";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
@@ -1963,7 +1946,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 CurrencyFactor := 1;
 
             SalesAdvLetterEntryCZZ3.Get(SalesAdvLetterEntryCZZ."Related Entry");
-            BufferAdvanceVATLines(SalesAdvLetterEntryCZZ3, TempAdvancePostingBufferCZZ, 0D, true);
+            BufferAdvanceVATLines(SalesAdvLetterEntryCZZ3, TempAdvancePostingBufferCZZ, 0D);
 
             GetCurrency(SalesAdvLetterEntryCZZ."Currency Code");
             SalesAdvLetterHeaderCZZ.Get(SalesAdvLetterEntryCZZ."Sales Adv. Letter No.");
@@ -2016,8 +1999,10 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 if GenJournalLine."Currency Code" <> '' then
                     CalculateAmountLCY(GenJournalLine);
                 BindSubscription(VATPostingSetupHandlerCZZ);
+                BindSubscription(DocumentTypeHandlerCZZ);
                 GenJnlPostLine.RunWithCheck(GenJournalLine);
                 UnbindSubscription(VATPostingSetupHandlerCZZ);
+                UnbindSubscription(DocumentTypeHandlerCZZ);
 
 #if not CLEAN22
 #pragma warning disable AL0432
@@ -2141,6 +2126,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         VATPostingSetup: Record "VAT Posting Setup";
         CustLedgerEntry: Record "Cust. Ledger Entry";
         CustLedgerEntryInv: Record "Cust. Ledger Entry";
+        DocumentTypeHandlerCZZ: Codeunit "Document Type Handler CZZ";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         VATPostingSetupHandlerCZZ: Codeunit "VAT Posting Setup Handler CZZ";
         GenJnlCheckLnHandlerCZZ: Codeunit "Gen.Jnl.-Check Ln. Handler CZZ";
@@ -2226,8 +2212,10 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                             GenJournalLine."VAT Base Amount (LCY)" := GenJournalLine."Amount (LCY)" - GenJournalLine."VAT Amount (LCY)";
                         end;
                         BindSubscription(VATPostingSetupHandlerCZZ);
+                        BindSubscription(DocumentTypeHandlerCZZ);
                         GenJnlPostLine.RunWithCheck(GenJournalLine);
                         UnbindSubscription(VATPostingSetupHandlerCZZ);
+                        UnbindSubscription(DocumentTypeHandlerCZZ);
 
 #if not CLEAN22
 #pragma warning disable AL0432
@@ -2532,7 +2520,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
 
         SalesAdvLetterHeaderCZZ.Get(SalesAdvLetterEntryCZZ."Sales Adv. Letter No.");
 
-        BufferAdvanceVATLines(SalesAdvLetterEntryCZZ, TempAdvancePostingBufferCZZ1, ToDate, true);
+        BufferAdvanceVATLines(SalesAdvLetterEntryCZZ, TempAdvancePostingBufferCZZ1, ToDate);
         TempAdvancePostingBufferCZZ1.CalcSums(Amount);
         VATDocAmtToDate := TempAdvancePostingBufferCZZ1.Amount;
         if VATDocAmtToDate <> 0 then begin
@@ -2540,34 +2528,23 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
             TempAdvancePostingBufferCZZ1.FindSet();
             repeat
                 TempAdvancePostingBufferCZZ2.Init();
-                TempAdvancePostingBufferCZZ2."VAT Bus. Posting Group" := TempAdvancePostingBufferCZZ1."VAT Bus. Posting Group";
-                TempAdvancePostingBufferCZZ2."VAT Prod. Posting Group" := TempAdvancePostingBufferCZZ1."VAT Prod. Posting Group";
-                TempAdvancePostingBufferCZZ2."VAT Calculation Type" := TempAdvancePostingBufferCZZ1."VAT Calculation Type";
-                TempAdvancePostingBufferCZZ2."VAT %" := TempAdvancePostingBufferCZZ1."VAT %";
-
-                TempAdvancePostingBufferCZZ2."Amount (ACY)" := Round(TempAdvancePostingBufferCZZ1.Amount * Coeff);
-                case TempAdvancePostingBufferCZZ2."VAT Calculation Type" of
-                    TempAdvancePostingBufferCZZ2."VAT Calculation Type"::"Normal VAT":
-                        TempAdvancePostingBufferCZZ2."VAT Amount (ACY)" := Round(TempAdvancePostingBufferCZZ2."Amount (ACY)" * TempAdvancePostingBufferCZZ2."VAT %" / (100 + TempAdvancePostingBufferCZZ2."VAT %"));
-                    TempAdvancePostingBufferCZZ2."VAT Calculation Type"::"Reverse Charge VAT":
-                        TempAdvancePostingBufferCZZ2."VAT Amount (ACY)" := 0;
-                end;
-                TempAdvancePostingBufferCZZ2."VAT Base Amount (ACY)" := TempAdvancePostingBufferCZZ2."Amount (ACY)" - TempAdvancePostingBufferCZZ2."VAT Amount (ACY)";
+                TempAdvancePostingBufferCZZ2 := TempAdvancePostingBufferCZZ1;
+                TempAdvancePostingBufferCZZ2.RecalcAmountsByCoefficient(Coeff);
                 TempAdvancePostingBufferCZZ2.Insert();
             until TempAdvancePostingBufferCZZ1.Next() = 0;
 
             if TempAdvancePostingBufferCZZ2.FindSet() then
                 repeat
                     VATPostingSetup.Get(TempAdvancePostingBufferCZZ2."VAT Bus. Posting Group", TempAdvancePostingBufferCZZ2."VAT Prod. Posting Group");
-                    PostUnrealizedExchangeRate(SalesAdvLetterEntryCZZ, SalesAdvLetterHeaderCZZ, VATPostingSetup, TempAdvancePostingBufferCZZ2."Amount (ACY)", TempAdvancePostingBufferCZZ2."VAT Amount (ACY)",
+                    PostUnrealizedExchangeRate(SalesAdvLetterEntryCZZ, SalesAdvLetterHeaderCZZ, VATPostingSetup, TempAdvancePostingBufferCZZ2.Amount, TempAdvancePostingBufferCZZ2."VAT Amount",
                         SalesAdvLetterEntryCZZ."Entry No.", DetEntryNo, DocumentNo, ToDate, ToDate, PostDescription, GenJnlPostLine, false, false);
                 until TempAdvancePostingBufferCZZ2.Next() = 0;
 
-            BufferAdvanceVATLines(SalesAdvLetterEntryCZZ, TempAdvancePostingBufferCZZ1, 0D, true);
+            BufferAdvanceVATLines(SalesAdvLetterEntryCZZ, TempAdvancePostingBufferCZZ1, 0D);
             TempAdvancePostingBufferCZZ1.CalcSums(Amount);
-            TempAdvancePostingBufferCZZ2.CalcSums("Amount (ACY)");
+            TempAdvancePostingBufferCZZ2.CalcSums(Amount);
             if TempAdvancePostingBufferCZZ1.Amount = 0 then
-                AmountToDivide := TempAdvancePostingBufferCZZ2."Amount (ACY)"
+                AmountToDivide := TempAdvancePostingBufferCZZ2.Amount
             else begin
                 SalesAdvLetterEntryCZZ2.Reset();
                 SalesAdvLetterEntryCZZ2.SetRange("Sales Adv. Letter No.", SalesAdvLetterEntryCZZ."Sales Adv. Letter No.");
@@ -2575,7 +2552,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                 SalesAdvLetterEntryCZZ2.SetRange("Related Entry", SalesAdvLetterEntryCZZ."Entry No.");
                 SalesAdvLetterEntryCZZ2.SetRange("Entry Type", SalesAdvLetterEntryCZZ2."Entry Type"::"VAT Payment");
                 SalesAdvLetterEntryCZZ2.CalcSums(Amount);
-                AmountToDivide := Round(TempAdvancePostingBufferCZZ2."Amount (ACY)" * (VATDocAmtToDate - TempAdvancePostingBufferCZZ1.Amount) / SalesAdvLetterEntryCZZ2.Amount);
+                AmountToDivide := Round(TempAdvancePostingBufferCZZ2.Amount * (VATDocAmtToDate - TempAdvancePostingBufferCZZ1.Amount) / SalesAdvLetterEntryCZZ2.Amount);
             end;
 
             AmountTotal := 0;
@@ -2610,7 +2587,7 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                             case SalesAdvLetterEntryCZZ3."VAT Calculation Type" of
                                 SalesAdvLetterEntryCZZ3."VAT Calculation Type"::"Normal VAT":
                                     VATAmountToPost := Round(AmountToPost * SalesAdvLetterEntryCZZ3."VAT %" / (100 + SalesAdvLetterEntryCZZ3."VAT %"));
-                                TempAdvancePostingBufferCZZ2."VAT Calculation Type"::"Reverse Charge VAT":
+                                SalesAdvLetterEntryCZZ3."VAT Calculation Type"::"Reverse Charge VAT":
                                     VATAmountToPost := 0;
                             end;
 

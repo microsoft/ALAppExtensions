@@ -20,6 +20,7 @@ using Microsoft.HumanResources.Employee;
 using Microsoft.Inventory.Location;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
+using System.Utilities;
 
 #pragma warning disable AL0432
 codeunit 11729 "Cash Document-Post CZP"
@@ -81,6 +82,7 @@ codeunit 11729 "Cash Document-Post CZP"
         OnBeforePostedCashDocHeaderInsert(PostedCashDocumentHdrCZP, CashDocumentHeaderCZP);
         PostedCashDocumentHdrCZP.Insert();
         OnAfterPostedCashDocHeaderInsert(PostedCashDocumentHdrCZP, CashDocumentHeaderCZP);
+        RecordLinkManagement.CopyLinks(CashDocumentHeaderCZP, PostedCashDocumentHdrCZP);
 
         PostHeader();
         PostLines();
@@ -102,6 +104,7 @@ codeunit 11729 "Cash Document-Post CZP"
         DimensionManagement: Codeunit DimensionManagement;
         CashDocumentReleaseCZP: Codeunit "Cash Document-Release CZP";
         GenJnlPostPreview: Codeunit "Gen. Jnl.-Post Preview";
+        RecordLinkManagement: Codeunit "Record Link Management";
         WindowDialog: Dialog;
         DialogMsg: Label 'Posting Document #1#################################\\Posting Lines #2######\', Comment = '%1 = Cash Desk No. & "Cash Document Type & No., %2 = Line Count';
         PostingDateOutRangeErr: Label 'is not within your range of allowed posting dates';
@@ -288,6 +291,14 @@ codeunit 11729 "Cash Document-Post CZP"
         TempGenJournalLine.Amount := InitCashDocumentLineCZP."Amount Including VAT" * Sign;
         TempGenJournalLine."Amount (LCY)" := InitCashDocumentLineCZP."Amount Including VAT (LCY)" * Sign;
         TempGenJournalLine."VAT Difference" := InitCashDocumentLineCZP."VAT Difference" * Sign;
+        TempGenJournalLine."Non-Deductible VAT %" := InitCashDocumentLineCZP."Non-Deductible VAT %";
+        TempGenJournalLine."Non-Deductible VAT Base" := InitCashDocumentLineCZP."Non-Deductible VAT Base" * Sign;
+        TempGenJournalLine."Non-Deductible VAT Amount" := InitCashDocumentLineCZP."Non-Deductible VAT Amount" * Sign;
+        TempGenJournalLine."Non-Deductible VAT Base LCY" := InitCashDocumentLineCZP."Non-Deductible VAT Base LCY" * Sign;
+        TempGenJournalLine."Non-Deductible VAT Amount LCY" := InitCashDocumentLineCZP."Non-Deductible VAT Amount LCY" * Sign;
+        TempGenJournalLine."Non-Deductible VAT Base ACY" := InitCashDocumentLineCZP."Non-Deductible VAT Base ACY" * Sign;
+        TempGenJournalLine."Non-Deductible VAT Amount ACY" := InitCashDocumentLineCZP."Non-Deductible VAT Amount ACY" * Sign;
+        TempGenJournalLine."Non-Deductible VAT Diff." := InitCashDocumentLineCZP."Non-Deductible VAT Diff." * Sign;
         TempGenJournalLine."Gen. Posting Type" := InitCashDocumentLineCZP."Gen. Posting Type";
         TempGenJournalLine."Applies-to Doc. Type" := InitCashDocumentLineCZP."Applies-To Doc. Type";
         TempGenJournalLine."Applies-to Doc. No." := InitCashDocumentLineCZP."Applies-To Doc. No.";
@@ -342,11 +353,7 @@ codeunit 11729 "Cash Document-Post CZP"
         CashDocumentLineCZP.Reset();
         CashDocumentLineCZP.SetRange("Cash Desk No.", CashDocumentHeaderCZP."Cash Desk No.");
         CashDocumentLineCZP.SetRange("Cash Document No.", CashDocumentHeaderCZP."No.");
-        if CashDocumentLineCZP.FindFirst() then
-            repeat
-                if CashDocumentLineCZP.HasLinks then
-                    CashDocumentLineCZP.DeleteLinks();
-            until CashDocumentLineCZP.Next() = 0;
+        RecordLinkManagement.RemoveLinks(CashDocumentLineCZP);
         CashDocumentLineCZP.DeleteAll();
     end;
 

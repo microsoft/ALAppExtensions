@@ -19,8 +19,7 @@ codeunit 139636 "Shpfy Company Export Test"
     begin
         // [SCENARIO] Convert an existing company record to a "Shpfy Company" and "Shpfy Company Location" record.
 
-        if not Customer.FindFirst() then
-            exit;
+        Customer.FindFirst();
         Shop := InitializeTest.CreateShop();
         Shop."Name Source" := Enum::"Shpfy Name Source"::CompanyName;
         Shop."Name 2 Source" := Enum::"Shpfy Name Source"::None;

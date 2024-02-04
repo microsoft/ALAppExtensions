@@ -15,5 +15,6 @@ permissionset 6363 "EDoc. Connector Objects"
                   codeunit "Pagero Auth." = X,
                   codeunit "Pagero Connection" = X,
                   codeunit "Pagero Integration Impl." = X,
-                  codeunit "Pagero Processing" = X;
+                  codeunit "Pagero Processing" = X,
+                  codeunit "Pagero Application Response" = X;
 }

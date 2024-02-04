@@ -88,4 +88,30 @@ codeunit 18081 "GST Purhase No. Series"
         PostingNoSeries.GetPostingNoSeriesCode(Record);
         Rec := Record;
     end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateShortcutDimCode', '', false, false)]
+    local procedure OnAfterValidateShortcutDimCode(var PurchHeader: Record "Purchase Header")
+    var
+        PostingNoSeries: Record "Posting No. Series";
+        PurchHeaderVariant: Variant;
+    begin
+        if not PurchHeader.IsTemporary() then begin
+            PurchHeaderVariant := PurchHeader;
+            PostingNoSeries.GetPostingNoSeriesCode(PurchHeaderVariant);
+            PurchHeader := PurchHeaderVariant;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnShowDocDimOnAfterSetDimensionSetID', '', false, false)]
+    local procedure OnShowDocDimOnAfterSetDimensionSetID(var PurchaseHeader: Record "Purchase Header")
+    var
+        PostingNoSeries: Record "Posting No. Series";
+        PurchaseHeaderVariant: Variant;
+    begin
+        if not PurchaseHeader.IsTemporary() then begin
+            PurchaseHeaderVariant := PurchaseHeader;
+            PostingNoSeries.GetPostingNoSeriesCode(PurchaseHeaderVariant);
+            PurchaseHeader := PurchaseHeaderVariant;
+        end;
+    end;
 }

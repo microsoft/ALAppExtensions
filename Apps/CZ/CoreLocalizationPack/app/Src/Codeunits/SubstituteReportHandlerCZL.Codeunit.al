@@ -48,8 +48,6 @@ codeunit 31097 "Substitute Report Handler CZL"
                     NewReportId := Report::"Create Stockkeeping Unit";
                 Report::"Income Statement CZL":
                     NewReportId := Report::"Income Statement";
-                Report::"VAT Statement CZL":
-                    NewReportId := Report::"VAT Statement";
                 Report::"VAT Register CZL":
                     NewReportId := Report::"VAT Register";
                 Report::"VAT Exceptions CZL":
@@ -74,8 +72,6 @@ codeunit 31097 "Substitute Report Handler CZL"
                     NewReportId := Report::"Create Stockkeeping Unit CZL";
                 Report::"Income Statement":
                     NewReportId := Report::"Income Statement CZL";
-                Report::"VAT Statement":
-                    NewReportId := Report::"VAT Statement CZL";
                 Report::"VAT Register":
                     NewReportId := Report::"VAT Register CZL";
                 Report::"VAT Exceptions":

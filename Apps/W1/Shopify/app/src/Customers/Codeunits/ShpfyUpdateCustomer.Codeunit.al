@@ -28,6 +28,7 @@ codeunit 30124 "Shpfy Update Customer"
     var
         Shop: Record "Shpfy Shop";
         CustomerEvents: Codeunit "Shpfy Customer Events";
+        NoLocationErr: Label 'No location was found for Shopify company id: %1', Comment = 'Shopify should not be translated. %1 = Shopify company id';
 
     trigger OnRun()
     var
@@ -128,6 +129,37 @@ codeunit 30124 "Shpfy Update Customer"
             if (ShopifyTaxArea."VAT Bus. Posting Group" <> '') then
                 Customer.Validate("VAT Bus. Posting Group", ShopifyTaxArea."VAT Bus. Posting Group");
         end;
+    end;
+
+    internal procedure UpdateCustomerFromCompany(var ShopifyCompany: Record "Shpfy Company")
+    var
+        Customer: Record Customer;
+        CountryRegion: Record "Country/Region";
+        CompanyLocation: Record "Shpfy Company Location";
+    begin
+        if not Customer.GetBySystemId(ShopifyCompany."Customer SystemId") then
+            exit;
+
+        if not CompanyLocation.Get(ShopifyCompany."Location Id") then
+            Error(NoLocationErr, ShopifyCompany.Id);
+
+        Customer.Validate(Name, ShopifyCompany.Name);
+        Customer.Validate(Address, CompanyLocation.Address);
+        Customer.Validate("Address 2", CompanyLocation."Address 2");
+
+        CountryRegion.SetRange("ISO Code", CompanyLocation."Country/Region Code");
+        if CountryRegion.FindFirst() then
+            Customer.Validate("Country/Region Code", CountryRegion.Code)
+        else
+            Customer."Country/Region Code" := CompanyLocation."Country/Region Code";
+
+        Customer.Validate(City, CompanyLocation.City);
+        Customer.Validate("Post Code", CompanyLocation.Zip);
+
+        if CompanyLocation."Phone No." <> '' then
+            Customer.Validate("Phone No.", CompanyLocation."Phone No.");
+
+        Customer.Modify();
     end;
 
     /// <summary> 

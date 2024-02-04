@@ -277,9 +277,7 @@ codeunit 30178 "Shpfy Product Export"
                     ShopifyProduct.Status := ShopifyProduct.Status::Archived;
                 Shop."Action for Removed Products"::StatusToDraft:
                     ShopifyProduct.Status := ShopifyProduct.Status::Draft;
-            end
-        else
-            ShopifyProduct.Status := ShopifyProduct.Status::Active;
+            end;
     end;
 
     /// <summary> 

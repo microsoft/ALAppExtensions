@@ -3,7 +3,7 @@ namespace Microsoft.Integration.Shopify;
 using Microsoft.Sales.Customer;
 
 /// <summary>
-/// Codeunit Shpfy Customer Mapping (ID 3018).
+/// Codeunit Shpfy Customer Mapping (ID 30118).
 /// </summary>
 codeunit 30118 "Shpfy Customer Mapping"
 {
@@ -161,7 +161,7 @@ codeunit 30118 "Shpfy Customer Mapping"
     /// </summary>
     /// <param name="PhoneNo">Parameter of type Text.</param>
     /// <returns>Return variable "Text".</returns>
-    local procedure CreatePhoneFilter(PhoneNo: Text): Text
+    internal procedure CreatePhoneFilter(PhoneNo: Text): Text
     var
         FilterBuilder: TextBuilder;
         I: Integer;

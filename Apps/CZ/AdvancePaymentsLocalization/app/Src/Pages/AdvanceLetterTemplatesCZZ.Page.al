@@ -64,6 +64,11 @@ page 31179 "Advance Letter Templates CZZ"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies automatic post VAT document.';
                 }
+                field("Post VAT Doc. for Rev. Charge"; Rec."Post VAT Doc. for Rev. Charge")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies whether the VAT document will be posting for reverse charge.';
+                }
 #if not CLEAN23
 #pragma warning disable AL0432,AS0074
                 field("Document Report ID"; '')

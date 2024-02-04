@@ -4,7 +4,7 @@ using Microsoft.Bank.Statement;
 
 page 7252 "Trans. To GL Acc. AI Proposal"
 {
-    Caption = 'Copilot G/L Account Transfer Proposals';
+    Caption = 'Copilot Proposals for Posting Differences to G/L Accounts';
     DataCaptionExpression = PageCaptionLbl;
     PageType = PromptDialog;
     IsPreview = true;
@@ -162,12 +162,12 @@ page 7252 "Trans. To GL Acc. AI Proposal"
             systemaction(OK)
             {
                 Caption = 'Keep it';
-                ToolTip = 'Save transfers to G/L Accounts proposed by Copilot.';
+                ToolTip = 'Post the difference amounts to G/L Accounts as proposed by Copilot.';
             }
             systemaction(Cancel)
             {
                 Caption = 'Discard it';
-                ToolTip = 'Discard transfers to G/L Accounts proposed by Copilot.';
+                ToolTip = 'Discard the Copilot proposals for posting difference amounts to G/L Accounts.';
             }
         }
     }
@@ -265,6 +265,8 @@ page 7252 "Trans. To GL Acc. AI Proposal"
             StatementDate := LocalBankAccReconciliation."Statement Date";
             TelemetryDimensions.Add('BankAccReconciliationId', Format(LocalBankAccReconciliation.SystemId));
         end;
+        if not Rec.Insert() then
+            Rec.Modify();
         PageCaptionLbl := StrSubstNo(ContentAreaCaptionTxt, BankAccNo, StatementNo, StatementDate);
         Session.LogMessage('0000LFC', TelemetryCopilotProposedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
     end;
@@ -322,21 +324,15 @@ page 7252 "Trans. To GL Acc. AI Proposal"
 
     var
         BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line";
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
         TempBankStatementMatchingBuffer: Record "Bank Statement Matching Buffer" temporary;
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
         AutoMatchedLinesTxt: Text;
         LinesMatchedByCopilotTxt: Text;
         AutoMatchedLinesLbl: label '%1 of %2 lines (%3%)', Comment = '%1 - an integer; %2 - an integer; %3 a decimal between 0 and 100';
         PageCaptionLbl: Text;
         OpenBankRecCardMsg: label 'There are statement lines with amounts that are not fully applied. Before posting, you must apply all statement line amounts in the bank account reconciliation.';
         SuccessfullPostedQst: label 'The bank account reconciliation is posted successfully. Do you want to view the posted bank reconciliation details?';
-        TelemetryUserAcceptedProposalsTxt: label 'User accepted Copilot proposals for transferring amounts to G/L Account', Locked = true;
-        TelemetryCopilotProposedTxt: label 'Copilot proposed transferring amounts to G/L Account, using cosine similarity threshold of 0.6', Locked = true;
+        TelemetryUserAcceptedProposalsTxt: label 'User accepted Copilot proposals for posting differences to G/L Account', Locked = true;
+        TelemetryCopilotProposedTxt: label 'Copilot proposed posting differences to G/L Account, using cosine similarity threshold of 0.6', Locked = true;
         TelemetryUserNotAcceptedProposalsTxt: label 'User closed Copilot proposals page without accepting', Locked = true;
         TelemetryUserAttemptedToPostFromProposalsPageTxt: label 'User attempted to post from proposals page.', Locked = true;
         TelemetryUserAttemptedToPostFromProposalsPageNotFullyAppliedTxt: label 'User attempted to post from proposals page, but there are still unapplied amounts.', Locked = true;

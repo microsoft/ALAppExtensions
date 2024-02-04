@@ -13,41 +13,39 @@ codeunit 6362 "Pagero Integration Impl." implements "E-Document Integration"
 
     procedure Send(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
     var
-        PageroConnection: Codeunit "Pagero Connection";
     begin
-        PageroConnection.SendEDocument(EDocument, TempBlob, IsAsync, HttpRequest, HttpResponse);
+        PageroProcessing.SendEDocument(EDocument, TempBlob, IsAsync, HttpRequest, HttpResponse);
     end;
 
     procedure SendBatch(var EDocuments: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
     begin
-
+        IsAsync := false;
+        Error('Batch sending is not supported in this version');
     end;
 
     procedure GetResponse(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     begin
-
+        exit(PageroProcessing.GetDocumentResponse(EDocument, HttpRequest, HttpResponse));
     end;
 
     procedure GetApproval(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     begin
-
+        exit(PageroProcessing.GetDocumentApproval(EDocument, HttpRequest, HttpResponse));
     end;
 
     procedure Cancel(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
-    var
-        PageroConnection: Codeunit "Pagero Connection";
     begin
-        exit(PageroConnection.CancelEDocument(EDocument, HttpRequest, HttpResponse));
+        exit(PageroProcessing.CancelEDocument(EDocument, HttpRequest, HttpResponse));
     end;
 
     procedure ReceiveDocument(var TempBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
     begin
-
+        PageroProcessing.ReceiveDocument(TempBlob, HttpRequest, HttpResponse);
     end;
 
     procedure GetDocumentCountInBatch(var TempBlob: Codeunit "Temp Blob"): Integer
     begin
-
+        exit(PageroProcessing.GetDocumentCountInBatch(TempBlob));
     end;
 
     procedure GetIntegrationSetup(var SetupPage: Integer; var SetupTable: Integer)
@@ -55,4 +53,7 @@ codeunit 6362 "Pagero Integration Impl." implements "E-Document Integration"
         SetupPage := page::"EDoc Ext Connection Setup Card";
         SetupTable := Database::"E-Doc. Ext. Connection Setup";
     end;
+
+    var
+        PageroProcessing: Codeunit "Pagero Processing";
 }

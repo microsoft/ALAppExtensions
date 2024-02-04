@@ -8,7 +8,7 @@ pageextension 14606 "IS Sales & Receivables Setup" extends "Sales & Receivables 
 {
     layout
     {
-        addafter("Report Output Type")
+        addafter(Printing)
         {
             field("Electronic Invoicing Reminder"; Rec."Electronic Invoicing Reminder")
             {

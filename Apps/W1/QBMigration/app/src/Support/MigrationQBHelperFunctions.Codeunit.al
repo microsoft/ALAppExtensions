@@ -26,7 +26,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
             GetFileContent(FileName, JObject);
             JObject.Get(EntityName, JToken);
             if not JToken.IsArray() then
-                LogInternalError(AnArrayExpectedErr, DataClassification::SystemMetadata, Verbosity::Error);
+                Session.LogMessage('0000M0Q', AnArrayExpectedErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetMigrationTypeTxt());
             JArray := JToken.AsArray();
             Session.LogMessage('00007FJ', StrSubstNo(ImportedEntityTxt, EntityName), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetMigrationTypeTxt());
             exit(true);
@@ -59,7 +59,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
                 exit(false);
 
             if not JToken.IsArray() then
-                LogInternalError(AnArrayExpectedErr, DataClassification::SystemMetadata, Verbosity::Error);
+                Session.LogMessage('0000M0R', AnArrayExpectedErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetMigrationTypeTxt());
             NbChildren := JToken.AsArray().Count();
             if NbChildren > 0 then
                 AddToArray(JToken, JArray);
@@ -401,7 +401,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
     begin
         if JObject.Get(PropertyName, JToken) then begin
             if not JToken.IsArray() then
-                LogInternalError(AnArrayExpectedErr, DataClassification::SystemMetadata, Verbosity::Error);
+                Session.LogMessage('0000M0S', AnArrayExpectedErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetMigrationTypeTxt());
             JArray := JToken.AsArray();
             exit(true);
         end;
@@ -547,7 +547,7 @@ Codeunit 1917 "MigrationQB Helper Functions"
         CurrentJToken: JsonToken;
     begin
         if not JToken.IsArray() then
-            LogInternalError(AnArrayExpectedErr, DataClassification::SystemMetadata, Verbosity::Error);
+            Session.LogMessage('0000M0T', AnArrayExpectedErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetMigrationTypeTxt());
         foreach CurrentJToken in JToken.AsArray() do
             JArray.Add(CurrentJToken);
     end;

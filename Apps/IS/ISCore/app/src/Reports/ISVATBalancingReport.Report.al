@@ -16,7 +16,7 @@ using System.Utilities;
 report 14600 "IS VAT Balancing Report"
 {
     DefaultLayout = RDLC;
-    RDLCLayout = './src/Reports/VATBalancingReport.rdlc';
+    RDLCLayout = './src/Reports/ISVATBalancingReport.rdlc';
     ApplicationArea = Basic, Suite;
     Caption = 'VAT Balancing Report';
     UsageCategory = ReportsAndAnalysis;

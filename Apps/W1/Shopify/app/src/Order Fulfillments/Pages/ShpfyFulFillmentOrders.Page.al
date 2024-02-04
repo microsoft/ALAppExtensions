@@ -46,6 +46,11 @@ page 30141 "Shpfy Fulfillment Orders"
                     ToolTip = 'Specifies the value of the Shop Id field.';
                     Visible = false;
                 }
+                field(Status; Rec.Status)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the status of the fulfillment order.';
+                }
             }
         }
     }

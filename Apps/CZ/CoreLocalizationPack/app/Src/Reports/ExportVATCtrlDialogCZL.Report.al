@@ -105,7 +105,7 @@ report 31104 "Export VAT Ctrl. Dialog CZL"
                         ApplicationArea = Basic, Suite;
                         Caption = 'Fast reaction to appel';
                         OptionCaption = ' ,B,P';
-                        ToolTip = 'Specifies the quick answer for appel. It is used for VAT Control Report.';
+                        ToolTip = 'Specifies the quick answer for appel of financial office. B = I''m not obliged to submit a VAT control report, P = I confirm the accuracy of the submitted VAT control report.';
                     }
                     field(AppelDocumentNoField; AppelDocumentNo)
                     {

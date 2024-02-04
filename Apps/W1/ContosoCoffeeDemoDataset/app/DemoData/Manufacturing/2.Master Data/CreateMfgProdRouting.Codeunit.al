@@ -52,7 +52,7 @@ codeunit 4772 "Create Mfg Prod. Routing"
         UpdateItems(MfgItem.SPSCM1009(), SPSCM1009SERIAL());
 
         ContosoManufacturing.InsertRoutingHeader(SPSCM1009PARALLEL(), AirpotParallelTok, 1);
-        ContosoManufacturing.InsertRoutingLine(SPSCM1009PARALLEL(), '', '5', (OperationNo10() + '|' + OperationNo20()), "Capacity Type Routing"::"Work Center", MfgCapacity.WorkCenter100(), '', 0, 0, 1, 0, '', 0);
+        ContosoManufacturing.InsertRoutingLine(SPSCM1009PARALLEL(), '', '05', (OperationNo10() + '|' + OperationNo20()), "Capacity Type Routing"::"Work Center", MfgCapacity.WorkCenter100(), '', 0, 0, 1, 0, '', 0);
         ContosoManufacturing.InsertRoutingLine(SPSCM1009PARALLEL(), '', OperationNo10(), '30', "Capacity Type Routing"::"Work Center", MfgCapacity.WorkCenter100(), BodyAssemblyTok, 20, 15, 1, 0, '', 0);
         ContosoManufacturing.InsertRoutingLine(SPSCM1009PARALLEL(), '', OperationNo20(), '30', "Capacity Type Routing"::"Machine Center", MfgCapacity.MachineCenter110(), ElectricalWiringTok, 20, 18, 1, 0, '', 0);
         ContosoManufacturing.InsertRoutingLine(SPSCM1009PARALLEL(), '', '30', '40', "Capacity Type Routing"::"Work Center", MfgCapacity.WorkCenter100(), TestingTok, 10, 9, 1, 0, '', 0);

@@ -50,6 +50,9 @@ table 30102 "Shpfy Shop"
                     if not "Shopify URL".ToLower().StartsWith('https://') then
                         "Shopify URL" := CopyStr('https://' + "Shopify URL", 1, MaxStrLen("Shopify URL"));
 
+                    if "Shopify URL".ToLower().StartsWith('https://admin.shopify.com/store/') then
+                        "Shopify URL" := CopyStr('https://' + "Shopify URL".Replace('https://admin.shopify.com/store/', '').Split('/').Get(1) + '.myshopify.com', 1, MaxStrLen("Shopify URL"));
+
                     if not AuthenticationMgt.IsValidShopUrl("Shopify URL") then
                         Error(InvalidShopUrlErr);
                 end;
@@ -176,7 +179,6 @@ table 30102 "Shpfy Shop"
             trigger OnValidate()
             var
                 ErrorInfo: ErrorInfo;
-                AutoCreateErrorMsg: Label 'You cannot turn "%1" off if "%2" is set to the value of "%3".', Comment = '%1 = Field Caption of "Auto Create Orders", %2 = Field Caption of "Return and Refund Process", %3 = Field Value of "Return and Refund Process"';
             begin
                 if Rec."Return and Refund Process" = "Shpfy ReturnRefund ProcessType"::"Auto Create Credit Memo" then
                     if not Rec."Auto Create Orders" then begin
@@ -705,6 +707,12 @@ table 30102 "Shpfy Shop"
             Caption = 'Can Update Shopify Companies';
             DataClassification = CustomerContent;
             InitValue = false;
+
+            trigger OnValidate()
+            begin
+                if "Can Update Shopify Companies" then
+                    "Shopify Can Update Companies" := false;
+            end;
         }
         field(119; "Default Contact Permission"; Enum "Shpfy Default Cont. Permission")
         {
@@ -715,7 +723,47 @@ table 30102 "Shpfy Shop"
         field(120; "Auto Create Catalog"; Boolean)
         {
             Caption = 'Auto Create Catalog';
-            DataClassification = SystemMetadata;
+            DataClassification = CustomerContent;
+        }
+        field(121; "Company Import From Shopify"; Enum "Shpfy Company Import Range")
+        {
+            Caption = 'Company Import from Shopify';
+            DataClassification = CustomerContent;
+            InitValue = WithOrderImport;
+        }
+        field(122; "Shopify Can Update Companies"; Boolean)
+        {
+            Caption = 'Shopify Can Update Companies';
+            DataClassification = CustomerContent;
+            InitValue = false;
+
+            trigger OnValidate()
+            begin
+                if "Shopify Can Update Companies" then
+                    "Can Update Shopify Companies" := false;
+            end;
+        }
+        field(123; "Auto Create Unknown Companies"; Boolean)
+        {
+            Caption = 'Auto Create Unknown Companies';
+            DataClassification = CustomerContent;
+        }
+        field(124; "Send Shipping Confirmation"; Boolean)
+        {
+            Caption = 'Send Shipping Confirmation';
+            DataClassification = CustomerContent;
+            InitValue = true;
+        }
+        field(125; "Default Company No."; Code[20])
+        {
+            Caption = 'Default Company No.';
+            DataClassification = CustomerContent;
+            TableRelation = Customer;
+        }
+        field(126; "Company Mapping Type"; Enum "Shpfy Company Mapping")
+        {
+            Caption = 'Company Mapping Type';
+            DataClassification = CustomerContent;
         }
         field(200; "Shop Id"; Integer)
         {
@@ -742,6 +790,7 @@ table 30102 "Shpfy Shop"
     var
         InvalidShopUrlErr: Label 'The URL must refer to the internal shop location at myshopify.com. It must not be the public URL that customers use, such as myshop.com.';
         CurrencyExchangeRateNotDefinedErr: Label 'The specified currency must have exchange rates configured. If your online shop uses the same currency as Business Central then leave the field empty.';
+        AutoCreateErrorMsg: Label 'You cannot turn "%1" off if "%2" is set to the value of "%3".', Comment = '%1 = Field Caption of "Auto Create Orders", %2 = Field Caption of "Return and Refund Process", %3 = Field Value of "Return and Refund Process"';
 
     [NonDebuggable]
     [Scope('OnPrem')]

@@ -23,6 +23,7 @@ pageextension 11738 "Purchase Order CZL" extends "Purchase Order"
         }
 #endif
         movelast(General; "Posting Description")
+#if not CLEAN24
         addlast(General)
         {
             field("Your Reference CZL"; Rec."Your Reference")
@@ -30,8 +31,13 @@ pageextension 11738 "Purchase Order CZL" extends "Purchase Order"
                 ApplicationArea = Basic, Suite;
                 Importance = Additional;
                 ToolTip = 'Specifies the customer''s reference. The contents will be printed on sales documents.';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '24.0';
+                ObsoleteReason = 'Replaced by standard page field "Your Reference".';
             }
         }
+#endif
         addafter("Posting Date")
         {
 #if not CLEAN22

@@ -75,10 +75,17 @@ tableextension 4817 "Intrastat Report Purch. Head." extends "Purchase Header"
             Validate("Transport Method", Vendor."Def. Transport Method");
             Validate("Transaction Type", Vendor."Default Trans. Type");
         end;
+
+        OnAfterUpdateIntrastatFields(Rec, Vendor, IntrastatReportSetup, FieldNo);
     end;
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeUpdateIntrastatFields(var PurchaseHeader: Record "Purchase Header"; FieldNo: Integer; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateIntrastatFields(var PurchaseHeader: Record "Purchase Header"; var Vendor: Record Vendor; var IntrastatReportSetup: Record "Intrastat Report Setup"; FieldNo: Integer);
     begin
     end;
 }

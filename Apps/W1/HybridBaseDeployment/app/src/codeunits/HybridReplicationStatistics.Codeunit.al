@@ -70,7 +70,7 @@ codeunit 40029 "Hybrid Replication Statistics"
         until HybridReplicationDetail.Next() = 0;
 
         HybridReplicationDetail.MarkedOnly(true);
-        exit(true);
+        exit(HybridReplicationDetail.FindFirst());
     end;
 
     internal procedure ShowFailedTables()

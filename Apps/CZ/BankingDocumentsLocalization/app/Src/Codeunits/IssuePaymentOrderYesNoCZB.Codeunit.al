@@ -23,18 +23,26 @@ codeunit 31354 "Issue Payment Order YesNo CZB"
     var
         IssPaymentOrderHeaderCZB: Record "Iss. Payment Order Header CZB";
         Selection: Integer;
+        SuppressCommit: Boolean;
     begin
         Selection := StrMenu(IssueQst, 1);
         if Selection = 0 then
             exit;
 
         Codeunit.Run(Codeunit::"Issue Payment Order CZB", PaymentOrderHeaderCZB);
-        Commit();
+        OnCodeOnBeforeCommit(PaymentOrderHeaderCZB, SuppressCommit);
+        if not SuppressCommit then
+            Commit();
 
         if Selection = 2 then begin
             IssPaymentOrderHeaderCZB.Get(PaymentOrderHeaderCZB."Last Issuing No.");
             IssPaymentOrderHeaderCZB.SetRecFilter();
             IssPaymentOrderHeaderCZB.ExportPaymentOrder();
         end;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCodeOnBeforeCommit(PaymentOrderHeaderCZB: Record "Payment Order Header CZB"; var SuppressCommit: Boolean)
+    begin
     end;
 }

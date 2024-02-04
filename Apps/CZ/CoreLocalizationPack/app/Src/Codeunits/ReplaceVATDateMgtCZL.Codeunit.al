@@ -5,6 +5,7 @@
 #if not CLEAN22
 namespace Microsoft.Finance.VAT.Calculation;
 
+using System.Environment;
 using System.Environment.Configuration;
 using Microsoft.Finance.GeneralLedger.Setup;
 
@@ -49,16 +50,21 @@ codeunit 31463 "Replace VAT Date Mgt. CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Feature Management Facade", 'OnAfterFeatureEnableConfirmed', '', true, true)]
     local procedure OnAfterFeatureEnableConfirmed(var FeatureKey: Record "Feature Key")
     var
+        Company: Record Company;
         GeneralLedgerSetup: Record "General Ledger Setup";
     begin
-        if FeatureKey.ID = GetFeatureKey() then begin
-            GeneralLedgerSetup.Get();
-            if GeneralLedgerSetup."Use VAT Date CZL" then
-                GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::"Enabled (Prevent modification)"
-            else
-                GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::Disabled;
-            GeneralLedgerSetup.Modify();
-        end;
+        if FeatureKey.ID <> GetFeatureKey() then
+            exit;
+        if Company.FindSet() then
+            repeat
+                GeneralLedgerSetup.ChangeCompany(Company.Name);
+                GeneralLedgerSetup.Get();
+                if GeneralLedgerSetup."Use VAT Date CZL" then
+                    GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::"Enabled (Prevent modification)"
+                else
+                    GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::Disabled;
+                GeneralLedgerSetup.Modify();
+            until Company.Next() = 0;
     end;
 
     [Obsolete('The VAT Date CZL will be replaced by VAT Reporting Date by default.', '22.0')]

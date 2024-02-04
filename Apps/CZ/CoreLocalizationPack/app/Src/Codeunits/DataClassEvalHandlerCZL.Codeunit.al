@@ -295,6 +295,7 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToPersonal(Database::"Registration Log CZL", RegistrationLog.FieldNo("Verified VAT Registration No."));
         DataClassificationMgt.SetFieldToPersonal(Database::"Registration Log CZL", RegistrationLog.FieldNo("Verified Address"));
         DataClassificationMgt.SetFieldToPersonal(Database::"Registration Log CZL", RegistrationLog.FieldNo("Verified Name"));
+        DataClassificationMgt.SetFieldToPersonal(Database::"Registration Log CZL", RegistrationLog.FieldNo("Verified Country/Region Code"));
         DataClassificationMgt.SetFieldToPersonal(Database::"Registration Log CZL", RegistrationLog.FieldNo("User ID"));
         DataClassificationMgt.SetFieldToPersonal(Database::"Registration Log CZL", RegistrationLog.FieldNo("Registration No."));
         DataClassificationMgt.SetFieldToPersonal(Database::"Registration Log Detail CZL", RegistrationLogDetail.FieldNo(Response));
@@ -381,8 +382,11 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
         DataClassificationMgt.SetFieldToNormal(Database::"Direct Trans. Line", DirectTransLine.FieldNo("Tariff No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Finance Charge Memo Header", FinanceChargeMemoHeader.FieldNo("Registration No. CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"Finance Charge Memo Header", FinanceChargeMemoHeader.FieldNo("Tax Registration No. CZL"));
+#if not CLEAN24
+#pragma warning disable AL0432
         DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("Allow VAT Posting From CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("Allow VAT Posting To CZL"));
+#endif
 #if not CLEAN22
 #pragma warning disable AL0432
         DataClassificationMgt.SetFieldToNormal(Database::"General Ledger Setup", GeneralLedgerSetup.FieldNo("Use VAT Date CZL"));
@@ -936,8 +940,12 @@ codeunit 11710 "Data Class. Eval. Handler CZL"
 #pragma warning restore AL0432
 #endif
         DataClassificationMgt.SetFieldToNormal(Database::"Unit of Measure", UnitofMeasure.FieldNo("Tariff Number UOM Code CZL"));
+#if not CLEAN24
+#pragma warning disable AL0432
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Allow VAT Posting From CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Allow VAT Posting To CZL"));
+#pragma warning restore AL0432
+#endif
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Check Doc. Date(work date) CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Check Doc. Date(sys. date) CZL"));
         DataClassificationMgt.SetFieldToNormal(Database::"User Setup", UserSetup.FieldNo("Check Post.Date(work date) CZL"));
