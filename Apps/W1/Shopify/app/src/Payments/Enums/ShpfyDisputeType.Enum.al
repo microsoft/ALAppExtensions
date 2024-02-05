@@ -7,7 +7,6 @@ enum 30151 "Shpfy Dispute Type"
     /// </summary>
     /// 
     Caption = 'Shopify Dispute Type';
-    Extensible = true;
 
     value(0; Unknown)
     {
