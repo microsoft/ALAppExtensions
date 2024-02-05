@@ -1,0 +1,71 @@
+name: ' Deploy Reference Documentation'
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+  pages: write
+  id-token: write
+
+defaults:
+  run:
+    shell: powershell
+
+env:
+  ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
+  ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
+
+jobs:
+  DeployALDoc:
+    runs-on: [ windows-latest ]
+    name: Deploy Reference Documentation
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialize the workflow
+        id: init
+        uses: microsoft/AL-Go/Actions/WorkflowInitialize@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        with:
+          shell: powershell
+          eventId: "DO0097"
+        
+      - name: Read settings
+        uses: microsoft/AL-Go/Actions/ReadSettings@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        with:
+          shell: powershell
+
+      - name: Determine Deployment Environments
+        id: DetermineDeploymentEnvironments
+        uses: microsoft/AL-Go/Actions/DetermineDeploymentEnvironments@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          shell: powershell
+          getEnvironments: 'github-pages'
+          type: 'Publish'
+            
+      - name: Setup Pages
+        if: steps.DetermineDeploymentEnvironments.outputs.deployALDocArtifact == 1
+        uses: actions/configure-pages@v4
+        
+      - name: Build Reference Documentation
+        uses: microsoft/AL-Go/Actions/BuildReferenceDocumentation@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        with:
+          shell: powershell
+          artifacts: 'latest'
+        
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ".aldoc/_site/"
+        
+      - name: Deploy to GitHub Pages
+        if: steps.DetermineDeploymentEnvironments.outputs.deployALDocArtifact == 1
+        id: deployment
+        uses: actions/deploy-pages@v4

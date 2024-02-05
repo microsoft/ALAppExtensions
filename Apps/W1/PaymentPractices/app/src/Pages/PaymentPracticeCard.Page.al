@@ -10,7 +10,7 @@ using System.Utilities;
 page 687 "Payment Practice Card"
 {
     ApplicationArea = All;
-	Caption = 'Payment Practice';
+    Caption = 'Payment Practice';
     PageType = Card;
     SourceTable = "Payment Practice Header";
 
@@ -20,7 +20,7 @@ page 687 "Payment Practice Card"
         {
             group(General)
             {
-				Caption = 'General';
+                Caption = 'General';
                 field("No."; Rec."No.")
                 {
                     ToolTip = 'Specifies the number of the payment practice header.';
@@ -65,7 +65,7 @@ page 687 "Payment Practice Card"
             }
             group("Statistics")
             {
-				Caption = 'Statistics';
+                Caption = 'Statistics';
                 field("Average Agreed Payment Period"; Rec."Average Agreed Payment Period")
                 {
                     ToolTip = 'Specifies the average agreed payment period.';
@@ -110,7 +110,7 @@ page 687 "Payment Practice Card"
         {
             action(Generate)
             {
-				Caption = 'Generate';
+                Caption = 'Generate';
                 ToolTip = 'Generates the data and lines for the payment practice.';
                 Image = CashFlow;
 
@@ -119,7 +119,7 @@ page 687 "Payment Practice Card"
                     PaymentPractices: Codeunit "Payment Practices";
                     ConfirmManagement: Codeunit "Confirm Management";
                 begin
-                    if Rec."Generated On" > 0DT then
+                    if Rec."Lines Exist" then
                         if not ConfirmManagement.GetResponse(LinesWillBeDeletedQst, false) then
                             exit;
 
@@ -132,7 +132,7 @@ page 687 "Payment Practice Card"
             }
             action(Print)
             {
-				Caption = 'Print';
+                Caption = 'Print';
                 ToolTip = 'Prints the payment practice report.';
                 Image = Print;
 
@@ -165,7 +165,7 @@ page 687 "Payment Practice Card"
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
         LinesWillBeDeletedQst: Label 'All previously generated lines will be deleted. Do you want to continue?';
-        NoEntriesFoundMsg: Label 'The payment practice generator found no entries were found corresponding to header type, starting and ending date.';
+        NoEntriesFoundMsg: Label 'The payment practice generator found no entries corresponding to the header type, starting and ending date.';
 
     local procedure PrepareLayout(PaymentPracticeLinesAggregator: Interface PaymentPracticeLinesAggregator)
     begin

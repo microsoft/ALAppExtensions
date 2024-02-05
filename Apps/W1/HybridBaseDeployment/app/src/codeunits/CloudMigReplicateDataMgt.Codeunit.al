@@ -30,6 +30,12 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
     begin
         HybridCloudManagement.RefreshIntelligentCloudStatusTable();
 
+        if IntelligentCloudStatus.Count() > GetMaximumNumberOfRecordsForFiltering() then
+            exit;
+
+        if IntelligentCloudStatus.IsEmpty() then
+            exit;
+
         if not IntelligentCloudStatus.FindSet() then
             exit;
 
@@ -37,6 +43,13 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
             if CheckRecordCanBeModified(IntelligentCloudStatus."Table Id") then
                 IntelligentCloudStatus.Mark(true);
         until IntelligentCloudStatus.Next() = 0;
+
+        IntelligentCloudStatus.MarkedOnly(true);
+    end;
+
+    internal procedure GetMaximumNumberOfRecordsForFiltering(): Integer
+    begin
+        exit(10000);
     end;
 
     internal procedure CheckCanChangeTheTable(var IntelligentCloudStatus: Record "Intelligent Cloud Status")
@@ -46,11 +59,11 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
 
         repeat
             if not CheckRecordCanBeModified(IntelligentCloudStatus."Table Id") then
-                Error(TableCannotBeIncludedErr, IntelligentCloudStatus."Table Name");
+                Error(TableReplicationPropertiesCannotBeChangedErr, IntelligentCloudStatus."Table Name");
         until IntelligentCloudStatus.Next() = 0;
     end;
 
-    local procedure CheckRecordCanBeModified(TableID: Integer): Boolean
+    internal procedure CheckRecordCanBeModified(TableID: Integer): Boolean
     var
         CanBeIncluded: Boolean;
     begin
@@ -80,6 +93,12 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
 
         repeat
             if IntelligentCloudStatus."Preserve Cloud Data" <> NewPreserveCloudData then begin
+                if (not NewPreserveCloudData) and (IntelligentCloudStatus."Table Id" = Database::"Tenant Media") then
+                    Error(NotPossibleToReplaceTenantMediaTableErr);
+
+                if (NewPreserveCloudData) and (IntelligentCloudStatus."Company Name" = '') then
+                    Error(NotPossibleToDeltaSyncDataPerCompanyErr);
+
                 InsertInitialLog(IntelligentCloudStatus);
                 IntelligentCloudStatus."Preserve Cloud Data" := NewPreserveCloudData;
                 IntelligentCloudStatus.Modify();
@@ -282,11 +301,13 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
     end;
 
     var
-        TableCannotBeIncludedErr: Label '%1 cannot be included in the migration due to insufficient permissions.', Comment = '%1 - Table name, e.g. CRONUS International Ltd_$Activity Step$437dbf0e-84ff-417a-965d-ed2bb9650972';
+        TableReplicationPropertiesCannotBeChangedErr: Label 'The replication properties of the table %1 cannot be changed because it is internal. Changing the replication of the sensitive tables is not allowed.', Comment = '%1 - Table name, e.g. CRONUS International Ltd_$Activity Step$437dbf0e-84ff-417a-965d-ed2bb9650972';
         DocumentationURLLbl: Label 'https://go.microsoft.com/fwlink/?linkid=2248572', Locked = true;
         DocumentationNotificationTxt: Label 'Cloud Mig. Replication Rules';
         DocumentationNotificationDescriptionTxt: Label 'Notification to learn more about how to configure which data is replicated and how.';
         LearnMoreTxt: Label 'Learn more';
         DontShowAgainTxt: Label 'Don''t show again';
+        NotPossibleToReplaceTenantMediaTableErr: Label 'It is not possible to overwrite the data in the Tenant Media table as it contains the data needed for the system to run correctly.';
         DocumentationNotificationTitleTxt: Label 'We strongly recommend reading the documentation before making changes, to avoid data loss and incorrect data replication.';
+        NotPossibleToDeltaSyncDataPerCompanyErr: Label 'Delta syncing per-company data is not supported. This process is not supported by the service, because it could result in slower replication and incorrect data replication.';
 }

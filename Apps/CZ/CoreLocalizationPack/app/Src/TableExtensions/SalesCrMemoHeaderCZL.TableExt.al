@@ -228,7 +228,7 @@ tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
         GeneralLedgerSetup.Get();
         if GeneralLedgerSetup."Use VAT Date CZL" then begin
             TestField("VAT Date CZL");
-            if VATDateHandlerCZL.VATDateNotAllowed("VAT Date CZL") then
+            if not VATDateHandlerCZL.IsVATDateInAllowedPeriod("VAT Date CZL") then
                 Error(VATDateRangeErr, "VAT Date CZL");
             VATDateHandlerCZL.VATPeriodCZLCheck("VAT Date CZL");
         end;

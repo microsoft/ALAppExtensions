@@ -46,6 +46,7 @@ codeunit 31088 "Upgrade Application CZZ"
                 InstallApplicationCZZ.CopyData();
         UpgradeCustomerNoInSalesAdvLetterEntries();
         UpgradeAdvanceLetterApplicationAmountLCY();
+        UpgradePostVATDocForReverseCharge();
     end;
 
     local procedure UpgradeAdvancePaymentsReportReportSelections();
@@ -119,6 +120,21 @@ codeunit 31088 "Upgrade Application CZZ"
             until AdvanceLetterApplication.Next() = 0;
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZZ.GetAdvanceLetterApplicationAmountLCYUpgradeTag());
+    end;
+
+    local procedure UpgradePostVATDocForReverseCharge()
+    var
+        AdvanceLetterTemplate: Record "Advance Letter Template CZZ";
+        AdvLetterTemplateDataTransfer: DataTransfer;
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZZ.GetPostVATDocForReverseChargeUpgradeTag()) then
+            exit;
+
+        AdvLetterTemplateDataTransfer.SetTables(Database::"Advance Letter Template CZZ", Database::"Advance Letter Template CZZ");
+        AdvLetterTemplateDataTransfer.AddConstantValue(true, AdvanceLetterTemplate.FieldNo("Post VAT Doc. for Rev. Charge"));
+        AdvLetterTemplateDataTransfer.CopyFields();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZZ.GetPostVATDocForReverseChargeUpgradeTag());
     end;
 
     local procedure GetCurrencyFactor(AdvanceLetterType: Enum "Advance Letter Type CZZ"; AdvanceLetterNo: Code[20]): Decimal

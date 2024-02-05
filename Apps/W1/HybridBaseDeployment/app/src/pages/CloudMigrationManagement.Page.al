@@ -578,6 +578,7 @@ page 40063 "Cloud Migration Management"
                     CloudMigReplicateDataMgt: Codeunit "Cloud Mig. Replicate Data Mgt.";
                 begin
                     CloudMigReplicateDataMgt.LoadRecords(IntelligentCloudStatus);
+
                     if IntelligentCloudStatus.FindFirst() then
                         Page.Run(Page::"Cloud Mig - Select Tables", IntelligentCloudStatus);
                 end;

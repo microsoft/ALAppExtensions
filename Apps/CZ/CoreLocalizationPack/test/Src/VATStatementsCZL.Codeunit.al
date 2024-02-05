@@ -274,7 +274,7 @@ codeunit 148060 "VAT Statements CZL"
     end;
 
     [RequestPageHandler]
-    procedure VATStatementCZLRequestPageHandler(var VATStatementCZL: TestRequestPage "VAT Statement CZL")
+    procedure VATStatementCZLRequestPageHandler(var VATStatement: TestRequestPage "VAT Statement")
     var
         StartingDate: Date;
         EndingDate: Date;
@@ -288,13 +288,13 @@ codeunit 148060 "VAT Statements CZL"
         PeriodSelection := LibraryVariableStorage.DequeueInteger();
         DocumentNo := CopyStr(LibraryVariableStorage.DequeueText(), 1, 20);
 
-        VATStatementCZL.StartingDate.SetValue(StartingDate);
-        VATStatementCZL.EndingDate.SetValue(EndingDate);
-        VATStatementCZL.Selection.SetValue(Selection);
-        VATStatementCZL.PeriodSelection.SetValue(PeriodSelection);
-        VATStatementCZL.SettlementNoFilterField.SetValue(DocumentNo);
+        VATStatement.StartingDate.SetValue(StartingDate);
+        VATStatement.EndingDate.SetValue(EndingDate);
+        VATStatement.Selection.SetValue(Selection);
+        VATStatement.PeriodSelection.SetValue(PeriodSelection);
+        VATStatement.SettlementNoFilterCZL.SetValue(DocumentNo);
 
-        VATStatementCZL.SaveAsXml(
+        VATStatement.SaveAsXml(
           LibraryReportDataset.GetParametersFileName(), LibraryReportDataset.GetFileName());
     end;
 

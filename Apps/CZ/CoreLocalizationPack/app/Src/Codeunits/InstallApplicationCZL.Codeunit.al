@@ -421,7 +421,6 @@ codeunit 11748 "Install Application CZL"
     begin
         ModifyGenJournalTemplate();
         ModifyReportSelections();
-        ModifyVATStatementTemplate();
         ModifyItemJournalTemplate();
     end;
 
@@ -667,6 +666,7 @@ codeunit 11748 "Install Application CZL"
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
+        VATSetup: Record "VAT Setup";
     begin
         if GeneralLedgerSetup.Get() then begin
 #if not CLEAN22
@@ -693,6 +693,13 @@ codeunit 11748 "Install Application CZL"
             end;
             StatutoryReportingSetupCZL."Company Official Nos." := GeneralLedgerSetup."Company Officials Nos.";
             StatutoryReportingSetupCZL.Modify();
+            if not VATSetup.Get() then begin
+                VATSetup.Init();
+                VATSetup.Insert();
+            end;
+            VATSetup."Allow VAT Date From" := GeneralLedgerSetup."Allow VAT Posting From";
+            VATSetup."Allow VAT Date To" := GeneralLedgerSetup."Allow VAT Posting To";
+            VATSetup.Modify();
         end;
     end;
 
@@ -757,6 +764,8 @@ codeunit 11748 "Install Application CZL"
         UserSetupDataTransfer.SetTables(Database::"User Setup", Database::"User Setup");
         UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Allow VAT Posting From"), UserSetup.FieldNo("Allow VAT Posting From CZL"));
         UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Allow VAT Posting To"), UserSetup.FieldNo("Allow VAT Posting To CZL"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Allow VAT Posting From"), UserSetup.FieldNo("Allow VAT Date From"));
+        UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Allow VAT Posting To"), UserSetup.FieldNo("Allow VAT Date To"));
         UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Document Date(work date)"), UserSetup.FieldNo("Check Doc. Date(work date) CZL"));
         UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Document Date(sys. date)"), UserSetup.FieldNo("Check Doc. Date(sys. date) CZL"));
         UserSetupDataTransfer.AddFieldValue(UserSetup.FieldNo("Check Posting Date (work date)"), UserSetup.FieldNo("Check Post.Date(work date) CZL"));
@@ -3257,21 +3266,6 @@ codeunit 11748 "Install Application CZL"
                 if ReportSelections."Report ID" <> PrevReportSelections."Report ID" then
                     ReportSelections.Modify();
             until ReportSelections.Next() = 0;
-    end;
-
-    local procedure ModifyVATStatementTemplate()
-    var
-        VATStatementTemplate: Record "VAT Statement Template";
-        PrevVATStatementTemplate: Record "VAT Statement Template";
-    begin
-        if VATStatementTemplate.FindSet(true) then
-            repeat
-                PrevVATStatementTemplate := VATStatementTemplate;
-                if VATStatementTemplate."VAT Statement Report ID" = Report::"VAT Statement" then
-                    VATStatementTemplate."VAT Statement Report ID" := Report::"VAT Statement CZL";
-                if (VATStatementTemplate."VAT Statement Report ID" <> PrevVATStatementTemplate."VAT Statement Report ID") then
-                    VATStatementTemplate.Modify();
-            until VATStatementTemplate.Next() = 0;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Company-Initialize", 'OnCompanyInitialize', '', false, false)]

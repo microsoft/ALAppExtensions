@@ -92,8 +92,8 @@ reportextension 14603 "IS Blanket Sales Order" extends "Blanket Sales Order"
                 {
                     ApplicationArea = Basic, Suite;
 #if not CLEAN24
-                    // Visible = IsISCoreAppEnabled; Bug 488336
-                    // Enabled = IsISCoreAppEnabled; Bug 488336
+                    Visible = IsISCoreAppEnabled;
+                    Enabled = IsISCoreAppEnabled;
 #endif
                     Caption = 'Always Show VAT Summary';
                     ToolTip = 'Specifies that you want the document to include VAT information.';

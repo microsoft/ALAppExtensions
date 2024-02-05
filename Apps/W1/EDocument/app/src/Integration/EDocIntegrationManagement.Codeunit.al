@@ -145,8 +145,7 @@ codeunit 6134 "E-Doc. Integration Management"
         if EDocumentService."Service Integration" = EDocumentService."Service Integration"::"No Integration" then
             exit(false);
 
-        EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
-        if EDocumentServiceStatus.FindFirst() then
+        if EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code) then
             if not (EDocumentServiceStatus.Status in [Enum::"E-Document Service Status"::"Sending Error", Enum::"E-Document Service Status"::Exported]) then begin
                 Message(EDocumentSendErr, EDocumentServiceStatus.Status);
                 exit(false);

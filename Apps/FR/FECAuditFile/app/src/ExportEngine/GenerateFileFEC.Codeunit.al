@@ -249,7 +249,7 @@ codeunit 10826 "Generate File FEC"
 #else
             GetProgressiveNo(GLRegister, GLEntry, AuditFileExportHeader),
 #endif
-            GLRegister."Creation Date", PartyNo, PartyName, FCYAmount, CurrencyCode, DocNoApplied, DateApplied);
+            DT2Date(GLRegister.SystemCreatedAt), PartyNo, PartyName, FCYAmount, CurrencyCode, DocNoApplied, DateApplied);
     end;
 
     local procedure CalcDetailedBalanceBySource(GLAccountNo: Code[20]; SourceType: Enum "Gen. Journal Source Type"; SourceNo: Code[20]) TotalAmt: Decimal
@@ -289,7 +289,11 @@ codeunit 10826 "Generate File FEC"
             exit;
         end;
 
+#if not CLEAN24
         GLRegister.SetLoadFields("From Entry No.", "To Entry No.", "Creation Date");
+#else
+        GLRegister.SetLoadFields("From Entry No.", "To Entry No.");
+#endif
         if EntryNo > GLRegisterGlobal."To Entry No." then
             GLRegister.SetFilter("No.", '>%1', GLRegisterGlobal."No.");
         GLRegister.SetFilter("From Entry No.", '<=%1', EntryNo);
@@ -303,7 +307,10 @@ codeunit 10826 "Generate File FEC"
         GLRegisterGlobal."No." := GLRegister."No.";
         GLRegisterGlobal."From Entry No." := GLRegister."From Entry No.";
         GLRegisterGlobal."To Entry No." := GLRegister."To Entry No.";
+#if not CLEAN24
         GLRegisterGlobal."Creation Date" := GLRegister."Creation Date";
+#endif
+        GLRegisterGlobal.SystemCreatedAt := GLRegister.SystemCreatedAt;
     end;
 
     local procedure GetOpeningBalance(var GLAccount: Record "G/L Account"; PeriodStartDate: Date): Decimal

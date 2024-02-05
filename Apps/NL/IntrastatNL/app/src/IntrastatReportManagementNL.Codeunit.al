@@ -141,12 +141,6 @@ codeunit 11426 "Intrastat Report Management NL"
         IntrastatLineCheckUpdate(IntrastatReportLine);
     end;
 
-    [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnBeforeInsertValueEntryLine', '', false, false)]
-    local procedure IntrastatOnBeforeInsertValueEntryLine(var IntrastatReportLine: Record "Intrastat Report Line"; ItemLedgerEntry: Record "Item Ledger Entry"; var IsHandled: Boolean)
-    begin
-        IntrastatLineCheckUpdate(IntrastatReportLine);
-    end;
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeCreateDefaultDataExchangeDef', '', true, true)]
     local procedure OnBeforeCreateDefaultDataExchangeDef(var IsHandled: Boolean);
     begin

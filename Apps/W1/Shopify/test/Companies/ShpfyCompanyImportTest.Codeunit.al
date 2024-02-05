@@ -5,7 +5,6 @@ codeunit 139647 "Shpfy Company Import Test"
 
     var
         LibraryAssert: Codeunit "Library Assert";
-        CompanyImport: Codeunit "Shpfy Company Import";
 
     [Test]
     procedure UnitTestFindMappingBetweenCompanyAndCustomer()
@@ -15,6 +14,7 @@ codeunit 139647 "Shpfy Company Import Test"
         ShopifyCustomer: Record "Shpfy Customer";
         Shop: Record "Shpfy Shop";
         InitializeTest: Codeunit "Shpfy Initialize Test";
+        CompanyMapping: Codeunit "Shpfy Company Mapping";
         Result: Boolean;
     begin
         // [SCENARIO] Importing a company record that is already mapped to a customer record via email.
@@ -22,15 +22,15 @@ codeunit 139647 "Shpfy Company Import Test"
         Shop."B2B Enabled" := true;
 
         // [GIVEN] Shop, Shopify company and Shopify customer
-        CompanyImport.SetShop(Shop);
+        CompanyMapping.SetShop(Shop);
         ShopifyCompany.Insert();
         Customer.SetFilter("E-Mail", '<>%1', '');
         Customer.FindFirst();
         ShopifyCustomer.Email := Customer."E-Mail";
 
 
-        // [WHEN] Invoke ShpfyCustomerImport.FindMapping(ShopifyCompany, ShopifyCustomer)
-        Result := CompanyImport.FindMapping(ShopifyCompany, ShopifyCustomer);
+        // [WHEN] Invoke CompanyMapping.FindMapping(ShopifyCompany, ShopifyCustomer)
+        Result := CompanyMapping.FindMapping(ShopifyCompany, ShopifyCustomer);
 
         // [THEN] The result is true and Shopify company has the correct customer id.
         LibraryAssert.IsTrue(Result, 'Result');

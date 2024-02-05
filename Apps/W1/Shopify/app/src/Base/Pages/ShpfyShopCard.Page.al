@@ -542,7 +542,7 @@ page 30101 "Shpfy Shop Card"
                     }
                 }
             }
-            group(B2B)
+            group("B2B Company Synchronization")
             {
                 Visible = Rec."B2B Enabled";
                 field("Can Update Shopify Companies"; Rec."Can Update Shopify Companies")
@@ -564,6 +564,16 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies if unknown companies are automatically created in D365BC when synchronizing from Shopify.';
+                }
+                field("Default Company No."; Rec."Default Company No.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the default customer when not creating a company for each B2B company.';
+                }
+                field("Company Mapping Type"; Rec."Company Mapping Type")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies how to map companies.';
                 }
                 field("Default Customer Permission"; Rec."Default Contact Permission")
                 {
@@ -747,7 +757,21 @@ page 30101 "Shpfy Shop Card"
                 PromotedOnly = true;
                 RunObject = Page "Shpfy Companies";
                 RunPageLink = "Shop Id" = field("Shop Id");
-                ToolTip = 'Add, view or edit detailed information for the companies. ';
+                ToolTip = 'Add, view or edit detailed information for the companies.';
+                Visible = Rec."B2B Enabled";
+            }
+            action(Catalogs)
+            {
+                ApplicationArea = All;
+                Caption = 'Catalogs';
+                Image = ItemGroup;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                RunObject = Page "Shpfy Catalogs";
+                RunPageLink = "Shop Code" = field(Code);
+                ToolTip = 'View a list of Shopify catalogs for the shop.';
                 Visible = Rec."B2B Enabled";
             }
         }

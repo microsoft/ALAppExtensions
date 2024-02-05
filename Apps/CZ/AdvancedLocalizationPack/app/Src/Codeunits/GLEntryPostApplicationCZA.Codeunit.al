@@ -44,12 +44,11 @@ codeunit 31370 "G/L Entry Post Application CZA"
         IsZero: Boolean;
     begin
         Clear(PostingDate);
-        GLEntry.CalcFields("Applied Amount CZA");
-        GLEntry.SetCurrentKey("Entry No.");
+        GLEntry.SetCurrentKey("Applies-to ID CZA", "Applying Entry CZA");
+        GLEntry.SetLoadFields("Entry No.", "Applies-to ID CZA", "Amount to Apply CZA", Amount, "Posting Date");
         GLEntry.SetRange("Applies-to ID CZA", ApplyingGLEntry."Applies-to ID CZA");
         GLEntry.SetRange("G/L Account No.", ApplyingGLEntry."G/L Account No.");
-
-        if GLEntry.FindSet() then
+        if GLEntry.FindSet(false) then
             repeat
                 if ApplyingGLEntry."Entry No." <> GLEntry."Entry No." then
                     if GLEntry."Amount to Apply CZA" <> 0 then
@@ -101,8 +100,9 @@ codeunit 31370 "G/L Entry Post Application CZA"
                 GLEntry.SetFilter(Amount, '<0');
             GLEntry.SetRange("Applying Entry CZA", false);
             GLEntry.Ascending(false);
-            if GLEntry.FindSet() then
+            if GLEntry.FindSet(true) then
                 repeat
+                    GLEntry.CalcFields("Applied Amount CZA");
                     if (ApplyingAmount <> 0) and
                        (GLEntry.Amount = GLEntry."Amount to Apply CZA" + GLEntry."Applied Amount CZA")
                     then begin
@@ -113,7 +113,7 @@ codeunit 31370 "G/L Entry Post Application CZA"
 
             if ApplyingAmount <> 0 then begin
                 GLEntry.SetFilter("Amount to Apply CZA", '<>0');
-                if GLEntry.FindSet() then
+                if GLEntry.FindSet(true) then
                     repeat
                         SetAmountToApply();
                         GLEntry.Modify();
@@ -132,14 +132,18 @@ codeunit 31370 "G/L Entry Post Application CZA"
         end;
 
         GLEntry.Reset();
+        GLEntry.SetCurrentKey("Applies-to ID CZA");
         GLEntry.SetRange("Applies-to ID CZA", ApplyingGLEntry."Applies-to ID CZA");
         GLEntry.SetRange("G/L Account No.", ApplyingGLEntry."G/L Account No.");
         GLEntry.SetRange("Amount to Apply CZA", 0);
-        GLEntry.ModifyAll("Applies-to ID CZA", '');
+        if not GLEntry.IsEmpty() then
+            GLEntry.ModifyAll("Applies-to ID CZA", '');
 
         TransactionNo := FindLastTransactionNo() + 1;
 
         GLEntry.Reset();
+        GLEntry.SetCurrentKey("Applies-to ID CZA");
+        GLEntry.SetLoadFields("Entry No.", "G/L Account No.", "Amount to Apply CZA", "Applies-to ID CZA", Amount);
         GLEntry.SetRange("Applies-to ID CZA", ApplyingGLEntry."Applies-to ID CZA");
         GLEntry.SetRange("G/L Account No.", ApplyingGLEntry."G/L Account No.");
         if GLEntry.FindSet(true) then
@@ -190,7 +194,8 @@ codeunit 31370 "G/L Entry Post Application CZA"
         TransactionNo: Integer;
         UnapplidedByEntryNo: Integer;
     begin
-        SelectedDetailedGLEntryCZA.SetCurrentKey("Entry No.");
+        SelectedDetailedGLEntryCZA.SetCurrentKey("Transaction No.");
+        SelectedDetailedGLEntryCZA.SetLoadFields("G/L Entry No.", "Applied G/L Entry No.", "G/L Account No.", Amount);
         SelectedDetailedGLEntryCZA.SetRange("Transaction No.", DetailedGLEntryCZA."Transaction No.");
         SelectedDetailedGLEntryCZA.SetRange("G/L Account No.", DetailedGLEntryCZA."G/L Account No.");
 
@@ -273,7 +278,8 @@ codeunit 31370 "G/L Entry Post Application CZA"
         DetailedGLEntryCZA: Record "Detailed G/L Entry CZA";
         ApplicationEntryNo: Integer;
     begin
-        DetailedGLEntryCZA.SetCurrentKey("Entry No.");
+        DetailedGLEntryCZA.SetCurrentKey("G/L Entry No.");
+        DetailedGLEntryCZA.SetLoadFields("Entry No.", Unapplied);
         DetailedGLEntryCZA.SetRange("G/L Entry No.", GLEntryNo);
         ApplicationEntryNo := 0;
         if DetailedGLEntryCZA.FindSet() then
@@ -365,7 +371,7 @@ codeunit 31370 "G/L Entry Post Application CZA"
         ApplyGLEntriesCZA.RunModal();
     end;
 
-    procedure AutomatedGLEntryApplication(var GenJournalLine: Record "Gen. Journal Line"; var GLEntry: Record "G/L Entry")
+    procedure AutomatedGLEntryApplication(var GenJournalLine: Record "Gen. Journal Line"; var VarGLEntry: Record "G/L Entry")
     var
         SelectedGLEntry: Record "G/L Entry";
         IsHandled: Boolean;
@@ -377,31 +383,32 @@ codeunit 31370 "G/L Entry Post Application CZA"
 
         if GenJournalLine."Applies-to Doc. No." <> '' then begin
             SelectedGLEntry.SetCurrentKey("G/L Account No.", "Closed CZA");
-            SelectedGLEntry.SetRange("G/L Account No.", GLEntry."G/L Account No.");
+            SelectedGLEntry.SetLoadFields("Entry No.", Amount, "Amount to Apply CZA");
+            SelectedGLEntry.SetRange("G/L Account No.", VarGLEntry."G/L Account No.");
             SelectedGLEntry.SetRange("Closed CZA", false);
             SelectedGLEntry.SetRange("Document No.", GenJournalLine."Applies-to Doc. No.");
             SelectedGLEntry.SetRange("Document Type", GenJournalLine."Applies-to Doc. Type");
-            if GLEntry.Amount < 0 then
+            if VarGLEntry.Amount < 0 then
                 SelectedGLEntry.SetFilter(Amount, '>0')
             else
                 SelectedGLEntry.SetFilter(Amount, '<0');
+            SelectedGLEntry.SetAutoCalcFields("Applied Amount CZA");
             if SelectedGLEntry.FindSet(true) then
                 repeat
-                    SelectedGLEntry.CalcFields("Applied Amount CZA");
                     SelectedGLEntry."Amount to Apply CZA" := SelectedGLEntry.Amount - SelectedGLEntry."Applied Amount CZA";
                     if SelectedGLEntry."Amount to Apply CZA" <> 0 then
                         SelectedGLEntry."Applies-to ID CZA" := GenJournalLine."Document No.";
                     SelectedGLEntry.Modify();
                 until SelectedGLEntry.Next() = 0;
 
-            GLEntry."Applies-to ID CZA" := GenJournalLine."Document No.";
-            GLEntry."Amount to Apply CZA" := GLEntry.Amount;
-            GLEntry."Applying Entry CZA" := true;
+            VarGLEntry."Applies-to ID CZA" := GenJournalLine."Document No.";
+            VarGLEntry."Amount to Apply CZA" := VarGLEntry.Amount;
+            VarGLEntry."Applying Entry CZA" := true;
         end else
             if GenJournalLine."Applies-to ID" <> '' then begin
-                GLEntry."Applies-to ID CZA" := GenJournalLine."Applies-to ID";
-                GLEntry."Amount to Apply CZA" := GLEntry.Amount;
-                GLEntry."Applying Entry CZA" := true;
+                VarGLEntry."Applies-to ID CZA" := GenJournalLine."Applies-to ID";
+                VarGLEntry."Amount to Apply CZA" := VarGLEntry.Amount;
+                VarGLEntry."Applying Entry CZA" := true;
             end;
     end;
 

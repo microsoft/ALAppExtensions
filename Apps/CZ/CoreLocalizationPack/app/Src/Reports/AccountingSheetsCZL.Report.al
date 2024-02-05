@@ -652,6 +652,7 @@ report 11703 "Accounting Sheets CZL"
     trigger OnInitReport()
     begin
         GroupGLAccounts := true;
+        OnAfterOnInitReport(GroupGLAccounts);
     end;
 
     trigger OnPreReport()
@@ -683,17 +684,19 @@ report 11703 "Accounting Sheets CZL"
         LastDocNo: Code[20];
         FCYRate: Decimal;
         LastGLEntry: Integer;
-        LastDataItem: Integer;
-        GroupGLAccounts: Boolean;
-        SalesInvHdrExists: Boolean;
-        SalesCrMemoHdrExists: Boolean;
-        PurchInvHdrExists: Boolean;
-        PurchCrMemoHdrExists: Boolean;
-        GeneralDocExists: Boolean;
         GroupCaption: Text;
         GroupText: Text;
         GLAccountNameTxt: Label 'G/L Account Name';
         DescriptionTxt: Label 'Description';
+
+    protected var
+        LastDataItem: Integer;
+        GeneralDocExists: Boolean;
+        GroupGLAccounts: Boolean;
+        PurchInvHdrExists: Boolean;
+        PurchCrMemoHdrExists: Boolean;
+        SalesInvHdrExists: Boolean;
+        SalesCrMemoHdrExists: Boolean;
 
     procedure GetLastDataItem(): Integer
     begin
@@ -746,5 +749,15 @@ report 11703 "Accounting Sheets CZL"
             exit(GLAccount.Name);
         end;
         exit(GLEntry.Description);
+    end;
+
+    procedure InitializeRequest(NewGroupGLAccounts: Boolean)
+    begin
+        GroupGLAccounts := NewGroupGLAccounts;
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnAfterOnInitReport(var GroupGLAccounts: Boolean)
+    begin
     end;
 }

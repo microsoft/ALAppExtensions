@@ -11,7 +11,7 @@ codeunit 4021 "Hybrid BC Last Management"
         CloudMigrationTok: Label 'CloudMigration', Locked = true;
         CompanyUpgradeFailedMsg: Label 'Company upgrade failed', Locked = true;
         PerDatabaseUpgradeFailedMsg: Label 'Ped database upgrade failed', Locked = true;
-        CompanyUnderUpgradeErr: Label 'Cloud migration can�t be run, because an upgrade has started on company %1 (upgrade status: %2). Either exclude the company from migration or delete it, then try migration again.', Comment = '%1 - Name of company, %2 Status of upgrade for company';
+        CompanyUnderUpgradeErr: Label 'Cloud migration can''t be run, because an upgrade has started on company %1 (upgrade status: %2). Either exclude the company from migration or delete it, then try migration again.', Comment = '%1 - Name of company, %2 Status of upgrade for company';
 
     procedure GetAppId() AppId: Guid
     var

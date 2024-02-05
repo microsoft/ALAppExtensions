@@ -20,7 +20,10 @@ permissionset 14600 "IS Core - Objects"
         report "IS VAT Balancing Report" = X,
         report "IS VAT Reconciliation A" = X,
         codeunit "IS Core Install" = X,
+        codeunit "IS Core" = X,
         codeunit "Enable IS Core App" = X,
+        codeunit "IS Docs Retention Period" = X,
+        codeunit "IS Core Upgrade" = X,
         page "IS IRS Groups" = X,
         page "IS IRS Numbers" = X,
 #if not CLEAN24

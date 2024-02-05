@@ -93,7 +93,6 @@ table 30113 "Shpfy Shop Location"
             ObsoleteState = Removed;
 #endif
             Description = 'This disabled the synchronisation of the stock to Shopify.';
-            InitValue = true;
         }
 
         field(8; Active; Boolean)

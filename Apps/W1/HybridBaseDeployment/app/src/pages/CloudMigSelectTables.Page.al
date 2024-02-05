@@ -121,6 +121,13 @@ page 40041 "Cloud Mig - Select Tables"
                     Caption = 'Preserve the Cloud Data';
                     ToolTip = 'Specifies if the data should only be delta synced. Setting this value to false will delete all data from the table before copying the data from on-premises database.';
                 }
+                field(ViewOnly; IsInternal)
+                {
+                    ApplicationArea = All;
+                    Caption = 'View only';
+                    ToolTip = 'Specifies if the replication properties of the table cannot be changed.';
+                    Visible = IsInternalVisible;
+                }
             }
         }
     }
@@ -194,19 +201,6 @@ page 40041 "Cloud Mig - Select Tables"
                     CurrPage.SetSelectionFilter(IntelligentCloudStatus);
                     CloudMigReplicateDataMgt.CheckCanChangeTheTable(IntelligentCloudStatus);
                     CloudMigReplicateDataMgt.ChangePreserveCloudData(IntelligentCloudStatus, false);
-                    CurrPage.Update(false);
-                end;
-            }
-            action(ResetCloudSyncDataAction)
-            {
-                ApplicationArea = All;
-                Caption = 'Replicate data again';
-                Image = CancelAllLines;
-                ToolTip = 'Resets the synced version. The next migration will copy all the data again.';
-
-                trigger OnAction()
-                begin
-                    ResetCloudSyncData();
                     CurrPage.Update(false);
                 end;
             }
@@ -302,24 +296,6 @@ page 40041 "Cloud Mig - Select Tables"
         }
     }
 
-    local procedure ResetCloudSyncData()
-    var
-        SelectedIntelligentCloudStatus: Record "Intelligent Cloud Status";
-    begin
-        if not Confirm(ConfirmResetLastSyncVersionQst) then
-            exit;
-
-        CurrPage.SetSelectionFilter(SelectedIntelligentCloudStatus);
-        if not SelectedIntelligentCloudStatus.FindSet() then
-            exit;
-
-        repeat
-            Clear(SelectedIntelligentCloudStatus."Synced Version");
-            SelectedIntelligentCloudStatus.Modify();
-        until SelectedIntelligentCloudStatus.Next() = 0;
-        CurrPage.Update(false);
-    end;
-
     trigger OnOpenPage()
     var
         CanChangeSetup: Boolean;
@@ -329,7 +305,7 @@ page 40041 "Cloud Mig - Select Tables"
             Error(ChangingSetupRequiresBCMigrationErr);
 
         CloudMigReplicateDataMgt.ShowDocumentationNotification();
-        Rec.MarkedOnly(true);
+        IsInternalVisible := not Rec.MarkedOnly();
     end;
 
     [InternalEvent(false, false)]
@@ -337,10 +313,17 @@ page 40041 "Cloud Mig - Select Tables"
     begin
     end;
 
+    trigger OnAfterGetRecord()
+    begin
+        if IsInternalVisible then
+            IsInternal := not CloudMigReplicateDataMgt.CheckRecordCanBeModified(Rec."Table Id");
+    end;
+
     var
         CloudMigReplicateDataMgt: Codeunit "Cloud Mig. Replicate Data Mgt.";
+        IsInternalVisible: Boolean;
+        IsInternal: Boolean;
         TableNameFilter: Text;
         CompanyFilterDisplayName: Text;
         ChangingSetupRequiresBCMigrationErr: Label 'Enable cloud migration and select a product before modifying how the data is replicated. Changing which data is replicated is only supported for migrations from Business Central.';
-        ConfirmResetLastSyncVersionQst: Label 'Resetting the latest synced version will cause the next migration to copy all the data again.\\Are you sure you want to reset the latest synced version?';
 }

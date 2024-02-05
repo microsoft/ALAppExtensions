@@ -15,7 +15,6 @@ codeunit 4016 "Hybrid GP Management"
         GPCloudMigrationReplicationErrorsMsg: Label 'Errors occured during GP Cloud Migration. Error message: %1.', Locked = true;
         SqlCompatibilityErr: Label 'SQL database must be at compatibility level 130 or higher.';
         StartingHandleInitializationofGPSynchronizationTelemetryMsg: Label 'Starting HandleInitializationofGPSynchronization', Locked = true;
-        StartingInstallGPSmartlistsTelemetryMsg: Label 'Starting Handle Initialization of GP Synchronization', Locked = true;
         UpgradeWasScheduledMsg: Label 'Upgrade was succesfully scheduled';
         GPCloudMigrationDoesNotSupportNewUIMsg: Label 'GP Cloud migration does not support the new UI, please switch back to the previous UI page.';
         CannotContinueUpgradeFailedMsg: Label 'Previous data upgrade has failed. You need to delete the failed companies and to migrate them again.';
@@ -194,7 +193,6 @@ codeunit 4016 "Hybrid GP Management"
         JsonManagement: Codeunit "JSON Management";
         HelperFunctions: Codeunit "Helper Functions";
         ServiceType: Text;
-        SesssionID: Integer;
     begin
         // Do not process migration data for a diagnostic run since there should be none
         if HybridReplicationSummary.Get(RunId) and (HybridReplicationSummary.ReplicationType = HybridReplicationSummary.ReplicationType::Diagnostic) then
@@ -210,14 +208,6 @@ codeunit 4016 "Hybrid GP Management"
             // Remove PerDatabase company status, it is not applcable for GP
             if HybridCompanyStatus.Get('') then
                 HybridCompanyStatus.Delete();
-        end else begin
-            Session.LogMessage('0000FXB', StartingInstallGPSmartlistsTelemetryMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetTelemetryCategory());
-
-            if not TaskScheduler.CanCreateTask() then
-                TaskScheduler.CreateTask(
-                    Codeunit::"Install GP SmartLists", 0, true, CompanyName(), CurrentDateTime() + 1000)
-            else
-                Session.StartSession(SesssionID, Codeunit::"Install GP SmartLists", CompanyName())
         end;
     end;
 

@@ -129,35 +129,8 @@ report 31073 "Phys. Inventory Document CZL"
                             Clear(Location);
 
                     ChangeCost := 0;
-                    ChangeQty := 0;
-
-                    ItemLedgerEntry.Reset();
-                    ItemLedgerEntry.SetCurrentKey("Item No.");
-                    ItemLedgerEntry.SetRange("Document No.", "Document No.");
-                    ItemLedgerEntry.SetRange("Posting Date", "Posting Date");
-                    ItemLedgerEntry.SetRange("Item No.", "Item No.");
-                    ItemLedgerEntry.SetRange("Variant Code", "Variant Code");
-                    ItemLedgerEntry.SetRange("Location Code", "Location Code");
-                    ItemLedgerEntry.SetRange("Entry Type", "Entry Type");
-                    case ItemLedgerEntry.Count() of
-                        0:
-                            ChangeCost := 0;
-                        1:
-                            begin
-                                ItemLedgerEntry.FindFirst();
-                                ItemLedgerEntry.CalcFields("Cost Amount (Actual)");
-                                ChangeCost := ItemLedgerEntry."Cost Amount (Actual)";
-                            end;
-                        else begin
-                            ItemLedgerEntry.FindSet();
-                            repeat
-                                ItemLedgerEntry.CalcFields("Cost Amount (Actual)");
-                                ChangeCost += ItemLedgerEntry."Cost Amount (Actual)";
-                                ChangeQty += ItemLedgerEntry.Quantity;
-                            until ItemLedgerEntry.Next() = 0;
-                            ChangeCost := Round(ChangeCost / ChangeQty * ("Qty. (Phys. Inventory)" - "Qty. (Calculated)"), 0.01);
-                        end;
-                    end;
+                    if "Qty. (Phys. Inventory)" - "Qty. (Calculated)" <> 0 then
+                        ChangeCost := CalcChangeCost(PhysInvLedgEntry);
                 end;
             }
         }
@@ -291,15 +264,50 @@ report 31073 "Phys. Inventory Document CZL"
         CompanyOfficialCZL: Record "Company Official CZL";
         Item: Record Item;
         Location: Record Location;
-        ItemLedgerEntry: Record "Item Ledger Entry";
         Member: array[4] of Text[100];
         Reason: Text;
         DocumentNo: Code[20];
         ChangeCost: Decimal;
-        ChangeQty: Decimal;
         Members: Text;
         PostingDate: Date;
         SelectOnlyOneErr: Label 'Please select only one %1.', Comment = '%1 = value to select in request page';
         ReportFilter: Text;
         ConfirmationTxt: Label 'We, signed this document, confirm inventory counting results on %1.', Comment = '%1 = document date';
+
+    local procedure CalcChangeCost(PhysInventoryLedgerEntry: Record "Phys. Inventory Ledger Entry"): Decimal
+    var
+        ItemLedgerEntry: Record "Item Ledger Entry";
+        ChangeCost2: Decimal;
+        ChangeQty2: Decimal;
+    begin
+        ItemLedgerEntry.Reset();
+        ItemLedgerEntry.SetCurrentKey("Item No.");
+        ItemLedgerEntry.SetRange("Document No.", PhysInventoryLedgerEntry."Document No.");
+        ItemLedgerEntry.SetRange("Posting Date", PhysInventoryLedgerEntry."Posting Date");
+        ItemLedgerEntry.SetRange("Item No.", PhysInventoryLedgerEntry."Item No.");
+        ItemLedgerEntry.SetRange("Variant Code", PhysInventoryLedgerEntry."Variant Code");
+        ItemLedgerEntry.SetRange("Location Code", PhysInventoryLedgerEntry."Location Code");
+        ItemLedgerEntry.SetRange("Entry Type", PhysInventoryLedgerEntry."Entry Type");
+        case ItemLedgerEntry.Count() of
+            0:
+                ChangeCost2 := 0;
+            1:
+                begin
+                    ItemLedgerEntry.FindFirst();
+                    ItemLedgerEntry.CalcFields("Cost Amount (Actual)");
+                    ChangeCost2 := ItemLedgerEntry."Cost Amount (Actual)";
+                end;
+            else begin
+                ItemLedgerEntry.FindSet();
+                repeat
+                    ItemLedgerEntry.CalcFields("Cost Amount (Actual)");
+                    ChangeCost2 += ItemLedgerEntry."Cost Amount (Actual)";
+                    ChangeQty2 += ItemLedgerEntry.Quantity;
+                until ItemLedgerEntry.Next() = 0;
+                ChangeCost2 := Round(ChangeCost2 / ChangeQty2 *
+                    (PhysInventoryLedgerEntry."Qty. (Phys. Inventory)" - PhysInventoryLedgerEntry."Qty. (Calculated)"), 0.01);
+            end;
+        end;
+        exit(ChangeCost2);
+    end;
 }
