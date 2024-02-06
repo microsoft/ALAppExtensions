@@ -1,5 +1,6 @@
 using module .\GitHubAPI.class.psm1
 using module .\GitHubIssue.class.psm1
+using module .\GitHubWorkItemLink.class.psm1
 
 <#
     Class that represents a GitHub pull request.
@@ -30,7 +31,40 @@ class GitHubPullRequest {
     static [GitHubPullRequest] Get([int] $PRNumber, [string] $Repository) {
         $pr = [GitHubPullRequest]::new($PRNumber, $Repository)
 
+        if (-not $pr.PullRequest) {
+            return $null
+        }
+
         return $pr
+    }
+
+    static [GitHubPullRequest] GetFromBranch([string] $BranchName, [string] $Repository) {
+        $openPullRequests = gh api "/repos/$Repository/pulls" --method GET -f state=open | ConvertFrom-Json
+        $existingPullRequest = $openPullRequests | Where-Object { $_.head.ref -eq $BranchName } | Select-Object -First 1
+
+        if ($existingPullRequest) {
+            $pr = [GitHubPullRequest]::Get($existingPullRequest.number, $Repository)
+            return $pr
+        }
+
+        return $null
+    }
+
+    <#
+        Updates the pull request description.
+    #>
+    UpdateDescription() {
+        $TempFile = New-TemporaryFile
+        Set-Content -Path $TempFile -Value $this.PullRequest.body
+
+        $params = @(
+            "--body-file '$($TempFile)'" # body is the description
+        )
+
+        $parameters = ($params -join " ")
+        Invoke-Expression "gh pr edit $($this.PRNumber) $parameters"
+
+        Remove-Item $TempFile
     }
 
     <#
@@ -39,12 +73,7 @@ class GitHubPullRequest {
             An array of linked issue IDs.
     #>
     [int[]] GetLinkedIssueIDs() {
-        if(-not $this.PullRequest.body) {
-            return @()
-        }
-
-        $workitemPattern = "(^|\s)(close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved) #(\d+)" # e.g. "Fixes #1234"
-        return $this.GetLinkedWorkItemIDs($workitemPattern)
+        return [GitHubWorkItemLink]::GetLinkedIssueIDs($this.PullRequest.body)
     }
 
     <#
@@ -52,9 +81,15 @@ class GitHubPullRequest {
         .returns
             An array of linked issue IDs.
     #>
-    [int[]] GetLinkedADOWorkitems() {
-        $workitemPattern = "(^|\s)(close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved) AB#(\d+)" # e.g. "Fixes AB#1234"
-        return $this.GetLinkedWorkItemIDs($workitemPattern)
+    [int[]] GetLinkedADOWorkItemIDs() {
+        return [GitHubWorkItemLink]::GetLinkedADOWorkItemIDs($this.PullRequest.body)
+    }
+
+    <#
+        Links the pull request to the ADO workitem.
+    #>
+    LinkToADOWorkItem($WorkItem) {
+        $this.PullRequest.body = [GitHubWorkItemLink]::LinkToADOWorkItem($this.PullRequest.body, $WorkItem)
     }
 
     <#
@@ -64,23 +99,6 @@ class GitHubPullRequest {
         return $this.PullRequest.head.repo.fork
     }
 
-    hidden [int[]] GetLinkedWorkItemIDs($Patten) {
-        if(-not $this.PullRequest.body) {
-            return @()
-        }
-
-        $workitemMatches = Select-String $Patten -InputObject $this.PullRequest.body -AllMatches
-
-        if(-not $workitemMatches) {
-            return @()
-        }
-
-        $workitemIds = @()
-        foreach($match in $workitemMatches.Matches) {
-            $workitemIds += $match.Groups[3].Value
-        }
-        return $workitemIds
-    }
     <#
         Removes a comment from the pull request if it exists.
     #>

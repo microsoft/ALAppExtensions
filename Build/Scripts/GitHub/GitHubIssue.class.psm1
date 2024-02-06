@@ -1,4 +1,5 @@
 using module .\GitHubAPI.class.psm1
+using module .\GitHubWorkItemLink.class.psm1
 
 <#
     Class that represents a GitHub issue.
@@ -45,6 +46,15 @@ class GitHubIssue {
         }
 
         return $this.Issue.labels.name -contains "approved"
+    }
+
+    <#
+        Gets the linked ADO workitem IDs from the pull request description.
+        .returns
+            An array of linked issue IDs.
+    #>
+    [int[]] GetLinkedADOWorkItemIDs() {
+        return [GitHubWorkItemLink]::GetLinkedADOWorkItemIDs($this.Issue.body)
     }
 
     <#

@@ -13,36 +13,28 @@ $ErrorActionPreference = "Stop"
 
 <#
     .SYNOPSIS
-    Validates that the pull request description contains a line that links the pull request to an issue or workitem.
-    .Description
-    Validates that the pull request description contains a line that links the pull request to an issue or workitem.
-    If the pull request is from a fork it must link to an issue.
-    If the pull request is not from a fork it must link to an issue or an ADO workitem.
+    Validates that the pull request description contains a line that links the pull request to an issue.
+    .Parameter IssueIds
+    The IDs of the issues linked to the pull request.
+    .Parameter PullRequest
+    The pull request to validate.
 #>
-function Test-WorkitemIsLinked() {
+function Test-IssueIsLinked() {
     param(
         [Parameter(Mandatory = $false)]
         [string[]] $IssueIds,
-        [Parameter(Mandatory = $false)]
-        [string[]] $ADOWorkItems,
         [Parameter(Mandatory = $false)]
         [object] $PullRequest
     )
 
     $Comment = "Could not find linked issues in the pull request description. Please make sure the pull request description contains a line that contains 'Fixes #' followed by the issue number being fixed. Use that pattern for every issue you want to link."
 
-    if (-not $PullRequest.IsFromFork()) {
-        $Comment += " You can also link ADO workitems by using the pattern 'Fixes AB#' followed by the workitem number being fixed."
-    }
-
     if (-not $IssueIds) {
         # If the pull request is from a fork, add a comment to the pull request and throw an error
-        # If the pull request is not from a fork only throw an error if there are no linked ADO workitems
-        if ($PullRequest.IsFromFork() -or (-not $ADOWorkItems)) {
-            $PullRequest.AddComment($Comment)
-            throw $Comment
-        }
+        $PullRequest.AddComment($Comment)
+        throw $Comment
     }
+
     $PullRequest.RemoveComment($Comment)
 }
 
@@ -50,7 +42,15 @@ function Test-WorkitemIsLinked() {
     .SYNOPSIS
     Validates all issues linked to a pull request.
     .Description
-    Validates all issues linked to a pull request. All linked issues must be open and approved.
+    Validates all issues linked to a pull request.
+    If the pull request is from a fork, it will validate that the issue is open and approved.
+    If the pull request is not from a fork, it will validate that the issue is open.
+    .Parameter Repository
+    The repository that contains the pull request.
+    .Parameter IssueIds
+    The IDs of the issues linked to the pull request.
+    .Parameter PullRequest
+    The pull request to validate.
 #>
 function Test-GitHubIssue() {
     param(
@@ -87,10 +87,18 @@ function Test-GitHubIssue() {
 Write-Host "Validating PR $PullRequestNumber"
 
 $pullRequest = [GitHubPullRequest]::Get($PullRequestNumber, $Repository)
-$issueIds = $pullRequest.GetLinkedIssueIDs()
-$adoWorkitems = $pullRequest.GetLinkedADOWorkitems()
+if (-not $pullRequest) {
+    throw "Could not get PR $PullRequestNumber from repository $Repository"
+}
 
-Test-WorkitemIsLinked -IssueIds $issueIds -ADOWorkItems $adoWorkitems -PullRequest $PullRequest
+$issueIds = $pullRequest.GetLinkedIssueIDs()
+
+# If the pull request is from a fork, validate that it links to an issue
+if ($pullRequest.IsFromFork()) {
+    Test-IssueIsLinked -IssueIds $issueIds -PullRequest $PullRequest
+}
+
+# Validate that all issues linked to the pull request are open and approved
 Test-GitHubIssue -Repository $Repository -IssueIds $issueIds -PullRequest $PullRequest
 
 Write-Host "PR $PullRequestNumber validated successfully" -ForegroundColor Green

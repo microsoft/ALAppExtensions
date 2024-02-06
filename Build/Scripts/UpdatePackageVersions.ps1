@@ -68,7 +68,7 @@ if ($updatesAvailable) {
     # Create branch and push changes
     Set-GitConfig -Actor $Actor
     Push-GitBranch -BranchName $BranchName -Files @("build/Packages.json") -CommitMessage $pullRequestTitle
-    New-GitHubPullRequest -Repository $Repository -BranchName $BranchName -TargetBranch $TargetBranch -label "automation"
+    New-GitHubPullRequest -Repository $Repository -BranchName $BranchName -TargetBranch $TargetBranch -label "automation" -PullRequestDescription "Fixes AB#420000"
 } else {
     Write-Host "No updates available"
 }
