@@ -14,7 +14,7 @@ if (-not $pullRequest) {
     throw "Could not get PR $PullRequestNumber from repository $Repository"
 }
 
-if ($pullRequest.PullRequest.labels -contains "automation") {
+if ($pullRequest.PullRequest.labels -and ($pullRequest.PullRequest.labels.name -contains "automation")) {
     return # Don't set milestone on automation PRs
 }
 
