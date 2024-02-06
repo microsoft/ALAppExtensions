@@ -3,7 +3,7 @@
     Restores translations from an app.
 .Description
     This function restores translations for an app.
-    All available translations in the translation package will be restored in a 'Translations' folder in the app project folder.
+    All available translations in the translation package will be restored in a 'Translations' folder in the app project folder. 
 .Parameter AppProjectFolder
     The path to the app project folder
 #>
