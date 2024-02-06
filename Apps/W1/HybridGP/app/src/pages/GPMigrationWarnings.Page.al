@@ -1,9 +1,9 @@
-page 40133 "GP Migration Log"
+page 40133 "GP Migration Warnings"
 {
     ApplicationArea = All;
-    Caption = 'GP Migration Log';
+    Caption = 'GP Migration Warnings';
     PageType = List;
-    SourceTable = "GP Migration Log";
+    SourceTable = "GP Migration Warnings";
     UsageCategory = Administration;
     Editable = false;
 
@@ -25,9 +25,9 @@ page 40133 "GP Migration Log"
                 {
                     ToolTip = 'Specifies the value of the Context field.';
                 }
-                field("Log Text"; Rec."Log Text")
+                field("Warning Text"; Rec."Warning Text")
                 {
-                    ToolTip = 'Specifies the value of the Log Text field.';
+                    ToolTip = 'Specifies the value of the Warning Text field.';
                 }
             }
         }

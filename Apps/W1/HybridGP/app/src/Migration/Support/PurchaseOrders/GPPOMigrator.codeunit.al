@@ -36,7 +36,7 @@ codeunit 40108 "GP PO Migrator"
         GeneralLedgerSetup: Record "General Ledger Setup";
         Vendor: Record Vendor;
         InventorySetup: Record "Inventory Setup";
-        GPMigrationLog: Record "GP Migration Log";
+        GPMigrationWarnings: Record "GP Migration Warnings";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         PurchaseDocumentType: Enum "Purchase Document Type";
         PurchaseDocumentStatus: Enum "Purchase Document Status";
@@ -100,7 +100,7 @@ codeunit 40108 "GP PO Migrator"
                 if PurchaseLine.IsEmpty() then
                     PurchaseHeader.Delete()
             end else
-                GPMigrationLog.InsertLog(MigrationLogAreaTxt, GPPOP10100.PONUMBER, 'PO was skipped because the Vendor has not been migrated.');
+                GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, GPPOP10100.PONUMBER, 'PO was skipped because the Vendor has not been migrated.');
         until GPPOP10100.Next() = 0;
 
         PostReceivedPurchaseLines();

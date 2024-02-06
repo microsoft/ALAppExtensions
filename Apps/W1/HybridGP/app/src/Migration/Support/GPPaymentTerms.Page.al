@@ -19,7 +19,7 @@ page 40134 "GP Payment Terms"
             {
                 field(DateFormulaIsValid; DateFormulaIsValid)
                 {
-                    Caption = 'Is Valid?';
+                    Caption = 'Valid Date Formula';
                     ToolTip = 'Indicates if the resulting date formula is valid.';
                     Editable = false;
                 }
@@ -92,6 +92,12 @@ page 40134 "GP Payment Terms"
     }
 
     trigger OnAfterGetRecord()
+    begin
+        UpdateRecordStatus();
+    end;
+
+
+    trigger OnAfterGetCurrRecord()
     begin
         UpdateRecordStatus();
     end;

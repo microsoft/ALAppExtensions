@@ -1,6 +1,6 @@
-table 41006 "GP Migration Log"
+table 41006 "GP Migration Warnings"
 {
-    Caption = 'GP Migration Log';
+    Caption = 'GP Migration Warnings';
     DataPerCompany = false;
     DataClassification = SystemMetadata;
 
@@ -23,9 +23,9 @@ table 41006 "GP Migration Log"
         {
             Caption = 'Context';
         }
-        field(5; "Log Text"; Text[500])
+        field(5; "Warning Text"; Text[500])
         {
-            Caption = 'Log Text';
+            Caption = 'Warning Text';
         }
     }
     keys
@@ -36,14 +36,14 @@ table 41006 "GP Migration Log"
         }
     }
 
-    procedure InsertLog(MigrationArea: Text[50]; ContextValue: Text[50]; LogText: Text[500])
+    procedure InsertWarning(MigrationArea: Text[50]; ContextValue: Text[50]; WarningText: Text[500])
     var
-        GPMigrationLog: Record "GP Migration Log";
+        GPMigrationWarnings: Record "GP Migration Warnings";
     begin
-        GPMigrationLog."Company Name" := CopyStr(CompanyName(), 1, 30);
-        GPMigrationLog."Migration Area" := MigrationArea;
-        GPMigrationLog.Context := ContextValue;
-        GPMigrationLog."Log Text" := LogText;
-        GPMigrationLog.Insert();
+        GPMigrationWarnings."Company Name" := CopyStr(CompanyName(), 1, 30);
+        GPMigrationWarnings."Migration Area" := MigrationArea;
+        GPMigrationWarnings.Context := ContextValue;
+        GPMigrationWarnings."Warning Text" := WarningText;
+        GPMigrationWarnings.Insert();
     end;
 }

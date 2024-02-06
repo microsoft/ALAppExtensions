@@ -1115,8 +1115,11 @@ codeunit 4037 "Helper Functions"
         ItemJournalLine: Record "Item Journal Line";
         UnpostedBatchCount: Integer;
     begin
-        ItemJournalBatch.ChangeCompany(CompanyNameTxt);
-        ItemJournalLine.ChangeCompany(CompanyNameTxt);
+        if not ItemJournalBatch.ChangeCompany(CompanyNameTxt) then
+            exit;
+
+        if not ItemJournalLine.ChangeCompany(CompanyNameTxt) then
+            exit;
 
         ItemJournalBatch.SetFilter(Name, 'GPITM*');
         if ItemJournalBatch.FindSet() then
@@ -1567,7 +1570,7 @@ codeunit 4037 "Helper Functions"
     var
         GPPaymentTerms: Record "GP Payment Terms";
         PaymentTerms: Record "Payment Terms";
-        GPMigrationLog: Record "GP Migration Log";
+        GPMigrationWarnings: Record "GP Migration Warnings";
         DueDateCalculation: DateFormula;
         DiscountDateCalculation: DateFormula;
         SeedValue: integer;
@@ -1615,7 +1618,7 @@ codeunit 4037 "Helper Functions"
                         GPPaymentTerms.Modify();
                     end;
                 end else
-                    GPMigrationLog.InsertLog(LogMigrationArea, PaymentTerm, 'Payment Term ' + GPPaymentTerms.PYMTRMID + ' was handled.');
+                    GPMigrationWarnings.InsertWarning(LogMigrationArea, PaymentTerm, 'Payment Term ' + GPPaymentTerms.PYMTRMID + ' was handled.');
             until GPPaymentTerms.Next() = 0;
 
             SeedValue := 0;

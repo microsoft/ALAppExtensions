@@ -70,15 +70,15 @@ page 40132 "Hybrid GP Errors Overview Fb"
                     end;
                 }
 
-                field("Migration Log"; MigrationLogCount)
+                field("Migration Warnings"; MigrationWarningCount)
                 {
-                    Caption = 'Migration Log';
+                    Caption = 'Migration Warnings';
                     ApplicationArea = All;
-                    ToolTip = 'Indicates the number of migration log entries.';
+                    ToolTip = 'Indicates the number of migration warning entries.';
 
                     trigger OnDrillDown()
                     begin
-                        Page.Run(Page::"GP Migration Log");
+                        Page.Run(Page::"GP Migration Warnings");
                     end;
                 }
             }
@@ -96,7 +96,7 @@ page 40132 "Hybrid GP Errors Overview Fb"
     var
         GPMigrationErrorOverview: Record "GP Migration Error Overview";
         HybridCompanyStatus: Record "Hybrid Company Status";
-        GPMigrationLog: Record "GP Migration Log";
+        GPMigrationWarnings: Record "GP Migration Warnings";
         HelperFunctions: Codeunit "Helper Functions";
         TotalGLBatchCount: Integer;
         TotalItemBatchCount: Integer;
@@ -108,7 +108,7 @@ page 40132 "Hybrid GP Errors Overview Fb"
         MigrationErrorCount := GPMigrationErrorOverview.Count();
         HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Failed);
         FailedCompanyCount := HybridCompanyStatus.Count();
-        MigrationLogCount := GPMigrationLog.Count();
+        MigrationWarningCount := GPMigrationWarnings.Count();
 
         HybridCompanyStatus.Reset();
         HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Completed);
@@ -141,5 +141,5 @@ page 40132 "Hybrid GP Errors Overview Fb"
         FailedCompanyCount: Integer;
         FailedBatchCount: Integer;
         FailedBatchMsg: Text;
-        MigrationLogCount: Integer;
+        MigrationWarningCount: Integer;
 }

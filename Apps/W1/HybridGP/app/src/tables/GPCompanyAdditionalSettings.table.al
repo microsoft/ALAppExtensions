@@ -436,6 +436,11 @@ table 40105 "GP Company Additional Settings"
             DataClassification = SystemMetadata;
             InitValue = false;
         }
+        field(42; "Has Hybrid Company"; Boolean)
+        {
+            FieldClass = FlowField;
+            CalcFormula = exist("Hybrid Company" where("Name" = field(Name)));
+        }
     }
 
     keys
@@ -448,21 +453,19 @@ table 40105 "GP Company Additional Settings"
 
     procedure GetSingleInstance()
     var
-        HybridCompany: Record "Hybrid Company";
-        CurrentCompanyName: Text[30];
+        CurrentCompanyName: Text[50];
     begin
-        CurrentCompanyName := CopyStr(CompanyName(), 1, MaxStrLen(CurrentCompanyName));
+#pragma warning disable AA0139
+        CurrentCompanyName := CompanyName();
 
-        if Rec.Name = CurrentCompanyName then
-            exit;
-
-        if not HybridCompany.Get(CurrentCompanyName) then
+        if Name = CurrentCompanyName then
             exit;
 
         if not Rec.Get(CurrentCompanyName) then begin
             Rec.Name := CurrentCompanyName;
             Rec.Insert();
         end;
+#pragma warning restore AA0139
     end;
 
     // Modules

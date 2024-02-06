@@ -29,7 +29,7 @@ codeunit 4017 "GP Account Migrator"
     var
         GPAccount: Record "GP Account";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-        GPMigrationLog: Record "GP Migration Log";
+        GPMigrationWarnings: Record "GP Migration Warnings";
         AccountNum: Code[20];
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Account" then
@@ -42,7 +42,7 @@ codeunit 4017 "GP Account Migrator"
 
         AccountNum := CopyStr(GPAccount.AcctNum.Trim(), 1, 20);
         if AccountNum = '' then begin
-            GPMigrationLog.InsertLog(MigrationLogAreaTxt, 'Account Index: ' + Format(GPAccount.AcctIndex), 'Account is skipped because there is no account number.');
+            GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, 'Account Index: ' + Format(GPAccount.AcctIndex), 'Account is skipped because there is no account number.');
             exit;
         end;
 
