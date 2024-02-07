@@ -26,7 +26,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          build/scripts/PullRequestValidation/ValidateIssuesForPullRequest.ps1 -PullRequestNumber ${{ github.event.pull_request.number }} -Repository ${{ github.repository }}
+          Build/Scripts/PullRequestValidation/ValidateIssuesForPullRequest.ps1 -PullRequestNumber ${{ github.event.pull_request.number }} -Repository ${{ github.repository }}
   
   WorkItemValidationForMicrosoft:
     if: github.repository_owner == 'microsoft' && github.event.pull_request.state == 'open'
@@ -46,9 +46,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          build/scripts/PullRequestValidation/LinkPullRequestToWorkItem.ps1 -PullRequestNumber ${{ github.event.pull_request.number }} -Repository ${{ github.repository }}
+          Build/Scripts/PullRequestValidation/LinkPullRequestToWorkItem.ps1 -PullRequestNumber ${{ github.event.pull_request.number }} -Repository ${{ github.repository }}
       - name: Validate internal work items for pull request
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          build/scripts/PullRequestValidation/ValidateInternalWorkItemForPullRequest.ps1 -PullRequestNumber ${{ github.event.pull_request.number }} -Repository ${{ github.repository }}
+          Build/Scripts/PullRequestValidation/ValidateInternalWorkItemForPullRequest.ps1 -PullRequestNumber ${{ github.event.pull_request.number }} -Repository ${{ github.repository }}
