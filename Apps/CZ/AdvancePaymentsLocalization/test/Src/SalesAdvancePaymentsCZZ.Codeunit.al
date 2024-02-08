@@ -688,9 +688,6 @@ codeunit 148109 "Sales Advance Payments CZZ"
         // [SCENARIO] Link sales advance letter with reverse charge to invoice
         Initialize();
 
-        // [GIVEN] Posting of VAT documents for reverse charge has been enabled
-        SetPostVATDocForReverseCharge(true);
-
         // [GIVEN] Sales advance letter  has been created
         // [GIVEN] Sales advance letter line with reverse charge has been created
         CreateSalesAdvLetterWithReverseCharge(SalesAdvLetterHeaderCZZ, SalesAdvLetterLineCZZ);
@@ -737,8 +734,6 @@ codeunit 148109 "Sales Advance Payments CZZ"
         // [THEN] Sales advance letter will be closed
         SalesAdvLetterHeaderCZZ.Get(SalesAdvLetterHeaderCZZ."No.");
         SalesAdvLetterHeaderCZZ.TestField(Status, SalesAdvLetterHeaderCZZ.Status::Closed);
-
-        SetPostVATDocForReverseCharge(false);
     end;
 
     [Test]
@@ -2220,9 +2215,6 @@ codeunit 148109 "Sales Advance Payments CZZ"
         //            with line which is the same as first line in advance letter and one VAT rate
         Initialize();
 
-        // [GIVEN] Posting of VAT documents for reverse charge has been enabled
-        SetPostVATDocForReverseCharge(true);
-
         // [GIVEN] Sales advance letter has been created
         // [GIVEN] Sales advance letter line with normal VAT has been created
         CreateSalesAdvLetter(SalesAdvLetterHeaderCZZ, SalesAdvLetterLineCZZ1);
@@ -2279,8 +2271,6 @@ codeunit 148109 "Sales Advance Payments CZZ"
         VATEntry.SetRange("VAT Bus. Posting Group", VATEntry."VAT Bus. Posting Group");
         VATEntry.SetRange("VAT Prod. Posting Group", VATEntry."VAT Prod. Posting Group");
         Assert.RecordCount(VATEntry, VATEntryCount);
-
-        SetPostVATDocForReverseCharge(false);
     end;
 
     [Test]
@@ -2298,9 +2288,6 @@ codeunit 148109 "Sales Advance Payments CZZ"
     begin
         // [SCENARIO] Create Sales advance letter with two lines with different VAT rates and link to invoice with line which is the same as second line in advance letter and one VAT rate
         Initialize();
-
-        // [GIVEN] Posting of VAT documents for reverse charge has been enabled
-        SetPostVATDocForReverseCharge(true);
 
         // [GIVEN] Sales advance letter has been created
         // [GIVEN] Sales advance letter line with normal VAT has been created
@@ -2358,8 +2345,6 @@ codeunit 148109 "Sales Advance Payments CZZ"
         VATEntry.SetRange("VAT Bus. Posting Group", VATEntry."VAT Bus. Posting Group");
         VATEntry.SetRange("VAT Prod. Posting Group", VATEntry."VAT Prod. Posting Group");
         Assert.RecordCount(VATEntry, VATEntryCount);
-
-        SetPostVATDocForReverseCharge(false);
     end;
 
     [Test]
@@ -2376,9 +2361,6 @@ codeunit 148109 "Sales Advance Payments CZZ"
     begin
         // [SCENARIO] Create Sales advance letter with two lines with different VAT rates and link to invoice with line which has the higher amount as first line in advance letter and one VAT rate
         Initialize();
-
-        // [GIVEN] Posting of VAT documents for reverse charge has been enabled
-        SetPostVATDocForReverseCharge(true);
 
         // [GIVEN] Sales advance letter has been created
         // [GIVEN] Sales advance letter line with normal VAT has been created
@@ -2431,8 +2413,6 @@ codeunit 148109 "Sales Advance Payments CZZ"
         SalesAdvLetterEntryCZZ2.SetRange("VAT Prod. Posting Group", SalesAdvLetterLineCZZ2."VAT Prod. Posting Group");
         SalesAdvLetterEntryCZZ2.SetRange("Entry Type", SalesAdvLetterEntryCZZ2."Entry Type"::"VAT Usage");
         Assert.RecordIsNotEmpty(SalesAdvLetterEntryCZZ2);
-
-        SetPostVATDocForReverseCharge(false);
     end;
 
     [Test]
@@ -2449,9 +2429,6 @@ codeunit 148109 "Sales Advance Payments CZZ"
     begin
         // [SCENARIO] Create Sales advance letter with two lines with different VAT rates and link to invoice with line which has the higher amount as second line in advance letter and one VAT rate
         Initialize();
-
-        // [GIVEN] Posting of VAT documents for reverse charge has been enabled
-        SetPostVATDocForReverseCharge(true);
 
         // [GIVEN] Sales advance letter has been created
         // [GIVEN] Sales advance letter line with normal VAT has been created
@@ -2504,8 +2481,6 @@ codeunit 148109 "Sales Advance Payments CZZ"
         SalesAdvLetterEntryCZZ2.SetRange("VAT Prod. Posting Group", SalesAdvLetterLineCZZ1."VAT Prod. Posting Group");
         SalesAdvLetterEntryCZZ2.SetRange("Entry Type", SalesAdvLetterEntryCZZ2."Entry Type"::"VAT Usage");
         Assert.RecordIsNotEmpty(SalesAdvLetterEntryCZZ2);
-
-        SetPostVATDocForReverseCharge(false);
     end;
 
     [Test]
@@ -2524,9 +2499,6 @@ codeunit 148109 "Sales Advance Payments CZZ"
     begin
         // [SCENARIO] Create Sales advance letter with two lines with different VAT rates and link to invoice with two lines which have the lower amounts as lines in advance letter
         Initialize();
-
-        // [GIVEN] Posting of VAT documents for reverse charge has been enabled
-        SetPostVATDocForReverseCharge(true);
 
         // [GIVEN] Sales advance letter has been created
         // [GIVEN] Sales advance letter line with normal VAT has been created
@@ -2598,8 +2570,6 @@ codeunit 148109 "Sales Advance Payments CZZ"
         VATEntry.CalcSums(Base, Amount);
         Assert.AreEqual(0, VATEntry.Base, 'The sum of base amount in VAT Entries must be zero.');
         Assert.AreEqual(0, VATEntry.Amount, 'The sum of VAT amount in VAT Entries must be zero.');
-
-        SetPostVATDocForReverseCharge(false);
     end;
 
     local procedure CreateSalesAdvLetterBase(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ"; CustomerNo: Code[20]; CurrencyCode: Code[10]; VATPostingSetup: Record "VAT Posting Setup")
@@ -2721,12 +2691,6 @@ codeunit 148109 "Sales Advance Payments CZZ"
     local procedure PostSalesDocument(var SalesHeader: Record "Sales Header"): Code[20]
     begin
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
-    end;
-
-    local procedure SetPostVATDocForReverseCharge(Value: Boolean)
-    begin
-        AdvanceLetterTemplateCZZ."Post VAT Doc. for Rev. Charge" := Value;
-        AdvanceLetterTemplateCZZ.Modify();
     end;
 
     local procedure FindLastPaymentAdvanceLetterEntry(AdvanceLetterNo: Code[20]; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")

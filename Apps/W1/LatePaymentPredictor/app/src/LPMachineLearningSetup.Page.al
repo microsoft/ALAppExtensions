@@ -112,7 +112,7 @@ page 1950 "LP Machine Learning Setup"
                         if (ApiURIText <> '') and (not EncryptionEnabled()) then
                             if Confirm(CryptographyManagement.GetEncryptionIsnotActivatedQst()) then
                                 Page.RunModal(Page::"Data Encryption Management");
-                        if ApiKeyText <> '' then
+                        if (ApiKeyText <> '') and (ApiKeyText <> DummyApiKeyTok) then
                             CheckCustomCredentialsAreSet();
                     end;
                 }
@@ -121,14 +121,15 @@ page 1950 "LP Machine Learning Setup"
                     Caption = 'API Key';
                     ToolTip = 'Specifies the API key to connect to the Azure Machine Learning service';
                     ApplicationArea = Basic, Suite;
+                    ExtendedDatatype = Masked;
                     ShowMandatory = true;
 
                     trigger OnValidate();
                     begin
-                        if (ApiKeyText <> '') and (not EncryptionEnabled()) then
+                        if (ApiKeyText <> '') and (ApiKeyText <> DummyApiKeyTok) and (not EncryptionEnabled()) then
                             if Confirm(CryptographyManagement.GetEncryptionIsnotActivatedQst()) then
                                 Page.RunModal(Page::"Data Encryption Management");
-                        if ApiURIText <> '' then
+                        if (ApiURIText <> '') and (ApiKeyText <> DummyApiKeyTok) then
                             CheckCustomCredentialsAreSet();
                     end;
                 }
@@ -263,14 +264,14 @@ page 1950 "LP Machine Learning Setup"
     begin
         if LPPScheduler.JobQueueEntryCreationInProcess() then
             Error(JobQueueCreationInProgressErr);
-        GetSingleInstance();
-        ApiURIText := GetApiURI();
-        ApiKeyText := GetApiKey();
+        Rec.GetSingleInstance();
+        ApiURIText := Rec.GetApiUri();
+        SetApiKey();
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     begin
-        if (CloseAction = ACTION::OK) OR (CloseAction = ACTION::LookupOK) then
+        if (CloseAction = ACTION::OK) or (CloseAction = ACTION::LookupOK) then
             CheckCustomCredentialsAreSet();
         exit(true);
     end;
@@ -280,18 +281,27 @@ page 1950 "LP Machine Learning Setup"
         AzureAIService := AzureAIService::"Machine Learning";
 
         RemainingTime := AzureAIUsage.GetResourceLimit(AzureAIService) - AzureAIUsage.GetTotalProcessingTime(AzureAIService);
-        CustomModelExists := MyModelExists();
-        ModelQualityVal := GetModelQuality();
+        CustomModelExists := Rec.MyModelExists();
+        ModelQualityVal := Rec.GetModelQuality();
+    end;
+
+    local procedure SetApiKey()
+    begin
+        if not Rec.GetApiKeyAsSecret().IsEmpty() then
+            ApiKeyText := DummyApiKeyTok;
     end;
 
     [NonDebuggable]
     local procedure CheckCustomCredentialsAreSet()
     begin
-        if "Use My Model Credentials" then begin
-            if (ApiKeyText = '') OR (ApiURIText = '') then
+        if Rec."Use My Model Credentials" then begin
+            if (ApiKeyText = '') or (ApiKeyText = DummyApiKeyTok) or (ApiURIText = '') then
                 Error(ApiCredentialsNotSetFullyErr);
-            SaveApiURI(ApiURIText);
-            SaveApiKey(ApiKeyText);
+            Rec.SaveApiURI(ApiURIText);
+            if (ApiKeyText <> '') and (ApiKeyText <> DummyApiKeyTok) then begin
+                ApiKeyText := CopyStr(DelChr(ApiKeyText, '=', ' '), 1, 200);
+                Rec.SaveApiKey(ApiKeyText);
+            end;
         end;
     end;
 
@@ -309,4 +319,5 @@ page 1950 "LP Machine Learning Setup"
         ApiCredentialsnotSetFullyErr: Label 'You must specify the API URI and the API Key.';
         JobQueueCreationInProgressErr: Label 'Payment prediction updates are being scheduled. Please wait until the process is complete.';
         UpdatingPaymentPredictionMsg: Label 'Payment predictions are being updated in the background. This might take a minute. You can view the updated predictions on the Customer Ledger Entries page.';
+        DummyApiKeyTok: Label '*', Locked = true;
 }

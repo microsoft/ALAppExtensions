@@ -379,6 +379,8 @@ codeunit 5579 "Digital Voucher Impl."
         RecRef: RecordRef;
         RelatedRecordID: RecordId;
     begin
+        if not DigitalVoucherFeature.IsFeatureEnabled() then
+            exit;
         RelatedRecordID := IncomingDocument."Related Record ID";
         if RelatedRecordID.TableNo = 0 then
             exit;

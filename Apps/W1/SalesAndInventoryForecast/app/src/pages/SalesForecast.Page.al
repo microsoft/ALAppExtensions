@@ -1,6 +1,7 @@
 namespace Microsoft.Inventory.InventoryForecast;
 
 using Microsoft.Inventory.Item;
+using System.Integration;
 using System.Visualization;
 using Microsoft.Inventory.Ledger;
 using System.AI;
@@ -20,7 +21,7 @@ page 1850 "Sales Forecast"
     {
         area(content)
         {
-            usercontrol(ForecastBusinessChart; "Microsoft.Dynamics.Nav.Client.BusinessChart")
+            usercontrol(ForecastBusinessChart; BusinessChart)
             {
                 ApplicationArea = Basic, Suite;
 
@@ -455,7 +456,7 @@ page 1850 "Sales Forecast"
         if not IsChartAddInReady then
             exit;
         PopulateChart(BusinessChartBuffer);
-        BusinessChartBuffer.Update(CurrPage.ForecastBusinessChart);
+        BusinessChartBuffer.UpdateChart(CurrPage.ForecastBusinessChart);
         NeedsUpdate := false;
     end;
 

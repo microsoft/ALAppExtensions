@@ -24,7 +24,7 @@ table 18471 "Multiple Subcon. Order Details"
             begin
                 if "No." <> xRec."No." then begin
                     PurchasePayablesSetup.Get();
-                    NoSeriesMgt.TestManual(PurchasePayablesSetup."Multiple Subcon. Order Det Nos");
+                    NoSeries.TestManual(PurchasePayablesSetup."Multiple Subcon. Order Det Nos");
                     "No. Series" := '';
                 end;
             end;
@@ -68,6 +68,8 @@ table 18471 "Multiple Subcon. Order Details"
     }
 
     trigger OnInsert()
+    var
+        NoSeries: Record "No. Series";
     begin
         if "No." = '' then begin
             PurchasePayablesSetup.Get();
@@ -97,7 +99,7 @@ table 18471 "Multiple Subcon. Order Details"
     end;
 
     var
-        NoSeries: Record "No. Series";
         PurchasePayablesSetup: Record "Purchases & Payables Setup";
         NoSeriesMgt: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
 }

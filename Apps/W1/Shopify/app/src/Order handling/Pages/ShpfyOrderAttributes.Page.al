@@ -27,8 +27,8 @@ page 30114 "Shpfy Order Attributes"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the value of the attribute.';
-                    Visible = false;
-                    ObsoleteReason = 'Replace with "Attribute Value" field.';
+                    Visible = not ReplaceOrderAtributeValueEnabled;
+                    ObsoleteReason = 'Replaced with "Attribute Value" field.';
                     ObsoleteState = Pending;
                     ObsoleteTag = '24.0';
                 }
@@ -37,9 +37,33 @@ page 30114 "Shpfy Order Attributes"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the value of the attribute.';
+#if not CLEAN24
+                    Visible = ReplaceOrderAtributeValueEnabled;
+#endif
                 }
             }
         }
     }
 
+#if not CLEAN24
+    trigger OnAfterGetRecord()
+    var
+        Shop: Record "Shpfy Shop";
+        OrderHeader: Record "Shpfy Order Header";
+        OrdersToImport: Record "Shpfy Orders To Import";
+    begin
+        if OrderHeader.Get(Rec."Order Id") then
+            if Shop.Get(OrderHeader."Shop Code") then begin
+                ReplaceOrderAtributeValueEnabled := Shop."Replace Order Attribute Value";
+                exit;
+            end;
+        OrdersToImport.SetRange(Id, Rec."Order Id");
+        if OrdersToImport.FindFirst() then
+            if Shop.Get(OrdersToImport."Shop Code") then
+                ReplaceOrderAtributeValueEnabled := Shop."Replace Order Attribute Value";
+    end;
+
+    var
+        ReplaceOrderAtributeValueEnabled: Boolean;
+#endif
 }

@@ -87,7 +87,7 @@ codeunit 30124 "Shpfy Update Customer"
         if Customer.Name = '' then
             Customer.Validate(Name, IName.GetName(CustomerAddress."First Name", CustomerAddress."Last Name", CustomerAddress.Company))
         else
-            Customer.Validate("Name 2", IName.GetName(CustomerAddress."First Name", CustomerAddress."Last Name", CustomerAddress.Company));
+            Customer.Validate("Name 2", CopyStr(IName.GetName(CustomerAddress."First Name", CustomerAddress."Last Name", CustomerAddress.Company), 1, MaxStrLen(Customer."Name 2")));
 
         IName := Shop."Contact Source";
         Customer.Validate(Contact, IName.GetName(CustomerAddress."First Name", CustomerAddress."Last Name", CustomerAddress.Company));

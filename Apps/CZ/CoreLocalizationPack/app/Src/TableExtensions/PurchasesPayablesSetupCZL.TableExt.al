@@ -13,7 +13,9 @@ tableextension 11715 "Purchases & Payables Setup CZL" extends "Purchases & Payab
 #if not CLEAN22
 #pragma warning disable AL0432
 #endif
+#pragma warning disable AL0842
         field(11780; "Default VAT Date CZL"; Enum "Default VAT Date CZL")
+#pragma warning restore AL0842
 #if not CLEAN22
 #pragma warning restore AL0432
 #endif

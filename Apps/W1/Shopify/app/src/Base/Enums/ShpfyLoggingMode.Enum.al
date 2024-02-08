@@ -2,7 +2,6 @@ namespace Microsoft.Integration.Shopify;
 
 enum 30141 "Shpfy Logging Mode"
 {
-    Access = Internal;
     Extensible = false;
 
     value(0; "Error Only")

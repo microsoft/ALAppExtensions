@@ -7,7 +7,6 @@ using Microsoft.Finance.GeneralLedger.Ledger;
 codeunit 6218 "Sustainability Calc. Mgt."
 {
     Access = Internal;
-    Permissions = tabledata "Sustainability Jnl. Line" = r;
 
     var
         FromToFilterLbl: Label '%1..%2', Locked = true;
@@ -15,16 +14,19 @@ codeunit 6218 "Sustainability Calc. Mgt."
     procedure CalculationEmissions(var SustainabilityJnlLine: Record "Sustainability Jnl. Line")
     var
         SustainAccountCategory: Record "Sustain. Account Category";
+        SustainAccountSubcategory: Record "Sustain. Account Subcategory";
+    begin
+        SustainAccountCategory.Get(SustainabilityJnlLine."Account Category");
+        SustainAccountSubcategory.Get(SustainabilityJnlLine."Account Category", SustainabilityJnlLine."Account Subcategory");
+
+        CalculationEmissions(SustainabilityJnlLine, SustainAccountCategory, SustainAccountSubcategory);
+    end;
+
+    procedure CalculationEmissions(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SustainAccountCategory: Record "Sustain. Account Category"; SustainAccountSubcategory: Record "Sustain. Account Subcategory")
+    var
         SustainabilityCalculation: Codeunit "Sustainability Calculation";
     begin
         if SustainabilityJnlLine."Manual Input" then
-            exit;
-
-        SustainabilityJnlLine.Validate("Emission CO2", 0);
-        SustainabilityJnlLine.Validate("Emission CH4", 0);
-        SustainabilityJnlLine.Validate("Emission N2O", 0);
-
-        if not SustainAccountCategory.Get(SustainabilityJnlLine."Account Category") then
             exit;
 
         SustainAccountCategory.TestField("Emission Scope");
@@ -32,13 +34,13 @@ codeunit 6218 "Sustainability Calc. Mgt."
 
         case SustainAccountCategory."Emission Scope" of
             Enum::"Emission Scope"::"Scope 1":
-                SustainabilityCalculation.CalculateScope1Emissions(SustainabilityJnlLine, SustainAccountCategory);
+                SustainabilityCalculation.CalculateScope1Emissions(SustainabilityJnlLine, SustainAccountCategory, SustainAccountSubcategory);
 
             Enum::"Emission Scope"::"Scope 2":
-                SustainabilityCalculation.CalculateScope2Emissions(SustainabilityJnlLine, SustainAccountCategory);
+                SustainabilityCalculation.CalculateScope2Emissions(SustainabilityJnlLine, SustainAccountCategory, SustainAccountSubcategory);
 
             Enum::"Emission Scope"::"Scope 3":
-                SustainabilityCalculation.CalculateScope3Emissions(SustainabilityJnlLine, SustainAccountCategory);
+                SustainabilityCalculation.CalculateScope3Emissions(SustainabilityJnlLine, SustainAccountCategory, SustainAccountSubcategory);
         end;
 
         if not SustainAccountCategory.CO2 then
@@ -52,7 +54,7 @@ codeunit 6218 "Sustainability Calc. Mgt."
     end;
 
     /// <summary>
-    /// Filter general ledger entreis by criteria defined in sustainability category and by date and calculate the total
+    /// Filter general ledger entries by criteria defined in sustainability category and by date and calculate the total
     /// </summary>
     /// <param name="SustainAccountCategory">Specifies the sustainability category that contains default filters.</param>
     /// <param name="FromDate">Specifies the "from" part of a date filter .</param>

@@ -1,6 +1,7 @@
 namespace Microsoft.EServices;
 
 using Microsoft.Foundation.Company;
+using System.Telemetry;
 
 codeunit 13609 "Upd. Registered with Nemhandel"
 {
@@ -14,14 +15,17 @@ codeunit 13609 "Upd. Registered with Nemhandel"
     var
         CompanyInformation: Record "Company Information";
         NemhandelCompanyStatus: Codeunit "Nemhandel Status Page Bckgrnd";
+        Telemetry: Codeunit Telemetry;
+        CustomDimensions: Dictionary of [Text, Text];
     begin
         CompanyInformation.Get();
         CompanyInformation."Registered with Nemhandel" := NemhandelCompanyStatus.GetCompanyStatus(CompanyInformation."Registration No.");
         CompanyInformation."Last Nemhandel Status Check DT" := CurrentDateTime();
         CompanyInformation.Modify();
 
-        Session.LogMessage(
+        CustomDimensions.Add('Category', NemhandelsregisteretCategoryTxt);
+        Telemetry.LogMessage(
             '0000KXX', StrSubstNo(BckGrndTaskCompletedTxt, CompanyInformation."Registered with Nemhandel"), Verbosity::Normal,
-            DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NemhandelsregisteretCategoryTxt);
+            DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
     end;
 }

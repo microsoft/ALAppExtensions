@@ -42,5 +42,8 @@
                                    "includeSourceInSymbolFile":  true
                                },
     "application":  "24.0.0.0",
-    "target":  "OnPrem"
+    "target":  "OnPrem",
+    "features":  [
+        "NoImplicitWith"
+    ]
 }

@@ -247,7 +247,6 @@ table 1950 "LP Machine Learning Setup"
         exit(CurrentDateTime() - "Last Background Analysis" < 7 * 24 * 60 * 60 * 1000);
     end;
 
-    [NonDebuggable]
     [Scope('OnPrem')]
     procedure SaveApiUri(ApiUriText: Text[250])
     var
@@ -257,12 +256,12 @@ table 1950 "LP Machine Learning Setup"
         if "Custom API Uri" <> '' then
             evaluate(ApiUriKeyGUID, "Custom API Uri");
 
-        if IsNullGuid(ApiUriKeyGUID) OR NOT IsolatedStorage.Contains(ApiUriKeyGUID, DataScope::Company) then begin
-            ApiUriKeyGUID := FORMAT(CreateGuid());
+        if IsNullGuid(ApiUriKeyGUID) or not IsolatedStorage.Contains(ApiUriKeyGUID, DataScope::Company) then begin
+            ApiUriKeyGUID := Format(CreateGuid());
             "Custom API Uri" := ApiUriKeyGUID;
         end;
 
-        IF NOT EncryptionEnabled() THEN
+        if not EncryptionEnabled() then
             IsolatedStorage.Set(ApiUriKeyGUID, ApiUriText, DataScope::Company)
         else
             IsolatedStorage.SetEncrypted(ApiUriKeyGUID, ApiUriText, DataScope::Company);
@@ -271,7 +270,7 @@ table 1950 "LP Machine Learning Setup"
     [NonDebuggable]
     [Scope('OnPrem')]
     procedure GetApiUri(): Text[250]
-    VAR
+    var
         ApiUriKeyGUID: Guid;
         ApiUriValue: Text;
     begin
@@ -282,38 +281,66 @@ table 1950 "LP Machine Learning Setup"
                 exit(CopyStr(ApiUriValue, 1, 250));
     end;
 
+#if not CLEAN24
     [NonDebuggable]
     [Scope('OnPrem')]
+    [Obsolete('Use "SaveApiKey(ApiKeyText: SecretText)" instead.', '24.0')]
     procedure SaveApiKey(ApiKeyText: Text[200])
-    VAR
+    var
         ApiKeyKeyGUID: Guid;
     begin
         ApiKeyText := CopyStr(DelChr(ApiKeyText, '=', ' '), 1, 200);
         if "Custom API Key" <> '' then
             evaluate(ApiKeyKeyGUID, "Custom API Key");
-        if IsNullGuid(ApiKeyKeyGUID) OR NOT IsolatedStorage.Contains(ApiKeyKeyGUID, DataScope::Company) then begin
+        if IsNullGuid(ApiKeyKeyGUID) or not IsolatedStorage.Contains(ApiKeyKeyGUID, DataScope::Company) then begin
             ApiKeyKeyGUID := FORMAT(CreateGuid());
             "Custom API Key" := ApiKeyKeyGUID;
         end;
 
-        IF not EncryptionEnabled() then
+        if not EncryptionEnabled() then
+            IsolatedStorage.Set(ApiKeyKeyGUID, ApiKeyText, DataScope::Company)
+        else
+            IsolatedStorage.SetEncrypted(ApiKeyKeyGUID, ApiKeyText, DataScope::Company);
+    end;
+#endif
+    [Scope('OnPrem')]
+    procedure SaveApiKey(ApiKeyText: SecretText)
+    var
+        ApiKeyKeyGUID: Guid;
+    begin
+        if "Custom API Key" <> '' then
+            evaluate(ApiKeyKeyGUID, "Custom API Key");
+        if IsNullGuid(ApiKeyKeyGUID) or not IsolatedStorage.Contains(ApiKeyKeyGUID, DataScope::Company) then begin
+            ApiKeyKeyGUID := FORMAT(CreateGuid());
+            "Custom API Key" := ApiKeyKeyGUID;
+        end;
+
+        if not EncryptionEnabled() then
             IsolatedStorage.Set(ApiKeyKeyGUID, ApiKeyText, DataScope::Company)
         else
             IsolatedStorage.SetEncrypted(ApiKeyKeyGUID, ApiKeyText, DataScope::Company);
     end;
 
+#if not CLEAN24
     [NonDebuggable]
     [Scope('OnPrem')]
+    [Obsolete('Replaced by GetApiKeySecret()', '24.0')]
     procedure GetApiKey(): Text[200]
-    VAR
+    begin
+        exit(CopyStr(GetApiKeyAsSecret().Unwrap(), 1, 200));
+    end;
+#endif
+    [Scope('OnPrem')]
+    procedure GetApiKeyAsSecret(): SecretText
+    var
         ApiKeyKeyGUID: GUID;
-        ApiValue: Text;
+        ApiValue: SecretText;
     begin
         if "Custom API Key" <> '' then
             evaluate(ApiKeyKeyGUID, "Custom API Key");
-        if NOT IsNullGuid(ApiKeyKeyGUID) then
+        if not IsNullGuid(ApiKeyKeyGUID) then
             if IsolatedStorage.Get(FORMAT(ApiKeyKeyGUID), DataScope::Company, ApiValue) then
-                exit(CopyStr(ApiValue, 1, 200));
+                exit(ApiValue);
     end;
 
     var

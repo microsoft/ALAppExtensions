@@ -11,6 +11,7 @@ page 6122 "E-Documents"
     CardPageId = "E-Document";
     PageType = List;
     UsageCategory = Lists;
+    AdditionalSearchTerms = 'Edoc,Electronic Document';
     RefreshOnActivate = true;
     Editable = false;
     DeleteAllowed = false;
@@ -57,7 +58,7 @@ page 6122 "E-Documents"
         {
             action(ImportManually)
             {
-                Caption = 'Create From File';
+                Caption = 'Create and Process From File';
                 ToolTip = 'Create an electronic document by manually uploading a file.';
                 Image = Import;
 
@@ -68,7 +69,7 @@ page 6122 "E-Documents"
                 begin
                     EDocImport.UploadDocument(EDocument);
                     if EDocument."Entry No" <> 0 then
-                        EDocImport.GetBasicInfo(EDocument);
+                        EDocImport.ProcessDocument(EDocument, false);
                 end;
             }
             action(EDocumentServices)

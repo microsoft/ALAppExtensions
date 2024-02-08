@@ -277,6 +277,20 @@ page 31254 "Bank Statement CZB"
                         IssueBankStatement(Codeunit::"Issue Bank Statement YesNo CZB");
                     end;
                 }
+                action(IssueAndCreateJournal)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Issue and Create Journal';
+                    Ellipsis = true;
+                    Image = ReleaseDoc;
+                    ShortCutKey = 'Ctrl+F9';
+                    ToolTip = 'Issue the bank statement and create a journal. The bank statement will be moved to issued bank statements.';
+
+                    trigger OnAction()
+                    begin
+                        IssueBankStatement(Codeunit::"IssueBank.Stat.Create Jnl. CZB");
+                    end;
+                }
                 action(IssueAndPrint)
                 {
                     ApplicationArea = Basic, Suite;
@@ -323,6 +337,9 @@ page 31254 "Bank Statement CZB"
                 Caption = 'Issuing';
                 ShowAs = SplitButton;
                 actionref(Issue_Promoted; Issue)
+                {
+                }
+                actionref(IssueAndCreateJournal_Promoted; IssueAndCreateJournal)
                 {
                 }
                 actionref(IssueAndPrint_Promoted; IssueAndPrint)
@@ -393,7 +410,8 @@ page 31254 "Bank Statement CZB"
         Codeunit.Run(IssuingCodeunitId, Rec);
         CurrPage.Update(false);
 
-        if IssuingCodeunitId <> Codeunit::"Issue Bank Statement YesNo CZB" then
+        if (IssuingCodeunitId <> Codeunit::"Issue Bank Statement YesNo CZB") and
+           (IssuingCodeunitId <> Codeunit::"IssueBank.Stat.Create Jnl. CZB") then
             exit;
 
         if InstructionMgt.IsEnabled(InstructionMgtCZB.GetOpeningIssuedDocumentNotificationId()) then
@@ -421,10 +439,8 @@ page 31254 "Bank Statement CZB"
     local procedure DetermineBankStatementCZBSeriesNo(): Code[20]
     var
         BankAccount: Record "Bank Account";
-        BankStatementHeaderCZB: Record "Bank Statement Header CZB";
     begin
         BankAccount.Get(Rec."Bank Account No.");
-        DocumentNoVisibility.CheckNumberSeries(BankStatementHeaderCZB, BankAccount."Bank Statement Nos. CZB", BankStatementHeaderCZB.FieldNo("No."));
         exit(BankAccount."Bank Statement Nos. CZB");
     end;
 

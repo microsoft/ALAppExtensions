@@ -21,7 +21,7 @@ codeunit 147103 "CD Transfer"
         isInitialized: Boolean;
         WrongInventoryErr: Label 'Wrong inventory.';
         SerTxt: Label 'SER';
-        QtyToHandleMessageErr: Label 'Qty. to Handle (Base) in the item tracking assigned to the document line for item %1 is currently 3. It must be 4.\\Check the assignment for serial number %2, lot number .';
+        QtyToHandleMessageErr: Label 'Qty. to Handle (Base) in the item tracking assigned to the document line for item %1 is currently 3. It must be 4.\\Check the assignment for serial number %2, lot number %3, package number %4.', Comment = '%1 - Item No., %2 - Serial No., %3 - Lot No., %4 - Package No.';
         PackageInfoNotExistErr: Label 'The Package No. Information does not exist.';
         TearDownErr: Label 'Error in TearDown';
         TemporaryPackageNoIsNotEqualErr: Label 'Temporary CD Number must be equal to ''No''  in Package No. Information';
@@ -267,7 +267,7 @@ codeunit 147103 "CD Transfer"
         end;
 
         asserterror PostTransferDocument(TransferHeader);
-        Assert.ExpectedError(StrSubstNo(QtyToHandleMessageErr, Item."No.", 'SER01'));
+        Assert.ExpectedError(StrSubstNo(QtyToHandleMessageErr, Item."No.", 'SER01', '', PackageNo));
 
         TearDown();
     end;

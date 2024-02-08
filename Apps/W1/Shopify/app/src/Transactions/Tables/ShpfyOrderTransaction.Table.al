@@ -32,7 +32,7 @@ table 30133 "Shpfy Order Transaction"
             DataClassification = SystemMetadata;
             Editable = false;
         }
-        field(4; Type; enum "Shpfy Transaction Type")
+        field(4; Type; Enum "Shpfy Transaction Type")
         {
             Caption = 'Type';
             DataClassification = SystemMetadata;
@@ -44,7 +44,7 @@ table 30133 "Shpfy Order Transaction"
             DataClassification = SystemMetadata;
             Editable = false;
         }
-        field(6; Status; enum "Shpfy Transaction Status")
+        field(6; Status; Enum "Shpfy Transaction Status")
         {
             Caption = 'Status';
             DataClassification = SystemMetadata;

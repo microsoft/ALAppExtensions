@@ -36,6 +36,12 @@
             "name": "System Application Test Library",
             "publisher": "Microsoft",
             "version": "24.0.0.0"
+        },
+        {
+            "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+            "publisher": "Microsoft",
+            "name": "Library Variable Storage",
+            "version": "24.0.0.0"
         }
     ],
     "idRanges": [

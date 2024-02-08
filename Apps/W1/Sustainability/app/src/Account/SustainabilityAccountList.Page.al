@@ -46,6 +46,11 @@ page 6212 "Sustainability Account List"
                 {
                     ToolTip = 'Specifies the subcategory of the category of the sustainability account.';
                 }
+                field("Emission Scope"; Rec."Emission Scope")
+                {
+                    DrillDown = false;
+                    ToolTip = 'Specifies the scope of the emissions that are associated with the sustainability account. Scope 1: Direct emissions from sources that are owned or controlled by the reporting entity. Scope 2: Indirect emissions from the generation of purchased electricity, heat, or steam consumed by the reporting entity. Scope 3: Other indirect emissions, such as the extraction and production of purchased materials and fuels, transport-related activities in vehicles not owned or controlled by the reporting entity, and waste disposal.';
+                }
                 field("Account Type"; Rec."Account Type")
                 {
                     ToolTip = 'Specifies the purpose of the account. Total: Used to total a series of balances on accounts from many different account groupings. To use Total, leave this field blank. Begin-Total: A marker for the beginning of a series of accounts to be totaled that ends with an End-Total account. End-Total: A total of a series of accounts that starts with the preceding Begin-Total account. The total is defined in the Totaling field.';

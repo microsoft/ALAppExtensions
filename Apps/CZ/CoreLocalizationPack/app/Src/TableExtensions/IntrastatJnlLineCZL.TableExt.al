@@ -77,7 +77,9 @@ tableextension 31026 "Intrastat Jnl. Line CZL" extends "Intrastat Jnl. Line"
 #endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
+#pragma warning disable AL0842
         field(31086; "Statement Type CZL"; Enum "Intrastat Statement Type CZL")
+#pragma warning restore AL0842
         {
             Caption = 'Statement Type';
             Editable = false;

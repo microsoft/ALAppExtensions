@@ -179,21 +179,22 @@ table 1853 "MS - Sales Forecast Setup"
         CryptographyManagement: Codeunit "Cryptography Management";
     begin
         if not CryptographyManagement.IsEncryptionEnabled() then
-            CryptographyManagement.EnableEncryption(FALSE);
+            CryptographyManagement.EnableEncryption(false);
     end;
 
-    [NonDebuggable]
     procedure URIOrKeyEmpty(): Boolean
     var
         EnvironmentInfo: Codeunit "Environment Information";
     begin
         if EnvironmentInfo.IsSaaS() then
             exit(false);
-        exit((GetAPIUri() = '') or (GetAPIKey() = ''));
+        exit((GetAPIUri() = '') or GetAPIKeyAsSecret().IsEmpty());
     end;
 
+#if not CLEAN24
     [NonDebuggable]
     [Scope('OnPrem')]
+    [Obsolete('Use GetUserDefinedAPIKeyAsSecret() instead.', '24.0')]
     procedure GetUserDefinedAPIKey(): Text[250]
     begin
         // If the user has defined the API Key in the page UI, then retrieve it from
@@ -201,31 +202,57 @@ table 1853 "MS - Sales Forecast Setup"
         if IsNullGuid("API Key ID") then
             exit('');
 
-        exit(TryReadAPICredential("API Key ID"));
+        exit(CopyStr(TryReadAPICredentialAsSecret("API Key ID").Unwrap(), 1, 250));
+    end;
+#endif
+    [Scope('OnPrem')]
+    procedure GetUserDefinedAPIKeyAsSecret(): SecretText
+    var
+        EmptyText: Text[250];
+    begin
+        // If the user has defined the API Key in the page UI, then retrieve it from
+        // the encrypted Isolated Storage table
+        EmptyText := '';
+        if IsNullGuid("API Key ID") then
+            exit(EmptyText);
+
+        exit(TryReadAPICredentialAsSecret("API Key ID"));
     end;
 
-    [NonDebuggable]
     [Scope('OnPrem')]
-    procedure SetUserDefinedAPIKey(UserDefinedAPIKey: Text[250])
+    procedure SetUserDefinedAPIKey(UserDefinedAPIKey: SecretText)
     begin
         // Store the user-defined API Key in the Isolated Storage and save its GUID in the "API Key ID"
-        if UserDefinedAPIKey = '' then begin
+        if UserDefinedAPIKey.IsEmpty() then begin
             DeleteAPICredential("API Key ID");
             exit;
         end;
         "API Key ID" := InsertAPICredential(UserDefinedAPIKey);
     end;
 
+#if not CLEAN24
     [NonDebuggable]
+    [Obsolete('Use GetAPIKeyAsSecret() instead.', '24.0')]
     procedure GetAPIKey(): Text[250]
     var
         UserDefinedAPIKey: Text[250];
     begin
         // The API Key and URI entered by the user take precedence
-        UserDefinedAPIKey := GetUserDefinedAPIKey();
+        UserDefinedAPIKey := CopyStr(GetUserDefinedAPIKeyAsSecret().Unwrap(), 1, 250);
         if UserDefinedAPIKey <> '' then
             exit(UserDefinedAPIKey);
         exit('');
+    end;
+#endif
+    procedure GetAPIKeyAsSecret(): SecretText
+    var
+        UserDefinedAPIKey: SecretText;
+    begin
+        // The API Key and URI entered by the user take precedence
+        UserDefinedAPIKey := GetUserDefinedAPIKeyAsSecret();
+        if not UserDefinedAPIKey.IsEmpty() then
+            exit(UserDefinedAPIKey);
+        exit(UserDefinedAPIKey);
     end;
 
     procedure GetAPIUri(): Text[250]
@@ -236,29 +263,30 @@ table 1853 "MS - Sales Forecast Setup"
         exit('');
     end;
 
-    [NonDebuggable]
-    local procedure TryReadAPICredential(CredentialGUID: Guid): Text[250]
+    local procedure TryReadAPICredentialAsSecret(CredentialGUID: Guid): SecretText
     var
         CredentialValue: Text;
+        CredentialValueAsSecret: SecretText;
     begin
+        CredentialValue := '';
+        CredentialValueAsSecret := CredentialValue;
         if IsNullGuid(CredentialGUID) then
-            exit('');
+            exit(CredentialValueAsSecret);
 
         if not IsolatedStorage.Contains(CredentialGUID, Datascope::Company) then
-            exit('');
+            exit(CredentialValueAsSecret);
 
-        IsolatedStorage.Get(CredentialGUID, Datascope::Company, CredentialValue);
-        exit(CopyStr(CredentialValue, 1, 250));
+        IsolatedStorage.Get(CredentialGUID, Datascope::Company, CredentialValueAsSecret);
+        exit(CredentialValueAsSecret);
     end;
 
-    [NonDebuggable]
-    local procedure InsertAPICredential(NewValue: Text[250]): Guid
+    local procedure InsertAPICredential(NewValue: SecretText): Guid
     var
         NewKey: Text;
     begin
         NewKey := FORMAT(CreateGuid());
 
-        IF NOT EncryptionEnabled() THEN
+        if not EncryptionEnabled() then
             IsolatedStorage.Set(NewKey, NewValue, Datascope::Company)
         else
             IsolatedStorage.SetEncrypted(NewKey, NewValue, Datascope::Company);
@@ -272,7 +300,7 @@ table 1853 "MS - Sales Forecast Setup"
         Modify();
 
         // Delete the stored API Key from Isolated Storage table
-        if not IsolatedStorage.Contains(KeyId, Datascope::Company) THEN
+        if not IsolatedStorage.Contains(KeyId, Datascope::Company) then
             exit;
 
         IsolatedStorage.Delete(KeyId, Datascope::Company);

@@ -30,4 +30,8 @@ enum 5160 "Contoso Demo Data Module" implements "Contoso Demo Data Module"
     {
         Implementation = "Contoso Demo Data Module" = "Job Module";
     }
+    value(7; "Sustainability Module")
+    {
+        Implementation = "Contoso Demo Data Module" = "Sustainability Module";
+    }
 }

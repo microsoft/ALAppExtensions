@@ -432,21 +432,19 @@ codeunit 6156 "E-Doc. DED PEPPOL Pre-Mapping"
         Clear(TempInteger);
         TempInteger.DeleteAll();
 
+        IntermediateDataImport.SetCurrentKey("Data Exch. No.", "Table ID", "Record No.");
         IntermediateDataImport.SetRange("Data Exch. No.", DataExchEntryNo);
         IntermediateDataImport.SetRange("Table ID", TableID);
         IntermediateDataImport.SetRange("Parent Record No.", ParentRecNo);
-        IntermediateDataImport.SetCurrentKey("Record No.");
-        if not IntermediateDataImport.FindSet() then
-            exit;
-
-        repeat
-            if CurrRecNo <> IntermediateDataImport."Record No." then begin
-                CurrRecNo := IntermediateDataImport."Record No.";
-                Clear(TempInteger);
-                TempInteger.Number := CurrRecNo;
-                TempInteger.Insert();
-            end;
-        until IntermediateDataImport.Next() = 0;
+        if IntermediateDataImport.FindSet() then
+            repeat
+                if CurrRecNo <> IntermediateDataImport."Record No." then begin
+                    CurrRecNo := IntermediateDataImport."Record No.";
+                    Clear(TempInteger);
+                    TempInteger.Number := CurrRecNo;
+                    TempInteger.Insert();
+                end;
+            until IntermediateDataImport.Next() = 0;
     end;
 
     local procedure ApplyInvoiceCharges(DataExchEntryNo: Integer)

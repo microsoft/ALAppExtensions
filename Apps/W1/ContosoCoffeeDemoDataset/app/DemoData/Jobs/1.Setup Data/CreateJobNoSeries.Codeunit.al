@@ -7,7 +7,7 @@ codeunit 5195 "Create Job No Series"
     var
         ContosoNoSeries: Codeunit "Contoso No Series";
     begin
-        ContosoNoSeries.InsertNoSeries(Job(), JobNosDescTok, 'PR00010', 'PR99999', '', '', 10, true, true);
+        ContosoNoSeries.InsertNoSeries(Job(), JobNosDescTok, 'PR00010', 'PR99999', '', '', 10, Enum::"No. Series Implementation"::Sequence, true);
     end;
 
     var

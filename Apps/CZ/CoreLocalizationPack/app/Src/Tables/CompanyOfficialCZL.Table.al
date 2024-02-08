@@ -28,7 +28,7 @@ table 11793 "Company Official CZL"
             begin
                 if "No." <> xRec."No." then begin
                     StatutoryReportingSetupCZL.Get();
-                    NoSeriesManagement.TestManual(StatutoryReportingSetupCZL."Company Official Nos.");
+                    NoSeries.TestManual(StatutoryReportingSetupCZL."Company Official Nos.");
                     "No. Series" := '';
                 end;
             end;
@@ -228,11 +228,31 @@ table 11793 "Company Official CZL"
         }
     }
     trigger OnInsert()
+    var
+        CompanyOfficial: Record "Company Official CZL";
+#if not CLEAN24
+        IsHandled: Boolean;
+#endif
     begin
         if "No." = '' then begin
             StatutoryReportingSetupCZL.Get();
             StatutoryReportingSetupCZL.TestField("Company Official Nos.");
-            NoSeriesManagement.InitSeries(StatutoryReportingSetupCZL."Company Official Nos.", xRec."No. Series", 0D, "No.", "No. Series");
+#if not CLEAN24
+            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(StatutoryReportingSetupCZL."Company Official Nos.", xRec."No. Series", 0D, "No.", "No. Series", IsHandled);
+            if not IsHandled then begin
+#endif
+                "No. Series" := StatutoryReportingSetupCZL."Company Official Nos.";
+                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                    "No. Series" := xRec."No. Series";
+                "No." := NoSeries.GetNextNo("No. Series");
+                CompanyOfficial.ReadIsolation(ReadIsolation::ReadUncommitted);
+                CompanyOfficial.SetLoadFields("No.");
+                while CompanyOfficial.Get("No.") do
+                    "No." := NoSeries.GetNextNo("No. Series");
+#if not CLEAN24
+                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", StatutoryReportingSetupCZL."Company Official Nos.", 0D, "No.");
+            end;
+#endif
         end;
     end;
 
@@ -252,6 +272,7 @@ table 11793 "Company Official CZL"
         PostCode: Record "Post Code";
         CompanyOfficialCZL: Record "Company Official CZL";
         NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
 
     procedure AssistEdit(OldCompanyOfficialCZL: Record "Company Official CZL"): Boolean
     begin

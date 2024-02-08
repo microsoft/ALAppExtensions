@@ -20,15 +20,12 @@ tableextension 13608 "Company Info. Nemhandel Status" extends "Company Informati
         modify("Registration No.")
         {
             trigger OnBeforeValidate()
-#if not CLEAN24
             var
                 NemhandelStatusMgt: Codeunit "Nemhandel Status Mgt.";
-#endif
             begin
-#if not CLEAN24
-                if not NemhandelStatusMgt.IsFeatureEnableDatePassed() then
+                if not NemhandelStatusMgt.IsSaaSProductionCompany() then
                     exit;
-#endif
+
                 if "Registered with Nemhandel" = "Nemhandel Company Status"::Registered then begin
                     if Rec."Registration No." <> xRec."Registration No." then
                         Error(CannotChangeRegistrationNoErr);

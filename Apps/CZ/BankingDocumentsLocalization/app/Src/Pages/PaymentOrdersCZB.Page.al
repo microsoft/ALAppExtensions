@@ -243,6 +243,20 @@ page 31261 "Payment Orders CZB"
                         IssueDocument(Codeunit::"Issue Payment Order YesNo CZB");
                     end;
                 }
+                action(IssueAndExport)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Issue and Export';
+                    Ellipsis = true;
+                    Image = ReleaseDoc;
+                    ShortCutKey = 'Ctrl+F9';
+                    ToolTip = 'Issue the payment order and export a file. The payment order will be moved to issued payment orders.';
+
+                    trigger OnAction()
+                    begin
+                        IssueDocument(Codeunit::"Issue Payment Order Export CZB");
+                    end;
+                }
                 action(IssueAndPrint)
                 {
                     ApplicationArea = Basic, Suite;
@@ -390,6 +404,9 @@ page 31261 "Payment Orders CZB"
                     actionref(Issue_Promoted; Issue)
                     {
                     }
+                    actionref(IssueAndExport_Promoted; IssueAndExport)
+                    {
+                    }
                     actionref(IssueAndPrint_Promoted; IssueAndPrint)
                     {
                     }
@@ -475,7 +492,8 @@ page 31261 "Payment Orders CZB"
         Rec.SendToIssuing(IssuingCodeunitID);
         CurrPage.Update(false);
 
-        if IssuingCodeunitID <> Codeunit::"Issue Payment Order YesNo CZB" then
+        if (IssuingCodeunitID <> Codeunit::"Issue Payment Order YesNo CZB") and
+           (IssuingCodeunitID <> Codeunit::"Issue Payment Order Export CZB") then
             exit;
 
         if InstructionMgt.IsEnabled(InstructionMgtCZB.GetOpeningIssuedDocumentNotificationId()) then

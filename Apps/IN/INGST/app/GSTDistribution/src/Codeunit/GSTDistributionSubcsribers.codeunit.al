@@ -412,12 +412,12 @@ codeunit 18201 "GST Distribution Subcsribers"
     local procedure ValidateNoField(var Rec: Record "GST Distribution Header"; var xRec: Record "GST Distribution Header")
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
         GeneralLedgerSetup.Get();
         if Rec."No." <> xRec."No." then begin
             GeneralLedgerSetup.Get();
-            NoSeriesManagement.TestManual(GeneralLedgerSetup."GST Distribution Nos.");
+            NoSeries.TestManual(GeneralLedgerSetup."GST Distribution Nos.");
             Rec."No. Series" := '';
         end;
     end;

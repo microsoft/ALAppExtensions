@@ -33,7 +33,7 @@ table 31252 "Bank Statement Header CZB"
             begin
                 if ("No." <> xRec."No.") and ("Bank Account No." <> '') then begin
                     BankAccount.Get("Bank Account No.");
-                    NoSeriesManagement.TestManual(BankAccount."Bank Statement Nos. CZB");
+                    NoSeries.TestManual(BankAccount."Bank Statement Nos. CZB");
                     "No. Series" := '';
                 end;
             end;
@@ -384,11 +384,31 @@ table 31252 "Bank Statement Header CZB"
     end;
 
     trigger OnInsert()
+    var
+        BankStatementHeader: Record "Bank Statement Header CZB";
+#if not CLEAN24
+        IsHandled: Boolean;
+#endif
     begin
         if "No." = '' then begin
             BankAccount.Get("Bank Account No.");
             BankAccount.Testfield("Bank Statement Nos. CZB");
-            NoSeriesManagement.InitSeries(BankAccount."Bank Statement Nos. CZB", xRec."No. Series", 0D, "No.", "No. Series");
+#if not CLEAN24
+            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(BankAccount."Bank Statement Nos. CZB", xRec."No. Series", 0D, "No.", "No. Series", IsHandled);
+            if not IsHandled then begin
+#endif
+                "No. Series" := BankAccount."Bank Statement Nos. CZB";
+                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                    "No. Series" := xRec."No. Series";
+                "No." := NoSeries.GetNextNo("No. Series");
+                BankStatementHeader.ReadIsolation(ReadIsolation::ReadUncommitted);
+                BankStatementHeader.SetLoadFields("No.");
+                while BankStatementHeader.Get("No.") do
+                    "No." := NoSeries.GetNextNo("No. Series");
+#if not CLEAN24
+                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", BankAccount."Bank Statement Nos. CZB", 0D, "No.");
+            end;
+#endif
         end;
     end;
 
@@ -403,6 +423,7 @@ table 31252 "Bank Statement Header CZB"
         BankAccount: Record "Bank Account";
         CurrencyExchangeRate: Record "Currency Exchange Rate";
         NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         ConfirmManagement: Codeunit "Confirm Management";
         HideValidationDialog: Boolean;
         Confirmed: Boolean;

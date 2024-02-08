@@ -45,7 +45,7 @@ table 11744 "Cash Desk CZP"
             begin
                 if "No." <> xRec."No." then begin
                     GeneralLedgerSetup.Get();
-                    NoSeriesManagement.TestManual(GeneralLedgerSetup."Cash Desk Nos. CZP");
+                    NoSeries.TestManual(GeneralLedgerSetup."Cash Desk Nos. CZP");
                     "No. Series" := '';
                 end;
             end;
@@ -620,11 +620,31 @@ table 11744 "Cash Desk CZP"
     end;
 
     trigger OnInsert()
+    var
+        CashDesk: Record "Cash Desk CZP";
+#if not CLEAN24
+        IsHandled: Boolean;
+#endif
     begin
         if "No." = '' then begin
             GeneralLedgerSetup.Get();
             GeneralLedgerSetup.TestField("Cash Desk Nos. CZP");
-            NoSeriesManagement.InitSeries(GeneralLedgerSetup."Cash Desk Nos. CZP", xRec."No. Series", 0D, "No.", "No. Series");
+#if not CLEAN24
+            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(GeneralLedgerSetup."Cash Desk Nos. CZP", xRec."No. Series", 0D, "No.", "No. Series", IsHandled);
+            if not IsHandled then begin
+#endif
+                "No. Series" := GeneralLedgerSetup."Cash Desk Nos. CZP";
+                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                    "No. Series" := xRec."No. Series";
+                "No." := NoSeries.GetNextNo("No. Series");
+                CashDesk.ReadIsolation(ReadIsolation::ReadUncommitted);
+                CashDesk.SetLoadFields("No.");
+                while CashDesk.Get("No.") do
+                    "No." := NoSeries.GetNextNo("No. Series");
+#if not CLEAN24
+                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", GeneralLedgerSetup."Cash Desk Nos. CZP", 0D, "No.");
+            end;
+#endif
         end;
         DimensionManagement.UpdateDefaultDim(Database::"Cash Desk CZP", "No.", "Global Dimension 1 Code", "Global Dimension 2 Code");
 
@@ -682,6 +702,7 @@ table 11744 "Cash Desk CZP"
         CommentLine: Record "Comment Line";
         PostCode: Record "Post Code";
         NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         ConfirmManagement: Codeunit "Confirm Management";
         MoveEntries: Codeunit MoveEntries;
         DimensionManagement: Codeunit DimensionManagement;

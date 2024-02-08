@@ -11,6 +11,7 @@ using Microsoft.Purchases.Payables;
 
 codeunit 31141 "Document Type Handler CZZ"
 {
+    Access = Internal;
     EventSubscriberInstance = Manual;
 
     [EventSubscriber(ObjectType::Table, Database::"G/L Entry", 'OnAfterCopyGLEntryFromGenJnlLine', '', false, false)]

@@ -4,6 +4,9 @@ using Microsoft.Foundation.Company;
 using Microsoft.Utilities;
 using System.Environment.Configuration;
 using System.Privacy;
+using System.Environment;
+using System.DataAdministration;
+using System.Telemetry;
 
 codeunit 13628 "Nemhandel Status Mgt."
 {
@@ -15,6 +18,9 @@ codeunit 13628 "Nemhandel Status Mgt."
         NotificationMsg: Label 'Your accounting software is not registered in Nemhandelsregisteret.';
         EnableNemhandelNotRegisteredNotificationTxt: Label 'Enable Nemhandel Not Registered Notification';
         EnableNemhandelNotRegisteredNotificationDescrTxt: Label 'Notify me that the company with the given CVR number is not registered in Nemhandelsregisteret. The message is shown on the Company Information page.';
+        NemhandelsregisteretCategoryTxt: Label 'Nemhandelsregisteret', Locked = true;
+        CVRNumberChangedTxt: Label 'CVR number was changed from %1 to %2. Modify trigger: %3.', Locked = true;
+        RegisteredStatusChangedTxt: Label 'Registered with Nemhandel was changed from %1 to %2. Modify trigger: %3.', Locked = true;
         NemhandelsregisteretUrlLbl: Label 'https://registration.nemhandel.dk/NemHandelRegisterWeb', Locked = true;
         NemhandelsregisteretGuidanceUrlLbl: Label 'https://nemhandel.dk/vejledning-nemhandelsregisteret-nhr', Locked = true;
 
@@ -49,26 +55,25 @@ codeunit 13628 "Nemhandel Status Mgt."
         exit(true);
     end;
 
-#if not CLEAN24
-    internal procedure IsFeatureEnableDatePassed(): Boolean
-    var
-        FeatureEnableDatePassed: Boolean;
-        IsHandled: Boolean;
-    begin
-        OnBeforeCheckFeatureEnableDate(FeatureEnableDatePassed, IsHandled);
-        if IsHandled then
-            exit(FeatureEnableDatePassed);
-        exit(CurrentDateTime() > GetFeatureEnableDateTime());
-    end;
-
-    local procedure GetFeatureEnableDateTime(): DateTime
-    begin
-        exit(CreateDateTime(20240101D, 0T));    // 1 January 2024
-    end;
-#endif
     local procedure GetNemhandelStatusCheckIntervalMs(): Integer
     begin
         exit(60 * 60 * 1000); // 1 hour in milliseconds
+    end;
+
+    internal procedure IsSaaSProductionCompany(): Boolean
+    var
+        EnvironmentInformation: Codeunit "Environment Information";
+    begin
+        if not EnvironmentInformation.IsProduction() then
+            exit(false);
+
+        if not EnvironmentInformation.IsSaaSInfrastructure() then
+            exit(false);
+
+        if EnvironmentInformation.IsSandbox() then
+            exit(false);
+
+        exit(true);
     end;
 
     internal procedure UpdateRegisteredWithNemhandel(NemhandelCompanyStatus: Enum "Nemhandel Company Status")
@@ -78,6 +83,20 @@ codeunit 13628 "Nemhandel Status Mgt."
         CompanyInformation.Get();
         CompanyInformation."Registered with Nemhandel" := NemhandelCompanyStatus;
         CompanyInformation."Last Nemhandel Status Check DT" := CurrentDateTime();
+        CompanyInformation.Modify();
+    end;
+
+    local procedure ResetRegisteredWithNemhandel(CompanyName: Text)
+    var
+        CompanyInformation: Record "Company Information";
+    begin
+        CompanyInformation.ChangeCompany(CompanyName);
+        if not CompanyInformation.Get() then
+            exit;
+
+        CompanyInformation."Registration No." := '';
+        CompanyInformation."Registered with Nemhandel" := Enum::"Nemhandel Company Status"::Unknown;
+        CompanyInformation."Last Nemhandel Status Check DT" := 0DT;
         CompanyInformation.Modify();
     end;
 
@@ -164,23 +183,37 @@ codeunit 13628 "Nemhandel Status Mgt."
         ShowNemhandelNotRegisteredNotification();
     end;
 
-    [InternalEvent(false)]
-    internal procedure OnBeforeCheckFeatureEnableDate(var FeatureEnableDatePassed: Boolean; var IsHandled: Boolean)
-    begin
-    end;
-
     [EventSubscriber(ObjectType::Report, Report::"Copy Company", 'OnAfterCreatedNewCompanyByCopyCompany', '', false, false)]
     local procedure NemhandelStatusOnAfterCreatedNewCompanyByCopyCompany(NewCompanyName: Text[30])
-    var
-        CompanyInformation: Record "Company Information";
     begin
-        CompanyInformation.ChangeCompany(NewCompanyName);
-        if not CompanyInformation.Get() then
+        ResetRegisteredWithNemhandel(NewCompanyName);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Environment Cleanup", 'OnClearCompanyConfig', '', false, false)]
+    local procedure NemhandelStatusOnClearCompanyConfig(CompanyName: Text; SourceEnv: Enum "Environment Type"; DestinationEnv: Enum "Environment Type")
+    begin
+        ResetRegisteredWithNemhandel(CompanyName);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Company Information", 'OnAfterModifyEvent', '', false, false)]
+    local procedure WriteLogOnAfterModifyEvent(var Rec: Record "Company Information"; var xRec: Record "Company Information"; RunTrigger: Boolean)
+    var
+        Telemetry: Codeunit "Telemetry";
+        CustomDimensions: Dictionary of [Text, Text];
+    begin
+        if Rec.IsTemporary() then
             exit;
 
-        CompanyInformation."Registration No." := '';
-        CompanyInformation."Registered with Nemhandel" := Enum::"Nemhandel Company Status"::Unknown;
-        CompanyInformation."Last Nemhandel Status Check DT" := 0DT;
-        CompanyInformation.Modify();
+        CustomDimensions.Add('Category', NemhandelsregisteretCategoryTxt);
+
+        if Rec."Registration No." <> xRec."Registration No." then
+            Telemetry.LogMessage(
+                '0000MAR', StrSubstNo(CVRNumberChangedTxt, xRec."Registration No.", Rec."Registration No.", RunTrigger), Verbosity::Normal,
+                DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, CustomDimensions);
+
+        if Rec."Registered with Nemhandel" <> xRec."Registered with Nemhandel" then
+            Telemetry.LogMessage(
+                '0000MAS', StrSubstNo(RegisteredStatusChangedTxt, xRec."Registered with Nemhandel", Rec."Registered with Nemhandel", RunTrigger), Verbosity::Normal,
+                DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, CustomDimensions);
     end;
 }

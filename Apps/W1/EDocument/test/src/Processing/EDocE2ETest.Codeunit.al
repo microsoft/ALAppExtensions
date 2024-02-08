@@ -18,6 +18,7 @@ codeunit 139624 "E-Doc E2E Test"
         DocumentSendingProfileWithWorkflowErr: Label 'Workflow %1 defined for %2 in Document Sending Profile %3 is not found.', Comment = '%1 - The workflow code, %2 - Enum value set in Electronic Document, %3 - Document Sending Profile Code';
         EDocEmptyErr: Label 'The E-Document table is empty.';
         FailedToGetBlobErr: Label 'Failed to get exported blob from EDocument %1', Comment = '%1 - E-Document No.';
+        SendingErrStateErr: Label 'E-document is Pending response and can not be sent in this state.';
 
     [Test]
     procedure CreateEDocumentBeforeAfterEventsSuccessful()
@@ -1315,7 +1316,6 @@ codeunit 139624 "E-Doc E2E Test"
         EDocument: Record "E-Document";
         EDocumentService: Record "E-Document Service";
         EDocumentServiceStatus: Record "E-Document Service Status";
-        //JobQueueEntry: Record "Job Queue Entry";
         EDocumentPage: TestPage "E-Document";
     begin
         // [FEATURE] [E-Document] [Processing] 
@@ -1341,7 +1341,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocumentPage.OpenView();
         EDocumentPage.GoToRecord(EDocument);
         asserterror EDocumentPage.Send.Invoke();
-        Assert.ExpectedError('E-document is Pending Response and can not be sent in this state.');
+        Assert.ExpectedError(SendingErrStateErr);
 
         UnbindSubscription(EDocImplState);
     end;

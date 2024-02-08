@@ -1,5 +1,7 @@
 namespace Microsoft.EServices;
 
+using System.Telemetry;
+
 codeunit 13608 "Nemhandel Status Page Bckgrnd"
 {
     Access = Internal;
@@ -32,6 +34,7 @@ codeunit 13608 "Nemhandel Status Page Bckgrnd"
 
     procedure GetCompanyStatus(CVRNumber: Text) CompanyStatus: Enum "Nemhandel Company Status"
     var
+        Telemetry: Codeunit Telemetry;
         HttpClientNemhandel: Interface "Http Client Nemhandel Status";
         HttpResponseMsgNemhandel: Interface "Http Response Msg Nemhandel";
         HttpRequestMessage: HttpRequestMessage;
@@ -42,9 +45,12 @@ codeunit 13608 "Nemhandel Status Page Bckgrnd"
         HttpStatusCode: Integer;
         HttpStatusReason: Text;
         HttpResponseLogMessage: Text;
+        CustomDimensions: Dictionary of [Text, Text];
     begin
         if CVRNumber = '' then
             exit("Nemhandel Company Status"::NotRegistered);
+
+        CustomDimensions.Add('Category', NemhandelsregisteretCategoryTxt);
 
         HttpClientNemhandel := NemhandelMgt.GetHttpClient();
         HttpRequestURI := HttpClientNemhandel.GetRequestURI(CVRNumber);
@@ -54,9 +60,9 @@ codeunit 13608 "Nemhandel Status Page Bckgrnd"
             else
                 ErrorMessage := StrSubstNo(ConnectionErr, HttpRequestMessage.GetRequestUri());
         if ErrorMessage <> '' then begin
-            Session.LogMessage(
-                '0000L9W', ErrorMessage, Verbosity::Warning, DataClassification::EndUserIdentifiableInformation,
-                TelemetryScope::ExtensionPublisher, 'Category', NemhandelsregisteretCategoryTxt);
+            Telemetry.LogMessage(
+                '0000L9W', ErrorMessage, Verbosity::Warning, DataClassification::OrganizationIdentifiableInformation,
+                TelemetryScope::ExtensionPublisher, CustomDimensions);
             CompanyStatus := "Nemhandel Company Status"::Unknown;
             exit;
         end;
@@ -74,22 +80,22 @@ codeunit 13608 "Nemhandel Status Page Bckgrnd"
                         CompanyStatus := "Nemhandel Company Status"::Registered
                     else
                         CompanyStatus := "Nemhandel Company Status"::NotRegistered;
-                    Session.LogMessage(
-                        '0000L9X', HttpResponseLogMessage, Verbosity::Normal, DataClassification::EndUserIdentifiableInformation,
-                        TelemetryScope::ExtensionPublisher, 'Category', NemhandelsregisteretCategoryTxt);
+                    Telemetry.LogMessage(
+                        '0000L9X', HttpResponseLogMessage, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation,
+                        TelemetryScope::ExtensionPublisher, CustomDimensions);
                 end;
             404:
                 begin
                     CompanyStatus := "Nemhandel Company Status"::NotRegistered;
-                    Session.LogMessage(
-                        '0000L9Y', HttpResponseLogMessage, Verbosity::Normal, DataClassification::EndUserIdentifiableInformation,
-                        TelemetryScope::ExtensionPublisher, 'Category', NemhandelsregisteretCategoryTxt);
+                    Telemetry.LogMessage(
+                        '0000L9Y', HttpResponseLogMessage, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation,
+                        TelemetryScope::ExtensionPublisher, CustomDimensions);
                 end;
             else begin
                 CompanyStatus := "Nemhandel Company Status"::Unknown;
-                Session.LogMessage(
-                    '0000L9Z', HttpResponseLogMessage, Verbosity::Normal, DataClassification::EndUserIdentifiableInformation,
-                    TelemetryScope::ExtensionPublisher, 'Category', NemhandelsregisteretCategoryTxt);
+                Telemetry.LogMessage(
+                    '0000L9Z', HttpResponseLogMessage, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation,
+                    TelemetryScope::ExtensionPublisher, CustomDimensions);
             end;
         end;
     end;

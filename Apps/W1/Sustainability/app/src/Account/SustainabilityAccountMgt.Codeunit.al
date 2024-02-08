@@ -18,7 +18,7 @@ codeunit 6210 "Sustainability Account Mgt."
         ChangeCriticalSetupEvenThereAreTransactionQst: Label 'You are changing %1 field of %2 %3, which is already used in associated transactions.\\We recommend to create new %2 instead of modifying current one.\\Do you want to change the value?', Comment = '%1 - Field Caption, %2 - Table Caption  %3 - Account No.';
         ChangeAndUpdateJournalLinesQst: Label 'There are journal lines associated with %1. Do you want to continue and update them?', Comment = '%1 = Account No. or Category Code';
 
-    procedure IndentChartOfSustainabilityAccounts()
+    procedure IndentChartOfSustainabilityAccounts(HideConfirmDialog: Boolean)
     var
         SustainAccount: Record "Sustainability Account";
         ConfirmManagement: Codeunit "Confirm Management";
@@ -26,15 +26,18 @@ codeunit 6210 "Sustainability Account Mgt."
         AccNo: array[10] of Code[20];
         Indentation: Integer;
     begin
-        if not ConfirmManagement.GetResponseOrDefault(SustainAccIndentQst, true) then
-            exit;
+        if not HideConfirmDialog then
+            if not ConfirmManagement.GetResponseOrDefault(SustainAccIndentQst, true) then
+                exit;
 
-        Window.Open(IndSustainAccountsTxt);
+        if GuiAllowed() then
+            Window.Open(IndSustainAccountsTxt);
 
         Indentation := 0;
         if SustainAccount.FindSet() then
             repeat
-                Window.Update(1, SustainAccount."No.");
+                if GuiAllowed() then
+                    Window.Update(1, SustainAccount."No.");
 
                 if SustainAccount."Account Type" = SustainAccount."Account Type"::"End-Total" then begin
                     if Indentation < 1 then
@@ -54,7 +57,8 @@ codeunit 6210 "Sustainability Account Mgt."
                 end;
             until SustainAccount.Next() = 0;
 
-        Window.Close();
+        if GuiAllowed() then
+            Window.Close();
     end;
 
     procedure CheckIfChangeAllowedForAccount(AccountNo: Code[20]; FieldCaption: Text)
@@ -120,38 +124,42 @@ codeunit 6210 "Sustainability Account Mgt."
         exit(false);
     end;
 
-    procedure ReCalculateJournalLinesForCategory(CategoryCode: Code[20])
+    procedure ReCalculateJournalLinesForCategory(SustainAccountCategory: Record "Sustain. Account Category")
     var
+        SustainAccountSubcategory: Record "Sustain. Account Subcategory";
         SustainabilityJnlLine: Record "Sustainability Jnl. Line";
         SustainabilityCalcMgt: Codeunit "Sustainability Calc. Mgt.";
     begin
-        SustainabilityJnlLine.SetRange("Account Category", CategoryCode);
+        SustainabilityJnlLine.SetRange("Account Category", SustainAccountCategory.Code);
 
         if not SustainabilityJnlLine.IsEmpty() then
-            if not Dialog.Confirm(StrSubstNo(ChangeAndUpdateJournalLinesQst, CategoryCode), false) then
+            if not Dialog.Confirm(StrSubstNo(ChangeAndUpdateJournalLinesQst, SustainAccountCategory.Code), false) then
                 Error('')
             else
                 if SustainabilityJnlLine.FindSet() then
                     repeat
-                        SustainabilityCalcMgt.CalculationEmissions(SustainabilityJnlLine);
+                        SustainAccountSubcategory.Get(SustainAccountCategory.Code, SustainabilityJnlLine."Account Subcategory");
+                        SustainabilityCalcMgt.CalculationEmissions(SustainabilityJnlLine, SustainAccountCategory, SustainAccountSubcategory);
                         SustainabilityJnlLine.Modify(true);
                     until SustainabilityJnlLine.Next() = 0;
     end;
 
-    procedure ReCalculateJournalLinesForSubcategory(SubcategoryCode: Code[20])
+    procedure ReCalculateJournalLinesForSubcategory(SustainAccountSubcategory: Record "Sustain. Account Subcategory")
     var
+        SustainAccountCategory: Record "Sustain. Account Category";
         SustainabilityJnlLine: Record "Sustainability Jnl. Line";
         SustainabilityCalcMgt: Codeunit "Sustainability Calc. Mgt.";
     begin
-        SustainabilityJnlLine.SetRange("Account Subcategory", SubcategoryCode);
+        SustainabilityJnlLine.SetRange("Account Subcategory", SustainAccountSubcategory.Code);
 
         if not SustainabilityJnlLine.IsEmpty() then
-            if not Dialog.Confirm(StrSubstNo(ChangeAndUpdateJournalLinesQst, SubcategoryCode), false) then
+            if not Dialog.Confirm(StrSubstNo(ChangeAndUpdateJournalLinesQst, SustainAccountSubcategory.Code), false) then
                 Error('')
             else
                 if SustainabilityJnlLine.FindSet() then
                     repeat
-                        SustainabilityCalcMgt.CalculationEmissions(SustainabilityJnlLine);
+                        SustainAccountCategory.Get(SustainabilityJnlLine."Account Category");
+                        SustainabilityCalcMgt.CalculationEmissions(SustainabilityJnlLine, SustainAccountCategory, SustainAccountSubcategory);
                         SustainabilityJnlLine.Modify(true);
                     until SustainabilityJnlLine.Next() = 0;
     end;

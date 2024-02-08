@@ -5,6 +5,7 @@ using Microsoft.Sustainability.Ledger;
 using Microsoft.Sustainability.Calculation;
 using Microsoft.Sustainability.Posting;
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Reports;
 using Microsoft.Sustainability.Setup;
 
 permissionset 6210 "Sustainability - Objects"
@@ -45,5 +46,8 @@ permissionset 6210 "Sustainability - Objects"
         codeunit "Sustainability Post Mgt" = X,
         codeunit "Sustainability Jnl.-Check" = X,
         codeunit "Sustainability Calculation" = X,
-        codeunit "Sustainability Calc. Mgt." = X;
+        codeunit "Sustainability Calc. Mgt." = X,
+        report "Emission By Category" = X,
+        report "Emission Per Facility" = X,
+        report "Total Emissions" = X;
 }

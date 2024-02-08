@@ -37,13 +37,21 @@ page 6221 "Sustainability Setup"
                 {
                     ToolTip = 'Specifies if responsibility center is mandatory.';
                 }
+                field("Block Change If Entry Exists"; Rec."Block Change If Entry Exists")
+                {
+                    ToolTip = 'Specifies if a change of critical setup change is blocked when sustainability entry exists.';
+                }
+                field("Block Sustain. Accs. Deletion"; Rec."Block Sustain. Accs. Deletion")
+                {
+                    ToolTip = 'Specifies if removing of sustainability account is blocked.';
+                }
             }
             group(Calculations)
             {
                 Caption = 'Calculations';
                 field("Fuel/El. Decimal Places"; Rec."Fuel/El. Decimal Places")
                 {
-                    ToolTip = 'Specifies the number of decimal places that are shown for fuel/elictricity amounts. The default setting, 2:2, specifies that all amounts are shown with a minimum of 2 decimal places and a maximum of 2 decimal places. You can also enter a fixed number, such as 2, which also means that amounts are shown with two decimals.';
+                    ToolTip = 'Specifies the number of decimal places that are shown for fuel/electricity amounts. The default setting, 2:2, specifies that all amounts are shown with a minimum of 2 decimal places and a maximum of 2 decimal places. You can also enter a fixed number, such as 2, which also means that amounts are shown with two decimals.';
                 }
                 field("Distance Decimal Places"; Rec."Distance Decimal Places")
                 {

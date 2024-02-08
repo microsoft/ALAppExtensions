@@ -28,7 +28,7 @@ page 1830 "MS - QBO Data Migration"
                         MultiLine = true;
                         ShowCaption = false;
                     }
-                    usercontrol(OAuthIntegration; OAuthControlAddIn)
+                    usercontrol(OAuthIntegration; OAuthIntegration)
                     {
                         ApplicationArea = Basic, Suite;
 

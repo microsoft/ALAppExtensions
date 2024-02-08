@@ -35,16 +35,16 @@ codeunit 6162 "E-Doc. DED PEPPOL Subscribers"
         ProcessedDocType := ProcessedDocType2;
     end;
 
-    procedure IsRoundingLine(SalesLine: Record "Sales Line"): Boolean;
+    procedure IsRoundingLine(SalesLine2: Record "Sales Line"): Boolean;
     var
         Customer: Record Customer;
         CustomerPostingGroup: Record "Customer Posting Group";
     begin
-        if SalesLine.Type = SalesLine.Type::"G/L Account" then begin
-            Customer.Get(SalesLine."Bill-to Customer No.");
+        if SalesLine2.Type = SalesLine2.Type::"G/L Account" then begin
+            Customer.Get(SalesLine2."Bill-to Customer No.");
             CustomerPostingGroup.SetFilter(Code, Customer."Customer Posting Group");
             if CustomerPostingGroup.FindFirst() then
-                if SalesLine."No." = CustomerPostingGroup."Invoice Rounding Account" then
+                if SalesLine2."No." = CustomerPostingGroup."Invoice Rounding Account" then
                     exit(true);
         end;
         exit(false);

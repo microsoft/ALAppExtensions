@@ -54,6 +54,8 @@ codeunit 139628 "E-Doc. Receive Test"
 
         // [GIVEN] purchase invoice
         LibraryPurchase.CreateVendorWithAddress(Vendor);
+        Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+        Vendor.Modify();
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
 
         for i := 1 to 3 do begin
@@ -129,6 +131,8 @@ codeunit 139628 "E-Doc. Receive Test"
         // [GIVEN] multiple purchase invoices
         for i := 1 to 5 do begin
             LibraryPurchase.CreateVendorWithAddress(Vendor);
+            Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+            Vendor.Modify();
             LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
 
             for j := 1 to 3 do begin
@@ -214,6 +218,8 @@ codeunit 139628 "E-Doc. Receive Test"
 
         // [GIVEN] purchase credit memo
         LibraryPurchase.CreateVendorWithAddress(Vendor);
+        Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+        Vendor.Modify();
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo", Vendor."No.");
 
         for i := 1 to 3 do begin
@@ -299,6 +305,8 @@ codeunit 139628 "E-Doc. Receive Test"
         // [GIVEN] purchase credit memo
         for i := 1 to 5 do begin
             LibraryPurchase.CreateVendorWithAddress(Vendor);
+            Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+            Vendor.Modify();
             LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo", Vendor."No.");
 
             for j := 1 to 3 do begin
@@ -403,6 +411,8 @@ codeunit 139628 "E-Doc. Receive Test"
 
         // [GIVEN] purchase invoice
         LibraryPurchase.CreateVendorWithAddress(Vendor);
+        Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+        Vendor.Modify();
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
         PurchaseHeader."Pay-to Name" := 'Journal Test Invoice';
         PurchaseHeader.Modify();
@@ -482,6 +492,8 @@ codeunit 139628 "E-Doc. Receive Test"
         // [GIVEN] purchase invoices
         for i := 1 to 5 do begin
             LibraryPurchase.CreateVendorWithAddress(Vendor);
+            Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+            Vendor.Modify();
             LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
             PurchaseHeader."Pay-to Name" := 'Journal Test Invoice no. ' + Format(i);
             PurchaseHeader.Modify();
@@ -560,6 +572,8 @@ codeunit 139628 "E-Doc. Receive Test"
 
         // [GIVEN] purchase credit memo
         LibraryPurchase.CreateVendorWithAddress(Vendor);
+        Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+        Vendor.Modify();
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo", Vendor."No.");
         PurchaseHeader."Pay-to Name" := 'Journal Test Invoice';
         PurchaseHeader.Modify();
@@ -639,6 +653,8 @@ codeunit 139628 "E-Doc. Receive Test"
         // [GIVEN] purchase credit memos
         for i := 1 to 5 do begin
             LibraryPurchase.CreateVendorWithAddress(Vendor);
+            Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+            Vendor.Modify();
             LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo", Vendor."No.");
             PurchaseHeader."Pay-to Name" := 'Journal Test Invoice no. ' + Format(i);
             PurchaseHeader.Modify();
@@ -695,6 +711,8 @@ codeunit 139628 "E-Doc. Receive Test"
 
         // [GIVEN] purchase invoice
         LibraryPurchase.CreateVendorWithAddress(Vendor);
+        Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+        Vendor.Modify();
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
 
         for i := 1 to 3 do begin
@@ -740,6 +758,8 @@ codeunit 139628 "E-Doc. Receive Test"
 
         // [GIVEN] purchase invoice
         LibraryPurchase.CreateVendorWithAddress(Vendor);
+        Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+        Vendor.Modify();
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
 
         for i := 1 to 3 do begin

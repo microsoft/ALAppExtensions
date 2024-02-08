@@ -212,6 +212,6 @@ table 6211 "Sustain. Account Category"
         SustainabilityAccountMgt: Codeunit "Sustainability Account Mgt.";
     begin
         SustainabilityAccountMgt.CheckIfChangeAllowedForCategory(Code, FieldCaption);
-        SustainabilityAccountMgt.ReCalculateJournalLinesForCategory(Code);
+        SustainabilityAccountMgt.ReCalculateJournalLinesForCategory(Rec);
     end;
 }

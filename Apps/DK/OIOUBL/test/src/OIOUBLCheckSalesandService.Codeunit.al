@@ -26,6 +26,7 @@ codeunit 148050 "OIOUBL-Check Sales and Service"
 #pragma warning restore AA0470
         NegativeDiscountAmountErr: Label 'The total Line Discount Amount cannot be negative.';
         NegativeAmountErr: Label 'The total Line Amount cannot be negative.';
+        TotalInvoiceAmountNegativeErr: Label 'The total amount for the invoice must be 0 or greater.';
         GLEntryVerifyErr: Label 'The GLEntry does not exist.';
         NotFoundOnPageErr: Label 'is not found on the page';
         TestFieldNotFoundErr: Label 'TestFieldNotFound';
@@ -119,7 +120,8 @@ codeunit 148050 "OIOUBL-Check Sales and Service"
         // Exercise: Post the Sales Invoice.
         // Verify: Verify error message pops up when posting.
         asserterror LibrarySales.PostSalesDocument(SalesHeader, false, false);
-        Assert.ExpectedError(NegativeAmountErr);
+        // Assert.ExpectedError(NegativeAmountErr); -> don't get the OIOUBL error, you get the normal W1 error
+        Assert.ExpectedError(TotalInvoiceAmountNegativeErr);
     end;
 
     [Test]

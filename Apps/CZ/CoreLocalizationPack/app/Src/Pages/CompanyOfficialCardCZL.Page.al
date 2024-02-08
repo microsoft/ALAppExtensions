@@ -273,10 +273,8 @@ page 11766 "Company Official Card CZL"
     local procedure DetermineCompanyOfficialSeriesNo(): Code[20]
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
-        CompanyOfficialCZL: Record "Company Official CZL";
     begin
         StatutoryReportingSetupCZL.Get();
-        DocumentNoVisibility.CheckNumberSeries(CompanyOfficialCZL, StatutoryReportingSetupCZL."Company Official Nos.", CompanyOfficialCZL.FieldNo("No."));
         exit(StatutoryReportingSetupCZL."Company Official Nos.");
     end;
 

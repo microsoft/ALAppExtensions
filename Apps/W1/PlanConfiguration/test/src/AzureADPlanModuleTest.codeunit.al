@@ -452,9 +452,12 @@ codeunit 139509 "Azure AD Plan Module Test"
         EssentialUser: Record User;
         AzureADPlan: Codeunit "Azure AD Plan";
         PlanIds: Codeunit "Plan Ids";
+        TestUserPermissionsSubs: Codeunit "Test User Permissions Subs.";
     begin
         // [SCENARIO] CheckMixedPlans show a message when user has access to the user management tables
         Initialize();
+        BindSubscription(TestUserPermissionsSubs);
+        TestUserPermissionsSubs.SetCanManageUser(UserSecurityId());
         LibraryLowerPermissions.SetOutsideO365Scope();
         LibraryLowerPermissions.AddSecurity();
 
@@ -490,9 +493,12 @@ codeunit 139509 "Azure AD Plan Module Test"
         PremiumUser: Record User;
         AzureADPlan: Codeunit "Azure AD Plan";
         PlanIds: Codeunit "Plan Ids";
+        TestUserPermissionsSubs: Codeunit "Test User Permissions Subs.";
     begin
         // [SCENARIO] CheckMixedPlans show a message when user has access to the user management tables
         Initialize();
+        BindSubscription(TestUserPermissionsSubs);
+        TestUserPermissionsSubs.SetCanManageUser(UserSecurityId());
         LibraryLowerPermissions.SetOutsideO365Scope();
         LibraryLowerPermissions.AddSecurity();
 
@@ -529,9 +535,12 @@ codeunit 139509 "Azure AD Plan Module Test"
         EssentialUser: Record User;
         AzureADPlan: Codeunit "Azure AD Plan";
         PlanIds: Codeunit "Plan Ids";
+        TestUserPermissionsSubs: Codeunit "Test User Permissions Subs.";
     begin
         // [SCENARIO] CheckMixedPlans show a message when user has access to the user management tables
         Initialize();
+        BindSubscription(TestUserPermissionsSubs);
+        TestUserPermissionsSubs.SetCanManageUser(UserSecurityId());
         LibraryLowerPermissions.SetOutsideO365Scope();
         LibraryLowerPermissions.AddSecurity();
 
