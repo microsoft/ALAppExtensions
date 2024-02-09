@@ -72,7 +72,8 @@ codeunit 4037 "Helper Functions"
                     tabledata "Purchase Header" = rimd,
                     tabledata "Purchase Line" = rimd,
                     tabledata "Over-Receipt Code" = rimd,
-                    tabledata "Accounting Period" = rimd;
+                    tabledata "Accounting Period" = rimd,
+                    tabledata "Data Migration Error" = rimd;
 
     var
         GPConfiguration: Record "GP Configuration";
