@@ -1,3 +1,7 @@
+namespace Microsoft.DataMigration.GP;
+
+using Microsoft.DataMigration;
+
 page 40125 "Hybrid GP Overview Fb"
 {
     ApplicationArea = All;
