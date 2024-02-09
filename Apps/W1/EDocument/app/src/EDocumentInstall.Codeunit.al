@@ -8,7 +8,6 @@ using System.IO;
 using System.Reflection;
 using System.Utilities;
 using System.Upgrade;
-
 codeunit 6161 "E-Document Install"
 {
     Access = Internal;
@@ -36,7 +35,7 @@ codeunit 6161 "E-Document Install"
         ImportServiceCreditMemoXML();
 
         UpgradeTag.SetUpgradeTag(GetEDOCDataExchUpdateTag());
-        
+
     end;
 
     local procedure ImportServiceInvoiceXML()

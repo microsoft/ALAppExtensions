@@ -7,11 +7,11 @@ codeunit 4780 "Create FA No Series"
     var
         ContosoNoSeries: Codeunit "Contoso No Series";
     begin
-        ContosoNoSeries.InsertNoSeries(FixedAsset(), FixedAssetLbl, 'FA000010', 'FA999990', '', '', 1, false, true);
-        ContosoNoSeries.InsertNoSeries(Insurance(), InsuranceLbl, 'INS000010', 'INS999990', '', '', 1, false, true);
-        ContosoNoSeries.InsertNoSeries(FixedAssetGLJournal(), FixedAssetGLJournalLbl, 'F00010', 'F01000', '', '', 1, false, true);
-        ContosoNoSeries.InsertNoSeries(RecurringFixedAssetGLJournal(), RecurringFixedAssetGLJournalLbl, 'RF00010', 'RF01000', '', '', 1, false, true);
-        ContosoNoSeries.InsertNoSeries(InsuranceJournal(), InsuranceJournalLbl, 'N00010', 'N01000', '', '', 1, false, true);
+        ContosoNoSeries.InsertNoSeries(FixedAsset(), FixedAssetLbl, 'FA000010', 'FA999990', '', '', 1, enum::"No. Series Implementation"::Normal, true);
+        ContosoNoSeries.InsertNoSeries(Insurance(), InsuranceLbl, 'INS000010', 'INS999990', '', '', 1, enum::"No. Series Implementation"::Normal, true);
+        ContosoNoSeries.InsertNoSeries(FixedAssetGLJournal(), FixedAssetGLJournalLbl, 'F00010', 'F01000', '', '', 1, enum::"No. Series Implementation"::Normal, true);
+        ContosoNoSeries.InsertNoSeries(RecurringFixedAssetGLJournal(), RecurringFixedAssetGLJournalLbl, 'RF00010', 'RF01000', '', '', 1, enum::"No. Series Implementation"::Normal, true);
+        ContosoNoSeries.InsertNoSeries(InsuranceJournal(), InsuranceJournalLbl, 'N00010', 'N01000', '', '', 1, enum::"No. Series Implementation"::Normal, true);
     end;
 
     var

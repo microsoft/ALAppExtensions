@@ -154,7 +154,7 @@ codeunit 1951 "LP Model Management"
         Result: Text;
         Title: Text;
         ApiURI: Text[250];
-        ApiKey: Text[200];
+        ApiKey: SecretText;
     begin
         if IsMachineLearningInProgress() then
             Error(TrainingInProgressErr);
@@ -299,7 +299,7 @@ codeunit 1951 "LP Model Management"
         LPFeatureTableHelper: Codeunit "LP Feature Table Helper";
         LPPredictionMgt: Codeunit "LP Prediction Mgt.";
         ApiURI: Text[250];
-        ApiKey: Text[200];
+        ApiKey: SecretText;
     begin
         LPMachineLearningSetup.GetSingleInstance();
         if LPMachineLearningSetup.LastFeatureTableResetWasTooLongAgo() or BasedOnIncrement then

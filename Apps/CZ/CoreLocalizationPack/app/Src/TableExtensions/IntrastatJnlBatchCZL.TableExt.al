@@ -39,7 +39,9 @@ tableextension 31025 "Intrastat Jnl. Batch CZL" extends "Intrastat Jnl. Batch"
             end;
 #endif
         }
+#pragma warning disable AL0842
         field(31082; "Statement Type CZL"; Enum "Intrastat Statement Type CZL")
+#pragma warning restore AL0842
         {
             Caption = 'Statement Type';
 #if not CLEAN22

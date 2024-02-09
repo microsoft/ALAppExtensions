@@ -1,7 +1,6 @@
 namespace Microsoft.EServices;
 
 using Microsoft.Foundation.Company;
-using System.Environment;
 
 pageextension 13609 "Companies Nemhandel Status" extends Companies
 {
@@ -11,19 +10,9 @@ pageextension 13609 "Companies Nemhandel Status" extends Companies
     trigger OnDeleteRecord(): Boolean
     var
         CompanyInformation: Record "Company Information";
-        EnvironmentInformation: Codeunit "Environment Information";
-#if not CLEAN24
         NemhandelStatusMgt: Codeunit "Nemhandel Status Mgt.";
-#endif
     begin
-#if not CLEAN24
-        if not NemhandelStatusMgt.IsFeatureEnableDatePassed() then
-            exit(true);
-#endif
-        if not EnvironmentInformation.IsProduction() then
-            exit(true);
-
-        if Rec."Evaluation Company" then
+        if not NemhandelStatusMgt.IsSaaSProductionCompany() then
             exit(true);
 
         CompanyInformation.ChangeCompany(Rec.Name);

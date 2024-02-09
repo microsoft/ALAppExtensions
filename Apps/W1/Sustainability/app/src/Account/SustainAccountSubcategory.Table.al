@@ -1,5 +1,7 @@
 namespace Microsoft.Sustainability.Account;
 
+using Microsoft.Sustainability.Setup;
+
 table 6212 "Sustain. Account Subcategory"
 {
     Caption = 'Sustainability Account Subcategory';
@@ -26,6 +28,8 @@ table 6212 "Sustain. Account Subcategory"
         }
         field(4; "Emission Factor CO2"; Decimal)
         {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission Factor CO2';
 
             trigger OnValidate()
@@ -35,6 +39,8 @@ table 6212 "Sustain. Account Subcategory"
         }
         field(5; "Emission Factor CH4"; Decimal)
         {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission Factor CH4';
 
             trigger OnValidate()
@@ -44,6 +50,8 @@ table 6212 "Sustain. Account Subcategory"
         }
         field(6; "Emission Factor N2O"; Decimal)
         {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission Factor N2O';
 
             trigger OnValidate()
@@ -89,11 +97,14 @@ table 6212 "Sustain. Account Subcategory"
         TestField(Code);
     end;
 
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
+
     local procedure CheckIfChangeAllowedAndRecalculateJournalLines(FieldCaption: Text)
     var
         SustainabilityAccountMgt: Codeunit "Sustainability Account Mgt.";
     begin
         SustainabilityAccountMgt.CheckIfChangeAllowedForSubcategory(Code, FieldCaption);
-        SustainabilityAccountMgt.ReCalculateJournalLinesForSubcategory(Code);
+        SustainabilityAccountMgt.ReCalculateJournalLinesForSubcategory(Rec);
     end;
 }

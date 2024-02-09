@@ -444,7 +444,9 @@ table 31105 "Statutory Reporting Setup CZL"
 #if not CLEAN22
 #pragma warning disable AL0432
 #endif
+#pragma warning disable AL0842
         field(167; "Get Tariff No. From"; Enum "Intrastat Detail Source CZL")
+#pragma warning restore AL0842
 #if not CLEAN22
 #pragma warning restore AL0432
 #endif
@@ -463,7 +465,9 @@ table 31105 "Statutory Reporting Setup CZL"
 #if not CLEAN22
 #pragma warning disable AL0432
 #endif
+#pragma warning disable AL0842
         field(168; "Get Net Weight From"; Enum "Intrastat Detail Source CZL")
+#pragma warning restore AL0842
 #if not CLEAN22
 #pragma warning restore AL0432
 #endif
@@ -482,7 +486,9 @@ table 31105 "Statutory Reporting Setup CZL"
 #if not CLEAN22
 #pragma warning disable AL0432
 #endif
+#pragma warning disable AL0842
         field(169; "Get Country/Region of Origin"; Enum "Intrastat Detail Source CZL")
+#pragma warning restore AL0842
 #if not CLEAN22
 #pragma warning restore AL0432
 #endif

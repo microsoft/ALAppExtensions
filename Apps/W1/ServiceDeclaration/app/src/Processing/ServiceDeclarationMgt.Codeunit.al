@@ -152,7 +152,7 @@ codeunit 5012 "Service Declaration Mgt."
         NoSeriesLine."Line No." := 10000;
         NoSeriesLine.Validate("Starting No.", NoSeriesCode + '00001');
         NoSeriesLine.Insert(true);
-        NoSeriesLine.Validate("Allow Gaps in Nos.", true);
+        NoSeriesLine.Validate(Implementation, Enum::"No. Series Implementation"::Sequence);
         NoSeriesLine.Modify(true);
         exit(NoSeriesCode);
     end;

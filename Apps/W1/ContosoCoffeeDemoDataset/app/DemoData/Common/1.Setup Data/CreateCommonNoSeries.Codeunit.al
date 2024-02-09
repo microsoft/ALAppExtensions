@@ -17,19 +17,18 @@ codeunit 5128 "Create Common No Series"
         SalesReceivablesSetup.Get();
 
         if SalesReceivablesSetup."Customer Nos." = '' then
-            ContosoNoSeries.InsertNoSeries(Customer(), CustomerLbl, 'C10', 'C99990', '', '', 1, true, true);
+            ContosoNoSeries.InsertNoSeries(Customer(), CustomerLbl, 'C10', 'C99990', '', '', 1, Enum::"No. Series Implementation"::Sequence, true);
 
         if SalesReceivablesSetup."Order Nos." = '' then
-            ContosoNoSeries.InsertNoSeries(SalesOrder(), SalesOrderLbl, '101001', '102999', '', '', 1, false, false);
-
+            ContosoNoSeries.InsertNoSeries(SalesOrder(), SalesOrderLbl, '101001', '102999', '', '', 1, Enum::"No. Series Implementation"::Normal, false);
 
         InventorySetup.Get();
         if InventorySetup."Item Nos." = '' then
-            ContosoNoSeries.InsertNoSeries(Item(), ItemsLbl, '1000', '9999', '', '', 1, true, true);
+            ContosoNoSeries.InsertNoSeries(Item(), ItemsLbl, '1000', '9999', '', '', 1, Enum::"No. Series Implementation"::Sequence, true);
 
         PurchasePayablesSetup.Get();
         if PurchasePayablesSetup."Order Nos." = '' then
-            ContosoNoSeries.InsertNoSeries(PurchaseOrder(), PurchaseOrderLbl, '106001', '107999', '', '', 1, false, false);
+            ContosoNoSeries.InsertNoSeries(PurchaseOrder(), PurchaseOrderLbl, '106001', '107999', '', '', 1, Enum::"No. Series Implementation"::Normal, false);
     end;
 
     var

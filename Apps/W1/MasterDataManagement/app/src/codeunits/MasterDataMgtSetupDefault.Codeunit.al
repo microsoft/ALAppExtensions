@@ -760,7 +760,12 @@ codeunit 7230 "Master Data Mgt. Setup Default"
         FieldNumbers.Add(NoSeriesLine.FieldNo(Open));
         FieldNumbers.Add(NoSeriesLine.FieldNo("Sequence Name"));
         FieldNumbers.Add(NoSeriesLine.FieldNo("Starting Sequence No."));
+#if not CLEAN24
+#pragma warning disable AL0432
         FieldNumbers.Add(NoSeriesLine.FieldNo("Allow Gaps in Nos."));
+#pragma warning restore AL0432
+#endif
+        FieldNumbers.Add(NoSeriesLine.FieldNo(Implementation));
 
         GenerateIntegrationTableMapping(IntegrationTableMapping, FieldNumbers, IntegrationTableMappingName, Database::"No. Series Line", '', true, ShouldRecreateJobQueueEntry);
         IntegrationTableMapping."Dependency Filter" := 'MDM_NUMBERSERIES';

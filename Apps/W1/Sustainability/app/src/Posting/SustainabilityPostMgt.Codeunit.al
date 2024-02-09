@@ -2,16 +2,11 @@ namespace Microsoft.Sustainability.Posting;
 
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Ledger;
-using System.Utilities;
 using Microsoft.Sustainability.Account;
 
 codeunit 6212 "Sustainability Post Mgt"
 {
     Access = Internal;
-    Permissions =
-        tabledata "Sustainability Jnl. Line" = r,
-        tabledata "Sustainability Jnl. Batch" = r,
-        tabledata "Sustainability Ledger Entry" = i;
 
     procedure InsertLedgerEntry(SustainabilityJnlLine: Record "Sustainability Jnl. Line")
     var
@@ -20,6 +15,9 @@ codeunit 6212 "Sustainability Post Mgt"
         SustainabilityLedgerEntry.Init();
         // AutoIncrement requires the PK to be empty
         SustainabilityLedgerEntry."Entry No." := 0;
+
+        SustainabilityJnlLine.CalcFields("Account Name");
+        SustainabilityLedgerEntry."Account Name" := SustainabilityJnlLine."Account Name";
 
         SustainabilityLedgerEntry.TransferFields(SustainabilityJnlLine);
 
@@ -31,41 +29,19 @@ codeunit 6212 "Sustainability Post Mgt"
         SustainabilityLedgerEntry.Insert(true);
     end;
 
-    procedure GetNoSeriesFromJournalLine(SustainabilityJnlLine: Record "Sustainability Jnl. Line"): Code[20]
-    var
-        SustainabilityJnlBatch: Record "Sustainability Jnl. Batch";
+    internal procedure GetStartPostingProgressMessage(): Text
     begin
-        SustainabilityJnlBatch.Get(SustainabilityJnlLine."Journal Template Name", SustainabilityJnlLine."Journal Batch Name");
-        exit(SustainabilityJnlBatch."No Series");
+        exit(PostingSustainabilityJournalLbl);
     end;
 
-    [ErrorBehavior(ErrorBehavior::Collect)]
-    procedure CheckJournalLinesWithErrorCollect(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"): Boolean
-    var
-        TempErrorMessages: Record "Error Message" temporary;
-        ErrorMessageManagement: Codeunit "Error Message Management";
+    internal procedure GetCheckJournalLineProgressMessage(LineNo: Integer): Text
     begin
-        if not Codeunit.Run(Codeunit::"Sustainability Jnl.-Check", SustainabilityJnlLine) then
-            ErrorMessageManagement.InsertTempLineErrorMessage(TempErrorMessages, SustainabilityJnlLine.RecordId(), Database::"Sustainability Jnl. Line", 0, GetLastErrorText(), GetLastErrorCallStack());
-
-        ErrorMessageManagement.CollectErrors(TempErrorMessages);
-
-        if not TempErrorMessages.IsEmpty() then begin
-            Page.RunModal(Page::"Error Messages", TempErrorMessages);
-            exit(false);
-        end;
-
-        exit(true);
+        exit(StrSubstNo(CheckSustainabilityJournalLineLbl, LineNo));
     end;
 
-    procedure PostSustainabilityJournalLines(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; IsRecurring: Boolean)
+    internal procedure GetProgressingLineMessage(LineNo: Integer): Text
     begin
-        if IsRecurring then
-            Codeunit.Run(Codeunit::"Sustainability Recur Jnl.-Post", SustainabilityJnlLine)
-        else
-            Codeunit.Run(Codeunit::"Sustainability Jnl.-Post", SustainabilityJnlLine);
-
-        Message(SuccessfulPostingLbl);
+        exit(StrSubstNo(ProcessingLineLbl, LineNo));
     end;
 
     local procedure CopyDataFromAccountCategory(var SustainabilityLedgerEntry: Record "Sustainability Ledger Entry"; CategoryCode: Code[20])
@@ -94,5 +70,7 @@ codeunit 6212 "Sustainability Post Mgt"
     end;
 
     var
-        SuccessfulPostingLbl: Label 'The journal lines have been posted successfully.';
+        PostingSustainabilityJournalLbl: Label 'Posting Sustainability Journal Lines: \ #1', Comment = '#1 = sub-process progress message';
+        CheckSustainabilityJournalLineLbl: Label 'Checking Sustainability Journal Line: %1', Comment = '%1 = Line No.';
+        ProcessingLineLbl: Label 'Processing Line: %1', Comment = '%1 = Line No.';
 }

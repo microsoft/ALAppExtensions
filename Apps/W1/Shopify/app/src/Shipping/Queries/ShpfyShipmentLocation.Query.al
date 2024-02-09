@@ -19,7 +19,6 @@ query 30100 "Shpfy Shipment Location"
                 DataItemLink = "Document No." = SalesShipmentHeader."No.";
                 DataItemTableFilter = Type = const(Item), Quantity = filter('>0');
                 SqlJoinType = InnerJoin;
-                column(Shpfy_Order_Line_Id; "Shpfy Order Line Id") { }
 
                 dataitem(OrderLine; "Shpfy Order Line")
                 {

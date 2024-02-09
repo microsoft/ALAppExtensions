@@ -498,10 +498,8 @@ page 31138 "VIES Declaration CZL"
     local procedure DetermineVIESDeclarationCZLSeriesNo(): Code[20]
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
-        VIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL";
     begin
         StatutoryReportingSetupCZL.Get();
-        DocumentNoVisibility.CheckNumberSeries(VIESDeclarationHeaderCZL, StatutoryReportingSetupCZL."VIES Declaration Nos.", VIESDeclarationHeaderCZL.FieldNo("No."));
         exit(StatutoryReportingSetupCZL."VIES Declaration Nos.");
     end;
 }

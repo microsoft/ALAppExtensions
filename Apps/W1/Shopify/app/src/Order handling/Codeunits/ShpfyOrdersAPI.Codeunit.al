@@ -72,7 +72,12 @@ codeunit 30165 "Shpfy Orders API"
     /// </summary>
     /// <param name="OrderId">Parameter of type BigInteger.</param>
     /// <param name="JAttributes">Parameter of type JsonArray.</param>
+#if not CLEAN24
+    /// <param name="ShopifyShop">Parameter of type Record "Shpfy Shop".</param>
+    local procedure UpdateOrderAttributes(OrderId: BigInteger; JAttributes: JsonArray; ShopifyShop: Record "Shpfy Shop")
+#else
     local procedure UpdateOrderAttributes(OrderId: BigInteger; JAttributes: JsonArray)
+#endif
     var
         OrderAttribute: Record "Shpfy Order Attribute";
         JItem: JsonToken;
@@ -87,7 +92,12 @@ codeunit 30165 "Shpfy Orders API"
 #pragma warning disable AA0139
             OrderAttribute."Key" := JsonHelper.GetValueAsText(JItem, 'key', MaxStrLen(OrderAttribute."Key"));
 #pragma warning restore AA0139
-            OrderAttribute."Attribute Value" := CopyStr(JsonHelper.GetValueAsText(JItem, 'value').Replace('\\', '\').Replace('\"', '"'), 1, MaxStrLen(OrderAttribute."Attribute Value"));
+#if not CLEAN24
+            if not ShopifyShop."Replace Order Attribute Value" then
+                OrderAttribute.Value := CopyStr(JsonHelper.GetValueAsText(JItem, 'value').Replace('\\', '\').Replace('\"', '"'), 1, MaxStrLen(OrderAttribute.Value))
+            else
+#endif
+                OrderAttribute."Attribute Value" := CopyStr(JsonHelper.GetValueAsText(JItem, 'value').Replace('\\', '\').Replace('\"', '"'), 1, MaxStrLen(OrderAttribute."Attribute Value"));
             OrderAttribute.Insert();
         end;
     end;
@@ -111,7 +121,12 @@ codeunit 30165 "Shpfy Orders API"
         Clear(OrderAttribute);
         OrderAttribute."Order Id" := OrderHeader."Shopify Order Id";
         OrderAttribute."Key" := CopyStr(KeyName, 1, MaxStrLen(OrderAttribute."Key"));
-        OrderAttribute."Attribute Value" := CopyStr(Value, 1, MaxStrLen(OrderAttribute."Attribute Value"));
+#if not CLEAN24
+        if not Shop."Replace Order Attribute Value" then
+            OrderAttribute.Value := CopyStr(Value, 1, MaxStrLen(OrderAttribute.Value))
+        else
+#endif
+            OrderAttribute."Attribute Value" := CopyStr(Value, 1, MaxStrLen(OrderAttribute."Attribute Value"));
         if not OrderAttribute.Insert() then
             OrderAttribute.Modify();
 
@@ -121,7 +136,12 @@ codeunit 30165 "Shpfy Orders API"
             repeat
                 Clear(JAttrib);
                 JAttrib.Add('key', OrderAttribute."Key");
-                JAttrib.Add('value', OrderAttribute."Attribute Value");
+#if not CLEAN24
+                if not Shop."Replace Order Attribute Value" then
+                    JAttrib.Add('value', OrderAttribute.Value)
+                else
+#endif
+                    JAttrib.Add('value', OrderAttribute."Attribute Value");
                 JAttributes.Add(JAttrib);
             until OrderAttribute.Next() = 0;
 
@@ -229,7 +249,11 @@ codeunit 30165 "Shpfy Orders API"
                         else
                             OrdersToImport."Purchasing Entity" := OrdersToImport."Purchasing Entity"::Customer;
                     if JsonHelper.GetJsonArray(JNode, JArray, 'customAttributes') then
+#if not CLEAN24
+                        UpdateOrderAttributes(OrdersToImport.Id, JArray, ShopifyShop);
+#else
                         UpdateOrderAttributes(OrdersToImport.Id, JArray);
+#endif
                     if JsonHelper.GetJsonArray(JNode, JArray, 'tags') then begin
                         Clear(Tags);
                         foreach JLineItem in JArray do begin

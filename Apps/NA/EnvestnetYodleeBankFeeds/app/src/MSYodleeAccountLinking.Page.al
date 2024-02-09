@@ -1,5 +1,7 @@
 namespace Microsoft.Bank.StatementImport.Yodlee;
 
+using System.Integration;
+
 page 1451 "MS - Yodlee Account Linking"
 {
     Caption = ' ';
@@ -21,7 +23,7 @@ page 1451 "MS - Yodlee Account Linking"
                 ShowCaption = false;
                 InstructionalText = 'NOTE: You are accessing a third-party''s website and service. You should review the third-party''s terms and privacy policy before acquiring or using its website or service.';
             }
-            usercontrol(WebPageViewer; "Microsoft.Dynamics.Nav.Client.WebPageViewer")
+            usercontrol(WebPageViewer; WebPageViewer)
             {
                 ApplicationArea = Basic, Suite;
 

@@ -5,27 +5,12 @@ using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Setup;
 using Microsoft.Finance.Dimension;
 using Microsoft.Sustainability.Calculation;
+using System.Utilities;
 
 codeunit 6216 "Sustainability Jnl.-Check"
 {
     Access = Internal;
     TableNo = "Sustainability Jnl. Line";
-    Permissions =
-        tabledata "Sustainability Jnl. Line" = r,
-        tabledata "Sustainability Jnl. Batch" = r,
-        tabledata "Sustainability Account" = r;
-
-    trigger OnRun()
-    begin
-        Rec.ReadIsolation := IsolationLevel::ReadUncommitted;
-
-        CheckCommonConditionsBeforePosting(Rec);
-
-        if Rec.FindSet() then
-            repeat
-                CheckSustainabilityJournalLine(Rec);
-            until Rec.Next() = 0;
-    end;
 
     procedure CheckCommonConditionsBeforePosting(var SustainabilityJnlLine: Record "Sustainability Jnl. Line")
     begin
@@ -40,6 +25,26 @@ codeunit 6216 "Sustainability Jnl.-Check"
             Error(SustainabilityJournalBatchMismatchErr);
     end;
 
+    [ErrorBehavior(ErrorBehavior::Collect)]
+    procedure CheckSustainabilityJournalLineWithErrorCollect(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; var TempErrorMessages: Record "Error Message" temporary)
+    var
+        ErrorMessageManagement: Codeunit "Error Message Management";
+    begin
+        if not TryCheckJournalLine(SustainabilityJnlLine) then
+            ErrorMessageManagement.InsertTempLineErrorMessage(TempErrorMessages, SustainabilityJnlLine.RecordId(), Database::"Sustainability Jnl. Line", 0, GetLastErrorText(), GetLastErrorCallStack());
+
+        ErrorMessageManagement.CollectErrors(TempErrorMessages);
+    end;
+
+    [ErrorBehavior(ErrorBehavior::Collect)]
+    procedure CheckAllJournalLinesWithErrorCollect(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; var TempErrorMessages: Record "Error Message" temporary)
+    begin
+        if SustainabilityJnlLine.FindSet() then
+            repeat
+                CheckSustainabilityJournalLineWithErrorCollect(SustainabilityJnlLine, TempErrorMessages);
+            until SustainabilityJnlLine.Next() = 0;
+    end;
+
     procedure CheckSustainabilityJournalLine(SustainabilityJnlLine: Record "Sustainability Jnl. Line")
     var
         SustainabilityAccount: Record "Sustainability Account";
@@ -50,18 +55,27 @@ codeunit 6216 "Sustainability Jnl.-Check"
         SustainabilityJnlLine.TestField(Description, ErrorInfo.Create());
         SustainabilityJnlLine.TestField("Unit of Measure", ErrorInfo.Create());
 
-        if SustainabilityAccount.Get(SustainabilityJnlLine."Account No.") then begin
-            SustainabilityAccount.CheckAccountReadyForPosting();
-            SustainabilityAccount.TestField("Direct Posting", ErrorInfo.Create());
-            SustainabilityJournalMgt.CheckScopeMatchWithBatch(SustainabilityJnlLine);
-        end else
-            SustainabilityJnlLine.TestField("Account No.", ErrorInfo.Create());
+        TestRequiredFieldsFromSetupForJnlLine(SustainabilityJnlLine);
+
+        SustainabilityAccount.Get(SustainabilityJnlLine."Account No.");
+        SustainabilityAccount.CheckAccountReadyForPosting();
+        SustainabilityAccount.TestField("Direct Posting", ErrorInfo.Create());
+        SustainabilityJournalMgt.CheckScopeMatchWithBatch(SustainabilityJnlLine);
 
         TestEmissionCalculationAndAmount(SustainabilityJnlLine);
 
-        TestRequiredFieldsFromSetupForJnlLine(SustainabilityJnlLine);
-
         TestDimensionsForJnlLine(SustainabilityJnlLine);
+    end;
+
+    [TryFunction]
+    local procedure TryCheckJournalLine(SustainabilityJnlLine: Record "Sustainability Jnl. Line")
+    var
+        SustainabilityJnlCheck: Codeunit "Sustainability Jnl.-Check";
+    begin
+        if SustainabilityJnlLine."Line No." = 0 then
+            exit;
+
+        SustainabilityJnlCheck.CheckSustainabilityJournalLine(SustainabilityJnlLine);
     end;
 
     local procedure TestEmissionCalculationAndAmount(SustainabilityJnlLine: Record "Sustainability Jnl. Line")

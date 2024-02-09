@@ -27,6 +27,7 @@ page 6135 "E-Document Service Status"
                 field(Status; Rec.Status)
                 {
                     ToolTip = 'Specifies the status of an E-Dcoument';
+                    StyleExpr = StyleTxt;
                 }
                 field(Logs; Rec.Logs())
                 {
@@ -51,4 +52,29 @@ page 6135 "E-Document Service Status"
             }
         }
     }
+
+    trigger OnAfterGetRecord()
+    begin
+        case Rec.Status of
+            Rec.Status::"Sending Error",
+            Rec.Status::"Export Error",
+            Rec.Status::"Cancel Error",
+            Rec.Status::"Imported Document Processing Error":
+                StyleTxt := 'Unfavorable';
+
+            Rec.Status::Sent,
+            Rec.Status::"Imported Document Created",
+            Rec.Status::Approved,
+            Rec.Status::"Order Linked",
+            Rec.Status::"Order Updated":
+                StyleTxt := 'Favorable';
+            else
+                StyleTxt := 'None';
+        end;
+    end;
+
+    var
+        StyleTxt: Text;
 }
+
+

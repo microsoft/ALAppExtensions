@@ -6,34 +6,23 @@ using Microsoft.Sustainability.Account;
 codeunit 6215 "Sustainability Calculation"
 {
     Access = Internal;
-    Permissions = tabledata "Sustainability Jnl. Line" = rm;
 
-    internal procedure CalculateScope1Emissions(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SustainAccountCategory: Record "Sustain. Account Category")
-    var
-        SustainAccountSubcategory: Record "Sustain. Account Subcategory";
+    internal procedure CalculateScope1Emissions(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SustainAccountCategory: Record "Sustain. Account Category"; SustainAccountSubcategory: Record "Sustain. Account Subcategory")
     begin
-        if not SustainAccountSubcategory.Get(SustainAccountCategory.Code, SustainabilityJnlLine."Account Subcategory") then
-            exit;
-
         case SustainAccountCategory."Calculation Foundation" of
             Enum::"Calculation Foundation"::"Fuel/Electricity":
                 CalculateFuelOrElectricityEmissions(SustainabilityJnlLine, SustainAccountSubcategory);
             Enum::"Calculation Foundation"::Distance:
                 CalculateDistanceEmissions(SustainabilityJnlLine, SustainAccountSubcategory);
             Enum::"Calculation Foundation"::Installations:
-                CalculateInstallationsEmissions(SustainabilityJnlLine)
+                CalculateInstallationsEmissions(SustainabilityJnlLine, SustainAccountSubcategory)
             else
                 Error(CalculationNotSupportedErr, SustainAccountCategory."Calculation Foundation", SustainAccountCategory."Emission Scope");
         end;
     end;
 
-    internal procedure CalculateScope2Emissions(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SustainAccountCategory: Record "Sustain. Account Category")
-    var
-        SustainAccountSubcategory: Record "Sustain. Account Subcategory";
+    internal procedure CalculateScope2Emissions(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SustainAccountCategory: Record "Sustain. Account Category"; SustainAccountSubcategory: Record "Sustain. Account Subcategory")
     begin
-        if not SustainAccountSubcategory.Get(SustainAccountCategory.Code, SustainabilityJnlLine."Account Subcategory") then
-            exit;
-
         case SustainAccountCategory."Calculation Foundation" of
             Enum::"Calculation Foundation"::"Fuel/Electricity":
                 CalculateFuelOrElectricityEmissions(SustainabilityJnlLine, SustainAccountSubcategory);
@@ -44,13 +33,8 @@ codeunit 6215 "Sustainability Calculation"
         end;
     end;
 
-    internal procedure CalculateScope3Emissions(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SustainAccountCategory: Record "Sustain. Account Category")
-    var
-        SustainAccountSubcategory: Record "Sustain. Account Subcategory";
+    internal procedure CalculateScope3Emissions(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SustainAccountCategory: Record "Sustain. Account Category"; SustainAccountSubcategory: Record "Sustain. Account Subcategory")
     begin
-        if not SustainAccountSubcategory.Get(SustainAccountCategory.Code, SustainabilityJnlLine."Account Subcategory") then
-            exit;
-
         case SustainAccountCategory."Calculation Foundation" of
             Enum::"Calculation Foundation"::"Fuel/Electricity":
                 CalculateFuelOrElectricityEmissions(SustainabilityJnlLine, SustainAccountSubcategory);
@@ -87,13 +71,13 @@ codeunit 6215 "Sustainability Calculation"
         SustainabilityJnlLine.Validate("Emission N2O", SustainabilityJnlLine.Distance * SustainAccountSubcategory."Emission Factor N2O");
     end;
 
-    local procedure CalculateInstallationsEmissions(var SustainabilityJnlLine: Record "Sustainability Jnl. Line")
+    local procedure CalculateInstallationsEmissions(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SustainAccountSubcategory: Record "Sustain. Account Subcategory")
     begin
-        SustainabilityJnlLine.Validate("Emission CO2", CalculateInstallationEmission(SustainabilityJnlLine));
+        SustainabilityJnlLine.Validate("Emission CO2", CalculateInstallationEmission(SustainabilityJnlLine) * SustainAccountSubcategory."Emission Factor CO2");
 
-        SustainabilityJnlLine.Validate("Emission CH4", CalculateInstallationEmission(SustainabilityJnlLine));
+        SustainabilityJnlLine.Validate("Emission CH4", CalculateInstallationEmission(SustainabilityJnlLine) * SustainAccountSubcategory."Emission Factor CH4");
 
-        SustainabilityJnlLine.Validate("Emission N2O", CalculateInstallationEmission(SustainabilityJnlLine));
+        SustainabilityJnlLine.Validate("Emission N2O", CalculateInstallationEmission(SustainabilityJnlLine) * SustainAccountSubcategory."Emission Factor N2O");
     end;
 
     local procedure CalculateCustomEmissions(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SustainAccountSubcategory: Record "Sustain. Account Subcategory")

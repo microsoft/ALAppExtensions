@@ -5,6 +5,7 @@
 namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Bank.Reconciliation;
+using Microsoft.eServices.EDocument.OrderMatch;
 using System.Utilities;
 
 page 6121 "E-Document"
@@ -15,7 +16,7 @@ page 6121 "E-Document"
     InsertAllowed = false;
     DeleteAllowed = false;
     ModifyAllowed = false;
-    AdditionalSearchTerms = 'Edoc,Electronic Document';
+    RefreshOnActivate = true;
 
     layout
     {
@@ -25,7 +26,7 @@ page 6121 "E-Document"
             {
                 field(Record; RecordLinkTxt)
                 {
-                    Caption = 'Record';
+                    Caption = 'Document';
                     Editable = false;
                     ToolTip = 'Specifies the record, document, journal line, or ledger entry, that is linked to the electronic document.';
 
@@ -34,6 +35,13 @@ page 6121 "E-Document"
                         Rec.ShowRecord();
                         CurrPage.Update();
                     end;
+                }
+                field("Electronic Document Status"; Rec.Status)
+                {
+                    Editable = false;
+                    Caption = 'Document Status';
+                    ToolTip = 'Specifies the status of the electronic document.';
+                    StyleExpr = StyleStatusTxt;
                 }
                 field(Direction; Rec.Direction)
                 {
@@ -107,16 +115,11 @@ page 6121 "E-Document"
                     Importance = Additional;
                     ToolTip = 'Specifies the electronic document posting date.';
                 }
-                field("Electronic Document Status"; Rec.Status)
-                {
-                    Editable = false;
-                    ToolTip = 'Specifies the status of the electronic document.';
-                }
             }
             group(ReceivingCompanyInfo)
             {
                 Caption = 'Receiving Company Information';
-                Visible = Rec.Direction = Rec.Direction::Incoming;
+                Visible = false;
 
                 field("Receiving Company VAT Reg. No."; Rec."Receiving Company VAT Reg. No.")
                 {
@@ -145,24 +148,38 @@ page 6121 "E-Document"
                     ToolTip = 'Specifies the receiving company address.';
                 }
             }
+            part(EdocoumentServiceStatus; "E-Document Service Status")
+            {
+                Caption = 'Service Status';
+                SubPageLink = "E-Document Entry No" = field("Entry No");
+                ShowFilter = false;
+            }
+#if NOT CLEAN24
             group(EDocServiceStatus)
             {
-                ShowCaption = false;
-                part(EdocoumentServiceStatus; "E-Document Service Status")
-                {
-                    SubPageLink = "E-Document Entry No" = field("Entry No");
-                    ShowFilter = false;
-                }
+                Visible = false;
+                Enabled = false;
+                ObsoleteTag = '24.0';
+                ObsoleteReason = 'Part inside group moved out';
+                ObsoleteState = Pending;
             }
+#endif
+            part(ErrorMessagesPart; "Error Messages Part")
+            {
+                Visible = HasErrorsAndWarnings;
+                ShowFilter = false;
+                UpdatePropagation = Both;
+            }
+#if NOT CLEAN24
             group("Errors and Warnings")
             {
-                ShowCaption = false;
-                part(ErrorMessagesPart; "Error Messages Part")
-                {
-                    Caption = 'Errors and Warnings';
-                    ShowFilter = false;
-                }
+                Visible = false;
+                Enabled = false;
+                ObsoleteTag = '24.0';
+                ObsoleteReason = 'Part inside group moved out';
+                ObsoleteState = Pending;
             }
+#endif
         }
     }
     actions
@@ -172,12 +189,13 @@ page 6121 "E-Document"
             group(Outgoing)
             {
                 Caption = 'Outgoing';
+
                 action(Send)
                 {
                     Caption = 'Send Document';
                     ToolTip = 'Starts the document export.';
                     Image = SendElectronicDocument;
-                    Visible = Rec.Direction = Rec.Direction::Outgoing;
+                    Visible = not IsIncomingDoc;
 
                     trigger OnAction()
                     begin
@@ -189,7 +207,7 @@ page 6121 "E-Document"
                     Caption = 'Recreate Document';
                     ToolTip = 'Recreates the electronic document';
                     Image = CreateDocument;
-                    Visible = Rec.Direction = Rec.Direction::Outgoing;
+                    Visible = not IsIncomingDoc;
 
                     trigger OnAction()
                     var
@@ -210,7 +228,7 @@ page 6121 "E-Document"
                     Caption = 'Get Approval';
                     ToolTip = 'Gets if the electronic document is approved or rejected';
                     Image = Approval;
-                    Visible = Rec.Direction = Rec.Direction::Outgoing;
+                    Visible = not IsIncomingDoc;
 
                     trigger OnAction()
                     var
@@ -230,7 +248,7 @@ page 6121 "E-Document"
                     Caption = 'Cancel EDocument';
                     ToolTip = 'Cancels the electronic document';
                     Image = Cancel;
-                    Visible = Rec.Direction = Rec.Direction::Outgoing;
+                    Visible = not IsIncomingDoc;
 
                     trigger OnAction()
                     var
@@ -249,24 +267,12 @@ page 6121 "E-Document"
             group(Incoming)
             {
                 Caption = 'Incoming';
-                action(ImportManually)
-                {
-                    Caption = 'Import Manually';
-                    ToolTip = 'Imports the electronic document manually.';
-                    Image = Import;
-                    Visible = Rec.Direction = Rec.Direction::Incoming;
-
-                    trigger OnAction()
-                    begin
-                        EDocImport.UploadDocument(Rec);
-                    end;
-                }
                 action(GetBasicInfo)
                 {
                     Caption = 'Get Basic Info';
                     ToolTip = 'Gets the electronic document basic info.';
                     Image = GetOrder;
-                    Visible = Rec.Direction = Rec.Direction::Incoming;
+                    Visible = false;
 
                     trigger OnAction()
                     begin
@@ -275,38 +281,74 @@ page 6121 "E-Document"
                 }
                 action(CreateDocument)
                 {
-                    Caption = 'Create Document';
-                    ToolTip = 'Creates the document based on imported electronic document.';
-                    Image = CreateDocument;
-                    Visible = Rec.Direction = Rec.Direction::Incoming;
+                    Caption = 'Recreate Document';
+                    ToolTip = 'Recreate the document based on imported electronic document.';
+                    Image = CreateXMLFile;
+                    Visible = (not ShowCreateJnlLine) and IsIncomingDoc and HasErrorsAndWarnings;
 
                     trigger OnAction()
                     begin
-                        EDocImport.ProcessDocument(Rec, false, false);
+                        EDocImport.ProcessDocument(Rec, false);
                     end;
                 }
                 action(CreateJournal)
                 {
-                    Caption = 'Create Journal';
-                    ToolTip = 'Creates the journal line.';
+                    Caption = 'Recreate Journal Line';
+                    ToolTip = 'Recreate the journal line.';
                     Image = Journal;
-                    Visible = Rec.Direction = Rec.Direction::Incoming;
+                    Visible = ShowCreateJnlLine and IsIncomingDoc and HasErrorsAndWarnings;
 
                     trigger OnAction()
                     begin
-                        EDocImport.ProcessDocument(Rec, false, true);
+                        EDocImport.ProcessDocument(Rec, true);
                     end;
                 }
+#if not CLEAN24
                 action(UpdateOrder)
                 {
                     Caption = 'Update Order';
                     ToolTip = 'Updates related order.';
                     Image = UpdateDescription;
-                    Visible = Rec.Direction = Rec.Direction::Incoming;
+                    Visible = false;
+                    Enabled = false;
+                    ObsoleteTag = '24.0';
+                    ObsoleteReason = 'Update order changed to "Receive E-Document To" on Vendor';
+                    ObsoleteState = Pending;
 
                     trigger OnAction()
                     begin
-                        EDocImport.ProcessDocument(Rec, true, false);
+                        exit;
+                    end;
+                }
+#endif
+                action(MatchToOrder)
+                {
+                    Caption = 'Match Purchase Order';
+                    ToolTip = 'Match E-document lines to Purchase Order.';
+                    Image = Reconcile;
+                    Visible = ShowMapToOrder;
+
+                    trigger OnAction()
+                    var
+                        EDocOrderMatch: Codeunit "E-Doc. Line Matching";
+                    begin
+                        EDocOrderMatch.RunMatching(Rec);
+                    end;
+                }
+            }
+            group(Troubleshoot)
+            {
+                Caption = 'Troubleshoot';
+                action(ImportManually)
+                {
+                    Caption = 'Replace Source Document';
+                    ToolTip = 'Import and replace the electronic document.';
+                    Image = UpdateXML;
+                    Visible = IsIncomingDoc and HasErrorsAndWarnings;
+
+                    trigger OnAction()
+                    begin
+                        EDocImport.UploadDocument(Rec);
                     end;
                 }
                 action(TextToAccountMapping)
@@ -315,9 +357,13 @@ page 6121 "E-Document"
                     Image = MapAccounts;
                     RunObject = Page "Text-to-Account Mapping Wksh.";
                     ToolTip = 'Create a mapping of text on electronic documents to identical text on specific debit, credit, and balancing accounts in the general ledger or on bank accounts so that the resulting document or journal lines are prefilled with the specified information.';
-                    Visible = Rec.Direction = Rec.Direction::Incoming;
+                    Visible = IsIncomingDoc and HasErrorsAndWarnings;
                 }
             }
+
+        }
+        area(Navigation)
+        {
             action(EDocumentLog)
             {
                 Caption = 'Logs';
@@ -330,35 +376,88 @@ page 6121 "E-Document"
         }
         area(Promoted)
         {
-            group(Out)
+            group(Category_Process)
             {
-                Caption = 'Outgoing';
+                actionref(MatchToOrder_Promoted; MatchToOrder) { }
+                actionref(CreateDocument_Promoted; CreateDocument) { }
+                actionref(CreateJournal_Promoted; CreateJournal) { }
                 actionref(Send_Promoted; Send) { }
                 actionref(Recreate_Promoted; Recreate) { }
                 actionref(Cancel_promoteed; Cancel) { }
                 actionref(Approval_promoteed; GetApproval) { }
             }
+            group(Category_Troubleshoot)
+            {
+                Caption = 'Troubleshoot';
+                actionref(ImportManually_Promoted; ImportManually) { }
+                actionref(TextToAccountMapping_Promoted; TextToAccountMapping) { }
+            }
+#if not CLEAN24            
+            group(Out)
+            {
+                Caption = 'Outgoing';
+                Visible = false;
+                ObsoleteTag = '24.0';
+                ObsoleteReason = 'Actionrefs moved to process category';
+                ObsoleteState = Pending;
+            }
             group(In)
             {
                 Caption = 'Incoming';
-                actionref(ImportManually_Promoted; ImportManually) { }
-                actionref(GetBasicInfo_Promoted; GetBasicInfo) { }
+                Visible = false;
+                ObsoleteTag = '24.0';
+                ObsoleteReason = 'Actionrefs moved to process category';
+                ObsoleteState = Pending;
+                actionref(GetBasicInfo_Promoted; GetBasicInfo)
+                {
+                    ObsoleteTag = '24.0';
+                    ObsoleteReason = 'Actionref removed';
+                    ObsoleteState = Pending;
+                }
                 group(CreateDoc)
                 {
+                    Visible = false;
                     ShowAs = SplitButton;
-                    actionref(CreateDocument_Promoted; CreateDocument) { }
-                    actionref(CreateJournal_Promoted; CreateJournal) { }
-                    actionref(UpdateOrder_Promoted; UpdateOrder) { }
+                    ObsoleteTag = '24.0';
+                    ObsoleteReason = 'CreateDoc group removed';
+                    ObsoleteState = Pending;
+
+                    actionref(UpdateOrder_Promoted; UpdateOrder)
+                    {
+                        Visible = false;
+                        ObsoleteTag = '24.0';
+                        ObsoleteReason = 'Update order changed to "Receive E-Document To" on Vendor';
+                        ObsoleteState = Pending;
+                    }
                 }
-                actionref(TextToAccountMapping_Promoted; TextToAccountMapping) { }
             }
+#endif
         }
     }
+
+    trigger OnOpenPage()
+    begin
+        ShowMapToOrder := false;
+        HasErrorsAndWarnings := false;
+    end;
 
     trigger OnAfterGetRecord()
     begin
         RecordLinkTxt := EDocumentHelper.GetRecordLinkText(Rec);
-        ShowErrors();
+        HasErrorsAndWarnings := EDocumentErrorHelper.HasErrors(Rec);
+        if HasErrorsAndWarnings then
+            ShowErrors();
+
+        case Rec.Status of
+            Rec.Status::Error:
+                StyleStatusTxt := 'Unfavorable';
+            Rec.Status::Processed:
+                StyleStatusTxt := 'Favorable';
+            else
+                StyleStatusTxt := 'None';
+        end;
+
+        ShowActionsForEDocument();
     end;
 
     local procedure ShowErrors()
@@ -389,11 +488,33 @@ page 6121 "E-Document"
             EDocumentBackgroundjobs.GetEDocumentResponse();
     end;
 
+    local procedure ShowActionsForEDocument()
+    begin
+        IsIncomingDoc := Rec.Direction = Rec.Direction::Incoming;
+        if IsIncomingDoc then
+            SetIncomingDocActions();
+    end;
+
+    local procedure SetIncomingDocActions()
+    var
+        EDocService: Record "E-Document Service";
+        EDocServiceStatus: Record "E-Document Service Status";
+        EDocLog: Codeunit "E-Document Log";
+    begin
+        EDocService := EDocLog.GetLastServiceFromLog(Rec);
+        ShowCreateJnlLine := EDocService."Create Journal Lines";
+        if (Rec."Document Type" = Enum::"E-Document Type"::"Purchase Order") and (Rec.Status <> Rec.Status::Processed) then
+            if EDocServiceStatus.Get(Rec."Entry No", EDocService.Code) then
+                ShowMapToOrder := EDocServiceStatus.Status = EDocServiceStatus.Status::"Order Linked";
+
+    end;
+
     var
         EDocumentBackgroundjobs: Codeunit "E-Document Background Jobs";
         EDocIntegrationManagement: Codeunit "E-Doc. Integration Management";
         EDocImport: Codeunit "E-Doc. Import";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         EDocumentHelper: Codeunit "E-Document Processing";
-        RecordLinkTxt: Text;
+        RecordLinkTxt, StyleStatusTxt : Text;
+        ShowMapToOrder, HasErrorsAndWarnings, ShowCreateJnlLine, IsIncomingDoc : Boolean;
 }

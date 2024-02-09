@@ -178,9 +178,7 @@ report 4810 "Intrastat Report Get Lines"
 
         dataitem("FA Ledger Entry"; "FA Ledger Entry")
         {
-            DataItemTableView = sorting("FA No.", "Depreciation Book Code", "FA Posting Category", "FA Posting Type", "FA Posting Date", "Part of Book Value", "Reclassification Entry")
-                where("FA Posting Type" = filter("Proceeds on Disposal" | "Acquisition Cost"), "Document Type" = filter(Invoice | "Credit Memo"), "FA Posting Category" = const(" "));
-
+            DataItemTableView = sorting("FA No.", "Depreciation Book Code", "FA Posting Category", "FA Posting Type", "FA Posting Date", "Part of Book Value", "Reclassification Entry");
             trigger OnAfterGetRecord()
             var
                 CountryCode: Code[10];
@@ -208,8 +206,18 @@ report 4810 "Intrastat Report Get Lines"
             end;
 
             trigger OnPreDataItem()
+            var
+                IsHandled: Boolean;
             begin
-                SetRange("FA Posting Date", StartDate, EndDate);
+                IsHandled := false;
+                OnBeforeFilterFALedgerEntry(IntrastatReportHeader, "FA Ledger Entry", StartDate, EndDate, IsHandled);
+                if not IsHandled then begin
+                    SetRange("FA Posting Date", StartDate, EndDate);
+                    SetFilter("FA Posting Type", '%1|%2', "FA Posting Type"::"Proceeds on Disposal", "FA Posting Type"::"Acquisition Cost");
+                    SetFilter("Document Type", '%1|%2', "Document Type"::Invoice, "Document Type"::"Credit Memo");
+                    SetRange("FA Posting Category", "FA Posting Category"::" ");
+                end;
+
                 IntrastatReportLine2.SetCurrentKey("Source Type", "Source Entry No.");
                 IntrastatReportLine2.SetRange("Source Type", IntrastatReportLine2."Source Type"::"FA Entry");
             end;
@@ -1281,6 +1289,11 @@ report 4810 "Intrastat Report Get Lines"
 
     [IntegrationEvent(true, false)]
     local procedure OnBeforeFilterValueEntry(IntrastatReportHeader: Record "Intrastat Report Header"; var ValueEntry: Record "Value Entry"; ItemLedgerEntry: Record "Item Ledger Entry"; StartDate: Date; EndDate: Date; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeFilterFALedgerEntry(IntrastatReportHeader: Record "Intrastat Report Header"; var FALedgerEntry: Record "FA Ledger Entry"; StartDate: Date; EndDate: Date; var IsHandled: Boolean);
     begin
     end;
 

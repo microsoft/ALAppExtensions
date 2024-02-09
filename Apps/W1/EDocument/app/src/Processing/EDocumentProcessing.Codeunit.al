@@ -98,6 +98,44 @@ codeunit 6108 "E-Document Processing"
         exit(EDocument.Count());
     end;
 
+    procedure MatchedPurchaseOrdersCount(): Integer
+    var
+        PurchaseHeader: Record "Purchase Header";
+        Guid: Guid;
+    begin
+        PurchaseHeader.SetFilter("E-Document Link", '<>%1', Guid);
+        exit(PurchaseHeader.Count());
+    end;
+
+    procedure MatchedPurchaseEDocumentsCount(): Integer
+    var
+        EDocument: Record "E-Document";
+    begin
+        EDocument.SetRange("Document Type", Enum::"E-Document Type"::"Purchase Order");
+        EDocument.SetRange(Status, Enum::"E-Document Status"::"In Progress");
+        EDocument.SetRange("Order No.", '');
+        exit(EDocument.Count());
+    end;
+
+    procedure OpenMatchedPurchaseEDoc()
+    var
+        EDocument: Record "E-Document";
+    begin
+        EDocument.SetRange("Document Type", Enum::"E-Document Type"::"Purchase Order");
+        EDocument.SetRange(Status, Enum::"E-Document Status"::"In Progress");
+        EDocument.SetRange("Order No.", '');
+        Page.Run(Page::"E-Documents", EDocument);
+    end;
+
+    procedure OpenMatchedPurchaseOrders()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        Guid: Guid;
+    begin
+        PurchaseHeader.SetFilter("E-Document Link", '<>%1', Guid);
+        Page.Run(Page::"Purchase Order List", PurchaseHeader);
+    end;
+
     procedure OpenEDocuments(Status: Enum "E-Document Status"; Direction: Enum "E-Document Direction"): Integer
     var
         EDocument: Record "E-Document";

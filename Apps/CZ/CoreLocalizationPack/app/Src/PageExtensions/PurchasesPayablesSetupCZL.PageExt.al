@@ -27,7 +27,9 @@ pageextension 11719 "Purchases & Payables Setup CZL" extends "Purchases & Payabl
                 ObsoleteTag = '22.0';
                 ObsoleteReason = 'All fields from this group are obsolete.';
 
+#pragma warning disable AL0842
                 field("Default VAT Date CZL"; Rec."Default VAT Date CZL")
+#pragma warning restore AL0842
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the default VAT date type for purchase document (posting date, document date, blank).';

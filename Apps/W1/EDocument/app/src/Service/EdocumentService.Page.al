@@ -118,13 +118,20 @@ page 6133 "E-Document Service"
                 {
                     ToolTip = 'Specifies if an invoice total shall be verified during the import.';
                 }
+#if not CLEAN24
                 field("Update Order"; Rec."Update Order")
                 {
                     ToolTip = 'Specifies if corresponding purchase order must be updated.';
+                    Visible = false;
+                    Enabled = false;
+                    ObsoleteTag = '24.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced by "Receive E-Document To" on Vendor table';
                 }
+#endif
                 field("Create Journal Lines"; Rec."Create Journal Lines")
                 {
-                    ToolTip = 'Specifies if journal line must be created instead of purchase document.';
+                    ToolTip = 'Specifies if journal line must be created instead of purchase document. Only applicable if vendor receives e-document to purchase invoice.';
                 }
                 field("General Journal Template Name"; Rec."General Journal Template Name")
                 {
@@ -157,24 +164,22 @@ page 6133 "E-Document Service"
                     }
                 }
             }
-            part(EDocumentExportFormatMapping; "E-Doc. Mapping Part")
-            {
-                Caption = 'Export Mapping';
-                SubPageLink = Code = field(Code), "For Import" = const(false);
-                Visible = not (Rec."Document Format" = Rec."Document Format"::"Data Exchange");
-            }
-            part(EDocumentImportFormatMapping; "E-Doc. Mapping Part")
-            {
-                Caption = 'Import Mapping';
-                SubPageLink = Code = field(Code), "For Import" = const(true);
-                Visible = not (Rec."Document Format" = Rec."Document Format"::"Data Exchange");
-            }
             part(EDocumentDataExchDef; "E-Doc. Service Data Exch. Sub")
             {
                 ApplicationArea = All;
                 Caption = 'Data Exchange Definition';
                 SubPageLink = "E-Document Format Code" = field(Code);
                 Visible = Rec."Document Format" = Rec."Document Format"::"Data Exchange";
+            }
+            part(EDocumentExportFormatMapping; "E-Doc. Mapping Part")
+            {
+                Caption = 'Export Mapping';
+                SubPageLink = Code = field(Code), "For Import" = const(false);
+            }
+            part(EDocumentImportFormatMapping; "E-Doc. Mapping Part")
+            {
+                Caption = 'Import Mapping';
+                SubPageLink = Code = field(Code), "For Import" = const(true);
             }
         }
     }

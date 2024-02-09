@@ -101,13 +101,15 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
     var
         JFulfillmentOrders: JsonArray;
         JItem: JsonToken;
+        JObject: JsonObject;
     begin
-        if JsonHelper.GetJsonArray(JResponse, JFulfillmentOrders, 'data.order.fulfillmentOrders.edges') then begin
-            foreach JItem in JFulfillmentOrders do
-                ExtractFulfillmentOrder(ShopifyShop, JItem, Cursor);
+        if JsonHelper.GetJsonObject(JResponse, JObject, 'data.order') then
+            if JsonHelper.GetJsonArray(JResponse, JFulfillmentOrders, 'data.order.fulfillmentOrders.edges') then begin
+                foreach JItem in JFulfillmentOrders do
+                    ExtractFulfillmentOrder(ShopifyShop, JItem, Cursor);
 
-            exit(true);
-        end;
+                exit(true);
+            end;
     end;
 
     internal procedure ExtractFulfillmentOrder(var ShopifyShop: Record "Shpfy Shop"; JFulfillmentOrder: JsonToken; var Cursor: Text)

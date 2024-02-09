@@ -22,7 +22,7 @@ page 30135 "Shpfy Authentication"
     {
         area(Content)
         {
-            usercontrol(OAuthIntegration; OAuthControlAddIn)
+            usercontrol(OAuthIntegration; OAuthIntegration)
             {
                 ApplicationArea = All;
                 trigger AuthorizationCodeRetrieved(Code: Text)

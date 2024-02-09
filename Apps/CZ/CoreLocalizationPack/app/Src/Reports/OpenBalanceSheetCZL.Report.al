@@ -434,7 +434,6 @@ report 11755 "Open Balance Sheet CZL"
         TempSelectedDimension: Record "Selected Dimension" temporary;
         TempEntryNoAmountBuffer: Record "Entry No. Amount Buffer" temporary;
         ObjectTranslation: Record "Object Translation";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         DimensionManagement: Codeunit DimensionManagement;
         DimensionBufferManagement: Codeunit "Dimension Buffer Management";
@@ -496,11 +495,13 @@ report 11755 "Open Balance Sheet CZL"
     end;
 
     local procedure ValidateJnl()
+    var
+        NoSeries: Codeunit "No. Series";
     begin
         DocNo := '';
         if GenJournalBatch.Get(GenJournalLine."Journal Template Name", GenJournalLine."Journal Batch Name") then
             if GenJournalBatch."No. Series" <> '' then
-                DocNo := NoSeriesManagement.TryGetNextNo(GenJournalBatch."No. Series", EndDateReq);
+                DocNo := NoSeries.PeekNextNo(GenJournalBatch."No. Series", EndDateReq);
     end;
 
     local procedure HandleGenJnlLine()

@@ -458,7 +458,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
 
         PurchAdvLetterEntryCZZ2.CalcSums(Amount);
         TempAdvancePostingBufferCZZ.CalcSums(Amount);
-        if Abs(PurchAdvLetterEntryCZZ.Amount - PurchAdvLetterEntryCZZ2.Amount) < Abs(TempAdvancePostingBufferCZZ.Amount) then
+        if (PurchAdvLetterEntryCZZ.Amount - PurchAdvLetterEntryCZZ2.Amount) < TempAdvancePostingBufferCZZ.Amount then
             Error(ExceededAmountErr);
 
         GetCurrency(PurchAdvLetterEntryCZZ."Currency Code");
@@ -586,19 +586,14 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
 
     local procedure BufferAdvanceLines(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ")
     var
-        AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
         PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ";
         TempAdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ" temporary;
     begin
         AdvancePostingBufferCZZ.Reset();
         AdvancePostingBufferCZZ.DeleteAll();
 
-        AdvanceLetterTemplateCZZ.Get(PurchAdvLetterHeaderCZZ."Advance Letter Code");
-
         PurchAdvLetterLineCZZ.SetRange("Document No.", PurchAdvLetterHeaderCZZ."No.");
         PurchAdvLetterLineCZZ.SetFilter(Amount, '<>0');
-        if not AdvanceLetterTemplateCZZ."Post VAT Doc. for Rev. Charge" then
-            PurchAdvLetterLineCZZ.SetFilter("VAT Calculation Type", '<>%1', PurchAdvLetterLineCZZ."VAT Calculation Type"::"Reverse Charge VAT");
         if PurchAdvLetterLineCZZ.FindSet() then
             repeat
                 TempAdvancePostingBufferCZZ.PrepareForPurchAdvLetterLine(PurchAdvLetterLineCZZ);

@@ -188,6 +188,20 @@ page 31253 "Bank Statements CZB"
                         IssueBankStatement(Codeunit::"Issue Bank Statement YesNo CZB");
                     end;
                 }
+                action(IssueAndCreateJournal)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Issue and Create Journal';
+                    Ellipsis = true;
+                    Image = ReleaseDoc;
+                    ShortCutKey = 'Ctrl+F9';
+                    ToolTip = 'Issue the bank statement and create a journal. The bank statement will be moved to issued bank statements.';
+
+                    trigger OnAction()
+                    begin
+                        IssueBankStatement(Codeunit::"IssueBank.Stat.Create Jnl. CZB");
+                    end;
+                }
                 action(IssueAndPrint)
                 {
                     ApplicationArea = Basic, Suite;
@@ -230,6 +244,9 @@ page 31253 "Bank Statements CZB"
                     Caption = 'Issuing';
                     ShowAs = SplitButton;
                     actionref(Issue_Promoted; Issue)
+                    {
+                    }
+                    actionref(IssueAndCreateJournal_Promoted; IssueAndCreateJournal)
                     {
                     }
                     actionref(IssueAndPrint_Promoted; IssueAndPrint)
@@ -282,7 +299,8 @@ page 31253 "Bank Statements CZB"
         Codeunit.Run(IssuingCodeunitId, Rec);
         CurrPage.Update(false);
 
-        if IssuingCodeunitId <> Codeunit::"Issue Bank Statement YesNo CZB" then
+        if (IssuingCodeunitId <> Codeunit::"Issue Bank Statement YesNo CZB") and
+           (IssuingCodeunitId <> Codeunit::"IssueBank.Stat.Create Jnl. CZB") then
             exit;
 
         if InstructionMgt.IsEnabled(InstructionMgtCZB.GetOpeningIssuedDocumentNotificationId()) then

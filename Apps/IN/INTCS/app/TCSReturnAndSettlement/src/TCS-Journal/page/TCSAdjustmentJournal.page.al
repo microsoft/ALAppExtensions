@@ -359,13 +359,11 @@ page 18870 "TCS Adjustment Journal"
     local procedure GetDocumentNo(): Code[20]
     var
         TCSJournalBatch: Record "TCS Journal Batch";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
         TCSJournalBatch.Get(Rec."Journal Template Name", Rec."Journal Batch Name");
-        if TCSJournalBatch."No. Series" <> '' then begin
-            Clear(NoSeriesManagement);
-            exit(NoSeriesManagement.TryGetNextNo(TCSJournalBatch."No. Series", Rec."Posting Date"));
-        end;
+        if TCSJournalBatch."No. Series" <> '' then 
+            exit(NoSeries.PeekNextNo(TCSJournalBatch."No. Series", Rec."Posting Date"));
     end;
 
     local procedure GetTCSJnlLineNo(): Integer

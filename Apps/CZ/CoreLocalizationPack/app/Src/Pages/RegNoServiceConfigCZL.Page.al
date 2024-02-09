@@ -58,6 +58,11 @@ page 11755 "Reg. No. Service Config CZL"
                         end;
                     end;
                 }
+                field("Post Code without Space"; Rec."Post Code without Space")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies whether the postcode provided by ARES shouldn''t be converted into format with a space, i.e. XXX XX.';
+                }
                 field(ServiceConditionsLbl; ServiceConditionsLbl)
                 {
                     Caption = 'Service Conditions';

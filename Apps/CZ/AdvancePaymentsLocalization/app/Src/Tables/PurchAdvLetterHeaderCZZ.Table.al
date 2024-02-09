@@ -57,7 +57,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
             begin
                 if "No." <> xRec."No." then begin
                     GetSetup();
-                    NoSeriesManagement.TestManual(AdvanceLetterTemplateCZZ."Advance Letter Document Nos.");
+                    NoSeries.TestManual(AdvanceLetterTemplateCZZ."Advance Letter Document Nos.");
                     "No. Series" := '';
                 end;
             end;
@@ -854,6 +854,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         SalespersonPurchaser: Record "Salesperson/Purchaser";
         ResponsibilityCenter: Record "Responsibility Center";
         NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         DimensionManagement: Codeunit DimensionManagement;
         UserSetupManagement: Codeunit "User Setup Management";
 #if not CLEAN22
@@ -931,9 +932,20 @@ table 31008 "Purch. Adv. Letter Header CZZ"
             if "No." = '' then begin
                 GetSetup();
                 AdvanceLetterTemplateCZZ.TestField("Advance Letter Document Nos.");
-                NoSeriesManagement.InitSeries(AdvanceLetterTemplateCZZ."Advance Letter Document Nos.", xRec."No. Series", "Posting Date", "No.", "No. Series")
+#if not CLEAN24
+                IsHandled := false;
+                NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(AdvanceLetterTemplateCZZ."Advance Letter Document Nos.", xRec."No. Series", "Posting Date", "No.", "No. Series", IsHandled);
+                if not IsHandled then begin
+#endif
+                    "No. Series" := AdvanceLetterTemplateCZZ."Advance Letter Document Nos.";
+                    if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                        "No. Series" := xRec."No. Series";
+                    "No." := NoSeries.GetNextNo("No. Series", "Posting Date");
+#if not CLEAN24
+                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", AdvanceLetterTemplateCZZ."Advance Letter Document Nos.", "Posting Date", "No.");
+                end;
+#endif
             end;
-
         OnInitInsertOnBeforeInitRecord(Rec, xRec);
         InitRecord();
     end;

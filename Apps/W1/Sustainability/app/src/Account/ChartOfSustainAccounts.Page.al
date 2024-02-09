@@ -3,6 +3,7 @@ namespace Microsoft.Sustainability.Account;
 using Microsoft.Finance.Dimension;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Foundation.Comment;
+using Microsoft.Sustainability.Reports;
 using Microsoft.Sustainability.Ledger;
 
 page 6210 "Chart of Sustain. Accounts"
@@ -226,7 +227,7 @@ page 6210 "Chart of Sustain. Accounts"
                     var
                         SustainabilityAccountMgt: Codeunit "Sustainability Account Mgt.";
                     begin
-                        SustainabilityAccountMgt.IndentChartOfSustainabilityAccounts();
+                        SustainabilityAccountMgt.IndentChartOfSustainabilityAccounts(false);
                     end;
                 }
             }
@@ -245,6 +246,27 @@ page 6210 "Chart of Sustain. Accounts"
         }
         area(reporting)
         {
+            action(TotalEmissions)
+            {
+                Caption = 'Total Emissions';
+                RunObject = report "Total Emissions";
+                Image = Report;
+                ToolTip = 'View the total emissions balance for the sustainability accounts that you specify.';
+            }
+            action(EmissionByCategory)
+            {
+                Caption = 'Emission By Category';
+                RunObject = report "Emission By Category";
+                Image = Report;
+                ToolTip = 'View emissions details by category.';
+            }
+            action(EmissionPerFacility)
+            {
+                Caption = 'Emission Per Facility';
+                RunObject = report "Emission Per Facility";
+                Image = Report;
+                ToolTip = 'View emissions details by responsibility center.';
+            }
         }
         area(Promoted)
         {
@@ -275,6 +297,9 @@ page 6210 "Chart of Sustain. Accounts"
             group(Category_Report)
             {
                 Caption = 'Report';
+                actionref(TotalEmissions_Promoted; TotalEmissions) { }
+                actionref(EmissionPerFacility_Promoted; EmissionPerFacility) { }
+                actionref(EmissionByCategory_Promoted; EmissionByCategory) { }
             }
         }
     }

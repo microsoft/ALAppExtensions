@@ -24,9 +24,9 @@
         "TranslationFile"
     ],
     "resourceExposurePolicy": {
-        "allowDebugging": true,
-        "allowDownloadingSource": true,
-        "includeSourceInSymbolFile": true
+        "allowDebugging": false,
+        "allowDownloadingSource": false,
+        "includeSourceInSymbolFile": false
     },
     "application": "24.0.0.0",
     "target": "OnPrem"

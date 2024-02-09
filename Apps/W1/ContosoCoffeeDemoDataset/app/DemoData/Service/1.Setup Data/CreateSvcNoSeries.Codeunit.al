@@ -7,14 +7,14 @@ codeunit 5101 "Create Svc No Series"
     var
         ContosoNoSeries: Codeunit "Contoso No Series";
     begin
-        ContosoNoSeries.InsertNoSeries(ServiceItem(), SeriesServiceItemNosDescTok, 'SV000001', 'SV999999', '', '', 1, true, true);
-        ContosoNoSeries.InsertNoSeries(ServiceOrder(), SeriesServiceOrderNosDescTok, 'SVO000001', 'SVO999999', '', '', 1, true, true);
-        ContosoNoSeries.InsertNoSeries(ServiceInvoice(), SeriesServiceInvoiceNosDescTok, 'SVI000001', 'SVI999999', '', '', 1, true, true);
-        ContosoNoSeries.InsertNoSeries(PostedServiceInvoice(), SeriesPostedServiceInvoiceNosDescTok, 'PSVI000001', 'PSVI999999', '', '', 1, true, true);
-        ContosoNoSeries.InsertNoSeries(PostedServiceShipment(), SeriesPostedServiceShipmentNosDescTok, 'PSVS000001', 'PSVS999999', '', '', 1, true, true);
-        ContosoNoSeries.InsertNoSeries(ServiceContract(), SeriesServiceContractNosDescTok, 'SVC000001', 'SVC999999', '', '', 1, true, true);
-        ContosoNoSeries.InsertNoSeries(ContractInvoice(), SeriesContractInvoiceNosDescTok, 'SVCI000001', 'SVCI999999', '', '', 1, true, true);
-        ContosoNoSeries.InsertNoSeries(ContractTemplate(), SeriesContractTemplateLbl, 'TEMPL0001', 'TEMPL9999', '', '', 1, true, true);
+        ContosoNoSeries.InsertNoSeries(ServiceItem(), SeriesServiceItemNosDescTok, 'SV000001', 'SV999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, true);
+        ContosoNoSeries.InsertNoSeries(ServiceOrder(), SeriesServiceOrderNosDescTok, 'SVO000001', 'SVO999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, true);
+        ContosoNoSeries.InsertNoSeries(ServiceInvoice(), SeriesServiceInvoiceNosDescTok, 'SVI000001', 'SVI999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, true);
+        ContosoNoSeries.InsertNoSeries(PostedServiceInvoice(), SeriesPostedServiceInvoiceNosDescTok, 'PSVI000001', 'PSVI999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, true);
+        ContosoNoSeries.InsertNoSeries(PostedServiceShipment(), SeriesPostedServiceShipmentNosDescTok, 'PSVS000001', 'PSVS999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, true);
+        ContosoNoSeries.InsertNoSeries(ServiceContract(), SeriesServiceContractNosDescTok, 'SVC000001', 'SVC999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, true);
+        ContosoNoSeries.InsertNoSeries(ContractInvoice(), SeriesContractInvoiceNosDescTok, 'SVCI000001', 'SVCI999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, true);
+        ContosoNoSeries.InsertNoSeries(ContractTemplate(), SeriesContractTemplateLbl, 'TEMPL0001', 'TEMPL9999', '', '', 1, Enum::"No. Series Implementation"::Sequence, true);
     end;
 
     var

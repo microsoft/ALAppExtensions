@@ -1,4 +1,4 @@
-codeunit 135216 "Sustainability Foundation Test"
+codeunit 148180 "Sustainability Foundation Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;

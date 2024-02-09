@@ -42,7 +42,11 @@ table 6103 "E-Document Service"
         field(6; "Update Order"; Boolean)
         {
             Caption = 'Update Order';
-            DataClassification = SystemMetadata;
+#if not CLEAN24
+            ObsoleteState = Pending;
+            ObsoleteReason = 'Replaced by "Receive E-Document To" on Vendor table';
+            ObsoleteTag = '24.0';
+#endif
         }
         field(7; "Create Journal Lines"; Boolean)
         {

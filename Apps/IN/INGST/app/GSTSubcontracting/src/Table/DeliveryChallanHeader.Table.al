@@ -125,21 +125,42 @@ table 18468 "Delivery Challan Header"
     }
 
     trigger OnInsert()
+    var
+        NoSeries: Codeunit "No. Series";
+#if not CLEAN24
+        IsHandled: Boolean;
+#endif
     begin
-        InitRecord();
         PurchSetup.Get();
+        InitRecord();
         if "No." = '' then begin
             PurchSetup.TestField("Posted Delivery Challan Nos.");
-            NoSeriesMgt.InitSeries(PurchSetup."Posted Delivery Challan Nos.", xRec."No. Series", TODAY, "No.", "No. Series");
+#if not CLEAN24
+            IsHandled := false;
+            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(PurchSetup."Posted Delivery Challan Nos.", xRec."No. Series", Today(), "No.", "No. Series", IsHandled);
+            if not IsHandled then begin
+#endif
+                "No. Series" := PurchSetup."Posted Delivery Challan Nos.";
+                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                    "No. Series" := xRec."No. Series";
+                "No." := NoSeries.GetNextNo("No. Series", Today());
+#if not CLEAN24
+            NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", PurchSetup."Posted Delivery Challan Nos.", Today(), "No.");
+            end;
+#endif
         end;
     end;
 
     procedure InitRecord()
+    var
+        NoSeriesManagement: Codeunit "NoSeriesManagement";
     begin
-        NoSeriesMgt.SetDefaultSeries("No. Series", PurchSetup."Posted Delivery Challan Nos.");
+        NoSeriesManagement.SetDefaultSeries("No. Series", PurchSetup."Posted Delivery Challan Nos.");
     end;
 
     var
         PurchSetup: Record "Purchases & Payables Setup";
-        NoSeriesMgt: Codeunit "NoSeriesManagement";
+#if not CLEAN24
+        NoSeriesManagement: Codeunit "NoSeriesManagement";
+#endif
 }

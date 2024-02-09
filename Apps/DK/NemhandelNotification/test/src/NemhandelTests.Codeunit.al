@@ -253,7 +253,6 @@ codeunit 148012 "Nemhandel Tests"
         CompanyInformationPage."Registration No.".SetValue('87654321');
 
         // [THEN] Notification "Your accounting software is not registered in Nemhandelsregisteret" was shown on Company Information page.
-        LibraryVariableStorage.DequeueText();       // clear notification shown when CVR number was blank
         NotificationText := LibraryVariableStorage.DequeueText();
         Assert.ExpectedMessage('Your accounting software is not registered in Nemhandelsregisteret', NotificationText);
 
@@ -548,14 +547,6 @@ codeunit 148012 "Nemhandel Tests"
         CompanyStatusGlobal := NewStatus;
     end;
 
-#if not CLEAN24
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Nemhandel Status Mgt.", 'OnBeforeCheckFeatureEnableDate', '', false, false)]
-    local procedure OnBeforeCheckFeatureEnableDate(var FeatureEnableDatePassed: Boolean; var IsHandled: Boolean)
-    begin
-        FeatureEnableDatePassed := true;
-        IsHandled := true;
-    end;
-#endif
     [EventSubscriber(ObjectType::Page, Page::"Company Information", 'OnAfterGetCompanyStatusCompanyInfoBckgrndTask', '', false, false)]
     local procedure MockStatusOnAfterGetCompanyStatusCompanyInfoBckgrndTask(var CompanyStatus: Enum "Nemhandel Company Status")
     begin

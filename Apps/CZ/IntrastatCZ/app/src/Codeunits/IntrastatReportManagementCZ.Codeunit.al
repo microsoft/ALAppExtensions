@@ -920,6 +920,51 @@ codeunit 31302 IntrastatReportManagementCZ
         then
             IntrastatReportLineType := Enum::"Intrastat Report Line Type"::Receipt;
     end;
+
+    [EventSubscriber(ObjectType::Report, Report::"Intrastat Report Get Lines", 'OnBeforeFilterFALedgerEntry', '', false, false)]
+    local procedure FilterFALedgerEntry(IntrastatReportHeader: Record "Intrastat Report Header"; var FALedgerEntry: Record "FA Ledger Entry"; StartDate: Date; EndDate: Date; var IsHandled: Boolean)
+    begin
+        FALedgerEntry.SetRange("FA Posting Date", StartDate, EndDate);
+        FALedgerEntry.SetFilter("FA Posting Type",
+            '%1|%2|%3',
+            FALedgerEntry."FA Posting Type"::"Proceeds on Disposal",
+            FALedgerEntry."FA Posting Type"::"Acquisition Cost",
+            FALedgerEntry."FA Posting Type"::"Custom 2");
+        FALedgerEntry.SetFilter("Document Type", '%1|%2', FALedgerEntry."Document Type"::Invoice, FALedgerEntry."Document Type"::"Credit Memo");
+        FALedgerEntry.SetRange("FA Posting Category", FALedgerEntry."FA Posting Category"::" ");
+        IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnAfterGetIntrastatBaseCountryCodeFromFAEntry', '', false, false)]
+    local procedure GetCountryForCustom2FAPostingType(var FALedgerEntry: Record "FA Ledger Entry"; var IntrastatReportSetup: Record "Intrastat Report Setup"; var CountryCode: Code[10]);
+    var
+        PurchInvHeader: Record "Purch. Inv. Header";
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+    begin
+        if FALedgerEntry."FA Posting Type" = FALedgerEntry."FA Posting Type"::"Custom 2" then
+            case FALedgerEntry."Document Type" of
+                FALedgerEntry."Document Type"::Invoice:
+                    if PurchInvHeader.Get(FALedgerEntry."Document No.") then
+                        case IntrastatReportSetup."Shipments Based On" of
+                            IntrastatReportSetup."Shipments Based On"::"Ship-to Country":
+                                CountryCode := PurchInvHeader."Buy-from Country/Region Code";
+                            IntrastatReportSetup."Shipments Based On"::"Sell-to Country":
+                                CountryCode := PurchInvHeader."Buy-from Country/Region Code";
+                            IntrastatReportSetup."Shipments Based On"::"Bill-to Country":
+                                CountryCode := PurchInvHeader."Pay-to Country/Region Code";
+                        end;
+                FALedgerEntry."Document Type"::"Credit Memo":
+                    if PurchCrMemoHdr.Get(FALedgerEntry."Document No.") then
+                        case IntrastatReportSetup."Shipments Based On" of
+                            IntrastatReportSetup."Shipments Based On"::"Ship-to Country":
+                                CountryCode := PurchCrMemoHdr."Buy-from Country/Region Code";
+                            IntrastatReportSetup."Shipments Based On"::"Sell-to Country":
+                                CountryCode := PurchCrMemoHdr."Buy-from Country/Region Code";
+                            IntrastatReportSetup."Shipments Based On"::"Bill-to Country":
+                                CountryCode := PurchCrMemoHdr."Pay-to Country/Region Code";
+                        end;
+            end;
+    end;
     #endregion
 
     #region Export

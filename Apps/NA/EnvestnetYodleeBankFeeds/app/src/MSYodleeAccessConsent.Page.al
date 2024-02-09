@@ -1,5 +1,7 @@
 namespace Microsoft.Bank.StatementImport.Yodlee;
 
+using System.Integration;
+
 page 1458 "MS - Yodlee Access Consent"
 {
     Caption = ' ';
@@ -15,7 +17,7 @@ page 1458 "MS - Yodlee Access Consent"
                 ShowCaption = false;
                 InstructionalText = 'NOTE: You are accessing a third-party website and service. You should review the third-parties terms and privacy policy before acquiring or using its website or service.';
             }
-            usercontrol(WebPageViewer; "Microsoft.Dynamics.Nav.Client.WebPageViewer")
+            usercontrol(WebPageViewer; WebPageViewer)
             {
                 ApplicationArea = Basic, Suite;
 

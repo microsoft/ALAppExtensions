@@ -36,11 +36,11 @@ table 31272 "Compensation Header CZC"
             trigger OnValidate()
             var
                 CompensationsSetupCZC: Record "Compensations Setup CZC";
-                NoSeriesMgt: Codeunit NoSeriesManagement;
+                NoSeries: Codeunit "No. Series";
             begin
                 if "No." <> xRec."No." then begin
                     CompensationsSetupCZC.Get();
-                    NoSeriesMgt.TestManual(CompensationsSetupCZC."Compensation Nos.");
+                    NoSeries.TestManual(CompensationsSetupCZC."Compensation Nos.");
                     "No. Series" := '';
                 end;
             end;
@@ -330,12 +330,32 @@ table 31272 "Compensation Header CZC"
     trigger OnInsert()
     var
         CompensationsSetupCZC: Record "Compensations Setup CZC";
+        CompensationHeader: Record "Compensation Header CZC";
+        NoSeries: Codeunit "No. Series";
+#if not CLEAN24
         NoSeriesManagement: Codeunit NoSeriesManagement;
+        IsHandled: Boolean;
+#endif
     begin
         CompensationsSetupCZC.Get();
         if "No." = '' then begin
             CompensationsSetupCZC.TestField("Compensation Nos.");
-            NoSeriesManagement.InitSeries(CompensationsSetupCZC."Compensation Nos.", xRec."No. Series", 0D, "No.", "No. Series");
+#if not CLEAN24
+            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(CompensationsSetupCZC."Compensation Nos.", xRec."No. Series", 0D, "No.", "No. Series", IsHandled);
+            if not IsHandled then begin
+#endif
+                "No. Series" := CompensationsSetupCZC."Compensation Nos.";
+                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                    "No. Series" := xRec."No. Series";
+                "No." := NoSeries.GetNextNo("No. Series");
+                CompensationHeader.ReadIsolation(ReadIsolation::ReadUncommitted);
+                CompensationHeader.SetLoadFields("No.");
+                while CompensationHeader.Get("No.") do
+                    "No." := NoSeries.GetNextNo("No. Series");
+#if not CLEAN24
+                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", CompensationsSetupCZC."Compensation Nos.", 0D, "No.");
+            end;
+#endif
         end;
         "User ID" := CopyStr(UserId(), 1, MaxStrLen("User ID"));
     end;

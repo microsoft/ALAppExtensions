@@ -37,7 +37,7 @@ page 31185 "VAT Document CZZ"
                     trigger OnValidate()
                     begin
                         if DocumentNo <> InitDocumentNo then
-                            NoSeriesManagement.TestManual(NoSeriesCode);
+                            NoSeries.TestManual(NoSeriesCode);
                     end;
 
                     trigger OnAssistEdit()
@@ -45,9 +45,7 @@ page 31185 "VAT Document CZZ"
                         NoSeriesManagement2: Codeunit NoSeriesManagement;
                     begin
                         if NoSeriesManagement2.SelectSeries(InitNoSeriesCode, NoSeriesCode, NoSeriesCode) then begin
-                            Clear(NoSeriesManagement);
-
-                            DocumentNo := NoSeriesManagement.GetNextNo(NoSeriesCode, PostingDate, false);
+                            DocumentNo := NoSeriesBatch.GetNextNo(NoSeriesCode, PostingDate);
                             InitDocumentNo := DocumentNo;
                         end;
                     end;
@@ -139,7 +137,8 @@ page 31185 "VAT Document CZZ"
     }
 
     var
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeriesBatch: Codeunit "No. Series - Batch";
+        NoSeries: Codeunit "No. Series";
         DocumentNo: Code[20];
         InitDocumentNo: Code[20];
         ExternalDocumentNo: Code[35];
@@ -190,7 +189,7 @@ page 31185 "VAT Document CZZ"
             DocumentNo := NewDocumentNo;
             DocumentNoEditable := false;
         end else begin
-            DocumentNo := NoSeriesManagement.GetNextNo(NoSeriesCode, PostingDate, false);
+            DocumentNo := NoSeriesBatch.GetNextNo(NoSeriesCode, PostingDate);
             DocumentNoEditable := true;
         end;
         InitDocumentNo := DocumentNo;
@@ -254,7 +253,7 @@ page 31185 "VAT Document CZZ"
 
     procedure SaveNoSeries()
     begin
-        NoSeriesManagement.SaveNoSeries();
+        NoSeriesBatch.SaveState();
     end;
 
     local procedure UpdateCurrencyFactor(NewCurrencyFactor: Decimal)

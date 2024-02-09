@@ -466,7 +466,7 @@ codeunit 11518 "Swiss QR-Bill Mgt."
         exit(Language.GetLanguageCode(GetLanguageIdENU()));
     end;
 
-    internal procedure DeleteTenantMedia(MediaId: Guid)
+    procedure DeleteTenantMedia(MediaId: Guid)
     var
         TenantMedia: Record "Tenant Media";
     begin

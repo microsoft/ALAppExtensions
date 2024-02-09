@@ -60,7 +60,7 @@ page 1853 "Sales Forecast Setup Card"
                     Importance = Additional;
                     ToolTip = 'Specifies how far in the future you want to look for stockouts. The value you enter works together with the unit of time specified in the Period Type field to determine the horizon.';
                 }
-                field("API URI"; "API URI")
+                field("API URI"; Rec."API URI")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the API URI for the Azure Machine Learning instance.';
@@ -72,15 +72,10 @@ page 1853 "Sales Forecast Setup Card"
                     ExtendedDatatype = Masked;
                     ToolTip = 'Specifies the API key for the Time Series experiment in Azure Machine Learning.';
 
-                    trigger OnDrillDown()
-                    begin
-                        if not IsNullGuid("API Key ID") then
-                            Message(GetUserDefinedAPIKey());
-                    end;
-
                     trigger OnValidate()
                     begin
-                        SetUserDefinedAPIKey(APIKeyValue);
+                        if APIKeyValue <> DummyApiKeyTok then
+                            Rec.SetUserDefinedAPIKey(APIKeyValue);
                     end;
                 }
                 field("Timeout (seconds)"; "Timeout (seconds)")
@@ -206,8 +201,8 @@ page 1853 "Sales Forecast Setup Card"
     begin
         if SalesForecastScheduler.JobQueueEntryCreationInProcess() then
             Error(JobQueueCreationInProgressErr);
-        GetSingleInstance();
-        APIKeyValue := GetAPIKey();
+        Rec.GetSingleInstance();
+        SetApiKey();
     end;
 
     var
@@ -216,6 +211,7 @@ page 1853 "Sales Forecast Setup Card"
         [NonDebuggable]
         APIKeyValue: Text[250];
         JobQueueCreationInProgressErr: Label 'Sales forecast updates are being scheduled. Please wait until the process is complete.';
+        DummyApiKeyTok: Label '*', Locked = true;
 
     local procedure GetMLTotalProcessingTime(): Decimal
     var
@@ -226,6 +222,12 @@ page 1853 "Sales Forecast Setup Card"
         ProcessingTime := AzureAIUsage.GetTotalProcessingTime(AzureAIService::"Machine Learning");
 
         exit(Round(ProcessingTime, 1));
+    end;
+
+    local procedure SetApiKey()
+    begin
+        if not Rec.GetApiKeyAsSecret().IsEmpty() then
+            APIKeyValue := DummyApiKeyTok;
     end;
 }
 

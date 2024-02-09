@@ -121,7 +121,7 @@ codeunit 11755 "Registration Log Mgt. CZL"
         // Name
         if GetValue(ResponseObject, NameKeyTok, Value) then
             NewRegistrationLogCZL."Verified Name" :=
-              CopyStr(Value, 1, MaxStrLen(NewRegistrationLogCZL."Verified Name"));
+                CopyStr(Value, 1, MaxStrLen(NewRegistrationLogCZL."Verified Name"));
 
         // Address information
         if GetValue(ResponseObject, AddressKeyTok, AddressObject) then begin
@@ -133,12 +133,12 @@ codeunit 11755 "Registration Log Mgt. CZL"
             // City
             if GetValue(AddressObject, CityKeyTok, Value) then
                 NewRegistrationLogCZL."Verified City" :=
-                  CopyStr(Value, 1, MaxStrLen(NewRegistrationLogCZL."Verified City"));
+                    CopyStr(Value, 1, MaxStrLen(NewRegistrationLogCZL."Verified City"));
 
             // Post Code
             if GetValue(AddressObject, PostCodeKeyTok, Value) then
                 NewRegistrationLogCZL."Verified Post Code" :=
-                  FormatPostCode(CopyStr(Value, 1, MaxStrLen(NewRegistrationLogCZL."Verified Post Code")));
+                    FormatPostCode(CopyStr(Value, 1, MaxStrLen(NewRegistrationLogCZL."Verified Post Code")));
 
             if GetValue(AddressObject, StreetKeyTok, Value) then
                 Address[1] := Value;  // Street
@@ -229,11 +229,17 @@ codeunit 11755 "Registration Log Mgt. CZL"
 
     local procedure FormatPostCode(PostCode: Text): Code[20]
     var
+        RegNoServiceConfig: Record "Reg. No. Service Config CZL";
         PostCodeTok: Label '%1 %2', Locked = true;
     begin
-        if StrLen(PostCode) <> 5 then
+        RegNoServiceConfig.Get();
+        if ((StrLen(PostCode) <> 5) and not RegNoServiceConfig."Post Code without Space") or
+           ((StrLen(PostCode) = 5) and RegNoServiceConfig."Post Code without Space")
+        then
             exit(CopyStr(PostCode, 1, 20));
-        exit(StrSubstNo(PostCodeTok, CopyStr(PostCode, 1, 3), CopyStr(PostCode, 4, 2)));
+        if not RegNoServiceConfig."Post Code without Space" then
+            exit(StrSubstNo(PostCodeTok, CopyStr(PostCode, 1, 3), CopyStr(PostCode, 4, 2)));
+        exit(CopyStr(DelChr(PostCode, '=', ' '), 1, 20));
     end;
 
     local procedure FormatAddress(Address: array[10] of Text): Text

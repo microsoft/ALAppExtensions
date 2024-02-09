@@ -10,7 +10,7 @@ pageextension 6360 "E-Doc. Ext. EDocument" extends "E-Document"
 {
     actions
     {
-        addafter(UpdateOrder)
+        addlast(Incoming)
         {
             action(Approve)
             {
@@ -43,7 +43,7 @@ pageextension 6360 "E-Doc. Ext. EDocument" extends "E-Document"
                 end;
             }
         }
-        addafter(UpdateOrder_Promoted)
+        addlast(Category_Process)
         {
             actionref(Approve_Promoted; Approve) { }
             actionref(Reject_Promoted; Reject) { }

@@ -5,6 +5,7 @@ using Microsoft.Sustainability.Ledger;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Calculation;
 using Microsoft.Finance.Dimension;
+using System.Utilities;
 
 page 6219 "Sustainability Journal"
 {
@@ -284,6 +285,9 @@ page 6219 "Sustainability Journal"
         }
         area(FactBoxes)
         {
+            part(ErrorMessagesPart; "Error Messages Part")
+            {
+            }
             part(CategoryFactBox; "Sustain. Category FactBox")
             {
                 SubPageLink = Code = field("Account Category");
@@ -349,14 +353,8 @@ page 6219 "Sustainability Journal"
                     ToolTip = 'View or edit dimensions, such as area, project, or department, that you can assign to the journal and analyze transaction history.';
 
                     trigger OnAction()
-                    var
-                        DimMgt: Codeunit DimensionManagement;
-                        DimensionCaptionLbl: Label '%1 %2 %3', Locked = true;
                     begin
-                        Rec.Validate("Dimension Set ID", DimMgt.EditDimensionSet(Rec, Rec."Dimension Set ID",
-                            StrSubstNo(DimensionCaptionLbl, Rec."Journal Template Name", Rec."Journal Batch Name", Rec."Line No."),
-                            Rec."Shortcut Dimension 1 Code", Rec."Shortcut Dimension 2 Code"));
-
+                        Rec.ShowDimensions();
                         CurrPage.SaveRecord();
                     end;
                 }
@@ -371,20 +369,34 @@ page 6219 "Sustainability Journal"
                 ShortCutKey = 'F9';
 
                 trigger OnAction()
-                var
-                    SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
                 begin
-                    if SustainabilityPostMgt.CheckJournalLinesWithErrorCollect(Rec) then
-                        SustainabilityPostMgt.PostSustainabilityJournalLines(Rec, IsRecurringView);
+                    if IsRecurringView then
+                        Codeunit.Run(Codeunit::"Sustainability Recur Jnl.-Post", Rec)
+                    else
+                        Codeunit.Run(Codeunit::"Sustainability Jnl.-Post", Rec);
+                end;
+            }
+            action(CheckLines)
+            {
+                Image = CheckJournal;
+                ToolTip = 'Check all journal lines for errors.';
 
-                    CurrPage.Update(false);
+                trigger OnAction()
+                var
+                    TempErrorMessages: Record "Error Message" temporary;
+                    SustainabilityJnlCheck: Codeunit "Sustainability Jnl.-Check";
+                begin
+                    SustainabilityJnlCheck.CheckAllJournalLinesWithErrorCollect(Rec, TempErrorMessages);
+
+                    if not TempErrorMessages.IsEmpty() then
+                        Page.RunModal(Page::"Error Messages", TempErrorMessages);
                 end;
             }
             action(Recalculate)
             {
                 Caption = 'Recalculate';
                 Image = Calculate;
-                ToolTip = 'Calculate the emission of the journal line.';
+                ToolTip = 'Recalculate the emission of the journal line.';
 
                 trigger OnAction()
                 var
@@ -403,6 +415,7 @@ page 6219 "Sustainability Journal"
             group(Category_Process)
             {
                 actionref(Post_Promoted; Post) { }
+                actionref(CheckLines_Promoted; CheckLines) { }
             }
             group(Category_Category10)
             {
@@ -434,6 +447,17 @@ page 6219 "Sustainability Journal"
         DimMgt.GetShortcutDimensions(Rec."Dimension Set ID", ShortcutDimCode);
     end;
 
+    trigger OnAfterGetCurrRecord()
+    var
+        TempErrorMessages: Record "Error Message" temporary;
+        SustainabilityJnlCheck: Codeunit "Sustainability Jnl.-Check";
+    begin
+        SustainabilityJnlCheck.CheckSustainabilityJournalLineWithErrorCollect(Rec, TempErrorMessages);
+
+        CurrPage.ErrorMessagesPart.Page.SetRecords(TempErrorMessages);
+        CurrPage.ErrorMessagesPart.Page.Update(false);
+    end;
+
     trigger OnInit()
     begin
         SetDimensionVisibility();
@@ -459,7 +483,6 @@ page 6219 "Sustainability Journal"
         Rec.SetRange("Journal Batch Name", SustainabilityJnlBatch.Name);
         Rec.SetRange("Journal Template Name", SustainabilityJnlBatch."Journal Template Name");
         Rec.FilterGroup(0);
-        if Rec.Find('-') then;
     end;
 
     local procedure SetDimensionVisibility()

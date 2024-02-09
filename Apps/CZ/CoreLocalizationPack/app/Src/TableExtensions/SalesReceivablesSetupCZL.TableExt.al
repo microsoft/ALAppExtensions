@@ -10,6 +10,7 @@ tableextension 11714 "Sales & Receivables Setup CZL" extends "Sales & Receivable
 {
     fields
     {
+#pragma warning disable AL0842
 #if not CLEAN22
 #pragma warning disable AL0432
 #endif
@@ -17,6 +18,7 @@ tableextension 11714 "Sales & Receivables Setup CZL" extends "Sales & Receivable
 #if not CLEAN22
 #pragma warning restore AL0432
 #endif
+#pragma warning restore AL0842
         {
             Caption = 'Default VAT Date';
             DataClassification = CustomerContent;

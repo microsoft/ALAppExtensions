@@ -91,10 +91,12 @@ table 6217 "Sustainability Setup"
         }
         field(14; "Block Sustain. Accs. Deletion"; Boolean)
         {
+            InitValue = true;
             Caption = 'Block Sustainability Accounts Deletion';
         }
         field(15; "Block Change If Entry Exists"; Boolean)
         {
+            InitValue = true;
             Caption = 'Block Calculation Foundation Change If Ledger Entries Exist';
         }
     }
@@ -115,8 +117,7 @@ table 6217 "Sustainability Setup"
 
     internal procedure GetFormat(FieldNo: Integer): Text
     begin
-        if not SustainabilitySetupRetreived then
-            SustainabilitySetupRetreived := SustainabilitySetup.Get();
+        GetSustainabilitySetup();
 
         case FieldNo of
             SustainabilitySetup.FieldNo("Fuel/El. Decimal Places"):
@@ -127,6 +128,37 @@ table 6217 "Sustainability Setup"
                 exit(StrSubstNo(AutoFormatExprLbl, SustainabilitySetup."Custom Amt. Decimal Places"));
             SustainabilitySetup.FieldNo("Emission Decimal Places"):
                 exit(StrSubstNo(AutoFormatExprLbl, SustainabilitySetup."Emission Decimal Places"));
+        end;
+    end;
+
+    internal procedure GetReportingParameters(var UOMCode: Code[10]; var UseUOMReportingFactor: Boolean; var UOMFactor: Decimal; var Direction: Text; var Precission: Decimal)
+    begin
+        GetSustainabilitySetup();
+
+        if SustainabilitySetup."Emission Reporting UOM Code" <> '' then begin
+            UOMCode := SustainabilitySetup."Emission Reporting UOM Code";
+            case SustainabilitySetup."Emission Rounding Type" of
+                SustainabilitySetup."Emission Rounding Type"::Down:
+                    Direction := '<';
+                SustainabilitySetup."Emission Rounding Type"::Nearest:
+                    Direction := '=';
+                SustainabilitySetup."Emission Rounding Type"::Up:
+                    Direction := '>';
+            end;
+            UseUOMReportingFactor := true;
+            UOMFactor := SustainabilitySetup."Reporting UOM Factor";
+            Precission := SustainabilitySetup."Emission Rounding Precission";
+        end else begin
+            UOMCode := SustainabilitySetup."Emission Unit of Measure Code";
+            UseUOMReportingFactor := false;
+        end;
+    end;
+
+    local procedure GetSustainabilitySetup()
+    begin
+        if not SustainabilitySetupRetreived then begin
+            SustainabilitySetup.Get();
+            SustainabilitySetupRetreived := true;
         end;
     end;
 

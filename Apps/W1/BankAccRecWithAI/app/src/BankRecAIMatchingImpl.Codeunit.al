@@ -311,7 +311,7 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
 
         FirstOpenParenthesisPos := StrPos(CompletionAnswerTxt, '(');
         FirstClosedParenthesisPos := StrPos(CompletionAnswerTxt, ')');
-        while FirstOpenParenthesisPos > 0 do begin
+        while (FirstOpenParenthesisPos > 0) and (FirstClosedParenthesisPos > FirstOpenParenthesisPos) do begin
             MatchedLedgerEntryNoTxt := '';
             MatchedStatementLineNoTxt := '';
             MatchTripleTxt := CopyStr(CompletionAnswerTxt, FirstOpenParenthesisPos + 1, FirstClosedParenthesisPos - FirstOpenParenthesisPos - 1);

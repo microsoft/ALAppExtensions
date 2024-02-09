@@ -48,15 +48,21 @@ codeunit 31370 "G/L Entry Post Application CZA"
         GLEntry.SetLoadFields("Entry No.", "Applies-to ID CZA", "Amount to Apply CZA", Amount, "Posting Date");
         GLEntry.SetRange("Applies-to ID CZA", ApplyingGLEntry."Applies-to ID CZA");
         GLEntry.SetRange("G/L Account No.", ApplyingGLEntry."G/L Account No.");
+        if ApplyingGLEntry.Amount > 0 then
+            GLEntry.SetFilter(Amount, '<0')
+        else
+            GLEntry.SetFilter(Amount, '>0');
         if GLEntry.FindSet(false) then
             repeat
-                if ApplyingGLEntry."Entry No." <> GLEntry."Entry No." then
-                    if GLEntry."Amount to Apply CZA" <> 0 then
-                        if (GLEntry.Amount * ApplyingGLEntry.Amount) > 0 then
-                            Error(SignAmtMustBediffErr);
+                if GLEntry."Amount to Apply CZA" <> 0 then
+                    if (GLEntry.Amount * ApplyingGLEntry.Amount) > 0 then
+                        Error(SignAmtMustBediffErr);
                 if GLEntry."Posting Date" > PostingDate then
                     PostingDate := GLEntry."Posting Date"
             until GLEntry.Next() = 0;
+
+        if ApplyingGLEntry."Posting Date" > PostingDate then
+            PostingDate := ApplyingGLEntry."Posting Date";
 
         DocumentNo := ApplyingGLEntry."Document No.";
         if not NotUseDialog then begin
@@ -92,6 +98,7 @@ codeunit 31370 "G/L Entry Post Application CZA"
                     GLEntry.Modify();
                 end;
             until GLEntry.Next() = 0;
+        ApplyingAmount := ApplyingAmount + ApplyingGLEntry."Amount to Apply CZA";
 
         if ApplyingAmount <> 0 then begin
             if ApplyingAmount > 0 then
@@ -102,12 +109,16 @@ codeunit 31370 "G/L Entry Post Application CZA"
             GLEntry.Ascending(false);
             if GLEntry.FindSet(true) then
                 repeat
-                    GLEntry.CalcFields("Applied Amount CZA");
-                    if (ApplyingAmount <> 0) and
-                       (GLEntry.Amount = GLEntry."Amount to Apply CZA" + GLEntry."Applied Amount CZA")
+                    if (ApplyingGLEntry.Amount > 0) and (GLEntry.Amount < 0) or
+                       (ApplyingGLEntry.Amount < 0) and (GLEntry.Amount > 0)
                     then begin
-                        SetAmountToApply();
-                        GLEntry.Modify();
+                        GLEntry.CalcFields("Applied Amount CZA");
+                        if (ApplyingAmount <> 0) and
+                           (GLEntry.Amount = GLEntry."Amount to Apply CZA" + GLEntry."Applied Amount CZA")
+                        then begin
+                            SetAmountToApply();
+                            GLEntry.Modify();
+                        end;
                     end;
                 until GLEntry.Next() = 0;
 
@@ -115,8 +126,12 @@ codeunit 31370 "G/L Entry Post Application CZA"
                 GLEntry.SetFilter("Amount to Apply CZA", '<>0');
                 if GLEntry.FindSet(true) then
                     repeat
-                        SetAmountToApply();
-                        GLEntry.Modify();
+                        if (ApplyingGLEntry.Amount > 0) and (GLEntry.Amount < 0) or
+                           (ApplyingGLEntry.Amount < 0) and (GLEntry.Amount > 0)
+                        then begin
+                            SetAmountToApply();
+                            GLEntry.Modify();
+                        end;
                     until GLEntry.Next() = 0;
             end;
             GLEntry.Ascending(true);

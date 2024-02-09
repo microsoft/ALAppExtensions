@@ -18,9 +18,10 @@ codeunit 6137 "E-Document Create Jnl. Line"
         CreateGeneralJournalLine(SourceEDocument, CreatedJnlLine);
     end;
 
-    internal procedure SetSource(var SourceEDocument2: Record "E-Document")
+    internal procedure SetSource(var SourceEDocument2: Record "E-Document"; var SourceEDocumentService2: Record "E-Document Service")
     begin
-        SourceEDocument := SourceEDocument2;
+        SourceEDocument.Copy(SourceEDocument2);
+        SourceEDocumentService.Copy(SourceEDocumentService2);
     end;
 
     internal procedure GetCreatedJnlLine(): RecordRef;
@@ -37,11 +38,10 @@ codeunit 6137 "E-Document Create Jnl. Line"
         GenJournalBatch: Record "Gen. Journal Batch";
         GeneralLedgerSetup: Record "General Ledger Setup";
         EDocService: Record "E-Document Service";
-        EDocumentLog: Codeunit "E-Document Log";
         TextToAccountMappingFound: Boolean;
         TempGenJournalLineInserted: Boolean;
     begin
-        EDocService := EDocumentLog.GetLastServiceFromLog(EDocument);
+        EDocService := SourceEDocumentService;
         if (EDocService."General Journal Template Name" = '') or (EDocService."General Journal Batch Name" = '') then
             EDocumentErrorHelper.LogErrorMessage(EDocument, EDocService, EDocService.FieldNo("General Journal Template Name"),
                 StrSubstNo(TemplateBatchNameMissingErr,
@@ -196,6 +196,7 @@ codeunit 6137 "E-Document Create Jnl. Line"
 
     var
         SourceEDocument: Record "E-Document";
+        SourceEDocumentService: Record "E-Document Service";
         NoSeriesMgt: Codeunit NoSeriesManagement;
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         SourceDocumentHeader, CreatedJnlLine : RecordRef;

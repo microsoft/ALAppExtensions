@@ -233,12 +233,11 @@ codeunit 6132 "E-Document Log"
         EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
         EDocServiceCount := EDocumentServiceStatus.Count;
 
-        EDocumentServiceStatus.SetFilter(Status, '%1|%2|%3|%4|%5|%6|%7',
+        EDocumentServiceStatus.SetFilter(Status, '%1|%2|%3|%4|%5|%6',
             EDocumentServiceStatus.Status::Sent,
             EDocumentServiceStatus.Status::Exported,
             EDocumentServiceStatus.Status::"Imported Document Created",
             EDocumentServiceStatus.Status::"Journal Line Created",
-            EDocumentServiceStatus.Status::"Order Updated",
             EDocumentServiceStatus.Status::Approved,
             EDocumentServiceStatus.Status::Canceled);
         if EDocumentServiceStatus.Count = EDocServiceCount then

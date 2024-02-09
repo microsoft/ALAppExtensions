@@ -682,10 +682,8 @@ page 31272 "Compensation Card CZC"
     local procedure DetermineCompensationCZCSeriesNo(): Code[20]
     var
         CompensationsSetupCZC: Record "Compensations Setup CZC";
-        CompensationHeaderCZC: Record "Compensation Header CZC";
     begin
         CompensationsSetupCZC.Get();
-        DocumentNoVisibility.CheckNumberSeries(CompensationHeaderCZC, CompensationsSetupCZC."Compensation Nos.", CompensationHeaderCZC.FieldNo("No."));
         exit(CompensationsSetupCZC."Compensation Nos.");
     end;
 
