@@ -1,3 +1,4 @@
+#if not CLEAN24
 namespace Microsoft.DataMigration.GP;
 
 using Microsoft.DataMigration;
@@ -74,3 +75,4 @@ page 40132 "Hybrid GP Errors Overview Fb"
         MigrationErrorCount: Integer;
         FailedCompanyCount: Integer;
 }
+#endif

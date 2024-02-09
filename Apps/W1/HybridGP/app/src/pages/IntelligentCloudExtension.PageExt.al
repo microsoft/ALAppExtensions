@@ -16,6 +16,7 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                 ApplicationArea = Basic, Suite;
                 Visible = false;
             }
+#if not CLEAN24
             part(Errors; "Hybrid GP Errors Overview Fb")
             {
                 ApplicationArea = Basic, Suite;
@@ -24,6 +25,7 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                 ObsoleteReason = 'Replaced by Overview part.';
                 ObsoleteTag = '24.0';
             }
+#endif
             part(Overview; "Hybrid GP Overview Fb")
             {
                 ApplicationArea = Basic, Suite;
