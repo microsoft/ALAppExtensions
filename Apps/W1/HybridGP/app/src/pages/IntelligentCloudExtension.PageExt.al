@@ -19,6 +19,14 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
             part(Errors; "Hybrid GP Errors Overview Fb")
             {
                 ApplicationArea = Basic, Suite;
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Replaced by Overview part.';
+                ObsoleteTag = '24.0';
+            }
+            part(Overview; "Hybrid GP Overview Fb")
+            {
+                ApplicationArea = Basic, Suite;
                 Visible = FactBoxesVisible;
             }
             part("Show Detail Snapshot Errors"; "Hist. Migration Status Factbox")
