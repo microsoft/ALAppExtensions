@@ -15,7 +15,14 @@ page 40132 "Hybrid GP Errors Overview Fb"
             {
                 ObsoleteState = Pending;
                 ObsoleteReason = 'Reorganization of tiles';
-                ObsoleteTag = '25.0';
+                ObsoleteTag = '24.0';
+                Visible = false;
+            }
+            cuegroup(FailedCompanies)
+            {
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Reorganization of tiles';
+                ObsoleteTag = '24.0';
                 Visible = false;
             }
 
