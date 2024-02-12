@@ -1,3 +1,4 @@
+#if not CLEAN24
 namespace Microsoft.DataMigration.GP;
 
 using Microsoft.DataMigration;
@@ -10,6 +11,9 @@ page 40132 "Hybrid GP Errors Overview Fb"
     DelayedInsert = false;
     ModifyAllowed = false;
     SourceTable = "GP Migration Error Overview";
+    ObsoleteState = Pending;
+    ObsoleteReason = 'Replaced by Hybrid GP Overview Fb';
+    ObsoleteTag = '24.0';
 
     layout
     {
@@ -71,3 +75,4 @@ page 40132 "Hybrid GP Errors Overview Fb"
         MigrationErrorCount: Integer;
         FailedCompanyCount: Integer;
 }
+#endif

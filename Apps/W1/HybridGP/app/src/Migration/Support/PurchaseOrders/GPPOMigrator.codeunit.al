@@ -21,6 +21,7 @@ codeunit 40108 "GP PO Migrator"
         GPCodeTxt: Label 'GP', Locked = true;
         ItemJournalBatchNameTxt: Label 'GPPOITEMS', Comment = 'Item journal batch name for item adjustments', Locked = true;
         SimpleInvJnlNameTxt: Label 'DEFAULT', Comment = 'The default name of the item journal', Locked = true;
+        MigrationLogAreaTxt: Label 'PO', Locked = true;
         ItemJnlBatchLineNo: Integer;
         PostPurchaseOrderNoList: List of [Text];
         InitialAutomaticCostAdjustmentType: Enum "Automatic Cost Adjustment Type";
@@ -35,6 +36,7 @@ codeunit 40108 "GP PO Migrator"
         GeneralLedgerSetup: Record "General Ledger Setup";
         Vendor: Record Vendor;
         InventorySetup: Record "Inventory Setup";
+        GPMigrationWarnings: Record "GP Migration Warnings";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         PurchaseDocumentType: Enum "Purchase Document Type";
         PurchaseDocumentStatus: Enum "Purchase Document Status";
@@ -96,8 +98,9 @@ codeunit 40108 "GP PO Migrator"
                 PurchaseLine.SetRange("Document Type", PurchaseLine."Document Type"::Order);
                 PurchaseLine.SetRange("Document No.", PurchaseHeader."No.");
                 if PurchaseLine.IsEmpty() then
-                    PurchaseHeader.Delete();
-            end;
+                    PurchaseHeader.Delete()
+            end else
+                GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, GPPOP10100.PONUMBER, 'PO was skipped because the Vendor has not been migrated.');
         until GPPOP10100.Next() = 0;
 
         PostReceivedPurchaseLines();
@@ -199,6 +202,7 @@ codeunit 40108 "GP PO Migrator"
     var
         PurchaseLine: Record "Purchase Line";
         Item: Record Item;
+        FoundItem: Boolean;
         PurchaseDocumentType: Enum "Purchase Document Type";
         PurchaseLineType: Enum "Purchase Line Type";
         ItemNo: Code[20];
@@ -228,8 +232,11 @@ codeunit 40108 "GP PO Migrator"
         ItemNo := CopyStr(GPPOP10110.ITEMNMBR.Trim(), 1, MaxStrLen(ItemNo));
         IsInventoryItem := false;
 
-        if Item.Get(ItemNo) then
+        Item.SetLoadFields(Type, "Over-Receipt Code");
+        if Item.Get(ItemNo) then begin
+            FoundItem := true;
             IsInventoryItem := Item.Type = Item.Type::Inventory;
+        end;
 
         PurchaseLine.Init();
         PurchaseLine."Document No." := PONumber;
@@ -238,8 +245,9 @@ codeunit 40108 "GP PO Migrator"
         PurchaseLine."Buy-from Vendor No." := GPPOP10110.VENDORID;
         PurchaseLine.Type := PurchaseLineType::Item;
 
-        if GPPOP10110.NONINVEN = 1 then
-            CreateNonInventoryItem(GPPOP10110);
+        if not FoundItem then
+            if GPPOP10110.NONINVEN = 1 then
+                CreateNonInventoryItem(GPPOP10110);
 
         PurchaseLine.Validate("Gen. Bus. Posting Group", GPCodeTxt);
         PurchaseLine.Validate("Gen. Prod. Posting Group", GPCodeTxt);

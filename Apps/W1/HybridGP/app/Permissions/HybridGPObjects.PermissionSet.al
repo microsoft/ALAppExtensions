@@ -153,5 +153,8 @@ permissionset 4029 "HybridGP - Objects"
                     table "GP PM10200" = X,
                     table "GP PM30300" = X,
                     table "GP RM20201" = X,
-                    table "GP RM30201" = X;
+                    table "GP RM30201" = X,
+                    table "GP Migration Warnings" = X,
+                    page "GP Migration Warnings" = X,
+                    page "GP Payment Terms" = X;
 }
