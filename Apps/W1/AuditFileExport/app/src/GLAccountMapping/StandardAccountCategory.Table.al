@@ -20,6 +20,7 @@ table 5262 "Standard Account Category"
         {
             DataClassification = CustomerContent;
             Caption = 'No.';
+            NotBlank = true;
         }
         field(3; Description; Text[250])
         {
