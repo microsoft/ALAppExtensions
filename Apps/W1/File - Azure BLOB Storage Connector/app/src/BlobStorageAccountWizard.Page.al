@@ -86,6 +86,7 @@ page 80101 "Blob Storage Account Wizard"
                 var
                     BlobStorageConnectorImpl: Codeunit "Blob Storage Connector Impl.";
                 begin
+                    CurrPage.Update();
                     BlobStorageConnectorImpl.LookUpContainer(Rec, Password, Text);
                     exit(true);
                 end;

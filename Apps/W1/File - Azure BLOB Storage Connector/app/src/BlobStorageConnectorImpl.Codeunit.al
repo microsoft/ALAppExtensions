@@ -405,7 +405,7 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
         FileAccount.Connector := Enum::"File System Connector"::"Blob Storage";
     end;
 
-    internal procedure LookUpContainer(var Account: Record "Blob Storage Account"; Password: Text; var NewContainerName: Text[2048])
+    internal procedure LookUpContainer(var Account: Record "Blob Storage Account"; Password: SecretText; var NewContainerName: Text[2048])
     var
         ABSContainers: Record "ABS Container";
         ABSContainerClient: Codeunit "ABS Container Client";

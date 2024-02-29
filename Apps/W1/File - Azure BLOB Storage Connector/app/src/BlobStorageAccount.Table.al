@@ -70,7 +70,7 @@ table 80100 "Blob Storage Account"
     end;
 
     [NonDebuggable]
-    procedure GetPassword(PasswordKey: Guid) Password: Text
+    procedure GetPassword(PasswordKey: Guid) Password: SecretText
     begin
         if not IsolatedStorage.Get(Format(PasswordKey), DataScope::Company, Password) then
             Error(UnableToGetPasswordMsg);

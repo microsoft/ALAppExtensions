@@ -57,6 +57,15 @@ page 80100 "Blob Storage Account"
                 ApplicationArea = All;
                 Caption = 'Container Name';
                 ToolTip = 'Specifies the Azure Storage Container name.';
+
+                trigger OnLookup(var Text: Text): Boolean
+                var
+                    BlobStorageConnectorImpl: Codeunit "Blob Storage Connector Impl.";
+                begin
+                    CurrPage.Update();
+                    BlobStorageConnectorImpl.LookUpContainer(Rec, Rec.GetPassword(Rec."Password Key"), Text);
+                    exit(true);
+                end;
             }
         }
     }
