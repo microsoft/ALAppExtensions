@@ -1,9 +1,9 @@
 {
-    "id":  "c9ce86fe-cb70-4b79-be03-d21856b1a4ca",
-    "name":  "File - Azure Blob Service Connector",
+    "id":  "79447b11-8301-4d02-a546-2261eb811296",
+    "name":  "File - Azure File Service Connector",
     "publisher":  "Microsoft",
-    "brief":  "Enable all users to use a Azure Blob Storage to save files from Business Central.",
-    "description":  "This app enables all users to store files in the smae azure blob storage in Business Central.",
+    "brief":  "Enable all users to use a Azure File Share to save files from Business Central.",
+    "description":  "This app enables all users to store files in the same Azure File Share in Business Central.",
     "version":  "25.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
@@ -17,8 +17,8 @@
                     "platform":  "24.0.0.0",
     "idRanges":  [
                      {
-                         "from":  80100,
-                         "to":  80199
+                         "from":  80200,
+                         "to":  80299
                      }
                  ],
     "target":  "OnPrem",

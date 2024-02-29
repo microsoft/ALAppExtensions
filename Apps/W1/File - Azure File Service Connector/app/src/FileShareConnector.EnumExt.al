@@ -6,16 +6,16 @@
 namespace System.FileSystem;
 
 /// <summary>
-/// Enum extension to register the Blob Storage connector.
+/// Enum extension to register the File Share connector.
 /// </summary>
-enumextension 80100 "Blob Storage Connector" extends "File System Connector"
+enumextension 80200 "File Share Connector" extends "File System Connector"
 {
     /// <summary>
-    /// The Blob Storage connector.
+    /// The File Share connector.
     /// </summary>
-    value(80100; "Blob Storage")
+    value(80200; "File Share")
     {
-        Caption = 'Blob Storage';
-        Implementation = "File System Connector" = "Blob Storage Connector Impl.";
+        Caption = 'File Share';
+        Implementation = "File System Connector" = "File Share Connector Impl.";
     }
 }

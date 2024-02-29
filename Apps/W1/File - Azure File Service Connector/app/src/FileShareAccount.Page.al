@@ -6,13 +6,13 @@
 namespace System.FileSystem;
 
 /// <summary>
-/// Displays an account that was registered via the Blob Storage connector.
+/// Displays an account that was registered via the File Share connector.
 /// </summary>
-page 80100 "Blob Storage Account"
+page 80200 "File Share Account"
 {
-    SourceTable = "Blob Storage Account";
-    Caption = 'Azure Blob Storage Account';
-    Permissions = tabledata "Blob Storage Account" = rimd;
+    SourceTable = "File Share Account";
+    Caption = 'Azure File Share Account';
+    Permissions = tabledata "File Share Account" = rimd;
     PageType = Card;
     Extensible = false;
     InsertAllowed = false;
@@ -26,7 +26,7 @@ page 80100 "Blob Storage Account"
             {
                 ApplicationArea = All;
                 Caption = 'Account Name';
-                ToolTip = 'Specifies the name of the Storage account connection.';
+                ToolTip = 'Specifies the name of the storage account connection.';
                 ShowMandatory = true;
                 NotBlank = true;
             }
@@ -38,34 +38,25 @@ page 80100 "Blob Storage Account"
                 ToolTip = 'Specifies the Azure Storage name.';
             }
 
-            field(Password; Password)
+            field(SASTokenField; SASToken)
             {
                 ApplicationArea = All;
-                Caption = 'Password';
+                Caption = 'SAS Token';
                 Editable = PasswordEditable;
                 ExtendedDatatype = Masked;
-                ToolTip = 'Specifies the shared key to access the Storage Blob.';
+                ToolTip = 'Specifies the shared access signature to access the file share.';
 
                 trigger OnValidate()
                 begin
-                    Rec.SetPassword(Password);
+                    Rec.SetSAS(SASToken);
                 end;
             }
 
-            field(ContainerNameField; Rec."Container Name")
+            field(FileShareNameField; Rec."File Share Name")
             {
                 ApplicationArea = All;
-                Caption = 'Container Name';
-                ToolTip = 'Specifies the Azure Storage Container name.';
-
-                trigger OnLookup(var Text: Text): Boolean
-                var
-                    BlobStorageConnectorImpl: Codeunit "Blob Storage Connector Impl.";
-                begin
-                    CurrPage.Update();
-                    BlobStorageConnectorImpl.LookUpContainer(Rec, Rec.GetPassword(Rec."Password Key"), Text);
-                    exit(true);
-                end;
+                Caption = 'File Share Name';
+                ToolTip = 'Specifies the Azure File Share name.';
             }
         }
     }
@@ -73,14 +64,14 @@ page 80100 "Blob Storage Account"
     var
         PasswordEditable: Boolean;
         [NonDebuggable]
-        Password: Text;
+        SASToken: Text;
 
     trigger OnOpenPage()
     begin
         Rec.SetCurrentKey(Name);
 
-        if not IsNullGuid(Rec."Password Key") then
-            Password := '***';
+        if not IsNullGuid(Rec."SAS Key") then
+            SASToken := '***';
     end;
 
     trigger OnAfterGetCurrRecord()
