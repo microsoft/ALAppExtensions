@@ -1,6 +1,6 @@
 {
     "id":  "c9ce86fe-cb70-4b79-be03-d21856b1a4ca",
-    "name":  "File - Azure BLOB Storage Connector",
+    "name":  "File - Azure Blob Service Connector",
     "publisher":  "Microsoft",
     "brief":  "Enable all users to use a Azure Blob Storage to save files from Business Central.",
     "description":  "This app enables all users to store files in the smae azure blob storage in Business Central.",
