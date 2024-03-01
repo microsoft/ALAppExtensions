@@ -7,8 +7,6 @@ namespace System.FileSystem;
 
 using System.Integration.Sharepoint;
 using System.Utilities;
-using System.Azure.Storage;
-using System.Azure.Storage.Files;
 
 codeunit 80300 "SharePoint Connector Impl." implements "File System Connector"
 {
@@ -33,7 +31,10 @@ codeunit 80300 "SharePoint Connector Impl." implements "File System Connector"
     var
         SharePointFile: Record "SharePoint File";
         SharePointClient: Codeunit "SharePoint Client";
+        OrginalPath: Text;
     begin
+        OrginalPath := Path;
+        InitPath(AccountId, Path);
         InitSharePointClient(AccountId, SharePointClient);
         if not SharePointClient.GetFolderFilesByServerRelativeUrl(Path, SharePointFile) then
             ShowError(SharePointClient);
@@ -47,7 +48,7 @@ codeunit 80300 "SharePoint Connector Impl." implements "File System Connector"
             FileAccountContent.Init();
             FileAccountContent.Name := SharePointFile.Name;
             FileAccountContent.Type := FileAccountContent.Type::"File";
-            FileAccountContent."Parent Directory" := Path;
+            FileAccountContent."Parent Directory" := OrginalPath;
             FileAccountContent.Insert();
         until SharePointFile.Next() = 0;
     end;
@@ -60,13 +61,22 @@ codeunit 80300 "SharePoint Connector Impl." implements "File System Connector"
     /// <param name="Stream">The Stream were the file is read to.</param>
     procedure GetFile(AccountId: Guid; Path: Text; Stream: InStream)
     var
+        SharePointFile: Record "SharePoint File";
         SharePointClient: Codeunit "SharePoint Client";
+        TempBlob, TempBlob2 : Codeunit "Temp Blob";
+        Content: HttpContent;
+        TempBlobStream: InStream;
     begin
+        InitPath(AccountId, Path);
         InitSharePointClient(AccountId, SharePointClient);
-        if SharePointClient.DownloadFileContentByServerRelativeUrl(Path, Stream) then
-            exit;
 
-        ShowError(SharePointClient);
+        TempBlob.CreateInStream(Stream);
+        if not SharePointClient.DownloadFileContentByServerRelativeUrl(Path, TempBlobStream) then
+            ShowError(SharePointClient);
+
+        // Platform fix: For some reason the Stream from DownloadFileContentByServerRelativeUrl dies after leaving the interface
+        Content.WriteFrom(TempBlobStream);
+        Content.ReadAs(Stream);
     end;
 
     /// <summary>
@@ -79,9 +89,12 @@ codeunit 80300 "SharePoint Connector Impl." implements "File System Connector"
     var
         SharePointFile: Record "SharePoint File";
         SharePointClient: Codeunit "SharePoint Client";
+        ParentPath, FileName : Text;
     begin
+        InitPath(AccountId, Path);
         InitSharePointClient(AccountId, SharePointClient);
-        if SharePointClient.AddFileToFolder(Path, SharePointFile) then
+        SplitPath(Path, ParentPath, FileName);
+        if SharePointClient.AddFileToFolder(ParentPath, FileName, Stream, SharePointFile, false) then
             exit;
 
         ShowError(SharePointClient);
@@ -133,6 +146,7 @@ codeunit 80300 "SharePoint Connector Impl." implements "File System Connector"
         SharePointFile: Record "SharePoint File";
         SharePointClient: Codeunit "SharePoint Client";
     begin
+        InitPath(AccountId, Path);
         InitSharePointClient(AccountId, SharePointClient);
         if not SharePointClient.GetFolderFilesByServerRelativeUrl(GetParentPath(Path), SharePointFile) then
             ShowError(SharePointClient);
@@ -150,6 +164,7 @@ codeunit 80300 "SharePoint Connector Impl." implements "File System Connector"
     var
         SharePointClient: Codeunit "SharePoint Client";
     begin
+        InitPath(AccountId, Path);
         InitSharePointClient(AccountId, SharePointClient);
         if SharePointClient.DeleteFileByServerRelativeUrl(Path) then
             exit;
@@ -168,7 +183,10 @@ codeunit 80300 "SharePoint Connector Impl." implements "File System Connector"
     var
         SharePointFolder: Record "SharePoint Folder";
         SharePointClient: Codeunit "SharePoint Client";
+        OrginalPath: Text;
     begin
+        OrginalPath := Path;
+        InitPath(AccountId, Path);
         InitSharePointClient(AccountId, SharePointClient);
         if not SharePointClient.GetSubFoldersByServerRelativeUrl(Path, SharePointFolder) then
             ShowError(SharePointClient);
@@ -182,7 +200,7 @@ codeunit 80300 "SharePoint Connector Impl." implements "File System Connector"
             FileAccountContent.Init();
             FileAccountContent.Name := SharePointFolder.Name;
             FileAccountContent.Type := FileAccountContent.Type::Directory;
-            FileAccountContent."Parent Directory" := Path;
+            FileAccountContent."Parent Directory" := OrginalPath;
             FileAccountContent.Insert();
         until SharePointFolder.Next() = 0;
     end;
@@ -197,6 +215,7 @@ codeunit 80300 "SharePoint Connector Impl." implements "File System Connector"
         SharePointFolder: Record "SharePoint Folder";
         SharePointClient: Codeunit "SharePoint Client";
     begin
+        InitPath(AccountId, Path);
         InitSharePointClient(AccountId, SharePointClient);
         if SharePointClient.CreateFolder(Path, SharePointFolder) then
             exit;
@@ -215,6 +234,7 @@ codeunit 80300 "SharePoint Connector Impl." implements "File System Connector"
         SharePointFolder: Record "SharePoint Folder";
         SharePointClient: Codeunit "SharePoint Client";
     begin
+        InitPath(AccountId, Path);
         InitSharePointClient(AccountId, SharePointClient);
         if SharePointClient.GetSubFoldersByServerRelativeUrl(Path, SharePointFolder) then
             exit;
@@ -231,6 +251,7 @@ codeunit 80300 "SharePoint Connector Impl." implements "File System Connector"
     var
         SharePointClient: Codeunit "SharePoint Client";
     begin
+        InitPath(AccountId, Path);
         InitSharePointClient(AccountId, SharePointClient);
         if SharePointClient.DeleteFolderByServerRelativeUrl(Path) then
             exit;
@@ -391,5 +412,33 @@ codeunit 80300 "SharePoint Connector Impl." implements "File System Connector"
     begin
         if (Path.TrimEnd(PathSeparator()).Contains(PathSeparator())) then
             FileName := Path.TrimEnd(PathSeparator()).Substring(Path.LastIndexOf(PathSeparator()) + 1);
+    end;
+
+    local procedure InitPath(AccountId: Guid; var Path: Text)
+    var
+        FileShareAccount: Record "SharePoint Account";
+    begin
+        FileShareAccount.Get(AccountId);
+        Path := CombinePath(FileShareAccount."Base Relative Folder Path", Path);
+    end;
+
+    local procedure CombinePath(Parent: Text; Child: Text): Text
+    begin
+        if Parent = '' then
+            exit(Child);
+
+        if Child = '' then
+            exit(Parent);
+
+        if not Parent.EndsWith(PathSeparator()) then
+            Parent += PathSeparator();
+
+        exit(Parent + Child);
+    end;
+
+    local procedure SplitPath(Path: Text; var ParentPath: Text; var FileName: Text)
+    begin
+        ParentPath := Path.TrimEnd(PathSeparator()).Substring(1, Path.LastIndexOf(PathSeparator()));
+        FileName := Path.TrimEnd(PathSeparator()).Substring(Path.LastIndexOf(PathSeparator()) + 1);
     end;
 }
