@@ -434,10 +434,10 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
     begin
         BlobStorageAccount.Get(AccountId);
         case BlobStorageAccount."Authorization Type" of
-            "Blob Storage Auth. Type"::SharedKey:
-                Authorization := StorageServiceAuthorization.CreateSharedKey(BlobStorageAccount.GetSecret(BlobStorageAccount."Secret Key"));
             "Blob Storage Auth. Type"::SasToken:
                 Authorization := SetReadySAS(StorageServiceAuthorization, BlobStorageAccount.GetSecret(BlobStorageAccount."Secret Key"));
+            "Blob Storage Auth. Type"::SharedKey:
+                Authorization := StorageServiceAuthorization.CreateSharedKey(BlobStorageAccount.GetSecret(BlobStorageAccount."Secret Key"));
         end;
         ABSBlobClient.Initialize(BlobStorageAccount."Storage Account Name", BlobStorageAccount."Container Name", Authorization);
     end;

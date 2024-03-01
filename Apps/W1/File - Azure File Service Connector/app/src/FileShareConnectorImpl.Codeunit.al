@@ -387,9 +387,9 @@ codeunit 80200 "File Share Connector Impl." implements "File System Connector"
         FileShareAccount.Get(AccountId);
         case FileShareAccount."Authorization Type" of
             FileShareAccount."Authorization Type"::SasToken:
-                Authorization := StorageServiceAuthorization.CreateSharedKey(FileShareAccount.GetSecret(FileShareAccount."Secret Key"));
-            FileShareAccount."Authorization Type"::SharedKey:
                 Authorization := SetReadySAS(StorageServiceAuthorization, FileShareAccount.GetSecret(FileShareAccount."Secret Key"));
+            FileShareAccount."Authorization Type"::SharedKey:
+                Authorization := StorageServiceAuthorization.CreateSharedKey(FileShareAccount.GetSecret(FileShareAccount."Secret Key"));
         end;
 
         AFSFileClient.Initialize(FileShareAccount."Storage Account Name", FileShareAccount."File Share Name", Authorization);
