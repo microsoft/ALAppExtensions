@@ -396,7 +396,7 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
         NewBlobStorageAccount.TransferFields(AccountToCopy);
 
         NewBlobStorageAccount.Id := CreateGuid();
-        NewBlobStorageAccount.SetPassword(Password);
+        NewBlobStorageAccount.SetSecret(Password);
 
         NewBlobStorageAccount.Insert();
 
@@ -405,7 +405,7 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
         FileAccount.Connector := Enum::"File System Connector"::"Blob Storage";
     end;
 
-    internal procedure LookUpContainer(var Account: Record "Blob Storage Account"; Password: SecretText; var NewContainerName: Text[2048])
+    internal procedure LookUpContainer(var Account: Record "Blob Storage Account"; AuthType: Enum "Blob Storage Auth. Type"; Secret: SecretText; var NewContainerName: Text[2048])
     var
         ABSContainers: Record "ABS Container";
         ABSContainerClient: Codeunit "ABS Container Client";
@@ -414,7 +414,13 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
         Authorization: Interface "Storage Service Authorization";
     begin
         Account.TestField("Storage Account Name");
-        Authorization := StorageServiceAuthorization.CreateSharedKey(Password);
+        case AuthType of
+            AuthType::SasToken:
+                Authorization := SetReadySAS(StorageServiceAuthorization, Secret);
+            AuthType::SharedKey:
+                Authorization := StorageServiceAuthorization.CreateSharedKey(Secret);
+        end;
+
         ABSContainerClient.Initialize(Account."Storage Account Name", Authorization);
         ABSOperationResponse := ABSContainerClient.ListContainers(ABSContainers);
         if not ABSOperationResponse.IsSuccessful() then
@@ -436,7 +442,12 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
         Authorization: Interface "Storage Service Authorization";
     begin
         BlobStorageAccount.Get(AccountId);
-        Authorization := StorageServiceAuthorization.CreateSharedKey(BlobStorageAccount.GetPassword(BlobStorageAccount."Password Key"));
+        case BlobStorageAccount."Authorization Type" of
+            "Blob Storage Auth. Type"::SharedKey:
+                Authorization := StorageServiceAuthorization.CreateSharedKey(BlobStorageAccount.GetSecret(BlobStorageAccount."Secret Key"));
+            "Blob Storage Auth. Type"::SasToken:
+                Authorization := SetReadySAS(StorageServiceAuthorization, BlobStorageAccount.GetSecret(BlobStorageAccount."Secret Key"));
+        end;
         ABSBlobClient.Initialize(BlobStorageAccount."Storage Account Name", BlobStorageAccount."Container Name", Authorization);
     end;
 
@@ -471,5 +482,12 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
 
         FilePaginationData.SetMarker(ABSOperationResponse.GetNextMarker());
         FilePaginationData.SetEndOfListing(ABSOperationResponse.GetNextMarker() = '');
+    end;
+
+
+    [NonDebuggable]
+    local procedure SetReadySAS(var StorageServiceAuthorization: Codeunit "Storage Service Authorization"; Secret: SecretText): Interface System.Azure.Storage."Storage Service Authorization"
+    begin
+        exit(StorageServiceAuthorization.UseReadySAS(Secret.Unwrap()));
     end;
 }

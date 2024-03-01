@@ -35,7 +35,11 @@ table 80200 "File Share Account"
         {
             Caption = 'File Share Name';
         }
-        field(8; "SAS Key"; Guid)
+        field(7; "Authorization Type"; Enum "File Share Auth. Type")
+        {
+            Caption = 'Authorization Type';
+        }
+        field(8; "Secret Key"; Guid)
         {
             DataClassification = SystemMetadata;
         }
@@ -50,29 +54,29 @@ table 80200 "File Share Account"
     }
 
     var
-        UnableToGetPasswordMsg: Label 'Unable to get File Share Account Key';
-        UnableToSetPasswordMsg: Label 'Unable to set File Share Account Key';
+        UnableToGetSecretMsg: Label 'Unable to get File Share Account secret.';
+        UnableToSetSecretMsg: Label 'Unable to set File Share Account secret.';
 
     trigger OnDelete()
     begin
-        if not IsNullGuid(Rec."SAS Key") then
-            if IsolatedStorage.Delete(Rec."SAS Key") then;
+        if not IsNullGuid(Rec."Secret Key") then
+            if IsolatedStorage.Delete(Rec."Secret Key") then;
     end;
 
     [NonDebuggable]
-    procedure SetSAS(SASToken: Text)
+    procedure SetSecret(Secret: SecretText)
     begin
-        if IsNullGuid(Rec."SAS Key") then
-            Rec."SAS Key" := CreateGuid();
+        if IsNullGuid(Rec."Secret Key") then
+            Rec."Secret Key" := CreateGuid();
 
-        if not IsolatedStorage.Set(Format(Rec."SAS Key"), SASToken, DataScope::Company) then
-            Error(UnableToSetPasswordMsg);
+        if not IsolatedStorage.Set(Format(Rec."Secret Key"), Secret, DataScope::Company) then
+            Error(UnableToSetSecretMsg);
     end;
 
     [NonDebuggable]
-    procedure GetSAS(SASKey: Guid) Password: Text
+    procedure GetSecret(SecretKey: Guid) Secret: SecretText
     begin
-        if not IsolatedStorage.Get(Format(SASKey), DataScope::Company, Password) then
-            Error(UnableToGetPasswordMsg);
+        if not IsolatedStorage.Get(Format(SecretKey), DataScope::Company, Secret) then
+            Error(UnableToGetSecretMsg);
     end;
 }

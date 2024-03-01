@@ -38,17 +38,23 @@ page 80100 "Blob Storage Account"
                 ToolTip = 'Specifies the Azure Storage name.';
             }
 
-            field(Password; Password)
+            field("Authorization Type"; Rec."Authorization Type")
+            {
+                ApplicationArea = All;
+                ToolTip = 'The way of authorizing used to access the Blob Storage.';
+            }
+
+            field(SecretField; Secret)
             {
                 ApplicationArea = All;
                 Caption = 'Password';
-                Editable = PasswordEditable;
+                Editable = SecretEditable;
                 ExtendedDatatype = Masked;
-                ToolTip = 'Specifies the shared key to access the Storage Blob.';
+                ToolTip = 'Specifies the Shared access signature Token or SharedKey.';
 
                 trigger OnValidate()
                 begin
-                    Rec.SetPassword(Password);
+                    Rec.SetSecret(Secret);
                 end;
             }
 
@@ -63,7 +69,7 @@ page 80100 "Blob Storage Account"
                     BlobStorageConnectorImpl: Codeunit "Blob Storage Connector Impl.";
                 begin
                     CurrPage.Update();
-                    BlobStorageConnectorImpl.LookUpContainer(Rec, Rec.GetPassword(Rec."Password Key"), Text);
+                    BlobStorageConnectorImpl.LookUpContainer(Rec, Rec."Authorization Type", Rec.GetSecret(Rec."Secret Key"), Text);
                     exit(true);
                 end;
             }
@@ -71,20 +77,20 @@ page 80100 "Blob Storage Account"
     }
 
     var
-        PasswordEditable: Boolean;
+        SecretEditable: Boolean;
         [NonDebuggable]
-        Password: Text;
+        Secret: Text;
 
     trigger OnOpenPage()
     begin
         Rec.SetCurrentKey(Name);
 
-        if not IsNullGuid(Rec."Password Key") then
-            Password := '***';
+        if not IsNullGuid(Rec."Secret Key") then
+            Secret := '***';
     end;
 
     trigger OnAfterGetCurrRecord()
     begin
-        PasswordEditable := CurrPage.Editable();
+        SecretEditable := CurrPage.Editable();
     end;
 }

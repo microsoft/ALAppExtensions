@@ -66,12 +66,18 @@ page 80201 "File Share Account Wizard"
                 end;
             }
 
-            field(SASTokenField; SASToken)
+            field("Authorization Type"; Rec."Authorization Type")
             {
                 ApplicationArea = All;
-                Caption = 'SAS Token';
+                ToolTip = 'The way of authorizing used to access the Blob Storage.';
+            }
+
+            field(SecretField; Secret)
+            {
+                ApplicationArea = All;
+                Caption = 'Secret';
                 ExtendedDatatype = Masked;
-                ToolTip = 'Specifies the shared access signature to access the file share.';
+                ToolTip = 'Specifies the Shared access signature Token or SharedKey.';
                 ShowMandatory = true;
             }
 
@@ -119,7 +125,7 @@ page 80201 "File Share Account Wizard"
 
                 trigger OnAction()
                 begin
-                    FileShareConnectorImpl.CreateAccount(Rec, SASToken, FileShareAccount);
+                    FileShareConnectorImpl.CreateAccount(Rec, Secret, FileShareAccount);
                     CurrPage.Close();
                 end;
             }
@@ -131,7 +137,7 @@ page 80201 "File Share Account Wizard"
         MediaResources: Record "Media Resources";
         FileShareConnectorImpl: Codeunit "File Share Connector Impl.";
         [NonDebuggable]
-        SASToken: Text;
+        Secret: Text;
         IsNextEnabled: Boolean;
         TopBannerVisible: Boolean;
 

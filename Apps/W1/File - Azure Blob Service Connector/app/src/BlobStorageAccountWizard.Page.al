@@ -66,12 +66,18 @@ page 80101 "Blob Storage Account Wizard"
                 end;
             }
 
-            field(PasswordField; Password)
+            field("Authorization Type"; Rec."Authorization Type")
             {
                 ApplicationArea = All;
-                Caption = 'Password';
+                ToolTip = 'The way of authorizing used to access the Blob Storage.';
+            }
+
+            field(SecretField; Secret)
+            {
+                ApplicationArea = All;
+                Caption = 'Secret';
                 ExtendedDatatype = Masked;
-                ToolTip = 'Specifies the shared key of the Storage Blob.';
+                ToolTip = 'Specifies the Shared access signature Token or SharedKey.';
                 ShowMandatory = true;
             }
 
@@ -87,7 +93,7 @@ page 80101 "Blob Storage Account Wizard"
                     BlobStorageConnectorImpl: Codeunit "Blob Storage Connector Impl.";
                 begin
                     CurrPage.Update();
-                    BlobStorageConnectorImpl.LookUpContainer(Rec, Password, Text);
+                    BlobStorageConnectorImpl.LookUpContainer(Rec, "Authorization Type", Secret, Text);
                     exit(true);
                 end;
 
@@ -128,7 +134,7 @@ page 80101 "Blob Storage Account Wizard"
 
                 trigger OnAction()
                 begin
-                    BlobStorageConnectorImpl.CreateAccount(Rec, Password, BlobStorageAccount);
+                    BlobStorageConnectorImpl.CreateAccount(Rec, Secret, BlobStorageAccount);
                     CurrPage.Close();
                 end;
             }
@@ -140,7 +146,7 @@ page 80101 "Blob Storage Account Wizard"
         MediaResources: Record "Media Resources";
         BlobStorageConnectorImpl: Codeunit "Blob Storage Connector Impl.";
         [NonDebuggable]
-        Password: Text;
+        Secret: Text;
         IsNextEnabled: Boolean;
         TopBannerVisible: Boolean;
 

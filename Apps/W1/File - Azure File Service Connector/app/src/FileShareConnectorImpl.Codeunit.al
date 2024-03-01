@@ -378,7 +378,7 @@ codeunit 80200 "File Share Connector Impl." implements "File System Connector"
         NewFileShareAccount.TransferFields(AccountToCopy);
 
         NewFileShareAccount.Id := CreateGuid();
-        NewFileShareAccount.SetSAS(Password);
+        NewFileShareAccount.SetSecret(Password);
 
         NewFileShareAccount.Insert();
 
@@ -394,7 +394,13 @@ codeunit 80200 "File Share Connector Impl." implements "File System Connector"
         Authorization: Interface "Storage Service Authorization";
     begin
         FileShareAccount.Get(AccountId);
-        Authorization := StorageServiceAuthorization.UseReadySAS(FileShareAccount.GetSAS(FileShareAccount."SAS Key"));
+        case FileShareAccount."Authorization Type" of
+            FileShareAccount."Authorization Type"::SasToken:
+                Authorization := StorageServiceAuthorization.CreateSharedKey(FileShareAccount.GetSecret(FileShareAccount."Secret Key"));
+            FileShareAccount."Authorization Type"::SharedKey:
+                Authorization := SetReadySAS(StorageServiceAuthorization, FileShareAccount.GetSecret(FileShareAccount."Secret Key"));
+        end;
+
         AFSFileClient.Initialize(FileShareAccount."Storage Account Name", FileShareAccount."File Share Name", Authorization);
     end;
 
@@ -441,5 +447,11 @@ codeunit 80200 "File Share Connector Impl." implements "File System Connector"
         InitOptionalParameters(Path, FilePaginationData, AFSOptionalParameters);
         AFSOperationResponse := AFSFileClient.ListDirectory(Path, AFSDirectoryContent, AFSOptionalParameters);
         ValidateListingResponse(FilePaginationData, AFSOperationResponse);
+    end;
+
+    [NonDebuggable]
+    local procedure SetReadySAS(var StorageServiceAuthorization: Codeunit "Storage Service Authorization"; Secret: SecretText): Interface System.Azure.Storage."Storage Service Authorization"
+    begin
+        exit(StorageServiceAuthorization.UseReadySAS(Secret.Unwrap()));
     end;
 }

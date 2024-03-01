@@ -35,7 +35,11 @@ table 80100 "Blob Storage Account"
         {
             Caption = 'Container Name';
         }
-        field(8; "Password Key"; Guid)
+        field(7; "Authorization Type"; Enum "Blob Storage Auth. Type")
+        {
+            Caption = 'Authorization Type';
+        }
+        field(8; "Secret Key"; Guid)
         {
             DataClassification = SystemMetadata;
         }
@@ -50,29 +54,29 @@ table 80100 "Blob Storage Account"
     }
 
     var
-        UnableToGetPasswordMsg: Label 'Unable to get Blob Storage Account Key';
-        UnableToSetPasswordMsg: Label 'Unable to set Blob Storage Account Key';
+        UnableToGetSecretMsg: Label 'Unable to get Blob Storage secret.';
+        UnableToSetSecretMsg: Label 'Unable to set Blob Storage secret.';
 
     trigger OnDelete()
     begin
-        if not IsNullGuid(Rec."Password Key") then
-            if IsolatedStorage.Delete(Rec."Password Key") then;
+        if not IsNullGuid(Rec."Secret Key") then
+            if IsolatedStorage.Delete(Rec."Secret Key") then;
     end;
 
     [NonDebuggable]
-    procedure SetPassword(Password: Text)
+    procedure SetSecret(Secret: Text)
     begin
-        if IsNullGuid(Rec."Password Key") then
-            Rec."Password Key" := CreateGuid();
+        if IsNullGuid(Rec."Secret Key") then
+            Rec."Secret Key" := CreateGuid();
 
-        if not IsolatedStorage.Set(Format(Rec."Password Key"), Password, DataScope::Company) then
-            Error(UnableToSetPasswordMsg);
+        if not IsolatedStorage.Set(Format(Rec."Secret Key"), Secret, DataScope::Company) then
+            Error(UnableToSetSecretMsg);
     end;
 
     [NonDebuggable]
-    procedure GetPassword(PasswordKey: Guid) Password: SecretText
+    procedure GetSecret(SecretKey: Guid) Secret: SecretText
     begin
-        if not IsolatedStorage.Get(Format(PasswordKey), DataScope::Company, Password) then
-            Error(UnableToGetPasswordMsg);
+        if not IsolatedStorage.Get(Format(SecretKey), DataScope::Company, Secret) then
+            Error(UnableToGetSecretMsg);
     end;
 }

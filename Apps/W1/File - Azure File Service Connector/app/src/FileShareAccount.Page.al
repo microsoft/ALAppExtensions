@@ -38,17 +38,23 @@ page 80200 "File Share Account"
                 ToolTip = 'Specifies the Azure Storage name.';
             }
 
-            field(SASTokenField; SASToken)
+            field("Authorization Type"; Rec."Authorization Type")
             {
                 ApplicationArea = All;
-                Caption = 'SAS Token';
-                Editable = PasswordEditable;
+                ToolTip = 'The way of authorizing used to access the Blob Storage.';
+            }
+
+            field(SecretField; Secret)
+            {
+                ApplicationArea = All;
+                Caption = 'Password';
+                Editable = SecretEditable;
                 ExtendedDatatype = Masked;
-                ToolTip = 'Specifies the shared access signature to access the file share.';
+                ToolTip = 'Specifies the Shared access signature Token or SharedKey.';
 
                 trigger OnValidate()
                 begin
-                    Rec.SetSAS(SASToken);
+                    Rec.SetSecret(Secret);
                 end;
             }
 
@@ -62,20 +68,20 @@ page 80200 "File Share Account"
     }
 
     var
-        PasswordEditable: Boolean;
+        SecretEditable: Boolean;
         [NonDebuggable]
-        SASToken: Text;
+        Secret: Text;
 
     trigger OnOpenPage()
     begin
         Rec.SetCurrentKey(Name);
 
-        if not IsNullGuid(Rec."SAS Key") then
-            SASToken := '***';
+        if not IsNullGuid(Rec."Secret Key") then
+            Secret := '***';
     end;
 
     trigger OnAfterGetCurrRecord()
     begin
-        PasswordEditable := CurrPage.Editable();
+        SecretEditable := CurrPage.Editable();
     end;
 }
