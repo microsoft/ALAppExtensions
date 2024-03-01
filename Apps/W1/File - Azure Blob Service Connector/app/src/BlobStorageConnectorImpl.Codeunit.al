@@ -75,12 +75,12 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
     end;
 
     /// <summary>
-    /// Gets a file to the provided account.
+    /// Create a file in the provided account.
     /// </summary>
     /// <param name="AccountId">The file account ID which is used to send out the file.</param>
     /// <param name="Path">The file path inside the file account.</param>
     /// <param name="Stream">The Stream were the file is read from.</param>
-    procedure SetFile(AccountId: Guid; Path: Text; Stream: InStream)
+    procedure CreateFile(AccountId: Guid; Path: Text; Stream: InStream)
     var
         ABSBlobClient: Codeunit "ABS Blob Client";
         ABSOperationResponse: Codeunit "ABS Operation Response";
@@ -235,7 +235,7 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
         OStream.WriteText(MarkerFileContentTok);
 
         TempBlob.CreateInStream(IStream);
-        SetFile(AccountId, Path, IStream);
+        CreateFile(AccountId, Path, IStream);
     end;
 
     /// <summary>
@@ -282,15 +282,6 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
             Error(DirectoryMustBeEmptyErr);
 
         DeleteFile(AccountId, CombinePath(Path, MarkerFileNameTok));
-    end;
-
-    /// <summary>
-    /// Returns the path separator of the file account.
-    /// </summary>
-    /// <returns>The Path separator like / or \</returns>
-    procedure PathSeparator(): Text
-    begin
-        exit('/');
     end;
 
     /// <summary>
@@ -489,5 +480,10 @@ codeunit 80100 "Blob Storage Connector Impl." implements "File System Connector"
     local procedure SetReadySAS(var StorageServiceAuthorization: Codeunit "Storage Service Authorization"; Secret: SecretText): Interface System.Azure.Storage."Storage Service Authorization"
     begin
         exit(StorageServiceAuthorization.UseReadySAS(Secret.Unwrap()));
+    end;
+
+    local procedure PathSeparator(): Text
+    begin
+        exit('/');
     end;
 }
