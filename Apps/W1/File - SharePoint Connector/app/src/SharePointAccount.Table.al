@@ -35,11 +35,11 @@ table 80300 "SharePoint Account"
         {
             Caption = 'Base Relative Folder Path';
         }
-        field(6; "Tenant Id"; Text[36])
+        field(6; "Tenant Id"; Guid)
         {
             Caption = 'Tenant Id';
         }
-        field(7; "Client Id"; Text[36])
+        field(7; "Client Id"; Guid)
         {
             Caption = 'Client Id';
         }
