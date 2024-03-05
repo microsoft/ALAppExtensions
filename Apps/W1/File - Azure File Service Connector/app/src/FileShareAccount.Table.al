@@ -63,7 +63,6 @@ table 80200 "File Share Account"
             if IsolatedStorage.Delete(Rec."Secret Key") then;
     end;
 
-    [NonDebuggable]
     procedure SetSecret(Secret: SecretText)
     begin
         if IsNullGuid(Rec."Secret Key") then
@@ -73,7 +72,6 @@ table 80200 "File Share Account"
             Error(UnableToSetSecretMsg);
     end;
 
-    [NonDebuggable]
     procedure GetSecret(SecretKey: Guid) Secret: SecretText
     begin
         if not IsolatedStorage.Get(Format(SecretKey), DataScope::Company, Secret) then

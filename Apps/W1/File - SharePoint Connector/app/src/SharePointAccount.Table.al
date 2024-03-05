@@ -67,7 +67,6 @@ table 80300 "SharePoint Account"
             if IsolatedStorage.Delete(Rec."Client Secret Key") then;
     end;
 
-    [NonDebuggable]
     procedure SetClientSecret(ClientSecret: SecretText)
     begin
         if IsNullGuid(Rec."Client Secret Key") then
@@ -77,7 +76,6 @@ table 80300 "SharePoint Account"
             Error(UnableToSetClientSecretMsg);
     end;
 
-    [NonDebuggable]
     procedure GetClientSecret(ClientSecretKey: Guid) ClientSecret: SecretText
     begin
         if not IsolatedStorage.Get(Format(ClientSecretKey), DataScope::Company, ClientSecret) then
