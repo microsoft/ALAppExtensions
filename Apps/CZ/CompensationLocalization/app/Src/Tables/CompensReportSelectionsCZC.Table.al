@@ -28,7 +28,7 @@ table 31271 "Compens. Report Selections CZC"
         field(3; "Report ID"; Integer)
         {
             Caption = 'Report ID';
-            TableRelation = AllObj."Object ID" where("Object Type" = const(Report));
+            TableRelation = AllObjWithCaption."Object ID" where("Object Type" = const(Report));
             DataClassification = CustomerContent;
 
             trigger OnValidate()
