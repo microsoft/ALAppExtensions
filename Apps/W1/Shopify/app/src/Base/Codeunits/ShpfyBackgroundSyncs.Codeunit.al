@@ -232,7 +232,7 @@ codeunit 30101 "Shpfy Background Syncs"
     /// <summary> 
     /// Synchronizes inventory for a shop.
     /// </summary>
-    /// <param name="ShopCode">Parameter of type Code[20].</param>
+    /// <param name="ShopCode">Code of the shop for which to sync inventory.</param>
     internal procedure InventorySync(ShopCode: Code[20])
     var
         Shop: Record "Shpfy Shop";
@@ -246,7 +246,7 @@ codeunit 30101 "Shpfy Background Syncs"
     /// <summary> 
     /// Synchronizes inventory for a shop.
     /// </summary>
-    /// <param name="Shop">Parameter of type Record "Shopify Shop".</param>
+    /// <param name="Shop">Filtered shopify shop record set for which to sync inventory.</param>
     internal procedure InventorySync(var Shop: Record "Shpfy Shop")
     var
         ShopLocation: Record "Shpfy Shop Location";
@@ -258,8 +258,8 @@ codeunit 30101 "Shpfy Background Syncs"
     /// <summary> 
     /// Synchronizes inventory for a shop.
     /// </summary>
-    /// <param name="Shop">Shopify shop for which to sync inventory.</param>
-    /// <param name="ShopLocation">Shopify shop location for which to sync inventory.</param>
+    /// <param name="Shop">Filtered shopify shop record set for which to sync inventory.</param>
+    /// <param name="ShopLocation">Filtered shopify shop location record set for which to sync inventory.</param>
     internal procedure InventorySync(var Shop: Record "Shpfy Shop"; var ShopLocation: Record "Shpfy Shop Location")
     var
         Parameters: Text;
