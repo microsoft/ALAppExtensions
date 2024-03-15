@@ -102,12 +102,18 @@ codeunit 30195 "Shpfy Inventory API"
                 exit(JsonHelper.GetJsonObject(JLocation, JResult, 'inventoryLevels'));
     end;
 
-    internal procedure SetInventoryIds()
+    /// <summary>
+    /// Collects all the inventory ids for a specific location. 
+    /// It is used to remove the inventory ids that are not in the Shopify location after the inventory levels are imported.
+    /// </summary>
+    /// <param name="LocationId"></param>
+    internal procedure SetInventoryIds(LocationId: BigInteger)
     var
         ShopInventory: Record "Shpfy Shop Inventory";
     begin
         Clear(InventoryIds);
         ShopInventory.SetRange("Shop Code", ShopifyShop.Code);
+        ShopInventory.SetRange("Location Id", LocationId);
         ShopInventory.LoadFields(SystemId);
         if ShopInventory.FindSet() then
             repeat

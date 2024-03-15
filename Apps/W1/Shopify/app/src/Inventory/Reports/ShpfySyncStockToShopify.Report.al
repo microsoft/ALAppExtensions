@@ -16,14 +16,21 @@ report 30102 "Shpfy Sync Stock to Shopify"
         {
             RequestFilterFields = Code;
 
-            trigger OnAfterGetRecord()
-            var
-                ShopifyShopInventory: Record "Shpfy Shop Inventory";
-            begin
-                ShopifyShopInventory.Reset();
-                ShopifyShopInventory.SetRange("Shop Code", Shop.Code);
-                CodeUnit.Run(Codeunit::"Shpfy Sync Inventory", ShopifyShopInventory);
-            end;
+            dataitem(ShopLocation; "Shpfy Shop Location")
+            {
+                RequestFilterFields = Id;
+                DataItemLink = "Shop Code" = field(Code);
+
+                trigger OnAfterGetRecord()
+                var
+                    ShopifyShopInventory: Record "Shpfy Shop Inventory";
+                begin
+                    ShopifyShopInventory.Reset();
+                    ShopifyShopInventory.SetRange("Shop Code", Shop.Code);
+                    ShopifyShopInventory.SetRange("Location Id", ShopLocation.Id);
+                    CodeUnit.Run(Codeunit::"Shpfy Sync Inventory", ShopifyShopInventory);
+                end;
+            }
         }
     }
 

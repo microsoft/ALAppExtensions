@@ -199,8 +199,38 @@ codeunit 30101 "Shpfy Background Syncs"
         exit(JobQueueEntry.ID);
     end;
 
+    /// <summary>
+    /// Opens a request page where the user can select the shop and location for which to sync inventory and then starts the inventory sync.
+    /// </summary>
+    /// <param name="ShopCode">Code of the shop for which to sync inventory. This parameter is used to preselect the shop on the request page.</param>
+    internal procedure InventorySyncWithReqPage(ShopCode: Code[20])
+    var
+        Shop: Record "Shpfy Shop";
+        ShopLocation: Record "Shpfy Shop Location";
+        BackgroundSyncs: Codeunit "Shpfy Background Syncs";
+        FilterBuilder: FilterPageBuilder;
+        InventorySyncLbl: Label 'Inventory Sync';
+    begin
+        Shop.Get(ShopCode);
+        Shop.SetRecFilter();
+        ShopLocation.SetRange("Shop Code", Shop.Code);
+
+        FilterBuilder.PageCaption(InventorySyncLbl);
+
+        FilterBuilder.AddRecord(ShopLocation.TableCaption, ShopLocation);
+        FilterBuilder.AddField(ShopLocation.TableCaption, ShopLocation.Id);
+        FilterBuilder.SetView(ShopLocation.TableCaption, ShopLocation.GetView());
+
+        if FilterBuilder.RunModal() then begin
+            ShopLocation.SetView(FilterBuilder.GetView(ShopLocation.TableCaption));
+            Shop.SetFilter(Code, ShopLocation.GetFilter("Shop Code"));
+
+            BackgroundSyncs.InventorySync(Shop, ShopLocation);
+        end;
+    end;
+
     /// <summary> 
-    /// Inventory Sync.
+    /// Synchronizes inventory for a shop.
     /// </summary>
     /// <param name="ShopCode">Parameter of type Code[20].</param>
     internal procedure InventorySync(ShopCode: Code[20])
@@ -214,25 +244,37 @@ codeunit 30101 "Shpfy Background Syncs"
     end;
 
     /// <summary> 
-    /// Inventory Sync.
+    /// Synchronizes inventory for a shop.
     /// </summary>
     /// <param name="Shop">Parameter of type Record "Shopify Shop".</param>
     internal procedure InventorySync(var Shop: Record "Shpfy Shop")
     var
-        ShopifyShopInventory: Record "Shpfy Shop Inventory";
+        ShopLocation: Record "Shpfy Shop Location";
+    begin
+        ShopLocation.SetRange("Shop Code", Shop.Code);
+        InventorySync(Shop, ShopLocation);
+    end;
+
+    /// <summary> 
+    /// Synchronizes inventory for a shop.
+    /// </summary>
+    /// <param name="Shop">Shopify shop for which to sync inventory.</param>
+    /// <param name="ShopLocation">Shopify shop location for which to sync inventory.</param>
+    internal procedure InventorySync(var Shop: Record "Shpfy Shop"; var ShopLocation: Record "Shpfy Shop Location")
+    var
         Parameters: Text;
-        InventoryParametersTxt: Label '<?xml version="1.0" standalone="yes"?><ReportParameters name="Shpfy Sync Stock To Shopify" id="30102"><DataItems><DataItem name="Shop">%1</DataItem></DataItems></ReportParameters>', Comment = '%1 = Shop Record View', Locked = true;
+        InventoryParametersTxt: Label '<?xml version="1.0" standalone="yes"?><ReportParameters name="Shpfy Sync Stock To Shopify" id="30102"><DataItems><DataItem name="Shop">%1</DataItem><DataItem name="ShopLocation">%2</DataItem></DataItems></ReportParameters>', Comment = '%1 = Shop Record View, %2 = Shop Location Record View', Locked = true;
     begin
         Shop.SetRange("Allow Background Syncs", true);
         if not Shop.IsEmpty then begin
-            Parameters := StrSubstNo(InventoryParametersTxt, Shop.GetView());
+            Parameters := StrSubstNo(InventoryParametersTxt, Shop.GetView(), ShopLocation.GetView());
             EnqueueJobEntry(Report::"Shpfy Sync Stock to Shopify", Parameters, StrSubstNo(SyncDescriptionTxt, InventorySyncTypeTxt, Shop.GetFilter(Code)), true, true);
         end;
+
         Shop.SetRange("Allow Background Syncs", false);
         if not Shop.IsEmpty then begin
-            ShopifyShopInventory.Reset();
-            ShopifyShopInventory.SetRange("Shop Code", Shop.Code);
-            Codeunit.Run(Codeunit::"Shpfy Sync Inventory", ShopifyShopInventory);
+            Parameters := StrSubstNo(InventoryParametersTxt, Shop.GetView(), ShopLocation.GetView());
+            EnqueueJobEntry(Report::"Shpfy Sync Stock to Shopify", Parameters, StrSubstNo(SyncDescriptionTxt, InventorySyncTypeTxt, Shop.GetFilter(Code)), false, true);
         end;
     end;
 

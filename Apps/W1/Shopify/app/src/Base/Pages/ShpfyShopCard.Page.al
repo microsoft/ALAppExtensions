@@ -906,7 +906,7 @@ page 30101 "Shpfy Shop Card"
                     var
                         BackgroundSyncs: Codeunit "Shpfy Background Syncs";
                     begin
-                        BackgroundSyncs.InventorySync(Rec.Code);
+                        BackgroundSyncs.InventorySyncWithReqPage(Rec.Code);
                     end;
                 }
                 action(SyncCustomers)
