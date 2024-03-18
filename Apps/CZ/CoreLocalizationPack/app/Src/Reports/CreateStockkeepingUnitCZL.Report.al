@@ -152,12 +152,8 @@ report 31069 "Create Stockkeeping Unit CZL"
                 }
             }
         }
-        trigger OnOpenPage()
-        begin
-            ReplacePreviousSKUs := false;
-            OnlyForSKUTemplates := true;
-        end;
     }
+
     var
         StockkeepingUnit: Record "Stockkeeping Unit";
         Location: Record Location;

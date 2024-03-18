@@ -379,15 +379,13 @@ table 31272 "Compensation Header CZC"
     var
         CompensationHeaderCZC: Record "Compensation Header CZC";
         CompensationsSetupCZC: Record "Compensations Setup CZC";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
         CompensationHeaderCZC.Copy(Rec);
         CompensationsSetupCZC.Get();
         CompensationsSetupCZC.TestField("Compensation Nos.");
-        if NoSeriesManagement.SelectSeries(CompensationsSetupCZC."Compensation Nos.", OldCompensationHeaderCZC."No. Series", CompensationHeaderCZC."No. Series") then begin
-            CompensationsSetupCZC.Get();
-            CompensationsSetupCZC.TestField("Compensation Nos.");
-            NoSeriesManagement.SetSeries(CompensationHeaderCZC."No.");
+        if NoSeries.LookupRelatedNoSeries(CompensationsSetupCZC."Compensation Nos.", OldCompensationHeaderCZC."No. Series", CompensationHeaderCZC."No. Series") then begin
+            CompensationHeaderCZC."No." := NoSeries.GetNextNo(CompensationHeaderCZC."No. Series");
             Rec := CompensationHeaderCZC;
             exit(true);
         end;

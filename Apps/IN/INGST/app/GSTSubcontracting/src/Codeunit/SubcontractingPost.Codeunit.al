@@ -700,7 +700,7 @@ codeunit 18466 "Subcontracting Post"
                                     ItemJnlLine.Validate("Applies-to Entry", ItemLedgerEntry."Entry No.");
 
                                 ItemJnlLine.Validate("Unit Cost", ProdOrderComp."Unit Cost");
-                                ItemJnlLine."Location Code" := SubOrderCompVend."Vendor Location";
+                                ItemJnlLine.Validate("Location Code", SubOrderCompVend."Vendor Location");
                                 ItemJnlLine."External Document No." := Purchaseline."Vendor Shipment No.";
                                 ItemJnlLine."Source Code" := SourceCodeSetup."Consumption Journal";
                                 ItemJnlLine."Gen. Bus. Posting Group" := ProdOrder."Gen. Bus. Posting Group";

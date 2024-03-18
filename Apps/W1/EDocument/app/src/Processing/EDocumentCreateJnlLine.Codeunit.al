@@ -58,7 +58,7 @@ codeunit 6137 "E-Document Create Jnl. Line"
                 LastGenJournalLine.Validate("Journal Template Name", EDocService."General Journal Template Name");
                 LastGenJournalLine.Validate("Journal Batch Name", EDocService."General Journal Batch Name");
                 LastGenJournalLine."Line No." += 10000;
-                LastGenJournalLine.Validate("Document No.", NoSeriesMgt.GetNextNo(GenJournalBatch."No. Series", EDocument."Document Date", false));
+                LastGenJournalLine.Validate("Document No.", NoSeriesBatch.GetNextNo(GenJournalBatch."No. Series", EDocument."Document Date"));
                 TempGenJournalLineInserted := LastGenJournalLine.Insert();
             end;
 
@@ -197,7 +197,7 @@ codeunit 6137 "E-Document Create Jnl. Line"
     var
         SourceEDocument: Record "E-Document";
         SourceEDocumentService: Record "E-Document Service";
-        NoSeriesMgt: Codeunit NoSeriesManagement;
+        NoSeriesBatch: Codeunit "No. Series - Batch";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         SourceDocumentHeader, CreatedJnlLine : RecordRef;
         NoBalanceAccountMappingErr: Label 'Could not fill the Bal. Account No. field for vendor ''''%1''''. Choose the Map Text to Account button to map ''''%1'''' to the relevant G/L account.', Comment = '%1 - vendor name';

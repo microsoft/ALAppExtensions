@@ -60,6 +60,7 @@ table 4763 "Whse Demo Data Setup"
             DataClassification = CustomerContent;
             Caption = 'Domestic - VAT Posting Group';
             TableRelation = "VAT Business Posting Group";
+            ValidateTableRelation = false;
         }
         field(35; "Resale Code"; code[20])
         {

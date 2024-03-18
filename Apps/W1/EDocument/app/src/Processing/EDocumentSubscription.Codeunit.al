@@ -113,6 +113,16 @@ codeunit 6103 "E-Document Subscription"
                 CreateOrUpdateEDocument(PurchaseHeader, PurchCrMemoHdr, PurchCrMemoHdrNo, Enum::"E-Document Type"::"Purchase Credit Memo");
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnRunOnAfterPostInvoice', '', false, false)]
+    local procedure OnRunOnAfterPostInvoice(var PurchaseHeader: Record "Purchase Header"; var PurchRcptHeader: Record "Purch. Rcpt. Header"; var ReturnShipmentHeader: Record "Return Shipment Header"; var PurchInvHeader: Record "Purch. Inv. Header"; var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; var PreviewMode: Boolean; var Window: Dialog; SrcCode: Code[10]; GenJnlLineDocType: Enum "Gen. Journal Document Type"; GenJnlLineDocNo: Code[20]; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    var
+        EDocument: Record "E-Document";
+    begin
+        if PurchInvHeader."No." <> '' then
+            if IsEDocumentLinkedToPurchaseDocument(EDocument, PurchaseHeader) then
+                ValidateDocumentTotalAgainstEDocument(EDocument, PurchInvHeader);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service-Post", 'OnAfterPostServiceDoc', '', false, false)]
     local procedure OnAfterPostServiceDoc(var ServiceHeader: Record "Service Header"; ServShipmentNo: Code[20]; ServInvoiceNo: Code[20]; ServCrMemoNo: Code[20]; var ServDocumentsMgt: Codeunit "Serv-Documents Mgt."; CommitIsSuppressed: Boolean; PassedShip: Boolean; PassedConsume: Boolean; PassedInvoice: Boolean; WhseShip: Boolean)
     var
@@ -184,13 +194,11 @@ codeunit 6103 "E-Document Subscription"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Release Purchase Document", 'OnAfterReleasePurchaseDoc', '', false, false)]
-    local procedure OnAfterReleasePurchaseDoc(var PurchaseHeader: Record "Purchase Header"; PreviewMode: Boolean; var LinesWereModified: Boolean; SkipWhseRequestOperations: Boolean)
-    var
-        EDocument: Record "E-Document";
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeOnDelete', '', false, false)]
+    local procedure OnBeforeOnDeletePurchaseHeader(var PurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean)
     begin
-        if IsEDocumentLinkedToPurchaseDocument(EDocument, PurchaseHeader) then
-            ValidateDocumentTotalAgainstEDocument(EDocument, PurchaseHeader);
+        if not IsNullGuid(PurchaseHeader."E-Document Link") then
+            Error(DeleteNotAllowedErr);
     end;
 
     local procedure RunEDocumentCheck(Record: Variant; EDocumentProcPhase: Enum "E-Document Processing Phase")
@@ -226,8 +234,9 @@ codeunit 6103 "E-Document Subscription"
         EDocService: Record "E-Document Service";
         EDocServiceStatus: Record "E-Document Service Status";
         EDocumentLog: Codeunit "E-Document Log";
+        EDocErrorHelper: Codeunit "E-Document Error Helper";
         OpenSourceDocumentHeader: RecordRef;
-        Guid: Guid;
+        NullGuid: Guid;
     begin
         OpenSourceDocumentHeader.GetTable(OpenRecord);
         if OpenSourceDocumentHeader.Number() <> Database::"Purchase Header" then
@@ -235,11 +244,9 @@ codeunit 6103 "E-Document Subscription"
 
         OpenSourceDocumentHeader.SetTable(PurchaseHeader);
         PurchaseHeader.SetRecFilter();
-        PurchaseHeader."E-Document Link" := Guid;
+        PurchaseHeader."E-Document Link" := NullGuid;
         // For invoices and fully invoiced orders, the open document is no valid 
         if not PurchaseHeader.IsEmpty() then begin
-            PurchaseHeader.Modify();
-
             // Dequeue edoc list of pending edocuments and set "Order linked"
             EDocument.SetRange("Document Record ID", PurchaseHeader.RecordId());
             EDocument.SetFilter(Status, '<>%1', Enum::"E-Document Status"::Processed);
@@ -249,14 +256,17 @@ codeunit 6103 "E-Document Subscription"
                 if EDocServiceStatus.Status = EDocServiceStatus.Status::Pending then begin
                     EDocServiceStatus.Status := EDocServiceStatus.Status::"Order Linked";
                     EDocServiceStatus.Modify();
+                    EDocErrorHelper.ClearErrorMessages(EDocument);
+                    PurchaseHeader."E-Document Link" := EDocument.SystemId;
                 end;
             end;
+            PurchaseHeader.Modify();
         end;
     end;
 
     local procedure ValidateDocumentTotalAgainstEDocument(var EDocument: Record "E-Document"; PostedRecord: Variant)
     var
-        PurchaseHeader: Record "Purchase Header";
+        PurchInvHeader: Record "Purch. Inv. Header";
         PostedSourceDocumentHeader: RecordRef;
     begin
         if EDocument.Direction <> Enum::"E-Document Direction"::Incoming then
@@ -264,12 +274,12 @@ codeunit 6103 "E-Document Subscription"
 
         PostedSourceDocumentHeader.GetTable(PostedRecord);
         case PostedSourceDocumentHeader.Number() of
-            Database::"Purchase Header":
+            Database::"Purch. Inv. Header":
                 begin
-                    PostedSourceDocumentHeader.SetTable(PurchaseHeader);
-                    PurchaseHeader.CalcFields("Amount Incl. VAT To Inv.");
-                    if EDocument."Amount Incl. VAT" <> PurchaseHeader."Amount Incl. VAT To Inv." then
-                        Error(WrongAmountErr, PurchaseHeader."Amount Incl. VAT To Inv.", EDocument."Amount Incl. VAT");
+                    PostedSourceDocumentHeader.SetTable(PurchInvHeader);
+                    PurchInvHeader.CalcFields("Amount Including VAT");
+                    if EDocument."Amount Incl. VAT" <> PurchInvHeader."Amount Including VAT" then
+                        Error(WrongAmountErr, PurchInvHeader."Amount Including VAT", EDocument."Amount Incl. VAT");
                 end;
         end;
     end;
@@ -316,4 +326,5 @@ codeunit 6103 "E-Document Subscription"
         EDocumentHelper: Codeunit "E-Document Helper";
         EDocumentProcessingPhase: Enum "E-Document Processing Phase";
         WrongAmountErr: Label 'Purchase Document cannot be released as Amount Incl. VAT: %1, is different from E-Document Amount Incl. VAT: %2', Comment = '%1 - Purchase document amount, %2 - E-document amount';
+        DeleteNotAllowedErr: Label 'Deletion of Purchase Header linked to E-Document is not allowed.';
 }

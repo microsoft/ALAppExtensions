@@ -35,8 +35,13 @@ report 13631 "OIOUBL-Create Elec. Cr. Memos"
             end;
 
             trigger OnPostDataItem();
+            var
+                SkipMessage: Boolean;
             begin
-                MESSAGE(SuccessMsg, Counter);
+                SkipMessage := false;
+                OnBeforeOnPostDataItemSalesCrMemoHeader(SkipMessage);
+                if not SkipMessage then
+                    Message(SuccessMsg, Counter);
             end;
 
             trigger OnPreDataItem();
@@ -131,6 +136,11 @@ report 13631 "OIOUBL-Create Elec. Cr. Memos"
     procedure InitLogInteraction();
     begin
         LogInteraction := SegManagement.FindInteractionTemplateCode(6) <> '';
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeOnPostDataItemSalesCrMemoHeader(var SkipMessage: Boolean)
+    begin
     end;
 }
 

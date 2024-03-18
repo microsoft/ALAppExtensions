@@ -6,6 +6,7 @@ namespace Microsoft.Finance.AdvancePayments;
 
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.VAT.Setup;
@@ -222,6 +223,9 @@ table 31006 "Sales Adv. Letter Entry CZZ"
         }
     }
 
+    var
+        SalesAdvLetterManagementCZZ: Codeunit "SalesAdvLetterManagement CZZ";
+
     procedure ShowDimensions()
     var
         DimensionManagement: Codeunit DimensionManagement;
@@ -303,6 +307,130 @@ table 31006 "Sales Adv. Letter Entry CZZ"
         exit(SalesAdvLetterHeader."Bill-to Customer No.");
     end;
 
+    procedure InitNewEntry()
+    begin
+        if ("Entry No." = 0) and (not IsTemporary()) then begin
+            LockTable();
+            if FindLast() then;
+        end;
+        Init();
+        "Entry No." += 1;
+        OnAfterInitNewEntry(Rec);
+    end;
+
+    procedure InitRelatedEntry(EntryNo: Integer)
+    var
+        SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ";
+    begin
+        if not SalesAdvLetterEntryCZZ.Get(EntryNo) then
+            SalesAdvLetterEntryCZZ."Entry No." := EntryNo;
+        InitRelatedEntry(SalesAdvLetterEntryCZZ);
+    end;
+
+    procedure InitRelatedEntry(SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
+    begin
+        "Related Entry" := SalesAdvLetterEntryCZZ."Entry No.";
+        OnAfterInitRelatedEntry(SalesAdvLetterEntryCZZ, Rec);
+    end;
+
+    procedure InitCustLedgerEntry(CustLedgerEntry: Record "Cust. Ledger Entry")
+    begin
+        "Cust. Ledger Entry No." := CustLedgerEntry."Entry No.";
+        OnAfterInitCustLedgerEntry(CustLedgerEntry, Rec);
+    end;
+
+    procedure InitDetailedCustLedgerEntry(DetailedCustLedgEntryNo: Integer)
+    var
+        DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
+    begin
+        if not DetailedCustLedgEntry.Get(DetailedCustLedgEntryNo) then
+            DetailedCustLedgEntry."Entry No." := DetailedCustLedgEntryNo;
+        InitDetailedCustLedgerEntry(DetailedCustLedgEntry);
+    end;
+
+    procedure InitDetailedCustLedgerEntry(DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry")
+    begin
+        "Det. Cust. Ledger Entry No." := DetailedCustLedgEntry."Entry No.";
+        OnAfterInitDetailedCustLedgerEntry(DetailedCustLedgEntry, Rec);
+    end;
+
+    procedure CopyFromGenJnlLine(GenJournalLine: Record "Gen. Journal Line")
+    begin
+        "Document No." := GenJournalLine."Document No.";
+        "Global Dimension 1 Code" := GenJournalLine."Shortcut Dimension 1 Code";
+        "Global Dimension 2 Code" := GenJournalLine."Shortcut Dimension 2 Code";
+        "Dimension Set ID" := GenJournalLine."Dimension Set ID";
+        "Posting Date" := GenJournalLine."Posting Date";
+        "VAT Date" := GenJournalLine."VAT Reporting Date";
+        "VAT Bus. Posting Group" := GenJournalLine."VAT Bus. Posting Group";
+        "VAT Prod. Posting Group" := GenJournalLine."VAT Prod. Posting Group";
+        "VAT %" := GenJournalLine."VAT %";
+        "VAT Calculation Type" := GenJournalLine."VAT Calculation Type";
+        "Currency Code" := GenJournalLine."Currency Code";
+        "Currency Factor" := GenJournalLine."Currency Factor";
+        Amount := GenJournalLine.Amount;
+        "Amount (LCY)" := GenJournalLine."Amount (LCY)";
+        "VAT Amount" := GenJournalLine."VAT Amount";
+        "VAT Amount (LCY)" := GenJournalLine."VAT Amount (LCY)";
+        "VAT Base Amount" := GenJournalLine."VAT Base Amount";
+        "VAT Base Amount (LCY)" := GenJournalLine."VAT Base Amount (LCY)";
+        OnAfterCopyFromGenJnlLine(GenJournalLine, Rec);
+    end;
+
+    procedure CopyFromVATPostingSetup(VATPostingSetup: Record "VAT Posting Setup")
+    begin
+        "VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
+        "VAT Prod. Posting Group" := VATPostingSetup."VAT Prod. Posting Group";
+        "VAT %" := VATPostingSetup."VAT %";
+        "VAT Identifier" := VATPostingSetup."VAT Identifier";
+        "VAT Calculation Type" := VATPostingSetup."VAT Calculation Type";
+        OnAfterCopyFromVATPostingSetup(VATPostingSetup, Rec);
+    end;
+
+    procedure InsertNewEntry(WriteToDatabase: Boolean) EntryNo: Integer
+    var
+        SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ";
+    begin
+        OnBeforeInsertNewEntry(WriteToDatabase, Rec);
+        if not IsTemporary() then
+            exit;
+
+        "User ID" := CopyStr(UserId(), 1, MaxStrLen("User ID"));
+        EntryNo := "Entry No.";
+        if WriteToDatabase then begin
+            SalesAdvLetterEntryCZZ.InitNewEntry();
+            EntryNo := SalesAdvLetterEntryCZZ."Entry No.";
+            SalesAdvLetterEntryCZZ := Rec;
+            SalesAdvLetterEntryCZZ."Entry No." := EntryNo;
+            SalesAdvLetterEntryCZZ.Insert(true);
+            Rec := SalesAdvLetterEntryCZZ;
+        end else
+            Insert();
+        OnAfterInsertNewEntry(WriteToDatabase, Rec);
+    end;
+
+    procedure GetRemainingAmount(): Decimal
+    begin
+        exit(GetRemainingAmount(0D))
+    end;
+
+    procedure GetRemainingAmount(BalanceAtDate: Date) RemainingAmount: Decimal
+    begin
+        RemainingAmount := SalesAdvLetterManagementCZZ.GetRemAmtSalAdvPayment(Rec, BalanceAtDate);
+        OnAfterRemainingAmount(Rec, BalanceAtDate, RemainingAmount);
+    end;
+
+    procedure GetRemainingAmountLCY(): Decimal
+    begin
+        exit(GetRemainingAmountLCY(0D))
+    end;
+
+    procedure GetRemainingAmountLCY(BalanceAtDate: Date) RemainingAmountLCY: Decimal
+    begin
+        RemainingAmountLCY := SalesAdvLetterManagementCZZ.GetRemAmtLCYSalAdvPayment(Rec, BalanceAtDate);
+        OnAfterRemainingAmountLCY(Rec, BalanceAtDate, RemainingAmountLCY);
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforePrintRecords(var ReportSelections: Record "Report Selections"; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; ShowRequestPage: Boolean; var IsHandled: Boolean)
     begin
@@ -310,6 +438,56 @@ table 31006 "Sales Adv. Letter Entry CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeEmailRecords(var ReportSelections: Record "Report Selections"; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; DocTxt: Text; ShowDialog: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInitNewEntry(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInitRelatedEntry(RelatedSalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInitCustLedgerEntry(CustLedgerEntry: Record "Cust. Ledger Entry"; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInitDetailedCustLedgerEntry(DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry"; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFromGenJnlLine(GenJournalLine: Record "Gen. Journal Line"; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFromVATPostingSetup(VATPostingSetup: Record "VAT Posting Setup"; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertNewEntry(WriteToDatabase: Boolean; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInsertNewEntry(WriteToDatabase: Boolean; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterRemainingAmount(SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; BalanceAtDate: Date; var RemainingAmount: Decimal)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterRemainingAmountLCY(SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; BalanceAtDate: Date; var RemainingAmountLCY: Decimal)
     begin
     end;
 }

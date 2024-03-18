@@ -126,18 +126,32 @@ tableextension 11721 "Vendor Ledger Entry CZL" extends "Vendor Ledger Entry"
         OnAfterUpdateBankInfoCZL(Rec);
     end;
 
+    procedure CollectSuggestedApplicationCZL(var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL"): Boolean
+    var
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+    begin
+        exit(CrossApplicationMgtCZL.CollectSuggestedApplication(Rec, CrossApplicationBufferCZL));
+    end;
+
+    procedure CollectSuggestedApplicationCZL(CalledFrom: Variant; var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL"): Boolean
+    var
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+    begin
+        exit(CrossApplicationMgtCZL.CollectSuggestedApplication(Rec, CalledFrom, CrossApplicationBufferCZL));
+    end;
+
     procedure CalcSuggestedAmountToApplyCZL(): Decimal
     var
         CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
     begin
-        exit(CrossApplicationMgtCZL.CalcSuggestedAmountToApplyVendorLedgerEntry(Rec));
+        exit(CrossApplicationMgtCZL.CalcSuggestedAmountToApply(Rec));
     end;
 
     procedure DrillDownSuggestedAmountToApplyCZL()
     var
         CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
     begin
-        CrossApplicationMgtCZL.DrillDownSuggestedAmountToApplyVendorLedgerEntry(Rec);
+        CrossApplicationMgtCZL.DrillDownSuggestedAmountToApply(Rec);
     end;
 
     procedure RelatedToAdvanceLetterCZL() IsRelatedToAdvanceLetter: Boolean

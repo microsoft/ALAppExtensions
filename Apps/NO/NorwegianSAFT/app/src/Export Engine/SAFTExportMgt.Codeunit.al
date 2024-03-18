@@ -71,7 +71,7 @@ codeunit 10675 "SAF-T Export Mgt."
         SendTraceTagOfExport(SAFTExportTxt, GetStartTraceTagMessage(SAFTExportHeader));
         CreateExportLines(SAFTExportHeader);
 
-        SAFTExportHeader.validate(Status, SAFTExportHeader.Status::"In Progress");
+        SAFTExportHeader.Validate(Status, SAFTExportHeader.Status::"In Progress");
         SAFTExportHeader.Validate("Execution Start Date/Time", TypeHelper.GetCurrentDateTimeInUserTimeZone());
         SAFTExportHeader.Validate("Execution End Date/Time", 0DT);
         CalculateGLEntryTotals(SAFTExportHeader);

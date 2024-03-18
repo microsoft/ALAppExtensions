@@ -1,3 +1,5 @@
+namespace Microsoft.Sustainability.Journal;
+
 enum 6214 "Sustain. Jnl. Recur. Method"
 {
     Access = Public;

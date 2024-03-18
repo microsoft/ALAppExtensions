@@ -5,7 +5,6 @@ using Microsoft.Sustainability.Ledger;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Calculation;
 using Microsoft.Finance.Dimension;
-using System.Utilities;
 
 page 6219 "Sustainability Journal"
 {
@@ -103,7 +102,7 @@ page 6219 "Sustainability Journal"
                 }
                 field("Sustainability Account No."; Rec."Account No.")
                 {
-                    ToolTip = 'Specifies the sustainability account.';
+                    ToolTip = 'Specifies the sustainability account number.';
                     ShowMandatory = true;
 
                     trigger OnValidate()
@@ -111,6 +110,7 @@ page 6219 "Sustainability Journal"
                         DimMgt: Codeunit DimensionManagement;
                     begin
                         DimMgt.GetShortcutDimensions(Rec."Dimension Set ID", ShortcutDimCode);
+                        CurrPage.Update();
                     end;
                 }
                 field("Sustainability Account Name"; Rec."Account Name")
@@ -139,45 +139,100 @@ page 6219 "Sustainability Journal"
                 {
                     ToolTip = 'Specifies the unit of measure of the journal line.';
                     ShowMandatory = true;
+                    trigger OnValidate()
+                    begin
+                        CurrPage.Update();
+                    end;
                 }
                 field("Fuel/Electricity"; Rec."Fuel/Electricity")
                 {
+                    Editable = not Rec."Manual Input";
                     ToolTip = 'Specifies the fuel or electricity of the journal line.';
+                    trigger OnValidate()
+                    begin
+                        CurrPage.Update();
+                    end;
                 }
                 field(Distance; Rec.Distance)
                 {
+                    Editable = not Rec."Manual Input";
                     ToolTip = 'Specifies the distance of the journal line.';
+                    trigger OnValidate()
+                    begin
+                        CurrPage.Update();
+                    end;
                 }
                 field("Custom Amount"; Rec."Custom Amount")
                 {
+                    Editable = not Rec."Manual Input";
                     ToolTip = 'Specifies the custom amount of the journal line.';
+                    trigger OnValidate()
+                    begin
+                        CurrPage.Update();
+                    end;
                 }
                 field("Installation Multiplier"; Rec."Installation Multiplier")
                 {
+                    Editable = not Rec."Manual Input";
                     ToolTip = 'Specifies the installation multiplier of the journal line.';
                 }
                 field("Time Factor"; Rec."Time Factor")
                 {
+                    Editable = not Rec."Manual Input";
                     ToolTip = 'Specifies the time factor of the journal line.';
                 }
                 field("Emission CO2"; Rec."Emission CO2")
                 {
-                    ToolTip = 'Specifies the emission CO2 of the journal line.';
                     Editable = Rec."Manual Input";
+                    ToolTip = 'Specifies the emission CO2 of the journal line.';
+                    trigger OnValidate()
+                    begin
+                        CurrPage.Update();
+                    end;
                 }
                 field("Emission CH4"; Rec."Emission CH4")
                 {
-                    ToolTip = 'Specifies the emission CH4 of the journal line.';
                     Editable = Rec."Manual Input";
+                    ToolTip = 'Specifies the emission CH4 of the journal line.';
+                    trigger OnValidate()
+                    begin
+                        CurrPage.Update();
+                    end;
                 }
                 field("Emission N2O"; Rec."Emission N2O")
                 {
-                    ToolTip = 'Specifies the emission N2O of the journal line.';
                     Editable = Rec."Manual Input";
+                    ToolTip = 'Specifies the emission N2O of the journal line.';
+                    trigger OnValidate()
+                    begin
+                        CurrPage.Update();
+                    end;
                 }
                 field("Country/Region Code"; Rec."Country/Region Code")
                 {
                     ToolTip = 'Specifies the country/region code of the journal line.';
+                    trigger OnValidate()
+                    begin
+                        CurrPage.Update();
+                    end;
+                }
+                field("Responsibility Center"; Rec."Responsibility Center")
+                {
+                    ToolTip = 'Specifies the responsibility center of the journal line.';
+                    trigger OnValidate()
+                    begin
+                        CurrPage.Update();
+                    end;
+                }
+                field("Source Code"; Rec."Source Code")
+                {
+                    ToolTip = 'Specifies the source code of the journal line.';
+                    Visible = false;
+                }
+                field("Reason Code"; Rec."Reason Code")
+                {
+                    ToolTip = 'Specifies the reason code of the journal line.';
+                    Visible = false;
                 }
                 field("Shortcut Dimension 1 Code"; Rec."Shortcut Dimension 1 Code")
                 {
@@ -285,8 +340,12 @@ page 6219 "Sustainability Journal"
         }
         area(FactBoxes)
         {
-            part(ErrorMessagesPart; "Error Messages Part")
+            part(SustainJnlErrorsFactbox; "Sustain. Jnl. Errors Factbox")
             {
+                ShowFilter = false;
+                SubPageLink = "Journal Template Name" = field("Journal Template Name"),
+                              "Journal Batch Name" = field("Journal Batch Name"),
+                              "Line No." = field("Line No.");
             }
             part(CategoryFactBox; "Sustain. Category FactBox")
             {
@@ -376,22 +435,6 @@ page 6219 "Sustainability Journal"
                         Codeunit.Run(Codeunit::"Sustainability Jnl.-Post", Rec);
                 end;
             }
-            action(CheckLines)
-            {
-                Image = CheckJournal;
-                ToolTip = 'Check all journal lines for errors.';
-
-                trigger OnAction()
-                var
-                    TempErrorMessages: Record "Error Message" temporary;
-                    SustainabilityJnlCheck: Codeunit "Sustainability Jnl.-Check";
-                begin
-                    SustainabilityJnlCheck.CheckAllJournalLinesWithErrorCollect(Rec, TempErrorMessages);
-
-                    if not TempErrorMessages.IsEmpty() then
-                        Page.RunModal(Page::"Error Messages", TempErrorMessages);
-                end;
-            }
             action(Recalculate)
             {
                 Caption = 'Recalculate';
@@ -415,7 +458,6 @@ page 6219 "Sustainability Journal"
             group(Category_Process)
             {
                 actionref(Post_Promoted; Post) { }
-                actionref(CheckLines_Promoted; CheckLines) { }
             }
             group(Category_Category10)
             {
@@ -447,17 +489,6 @@ page 6219 "Sustainability Journal"
         DimMgt.GetShortcutDimensions(Rec."Dimension Set ID", ShortcutDimCode);
     end;
 
-    trigger OnAfterGetCurrRecord()
-    var
-        TempErrorMessages: Record "Error Message" temporary;
-        SustainabilityJnlCheck: Codeunit "Sustainability Jnl.-Check";
-    begin
-        SustainabilityJnlCheck.CheckSustainabilityJournalLineWithErrorCollect(Rec, TempErrorMessages);
-
-        CurrPage.ErrorMessagesPart.Page.SetRecords(TempErrorMessages);
-        CurrPage.ErrorMessagesPart.Page.Update(false);
-    end;
-
     trigger OnInit()
     begin
         SetDimensionVisibility();
@@ -465,10 +496,12 @@ page 6219 "Sustainability Journal"
 
     trigger OnOpenPage()
     var
+        SustainabilityJnlTemplate: Record "Sustainability Jnl. Template";
         SustainabilityJnlBatch: Record "Sustainability Jnl. Batch";
         SustainabilityJournalMgt: Codeunit "Sustainability Journal Mgt.";
     begin
-        SustainabilityJnlBatch := SustainabilityJournalMgt.GetASustainabilityJournalBatch(IsRecurringView);
+        SustainabilityJnlTemplate := SustainabilityJournalMgt.SelectTemplate(IsRecurringView);
+        SustainabilityJnlBatch := SustainabilityJournalMgt.SelectBatch(SustainabilityJnlTemplate, CurrentJournalBatchName);
 
         ResetFilterOnLinesWithNewBatch(SustainabilityJnlBatch);
     end;

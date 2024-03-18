@@ -27,7 +27,7 @@ page 6221 "Sustainability Setup"
                 }
                 field("Emission Decimal Places"; Rec."Emission Decimal Places")
                 {
-                    ToolTip = 'Specifies the number of decimal places that are shown for emission amounts. The default setting, 2:2, specifies that all amounts are shown with a minimum of 2 decimal places and a maximum of 2 decimal places. You can also enter a fixed number, such as 2, which also means that amounts are shown with two decimals.';
+                    ToolTip = 'Specifies the number of decimal places that are shown for emission amounts. The default setting, 2:5, specifies that all amounts are shown with a minimum of 2 decimal places and a maximum of 5 decimal places. You can also enter a fixed number, such as 2, which also means that amounts are shown with two decimals.';
                 }
                 field("Country/Region Mandatory"; Rec."Country/Region Mandatory")
                 {
@@ -39,11 +39,11 @@ page 6221 "Sustainability Setup"
                 }
                 field("Block Change If Entry Exists"; Rec."Block Change If Entry Exists")
                 {
-                    ToolTip = 'Specifies if a change of critical setup change is blocked when sustainability entry exists.';
+                    ToolTip = 'Specifies if the change of critical setup change is blocked when sustainability entry exists.';
                 }
-                field("Block Sustain. Accs. Deletion"; Rec."Block Sustain. Accs. Deletion")
+                field("Enable Background Error Check"; Rec."Enable Background Error Check")
                 {
-                    ToolTip = 'Specifies if removing of sustainability account is blocked.';
+                    ToolTip = 'Specifies if the background error check of sustainability journal lines is enabled.';
                 }
             }
             group(Calculations)
@@ -51,15 +51,15 @@ page 6221 "Sustainability Setup"
                 Caption = 'Calculations';
                 field("Fuel/El. Decimal Places"; Rec."Fuel/El. Decimal Places")
                 {
-                    ToolTip = 'Specifies the number of decimal places that are shown for fuel/electricity amounts. The default setting, 2:2, specifies that all amounts are shown with a minimum of 2 decimal places and a maximum of 2 decimal places. You can also enter a fixed number, such as 2, which also means that amounts are shown with two decimals.';
+                    ToolTip = 'Specifies the number of decimal places that are shown for fuel/electricity amounts. The default setting, 2:5, specifies that all amounts are shown with a minimum of 2 decimal places and a maximum of 5 decimal places. You can also enter a fixed number, such as 2, which also means that amounts are shown with two decimals.';
                 }
                 field("Distance Decimal Places"; Rec."Distance Decimal Places")
                 {
-                    ToolTip = 'Specifies the number of decimal places that are shown for distance amounts. The default setting, 2:2, specifies that all amounts are shown with a minimum of 2 decimal places and a maximum of 2 decimal places. You can also enter a fixed number, such as 2, which also means that amounts are shown with two decimals.';
+                    ToolTip = 'Specifies the number of decimal places that are shown for distance measurements. The default setting, 2:5, specifies that all amounts are shown with a minimum of 2 decimal places and a maximum of 5 decimal places. You can also enter a fixed number, such as 2, which also means that amounts are shown with two decimals.';
                 }
                 field("Custom Amt. Decimal Places"; Rec."Custom Amt. Decimal Places")
                 {
-                    ToolTip = 'Specifies the number of decimal places that are shown for custom amounts. The default setting, 2:2, specifies that all amounts are shown with a minimum of 2 decimal places and a maximum of 2 decimal places. You can also enter a fixed number, such as 2, which also means that amounts are shown with two decimals.';
+                    ToolTip = 'Specifies the number of decimal places that are shown for custom amounts. The default setting, 2:5, specifies that all amounts are shown with a minimum of 2 decimal places and a maximum of 5 decimal places. You can also enter a fixed number, such as 2, which also means that amounts are shown with two decimals.';
                 }
             }
             group(Reporting)
@@ -73,7 +73,7 @@ page 6221 "Sustainability Setup"
                 {
                     ToolTip = 'Specifies the unit of measure factor that is used to register emission.';
                 }
-                field("Emission Rounding Precission"; Rec."Emission Rounding Precission")
+                field("Emission Rounding Precision"; Rec."Emission Rounding Precision")
                 {
                     ToolTip = 'Specifies the size of the interval to be used when rounding emission amounts.';
                 }
@@ -108,41 +108,25 @@ page 6221 "Sustainability Setup"
     {
         area(navigation)
         {
-            group("CalculationsGr")
+            action(SustainAccountCategory)
             {
-                Caption = 'Calculations';
-                action(SustainAccountCategory)
-                {
-                    Caption = 'Sustainability Account Categories';
-                    Image = Category;
-                    RunObject = Page "Sustain. Account Categories";
-                    ToolTip = 'View or add sustainability account categories.';
-                }
+                Caption = 'Sustainability Account Categories';
+                Image = Category;
+                RunObject = Page "Sustain. Account Categories";
+                ToolTip = 'View or add sustainability account categories.';
             }
-            group("Sustainability Journal Templates")
+            action(SustainabilityJournalTemplate)
             {
-                Caption = 'Journal Templates';
-                action(SustainabilityJournalTemplate)
-                {
-                    Caption = 'Sustainability Journal Template';
-                    Image = Template;
-                    RunObject = Page "Sustainability Jnl. Templates";
-                    ToolTip = 'Set up templates for the journals that you use for sustainability reporting tasks. Templates allow you to work in a journal window that is designed for a specific purpose.';
-                }
+                Caption = 'Sustainability Journal Template';
+                Image = Template;
+                RunObject = Page "Sustainability Jnl. Templates";
+                ToolTip = 'Set up templates for the journals that you use for sustainability reporting tasks. Templates allow you to work in a journal window that is designed for a specific purpose.';
             }
         }
         area(Promoted)
         {
-            group(Category_Category4)
-            {
-                Caption = 'Calculations';
-                actionref(SustainAccountCategory_Promoted; SustainAccountCategory) { }
-            }
-            group(Category_Category5)
-            {
-                Caption = 'Journal Templates';
-                actionref(SustainabilityJournalTemplate_Promoted; SustainabilityJournalTemplate) { }
-            }
+            actionref(SustainAccountCategory_Promoted; SustainAccountCategory) { }
+            actionref(SustainabilityJournalTemplate_Promoted; SustainabilityJournalTemplate) { }
         }
     }
     trigger OnOpenPage()

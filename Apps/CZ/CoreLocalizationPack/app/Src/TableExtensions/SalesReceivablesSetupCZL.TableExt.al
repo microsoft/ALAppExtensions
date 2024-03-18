@@ -5,6 +5,7 @@
 namespace Microsoft.Sales.Setup;
 
 using Microsoft.Finance.VAT.Setup;
+using System.Environment;
 
 tableextension 11714 "Sales & Receivables Setup CZL" extends "Sales & Receivables Setup"
 {
@@ -40,5 +41,28 @@ tableextension 11714 "Sales & Receivables Setup CZL" extends "Sales & Receivable
             ObsoleteReason = 'It will be replaced by "Allow Multiple Posting Groups" field.';
 
         }
+        field(11782; "Print QR Payment CZL"; Boolean)
+        {
+            Caption = 'Print QR payment';
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                if "Print QR Payment CZL" then
+                    CreatePrintQROnPremFontkNotification();
+            end;
+        }
     }
+    local procedure CreatePrintQROnPremFontkNotification()
+    var
+        EnvironmentInformation: Codeunit "Environment Information";
+        PrintQROnPremFontkNotification: Notification;
+        PrintQROnPremFontkNotificationLbl: Label 'To print the QR code for payments, it is necessary to have the IDAutomation2D font installed on the server.';
+    begin
+        if not EnvironmentInformation.IsOnPrem() then
+            exit;
+        PrintQROnPremFontkNotification.Message := PrintQROnPremFontkNotificationLbl;
+        PrintQROnPremFontkNotification.Scope := NotificationScope::LocalScope;
+        PrintQROnPremFontkNotification.Send();
+    end;
 }

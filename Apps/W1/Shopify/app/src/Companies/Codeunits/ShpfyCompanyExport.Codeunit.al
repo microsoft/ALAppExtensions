@@ -37,6 +37,7 @@ codeunit 30284 "Shpfy Company Export"
         CompanyAPI: Codeunit "Shpfy Company API";
         CatalogAPI: Codeunit "Shpfy Catalog API";
         CreateCustomers: Boolean;
+        CountyCodeTooLongLbl: Label 'Can not export customer %1 %2. The length of the string is %3, but it must be less than or equal to %4 characters. Value: %5, field: %6', Comment = '%1 - Customer No., %2 - Customer Name, %3 - Length, %4 - Max Length, %5 - Value, %6 - Field Name';
 
     local procedure CreateShopifyCompany(Customer: Record Customer)
     var
@@ -50,14 +51,15 @@ codeunit 30284 "Shpfy Company Export"
         if CreateCompanyMainContact(Customer, ShopifyCustomer) then
             if FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation) then
                 if CompanyAPI.CreateCompany(ShopifyCompany, CompanyLocation, ShopifyCustomer) then begin
-                    if Shop."Auto Create Catalog" then
-                        CatalogAPI.CreateCatalog(ShopifyCompany);
                     ShopifyCompany."Main Contact Customer Id" := ShopifyCustomer.Id;
                     ShopifyCompany."Customer SystemId" := Customer.SystemId;
                     ShopifyCompany."Last Updated by BC" := CurrentDateTime();
                     ShopifyCompany."Shop Id" := Shop."Shop Id";
                     ShopifyCompany."Shop Code" := Shop.Code;
                     ShopifyCompany.Insert();
+
+                    if Shop."Auto Create Catalog" then
+                        CatalogAPI.CreateCatalog(ShopifyCompany);
 
                     CompanyLocation."Company SystemId" := ShopifyCompany.SystemId;
                     CompanyLocation.Insert();
@@ -82,8 +84,10 @@ codeunit 30284 "Shpfy Company Export"
     var
         CompanyInformation: Record "Company Information";
         CountryRegion: Record "Country/Region";
+        TaxArea: Record "Shpfy Tax Area";
         TempShopifyCompany: Record "Shpfy Company" temporary;
         TempCompanyLocation: Record "Shpfy Company Location" temporary;
+        CountyCodeTooLongErr: Text;
     begin
         TempShopifyCompany := ShopifyCompany;
         TempCompanyLocation := CompanyLocation;
@@ -95,6 +99,38 @@ codeunit 30284 "Shpfy Company Export"
         CompanyLocation."Address 2" := Customer."Address 2";
         CompanyLocation.Zip := Customer."Post Code";
         CompanyLocation.City := Customer.City;
+
+        if Customer.County <> '' then
+            case Shop."County Source" of
+                Shop."County Source"::Code:
+                    begin
+                        if StrLen(Customer.County) > MaxStrLen(TaxArea."County Code") then begin
+                            CountyCodeTooLongErr := StrSubstNo(CountyCodeTooLongLbl, Customer."No.", Customer.Name, StrLen(Customer.County), MaxStrLen(TaxArea."County Code"), Customer.County, Customer.FieldCaption(County));
+                            Error(CountyCodeTooLongErr);
+                        end;
+                        TaxArea.SetRange("Country/Region Code", Customer."Country/Region Code");
+                        TaxArea.SetRange("County Code", Customer.County);
+                        if TaxArea.FindFirst() then begin
+                            CompanyLocation."Province Code" := TaxArea."County Code";
+                            CompanyLocation."Province Name" := TaxArea.County;
+                        end;
+                    end;
+                Shop."County Source"::Name:
+                    begin
+                        TaxArea.SetRange("Country/Region Code", Customer."Country/Region Code");
+                        TaxArea.SetRange(County, Customer.County);
+                        if TaxArea.FindFirst() then begin
+                            CompanyLocation."Province Code" := TaxArea."County Code";
+                            CompanyLocation."Province Name" := TaxArea.County;
+                        end else begin
+                            TaxArea.SetFilter(County, Customer.County + '*');
+                            if TaxArea.FindFirst() then begin
+                                CompanyLocation."Province Code" := TaxArea."County Code";
+                                CompanyLocation."Province Name" := TaxArea.County;
+                            end;
+                        end;
+                    end;
+            end;
 
         if (Customer."Country/Region Code" = '') and CompanyInformation.Get() then
             Customer."Country/Region Code" := CompanyInformation."Country/Region Code";

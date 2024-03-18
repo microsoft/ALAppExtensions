@@ -29,6 +29,15 @@ codeunit 6212 "Sustainability Post Mgt"
         SustainabilityLedgerEntry.Insert(true);
     end;
 
+    procedure ResetFilters(var SustainabilityJnlLine: Record "Sustainability Jnl. Line")
+    begin
+        SustainabilityJnlLine.Reset();
+        SustainabilityJnlLine.FilterGroup(2);
+        SustainabilityJnlLine.SetRange("Journal Template Name", SustainabilityJnlLine."Journal Template Name");
+        SustainabilityJnlLine.SetRange("Journal Batch Name", SustainabilityJnlLine."Journal Batch Name");
+        SustainabilityJnlLine.FilterGroup(0);
+    end;
+
     internal procedure GetStartPostingProgressMessage(): Text
     begin
         exit(PostingSustainabilityJournalLbl);
@@ -42,6 +51,16 @@ codeunit 6212 "Sustainability Post Mgt"
     internal procedure GetProgressingLineMessage(LineNo: Integer): Text
     begin
         exit(StrSubstNo(ProcessingLineLbl, LineNo));
+    end;
+
+    internal procedure GetJnlLinesPostedMessage(): Text
+    begin
+        exit(JnlLinesPostedLbl);
+    end;
+
+    internal procedure GetPostConfirmMessage(): Text
+    begin
+        exit(PostConfirmLbl);
     end;
 
     local procedure CopyDataFromAccountCategory(var SustainabilityLedgerEntry: Record "Sustainability Ledger Entry"; CategoryCode: Code[20])
@@ -73,4 +92,6 @@ codeunit 6212 "Sustainability Post Mgt"
         PostingSustainabilityJournalLbl: Label 'Posting Sustainability Journal Lines: \ #1', Comment = '#1 = sub-process progress message';
         CheckSustainabilityJournalLineLbl: Label 'Checking Sustainability Journal Line: %1', Comment = '%1 = Line No.';
         ProcessingLineLbl: Label 'Processing Line: %1', Comment = '%1 = Line No.';
+        JnlLinesPostedLbl: Label 'The journal lines were successfully posted.';
+        PostConfirmLbl: Label 'Do you want to post the journal lines?';
 }

@@ -198,7 +198,9 @@ codeunit 139684 "Migration Vendor 1099 Tests"
 
         // [THEN] The Vendor record will have correct 1099 data
         Assert.IsTrue(Vendor.Get(TestVendorNoLbl), 'Vendor not found.');
+#if not CLEAN25
         Assert.AreEqual('NEC-01', Vendor."IRS 1099 Code", 'Incorrect IRS 1099 Code.');
+#endif
         Assert.AreEqual('123456789', Vendor."Federal ID No.", 'Incorrect Federal ID No.');
         Assert.AreEqual(Vendor."Tax Identification Type"::"Legal Entity", Vendor."Tax Identification Type", 'Incorrect Tax Identification Type.');
 
@@ -214,8 +216,10 @@ codeunit 139684 "Migration Vendor 1099 Tests"
 
         DocumentNo := VendorLedgerEntry."Document No.";
         Assert.AreEqual('NEC-01', VendorLedgerEntry.Description, 'Invoice Vendor ledger entry description is incorrect.');
+#if not CLEAN25
         Assert.AreEqual('NEC-01', VendorLedgerEntry."IRS 1099 Code", 'Invoice Vendor ledger entry IRS 1099 Code is incorrect.');
         Assert.AreEqual(-120, VendorLedgerEntry."IRS 1099 Amount", 'Invoice Vendor ledger entry IRS 1099 Amount is incorrect.');
+#endif
         Assert.AreEqual(0, VendorLedgerEntry."Remaining Amount", 'Invoice Vendor ledger entry Remaining Amount should be zero.');
 
         VendorLedgerEntry.SetRange("Vendor No.", TestVendorNoLbl);
@@ -223,7 +227,9 @@ codeunit 139684 "Migration Vendor 1099 Tests"
         VendorLedgerEntry.SetRange(Description, 'NEC-01');
         Assert.IsTrue(VendorLedgerEntry.FindFirst(), 'NEC-01 Payment Vendor ledger entry not found.');
         Assert.AreEqual('NEC-01', VendorLedgerEntry.Description, 'Payment Vendor ledger entry description is incorrect.');
+#if not CLEAN25
         Assert.AreEqual('NEC-01', VendorLedgerEntry."IRS 1099 Code", 'Payment Vendor ledger entry IRS 1099 Code is incorrect.');
+#endif
 
         DetailedVendorLedgEntry.SetRange("Vendor No.", TestVendorNoLbl);
         DetailedVendorLedgEntry.SetRange("Initial Document Type", DetailedVendorLedgEntry."Initial Document Type"::Payment);

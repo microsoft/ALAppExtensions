@@ -1477,7 +1477,7 @@ codeunit 18479 "GST Subcontracting"
         ProdOrderLine: Record "Prod. Order Line";
         ReservationEntry: Record "Reservation Entry";
         MainItem: Record Item;
-        NoSeriesMgt: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         SlNo: Code[20];
         i: Integer;
     begin
@@ -1487,7 +1487,7 @@ codeunit 18479 "GST Subcontracting"
         ProdOrderLine.SetRange(ProdOrderLine."Line No.", PurchaseLine."Prod. Order Line No.");
         ProdOrderLine.FindFirst();
         for i := 1 to ProdOrderLine.Quantity do begin
-            SlNo := NoSeriesMgt.GetNextNo(MainItem."Serial Nos.", 0D, true);
+            SlNo := NoSeries.GetNextNo(MainItem."Serial Nos.");
             LibraryItemTracking.CreateProdOrderItemTracking(ReservationEntry, ProdOrderLine, SlNo, '', 1);
         end;
     end;

@@ -39,6 +39,7 @@ permissionset 6210 "Sustainability - Objects"
         page "Recurring Sustainability Jnl." = X,
         page "Sustainability Ledger Entries" = X,
         page "Sustainability Setup" = X,
+        page "Sustain. Jnl. Errors Factbox" = X,
         codeunit "Sustainability Account Mgt." = X,
         codeunit "Sustainability Journal Mgt." = X,
         codeunit "Sustainability Jnl.-Post" = X,
@@ -47,6 +48,8 @@ permissionset 6210 "Sustainability - Objects"
         codeunit "Sustainability Jnl.-Check" = X,
         codeunit "Sustainability Calculation" = X,
         codeunit "Sustainability Calc. Mgt." = X,
+        codeunit "Sustain. Jnl. Errors Mgt." = X,
+        codeunit "Check Sust. Jnl. Line. Backgr." = X,
         report "Emission By Category" = X,
         report "Emission Per Facility" = X,
         report "Total Emissions" = X;

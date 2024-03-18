@@ -19,6 +19,8 @@ table 5023 "Service Declaration Header"
             Caption = 'No.';
 
             trigger OnValidate()
+            var
+                NoSeries: Codeunit "No. Series";
             begin
                 if "No." <> xRec."No." then begin
                     TestNoSeries();
@@ -87,13 +89,15 @@ table 5023 "Service Declaration Header"
 
     var
         ServiceDeclarationSetup: Record "Service Declaration Setup";
+#if not CLEAN24
         NoSeriesManagement: Codeunit NoSeriesManagement;
-        NoSeries: Codeunit "No. Series";
+#endif
         ServDeclAlreadyExistErr: Label 'The service declaration %1 already exists.', Comment = '%1 = service declaration number.';
 
     trigger OnInsert()
-#if not CLEAN24
     var
+        NoSeries: Codeunit "No. Series";
+#if not CLEAN24
         IsHandled: Boolean;
 #endif
     begin
@@ -150,11 +154,12 @@ table 5023 "Service Declaration Header"
     procedure AssistEdit(OldServDeclHeader: Record "Service Declaration Header") Result: Boolean
     var
         ServDeclHeader: Record "Service Declaration Header";
+        NoSeries: Codeunit "No. Series";
     begin
         ServDeclHeader.Copy(Rec);
         TestNoSeries();
-        if NoSeriesManagement.SelectSeries(ServiceDeclarationSetup."Declaration No. Series", OldServDeclHeader."No. Series", ServDeclHeader."No. Series") then begin
-            NoSeriesManagement.SetSeries(ServDeclHeader."No.");
+        if NoSeries.LookupRelatedNoSeries(ServiceDeclarationSetup."Declaration No. Series", OldServDeclHeader."No. Series", ServDeclHeader."No. Series") then begin
+            ServDeclHeader."No." := NoSeries.GetNextNo(ServDeclHeader."No. Series");
             if ServDeclHeader.Get(ServDeclHeader."No.") then
                 Error(ServDeclAlreadyExistErr, ServDeclHeader."No.");
             Rec := ServDeclHeader;

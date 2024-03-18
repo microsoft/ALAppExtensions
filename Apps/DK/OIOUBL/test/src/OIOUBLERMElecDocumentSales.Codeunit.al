@@ -1511,7 +1511,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         CountriesRegions.FindFirst();
 
         // [GIVEN] Set OIOUBL-Country/Region Code to Blank for DK Code of Countries/Regions.
-        CountriesRegions.validate("OIOUBL-Country/Region Code", '');
+        CountriesRegions.Validate("OIOUBL-Country/Region Code", '');
         CountriesRegions.Modify(true);
 
         // [GIVEN] Create a Customer with Address.

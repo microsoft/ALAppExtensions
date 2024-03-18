@@ -16,6 +16,12 @@ report 30116 "Shpfy Sync Catalog Prices"
         {
             RequestFilterFields = Code;
 
+            trigger OnPreDataItem()
+            begin
+                if not Shop.HasFilter() then
+                    Error(NoShopSelectedErr);
+            end;
+
             trigger OnAfterGetRecord()
             begin
                 if CompanyId <> '' then
@@ -35,6 +41,7 @@ report 30116 "Shpfy Sync Catalog Prices"
                     Caption = 'Company Id';
                     Tooltip = 'Specifies the company id to sync prices for. If empty, all companies will be synced.';
                     ApplicationArea = All;
+                    Visible = false;
                 }
             }
         }
@@ -43,4 +50,5 @@ report 30116 "Shpfy Sync Catalog Prices"
     var
         SyncCatalogPrices: Codeunit "Shpfy Sync Catalog Prices";
         CompanyId: Text;
+        NoShopSelectedErr: Label 'You must select a shop to sync prices for.';
 }

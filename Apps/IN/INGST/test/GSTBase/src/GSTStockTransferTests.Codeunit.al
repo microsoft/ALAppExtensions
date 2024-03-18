@@ -148,6 +148,103 @@ codeunit 18427 "GST Stock Transfer Tests"
         VerifyGSTEntries(PostedDocumentNo);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatesPage')]
+    procedure PostFromTransferOrderwithInterStateStockTransferAndGenerateEInv()
+    var
+        FromLocation, ToLocation, InTransitLocation : Record Location;
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        TransferShipHead: Record "Transfer Shipment Header";
+        PostedTransShip: TestPage "Posted Transfer Shipment";
+        GSTGroupType: Enum "GST Group Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] [453739] Check if the system is able to Post with GST in case of Inter-State Stock Transfer Shipment and Receipt.
+        // [GIVEN] Created GST Setup ,Transfer Locations
+        CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
+        CreateGSTSetup(GSTGroupType::Goods, false, false);
+
+        // [WHEN] Create and Post Interstate Transfer Order
+        PostedDocumentNo := CreateandPostTransferOrder(
+            TransferHeader,
+            TransferLine);
+
+        // [THEN] Verify E-Invoice Generated
+        TransferShipHead.Get(PostedDocumentNo);
+        PostedTransShip.OpenEdit();
+        PostedTransShip.GoToRecord(TransferShipHead);
+        PostedTransShip."Generate E-Invoice".Invoke();
+        PostedTransShip.Close();
+        Assert.IsTrue(true, 'E-Invoice generated');
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatesPage')]
+    procedure PostFromTransferOrderwithInterStateStockTransferAndGenerateIRN()
+    var
+        FromLocation, ToLocation, InTransitLocation : Record Location;
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        TransferShipHead: Record "Transfer Shipment Header";
+        PostedTransShip: TestPage "Posted Transfer Shipment";
+        GSTGroupType: Enum "GST Group Type";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] [453739] Check if the system is able to Post with GST in case of Inter-State Stock Transfer Shipment and Receipt.
+        // [GIVEN] Created GST Setup ,Transfer Locations
+        CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
+        CreateGSTSetup(GSTGroupType::Goods, false, false);
+
+        // [WHEN] Create and Post Interstate Transfer Order
+        PostedDocumentNo := CreateandPostTransferOrder(
+            TransferHeader,
+            TransferLine);
+
+        // [THEN] Verify E-Invoice IRN Generated
+        TransferShipHead.Get(PostedDocumentNo);
+        PostedTransShip.OpenEdit();
+        PostedTransShip.GoToRecord(TransferShipHead);
+        PostedTransShip."Generate IRN".Invoke();
+        PostedTransShip.Close();
+        Assert.IsTrue(true, 'IRN Generated');
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatesPage')]
+    procedure PostFromTransferOrderwithInterStateStockTransferAndCheckGSTApplicable()
+    var
+        FromLocation, ToLocation, InTransitLocation : Record Location;
+        TransferHeader: Record "Transfer Header";
+        TransferLine: Record "Transfer Line";
+        TransferShipHead: Record "Transfer Shipment Header";
+        EInvTransshptJsonMgmt: Codeunit EInvTransshptJsonManagement;
+        PostedTransShip: TestPage "Posted Transfer Shipment";
+        GSTGroupType: Enum "GST Group Type";
+        GSTApplicable: Boolean;
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] [453739] Check if the system is able to Post with GST in case of Inter-State Stock Transfer Shipment and Receipt.
+        // [GIVEN] Created GST Setup ,Transfer Locations
+        CreateTransferLocations(FromLocation, ToLocation, InTransitLocation);
+        CreateGSTSetup(GSTGroupType::Goods, false, false);
+
+        // [WHEN] Create and Post Interstate Transfer Order
+        PostedDocumentNo := CreateandPostTransferOrder(
+            TransferHeader,
+            TransferLine);
+
+        // [THEN] Verified GST is applicable for E-Invoice
+        GSTApplicable := EInvTransshptJsonMgmt.IsGSTApplicable(PostedDocumentNo, Database::"Transfer Shipment Header");
+        TransferShipHead.Get(PostedDocumentNo);
+        PostedTransShip.OpenEdit();
+        PostedTransShip.GoToRecord(TransferShipHead);
+        PostedTransShip."Generate E-Invoice".Invoke();
+        EInvTransshptJsonMgmt.IsGSTApplicable(PostedDocumentNo, Database::"Transfer Shipment Header");
+        PostedTransShip.Close();
+        Assert.IsTrue(GSTApplicable, 'GSTApplicable');
+    end;
+
     local procedure CreateItemWithInventory(): Code[20]
     var
         Item: Record Item;
@@ -182,7 +279,7 @@ codeunit 18427 "GST Stock Transfer Tests"
     var
         ItemJournalLine: Record "Item Journal Line";
         ReservationEntry: Record "Reservation Entry";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         InputCreditAvailment: Boolean;
     begin
         InputCreditAvailment := StorageBoolean.Get(AvailmentLbl);
@@ -205,7 +302,7 @@ codeunit 18427 "GST Stock Transfer Tests"
             ItemJournalLine, Item."No.",
             (LibraryStorage.Get(FromLocationLbl)),
             '', LibraryRandom.RandInt(100));
-        LotNo := NoSeriesManagement.GetNextNo(Item."Lot Nos.", WorkDate(), true);
+        LotNo := NoSeries.GetNextNo(Item."Lot Nos.");
         LibraryItemTracking.CreateItemJournalLineItemTracking(ReservationEntry, ItemJournalLine, '', LotNo, ItemJournalLine.Quantity);
         Codeunit.Run(Codeunit::"Item Jnl.-Post Batch", ItemJournalLine);
     end;

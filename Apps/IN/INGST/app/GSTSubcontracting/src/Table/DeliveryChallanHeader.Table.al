@@ -145,7 +145,7 @@ table 18468 "Delivery Challan Header"
                     "No. Series" := xRec."No. Series";
                 "No." := NoSeries.GetNextNo("No. Series", Today());
 #if not CLEAN24
-            NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", PurchSetup."Posted Delivery Challan Nos.", Today(), "No.");
+                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", PurchSetup."Posted Delivery Challan Nos.", Today(), "No.");
             end;
 #endif
         end;
@@ -153,14 +153,29 @@ table 18468 "Delivery Challan Header"
 
     procedure InitRecord()
     var
-        NoSeriesManagement: Codeunit "NoSeriesManagement";
+#if CLEAN24
+        NoSeries: Codeunit "No. Series";
+#else
+#pragma warning disable AL0432
+        NoSeriesManagement2: Codeunit "NoSeriesManagement";
+#pragma warning restore AL0432
+#endif
     begin
-        NoSeriesManagement.SetDefaultSeries("No. Series", PurchSetup."Posted Delivery Challan Nos.");
+#if CLEAN24
+        if NoSeries.IsAutomatic(PurchSetup."Posted Delivery Challan Nos.") then
+            "No. Series" := PurchSetup."Posted Delivery Challan Nos.";
+#else
+#pragma warning disable AL0432
+        NoSeriesManagement2.SetDefaultSeries("No. Series", PurchSetup."Posted Delivery Challan Nos.");
+#pragma warning restore AL0432
+#endif
     end;
 
     var
         PurchSetup: Record "Purchases & Payables Setup";
 #if not CLEAN24
+#pragma warning disable AL0432
         NoSeriesManagement: Codeunit "NoSeriesManagement";
+#pragma warning restore AL0432
 #endif
 }

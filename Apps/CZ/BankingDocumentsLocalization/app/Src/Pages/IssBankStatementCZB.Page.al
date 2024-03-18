@@ -5,6 +5,7 @@
 namespace Microsoft.Bank.Documents;
 
 using Microsoft.Foundation.Attachment;
+using Microsoft.Utilities;
 
 page 31258 "Iss. Bank Statement CZB"
 {
@@ -213,8 +214,16 @@ page 31258 "Iss. Bank Statement CZB"
                 ToolTip = 'The batch job create payment reconciliation journal or payment journal.';
 
                 trigger OnAction()
+                var
+                    InstructionMgt: Codeunit "Instruction Mgt.";
+                    InstructionMgtCZB: Codeunit "Instruction Mgt. CZB";
+                    OpenCreatedJnlQst: Label 'The journal was successfully created.\\Do you want to open the created journal and check it now?';
                 begin
-                    CreatePaymentReconciliationJournalOrGeneralJournal();
+                    if CreatePaymentReconciliationJournalOrGeneralJournal() then
+                        if Rec.PaymentReconcialiationOrGeneralJournalExist() then
+                            if InstructionMgt.IsEnabled(InstructionMgtCZB.ShowCreatedJnlIssBankStmtConfirmationMessageCode()) then
+                                if InstructionMgt.ShowConfirm(OpenCreatedJnlQst, InstructionMgtCZB.ShowCreatedJnlIssBankStmtConfirmationMessageCode()) then
+                                    Rec.OpenReconciliationOrJournal();
                 end;
             }
             action("&Navigate")
@@ -319,12 +328,14 @@ page 31258 "Iss. Bank Statement CZB"
         IssBankStatementHeaderCZB.PrintRecords(true);
     end;
 
-    local procedure CreatePaymentReconciliationJournalOrGeneralJournal()
+    local procedure CreatePaymentReconciliationJournalOrGeneralJournal(): Boolean
     var
         IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB";
+        InstructionMgt: Codeunit "Instruction Mgt.";
+        InstructionMgtCZB: Codeunit "Instruction Mgt. CZB";
     begin
         IssBankStatementHeaderCZB := Rec;
         IssBankStatementHeaderCZB.SetRecFilter();
-        IssBankStatementHeaderCZB.CreateJournal(true);
+        exit(IssBankStatementHeaderCZB.IsCreatedJournal(true, InstructionMgt.IsEnabled(InstructionMgtCZB.ShowCreatedJnlIssBankStmtConfirmationMessageCode())));
     end;
 }

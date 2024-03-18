@@ -570,6 +570,26 @@ codeunit 6109 "E-Document Import Helper"
             EDocErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(VendorNotFoundErr, EDocument."Bill-to/Pay-to Name"));
     end;
 
+    /// <summary>
+    /// Use it to process imported E-Document
+    /// </summary>
+    /// <param name="EDocument">The E-Document record.</param>
+    /// <param name="CreateJnlLine">If processing should create journal line</param>
+    procedure ProcessDocument(var EDocument: Record "E-Document"; CreateJnlLine: Boolean)
+    var
+    begin
+        EDocumentImport.ProcessDocument(EDocument, CreateJnlLine);
+    end;
+
+    /// <summary>
+    /// Use it to set hide dialogs when importing E-Document.
+    /// </summary>
+    /// <param name="Hide">Hide or show the dialog.</param>
+    procedure SetHideDialogs(Hide: Boolean)
+    begin
+        EDocumentImport.SetHideDialogs(Hide);
+    end;
+
     local procedure TryFindLeastBlockedVendorNoByVendorBankAcc(var VendorBankAccount: record "Vendor Bank Account"): Code[20]
     var
         Vendor: Record Vendor;
@@ -853,6 +873,7 @@ codeunit 6109 "E-Document Import Helper"
 
     var
         EDocErrorHelper: Codeunit "E-Document Error Helper";
+        EDocumentImport: Codeunit "E-Doc. Import";
         UOMNotFoundErr: Label 'Cannot find unit of measure %1. Make sure that the unit of measure exists.', Comment = '%1 International Standard Code or Code or Description for Unit of Measure';
         UOMConflictWithItemRefErr: Label 'Unit of measure %1 on electronic document line %2 does not match unit of measure %3 in the item reference.  Make sure that a card for the item with the specified unit of measure exists with the corresponding item reference.', Comment = '%1 imported unit code, %2 document line number (e.g. 2), %3 Item Reference unit code';
         UOMConflictItemRefWithItemErr: Label 'Unit of measure %1 in the item reference is not in the list of units of measure for the corresponding item. Make sure that a unit of measure of item reference is in the list of units of measure for the corresponding item.', Comment = '%1 item reference unit code';

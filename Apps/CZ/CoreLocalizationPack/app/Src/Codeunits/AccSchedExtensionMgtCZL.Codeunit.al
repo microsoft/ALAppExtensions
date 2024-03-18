@@ -380,14 +380,13 @@ codeunit 31326 "Acc. Sched. Extension Mgt. CZL"
         AccScheduleLineSave: Record "Acc. Schedule Line";
         AccScheduleResultLineCZL: Record "Acc. Schedule Result Line CZL";
         AccScheduleResultColCZL: Record "Acc. Schedule Result Col. CZL";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
         GetGLSetup();
         GeneralLedgerSetup.TestField("Acc. Schedule Results Nos. CZL");
 
         AccScheduleResultHdrCZL.Init();
-        AccScheduleResultHdrCZL."Result Code" :=
-          NoSeriesManagement.GetNextNo(GeneralLedgerSetup."Acc. Schedule Results Nos. CZL", Today, true);
+        AccScheduleResultHdrCZL."Result Code" := NoSeries.GetNextNo(GeneralLedgerSetup."Acc. Schedule Results Nos. CZL", Today());
         AccScheduleResultHdrCZL."Acc. Schedule Name" := AccScheduleName;
         AccScheduleResultHdrCZL."Column Layout Name" := ColumnLayoutName;
         AccScheduleResultHdrCZL."Date Filter" := CopyStr(DateFilter, 1, MaxStrLen(AccScheduleResultHdrCZL."Date Filter"));

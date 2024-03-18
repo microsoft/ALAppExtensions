@@ -378,19 +378,19 @@ codeunit 18627 "Gate Entry Library"
     local procedure CreateGateEntrySeries(GateEntryHeader: Record "Gate Entry Header"): Code[20]
     var
         InventorySetup: Record "Inventory Setup";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
         if GateEntryHeader."No." = '' then begin
             InventorySetup.Get();
             case GateEntryHeader."Entry Type" of
                 GateEntryHeader."Entry Type"::Inward:
                     if InventorySetup."Inward Gate Entry Nos." <> '' then
-                        exit(NoSeriesManagement.GetNextNo(InventorySetup."Inward Gate Entry Nos.", WorkDate(), true))
+                        exit(NoSeries.GetNextNo(InventorySetup."Inward Gate Entry Nos."))
                     else
                         exit(CreateNoSeries());
                 GateEntryHeader."Entry Type"::Outward:
                     if InventorySetup."Outward Gate Entry Nos." <> '' then
-                        exit(NoSeriesManagement.GetNextNo(InventorySetup."Outward Gate Entry Nos.", WorkDate(), true))
+                        exit(NoSeries.GetNextNo(InventorySetup."Outward Gate Entry Nos."))
                     else
                         exit(CreateNoSeries());
             end;

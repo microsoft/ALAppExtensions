@@ -25,6 +25,8 @@ table 11793 "Company Official CZL"
             DataClassification = CustomerContent;
 
             trigger OnValidate()
+            var
+                NoSeries: Codeunit "No. Series";
             begin
                 if "No." <> xRec."No." then begin
                     StatutoryReportingSetupCZL.Get();
@@ -185,7 +187,7 @@ table 11793 "Company Official CZL"
                     "Country/Region Code" := Employee."Country/Region Code";
                     "Phone No." := Employee."Phone No.";
                     "Mobile Phone No." := Employee."Mobile Phone No.";
-                    "E-Mail" := Employee."E-Mail";
+                    "E-Mail" := Employee."Company E-Mail";
                     "Fax No." := Employee."Fax No.";
                     "Employee No." := Employee."No.";
                     "Privacy Blocked" := Employee."Privacy Blocked";
@@ -230,6 +232,7 @@ table 11793 "Company Official CZL"
     trigger OnInsert()
     var
         CompanyOfficial: Record "Company Official CZL";
+        NoSeries: Codeunit "No. Series";
 #if not CLEAN24
         IsHandled: Boolean;
 #endif
@@ -271,18 +274,19 @@ table 11793 "Company Official CZL"
         Employee: Record Employee;
         PostCode: Record "Post Code";
         CompanyOfficialCZL: Record "Company Official CZL";
+#if not CLEAN24
         NoSeriesManagement: Codeunit NoSeriesManagement;
-        NoSeries: Codeunit "No. Series";
+#endif
 
     procedure AssistEdit(OldCompanyOfficialCZL: Record "Company Official CZL"): Boolean
+    var
+        NoSeries: Codeunit "No. Series";
     begin
         CompanyOfficialCZL := Rec;
         StatutoryReportingSetupCZL.Get();
         StatutoryReportingSetupCZL.TestField("Company Official Nos.");
-        if NoSeriesManagement.SelectSeries(StatutoryReportingSetupCZL."Company Official Nos.", OldCompanyOfficialCZL."No. Series", OldCompanyOfficialCZL."No. Series") then begin
-            StatutoryReportingSetupCZL.Get();
-            StatutoryReportingSetupCZL.TestField("Company Official Nos.");
-            NoSeriesManagement.SetSeries(OldCompanyOfficialCZL."No.");
+        if NoSeries.LookupRelatedNoSeries(StatutoryReportingSetupCZL."Company Official Nos.", OldCompanyOfficialCZL."No. Series", OldCompanyOfficialCZL."No. Series") then begin
+            OldCompanyOfficialCZL."No." := NoSeries.GetNextNo(OldCompanyOfficialCZL."No. Series");
             Rec := CompanyOfficialCZL;
             exit(true);
         end;

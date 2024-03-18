@@ -378,7 +378,7 @@ codeunit 18350 "Service Transfer Post"
     local procedure InsertServiceTransShptHeader(ServTransHeader: Record "Service Transfer Header"): Code[20]
     var
         ServiceTransferShptHeader: Record "Service Transfer Shpt. Header";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
         ServiceTransferShptHeader.LockTable();
 
@@ -411,8 +411,7 @@ codeunit 18350 "Service Transfer Post"
         ServiceTransferShptHeader."Assigned User ID" := ServTransHeader."Assigned User ID";
         GetServiceShipmentPostingNoSeries(ServTransHeader);
         ServiceTransferShptHeader."No. Series" := ServTransHeader."No. Series";
-        ServiceTransferShptHeader."No." := NoSeriesManagement.GetNextNo(
-        ServiceTransferShptHeader."No. Series", ServTransHeader."Shipment Date", true);
+        ServiceTransferShptHeader."No." := NoSeries.GetNextNo(ServiceTransferShptHeader."No. Series", ServTransHeader."Shipment Date");
         ServiceTransferShptHeader.Insert();
         exit(ServiceTransferShptHeader."No.");
     end;
@@ -456,7 +455,7 @@ codeunit 18350 "Service Transfer Post"
     local procedure InsertServiceTransRcptHeader(ServTransHeader: Record "Service Transfer Header"): Code[20]
     var
         ServiceTransferRcptHeader: Record "Service Transfer Rcpt. Header";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
         ServiceTransferRcptHeader.LockTable();
         ServiceTransferRcptHeader.Init();
@@ -489,8 +488,7 @@ codeunit 18350 "Service Transfer Post"
         ServiceTransferRcptHeader."External Doc No." := ServTransHeader."External Doc No.";
         GetServiceReceiptPostingNoSeries(ServTransHeader);
         ServiceTransferRcptHeader."No. Series" := ServTransHeader."No. Series";
-        ServiceTransferRcptHeader."No." := NoSeriesManagement.GetNextNo(
-            ServiceTransferRcptHeader."No. Series", ServTransHeader."Receipt Date", true);
+        ServiceTransferRcptHeader."No." := NoSeries.GetNextNo(ServiceTransferRcptHeader."No. Series", ServTransHeader."Receipt Date");
         ServiceTransferRcptHeader.Insert();
         exit(ServiceTransferRcptHeader."No.");
     end;

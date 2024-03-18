@@ -81,9 +81,9 @@ report 6211 "Emission Per Facility"
                     Clear(ResponsibilityCenter);
 
                 if UseReportingUOMFactor then begin
-                    "Emission CO2" := Round("Emission CO2" * ReportingUOMFactor, RoundingPrecission, RoundingDirection);
-                    "Emission CH4" := Round("Emission CH4" * ReportingUOMFactor, RoundingPrecission, RoundingDirection);
-                    "Emission N2O" := Round("Emission N2O" * ReportingUOMFactor, RoundingPrecission, RoundingDirection);
+                    "Emission CO2" := Round("Emission CO2" * ReportingUOMFactor, RoundingPrecision, RoundingDirection);
+                    "Emission CH4" := Round("Emission CH4" * ReportingUOMFactor, RoundingPrecision, RoundingDirection);
+                    "Emission N2O" := Round("Emission N2O" * ReportingUOMFactor, RoundingPrecision, RoundingDirection);
                 end;
             end;
         }
@@ -92,6 +92,21 @@ report 6211 "Emission Per Facility"
     {
         EmissionPerFacility = 'Emission Per Facility';
         PageCaption = 'Page';
+        EmissionsByRespCenter = 'Emissions by R. C.';
+        AverageByScopeAndRC = 'Average by Scope and R. C.';
+        AverageByAccountAndRC = 'Average by Account and R. C.';
+        CompName = 'Company Name';
+        CountryRegionCode = 'Country/Region Code';
+        EmissionByRespCenter = 'Emissions by Responsibility Center';
+        EmissionScope = 'Emission Scope';
+        ResponsibilityCenter = 'Responsibility Center';
+        SumOfEmission_CO2 = 'Sum of Emission CO2';
+        SumOfEmission_CH4 = 'Sum of Emission CH4';
+        SumOfEmission_N2O = 'Sum of Emission N2O';
+        AverageOfEmission_CO2 = 'Average of Emission CO2';
+        AverageOfEmission_CH4 = 'Average of Emission CH4';
+        AverageOfEmission_N2O = 'Average of Emission N2O';
+        AccountName = 'Account Name';
     }
 
     trigger OnPreReport()
@@ -99,14 +114,14 @@ report 6211 "Emission Per Facility"
         SustainabilitySetup: Record "Sustainability Setup";
     begin
         SustLedgDateFilter := "Sustainability Ledger Entry".GetFilter("Posting Date");
-        SustainabilitySetup.GetReportingParameters(ReportingUOMCode, UseReportingUOMFactor, ReportingUOMFactor, RoundingDirection, RoundingPrecission);
+        SustainabilitySetup.GetReportingParameters(ReportingUOMCode, UseReportingUOMFactor, ReportingUOMFactor, RoundingDirection, RoundingPrecision);
     end;
 
     var
         ResponsibilityCenter: Record "Responsibility Center";
         ReportingUOMCode: Code[10];
         SustainabilityAccountName, SustLedgDateFilter, RoundingDirection : Text;
-        ReportingUOMFactor, RoundingPrecission : Decimal;
+        ReportingUOMFactor, RoundingPrecision : Decimal;
         ShowDetails, UseReportingUOMFactor : Boolean;
         PeriodLbl: Label 'Period: %1', Comment = '%1 - period filter';
 }

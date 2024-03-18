@@ -15,6 +15,7 @@ using Microsoft.Foundation.AuditCodes;
 using Microsoft.Purchases.Payables;
 using Microsoft.Sales.Receivables;
 #endif
+using System.Utilities;
 using System.Security.User;
 
 codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
@@ -436,6 +437,17 @@ codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
         GLEntry.Amount := GenJournalLine."VAT Base Amount (LCY)";
         GLEntry."VAT Amount" := GenJournalLine."VAT Amount (LCY)";
 #endif
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCheckPurchExtDocNoProcedure', '', false, false)]
+    local procedure SkipCheckExternalDocumentNoOnBeforeCheckPurchExtDocNoProcedure(var IsHandled: Boolean)
+    var
+        PersistConfirmResponseCZL: Codeunit "Persist. Confirm Response CZL";
+    begin
+        if IsHandled then
+            exit;
+
+        IsHandled := PersistConfirmResponseCZL.GetPersistentResponse();
     end;
 
     [IntegrationEvent(false, false)]

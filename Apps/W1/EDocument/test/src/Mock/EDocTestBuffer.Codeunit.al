@@ -5,6 +5,7 @@ codeunit 139625 "E-Doc. Test Buffer"
     var
         TmpPurchHeader: Record "Purchase Header" temporary;
         TmpPurchLine: Record "Purchase Line" temporary;
+        EDocOrderNo: Code[20];
 
     procedure ClearTempVariables()
     begin
@@ -33,9 +34,19 @@ codeunit 139625 "E-Doc. Test Buffer"
             until PurchLine.Next() = 0;
     end;
 
+    procedure SetEDocOrderNo(OrderNo: Code[20])
+    begin
+        EDocOrderNo := OrderNo;
+    end;
+
     procedure GetPurchaseDocToTempVariables(var TmpPurchHeader2: Record "Purchase Header" temporary; var TmpPurchLine2: Record "Purchase Line" temporary)
     begin
         TmpPurchHeader2.Copy(TmpPurchHeader, true);
         TmpPurchLine2.Copy(TmpPurchLine, true);
+    end;
+
+    procedure GetEDocOrderNo(): Code[20]
+    begin
+        exit(EDocOrderNo);
     end;
 }

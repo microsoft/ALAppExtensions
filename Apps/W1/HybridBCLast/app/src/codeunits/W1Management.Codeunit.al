@@ -25,6 +25,7 @@ codeunit 4026 "W1 Management"
         SettingCanUpgradeToTrueForCompanyNameMsg: Label 'Setting can start upgrade to true, for the company %1', Locked = true;
         UpdatingUpgradeStatusOfTheCompanyMsg: Label 'Setting can start upgrade to true, for the company %1', Locked = true;
         CloudMigrationTok: Label 'CloudMigration', Locked = true;
+        CannotStartReplicationUpgradeCompletedErr: Label 'You cannot start the replication from the previous version because one or more companies are already upgraded. Consult the official documentation for more information how to proceed.';
         CannotStartUpgradeCompanyUpgradeCompletedErr: Label 'You cannot start the upgrade because one or more companies are already upgraded. Consult the official documentation for more information how to proceed.';
         PleaseWaitForUpgradeToBeTriggeredErr: Label 'The upgrade has been scheduled at %1. Please wait for %2 minutes for the task to start. You can check if the upgrade was scheduled and track the progress in on the Operations tab in the Business Central admin center. If the task does not start during this time, start the process again.', Comment = '%1 - Time upgrade action was invoked. %2 Time in minutes to wait.';
         CheckUpgradeStatusInTenantAdminCenterMsg: Label 'The upgrade was scheduled at %1. You can see if the upgrade has run on the Operations tab in the Business Central admin center. In case the upgrade fails, we will have restored the tenant to the point before the upgrade, so you can fix any issues and start a new upgrade run.', Comment = '%1 - Time upgrade action was invoked.';
@@ -90,6 +91,7 @@ codeunit 4026 "W1 Management"
 
         if not HybridBCLastManagement.GetBCLastProductEnabled() then
             exit;
+
         Clear(BlankDateTime);
         HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Completed);
         if not HybridCompanyStatus.IsEmpty() then
@@ -183,6 +185,7 @@ codeunit 4026 "W1 Management"
         if not HybridReplicationSummary.FindLast() then
             exit;
 
+        Clear(BlankDateTime);
         if HybridReplicationSummary."Upgrade Started DateTime" = BlankDateTime then
             exit;
 
@@ -466,6 +469,16 @@ codeunit 4026 "W1 Management"
             exit;
 
         SourceBC := true;
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Hybrid Cloud Setup Wizard", 'OnSelectedProduct', '', false, false)]
+    local procedure HandleOnSelectedProduct(ProductId: Text)
+    var
+        HybridCompanyStatus: Record "Hybrid Company Status";
+    begin
+        HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Completed);
+        if not HybridCompanyStatus.IsEmpty() then
+            Error(CannotStartReplicationUpgradeCompletedErr);
     end;
 
     [IntegrationEvent(false, false)]

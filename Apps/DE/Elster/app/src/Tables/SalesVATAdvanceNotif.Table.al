@@ -315,17 +315,15 @@ table 11021 "Sales VAT Advance Notif."
     procedure AssistEdit(OldSalesVATAdvNotif: Record "Sales VAT Advance Notif."): Boolean
     var
         SalesVATAdvNotif: Record "Sales VAT Advance Notif.";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
-        with SalesVATAdvNotif do begin
-            SalesVATAdvNotif := Rec;
-            ElecVATDeclSetup.Get();
-            ElecVATDeclSetup.TestField("Sales VAT Adv. Notif. Nos.");
-            if NoSeriesManagement.SelectSeries(ElecVATDeclSetup."Sales VAT Adv. Notif. Nos.", OldSalesVATAdvNotif."No. Series", "No. Series") then begin
-                NoSeriesManagement.SetSeries("No.");
-                Rec := SalesVATAdvNotif;
-                exit(true);
-            end;
+        SalesVATAdvNotif := Rec;
+        ElecVATDeclSetup.Get();
+        ElecVATDeclSetup.TestField("Sales VAT Adv. Notif. Nos.");
+        if NoSeries.LookupRelatedNoSeries(ElecVATDeclSetup."Sales VAT Adv. Notif. Nos.", OldSalesVATAdvNotif."No. Series", SalesVATAdvNotif."No. Series") then begin
+            SalesVATAdvNotif."No." := NoSeries.GetNextNo(SalesVATAdvNotif."No. Series");
+            Rec := SalesVATAdvNotif;
+            exit(true);
         end;
     end;
 

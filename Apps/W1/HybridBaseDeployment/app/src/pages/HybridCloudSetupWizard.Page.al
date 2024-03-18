@@ -151,6 +151,7 @@ page 4000 "Hybrid Cloud Setup Wizard"
                                     exit;
 
                                 HybridCloudManagement.OnGetHybridProductDescription(TempHybridProductType.ID, SelectedProductDescription);
+                                OnSelectedProduct(TempHybridProductType.ID);
                                 SelectedProductDescriptionVisible := SelectedProductDescription <> '';
                                 Rec."Product ID" := TempHybridProductType.ID;
 
@@ -1017,6 +1018,11 @@ page 4000 "Hybrid Cloud Setup Wizard"
             CurrentStep -= 1
         else
             CurrentStep += 1;
+    end;
+
+    [IntegrationEvent(false, false)]
+    procedure OnSelectedProduct(ProductId: Text)
+    begin
     end;
 }
 

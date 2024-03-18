@@ -119,6 +119,7 @@ codeunit 139630 "E-Doc. Impl. State"
             TmpPurchHeader.CalcFields(Amount, "Amount Including VAT");
             EDocument."Amount Excl. VAT" := TmpPurchHeader.Amount;
             EDocument."Amount Incl. VAT" := TmpPurchHeader."Amount Including VAT";
+            EDocument."Order No." := PurchDocTestBuffer.GetEDocOrderNo();
         end;
     end;
 

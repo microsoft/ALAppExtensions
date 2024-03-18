@@ -40,13 +40,13 @@ codeunit 4708 "VAT Group Settlement"
     var
         VATGroupSubmissionHeader: Record "VAT Group Submission Header";
         GenJournalLine: Record "Gen. Journal Line";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         DocNo: Code[20];
         VATAmount: Decimal;
     begin
         VATGroupSubmissionHeader.SetRange("VAT Group Return No.", VATReportHeaderNo);
         if VATGroupSubmissionHeader.FindSet() then begin
-            DocNo := NoSeriesManagement.GetNextNo(GenJournalTemplate."No. Series", 0D, true);
+            DocNo := NoSeries.GetNextNo(GenJournalTemplate."No. Series");
             repeat
                 VATAmount := FindVATAmount(VATGroupSubmissionHeader);
 

@@ -208,6 +208,7 @@ tableextension 11793 "VAT Amount Line CZL" extends "VAT Amount Line"
         VATEntry.SetRange("Document No.", DocumentNo);
         VATEntry.SetRange("Posting Date", PostingDate);
         VATEntry.SetRange("Source Code", SourceCode);
+        OnCopyDocumentVATEntriesToBufferOnAfterSetVATEntryFilterCZL(TransactionNo, DocumentType, DocumentNo, PostingDate, SourceCode, VATEntry);
         if VATEntry.FindSet() then
             repeat
                 TempVATEntry := VATEntry;
@@ -278,6 +279,11 @@ tableextension 11793 "VAT Amount Line CZL" extends "VAT Amount Line"
 
     [IntegrationEvent(true, false)]
     local procedure OnAfterGetDocumentVATEntryBufferCZL(DocRecordRef: RecordRef; var TempVATEntry: Record "VAT Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCopyDocumentVATEntriesToBufferOnAfterSetVATEntryFilterCZL(TransactionNo: Integer; DocumentType: Enum "Gen. Journal Document Type"; DocumentNo: Code[20]; PostingDate: Date; SourceCode: Code[10]; var VATEntry: Record "VAT Entry")
     begin
     end;
 }

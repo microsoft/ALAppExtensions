@@ -466,18 +466,10 @@ report 31183 "Finance Charge Memo CZL"
     end;
 
     var
-        TempVATAmountLine: Record "VAT Amount Line" temporary;
         LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
-        CompanyAddr: array[8] of Text[100];
-        CustAddr: array[8] of Text[100];
-        DocFooterText: Text[1000];
-        TotalInclVATText: Text[50];
-        NoOfCopies: Integer;
-        NoOfLoops: Integer;
-        LogInteraction: Boolean;
         LogInteractionEnable: Boolean;
         ShowCaptions: Boolean;
         PrevDetailedInterestRatesEntry: Boolean;
@@ -493,6 +485,16 @@ report 31183 "Finance Charge Memo CZL"
         VATPercentLbl: Label 'VAT %', Comment = 'VAT %';
         VATBaseLbl: Label 'VAT Base';
         VATAmtLbl: Label 'VAT Amount';
+
+    protected var
+        TempVATAmountLine: Record "VAT Amount Line" temporary;
+        CompanyAddr: array[8] of Text[100];
+        CustAddr: array[8] of Text[100];
+        DocFooterText: Text[1000];
+        TotalInclVATText: Text[50];
+        NoOfCopies: Integer;
+        NoOfLoops: Integer;
+        LogInteraction: Boolean;
         PrintInterestDetail: Boolean;
 
     procedure InitializeRequest(NoOfCopiesFrom: Integer; LogInteractionFrom: Boolean; PrintInterestDetailFrom: Boolean)

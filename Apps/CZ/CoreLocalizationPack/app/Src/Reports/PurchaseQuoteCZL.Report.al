@@ -484,23 +484,12 @@ report 31184 "Purchase Quote CZL"
     var
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         Vendor: Record Vendor;
-        PaymentTerms: Record "Payment Terms";
-        PaymentMethod: Record "Payment Method";
-        ShipmentMethod: Record "Shipment Method";
         LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
         ArchiveManagement: Codeunit ArchiveManagement;
-        CompanyAddr: array[8] of Text[100];
-        VendAddr: array[8] of Text[100];
-        ShipToAddr: array[8] of Text[100];
-        DocFooterText: Text[1000];
-        NoOfCopies: Integer;
-        NoOfLoops: Integer;
-        LogInteraction: Boolean;
-        ArchiveDocument: Boolean;
         LogInteractionEnable: Boolean;
         DocumentLbl: Label 'Quote';
         PageLbl: Label 'Page';
@@ -518,6 +507,19 @@ report 31184 "Purchase Quote CZL"
         DiscPercentLbl: Label 'Discount %';
         TotalLbl: Label 'total';
         VATLbl: Label 'VAT';
+
+    protected var
+        PaymentMethod: Record "Payment Method";
+        PaymentTerms: Record "Payment Terms";
+        ShipmentMethod: Record "Shipment Method";
+        CompanyAddr: array[8] of Text[100];
+        ShipToAddr: array[8] of Text[100];
+        VendAddr: array[8] of Text[100];
+        DocFooterText: Text[1000];
+        NoOfCopies: Integer;
+        NoOfLoops: Integer;
+        ArchiveDocument: Boolean;
+        LogInteraction: Boolean;
 
     procedure InitializeRequest(NoOfCopiesFrom: Integer; ArchiveDocumentFrom: Boolean; LogInteractionFrom: Boolean)
     begin

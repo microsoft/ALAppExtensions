@@ -404,9 +404,12 @@ report 11736 "Posted Rcpt. Cash Document CZP"
     }
 
     var
-        TempVATAmountLine: Record "VAT Amount Line" temporary;
         CurrencyExchangeRate: Record "Currency Exchange Rate";
         FormatAddress: Codeunit "Format Address";
+        ExchangeRateTxt: Label 'Exchange Rate %1 %2 / %3 %4', Comment = '%1 = Calculated Exchange Rate Amount; %2 = LCY Code; %3 = Exchange Rate Amount; %4 = Currency Code';
+
+    protected var
+        TempVATAmountLine: Record "VAT Amount Line" temporary;
         CompanyAddr: array[8] of Text[100];
         ExchRateText: Text[50];
         CalculatedExchRate: Decimal;
@@ -414,7 +417,6 @@ report 11736 "Posted Rcpt. Cash Document CZP"
         NoOfLoops: Integer;
         PrintAccountingSheet: Boolean;
         PrintVATSpecification: Boolean;
-        ExchangeRateTxt: Label 'Exchange Rate %1 %2 / %3 %4', Comment = '%1 = Calculated Exchange Rate Amount; %2 = LCY Code; %3 = Exchange Rate Amount; %4 = Currency Code';
 
     procedure InitializeRequest(NewNoOfCopies: Integer; NewPrintAccountingSheet: Boolean; NewPrintVATSpecification: Boolean)
     begin

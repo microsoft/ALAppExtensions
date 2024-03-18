@@ -140,7 +140,7 @@ tableextension 4701 "VAT Report Setup Extension" extends "VAT Report Setup"
 
     [Scope('OnPrem')]
     [NonDebuggable]
-    procedure SetSecret(SecretKey: Guid; ClientSecretText: Text): Guid
+    procedure SetSecret(SecretKey: Guid; ClientSecretText: SecretText): Guid
     var
         NewSecretKey: Guid;
     begin
@@ -149,7 +149,7 @@ tableextension 4701 "VAT Report Setup Extension" extends "VAT Report Setup"
 
         NewSecretKey := CreateGuid();
 
-        if (not EncryptionEnabled() or (StrLen(ClientSecretText) > 215)) then
+        if (not EncryptionEnabled() or (StrLen(ClientSecretText.Unwrap()) > 215)) then
             IsolatedStorage.Set(NewSecretKey, ClientSecretText, DataScope::Company)
         else
             IsolatedStorage.SetEncrypted(NewSecretKey, ClientSecretText, DataScope::Company);
@@ -157,11 +157,26 @@ tableextension 4701 "VAT Report Setup Extension" extends "VAT Report Setup"
         exit(NewSecretKey);
     end;
 
+#if not CLEAN24
     [Scope('OnPrem')]
     [NonDebuggable]
+    [Obsolete('Use "GetSecretAsSecretText instead.', '24.0')]
     procedure GetSecret(SecretKey: Guid): Text
     var
         ClientSecretText: Text;
+    begin
+        if not IsNullGuid(SecretKey) then
+            if not GetSecretAsSecretText(SecretKey).IsEmpty() then
+                ClientSecretText := GetSecretAsSecretText(SecretKey).Unwrap();
+
+        exit(ClientSecretText);
+    end;
+#endif
+
+    [Scope('OnPrem')]
+    procedure GetSecretAsSecretText(SecretKey: Guid): SecretText
+    var
+        ClientSecretText: SecretText;
     begin
         if not IsNullGuid(SecretKey) then
             if not IsolatedStorage.Get(SecretKey, DataScope::Company, ClientSecretText) then;

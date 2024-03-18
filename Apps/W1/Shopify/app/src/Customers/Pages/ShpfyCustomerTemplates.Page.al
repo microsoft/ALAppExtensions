@@ -25,6 +25,7 @@ page 30108 "Shpfy Customer Templates"
                 field(CustomerTemlateCode; Rec."Customer Template Code")
                 {
                     ApplicationArea = All;
+                    Caption = 'Customer/Company Template Code';
                     ToolTip = 'Specifies which customer template to use when creating unknown customers for this country. This template will only be used if the  field "Fix CustomerNo." is blank';
                     Visible = not NewTemplatesEnabled;
                     ObsoleteReason = 'Replaced by Customer Templ. Code';
@@ -35,6 +36,7 @@ page 30108 "Shpfy Customer Templates"
                 field(CustomerTemplCode; Rec."Customer Templ. Code")
                 {
                     ApplicationArea = All;
+                    Caption = 'Customer/Company Template Code';
                     ToolTip = 'Specifies which customer template to use when creating unknown customers for this country. This template will only be used if the  field "Fix CustomerNo." is blank';
 #if not CLEAN22
                     Visible = NewTemplatesEnabled;

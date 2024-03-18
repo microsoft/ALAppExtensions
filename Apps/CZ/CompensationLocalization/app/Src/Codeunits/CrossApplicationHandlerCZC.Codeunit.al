@@ -10,62 +10,70 @@ using Microsoft.Sales.Receivables;
 
 codeunit 31415 "Cross Application Handler CZC"
 {
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cross Application Mgt. CZL", 'OnGetSuggestedAmountForCustLedgerEntry', '', false, false)]
-    local procedure AddCompensationLineCZCOnGetSuggestedAmountForCustLedgerEntry(var TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary;
-                                                                                 CustLedgerEntry: Record "Cust. Ledger Entry";
-                                                                                 ExcludeTableID: Integer; ExcludeDocumentNo: Code[20]; ExcludeLineNo: Integer)
+#if not CLEAN25
+    ObsoleteState = Pending;
+    ObsoleteReason = 'The Access property will be changed to Internal.';
+    ObsoleteTag = '25.0';
+#else
+    Access = Internal;
+#endif
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cross Application Mgt. CZL", 'OnCollectSuggestedApplication', '', false, false)]
+    local procedure AddCompensationLineCZCOnCollectSuggestedApplication(
+        CollectedForTableID: Integer; CollectedFor: Variant; var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL")
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+    begin
+        case CollectedForTableID of
+            Database::"Cust. Ledger Entry":
+                begin
+                    CustLedgerEntry := CollectedFor;
+                    CollectCompensationLines(
+                        "Compensation Source Type CZC"::Customer, CustLedgerEntry."Customer No.",
+                        CustLedgerEntry."Entry No.", CrossApplicationBufferCZL);
+                end;
+            Database::"Vendor Ledger Entry":
+                begin
+                    VendorLedgerEntry := CollectedFor;
+                    CollectCompensationLines(
+                        "Compensation Source Type CZC"::Vendor, VendorLedgerEntry."Vendor No.",
+                        VendorLedgerEntry."Entry No.", CrossApplicationBufferCZL);
+                end;
+        end;
+    end;
+
+    local procedure CollectCompensationLines(SourceType: Enum "Compensation Source Type CZC"; SourceNo: Code[20]; SourceEntryNo: Integer; var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL")
     var
         CompensationLineCZC: Record "Compensation Line CZC";
     begin
-        CompensationLineCZC.SetRange("Source Type", CompensationLineCZC."Source Type"::Customer);
-        CompensationLineCZC.SetRange("Source No.", CustLedgerEntry."Customer No.");
-        CompensationLineCZC.SetRange("Source Entry No.", CustLedgerEntry."Entry No.");
+        CompensationLineCZC.SetRange("Source Type", SourceType);
+        CompensationLineCZC.SetRange("Source No.", SourceNo);
+        CompensationLineCZC.SetRange("Source Entry No.", SourceEntryNo);
         if CompensationLineCZC.FindSet() then
             repeat
-                AddLineToBuffer(TempCrossApplicationBufferCZL, CompensationLineCZC, ExcludeTableID, ExcludeDocumentNo, ExcludeLineNo);
+                AddLineToBuffer(CompensationLineCZC, CrossApplicationBufferCZL);
             until CompensationLineCZC.Next() = 0;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cross Application Mgt. CZL", 'OnGetSuggestedAmountForVendLedgerEntry', '', false, false)]
-    local procedure AddCompensationLineCZCOnGetSuggestedAmountForVendLedgerEntry(var TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary;
-                                                                                 VendorLedgerEntry: Record "Vendor Ledger Entry";
-                                                                                 ExcludeTableID: Integer; ExcludeDocumentNo: Code[20]; ExcludeLineNo: Integer)
-    var
+    local procedure AddLineToBuffer(
         CompensationLineCZC: Record "Compensation Line CZC";
-    begin
-        CompensationLineCZC.SetRange("Source Type", CompensationLineCZC."Source Type"::Vendor);
-        CompensationLineCZC.SetRange("Source No.", VendorLedgerEntry."Vendor No.");
-        CompensationLineCZC.SetRange("Source Entry No.", VendorLedgerEntry."Entry No.");
-        if CompensationLineCZC.FindSet() then
-            repeat
-                AddLineToBuffer(TempCrossApplicationBufferCZL, CompensationLineCZC, ExcludeTableID, ExcludeDocumentNo, ExcludeLineNo);
-            until CompensationLineCZC.Next() = 0;
-    end;
-
-    local procedure AddLineToBuffer(var TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary;
-                                    CompensationLineCZC: Record "Compensation Line CZC";
-                                    ExcludeTableID: Integer; ExcludeDocumentNo: Code[20]; ExcludeLineNo: Integer)
+        var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL")
     var
         CompensationHeaderCZC: Record "Compensation Header CZC";
     begin
-        if (ExcludeTableID = Database::"Compensation Line CZC") and
-           (ExcludeDocumentNo = CompensationLineCZC."Compensation No.") and
-           (ExcludeLineNo = CompensationLineCZC."Line No.")
-        then
-            exit;
-
         CompensationHeaderCZC.Get(CompensationLineCZC."Compensation No.");
         if CompensationHeaderCZC.Status <> CompensationHeaderCZC.Status::Released then
             exit;
 
-        TempCrossApplicationBufferCZL.Init();
-        TempCrossApplicationBufferCZL."Entry No." := TempCrossApplicationBufferCZL.Count() + 1;
-        TempCrossApplicationBufferCZL."Table ID" := Database::"Compensation Line CZC";
-        TempCrossApplicationBufferCZL."Applied Document No." := CompensationLineCZC."Compensation No.";
-        TempCrossApplicationBufferCZL."Applied Document Line No." := CompensationLineCZC."Line No.";
-        TempCrossApplicationBufferCZL."Applied Document Date" := CompensationHeaderCZC."Document Date";
-        TempCrossApplicationBufferCZL."Amount (LCY)" := CompensationLineCZC."Amount (LCY)";
-        TempCrossApplicationBufferCZL.Insert();
+        CrossApplicationBufferCZL.Init();
+        CrossApplicationBufferCZL."Entry No." := CrossApplicationBufferCZL.Count() + 1;
+        CrossApplicationBufferCZL."Table ID" := Database::"Compensation Line CZC";
+        CrossApplicationBufferCZL."Applied Document No." := CompensationLineCZC."Compensation No.";
+        CrossApplicationBufferCZL."Applied Document Line No." := CompensationLineCZC."Line No.";
+        CrossApplicationBufferCZL."Applied Document Date" := CompensationHeaderCZC."Document Date";
+        CrossApplicationBufferCZL."Amount (LCY)" := CompensationLineCZC."Amount (LCY)";
+        CrossApplicationBufferCZL.Insert();
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Cross Application CZL", 'OnShowCrossApplicationDocument', '', false, false)]
@@ -81,5 +89,18 @@ codeunit 31415 "Cross Application Handler CZC"
         CompensationLineCZC.SetRange("Line No.", LineNo);
         CompensationLineCZC.FilterGroup(0);
         Page.Run(Page::"Compensation Lines CZC", CompensationLineCZC);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Cross Application Buffer CZL", 'OnExcludeDocument', '', false, false)]
+    local procedure SetFilterOnExcludeDocument(TableID: Integer; DocumentVariant: Variant; var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL")
+    var
+        CompensationLineCZC: Record "Compensation Line CZC";
+    begin
+        if TableID <> Database::"Compensation Line CZC" then
+            exit;
+
+        CompensationLineCZC := DocumentVariant;
+        CrossApplicationBufferCZL.RemoveDocument(
+            TableID, CompensationLineCZC."Compensation No.", CompensationLineCZC."Line No.");
     end;
 }

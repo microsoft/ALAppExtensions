@@ -69,6 +69,10 @@ codeunit 5103 "Create Svc Setup"
             ServiceMgtSetup.Validate("Contract Invoice Nos.", SevNoSeries.ContractInvoice());
         if ServiceMgtSetup."Contract Template Nos." = '' then
             ServiceMgtSetup.Validate("Contract Template Nos.", SevNoSeries.ContractTemplate());
+        if ServiceMgtSetup."Service Credit Memo Nos." = '' then
+            ServiceMgtSetup.Validate("Service Credit Memo Nos.", SevNoSeries.ServiceCreditMemo());
+        if ServiceMgtSetup."Posted Serv. Credit Memo Nos." = '' then
+            ServiceMgtSetup.Validate("Posted Serv. Credit Memo Nos.", SevNoSeries.PostedServiceCreditMemo());
 
         ServiceMgtSetup.Validate("Base Calendar Code", DefaultBaseCalendar());
 

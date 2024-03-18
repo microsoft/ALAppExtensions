@@ -97,6 +97,7 @@ codeunit 20286 "Use Case Event Handling"
         if RecRef.IsTemporary() then
             exit;
 
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
         TaxTransactionValue.SetRange("Tax Record ID", RecRef.RecordId());
         if not TaxTransactionValue.IsEmpty() then
             TaxTransactionValue.DeleteAll(true);

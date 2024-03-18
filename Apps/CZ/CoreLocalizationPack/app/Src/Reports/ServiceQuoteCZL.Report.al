@@ -512,23 +512,11 @@ report 31193 "Service Quote CZL"
     end;
 
     var
-        PaymentTerms: Record "Payment Terms";
-        PaymentMethod: Record "Payment Method";
-        ShipmentMethod: Record "Shipment Method";
         LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
-        CompanyAddr: array[8] of Text[100];
-        CustAddr: array[8] of Text[100];
-        ShipToAddr: array[8] of Text[100];
-        DocFooterText: Text[1000];
-        NoOfCopies: Integer;
-        NoOfLoops: Integer;
-        Number1: Integer;
-        Number2: Integer;
-        LogInteraction: Boolean;
         LogInteractionEnable: Boolean;
         DocumentLbl: Label 'Service Quote';
         PageLbl: Label 'Page';
@@ -548,6 +536,20 @@ report 31193 "Service Quote CZL"
         AmountLbl: Label 'Amount';
         GrossAmountLbl: Label 'Gross Amount';
         TotalLbl: Label 'Total';
+
+    protected var
+        PaymentTerms: Record "Payment Terms";
+        PaymentMethod: Record "Payment Method";
+        ShipmentMethod: Record "Shipment Method";
+        CompanyAddr: array[8] of Text[100];
+        CustAddr: array[8] of Text[100];
+        ShipToAddr: array[8] of Text[100];
+        DocFooterText: Text[1000];
+        NoOfCopies: Integer;
+        NoOfLoops: Integer;
+        Number1: Integer;
+        Number2: Integer;
+        LogInteraction: Boolean;
 
     procedure InitializeRequest(NoOfCopiesFrom: Integer; LogInteractionFrom: Boolean)
     begin

@@ -185,6 +185,7 @@ codeunit 30110 "Shpfy Create Customer"
         ShopifyCustomer: Record "Shpfy Customer";
         CountryRegion: Record "Country/Region";
         CompanyLocation: Record "Shpfy Company Location";
+        ShopifyTaxArea: Record "Shpfy Tax Area";
 #if not CLEAN22
         ConfigTemplateHeader: Record "Config. Template Header";
         ConfigConfigTemplateLine: Record "Config. Template Line";
@@ -198,6 +199,7 @@ codeunit 30110 "Shpfy Create Customer"
 #if not CLEAN22
         CustomerRecordRef: RecordRef;
 #endif
+        ICounty: Interface "Shpfy ICounty";
         CountryCode: Code[20];
         CurrentTemplateCode: Code[20];
         IsHandled: Boolean;
@@ -242,13 +244,31 @@ codeunit 30110 "Shpfy Create Customer"
                 Customer.Validate("Country/Region Code", CountryCode);
                 Customer.Validate(City, CompanyLocation.City);
                 Customer.Validate("Post Code", CompanyLocation.Zip);
+
+                ICounty := Shop."County Source";
+                Customer.Validate(County, ICounty.County(CompanyLocation));
+
                 if CompanyLocation."Phone No." <> '' then
                     Customer.Validate("Phone No.", CompanyLocation."Phone No.");
+
+                if ShopifyTaxArea.Get(CompanyLocation."Country/Region Code", CompanyLocation."Province Name") then begin
+                    if (ShopifyTaxArea."Tax Area Code" <> '') then begin
+                        Customer.Validate("Tax Area Code", ShopifyTaxArea."Tax Area Code");
+                        Customer.Validate("Tax Liable", ShopifyTaxArea."Tax Liable");
+                    end;
+                    if (ShopifyTaxArea."VAT Bus. Posting Group" <> '') then
+                        Customer.Validate("VAT Bus. Posting Group", ShopifyTaxArea."VAT Bus. Posting Group");
+                end;
+
                 Customer.Modify();
 
-                ShopifyCustomer.Copy(TempShopifyCustomer);
-                ShopifyCustomer."Customer SystemId" := Customer.SystemId;
-                ShopifyCustomer.Insert();
+                if ShopifyCustomer.Get(TempShopifyCustomer.Id) then begin
+                    ShopifyCustomer."Customer SystemId" := Customer.SystemId;
+                    ShopifyCustomer.Modify();
+                end else begin
+                    ShopifyCustomer.Copy(TempShopifyCustomer);
+                    ShopifyCustomer.Insert();
+                end;
 
                 ShopifyCompany."Customer SystemId" := Customer.SystemId;
                 ShopifyCompany."Main Contact Customer Id" := ShopifyCustomer.Id;
@@ -265,8 +285,22 @@ codeunit 30110 "Shpfy Create Customer"
             Customer.Validate("Country/Region Code", CountryCode);
             Customer.Validate(City, CompanyLocation.City);
             Customer.Validate("Post Code", CompanyLocation.Zip);
+
+            ICounty := Shop."County Source";
+            Customer.Validate(County, ICounty.County(CompanyLocation));
+
             if CompanyLocation."Phone No." <> '' then
                 Customer.Validate("Phone No.", CompanyLocation."Phone No.");
+
+            if ShopifyTaxArea.Get(CompanyLocation."Country/Region Code", CompanyLocation."Province Name") then begin
+                if (ShopifyTaxArea."Tax Area Code" <> '') then begin
+                    Customer.Validate("Tax Area Code", ShopifyTaxArea."Tax Area Code");
+                    Customer.Validate("Tax Liable", ShopifyTaxArea."Tax Liable");
+                end;
+                if (ShopifyTaxArea."VAT Bus. Posting Group" <> '') then
+                    Customer.Validate("VAT Bus. Posting Group", ShopifyTaxArea."VAT Bus. Posting Group");
+            end;
+
             Customer.Modify();
 
             ShopifyCustomer.Copy(TempShopifyCustomer);
@@ -288,8 +322,22 @@ codeunit 30110 "Shpfy Create Customer"
         Customer.Validate("Country/Region Code", CountryCode);
         Customer.Validate(City, CompanyLocation.City);
         Customer.Validate("Post Code", CompanyLocation.Zip);
+
+        ICounty := Shop."County Source";
+        Customer.Validate(County, ICounty.County(CompanyLocation));
+
         if CompanyLocation."Phone No." <> '' then
             Customer.Validate("Phone No.", CompanyLocation."Phone No.");
+            
+        if ShopifyTaxArea.Get(CompanyLocation."Country/Region Code", CompanyLocation."Province Name") then begin
+            if (ShopifyTaxArea."Tax Area Code" <> '') then begin
+                Customer.Validate("Tax Area Code", ShopifyTaxArea."Tax Area Code");
+                Customer.Validate("Tax Liable", ShopifyTaxArea."Tax Liable");
+            end;
+            if (ShopifyTaxArea."VAT Bus. Posting Group" <> '') then
+            Customer.Validate("VAT Bus. Posting Group", ShopifyTaxArea."VAT Bus. Posting Group");
+        end;
+
         Customer.Modify();
 
         ShopifyCustomer.Copy(TempShopifyCustomer);

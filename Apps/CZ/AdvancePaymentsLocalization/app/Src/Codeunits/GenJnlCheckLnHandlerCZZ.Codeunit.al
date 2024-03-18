@@ -40,4 +40,18 @@ codeunit 31109 "Gen.Jnl.-Check Ln. Handler CZZ"
     begin
         NewTransaction := false;
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCheckVendMultiplePostingGroups', '', false, false)]
+    local procedure SuppressMultiplePostingGroupsOnBeforeCheckVendMultiplePostingGroups(var IsMultiplePostingGroups: Boolean; var IsHandled: Boolean)
+    begin
+        IsHandled := true;
+        IsMultiplePostingGroups := false;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCheckCustMultiplePostingGroups', '', false, false)]
+    local procedure SuppressMultiplePostingGroupsOnBeforeCheckCustMultiplePostingGroups(var IsMultiplePostingGroups: Boolean; var IsHandled: Boolean)
+    begin
+        IsHandled := true;
+        IsMultiplePostingGroups := false;
+    end;
 }

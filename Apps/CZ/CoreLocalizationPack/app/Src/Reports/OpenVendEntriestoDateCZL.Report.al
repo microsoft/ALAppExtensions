@@ -13,11 +13,10 @@ using System.Utilities;
 
 report 11716 "Open Vend. Entries to Date CZL"
 {
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/OpenVendEntriestoDate.rdl';
     ApplicationArea = Basic, Suite;
     Caption = 'Open Vendor Entries to Date';
     UsageCategory = ReportsAndAnalysis;
+    DefaultRenderingLayout = "OpenVendEntriestoDate.rdl";
 
     dataset
     {
@@ -636,6 +635,23 @@ report 11716 "Open Vend. Entries to Date CZL"
                     }
                 }
             }
+        }
+    }
+    rendering
+    {
+        layout("OpenVendEntriestoDate.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/OpenVendEntriestoDate.rdl';
+            Caption = 'Open Vendor Entries to Date (RDL)';
+            Summary = 'The Open Vendor Entries to Date (RDL) provides a detailed layout.';
+        }
+        layout("OpenVendEntriestoDate.xlsx")
+        {
+            Type = Excel;
+            LayoutFile = './Src/Reports/OpenVendEntriestoDate.xlsx';
+            Caption = 'Open Vendor Entries to Date (Excel)';
+            Summary = 'The Open Vendor Entries to Date (Excel) provides a detailed layout.';
         }
     }
     trigger OnInitReport()

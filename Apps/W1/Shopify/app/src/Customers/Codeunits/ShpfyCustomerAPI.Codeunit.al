@@ -264,8 +264,11 @@ codeunit 30114 "Shpfy Customer API"
                 if JItem.IsObject then begin
                     if ShopifyCustomer.Id <> CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'id')) then
                         Error(UpdateCustIdErr);
-                    ShopifyCustomer."Accepts Marketing" := JsonHelper.GetValueAsBoolean(JItem, 'acceptsMarketing');
-                    ShopifyCustomer."Accepts Marketing Update At" := JsonHelper.GetValueAsDateTime(JItem, 'acceptsMArketingUpdatedAt');
+                    if JsonHelper.GetValueAsText(JItem, 'emailMarketingConsent.marketingState') = 'SUBSCRIBED' then
+                        ShopifyCustomer."Accepts Marketing" := true
+                    else
+                        ShopifyCustomer."Accepts Marketing" := false;
+                    ShopifyCustomer."Accepts Marketing Update At" := JsonHelper.GetValueAsDateTime(JItem, 'emailMarketingConsent.consentUpdatedAt');
                     ShopifyCustomer."Tax Exempt" := JsonHelper.GetValueAsBoolean(JItem, 'taxExempt');
                     ShopifyCustomer."Updated At" := JsonHelper.GetValueAsDateTime(JItem, 'updatedAt');
                     ShopifyCustomer."Verified Email" := JsonHelper.GetValueAsBoolean(JItem, 'verifiedEmail');
@@ -339,7 +342,7 @@ codeunit 30114 "Shpfy Customer API"
 
         if HasChange then begin
             GraphQuery.Remove(GraphQuery.Length - 1, 2);
-            GraphQuery.Append('}}) {customer {id, acceptsMarketing, acceptsMarketingUpdatedAt, tags, updatedAt, verifiedEmail, defaultAddress {id, province, country}}, userErrors {field, message}}}"}');
+            GraphQuery.Append('}}) {customer {id, tags, updatedAt, verifiedEmail, emailMarketingConsent {consentUpdatedAt marketingState}, defaultAddress {id, province, country}}, userErrors {field, message}}}"}');
             exit(GraphQuery.ToText());
         end;
     end;
@@ -380,8 +383,11 @@ codeunit 30114 "Shpfy Customer API"
         PhoneNo := JsonHelper.GetValueAsText(JCustomer, 'phone');
         PhoneNo := DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()'));
         ShopifyCustomer."Phone No." := CopyStr(PhoneNo, 1, MaxStrLen(ShopifyCustomer."Phone No."));
-        ShopifyCustomer."Accepts Marketing" := JsonHelper.GetValueAsBoolean(JCustomer, 'acceptsMarketing');
-        ShopifyCustomer."Accepts Marketing Update At" := JsonHelper.GetValueAsDateTime(JCustomer, 'acceptsMarketingUpdateAt');
+        if JsonHelper.GetValueAsText(JCustomer, 'emailMarketingConsent.marketingState') = 'SUBSCRIBED' then
+            ShopifyCustomer."Accepts Marketing" := true
+        else
+            ShopifyCustomer."Accepts Marketing" := false;
+        ShopifyCustomer."Accepts Marketing Update At" := JsonHelper.GetValueAsDateTime(JCustomer, 'emailMarketingConsent.consentUpdatedAt');
         ShopifyCustomer."Tax Exempt" := JsonHelper.GetValueAsBoolean(JCustomer, 'taxExempt');
         ShopifyCustomer."Verified Email" := JsonHelper.GetValueAsBoolean(JCustomer, 'verifiedEmail');
         StateString := JsonHelper.GetValueAsText(JCustomer, 'state').ToLower();

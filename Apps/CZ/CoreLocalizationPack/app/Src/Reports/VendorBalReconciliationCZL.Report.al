@@ -582,7 +582,7 @@ report 11724 "Vendor-Bal. Reconciliation CZL"
         FormattedEmployee := Employee.FullName();
 
         AddFieldInfoToCommaSeparatedText(Employee.FieldCaption("Phone No."), Employee."Phone No.", FormattedEmployee);
-        AddFieldInfoToCommaSeparatedText(Employee.FieldCaption("E-Mail"), Employee."E-Mail", FormattedEmployee);
+        AddFieldInfoToCommaSeparatedText(Employee.FieldCaption("E-Mail"), Employee."Company E-Mail", FormattedEmployee);
 
         if FormattedEmployee <> '' then
             FormattedEmployee := StrSubstNo(ResponsibleEmployeeLbl, FormattedEmployee);

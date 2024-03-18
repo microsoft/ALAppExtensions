@@ -27,4 +27,11 @@ table 6201 "Transaction Storage Setup"
             Clustered = true;
         }
     }
+
+    trigger OnInsert()
+    var
+        TransactStorageExport: Codeunit "Transact. Storage Export";
+    begin
+        Rec."Earliest Start Time" := TransactStorageExport.CalcTenantExportStartTime();
+    end;
 }

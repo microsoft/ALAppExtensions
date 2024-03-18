@@ -90,14 +90,14 @@ codeunit 18201 "GST Distribution Subcsribers"
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
         NoSeries: Record "No. Series";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeriesCodeunit: Codeunit "No. Series";
     begin
         if GSTDistributionHeader."No." = '' then begin
             GeneralLedgerSetup.Get();
             if GeneralLedgerSetup."GST Distribution Nos." <> '' then begin
                 GeneralLedgerSetup.TestField("GST Distribution Nos.");
                 NoSeries.Get(GeneralLedgerSetup."GST Distribution Nos.");
-                GSTDistributionHeader."No." := NoSeriesManagement.GetNextNo(NoSeries.Code, WorkDate(), true);
+                GSTDistributionHeader."No." := NoSeriesCodeunit.GetNextNo(NoSeries.Code);
                 GSTDistributionHeader."No. Series" := GeneralLedgerSetup."GST Distribution Nos.";
             end;
         end;

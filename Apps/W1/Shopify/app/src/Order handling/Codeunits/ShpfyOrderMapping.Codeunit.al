@@ -45,7 +45,7 @@ codeunit 30163 "Shpfy Order Mapping"
                     OrderHeader.Modify();
                 end
         end else
-            if Shop."Customer Import From Shopify" = Shop."Customer Import From Shopify"::None then begin
+            if Shop."Company Import From Shopify" = Shop."Company Import From Shopify"::None then begin
                 if OrderHeader."Bill-to Customer No." = '' then
                     OrderHeader."Bill-to Customer No." := Shop."Default Company No.";
                 if OrderHeader."Sell-to Customer No." = '' then

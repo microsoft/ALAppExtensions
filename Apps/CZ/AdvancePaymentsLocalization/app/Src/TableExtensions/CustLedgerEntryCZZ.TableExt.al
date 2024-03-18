@@ -23,4 +23,23 @@ tableextension 31001 "Cust. Ledger Entry CZZ" extends "Cust. Ledger Entry"
             TableRelation = "Advance Letter Template CZZ" where("Sales/Purchase" = const(Sales));
         }
     }
+
+    internal procedure SetApplication(AdvanceLetterCode: Code[20]; AdvanceLetterNo: Code[20])
+    begin
+        CalcFields("Remaining Amount");
+        "Amount to Apply" := "Remaining Amount";
+        "Applies-to ID" := CopyStr("Document No." + Format("Entry No.", 0, '<Integer>'), 1, MaxStrLen("Applies-to ID"));
+        Prepayment := false;
+        if AdvanceLetterCode <> '' then
+            "Adv. Letter Template Code CZZ" := AdvanceLetterCode;
+        if AdvanceLetterNo <> '' then
+            "Advance Letter No. CZZ" := AdvanceLetterNo;
+        OnSetApplicationOnBeforeCustEntryEditCZZ(Rec);
+        Codeunit.Run(Codeunit::"Cust. Entry-Edit", Rec);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSetApplicationOnBeforeCustEntryEditCZZ(var CustLedgerEntry: Record "Cust. Ledger Entry")
+    begin
+    end;
 }

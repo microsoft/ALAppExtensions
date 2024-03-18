@@ -50,6 +50,7 @@ codeunit 31001 "Rel. Sales Adv.Letter Doc. CZZ"
             OnUpdateVariableSymbol(SalesAdvLetterHeaderCZZ, VariableSymbol);
             SalesAdvLetterHeaderCZZ."Variable Symbol" := VariableSymbol;
         end;
+        SalesAdvLetterHeaderCZZ.CheckPaymentQRCodePrintIBAN();
 
         SalesAdvLetterManagementCZZ.AdvEntryInit(false);
         SalesAdvLetterManagementCZZ.AdvEntryInsert("Advance Letter Entry Type CZZ"::"Initial Entry", SalesAdvLetterHeaderCZZ."No.", SalesAdvLetterHeaderCZZ."Posting Date",
@@ -57,7 +58,7 @@ codeunit 31001 "Rel. Sales Adv.Letter Doc. CZZ"
             SalesAdvLetterHeaderCZZ."Currency Code", SalesAdvLetterHeaderCZZ."Currency Factor", SalesAdvLetterHeaderCZZ."No.",
             SalesAdvLetterHeaderCZZ."Shortcut Dimension 1 Code", SalesAdvLetterHeaderCZZ."Shortcut Dimension 2 Code", SalesAdvLetterHeaderCZZ."Dimension Set ID", false);
 
-        SalesAdvLetterManagementCZZ.UpdateStatus(SalesAdvLetterHeaderCZZ, SalesAdvLetterHeaderCZZ.Status::"To Pay");
+        SalesAdvLetterHeaderCZZ.UpdateStatus(SalesAdvLetterHeaderCZZ.Status::"To Pay");
 
         OnAfterReleaseDoc(SalesAdvLetterHeaderCZZ);
     end;
@@ -84,7 +85,7 @@ codeunit 31001 "Rel. Sales Adv.Letter Doc. CZZ"
             exit;
 
         SalesAdvLetterManagementCZZ.CancelInitEntry(SalesAdvLetterHeaderCZZ, 0D, true);
-        SalesAdvLetterManagementCZZ.UpdateStatus(SalesAdvLetterHeaderCZZ, SalesAdvLetterHeaderCZZ.Status::New);
+        SalesAdvLetterHeaderCZZ.UpdateStatus(SalesAdvLetterHeaderCZZ.Status::New);
 
         OnAfterReopenDoc(SalesAdvLetterHeaderCZZ);
     end;

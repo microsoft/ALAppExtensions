@@ -47,7 +47,9 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
     local procedure UpdateAllVendorTaxInfo()
     begin
         Initialize();
+#if not CLEAN25
         UpdateVendorTaxInfo();
+#endif
         CleanUp();
     end;
 
@@ -81,6 +83,7 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
         DataMigrationFacadeHelper.CreateSourceCodeIfNeeded(SourceCodeTxt);
     end;
 
+#if not CLEAN25
     local procedure UpdateVendorTaxInfo()
     var
         GPPM00200: Record "GP PM00200";
@@ -124,12 +127,13 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
         end else
             LogVendorSkipped(Vendor."No.");
     end;
+#endif
 
     local procedure AddVendor1099Values(var Vendor: Record Vendor)
     var
         InvoiceGenJournalLine: Record "Gen. Journal Line";
         PaymentGenJournalLine: Record "Gen. Journal Line";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         VendorYear1099AmountDictionary: Dictionary of [Code[10], Decimal];
         IRS1099Code: Code[10];
         TaxAmount: Decimal;
@@ -157,7 +161,7 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
             if TaxAmount > 0 then begin
                 // Invoice
                 InvoiceExternalDocumentNo := CopyStr(Vendor."No." + '-' + IRS1099Code + '-INV', 1, MaxStrLen(InvoiceExternalDocumentNo));
-                InvoiceDocumentNo := NoSeriesManagement.GetNextNo(VendorTaxNoSeriesTxt, 0D, true);
+                InvoiceDocumentNo := NoSeries.GetNextNo(VendorTaxNoSeriesTxt);
                 InvoiceCreated := CreateGeneralJournalLine(InvoiceGenJournalLine,
                                     Vendor."No.",
                                     "Gen. Journal Document Type"::Invoice,
@@ -171,7 +175,7 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
 
                 // Payment
                 PaymentExternalDocumentNo := CopyStr(Vendor."No." + '-' + IRS1099Code + '-PMT', 1, MaxStrLen(PaymentExternalDocumentNo));
-                PaymentDocumentNo := NoSeriesManagement.GetNextNo(VendorTaxNoSeriesTxt, 0D, true);
+                PaymentDocumentNo := NoSeries.GetNextNo(VendorTaxNoSeriesTxt);
                 PaymentCreated := CreateGeneralJournalLine(PaymentGenJournalLine,
                                     Vendor."No.",
                                     "Gen. Journal Document Type"::Payment,
@@ -234,8 +238,10 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
             until GPPM00204.Next() = 0;
     end;
 
+#pragma warning disable AA0137
     local procedure CreateGeneralJournalLine(var GenJournalLine: Record "Gen. Journal Line"; VendorNo: Code[20]; DocumentType: enum "Gen. Journal Document Type"; DocumentNo: Code[20];
         Description: Text[50]; AccountNo: Code[20]; Amount: Decimal; BalancingAccount: Code[20]; IRS1099Code: Code[10]; ExternalDocumentNo: Code[35]): boolean
+#pragma warning restore AA0137
     var
         GenJournalBatch: Record "Gen. Journal Batch";
         GenJournalLineCurrent: Record "Gen. Journal Line";
@@ -276,7 +282,9 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
         GenJournalLine.Validate("Bal. Gen. Prod. Posting Group", '');
         GenJournalLine.Validate("Bal. VAT Prod. Posting Group", '');
         GenJournalLine.Validate("Bal. VAT Bus. Posting Group", '');
+#if not CLEAN25
         GenJournalLine.Validate("IRS 1099 Code", IRS1099Code);
+#endif
         GenJournalLine.Validate("Document Type", DocumentType);
         GenJournalLine.Validate("Source Code", SourceCodeTxt);
         GenJournalLine.Validate("External Document No.", ExternalDocumentNo);

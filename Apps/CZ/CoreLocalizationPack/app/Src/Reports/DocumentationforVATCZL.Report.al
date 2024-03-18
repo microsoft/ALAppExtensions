@@ -11,12 +11,11 @@ using System.Utilities;
 
 report 11757 "Documentation for VAT CZL"
 {
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/DocumentationForVAT.rdl';
     ApplicationArea = Basic, Suite;
     Caption = 'Documentation for VAT';
     UsageCategory = ReportsAndAnalysis;
     PreviewMode = PrintLayout;
+    DefaultRenderingLayout = "DocumentationForVAT.rdl";
 
     dataset
     {
@@ -496,6 +495,24 @@ report 11757 "Documentation for VAT CZL"
                     }
                 }
             }
+        }
+    }
+
+    rendering
+    {
+        layout("DocumentationForVAT.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/DocumentationForVAT.rdl';
+            Caption = 'Documentation For VAT (RDL)';
+            Summary = 'The Documentation For VAT (RDL) provides a detailed layout.';
+        }
+        layout("DocumentationForVAT.xlsx")
+        {
+            Type = Excel;
+            LayoutFile = './Src/Reports/DocumentationForVAT.xlsx';
+            Caption = 'Documentation For VAT (Excel)';
+            Summary = 'The Documentation For VAT (Excel) provides a detailed layout.';
         }
     }
 

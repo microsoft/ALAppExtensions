@@ -94,8 +94,8 @@ page 6127 "E-Document Activities"
                     field(MatchedPurchaseOrderCount; MatchedPurchaseOrderCount)
                     {
                         ApplicationArea = Basic, Suite;
-                        Caption = 'Matched Purchase Orders';
-                        ToolTip = 'Specifies the number of purchase orders that have matched to a received e-document.';
+                        Caption = 'Linked Purchase Orders';
+                        ToolTip = 'Specifies the number of e-documents that are linked to a purchase order and needs to be processed.';
 
                         trigger OnDrillDown()
                         begin
@@ -105,12 +105,12 @@ page 6127 "E-Document Activities"
                     field(WaitingPurchaseOrderCount; WaitingPurchaseEDocCount)
                     {
                         ApplicationArea = Basic, Suite;
-                        Caption = 'Waiting Purchase E-Documents';
+                        Caption = 'Waiting Purchase E-Invoices';
                         ToolTip = 'Specifies the number of received purchase e-documents that needs to be reviewed.';
 
                         trigger OnDrillDown()
                         begin
-                            EDocumentHelper.OpenMatchedPurchaseEDoc();
+                            EDocumentHelper.OpenWaitingPurchaseEDoc();
                         end;
                     }
                 }

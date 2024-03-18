@@ -504,9 +504,6 @@ report 31186 "Sales Quote CZL"
     end;
 
     var
-        PaymentTerms: Record "Payment Terms";
-        PaymentMethod: Record "Payment Method";
-        ShipmentMethod: Record "Shipment Method";
         SalesReceivablesSetup: Record "Sales & Receivables Setup";
         LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
@@ -514,14 +511,6 @@ report 31186 "Sales Quote CZL"
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
         ArchiveManagement: Codeunit ArchiveManagement;
-        CompanyAddr: array[8] of Text[100];
-        CustAddr: array[8] of Text[100];
-        ShipToAddr: array[8] of Text[100];
-        DocFooterText: Text[1000];
-        NoOfCopies: Integer;
-        NoOfLoops: Integer;
-        LogInteraction: Boolean;
-        ArchiveDocument: Boolean;
         LogInteractionEnable: Boolean;
         DocumentLbl: Label 'Quote';
         PageLbl: Label 'Page';
@@ -544,6 +533,19 @@ report 31186 "Sales Quote CZL"
         ClosingLbl: Label 'Sincerely';
         BodyLbl: Label 'Thank you for your business. Your quote is attached to this message.';
         DocumentNoLbl: Label 'No.';
+
+    protected var
+        PaymentTerms: Record "Payment Terms";
+        PaymentMethod: Record "Payment Method";
+        ShipmentMethod: Record "Shipment Method";
+        CompanyAddr: array[8] of Text[100];
+        CustAddr: array[8] of Text[100];
+        ShipToAddr: array[8] of Text[100];
+        DocFooterText: Text[1000];
+        NoOfCopies: Integer;
+        NoOfLoops: Integer;
+        ArchiveDocument: Boolean;
+        LogInteraction: Boolean;
 
     procedure InitializeRequest(NoOfCopiesFrom: Integer; ArchiveDocumentFrom: Boolean; LogInteractionFrom: Boolean)
     begin

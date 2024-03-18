@@ -6,6 +6,7 @@ namespace Microsoft.Bank.Documents;
 
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Reconciliation;
+using System.Utilities;
 
 report 31286 "Create Payment Recon. Jnl. CZB"
 {
@@ -45,8 +46,20 @@ report 31286 "Create Payment Recon. Jnl. CZB"
             }
 
             trigger OnAfterGetRecord()
+            var
+                BankAccReconciliation: Record "Bank Acc. Reconciliation";
+                PostedPaymentReconHdr: Record "Posted Payment Recon. Hdr";
+                ConfirmManagement: Codeunit "Confirm Management";
+                ExistErr: Label '%1 %2 already exist.', Comment = '%1 = TableCaption, %2 = No.';
+                ExistJournallinesQst: Label '%1 %2 already exist. Existing journal lines will be deleted and new ones will be created based on the bank statement lines. Do you want to continue?', Comment = '%1 = TableCaption, %2 = No.';
             begin
-                CheckPaymentReconciliationExists();
+                if PostedPaymentReconciliationExist("Iss. Bank Statement Header CZB") then
+                    Error(ExistErr, PostedPaymentReconHdr.TableCaption(), "No.");
+                if PaymentReconcialiationOrGeneralJournalExist() then
+                    if not ConfirmManagement.GetResponseOrDefault(StrSubstNo(ExistJournallinesQst, BankAccReconciliation.TableCaption(), "No."), false) then
+                        Error('')
+                    else
+                        DeleteBankAccReconsiliation("Iss. Bank Statement Header CZB");
                 CreateBankAccReconciliation("Iss. Bank Statement Header CZB");
                 UpdatePaymentReconciliationStatus("Payment Reconciliation Status"::Opened);
             end;
@@ -92,6 +105,7 @@ report 31286 "Create Payment Recon. Jnl. CZB"
     var
         WindowDialog: Dialog;
         VariableSymbolToDescription: Boolean;
+        VarBankAccReconciliationCreated: Boolean;
         CreatingLinesMsg: Label 'Creating payment reconciliation journal lines...\\Line No. #1##########', Comment = '%1 = Progress bar';
         SuccessCreatedMsg: Label 'Payment reconciliation journal lines were successfully created.';
         HideMessages: Boolean;
@@ -99,6 +113,11 @@ report 31286 "Create Payment Recon. Jnl. CZB"
     procedure SetHideMessages(HideMessagesNew: Boolean)
     begin
         HideMessages := HideMessagesNew;
+    end;
+
+    procedure BankAccReconciliationCreated(): Boolean
+    begin
+        exit(VarBankAccReconciliationCreated);
     end;
 
     local procedure GetParameters()
@@ -159,10 +178,38 @@ report 31286 "Create Payment Recon. Jnl. CZB"
 
         OnCreateBankAccReconLineOnBeforeInsertBankAccReconLine(IssBankStatementHeaderCZB, IssBankStatementLineCZB, BankAccReconciliationLine, VariableSymbolToDescription);
         BankAccReconciliationLine.Insert(true);
+        VarBankAccReconciliationCreated := true;
+    end;
+
+    local procedure PostedPaymentReconciliationExist(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"): Boolean
+    var
+        PostedPaymentReconHdr: Record "Posted Payment Recon. Hdr";
+    begin
+        PostedPaymentReconHdr.Reset();
+        PostedPaymentReconHdr.SetRange("Bank Account No.", IssBankStatementHeaderCZB."Bank Account No.");
+        PostedPaymentReconHdr.SetRange("Statement No.", IssBankStatementHeaderCZB."No.");
+        exit(not PostedPaymentReconHdr.IsEmpty());
+    end;
+
+    local procedure DeleteBankAccReconsiliation(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB")
+    var
+        BankAccReconciliation: Record "Bank Acc. Reconciliation";
+    begin
+        BankAccReconciliation.Reset();
+        BankAccReconciliation.SetRange("Statement Type", BankAccReconciliation."Statement Type"::"Payment Application");
+        BankAccReconciliation.SetRange("Bank Account No.", IssBankStatementHeaderCZB."Bank Account No.");
+        BankAccReconciliation.SetRange("Statement No.", IssBankStatementHeaderCZB."No.");
+        OnDeleteBankAccReconsiliationOnAfterSetBankAccReconsiliationFilters(BankAccReconciliation, IssBankStatementHeaderCZB);
+        BankAccReconciliation.DeleteAll(true);
     end;
 
     [IntegrationEvent(false, false)]
     local procedure OnCreateBankAccReconLineOnBeforeInsertBankAccReconLine(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; IssBankStatementLineCZB: Record "Iss. Bank Statement Line CZB"; var BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line"; VariableSymbolToDescription: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnDeleteBankAccReconsiliationOnAfterSetBankAccReconsiliationFilters(var BankAccReconciliation: Record "Bank Acc. Reconciliation"; IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB")
     begin
     end;
 }
