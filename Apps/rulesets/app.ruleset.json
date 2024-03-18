@@ -5,7 +5,7 @@
   "includedRuleSets": [
     {
       "action": "Default",
-      "path": "../BCApps/src/rulesets/ruleset.json"
+      "path": "./ruleset.json"
     }
   ],
   "rules": [
