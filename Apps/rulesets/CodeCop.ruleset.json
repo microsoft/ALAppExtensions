@@ -936,7 +936,8 @@
                   },
                   {
                       "id":  "AA0234",
-                      "action":  "Error"
+                      "action":  "None",
+                      "justification": "New rule for introducing tooltips on table fields, which means there are too many to fix now. Code Action on the way."
                   },
                   {
                       "id":  "AA0235",
