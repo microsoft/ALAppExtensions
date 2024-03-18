@@ -5,14 +5,10 @@
   "includedRuleSets": [
     {
       "action": "Default",
-      "path": "./ruleset.json"
+      "path": "../BCApps/src/rulesets/ruleset.json"
     }
   ],
   "rules": [
-    {
-      "id": "AL0792",
-      "action": "Warning"
-    },
     {
       "id": "AD0001",
       "action": "Error",
@@ -61,10 +57,6 @@
     },
     {
       "id": "AL0611",
-      "action": "Warning"
-    },
-    {
-      "id": "AL0634",
       "action": "Warning"
     },
     {
@@ -136,6 +128,11 @@
       "action": "Warning"
     },
     {
+      "id": "AS0059",
+      "action": "Warning",
+      "justification": "Will be fixed. Reserved database tables are read-only in a multi-tenant environment"
+    },
+    {
       "id": "AS0079",
       "action": "Warning"
     },
@@ -166,6 +163,11 @@
     {
       "id": "AS0113",
       "action": "Warning"
+    },
+    {
+      "id": "AS0126",
+      "action": "Warning",
+      "justification": "Tracked by #501904"
     },
     {
       "id": "AA0051",
@@ -245,10 +247,6 @@
     },
     {
       "id": "AA0214",
-      "action": "Warning"
-    },
-    {
-      "id": "AA0215",
       "action": "Warning"
     },
     {
@@ -351,6 +349,11 @@
     {
       "id": "AW0005",
       "action": "Warning"
+    },
+    {
+      "id": "AW0009",
+      "action": "Warning",
+      "justification": "Using a Blob with subtype Bitmap on a page field is deprecated. Instead use the Media/MediaSet data types."
     },
     {
       "id": "AW0011",
