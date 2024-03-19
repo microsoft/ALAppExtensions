@@ -86,20 +86,21 @@ codeunit 5376 "Create E-Document Transactions"
     local procedure CreateEdocs(PurchaseOrdersList: List of [Code[20]])
     var
         Vendor: Record Vendor;
+        EDocumentModuleSetup: Record "E-Document Module Setup";
         CompanyInfo: Record "Company Information";
-        CreateCommonCustomerVendor: Codeunit "Create Common Customer/Vendor";
     begin
+        if EDocumentModuleSetup.Get() then;
         if CompanyInfo.Get() then;
-        Vendor.Get(CreateCommonCustomerVendor.DomesticVendor1());
+        Vendor.Get(EDocumentModuleSetup."Vendor No. 1");
 
         CreateEDocument(StrSubstNo(FK248691XmlTxt, Vendor.Name, CompanyInfo."VAT Registration No.", PurchaseOrdersList.Get(1), CompanyInfo."VAT Registration No.", CompanyInfo.Name, CompanyInfo.Address, CompanyInfo."Post Code"));
         CreateEDocument(StrSubstNo(FK246222XmlTxt, Vendor.Name, CompanyInfo."VAT Registration No.", PurchaseOrdersList.Get(2), CompanyInfo."VAT Registration No.", CompanyInfo.Name, CompanyInfo.Address, CompanyInfo."Post Code"));
 
-        Vendor.Get(CreateCommonCustomerVendor.DomesticVendor2());
+        Vendor.Get(EDocumentModuleSetup."Vendor No. 2");
         CreateEDocument(StrSubstNo(FK246098XmlTxt, Vendor.Name, CompanyInfo."VAT Registration No.", PurchaseOrdersList.Get(3), CompanyInfo."VAT Registration No.", CompanyInfo.Name, CompanyInfo.Address, CompanyInfo."Post Code"));
         CreateEDocument(StrSubstNo(FK245260XmlTxt, Vendor.Name, CompanyInfo."VAT Registration No.", PurchaseOrdersList.Get(4), CompanyInfo."VAT Registration No.", CompanyInfo.Name, CompanyInfo.Address, CompanyInfo."Post Code"));
 
-        Vendor.Get(CreateCommonCustomerVendor.DomesticVendor3());
+        Vendor.Get(EDocumentModuleSetup."Vendor No. 3");
         CreateEDocument(StrSubstNo(FK242896XmlTxt, Vendor.Name, CompanyInfo."VAT Registration No.", PurchaseOrdersList.Get(5), CompanyInfo."VAT Registration No.", CompanyInfo.Name, CompanyInfo.Address, CompanyInfo."Post Code"));
         CreateEDocument(StrSubstNo(FK242811XmlTxt, Vendor.Name, CompanyInfo."VAT Registration No.", PurchaseOrdersList.Get(6), CompanyInfo."VAT Registration No.", CompanyInfo.Name, CompanyInfo.Address, CompanyInfo."Post Code"));
     end;
