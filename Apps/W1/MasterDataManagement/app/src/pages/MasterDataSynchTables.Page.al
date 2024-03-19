@@ -515,7 +515,12 @@ page 7233 "Master Data Synch. Tables"
         }
     }
 
-    local procedure FindRelatedTables(var ExistingSynchTableNos: List of [Integer]; var RelatedTablesToAdd: List of [Integer]; var RelatedTablesToAddText: Text; TableId: Integer)
+    internal procedure FindRelatedTables(var ExistingSynchTableNos: List of [Integer]; var RelatedTablesToAdd: List of [Integer]; var RelatedTablesToAddText: Text; TableId: Integer)
+    begin
+        FindRelatedTables(ExistingSynchTableNos, RelatedTablesToAdd, RelatedTablesToAddText, TableId, TableId);
+    end;
+
+    local procedure FindRelatedTables(var ExistingSynchTableNos: List of [Integer]; var RelatedTablesToAdd: List of [Integer]; var RelatedTablesToAddText: Text; TableId: Integer; TopLevelTableId: Integer)
     var
         Field: Record Field;
         TableMetadata: Record "Table Metadata";
@@ -531,7 +536,7 @@ page 7233 "Master Data Synch. Tables"
             exit;
 
         repeat
-            if not (ExistingSynchTableNos.Contains(Field.RelationTableNo) or RelatedTablesToAdd.Contains(Field.RelationTableNo)) then
+            if not ((Field.RelationTableNo = TopLevelTableId) or ExistingSynchTableNos.Contains(Field.RelationTableNo) or RelatedTablesToAdd.Contains(Field.RelationTableNo)) then
                 if TableMetadata.Get(Field.RelationTableNo) then
                     if (TableMetadata.TableType = TableMetadata.TableType::Normal) and TableMetadata.DataPerCompany then begin
                         RecRef.Open(Field.RelationTableNo);
@@ -541,7 +546,7 @@ page 7233 "Master Data Synch. Tables"
                                 RelatedTablesToAddText := TableMetadata.Name
                             else
                                 RelatedTablesToAddText += ', ' + TableMetadata.Name;
-                            FindRelatedTables(ExistingSynchTableNos, RelatedTablesToAdd, RelatedTablesToAddText, Field.RelationTableNo);
+                            FindRelatedTables(ExistingSynchTableNos, RelatedTablesToAdd, RelatedTablesToAddText, Field.RelationTableNo, TopLevelTableId);
                         end;
                         RecRef.Close();
                     end;
