@@ -119,7 +119,7 @@ table 31254 "Iss. Bank Statement Header CZB"
         }
         field(15; "No. of Lines"; Integer)
         {
-            CalcFormula = Count("Iss. Bank Statement Line CZB" where("Bank Statement No." = field("No.")));
+            CalcFormula = count("Iss. Bank Statement Line CZB" where("Bank Statement No." = field("No.")));
             Caption = 'No. of Lines';
             Editable = false;
             FieldClass = FlowField;
@@ -347,6 +347,16 @@ table 31254 "Iss. Bank Statement Header CZB"
         exit(not GenJournalLine.IsEmpty());
     end;
 
+    procedure PaymentReconcialiationOrGeneralJournalExist(): Boolean
+    begin
+        if Rec."Search Rule Code" = '' then begin
+            if PaymentReconciliationExist() then
+                exit(true);
+        end else
+            if GeneralJournalExist() then
+                exit(true);
+    end;
+
     procedure LinesExist(): Boolean
     var
         IssBankStatementLineCZB: Record "Iss. Bank Statement Line CZB";
@@ -456,7 +466,16 @@ table 31254 "Iss. Bank Statement Header CZB"
         if Rec."Search Rule Code" = '' then
             RunPaymentReconciliationJournalCreation(ShowRequestForm, HideMessages)
         else
-            RunGeneralJournalCreation(ShowRequestForm, HideMessages)
+            RunGeneralJournalCreation(ShowRequestForm, HideMessages);
+    end;
+
+    procedure IsCreatedJournal(ShowRequestForm: Boolean; HideMessages: Boolean): Boolean
+    begin
+        OnBeforeIsCreatedJournal(Rec);
+        if Rec."Search Rule Code" = '' then
+            exit(RunPaymentReconciliationJournalCreation(ShowRequestForm, HideMessages))
+        else
+            exit(RunGeneralJournalCreation(ShowRequestForm, HideMessages));
     end;
 
     procedure UpdatePaymentReconciliationStatus(PaymentReconciliationStatus: Enum "Journal Status CZB")
@@ -471,40 +490,44 @@ table 31254 "Iss. Bank Statement Header CZB"
         Modify();
     end;
 
-    local procedure RunPaymentReconciliationJournalCreation(ShowRequestForm: Boolean; HideMessages: Boolean)
+    local procedure RunPaymentReconciliationJournalCreation(ShowRequestForm: Boolean; HideMessages: Boolean): Boolean
     var
         IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB";
         CreatePaymentReconJnlCZB: Report "Create Payment Recon. Jnl. CZB";
         IsHandled: Boolean;
+        BankAccReconciliationCreated: Boolean;
     begin
         IsHandled := false;
-        OnBeforeRunPaymentReconJournalCreation(Rec, ShowRequestForm, HideMessages, IsHandled);
+        OnBeforeRunPaymentReconJournalCreation(Rec, ShowRequestForm, HideMessages, IsHandled, BankAccReconciliationCreated);
         if IsHandled then
-            exit;
+            exit(BankAccReconciliationCreated);
 
         IssBankStatementHeaderCZB.Copy(Rec);
         CreatePaymentReconJnlCZB.SetTableView(IssBankStatementHeaderCZB);
         CreatePaymentReconJnlCZB.UseRequestPage(ShowRequestForm);
         CreatePaymentReconJnlCZB.SetHideMessages(HideMessages);
         CreatePaymentReconJnlCZB.RunModal();
+        exit(CreatePaymentReconJnlCZB.BankAccReconciliationCreated())
     end;
 
-    local procedure RunGeneralJournalCreation(ShowRequestForm: Boolean; HideMessages: Boolean)
+    local procedure RunGeneralJournalCreation(ShowRequestForm: Boolean; HideMessages: Boolean): Boolean
     var
         IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB";
         CreateGeneralJournalCZB: Report "Create General Journal CZB";
         IsHandled: Boolean;
+        JournalCreated: Boolean;
     begin
         IsHandled := false;
-        OnBeforeRunGeneralJournalCreation(Rec, ShowRequestForm, HideMessages, IsHandled);
+        OnBeforeRunGeneralJournalCreation(Rec, ShowRequestForm, HideMessages, IsHandled, JournalCreated);
         if IsHandled then
-            exit;
+            exit(JournalCreated);
 
         IssBankStatementHeaderCZB.Copy(Rec);
         CreateGeneralJournalCZB.SetTableView(IssBankStatementHeaderCZB);
         CreateGeneralJournalCZB.UseRequestPage(ShowRequestForm);
         CreateGeneralJournalCZB.SetHideMessages(HideMessages);
         CreateGeneralJournalCZB.RunModal();
+        exit(CreateGeneralJournalCZB.JournalCreated());
     end;
 
     procedure ShowStatistics()
@@ -524,12 +547,17 @@ table 31254 "Iss. Bank Statement Header CZB"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeRunPaymentReconJournalCreation(var IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; var ShowRequestForm: Boolean; var HideMessages: Boolean; var IsHandled: Boolean)
+    local procedure OnBeforeIsCreatedJournal(var IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB")
     begin
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeRunGeneralJournalCreation(var IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; var ShowRequestForm: Boolean; var HideMessages: Boolean; var IsHandled: Boolean)
+    local procedure OnBeforeRunPaymentReconJournalCreation(var IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; var ShowRequestForm: Boolean; var HideMessages: Boolean; var IsHandled: Boolean; var BankAccReconciliationCreated: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeRunGeneralJournalCreation(var IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; var ShowRequestForm: Boolean; var HideMessages: Boolean; var IsHandled: Boolean; var JournalCreated: Boolean)
     begin
     end;
 

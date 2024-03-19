@@ -40,14 +40,14 @@ codeunit 139722 "APIV1 - Employees E2E"
     procedure TestGetEmployee()
     var
         Employee: Record "Employee";
-        NoSeriesManagement: Codeunit "NoSeriesManagement";
+        NoSeries: Codeunit "No. Series";
         ResponseText: Text;
         TargetURL: Text;
     begin
         // [SCENARIO] User can get an Employee with a GET request to the service.
         Initialize();
 
-        NoSeriesManagement.GetNextNo(LibraryHumanResource.SetupEmployeeNumberSeries(), WORKDATE(), TRUE);
+        NoSeries.GetNextNo(LibraryHumanResource.SetupEmployeeNumberSeries());
 
         // [GIVEN] An Employee exists in the system.
         CreateEmployee(Employee);
@@ -92,7 +92,7 @@ codeunit 139722 "APIV1 - Employees E2E"
     var
         Employee: Record "Employee";
         TempEmployee: Record "Employee" temporary;
-        NoSeriesManagement: Codeunit "NoSeriesManagement";
+        NoSeries: Codeunit "No. Series";
         RequestBody: Text;
         ResponseText: Text;
         TargetURL: Text;
@@ -100,7 +100,7 @@ codeunit 139722 "APIV1 - Employees E2E"
         // [SCENARIO] User can modify an Employee through a PATCH request.
         Initialize();
 
-        NoSeriesManagement.GetNextNo(LibraryHumanResource.SetupEmployeeNumberSeries(), WORKDATE(), TRUE);
+        NoSeries.GetNextNo(LibraryHumanResource.SetupEmployeeNumberSeries());
 
         // [GIVEN] An Employee exists.
         CreateEmployee(Employee);
@@ -172,10 +172,10 @@ codeunit 139722 "APIV1 - Employees E2E"
 
     local procedure GetEmployeeJSON(var Employee: Record "Employee") EmployeeJSON: Text
     var
-        NoSeriesManagement: Codeunit "NoSeriesManagement";
+        NoSeries: Codeunit "No. Series";
     begin
         IF Employee."No." = '' THEN
-            Employee."No." := NoSeriesManagement.GetNextNo(LibraryHumanResource.SetupEmployeeNumberSeries(), WORKDATE(), FALSE);
+            Employee."No." := NoSeries.PeekNextNo(LibraryHumanResource.SetupEmployeeNumberSeries());
         IF Employee."First Name" = '' THEN
             Employee."First Name" := Employee."No.";
         EmployeeJSON := LibraryGraphMgt.AddPropertytoJSON('', 'number', Employee."No.");

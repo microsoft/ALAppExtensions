@@ -168,10 +168,10 @@ codeunit 18460 "Calculate Depreciation Tests"
     local procedure GetDocumentNo(FAJournalBatch: Record "FA Journal Batch"): Code[20]
     var
         NoSeries: Record "No. Series";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeriesCodeunit: Codeunit "No. Series";
     begin
         NoSeries.Get(FAJournalBatch."No. Series");
-        exit(NoSeriesManagement.GetNextNo(FAJournalBatch."No. Series", WorkDate(), false));
+        exit(NoSeriesCodeunit.PeekNextNo(FAJournalBatch."No. Series"));
     end;
 
 }

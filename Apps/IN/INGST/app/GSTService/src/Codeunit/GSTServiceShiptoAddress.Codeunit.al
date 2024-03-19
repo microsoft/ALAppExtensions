@@ -176,14 +176,15 @@ codeunit 18156 "GST Service Ship To Address"
                         PresentRegNo := ShipToAddress."ARN No.";
         end;
 
-        Exit(PresentRegNo);
+        exit(PresentRegNo);
     end;
 
-    procedure CheckUpdatePreviousLineGSTPlaceofSupply(Var ServiceLine: Record "Service Line")
+    procedure CheckUpdatePreviousLineGSTPlaceofSupply(var ServiceLine: Record "Service Line")
     var
         PreviousServiceLine: Record "Service Line";
     begin
         PreviousServiceLine.SetCurrentKey("Document Type", "Document No.", Type, "No.");
+        PreviousServiceLine.LoadFields("Document Type", "Document No.", Type, "No.");
         PreviousServiceLine.SetRange("Document Type", ServiceLine."Document Type");
         PreviousServiceLine.SetRange("Document No.", ServiceLine."Document No.");
         PreviousServiceLine.SetFilter(Type, '<>%1', Type::" ");

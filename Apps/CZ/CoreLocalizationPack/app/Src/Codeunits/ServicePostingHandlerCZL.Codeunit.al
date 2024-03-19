@@ -325,6 +325,12 @@ codeunit 31040 "Service Posting Handler CZL"
             ServiceCrMemoHeader."Variable Symbol CZL" := BankOperationsFunctionsCZL.CreateVariableSymbol(ServiceCrMemoHeader."No.");
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service-Post (Yes/No)", 'OnBeforeConfirmServPost', '', false, false)]
+    local procedure CheckQRPaymentOnBeforeConfirmServPost(var ServiceHeader: Record "Service Header")
+    begin
+        ServiceHeader.CheckPaymentQRCodePrintIBANCZL();
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCheckTariffNo(ServiceHeader: Record "Service Header"; var IsHandled: Boolean);
     begin

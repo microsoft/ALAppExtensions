@@ -39,6 +39,7 @@
                   codeunit "FA Jnl. Check Line Handler CZL" = X,
                   codeunit "FA Recl. Jnl. Line Handler CZL" = X,
                   codeunit "Fin. Charge Memo Handler CZL" = X,
+                  codeunit "Format Address Handler CZL" = X,
                   codeunit "Format Document Mgt. CZL" = X,
                   codeunit "Gen.Jnl.Check Line Handler CZL" = X,
                   codeunit "Gen.Jnl. - Post Acc. Group CZL" = X,

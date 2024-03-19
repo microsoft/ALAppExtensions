@@ -613,10 +613,10 @@ table 31075 "VIES Declaration Header CZL"
 
     procedure AssistEdit(OldVIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL"): Boolean
     var
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
-        if NoSeriesManagement.SelectSeries(GetNoSeriesCode(), OldVIESDeclarationHeaderCZL."No. Series", "No. Series") then begin
-            NoSeriesManagement.SetSeries("No.");
+        if NoSeries.LookupRelatedNoSeries(GetNoSeriesCode(), OldVIESDeclarationHeaderCZL."No. Series", "No. Series") then begin
+            "No." := NoSeries.GetNextNo("No. Series");
             exit(true);
         end;
     end;

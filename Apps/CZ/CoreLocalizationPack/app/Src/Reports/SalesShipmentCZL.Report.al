@@ -496,8 +496,6 @@ report 31191 "Sales Shipment CZL"
     end;
 
     var
-        ShipmentMethod: Record "Shipment Method";
-        TempTrackingSpecification: Record "Tracking Specification" temporary;
         ItemTrackingAppendix: Report "Item Tracking Appendix";
         LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
@@ -505,22 +503,9 @@ report 31191 "Sales Shipment CZL"
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
         ItemTrackingDocManagement: Codeunit "Item Tracking Doc. Management";
-        CompanyAddr: array[8] of Text[100];
-        CustAddr: array[8] of Text[100];
-        ShipToAddr: array[8] of Text[100];
-        DocFooterText: Text[1000];
-        NoOfCopies: Integer;
-        NoOfLoops: Integer;
         OldRefNo: Integer;
         OldNo: Code[20];
-        LogInteraction: Boolean;
-        ShowCorrectionLines: Boolean;
         LogInteractionEnable: Boolean;
-        ShowLotSN: Boolean;
-        ShowTotal: Boolean;
-        ShowGroup: Boolean;
-        TotalQty: Decimal;
-        TrackingSpecCount: Integer;
         DocumentLbl: Label 'Shipment';
         PageLbl: Label 'Page';
         CopyLbl: Label 'Copy';
@@ -543,6 +528,23 @@ report 31191 "Sales Shipment CZL"
         DescriptionCaptionLbl: Label 'Description';
         NoCaptionLbl: Label 'No.';
         ExpirationDateLbl: Label 'Expiration Date';
+
+    protected var
+        ShipmentMethod: Record "Shipment Method";
+        TempTrackingSpecification: Record "Tracking Specification" temporary;
+        CompanyAddr: array[8] of Text[100];
+        CustAddr: array[8] of Text[100];
+        ShipToAddr: array[8] of Text[100];
+        DocFooterText: Text[1000];
+        NoOfCopies: Integer;
+        NoOfLoops: Integer;
+        TrackingSpecCount: Integer;
+        LogInteraction: Boolean;
+        ShowCorrectionLines: Boolean;
+        ShowGroup: Boolean;
+        ShowLotSN: Boolean;
+        ShowTotal: Boolean;
+        TotalQty: Decimal;
 
     procedure InitLogInteraction()
     begin

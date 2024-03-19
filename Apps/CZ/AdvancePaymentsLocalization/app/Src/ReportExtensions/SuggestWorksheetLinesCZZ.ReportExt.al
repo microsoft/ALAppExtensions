@@ -6,8 +6,10 @@ namespace Microsoft.Finance.AdvancePayments;
 
 using Microsoft.CashFlow.Setup;
 using Microsoft.CashFlow.Worksheet;
+using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
 
 reportextension 31001 "Suggest Worksheet Lines CZZ" extends "Suggest Worksheet Lines"
 {
@@ -87,13 +89,13 @@ reportextension 31001 "Suggest Worksheet Lines CZZ" extends "Suggest Worksheet L
             trigger OnAfterAfterGetRecord()
             var
                 TempAdvanceLetterApplication: Record "Advance Letter Application CZZ" temporary;
+                SalesHeader: Record "Sales Header";
             begin
                 if not TempCFWorksheetLine.Find() then
                     exit;
-                if "Document Type" = "Document Type"::Order then
-                    AdvanceLetterApplication.GetAssignedAdvance("Adv. Letter Usage Doc.Type CZZ"::"Sales Order", "Document No.", TempAdvanceLetterApplication)
-                else
-                    AdvanceLetterApplication.GetAssignedAdvance("Adv. Letter Usage Doc.Type CZZ"::"Sales Invoice", "Document No.", TempAdvanceLetterApplication);
+                SalesHeader."Document Type" := "Document Type";
+                AdvanceLetterApplication.GetAssignedAdvance(
+                    SalesHeader.GetAdvLetterUsageDocTypeCZZ(), "Document No.", TempAdvanceLetterApplication);
                 TempAdvanceLetterApplication.CalcSums("Amount (LCY)");
                 TempCFWorksheetLine."Amount (LCY)" -= TempAdvanceLetterApplication."Amount (LCY)";
                 if TempCFWorksheetLine."Amount (LCY)" = 0 then
@@ -107,13 +109,12 @@ reportextension 31001 "Suggest Worksheet Lines CZZ" extends "Suggest Worksheet L
             trigger OnAfterAfterGetRecord()
             var
                 TempAdvanceLetterApplication: Record "Advance Letter Application CZZ" temporary;
+                PurchaseHeader: Record "Purchase Header";
             begin
                 if not TempCFWorksheetLine.Find() then
                     exit;
-                if "Document Type" = "Document Type"::Order then
-                    AdvanceLetterApplication.GetAssignedAdvance("Adv. Letter Usage Doc.Type CZZ"::"Purchase Order", "Document No.", TempAdvanceLetterApplication)
-                else
-                    AdvanceLetterApplication.GetAssignedAdvance("Adv. Letter Usage Doc.Type CZZ"::"Purchase Invoice", "Document No.", TempAdvanceLetterApplication);
+                PurchaseHeader."Document Type" := "Document Type";
+                AdvanceLetterApplication.GetAssignedAdvance(PurchaseHeader.GetAdvLetterUsageDocTypeCZZ(), "Document No.", TempAdvanceLetterApplication);
                 TempAdvanceLetterApplication.CalcSums("Amount (LCY)");
                 TempCFWorksheetLine."Amount (LCY)" += TempAdvanceLetterApplication."Amount (LCY)";
                 if TempCFWorksheetLine."Amount (LCY)" = 0 then

@@ -6,6 +6,7 @@ namespace Microsoft.Purchases.Document;
 
 using Microsoft.Finance.GST.Application;
 using Microsoft.Finance.GST.Purchase;
+using Microsoft.Finance.GST.Base;
 
 pageextension 18101 "GST Purchase Order Stats." extends "Purchase Order Statistics"
 {
@@ -30,6 +31,26 @@ pageextension 18101 "GST Purchase Order Stats." extends "Purchase Order Statisti
                 Caption = 'GST Amount';
             }
         }
+        addlast(Invoicing)
+        {
+            field("Inv. GST Amount"; PartialInvGSTAmount)
+            {
+                Caption = 'GST Amount';
+                ToolTip = 'Specifies the amount of GST that is partial amount of total.';
+                ApplicationArea = Basic, Suite;
+                Editable = false;
+            }
+        }
+        addlast(Shipping)
+        {
+            field("Inv. GST Amt"; PartialRcptGSTAmount)
+            {
+                Caption = 'GST Amount';
+                ToolTip = 'Specifies the amount of GST that is partial amount of total.';
+                ApplicationArea = Basic, Suite;
+                Editable = false;
+            }
+        }
     }
 
     trigger OnAfterGetRecord()
@@ -40,8 +61,11 @@ pageextension 18101 "GST Purchase Order Stats." extends "Purchase Order Statisti
     local procedure GetGSTAmount()
     var
         GSTStatsManagement: Codeunit "GST Stats Management";
+        GSTStatistics: Codeunit "GST Statistics";
     begin
         GSTAmount := GSTStatsManagement.GetGstStatsAmount();
+        GSTStatistics.OnGetPartialPurchaseHeaderGSTAmount(Rec, PartialInvGSTAmount);
+        GSTStatistics.OnGetPartialPurchaseRcptGSTAmount(Rec, PartialRcptGSTAmount);
         Calculated := true;
         GSTStatsManagement.ClearSessionVariable();
     end;
@@ -54,5 +78,7 @@ pageextension 18101 "GST Purchase Order Stats." extends "Purchase Order Statisti
 
     var
         GSTAmount: Decimal;
+        PartialInvGSTAmount: Decimal;
+        PartialRcptGSTAmount: Decimal;
         Calculated: Boolean;
 }

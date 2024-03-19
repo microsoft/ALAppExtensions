@@ -23,22 +23,22 @@ page 6224 "Collect Amount from G/L Entry"
                 field("G/L Account Filter"; Rec."G/L Account Filter")
                 {
                     Editable = false;
-                    ToolTip = 'Specifies a general ledger account number filter.';
+                    ToolTip = 'Specifies the general ledger account number filter.';
                 }
                 field("Global Dimension 1 Filter"; Rec."Global Dimension 1 Filter")
                 {
                     Editable = false;
-                    ToolTip = 'Specifies a global dimension 1 filter.';
+                    ToolTip = 'Specifies the global dimension 1 filter.';
                 }
                 field("Global Dimension 2 Filter"; Rec."Global Dimension 2 Filter")
                 {
                     Editable = false;
-                    ToolTip = 'Specifies a global dimension 2 filter.';
+                    ToolTip = 'Specifies the global dimension 2 filter.';
                 }
                 field(FromDate; FromDate)
                 {
                     Caption = 'From Date';
-                    ToolTip = 'Specifies a from date.';
+                    ToolTip = 'Specifies from date.';
 
                     trigger OnValidate()
                     begin
@@ -48,7 +48,7 @@ page 6224 "Collect Amount from G/L Entry"
                 field(ToDate; ToDate)
                 {
                     Caption = 'To Date';
-                    ToolTip = 'Specifies a to date.';
+                    ToolTip = 'Specifies to date.';
 
                     trigger OnValidate()
                     begin
@@ -71,7 +71,7 @@ page 6224 "Collect Amount from G/L Entry"
                     Caption = 'Total Amount';
                     Editable = false;
                     DrillDown = true;
-                    ToolTip = 'Specifies a total calculated amount to be added to sustainability journal line.';
+                    ToolTip = 'Specifies the total amount of the collectable general ledger entries.';
 
                     trigger OnDrillDown()
                     var

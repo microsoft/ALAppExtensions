@@ -17,6 +17,7 @@ using System.EMail;
 using System.Globalization;
 using System.Security.User;
 using System.Utilities;
+using System.Text;
 
 report 31014 "Sales - Advance Letter CZZ"
 {
@@ -132,6 +133,9 @@ report 31014 "Sales - Advance Letter CZZ"
             column(DocumentNoLbl; DocumentNoLbl)
             {
             }
+            column(QRPaymentLbl; QRPaymentLbl)
+            {
+            }
             column(No_SalesAdvanceLetterHeader; "No.")
             {
             }
@@ -223,6 +227,9 @@ report 31014 "Sales - Advance Letter CZZ"
             {
             }
             column(AmountIncludingVAT; AmountIncludingVAT)
+            {
+            }
+            column(QRPaymentCode; QRPaymentCode)
             {
             }
             dataitem(CopyLoop; "Integer")
@@ -340,6 +347,10 @@ report 31014 "Sales - Advance Letter CZZ"
                 SalesAdvLetterLineCZZ.SetRange("Document No.", "No.");
                 SalesAdvLetterLineCZZ.CalcSums("Amount Including VAT");
                 AmountIncludingVAT := SalesAdvLetterLineCZZ."Amount Including VAT";
+
+                Clear(QRPaymentCode);
+                if "Sales & Receivables Setup"."Print QR Payment CZL" and PaymentMethod."Print QR Payment CZL" then
+                    GenerateQRPaymentCode();
             end;
         }
     }
@@ -367,20 +378,10 @@ report 31014 "Sales - Advance Letter CZZ"
     }
 
     var
-        PaymentTerms: Record "Payment Terms";
-        PaymentMethod: Record "Payment Method";
         LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         FormatDocument: Codeunit "Format Document";
-        CompanyAddr: array[8] of Text[100];
-        CustAddr: array[8] of Text[100];
-        DocFooterText: Text[1000];
-        PaymentSymbol: array[2] of Text;
-        PaymentSymbolLabel: array[2] of Text;
-        AmountIncludingVAT: Decimal;
-        NoOfCop: Integer;
-        CopyNo: Integer;
         NoOfLoops: Integer;
         DocumentLbl: Label 'Advance Letter';
         PageLbl: Label 'Page';
@@ -396,7 +397,21 @@ report 31014 "Sales - Advance Letter CZZ"
         ClosingLbl: Label 'Sincerely';
         BodyLbl: Label 'The sales advance letter is attached to this message.';
         DocumentNoLbl: Label 'No.';
+        QRPaymentLbl: Label 'QR Payment';
         AmountIncludingVATLbl: Label 'Amount Including VAT';
+
+    protected var
+        PaymentTerms: Record "Payment Terms";
+        PaymentMethod: Record "Payment Method";
+        CompanyAddr: array[8] of Text[100];
+        CustAddr: array[8] of Text[100];
+        PaymentSymbol: array[2] of Text;
+        PaymentSymbolLabel: array[2] of Text;
+        DocFooterText: Text[1000];
+        AmountIncludingVAT: Decimal;
+        CopyNo: Integer;
+        NoOfCop: Integer;
+        QRPaymentCode: Text;
 
     local procedure FormatDocumentFields(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
     begin
@@ -416,5 +431,17 @@ report 31014 "Sales - Advance Letter CZZ"
         MailManagement: Codeunit "Mail Management";
     begin
         exit(CurrReport.Preview or MailManagement.IsHandlingGetEmailBody());
+    end;
+
+    local procedure GenerateQRPaymentCode()
+    var
+        BarcodeSymbology2D: Enum "Barcode Symbology 2D";
+        BarcodeFontProvider2D: Interface "Barcode Font Provider 2D";
+        BarcodeString: Text;
+    begin
+        BarcodeFontProvider2D := Enum::"Barcode Font Provider 2D"::IDAutomation2D;
+        BarcodeSymbology2D := Enum::"Barcode Symbology 2D"::"QR-Code";
+        BarcodeString := "Sales Advance Letter Header".CreateSalesAdvInvoicePaymentQRCodeString();
+        QRPaymentCode := BarcodeFontProvider2D.EncodeFont(BarcodeString, BarcodeSymbology2D);
     end;
 }

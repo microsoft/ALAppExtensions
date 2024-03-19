@@ -159,12 +159,17 @@ page 31180 "Purch. Advance Letters CZZ"
                     ToolTip = 'Specifies whether VAT document will be posted automatically.';
                     Visible = false;
                 }
+#if not CLEAN25
                 field("Amount on Iss. Payment Order"; "Amount on Iss. Payment Order")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies amount on issued payment order.';
                     Visible = false;
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This field is obsolete and will be removed in a future release. The CalcSuggestedAmountToApply function should be used instead.';
+                    ObsoleteTag = '25.0';
                 }
+#endif
                 field(SuggestedAmountToApplyCZL; Rec.CalcSuggestedAmountToApply())
                 {
                     Caption = 'Suggested Amount to Apply (LCY)';

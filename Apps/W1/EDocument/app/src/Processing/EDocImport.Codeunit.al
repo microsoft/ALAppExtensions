@@ -7,13 +7,14 @@ namespace Microsoft.eServices.EDocument;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Purchases.Document;
-using System.Utilities;
 using Microsoft.eServices.EDocument.OrderMatch;
+using System.Utilities;
 
 codeunit 6140 "E-Doc. Import"
 {
     Permissions =
-        tabledata "E-Document" = im;
+        tabledata "E-Document" = im,
+        tabledata "E-Doc. Imported Line" = imd;
 
     internal procedure UploadDocument(var EDocument: Record "E-Document")
     var
@@ -30,6 +31,7 @@ codeunit 6140 "E-Doc. Import"
             if CopyStream(OutStr, InStr) then begin
                 EDocument.Direction := EDocument.Direction::Incoming;
                 EDocument.Status := EDocument.Status::"In Progress";
+                EDocument."Document Type" := Enum::"E-Document Type"::None;
                 if EDocument."Entry No" = 0 then
                     EDocument.Insert(true)
                 else
@@ -46,7 +48,6 @@ codeunit 6140 "E-Doc. Import"
         TempBlob: Codeunit "Temp Blob";
     begin
         EDocErrorHelper.ClearErrorMessages(EDocument);
-
         EDocService := EDocumentLog.GetLastServiceFromLog(EDocument);
         EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocService, TempBlob, Enum::"E-Document Service Status"::Imported);
 
@@ -58,15 +59,13 @@ codeunit 6140 "E-Doc. Import"
         EDocService: Record "E-Document Service";
         TempBlob: Codeunit "Temp Blob";
     begin
+        if EDocument.Status = EDocument.Status::Processed then
+            exit;
         EDocErrorHelper.ClearErrorMessages(EDocument);
-
         EDocService := EDocumentLog.GetLastServiceFromLog(EDocument);
         EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocService, TempBlob, Enum::"E-Document Service Status"::Imported);
 
         ProcessImportedDocument(EDocument, EDocService, TempBlob, CreateJnlLine);
-
-        if GuiAllowed and EDocErrorHelper.HasErrors(EDocument) then
-            Message(DocNotCreatedMsg);
     end;
 
     local procedure GetDocumentBasicInfo(var EDocument: Record "E-Document"; EDocService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob")
@@ -143,7 +142,6 @@ codeunit 6140 "E-Doc. Import"
                 OnAfterInsertImportedEdocument(EDocument, EDocService, TempBlob, EDocCount, HttpRequest, HttpResponse);
             end;
 
-
             if not IsProcessed then
                 ProcessImportedDocument(EDocument, EDocService, TempBlob, EDocService."Create Journal Lines");
 
@@ -153,27 +151,46 @@ codeunit 6140 "E-Doc. Import"
             end;
         end;
 
-        if HasErrors and GuiAllowed then
-            if Confirm(DocNotCreatedQst) then
+        if HasErrors and GuiAllowed() then
+            if Confirm(DocNotCreatedQst, true, EDocument2."Document Type") then
                 Page.Run(Page::"E-Document", EDocument2);
     end;
 
-    local procedure ProcessExistingOrder(var EDocument: Record "E-Document"; EDocService: Record "E-Document Service"; var SourceDocumentLine: RecordRef; DocumentHeader: RecordRef; var EDocServiceStatus: Enum "E-Document Service Status")
+    internal procedure UpdatePurchaseOrderLink(var EDocument: Record "E-Document")
+    var
+        Vendor: Record Vendor;
+        PurchaseHeader: Record "Purchase Header";
+        DocumentHeader: RecordRef;
+        NullGuid: Guid;
+    begin
+        if EDocument.Status = Enum::"E-Document Status"::Processed then
+            exit;
+
+        // Release purchase header if it is pointing to this document
+
+        if PurchaseHeader.Get(EDocument."Document Record ID") then
+            if PurchaseHeader."E-Document Link" = EDocument.SystemId then begin
+                PurchaseHeader."E-Document Link" := NullGuid;
+                PurchaseHeader.Modify();
+            end;
+
+        EDocument."Order No." := '';
+        EDocument."Document Type" := EDocument."Document Type"::None;
+        Vendor.Get(EDocument."Bill-to/Pay-to No.");
+        if SelectPurchaseOrderFromList(EDocument, Vendor, DocumentHeader) then
+            ProcessDocument(EDocument, false);
+    end;
+
+    local procedure ProcessExistingOrder(var EDocument: Record "E-Document"; EDocService: Record "E-Document Service"; var SourceDocumentLine: RecordRef; var DocumentHeader: RecordRef; var EDocServiceStatus: Enum "E-Document Service Status")
     var
         PurchaseOrderHeader: Record "Purchase Header";
         TempEDocImportedLine: Record "E-Doc. Imported Line" temporary;
         EDocument2: Record "E-Document";
         ErrorMessage: Record "Error Message";
         TempExistingErrorMessage: Record "Error Message" temporary;
-        IsAnEDocAlreadyLinkedToPO: Boolean;
         ItemFound, UOMResolved : Boolean;
     begin
         DocumentHeader.SetTable(PurchaseOrderHeader);
-
-        // We should mark Edoc pending if existing edoc is already linked
-        EDocument2.SetRange("Document Record ID", PurchaseOrderHeader.RecordId());
-        EDocument2.SetFilter(Status, '<>%1', Enum::"E-Document Status"::Processed);
-        IsAnEDocAlreadyLinkedToPO := not EDocument2.IsEmpty();
 
         // Collect any error message
         ErrorMessage.SetContext(EDocument.RecordId());
@@ -183,10 +200,8 @@ codeunit 6140 "E-Doc. Import"
         // Get lines
         if SourceDocumentLine.FindSet() then
             repeat
-
                 if EDocService."Resolve Unit Of Measure" or EDocService."Lookup Item Reference" or
-                   EDocService."Lookup Item GTIN" or EDocService."Lookup Account Mapping" or
-                   EDocService."Validate Line Discount" then begin
+                   EDocService."Lookup Item GTIN" or EDocService."Lookup Account Mapping" then begin
                     ItemFound := false;
                     UOMResolved := false;
                     if EDocService."Resolve Unit Of Measure" then
@@ -205,6 +220,9 @@ codeunit 6140 "E-Doc. Import"
                         if (not ItemFound) and EDocService."Lookup Account Mapping" then
                             ItemFound := EDocImportHelper.FindGLAccountForLine(EDocument, SourceDocumentLine);
                     end;
+
+                    if EDocService."Validate Line Discount" then
+                        EDocImportHelper.ValidateLineDiscount(EDocument, SourceDocumentLine);
                 end;
 
                 // Save Temp EDocument Import Line for matching to purchase order
@@ -218,11 +236,17 @@ codeunit 6140 "E-Doc. Import"
         // Load into imported lines and update edoc state
         PersistImportedLines(EDocument, TempEDocImportedLine);
         UpdateEDocumentRecordId(EDocument, DocumentHeader.Field(PurchaseOrderHeader.FieldNo("No.")).Value(), DocumentHeader.RecordId);
-        if IsAnEDocAlreadyLinkedToPO then begin
+
+        // We should mark Edoc pending if existing edoc is already linked
+        if (not IsNullGuid(PurchaseOrderHeader."E-Document Link")) and (PurchaseOrderHeader."E-Document Link" <> EDocument.SystemId) then begin
             EDocServiceStatus := EDocServiceStatus::Pending;
+            EDocument2.GetBySystemId(PurchaseOrderHeader."E-Document Link");
             EDocErrorHelper.LogWarningMessage(EDocument, EDocument2, EDocument2.FieldNo("Entry No"), StrSubstNo(CannotProcessEDocumentMsg, EDocument."Entry No", PurchaseOrderHeader."No.", EDocument2."Entry No"));
-        end else
+        end else begin
+            PurchaseOrderHeader.Validate("E-Document Link", EDocument.SystemId);
+            PurchaseOrderHeader.Modify();
             EDocServiceStatus := EDocServiceStatus::"Order Linked";
+        end;
         EDocument.Status := Enum::"E-Document Status"::"In Progress";
     end;
 
@@ -314,7 +338,8 @@ codeunit 6140 "E-Doc. Import"
         UpdateEDocumentRecordId(EDocument, EDocument."Document Type", DocNo, RecordId);
     end;
 
-    local procedure UpdateEDocumentRecordId(var EDocument: Record "E-Document"; EDocType: enum "E-Document Type"; DocNo: Code[20]; RecordId: RecordId)
+    local procedure UpdateEDocumentRecordId(var EDocument: Record "E-Document"; EDocType: enum "E-Document Type"; DocNo: Code[20];
+                                                                                              RecordId: RecordId)
     begin
         EDocument."Document Type" := EDocType;
         EDocument."Document No." := DocNo;
@@ -329,86 +354,129 @@ codeunit 6140 "E-Doc. Import"
         DocumentHeader, SourceDocumentHeader, SourceDocumentLine : RecordRef;
         EDocumentLogEntryNo: Integer;
         EDocServiceStatus: Enum "E-Document Service Status";
+        ExistingOrderNo: Code[20];
+        Window: Dialog;
     begin
-        if EDocument."Document No." <> '' then
-            if GuiAllowed then
-                if not Confirm(StrSubstNo(DocAlreadyCreatedQst, EDocument."Document Type", EDocument."Document No.", EDocument."Incoming E-Document No.")) then
-                    exit;
+        if GuiAllowed() then
+            Window.Open('Processing E-Document: \ #1');
 
+        // Pending documents that are processed can already be linked to order. In these cases we save order no and reinsert after parsing xml.
+        ExistingOrderNo := EDocument."Order No.";
         EDocErrorHelper.ClearErrorMessages(EDocument);
 
         GetDocumentBasicInfo(EDocument, EDocService, TempBlob);
         if EDocErrorHelper.HasErrors(EDocument) then begin
-            EDocumentLog.InsertLog(EDocument, EDocService, TempBlob, Enum::"E-Document Service Status"::"Imported document processing error");
+            EDocumentLog.InsertLog(EDocument, EDocService, Enum::"E-Document Service Status"::"Imported document processing error");
             exit;
         end;
 
         ParseDocumentLines(EDocument, EDocService, TempBlob, SourceDocumentHeader, SourceDocumentLine, TempEDocMapping);
         if EDocErrorHelper.HasErrors(EDocument) then begin
-            EDocumentLog.InsertLog(EDocument, EDocService, TempBlob, Enum::"E-Document Service Status"::"Imported document processing error");
+            EDocumentLog.InsertLog(EDocument, EDocService, Enum::"E-Document Service Status"::"Imported document processing error");
             exit;
         end;
 
-        // Always handle corrective document, or handle based on vendor setting
+        if ExistingOrderNo <> '' then
+            EDocument."Order No." := ExistingOrderNo;
+
         if Vendor.Get(EDocument."Bill-to/Pay-to No.") then
-            case EDocument."Document Type" of
-                "E-Document Type"::"Purchase Credit Memo":
-                    ReceiveEDocumentToPurchaseDoc(EDocument, EDocService, SourceDocumentHeader, SourceDocumentLine, EDocServiceStatus, CreateJnlLine);
-                else
-                    case Vendor."Receive E-Document To" of
-                        Enum::"E-Document Type"::"Purchase Invoice":
-                            ReceiveEDocumentToPurchaseDoc(EDocument, EDocService, SourceDocumentHeader, SourceDocumentLine, EDocServiceStatus, CreateJnlLine);
-                        Enum::"E-Document Type"::"Purchase Order":
-                            ReceiveEDocumentToPurchaseOrder(EDocument, EDocService, SourceDocumentHeader, SourceDocumentLine, EDocServiceStatus, Vendor);
-                        else begin
-                            ReceiveEDocumentToPurchaseDoc(EDocument, EDocService, SourceDocumentHeader, SourceDocumentLine, EDocServiceStatus, CreateJnlLine);
-                            Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
-                            Vendor.Modify();
-                        end;
-                    end
-            end
+            if ValidateEDocumentIsForPurchaseOrder(EDocument, Vendor) then
+                ReceiveEDocumentToPurchaseOrder(EDocument, EDocService, SourceDocumentHeader, SourceDocumentLine, EDocServiceStatus, Vendor, Window)
+            else
+                ReceiveEDocumentToPurchaseDoc(EDocument, EDocService, SourceDocumentHeader, SourceDocumentLine, EDocServiceStatus, CreateJnlLine, Window)
         else
             EDocErrorHelper.LogErrorMessage(EDocument, Vendor, Vendor.FieldNo("No."), FailedToFindVendorErr);
 
         if EDocErrorHelper.HasErrors(EDocument) then
-            EDocumentLog.InsertLog(EDocument, EDocService, TempBlob, Enum::"E-Document Service Status"::"Imported document processing error")
+            EDocumentLog.InsertLog(EDocument, EDocService, Enum::"E-Document Service Status"::"Imported document processing error")
         else begin
             EDocumentLogEntryNo := EDocumentLog.InsertLog(EDocument, EDocService, EDocServiceStatus);
             EDocumentLog.InsertMappingLog(EDocumentLogEntryNo, TempEDocMapping);
         end;
+
         OnAfterProcessImportedDocument(EDocument, DocumentHeader);
     end;
 
-    procedure ReceiveEDocumentToPurchaseOrder(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service"; var SourceDocumentHeader: RecordRef; var SourceDocumentLine: RecordRef; var EDocServiceStatus: Enum "E-Document Service Status"; Vendor: Record Vendor)
+    local procedure ValidateEDocumentIsForPurchaseOrder(var EDocument: Record "E-Document"; Vendor: Record Vendor): Boolean
+    begin
+        if EDocument."Document Type" = EDocument."Document Type"::"Purchase Credit Memo" then
+            exit(false);
+        exit(Vendor."Receive E-Document To" = Enum::"E-Document Type"::"Purchase Order");
+    end;
+
+#pragma warning disable AS0022
+    local procedure ReceiveEDocumentToPurchaseOrder(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service"; var SourceDocumentHeader: RecordRef; var SourceDocumentLine: RecordRef; var EDocServiceStatus: Enum "E-Document Service Status"; Vendor: Record Vendor; var WindowInstance: Dialog)
     var
         DocumentHeader: RecordRef;
     begin
         EDocument."Document Type" := "E-Document Type"::"Purchase Order";
         EDocument.Modify();
 
-        if (EDocument."Order No." = '') and not GuiAllowed() then begin
-            EDocServiceStatus := Enum::"E-Document Service Status"::Pending;
+        // Check if document points to existing order
+        if OrderExists(EDocument, Vendor, DocumentHeader) then begin
+            ProcessExistingOrder(EDocument, EDocService, SourceDocumentLine, DocumentHeader, EDocServiceStatus);
             exit;
         end;
 
-        if (EDocument."Order No." = '') and GuiAllowed() then
-            FindPurchaseOrder(EDocument, Vendor);
+        // Case where we do not find/have order
+        if GuiAllowed() and (not HideDialogs) then begin
+            if SelectPurchaseOrderFromList(EDocument, Vendor, DocumentHeader) then begin
+                WindowInstance.Update(1, DocLinkMsg);
+                ProcessExistingOrder(EDocument, EDocService, SourceDocumentLine, DocumentHeader, EDocServiceStatus);
+            end else begin
+                WindowInstance.Update(1, DocCreatePOMsg);
+                CreatePurchaseDocumentFromImportedDocument(EDocument, EDocService, SourceDocumentHeader, SourceDocumentLine, EDocServiceStatus, Enum::"Purchase Document Type"::Order);
+            end;
+        end else
+            EDocServiceStatus := Enum::"E-Document Service Status"::Pending;
+    end;
+#pragma warning restore AS0022
 
-        if OrderExists(EDocument, Vendor, DocumentHeader) then
-            ProcessExistingOrder(EDocument, EDocService, SourceDocumentLine, DocumentHeader, EDocServiceStatus)
-        else
-            CreatePurchaseDocumentFromImportedDocument(EDocument, EDocService, SourceDocumentHeader, SourceDocumentLine, EDocServiceStatus, Enum::"Purchase Document Type"::Order);
+    internal procedure ProcessEDocPendingOrderMatch(var EDocument: Record "E-Document")
+    var
+        EDocService: Record "E-Document Service";
+        EDocServiceStatus: Record "E-Document Service Status";
+        EDocLog: Codeunit "E-Document Log";
+    begin
+        if (EDocument."Document Type" <> Enum::"E-Document Type"::"Purchase Order") or
+            (EDocument.Status = Enum::"E-Document Status"::Processed) then
+            exit;
 
+        EDocService := EDocLog.GetLastServiceFromLog(EDocument);
+        EDocServiceStatus.Get(EDocument."Entry No", EDocService.Code);
+        if EDocServiceStatus.Status <> EDocServiceStatus.Status::Pending then
+            exit;
+
+        if not IsPendingEDocReadyToProcess(EDocument) then
+            exit;
+
+        ProcessDocument(EDocument, EDocService."Create Journal Lines");
     end;
 
-    local procedure FindPurchaseOrder(var EDocument: Record "E-Document"; Vendor: Record Vendor)
+    local procedure IsPendingEDocReadyToProcess(EDocument: Record "E-Document"): Boolean
     var
         PurchaseHeader: Record "Purchase Header";
-        ConfirmManagement: Codeunit "Confirm Management";
+    begin
+        // If no order number is set we need to process document
+        if EDocument."Order No." = '' then
+            exit(true);
+
+        PurchaseHeader.SetRange("No.", EDocument."Order No.");
+        PurchaseHeader.SetRange("Document Type", Enum::"Purchase Document Type"::Order);
+        if PurchaseHeader.FindFirst() then
+            exit(IsNullGuid(PurchaseHeader."E-Document Link"))
+        else
+            exit(true);
+    end;
+
+    local procedure SelectPurchaseOrderFromList(var EDocument: Record "E-Document"; Vendor: Record Vendor; var DocumentHeader: RecordRef) Found: Boolean
+    var
+        PurchaseHeader: Record "Purchase Header";
         PurchaseOrderList: Page "Purchase Order List";
     begin
+        Found := false;
         if not GuiAllowed() then
-            exit;
+            exit(false);
 
         PurchaseHeader.SetRange("Buy-from Vendor No.", Vendor."No.");
         PurchaseOrderList.SetTableView(PurchaseHeader);
@@ -416,23 +484,28 @@ codeunit 6140 "E-Doc. Import"
         Commit();
         if PurchaseOrderList.RunModal() = Action::LookupOK then begin
             PurchaseOrderList.GetRecord(PurchaseHeader);
-            if ConfirmManagement.GetResponseOrDefault(StrSubstNo(FindPurchaseOrderConfrimQst, PurchaseHeader."No.", EDocument."Entry No"), true) then begin
-                EDocument."Order No." := PurchaseHeader."No.";
-                EDocument.Modify();
-            end;
+            DocumentHeader.GetTable(PurchaseHeader);
+            EDocument."Order No." := PurchaseHeader."No.";
+            EDocument.Modify();
+            Found := true;
         end;
     end;
 
-    local procedure ReceiveEDocumentToPurchaseDoc(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service"; var SourceDocumentHeader: RecordRef; var SourceDocumentLine: RecordRef; var EDocServiceStatus: Enum "E-Document Service Status"; CreateJnlLine: Boolean)
+    local procedure ReceiveEDocumentToPurchaseDoc(var EDocument: Record "E-Document"; var EDocService: Record "E-Document Service"; var SourceDocumentHeader: RecordRef; var SourceDocumentLine: RecordRef; var EDocServiceStatus: Enum "E-Document Service Status"; CreateJnlLine: Boolean; var WindowInstance: Dialog)
     var
         PurchaseHeader: Record "Purchase Header";
         PurchaseDocumentType: Enum "Purchase Document Type";
     begin
         PurchaseDocumentType := SourceDocumentHeader.Field(PurchaseHeader.FieldNo("Document Type")).Value();
-        if CreateJnlLine then
-            CreateJournalLineFromImportedDocument(EDocument, EDocService, EDocServiceStatus)
-        else
+        if CreateJnlLine then begin
+            if GuiAllowed() then
+                WindowInstance.Update(1, JnlLineCreateMsg);
+            CreateJournalLineFromImportedDocument(EDocument, EDocService, EDocServiceStatus);
+        end else begin
+            if GuiAllowed() then
+                WindowInstance.Update(1, StrSubstNo(DocCreateMsg, Format(PurchaseDocumentType)));
             CreatePurchaseDocumentFromImportedDocument(EDocument, EDocService, SourceDocumentHeader, SourceDocumentLine, EDocServiceStatus, PurchaseDocumentType);
+        end;
     end;
 
     local procedure ParseDocumentLines(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; var SourceDocumentHeader: RecordRef; var SourceDocumentLine: RecordRef; var TempEDocMapping: Record "E-Doc. Mapping" temporary)
@@ -528,10 +601,12 @@ codeunit 6140 "E-Doc. Import"
     var
         PurchaseHeader: Record "Purchase Header";
     begin
+        if EDocument."Order No." = '' then
+            exit(false);
+
         PurchaseHeader.SetRange("Document Type", PurchaseHeader."Document Type"::Order);
         PurchaseHeader.SetRange("No.", EDocument."Order No.");
-        PurchaseHeader.SetRange("Pay-to Vendor No.", Vendor."No.");
-
+        PurchaseHeader.SetRange("Buy-from Vendor No.", Vendor."No.");
         if PurchaseHeader.FindFirst() then begin
             DocumentHeader.GetTable(PurchaseHeader);
             exit(true);
@@ -553,16 +628,23 @@ codeunit 6140 "E-Doc. Import"
             until TempEDocImportedLine.Next() = 0;
     end;
 
+    internal procedure SetHideDialogs(Hide: Boolean)
+    begin
+        HideDialogs := Hide;
+    end;
+
     var
         EDocumentLog: Codeunit "E-Document Log";
         EDocImportHelper: Codeunit "E-Document Import Helper";
         EDocErrorHelper: Codeunit "E-Document Error Helper";
-        DocNotCreatedQst: Label 'The document was not created due to errors in the conversion process. Do you want to open the document?';
-        DocNotCreatedMsg: Label 'The document was not created due to errors in the conversion process.';
+        HideDialogs: Boolean;
+        JnlLineCreateMsg: Label 'Creating Journal Line';
+        DocCreateMsg: Label 'Creating Purchase %1', Comment = '%1 - Document type';
+        DocLinkMsg: Label 'Linking to existing order';
+        DocCreatePOMsg: Label 'Creating Purchase Order';
+        DocNotCreatedQst: Label 'Failed to create new Purchase %1 from E-Document. Do you want to open E-Document to see reported errors?', Comment = '%1 - Purchase Document Type';
         DocAlreadyExistsMsg: Label 'The document already exists.';
-        DocAlreadyCreatedQst: Label 'The %1 %2 was already created for the electronic document %3. Do you want to create new document?', Comment = '%1 - Document Type, %2 - Document No., %3 - E-Document ID';
         DocTypeIsNotSupportedErr: Label 'Document type %1 is not supported.', Comment = '%1 - Document Type';
-        FindPurchaseOrderConfrimQst: Label 'Are you sure you want to link Purchase Order %1 to E-Document %2?', Comment = '%1 - Purchase Order number, %2 - E-Document entry number';
         FailedToFindVendorErr: Label 'No vendor is set for Edocument';
         CannotProcessEDocumentMsg: Label 'Cannot process E-Document %1 with Purchase Order %2 before Purchase Order has been matched and posted for E-Document %3.', Comment = '%1 - E-Document entry no, %2 - Purchase Order number, %3 - EDocument entry no.';
 

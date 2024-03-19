@@ -302,6 +302,16 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
 #endif
         GenJournalLine."VAT Reporting Date" := PurchaseHeader."VAT Reporting Date";
     end;
+#if not CLEAN22
+#pragma warning disable AL0432
+
+    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterInitNewLine', '', false, false)]
+    local procedure CopyVATDateOnAfterInitNewLine(var GenJournalLine: Record "Gen. Journal Line")
+    begin
+        GenJournalLine."VAT Date CZL" := GenJournalLine."VAT Reporting Date";
+    end;
+#pragma warning restore AL0432
+#endif
 
 #if not CLEAN24
     [Obsolete('Replaced by OnBeforeGetReceivablesAccountNoCZL function in "Cust. Ledger Entry" table.', '24.0')]

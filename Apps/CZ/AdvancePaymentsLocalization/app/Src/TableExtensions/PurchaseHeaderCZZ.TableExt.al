@@ -44,13 +44,37 @@ tableextension 31008 "Purchase Header CZZ" extends "Purchase Header"
     var
         AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
     begin
-        if "Document Type" in ["Document Type"::Order, "Document Type"::Invoice] then begin
-            if "Document Type" = "Document Type"::Order then
-                AdvanceLetterApplicationCZZ.SetRange("Document Type", "Adv. Letter Usage Doc.Type CZZ"::"Purchase Order")
-            else
-                AdvanceLetterApplicationCZZ.SetRange("Document Type", "Adv. Letter Usage Doc.Type CZZ"::"Purchase Invoice");
+        if IsAdvanceLetterDocTypeCZZ() then begin
+            AdvanceLetterApplicationCZZ.SetRange("Document Type", GetAdvLetterUsageDocTypeCZZ());
             AdvanceLetterApplicationCZZ.SetRange("Document No.", "No.");
             AdvanceLetterApplicationCZZ.DeleteAll();
         end;
+    end;
+
+    procedure IsAdvanceLetterDocTypeCZZ() AdvanceLetterDocType: Boolean
+    begin
+        AdvanceLetterDocType := "Document Type" in ["Document Type"::Order, "Document Type"::Invoice];
+        OnAfterIsAdvanceLetterDocTypeCZZ(Rec, AdvanceLetterDocType);
+    end;
+
+    procedure GetAdvLetterUsageDocTypeCZZ() AdvLetterUsageDocType: Enum "Adv. Letter Usage Doc.Type CZZ"
+    begin
+        case "Document Type" of
+            "Document Type"::Order:
+                AdvLetterUsageDocType := "Adv. Letter Usage Doc.Type CZZ"::"Purchase Order";
+            "Document Type"::Invoice:
+                AdvLetterUsageDocType := "Adv. Letter Usage Doc.Type CZZ"::"Purchase Invoice";
+        end;
+        OnAfterGetAdvLetterUsageDocTypeCZZ(Rec, AdvLetterUsageDocType);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterIsAdvanceLetterDocTypeCZZ(Rec: Record "Purchase Header"; var AdvanceLetterDocType: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetAdvLetterUsageDocTypeCZZ(Rec: Record "Purchase Header"; var AdvLetterUsageDocType: Enum "Adv. Letter Usage Doc.Type CZZ")
+    begin
     end;
 }

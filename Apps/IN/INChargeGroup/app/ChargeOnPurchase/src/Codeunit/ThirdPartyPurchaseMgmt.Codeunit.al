@@ -121,7 +121,7 @@ codeunit 18518 "Third Party Purchase Mgmt."
     Var
         InsertPurchaseHeader: Record "Purchase Header";
         ChargeGroupHeader: Record "Charge Group Header";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         IsHandled: Boolean;
     begin
         OnBeforeInsertPurchaseHeaderWithChargeGroup(MainPurchaseHeader, ChargeGroupLines, IsHandled);
@@ -130,7 +130,7 @@ codeunit 18518 "Third Party Purchase Mgmt."
 
         InsertPurchaseHeader.Init();
         InsertPurchaseHeader."Document Type" := InsertPurchaseHeader."Document Type"::Invoice;
-        InsertPurchaseHeader."No." := NoSeriesManagement.GetNextNo(InsertPurchaseHeader.GetNoSeriesCode(), MainPurchaseHeader."Posting Date", true);
+        InsertPurchaseHeader."No." := NoSeries.GetNextNo(InsertPurchaseHeader.GetNoSeriesCode(), MainPurchaseHeader."Posting Date");
         InsertPurchaseHeader.Validate("Buy-from Vendor No.", ChargeGroupLines."Vendor No.");
         InsertPurchaseHeader.Validate("Posting Date", MainPurchaseHeader."Posting Date");
         InsertPurchaseHeader.Validate("Location Code", MainPurchaseHeader."Location Code");

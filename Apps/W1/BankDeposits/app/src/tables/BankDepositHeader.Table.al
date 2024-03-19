@@ -24,6 +24,8 @@ table 1690 "Bank Deposit Header"
             Caption = 'No.';
 
             trigger OnValidate()
+            var
+                NoSeries: Codeunit "No. Series";
             begin
                 if "No." <> xRec."No." then begin
                     SalesReceivablesSetup.Get();
@@ -323,8 +325,9 @@ table 1690 "Bank Deposit Header"
         SalesReceivablesSetup: Record "Sales & Receivables Setup";
         BankDepositHeader: Record "Bank Deposit Header";
         GenJournalBatch: Record "Gen. Journal Batch";
+#if not CLEAN24
         NoSeriesManagement: Codeunit NoSeriesManagement;
-        NoSeries: Codeunit "No. Series";
+#endif
         DimensionManagement: Codeunit DimensionManagement;
         GenJnlManagement: Codeunit GenJnlManagement;
         PostingDescriptionTxt: Label 'Deposit %1 %2', Comment = '%1 - the caption of field No.; %2 - the value of field No.';
@@ -336,6 +339,7 @@ table 1690 "Bank Deposit Header"
 
     local procedure InitInsert()
     var
+        NoSeries: Codeunit "No. Series";
         NoSeriesCode: Code[20];
         IsHandled: Boolean;
     begin
@@ -499,12 +503,13 @@ table 1690 "Bank Deposit Header"
     internal procedure AssistEdit(OldBankDepositHeader: Record "Bank Deposit Header"): Boolean
     var
         LocalBankDepositHeader: Record "Bank Deposit Header";
+        NoSeries: Codeunit "No. Series";
     begin
         LocalBankDepositHeader := Rec;
         SalesReceivablesSetup.Get();
         SalesReceivablesSetup.TestField("Bank Deposit Nos.");
-        if NoSeriesManagement.SelectSeries(SalesReceivablesSetup."Bank Deposit Nos.", OldBankDepositHeader."No. Series", LocalBankDepositHeader."No. Series") then begin
-            NoSeriesManagement.SetSeries(LocalBankDepositHeader."No.");
+        if NoSeries.LookupRelatedNoSeries(SalesReceivablesSetup."Bank Deposit Nos.", OldBankDepositHeader."No. Series", LocalBankDepositHeader."No. Series") then begin
+            LocalBankDepositHeader."No." := NoSeries.GetNextNo(LocalBankDepositHeader."No. Series");
             Rec := LocalBankDepositHeader;
             exit(true);
         end;

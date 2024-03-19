@@ -29,27 +29,14 @@ page 31175 "Advance Letter Appl. Edit CZZ"
                     begin
                         if Rec."Advance Letter No." <> '' then begin
                             TempAdvanceLetterApplication.Get(Rec."Advance Letter Type", Rec."Advance Letter No.", Rec."Document Type", Rec."Document No.");
-                            Rec."Advance Letter Type" := TempAdvanceLetterApplication."Advance Letter Type";
-                            Rec."Advance Letter No." := TempAdvanceLetterApplication."Advance Letter No.";
-                            Rec."Document Type" := TempAdvanceLetterApplication."Document Type";
-                            Rec."Document No." := TempAdvanceLetterApplication."Document No.";
-                            Rec."Posting Date" := TempAdvanceLetterApplication."Posting Date";
-                            Rec.Amount := TempAdvanceLetterApplication.Amount;
-                            Rec."Amount (LCY)" := TempAdvanceLetterApplication."Amount (LCY)";
+                            Rec.CopyFrom(TempAdvanceLetterApplication);
                         end
                     end;
 
                     trigger OnLookup(var Text: Text): Boolean
                     begin
-                        if Page.RunModal(Page::"Advance Letter Application CZZ", TempAdvanceLetterApplication) = Action::LookupOK then begin
-                            Rec."Advance Letter Type" := TempAdvanceLetterApplication."Advance Letter Type";
-                            Rec."Advance Letter No." := TempAdvanceLetterApplication."Advance Letter No.";
-                            Rec."Document Type" := TempAdvanceLetterApplication."Document Type";
-                            Rec."Document No." := TempAdvanceLetterApplication."Document No.";
-                            Rec."Posting Date" := TempAdvanceLetterApplication."Posting Date";
-                            Rec.Amount := TempAdvanceLetterApplication.Amount;
-                            Rec."Amount (LCY)" := TempAdvanceLetterApplication."Amount (LCY)";
-                        end;
+                        if Page.RunModal(Page::"Advance Letter Application CZZ", TempAdvanceLetterApplication) = Action::LookupOK then
+                            Rec.CopyFrom(TempAdvanceLetterApplication);
                     end;
                 }
                 field("Posting Date"; Rec."Posting Date")

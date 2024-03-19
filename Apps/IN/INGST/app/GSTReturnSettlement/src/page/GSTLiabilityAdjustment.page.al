@@ -154,9 +154,9 @@ page 18320 "GST Liability Adjustment"
 
     trigger OnOpenPage()
     var
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
-        AdjDocNo := NoSeriesManagement.GetNextNo(GSTSettlement.GetNoSeriesCode(true), PostingDate, false);
+        AdjDocNo := NoSeries.PeekNextNo(GSTSettlement.GetNoSeriesCode(true), PostingDate);
     end;
 
     local procedure CheckMandatoryFields()

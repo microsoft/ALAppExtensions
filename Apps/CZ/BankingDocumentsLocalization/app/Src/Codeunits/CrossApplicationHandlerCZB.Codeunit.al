@@ -11,78 +11,76 @@ using Microsoft.Sales.Receivables;
 
 codeunit 31416 "Cross Application Handler CZB"
 {
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cross Application Mgt. CZL", 'OnGetSuggestedAmountForCustLedgerEntry', '', false, false)]
-    local procedure AddIssPaymentOrderLineCZBOnGetSuggestedAmountForCustLedgerEntry(var TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary;
-                                                                                    CustLedgerEntry: Record "Cust. Ledger Entry";
-                                                                                    ExcludeTableID: Integer; ExcludeDocumentNo: Code[20]; ExcludeLineNo: Integer)
+#if not CLEAN25
+    ObsoleteState = Pending;
+    ObsoleteReason = 'The Access property will be changed to Internal.';
+    ObsoleteTag = '25.0';
+#else
+    Access = Internal;
+#endif
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cross Application Mgt. CZL", 'OnCollectSuggestedApplication', '', false, false)]
+    local procedure AddIssPaymentOrderLineCZBOnCollectSuggestedApplication(
+        CollectedForTableID: Integer; CollectedFor: Variant; var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL")
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+        EmployeeLedgerEntry: Record "Employee Ledger Entry";
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+    begin
+        case CollectedForTableID of
+            Database::"Cust. Ledger Entry":
+                begin
+                    CustLedgerEntry := CollectedFor;
+                    CollectIssPaymentOrderLines(
+                        "Banking Line Type CZB"::Customer, CustLedgerEntry."Customer No.",
+                        CustLedgerEntry."Entry No.", CrossApplicationBufferCZL);
+                end;
+            Database::"Vendor Ledger Entry":
+                begin
+                    VendorLedgerEntry := CollectedFor;
+                    CollectIssPaymentOrderLines(
+                        "Banking Line Type CZB"::Vendor, VendorLedgerEntry."Vendor No.",
+                        VendorLedgerEntry."Entry No.", CrossApplicationBufferCZL);
+                end;
+            Database::"Employee Ledger Entry":
+                begin
+                    EmployeeLedgerEntry := CollectedFor;
+                    CollectIssPaymentOrderLines(
+                        "Banking Line Type CZB"::Employee, EmployeeLedgerEntry."Employee No.",
+                        EmployeeLedgerEntry."Entry No.", CrossApplicationBufferCZL);
+                end;
+        end;
+    end;
+
+    local procedure CollectIssPaymentOrderLines(AccountType: Enum "Banking Line Type CZB"; AccountNo: Code[20]; EntryNo: Integer; var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL")
     var
         IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
     begin
-        IssPaymentOrderLineCZB.SetRange(Type, IssPaymentOrderLineCZB.Type::Customer);
-        IssPaymentOrderLineCZB.SetRange("No.", CustLedgerEntry."Customer No.");
-        IssPaymentOrderLineCZB.SetRange("Applies-to C/V/E Entry No.", CustLedgerEntry."Entry No.");
+        IssPaymentOrderLineCZB.SetRange(Type, AccountType);
+        IssPaymentOrderLineCZB.SetRange("No.", AccountNo);
+        IssPaymentOrderLineCZB.SetRange("Applies-to C/V/E Entry No.", EntryNo);
         IssPaymentOrderLineCZB.SetFilter(Status, '<>%1', IssPaymentOrderLineCZB.Status::Canceled);
         if IssPaymentOrderLineCZB.FindSet() then
             repeat
-                AddLineToBuffer(TempCrossApplicationBufferCZL, IssPaymentOrderLineCZB, ExcludeTableID, ExcludeDocumentNo, ExcludeLineNo);
+                AddLineToBuffer(IssPaymentOrderLineCZB, CrossApplicationBufferCZL);
             until IssPaymentOrderLineCZB.Next() = 0;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cross Application Mgt. CZL", 'OnGetSuggestedAmountForVendLedgerEntry', '', false, false)]
-    local procedure AddIssPaymentOrderLineCZBOnGetSuggestedAmountForVendLedgerEntry(var TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary;
-                                                                                    VendorLedgerEntry: Record "Vendor Ledger Entry";
-                                                                                    ExcludeTableID: Integer; ExcludeDocumentNo: Code[20]; ExcludeLineNo: Integer)
-    var
+    local procedure AddLineToBuffer(
         IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
-    begin
-        IssPaymentOrderLineCZB.SetRange(Type, IssPaymentOrderLineCZB.Type::Vendor);
-        IssPaymentOrderLineCZB.SetRange("No.", VendorLedgerEntry."Vendor No.");
-        IssPaymentOrderLineCZB.SetRange("Applies-to C/V/E Entry No.", VendorLedgerEntry."Entry No.");
-        IssPaymentOrderLineCZB.SetFilter(Status, '<>%1', IssPaymentOrderLineCZB.Status::Canceled);
-        if IssPaymentOrderLineCZB.FindSet() then
-            repeat
-                AddLineToBuffer(TempCrossApplicationBufferCZL, IssPaymentOrderLineCZB, ExcludeTableID, ExcludeDocumentNo, ExcludeLineNo);
-            until IssPaymentOrderLineCZB.Next() = 0;
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cross Application Mgt. CZL", 'OnGetSuggestedAmountForEmplLedgerEntry', '', false, false)]
-    local procedure AddIssPaymentOrderLineCZBOnGetSuggestedAmountForEmplLedgerEntry(var TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary;
-                                                                                    EmployeeLedgerEntry: Record "Employee Ledger Entry";
-                                                                                    ExcludeTableID: Integer; ExcludeDocumentNo: Code[20]; ExcludeLineNo: Integer)
-    var
-        IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
-    begin
-        IssPaymentOrderLineCZB.SetRange(Type, IssPaymentOrderLineCZB.Type::Employee);
-        IssPaymentOrderLineCZB.SetRange("No.", EmployeeLedgerEntry."Employee No.");
-        IssPaymentOrderLineCZB.SetRange("Applies-to C/V/E Entry No.", EmployeeLedgerEntry."Entry No.");
-        IssPaymentOrderLineCZB.SetFilter(Status, '<>%1', IssPaymentOrderLineCZB.Status::Canceled);
-        if IssPaymentOrderLineCZB.FindSet() then
-            repeat
-                AddLineToBuffer(TempCrossApplicationBufferCZL, IssPaymentOrderLineCZB, ExcludeTableID, ExcludeDocumentNo, ExcludeLineNo);
-            until IssPaymentOrderLineCZB.Next() = 0;
-    end;
-
-    local procedure AddLineToBuffer(var TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary;
-                                    IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
-                                    ExcludeTableID: Integer; ExcludeDocumentNo: Code[20]; ExcludeLineNo: Integer)
+        var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL")
     var
         IssPaymentOrderHeaderCZB: Record "Iss. Payment Order Header CZB";
     begin
-        if (ExcludeTableID = Database::"Iss. Payment Order Line CZB") and
-           (ExcludeDocumentNo = IssPaymentOrderLineCZB."Payment Order No.") and
-           (ExcludeLineNo = IssPaymentOrderLineCZB."Line No.")
-        then
-            exit;
-
         IssPaymentOrderHeaderCZB.Get(IssPaymentOrderLineCZB."Payment Order No.");
-        TempCrossApplicationBufferCZL.Init();
-        TempCrossApplicationBufferCZL."Entry No." := TempCrossApplicationBufferCZL.Count() + 1;
-        TempCrossApplicationBufferCZL."Table ID" := Database::"Iss. Payment Order Line CZB";
-        TempCrossApplicationBufferCZL."Applied Document No." := IssPaymentOrderLineCZB."Payment Order No.";
-        TempCrossApplicationBufferCZL."Applied Document Line No." := IssPaymentOrderLineCZB."Line No.";
-        TempCrossApplicationBufferCZL."Applied Document Date" := IssPaymentOrderHeaderCZB."Document Date";
-        TempCrossApplicationBufferCZL."Amount (LCY)" := -IssPaymentOrderLineCZB."Amount (LCY)";
-        TempCrossApplicationBufferCZL.Insert();
+        CrossApplicationBufferCZL.Init();
+        CrossApplicationBufferCZL."Entry No." := CrossApplicationBufferCZL.Count() + 1;
+        CrossApplicationBufferCZL."Table ID" := Database::"Iss. Payment Order Line CZB";
+        CrossApplicationBufferCZL."Applied Document No." := IssPaymentOrderLineCZB."Payment Order No.";
+        CrossApplicationBufferCZL."Applied Document Line No." := IssPaymentOrderLineCZB."Line No.";
+        CrossApplicationBufferCZL."Applied Document Date" := IssPaymentOrderHeaderCZB."Document Date";
+        CrossApplicationBufferCZL."Amount (LCY)" := -IssPaymentOrderLineCZB."Amount (LCY)";
+        CrossApplicationBufferCZL.Insert();
     end;
 
     [EventSubscriber(ObjectType::Page, Page::"Cross Application CZL", 'OnShowCrossApplicationDocument', '', false, false)]
@@ -90,7 +88,7 @@ codeunit 31416 "Cross Application Handler CZB"
     var
         IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
     begin
-        if TableId <> Database::"Iss. Payment Order Line CZB" then
+        if TableID <> Database::"Iss. Payment Order Line CZB" then
             exit;
 
         IssPaymentOrderLineCZB.FilterGroup(2);
@@ -98,5 +96,18 @@ codeunit 31416 "Cross Application Handler CZB"
         IssPaymentOrderLineCZB.SetRange("Line No.", LineNo);
         IssPaymentOrderLineCZB.FilterGroup(0);
         Page.Run(Page::"Iss. Payment Order Lines CZB", IssPaymentOrderLineCZB);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Cross Application Buffer CZL", 'OnExcludeDocument', '', false, false)]
+    local procedure SetFilterOnExcludeDocument(TableID: Integer; DocumentVariant: Variant; var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL")
+    var
+        IssPaymentOrderLine: Record "Iss. Payment Order Line CZB";
+    begin
+        if TableID <> Database::"Iss. Payment Order Line CZB" then
+            exit;
+
+        IssPaymentOrderLine := DocumentVariant;
+        CrossApplicationBufferCZL.RemoveDocument(
+            TableID, IssPaymentOrderLine."Payment Order No.", IssPaymentOrderLine."Line No.");
     end;
 }

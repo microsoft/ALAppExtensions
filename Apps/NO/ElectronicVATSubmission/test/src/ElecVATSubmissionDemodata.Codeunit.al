@@ -48,5 +48,7 @@ codeunit 148132 "Elec. VAT Submission Demodata"
         ElecVATSetup.DeleteAll();
         ElectronicVATInstallation.RunExtensionSetup();
         ElecVATSetup.Get();
+        ElecVATSetup.TestField("Authentication URL");
+        ElecVATSetup.TestField("Login URL");
     end;
 }

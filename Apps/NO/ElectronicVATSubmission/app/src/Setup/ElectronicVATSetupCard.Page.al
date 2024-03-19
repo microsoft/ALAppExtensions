@@ -59,6 +59,11 @@ page 10692 "Electronic VAT Setup Card"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the URL to connect to ID-Porten.';
                 }
+                field("Login URL"; Rec."Login URL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the URL to login to ID-Porten.';
+                }
                 field("Redirect URL"; "Redirect URL")
                 {
                     ApplicationArea = Basic, Suite;

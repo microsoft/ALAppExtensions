@@ -265,7 +265,7 @@ table 31128 "EET Entry CZL"
     var
         CompanyInformation: Record "Company Information";
         EETServiceSetupCZL: Record "EET Service Setup CZL";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         IsHandled: Boolean;
     begin
         IsHandled := false;
@@ -280,7 +280,7 @@ table 31128 "EET Entry CZL"
 
         if "Receipt Serial No." = '' then begin
             TestReceiptSerialNoSeries();
-            "Receipt Serial No." := NoSeriesManagement.GetNextNo(GetReceiptSerialNoSeriesCode(), Today(), true);
+            "Receipt Serial No." := NoSeries.GetNextNo(GetReceiptSerialNoSeriesCode(), Today());
         end;
 
         if "VAT Registration No." = '' then begin

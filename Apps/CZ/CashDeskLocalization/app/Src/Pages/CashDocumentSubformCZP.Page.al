@@ -139,32 +139,12 @@ page 31161 "Cash Document Subform CZP"
                     ApplicationArea = Dimensions;
                     ToolTip = 'Specifies the code of the Shortcut Dimension 1, which is defined in the Shortcut Dimension 1 Code field in the General Ledger Setup window.';
                     Visible = DimVisible1;
-
-                    trigger OnLookup(var Text: Text): Boolean
-                    begin
-                        Rec.LookupShortcutDimCode(1, Rec."Shortcut Dimension 1 Code");
-                    end;
-
-                    trigger OnValidate()
-                    begin
-                        Rec.ValidateShortcutDimCode(1, Rec."Shortcut Dimension 1 Code");
-                    end;
                 }
                 field("Shortcut Dimension 2 Code"; Rec."Shortcut Dimension 2 Code")
                 {
                     ApplicationArea = Dimensions;
                     ToolTip = 'Specifies the code of the Shortcut Dimension 2, which is defined in the Shortcut Dimension 2 Code field in the General Ledger Setup window.';
                     Visible = DimVisible2;
-
-                    trigger OnLookup(var Text: Text): Boolean
-                    begin
-                        Rec.LookupShortcutDimCode(2, Rec."Shortcut Dimension 2 Code");
-                    end;
-
-                    trigger OnValidate()
-                    begin
-                        Rec.ValidateShortcutDimCode(2, Rec."Shortcut Dimension 2 Code");
-                    end;
                 }
                 field("ShortcutDimCode[3]"; ShortcutDimCode[3])
                 {

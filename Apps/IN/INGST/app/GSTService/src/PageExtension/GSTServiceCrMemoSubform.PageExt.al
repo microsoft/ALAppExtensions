@@ -65,6 +65,11 @@ pageextension 18445 "GST Service Cr. Memo Subform" extends "Service Credit Memo 
                 ApplicationArea = Basic, Suite;
                 Editable = true;
                 ToolTip = 'Specifies on which location state code system should consider for GST calculation in case of sale of product or service.';
+                trigger OnValidate()
+                begin
+                    CurrPage.SaveRecord();
+                    CalculateTax.CallTaxEngineOnServiceLine(Rec, xRec);
+                end;
             }
             field("GST Group Type"; Rec."GST Group Type")
             {

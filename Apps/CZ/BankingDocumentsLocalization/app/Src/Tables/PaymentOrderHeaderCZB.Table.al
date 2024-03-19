@@ -27,6 +27,8 @@ table 31256 "Payment Order Header CZB"
             DataClassification = CustomerContent;
 
             trigger OnValidate()
+            var
+                NoSeries: Codeunit "No. Series";
             begin
                 if ("No." <> xRec."No.") and ("Bank Account No." <> '') then begin
                     BankAccount.Get("Bank Account No.");
@@ -323,6 +325,7 @@ table 31256 "Payment Order Header CZB"
     trigger OnInsert()
     var
         PaymentOrderHeader: Record "Payment Order Header CZB";
+        NoSeries: Codeunit "No. Series";
 #if not CLEAN24
         IsHandled: Boolean;
 #endif
@@ -359,8 +362,9 @@ table 31256 "Payment Order Header CZB"
     var
         BankAccount: Record "Bank Account";
         CurrencyExchangeRate: Record "Currency Exchange Rate";
+#if not CLEAN24
         NoSeriesManagement: Codeunit NoSeriesManagement;
-        NoSeries: Codeunit "No. Series";
+#endif
         BankingApprovalsMgtCZB: Codeunit "Banking Approvals Mgt. CZB";
         ConfirmManagement: Codeunit "Confirm Management";
         UpdateCurrFactorQst: Label 'Do you want to update the exchange rate?';
@@ -369,14 +373,13 @@ table 31256 "Payment Order Header CZB"
     procedure AssistEdit(OldPaymentOrderHeaderCZB: Record "Payment Order Header CZB"): Boolean
     var
         PaymentOrderHeaderCZB: Record "Payment Order Header CZB";
+        NoSeries: Codeunit "No. Series";
     begin
         PaymentOrderHeaderCZB := Rec;
         BankAccount.Get(PaymentOrderHeaderCZB."Bank Account No.");
         BankAccount.Testfield("Payment Order Nos. CZB");
-        if NoSeriesManagement.SelectSeries(BankAccount."Payment Order Nos. CZB", OldPaymentOrderHeaderCZB."No. Series", PaymentOrderHeaderCZB."No. Series") then begin
-            BankAccount.Get(PaymentOrderHeaderCZB."Bank Account No.");
-            BankAccount.Testfield("Bank Account No.");
-            NoSeriesManagement.SetSeries(PaymentOrderHeaderCZB."No.");
+        if NoSeries.LookupRelatedNoSeries(BankAccount."Payment Order Nos. CZB", OldPaymentOrderHeaderCZB."No. Series", PaymentOrderHeaderCZB."No. Series") then begin
+            PaymentOrderHeaderCZB."No." := NoSeries.GetNextNo(PaymentOrderHeaderCZB."No. Series");
             Rec := PaymentOrderHeaderCZB;
             exit(true);
         end;

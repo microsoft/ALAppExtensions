@@ -453,23 +453,11 @@ report 31017 "Purchase - Advance VAT Doc.CZZ"
     }
 
     var
-        TempVATAmountLine: Record "VAT Amount Line" temporary;
-        PaymentTerms: Record "Payment Terms";
-        PaymentMethod: Record "Payment Method";
         CurrencyExchangeRate: Record "Currency Exchange Rate";
         DocumentFooterCZL: Record "Document Footer CZL";
         LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
-        ExchRateText: Text[50];
-        CompanyAddr: array[8] of Text[100];
-        VendAddr: array[8] of Text[100];
-        DocFooterText: Text[1000];
-        DocumentLabel: Text;
-        CalculatedExchRate: Decimal;
-        NoOfCop: Integer;
-        CopyNo: Integer;
         NoOfLoops: Integer;
-        OriginalAdvanceVATDocumentNo: Code[20];
         Text009Txt: Label 'Exchange Rate %1 %2 / %3 %4', Comment = '%1=calculatedexchrate;%2=general ledger setup.LCY Code;%3=currexchrate.exchange rate amount;%4=currency code';
         DocumentLbl: Label 'VAT Document to Paid Payment';
         CrMemoDocumentLbl: Label 'VAT Credit Memo to Paid Payment';
@@ -487,6 +475,20 @@ report 31017 "Purchase - Advance VAT Doc.CZZ"
         VATLbl: Label 'VAT';
         AdvanceLetterLbl: Label 'VAT Document to Advance Letter';
         OriginalAdvanceVATDocumentNoLbl: Label 'Original Advance VAT Document No.';
+
+    protected var
+        PaymentTerms: Record "Payment Terms";
+        PaymentMethod: Record "Payment Method";
+        TempVATAmountLine: Record "VAT Amount Line" temporary;
+        CompanyAddr: array[8] of Text[100];
+        VendAddr: array[8] of Text[100];
+        ExchRateText: Text[50];
+        DocFooterText: Text[1000];
+        OriginalAdvanceVATDocumentNo: Code[20];
+        DocumentLabel: Text;
+        CalculatedExchRate: Decimal;
+        CopyNo: Integer;
+        NoOfCop: Integer;
 
     local procedure IsCreditMemo(PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"): Boolean
     begin

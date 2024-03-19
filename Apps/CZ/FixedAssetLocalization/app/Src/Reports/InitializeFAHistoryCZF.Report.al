@@ -72,9 +72,11 @@ report 31250 "Initialize FA History CZF"
         }
 
         trigger OnOpenPage()
+        var
+            NoSeries: Codeunit "No. Series";
         begin
             InitializeDate := WorkDate();
-            DocumentNo := NoSeriesManagement.GetNextNo(FASetup."Fixed Asset History Nos. CZF", WorkDate(), true);
+            DocumentNo := NoSeries.GetNextNo(FASetup."Fixed Asset History Nos. CZF");
         end;
     }
 
@@ -82,7 +84,6 @@ report 31250 "Initialize FA History CZF"
         FASetup: Record "FA Setup";
         FAHistoryEntryCZF: Record "FA History Entry CZF";
         FAHistoryManagementCZF: Codeunit "FA History Management CZF";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
         InitializeDate: Date;
         DocumentNo: Code[20];
         InitializeCounter: Integer;

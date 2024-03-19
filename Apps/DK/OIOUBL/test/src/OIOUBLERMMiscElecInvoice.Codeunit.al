@@ -1227,14 +1227,14 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
     var
         ServiceHeader: Record "Service Header";
         ServiceLine: Record "Service Line";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
         CreateServiceHeader(ServiceHeader, DocumentType);
         CreateServiceLine(ServiceLine, ServiceHeader);
         ServiceLine.VALIDATE(Description, Description);
         ServiceLine.MODIFY(true);
         DocumentNo := ServiceHeader."No.";
-        PostedInvoiceNo := NoSeriesManagement.GetNextNo(ServiceHeader."Posting No. Series", WORKDATE(), false);
+        PostedInvoiceNo := NoSeries.PeekNextNo(ServiceHeader."Posting No. Series");
         LibraryService.PostServiceOrder(ServiceHeader, true, false, true);
     end;
 
@@ -1243,14 +1243,14 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         ServiceHeader: Record "Service Header";
         ServiceItemLine: Record "Service Item Line";
         ServiceLine: Record "Service Line";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
         CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Order);
         LibraryService.CreateServiceItemLine(ServiceItemLine, ServiceHeader, '');  // Blank for Service Item No.
         CreateServiceLine(ServiceLine, ServiceHeader);
         ServiceLine.VALIDATE("Service Item Line No.", ServiceItemLine."Line No.");
         ServiceLine.MODIFY(true);
-        PostedInvoiceNo := NoSeriesManagement.GetNextNo(ServiceHeader."Posting No. Series", WORKDATE(), false);
+        PostedInvoiceNo := NoSeries.PeekNextNo(ServiceHeader."Posting No. Series");
         LibraryService.PostServiceOrder(ServiceHeader, true, false, true);
     end;
 

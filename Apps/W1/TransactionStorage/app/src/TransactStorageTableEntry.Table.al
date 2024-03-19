@@ -21,6 +21,9 @@ table 6204 "Transact. Storage Table Entry"
             Editable = false;
             FieldClass = FlowField;
         }
+        field(4; "Filter Record To DT"; DateTime)
+        {
+        }
         field(5; "Last Handled Date/Time"; DateTime)
         {
         }

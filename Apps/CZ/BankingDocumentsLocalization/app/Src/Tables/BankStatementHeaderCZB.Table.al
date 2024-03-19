@@ -30,6 +30,8 @@ table 31252 "Bank Statement Header CZB"
             DataClassification = CustomerContent;
 
             trigger OnValidate()
+            var
+                NoSeries: Codeunit "No. Series";
             begin
                 if ("No." <> xRec."No.") and ("Bank Account No." <> '') then begin
                     BankAccount.Get("Bank Account No.");
@@ -386,7 +388,9 @@ table 31252 "Bank Statement Header CZB"
     trigger OnInsert()
     var
         BankStatementHeader: Record "Bank Statement Header CZB";
+        NoSeries: Codeunit "No. Series";
 #if not CLEAN24
+        NoSeriesManagement: Codeunit NoSeriesManagement;
         IsHandled: Boolean;
 #endif
     begin
@@ -422,8 +426,6 @@ table 31252 "Bank Statement Header CZB"
     var
         BankAccount: Record "Bank Account";
         CurrencyExchangeRate: Record "Currency Exchange Rate";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-        NoSeries: Codeunit "No. Series";
         ConfirmManagement: Codeunit "Confirm Management";
         HideValidationDialog: Boolean;
         Confirmed: Boolean;
@@ -432,14 +434,13 @@ table 31252 "Bank Statement Header CZB"
     procedure AssistEdit(OldBankStatementHeaderCZB: Record "Bank Statement Header CZB"): Boolean
     var
         BankStatementHeaderCZB: Record "Bank Statement Header CZB";
+        NoSeries: Codeunit "No. Series";
     begin
         BankStatementHeaderCZB := Rec;
         BankAccount.Get(BankStatementHeaderCZB."Bank Account No.");
         BankAccount.Testfield("Bank Statement Nos. CZB");
-        if NoSeriesManagement.SelectSeries(BankAccount."Bank Statement Nos. CZB", OldBankStatementHeaderCZB."No. Series", BankStatementHeaderCZB."No. Series") then begin
-            BankAccount.Get(BankStatementHeaderCZB."Bank Account No.");
-            BankAccount.Testfield("Bank Account No.");
-            NoSeriesManagement.SetSeries(BankStatementHeaderCZB."No.");
+        if NoSeries.LookupRelatedNoSeries(BankAccount."Bank Statement Nos. CZB", OldBankStatementHeaderCZB."No. Series", BankStatementHeaderCZB."No. Series") then begin
+            BankStatementHeaderCZB."No." := NoSeries.GetNextNo(BankStatementHeaderCZB."No. Series");
             Rec := BankStatementHeaderCZB;
             exit(true);
         end;

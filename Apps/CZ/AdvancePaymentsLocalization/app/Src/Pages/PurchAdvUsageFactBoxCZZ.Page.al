@@ -29,18 +29,10 @@ page 31189 "Purch. Adv. Usage FactBox CZZ"
                 var
                     PurchAdvLetterManagement: Codeunit "PurchAdvLetterManagement CZZ";
                 begin
-                    case Rec."Document Type" of
-                        Rec."Document Type"::Order:
-                            begin
-                                PurchAdvLetterManagement.LinkAdvanceLetter("Adv. Letter Usage Doc.Type CZZ"::"Purchase Order", PurchaseHeader."No.", PurchaseHeader."Pay-to Vendor No.", PurchaseHeader."Posting Date", PurchaseHeader."Currency Code");
-                                CurrPage.Update();
-                            end;
-                        Rec."Document Type"::Invoice:
-                            begin
-                                PurchAdvLetterManagement.LinkAdvanceLetter("Adv. Letter Usage Doc.Type CZZ"::"Purchase Invoice", PurchaseHeader."No.", PurchaseHeader."Pay-to Vendor No.", PurchaseHeader."Posting Date", PurchaseHeader."Currency Code");
-                                CurrPage.Update();
-                            end;
-                    end;
+                    PurchAdvLetterManagement.LinkAdvanceLetter(
+                        PurchaseHeader.GetAdvLetterUsageDocTypeCZZ(), PurchaseHeader."No.", PurchaseHeader."Pay-to Vendor No.",
+                        PurchaseHeader."Posting Date", PurchaseHeader."Currency Code");
+                    CurrPage.Update();
                 end;
             }
             field(AdvanceAmountToUse; AdvanceAmountToUse)
@@ -125,11 +117,8 @@ page 31189 "Purch. Adv. Usage FactBox CZZ"
         end;
 
         PurchaseHeader.Get(Rec."Document Type", Rec."Document No.");
-
-        if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Order then
-            AdvanceLetterApplication.GetAssignedAdvance("Adv. Letter Usage Doc.Type CZZ"::"Purchase Order", PurchaseHeader."No.", TempAdvanceLetterApplication)
-        else
-            AdvanceLetterApplication.GetAssignedAdvance("Adv. Letter Usage Doc.Type CZZ"::"Purchase Invoice", PurchaseHeader."No.", TempAdvanceLetterApplication);
+        AdvanceLetterApplication.GetAssignedAdvance(
+            PurchaseHeader.GetAdvLetterUsageDocTypeCZZ(), PurchaseHeader."No.", TempAdvanceLetterApplication);
 
         CurrFactor := PurchaseHeader."Currency Factor";
         if CurrFactor = 0 then

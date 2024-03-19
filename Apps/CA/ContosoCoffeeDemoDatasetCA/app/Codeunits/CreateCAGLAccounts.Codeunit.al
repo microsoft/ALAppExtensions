@@ -15,7 +15,7 @@ codeunit 27009 "Create CA GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.CustomerDomesticName(), '13100');
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.VendorDomesticName(), '22300');
 
-        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.SalesDomesticName(), '44100');
+        ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.SalesDomesticName(), '41100');
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.PurchaseDomesticName(), '54100');
 
         ContosoGLAccount.AddAccountForLocalization(CommonGLAccount.SalesVATStandardName(), '');

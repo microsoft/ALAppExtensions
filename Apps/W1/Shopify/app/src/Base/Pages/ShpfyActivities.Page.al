@@ -88,6 +88,12 @@ page 30100 "Shpfy Activities"
                         Page.Run(Page::"Job Queue Log Entries", JobQueueLogEntry);
                     end;
                 }
+                field(UnprocessedOrderUpdates; Rec."Unprocessed Order Updates")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the number of order updates that aren''t processed.';
+                    DrillDownPageId = "Shpfy Orders";
+                }
             }
         }
     }
@@ -95,10 +101,11 @@ page 30100 "Shpfy Activities"
     trigger OnOpenPage()
     begin
         Rec.Reset();
-        if not Rec.Get() then begin
-            Rec.Init();
-            Rec.Insert();
-            Commit();
-        end;
+        if not Rec.Get() then
+            if Rec.WritePermission then begin
+                Rec.Init();
+                Rec.Insert();
+                Commit();
+            end;
     end;
 }

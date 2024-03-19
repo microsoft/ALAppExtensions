@@ -57,7 +57,7 @@ codeunit 31018 "Rel. Purch.Adv.Letter Doc. CZZ"
             PurchAdvLetterHeaderCZZ."Currency Code", PurchAdvLetterHeaderCZZ."Currency Factor", PurchAdvLetterHeaderCZZ."No.", '',
             PurchAdvLetterHeaderCZZ."Shortcut Dimension 1 Code", PurchAdvLetterHeaderCZZ."Shortcut Dimension 2 Code", PurchAdvLetterHeaderCZZ."Dimension Set ID", false);
 
-        PurchAdvLetterManagementCZZ.UpdateStatus(PurchAdvLetterHeaderCZZ, PurchAdvLetterHeaderCZZ.Status::"To Pay");
+        PurchAdvLetterHeaderCZZ.UpdateStatus(PurchAdvLetterHeaderCZZ.Status::"To Pay");
 
         OnAfterReleaseDoc(PurchAdvLetterHeaderCZZ);
     end;
@@ -85,7 +85,7 @@ codeunit 31018 "Rel. Purch.Adv.Letter Doc. CZZ"
             exit;
 
         PurchAdvLetterManagementCZZ.CancelInitEntry(PurchAdvLetterHeaderCZZ, 0D, true);
-        PurchAdvLetterManagementCZZ.UpdateStatus(PurchAdvLetterHeaderCZZ, PurchAdvLetterHeaderCZZ.Status::New);
+        PurchAdvLetterHeaderCZZ.UpdateStatus(PurchAdvLetterHeaderCZZ.Status::New);
 
         OnAfterReopenDoc(PurchAdvLetterHeaderCZZ);
     end;

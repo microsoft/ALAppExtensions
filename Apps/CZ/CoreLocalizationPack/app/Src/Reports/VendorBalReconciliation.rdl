@@ -31,6 +31,7 @@
                         <Rectangle Name="Rectangle1">
                           <ReportItems>
                             <Textbox Name="DocumentNo4">
+                              <CanGrow>true</CanGrow>
                               <KeepTogether>true</KeepTogether>
                               <Paragraphs>
                                 <Paragraph>
@@ -50,7 +51,7 @@
                               </Paragraphs>
                               <Top>0.30529in</Top>
                               <Left>0.22521in</Left>
-                              <Height>0.8cm</Height>
+                              <Height>0.65889cm</Height>
                               <Width>7.78066cm</Width>
                               <Style>
                                 <VerticalAlign>Middle</VerticalAlign>
@@ -73,7 +74,7 @@
                                   </Style>
                                 </Paragraph>
                               </Paragraphs>
-                              <Top>0.63414in</Top>
+                              <Top>0.5647in</Top>
                               <Left>0.22521in</Left>
                               <Height>0.423cm</Height>
                               <Width>7.78066cm</Width>
@@ -83,6 +84,7 @@
                               </Style>
                             </Textbox>
                             <Textbox Name="DocumentNo6">
+                              <CanGrow>true</CanGrow>
                               <KeepTogether>true</KeepTogether>
                               <Paragraphs>
                                 <Paragraph>
@@ -102,7 +104,7 @@
                               </Paragraphs>
                               <Top>0.30529in</Top>
                               <Left>4.08571in</Left>
-                              <Height>0.8cm</Height>
+                              <Height>0.65889cm</Height>
                               <Width>7.78066cm</Width>
                               <ZIndex>2</ZIndex>
                               <Style>
@@ -126,7 +128,7 @@
                                   </Style>
                                 </Paragraph>
                               </Paragraphs>
-                              <Top>0.81317in</Top>
+                              <Top>0.74373in</Top>
                               <Left>0.22521in</Left>
                               <Height>0.423cm</Height>
                               <Width>7.78066cm</Width>
@@ -152,7 +154,7 @@
                                   </Style>
                                 </Paragraph>
                               </Paragraphs>
-                              <Top>0.99221in</Top>
+                              <Top>0.92277in</Top>
                               <Left>0.22521in</Left>
                               <Height>0.423cm</Height>
                               <Width>7.78066cm</Width>
@@ -178,8 +180,8 @@
                                   </Style>
                                 </Paragraph>
                               </Paragraphs>
-                              <Top>0.63414in</Top>
-                              <Left>4.08571in</Left>
+                              <Top>0.5647in</Top>
+                              <Left>4.08538in</Left>
                               <Height>0.423cm</Height>
                               <Width>7.78066cm</Width>
                               <ZIndex>5</ZIndex>
@@ -204,8 +206,8 @@
                                   </Style>
                                 </Paragraph>
                               </Paragraphs>
-                              <Top>0.81317in</Top>
-                              <Left>4.08571in</Left>
+                              <Top>0.74373in</Top>
+                              <Left>4.08538in</Left>
                               <Height>0.423cm</Height>
                               <Width>7.78066cm</Width>
                               <ZIndex>6</ZIndex>
@@ -230,8 +232,8 @@
                                   </Style>
                                 </Paragraph>
                               </Paragraphs>
-                              <Top>0.99221in</Top>
-                              <Left>4.08571in</Left>
+                              <Top>0.92277in</Top>
+                              <Left>4.08538in</Left>
                               <Height>0.423cm</Height>
                               <Width>7.78066cm</Width>
                               <ZIndex>7</ZIndex>

@@ -1513,6 +1513,16 @@ codeunit 4001 "Hybrid Cloud Management"
         IntelligentCloudStatus.Delete();
     end;
 
+    procedure RunDataUpgradeAPI(var HybridReplicationSummary: Record "Hybrid Replication Summary")
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        HybridDeployment: Codeunit "Hybrid Deployment";
+    begin
+        IntelligentCloudSetup.Get();
+        HybridDeployment.Initialize(IntelligentCloudSetup."Product ID");
+        RunDataUpgrade(HybridReplicationSummary);
+    end;
+
     procedure RunDataUpgrade(var HybridReplicationSummary: Record "Hybrid Replication Summary")
     var
         ExistingHybridReplicationSummary: Record "Hybrid Replication Summary";

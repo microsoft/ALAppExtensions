@@ -23,11 +23,11 @@ page 6211 "Sustainability Account Card"
                 field("No."; Rec."No.")
                 {
                     Importance = Promoted;
-                    ToolTip = 'Specifies the sustainability account number in the chart of sustainability accounts.';
+                    ToolTip = 'Specifies the account number of the sustainability account.';
                 }
                 field("No. 2"; Rec."No. 2")
                 {
-                    ToolTip = 'Specifies an alternative account number which can be used internally in the company.';
+                    ToolTip = 'Specifies the additional account number of the sustainability account.';
                     Visible = false;
                 }
                 field(Name; Rec.Name)
@@ -63,12 +63,12 @@ page 6211 "Sustainability Account Card"
                 }
                 field(Blocked; Rec.Blocked)
                 {
-                    ToolTip = 'Specifies that the related record is blocked from being posted in transactions, for example a customer that is declared insolvent or an item that is placed in quarantine.';
+                    ToolTip = 'Specifies if the account is blocked. If the field is selected, then the account is blocked and you cannot post to it.';
                     Visible = false;
                 }
                 field("Direct Posting"; Rec."Direct Posting")
                 {
-                    ToolTip = 'Specifies if you can post directly to this general ledger account. If the field is not selected, then users must use sales documents, for example, and not post directly to the general ledger.';
+                    ToolTip = 'Specifies whether you will be able to post directly or only indirectly to this sustainability account. To allow Direct Posting to the sustainability account, place a check mark in the check box.';
                 }
             }
             group(Balances)

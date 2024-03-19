@@ -358,6 +358,7 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     ShowMandatory = true;
+                    Caption = 'Customer/Company Template Code';
                     ToolTip = 'Specifies which customer template to use when creating unknown customers.';
                     Visible = not NewTemplatesEnabled;
                     ObsoleteReason = 'Generic Templates will be replaced with Customer Templates. Use Customer Templ. Code instead.';
@@ -367,7 +368,7 @@ page 30101 "Shpfy Shop Card"
 #endif
                 field(CustomerTemplCode; Rec."Customer Templ. Code")
                 {
-                    Caption = 'Customer Template Code';
+                    Caption = 'Customer/Company Template Code';
                     ToolTip = 'Specifies which customer template to use when creating unknown customers.';
                     ShowMandatory = true;
                     ApplicationArea = All;
@@ -421,7 +422,52 @@ page 30101 "Shpfy Shop Card"
                 field(CountySource; Rec."County Source")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies how to synchronize the county of the customer.';
+                    ToolTip = 'Specifies how to synchronize the county of the customer/company.';
+                }
+            }
+            group("B2B Company Synchronization")
+            {
+                Visible = Rec."B2B Enabled";
+                field("Company Import From Shopify"; Rec."Company Import From Shopify")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies how Shopify companies are synced to Business Central.';
+                    Importance = Promoted;
+                }
+                field("Company Mapping Type"; Rec."Company Mapping Type")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies how to map companies.';
+                }
+                field("Auto Create Unknown Companies"; Rec."Auto Create Unknown Companies")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies if unknown companies are automatically created in D365BC when synchronizing from Shopify.';
+                }
+                field("Default Company No."; Rec."Default Company No.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the default customer when not creating a company for each B2B company.';
+                }
+                field("Shopify Can Update Companies"; Rec."Shopify Can Update Companies")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies whether Shopify can update companies when synchronizing from Shopify.';
+                }
+                field("Can Update Shopify Companies"; Rec."Can Update Shopify Companies")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies whether D365BC can update companies when synchronizing to Shopify.';
+                }
+                field("Default Customer Permission"; Rec."Default Contact Permission")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the default customer permission for new companies.';
+                }
+                field("Auto Create Catalog"; Rec."Auto Create Catalog")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies whether a catalog is automatically created for new companies.';
                 }
             }
             group(OrderProcessing)
@@ -557,50 +603,6 @@ page 30101 "Shpfy Shop Card"
                             CurrPage.Update(true);
                         end;
                     }
-                }
-            }
-            group("B2B Company Synchronization")
-            {
-                Visible = Rec."B2B Enabled";
-                field("Can Update Shopify Companies"; Rec."Can Update Shopify Companies")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies whether D365BC can update companies when synchronizing to Shopify.';
-                }
-                field("Shopify Can Update Companies"; Rec."Shopify Can Update Companies")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies whether Shopify can update companies when synchronizing from Shopify.';
-                }
-                field("Company Import From Shopify"; Rec."Company Import From Shopify")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies how Shopify companies are synced to Business Central.';
-                }
-                field("Auto Create Unknown Companies"; Rec."Auto Create Unknown Companies")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies if unknown companies are automatically created in D365BC when synchronizing from Shopify.';
-                }
-                field("Default Company No."; Rec."Default Company No.")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the default customer when not creating a company for each B2B company.';
-                }
-                field("Company Mapping Type"; Rec."Company Mapping Type")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies how to map companies.';
-                }
-                field("Default Customer Permission"; Rec."Default Contact Permission")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the default customer permission for new companies.';
-                }
-                field("Auto Create Catalog"; Rec."Auto Create Catalog")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies whether a catalog is automatically created for new companies.';
                 }
             }
         }

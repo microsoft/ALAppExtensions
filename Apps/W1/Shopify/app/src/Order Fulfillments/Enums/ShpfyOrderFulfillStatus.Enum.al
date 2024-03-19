@@ -46,4 +46,8 @@ enum 30113 "Shpfy Order Fulfill. Status"
     {
         Caption = 'Partially Fulfilled';
     }
+    value(9; "On Hold")
+    {
+        Caption = 'On Hold';
+    }
 }

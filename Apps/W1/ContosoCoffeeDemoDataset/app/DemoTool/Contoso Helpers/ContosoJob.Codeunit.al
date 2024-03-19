@@ -50,27 +50,17 @@ codeunit 5186 "Contoso Job"
             JobPostingGroup.Insert(true);
     end;
 
-    procedure InsertJob(JobNo: Code[20]; Description: Text[100]; CustomerNo: Code[20]; ExternalDocumentNo: Code[35])
+    procedure InsertJob(Description: Text[100]; CustomerNo: Code[20]; ExternalDocumentNo: Code[35]): Record Job
     var
         Job: Record Job;
-        Exists: Boolean;
     begin
-        if Job.Get(JobNo) then begin
-            Exists := true;
-
-            if not OverwriteData then
-                exit;
-        end;
-
-        Job.Validate("No.", JobNo);
         Job.Validate(Description, Description);
         Job.Validate("Bill-to Customer No.", CustomerNo);
         Job.Validate("External Document No.", ExternalDocumentNo);
 
-        if Exists then
-            Job.Modify(true)
-        else
-            Job.Insert(true);
+        Job.Insert(true);
+
+        exit(Job);
     end;
 
     procedure InsertJobTask(JobNo: Code[20]; JobTaskNo: Code[20]; Description: Text[100]; JobTaskType: Enum "Job Task Type")
@@ -108,7 +98,8 @@ codeunit 5186 "Contoso Job"
         JobPlanningLine.Validate("No.", No);
         JobPlanningLine.Validate(Quantity, Quantity);
         JobPlanningLine.Validate("Location Code", LocationCode);
-        JobPlanningLine.Validate(Description, LineDescription);
+        if LineDescription <> '' then
+            JobPlanningLine.Validate(Description, LineDescription);
         JobPlanningLine.Insert(true);
     end;
 

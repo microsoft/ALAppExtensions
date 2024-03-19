@@ -108,7 +108,7 @@ codeunit 139902 "Service Declaration UI Tests"
         NoSeriesLine: Record "No. Series Line";
         ServDeclSetup: Record "Service Declaration Setup";
         ServDeclHeader: Record "Service Declaration Header";
-        NoSeriesMgt: Codeunit NoSeriesManagement;
+        NoSeriesCodeunit: Codeunit "No. Series";
     begin
         // [SCENARIO 457814] Stan cannot set service declaration number manually if this number already exists
         Initialize();
@@ -121,7 +121,7 @@ codeunit 139902 "Service Declaration UI Tests"
         ServDeclSetup.Validate("Declaration No. Series", NoSeries.Code);
         ServDeclSetup.Modify(true);
         // [GIVEN] Service declaration with number "SERVDECL-001" from No. Series inserted manually
-        ServDeclHeader.Validate("No.", NoSeriesMgt.GetNextNo(ServDeclSetup."Declaration No. Series", WorkDate(), false));
+        ServDeclHeader.Validate("No.", NoSeriesCodeunit.PeekNextNo(ServDeclSetup."Declaration No. Series"));
         ServDeclHeader.Insert(true);
         // [WHEN] Call AssistEdit and select No. Series "X"
         Asserterror ServDeclHeader.AssistEdit(ServDeclHeader);

@@ -19,12 +19,12 @@
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>18.00001cm</Width>
+                  <Width>17.99999cm</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
                 <TablixRow>
-                  <Height>7.21136in</Height>
+                  <Height>7.93349in</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -4029,10 +4029,10 @@ Cstr(Fields!PageLbl.Value)</Value>
                                     <Width>0.98425in</Width>
                                   </TablixColumn>
                                   <TablixColumn>
-                                    <Width>0.98425in</Width>
+                                    <Width>0.98423in</Width>
                                   </TablixColumn>
                                   <TablixColumn>
-                                    <Width>0.98425in</Width>
+                                    <Width>0.88008in</Width>
                                   </TablixColumn>
                                 </TablixColumns>
                                 <TablixRows>
@@ -4800,7 +4800,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                               <Top>422.8pt</Top>
                               <Left>0.00003cm</Left>
                               <Height>0.70868in</Height>
-                              <Width>5.70865in</Width>
+                              <Width>5.60446in</Width>
                               <ZIndex>2</ZIndex>
                               <Style>
                                 <Border>
@@ -4913,8 +4913,8 @@ Cstr(Fields!PageLbl.Value)</Value>
                                   </FilterValues>
                                 </Filter>
                               </Filters>
-                              <Top>16.87625cm</Top>
-                              <Left>0.00003cm</Left>
+                              <Top>18.55969cm</Top>
+                              <Left>0.00012cm</Left>
                               <Height>0.45001cm</Height>
                               <Width>17.99998cm</Width>
                               <ZIndex>3</ZIndex>
@@ -4997,8 +4997,8 @@ Cstr(Fields!PageLbl.Value)</Value>
                                   </FilterValues>
                                 </Filter>
                               </Filters>
-                              <Top>17.35801cm</Top>
-                              <Left>11.99998cm</Left>
+                              <Top>19.11554cm</Top>
+                              <Left>12.00002cm</Left>
                               <Height>0.45001cm</Height>
                               <Width>6.00001cm</Width>
                               <ZIndex>4</ZIndex>
@@ -5109,8 +5109,8 @@ Cstr(Fields!PageLbl.Value)</Value>
                                   </FilterValues>
                                 </Filter>
                               </Filters>
-                              <Top>17.89353cm</Top>
-                              <Left>0.00003cm</Left>
+                              <Top>19.65106cm</Top>
+                              <Left>0.00007cm</Left>
                               <Height>0.42333cm</Height>
                               <Width>17.80794cm</Width>
                               <ZIndex>5</ZIndex>
@@ -5120,6 +5120,74 @@ Cstr(Fields!PageLbl.Value)</Value>
                                 </Border>
                               </Style>
                             </Tablix>
+                            <Textbox Name="QRCode">
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Fields!QRPaymentCode.Value</Value>
+                                      <Style>
+                                        <FontFamily>IDAutomation2D</FontFamily>
+                                        <FontSize>8pt</FontSize>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>QRCode</rd:DefaultName>
+                              <Top>14.8008cm</Top>
+                              <Left>14.30805cm</Left>
+                              <Height>3.3441cm</Height>
+                              <Width>3.6919cm</Width>
+                              <ZIndex>6</ZIndex>
+                              <Visibility>
+                                <Hidden>=IIF(Fields!QRPaymentCode.Value = "", True, False)</Hidden>
+                              </Visibility>
+                              <Style>
+                                <Border />
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                            <Textbox Name="Textbox1">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Fields!QRPaymentLbl.Value</Value>
+                                      <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox1</rd:DefaultName>
+                              <Top>18.18017cm</Top>
+                              <Left>14.5cm</Left>
+                              <Height>0.30896cm</Height>
+                              <Width>2.5cm</Width>
+                              <ZIndex>7</ZIndex>
+                              <Visibility>
+                                <Hidden>=IIF(Fields!QRPaymentCode.Value = "", True, False)</Hidden>
+                              </Visibility>
+                              <Style>
+                                <Border>
+                                  <Style>None</Style>
+                                </Border>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
                           </ReportItems>
                           <KeepTogether>true</KeepTogether>
                           <Style>
@@ -5164,8 +5232,9 @@ Cstr(Fields!PageLbl.Value)</Value>
                 </FilterValues>
               </Filter>
             </Filters>
-            <Height>7.21136in</Height>
-            <Width>18.00001cm</Width>
+            <Left>0.00005cm</Left>
+            <Height>7.93349in</Height>
+            <Width>17.99999cm</Width>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -5173,12 +5242,12 @@ Cstr(Fields!PageLbl.Value)</Value>
             </Style>
           </Tablix>
         </ReportItems>
-        <Height>18.31686cm</Height>
+        <Height>20.65378cm</Height>
         <Style>
           <Border />
         </Style>
       </Body>
-      <Width>18.00001cm</Width>
+      <Width>18.00008cm</Width>
       <Page>
         <PageHeader>
           <Height>2.2cm</Height>
@@ -5204,6 +5273,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                 </Paragraph>
               </Paragraphs>
               <Top>0.8cm</Top>
+              <Left>0.00005cm</Left>
               <Height>0.5cm</Height>
               <Width>17.99999cm</Width>
               <Style>
@@ -5234,7 +5304,8 @@ Cstr(Fields!PageLbl.Value)</Value>
                   </Style>
                 </Paragraph>
               </Paragraphs>
-              <Top>1.3cm</Top>
+              <Top>1.33528cm</Top>
+              <Left>0.00005cm</Left>
               <Height>0.5cm</Height>
               <Width>18cm</Width>
               <ZIndex>1</ZIndex>
@@ -5267,6 +5338,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                   </Style>
                 </Paragraph>
               </Paragraphs>
+              <Left>0.00005cm</Left>
               <Height>0.8cm</Height>
               <Width>18cm</Width>
               <ZIndex>2</ZIndex>
@@ -5285,6 +5357,7 @@ Cstr(Fields!PageLbl.Value)</Value>
               <Value>=IIf(Code.GetData(3,1)=1,First(Fields!Picture_CompanyInformation.Value, "DataSet_Result"),"")</Value>
               <MIMEType>image/bmp</MIMEType>
               <Sizing>FitProportional</Sizing>
+              <Left>0.00005cm</Left>
               <Height>14mm</Height>
               <Width>60mm</Width>
               <ZIndex>3</ZIndex>
@@ -5302,7 +5375,7 @@ Cstr(Fields!PageLbl.Value)</Value>
               <Value>=IIf(Code.GetData(3,1)=2,First(Fields!Picture_CompanyInformation.Value, "DataSet_Result"),"")</Value>
               <MIMEType>image/bmp</MIMEType>
               <Sizing>FitProportional</Sizing>
-              <Left>6cm</Left>
+              <Left>6.00005cm</Left>
               <Height>14mm</Height>
               <Width>60mm</Width>
               <ZIndex>4</ZIndex>
@@ -5320,7 +5393,7 @@ Cstr(Fields!PageLbl.Value)</Value>
               <Value>=IIf(Code.GetData(3,1)=3,First(Fields!Picture_CompanyInformation.Value, "DataSet_Result"),"")</Value>
               <MIMEType>image/bmp</MIMEType>
               <Sizing>FitProportional</Sizing>
-              <Left>12cm</Left>
+              <Left>12.00005cm</Left>
               <Height>14mm</Height>
               <Width>60mm</Width>
               <ZIndex>5</ZIndex>
@@ -5341,7 +5414,7 @@ Cstr(Fields!PageLbl.Value)</Value>
           </Style>
         </PageHeader>
         <PageFooter>
-          <Height>1.77002cm</Height>
+          <Height>0.67639cm</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -5360,7 +5433,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                   <Style />
                 </Paragraph>
               </Paragraphs>
-              <Top>1.27001cm</Top>
+              <Top>0.14111cm</Top>
               <Height>0.5cm</Height>
               <Width>12cm</Width>
               <Style>
@@ -5389,7 +5462,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                   </Style>
                 </Paragraph>
               </Paragraphs>
-              <Top>1.26999cm</Top>
+              <Top>0.17639cm</Top>
               <Left>12cm</Left>
               <Height>0.5cm</Height>
               <Width>6cm</Width>
@@ -5664,6 +5737,9 @@ End Function</Code>
         <Field Name="DocumentNoLbl">
           <DataField>DocumentNoLbl</DataField>
         </Field>
+        <Field Name="QRPaymentLbl">
+          <DataField>QRPaymentLbl</DataField>
+        </Field>
         <Field Name="No_SalesInvoiceHeader">
           <DataField>No_SalesInvoiceHeader</DataField>
         </Field>
@@ -5825,6 +5901,9 @@ End Function</Code>
         </Field>
         <Field Name="ShipToAddr6">
           <DataField>ShipToAddr6</DataField>
+        </Field>
+        <Field Name="QRPaymentCode">
+          <DataField>QRPaymentCode</DataField>
         </Field>
         <Field Name="CopyNo">
           <DataField>CopyNo</DataField>

@@ -72,9 +72,6 @@ codeunit 6216 "Sustainability Jnl.-Check"
     var
         SustainabilityJnlCheck: Codeunit "Sustainability Jnl.-Check";
     begin
-        if SustainabilityJnlLine."Line No." = 0 then
-            exit;
-
         SustainabilityJnlCheck.CheckSustainabilityJournalLine(SustainabilityJnlLine);
     end;
 

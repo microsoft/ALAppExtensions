@@ -32,6 +32,11 @@ codeunit 4781 "Contoso Purchase"
     end;
 
     procedure InsertPurchaseLineWithItem(PurchaseHeader: Record "Purchase Header"; ItemNo: Code[20]; Quantity: Decimal; UnitOfMeasureCode: Code[10]; UnitCost: Decimal)
+    begin
+        InsertPurchaseLineWithItem(PurchaseHeader, ItemNo, Quantity, UnitOfMeasureCode, UnitCost, 0);
+    end;
+
+    procedure InsertPurchaseLineWithItem(PurchaseHeader: Record "Purchase Header"; ItemNo: Code[20]; Quantity: Decimal; UnitOfMeasureCode: Code[10]; UnitCost: Decimal; LineDiscount: Decimal)
     var
         Item: Record Item;
         PurchaseLine: Record "Purchase Line";
@@ -45,15 +50,16 @@ codeunit 4781 "Contoso Purchase"
 
         if UnitOfMeasureCode <> '' then begin
             PurchaseLine.Validate("Unit of Measure Code", UnitOfMeasureCode);
-            PurchaseLine.Validate("Unit Cost", UnitCost);
+            PurchaseLine.Validate("Direct Unit Cost", UnitCost);
         end else begin
             Item.SetBaseLoadFields();
             Item.Get(ItemNo);
             PurchaseLine.Validate("Unit of Measure Code", Item."Base Unit of Measure");
-            PurchaseLine.Validate("Unit Cost", Item."Unit Cost");
+            PurchaseLine.Validate("Direct Unit Cost", Item."Unit Cost");
         end;
 
         PurchaseLine.Validate(Quantity, Quantity);
+        PurchaseLine.Validate("Line Discount %", LineDiscount);
         PurchaseLine.Insert(true);
     end;
 

@@ -35,14 +35,17 @@ table 6165 "E-Doc. Imported Line"
             Caption = 'Unit Of Measure';
             Editable = false;
         }
-        field(6; Quantity; Integer)
+#pragma warning disable AS0004
+        field(6; Quantity; Decimal)
         {
             Caption = 'Quantity';
+            DecimalPlaces = 0 : 5;
             Editable = false;
         }
-        field(7; "Matched Quantity"; Integer)
+        field(7; "Matched Quantity"; Decimal)
         {
             Caption = 'Matched Quantity';
+            DecimalPlaces = 0 : 5;
             Editable = false;
 
             trigger OnValidate()
@@ -53,6 +56,7 @@ table 6165 "E-Doc. Imported Line"
                 Validate("Fully Matched");
             end;
         }
+#pragma warning restore AS0004
         field(8; "Fully Matched"; Boolean)
         {
             Caption = 'Fully Matched';
@@ -115,7 +119,7 @@ table 6165 "E-Doc. Imported Line"
         TempEDocImportedLine.SetRange("E-Document Entry No.", EDocument."Entry No");
         LineNo := TempEDocImportedLine.GetNextLineNo();
 
-        TempEDocImportedLine.Reset();
+        Clear(TempEDocImportedLine);
         TempEDocImportedLine."E-Document Entry No." := EDocument."Entry No";
         TempEDocImportedLine."Line No." := LineNo;
         TempEDocImportedLine."No." := PurchaseLine."No.";
@@ -130,8 +134,7 @@ table 6165 "E-Doc. Imported Line"
         TempEDocImportedLine.Type := PurchaseLine.Type;
         TempEDocImportedLine.Quantity := PurchaseLine.Quantity;
         TempEDocImportedLine."Direct Unit Cost" := PurchaseLine."Direct Unit Cost";
-        if PurchaseLine."Line Discount Amount" > 0 then
-            TempEDocImportedLine."Line Discount %" := 100 * (PurchaseLine."Line Discount Amount" / (PurchaseLine.Amount + PurchaseLine."Line Discount Amount"));
+        TempEDocImportedLine."Line Discount %" := 100 * (PurchaseLine."Line Discount Amount" / (PurchaseLine.Amount + PurchaseLine."Line Discount Amount"));
         TempEDocImportedLine.Insert();
     end;
 

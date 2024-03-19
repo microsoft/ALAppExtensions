@@ -409,26 +409,44 @@ codeunit 30106 "Shpfy Upgrade Mgt."
 
     local procedure CreditMemoCanBeCreatedUpgrade()
     var
-        RefundLine: Record "Shpfy Refund Line";
+        RefundHeader: Record "Shpfy Refund Header";
         UpgradeTag: Codeunit "Upgrade Tag";
-        RefundLineDataTransfer: DataTransfer;
+        HeadersInFilter, MaxHeadersInFilter : Integer;
+        RefundIdFilter: Text;
     begin
         if UpgradeTag.HasUpgradeTag(GetCreditMemoCanBeCreatedUpgradeTag()) then
             exit;
 
+        MaxHeadersInFilter := 100;
+        RefundHeader.SetFilter("Total Refunded Amount", '>%1', 0);
+        if RefundHeader.FindSet() then
+            repeat
+                if RefundIdFilter <> '' then
+                    RefundIdFilter += '|';
+                RefundIdFilter += Format(RefundHeader."Refund Id");
+                HeadersInFilter += 1;
+                if HeadersInFilter >= MaxHeadersInFilter then begin
+                    SetCanCreateCreditMemoInRefundLines(RefundIdFilter);
+                    RefundIdFilter := '';
+                    HeadersInFilter := 0;
+                end;
+            until RefundHeader.Next() = 0;
+        if RefundIdFilter <> '' then
+            SetCanCreateCreditMemoInRefundLines(RefundIdFilter);
+
+        UpgradeTag.SetUpgradeTag(GetCreditMemoCanBeCreatedUpgradeTag());
+    end;
+
+    local procedure SetCanCreateCreditMemoInRefundLines(RefundIdFilter: Text)
+    var
+        RefundLine: Record "Shpfy Refund Line";
+        RefundLineDataTransfer: DataTransfer;
+    begin
         RefundLineDataTransfer.SetTables(Database::"Shpfy Refund Line", Database::"Shpfy Refund Line");
-        RefundLineDataTransfer.AddSourceFilter(RefundLine.FieldNo("Restock Type"), '=%1|%2|%3', RefundLine."Restock Type"::Return, RefundLine."Restock Type"::"Legacy Restock", RefundLine."Restock Type"::"No Restock");
+        RefundLineDataTransfer.AddSourceFilter(RefundLine.FieldNo("Refund Id"), RefundIdFilter);
         RefundLineDataTransfer.AddConstantValue(true, RefundLine.FieldNo("Can Create Credit Memo"));
         RefundLineDataTransfer.UpdateAuditFields(false);
         RefundLineDataTransfer.CopyFields();
-        Clear(RefundLineDataTransfer);
-        RefundLineDataTransfer.SetTables(Database::"Shpfy Refund Line", Database::"Shpfy Refund Line");
-        RefundLineDataTransfer.AddSourceFilter(RefundLine.FieldNo("Restock Type"), '=%1', RefundLine."Restock Type"::Cancel);
-        RefundLineDataTransfer.AddConstantValue(false, RefundLine.FieldNo("Can Create Credit Memo"));
-        RefundLineDataTransfer.UpdateAuditFields(false);
-        RefundLineDataTransfer.CopyFields();
-
-        UpgradeTag.SetUpgradeTag(GetCreditMemoCanBeCreatedUpgradeTag());
     end;
 
     local procedure GetShopifyB2BEnabledUpgradeTag(): Code[250]

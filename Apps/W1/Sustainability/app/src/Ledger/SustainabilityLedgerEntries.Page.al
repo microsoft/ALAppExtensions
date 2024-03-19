@@ -35,17 +35,13 @@ page 6220 "Sustainability Ledger Entries"
                     Caption = 'Batch Name';
                     ToolTip = 'Specifies the name of the journal batch.';
                 }
-                field("Line No."; Rec."Line No.")
-                {
-                    ToolTip = 'Specifies the line number of the journal line.';
-                }
                 field("Posting Date"; Rec."Posting Date")
                 {
                     ToolTip = 'Specifies the date when the transaction is posted.';
                 }
                 field("Document Type"; Rec."Document Type")
                 {
-                    ToolTip = 'Specifies the document type.';
+                    ToolTip = 'Specifies the type of the document.';
                 }
                 field("Document No."; Rec."Document No.")
                 {
@@ -73,7 +69,7 @@ page 6220 "Sustainability Ledger Entries"
                 }
                 field(Description; Rec.Description)
                 {
-                    ToolTip = 'Specifies the description of the journal line.';
+                    ToolTip = 'Specifies the description of the entry.';
                 }
                 field("Manual Input"; Rec."Manual Input")
                 {
@@ -81,55 +77,59 @@ page 6220 "Sustainability Ledger Entries"
                 }
                 field("Unit of Measure"; Rec."Unit of Measure")
                 {
-                    ToolTip = 'Specifies the unit of measure of the journal line.';
+                    ToolTip = 'Specifies the unit of measure of the entry.';
                 }
                 field("Fuel/Electricity"; Rec."Fuel/Electricity")
                 {
-                    ToolTip = 'Specifies the fuel or electricity of the journal line.';
+                    ToolTip = 'Specifies the fuel or electricity of the entry.';
                 }
                 field(Distance; Rec.Distance)
                 {
-                    ToolTip = 'Specifies the distance of the journal line.';
+                    ToolTip = 'Specifies the distance of the entry.';
                 }
                 field("Custom Amount"; Rec."Custom Amount")
                 {
-                    ToolTip = 'Specifies the custom amount of the journal line.';
+                    ToolTip = 'Specifies the custom amount of the entry.';
                 }
                 field("Emission Factor CO2"; Rec."Emission Factor CO2")
                 {
-                    ToolTip = 'Specifies the emission factor CO2 of the journal line.';
+                    ToolTip = 'Specifies the emission factor CO2 of the entry.';
                 }
                 field("Emission Factor CH4"; Rec."Emission Factor CH4")
                 {
-                    ToolTip = 'Specifies the emission factor CH4 of the journal line.';
+                    ToolTip = 'Specifies the emission factor CH4 of the entry.';
                 }
                 field("Emission Factor N2O"; Rec."Emission Factor N2O")
                 {
-                    ToolTip = 'Specifies the emission factor N2O of the journal line.';
+                    ToolTip = 'Specifies the emission factor N2O of the entry.';
                 }
                 field("Installation Multiplier"; Rec."Installation Multiplier")
                 {
-                    ToolTip = 'Specifies the installation multiplier of the journal line.';
+                    ToolTip = 'Specifies the installation multiplier of the entry.';
                 }
                 field("Time Factor"; Rec."Time Factor")
                 {
-                    ToolTip = 'Specifies the time factor of the journal line.';
+                    ToolTip = 'Specifies the time factor of the entry.';
                 }
                 field("Emission CO2"; Rec."Emission CO2")
                 {
-                    ToolTip = 'Specifies the emission CO2 of the journal line.';
+                    ToolTip = 'Specifies the emission CO2 of the entry.';
                 }
                 field("Emission CH4"; Rec."Emission CH4")
                 {
-                    ToolTip = 'Specifies the emission CH4 of the journal line.';
+                    ToolTip = 'Specifies the emission CH4 of the entry.';
                 }
                 field("Emission N2O"; Rec."Emission N2O")
                 {
-                    ToolTip = 'Specifies the emission N2O of the journal line.';
+                    ToolTip = 'Specifies the emission N2O of the entry.';
                 }
                 field("Country/Region Code"; Rec."Country/Region Code")
                 {
-                    ToolTip = 'Specifies the country/region code of the journal line.';
+                    ToolTip = 'Specifies the country/region code of the entry.';
+                }
+                field("Responsibility Center"; Rec."Responsibility Center")
+                {
+                    ToolTip = 'Specifies the responsibility center of the entry.';
                 }
                 field("Global Dimension 1 Code"; Rec."Global Dimension 1 Code")
                 {

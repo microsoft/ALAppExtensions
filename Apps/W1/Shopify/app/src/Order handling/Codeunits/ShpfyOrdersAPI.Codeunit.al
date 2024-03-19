@@ -109,7 +109,12 @@ codeunit 30165 "Shpfy Orders API"
     /// <param name="OrderHeader">Parameter of type Record "Shopify Order Header".</param>
     /// <param name="KeyName">Parameter of type Text.</param>
     /// <param name="Value">Parameter of type Text.</param>
+#if not CLEAN24
+    /// <param name="ShopifyShop">Parameter of type Record "Shpfy Shop".</param>
+    internal procedure AddOrderAttribute(OrderHeader: Record "Shpfy Order Header"; KeyName: Text; Value: Text; ShopifyShop: Record "Shpfy Shop")
+#else
     internal procedure AddOrderAttribute(OrderHeader: Record "Shpfy Order Header"; KeyName: Text; Value: Text)
+#endif
     var
         OrderAttribute: Record "Shpfy Order Attribute";
         Parameters: Dictionary of [Text, Text];
@@ -122,7 +127,7 @@ codeunit 30165 "Shpfy Orders API"
         OrderAttribute."Order Id" := OrderHeader."Shopify Order Id";
         OrderAttribute."Key" := CopyStr(KeyName, 1, MaxStrLen(OrderAttribute."Key"));
 #if not CLEAN24
-        if not Shop."Replace Order Attribute Value" then
+        if not ShopifyShop."Replace Order Attribute Value" then
             OrderAttribute.Value := CopyStr(Value, 1, MaxStrLen(OrderAttribute.Value))
         else
 #endif
@@ -137,7 +142,7 @@ codeunit 30165 "Shpfy Orders API"
                 Clear(JAttrib);
                 JAttrib.Add('key', OrderAttribute."Key");
 #if not CLEAN24
-                if not Shop."Replace Order Attribute Value" then
+                if not ShopifyShop."Replace Order Attribute Value" then
                     JAttrib.Add('value', OrderAttribute.Value)
                 else
 #endif

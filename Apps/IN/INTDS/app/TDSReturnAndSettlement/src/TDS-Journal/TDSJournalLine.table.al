@@ -822,7 +822,7 @@ table 18747 "TDS Journal Line"
         TDSJournalLine: Record "TDS Journal Line";
         TDSJournalTemplate: Record "TDS Journal Template";
         TDSJournalBatch: Record "TDS Journal Batch";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
         TDSJournalTemplate.Get("Journal Template Name");
         TDSJournalBatch.Get("Journal Template Name", "Journal Batch Name");
@@ -841,10 +841,8 @@ table 18747 "TDS Journal Line"
         end else begin
             "Posting Date" := WorkDate();
             "Document Date" := WorkDate();
-            if TDSJournalBatch."No. Series" <> '' then begin
-                Clear(NoSeriesManagement);
-                "Document No." := NoSeriesManagement.GetNextNo(TDSJournalBatch."No. Series", "Posting Date", false);
-            end;
+            if TDSJournalBatch."No. Series" <> '' then
+                "Document No." := NoSeries.PeekNextNo(TDSJournalBatch."No. Series", "Posting Date");
         end;
         Validate("Account Type", LastTDSJournalLine."Account Type");
         Validate("Document Type", LastTDSJournalLine."Document Type");

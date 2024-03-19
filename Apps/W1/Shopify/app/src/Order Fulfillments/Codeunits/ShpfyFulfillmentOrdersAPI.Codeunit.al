@@ -123,8 +123,10 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
             Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'id'));
 
             if FulfillmentOrderHeader.Get(Id) then begin
-                if FulfillmentOrderHeader."Updated At" = JsonHelper.GetValueAsDateTime(JNode, 'updatedAt') then
+                if FulfillmentOrderHeader."Updated At" = JsonHelper.GetValueAsDateTime(JNode, 'updatedAt') then begin
+                    GetFulfillmentOrderLines(ShopifyShop, FulfillmentOrderHeader);
                     exit;
+                end;
             end else
                 Clear(FulfillmentOrderHeader);
             FulfillmentOrderHeader."Shopify Fulfillment Order Id" := Id;
@@ -134,6 +136,7 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
             FulfillmentOrderHeader."Shopify Location Id" := JsonHelper.GetValueAsBigInteger(JNode, 'assignedLocation.location.legacyResourceId');
             FulfillmentOrderHeader."Updated At" := JsonHelper.GetValueAsDateTime(JNode, 'updatedAt');
             FulfillmentOrderHeader.Status := CopyStr(JsonHelper.GetValueAsText(JNode, 'status'), 1, MaxStrLen(FulfillmentOrderHeader.Status));
+            FulfillmentOrderHeader."Delivery Method Type" := ConvertToDeliveryMethodType(JsonHelper.GetValueAsText(JNode, 'deliveryMethod.methodType'));
             if not FulfillmentOrderHeader.Insert() then
                 FulfillmentOrderHeader.Modify();
             GetFulfillmentOrderLines(ShopifyShop, FulfillmentOrderHeader);
@@ -143,6 +146,7 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
     internal procedure ExtractFulfillmentOrderLines(var ShopifyShop: Record "Shpfy Shop"; var FulfillmentOrderHeader: Record "Shpfy FulFillment Order Header"; JResponse: JsonObject; var Cursor: Text): Boolean
     var
         FulfillmentOrderLine: Record "Shpfy FulFillment Order Line";
+        Modified: Boolean;
         Id: BigInteger;
         JFulfillmentOrderLines: JsonArray;
         JNode: JsonObject;
@@ -157,16 +161,48 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
                     if not FulfillmentOrderLine.Get(FulfillmentOrderHeader."Shopify Fulfillment Order Id", Id) then begin
                         FulfillmentOrderLine."Shopify Fulfillment Order Id" := FulfillmentOrderHeader."Shopify Fulfillment Order Id";
                         FulfillmentOrderLine."Shopify Fulfillm. Ord. Line Id" := Id;
+                        FulfillmentOrderLine."Shopify Order Id" := FulfillmentOrderHeader."Shopify Order Id";
+                        FulfillmentOrderLine."Shopify Location Id" := FulfillmentOrderHeader."Shopify Location Id";
+                        FulfillmentOrderLine."Delivery Method Type" := FulfillmentOrderHeader."Delivery Method Type";
+                        FulfillmentOrderLine."Shopify Product Id" := JsonHelper.GetValueAsBigInteger(JNode, 'lineItem.product.legacyResourceId');
+                        FulfillmentOrderLine."Shopify Variant Id" := JsonHelper.GetValueAsBigInteger(JNode, 'lineItem.variant.legacyResourceId');
+                        FulfillmentOrderLine."Total Quantity" := JsonHelper.GetValueAsDecimal(JNode, 'totalQuantity');
+                        FulfillmentOrderLine."Remaining Quantity" := JsonHelper.GetValueAsDecimal(JNode, 'remainingQuantity');
                         FulfillmentOrderLine.Insert();
-                    end;
+                    end else begin
+                        Modified := false;
 
-                    FulfillmentOrderLine."Shopify Order Id" := FulfillmentOrderHeader."Shopify Order Id";
-                    FulfillmentOrderLine."Shopify Location Id" := FulfillmentOrderHeader."Shopify Location Id";
-                    FulfillmentOrderLine."Shopify Product Id" := JsonHelper.GetValueAsBigInteger(JNode, 'lineItem.product.legacyResourceId');
-                    FulfillmentOrderLine."Shopify Variant Id" := JsonHelper.GetValueAsBigInteger(JNode, 'lineItem.variant.legacyResourceId');
-                    FulfillmentOrderLine."Total Quantity" := JsonHelper.GetValueAsDecimal(JNode, 'totalQuantity');
-                    FulfillmentOrderLine."Remaining Quantity" := JsonHelper.GetValueAsDecimal(JNode, 'remainingQuantity');
-                    FulfillmentOrderLine.Modify();
+                        if FulfillmentOrderLine."Shopify Order Id" <> FulfillmentOrderHeader."Shopify Order Id" then begin
+                            Modified := true;
+                            FulfillmentOrderLine."Shopify Order Id" := FulfillmentOrderHeader."Shopify Order Id";
+                        end;
+                        if FulfillmentOrderLine."Shopify Location Id" <> FulfillmentOrderHeader."Shopify Location Id" then begin
+                            Modified := true;
+                            FulfillmentOrderLine."Shopify Location Id" := FulfillmentOrderHeader."Shopify Location Id";
+                        end;
+                        if FulfillmentOrderLine."Delivery Method Type" <> FulfillmentOrderHeader."Delivery Method Type" then begin
+                            Modified := true;
+                            FulfillmentOrderLine."Delivery Method Type" := FulfillmentOrderHeader."Delivery Method Type";
+                        end;
+                        if FulfillmentOrderLine."Shopify Product Id" <> JsonHelper.GetValueAsBigInteger(JNode, 'lineItem.product.legacyResourceId') then begin
+                            Modified := true;
+                            FulfillmentOrderLine."Shopify Product Id" := JsonHelper.GetValueAsBigInteger(JNode, 'lineItem.product.legacyResourceId');
+                        end;
+                        if FulfillmentOrderLine."Shopify Variant Id" <> JsonHelper.GetValueAsBigInteger(JNode, 'lineItem.variant.legacyResourceId') then begin
+                            Modified := true;
+                            FulfillmentOrderLine."Shopify Variant Id" := JsonHelper.GetValueAsBigInteger(JNode, 'lineItem.variant.legacyResourceId');
+                        end;
+                        if FulfillmentOrderLine."Total Quantity" <> JsonHelper.GetValueAsDecimal(JNode, 'totalQuantity') then begin
+                            Modified := true;
+                            FulfillmentOrderLine."Total Quantity" := JsonHelper.GetValueAsDecimal(JNode, 'totalQuantity');
+                        end;
+                        if FulfillmentOrderLine."Remaining Quantity" <> JsonHelper.GetValueAsDecimal(JNode, 'remainingQuantity') then begin
+                            Modified := true;
+                            FulfillmentOrderLine."Remaining Quantity" := JsonHelper.GetValueAsDecimal(JNode, 'remainingQuantity');
+                        end;
+                        if Modified then
+                            FulfillmentOrderLine.Modify();
+                    end;
                 end;
             end;
             exit(true);
@@ -204,5 +240,14 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
                 end else
                     break;
         until not JsonHelper.GetValueAsBoolean(JResponse, 'data.order.fulfillmentOrders.pageInfo.hasNextPage');
+    end;
+
+    local procedure ConvertToDeliveryMethodType(Value: Text): Enum "Shpfy Delivery Method Type"
+    begin
+        Value := CommunicationMgt.ConvertToCleanOptionValue(Value);
+        if Enum::"Shpfy Delivery Method Type".Names().Contains(Value) then
+            exit(Enum::"Shpfy Delivery Method Type".FromInteger(Enum::"Shpfy Delivery Method Type".Ordinals().Get(Enum::"Shpfy Delivery Method Type".Names().IndexOf(Value))))
+        else
+            exit(Enum::"Shpfy Delivery Method Type"::" ");
     end;
 }

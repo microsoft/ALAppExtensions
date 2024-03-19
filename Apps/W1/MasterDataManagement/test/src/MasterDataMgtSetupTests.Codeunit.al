@@ -106,6 +106,7 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
         IntegrationFieldMapping: Record "Integration Field Mapping";
         JobQueueEntry: Record "Job Queue Entry";
         MasterDataMgtSetupTests: Codeunit "Master Data Mgt. Setup Tests";
+        MasterDataMgtSynchTests: Codeunit "Master Data Mgt. Synch. Tests";
         EmptyGuid: Guid;
     begin
         Initialize();
@@ -113,8 +114,10 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
         MasterDataManagementSetup."Company Name" := CopyStr(LibraryRandom.RandText(30), 1, MaxStrLen(MasterDataManagementSetup."Company Name"));
         MasterDataManagementSetup.Validate("Is Enabled", true);
         BindSubscription(MasterDataMgtSetupTests);
+        BindSubscription(MasterDataMgtSynchTests);
         MasterDataManagementSetup.Insert(true);
         UnbindSubscription(MasterDataMgtSetupTests);
+        UnbindSubscription(MasterDataMgtSynchTests);
 
         // insert a dummy coupling
         MasterDataMgtCoupling."Integration System ID" := EmptyGuid;
@@ -176,6 +179,7 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
     var
         MasterDataManagementSetup: Record "Master Data Management Setup";
         IntegrationTableMapping: Record "Integration Table Mapping";
+        JobQueueEntry: Record "Job Queue Entry";
         MasterDataMgtSetupTests: Codeunit "Master Data Mgt. Setup Tests";
         TempBlob: Codeunit "Temp Blob";
         InStr: InStream;
@@ -195,6 +199,9 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
         TempBlob.CreateInStream(InStr, TEXTENCODING::UTF16);
 
         // mappings and job queue entries are deleted
+        JobQueueEntry.SetRange("Object ID to Run", Codeunit::"Integration Synch. Job Runner");
+        JobQueueEntry.SetRange("Recurring Job", true);
+        JobQueueEntry.DeleteAll();
         IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
         if IntegrationTableMapping.FindSet() then
             repeat
@@ -280,15 +287,20 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
         IntegrationFieldMapping: Record "Integration Field Mapping";
         JobQueueEntry: Record "Job Queue Entry";
         MasterDataMgtSetupTests: Codeunit "Master Data Mgt. Setup Tests";
+        MasterDataMgtSynchTests: Codeunit "Master Data Mgt. Synch. Tests";
         EmptyGuid: Guid;
     begin
         Initialize();
+        JobQueueEntry.SetRange("Object ID to Run", Codeunit::"Integration Synch. Job Runner");
+        JobQueueEntry.DeleteAll();
         MasterDataManagementSetup.Init();
         MasterDataManagementSetup."Company Name" := CopyStr(LibraryRandom.RandText(30), 1, MaxStrLen(MasterDataManagementSetup."Company Name"));
         MasterDataManagementSetup.Validate("Is Enabled", true);
         BindSubscription(MasterDataMgtSetupTests);
+        BindSubscription(MasterDataMgtSynchTests);
         MasterDataManagementSetup.Insert(true);
         UnbindSubscription(MasterDataMgtSetupTests);
+        UnbindSubscription(MasterDataMgtSynchTests);
 
         // insert a dummy coupling
         MasterDataMgtCoupling."Integration System ID" := EmptyGuid;
@@ -336,7 +348,7 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
         IntegrationTableMapping: Record "Integration Table Mapping";
         MasterDataMgtCoupling: Record "Master Data Mgt. Coupling";
         MasterDataMgtSubscriber: Record "Master Data Mgt. Subscriber";
-        JObQueueEntry: Record "Job Queue Entry";
+        MasterDataMgtSynchTests: Codeunit "Master Data Mgt. Synch. Tests";
     begin
         OnBeforeInitialize(InitializeHandled);
         if InitializeHandled then
@@ -344,16 +356,16 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
 
         LibrarySetupStorage.Restore();
 
+        BindSubscription(MasterDataMgtSynchTests);
         IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
         if IntegrationTableMapping.FindSet() then
             repeat
                 IntegrationTableMapping.Delete(true);
             until IntegrationTableMapping.Next() = 0;
-        JobQueueEntry.SetRange("Object ID to Run", Codeunit::"Integration Synch. Job Runner");
-        JobQueueEntry.DeleteAll();
         MasterDataMgtCoupling.DeleteAll();
         MasterDataManagementSetup.DeleteAll();
         MasterDataMgtSubscriber.DeleteAll();
+        UnbindSubscription(MasterDataMgtSynchTests);
         Commit();
         OnAfterInitialize(InitializeHandled);
     end;

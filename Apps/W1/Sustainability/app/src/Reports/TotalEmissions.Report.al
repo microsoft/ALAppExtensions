@@ -39,11 +39,9 @@ report 6212 "Total Emissions"
             column(Account_Name; "Account Name")
             {
             }
-            column(Posting_Date; Format("Posting Date"))
+            column(Posting_Date; "Posting Date")
             {
-            }
-            column(Posting_Date_Caption; FieldCaption("Posting Date"))
-            {
+                IncludeCaption = true;
             }
             column(Document_Type; "Document Type")
             {
@@ -78,9 +76,9 @@ report 6212 "Total Emissions"
             trigger OnAfterGetRecord()
             begin
                 if UseReportingUOMFactor then begin
-                    "Emission CO2" := Round("Emission CO2" * ReportingUOMFactor, RoundingPrecission, RoundingDirection);
-                    "Emission CH4" := Round("Emission CH4" * ReportingUOMFactor, RoundingPrecission, RoundingDirection);
-                    "Emission N2O" := Round("Emission N2O" * ReportingUOMFactor, RoundingPrecission, RoundingDirection);
+                    "Emission CO2" := Round("Emission CO2" * ReportingUOMFactor, RoundingPrecision, RoundingDirection);
+                    "Emission CH4" := Round("Emission CH4" * ReportingUOMFactor, RoundingPrecision, RoundingDirection);
+                    "Emission N2O" := Round("Emission N2O" * ReportingUOMFactor, RoundingPrecision, RoundingDirection);
                 end;
             end;
         }
@@ -111,6 +109,20 @@ report 6212 "Total Emissions"
     {
         TotalEmissionsCaption = 'Total Emissions';
         PageCaption = 'Page';
+        CompName = 'Company Name';
+        PostingDate = 'Posting Date';
+        EmissionsPerScopes = 'Emissions Per Scopes';
+        EmissionsThroughPeriod = 'Emissions Through Period';
+        EmissionsSplit = 'Emissions Split';
+        SumOfEmission_CO2 = 'Sum of Emission CO2';
+        SumOfEmission_CH4 = 'Sum of Emission CH4';
+        SumOfEmission_N2O = 'Sum of Emission N2O';
+        EmissionScope = 'Emission Scope';
+        AccountName = 'Account Name';
+        DocumentType = 'Document Type';
+        TotalEmissionOfCO2 = 'Total Emission of CO2';
+        TotalEmissionOfCH4 = 'Total Emission of CH4';
+        TotalEmissionOfN2O = 'Total Emission of N2O';
     }
 
     trigger OnPreReport()
@@ -118,13 +130,13 @@ report 6212 "Total Emissions"
         SustainabilitySetup: Record "Sustainability Setup";
     begin
         SustLedgDateFilter := "Sustainability Ledger Entry".GetFilter("Posting Date");
-        SustainabilitySetup.GetReportingParameters(ReportingUOMCode, UseReportingUOMFactor, ReportingUOMFactor, RoundingDirection, RoundingPrecission);
+        SustainabilitySetup.GetReportingParameters(ReportingUOMCode, UseReportingUOMFactor, ReportingUOMFactor, RoundingDirection, RoundingPrecision);
     end;
 
     var
         ReportingUOMCode: Code[10];
         SustainabilityAccountName, SustLedgDateFilter, RoundingDirection : Text;
         ShowDetails, UseReportingUOMFactor : Boolean;
-        ReportingUOMFactor, RoundingPrecission : Decimal;
+        ReportingUOMFactor, RoundingPrecision : Decimal;
         PeriodLbl: Label 'Period: %1', Comment = '%1 - period filter';
 }

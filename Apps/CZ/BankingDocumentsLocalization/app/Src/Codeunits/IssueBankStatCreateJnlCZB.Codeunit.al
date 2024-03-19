@@ -5,6 +5,8 @@
 
 namespace Microsoft.Bank.Documents;
 
+using Microsoft.Utilities;
+
 codeunit 31230 "IssueBank.Stat.Create Jnl. CZB"
 {
     TableNo = "Bank Statement Header CZB";
@@ -22,6 +24,8 @@ codeunit 31230 "IssueBank.Stat.Create Jnl. CZB"
     procedure Code()
     var
         IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB";
+        InstructionMgt: Codeunit "Instruction Mgt.";
+        InstructionMgtCZB: Codeunit "Instruction Mgt. CZB";
         SuppressCommit: Boolean;
     begin
         Codeunit.Run(Codeunit::"Issue Bank Statement CZB", BankStatementHeaderCZB);
@@ -31,7 +35,7 @@ codeunit 31230 "IssueBank.Stat.Create Jnl. CZB"
 
         IssBankStatementHeaderCZB.Get(BankStatementHeaderCZB."Last Issuing No.");
         IssBankStatementHeaderCZB.SetRecFilter();
-        IssBankStatementHeaderCZB.CreateJournal(false);
+        IssBankStatementHeaderCZB.CreateJournal(false, InstructionMgt.IsEnabled(InstructionMgtCZB.ShowCreatedJnlIssBankStmtConfirmationMessageCode()));
     end;
 
     [IntegrationEvent(false, false)]
