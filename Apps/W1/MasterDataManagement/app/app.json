@@ -18,8 +18,13 @@
                                    "id":  "044e7b4c-db9b-43c6-8a08-e1fd8954d40c",
                                    "name":  "_Exclude_Master_Data_Management_Test_Library",
                                    "publisher":  "Microsoft"
+                               },
+                               {
+                                    "id":  "f541fb4a-19ff-4a99-8a3c-e2af38abec49",
+                                    "name":  "_Exclude_Master_Data_Management_Tests",
+                                    "publisher":  "Microsoft"
                                }
-                           ],
+                            ],
     "screenshots":  [
 
                     ],

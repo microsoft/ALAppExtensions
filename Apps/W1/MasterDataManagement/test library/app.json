@@ -29,5 +29,6 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
-    "application":  "24.0.0.0"
+    "application":  "24.0.0.0",
+    "runtime": "13.0"
 }
