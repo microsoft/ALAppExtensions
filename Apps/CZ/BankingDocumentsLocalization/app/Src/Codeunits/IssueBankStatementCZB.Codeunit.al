@@ -24,7 +24,7 @@ codeunit 31357 "Issue Bank Statement CZB"
         IssBankStatementLineCZB: Record "Iss. Bank Statement Line CZB";
         BankAccount: Record "Bank Account";
         User: Record User;
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         RecordLinkManagement: Codeunit "Record Link Management";
     begin
         OnBeforeIssueBankStatement(Rec);
@@ -60,7 +60,7 @@ codeunit 31357 "Issue Bank Statement CZB"
         IssBankStatementHeaderCZB.TransferFields(Rec);
         BankAccount.TestField("Issued Bank Statement Nos. CZB");
         if (BankAccount."Issued Bank Statement Nos. CZB" <> Rec."No. Series") and (Rec."No. Series" <> '') then
-            IssBankStatementHeaderCZB."No." := NoSeriesManagement.GetNextNo(BankAccount."Issued Bank Statement Nos. CZB", Rec."Document Date", true);
+            IssBankStatementHeaderCZB."No." := NoSeries.GetNextNo(BankAccount."Issued Bank Statement Nos. CZB", Rec."Document Date");
         if IssBankStatementHeaderCZB."No." = '' then
             IssBankStatementHeaderCZB."No." := Rec."No.";
 

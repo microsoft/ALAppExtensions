@@ -23,6 +23,19 @@ codeunit 6115 "E-Document Error Helper"
     end;
 
     /// <summary>
+    /// Use it to get the number of warnings for E-Document.
+    /// </summary>
+    /// <param name="EDocument">The E-Document record.</param>
+    /// <returns> Count of the warnings in an an E-Document.</returns>
+    procedure WarningMessageCount(var EDocument: Record "E-Document"): Integer
+    var
+        ErrorMessage: Record "Error Message";
+    begin
+        ErrorMessage.SetContext(EDocument);
+        exit(ErrorMessage.ErrorMessageCount(ErrorMessage."Message Type"::"Warning"));
+    end;
+
+    /// <summary>
     /// Use it to check if there are errors for E-Document.
     /// </summary>
     /// <param name="EDocument">The E-Document record.</param>

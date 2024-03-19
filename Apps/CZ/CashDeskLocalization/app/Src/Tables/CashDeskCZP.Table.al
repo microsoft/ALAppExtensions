@@ -42,6 +42,8 @@ table 11744 "Cash Desk CZP"
             DataClassification = CustomerContent;
 
             trigger OnValidate()
+            var
+                NoSeries: Codeunit "No. Series";
             begin
                 if "No." <> xRec."No." then begin
                     GeneralLedgerSetup.Get();
@@ -622,6 +624,7 @@ table 11744 "Cash Desk CZP"
     trigger OnInsert()
     var
         CashDesk: Record "Cash Desk CZP";
+        NoSeries: Codeunit "No. Series";
 #if not CLEAN24
         IsHandled: Boolean;
 #endif
@@ -701,8 +704,9 @@ table 11744 "Cash Desk CZP"
         BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
         CommentLine: Record "Comment Line";
         PostCode: Record "Post Code";
+#if not CLEAN24
         NoSeriesManagement: Codeunit NoSeriesManagement;
-        NoSeries: Codeunit "No. Series";
+#endif
         ConfirmManagement: Codeunit "Confirm Management";
         MoveEntries: Codeunit MoveEntries;
         DimensionManagement: Codeunit DimensionManagement;
@@ -713,12 +717,14 @@ table 11744 "Cash Desk CZP"
         CurrExchRateIsEmptyErr: Label 'There is no Currency Exchange Rate within the filter. Filters: %1.', Comment = '%1 = GetFilters';
 
     procedure AssistEdit(OldCashDeskCZP: Record "Cash Desk CZP"): Boolean
+    var
+        NoSeries: Codeunit "No. Series";
     begin
         CashDeskCZP := Rec;
         GeneralLedgerSetup.Get();
         GeneralLedgerSetup.TestField("Cash Desk Nos. CZP");
-        if NoSeriesManagement.SelectSeries(GeneralLedgerSetup."Cash Desk Nos. CZP", OldCashDeskCZP."No. Series", CashDeskCZP."No. Series") then begin
-            NoSeriesManagement.SetSeries(CashDeskCZP."No.");
+        if NoSeries.LookupRelatedNoSeries(GeneralLedgerSetup."Cash Desk Nos. CZP", OldCashDeskCZP."No. Series", CashDeskCZP."No. Series") then begin
+            CashDeskCZP."No." := NoSeries.GetNextNo(CashDeskCZP."No. Series");
             Rec := CashDeskCZP;
             exit(true);
         end;

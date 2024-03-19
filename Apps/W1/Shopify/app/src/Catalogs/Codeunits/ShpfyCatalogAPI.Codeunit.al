@@ -83,7 +83,7 @@ codeunit 30290 "Shpfy Catalog API"
                     GraphQLType := "Shpfy GraphQL Type"::GetNextCatalogs;
                 end else
                     break;
-        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.orders.pageInfo.hasNextPage');
+        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.catalogs.pageInfo.hasNextPage');
     end;
 
     internal procedure GetCatalogPrices(CatalogId: BigInteger; var TempCatalogPrice: Record "Shpfy Catalog Price" temporary)
@@ -91,13 +91,15 @@ codeunit 30290 "Shpfy Catalog API"
         GraphQLType: Enum "Shpfy GraphQL Type";
         Cursor: Text;
         JResponse: JsonToken;
+        ProductList: List of [BigInteger];
         Parameters: Dictionary of [Text, Text];
     begin
+        GetIncludedProductsInCatalog(CatalogId, ProductList);
         Parameters.Add('CatalogId', Format(CatalogId));
         repeat
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::GetCatalogPrices, Parameters);
             if JResponse.IsObject() then
-                if ExtractShopifyCatalogPrices(TempCatalogPrice, JResponse.AsObject(), Cursor) then begin
+                if ExtractShopifyCatalogPrices(TempCatalogPrice, ProductList, JResponse.AsObject(), Cursor) then begin
                     if Parameters.ContainsKey('After') then
                         Parameters.Set('After', Cursor)
                     else
@@ -105,13 +107,14 @@ codeunit 30290 "Shpfy Catalog API"
                     GraphQLType := "Shpfy GraphQL Type"::GetNextCatalogPrices;
                 end else
                     break;
-        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.catalog.priceList.prices.hasNextPage');
+        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.catalog.priceList.prices.pageInfo.hasNextPage');
     end;
 
     internal procedure AddUpdatePriceGraphQL(var TempCatalogPrice: Record "Shpfy Catalog Price" temporary; Price: Decimal; CompareAtPrice: Decimal; var JSetPrice: JsonObject): Boolean
     var
         HasChange: Boolean;
         JPrice: JsonObject;
+        JNullValue: JsonValue;
         JCompareAtPrice: JsonObject;
         VariantIdTxt: Label 'gid://shopify/ProductVariant/%1', Locked = true, Comment = '%1 = The product variant Id';
     begin
@@ -130,7 +133,8 @@ codeunit 30290 "Shpfy Catalog API"
                 JSetPrice.Add('compareAtPrice', JCompareAtPrice);
             end else begin
                 HasChange := true;
-                JSetPrice.Add('compareAtPrice', 'null');
+                JNullValue.SetValueToNull();
+                JSetPrice.Add('compareAtPrice', JNullValue.AsToken());
             end;
 
         if HasChange then
@@ -158,7 +162,7 @@ codeunit 30290 "Shpfy Catalog API"
         JSetPrices := JsonHelper.GetJsonArray(JGraphQL, 'variables.prices');
     end;
 
-    internal procedure ExtractShopifyCatalogPrices(var TempCatalogPrice: Record "Shpfy Catalog Price" temporary; JResponse: JsonObject; var Cursor: Text): Boolean
+    internal procedure ExtractShopifyCatalogPrices(var TempCatalogPrice: Record "Shpfy Catalog Price" temporary; ProductList: List of [BigInteger]; JResponse: JsonObject; var Cursor: Text): Boolean
     var
         JCatalogs: JsonArray;
         JEdge: JsonToken;
@@ -167,15 +171,16 @@ codeunit 30290 "Shpfy Catalog API"
         if JsonHelper.GetJsonArray(JResponse, JCatalogs, 'data.catalog.priceList.prices.edges') then begin
             foreach JEdge in JCatalogs do begin
                 Cursor := JsonHelper.GetValueAsText(JEdge.AsObject(), 'cursor');
-                if JsonHelper.GetJsonObject(JEdge.AsObject(), JNode, 'node') then begin
-                    TempCatalogPrice."Variant Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'variant.id'));
-                    TempCatalogPrice."Shop Code" := Shop.Code;
-                    TempCatalogPrice."Price List Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JResponse, 'data.catalog.priceList.id'));
-                    TempCatalogPrice."Price List Currency" := StrSubstNo(JsonHelper.GetValueAsCode(JResponse, 'data.catalog.priceList.currency'), 1, MaxStrLen(TempCatalogPrice."Price List Currency"));
-                    TempCatalogPrice.Price := JsonHelper.GetValueAsDecimal(JNode, 'price.amount');
-                    TempCatalogPrice."Compare At Price" := JsonHelper.GetValueAsDecimal(JNode, 'compareAtPrice.amount');
-                    TempCatalogPrice.Insert();
-                end;
+                if JsonHelper.GetJsonObject(JEdge.AsObject(), JNode, 'node') then
+                    if ProductList.Contains(CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'variant.product.id'))) then begin
+                        TempCatalogPrice."Variant Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'variant.id'));
+                        TempCatalogPrice."Shop Code" := Shop.Code;
+                        TempCatalogPrice."Price List Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JResponse, 'data.catalog.priceList.id'));
+                        TempCatalogPrice."Price List Currency" := StrSubstNo(JsonHelper.GetValueAsCode(JResponse, 'data.catalog.priceList.currency'), 1, MaxStrLen(TempCatalogPrice."Price List Currency"));
+                        TempCatalogPrice.Price := JsonHelper.GetValueAsDecimal(JNode, 'price.amount');
+                        TempCatalogPrice."Compare At Price" := JsonHelper.GetValueAsDecimal(JNode, 'compareAtPrice.amount');
+                        TempCatalogPrice.Insert();
+                    end;
             end;
             exit(true);
         end;
@@ -208,6 +213,47 @@ codeunit 30290 "Shpfy Catalog API"
                         Catalog.FindFirst();
                         Catalog.Modify();
                     end;
+                end;
+            end;
+            exit(true);
+        end;
+    end;
+
+    internal procedure GetIncludedProductsInCatalog(CatalogId: BigInteger; var ProductList: List of [BigInteger])
+    var
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        Cursor: Text;
+        JResponse: JsonToken;
+        Parameters: Dictionary of [Text, Text];
+    begin
+        Parameters.Add('CatalogId', Format(CatalogId));
+        repeat
+            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::GetCatalogProducts, Parameters);
+            if JResponse.IsObject() then
+                if ExtractShopifyCatalogProducts(ProductList, JResponse.AsObject(), Cursor) then begin
+                    if Parameters.ContainsKey('After') then
+                        Parameters.Set('After', Cursor)
+                    else
+                        Parameters.Add('After', Cursor);
+                    GraphQLType := "Shpfy GraphQL Type"::GetNextCatalogProducts;
+                end else
+                    break;
+        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.catalog.publication.products.pageInfo.hasNextPage');
+    end;
+
+    internal procedure ExtractShopifyCatalogProducts(var ProductList: List of [BigInteger]; JResponse: JsonObject; var Cursor: Text): Boolean
+    var
+        JCatalogProducts: JsonArray;
+        JEdge: JsonToken;
+        JNode: JsonObject;
+        ProductId: BigInteger;
+    begin
+        if JsonHelper.GetJsonArray(JResponse, JCatalogProducts, 'data.catalog.publication.products.edges') then begin
+            foreach JEdge in JCatalogProducts do begin
+                Cursor := JsonHelper.GetValueAsText(JEdge.AsObject(), 'cursor');
+                if JsonHelper.GetJsonObject(JEdge.AsObject(), JNode, 'node') then begin
+                    ProductId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'id'));
+                    ProductList.Add(ProductId);
                 end;
             end;
             exit(true);

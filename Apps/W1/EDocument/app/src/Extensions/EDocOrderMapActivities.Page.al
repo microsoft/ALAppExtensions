@@ -9,40 +9,37 @@ page 6159 "E-Doc. Order Map. Activities"
     PageType = CardPart;
     RefreshOnActivate = true;
     Caption = 'E-Document Activities';
+    ShowFilter = false;
 
     layout
     {
         area(Content)
         {
-            cuegroup("EDocument Activities")
+            cuegroup("IncomingEDocument")
             {
-                ShowCaption = false;
-                cuegroup("IncomingEDocument")
+                Caption = 'Incoming E-Document';
+
+                field(MatchedPurchaseOrderCount; EDocumentHelper.MatchedPurchaseOrdersCount())
                 {
-                    Caption = 'Incoming E-Document';
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Linked Purchase Orders';
+                    ToolTip = 'Specifies the number of e-documents that are linked to a purchase order and needs to be processed.';
 
-                    field(MatchedPurchaseOrderCount; EDocumentHelper.MatchedPurchaseOrdersCount())
-                    {
-                        ApplicationArea = Basic, Suite;
-                        Caption = 'Matched Purchase Orders';
-                        ToolTip = 'Specifies the number of purchase orders that have matched to a received e-document.';
+                    trigger OnDrillDown()
+                    begin
+                        EDocumentHelper.OpenMatchedPurchaseOrders();
+                    end;
+                }
+                field(WaitingPurchaseOrderCount; EDocumentHelper.MatchedPurchaseEDocumentsCount())
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Waiting Purchase E-Invoices';
+                    ToolTip = 'Specifies the number of received purchase e-documents that needs to be reviewed.';
 
-                        trigger OnDrillDown()
-                        begin
-                            EDocumentHelper.OpenMatchedPurchaseOrders();
-                        end;
-                    }
-                    field(WaitingPurchaseOrderCount; EDocumentHelper.MatchedPurchaseEDocumentsCount())
-                    {
-                        ApplicationArea = Basic, Suite;
-                        Caption = 'Waiting Purchase E-Documents';
-                        ToolTip = 'Specifies the number of received purchase e-documents that needs to be reviewed.';
-
-                        trigger OnDrillDown()
-                        begin
-                            EDocumentHelper.OpenMatchedPurchaseEDoc();
-                        end;
-                    }
+                    trigger OnDrillDown()
+                    begin
+                        EDocumentHelper.OpenWaitingPurchaseEDoc();
+                    end;
                 }
             }
         }

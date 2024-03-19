@@ -9,7 +9,9 @@ using Microsoft.Utilities;
 using System.Environment.Configuration;
 using System.Media;
 using System.Telemetry;
+#if not CLEAN25
 using System.Utilities;
+#endif
 
 codeunit 10016 "IRS 1096 Form Mgt."
 {
@@ -29,7 +31,9 @@ codeunit 10016 "IRS 1096 Form Mgt."
         FeatureNotEnabledMessageTxt: Label 'The %1 page is part of the new IRS 1096 feature, which is not yet enabled in your Business Central. An administrator can enable the feature on the Feature Management page.', Comment = '%1 - page caption';
 #endif
         NoEntriesToCreateFormsMsg: Label 'No entries have been found by filters specified.';
+#if not CLEAN25
         FormPerPeriodAlreadyExistsQst: Label 'The form %1 for the period from %2 to %3 already exist. If you want to replace it, use the Replace parameter on the request page. Do you want to stop the creation of forms?', Comment = '%1 - code of the form, %2,%3 - starting and ending dates of the period';
+#endif
         FormsCreatedMsg: Label 'IRS 1096 forms have been created';
         AssistedSetupTxt: Label 'Set up an IRS 1096 feature';
         AssistedSetupDescriptionTxt: Label 'This feature provides functionality that enables an easy overview and reporting of the 1096 form to IRS.';
@@ -65,12 +69,16 @@ codeunit 10016 "IRS 1096 Form Mgt."
         TempVendorLedgerEntry: Record "Vendor Ledger Entry" temporary;
         TempIRS1096FormHeader: Record "IRS 1096 Form Header" temporary;
         TempCreatedIRS1096FormHeader: Record "IRS 1096 Form Header" temporary;
+#if not CLEAN25
         TempIRS1096FormLine: Record "IRS 1096 Form Line" temporary;
+#endif
         IRS1096FormHeader: Record "IRS 1096 Form Header";
         IRS1096FormLine: Record "IRS 1096 Form Line";
         EntryApplicationManagement: Codeunit "Entry Application Management";
         PeriodDate: array[2] of Date;
+#if not CLEAN25
         ConflictResolved: Boolean;
+#endif
     begin
         PeriodDate[1] := StartDate;
         PeriodDate[2] := EndDate;
@@ -94,9 +102,13 @@ codeunit 10016 "IRS 1096 Form Mgt."
         IRS1096FormHeader.LockTable();
         IRS1096FormLine.LockTable();
         repeat
+#if not CLEAN25
             AddVendLedgEntryToFormBuffer(TempIRS1096FormLine, TempIRS1096FormHeader, TempCreatedIRS1096FormHeader, ConflictResolved, TempVendorLedgerEntry, PeriodDate, Replace);
+#endif
         until TempVendorLedgerEntry.Next() = 0;
+#if not CLEAN25
         InsertFromFormBuffer(TempCreatedIRS1096FormHeader, TempIRS1096FormLine);
+#endif
         if TempCreatedIRS1096FormHeader.IsEmpty() then begin
             if GuiAllowed() then
                 Message(NoFormsHaveBeenCreatedMsg);
@@ -215,6 +227,7 @@ codeunit 10016 "IRS 1096 Form Mgt."
         IRS1096FormHeader.Modify(true);
     end;
 
+#if not CLEAN25
     local procedure AddVendLedgEntryToFormBuffer(var TempIRS1096FormLine: Record "IRS 1096 Form Line" temporary; var TempIRS1096FormHeader: Record "IRS 1096 Form Header" temporary; var TempCreatedIRS1096FormHeader: Record "IRS 1096 Form Header" temporary; var ConflictResolved: Boolean; VendLedgEntry: Record "Vendor Ledger Entry"; PeriodDate: array[2] of Date; Replace: Boolean)
     var
         IRS1096FormHeader: Record "IRS 1096 Form Header";
@@ -227,7 +240,9 @@ codeunit 10016 "IRS 1096 Form Mgt."
         If (VendLedgEntry."IRS 1099 Code" = '') or (VendLedgEntry."IRS 1099 Amount" = 0) then
             exit;
 
+#if not CLEAN25
         General1099Code := GetGeneral1099CodeFromVendLedgEntry(VendLedgEntry);
+#endif
         if General1099Code = '' then
             exit;
 
@@ -294,7 +309,9 @@ codeunit 10016 "IRS 1096 Form Mgt."
         TempIRS1096FormLine.Insert();
         InsertLineRelation(TempIRS1096FormLine, VendLedgEntry);
     end;
+#endif
 
+#if not CLEAN25
     local procedure GetGeneral1099CodeFromVendLedgEntry(VendLedgEntry: Record "Vendor Ledger Entry") IRSCode: Code[20]
     var
         IsHandled: Boolean;
@@ -312,6 +329,7 @@ codeunit 10016 "IRS 1096 Form Mgt."
             exit('');
         exit(IRSCode);
     end;
+#endif
 
     local procedure InsertLineRelation(IRS1096FormLine: Record "IRS 1096 Form Line"; VendLedgEntry: Record "Vendor Ledger Entry")
     var
@@ -323,6 +341,7 @@ codeunit 10016 "IRS 1096 Form Mgt."
         IRS1096FormLineRelation.Insert(true);
     end;
 
+#if not CLEAN25
     local procedure InsertFromFormBuffer(var TempCreatedIRS1096FormHeader: Record "IRS 1096 Form Header" temporary; var TempIRS1096FormLine: Record "IRS 1096 Form Line" temporary)
     var
         IRS1096FormHeader: Record "IRS 1096 Form Header";
@@ -374,6 +393,7 @@ codeunit 10016 "IRS 1096 Form Mgt."
             end;
         until TempCreatedIRS1096FormHeader.Next() = 0;
     end;
+#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Guided Experience", 'OnRegisterAssistedSetup', '', true, true)]
     local procedure InsertIntoAssistedSetup()

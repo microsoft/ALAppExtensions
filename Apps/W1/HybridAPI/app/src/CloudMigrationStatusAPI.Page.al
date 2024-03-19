@@ -127,7 +127,7 @@ page 40021 "Cloud Migration Status API"
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         FeatureTelemetry.LogUsage('0000JMO', HybridCloudManagement.GetFeatureTelemetryName(), 'Cloud migration API Upgrade');
-        HybridCloudManagement.RunDataUpgrade(Rec);
+        HybridCloudManagement.RunDataUpgradeAPI(Rec);
         SetActionResponseToThisPage(ActionContext, Rec);
     end;
 
@@ -140,7 +140,6 @@ page 40021 "Cloud Migration Status API"
         HybridCloudManagement.RefreshReplicationStatus();
         SetActionResponseToThisPage(ActionContext, Rec);
     end;
-
 
     [ServiceEnabled]
     [Scope('Cloud')]

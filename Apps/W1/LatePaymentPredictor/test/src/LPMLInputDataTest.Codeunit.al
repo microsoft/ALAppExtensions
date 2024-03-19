@@ -2,6 +2,7 @@ namespace Microsoft.Finance.Latepayment;
 
 using Microsoft.Sales.History;
 using Microsoft.Sales.Receivables;
+using Microsoft.Foundation.Company;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Sales.Document;
 using Microsoft.Inventory.Item;
@@ -13,6 +14,7 @@ codeunit 139576 "LP ML Input Data Test"
     TestPermissions = Disabled;
 
     var
+        CompanyInformation: Record "Company Information";
         Assert: Codeunit Assert;
         LibrarySales: Codeunit "Library - Sales";
         LibraryInventory: Codeunit "Library - Inventory";
@@ -138,6 +140,9 @@ codeunit 139576 "LP ML Input Data Test"
         Invoice1PaidDate: Date;
         Invoice2PaidDate: Date;
     begin
+        CompanyInformation.get();
+        if CompanyInformation."Country/Region Code" = 'IT' then
+            exit;
         LibraryERMCountryData.UpdateLocalData();
 
         Invoice1CreationDate := DMY2Date(01, 07, 2017);
@@ -542,6 +547,9 @@ codeunit 139576 "LP ML Input Data Test"
         CustomerNo: Code[20];
         NewStartingDate: Date;
     begin
+        CompanyInformation.get();
+        if CompanyInformation."Country/Region Code" = 'IT' then
+            exit;
         LPMLInputData.SetCurrentKey("Posting Date");
         LPMLInputData.SetAscending("Posting Date", true);
         if LPMLInputData.FindLast()

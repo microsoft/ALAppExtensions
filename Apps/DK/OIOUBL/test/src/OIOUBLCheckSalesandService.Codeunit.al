@@ -19,7 +19,6 @@ codeunit 148050 "OIOUBL-Check Sales and Service"
         LibraryService: Codeunit "Library - Service";
         LibraryRandom: Codeunit "Library - Random";
         Assert: Codeunit Assert;
-        NoSeriesManagement: Codeunit NoSeriesManagement;
 #pragma warning disable AA0470
         NegSalesLineDiscountErr: Label 'Line Discount % cannot be negative in Sales Line Document Type=''%1'',Document No.=''%2'',Line No.=''%3''.';
         NegServiceLineDiscountErr: Label 'Line Discount % cannot be negative in Service Line Document Type=''%1'',Document No.=''%2'',Line No.=''%3''.';
@@ -266,12 +265,13 @@ codeunit 148050 "OIOUBL-Check Sales and Service"
         ServiceLine1: Record "Service Line";
         ServiceLine2: Record "Service Line";
         GLEntry: Record "G/L Entry";
+        NoSeries: Codeunit "No. Series";
         PostedDocumentNo: Code[20];
     begin
         // Setup: Create customer, Item and Service Credit Memo with one negative line but total amount is positive.
         CreateOIOUBLCustomer(Customer);
         CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::"Credit Memo", Customer."No.");
-        PostedDocumentNo := NoSeriesManagement.GetNextNo(ServiceHeader."Posting No. Series", WORKDATE(), false);
+        PostedDocumentNo := NoSeries.PeekNextNo(ServiceHeader."Posting No. Series");
         LibraryInventory.CreateItem(Item);
 
         // This Credit Memo has one line with negative Line Amount and Line Discount Amount but postive Line Discount %,

@@ -452,19 +452,10 @@ report 31199 "Service Shipment CZL"
     }
 
     var
-        TempTrackingSpecification: Record "Tracking Specification" temporary;
         LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         ItemTrackingDocManagement: Codeunit "Item Tracking Doc. Management";
-        CompanyAddr: array[8] of Text[100];
-        CustAddr: array[8] of Text[100];
-        ShipToAddr: array[8] of Text[100];
-        DocFooterText: Text[1000];
-        NoOfCopies: Integer;
-        NoOfLoops: Integer;
-        ShowLotSN: Boolean;
-        TrackingSpecCount: Integer;
         DocumentLbl: Label 'Shipment';
         PageLbl: Label 'Page';
         CopyLbl: Label 'Copy';
@@ -481,6 +472,17 @@ report 31199 "Service Shipment CZL"
         TotalLbl: Label 'total';
         VATLbl: Label 'VAT';
         OrderNoLbl: Label 'Order No.';
+
+    protected var
+        TempTrackingSpecification: Record "Tracking Specification" temporary;
+        CompanyAddr: array[8] of Text[100];
+        CustAddr: array[8] of Text[100];
+        ShipToAddr: array[8] of Text[100];
+        DocFooterText: Text[1000];
+        NoOfCopies: Integer;
+        NoOfLoops: Integer;
+        ShowLotSN: Boolean;
+        TrackingSpecCount: Integer;
 
     local procedure IsReportInPreviewMode(): Boolean
     var

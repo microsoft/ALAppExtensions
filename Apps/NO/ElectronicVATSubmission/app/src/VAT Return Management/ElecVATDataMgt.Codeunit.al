@@ -203,7 +203,7 @@ codeunit 10683 "Elec. VAT Data Mgt."
 
     procedure IsReverseChargeVATCode(VATCode: Code[20]): Boolean
     begin
-        exit(VATCode in ['81', '86', '91'])
+        exit(VATCode in ['81', '83', '86', '88', '91'])
     end;
 
     procedure IsVATCodeWithDeductiblePart(VATCode: Code[20]): Boolean

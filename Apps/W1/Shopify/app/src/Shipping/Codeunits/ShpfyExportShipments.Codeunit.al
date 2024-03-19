@@ -30,11 +30,11 @@ codeunit 30190 "Shpfy Export Shipments"
             ShipmentLocation.SetRange(No, SalesShipmentHeader."No.");
             if ShipmentLocation.Open() then
                 while ShipmentLocation.Read() do
-                    CreateShopifyFulfillment(SalesShipmentHeader, ShipmentLocation.LocationId);
+                    CreateShopifyFulfillment(SalesShipmentHeader, ShipmentLocation.LocationId, ShipmentLocation.DeliveryMethodType);
         end;
     end;
 
-    local procedure CreateShopifyFulfillment(var SalesShipmentHeader: Record "Sales Shipment Header"; LocationId: BigInteger);
+    local procedure CreateShopifyFulfillment(var SalesShipmentHeader: Record "Sales Shipment Header"; LocationId: BigInteger; DeliveryMethodType: Enum "Shpfy Delivery Method Type");
     var
         Shop: Record "Shpfy Shop";
         ShopifyOrderHeader: Record "Shpfy Order Header";
@@ -47,7 +47,7 @@ codeunit 30190 "Shpfy Export Shipments"
         if ShopifyOrderHeader.Get(SalesShipmentHeader."Shpfy Order Id") then begin
             ShopifyCommunicationMgt.SetShop(ShopifyOrderHeader."Shop Code");
             Shop.Get(ShopifyOrderHeader."Shop Code");
-            FulfillmentOrderRequest := CreateFulfillmentOrderRequest(SalesShipmentHeader, Shop, LocationId);
+            FulfillmentOrderRequest := CreateFulfillmentOrderRequest(SalesShipmentHeader, Shop, LocationId, DeliveryMethodType);
             if FulfillmentOrderRequest <> '' then begin
                 JResponse := ShopifyCommunicationMgt.ExecuteGraphQL(FulfillmentOrderRequest);
                 JFulfillment := JsonHelper.GetJsonToken(JResponse, 'data.fulfillmentCreateV2.fulfillment');
@@ -61,7 +61,7 @@ codeunit 30190 "Shpfy Export Shipments"
         end;
     end;
 
-    internal procedure CreateFulfillmentOrderRequest(SalesShipmentHeader: Record "Sales Shipment Header"; Shop: Record "Shpfy Shop"; LocationId: BigInteger) Request: Text;
+    internal procedure CreateFulfillmentOrderRequest(SalesShipmentHeader: Record "Sales Shipment Header"; Shop: Record "Shpfy Shop"; LocationId: BigInteger; DeliveryMethodType: Enum "Shpfy Delivery Method Type") Request: Text;
     var
         SalesShipmentLine: Record "Sales Shipment Line";
         ShippingAgent: Record "Shipping Agent";
@@ -84,7 +84,7 @@ codeunit 30190 "Shpfy Export Shipments"
         if SalesShipmentLine.FindSet() then begin
             repeat
                 if OrderLine.Get(SalesShipmentHeader."Shpfy Order Id", SalesShipmentLine."Shpfy Order Line Id") then
-                    if OrderLine."Location Id" = LocationId then
+                    if (OrderLine."Location Id" = LocationId) and (OrderLine."Delivery Method Type" = DeliveryMethodType) then
                         if FindFulfillmentOrderLine(SalesShipmentHeader, SalesShipmentLine, FulfillmentOrderLine) then begin
                             FulfillmentOrderLine."Quantity to Fulfill" += Round(SalesShipmentLine.Quantity, 1, '=');
                             FulfillmentOrderLine."Remaining Quantity" := FulfillmentOrderLine."Remaining Quantity" - Round(SalesShipmentLine.Quantity, 1, '=');
@@ -179,6 +179,7 @@ codeunit 30190 "Shpfy Export Shipments"
             FulfillmentOrderLine.SetRange("Shopify Order Id", OrderLine."Shopify Order Id");
             FulfillmentOrderLine.SetRange("Shopify Variant Id", OrderLine."Shopify Variant Id");
             FulfillmentOrderLine.SetRange("Shopify Location Id", OrderLine."Location Id");
+            FulfillmentOrderLine.SetRange("Delivery Method Type", OrderLine."Delivery Method Type");
             FulfillmentOrderLine.SetFilter("Remaining Quantity", '>=%1', Round(SalesShipmentLine.Quantity, 1, '='));
             if FulfillmentOrderLine.FindFirst() then
                 exit(true);

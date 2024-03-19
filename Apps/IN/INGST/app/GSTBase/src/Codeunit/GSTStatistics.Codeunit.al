@@ -116,6 +116,52 @@ codeunit 18006 "GST Statistics"
             until SalesLine.Next() = 0;
     end;
 
+    procedure GetPartialSalesStatisticsAmount(
+        SalesHeader: Record "Sales Header";
+        var PartialGSTAmount: Decimal)
+    var
+        SalesLine: Record "Sales Line";
+        GSTBaseValidation: Codeunit "GST Base Validation";
+    begin
+        Clear(PartialGSTAmount);
+
+        SalesLine.SetLoadFields("Document Type", "Document No.", Quantity, "Qty. to Invoice");
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document no.", SalesHeader."No.");
+        if SalesLine.FindSet() then
+            repeat
+                if SalesLine.Quantity <> 0 then
+                    PartialGSTAmount += (GetGSTAmount(SalesLine.RecordId()) * SalesLine."Qty. to Invoice" / SalesLine.Quantity);
+            until SalesLine.Next() = 0;
+
+        PartialGSTAmount := GSTBaseValidation.RoundGSTPrecision(PartialGSTAmount);
+    end;
+
+    procedure GetPartialSalesShptStatisticsAmount(
+        SalesHeader: Record "Sales Header";
+        var PartialGSTAmount: Decimal)
+    var
+        SalesLine: Record "Sales Line";
+        GSTBaseValidation: Codeunit "GST Base Validation";
+    begin
+        Clear(PartialGSTAmount);
+
+        SalesLine.SetLoadFields("Document Type", "Document No.", Quantity, "Qty. to Ship", "Return Qty. to Receive");
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document no.", SalesHeader."No.");
+        if SalesLine.FindSet() then
+            repeat
+                if SalesLine.Quantity <> 0 then
+                    if SalesLine."Document Type" = SalesLine."Document Type"::Order then
+                        PartialGSTAmount += (GetGSTAmount(SalesLine.RecordId()) * SalesLine."Qty. to Ship" / SalesLine.Quantity)
+                    else
+                        if SalesLine."Document Type" = SalesLine."Document Type"::"Return Order" then
+                            PartialGSTAmount += (GetGSTAmount(SalesLine.RecordId()) * SalesLine."Return Qty. to Receive" / SalesLine.Quantity)
+            until SalesLine.Next() = 0;
+
+        PartialGSTAmount := GSTBaseValidation.RoundGSTPrecision(PartialGSTAmount);
+    end;
+
     procedure GetStatisticsPostedSalesInvAmount(
         SalesInvHeader: Record "Sales Invoice Header";
         var GSTAmount: Decimal)
@@ -206,6 +252,120 @@ codeunit 18006 "GST Statistics"
         GSTAmount := GSTAmount - RCMAmount;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetPartialPurchaseHeaderGSTAmount', '', false, false)]
+    procedure OnGetPartialPurchaseHeaderGSTAmount(PurchaseHeader: Record "Purchase Header"; var PartialGSTAmount: Decimal)
+    var
+        PartialRCMAmount: Decimal;
+    begin
+        GetPartialPurchaseInvStatisticsAmount(PurchaseHeader, PartialGSTAmount);
+        GetPartialPurchaseRCMStatisticsAmount(PurchaseHeader, PartialRCMAmount);
+        PartialGSTAmount := PartialGSTAmount - PartialRCMAmount;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetPartialPurchaseRcptGSTAmount', '', false, false)]
+    procedure OnGetPartialPurchaseRcptGSTAmount(PurchaseHeader: Record "Purchase Header"; var PartialGSTAmount: Decimal)
+    var
+        PartialRCMAmount: Decimal;
+    begin
+        GetPartialPurchaseRcptStatisticsAmount(PurchaseHeader, PartialGSTAmount);
+        GetPartialPurchaseRcptRCMStatisticsAmount(PurchaseHeader, PartialRCMAmount);
+        PartialGSTAmount := PartialGSTAmount - PartialRCMAmount;
+    end;
+
+    local procedure GetPartialPurchaseInvStatisticsAmount(
+        PurchaseHeader: Record "Purchase Header";
+        var PartialGSTAmount: Decimal)
+    var
+        PurchaseLine: Record "Purchase Line";
+        GSTBaseValidation: Codeunit "GST Base Validation";
+    begin
+        Clear(PartialGSTAmount);
+
+        PurchaseLine.SetLoadFields("Document Type", "Document No.", Quantity, "Qty. to Invoice");
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.SetRange("Document no.", PurchaseHeader."No.");
+        if PurchaseLine.FindSet() then
+            repeat
+                if PurchaseLine.Quantity <> 0 then
+                    PartialGSTAmount += (GetGSTAmount(PurchaseLine.RecordId()) * PurchaseLine."Qty. to Invoice" / PurchaseLine.Quantity);
+            until PurchaseLine.Next() = 0;
+
+        PartialGSTAmount := GSTBaseValidation.RoundGSTPrecision(PartialGSTAmount);
+    end;
+
+    local procedure GetPartialPurchaseRcptStatisticsAmount(
+        PurchaseHeader: Record "Purchase Header";
+        var PartialGSTAmount: Decimal)
+    var
+        PurchaseLine: Record "Purchase Line";
+        GSTBaseValidation: Codeunit "GST Base Validation";
+    begin
+        Clear(PartialGSTAmount);
+
+        PurchaseLine.SetLoadFields("Document Type", "Document No.", Quantity, "Qty. to Receive", "Return Qty. to Ship");
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.SetRange("Document no.", PurchaseHeader."No.");
+        if PurchaseLine.FindSet() then
+            repeat
+                if PurchaseLine.Quantity <> 0 then
+                    if PurchaseLine."Document Type" = PurchaseLine."Document Type"::Order then
+                        PartialGSTAmount += (GetGSTAmount(PurchaseLine.RecordId()) * PurchaseLine."Qty. to Receive" / PurchaseLine.Quantity)
+                    else
+                        if PurchaseLine."Document Type" = PurchaseLine."Document Type"::"Return Order" then
+                            PartialGSTAmount += (GetGSTAmount(PurchaseLine.RecordId()) * PurchaseLine."Return Qty. to Ship" / PurchaseLine.Quantity);
+            until PurchaseLine.Next() = 0;
+
+        PartialGSTAmount := GSTBaseValidation.RoundGSTPrecision(PartialGSTAmount);
+    end;
+
+    local procedure GetPartialPurchaseRCMStatisticsAmount(
+        PurchaseHeader: Record "Purchase Header";
+        var PartialRCMAmount: Decimal)
+    var
+        PurchaseLine: Record "Purchase Line";
+        GSTBaseValidation: Codeunit "GST Base Validation";
+    begin
+        Clear(PartialRCMAmount);
+
+        PurchaseLine.SetLoadFields("Document Type", "Document No.", Quantity, "Qty. to Invoice");
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.SetRange("Document no.", PurchaseHeader."No.");
+        PurchaseLine.SetRange("GST Reverse Charge", true);
+        if PurchaseLine.FindSet() then
+            repeat
+                if PurchaseLine.Quantity <> 0 then
+                    PartialRCMAmount += (GetGSTAmount(PurchaseLine.RecordId()) * PurchaseLine."Qty. to Invoice" / PurchaseLine.Quantity);
+            until PurchaseLine.Next() = 0;
+
+        PartialRCMAmount := GSTBaseValidation.RoundGSTPrecision(PartialRCMAmount);
+    end;
+
+    local procedure GetPartialPurchaseRcptRCMStatisticsAmount(
+        PurchaseHeader: Record "Purchase Header";
+        var PartialRCMAmount: Decimal)
+    var
+        PurchaseLine: Record "Purchase Line";
+        GSTBaseValidation: Codeunit "GST Base Validation";
+    begin
+        Clear(PartialRCMAmount);
+
+        PurchaseLine.SetLoadFields("Document Type", "Document No.", Quantity, "Qty. to Receive", "Return Qty. to Ship");
+        PurchaseLine.SetRange("Document Type", PurchaseHeader."Document Type");
+        PurchaseLine.SetRange("Document no.", PurchaseHeader."No.");
+        PurchaseLine.SetRange("GST Reverse Charge", true);
+        if PurchaseLine.FindSet() then
+            repeat
+                if PurchaseLine.Quantity <> 0 then
+                    if PurchaseLine."Document Type" = PurchaseLine."Document Type"::Order then
+                        PartialRCMAmount += (GetGSTAmount(PurchaseLine.RecordId()) * PurchaseLine."Qty. to Receive" / PurchaseLine.Quantity)
+                    else
+                        if PurchaseLine."Document Type" = PurchaseLine."Document Type"::"Return Order" then
+                            PartialRCMAmount += (GetGSTAmount(PurchaseLine.RecordId()) * PurchaseLine."Return Qty. to Ship" / PurchaseLine.Quantity);
+            until PurchaseLine.Next() = 0;
+
+        PartialRCMAmount := GSTBaseValidation.RoundGSTPrecision(PartialRCMAmount);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetPurchInvHeaderGSTAmount', '', false, false)]
     local procedure OnGetPurchInvHeaderGSTAmount(PurchInvHeader: Record "Purch. Inv. Header"; var GSTAmount: Decimal)
     begin
@@ -222,6 +382,18 @@ codeunit 18006 "GST Statistics"
     local procedure OnGetSalesHeaderGSTAmount(SalesHeader: Record "Sales Header"; var GSTAmount: Decimal)
     begin
         GetSalesStatisticsAmount(SalesHeader, GSTAmount);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetPartialSalesHeaderGSTAmount', '', false, false)]
+    local procedure OnGetPartialSalesHeaderGSTAmount(SalesHeader: Record "Sales Header"; var PartialGSTAmount: Decimal)
+    begin
+        GetPartialSalesStatisticsAmount(SalesHeader, PartialGSTAmount);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetPartialSalesShptGSTAmount', '', false, false)]
+    local procedure OnGetPartialSalesShptGSTAmount(SalesHeader: Record "Sales Header"; var PartialGSTAmount: Decimal)
+    begin
+        GetPartialSalesShptStatisticsAmount(SalesHeader, PartialGSTAmount);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetSalesInvHeaderGSTAmount', '', false, false)]

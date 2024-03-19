@@ -28,10 +28,10 @@
                   <Width>1.05139in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.67638in</Width>
+                  <Width>0.78471in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.48268in</Width>
+                  <Width>0.58268in</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>1.91239in</Width>
@@ -40,7 +40,7 @@
                   <Width>0.53333in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.76805in</Width>
+                  <Width>0.55972in</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>0.07874in</Width>
@@ -74,7 +74,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!Posting_Date_Caption.Value</Value>
+                                  <Value>=Parameters!Posting_DateCaption.Value</Value>
                                   <Style>
                                     <FontStyle>Normal</FontStyle>
                                     <FontFamily>Segoe UI Semibold</FontFamily>
@@ -912,6 +912,7 @@
                                     <FontStyle>Normal</FontStyle>
                                     <FontFamily>Segoe UI</FontFamily>
                                     <FontSize>8pt</FontSize>
+                                    <Format>d</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -931,6 +932,7 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
+                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
@@ -1985,6 +1987,186 @@
       </DefaultValue>
       <Prompt>PageCaption</Prompt>
     </ReportParameter>
+    <ReportParameter Name="CompName">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>CompName</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>CompName</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="PostingDate">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>PostingDate</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>PostingDate</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="TotalEmissionsperCategory">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>TotalEmissionsperCategory</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>TotalEmissionsperCategory</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="SumOfEmission_CO2">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>SumOfEmission_CO2</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>SumOfEmission_CO2</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="SumOfEmission_CH4">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>SumOfEmission_CH4</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>SumOfEmission_CH4</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="SumOfEmission_N2O">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>SumOfEmission_N2O</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>SumOfEmission_N2O</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="AccountCategoryDescription">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>AccountCategoryDescription</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>AccountCategoryDescription</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="CategoryDetails">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>CategoryDetails</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>CategoryDetails</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="AccountName">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>AccountName</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>AccountName</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="DocumentType">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>DocumentType</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>DocumentType</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="CountryRegionCode">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>CountryRegionCode</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>CountryRegionCode</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="EmissionScope">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>EmissionScope</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>EmissionScope</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="AccountCategory">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>AccountCategory</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>AccountCategory</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="AccountNo">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>AccountNo</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>AccountNo</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="AverageEmissions">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>AverageEmissions</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>AverageEmissions</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="AverageEmissionsperCategory">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>AverageEmissionsperCategory</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>AverageEmissionsperCategory</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="AverageOfEmission_CO2">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>AverageOfEmission_CO2</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>AverageOfEmission_CO2</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="AverageOfEmission_CH4">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>AverageOfEmission_CH4</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>AverageOfEmission_CH4</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="AverageOfEmission_N2O">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>AverageOfEmission_N2O</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>AverageOfEmission_N2O</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="EmissionsPerDocument">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>EmissionsPerDocument</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>EmissionsPerDocument</Prompt>
+    </ReportParameter>
     <ReportParameter Name="Account_CategoryCaption">
       <DataType>String</DataType>
       <DefaultValue>
@@ -2002,6 +2184,15 @@
         </Values>
       </DefaultValue>
       <Prompt>Account_Category_DescriptionCaption</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="Posting_DateCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>Posting_DateCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Posting_DateCaption</Prompt>
     </ReportParameter>
     <ReportParameter Name="Document_TypeCaption">
       <DataType>String</DataType>
@@ -2097,7 +2288,7 @@
   <ReportParametersLayout>
     <GridLayoutDefinition>
       <NumberOfColumns>1</NumberOfColumns>
-      <NumberOfRows>14</NumberOfRows>
+      <NumberOfRows>35</NumberOfRows>
       <CellDefinitions>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
@@ -2112,61 +2303,166 @@
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>2</RowIndex>
-          <ParameterName>Account_CategoryCaption</ParameterName>
+          <ParameterName>CompName</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>3</RowIndex>
-          <ParameterName>Account_Category_DescriptionCaption</ParameterName>
+          <ParameterName>PostingDate</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>4</RowIndex>
-          <ParameterName>Document_TypeCaption</ParameterName>
+          <ParameterName>TotalEmissionsperCategory</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>5</RowIndex>
-          <ParameterName>Document_No_Caption</ParameterName>
+          <ParameterName>SumOfEmission_CO2</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>6</RowIndex>
-          <ParameterName>Account_No_Caption</ParameterName>
+          <ParameterName>SumOfEmission_CH4</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>7</RowIndex>
-          <ParameterName>Account_NameCaption</ParameterName>
+          <ParameterName>SumOfEmission_N2O</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>8</RowIndex>
-          <ParameterName>DescriptionCaption</ParameterName>
+          <ParameterName>AccountCategoryDescription</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>9</RowIndex>
-          <ParameterName>Emission_ScopeCaption</ParameterName>
+          <ParameterName>CategoryDetails</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>10</RowIndex>
-          <ParameterName>Country_Region_CodeCaption</ParameterName>
+          <ParameterName>AccountName</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>11</RowIndex>
-          <ParameterName>Emission_CO2Caption</ParameterName>
+          <ParameterName>DocumentType</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>12</RowIndex>
-          <ParameterName>Emission_CH4Caption</ParameterName>
+          <ParameterName>CountryRegionCode</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>13</RowIndex>
+          <ParameterName>EmissionScope</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>14</RowIndex>
+          <ParameterName>AccountCategory</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>15</RowIndex>
+          <ParameterName>AccountNo</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>16</RowIndex>
+          <ParameterName>AverageEmissions</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>17</RowIndex>
+          <ParameterName>AverageEmissionsperCategory</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>18</RowIndex>
+          <ParameterName>AverageOfEmission_CO2</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>19</RowIndex>
+          <ParameterName>AverageOfEmission_CH4</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>20</RowIndex>
+          <ParameterName>AverageOfEmission_N2O</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>21</RowIndex>
+          <ParameterName>EmissionsPerDocument</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>22</RowIndex>
+          <ParameterName>Account_CategoryCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>23</RowIndex>
+          <ParameterName>Account_Category_DescriptionCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>24</RowIndex>
+          <ParameterName>Posting_DateCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>25</RowIndex>
+          <ParameterName>Document_TypeCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>26</RowIndex>
+          <ParameterName>Document_No_Caption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>27</RowIndex>
+          <ParameterName>Account_No_Caption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>28</RowIndex>
+          <ParameterName>Account_NameCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>29</RowIndex>
+          <ParameterName>DescriptionCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>30</RowIndex>
+          <ParameterName>Emission_ScopeCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>31</RowIndex>
+          <ParameterName>Country_Region_CodeCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>32</RowIndex>
+          <ParameterName>Emission_CO2Caption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>33</RowIndex>
+          <ParameterName>Emission_CH4Caption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>34</RowIndex>
           <ParameterName>Emission_N2OCaption</ParameterName>
         </CellDefinition>
       </CellDefinitions>
@@ -2241,9 +2537,6 @@ End Function</Code>
         </Field>
         <Field Name="Posting_Date">
           <DataField>Posting_Date</DataField>
-        </Field>
-        <Field Name="Posting_Date_Caption">
-          <DataField>Posting_Date_Caption</DataField>
         </Field>
         <Field Name="Document_Type">
           <DataField>Document_Type</DataField>

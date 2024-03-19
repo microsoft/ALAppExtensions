@@ -24,6 +24,8 @@ table 31106 "VAT Ctrl. Report Header CZL"
             DataClassification = CustomerContent;
 
             trigger OnValidate()
+            var
+                NoSeries: Codeunit "No. Series";
             begin
                 if "No." <> xRec."No." then begin
                     NoSeries.TestManual(GetNoSeriesCode());
@@ -200,6 +202,7 @@ table 31106 "VAT Ctrl. Report Header CZL"
     trigger OnInsert()
     var
         VATCtrlReportHeader: Record "VAT Ctrl. Report Header CZL";
+        NoSeries: Codeunit "No. Series";
         NoSeriesCode: Code[20];
 #if not CLEAN24
         IsHandled: Boolean;
@@ -234,8 +237,9 @@ table 31106 "VAT Ctrl. Report Header CZL"
 
     var
         VATCtrlReportLineCZL: Record "VAT Ctrl. Report Line CZL";
+#if not CLEAN24
         NoSeriesManagement: Codeunit NoSeriesManagement;
-        NoSeries: Codeunit "No. Series";
+#endif
         VATCtrlReportMgtCZL: Codeunit "VAT Ctrl. Report Mgt. CZL";
         VATCtrlRepExpRunnerCZL: Codeunit "VAT Ctrl. Rep. Exp. Runner CZL";
         RecordRenameErr: Label 'You cannot rename a %1.', Comment = '%1 = Header No.';
@@ -249,9 +253,11 @@ table 31106 "VAT Ctrl. Report Header CZL"
     end;
 
     procedure AssistEdit(OldVATCtrlReportHeaderCZL: Record "VAT Ctrl. Report Header CZL"): Boolean
+    var
+        NoSeries: Codeunit "No. Series";
     begin
-        if NoSeriesManagement.SelectSeries(GetNoSeriesCode(), OldVATCtrlReportHeaderCZL."No. Series", "No. Series") then begin
-            NoSeriesManagement.SetSeries("No.");
+        if NoSeries.LookupRelatedNoSeries(GetNoSeriesCode(), OldVATCtrlReportHeaderCZL."No. Series", "No. Series") then begin
+            "No." := NoSeries.GetNextNo("No. Series");
             exit(true);
         end;
     end;

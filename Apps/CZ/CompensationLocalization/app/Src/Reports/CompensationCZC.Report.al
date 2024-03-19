@@ -414,16 +414,12 @@ report 31270 "Compensation CZC"
     }
 
     var
-        CompanyInformation: Record "Company Information";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         CustLedgerEntry: Record "Cust. Ledger Entry";
         GeneralLedgerSetup: Record "General Ledger Setup";
         TempCustomerCompensationLineCZC, TempVendorCompensationLineCZC : Record "Compensation Line CZC" temporary;
         LanguageMgt: Codeunit Language;
-        CompanyName, CompanyAddress, CompanyRegistrationNo, RemaningCompanyName : Text;
-        CustomerDueDate, VendorDueDate : Date;
-        NoOfCopies, NoOfLoops, OutputCounter : Integer;
-
+        NoOfLoops: Integer;
         AgreementTxt: Label 'AGREEMENT %1', Comment = '%1 = Compensation No.';
         ToDateTxt: Label 'To Date %1', Comment = '%1 = Posting Date';
         ReceivablesTxt: Label 'Receivables %1', Comment = '%1 = Company Name';
@@ -451,4 +447,10 @@ report 31270 "Compensation CZC"
         DocumentNoLbl: Label 'Document No';
         DocumentTypeLbl: Label 'Document Type';
         PostingDateLbl: Label 'Posting Date';
+
+    protected var
+        CompanyInformation: Record "Company Information";
+        CompanyName, CompanyAddress, CompanyRegistrationNo, RemaningCompanyName : Text;
+        CustomerDueDate, VendorDueDate : Date;
+        NoOfCopies, OutputCounter : Integer;
 }

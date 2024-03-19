@@ -16,7 +16,7 @@ page 6210 "Chart of Sustain. Accounts"
     SourceTable = "Sustainability Account";
     UsageCategory = Lists;
     AnalysisModeEnabled = false;
-    AdditionalSearchTerms = 'Sustainability Account List, Sustainability Accounts, Sustainability Overview, Sustainability Chart';
+    AdditionalSearchTerms = 'Sustainability Account List, Sustainability Accounts, Sustainability Overview, Sustainability Chart, CsA';
 
     layout
     {
@@ -31,13 +31,13 @@ page 6210 "Chart of Sustain. Accounts"
                 {
                     Style = Strong;
                     StyleExpr = Rec."Account Type" <> Rec."Account Type"::Posting;
-                    ToolTip = 'Specifies the sustainability account number in the chart of sustainability accounts.';
+                    ToolTip = 'Specifies the account number of the sustainability account.';
                 }
                 field("No. 2"; Rec."No. 2")
                 {
                     Style = Strong;
                     StyleExpr = Rec."Account Type" <> Rec."Account Type"::Posting;
-                    ToolTip = 'Specifies an alternative account number which can be used internally in the company.';
+                    ToolTip = 'Specifies the additional account number of the sustainability account.';
                     Visible = false;
                 }
                 field(Name; Rec.Name)
@@ -60,12 +60,12 @@ page 6210 "Chart of Sustain. Accounts"
                 }
                 field("Balance at Date (CO2)"; Rec."Balance at Date (CO2)")
                 {
-                    ToolTip = 'Specifies the balance at date of CO2 on this account for the upper date in the Date Filter field.';
+                    ToolTip = 'Specifies the balance at date of CO2 on the account for the upper date in the Date Filter field.';
                     Visible = false;
                 }
                 field("Balance (CO2)"; Rec."Balance (CO2)")
                 {
-                    ToolTip = 'Specifies the balance on CO2 on this account.';
+                    ToolTip = 'Specifies the balance of CO2 on the account.';
                 }
                 field("Net Change (CH4)"; Rec."Net Change (CH4)")
                 {
@@ -73,12 +73,12 @@ page 6210 "Chart of Sustain. Accounts"
                 }
                 field("Balance at Date (CH4)"; Rec."Balance at Date (CH4)")
                 {
-                    ToolTip = 'Specifies the balance at date of CH4 on this account for the upper date in the Date Filter field.';
+                    ToolTip = 'Specifies the balance at date of CH4 on the account for the upper date in the Date Filter field.';
                     Visible = false;
                 }
                 field("Balance (CH4)"; Rec."Balance (CH4)")
                 {
-                    ToolTip = 'Specifies the balance of CH4 on this account.';
+                    ToolTip = 'Specifies the balance of CH4 on the account.';
                 }
                 field("Net Change (N2O)"; Rec."Net Change (N2O)")
                 {
@@ -86,12 +86,12 @@ page 6210 "Chart of Sustain. Accounts"
                 }
                 field("Balance at Date (N2O)"; Rec."Balance at Date (N2O)")
                 {
-                    ToolTip = 'Specifies the balance at date of N2O on this account for the upper date in the Date Filter field.';
+                    ToolTip = 'Specifies the balance at date of N2O on the account for the upper date in the Date Filter field.';
                     Visible = false;
                 }
                 field("Balance (N2O)"; Rec."Balance (N2O)")
                 {
-                    ToolTip = 'Specifies the balance of N2O on this account.';
+                    ToolTip = 'Specifies the balance of N2O on the account.';
                 }
                 field(Category; Rec.Category)
                 {
@@ -251,7 +251,7 @@ page 6210 "Chart of Sustain. Accounts"
                 Caption = 'Total Emissions';
                 RunObject = report "Total Emissions";
                 Image = Report;
-                ToolTip = 'View the total emissions balance for the sustainability accounts that you specify.';
+                ToolTip = 'View total emissions details.';
             }
             action(EmissionByCategory)
             {

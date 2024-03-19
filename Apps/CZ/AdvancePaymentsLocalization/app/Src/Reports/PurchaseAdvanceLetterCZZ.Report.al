@@ -336,17 +336,10 @@ report 31016 "Purchase - Advance Letter CZZ"
     }
 
     var
-        PaymentTerms: Record "Payment Terms";
-        PaymentMethod: Record "Payment Method";
         LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
-        CompanyAddr: array[8] of Text[100];
-        VendAddr: array[8] of Text[100];
-        DocFooterText: Text[1000];
-        NoOfCop: Integer;
-        CopyNo: Integer;
         NoOfLoops: Integer;
         DocumentLbl: Label 'Advance Letter';
         PageLbl: Label 'Page';
@@ -358,6 +351,15 @@ report 31016 "Purchase - Advance Letter CZZ"
         PurchaserLbl: Label 'Purchaser';
         TotalLbl: Label 'total';
         CreatorLbl: Label 'Posted by';
+
+    protected var
+        PaymentTerms: Record "Payment Terms";
+        PaymentMethod: Record "Payment Method";
+        CompanyAddr: array[8] of Text[100];
+        VendAddr: array[8] of Text[100];
+        DocFooterText: Text[1000];
+        CopyNo: Integer;
+        NoOfCop: Integer;
 
     local procedure FormatDocumentFields(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
     begin

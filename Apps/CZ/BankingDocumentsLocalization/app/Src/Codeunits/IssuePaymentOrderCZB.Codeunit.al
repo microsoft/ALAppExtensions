@@ -37,7 +37,7 @@ codeunit 31353 "Issue Payment Order CZB"
         IssPaymentOrderHeaderCZB: Record "Iss. Payment Order Header CZB";
         IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
         User: Record User;
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         RecordLinkManagement: Codeunit "Record Link Management";
         IsHandled: Boolean;
     begin
@@ -69,7 +69,7 @@ codeunit 31353 "Issue Payment Order CZB"
         OnIssuePaymentOrderCZBOnBeforeGetNextNo(PaymentOrderHeaderCZB, IssPaymentOrderHeaderCZB, IsHandled);
         if not IsHandled then
             if (BankAccount."Issued Payment Order Nos. CZB" <> IssPaymentOrderHeaderCZB."No. Series") and (IssPaymentOrderHeaderCZB."No. Series" <> '') then
-                IssPaymentOrderHeaderCZB."No." := NoSeriesManagement.GetNextNo(BankAccount."Issued Payment Order Nos. CZB", IssPaymentOrderHeaderCZB."Document Date", true);
+                IssPaymentOrderHeaderCZB."No." := NoSeries.GetNextNo(BankAccount."Issued Payment Order Nos. CZB", IssPaymentOrderHeaderCZB."Document Date");
         if IssPaymentOrderHeaderCZB."No." = '' then
             IssPaymentOrderHeaderCZB."No." := PaymentOrderHeaderCZB."No.";
 

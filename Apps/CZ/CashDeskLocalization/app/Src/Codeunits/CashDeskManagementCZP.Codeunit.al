@@ -25,6 +25,7 @@ using System.Security.User;
 codeunit 11724 "Cash Desk Management CZP"
 {
     var
+        PreviewMode: Boolean;
         CashDeskNotExistErr: Label 'There are no Cash Desk accounts.';
         NotPermToPostErr: Label 'You don''t have permission to post %1.', Comment = '%1 = Cash Document Header TableCaption';
         NotPermToIssueErr: Label 'You don''t have permission to issue %1.', Comment = '%1 = Cash Document Header TableCaption';
@@ -474,18 +475,25 @@ codeunit 11724 "Cash Desk Management CZP"
 
     local procedure RunCashDocumentAction(CashDocumentHeaderCZP: Record "Cash Document Header CZP"; CashDocumentAction: Enum "Cash Document Action CZP")
     var
+        CashDocumentPostCZP: Codeunit "Cash Document-Post CZP";
         CashDocumentPostPrintCZP: Codeunit "Cash Document-Post + Print CZP";
     begin
+        if (CashDocumentAction = CashDocumentAction::"Post and Print") and PreviewMode then
+            CashDocumentAction := CashDocumentAction::Post;
+
         CashDocumentHeaderCZP.SetRecFilter();
         case CashDocumentAction of
             CashDocumentAction::Release:
                 Codeunit.Run(Codeunit::"Cash Document-Release CZP", CashDocumentHeaderCZP);
             CashDocumentAction::Post:
-                Codeunit.Run(Codeunit::"Cash Document-Post CZP", CashDocumentHeaderCZP);
+                begin
+                    CashDocumentPostCZP.SetPreviewMode(PreviewMode);
+                    CashDocumentPostCZP.Run(CashDocumentHeaderCZP);
+                end;
             CashDocumentAction::"Release and Print":
                 Codeunit.Run(Codeunit::"Cash Document-ReleasePrint CZP", CashDocumentHeaderCZP);
             CashDocumentAction::"Post and Print":
-                CashDocumentPostPrintCZP.PostWithoutConfirmation(CashDocumentHeaderCZP);
+                CashDocumentPostPrintCZP.PostWithoutConfirmation(CashDocumentHeaderCZP)
         end;
     end;
 
@@ -714,6 +722,11 @@ codeunit 11724 "Cash Desk Management CZP"
                     exit(Employee.Status = Employee.Status::Terminated);
         end;
         exit(false);
+    end;
+
+    procedure SetPreviewMode(NewPreviewMode: Boolean)
+    begin
+        PreviewMode := NewPreviewMode;
     end;
 #if not CLEAN22
 #pragma warning disable AL0432

@@ -10,28 +10,71 @@ using System.Security.Authentication;
 using System.Azure.Identity;
 using System.Utilities;
 
-codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
+#if not CLEAN24
+#pragma warning disable AL0432
+codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client", "Email - OAuth Client v2"
+#pragma warning restore AL0432
+#else
+codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client v2"
+#endif
 {
+#if not CLEAN24
     /// <summary>
     /// Retrieves the Access token for the current user to connect to Outlook API
     /// </summary>
     /// <param name="AccessToken">Out parameter with the Access token of the account</param>
     [NonDebuggable]
+    [Obsolete('Replaced by GetAccessToken with SecretText data type for AccessToken parameter.', '24.0')]
     procedure GetAccessToken(var AccessToken: Text)
+    begin
+#pragma warning disable AL0432
+        TryGetAccessTokenInternal(AccessToken);
+#pragma warning restore AL0432
+    end;
+
+    [NonDebuggable]
+    [Obsolete('Replaced by GetAccessToken with SecretText data type for AccessToken parameter.', '24.0')]
+
+    procedure TryGetAccessToken(var AccessToken: Text): Boolean
+    begin
+        exit(TryGetAccessTokenInternal(AccessToken));
+    end;
+#endif
+
+    /// <summary>
+    /// Retrieves the Access token for the current user to connect to Outlook API
+    /// </summary>
+    /// <param name="AccessToken">Out parameter with the Access token of the account</param>
+    [NonDebuggable]
+    procedure GetAccessToken(var AccessToken: SecretText)
     begin
         TryGetAccessTokenInternal(AccessToken);
     end;
 
     [NonDebuggable]
-    procedure TryGetAccessToken(var AccessToken: Text): Boolean
+    procedure TryGetAccessToken(var AccessToken: SecretText): Boolean
     begin
         exit(TryGetAccessTokenInternal(AccessToken));
     end;
 
+#if not CLEAN24
     // Interfaces do not support properties for the procedures, so using an internal function
     [TryFunction]
     [NonDebuggable]
     local procedure TryGetAccessTokenInternal(var AccessToken: Text)
+    var
+        Token: SecretText;
+    begin
+        TryGetAccessTokenInternal(Token);
+        if not Token.IsEmpty() then
+            AccessToken := Token.Unwrap();
+    end;
+#endif
+
+    // Interfaces do not support properties for the procedures, so using an internal function
+    [TryFunction]
+    [NonDebuggable]
+    local procedure TryGetAccessTokenInternal(var AccessToken: SecretText)
     var
         AzureAdMgt: Codeunit "Azure AD Mgt.";
         UrlHelper: Codeunit "Url Helper";
@@ -43,15 +86,15 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
         ClearLastError();
         if EnvironmentInformation.IsSaaSInfrastructure() then begin
             AccessToken := AzureAdMgt.GetAccessToken(UrlHelper.GetGraphUrl(), '', false);
-            if AccessToken = '' then begin
+            if AccessToken.IsEmpty() then begin
                 Session.LogMessage('000040Z', CouldNotAcquireAccessTokenErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
                 if OAuth2.AcquireOnBehalfOfToken('', Scopes, AccessToken) then;
             end;
         end else
-            if (not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, GetOAuthAuthorityUrl(), Scopes, AccessToken)) or (AccessToken = '') then
+            if (not OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, GetOAuthAuthorityUrl(), Scopes, AccessToken)) or AccessToken.IsEmpty() then
                 OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, GetOAuthAuthorityUrl(), RedirectURL, Scopes, Enum::"Prompt Interaction"::None, AccessToken, OAuthErr);
 
-        if AccessToken = '' then begin
+        if AccessToken.IsEmpty() then begin
             if AzureADMgt.GetLastErrorMessage() <> '' then
                 Error(AzureADMgt.GetLastErrorMessage());
 
@@ -85,21 +128,19 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client"
 
     internal procedure AuthorizationCodeTokenCacheExists(): Boolean
     var
-        [NonDebuggable]
-        AccessToken: Text;
+        AccessToken: SecretText;
     begin
         Initialize();
-        exit(OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, GetOAuthAuthorityUrl(), Scopes, AccessToken) and (AccessToken <> ''))
+        exit(OAuth2.AcquireAuthorizationCodeTokenFromCache(ClientId, ClientSecret, RedirectURL, GetOAuthAuthorityUrl(), Scopes, AccessToken) and (not AccessToken.IsEmpty()))
     end;
 
     internal procedure SignInUsingAuthorizationCode(): Boolean
     var
-        [NonDebuggable]
-        AccessToken: Text;
+        AccessToken: SecretText;
         OAuthErr: Text;
     begin
         Initialize();
-        exit(OAuth2.AcquireTokenByAuthorizationCode(ClientID, ClientSecret, GetOAuthAuthorityUrl(), RedirectURL, Scopes, Enum::"Prompt Interaction"::"Select Account", AccessToken, OAuthErr) and (AccessToken <> ''));
+        exit(OAuth2.AcquireTokenByAuthorizationCode(ClientID, ClientSecret, GetOAuthAuthorityUrl(), RedirectURL, Scopes, Enum::"Prompt Interaction"::"Select Account", AccessToken, OAuthErr) and (not AccessToken.IsEmpty()));
     end;
 
     local procedure GetOAuthAuthorityUrl(): Text

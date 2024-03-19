@@ -54,12 +54,13 @@ codeunit 6202 "Transact. Storage Export Data"
 
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
-        TransactionStorageImpl: Codeunit "Transaction Storage Impl.";
+        TransactStorageExport: Codeunit "Transact. Storage Export";
         TransactionStorageTok: Label 'Transaction Storage', Locked = true;
         ExportActionTok: Label 'Export of the table %1 %2', Comment = '%1 = table name; %2 = either ''starts'' or ''ends''';
         NoOfCollectedRecordsTxt: Label '%1 records collected from the table %2', Comment = '%1 = number; %2 = table name';
+        NoPermissionsForTableErr: Label 'User does not have permissions to read the table %1', Comment = '%1 = table name', Locked = true;
 
-    procedure ExportData(TransactStorageTaskEntry: Record "Transact. Storage Task Entry")
+    procedure ExportData(TaskStartingDateTime: DateTime)
     var
         TempFieldList: Record Field temporary;
         TransactionStorageABS: Codeunit "Transaction Storage ABS";
@@ -71,13 +72,13 @@ codeunit 6202 "Transact. Storage Export Data"
     begin
         TablesToExport := GetTablesToExport();
         foreach TableID in TablesToExport do
-            CollectDataFromTable(DataJsonArrays, HandledIncomingDocs, TempFieldList, MasterData, TransactStorageTaskEntry, TableID);
+            CollectDataFromTable(DataJsonArrays, HandledIncomingDocs, TempFieldList, MasterData, TaskStartingDateTime, TableID);
         CollectMasterData(DataJsonArrays, MasterData);
-        TransactionStorageABS.ArchiveTransactionsToABS(DataJsonArrays, HandledIncomingDocs, TransactStorageTaskEntry);
-        TransactStorageTaskEntry.Modify();
+        if (DataJsonArrays.Count() <> 0) or (HandledIncomingDocs.Count() <> 0) then
+            TransactionStorageABS.ArchiveTransactionsToABS(DataJsonArrays, HandledIncomingDocs);
     end;
 
-    local procedure CollectDataFromTable(var DataJsonArrays: Dictionary of [Integer, JsonArray]; var HandledIncomingDocs: Dictionary of [Text, Integer]; var TempFieldList: Record Field temporary; var MasterData: Dictionary of [Integer, List of [Code[50]]]; TransactStorageTaskEntry: Record "Transact. Storage Task Entry"; TableID: Integer)
+    local procedure CollectDataFromTable(var DataJsonArrays: Dictionary of [Integer, JsonArray]; var HandledIncomingDocs: Dictionary of [Text, Integer]; var TempFieldList: Record Field temporary; var MasterData: Dictionary of [Integer, List of [Code[50]]]; TaskStartingDateTime: DateTime; TableID: Integer)
     var
         TransactStorageTableEntry: Record "Transact. Storage Table Entry";
         RecRef: RecordRef;
@@ -85,10 +86,14 @@ codeunit 6202 "Transact. Storage Export Data"
         TableJsonArray: JsonArray;
     begin
         RecRef.Open(TableID);
+        if not RecRef.ReadPermission() then begin
+            FeatureTelemetry.LogError('0000MLH', TransactionStorageTok, '', StrSubstNo(NoPermissionsForTableErr, RecRef.Name));
+            exit;
+        end;
         SetFieldsToHandle(TempFieldList, RecRef.Number);
         SetLoadFieldForRecRef(RecRef, TempFieldList);
-        TransactionStorageImpl.GetExportDataTrack(TransactStorageTableEntry, RecRef);
-        SetRangeOnDataTable(RecRef, TransactStorageTableEntry, TransactStorageTaskEntry);
+        TransactStorageExport.GetExportDataTrack(TransactStorageTableEntry, RecRef);
+        SetRangeOnDataTable(RecRef, TransactStorageTableEntry, TaskStartingDateTime);
         TransactStorageTableEntry."No. Of Records Exported" := 0;
         FeatureTelemetry.LogUsage('0000LK5', TransactionStorageTok, StrSubstNo(ExportActionTok, RecRef.Name, 'started'));
         if RecRef.FindSet() then begin
@@ -97,11 +102,12 @@ codeunit 6202 "Transact. Storage Export Data"
                 TransactStorageTableEntry."No. Of Records Exported" += 1;
                 HandleTableFieldSet(RecordJsonObject, MasterData, TempFieldList, RecRef, true);
                 TableJsonArray.Add(RecordJsonObject);
-                TransactionStorageImpl.HandleIncomingDocuments(HandledIncomingDocs, RecRef);
+                TransactStorageExport.HandleIncomingDocuments(HandledIncomingDocs, RecRef);
             until RecRef.Next() = 0;
             DataJsonArrays.Add(RecRef.Number, TableJsonArray);
-        end;
-        TransactionStorageImpl.CheckTimeDeadline(TransactStorageTaskEntry);
+        end else
+            TransactStorageExport.SetTableEntryProcessed(TransactStorageTableEntry, TransactStorageTableEntry."Filter Record To DT", false, '');
+        TransactStorageExport.CheckTimeDeadline(TaskStartingDateTime);
         FeatureTelemetry.LogUsage('0000LK6', TransactionStorageTok, StrSubstNo(ExportActionTok, RecRef.Name, 'ended'));
         FeatureTelemetry.LogUsage(
             '0000LK7', TransactionStorageTok, StrSubstNo(NoOfCollectedRecordsTxt, TransactStorageTableEntry."No. Of Records Exported", RecRef.Name));
@@ -125,6 +131,10 @@ codeunit 6202 "Transact. Storage Export Data"
         foreach MasterDataTableNo in MasterData.Keys() do begin
             MasterDataCodes := MasterData.Get(MasterDataTableNo);
             RecRef.Open(MasterDataTableNo);
+            if not RecRef.ReadPermission() then begin
+                FeatureTelemetry.LogError('0000MLI', TransactionStorageTok, '', StrSubstNo(NoPermissionsForTableErr, RecRef.Name));
+                exit;
+            end;
             SetFieldsToHandle(TempFieldList, RecRef.Number);
             SetLoadFieldForRecRef(RecRef, TempFieldList);
             KeyRef := RecRef.KeyIndex(1);
@@ -133,9 +143,10 @@ codeunit 6202 "Transact. Storage Export Data"
                 Clear(TableJsonArray);
                 foreach MasterDataCode in MasterDataCodes do begin
                     FieldRef.SetRange(MasterDataCode);
-                    RecRef.FindFirst();
-                    HandleTableFieldSet(RecordJsonObject, MasterData, TempFieldList, RecRef, false);
-                    TableJsonArray.Add(RecordJsonObject);
+                    if RecRef.FindFirst() then begin
+                        HandleTableFieldSet(RecordJsonObject, MasterData, TempFieldList, RecRef, false);
+                        TableJsonArray.Add(RecordJsonObject);
+                    end;
                 end;
                 DataJsonArrays.Add(RecRef.Number, TableJsonArray);
             end;
@@ -144,18 +155,34 @@ codeunit 6202 "Transact. Storage Export Data"
         end;
     end;
 
-    local procedure SetRangeOnDataTable(var RecRef: RecordRef; var TransactStorageTableEntry: Record "Transact. Storage Table Entry"; TransactStorageTaskEntry: Record "Transact. Storage Task Entry")
+    local procedure SetRangeOnDataTable(var RecRef: RecordRef; var TransactStorageTableEntry: Record "Transact. Storage Table Entry"; TaskStartingDateTime: DateTime)
     var
         SystemCreateAtFieldRef: FieldRef;
         LastHandledDate: Date;
         LastHandledTime: Time;
     begin
-        // select records modified from the last handled date/time to the task starting date/time
+        // select records modified from the last handled date/time to min(<task starting date/time>, <last handled date/time + 10 days>)
         LastHandledDate := DT2Date(TransactStorageTableEntry."Last Handled Date/Time");
         LastHandledTime := DT2Time(TransactStorageTableEntry."Last Handled Date/Time");
+
+        TransactStorageTableEntry."Filter Record To DT" := CalcFilterRecordToDateTime(TaskStartingDateTime, LastHandledDate);
+
         SystemCreateAtFieldRef := RecRef.Field(RecRef.SystemModifiedAtNo());
         SystemCreateAtFieldRef.SetFilter(
-            '%1..%2', CreateDateTime(LastHandledDate, LastHandledTime + 1), TransactStorageTaskEntry."Starting Date/Time");
+            '%1..%2', CreateDateTime(LastHandledDate, LastHandledTime + 1), TransactStorageTableEntry."Filter Record To DT");
+    end;
+
+    local procedure CalcFilterRecordToDateTime(TaskStartingDateTime: DateTime; TableLastHandledDate: Date) FilterRecordTo: DateTime
+    var
+        TaskStartingDate: Date;
+        MaxExportPeriodDays: Integer;
+    begin
+        MaxExportPeriodDays := 10;
+        TaskStartingDate := DT2Date(TaskStartingDateTime);
+
+        FilterRecordTo := TaskStartingDateTime;
+        if TaskStartingDate - TableLastHandledDate > MaxExportPeriodDays then
+            FilterRecordTo := CreateDateTime(TableLastHandledDate + MaxExportPeriodDays, 0T);
     end;
 
     local procedure HandleTableFieldSet(var RecordJsonObject: JsonObject; var MasterData: Dictionary of [Integer, List of [Code[50]]]; var TempFieldList: Record Field temporary; var RecRef: RecordRef; MasterDataCollectionRequired: Boolean)

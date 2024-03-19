@@ -74,6 +74,8 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
         Evaluate(EDocument."Amount Excl. VAT", GetNodeByPath(TempXMLBuffer, '/Invoice/cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount'), 9);
         Evaluate(EDocument."Amount Incl. VAT", GetNodeByPath(TempXMLBuffer, '/Invoice/cac:LegalMonetaryTotal/cbc:PayableAmount'), 9);
 
+        EDocument."Order No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/Invoice/cac:OrderReference/cbc:ID'), 1, MaxStrLen(EDocument."Order No."));
+
         Currency := CopyStr(GetNodeByPath(TempXMLBuffer, '/Invoice/cbc:DocumentCurrencyCode'), 1, MaxStrLen(EDocument."Currency Code"));
         if LCYCode <> Currency then
             EDocument."Currency Code" := Currency;
@@ -141,6 +143,7 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
     begin
         PurchaseHeader."Document Type" := PurchaseHeader."Document Type"::Invoice;
         PurchaseHeader."No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/Invoice/cbc:ID'), 1, MaxStrLen(PurchaseHeader."No."));
+        PurchaseHeader."Vendor Order No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/Invoice/cac:OrderReference/cbc:ID'), 1, MaxStrLen(PurchaseHeader."Vendor Order No."));
         // Currency
         PurchaseHeader.Insert();
 

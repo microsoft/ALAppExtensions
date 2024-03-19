@@ -2,21 +2,16 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-#if not CLEAN22
+
 namespace Microsoft.Sales.Setup;
-
+#if not CLEAN22
 using Microsoft.Finance.VAT.Calculation;
-
+#endif
 pageextension 11718 "Sales & Receivables Setup CZL" extends "Sales & Receivables Setup"
 {
-    ObsoleteState = Pending;
-#pragma warning disable AS0072
-    ObsoleteTag = '22.0';
-#pragma warning restore AS0072
-    ObsoleteReason = 'All fields from this pageextension are obsolete.';
-
     layout
     {
+#if not CLEAN22
         addlast(content)
         {
             group(VatCZL)
@@ -38,8 +33,17 @@ pageextension 11718 "Sales & Receivables Setup CZL" extends "Sales & Receivables
                 }
             }
         }
+#endif
+        addlast(General)
+        {
+            field("Print QR Payment CZL"; Rec."Print QR Payment CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies whether to print a code for QR payment on Sales Invoices and Advances';
+            }
+        }
     }
-
+#if not CLEAN22
     trigger OnOpenPage()
     begin
         ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
@@ -50,6 +54,6 @@ pageextension 11718 "Sales & Receivables Setup CZL" extends "Sales & Receivables
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
 #pragma warning restore AL0432
         ReplaceVATDateEnabled: Boolean;
+#endif
 }
 
-#endif

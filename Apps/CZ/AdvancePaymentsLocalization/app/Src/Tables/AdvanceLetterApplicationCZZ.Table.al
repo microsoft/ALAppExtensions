@@ -6,6 +6,7 @@ namespace Microsoft.Finance.AdvancePayments;
 
 using Microsoft.Purchases.Document;
 using Microsoft.Sales.Document;
+using Microsoft.Finance.Currency;
 
 table 31007 "Advance Letter Application CZZ"
 {
@@ -38,11 +39,17 @@ table 31007 "Advance Letter Application CZZ"
 
                 case "Advance Letter Type" of
                     "Advance Letter Type"::Sales:
-                        if SalesAdvLetterHeaderCZZ.Get("Advance Letter No.") then
+                        if SalesAdvLetterHeaderCZZ.Get("Advance Letter No.") then begin
                             "Posting Date" := SalesAdvLetterHeaderCZZ."Posting Date";
+                            "Currency Code" := SalesAdvLetterHeaderCZZ."Currency Code";
+                            "Currency Factor" := SalesAdvLetterHeaderCZZ."Currency Factor";
+                        end;
                     "Advance Letter Type"::Purchase:
-                        if PurchAdvLetterHeaderCZZ.Get("Advance Letter No.") then
+                        if PurchAdvLetterHeaderCZZ.Get("Advance Letter No.") then begin
                             "Posting Date" := PurchAdvLetterHeaderCZZ."Posting Date";
+                            "Currency Code" := PurchAdvLetterHeaderCZZ."Currency Code";
+                            "Currency Factor" := PurchAdvLetterHeaderCZZ."Currency Factor";
+                        end;
                 end;
             end;
         }
@@ -64,6 +71,15 @@ table 31007 "Advance Letter Application CZZ"
         {
             Caption = 'Amount';
             DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            var
+                CurrencyExchangeRate: Record "Currency Exchange Rate";
+            begin
+                "Amount (LCY)" :=
+                    Round(CurrencyExchangeRate.ExchangeAmtFCYToLCY(
+                        "Posting Date", "Currency Code", Amount, "Currency Factor"));
+            end;
         }
         field(9; "Amount (LCY)"; Decimal)
         {
@@ -74,6 +90,21 @@ table 31007 "Advance Letter Application CZZ"
         {
             Caption = 'Amount to Use';
             DataClassification = CustomerContent;
+        }
+        field(20; "Currency Code"; Code[10])
+        {
+            Caption = 'Currency Code';
+            DataClassification = CustomerContent;
+            TableRelation = Currency;
+            Editable = false;
+        }
+        field(21; "Currency Factor"; Decimal)
+        {
+            Caption = 'Currency Factor';
+            DataClassification = CustomerContent;
+            DecimalPlaces = 0 : 15;
+            Editable = false;
+            MinValue = 0;
         }
         field(50; "Posting Date"; Date)
         {
@@ -131,6 +162,8 @@ table 31007 "Advance Letter Application CZZ"
                 NewAdvanceLetterApplicationCZZ."Advance Letter Type" := AdvanceLetterApplicationCZZ."Advance Letter Type"::Sales;
                 NewAdvanceLetterApplicationCZZ."Advance Letter No." := SalesAdvLetterHeaderCZZ."No.";
                 NewAdvanceLetterApplicationCZZ."Posting Date" := SalesAdvLetterHeaderCZZ."Posting Date";
+                NewAdvanceLetterApplicationCZZ."Currency Code" := SalesAdvLetterHeaderCZZ."Currency Code";
+                NewAdvanceLetterApplicationCZZ."Currency Factor" := SalesAdvLetterHeaderCZZ."Currency Factor";
 
                 SalesAdvLetterEntryCZZ.Reset();
                 SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", SalesAdvLetterHeaderCZZ."No.");
@@ -183,6 +216,8 @@ table 31007 "Advance Letter Application CZZ"
                 NewAdvanceLetterApplicationCZZ."Advance Letter Type" := AdvanceLetterApplicationCZZ."Advance Letter Type"::Purchase;
                 NewAdvanceLetterApplicationCZZ."Advance Letter No." := PurchAdvLetterHeaderCZZ."No.";
                 NewAdvanceLetterApplicationCZZ."Posting Date" := PurchAdvLetterHeaderCZZ."Posting Date";
+                NewAdvanceLetterApplicationCZZ."Currency Code" := PurchAdvLetterHeaderCZZ."Currency Code";
+                NewAdvanceLetterApplicationCZZ."Currency Factor" := PurchAdvLetterHeaderCZZ."Currency Factor";
 
                 PurchAdvLetterEntryCZZ.Reset();
                 PurchAdvLetterEntryCZZ.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
@@ -232,13 +267,7 @@ table 31007 "Advance Letter Application CZZ"
         AdvanceLetterApplicationCZZ.SetRange("Document No.", NewFromDocumentNo);
         if AdvanceLetterApplicationCZZ.FindSet() then
             repeat
-                NewAdvanceLetterApplicationCZZ."Advance Letter Type" := AdvanceLetterApplicationCZZ."Advance Letter Type";
-                NewAdvanceLetterApplicationCZZ."Advance Letter No." := AdvanceLetterApplicationCZZ."Advance Letter No.";
-                NewAdvanceLetterApplicationCZZ."Posting Date" := AdvanceLetterApplicationCZZ."Posting Date";
-                NewAdvanceLetterApplicationCZZ.Amount := AdvanceLetterApplicationCZZ.Amount;
-                NewAdvanceLetterApplicationCZZ."Amount (LCY)" := AdvanceLetterApplicationCZZ."Amount (LCY)";
-                NewAdvanceLetterApplicationCZZ."Document Type" := NewFromAdvLetterUsageDocTypeCZZ;
-                NewAdvanceLetterApplicationCZZ."Document No." := NewFromDocumentNo;
+                NewAdvanceLetterApplicationCZZ := AdvanceLetterApplicationCZZ;
                 case AdvanceLetterApplicationCZZ."Advance Letter Type" of
                     AdvanceLetterApplicationCZZ."Advance Letter Type"::Sales:
                         begin
@@ -258,6 +287,47 @@ table 31007 "Advance Letter Application CZZ"
                 OnGetAssignedAdvanceOnBeforeInsertNewAdvanceLetterApplication(NewAdvanceLetterApplicationCZZ, AdvanceLetterApplicationCZZ);
                 NewAdvanceLetterApplicationCZZ.Insert();
             until AdvanceLetterApplicationCZZ.Next() = 0;
+    end;
+
+    internal procedure CopyFrom(AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")
+    begin
+        "Advance Letter Type" := AdvanceLetterApplicationCZZ."Advance Letter Type";
+        "Advance Letter No." := AdvanceLetterApplicationCZZ."Advance Letter No.";
+        "Document Type" := AdvanceLetterApplicationCZZ."Document Type";
+        "Document No." := AdvanceLetterApplicationCZZ."Document No.";
+        "Posting Date" := AdvanceLetterApplicationCZZ."Posting Date";
+        "Currency Code" := AdvanceLetterApplicationCZZ."Currency Code";
+        "Currency Factor" := AdvanceLetterApplicationCZZ."Currency Factor";
+        Amount := AdvanceLetterApplicationCZZ.Amount;
+        "Amount (LCY)" := AdvanceLetterApplicationCZZ."Amount (LCY)";
+        "Amount to Use" := AdvanceLetterApplicationCZZ."Amount to Use";
+    end;
+
+    internal procedure Add(AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")
+    begin
+        if not IsTemporary() then
+            exit;
+
+        Init();
+        Rec := AdvanceLetterApplicationCZZ;
+        Insert();
+    end;
+
+    internal procedure ApplyChanges()
+    var
+        AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
+    begin
+        if not IsTemporary() then
+            exit;
+
+        AdvanceLetterApplicationCZZ.Get("Advance Letter Type", "Advance Letter No.", "Document Type", "Document No.");
+        if Amount <= 0 then
+            AdvanceLetterApplicationCZZ.Delete(true)
+        else begin
+            AdvanceLetterApplicationCZZ.Amount := Amount;
+            AdvanceLetterApplicationCZZ."Amount (LCY)" := "Amount (LCY)";
+            AdvanceLetterApplicationCZZ.Modify();
+        end;
     end;
 
     [IntegrationEvent(false, false)]

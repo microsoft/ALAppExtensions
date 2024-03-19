@@ -315,6 +315,8 @@ codeunit 20343 "Tax Posting Buffer Mgmt."
         TempTransactionValue.Reset();
         NextID := TempTransactionValue.Count();
 
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
+        TaxTransactionValue.LoadFields("Tax Record ID", "Case ID");
         TaxTransactionValue.SetRange("Tax Record ID", TempTaxPostingBuffer."Tax Record ID");
         TaxTransactionValue.SetRange("Case ID", TempTaxPostingBuffer."Case ID");
         if TaxTransactionValue.FindSet() then

@@ -26,4 +26,10 @@ codeunit 31310 "Release Sales Doc. Handler CZL"
                 end;
             end;
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Release Sales Document", 'OnCodeOnAfterCheck', '', false, false)]
+    local procedure CheckPaymentQRCodePrintIBANOnCodeOnAfterCheck(SalesHeader: Record "Sales Header")
+    begin
+        SalesHeader.CheckPaymentQRCodePrintIBANCZL();
+    end;
 }

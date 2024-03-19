@@ -484,7 +484,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         // [SCENARIO 351182] Scan QR-Bill into Purchase Invoice, confirm create a new vendor bank account
         // [SCENARIO 362130] A new vendor bank account "Payment Form" = "Bank Payment Domestic"
         Initialize();
-        IBAN := SwissQRBillTestLibrary.GetRandomIBAN();
+        IBAN := SwissQRBillTestLibrary.GetFixedIBAN();
         PaymentReference := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
         BillInfo := 'S1/10/DOCNO123';
         QRCodeText := SwissQRBillTestLibrary.CreateQRCodeText(IBAN, 123.45, 'CHF', PaymentReference, 'Unstr Msg', BillInfo);
@@ -849,7 +849,7 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         // [FEATURE] [UI]
         // [SCENARIO 351182] Scan QR-Bill into Purchase Order, confirm create a new vendor bank account
         Initialize();
-        IBAN := SwissQRBillTestLibrary.GetRandomIBAN();
+        IBAN := SwissQRBillTestLibrary.GetFixedIBAN();
         PaymentReference := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
         BillInfo := 'S1/10/DOCNO123';
         QRCodeText := SwissQRBillTestLibrary.CreateQRCodeText(IBAN, 123.45, 'CHF', PaymentReference, 'Unstr Msg', BillInfo);
@@ -1468,6 +1468,41 @@ codeunit 148096 "Swiss QR-Bill Test Purchases"
         SwissQRBillTestLibrary.ClearVendor(VendorNo);
 
         LibraryVariableStorage.AssertEmpty();
+    end;
+
+    [Test]
+    [HandlerFunctions('QRBillScanMPH,ConfirmHandler')]
+    procedure InvoiceScanCreateBankAccountWrongIBAN()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        QRCodeText: Text;
+        PaymentReference: Code[50];
+        IBAN: Code[50];
+        BillInfo: Text;
+    begin
+        // [SCENARIO 501997] Scan QR-Bill into Purchase Invoice, confirm create a new vendor bank account when Incoming Document has IBAN in incorrect format.
+        Initialize();
+        IBAN := 'CH5800791123000889013';    // IBAN fails mod97 validation
+        PaymentReference := SwissQRBillTestLibrary.GetRandomQRPaymentReference();
+        BillInfo := 'S1/10/DOCNO123';
+        QRCodeText := SwissQRBillTestLibrary.CreateQRCodeText(IBAN, 123.45, 'CHF', PaymentReference, 'Unstr Msg', BillInfo);
+        CreatePurchaseHeader(PurchaseHeader, DocumentType::Invoice, '', false, '123');
+
+        LibraryVariableStorage.Enqueue(QRCodeText);
+        LibraryVariableStorage.Enqueue(true);       // confirm to create a new bank account
+        LibraryVariableStorage.Enqueue(false);      // refuse to coninue on incorrect IBAN
+        ScanToInvoice(PurchaseHeader);
+
+        // [THEN] IBAN is validated with mod97 operation when copied from Incoming Document to Vendor Bank Account.
+        // [THEN] Confirm message is shown "Then entered number may not be a valid IBAN. Do you want to continue?"
+        Assert.ExpectedMessage('Do you want to create a new vendor bank account?', LibraryVariableStorage.DequeueText());
+        Assert.ExpectedMessage(
+            'The number CH5800791123000889013 that you entered may not be a valid International Bank Account Number (IBAN)',
+            LibraryVariableStorage.DequeueText());
+
+        LibraryVariableStorage.AssertEmpty();
+        PurchaseHeader.Delete();
+        SwissQRBillTestLibrary.ClearVendor(PurchaseHeader."Buy-from Vendor No.");
     end;
 
     local procedure Initialize()

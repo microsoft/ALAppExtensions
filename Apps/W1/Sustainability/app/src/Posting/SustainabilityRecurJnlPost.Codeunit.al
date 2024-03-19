@@ -2,6 +2,7 @@ namespace Microsoft.Sustainability.Posting;
 
 using Microsoft.Sustainability.Journal;
 using Microsoft.Foundation.NoSeries;
+using System.Utilities;
 
 codeunit 6214 "Sustainability Recur Jnl.-Post"
 {
@@ -10,10 +11,14 @@ codeunit 6214 "Sustainability Recur Jnl.-Post"
     trigger OnRun()
     var
         SustainabilityJnlBatch: Record "Sustainability Jnl. Batch";
+        ConfirmManagement: Codeunit "Confirm Management";
         SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
         NoSeriesBatch: Codeunit "No. Series - Batch";
         Window: Dialog;
     begin
+        if not ConfirmManagement.GetResponseOrDefault(SustainabilityPostMgt.GetPostConfirmMessage(), true) then
+            exit;
+
         Rec.LockTable();
 
         if GuiAllowed() then
@@ -28,7 +33,6 @@ codeunit 6214 "Sustainability Recur Jnl.-Post"
                 if GuiAllowed() then
                     Window.Update(1, SustainabilityPostMgt.GetProgressingLineMessage(Rec."Line No."));
 
-
                 Rec.Validate("Document No.", NoSeriesBatch.GetNextNo(SustainabilityJnlBatch."No Series", Rec."Posting Date"));
                 SustainabilityPostMgt.InsertLedgerEntry(Rec);
 
@@ -37,8 +41,12 @@ codeunit 6214 "Sustainability Recur Jnl.-Post"
 
         NoSeriesBatch.SaveState();
 
-        if GuiAllowed() then
+        if GuiAllowed() then begin
             Window.Close();
+            Message(SustainabilityPostMgt.GetJnlLinesPostedMessage());
+        end;
+
+        SustainabilityPostMgt.ResetFilters(Rec);
     end;
 
     local procedure CheckAndMarkRecurringLinesBeforePosting(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; var DialogInstance: Dialog)
@@ -67,8 +75,10 @@ codeunit 6214 "Sustainability Recur Jnl.-Post"
 
         SustainabilityJnlLine.MarkedOnly(true);
 
-        if SustainabilityJnlLine.IsEmpty() then
+        if SustainabilityJnlLine.IsEmpty() then begin
+            SustainabilityJnlLine.MarkedOnly(false);
             Error(AllRecurringLinesExpiredErr, SustainabilityJnlLine.FieldCaption("Expiration Date"), SustainabilityJnlLine.FieldCaption("Posting Date"));
+        end;
     end;
 
     local procedure ProcessRecurringJournalLine(var SustainabilityJnlLine: Record "Sustainability Jnl. Line")

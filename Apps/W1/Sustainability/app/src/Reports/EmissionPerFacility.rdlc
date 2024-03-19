@@ -1746,6 +1746,141 @@
       </DefaultValue>
       <Prompt>PageCaption</Prompt>
     </ReportParameter>
+    <ReportParameter Name="EmissionsByRespCenter">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>EmissionsByRespCenter</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>EmissionsByRespCenter</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="AverageByScopeAndRC">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>AverageByScopeAndRC</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>AverageByScopeAndRC</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="AverageByAccountAndRC">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>AverageByAccountAndRC</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>AverageByAccountAndRC</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="CompName">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>CompName</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>CompName</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="CountryRegionCode">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>CountryRegionCode</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>CountryRegionCode</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="EmissionByRespCenter">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>EmissionByRespCenter</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>EmissionByRespCenter</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="EmissionScope">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>EmissionScope</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>EmissionScope</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="ResponsibilityCenter">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>ResponsibilityCenter</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>ResponsibilityCenter</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="SumOfEmission_CO2">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>SumOfEmission_CO2</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>SumOfEmission_CO2</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="SumOfEmission_CH4">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>SumOfEmission_CH4</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>SumOfEmission_CH4</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="SumOfEmission_N2O">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>SumOfEmission_N2O</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>SumOfEmission_N2O</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="AverageOfEmission_CO2">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>AverageOfEmission_CO2</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>AverageOfEmission_CO2</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="AverageOfEmission_CH4">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>AverageOfEmission_CH4</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>AverageOfEmission_CH4</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="AverageOfEmission_N2O">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>AverageOfEmission_N2O</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>AverageOfEmission_N2O</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="AccountName">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>AccountName</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>AccountName</Prompt>
+    </ReportParameter>
     <ReportParameter Name="Responsibility_CenterCaption">
       <DataType>String</DataType>
       <DefaultValue>
@@ -1840,7 +1975,7 @@
   <ReportParametersLayout>
     <GridLayoutDefinition>
       <NumberOfColumns>1</NumberOfColumns>
-      <NumberOfRows>12</NumberOfRows>
+      <NumberOfRows>27</NumberOfRows>
       <CellDefinitions>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
@@ -1855,51 +1990,126 @@
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>2</RowIndex>
-          <ParameterName>Responsibility_CenterCaption</ParameterName>
+          <ParameterName>EmissionsByRespCenter</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>3</RowIndex>
-          <ParameterName>Responsibility_Center_NameCaption</ParameterName>
+          <ParameterName>AverageByScopeAndRC</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>4</RowIndex>
-          <ParameterName>Account_No_Caption</ParameterName>
+          <ParameterName>AverageByAccountAndRC</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>5</RowIndex>
-          <ParameterName>Account_NameCaption</ParameterName>
+          <ParameterName>CompName</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>6</RowIndex>
-          <ParameterName>DescriptionCaption</ParameterName>
+          <ParameterName>CountryRegionCode</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>7</RowIndex>
-          <ParameterName>Emission_ScopeCaption</ParameterName>
+          <ParameterName>EmissionByRespCenter</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>8</RowIndex>
-          <ParameterName>Country_Region_CodeCaption</ParameterName>
+          <ParameterName>EmissionScope</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>9</RowIndex>
-          <ParameterName>Emission_CO2Caption</ParameterName>
+          <ParameterName>ResponsibilityCenter</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>10</RowIndex>
-          <ParameterName>Emission_CH4Caption</ParameterName>
+          <ParameterName>SumOfEmission_CO2</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>11</RowIndex>
+          <ParameterName>SumOfEmission_CH4</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>12</RowIndex>
+          <ParameterName>SumOfEmission_N2O</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>13</RowIndex>
+          <ParameterName>AverageOfEmission_CO2</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>14</RowIndex>
+          <ParameterName>AverageOfEmission_CH4</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>15</RowIndex>
+          <ParameterName>AverageOfEmission_N2O</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>16</RowIndex>
+          <ParameterName>AccountName</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>17</RowIndex>
+          <ParameterName>Responsibility_CenterCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>18</RowIndex>
+          <ParameterName>Responsibility_Center_NameCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>19</RowIndex>
+          <ParameterName>Account_No_Caption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>20</RowIndex>
+          <ParameterName>Account_NameCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>21</RowIndex>
+          <ParameterName>DescriptionCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>22</RowIndex>
+          <ParameterName>Emission_ScopeCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>23</RowIndex>
+          <ParameterName>Country_Region_CodeCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>24</RowIndex>
+          <ParameterName>Emission_CO2Caption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>25</RowIndex>
+          <ParameterName>Emission_CH4Caption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>26</RowIndex>
           <ParameterName>Emission_N2OCaption</ParameterName>
         </CellDefinition>
       </CellDefinitions>

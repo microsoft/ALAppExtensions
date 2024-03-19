@@ -1,4 +1,4 @@
-codeunit 139658 "E-Doc. Line Matching Test"
+codeunit 139659 "E-Doc. Line Matching Test"
 {
 
     Subtype = Test;
@@ -10,6 +10,7 @@ codeunit 139658 "E-Doc. Line Matching Test"
 
         Assert: Codeunit Assert;
         LibraryPurchase: Codeunit "Library - Purchase";
+        LibraryEdoc: Codeunit "Library - E-Document";
 
     procedure Initialize()
     var
@@ -27,6 +28,9 @@ codeunit 139658 "E-Doc. Line Matching Test"
         EDocImportedLine: Record "E-Doc. Imported Line";
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
+        EDocService: Record "E-Document Service";
+        EDocLineMatching: Codeunit "E-Doc. Line Matching";
+        EDocLog: Codeunit "E-Document Log Helper";
         EDocOrderLineMatchingPage: TestPage "E-Doc. Order Line Matching";
     begin
         // [FEATURE] [E-Document] [Matching] 
@@ -38,11 +42,14 @@ codeunit 139658 "E-Doc. Line Matching Test"
         // [GIVEN] We create e-document and PO line with Qty 5
         PurchaseHeader := CreatePurchaseLine(5);
         CreateEDocumentWithPOReference(PurchaseHeader);
+        EDocService.Get(LibraryEdoc.CreateService());
+
 
         // Receive
         LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false);
         LibraryPurchase.ReopenPurchaseDocument(PurchaseHeader);
         EDocument.FindLast();
+        EDocLog.InsertLog(EDocument, EDocService, Enum::"E-Document Service Status"::"Order Linked");
 
         // [GIVEN] We imported a item with quantity 5
         CreateImportedLine(EDocument, 10000, 5, Enum::"Purchase Line Type"::Item);
@@ -51,8 +58,10 @@ codeunit 139658 "E-Doc. Line Matching Test"
 
         // [WHEN] Open Matching page and select first entry
         Commit();
-        EDocOrderLineMatchingPage.OpenEdit();
-        EDocOrderLineMatchingPage.Last();
+
+        EDocOrderLineMatchingPage.Trap();
+        EDocLineMatching.RunMatching(EDocument);
+
         EDocOrderLineMatchingPage.ImportedLines.First();
         EDocOrderLineMatchingPage.OrderLines.First();
 

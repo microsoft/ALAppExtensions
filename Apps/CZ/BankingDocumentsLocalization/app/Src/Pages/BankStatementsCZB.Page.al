@@ -303,6 +303,9 @@ page 31253 "Bank Statements CZB"
            (IssuingCodeunitId <> Codeunit::"IssueBank.Stat.Create Jnl. CZB") then
             exit;
 
+        if ShowIssuedAndCreatedJnlConfirmationMessage(Rec."No.", IssuingCodeunitId) then
+            exit;
+
         if InstructionMgt.IsEnabled(InstructionMgtCZB.GetOpeningIssuedDocumentNotificationId()) then
             ShowIssuedConfirmationMessage(Rec."No.");
     end;
@@ -315,6 +318,30 @@ page 31253 "Bank Statements CZB"
         if IssBankStatementHeaderCZB.FindFirst() then
             if InstructionMgt.ShowConfirm(OpenIssuedBankStmtQst, InstructionMgtCZB.ShowIssuedConfirmationMessageCode()) then
                 Page.Run(Page::"Iss. Bank Statement CZB", IssBankStatementHeaderCZB);
+    end;
+
+    local procedure ShowIssuedAndCreatedJnlConfirmationMessage(PreAssignedNo: Code[20]; IssuingCodeunitId: Integer): Boolean
+    var
+        IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB";
+        OpenCreatedJnlIssuedBankStmtQst: Label 'The bank statement has been issued and moved to the Issued Bank Statements window.\\Do you want to open the created journal and check it now?';
+    begin
+        if not InstructionMgt.IsEnabled(InstructionMgtCZB.ShowCreatedJnlIssBankStmtConfirmationMessageCode()) then
+            exit(false);
+
+        IssBankStatementHeaderCZB.SetRange("Pre-Assigned No.", PreAssignedNo);
+        if IssBankStatementHeaderCZB.FindFirst() then begin
+            if IssuingCodeunitId = Codeunit::"IssueBank.Stat.Create Jnl. CZB" then
+                if InstructionMgt.ShowConfirm(OpenCreatedJnlIssuedBankStmtQst, InstructionMgtCZB.ShowCreatedJnlIssBankStmtConfirmationMessageCode()) then begin
+                    IssBankStatementHeaderCZB.OpenReconciliationOrJournal();
+                    exit(true);
+                end;
+            if IssuingCodeunitId = Codeunit::"Issue Bank Statement YesNo CZB" then
+                if IssBankStatementHeaderCZB.PaymentReconcialiationOrGeneralJournalExist() then
+                    if InstructionMgt.ShowConfirm(OpenCreatedJnlIssuedBankStmtQst, InstructionMgtCZB.ShowCreatedJnlIssBankStmtConfirmationMessageCode()) then begin
+                        IssBankStatementHeaderCZB.OpenReconciliationOrJournal();
+                        exit(true)
+                    end;
+        end;
     end;
 
     local procedure CopyPaymentOrder()

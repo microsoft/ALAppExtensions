@@ -1,6 +1,7 @@
 namespace Microsoft.Sustainability.Account;
 
 using Microsoft.Sustainability.Setup;
+using Microsoft.Sustainability.Ledger;
 
 table 6212 "Sustain. Account Subcategory"
 {
@@ -84,11 +85,17 @@ table 6212 "Sustain. Account Subcategory"
     trigger OnDelete()
     var
         SustainabilityAccount: Record "Sustainability Account";
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
     begin
         SustainabilityAccount.SetRange(Category, "Category Code");
         SustainabilityAccount.SetRange(Subcategory, Code);
         if not SustainabilityAccount.IsEmpty() then
             SustainabilityAccount.ModifyAll(Subcategory, '');
+
+        SustainabilityLedgerEntry.SetRange("Account Category", "Category Code");
+        SustainabilityLedgerEntry.SetRange("Account Subcategory", Code);
+        if not SustainabilityLedgerEntry.IsEmpty() then
+            SustainabilityLedgerEntry.ModifyAll("Account Subcategory", '');
     end;
 
     trigger OnInsert()

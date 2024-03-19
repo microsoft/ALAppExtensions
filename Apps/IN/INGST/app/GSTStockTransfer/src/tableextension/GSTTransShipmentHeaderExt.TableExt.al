@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.GST.StockTransfer;
 
 using Microsoft.Finance.GST.Base;
+using Microsoft.Finance.GST.Sales;
 using Microsoft.Inventory.Transfer;
 using Microsoft.Purchases.Vendor;
 
@@ -61,6 +62,47 @@ tableextension 18396 "GST Trans. Shipment Header Ext" extends "Transfer Shipment
         field(18399; "Time of Removal"; Time)
         {
             Caption = 'Time of Removal';
+            DataClassification = CustomerContent;
+        }
+        field(18403; "Acknowledgement No."; Text[30])
+        {
+            Caption = 'Acknowledgement No.';
+            DataClassification = CustomerContent;
+        }
+        field(18404; "IRN Hash"; Text[64])
+        {
+            Caption = 'IRN Hash';
+            DataClassification = CustomerContent;
+        }
+        field(18405; "QR Code"; Blob)
+        {
+            Subtype = Bitmap;
+            Caption = 'QR Code';
+            DataClassification = CustomerContent;
+        }
+        field(18406; "Acknowledgement Date"; DateTime)
+        {
+            Caption = 'Acknowledgement Date';
+            DataClassification = CustomerContent;
+        }
+        field(18407; "IsJSONImported"; Boolean)
+        {
+            Caption = 'IsJSONImported';
+            DataClassification = EndUserPseudonymousIdentifiers;
+        }
+        field(18408; "E-Inv. Cancelled Date"; DateTime)
+        {
+            Caption = 'E-Inv. Cancelled Date';
+            DataClassification = CustomerContent;
+        }
+        field(18409; "Cancel Reason"; Enum "e-Invoice Cancel Reason")
+        {
+            Caption = 'Cancel Reason';
+            DataClassification = CustomerContent;
+        }
+        field(18410; "E-Way Bill No."; Text[50])
+        {
+            Caption = 'E-Way Bill No.';
             DataClassification = CustomerContent;
         }
     }

@@ -23,7 +23,7 @@ page 6225 "G/L Accounts Subform"
                     ApplicationArea = Basic, Suite;
                     Style = Strong;
                     StyleExpr = Rec."Account Type" <> Rec."Account Type"::Posting;
-                    ToolTip = 'Specifies the number of the involved entry or record, according to the specified number series.';
+                    ToolTip = 'Specifies the number of the general ledger account.';
                 }
                 field(Name; Rec.Name)
                 {

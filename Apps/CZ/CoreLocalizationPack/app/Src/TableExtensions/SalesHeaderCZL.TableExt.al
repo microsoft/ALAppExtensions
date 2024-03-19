@@ -10,14 +10,13 @@ using Microsoft.Finance.Currency;
 using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.BatchProcessing;
-#if not CLEAN22
 using Microsoft.Foundation.Company;
-#endif
 using Microsoft.Sales.Customer;
 #if not CLEAN22
 using System.Environment.Configuration;
 #endif
 using System.Utilities;
+using Microsoft.Sales.Setup;
 
 tableextension 11703 "Sales Header CZL" extends "Sales Header"
 {
@@ -511,6 +510,64 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
         exit(ReplaceVATDateMgtCZL.IsEnabled());
     end;
 #endif
+    procedure CheckPaymentQRCodePrintIBANCZL()
+    var
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+        PaymentMethod: Record "Payment Method";
+        CompanyInformation: Record "Company Information";
+    begin
+        if "Document Type" in ["Document Type"::"Blanket Order", "Document Type"::"Credit Memo", "Document Type"::Quote, "Document Type"::"Return Order"] then
+            exit;
+
+        if "Payment Method Code" = '' then
+            exit;
+
+        SalesReceivablesSetup.Get();
+
+        if not SalesReceivablesSetup."Print QR Payment CZL" then
+            exit;
+
+        PaymentMethod.Get("Payment Method Code");
+        if not PaymentMethod."Print QR Payment CZL" then
+            exit;
+
+        if "Bank Account Code CZL" = '' then begin
+            CompanyInformation.Get();
+            if CompanyInformation.IBAN <> '' then
+                exit;
+        end else
+            if "IBAN CZL" <> '' then
+                exit;
+
+        ConfirmCheckPaymentQRCodePrintIBAN();
+    end;
+
+    local procedure ConfirmCheckPaymentQRCodePrintIBAN()
+    var
+
+        EmptyIBANQst: Label 'Bank Account has empty IBAN, QR payment will not be printed on Sales document.\\Do you want to continue?';
+    begin
+        ConfirmProcess(EmptyIBANQst);
+    end;
+
+    local procedure ConfirmProcess(ConfirmQuestion: Text)
+    var
+        IsHandled: Boolean;
+    begin
+        OnBeforeConfirmProcessCZL(ConfirmQuestion, IsHandled);
+        if IsHandled then
+            exit;
+        if not IsConfirmDialogAllowedCZL() then
+            exit;
+        if not ConfirmManagement.GetResponse(ConfirmQuestion, false) then
+            Error('');
+    end;
+
+    local procedure IsConfirmDialogAllowedCZL() IsAllowed: Boolean
+    begin
+        IsAllowed := GuiAllowed();
+        OnIsConfirmDialogAllowedCZL(IsAllowed);
+    end;
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterUpdateBankInfoCZL(var SalesHeader: Record "Sales Header")
@@ -549,6 +606,16 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeGetDefaulBankAccountNoCZL(var SalesHeader: Record "Sales Header"; var BankAccountNo: Code[20]; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeConfirmProcessCZL(ConfirmQuestion: Text; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnIsConfirmDialogAllowedCZL(var IsAllowed: Boolean)
     begin
     end;
 }

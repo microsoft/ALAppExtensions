@@ -2,8 +2,6 @@ namespace Microsoft.Sustainability.Account;
 
 enum 6210 "Calculation Foundation"
 {
-    Extensible = false;
-
     value(0; " ") { Caption = ' '; }
     value(1; "Fuel/Electricity") { Caption = 'Fuel/Electricity'; }
     value(2; Distance) { Caption = 'Distance'; }

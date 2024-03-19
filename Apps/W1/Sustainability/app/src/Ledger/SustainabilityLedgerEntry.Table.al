@@ -49,7 +49,7 @@ table 6216 "Sustainability Ledger Entry"
         field(7; "Account No."; Code[20])
         {
             Caption = 'Account No.';
-            TableRelation = "Sustainability Account";
+            TableRelation = "Sustainability Account" where("Account Type" = const(Posting));
         }
         field(8; "Account Name"; Text[100])
         {

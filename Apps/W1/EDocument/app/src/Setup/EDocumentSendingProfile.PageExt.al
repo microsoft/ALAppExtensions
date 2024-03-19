@@ -33,7 +33,7 @@ pageextension 6101 "E-Document Sending Profile" extends "Document Sending Profil
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Electronic Document Service Flow Code';
-                    ToolTip = 'Specifies Electronic Service FLow that is used for sending documents.';
+                    ToolTip = 'Specifies Electronic Service Flow that is used for sending documents.';
 
                     trigger OnValidate()
                     var

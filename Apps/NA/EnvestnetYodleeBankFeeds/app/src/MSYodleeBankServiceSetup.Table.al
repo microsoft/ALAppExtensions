@@ -420,6 +420,7 @@ table 1450 "MS - Yodlee Bank Service Setup"
             CheckEncryption();
     end;
 
+    [NonDebuggable]
     [Scope('OnPrem')]
     procedure SaveConsumerPassword(var ConsumerPasswordKey: Guid; ConsumerPasswordValue: Text);
     begin

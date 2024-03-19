@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Bank.Documents;
 
+using Microsoft.Utilities;
+
 codeunit 31358 "Issue Bank Statement YesNo CZB"
 {
     TableNo = "Bank Statement Header CZB";
@@ -22,6 +24,8 @@ codeunit 31358 "Issue Bank Statement YesNo CZB"
     procedure Code()
     var
         IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB";
+        InstructionMgt: Codeunit "Instruction Mgt.";
+        InstructionMgtCZB: Codeunit "Instruction Mgt. CZB";
         Selection: Integer;
     begin
         Selection := StrMenu(IssueQst, 1);
@@ -34,7 +38,7 @@ codeunit 31358 "Issue Bank Statement YesNo CZB"
         if Selection = 2 then begin
             IssBankStatementHeaderCZB.Get(BankStatementHeaderCZB."Last Issuing No.");
             IssBankStatementHeaderCZB.SetRecFilter();
-            IssBankStatementHeaderCZB.CreateJournal(false);
+            IssBankStatementHeaderCZB.CreateJournal(false, InstructionMgt.IsEnabled(InstructionMgtCZB.ShowCreatedJnlIssBankStmtConfirmationMessageCode()));
         end;
     end;
 }

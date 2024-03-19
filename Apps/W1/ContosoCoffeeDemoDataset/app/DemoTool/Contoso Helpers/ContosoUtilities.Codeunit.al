@@ -15,7 +15,7 @@ codeunit 5142 "Contoso Utilities"
         exit(Round(UnitPrice * ContosoCoffeeDemoDataSetup."Price Factor", ContosoCoffeeDemoDataSetup."Rounding Precision"));
     end;
 
-    internal procedure AdjustDate(OriginalDate: Date): Date
+    procedure AdjustDate(OriginalDate: Date): Date
     var
         ContosoCoffeeDemoDataSetup: Record "Contoso Coffee Demo Data Setup";
         TempDate: Date;

@@ -110,20 +110,38 @@ codeunit 6108 "E-Document Processing"
     procedure MatchedPurchaseEDocumentsCount(): Integer
     var
         EDocument: Record "E-Document";
+        EDocumentServiceStatus: Record "E-Document Service Status";
     begin
         EDocument.SetRange("Document Type", Enum::"E-Document Type"::"Purchase Order");
         EDocument.SetRange(Status, Enum::"E-Document Status"::"In Progress");
-        EDocument.SetRange("Order No.", '');
+        if EDocument.FindSet() then
+            repeat
+                EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
+                EDocumentServiceStatus.SetRange(Status, Enum::"E-Document Service Status"::Pending);
+                if not EDocumentServiceStatus.IsEmpty() then
+                    EDocument.Mark(true);
+            until EDocument.Next() = 0;
+
+        EDocument.MarkedOnly(true);
         exit(EDocument.Count());
     end;
 
-    procedure OpenMatchedPurchaseEDoc()
+    procedure OpenWaitingPurchaseEDoc()
     var
         EDocument: Record "E-Document";
+        EDocumentServiceStatus: Record "E-Document Service Status";
     begin
         EDocument.SetRange("Document Type", Enum::"E-Document Type"::"Purchase Order");
         EDocument.SetRange(Status, Enum::"E-Document Status"::"In Progress");
-        EDocument.SetRange("Order No.", '');
+        if EDocument.FindSet() then
+            repeat
+                EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
+                EDocumentServiceStatus.SetRange(Status, Enum::"E-Document Service Status"::Pending);
+                if not EDocumentServiceStatus.IsEmpty() then
+                    EDocument.Mark(true);
+            until EDocument.Next() = 0;
+
+        EDocument.MarkedOnly(true);
         Page.Run(Page::"E-Documents", EDocument);
     end;
 

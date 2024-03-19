@@ -405,13 +405,6 @@ report 31196 "Service Contract CZL"
         FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
-        CompanyAddr: array[8] of Text[100];
-        CustAddr: array[8] of Text[100];
-        ShipToAddr: array[8] of Text[100];
-        DocFooterText: Text[1000];
-        NoOfCopies: Integer;
-        NoOfLoops: Integer;
-        LogInteraction: Boolean;
         LogInteractionEnable: Boolean;
         DocumentLbl: Label 'Service Contract';
         PageLbl: Label 'Page';
@@ -423,6 +416,15 @@ report 31196 "Service Contract CZL"
         PrintedByLbl: Label 'Printed by';
         VATRegistrationNoLbl: Label 'VAT Registration No.';
         RegistrationNoLbl: Label 'Registration No.';
+
+    protected var
+        CompanyAddr: array[8] of Text[100];
+        CustAddr: array[8] of Text[100];
+        ShipToAddr: array[8] of Text[100];
+        DocFooterText: Text[1000];
+        NoOfCopies: Integer;
+        NoOfLoops: Integer;
+        LogInteraction: Boolean;
 
     procedure InitializeRequest(NoOfCopiesFrom: Integer; LogInteractionFrom: Boolean)
     begin

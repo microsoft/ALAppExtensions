@@ -22,19 +22,23 @@ reportextension 11701 "Carry Out Action Msg. Req. CZA" extends "Carry Out Action
                     ToolTip = 'Specifies no. series for reporting';
 
                     trigger OnLookup(var Text: Text): Boolean
+                    var
+                        NoSeries: Codeunit "No. Series";
                     begin
                         PurchasesPayablesSetupCZA.Get();
                         PurchasesPayablesSetupCZA.TestField("Order Nos.");
-                        if NoSeriesManagementCZA.SelectSeries(PurchasesPayablesSetupCZA."Order Nos.", '', PurchOrderHeader."No. Series") then
-                            NoSeriesManagementCZA.TestSeries(PurchasesPayablesSetupCZA."Order Nos.", PurchOrderHeader."No. Series");
+                        if NoSeries.LookupRelatedNoSeries(PurchasesPayablesSetupCZA."Order Nos.", '', PurchOrderHeader."No. Series") then
+                            NoSeries.TestAreRelated(PurchasesPayablesSetupCZA."Order Nos.", PurchOrderHeader."No. Series");
                     end;
 
                     trigger OnValidate()
+                    var
+                        NoSeries: Codeunit "No. Series";
                     begin
                         PurchasesPayablesSetupCZA.Get();
                         PurchasesPayablesSetupCZA.TestField("Order Nos.");
                         if PurchOrderHeader."No. Series" <> '' then
-                            NoSeriesManagementCZA.TestSeries(PurchasesPayablesSetupCZA."Order Nos.", PurchOrderHeader."No. Series");
+                            NoSeries.TestAreRelated(PurchasesPayablesSetupCZA."Order Nos.", PurchOrderHeader."No. Series");
                     end;
                 }
             }
@@ -43,5 +47,4 @@ reportextension 11701 "Carry Out Action Msg. Req. CZA" extends "Carry Out Action
 
     var
         PurchasesPayablesSetupCZA: Record "Purchases & Payables Setup";
-        NoSeriesManagementCZA: Codeunit NoSeriesManagement;
 }

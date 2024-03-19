@@ -1865,13 +1865,14 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
 
     [Test]
     [HandlerFunctions('ConfirmHandler,ConsentConfirmYes')]
+    [NonDebuggable]
     procedure TestRegisterConsumerShouldGenerateUserNameIfNotExist();
     var
         MSYodleeBankServiceSetupRec: Record "MS - Yodlee Bank Service Setup";
         MSYodleeServiceMgt: Codeunit "MS - Yodlee Service Mgt.";
         MSYodleeBankServiceSetupPage: TestPage "MS - Yodlee Bank Service Setup";
         UserName: Text[250];
-        Password: Text;
+        Password: SecretText;
         ErrorText: Text;
     begin
         Initialize();
@@ -1882,7 +1883,6 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         MSYodleeBankServiceSetupPage.Enabled.SETVALUE(TRUE);
         MSYodleeBankServiceSetupPage.CLOSE();
         UserName := '';
-        Password := '';
 
         // Execute
         EnqueueConfirmMsgAndResponse(DataEncryptionTxt, FALSE);
@@ -1893,14 +1893,14 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         MSYodleeBankServiceSetupRec.GET();
 
         Assert.AreNotEqual('', UserName, 'Expected that user name is filled');
-        Assert.AreNotEqual('', Password, 'Expected that Password is filled');
+        Assert.IsFalse(Password.IsEmpty(), 'Expected that Password is filled');
 
         Assert.AreEqual(UserName, MSYodleeBankServiceSetupRec."Consumer Name", 'Expected that Consumer Name is persisted');
         Assert.IsTrue(STRPOS(UserName, COMPANYNAME()) = 0, 'Expected that a new user name is generated and starts with company name');
 
         Assert.IsFalse(ISNULLGUID(MSYodleeBankServiceSetupRec."Consumer Password"), 'Password');
         Assert.AreEqual(
-          Password, MSYodleeBankServiceSetupRec.GetPassword(MSYodleeBankServiceSetupRec."Consumer Password"),
+          Password.Unwrap(), MSYodleeBankServiceSetupRec.GetPassword(MSYodleeBankServiceSetupRec."Consumer Password"),
           'Expected that passwords are equal');
     end;
 
@@ -1981,9 +1981,9 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
     procedure TestYodleeUserPassword();
     var
         PasswordHelper: Codeunit "Password Helper";
-        Password: Text[50];
+        Password: SecretText;
     begin
-        Password := CopyStr(PasswordHelper.GeneratePassword(MaxStrLen(Password)), 1, 50);
+        Password := PasswordHelper.GenerateSecretPassword(50);
         Assert.IsFalse(PasswordHelper.WeakYodleePassword(Password), 'The generated password does not conform with Yodlee standard for a strong password.')
     end;
 

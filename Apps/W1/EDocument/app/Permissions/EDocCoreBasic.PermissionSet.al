@@ -26,6 +26,6 @@ permissionset 6103 "E-Doc. Core - Basic"
         tabledata "E-Document Integration Log" = im,
         tabledata "E-Doc. Service Data Exch. Def." = im,
         tabledata "E-Doc. Service Supported Type" = im,
-        tabledata "E-Doc. Imported Line" = im,
-        tabledata "E-Doc. Order Match" = im;
+        tabledata "E-Doc. Imported Line" = imd,
+        tabledata "E-Doc. Order Match" = imd;
 }

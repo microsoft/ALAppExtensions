@@ -18,13 +18,10 @@ codeunit 31008 "Sales-Post Handler CZZ"
     var
         SalesAdvLetterManagement: Codeunit "SalesAdvLetterManagement CZZ";
     begin
-        if (not SalesHeader.Invoice) or (not (SalesHeader."Document Type" in [SalesHeader."Document Type"::Order, SalesHeader."Document Type"::Invoice])) then
+        if (not SalesHeader.Invoice) or (not SalesHeader.IsAdvanceLetterDocTypeCZZ()) then
             exit;
 
-        if SalesHeader."Document Type" = SalesHeader."Document Type"::Order then
-            SalesAdvLetterManagement.CheckAdvancePayment("Adv. Letter Usage Doc.Type CZZ"::"Sales Order", SalesHeader)
-        else
-            SalesAdvLetterManagement.CheckAdvancePayment("Adv. Letter Usage Doc.Type CZZ"::"Sales Invoice", SalesHeader);
+        SalesAdvLetterManagement.CheckAdvancePayment(SalesHeader.GetAdvLetterUsageDocTypeCZZ(), SalesHeader)
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Handler CZP", 'OnBeforeCreateCashDocument', '', false, false)]
@@ -42,13 +39,10 @@ codeunit 31008 "Sales-Post Handler CZZ"
         SalesAdvLetterManagement: Codeunit "SalesAdvLetterManagement CZZ";
         AdvLetterUsageDocTypeCZZ: Enum "Adv. Letter Usage Doc.Type CZZ";
     begin
-        if (not SalesHeader.Invoice) or (not (SalesHeader."Document Type" in [SalesHeader."Document Type"::Order, SalesHeader."Document Type"::Invoice])) then
+        if (not SalesHeader.Invoice) or (not SalesHeader.IsAdvanceLetterDocTypeCZZ()) then
             exit;
 
-        if SalesHeader."Document Type" = SalesHeader."Document Type"::Order then
-            AdvLetterUsageDocTypeCZZ := AdvLetterUsageDocTypeCZZ::"Sales Order"
-        else
-            AdvLetterUsageDocTypeCZZ := AdvLetterUsageDocTypeCZZ::"Sales Invoice";
+        AdvLetterUsageDocTypeCZZ := SalesHeader.GetAdvLetterUsageDocTypeCZZ();
 
         CustLedgerEntry.Get(SalesInvoiceHeader."Cust. Ledger Entry No.");
         BindSubscription(GetLastGLEntryNoCZZ);

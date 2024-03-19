@@ -12,8 +12,7 @@ report 31019 "Sales Advance Letters CZZ"
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = Basic, Suite;
     Caption = 'Sales Advance Letters';
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/SalesAdvanceLetters.rdl';
+    DefaultRenderingLayout = "SalesAdvanceLetters.rdl";
 
     dataset
     {
@@ -312,6 +311,24 @@ report 31019 "Sales Advance Letters CZZ"
             if ToDate = 0D then
                 ToDate := WorkDate();
         end;
+    }
+
+    rendering
+    {
+        layout("SalesAdvanceLetters.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/SalesAdvanceLetters.rdl';
+            Caption = 'Standard Sales Advance Letters (RDL)';
+            Summary = 'The Sales Advance Letters (RDL) provides a detailed layout.';
+        }
+        layout("SalesAdvanceLetters.xlsx")
+        {
+            Type = Excel;
+            LayoutFile = './Src/Reports/SalesAdvanceLetters.xlsx';
+            Caption = 'Standard Sales Advance Letters (Excel)';
+            Summary = 'The Sales Advance Letters (Excel) provides a detailed layout.';
+        }
     }
 
     labels

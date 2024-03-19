@@ -6,6 +6,7 @@ namespace Microsoft.Purchases.Document;
 
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.OrderMatch;
+using Microsoft.eServices.EDocument.OrderMatch.Copilot;
 
 pageextension 6132 "E-Doc. Purchase Order" extends "Purchase Order"
 {
@@ -15,13 +16,30 @@ pageextension 6132 "E-Doc. Purchase Order" extends "Purchase Order"
         {
             group("E-Document")
             {
+                action(MatchToOrderCopilotEnabled)
+                {
+                    Caption = 'Map E-Document Lines';
+                    ToolTip = 'Map received E-Document to the Purchase Order';
+                    ApplicationArea = All;
+                    Image = SparkleFilled;
+                    Visible = ShowMapToEDocument and CopilotEnabled;
+
+                    trigger OnAction()
+                    var
+                        EDocument: Record "E-Document";
+                        EDocOrderMatch: Codeunit "E-Doc. Line Matching";
+                    begin
+                        EDocument.GetBySystemId(Rec."E-Document Link");
+                        EDocOrderMatch.RunMatching(EDocument);
+                    end;
+                }
                 action(MatchToOrder)
                 {
-                    Caption = 'Map E-Document';
+                    Caption = 'Map E-Document Lines';
                     ToolTip = 'Map received E-Document to the Purchase Order';
                     ApplicationArea = All;
                     Image = Reconcile;
-                    Visible = ShowMapToEDocument;
+                    Visible = ShowMapToEDocument and (not CopilotEnabled);
 
                     trigger OnAction()
                     var
@@ -51,6 +69,9 @@ pageextension 6132 "E-Doc. Purchase Order" extends "Purchase Order"
         }
         addlast(Category_Process)
         {
+            actionref(MapEDocumentCE_Promoted; MatchToOrderCopilotEnabled)
+            {
+            }
             actionref(MapEDocument_Promoted; MatchToOrder)
             {
             }
@@ -59,11 +80,28 @@ pageextension 6132 "E-Doc. Purchase Order" extends "Purchase Order"
 
 
     var
-        ShowMapToEDocument: Boolean;
+        ShowMapToEDocument, CopilotEnabled : Boolean;
+
+
+    trigger OnOpenPage()
+    var
+        EDocPOMatching: Codeunit "E-Doc. PO Copilot Matching";
+    begin
+        CopilotEnabled := EDocPOMatching.IsCopilotEnabled();
+    end;
 
     trigger OnAfterGetCurrRecord()
+    var
+        EDocument: Record "E-Document";
+        EDocumentServiceStatus: Record "E-Document Service Status";
     begin
-        ShowMapToEDocument := not IsNullGuid(Rec."E-Document Link");
+        ShowMapToEDocument := false;
+        if not IsNullGuid(Rec."E-Document Link") then begin
+            EDocument.GetBySystemId(Rec."E-Document Link");
+            EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
+            EDocumentServiceStatus.FindFirst();
+            ShowMapToEDocument := EDocumentServiceStatus.Status = Enum::"E-Document Service Status"::"Order Linked";
+        end;
     end;
 
 }

@@ -4,7 +4,6 @@ using Microsoft.Finance.Dimension;
 using Microsoft.Inventory.Location;
 using Microsoft.Foundation.Comment;
 using Microsoft.Sustainability.Ledger;
-using Microsoft.Sustainability.Setup;
 using Microsoft.Sustainability.Journal;
 
 table 6210 "Sustainability Account"
@@ -359,18 +358,11 @@ table 6210 "Sustainability Account"
 
     trigger OnDelete()
     var
-        CommentLine: Record "Comment Line";
-        SustainabilitySetup: Record "Sustainability Setup";
-        DimMgt: Codeunit DimensionManagement;
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
     begin
-        SustainabilitySetup.Get();
-        SustainabilitySetup.TestField("Block Sustain. Accs. Deletion", false);
-
-        CommentLine.SetRange("Table Name", CommentLine."Table Name"::"Sustainability Account");
-        CommentLine.SetRange("No.", "No.");
-        CommentLine.DeleteAll();
-
-        DimMgt.DeleteDefaultDim(Database::"Sustainability Account", "No.");
+        SustainabilityLedgerEntry.SetRange("Account No.", "No.");
+        if not SustainabilityLedgerEntry.IsEmpty() then
+            Error(LedgerEntryExistsErr, "No.");
     end;
 
     trigger OnInsert()

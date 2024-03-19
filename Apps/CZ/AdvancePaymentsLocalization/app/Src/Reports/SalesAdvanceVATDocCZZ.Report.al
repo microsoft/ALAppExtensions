@@ -480,24 +480,11 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
     }
 
     var
-        TempVATAmountLine: Record "VAT Amount Line" temporary;
-        PaymentTerms: Record "Payment Terms";
-        PaymentMethod: Record "Payment Method";
         CurrencyExchangeRate: Record "Currency Exchange Rate";
         DocumentFooterCZL: Record "Document Footer CZL";
         LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
-        ExchRateText: Text[50];
-        CompanyAddr: array[8] of Text[100];
-        CustAddr: array[8] of Text[100];
-        DocFooterText: Text[1000];
-        DocumentLabel: Text;
-        AmountIncludingVAT: Decimal;
-        CalculatedExchRate: Decimal;
-        NoOfCop: Integer;
-        CopyNo: Integer;
         NoOfLoops: Integer;
-        OriginalAdvanceVATDocumentNo: Code[20];
         ExchangeRateTxt: Label 'Exchange Rate %1 %2 / %3 %4', Comment = '%1=calculatedexchrate;%2=general ledger setup.LCY Code;%3=currexchrate.exchange rate amount;%4=currency code';
         DocumentLbl: Label 'VAT Document to Received Payment';
         CrMemoDocumentLbl: Label 'VAT Credit Memo to Received Payment';
@@ -520,6 +507,21 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
         BodyLbl: Label 'The sales advance VAT document is attached to this message.';
         DocumentNoLbl: Label 'No.';
         AmountIncludingVATLbl: Label 'Amount Including VAT';
+
+    protected var
+        PaymentTerms: Record "Payment Terms";
+        PaymentMethod: Record "Payment Method";
+        TempVATAmountLine: Record "VAT Amount Line" temporary;
+        CompanyAddr: array[8] of Text[100];
+        CustAddr: array[8] of Text[100];
+        DocFooterText: Text[1000];
+        DocumentLabel: Text;
+        ExchRateText: Text[50];
+        OriginalAdvanceVATDocumentNo: Code[20];
+        AmountIncludingVAT: Decimal;
+        CalculatedExchRate: Decimal;
+        CopyNo: Integer;
+        NoOfCop: Integer;
 
     local procedure IsCreditMemo(SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"): Boolean
     begin

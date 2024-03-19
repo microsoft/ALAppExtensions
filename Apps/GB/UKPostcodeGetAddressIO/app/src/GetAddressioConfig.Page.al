@@ -20,12 +20,13 @@ page 9142 "GetAddress.io Config"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'API Key for GetAddress.io';
                 ShowCaption = false;
+                ExtendedDatatype = Masked;
 
                 trigger OnValidate()
                 begin
                     ValidateApiKey();
 
-                    Rec.SaveAPIKey(Rec.APIKey, APIKeyText);
+                    Rec.SaveAPIKeyAsSecret(Rec.APIKey, APIKeyText);
                     UpdateAPIField();
                 end;
             }
