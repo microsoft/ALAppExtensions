@@ -27,6 +27,8 @@ table 30113 "Shpfy Shop Location"
         {
             Caption = 'Id';
             DataClassification = CustomerContent;
+            TableRelation = "Shpfy Shop Location".Id where("Shop Code" = field("Shop Code"));
+            ValidateTableRelation = false;
             Editable = false;
         }
 

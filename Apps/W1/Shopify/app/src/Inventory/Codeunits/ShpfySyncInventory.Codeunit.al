@@ -16,16 +16,12 @@ codeunit 30197 "Shpfy Sync Inventory"
     var
         ShopInventory: Record "Shpfy Shop Inventory";
         ShopLocation: Record "Shpfy Shop Location";
-        ShopFilter: Text;
     begin
-        ShopFilter := Rec.GetFilter("Shop Code");
-        if ShopFilter <> '' then begin
-            ShopLocation.SetRange("Shop Code", ShopFilter);
-            ShopInventory.SetRange("Shop Code", ShopFilter);
-        end;
+        SetShopAndLocationFilters(Rec, ShopInventory, ShopLocation);
+
         if ShopLocation.FindSet(false) then begin
             InventoryApi.SetShop(ShopLocation."Shop Code");
-            InventoryApi.SetInventoryIds();
+            InventoryApi.SetInventoryIds(ShopLocation.Id);
             repeat
                 InventoryApi.ImportStock(ShopLocation);
             until ShopLocation.Next() = 0;
@@ -33,5 +29,24 @@ codeunit 30197 "Shpfy Sync Inventory"
         InventoryApi.RemoveUnusedInventoryIds();
 
         InventoryApi.ExportStock(ShopInventory);
+    end;
+
+    local procedure SetShopAndLocationFilters(var FilteredInventory: Record "Shpfy Shop Inventory"; var ShopInventory: Record "Shpfy Shop Inventory"; var ShopLocation: Record "Shpfy Shop Location")
+    var
+        ShopFilter: Text;
+        LocationFilter: BigInteger;
+    begin
+        ShopFilter := FilteredInventory.GetFilter("Shop Code");
+        Evaluate(LocationFilter, FilteredInventory.GetFilter("Location Id"));
+
+        if ShopFilter <> '' then begin
+            ShopLocation.SetRange("Shop Code", ShopFilter);
+            ShopInventory.SetRange("Shop Code", ShopFilter);
+        end;
+
+        if LocationFilter <> 0 then begin
+            ShopLocation.SetRange(Id, LocationFilter);
+            ShopInventory.SetRange("Location Id", LocationFilter);
+        end;
     end;
 }
