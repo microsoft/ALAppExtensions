@@ -679,7 +679,24 @@ codeunit 30178 "Shpfy Product Export"
                             end;
                         until ItemUnitofMeasure.Next() = 0;
             end;
+
+            UpdateMetafields(ShopifyProduct.Id);
         end;
+    end;
+
+    local procedure UpdateMetafields(ProductId: BigInteger)
+    var
+        ShpfyVariant: Record "Shpfy Variant";
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
+    begin
+        MetafieldAPI.CreateOrUpdateMetafieldsInShopify(Database::"Shpfy Product", ProductId);
+
+        ShpfyVariant.SetRange("Product Id", ProductId);
+        ShpfyVariant.ReadIsolation := IsolationLevel::ReadCommitted;
+        if ShpfyVariant.FindSet() then
+            repeat
+                MetafieldAPI.CreateOrUpdateMetafieldsInShopify(Database::"Shpfy Variant", ShpfyVariant.Id);
+            until ShpfyVariant.Next() = 0;
     end;
 
     /// <summary> 

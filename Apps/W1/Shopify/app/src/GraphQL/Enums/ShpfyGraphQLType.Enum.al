@@ -390,4 +390,19 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
         Caption = 'Create Price List';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL CreatePriceList";
     }
+    value(76; MetafieldSet)
+    {
+        Caption = 'MetfieldSet';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL MetafieldsSet";
+    }
+    value(77; ProductMetafieldIds)
+    {
+        Caption = 'Product Metafield Ids';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL ProductMetafieldIds";
+    }
+    value(78; VariantMetafieldIds)
+    {
+        Caption = 'Variant Metafield Ids';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL VariantMetafieldIds";
+    }
 }

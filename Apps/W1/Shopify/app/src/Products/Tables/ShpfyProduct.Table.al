@@ -152,6 +152,7 @@ table 30127 "Shpfy Product"
     var
         Shop: Record "Shpfy Shop";
         ShopifyVariant: Record "Shpfy Variant";
+        Metafield: Record "Shpfy Metafield";
         IRemoveProduct: Interface "Shpfy IRemoveProductAction";
     begin
         if Shop.Get(Rec."Shop Code") then begin
@@ -161,6 +162,11 @@ table 30127 "Shpfy Product"
         ShopifyVariant.SetRange("Product Id", Id);
         if not ShopifyVariant.IsEmpty then
             ShopifyVariant.DeleteAll(true);
+
+        Metafield.SetRange("Parent Table No.", Database::"Shpfy Product");
+        Metafield.SetRange("Owner Id", Id);
+        if not Metafield.IsEmpty then
+            Metafield.DeleteAll();
     end;
 
     /// <summary> 
