@@ -41,6 +41,7 @@ codeunit 4019 "GP Item Migrator"
     var
         GPItem: Record "GP Item";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
+        HelperFunctions: Codeunit "Helper Functions";
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Item" then
             exit;
@@ -49,29 +50,12 @@ codeunit 4019 "GP Item Migrator"
         if not GPItem.Get(RecordIdToMigrate) then
             exit;
 
-        if not ShouldMigrateItem(GPItem) then begin
+        if not HelperFunctions.ShouldMigrateItem(GPItem.No) then begin
             DecrementMigratedCount();
             exit;
         end;
 
         MigrateItemDetails(GPItem, Sender);
-    end;
-
-    local procedure ShouldMigrateItem(var GPItem: Record "GP Item"): Boolean
-    var
-        GPIV00101: Record "GP IV00101";
-    begin
-        if GPIV00101.Get(GPItem.No) then begin
-            if GPIV00101.INACTIVE then
-                if not GPCompanyAdditionalSettings.GetMigrateInactiveItems() then
-                    exit(false);
-
-            if GPIV00101.IsDiscontinued() then
-                if not GPCompanyAdditionalSettings.GetMigrateDiscontinuedItems() then
-                    exit(false);
-        end;
-
-        exit(true);
     end;
 
     local procedure DecrementMigratedCount()
