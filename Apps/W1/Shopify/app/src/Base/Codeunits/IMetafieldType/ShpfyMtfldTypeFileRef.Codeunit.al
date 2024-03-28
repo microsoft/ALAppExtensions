@@ -13,7 +13,7 @@ codeunit 30322 "Shpfy Mtfld Type File Ref" implements "Shpfy IMetafield Type"
     var
         Regex: Codeunit Regex;
     begin
-        exit(Regex.IsMatch(Value, '^gid:\/\/shopify\/MediaImage\/\d+$'));
+        exit(Regex.IsMatch(Value, '^gid:\/\/shopify\/(GenericFile|MediaImage|Video)\/\d+$'));
     end;
 
     procedure AssistEdit(var Value: Text[2048]): Boolean
