@@ -106,9 +106,11 @@ page 30163 "Shpfy Metafields"
         JsonHelper: Codeunit "Shpfy Json Helper";
         MetafieldAPI: Codeunit "Shpfy Metafield API";
         ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        UserErrorOnShopifyErr: Label 'Something went wrong while sending the metafield to Shopify. Check Shopify Log Entries for more details.';
         GraphQuery: TextBuilder;
         JResponse: JsonToken;
         JMetafields: JsonArray;
+        JUserErrors: JsonArray;
         JItem: JsonToken;
     begin
         ShpfyCommunicationMgt.SetShop(Shop);
@@ -116,9 +118,13 @@ page 30163 "Shpfy Metafields"
         MetafieldAPI.CreateMetafieldQuery(Rec, GraphQuery);
         JResponse := MetafieldAPI.UpdateMetafields(GraphQuery.ToText());
 
-        JsonHelper.GetJsonArray(JResponse, JMetafields, 'data.metafieldsSet.metafields');
-        JMetafields.Get(0, JItem);
+        JsonHelper.GetJsonArray(JResponse, JUserErrors, 'data.metafieldsSet.userErrors');
 
-        exit(JsonHelper.GetValueAsBigInteger(JItem, 'legacyResourceId'));
+        if JUserErrors.Count() = 0 then begin
+            JsonHelper.GetJsonArray(JResponse, JMetafields, 'data.metafieldsSet.metafields');
+            JMetafields.Get(0, JItem);
+            exit(JsonHelper.GetValueAsBigInteger(JItem, 'legacyResourceId'));
+        end else
+            Error(UserErrorOnShopifyErr);
     end;
 }
