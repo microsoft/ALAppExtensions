@@ -66,7 +66,7 @@ page 30101 "Shpfy Shop Card"
 #if not CLEAN23
                         if BulkOperationMgt.IsBulkOperationFeatureEnabled() then
 #endif
-                            BulkOperationMgt.EnableBulkOperations(Rec);
+                        BulkOperationMgt.EnableBulkOperations(Rec);
                         Rec."B2B Enabled" := Rec.GetB2BEnabled();
                         FeatureTelemetry.LogUptake('0000HUT', 'Shopify', Enum::"Feature Uptake Status"::"Set up");
                     end;
@@ -792,6 +792,19 @@ page 30101 "Shpfy Shop Card"
                 RunPageLink = "Shop Code" = field(Code);
                 ToolTip = 'View a list of Shopify catalogs for the shop.';
                 Visible = Rec."B2B Enabled";
+            }
+            action(Languages)
+            {
+                ApplicationArea = All;
+                Caption = 'Languages';
+                Image = Translations;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                RunObject = Page "Shpfy Languages";
+                RunPageLink = "Shop Code" = field(Code);
+                ToolTip = 'View a list of Shopify Languages for the shop.';
             }
         }
         area(Processing)

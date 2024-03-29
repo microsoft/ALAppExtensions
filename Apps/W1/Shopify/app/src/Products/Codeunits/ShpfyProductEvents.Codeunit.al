@@ -62,7 +62,8 @@ codeunit 30177 "Shpfy Product Events"
     /// <param name="ItemNo">Parameter of type Code[20].</param>
     /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
     /// <param name="ProductBodyHtml">Parameter of type Text.</param>
-    internal procedure OnAfterCreateProductBodyHtml(ItemNo: Code[20]; ShopifyShop: Record "Shpfy Shop"; var ProductBodyHtml: Text)
+    /// <param name="LanguageCode">Parameter of type Code[10].</param>
+    internal procedure OnAfterCreateProductBodyHtml(ItemNo: Code[20]; ShopifyShop: Record "Shpfy Shop"; var ProductBodyHtml: Text; LanguageCode: Code[10])
     begin
     end;
 
@@ -147,7 +148,8 @@ codeunit 30177 "Shpfy Product Events"
     /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
     /// <param name="ProductBodyHtml">Parameter of type Text.</param>
     /// <param name="Handled">Parameter of type Boolean.</param>
-    internal procedure OnBeforeCreateProductBodyHtml(ItemNo: Code[20]; ShopifyShop: Record "Shpfy Shop"; var ProductBodyHtml: Text; var Handled: Boolean)
+    /// <param name="LanguageCode">Parameter of type Code[10].</param>
+    internal procedure OnBeforeCreateProductBodyHtml(ItemNo: Code[20]; ShopifyShop: Record "Shpfy Shop"; var ProductBodyHtml: Text; var Handled: Boolean; LanguageCode: Code[10])
     begin
     end;
 
