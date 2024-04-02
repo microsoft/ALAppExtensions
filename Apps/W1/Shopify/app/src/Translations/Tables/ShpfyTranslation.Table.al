@@ -29,7 +29,7 @@ table 30155 "Shpfy Translation"
 
         field(4; Name; Text[100])
         {
-            Caption = 'Sync translations';
+            Caption = 'Key';
             DataClassification = SystemMetadata;
         }
         field(5; Value; Blob)
@@ -39,6 +39,7 @@ table 30155 "Shpfy Translation"
         }
         field(6; "Transl. Content Digest"; Text[100])
         {
+            Caption = 'Transl. Content Digest';
             DataClassification = SystemMetadata;
         }
     }
