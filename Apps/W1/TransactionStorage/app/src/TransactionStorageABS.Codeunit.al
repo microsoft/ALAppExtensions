@@ -30,10 +30,11 @@ codeunit 6205 "Transaction Storage ABS"
         TransactionStorageTok: Label 'Transaction Storage', Locked = true;
         JsonContentTypeHeaderTok: Label 'application/json', Locked = true;
         ExportLogFileNameTxt: Label 'ExportLog', Locked = true;
-        SendBlobBlockForTableTok: Label 'Send blob block for table %1 with name %2 to Azure Function', Comment = '%1 - table id, %2 - blob name';
-        ExportOfIncomingDocTok: Label 'Export of incoming document %1 with name %2', Comment = '%1 - incoming document file name, %2 - blob name';
-        ExportedDocCountTxt: Label 'Export of incoming documents completed. Collected %1 documents, exported %2 documents', Comment = '%1 - collected documents count, %2 - exported documents count';
-        ExportedTablesCountTxt: Label 'Export of tables completed. Collected %1 tables, exported %2 tables', Comment = '%1 - collected tables count, %2 - exported tables count';
+        SendBlobBlockForTableTok: Label 'Send blob block for table %1 with name %2 to Azure Function', Comment = '%1 - table id, %2 - blob name', Locked = true;
+        ExportOfIncomingDocTok: Label 'Export of incoming document %1 with name %2', Comment = '%1 - incoming document file name, %2 - blob name', Locked = true;
+        ExportedDocCountTxt: Label 'Export of incoming documents completed. Collected %1 documents, exported %2 documents', Comment = '%1 - collected documents count, %2 - exported documents count', Locked = true;
+        ExportedTablesCountTxt: Label 'Export of tables completed. Collected %1 tables, exported %2 tables', Comment = '%1 - collected tables count, %2 - exported tables count', Locked = true;
+        ExportedToABSTxt: Label 'Exported to Azure Blob Storage', Locked = true;
         BlobFolderNameTxt: Label '%1_%2/%3', Comment = '%1 - aad tenant id, %2 - environment name, %3 - date', Locked = true;
         JsonBlobNameTxt: Label '%1/%2.json', Comment = '%1 - blob folder name, %2 - table name', Locked = true;
         IncomingDocBlobNameTxt: Label '%1/%2-%3.%4', Comment = '%1 - blob folder name, %2 - incoming document entry no., %3 - incoming document name, %4 - incoming document extension', Locked = true;
@@ -54,34 +55,43 @@ codeunit 6205 "Transaction Storage ABS"
         AzFuncEndpointBase64KeyTok: Label 'TransactionStorage-AzFuncEndpointBase64', Locked = true;
 
     [NonDebuggable]
-    procedure ArchiveTransactionsToABS(DataJsonArrays: Dictionary of [Integer, JsonArray]; IncomingDocs: Dictionary of [Text, Integer]; TransactStorageTaskEntry: Record "Transact. Storage Task Entry")
+    procedure ArchiveTransactionsToABS(DataJsonArrays: Dictionary of [Integer, JsonArray]; IncomingDocs: Dictionary of [Text, Integer])
     var
         AzureFunctionsAuthentication: Codeunit "Azure Functions Authentication";
         AzureFunctionsAuthForJson: Interface "Azure Functions Authentication";
         AzureFunctionsAuthForDoc: Interface "Azure Functions Authentication";
         ExportLog: JsonObject;
         CurrentDate: Date;
-        ClientID, ClientSecret, ResourceURL, AuthURL, EndpointText, EndpointBase64 : Text;
+        ClientID, ResourceURL, AuthURL, EndpointText, EndpointBase64 : Text;
+        ClientSecret: SecretText;
     begin
         GetAzFunctionSecrets(ClientID, ClientSecret, AuthURL, ResourceURL, EndpointText, EndpointBase64);
+#if not CLEAN24
+#pragma warning disable AL0432
+        AzureFunctionsAuthForJson := AzureFunctionsAuthentication.CreateOAuth2(EndpointText, '', ClientID, ClientSecret.Unwrap(), AuthURL, '', ResourceURL);
+        AzureFunctionsAuthForDoc := AzureFunctionsAuthentication.CreateOAuth2(EndpointBase64, '', ClientID, ClientSecret.Unwrap(), AuthURL, '', ResourceURL);
+#pragma warning restore AL0432
+#else
         AzureFunctionsAuthForJson := AzureFunctionsAuthentication.CreateOAuth2(EndpointText, '', ClientID, ClientSecret, AuthURL, '', ResourceURL);
         AzureFunctionsAuthForDoc := AzureFunctionsAuthentication.CreateOAuth2(EndpointBase64, '', ClientID, ClientSecret, AuthURL, '', ResourceURL);
+#endif
         CurrentDate := Today();
-        WriteJsonBlobsToABS(DataJsonArrays, AzureFunctionsAuthForJson, CurrentDate, TransactStorageTaskEntry."Starting Date/Time", ExportLog);
+        WriteJsonBlobsToABS(DataJsonArrays, AzureFunctionsAuthForJson, CurrentDate, ExportLog);
         WriteIncomingDocumentsToABS(IncomingDocs, AzureFunctionsAuthForDoc, CurrentDate, ExportLog);
         WriteExportLog(ExportLog, AzureFunctionsAuthForJson, CurrentDate);
-        FeatureTelemetry.LogUsage('0000LQ4', TransactionStorageTok, 'Exported to ABS');
+        FeatureTelemetry.LogUsage('0000LQ4', TransactionStorageTok, ExportedToABSTxt);
     end;
 
     [NonDebuggable]
-    local procedure WriteJsonBlobsToABS(DataJsonArrays: Dictionary of [Integer, JsonArray]; AzureFunctionsAuth: Interface "Azure Functions Authentication"; CurrentDate: Date; TaskStartingDateTime: DateTime; var ExportLog: JsonObject)
+    local procedure WriteJsonBlobsToABS(DataJsonArrays: Dictionary of [Integer, JsonArray]; AzureFunctionsAuth: Interface "Azure Functions Authentication"; CurrentDate: Date; var ExportLog: JsonObject)
     var
         TableMetadata: Record "Table Metadata";
         TransactStorageTableEntry: Record "Transact. Storage Table Entry";
+        TransactStorageExport: Codeunit "Transact. Storage Export";
         AzureFunctionsResponse: Codeunit "Azure Functions Response";
         StringConversionManagement: Codeunit StringConversionManagement;
         TableDataJsonArray: JsonArray;
-        TableNumber: Integer;
+        TableID: Integer;
         ExportedTableCount: Integer;
         ContainerName: Text;
         BlobFolder: Text;
@@ -92,22 +102,18 @@ codeunit 6205 "Transaction Storage ABS"
         ContainerName := GetCompanyCVRNumber();
         BlobFolder := GetBlobFolder(CurrentDate);
         BlobExpirationDate := GetBlobExpirationDate(CurrentDate);
-        foreach TableNumber in DataJsonArrays.Keys() do begin
-            TableDataJsonArray := DataJsonArrays.Get(TableNumber);
+        foreach TableID in DataJsonArrays.Keys() do begin
+            TableDataJsonArray := DataJsonArrays.Get(TableID);
             TableDataJsonArray.WriteTo(JsonData);
-            TableMetadata.Get(TableNumber);
+            TableMetadata.Get(TableID);
             BlobName := StrSubstNo(JsonBlobNameTxt, BlobFolder, StringConversionManagement.RemoveNonAlphaNumericCharacters(TableMetadata.Name));
             AzureFunctionsResponse := SendJsonTextToAzureFunction(AzureFunctionsAuth, ContainerName, BlobName, JsonData, BlobExpirationDate);
-            HandleAzureFunctionResponse(AzureFunctionsResponse, StrSubstNo(SendBlobBlockForTableTok, TableNumber, BlobName));
+            HandleAzureFunctionResponse(AzureFunctionsResponse, StrSubstNo(SendBlobBlockForTableTok, TableID, BlobName));
             ExportedTableCount += 1;
             ExportLog.Add(BlobName, TableDataJsonArray.Count());
 
-            if TransactStorageTableEntry.Get(TableNumber) then begin
-                TransactStorageTableEntry."Exported To ABS" := true;
-                TransactStorageTableEntry."Blob Name in ABS" := CopyStr(BlobName, 1, MaxStrLen(TransactStorageTableEntry."Blob Name in ABS"));
-                TransactStorageTableEntry."Last Handled Date/Time" := TaskStartingDateTime;
-                TransactStorageTableEntry.Modify();
-            end;
+            if TransactStorageTableEntry.Get(TableID) then
+                TransactStorageExport.SetTableEntryProcessed(TransactStorageTableEntry, TransactStorageTableEntry."Filter Record To DT", true, CopyStr(BlobName, 1, MaxStrLen(TransactStorageTableEntry."Blob Name in ABS")));
         end;
         FeatureTelemetry.LogUsage('0000LQ6', TransactionStorageTok, StrSubstNo(ExportedTablesCountTxt, DataJsonArrays.Count(), ExportedTableCount))
     end;
@@ -160,7 +166,7 @@ codeunit 6205 "Transaction Storage ABS"
         ExportLog.Add(IncomingDocAttachment.TableName, ExportedDocCount);
         if LargeFileCount > 0 then
             FeatureTelemetry.LogError('0000M7H', TransactionStorageTok, '', StrSubstNo(LargeFileFoundErr, LargeFileCount));
-        FeatureTelemetry.LogUsage('0000LT3', TransactionStorageTok, StrSubstNo(ExportedDocCountTxt, IncomingDocs.Count(), ExportedDocCount));
+        FeatureTelemetry.LogUsage('0000LT3', TransactionStorageTok, StrSubstNo(ExportedDocCountTxt, IncomingDocAttachment.Count(), ExportedDocCount));
     end;
 
     [NonDebuggable]
@@ -256,7 +262,7 @@ codeunit 6205 "Transaction Storage ABS"
     end;
 
     [NonDebuggable]
-    local procedure GetAzFunctionSecrets(var ClientID: Text; var ClientSecret: Text; var AuthURL: Text; var ResourceURL: Text; var EndpointForText: Text; var EndpointForBase64: Text)
+    local procedure GetAzFunctionSecrets(var ClientID: Text; var ClientSecret: SecretText; var AuthURL: Text; var ResourceURL: Text; var EndpointForText: Text; var EndpointForBase64: Text)
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
     begin
@@ -286,13 +292,13 @@ codeunit 6205 "Transaction Storage ABS"
         end;
 
         if not AzureKeyVault.GetAzureKeyVaultSecret(AzFuncEndpointBase64KeyTok, EndpointForBase64) then begin
-            FeatureTelemetry.LogError('0000M7I', TransactionStorageTok, '', StrSubstNo(CannotGetEndpointBase64FromKeyVaultErr, AzFuncEndpointTextKeyTok));
-            Error(CannotGetEndpointBase64FromKeyVaultErr, AzFuncEndpointTextKeyTok);
+            FeatureTelemetry.LogError('0000M7I', TransactionStorageTok, '', StrSubstNo(CannotGetEndpointBase64FromKeyVaultErr, AzFuncEndpointBase64KeyTok));
+            Error(CannotGetEndpointBase64FromKeyVaultErr, AzFuncEndpointBase64KeyTok);
         end;
     end;
 
     [NonDebuggable]
-    local procedure GetAadTenantId(): Text
+    procedure GetAadTenantId(): Text
     var
         AzureADTenant: Codeunit "Azure AD Tenant";
     begin

@@ -4,7 +4,6 @@ using Microsoft.Finance.Dimension;
 using Microsoft.Inventory.Location;
 using Microsoft.Foundation.Comment;
 using Microsoft.Sustainability.Ledger;
-using Microsoft.Sustainability.Setup;
 using Microsoft.Sustainability.Journal;
 
 table 6210 "Sustainability Account"
@@ -92,7 +91,13 @@ table 6210 "Sustainability Account"
                 end;
             end;
         }
-        field(8; "Account Type"; Enum "Sustainability Account Type")
+        field(8; "Emission Scope"; Enum "Emission Scope")
+        {
+            Caption = 'Emission Scope';
+            FieldClass = FlowField;
+            CalcFormula = lookup("Sustain. Account Category"."Emission Scope" where(Code = field(Category)));
+        }
+        field(9; "Account Type"; Enum "Sustainability Account Type")
         {
             Caption = 'Account Type';
             trigger OnValidate()
@@ -111,12 +116,12 @@ table 6210 "Sustainability Account"
                     "Direct Posting" := false;
             end;
         }
-        field(9; Totaling; Text[250])
+        field(10; Totaling; Text[250])
         {
             Caption = 'Totaling';
             trigger OnValidate()
             begin
-                if IsPosting() then
+                if IsPosting() and (Totaling <> '') then
                     FieldError("Account Type");
                 CalcFields("Net Change (CO2)", "Balance at Date (CO2)", "Balance (CO2)", "Net Change (CH4)", "Balance at Date (CH4)", "Balance (CH4)", "Net Change (N2O)", "Balance at Date (N2O)", "Balance (N2O)");
             end;
@@ -130,21 +135,21 @@ table 6210 "Sustainability Account"
                     Validate(Totaling, CopyStr(SustainAccountList.GetSelectionFilter(), 1, MaxStrLen(Totaling)));
             end;
         }
-        field(10; Blocked; Boolean)
+        field(11; Blocked; Boolean)
         {
             Caption = 'Blocked';
         }
-        field(11; "Direct Posting"; Boolean)
+        field(12; "Direct Posting"; Boolean)
         {
             Caption = 'Direct Posting';
             InitValue = true;
         }
-        field(12; Indentation; Integer)
+        field(13; Indentation; Integer)
         {
             Caption = 'Indentation';
             Editable = false;
         }
-        field(13; "Global Dimension 1 Code"; Code[20])
+        field(14; "Global Dimension 1 Code"; Code[20])
         {
             CaptionClass = '1,1,1';
             Caption = 'Global Dimension 1 Code';
@@ -154,7 +159,7 @@ table 6210 "Sustainability Account"
                 ValidateShortcutDimCode(1, "Global Dimension 1 Code");
             end;
         }
-        field(14; "Global Dimension 2 Code"; Code[20])
+        field(15; "Global Dimension 2 Code"; Code[20])
         {
             CaptionClass = '1,1,2';
             Caption = 'Global Dimension 2 Code';
@@ -164,7 +169,7 @@ table 6210 "Sustainability Account"
                 ValidateShortcutDimCode(2, "Global Dimension 2 Code");
             end;
         }
-        field(15; Comment; Boolean)
+        field(16; Comment; Boolean)
         {
             CalcFormula = exist("Comment Line" where("Table Name" = const("Sustainability Account"), "No." = field("No.")));
             Caption = 'Comment';
@@ -347,24 +352,17 @@ table 6210 "Sustainability Account"
 
     fieldgroups
     {
-        fieldgroup(DropDown; "No.", Name, Blocked, "Direct Posting") { }
-        fieldgroup(Brick; "No.", Name, Blocked) { }
+        fieldgroup(DropDown; "No.", Name, "Emission Scope", Blocked, "Direct Posting") { }
+        fieldgroup(Brick; "No.", Name, "Emission Scope", Blocked) { }
     }
 
     trigger OnDelete()
     var
-        CommentLine: Record "Comment Line";
-        SustainabilitySetup: Record "Sustainability Setup";
-        DimMgt: Codeunit DimensionManagement;
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
     begin
-        SustainabilitySetup.Get();
-        SustainabilitySetup.TestField("Block Sustain. Accs. Deletion", false);
-
-        CommentLine.SetRange("Table Name", CommentLine."Table Name"::"Sustainability Account");
-        CommentLine.SetRange("No.", "No.");
-        CommentLine.DeleteAll();
-
-        DimMgt.DeleteDefaultDim(Database::"Sustainability Account", "No.");
+        SustainabilityLedgerEntry.SetRange("Account No.", "No.");
+        if not SustainabilityLedgerEntry.IsEmpty() then
+            Error(LedgerEntryExistsErr, "No.");
     end;
 
     trigger OnInsert()

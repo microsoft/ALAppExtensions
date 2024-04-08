@@ -2,7 +2,6 @@ namespace Microsoft.Sustainability.Account;
 
 enum 6212 "Emission Scope"
 {
-    Access = Internal;
     Extensible = false;
 
     value(0; " ") { Caption = ' '; }

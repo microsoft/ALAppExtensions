@@ -291,7 +291,6 @@ codeunit 4001 "Hybrid Cloud Management"
         DisableMigration(IntelligentCloudSetup."Product ID", DisablereplicationTxt, false)
     end;
 
-
     [Scope('OnPrem')]
     procedure DisableMigration()
     var
@@ -309,6 +308,7 @@ codeunit 4001 "Hybrid Cloud Management"
         HybridDeployment: Codeunit "Hybrid Deployment";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        CompletedCloudMigration: Boolean;
     begin
         RestoreDataPerDatabaseTables(HybridReplicationSummary."Run ID", SourceProduct);
 
@@ -316,6 +316,13 @@ codeunit 4001 "Hybrid Cloud Management"
             HybridDeployment.Initialize(SourceProduct);
             HybridDeployment.DisableReplication();
         end;
+
+        OnIsCloudMigrationCompleted(SourceProduct, CompletedCloudMigration);
+        if not CompletedCloudMigration then
+            CompletedCloudMigration := Reason = CloudMigrationCompletedTxt;
+
+        if CompletedCloudMigration then
+            SendCompletedCloudMigrationTelemetry();
 
         IntelligentCloud.Get();
         IntelligentCloud.Enabled := false;
@@ -629,7 +636,7 @@ codeunit 4001 "Hybrid Cloud Management"
         if IntelligentCloudSetup.Get() then
             TelemetryDimensions.Add('SourceProduct', IntelligentCloudSetup."Product ID");
 
-        Session.LogMessage('0000IGC', DisabledCloudMigrationFromCompanyTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', CloudMigrationTok);
+        Session.LogMessage('0000IGC', DisabledCloudMigrationFromCompanyTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, TelemetryDimensions);
     end;
 
     local procedure GetDisabledReasonTelemetryText(): Text
@@ -853,7 +860,7 @@ codeunit 4001 "Hybrid Cloud Management"
         exit(ReplicationCompletedServiceTypeTxt = ServiceType);
     end;
 
-    internal procedure SendCloudMigrationTelemetry()
+    internal procedure SendCompletedCloudMigrationTelemetry()
     var
         IntelligentCloud: Record "Intelligent Cloud";
         HybridCompany: Record "Hybrid Company";
@@ -872,9 +879,11 @@ codeunit 4001 "Hybrid Cloud Management"
         TelemetryDimensions.Add('NumberOfCompanies', Format(HybridCompany.Count(), 0, 9));
         TelemetryDimensions.Add('TotalMigrationSize', Format(HybridCompany.GetTotalMigrationSize(), 0, 9));
         TelemetryDimensions.Add('TotalOnPremSize', Format(HybridCompany.GetTotalOnPremSize(), 0, 9));
-        IntelligentCloudSetup."Product ID" := 'Unknown';
-        if IntelligentCloudSetup.Get() then;
-        TelemetryDimensions.Add('Product', IntelligentCloudSetup."Product ID");
+        if IntelligentCloudSetup.Get() then
+            TelemetryDimensions.Add('Product', IntelligentCloudSetup."Product ID")
+        else
+            IntelligentCloudSetup."Product ID" := 'Unknown';
+
         TelemetryDimensions.Add('MigrationDateTime', Format(IntelligentCloud.SystemModifiedAt, 0, 9));
         FeatureTelemetry.LogUsage('0000JMR', HybridCloudManagement.GetFeatureTelemetryName(), 'Tenant was cloud migrated', TelemetryDimensions);
     end;
@@ -906,7 +915,6 @@ codeunit 4001 "Hybrid Cloud Management"
 
         FeatureTelemetry.LogUptake('0000JV4', HybridCloudManagement.GetFeatureTelemetryName(), Enum::"Feature Uptake Status"::Used);
         FeatureTelemetry.LogUsage('0000JV5', HybridCloudManagement.GetFeatureTelemetryName(), 'Completed the cloud migration succesfully');
-        SendCloudMigrationTelemetry();
 
         if GuiAllowed then
             Message(CloudMigrationCompletedTxt);
@@ -1505,6 +1513,16 @@ codeunit 4001 "Hybrid Cloud Management"
         IntelligentCloudStatus.Delete();
     end;
 
+    procedure RunDataUpgradeAPI(var HybridReplicationSummary: Record "Hybrid Replication Summary")
+    var
+        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
+        HybridDeployment: Codeunit "Hybrid Deployment";
+    begin
+        IntelligentCloudSetup.Get();
+        HybridDeployment.Initialize(IntelligentCloudSetup."Product ID");
+        RunDataUpgrade(HybridReplicationSummary);
+    end;
+
     procedure RunDataUpgrade(var HybridReplicationSummary: Record "Hybrid Replication Summary")
     var
         ExistingHybridReplicationSummary: Record "Hybrid Replication Summary";
@@ -1991,6 +2009,11 @@ codeunit 4001 "Hybrid Cloud Management"
 
     [InternalEvent(false, false)]
     local procedure OnBeforeCanScheduleTask(var Handled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnIsCloudMigrationCompleted(SourceProduct: Text; var CloudMigrationCompleted: Boolean)
     begin
     end;
 }

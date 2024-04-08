@@ -19,13 +19,13 @@ codeunit 148050 "OIOUBL-Check Sales and Service"
         LibraryService: Codeunit "Library - Service";
         LibraryRandom: Codeunit "Library - Random";
         Assert: Codeunit Assert;
-        NoSeriesManagement: Codeunit NoSeriesManagement;
 #pragma warning disable AA0470
         NegSalesLineDiscountErr: Label 'Line Discount % cannot be negative in Sales Line Document Type=''%1'',Document No.=''%2'',Line No.=''%3''.';
         NegServiceLineDiscountErr: Label 'Line Discount % cannot be negative in Service Line Document Type=''%1'',Document No.=''%2'',Line No.=''%3''.';
 #pragma warning restore AA0470
         NegativeDiscountAmountErr: Label 'The total Line Discount Amount cannot be negative.';
         NegativeAmountErr: Label 'The total Line Amount cannot be negative.';
+        TotalInvoiceAmountNegativeErr: Label 'The total amount for the invoice must be 0 or greater.';
         GLEntryVerifyErr: Label 'The GLEntry does not exist.';
         NotFoundOnPageErr: Label 'is not found on the page';
         TestFieldNotFoundErr: Label 'TestFieldNotFound';
@@ -119,7 +119,8 @@ codeunit 148050 "OIOUBL-Check Sales and Service"
         // Exercise: Post the Sales Invoice.
         // Verify: Verify error message pops up when posting.
         asserterror LibrarySales.PostSalesDocument(SalesHeader, false, false);
-        Assert.ExpectedError(NegativeAmountErr);
+        // Assert.ExpectedError(NegativeAmountErr); -> don't get the OIOUBL error, you get the normal W1 error
+        Assert.ExpectedError(TotalInvoiceAmountNegativeErr);
     end;
 
     [Test]
@@ -264,12 +265,13 @@ codeunit 148050 "OIOUBL-Check Sales and Service"
         ServiceLine1: Record "Service Line";
         ServiceLine2: Record "Service Line";
         GLEntry: Record "G/L Entry";
+        NoSeries: Codeunit "No. Series";
         PostedDocumentNo: Code[20];
     begin
         // Setup: Create customer, Item and Service Credit Memo with one negative line but total amount is positive.
         CreateOIOUBLCustomer(Customer);
         CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::"Credit Memo", Customer."No.");
-        PostedDocumentNo := NoSeriesManagement.GetNextNo(ServiceHeader."Posting No. Series", WORKDATE(), false);
+        PostedDocumentNo := NoSeries.PeekNextNo(ServiceHeader."Posting No. Series");
         LibraryInventory.CreateItem(Item);
 
         // This Credit Memo has one line with negative Line Amount and Line Discount Amount but postive Line Discount %,

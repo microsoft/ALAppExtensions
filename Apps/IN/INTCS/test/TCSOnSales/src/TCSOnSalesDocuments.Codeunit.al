@@ -3829,7 +3829,7 @@ codeunit 18917 "TCS On Sales Documents"
         SalesHeader.Validate("Posting Date", PostingDate);
         SalesHeader.Modify(true);
         TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::Item, false);
-        SalesLine.validate("Qty. to Invoice", SalesLine.Quantity / 2);
+        SalesLine.Validate("Qty. to Invoice", SalesLine.Quantity / 2);
         SalesLine.Modify();
         TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine1, SalesLine.Type::"Charge (Item)", false);
         TCSSalesLibrary.CreateItemChargeAssignment(

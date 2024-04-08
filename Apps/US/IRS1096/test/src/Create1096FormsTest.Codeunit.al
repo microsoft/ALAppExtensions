@@ -1,7 +1,11 @@
+#if not CLEAN25
 codeunit 144041 "Create 1096 Forms Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;
+    ObsoleteReason = 'Moved to IRS Forms App.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '25.0';
 
     var
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
@@ -734,3 +738,4 @@ codeunit 144041 "Create 1096 Forms Test"
         IRS1096Form.Cancel().Invoke();
     end;
 }
+#endif

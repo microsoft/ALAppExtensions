@@ -20,7 +20,6 @@ codeunit 31356 "Payment Order Management CZB"
         TempErrorMessage: Record "Error Message" temporary;
         BankOperationsFunctionsCZB: Codeunit "Bank Operations Functions CZB";
         BankOperationsFunctionsCZL: Codeunit "Bank Operations Functions CZL";
-        ConfirmManagement: Codeunit "Confirm Management";
         ErrorMessageLogSuspended: Boolean;
 
     procedure PaymentOrderSelection(var PaymentOrderHeaderCZB: Record "Payment Order Header CZB"; var SelectedBankAccountForPaymentOrder: Boolean)
@@ -250,10 +249,12 @@ codeunit 31356 "Payment Order Management CZB"
                 exit;
 
             TempErrorMessage2.LogMessage(
-                PaymentOrderLineCZB, PaymentOrderLineCZB.FieldNo("Applies-to C/V/E Entry No."), TempErrorMessage2."Message Type"::Warning,
+                PaymentOrderLineCZB,
+                PaymentOrderLineCZB.FieldNo("Applies-to C/V/E Entry No."),
+                TempErrorMessage2."Message Type"::Warning,
                 StrSubstNo(
                     SuggestedAmountToApplyErr,
-                    PaymentOrderLineCZB.FieldCaption(PaymentOrderLineCZB."Applies-to C/V/E Entry No."), PaymentOrderLineCZB."Applies-to C/V/E Entry No.", PaymentOrderLineCZB.RecordId()));
+                    PaymentOrderLineCZB.Type, PaymentOrderLineCZB."Applies-to C/V/E Entry No."));
         end;
 
         SaveErrorMessage(TempErrorMessage2);
@@ -262,17 +263,12 @@ codeunit 31356 "Payment Order Management CZB"
 
     local procedure IsLedgerEntryApplied(PaymentOrderLineCZB: Record "Payment Order Line CZB"): Boolean
     var
-        IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
         PaymentOrderLineCZB2: Record "Payment Order Line CZB";
     begin
         if PaymentOrderLineCZB."Applies-to C/V/E Entry No." = 0 then
             exit(false);
 
-        IssPaymentOrderLineCZB.SetRange(Type, PaymentOrderLineCZB.Type);
-        IssPaymentOrderLineCZB.SetRange("No.", PaymentOrderLineCZB."No.");
-        IssPaymentOrderLineCZB.SetRange("Applies-to C/V/E Entry No.", PaymentOrderLineCZB."Applies-to C/V/E Entry No.");
-        IssPaymentOrderLineCZB.SetFilter(Status, '<>%1', IssPaymentOrderLineCZB.Status::Canceled);
-        if not IssPaymentOrderLineCZB.IsEmpty() then
+        if PaymentOrderLineCZB.CalcRelatedAmountToApply() <> 0 then
             exit(true);
 
         PaymentOrderLineCZB2.SetRange(Type, PaymentOrderLineCZB.Type);
@@ -327,27 +323,15 @@ codeunit 31356 "Payment Order Management CZB"
 
     procedure ProcessErrorMessages(ShowMessage: Boolean; RollBackOnError: Boolean)
     var
-        PaymentOrderLineCZB: Record "Payment Order Line CZB";
         IsHandled: Boolean;
-        TwoPlaceholdersTok: Label '%1\\%2', Locked = true;
-        ContinueQst: Label 'Do you want to continue?';
     begin
         IsHandled := false;
         OnBeforeProcessErrorMessages(TempErrorMessage, ShowMessage, RollBackOnError, IsHandled);
         if IsHandled then
             exit;
 
-        if TempErrorMessage.HasErrors(ShowMessage) then
-            TempErrorMessage.ShowErrorMessages(RollBackOnError);
-
-        TempErrorMessage.Reset();
-        TempErrorMessage.SetRange("Message Type", TempErrorMessage."Message Type"::Warning);
-        TempErrorMessage.SetFilter("Field Number", '%1', PaymentOrderLineCZB.FieldNo("Applies-to C/V/E Entry No."));
-        if TempErrorMessage.FindSet() then
-            repeat
-                if not ConfirmManagement.GetResponseOrDefault(StrSubstNo(TwoPlaceholdersTok, TempErrorMessage."Message", ContinueQst), false) then
-                    Error('');
-            until TempErrorMessage.Next() = 0;
+        TempErrorMessage.HasErrors(ShowMessage);
+        TempErrorMessage.ShowErrorMessages(RollBackOnError);
     end;
 
     local procedure CheckBankAccessAllowed(BankAccountNo: Code[20])

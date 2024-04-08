@@ -16,6 +16,6 @@ codeunit 4617 "Basic SMTP Auth" implements "SMTP Auth"
     var
         CancellationToken: DotNet CancellationToken;
     begin
-        SmtpClient.Authenticate(SMTPAuthentication.GetUserName(), SMTPAuthentication.GetPassword(), CancellationToken);
+        SmtpClient.Authenticate(SMTPAuthentication.GetUserName(), SMTPAuthentication.GetPassword().Unwrap(), CancellationToken);
     end;
 }

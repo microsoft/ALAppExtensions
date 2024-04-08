@@ -10,7 +10,7 @@ pageextension 6360 "E-Doc. Ext. EDocument" extends "E-Document"
 {
     actions
     {
-        addafter(UpdateOrder)
+        addlast(Incoming)
         {
             action(Approve)
             {
@@ -18,7 +18,7 @@ pageextension 6360 "E-Doc. Ext. EDocument" extends "E-Document"
                 ToolTip = 'Approve related document.';
                 Image = Approve;
                 ApplicationArea = All;
-                Visible = Rec.Direction = Rec.Direction::Incoming;
+                Visible = ApprovalActionVisible;
 
                 trigger OnAction()
                 var
@@ -33,7 +33,7 @@ pageextension 6360 "E-Doc. Ext. EDocument" extends "E-Document"
                 ToolTip = 'Reject related document.';
                 Image = Reject;
                 ApplicationArea = All;
-                Visible = Rec.Direction = Rec.Direction::Incoming;
+                Visible = ApprovalActionVisible;
 
                 trigger OnAction()
                 var
@@ -43,10 +43,23 @@ pageextension 6360 "E-Doc. Ext. EDocument" extends "E-Document"
                 end;
             }
         }
-        addafter(UpdateOrder_Promoted)
+        addlast(Category_Process)
         {
             actionref(Approve_Promoted; Approve) { }
             actionref(Reject_Promoted; Reject) { }
         }
     }
+
+    trigger OnAfterGetRecord()
+    var
+        EDocumentService: Record "E-Document Service";
+        EDocumentHelper: Codeunit "E-Document Helper";
+    begin
+        EDocumentHelper.GetEdocumentService(Rec, EdocumentService);
+        ApprovalActionVisible :=
+            (EDocumentService."Service Integration" = EDocumentService."Service Integration"::Pagero) and (Rec.Direction = Rec.Direction::Incoming);
+    end;
+
+    var
+        ApprovalActionVisible: Boolean;
 }

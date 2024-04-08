@@ -49,7 +49,7 @@ table 6216 "Sustainability Ledger Entry"
         field(7; "Account No."; Code[20])
         {
             Caption = 'Account No.';
-            TableRelation = "Sustainability Account";
+            TableRelation = "Sustainability Account" where("Account Type" = const(Posting));
         }
         field(8; "Account Name"; Text[100])
         {
@@ -125,7 +125,7 @@ table 6216 "Sustainability Ledger Entry"
         }
         field(22; "Country/Region Code"; Code[10])
         {
-            Caption = 'Country or Region Code';
+            Caption = 'Country/Region Code';
             TableRelation = "Country/Region";
         }
         field(23; "Responsibility Center"; Code[10])
@@ -146,10 +146,14 @@ table 6216 "Sustainability Ledger Entry"
         {
             Caption = 'Expiration Date';
         }
-        field(27; "Dimension Set ID"; Integer)
+        field(480; "Dimension Set ID"; Integer)
         {
             Caption = 'Dimension Set ID';
             TableRelation = "Dimension Set Entry";
+            trigger OnLookup()
+            begin
+                ShowDimensions();
+            end;
         }
         field(28; "Global Dimension 1 Code"; Code[20])
         {
@@ -279,4 +283,12 @@ table 6216 "Sustainability Ledger Entry"
 
     var
         SustainabilitySetup: Record "Sustainability Setup";
+        EntryRecIDLbl: Label '%1 %2', Locked = true;
+
+    local procedure ShowDimensions()
+    var
+        DimMgt: Codeunit DimensionManagement;
+    begin
+        DimMgt.ShowDimensionSet("Dimension Set ID", StrSubstNo(EntryRecIDLbl, TableCaption(), "Entry No."));
+    end;
 }

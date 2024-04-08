@@ -13,11 +13,10 @@ using System.Utilities;
 
 report 11715 "Open Cust. Entries to Date CZL"
 {
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/OpenCustEntriestoDate.rdl';
     ApplicationArea = Basic, Suite;
     Caption = 'Open Customer Entries to Date';
     UsageCategory = ReportsAndAnalysis;
+    DefaultRenderingLayout = "OpenCustEntriestoDate.rdl";
 
     dataset
     {
@@ -621,6 +620,23 @@ report 11715 "Open Cust. Entries to Date CZL"
                     }
                 }
             }
+        }
+    }
+    rendering
+    {
+        layout("OpenCustEntriestoDate.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/OpenCustEntriestoDate.rdl';
+            Caption = 'Open Customer Entries to Date (RDL)';
+            Summary = 'The Open Customer Entries to Date (RDL) provides a detailed layout.';
+        }
+        layout("OpenCustEntriestoDate.xlsx")
+        {
+            Type = Excel;
+            LayoutFile = './Src/Reports/OpenCustEntriestoDate.xlsx';
+            Caption = 'Open Customer Entries to Date (Excel)';
+            Summary = 'The Open Customer Entries to Date (Excel) provides a detailed layout.';
         }
     }
     trigger OnInitReport()

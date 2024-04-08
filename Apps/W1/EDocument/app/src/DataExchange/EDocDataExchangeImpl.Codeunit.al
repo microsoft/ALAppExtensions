@@ -204,6 +204,7 @@ codeunit 6152 "E-Doc. Data Exchange Impl." implements "E-Document"
         TempFieldBuffer: Record "Field Buffer" temporary;
     begin
         AddFieldToFieldBuffer(TempFieldBuffer, EDocument.FieldNo("Incoming E-Document No."));
+        AddFieldToFieldBuffer(TempFieldBuffer, EDocument.FieldNo("Order No."));
         AddFieldToFieldBuffer(TempFieldBuffer, EDocument.FieldNo("Bill-to/Pay-to No."));
         AddFieldToFieldBuffer(TempFieldBuffer, EDocument.FieldNo("Bill-to/Pay-to Name"));
         AddFieldToFieldBuffer(TempFieldBuffer, EDocument.FieldNo("Document Date"));
@@ -315,8 +316,12 @@ codeunit 6152 "E-Doc. Data Exchange Impl." implements "E-Document"
                         if EDocument."Document Type" = EDocument."Document Type"::"Purchase Credit Memo" then
                             exit(DataExchLineDef.GetPath(Database::"Purchase Header", PurchaseHeader.FieldNo("Vendor Cr. Memo No.")));
                     end;
+                EDocument.FieldNo("Order No."):
+                    exit(DataExchLineDef.GetPath(Database::"Purchase Header", PurchaseHeader.FieldNo("Vendor Order No.")));
                 EDocument.FieldNo("Bill-to/Pay-to Name"):
                     exit(DataExchLineDef.GetPath(Database::"Purchase Header", PurchaseHeader.FieldNo("Buy-from Vendor Name")));
+                EDocument.FieldNo("Bill-to/Pay-to No."):
+                    exit(DataExchLineDef.GetPath(Database::"Purchase Header", PurchaseHeader.FieldNo("Buy-from Vendor No.")));
                 EDocument.FieldNo("Document Date"):
                     exit(DataExchLineDef.GetPath(Database::"Purchase Header", PurchaseHeader.FieldNo("Document Date")));
                 EDocument.FieldNo("Due Date"):

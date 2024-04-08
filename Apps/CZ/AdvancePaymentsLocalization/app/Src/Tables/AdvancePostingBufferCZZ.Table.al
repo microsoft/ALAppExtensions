@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.AdvancePayments;
 
+using Microsoft.Finance.Currency;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Enums;
-using Microsoft.Finance.Currency;
 
 table 31013 "Advance Posting Buffer CZZ"
 {
@@ -178,9 +178,9 @@ table 31013 "Advance Posting Buffer CZZ"
         end;
     end;
 
-    procedure RecalcAmountsByCoefficient(Coeff: Decimal)
+    procedure UpdateVATAmounts()
     begin
-        Amount := Round(Amount * Coeff);
+        Amount := Round(Amount);
         case "VAT Calculation Type" of
             "VAT Calculation Type"::"Normal VAT":
                 "VAT Amount" := Round(Amount * "VAT %" / (100 + "VAT %"));
@@ -188,6 +188,16 @@ table 31013 "Advance Posting Buffer CZZ"
                 "VAT Amount" := 0;
         end;
         "VAT Base Amount" := Amount - "VAT Amount";
+    end;
+
+    procedure ReverseAmounts()
+    begin
+        Amount := -Amount;
+        "VAT Base Amount" := -"VAT Base Amount";
+        "VAT Amount" := -"VAT Amount";
+        "Amount (ACY)" := -"Amount (ACY)";
+        "VAT Base Amount (ACY)" := -"VAT Base Amount (ACY)";
+        "VAT Amount (ACY)" := -"VAT Amount (ACY)";
     end;
 
     [IntegrationEvent(false, false)]

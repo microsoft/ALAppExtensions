@@ -14,6 +14,7 @@ table 6214 "Sustainability Jnl. Line"
     Caption = 'Sustainability Journal Line';
     Access = Public;
     DataClassification = CustomerContent;
+    LookupPageId = "Sustainability Journal";
     DataPerCompany = true;
     Extensible = true;
 
@@ -87,7 +88,7 @@ table 6214 "Sustainability Jnl. Line"
         }
         field(9; "Account Category"; Code[20])
         {
-            Caption = 'Category';
+            Caption = 'Account Category';
             Editable = false;
             TableRelation = "Sustain. Account Category";
 
@@ -99,7 +100,7 @@ table 6214 "Sustainability Jnl. Line"
         }
         field(10; "Account Subcategory"; Code[20])
         {
-            Caption = 'Subcategory';
+            Caption = 'Account Subcategory';
             Editable = false;
             TableRelation = "Sustain. Account Subcategory".Code where("Category Code" = field("Account Category"));
         }
@@ -115,6 +116,12 @@ table 6214 "Sustainability Jnl. Line"
             var
                 SustainabilityCalcMgt: Codeunit "Sustainability Calc. Mgt.";
             begin
+                Validate(Distance, 0);
+                Validate("Fuel/Electricity", 0);
+                Validate("Custom Amount", 0);
+                Validate("Installation Multiplier", 1);
+                Validate("Time Factor", 0);
+
                 SustainabilityCalcMgt.CalculationEmissions(Rec);
             end;
         }
@@ -228,11 +235,21 @@ table 6214 "Sustainability Jnl. Line"
         {
             Caption = 'Expiration Date';
         }
-        field(27; "Dimension Set ID"; Integer)
+        field(480; "Dimension Set ID"; Integer)
         {
             Caption = 'Dimension Set ID';
             Editable = false;
             TableRelation = "Dimension Set Entry";
+
+            trigger OnLookup()
+            begin
+                ShowDimensions();
+            end;
+
+            trigger OnValidate()
+            begin
+                DimMgt.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
+            end;
         }
         field(28; "Shortcut Dimension 1 Code"; Code[20])
         {
@@ -241,8 +258,6 @@ table 6214 "Sustainability Jnl. Line"
             TableRelation = "Dimension Value".Code where("Global Dimension No." = const(1), Blocked = const(false));
 
             trigger OnValidate()
-            var
-                DimMgt: Codeunit DimensionManagement;
             begin
                 DimMgt.ValidateShortcutDimValues(1, "Shortcut Dimension 1 Code", "Dimension Set ID");
             end;
@@ -254,8 +269,6 @@ table 6214 "Sustainability Jnl. Line"
             TableRelation = "Dimension Value".Code where("Global Dimension No." = const(2), Blocked = const(false));
 
             trigger OnValidate()
-            var
-                DimMgt: Codeunit DimensionManagement;
             begin
                 DimMgt.ValidateShortcutDimValues(2, "Shortcut Dimension 2 Code", "Dimension Set ID");
             end;
@@ -294,6 +307,8 @@ table 6214 "Sustainability Jnl. Line"
 
     var
         SustainabilitySetup: Record "Sustainability Setup";
+        DimMgt: Codeunit DimensionManagement;
+        JnlRecRefLbl: Label '%1 %2 %3', Locked = true;
 
     internal procedure SetupNewLine(PreviousLine: Record "Sustainability Jnl. Line")
     var
@@ -308,9 +323,10 @@ table 6214 "Sustainability Jnl. Line"
         SustainabilityJnlLine.SetRange("Journal Batch Name", "Journal Batch Name");
         IsPreviousLineValid := not SustainabilityJnlLine.IsEmpty();
 
-        if IsPreviousLineValid then
-            Validate("Posting Date", PreviousLine."Posting Date")
-        else
+        if IsPreviousLineValid then begin
+            Validate("Posting Date", PreviousLine."Posting Date");
+            Validate("Document Type", PreviousLine."Document Type");
+        end else
             Validate("Posting Date", WorkDate());
 
         Validate("Reason Code", SustainabilityJnlBatch."Reason Code");
@@ -320,7 +336,6 @@ table 6214 "Sustainability Jnl. Line"
 
     local procedure GetDefaultDimensionsFromAccount()
     var
-        DimMgt: Codeunit DimensionManagement;
         DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
     begin
         "Shortcut Dimension 1 Code" := '';
@@ -328,5 +343,17 @@ table 6214 "Sustainability Jnl. Line"
 
         DimMgt.AddDimSource(DefaultDimSource, Database::"Sustainability Account", "Account No.", true);
         Validate("Dimension Set ID", DimMgt.GetRecDefaultDimID(Rec, CurrFieldNo, DefaultDimSource, "Source Code", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0));
+    end;
+
+    internal procedure ShowDimensions() IsChanged: Boolean
+    var
+        OldDimSetID: Integer;
+    begin
+        OldDimSetID := "Dimension Set ID";
+        "Dimension Set ID" := DimMgt.EditDimensionSet(
+            Rec, "Dimension Set ID", StrSubstNo(JnlRecRefLbl, "Journal Template Name", "Journal Batch Name", "Line No."),
+            "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
+
+        IsChanged := OldDimSetID <> "Dimension Set ID";
     end;
 }

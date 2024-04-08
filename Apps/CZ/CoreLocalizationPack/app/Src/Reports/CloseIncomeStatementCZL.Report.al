@@ -489,7 +489,6 @@ report 11753 "Close Income Statement CZL"
         SelectedDimension: Record "Selected Dimension";
         TempSelectedDimension: Record "Selected Dimension" temporary;
         TempEntryNoAmountBuffer: Record "Entry No. Amount Buffer" temporary;
-        NoSeriesManagement: Codeunit NoSeriesManagement;
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         DimensionManagement: Codeunit DimensionManagement;
         DimensionBufferManagement: Codeunit "Dimension Buffer Management";
@@ -563,14 +562,18 @@ report 11753 "Close Income Statement CZL"
     end;
 
     local procedure ValidateJnl()
+    var
+        NoSeries: Codeunit "No. Series";
     begin
         DocNo := '';
         if GenJournalBatch.Get(GenJournalLine."Journal Template Name", GenJournalLine."Journal Batch Name") then
             if GenJournalBatch."No. Series" <> '' then
-                DocNo := NoSeriesManagement.TryGetNextNo(GenJournalBatch."No. Series", EndDateReq);
+                DocNo := NoSeries.PeekNextNo(GenJournalBatch."No. Series", EndDateReq);
     end;
 
     local procedure HandleGenJnlLine()
+    var
+        NoSeriesBatch: Codeunit "No. Series - Batch";
     begin
         OnBeforeHandleGenJnlLine(GenJournalLine);
 
@@ -586,8 +589,8 @@ report 11753 "Close Income Statement CZL"
             end;
             if GenJournalLine.Amount <> 0 then begin
                 GenJnlPostLine.Run(GenJournalLine);
-                if DocNo = NoSeriesManagement.GetNextNo(GenJournalBatch."No. Series", EndDateReq, false) then
-                    NoSeriesManagement.SaveNoSeries();
+                if DocNo = NoSeriesBatch.GetNextNo(GenJournalBatch."No. Series", EndDateReq) then
+                    NoSeriesBatch.SaveState();
             end;
         end else
             if not ZeroGenJnlAmount() then

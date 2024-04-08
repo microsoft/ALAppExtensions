@@ -15,10 +15,12 @@ table 11021 "Sales VAT Advance Notif."
             DataClassification = CustomerContent;
 
             trigger OnValidate()
+            var
+                NoSeries: Codeunit "No. Series";
             begin
                 if "No." <> xRec."No." then begin
                     ElecVATDeclSetup.Get();
-                    NoSeriesMgt.TestManual(ElecVATDeclSetup."Sales VAT Adv. Notif. Nos.");
+                    NoSeries.TestManual(ElecVATDeclSetup."Sales VAT Adv. Notif. Nos.");
                     "No. Series" := '';
                 end;
             end;
@@ -240,6 +242,11 @@ table 11021 "Sales VAT Advance Notif."
     trigger OnInsert()
     var
         CompanyInformation: Record "Company Information";
+        NoSeries: Codeunit "No. Series";
+#if not CLEAN24
+        NoSeriesManagement: Codeunit NoSeriesManagement;
+        IsHandled: Boolean;
+#endif
     begin
         FeatureTelemetry.LogUptake('0001Q0G', ElecVATAdvanceNotTok, Enum::"Feature Uptake Status"::"Used");
         if xRec.FindLast() then;
@@ -253,7 +260,19 @@ table 11021 "Sales VAT Advance Notif."
         if "No." = '' then begin
             ElecVATDeclSetup.Get();
             ElecVATDeclSetup.TestField("Sales VAT Adv. Notif. Nos.");
-            NoSeriesMgt.InitSeries(ElecVATDeclSetup."Sales VAT Adv. Notif. Nos.", xRec."No. Series", WorkDate(), "No.", "No. Series");
+#if not CLEAN24
+            IsHandled := false;
+            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(ElecVATDeclSetup."Sales VAT Adv. Notif. Nos.", xRec."No. Series", WorkDate(), "No.", "No. Series", IsHandled);
+            if not IsHandled then begin
+#endif
+                "No. Series" := ElecVATDeclSetup."Sales VAT Adv. Notif. Nos.";
+                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                    "No. Series" := xRec."No. Series";
+                "No." := NoSeries.GetNextNo("No. Series");
+#if not CLEAN24
+                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", ElecVATDeclSetup."Sales VAT Adv. Notif. Nos.", WorkDate(), "No.");
+            end;
+#endif
         end;
         FeatureTelemetry.LogUsage('0001Q0H', ElecVATAdvanceNotTok, 'Elec. VAT advance notif generated');
     end;
@@ -270,7 +289,6 @@ table 11021 "Sales VAT Advance Notif."
 
     var
         ElecVATDeclSetup: Record "Elec. VAT Decl. Setup";
-        NoSeriesMgt: Codeunit NoSeriesManagement;
         FeatureTelemetry: Codeunit "Feature Telemetry";
         ElecVATAdvanceNotTok: Label 'DE Elec. VAT Advance Notifications', Locked = true;
         WrongPlaceErr: Label 'Places of %1 in area %2 must be %3.', Comment = '%1 = Registration No. Field Caption; %2 = Tax Office Area; %3 = VAT No.';
@@ -297,16 +315,15 @@ table 11021 "Sales VAT Advance Notif."
     procedure AssistEdit(OldSalesVATAdvNotif: Record "Sales VAT Advance Notif."): Boolean
     var
         SalesVATAdvNotif: Record "Sales VAT Advance Notif.";
+        NoSeries: Codeunit "No. Series";
     begin
-        with SalesVATAdvNotif do begin
-            SalesVATAdvNotif := Rec;
-            ElecVATDeclSetup.Get();
-            ElecVATDeclSetup.TestField("Sales VAT Adv. Notif. Nos.");
-            if NoSeriesMgt.SelectSeries(ElecVATDeclSetup."Sales VAT Adv. Notif. Nos.", OldSalesVATAdvNotif."No. Series", "No. Series") then begin
-                NoSeriesMgt.SetSeries("No.");
-                Rec := SalesVATAdvNotif;
-                exit(true);
-            end;
+        SalesVATAdvNotif := Rec;
+        ElecVATDeclSetup.Get();
+        ElecVATDeclSetup.TestField("Sales VAT Adv. Notif. Nos.");
+        if NoSeries.LookupRelatedNoSeries(ElecVATDeclSetup."Sales VAT Adv. Notif. Nos.", OldSalesVATAdvNotif."No. Series", SalesVATAdvNotif."No. Series") then begin
+            SalesVATAdvNotif."No." := NoSeries.GetNextNo(SalesVATAdvNotif."No. Series");
+            Rec := SalesVATAdvNotif;
+            exit(true);
         end;
     end;
 

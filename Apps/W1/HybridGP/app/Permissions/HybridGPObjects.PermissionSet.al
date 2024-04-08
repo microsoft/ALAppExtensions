@@ -146,12 +146,17 @@ permissionset 4029 "HybridGP - Objects"
                     query "GP Item Aggregate" = X,
                     codeunit "GP Migration Error Handler" = X,
                     page "GP Migration Error Overview" = X,
+#if not CLEAN24
                     page "Hybrid GP Errors Overview Fb" = X,
+#endif
                     table "GP Migration Error Overview" = X,
                     table "GP Upgrade Settings" = X,
                     codeunit "Start Data Upgrade" = X,
                     table "GP PM10200" = X,
                     table "GP PM30300" = X,
                     table "GP RM20201" = X,
-                    table "GP RM30201" = X;
+                    table "GP RM30201" = X,
+                    table "GP Migration Warnings" = X,
+                    page "GP Migration Warnings" = X,
+                    page "GP Payment Terms" = X;
 }

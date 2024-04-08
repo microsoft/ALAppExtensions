@@ -27,10 +27,12 @@ table 31256 "Payment Order Header CZB"
             DataClassification = CustomerContent;
 
             trigger OnValidate()
+            var
+                NoSeries: Codeunit "No. Series";
             begin
                 if ("No." <> xRec."No.") and ("Bank Account No." <> '') then begin
                     BankAccount.Get("Bank Account No.");
-                    NoSeriesManagement.TestManual(BankAccount."Payment Order Nos. CZB");
+                    NoSeries.TestManual(BankAccount."Payment Order Nos. CZB");
                     "No. Series" := '';
                 end;
             end;
@@ -321,11 +323,32 @@ table 31256 "Payment Order Header CZB"
     end;
 
     trigger OnInsert()
+    var
+        PaymentOrderHeader: Record "Payment Order Header CZB";
+        NoSeries: Codeunit "No. Series";
+#if not CLEAN24
+        IsHandled: Boolean;
+#endif
     begin
         if "No." = '' then begin
             BankAccount.Get("Bank Account No.");
             BankAccount.Testfield("Payment Order Nos. CZB");
-            NoSeriesManagement.InitSeries(BankAccount."Payment Order Nos. CZB", xRec."No. Series", 0D, "No.", "No. Series");
+#if not CLEAN24
+            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(BankAccount."Payment Order Nos. CZB", xRec."No. Series", 0D, "No.", "No. Series", IsHandled);
+            if not IsHandled then begin
+#endif
+                "No. Series" := BankAccount."Payment Order Nos. CZB";
+                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                    "No. Series" := xRec."No. Series";
+                "No." := NoSeries.GetNextNo("No. Series");
+                PaymentOrderHeader.ReadIsolation(ReadIsolation::ReadUncommitted);
+                PaymentOrderHeader.SetLoadFields("No.");
+                while PaymentOrderHeader.Get("No.") do
+                    "No." := NoSeries.GetNextNo("No. Series");
+#if not CLEAN24
+                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", BankAccount."Payment Order Nos. CZB", 0D, "No.");
+            end;
+#endif
         end;
     end;
 
@@ -339,7 +362,9 @@ table 31256 "Payment Order Header CZB"
     var
         BankAccount: Record "Bank Account";
         CurrencyExchangeRate: Record "Currency Exchange Rate";
+#if not CLEAN24
         NoSeriesManagement: Codeunit NoSeriesManagement;
+#endif
         BankingApprovalsMgtCZB: Codeunit "Banking Approvals Mgt. CZB";
         ConfirmManagement: Codeunit "Confirm Management";
         UpdateCurrFactorQst: Label 'Do you want to update the exchange rate?';
@@ -348,14 +373,13 @@ table 31256 "Payment Order Header CZB"
     procedure AssistEdit(OldPaymentOrderHeaderCZB: Record "Payment Order Header CZB"): Boolean
     var
         PaymentOrderHeaderCZB: Record "Payment Order Header CZB";
+        NoSeries: Codeunit "No. Series";
     begin
         PaymentOrderHeaderCZB := Rec;
         BankAccount.Get(PaymentOrderHeaderCZB."Bank Account No.");
         BankAccount.Testfield("Payment Order Nos. CZB");
-        if NoSeriesManagement.SelectSeries(BankAccount."Payment Order Nos. CZB", OldPaymentOrderHeaderCZB."No. Series", PaymentOrderHeaderCZB."No. Series") then begin
-            BankAccount.Get(PaymentOrderHeaderCZB."Bank Account No.");
-            BankAccount.Testfield("Bank Account No.");
-            NoSeriesManagement.SetSeries(PaymentOrderHeaderCZB."No.");
+        if NoSeries.LookupRelatedNoSeries(BankAccount."Payment Order Nos. CZB", OldPaymentOrderHeaderCZB."No. Series", PaymentOrderHeaderCZB."No. Series") then begin
+            PaymentOrderHeaderCZB."No." := NoSeries.GetNextNo(PaymentOrderHeaderCZB."No. Series");
             Rec := PaymentOrderHeaderCZB;
             exit(true);
         end;

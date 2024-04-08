@@ -595,10 +595,8 @@ page 31151 "Cash Desk Card CZP"
     local procedure DetermineCashDeskCZPSeriesNo(): Code[20]
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
-        CashDeskCZP: Record "Cash Desk CZP";
     begin
         GeneralLedgerSetup.Get();
-        DocumentNoVisibility.CheckNumberSeries(CashDeskCZP, GeneralLedgerSetup."Cash Desk Nos. CZP", CashDeskCZP.FieldNo("No."));
         exit(GeneralLedgerSetup."Cash Desk Nos. CZP");
     end;
 }

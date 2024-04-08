@@ -7,6 +7,8 @@ namespace Microsoft.Sales.History;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Setup;
 using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Foundation.Company;
 
 tableextension 11726 "Sales Invoice Header CZL" extends "Sales Invoice Header"
 {
@@ -180,8 +182,73 @@ tableextension 11726 "Sales Invoice Header CZL" extends "Sales Invoice Header"
         OnAfterUpdateBankInfoCZL(Rec);
     end;
 
+    procedure CreateSalesInvoicePaymentQRCodeStringCZL(): Text
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        CompanyInformation: Record "Company Information";
+        IBAN: Code[50];
+        SWIFT: Code[20];
+        QRCode: Text;
+        InvoiceTxt: Label 'Invoice';
+    begin
+        if "Bank Account Code CZL" <> '' then begin
+            IBAN := "IBAN CZL";
+            SWIFT := "SWIFT Code CZL";
+        end else begin
+            CompanyInformation.Get();
+            IBAN := CompanyInformation.IBAN;
+            SWIFT := CompanyInformation."SWIFT Code";
+            if "IBAN CZL" <> '' then
+                IBAN := "IBAN CZL";
+            if "SWIFT Code CZL" <> '' then
+                SWIFT := "SWIFT Code CZL";
+        end;
+
+        CalcFields("Remaining Amount");
+
+        QRCode := 'SPD*1.0*';
+
+        // ACC
+        if SWIFT <> '' then
+            QRCode := QRCode + 'ACC:' + IBAN + '+' + SWIFT + '*'
+        else
+            QRCode := QRCode + 'ACC:' + IBAN + '*';
+
+        // AM
+        QRCode := QRCode + 'AM:' + format("Remaining Amount", 0, '<Precision,2:2><Standard Format,2>') + '*';
+
+        // CC
+        if "Currency Code" = '' then begin
+            GeneralLedgerSetup.Get();
+            QRCode := QRCode + 'CC:' + UpperCase(GeneralLedgerSetup."LCY Code") + '*';
+        end else
+            QRCode := QRCode + 'CC:' + UpperCase("Currency Code") + '*';
+
+        // DT
+        QRCode := QRCode + 'DT:' + format("Due Date", 0, '<Year4><Month,2><Day,2>') + '*';
+
+        // MSG
+        QRCode := QRCode + 'MSG:' + InvoiceTxt + ' ' + "No." + '*';
+
+        // XVS
+        QRCode := QRCode + 'X-VS:' + "Variable Symbol CZL" + '*';
+
+        // X-KS
+        QRCode := QRCode + 'X-KS:' + "Constant Symbol CZL" + '*';
+
+        if IBAN = '' then
+            QRCode := '';
+        OnBeforeExitSalesInvoicePaymentQRCodeStringCZL(Rec, QRCode);
+        exit(QRCode);
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterUpdateBankInfoCZL(var SalesInvoiceHeader: Record "Sales Invoice Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeExitSalesInvoicePaymentQRCodeStringCZL(SalesInvoiceHeader: Record "Sales Invoice Header"; var QRCode: Text)
     begin
     end;
 }

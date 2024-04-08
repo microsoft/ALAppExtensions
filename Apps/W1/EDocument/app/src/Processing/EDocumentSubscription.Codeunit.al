@@ -89,11 +89,12 @@ codeunit 6103 "E-Document Subscription"
 
         if SalesInvHdrNo <> '' then begin
             if SalesInvHeader.Get(SalesInvHdrNo) then
-                RunEDocumentCreation(SalesHeader, SalesInvHeader, SalesInvHdrNo);
+                CreateOrUpdateEDocument(SalesHeader, SalesInvHeader, SalesInvHdrNo, Enum::"E-Document Type"::"Sales Invoice");
         end else
             if SalesCrMemoHeader.Get(SalesCrMemoHdrNo) then
-                RunEDocumentCreation(SalesHeader, SalesCrMemoHeader, SalesCrMemoHdrNo);
+                CreateOrUpdateEDocument(SalesHeader, SalesCrMemoHeader, SalesCrMemoHdrNo, Enum::"E-Document Type"::"Sales Credit Memo");
     end;
+
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterPostPurchaseDoc', '', false, false)]
     local procedure OnAfterPostPurchaseDoc(var PurchaseHeader: Record "Purchase Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; PurchRcpHdrNo: Code[20]; RetShptHdrNo: Code[20]; PurchInvHdrNo: Code[20]; PurchCrMemoHdrNo: Code[20]; CommitIsSupressed: Boolean)
@@ -106,10 +107,20 @@ codeunit 6103 "E-Document Subscription"
 
         if PurchInvHdrNo <> '' then begin
             if PurchInvHeader.Get(PurchInvHdrNo) then
-                RunEDocumentCreation(PurchaseHeader, PurchInvHeader, PurchInvHdrNo);
+                CreateOrUpdateEDocument(PurchaseHeader, PurchInvHeader, PurchInvHdrNo, Enum::"E-Document Type"::"Purchase Invoice")
         end else
             if PurchCrMemoHdr.Get(PurchCrMemoHdrNo) then
-                RunEDocumentCreation(PurchaseHeader, PurchCrMemoHdr, PurchCrMemoHdrNo);
+                CreateOrUpdateEDocument(PurchaseHeader, PurchCrMemoHdr, PurchCrMemoHdrNo, Enum::"E-Document Type"::"Purchase Credit Memo");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnRunOnAfterPostInvoice', '', false, false)]
+    local procedure OnRunOnAfterPostInvoice(var PurchaseHeader: Record "Purchase Header"; var PurchRcptHeader: Record "Purch. Rcpt. Header"; var ReturnShipmentHeader: Record "Return Shipment Header"; var PurchInvHeader: Record "Purch. Inv. Header"; var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; var PreviewMode: Boolean; var Window: Dialog; SrcCode: Code[10]; GenJnlLineDocType: Enum "Gen. Journal Document Type"; GenJnlLineDocNo: Code[20]; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    var
+        EDocument: Record "E-Document";
+    begin
+        if PurchInvHeader."No." <> '' then
+            if IsEDocumentLinkedToPurchaseDocument(EDocument, PurchaseHeader) then
+                ValidateDocumentTotalAgainstEDocument(EDocument, PurchInvHeader);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service-Post", 'OnAfterPostServiceDoc', '', false, false)]
@@ -123,10 +134,10 @@ codeunit 6103 "E-Document Subscription"
 
         if ServInvoiceNo <> '' then begin
             if ServiceInvoiceHeader.Get(ServInvoiceNo) then
-                RunEDocumentCreation(ServiceHeader, ServiceInvoiceHeader, ServInvoiceNo);
+                CreateOrUpdateEDocument(ServiceHeader, ServiceInvoiceHeader, ServInvoiceNo, Enum::"E-Document Type"::"Service Invoice");
         end else
             if ServiceCrMemoHdr.Get(ServCrMemoNo) then
-                RunEDocumentCreation(ServiceHeader, ServiceCrMemoHdr, ServCrMemoNo);
+                CreateOrUpdateEDocument(ServiceHeader, ServiceCrMemoHdr, ServCrMemoNo, Enum::"E-Document Type"::"Service Credit Memo");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"FinChrgMemo-Issue", 'OnAfterIssueFinChargeMemo', '', false, false)]
@@ -137,7 +148,7 @@ codeunit 6103 "E-Document Subscription"
         if IssuedFinChargeMemoNo = '' then
             exit;
         if IssuedFinChrgMemoHeader.Get(IssuedFinChargeMemoNo) then
-            RunEDocumentCreation(FinChargeMemoHeader, IssuedFinChrgMemoHeader, IssuedFinChargeMemoNo);
+            CreateOrUpdateEDocument(FinChargeMemoHeader, IssuedFinChrgMemoHeader, IssuedFinChargeMemoNo, Enum::"E-Document Type"::"Issued Finance Charge Memo");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Reminder-Issue", 'OnAfterIssueReminder', '', false, false)]
@@ -148,7 +159,7 @@ codeunit 6103 "E-Document Subscription"
         if IssuedReminderNo = '' then
             exit;
         if IssuedReminderHeader.Get(IssuedReminderNo) then
-            RunEDocumentCreation(ReminderHeader, IssuedReminderHeader, IssuedReminderNo);
+            CreateOrUpdateEDocument(ReminderHeader, IssuedReminderHeader, IssuedReminderNo, Enum::"E-Document Type"::"Issued Reminder");
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Document Sending Profile", 'OnCheckElectronicSendingEnabled', '', false, false)]
@@ -168,6 +179,8 @@ codeunit 6103 "E-Document Subscription"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterPostGLAcc', '', false, false)]
     local procedure OnAfterPostGLAcc(var GenJnlLine: Record "Gen. Journal Line"; var TempGLEntryBuf: Record "G/L Entry" temporary; var NextEntryNo: Integer; var NextTransactionNo: Integer; Balancing: Boolean; var GLEntry: Record "G/L Entry"; VATPostingSetup: Record "VAT Posting Setup")
+    var
+        EDocument: Record "E-Document";
     begin
         if not IsNullGuid(GenJnlLine.SystemId) then begin
             EDocument.SetRange("Journal Line System ID", GenJnlLine.SystemId);
@@ -181,8 +194,16 @@ codeunit 6103 "E-Document Subscription"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeOnDelete', '', false, false)]
+    local procedure OnBeforeOnDeletePurchaseHeader(var PurchaseHeader: Record "Purchase Header"; var IsHandled: Boolean)
+    begin
+        if not IsNullGuid(PurchaseHeader."E-Document Link") then
+            Error(DeleteNotAllowedErr);
+    end;
+
     local procedure RunEDocumentCheck(Record: Variant; EDocumentProcPhase: Enum "E-Document Processing Phase")
     var
+        EDocument: Record "E-Document";
         SourceDocumentHeader: RecordRef;
     begin
         SourceDocumentHeader.GetTable(Record);
@@ -191,25 +212,119 @@ codeunit 6103 "E-Document Subscription"
             EDocExport.CheckEDocument(SourceDocumentHeader, EDocumentProcPhase);
     end;
 
-    local procedure RunEDocumentCreation(OpenRecord: Variant; PostedRecord: Variant; PostedDocumentNo: Code[20])
+    local procedure IsEDocumentLinkedToPurchaseDocument(var EDocument: Record "E-Document"; OpenRecord: Variant): Boolean
     var
-        OpenSourceDocumentHeader, PostedSourceDocumentHeader : RecordRef;
+        PurchaseHeader: Record "Purchase Header";
+        OpenSourceDocumentHeader: RecordRef;
     begin
-        PostedSourceDocumentHeader.GetTable(PostedRecord);
         OpenSourceDocumentHeader.GetTable(OpenRecord);
-        EDocument.SetRange("Document Record ID", OpenSourceDocumentHeader.RecordId);
-        if EDocument.FindFirst() then begin
-            EDocument."Document Record ID" := PostedSourceDocumentHeader.RecordId;
-            EDocument."Document No." := PostedDocumentNo;
-            EDocument.Modify();
-        end else
-            if EDocumentHelper.IsElectronicDocument(PostedSourceDocumentHeader) then
-                EDocExport.CreateEDocument(PostedSourceDocumentHeader);
+        if OpenSourceDocumentHeader.Number() <> Database::"Purchase Header" then
+            exit(false);
+
+        OpenSourceDocumentHeader.SetTable(PurchaseHeader);
+        PurchaseHeader.SetRecFilter();
+        if EDocument.GetBySystemId(PurchaseHeader."E-Document Link") then
+            exit(true);
     end;
 
+    local procedure RemoveEDocumentLinkFromPurchaseDocument(OpenRecord: Variant)
+    var
+        PurchaseHeader: Record "Purchase Header";
+        EDocument: Record "E-Document";
+        EDocService: Record "E-Document Service";
+        EDocServiceStatus: Record "E-Document Service Status";
+        EDocumentLog: Codeunit "E-Document Log";
+        EDocErrorHelper: Codeunit "E-Document Error Helper";
+        OpenSourceDocumentHeader: RecordRef;
+        NullGuid: Guid;
+    begin
+        OpenSourceDocumentHeader.GetTable(OpenRecord);
+        if OpenSourceDocumentHeader.Number() <> Database::"Purchase Header" then
+            exit;
+
+        OpenSourceDocumentHeader.SetTable(PurchaseHeader);
+        PurchaseHeader.SetRecFilter();
+        PurchaseHeader."E-Document Link" := NullGuid;
+        // For invoices and fully invoiced orders, the open document is no valid 
+        if not PurchaseHeader.IsEmpty() then begin
+            // Dequeue edoc list of pending edocuments and set "Order linked"
+            EDocument.SetRange("Document Record ID", PurchaseHeader.RecordId());
+            EDocument.SetFilter(Status, '<>%1', Enum::"E-Document Status"::Processed);
+            if EDocument.FindFirst() then begin
+                EDocService := EDocumentLog.GetLastServiceFromLog(EDocument);
+                EDocServiceStatus.Get(EDocument."Entry No", EDocService.Code);
+                if EDocServiceStatus.Status = EDocServiceStatus.Status::Pending then begin
+                    EDocServiceStatus.Status := EDocServiceStatus.Status::"Order Linked";
+                    EDocServiceStatus.Modify();
+                    EDocErrorHelper.ClearErrorMessages(EDocument);
+                    PurchaseHeader."E-Document Link" := EDocument.SystemId;
+                end;
+            end;
+            PurchaseHeader.Modify();
+        end;
+    end;
+
+    local procedure ValidateDocumentTotalAgainstEDocument(var EDocument: Record "E-Document"; PostedRecord: Variant)
+    var
+        PurchInvHeader: Record "Purch. Inv. Header";
+        PostedSourceDocumentHeader: RecordRef;
+    begin
+        if EDocument.Direction <> Enum::"E-Document Direction"::Incoming then
+            exit;
+
+        PostedSourceDocumentHeader.GetTable(PostedRecord);
+        case PostedSourceDocumentHeader.Number() of
+            Database::"Purch. Inv. Header":
+                begin
+                    PostedSourceDocumentHeader.SetTable(PurchInvHeader);
+                    PurchInvHeader.CalcFields("Amount Including VAT");
+                    if EDocument."Amount Incl. VAT" <> PurchInvHeader."Amount Including VAT" then
+                        Error(WrongAmountErr, PurchInvHeader."Amount Including VAT", EDocument."Amount Incl. VAT");
+                end;
+        end;
+    end;
+
+    local procedure UpdateToPostedEDocument(var EDocument: Record "E-Document"; PostedRecord: Variant; PostedDocumentNo: Code[20]; DocumentType: Enum "E-Document Type")
+    var
+        EDocService: Record "E-Document Service";
+        EDocumentLog: Codeunit "E-Document Log";
+        EDocLogHelper: Codeunit "E-Document Log Helper";
+        PostedSourceDocumentHeader: RecordRef;
+    begin
+        PostedSourceDocumentHeader.GetTable(PostedRecord);
+        EDocument."Document Record ID" := PostedSourceDocumentHeader.RecordId;
+        EDocument."Document No." := PostedDocumentNo;
+        EDocument."Document Type" := DocumentType;
+        EDocument.Status := Enum::"E-Document Status"::Processed;
+        EDocument.Modify();
+
+        // If we posted from incoming document
+        if EDocument.Direction = Enum::"E-Document Direction"::Incoming then begin
+            EDocService := EDocumentLog.GetLastServiceFromLog(EDocument);
+            EDocLogHelper.InsertLog(EDocument, EDocService, Enum::"E-Document Service Status"::"Imported Document Created");
+        end;
+    end;
+
+    local procedure CreateOrUpdateEDocument(OpenRecord: Variant; PostedRecord: Variant; PostedDocumentNo: Code[20]; DocumentType: Enum "E-Document Type")
     var
         EDocument: Record "E-Document";
+        PostedSourceDocumentHeader: RecordRef;
+    begin
+        if IsEDocumentLinkedToPurchaseDocument(EDocument, OpenRecord) then begin
+            UpdateToPostedEDocument(EDocument, PostedRecord, PostedDocumentNo, DocumentType);
+            RemoveEDocumentLinkFromPurchaseDocument(OpenRecord);
+        end else begin
+            PostedSourceDocumentHeader.GetTable(PostedRecord);
+            if EDocumentHelper.IsElectronicDocument(PostedSourceDocumentHeader) then
+                EDocExport.CreateEDocument(PostedSourceDocumentHeader);
+        end;
+    end;
+
+
+    var
         EDocExport: Codeunit "E-Doc. Export";
         EDocumentHelper: Codeunit "E-Document Helper";
         EDocumentProcessingPhase: Enum "E-Document Processing Phase";
+        WrongAmountErr: Label 'Purchase Document cannot be released as Amount Incl. VAT: %1, is different from E-Document Amount Incl. VAT: %2', Comment = '%1 - Purchase document amount, %2 - E-document amount';
+        DeleteNotAllowedErr: Label 'Deletion of Purchase Header linked to E-Document is not allowed.';
 }

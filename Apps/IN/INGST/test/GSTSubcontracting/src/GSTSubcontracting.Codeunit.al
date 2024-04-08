@@ -879,6 +879,29 @@ codeunit 18479 "GST Subcontracting"
         VerifyItemLedgerEntryComponentTransfer(PurchaseLine);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler,DeliveryChallanSentMsgHandler,PostConfirmation')]
+    procedure SubconOrderToRegVendInterStateReceiveItemCheckOutstandingQtyBase()
+    var
+        ProductionOrder: Record "Production Order";
+        PurchaseLine: Record "Purchase Line";
+        GSTGroupType: Enum "GST Group Type";
+        GSTVendorType: Enum "GST Vendor Type";
+        OutstandingQtyBase: Decimal;
+    begin
+        // [SCENARIO] [498150] Check if the system on subcontracting order for Registered Vendor and after Send and Receipt from Vendor have Outstanding base quantity field showes 0 in subcontracting order
+        // [GIVEN] Setups created
+        CreateGSTSubconSetups(GSTVendorType::Registered, GSTGroupType::Goods, false);
+
+        // [WHEN] Create Subcontracting Order from Released Purchase Order, Send Subcon Components, Receive Item
+        CreateSubcontractingOrderFromReleasedProdOrder(ProductionOrder, PurchaseLine);
+        DeliverSubconComponents(PurchaseLine, 0);
+        OutstandingQtyBase := ReceiptSubconItemForOutstandingQtyBase(PurchaseLine, false, false, false, WorkDate());
+
+        // [THEN] Purchase Line Outstanding Quantity Base Verfied for Zero value
+        Assert.Equal(OutstandingQtyBase, 0);
+    end;
+
     local procedure CreateGSTSubconSetups(
         GSTVendorType: Enum "GST Vendor Type";
                            GSTGroupType: Enum "GST Group Type";
@@ -1454,7 +1477,7 @@ codeunit 18479 "GST Subcontracting"
         ProdOrderLine: Record "Prod. Order Line";
         ReservationEntry: Record "Reservation Entry";
         MainItem: Record Item;
-        NoSeriesMgt: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         SlNo: Code[20];
         i: Integer;
     begin
@@ -1464,7 +1487,7 @@ codeunit 18479 "GST Subcontracting"
         ProdOrderLine.SetRange(ProdOrderLine."Line No.", PurchaseLine."Prod. Order Line No.");
         ProdOrderLine.FindFirst();
         for i := 1 to ProdOrderLine.Quantity do begin
-            SlNo := NoSeriesMgt.GetNextNo(MainItem."Serial Nos.", 0D, true);
+            SlNo := NoSeries.GetNextNo(MainItem."Serial Nos.");
             LibraryItemTracking.CreateProdOrderItemTracking(ReservationEntry, ProdOrderLine, SlNo, '', 1);
         end;
     end;
@@ -2116,6 +2139,46 @@ codeunit 18479 "GST Subcontracting"
     local procedure Dispose()
     begin
         StorageBoolean.Set(WithDimensionLbl, false);
+    end;
+
+    local procedure ReceiptSubconItemForOutstandingQtyBase(var PurchaseLine: Record "Purchase Line"; PartialReceipt: Boolean; RejectVE: Boolean; RejectCE: Boolean; PostingDate: Date): Decimal
+    var
+        SubConPost: Codeunit "Subcontracting Post";
+        QtyToReceive: Decimal;
+        QtyRejectVE: Decimal;
+        QtyRejectCE: Decimal;
+    begin
+        PurchaseLine.FindFirst();
+        PurchaseLine."Vendor Shipment No." := LibraryUtility.GenerateRandomCode(PurchaseLine.FieldNo("Vendor Shipment No."), Database::"Purchase Line");
+        PurchaseLine.Validate("Posting Date", PostingDate);
+
+        QtyToReceive := PurchaseLine.Quantity;
+        if PartialReceipt then
+            QtyToReceive := QtyToReceive div 2;
+
+        if PartialReceipt and RejectVE then
+            QtyRejectVE := PurchaseLine.Quantity - QtyToReceive;
+
+        if PartialReceipt and RejectCE then
+            QtyRejectCE := PurchaseLine.Quantity - QtyToReceive;
+
+        PurchaseLine.Validate("Qty. to Receive", QtyToReceive);
+        if QtyRejectVE > 0 then
+            PurchaseLine.Validate("Qty. to Reject (V.E.)", QtyRejectVE);
+
+        if QtyRejectCE > 0 then
+            PurchaseLine.Validate("Qty. to Reject (C.E.)", QtyRejectCE);
+
+        PurchaseLine.Modify();
+
+        // Apply Delivery Challan
+        ApplyDeliveryChallan(PurchaseLine);
+
+        // Post Receipt        
+        PurchaseLine.SubConReceive := true;
+        SubConPost.PostPurchOrder(PurchaseLine);
+
+        exit(PurchaseLine."Outstanding Qty. (Base)");
     end;
 
     [PageHandler]

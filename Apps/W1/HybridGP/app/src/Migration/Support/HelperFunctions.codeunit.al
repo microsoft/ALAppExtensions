@@ -72,7 +72,8 @@ codeunit 4037 "Helper Functions"
                     tabledata "Purchase Header" = rimd,
                     tabledata "Purchase Line" = rimd,
                     tabledata "Over-Receipt Code" = rimd,
-                    tabledata "Accounting Period" = rimd;
+                    tabledata "Accounting Period" = rimd,
+                    tabledata "Data Migration Error" = rimd;
 
     var
         GPConfiguration: Record "GP Configuration";
@@ -599,7 +600,7 @@ codeunit 4037 "Helper Functions"
         end;
     end;
 
-    local procedure CalculateDueDateFormula(GPPaymentTerms: Record "GP Payment Terms"; Use_Discount_Calc: Boolean; Discount_Calc: Text[32]): Text[50]
+    internal procedure CalculateDueDateFormula(GPPaymentTerms: Record "GP Payment Terms"; Use_Discount_Calc: Boolean; Discount_Calc: Text[32]): Text[50]
     var
         working_number: integer;
         extra_month: integer;
@@ -607,14 +608,17 @@ codeunit 4037 "Helper Functions"
         working_string: Text[20];
         working_discount_calc: Text[50];
         final_string: Text[50];
+        MonthAsInteger: Integer;
     begin
         // BC Only supports GPPaymentTerms.CalculateDateFrom = Transaction Date
         // Set date formula to a string '<1M>'
         working_number := GPPaymentTerms.CalculateDateFromDays;  // Always add this many days to the due date.
+        if working_number < 0 then
+            working_number := 0;
 
         if Use_Discount_Calc and (Discount_Calc <> '') then
             // Need to get the date formula text minus the brackets...
-            working_discount_calc := copystr(copystr(Discount_Calc, 2, (strlen(Discount_Calc) - 2)), 1, 50)
+            working_discount_calc := CopyStr(CopyStr(Discount_Calc, 2, (StrLen(Discount_Calc) - 2)), 1, 50)
         else
             // In case use discount is true, but the passed-in formula string is empty
             Use_Discount_Calc := false;
@@ -623,7 +627,7 @@ codeunit 4037 "Helper Functions"
         if GPPaymentTerms.DUETYPE = GPPaymentTerms.DUETYPE::"Net Days" then
             if GPPaymentTerms.DUEDTDS > 0 then begin
                 working_number := working_number + GPPaymentTerms.DUEDTDS;
-                working_string := '<' + format(working_number) + 'D>';
+                working_string := '<' + Format(working_number, 0, 9) + 'D>';
             end;
 
         // Get the first day of the current month, then add appropriate days.
@@ -631,55 +635,61 @@ codeunit 4037 "Helper Functions"
         // giving you one extra day we need to remove.
         if GPPaymentTerms.DUETYPE = GPPaymentTerms.DUETYPE::Date then
             if GPPaymentTerms.DUEDTDS > 0 then
-                working_string := '<D' + format(GPPaymentTerms.DUEDTDS) + '>';
+                working_string := '<D' + Format(GPPaymentTerms.DUEDTDS, 0, 9) + '>';
 
         // Go to the end of the current month, then add appropriate days
         if GPPaymentTerms.DUETYPE = GPPaymentTerms.DUETYPE::EOM then begin
             if GPPaymentTerms.DUEDTDS > 0 then
                 working_number := working_number + GPPaymentTerms.DUEDTDS;
             if working_number > 0 then
-                working_string := '<CM+' + format(working_number) + 'D>'
+                working_string := '<CM+' + Format(working_number, 0, 9) + 'D>'
             else
                 working_string := '<CM>';
         end;
 
         // Just add the number of initial days to the current date
         if GPPaymentTerms.DUETYPE = GPPaymentTerms.DUETYPE::None then
-            working_string := '<' + format(working_number) + 'D>';
+            working_string := '<' + Format(working_number, 0, 9) + 'D>';
 
         // Set the day of the next month
         // Need to remove one day, see the comments above for DUETYPE::Date
         if GPPaymentTerms.DUETYPE = GPPaymentTerms.DUETYPE::"Next Month" then begin
             if GPPaymentTerms.DUEDTDS > 0 then
                 working_number := GPPaymentTerms.DUEDTDS;
+
+            if working_number < 1 then
+                working_number := 1;
+
             // First day of current month, + 1 month + the number of days
-            working_string := '<-CM+1M+' + format(working_number - 1) + 'D>';
+            working_string := '<-CM+1M+' + Format(working_number - 1, 0, 9) + 'D>';
         end;
 
         if GPPaymentTerms.DUETYPE = GPPaymentTerms.DUETYPE::Months then begin
             if GPPaymentTerms.DUEDTDS > 0 then
                 extra_month := GPPaymentTerms.DUEDTDS;
             // Add the extra months, then the extra days
-            working_string := '<' + format(extra_month) + 'M+' + format(working_number) + 'D>';
+            working_string := '<' + Format(extra_month, 0, 9) + 'M+' + Format(working_number, 0, 9) + 'D>';
         end;
 
-        if GPPaymentTerms.DUETYPE = GPPaymentTerms.DUETYPE::"Month/Day" then
-            working_string := '<M' + format(GPPaymentTerms.DueMonth) + '+D' + format(GPPaymentTerms.DUEDTDS) + '>';
+        if GPPaymentTerms.DUETYPE = GPPaymentTerms.DUETYPE::"Month/Day" then begin
+            MonthAsInteger := GPPaymentTerms.DueMonth;
+            working_string := '<M' + Format(MonthAsInteger, 0, 9) + '+D' + Format(GPPaymentTerms.DUEDTDS, 0, 9) + '>';
+        end;
 
         if GPPaymentTerms.DUETYPE = GPPaymentTerms.DUETYPE::Annual then begin
             if GPPaymentTerms.DUEDTDS > 0 then
                 extra_year := GPPaymentTerms.DUEDTDS;
             // Add the extra months, then the extra days
-            working_string := '<' + format(extra_year) + 'Y+' + format(working_number) + 'D>'
+            working_string := '<' + Format(extra_year, 0, 9) + 'Y+' + Format(working_number, 0, 9) + 'D>'
         end;
 
         if Use_Discount_Calc then begin
-            final_string := copystr('<' + working_discount_calc, 1, 50);
-            if (copystr(working_string, 2, 1) = '-') or (copystr(working_string, 2, 1) = '+') then
-                final_string := final_string + copystr(working_string, 2)
+            final_string := CopyStr('<' + working_discount_calc, 1, 50);
+            if (CopyStr(working_string, 2, 1) = '-') or (CopyStr(working_string, 2, 1) = '+') then
+                final_string := final_string + CopyStr(working_string, 2)
             else
                 if working_string <> '' then
-                    final_string += '+' + copystr(working_string, 2)
+                    final_string += '+' + CopyStr(working_string, 2)
                 else
                     final_string += '>';
             exit(final_string);
@@ -688,7 +698,7 @@ codeunit 4037 "Helper Functions"
         // Back in the calling proc, EVALUATE(variable,forumlastring) will set the variable to the correct formula
     end;
 
-    local procedure CalculateDiscountDateFormula(GPPaymentTerms: Record "GP Payment Terms"): Text[50]
+    internal procedure CalculateDiscountDateFormula(GPPaymentTerms: Record "GP Payment Terms"): Text[50]
     var
         working_number: integer;
         extra_month: integer;
@@ -697,12 +707,14 @@ codeunit 4037 "Helper Functions"
     begin
         // Set date formula to a string '<1M>'
         working_number := GPPaymentTerms.CalculateDateFromDays;  // Always add this many days to the due date.
+        if working_number < 0 then
+            working_number := 0;
 
         // Add base days + discount days
         if GPPaymentTerms.DISCTYPE = GPPaymentTerms.DISCTYPE::Days then
             if GPPaymentTerms.DISCDTDS > 0 then begin
                 working_number := working_number + GPPaymentTerms.DISCDTDS;
-                working_string := '<' + format(working_number) + 'D>';
+                working_string := '<' + Format(working_number, 0, 9) + 'D>';
             end;
 
         // Get the first day of the current month, then add appropriate days.
@@ -710,46 +722,50 @@ codeunit 4037 "Helper Functions"
         // giving you one extra day we need to remove.
         if GPPaymentTerms.DISCTYPE = GPPaymentTerms.DISCTYPE::Date then
             if GPPaymentTerms.DISCDTDS > 0 then
-                working_string := '<D' + format(GPPaymentTerms.DISCDTDS) + '>';
+                working_string := '<D' + Format(GPPaymentTerms.DISCDTDS, 0, 9) + '>';
 
         // Go to the end of the current month, then add appropriate days
         if GPPaymentTerms.DISCTYPE = GPPaymentTerms.DISCTYPE::EOM then begin
             if GPPaymentTerms.DISCDTDS > 0 then
                 working_number := working_number + GPPaymentTerms.DISCDTDS;
             if working_number > 0 then
-                working_string := '<CM+' + format(working_number) + 'D>'
+                working_string := '<CM+' + Format(working_number, 0, 9) + 'D>'
             else
                 working_string := '<CM>';
         end;
 
         // Just add the number of initial days to the current date
         if GPPaymentTerms.DISCTYPE = GPPaymentTerms.DISCTYPE::None then
-            working_string := '<+' + format(working_number) + 'D>';
+            working_string := '<+' + Format(working_number, 0, 9) + 'D>';
 
         // Set the day of the next month
         // Need to remove one day, see the comments above for DISCTYPE::Date
         if GPPaymentTerms.DISCTYPE = GPPaymentTerms.DISCTYPE::"Next Month" then begin
             if GPPaymentTerms.DISCDTDS > 0 then
                 working_number := GPPaymentTerms.DISCDTDS;
+
+            if working_number < 1 then
+                working_number := 1;
+
             // First day of current month, + 1 month + the number of days
-            working_string := '<-CM+1M+' + format(working_number - 1) + 'D>;'
+            working_string := '<-CM+1M+' + Format(working_number - 1, 0, 9) + 'D>;'
         end;
 
         if GPPaymentTerms.DISCTYPE = GPPaymentTerms.DISCTYPE::Months then begin
             if GPPaymentTerms.DISCDTDS > 0 then
                 extra_month := GPPaymentTerms.DISCDTDS;
             // Add the extra months, then the extra days
-            working_string := '<' + format(extra_month) + 'M+' + format(working_number) + 'D>;'
+            working_string := '<' + Format(extra_month, 0, 9) + 'M+' + Format(working_number, 0, 9) + 'D>;'
         end;
 
         if GPPaymentTerms.DISCTYPE = GPPaymentTerms.DISCTYPE::"Month/Day" then
-            working_string := '<M' + format(GPPaymentTerms.DiscountMonth) + '+D' + format(GPPaymentTerms.DISCDTDS) + '>';
+            working_string := '<M' + Format(GPPaymentTerms.DiscountMonth, 0, 9) + '+D' + Format(GPPaymentTerms.DISCDTDS, 0, 9) + '>';
 
         if GPPaymentTerms.DISCTYPE = GPPaymentTerms.DISCTYPE::Annual then begin
             if GPPaymentTerms.DISCDTDS > 0 then
                 extra_year := GPPaymentTerms.DISCDTDS;
             // Add the extra months, then the extra days
-            working_string := '<' + format(extra_year) + 'Y+' + format(working_number) + 'D>;'
+            working_string := '<' + Format(extra_year, 0, 9) + 'Y+' + Format(working_number, 0, 9) + 'D>;'
         end;
 
         exit(working_string);
@@ -1067,6 +1083,88 @@ codeunit 4037 "Helper Functions"
             until GenJournalBatch.Next() = 0;
 
         exit(UnpostedLines);
+    end;
+
+    local procedure GetGLBatchCountWithUnpostedLinesForCompany(CompanyNameTxt: Text; TemplateName: Text; BatchNameFilter: text): Integer
+    var
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
+        UnpostedBatchCount: Integer;
+    begin
+        if not GenJournalBatch.ChangeCompany(CompanyNameTxt) then
+            exit;
+
+        if not GenJournalLine.ChangeCompany(CompanyNameTxt) then
+            exit;
+
+        GenJournalBatch.SetRange("Journal Template Name", TemplateName);
+        GenJournalBatch.SetFilter(Name, BatchNameFilter);
+        if GenJournalBatch.FindSet() then
+            repeat
+                GenJournalLine.SetRange("Journal Template Name", GenJournalBatch."Journal Template Name");
+                GenJournalLine.SetRange("Journal Batch Name", GenJournalBatch.Name);
+                if not GenJournalLine.IsEmpty() then
+                    UnpostedBatchCount := UnpostedBatchCount + 1;
+            until GenJournalBatch.Next() = 0;
+
+        exit(UnpostedBatchCount);
+    end;
+
+    local procedure GetItemBatchCountWithUnpostedLinesForCompany(CompanyNameTxt: Text): Integer
+    var
+        ItemJournalBatch: Record "Item Journal Batch";
+        ItemJournalLine: Record "Item Journal Line";
+        UnpostedBatchCount: Integer;
+    begin
+        if not ItemJournalBatch.ChangeCompany(CompanyNameTxt) then
+            exit;
+
+        if not ItemJournalLine.ChangeCompany(CompanyNameTxt) then
+            exit;
+
+        ItemJournalBatch.SetFilter(Name, 'GPITM*');
+        if ItemJournalBatch.FindSet() then
+            repeat
+                ItemJournalLine.SetRange("Journal Batch Name", ItemJournalBatch.Name);
+                if not ItemJournalLine.IsEmpty() then
+                    UnpostedBatchCount += UnpostedBatchCount + 1;
+            until ItemJournalBatch.Next() = 0;
+
+        exit(UnpostedBatchCount);
+    end;
+
+    internal procedure GetUnpostedBatchCountForCompany(CompanyNameTxt: Text; var TotalGLBatchCount: Integer; var TotalItemBatchCount: Integer)
+    var
+        HybridCompanyStatus: Record "Hybrid Company Status";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+    begin
+        TotalGLBatchCount := 0;
+        TotalItemBatchCount := 0;
+
+        if not HybridCompanyStatus.Get(CompanyNameTxt) then
+            exit;
+
+        if not (HybridCompanyStatus."Upgrade Status" = HybridCompanyStatus."Upgrade Status"::Completed) then
+            exit;
+
+
+        if not GPCompanyAdditionalSettings.Get(CompanyNameTxt) then
+            exit;
+
+        if not GPCompanyAdditionalSettings."Skip Posting Account Batches" then
+            TotalGLBatchCount := GetGLBatchCountWithUnpostedLinesForCompany(CompanyNameTxt, GeneralTemplateNameTxt, PostingGroupCodeTxt + '*');
+
+        if not GPCompanyAdditionalSettings."Skip Posting Customer Batches" then
+            TotalGLBatchCount += GetGLBatchCountWithUnpostedLinesForCompany(CompanyNameTxt, GeneralTemplateNameTxt, CustomerBatchNameTxt);
+
+        if not GPCompanyAdditionalSettings."Skip Posting Vendor Batches" then
+            TotalGLBatchCount += GetGLBatchCountWithUnpostedLinesForCompany(CompanyNameTxt, GeneralTemplateNameTxt, VendorBatchNameTxt);
+
+        if not GPCompanyAdditionalSettings."Skip Posting Bank Batches" then
+            TotalGLBatchCount += GetGLBatchCountWithUnpostedLinesForCompany(CompanyNameTxt, GeneralTemplateNameTxt, BankBatchNameTxt);
+
+        if not GPCompanyAdditionalSettings."Skip Posting Item Batches" then
+            TotalItemBatchCount := GetItemBatchCountWithUnpostedLinesForCompany(CompanyNameTxt);
     end;
 
     procedure PostGLTransactions()
@@ -1473,46 +1571,55 @@ codeunit 4037 "Helper Functions"
     var
         GPPaymentTerms: Record "GP Payment Terms";
         PaymentTerms: Record "Payment Terms";
+        GPMigrationWarnings: Record "GP Migration Warnings";
         DueDateCalculation: DateFormula;
         DiscountDateCalculation: DateFormula;
         SeedValue: integer;
         PaymentTerm: Text[10];
         DueDateCalculationText: Text[50];
         DiscountDateCalculationText: Text[50];
+        LogMigrationArea: Text[50];
+        IsPaymentTermHandled: Boolean;
     begin
+        LogMigrationArea := 'Payment Terms';
         SeedValue := 0;
         if GPPaymentTerms.FindSet() then begin
             repeat
-                if StrLen(DelChr(GPPaymentTerms.PYMTRMID, '>', ' ')) > 10 then begin
-                    PaymentTerm := GeneratePaymentTerm(SeedValue, GPPaymentTerms.PYMTRMID);
-                    PaymentTerms.Validate(Code, PaymentTerm);
-                    SeedValue := SeedValue + 1;
+                IsPaymentTermHandled := false;
+                OnHandlePaymentTerm(GPPaymentTerms, IsPaymentTermHandled);
+                if not IsPaymentTermHandled then begin
+                    if StrLen(DelChr(GPPaymentTerms.PYMTRMID, '>', ' ')) > 10 then begin
+                        PaymentTerm := GeneratePaymentTerm(SeedValue, GPPaymentTerms.PYMTRMID);
+                        PaymentTerms.Validate(Code, PaymentTerm);
+                        SeedValue := SeedValue + 1;
+                    end else
+                        PaymentTerm := CopyStr(DelChr(GPPaymentTerms.PYMTRMID, '>', ' '), 1, 10);
+
+                    if not PaymentTerms.Get(PaymentTerm) then begin
+                        PaymentTerms.Init();
+                        PaymentTerms.Validate(Code, PaymentTerm);
+                        PaymentTerms.Validate(Description, DelChr(GPPaymentTerms.PYMTRMID, '>', ' '));
+                        PaymentTerms.Validate("Discount %", (GPPaymentTerms.DSCPCTAM / 100));
+
+                        DiscountDateCalculationText := CalculateDiscountDateFormula(GPPaymentTerms);
+                        Evaluate(DiscountDateCalculation, DiscountDateCalculationText);
+                        PaymentTerms.Validate("Discount Date Calculation", DiscountDateCalculation);
+
+                        if GPPaymentTerms.CalculateDateFrom = GPPaymentTerms.CalculateDateFrom::"Transaction Date" then
+                            DueDateCalculationText := CalculateDueDateFormula(GPPaymentTerms, false, '')
+                        else
+                            DueDateCalculationText := CalculateDueDateFormula(GPPaymentTerms, true, copystr(DiscountDateCalculationText, 1, 32));
+
+                        Evaluate(DueDateCalculation, DueDateCalculationText);
+                        PaymentTerms.Validate("Due Date Calculation", DueDateCalculation);
+
+                        PaymentTerms.Insert(true);
+
+                        GPPaymentTerms.PYMTRMID_New := PaymentTerm;
+                        GPPaymentTerms.Modify();
+                    end;
                 end else
-                    PaymentTerm := CopyStr(DelChr(GPPaymentTerms.PYMTRMID, '>', ' '), 1, 10);
-
-                if not PaymentTerms.Get(PaymentTerm) then begin
-                    PaymentTerms.Init();
-                    PaymentTerms.Validate(Code, PaymentTerm);
-                    PaymentTerms.Validate(Description, DelChr(GPPaymentTerms.PYMTRMID, '>', ' '));
-                    PaymentTerms.Validate("Discount %", (GPPaymentTerms.DSCPCTAM / 100));
-
-                    DiscountDateCalculationText := CalculateDiscountDateFormula(GPPaymentTerms);
-                    Evaluate(DiscountDateCalculation, DiscountDateCalculationText);
-                    PaymentTerms.Validate("Discount Date Calculation", DiscountDateCalculation);
-
-                    if GPPaymentTerms.CalculateDateFrom = GPPaymentTerms.CalculateDateFrom::"Transaction Date" then
-                        DueDateCalculationText := CalculateDueDateFormula(GPPaymentTerms, false, '')
-                    else
-                        DueDateCalculationText := CalculateDueDateFormula(GPPaymentTerms, true, copystr(DiscountDateCalculationText, 1, 32));
-
-                    Evaluate(DueDateCalculation, DueDateCalculationText);
-                    PaymentTerms.Validate("Due Date Calculation", DueDateCalculation);
-
-                    PaymentTerms.Insert(true);
-
-                    GPPaymentTerms.PYMTRMID_New := PaymentTerm;
-                    GPPaymentTerms.Modify();
-                end;
+                    GPMigrationWarnings.InsertWarning(LogMigrationArea, PaymentTerm, 'Payment Term ' + GPPaymentTerms.PYMTRMID + ' was handled.');
             until GPPaymentTerms.Next() = 0;
 
             SeedValue := 0;
@@ -1994,6 +2101,11 @@ codeunit 4037 "Helper Functions"
 
     [IntegrationEvent(false, false)]
     local procedure OnSkipPostingItemBatches(var SkipPosting: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnHandlePaymentTerm(GPPaymentTerms: Record "GP Payment Terms"; var IsPaymentTermHandled: Boolean)
     begin
     end;
 }

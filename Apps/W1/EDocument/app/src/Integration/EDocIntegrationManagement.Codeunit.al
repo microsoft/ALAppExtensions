@@ -111,14 +111,6 @@ codeunit 6134 "E-Doc. Integration Management"
         end;
     end;
 
-    local procedure SetDocumentStatusAndInsertLogs(Edocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage; IsAsync: Boolean; SendingWasSuccessful: Boolean)
-    var
-        EDocDataStorageEntryNo: Integer;
-    begin
-        EDocDataStorageEntryNo := EDocumentLog.AddTempBlobToLog(TempBlob);
-        SetDocumentStatusAndInsertLogs(Edocument, EDocumentService, EDocDataStorageEntryNo, HttpRequest, HttpResponse, IsAsync, SendingWasSuccessful);
-    end;
-
     local procedure SetDocumentStatusAndInsertLogs(Edocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; EDocDataStorageEntryNo: Integer; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage; IsAsync: Boolean; SendingWasSuccessful: Boolean)
     var
         Status: Enum "E-Document Service Status";

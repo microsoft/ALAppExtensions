@@ -2,44 +2,65 @@ namespace Microsoft.Sustainability.Posting;
 
 using Microsoft.Sustainability.Journal;
 using Microsoft.Foundation.NoSeries;
+using System.Utilities;
 
 codeunit 6214 "Sustainability Recur Jnl.-Post"
 {
     TableNo = "Sustainability Jnl. Line";
-    Permissions =
-        tabledata "Sustainability Jnl. Line" = rm,
-        tabledata "Sustainability Jnl. Batch" = r;
 
     trigger OnRun()
     var
+        SustainabilityJnlBatch: Record "Sustainability Jnl. Batch";
+        ConfirmManagement: Codeunit "Confirm Management";
         SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
-        NoSeriesMgt: Codeunit NoSeriesManagement;
-        NoSeriesCode: Code[20];
+        NoSeriesBatch: Codeunit "No. Series - Batch";
+        Window: Dialog;
     begin
+        if not ConfirmManagement.GetResponseOrDefault(SustainabilityPostMgt.GetPostConfirmMessage(), true) then
+            exit;
+
         Rec.LockTable();
 
-        CheckAndMarkRecurringLinesBeforePosting(Rec);
+        if GuiAllowed() then
+            Window.Open(SustainabilityPostMgt.GetStartPostingProgressMessage());
 
-        NoSeriesCode := SustainabilityPostMgt.GetNoSeriesFromJournalLine(Rec);
+        CheckAndMarkRecurringLinesBeforePosting(Rec, Window);
+
+        SustainabilityJnlBatch.Get(Rec."Journal Template Name", Rec."Journal Batch Name");
 
         if Rec.FindSet() then
             repeat
-                Rec.Validate("Document No.", NoSeriesMgt.DoGetNextNo(NoSeriesCode, Rec."Posting Date", true, false));
+                if GuiAllowed() then
+                    Window.Update(1, SustainabilityPostMgt.GetProgressingLineMessage(Rec."Line No."));
+
+                Rec.Validate("Document No.", NoSeriesBatch.GetNextNo(SustainabilityJnlBatch."No Series", Rec."Posting Date"));
                 SustainabilityPostMgt.InsertLedgerEntry(Rec);
 
                 ProcessRecurringJournalLine(Rec);
             until Rec.Next() = 0;
+
+        NoSeriesBatch.SaveState();
+
+        if GuiAllowed() then begin
+            Window.Close();
+            Message(SustainabilityPostMgt.GetJnlLinesPostedMessage());
+        end;
+
+        SustainabilityPostMgt.ResetFilters(Rec);
     end;
 
-    // Could be replaced by running codeunit "Check Sustainability Jnl. Line", but need to check for recurring specific fields
-    local procedure CheckAndMarkRecurringLinesBeforePosting(var SustainabilityJnlLine: Record "Sustainability Jnl. Line")
+    local procedure CheckAndMarkRecurringLinesBeforePosting(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; var DialogInstance: Dialog)
     var
         SustainabilityJnlCheck: Codeunit "Sustainability Jnl.-Check";
+        SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
     begin
         SustainabilityJnlCheck.CheckCommonConditionsBeforePosting(SustainabilityJnlLine);
 
         if SustainabilityJnlLine.FindSet() then
             repeat
+                if GuiAllowed() then
+                    DialogInstance.Update(1, SustainabilityPostMgt.GetCheckJournalLineProgressMessage(SustainabilityJnlLine."Line No."));
+
                 // Posting Date needs to be checked before IsExpiredJournalLine is called
                 SustainabilityJnlLine.TestField("Posting Date");
 
@@ -54,8 +75,10 @@ codeunit 6214 "Sustainability Recur Jnl.-Post"
 
         SustainabilityJnlLine.MarkedOnly(true);
 
-        if SustainabilityJnlLine.IsEmpty() then
-            Error(AllRecurringLinesExpiredErr);
+        if SustainabilityJnlLine.IsEmpty() then begin
+            SustainabilityJnlLine.MarkedOnly(false);
+            Error(AllRecurringLinesExpiredErr, SustainabilityJnlLine.FieldCaption("Expiration Date"), SustainabilityJnlLine.FieldCaption("Posting Date"));
+        end;
     end;
 
     local procedure ProcessRecurringJournalLine(var SustainabilityJnlLine: Record "Sustainability Jnl. Line")
@@ -86,5 +109,5 @@ codeunit 6214 "Sustainability Recur Jnl.-Post"
     end;
 
     var
-        AllRecurringLinesExpiredErr: Label 'All recurring lines are expired, please check the Expiration Date and Posting Date set on each recurring journal lines.';
+        AllRecurringLinesExpiredErr: Label 'All recurring lines are expired, please check the %1 and %2 set on each recurring journal lines.', Comment = '%1 = Expiration Date Field Caption, %2 = Posting Date Field Caption';
 }

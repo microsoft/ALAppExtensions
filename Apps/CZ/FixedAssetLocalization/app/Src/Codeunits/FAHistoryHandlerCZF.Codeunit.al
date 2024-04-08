@@ -49,14 +49,14 @@ codeunit 31238 "FA History Handler CZF"
     [EventSubscriber(ObjectType::Report, Report::"Copy Fixed Asset", 'OnAfterFixedAssetCopied', '', false, false)]
     local procedure InitializeHistoryOnAfterFixedAssetCopied(FixedAsset2: Record "Fixed Asset")
     var
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         DocumentNo: Code[20];
     begin
         FASetup.Get();
         if FASetup."Fixed Asset History CZF" then begin
             if (FixedAsset2."FA Location Code" <> '') or (FixedAsset2."Responsible Employee" <> '') then begin
                 FASetup.TestField("Fixed Asset History Nos. CZF");
-                DocumentNo := NoSeriesManagement.GetNextNo(FASetup."Fixed Asset History Nos. CZF", WorkDate(), true);
+                DocumentNo := NoSeries.GetNextNo(FASetup."Fixed Asset History Nos. CZF");
             end;
             FAHistoryManagementCZF.InitializeFAHistory(FixedAsset2, WorkDate(), DocumentNo);
         end;

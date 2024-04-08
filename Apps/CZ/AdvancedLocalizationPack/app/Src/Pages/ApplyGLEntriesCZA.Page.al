@@ -548,10 +548,8 @@ page 31284 "Apply G/L Entries CZA"
         GLEntry.Reset();
         GLEntry.Copy(Rec);
         GLEntry.SetRange("Applies-to ID CZA", GLApplID);
-        if GLEntry.FindSet() then
-            repeat
-                ApplyingAmount := ApplyingAmount + GLEntry."Amount to Apply CZA";
-            until GLEntry.Next() = 0;
+        GLEntry.CalcSums("Amount to Apply CZA");
+        ApplyingAmount := GLEntry."Amount to Apply CZA";
     end;
 
     procedure CheckAppliesToID(var GLEntry2: Record "G/L Entry")

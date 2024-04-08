@@ -13,6 +13,7 @@ codeunit 30295 "Shpfy Sync Catalog Prices"
     trigger OnRun()
     var
         Catalog: Record "Shpfy Catalog";
+        CatalogIds: List of [BigInteger];
     begin
         SetShop(Rec);
         Catalog.SetRange("Shop Code", Shop.Code);
@@ -21,8 +22,11 @@ codeunit 30295 "Shpfy Sync Catalog Prices"
             Catalog.SetRange("Company SystemId", CompanyId);
         if Catalog.FindSet() then
             repeat
-                ProductPriceCalc.SetShopAndCatalog(Shop, Catalog);
-                SyncCatalogPrices(Catalog);
+                if not CatalogIds.Contains(Catalog.Id) then begin
+                    CatalogIds.Add(Catalog.Id);
+                    ProductPriceCalc.SetShopAndCatalog(Shop, Catalog);
+                    SyncCatalogPrices(Catalog);
+                end;
             until Catalog.Next() = 0;
     end;
 
@@ -74,7 +78,8 @@ codeunit 30295 "Shpfy Sync Catalog Prices"
                 end;
             until TempCatalogPrice.Next() = 0;
 
-            CatalogAPI.UpdatePrice(JGraphQL, TempCatalogPrice."Price List Id");
+            if JSetPrices.Count() > 0 then
+                CatalogAPI.UpdatePrice(JGraphQL, TempCatalogPrice."Price List Id");
         end;
     end;
 

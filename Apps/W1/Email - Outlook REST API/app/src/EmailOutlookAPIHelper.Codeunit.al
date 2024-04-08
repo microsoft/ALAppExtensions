@@ -224,6 +224,8 @@ codeunit 4509 "Email - Outlook API Helper"
             IsolatedStorage.Delete(Rec.ClientSecret, DataScope::Module);
     end;
 
+#if not CLEAN24
+    [Obsolete('Replaced by InitializeClients with v2 interfaces.', '24.0')]
     procedure InitializeClients(var OutlookAPIClient: interface "Email - Outlook API Client"; var OAuthClient: interface "Email - OAuth Client")
     var
         DefaultAPIClient: Codeunit "Email - Outlook API Client";
@@ -233,15 +235,23 @@ codeunit 4509 "Email - Outlook API Helper"
         OAuthClient := DefaultOAuthClient;
         OnAfterInitializeClients(OutlookAPIClient, OAuthClient);
     end;
+#endif
+    procedure InitializeClients(var OutlookAPIClient: interface "Email - Outlook API Client v2"; var OAuthClient: interface "Email - OAuth Client v2")
+    var
+        DefaultAPIClient: Codeunit "Email - Outlook API Client";
+        DefaultOAuthClient: Codeunit "Email - OAuth Client";
+    begin
+        OutlookAPIClient := DefaultAPIClient;
+        OAuthClient := DefaultOAuthClient;
+        OnAfterInitializeClientsV2(OutlookAPIClient, OAuthClient);
+    end;
 
     procedure Send(EmailMessage: Codeunit "Email Message"; AccountId: Guid)
     var
         EmailOutlookAccount: Record "Email - Outlook Account";
-        APIClient: interface "Email - Outlook API Client";
-        OAuthClient: interface "Email - OAuth Client";
-
-        [NonDebuggable]
-        AccessToken: Text;
+        APIClient: interface "Email - Outlook API Client v2";
+        OAuthClient: interface "Email - OAuth Client v2";
+        AccessToken: SecretText;
     begin
         InitializeClients(APIClient, OAuthClient);
         if not EmailOutlookAccount.Get(AccountId) then
@@ -253,11 +263,9 @@ codeunit 4509 "Email - Outlook API Helper"
 
     procedure Send(EmailMessage: Codeunit "Email Message")
     var
-        APIClient: interface "Email - Outlook API Client";
-        OAuthClient: interface "Email - OAuth Client";
-
-        [NonDebuggable]
-        AccessToken: Text;
+        APIClient: interface "Email - Outlook API Client v2";
+        OAuthClient: interface "Email - OAuth Client v2";
+        AccessToken: SecretText;
     begin
         InitializeClients(APIClient, OAuthClient);
 
@@ -265,8 +273,16 @@ codeunit 4509 "Email - Outlook API Helper"
         APIClient.SendEmail(AccessToken, EmailMessageToJson(EmailMessage));
     end;
 
+
+#if not CLEAN24
     [InternalEvent(false)]
     local procedure OnAfterInitializeClients(var OutlookAPIClient: interface "Email - Outlook API Client"; var OAuthClient: interface "Email - OAuth Client")
+    begin
+    end;
+#endif
+
+    [InternalEvent(false)]
+    local procedure OnAfterInitializeClientsV2(var OutlookAPIClient: interface "Email - Outlook API Client v2"; var OAuthClient: interface "Email - OAuth Client v2")
     begin
     end;
 

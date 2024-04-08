@@ -12,26 +12,30 @@ codeunit 6204 "Trans. Storage Error Handler"
 
     var
         TransactionStorageTok: Label 'Transaction Storage', Locked = true;
-        MultipleFailuresErr: Label 'Export task failed %1 days in a row', Locked = true;
+        TaskFailedErr: Label 'Export task failed', Locked = true;
+        TaskFailedMultipleTimesErr: Label 'Export task failed 4 times', Locked = true;
+        TaskFailedMultipleDaysErr: Label 'Export task failed %1 days in a row', Locked = true;
 
     trigger OnRun()
     var
         TransactStorageExportState: Record "Transact. Storage Export State";
-        TransactionStorageImpl: Codeunit "Transaction Storage Impl.";
+        TransStorageScheduleTask: Codeunit "Trans. Storage Schedule Task";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        ExportDateTime: DateTime;
         ErrorText: Text;
     begin
         ErrorText := GetLastErrorText();
-        FeatureTelemetry.LogError('0000LK2', TransactionStorageTok, 'Export task failed', ErrorText);
+        FeatureTelemetry.LogError('0000LK2', TransactionStorageTok, TaskFailedErr, ErrorText);
         Rec.SetStatusFailed(ErrorText, GetLastErrorCallStack());
 
         TransactStorageExportState.Get();
         if TransactStorageExportState."Number Of Attempts" = 0 then begin
-            FeatureTelemetry.LogError('0000LNA', TransactionStorageTok, 'Export task failed 3 times', '');
+            FeatureTelemetry.LogError('0000LNA', TransactionStorageTok, TaskFailedMultipleTimesErr, '');
             CheckMultipleTaskFailures();
             exit;
         end;
-        TransactionStorageImpl.CreateTaskToExport(CurrentDateTime(), false);
+        ExportDateTime := CurrentDateTime() + Random(3) * 5 * 60 * 1000;   // 5 - 15 minutes
+        TransStorageScheduleTask.CreateTaskToExport(ExportDateTime, false);
         TransactStorageExportState."Number Of Attempts" -= 1;
         TransactStorageExportState.Modify();
     end;
@@ -55,7 +59,7 @@ codeunit 6204 "Trans. Storage Error Handler"
                 if TransactStorageTaskEntry.Status <> Enum::"Trans. Storage Export Status"::Failed then
                     exit;
             until TransactStorageTaskEntry.Next() = 0;
-            FeatureTelemetry.LogError('0000LQX', TransactionStorageTok, StrSubstNo(MultipleFailuresErr, MaxNumberFailureDays), '');
+            FeatureTelemetry.LogError('0000LQX', TransactionStorageTok, StrSubstNo(TaskFailedMultipleDaysErr, MaxNumberFailureDays), '');
         end;
     end;
 }

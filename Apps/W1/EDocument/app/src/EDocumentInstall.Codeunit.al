@@ -8,6 +8,7 @@ using System.IO;
 using System.Reflection;
 using System.Utilities;
 using System.Upgrade;
+using Microsoft.eServices.EDocument.OrderMatch.Copilot;
 
 codeunit 6161 "E-Document Install"
 {
@@ -17,6 +18,13 @@ codeunit 6161 "E-Document Install"
     trigger OnInstallAppPerCompany()
     begin
         InsertDataExch();
+    end;
+
+    trigger OnInstallAppPerDatabase()
+    var
+        EDocAIMatching: Codeunit "E-Doc. PO Copilot Matching";
+    begin
+        EDocAIMatching.RegisterAICapability();
     end;
 
     internal procedure InsertDataExch()
@@ -36,10 +44,10 @@ codeunit 6161 "E-Document Install"
         ImportServiceCreditMemoXML();
 
         UpgradeTag.SetUpgradeTag(GetEDOCDataExchUpdateTag());
-        
+
     end;
 
-    local procedure ImportServiceInvoiceXML()
+    internal procedure ImportServiceInvoiceXML()
     var
         DataExchDef: Record "Data Exch. Def";
         Field: Record Field;
@@ -67,7 +75,7 @@ codeunit 6161 "E-Document Install"
         Clear(TempBlob);
     end;
 
-    local procedure ImportServiceCreditMemoXML()
+    internal procedure ImportServiceCreditMemoXML()
     var
         DataExchDef: Record "Data Exch. Def";
         Field: Record Field;
@@ -95,7 +103,7 @@ codeunit 6161 "E-Document Install"
         Clear(TempBlob);
     end;
 
-    local procedure ImportSalesInvoiceXML()
+    internal procedure ImportSalesInvoiceXML()
     var
         DataExchDef: Record "Data Exch. Def";
         TempBlob: Codeunit "Temp Blob";
@@ -114,7 +122,7 @@ codeunit 6161 "E-Document Install"
         Clear(TempBlob);
     end;
 
-    local procedure ImportSalesCreditMemoXML()
+    internal procedure ImportSalesCreditMemoXML()
     var
         DataExchDef: Record "Data Exch. Def";
         TempBlob: Codeunit "Temp Blob";
@@ -133,7 +141,7 @@ codeunit 6161 "E-Document Install"
         Clear(TempBlob);
     end;
 
-    local procedure ImportCreditMemoXML()
+    internal procedure ImportCreditMemoXML()
     var
         DataExchDef: Record "Data Exch. Def";
         TempBlob: Codeunit "Temp Blob";
@@ -150,7 +158,7 @@ codeunit 6161 "E-Document Install"
         Clear(TempBlob);
     end;
 
-    local procedure ImportInvoiceXML()
+    internal procedure ImportInvoiceXML()
     var
         DataExchDef: Record "Data Exch. Def";
         TempBlob: Codeunit "Temp Blob";

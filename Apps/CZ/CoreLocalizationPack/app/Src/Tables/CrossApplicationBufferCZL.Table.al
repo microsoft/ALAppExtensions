@@ -54,4 +54,32 @@ table 31115 "Cross Application Buffer CZL"
             Clustered = true;
         }
     }
+
+    procedure ExcludeDocument(DocumentVariant: Variant)
+    var
+        DataTypeManagement: Codeunit "Data Type Management";
+        DocumentRecRef: RecordRef;
+    begin
+        if not DataTypeManagement.GetRecordRef(DocumentVariant, DocumentRecRef) then
+            exit;
+        OnExcludeDocument(DocumentRecRef.Number, DocumentVariant, Rec);
+    end;
+
+    procedure RemoveDocument(TableID: Integer; AppliedDocumentNo: Code[20]; AppliedDocumentLineNo: Integer)
+    var
+        CrossApplicationBufferCZL: Record "Cross Application Buffer CZL";
+    begin
+        CrossApplicationBufferCZL.CopyFilters(Rec);
+        SetRange("Table ID", TableID);
+        SetRange("Applied Document No.", AppliedDocumentNo);
+        SetRange("Applied Document Line No.", AppliedDocumentLineNo);
+        DeleteAll();
+        Reset();
+        CopyFilters(CrossApplicationBufferCZL);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnExcludeDocument(TableID: Integer; DocumentVariant: Variant; var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL")
+    begin
+    end;
 }

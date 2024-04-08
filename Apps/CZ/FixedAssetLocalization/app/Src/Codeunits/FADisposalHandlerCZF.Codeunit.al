@@ -519,6 +519,17 @@ codeunit 31235 "FA Disposal Handler CZF"
         exit(ResultOnDisposalFALedgerEntry."Result on Disposal"::Loss);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"FA Get G/L Account No.", 'OnBeforeGetMaintenanceAccNo', '', false, false)]
+    local procedure GetMaintenanceExpenseAccountOnBeforeGetMaintenanceAccNo(var MaintenanceLedgEntry: Record "Maintenance Ledger Entry"; var AccountNo: Code[20]; var IsHandled: Boolean)
+    var
+        FAPostingGroup: Record "FA Posting Group";
+    begin
+        FAPostingGroup.GetPostingGroup(
+            MaintenanceLedgEntry."FA Posting Group", MaintenanceLedgEntry."Depreciation Book Code");
+        AccountNo := FAPostingGroup.GetMaintenanceExpenseAccountCZF(MaintenanceLedgEntry."Maintenance Code");
+        IsHandled := true;
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"FA Insert G/L Account", 'OnInsertMaintenanceAccNoOnBeforeInsertBufferEntry', '', false, false)]
     local procedure GetMaintenanceExpenseAccountOnInsertMaintenanceAccNoOnBeforeInsertBufferEntry(var FAGLPostBuf: Record "FA G/L Posting Buffer"; var MaintenanceLedgEntry: Record "Maintenance Ledger Entry")
     var

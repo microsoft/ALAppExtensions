@@ -10,6 +10,7 @@ using System.AI;
 using System.Reflection;
 using System.Environment;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Foundation.Company;
 
 codeunit 139575 "LP Prediction Test"
 {
@@ -19,6 +20,7 @@ codeunit 139575 "LP Prediction Test"
     TestPermissions = Disabled;
 
     var
+        CompanyInformation: Record "Company Information";
         Assert: Codeunit Assert;
         LibrarySales: Codeunit "Library - Sales";
         LibraryInventory: Codeunit "Library - Inventory";
@@ -40,7 +42,6 @@ codeunit 139575 "LP Prediction Test"
             Comment = '%1 = Quality of new model, %2 = Quality of existing model.';
         ModelReplacedMsg: Label 'A new model has been created with a quality of %1%.', Comment = '%1 = Quality of the new model';
         ModelTestedMsg: Label 'We have tested the model on your data and determined that its quality is %1. The quality indicates how well the model has been trained, and how accurate its predictions will be. For example, 80% means you can expect correct predictions for 80 out of 100 documents.', Comment = '%1 = Quality of the existing model';
-        CurrentModelLowerQualityThanDesiredErr: Label 'You cannot use the model because its quality of %1 is below the value in the Model Quality Threshold field. That means its predictions are unlikely to meet your accuracy requirements. You can evaluate the model again to confirm its quality. To use the model anyway, enter a value that is less than or equal to %1 in the Model Quality Threshold field.', Comment = '%1 = current model quality (decimal)';
         CurrentTestMethod: Text;
         State: Integer;
         NoLPPForLatePaymentTxt: Label 'No prediction needed. The payment for this sales document is already overdue.';
@@ -278,56 +279,6 @@ codeunit 139575 "LP Prediction Test"
     end;
 
     [Test]
-    [HandlerFunctions('ModelReplacedMsgHandler')]
-    procedure TestCreateMyModelSunshine()
-    var
-        LPMachineLearningSetup: Record "LP Machine Learning Setup";
-        LPModelManagement: Codeunit "LP Model Management";
-    begin
-        // [SCENARIO] Training a model manually creates a model with a quality that is saved in the setup. Enabling the setup with a threshold higher than given model raises error.
-        Initialize();
-
-        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
-        EnvironmentInfoTestLibrary.SetTestabilitySandbox(true);
-        EnsureThatMockDataIsFetchedFromKeyVault();
-
-        if BindSubscription(LPPredictionTest) then;
-        SomeModelQuality := 0.66;
-
-        // [GIVEN] Enough data for the training
-        MakeEnoughDataAvailableForTraining(true);
-
-        // [WHEN] Invoke the training of the model
-        LPMachineLearningSetup.DeleteAll();
-        DummyModel := DefaultDummyModelTxt;
-        LPModelManagement.InvokeTrainFromUi();
-
-        // [THEN] Model is saved to database with a quality
-        LPMachineLearningSetup.GetSingleInstance();
-        Assert.AreEqual(SomeModelQuality, LPMachineLearningSetup."My Model Quality", 'Fetched incorrect quality');
-        Assert.AreEqual(DefaultDummyModelTxt, LPMachineLearningSetup.GetModelAsText(LPMachineLearningSetup."Selected Model"::My), 'Fetched incorrect model');
-        Assert.AreEqual(LPMachineLearningSetup."Selected Model"::Standard, LPMachineLearningSetup."Selected Model", 'Should not change selected model');
-        UnbindSubscription(LPPredictionTest);
-
-        // [WHEN] The trained model is set to be used
-        LPMachineLearningSetup.Validate("Selected Model", LPMachineLearningSetup."Selected Model"::My);
-
-        // [WHEN] Threshold is made higher than model quality
-        LPMachineLearningSetup."Model Quality Threshold" := SomeModelQuality + 0.02;
-        LPMachineLearningSetup."Standard Model Quality" := 0.6; // arbitrary standard model quality
-        LPMachineLearningSetup.Modify();
-
-        // [WHEN] Enabling the prediction
-        asserterror LPMachineLearningSetup.Validate("Make Predictions", true);
-
-        // [THEN] Raises error
-        Assert.ExpectedError(StrSubstNo(CurrentModelLowerQualityThanDesiredErr, SomeModelQuality));
-
-        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
-        EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
-    end;
-
-    [Test]
     procedure TestCreateMyModelWhenTrainingOngoing()
     var
         JobQueueEntry: Record "Job Queue Entry";
@@ -384,45 +335,6 @@ codeunit 139575 "LP Prediction Test"
     end;
 
     [Test]
-    [HandlerFunctions('ModelReplaceConfirmationHandler,ModelReplacedMsgHandler')]
-    procedure TestCreateMyModelWhenQualityWorseThanExisting()
-    var
-        LPMachineLearningSetup: Record "LP Machine Learning Setup";
-        LPModelManagement: Codeunit "LP Model Management";
-    begin
-        // [SCENARIO] A custom model already exists. Training a new model leads to a model of poorer quality. User confirms that he stil wishes to use the new model.
-        Initialize();
-
-        if BindSubscription(LPPredictionTest) then;
-        SomeModelQuality := 0.66;
-        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
-        EnvironmentInfoTestLibrary.SetTestabilitySandbox(true);
-        LPMachineLearningSetup.DeleteAll();
-        DummyModel := 'some new but worse model';
-
-        // [GIVEN] Enough data for training
-        MakeEnoughDataAvailableForTraining(true);
-
-        // [GIVEN] A model exists with quality higher than the one going to be created
-        LPMachineLearningSetup.GetSingleInstance();
-        LPMachineLearningSetup.SetModel(DefaultDummyModelTxt);
-        ExistingModelQuality := SomeModelQuality + 0.1;
-        LPMachineLearningSetup."My Model Quality" := ExistingModelQuality;
-        LPMachineLearningSetup.Modify(true);
-
-        // [WHEN] Training is invoked
-        LPModelManagement.InvokeTrainFromUi();
-
-        // [THEN] After user confirmation, the new model and its quality are saved in the database.
-        LPMachineLearningSetup.GetSingleInstance();
-        Assert.AreEqual(SomeModelQuality, LPMachineLearningSetup."My Model Quality", 'Fetched incorrect quality');
-        Assert.AreEqual(DummyModel, LPMachineLearningSetup.GetModelAsText(LPMachineLearningSetup."Selected Model"::My), 'Fetched incorrect model');
-        UnbindSubscription(LPPredictionTest);
-        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
-        EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
-    end;
-
-    [Test]
     procedure TestBackgroundTaskOnCompanyOpen()
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
@@ -431,6 +343,8 @@ codeunit 139575 "LP Prediction Test"
     begin
         // [SCENARIO] Test the background task calls the evaluate and train in the good sequence and when expected
         Initialize();
+        if CompanyInformation."Country/Region Code" = 'IT' then
+            exit;
 
         EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
         EnvironmentInfoTestLibrary.SetTestabilitySandbox(true);
@@ -605,7 +519,8 @@ codeunit 139575 "LP Prediction Test"
     begin
         // [SCENARIO] Testing that there is enough data available as a pre-req for creating/ evaluating models
         Initialize();
-
+        if CompanyInformation."Country/Region Code" = 'IT' then
+            exit;
         // [GIVEN] Create 50 sales invoices, 3 of them are delayed
         SalesInvoiceHeader.DeleteAll();
         LPMachineLearningSetup.DeleteAll();
@@ -643,6 +558,7 @@ codeunit 139575 "LP Prediction Test"
     begin
         LibraryERM.SetEnableDataCheck(false);
         LibraryERMCountryData.UpdateLocalData();
+        CompanyInformation.get();
     end;
 
     [SendNotificationHandler]

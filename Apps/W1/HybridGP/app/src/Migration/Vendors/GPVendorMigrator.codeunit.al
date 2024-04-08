@@ -361,7 +361,6 @@ codeunit 4022 "GP Vendor Migrator"
             VendorDataMigrationFacade.SetGenBusPostingGroup(CopyStr(PostingGroupCodeTxt, 1, MaxStrLen(GenBusinessPostingGroup."Code")));
         end;
 
-        VendorDataMigrationFacade.SetEmail(COPYSTR(GPVendor.INET1, 1, MaxStrLen(Vendor."E-Mail")));
         VendorDataMigrationFacade.SetHomePage(COPYSTR(GPVendor.INET2, 1, MaxStrLen(Vendor."Home Page")));
 
         GPPM00200.SetLoadFields(VADDCDPR);

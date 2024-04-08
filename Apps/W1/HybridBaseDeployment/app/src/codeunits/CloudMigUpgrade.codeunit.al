@@ -18,7 +18,7 @@ codeunit 40010 "Cloud Mig. Upgrade"
         if UpgradeTag.HasUpgradeTag(GetSendCloudMigrationUpgradeTelemetryTag()) then
             exit;
 
-        HybridCloudManagement.SendCloudMigrationTelemetry();
+        HybridCloudManagement.SendCompletedCloudMigrationTelemetry();
 
         UpgradeTag.SetUpgradeTag(GetSendCloudMigrationUpgradeTelemetryTag());
     end;
@@ -32,6 +32,6 @@ codeunit 40010 "Cloud Mig. Upgrade"
 
     local procedure GetSendCloudMigrationUpgradeTelemetryTag(): Text[250]
     begin
-        exit('MS-456494-CloudMigrationUptake-20230425');
+        exit('MS-456494-CloudMigrationUptake-20240201');
     end;
 }

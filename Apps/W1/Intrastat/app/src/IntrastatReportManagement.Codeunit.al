@@ -45,8 +45,14 @@ codeunit 4810 IntrastatReportManagement
         ReturnRcptHeader: Record "Return Receipt Header";
         PurchRcptHeader: Record "Purch. Rcpt. Header";
         ReturnShptHeader: Record "Return Shipment Header";
+        IsHandled: Boolean;
     begin
         IntrastatReportSetup.Get();
+
+        IsHandled := false;
+        OnBeforeGetIntrastatBaseCountryCode(ItemLedgEntry, IntrastatReportSetup, CountryCode, IsHandled);
+        if IsHandled then
+            exit(CountryCode);
 
         CountryCode := ItemLedgEntry."Country/Region Code";
 
@@ -176,6 +182,7 @@ codeunit 4810 IntrastatReportManagement
                                 CountryCode := SalesCrMemoHeader."Bill-to Country/Region Code";
                         end;
             end;
+        OnAfterGetIntrastatBaseCountryCodeFromFAEntry(FALedgerEntry, IntrastatReportSetup, CountryCode);
     end;
 
     procedure GetOriginalCurrency(FALedgerEntry: Record "FA Ledger Entry") CurrencyCode: Code[10]
@@ -769,7 +776,7 @@ codeunit 4810 IntrastatReportManagement
             NoSeriesLine."Line No." := 10000;
             NoSeriesLine.Validate("Starting No.", 'INTRA00001');
             NoSeriesLine.Insert(true);
-            NoSeriesLine.Validate("Allow Gaps in Nos.", true);
+            NoSeriesLine.Validate(Implementation, Enum::"No. Series Implementation"::Sequence);
             NoSeriesLine.Modify(true);
         end;
 
@@ -1149,6 +1156,16 @@ codeunit 4810 IntrastatReportManagement
 
     [IntegrationEvent(true, false)]
     local procedure OnBeforeCreateDefaultDataExchangeDef(var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnAfterGetIntrastatBaseCountryCodeFromFAEntry(var FALedgerEntry: Record "FA Ledger Entry"; var IntrastatReportSetup: Record "Intrastat Report Setup"; var CountryCode: Code[10]);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetIntrastatBaseCountryCode(var ItemLedgerEntry: Record "Item Ledger Entry"; var IntrastatReportSetup: Record "Intrastat Report Setup"; var CountryCode: Code[10]; var IsHandled: Boolean)
     begin
     end;
 }

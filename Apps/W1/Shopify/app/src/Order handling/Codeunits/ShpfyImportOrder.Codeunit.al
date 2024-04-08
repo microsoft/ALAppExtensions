@@ -15,7 +15,7 @@ codeunit 30161 "Shpfy Import Order"
 
     trigger OnRun()
     begin
-        ImportOrderAndCreateOrUpdate(Rec."Shop Code", Rec.Id, true)
+        ImportOrderAndCreateOrUpdate(Rec."Shop Code", Rec.Id, ImportActionAtConflict::SkipOrderSyncAndMark);
     end;
 
     internal procedure SetShop(ShopCode: Code[20]): Boolean
@@ -30,18 +30,24 @@ codeunit 30161 "Shpfy Import Order"
 
     internal procedure RetrieveOrderAndOrderLines(OrderId: BigInteger; var OrderHeader: Record "Shpfy Order Header" temporary; var OrderLine: Record "Shpfy Order Line" temporary)
     var
+        DataCaptureDict: Dictionary of [BigInteger, JsonToken];
         JOrder: JsonObject;
     begin
         if RetrieveOrderHeaderJson(OrderId, JOrder) then
             if not SetOrderHeaderValuesFromJson(JOrder, false, OrderHeader) then
                 exit;
-        RetrieveAndSetOrderLines(OrderId, OrderLine, false);
+        RetrieveAndSetOrderLines(OrderId, OrderLine, DataCaptureDict);
     end;
 
-    internal procedure MarkOrderConflictAsResolvedAndReimport(OrderHeader: Record "Shpfy Order Header")
+    internal procedure ReimportExistingOrderConfirmIfConflicting(OrderHeader: Record "Shpfy Order Header")
+    var
+        OrderMapping: Codeunit "Shpfy Order Mapping";
     begin
-        MarkOrderConflictAsResolved(OrderHeader);
-        ImportOrderAndCreateOrUpdate(OrderHeader."Shop Code", OrderHeader."Shopify Order Id", false);
+        OrderHeader.Get(OrderHeader."Shopify Order Id");
+        ImportOrderAndCreateOrUpdate(OrderHeader."Shop Code", OrderHeader."Shopify Order Id", ImportActionAtConflict::WarnAndSyncOrder);
+        OrderHeader.Get(OrderHeader."Shopify Order Id");
+        if not OrderHeader."Has Error" then
+            if OrderMapping.DoMapping(OrderHeader) then;
     end;
 
     internal procedure ImportCreateAndUpdateOrderHeaderFromMock(ShopCode: Code[20]; OrderId: BigInteger; MockJOrder: JsonObject)
@@ -59,8 +65,16 @@ codeunit 30161 "Shpfy Import Order"
     internal procedure ImportCreateAndUpdateOrderLinesFromMock(OrderId: BigInteger; MockJOrderLines: JsonArray)
     var
         OrderLine: Record "Shpfy Order Line";
+        TempOrderLine: Record "Shpfy Order Line" temporary;
+        DataCaptureDict: Dictionary of [BigInteger, JsonToken];
     begin
-        SetAndInsertOrderLines(OrderId, MockJOrderLines, false, OrderLine);
+        SetAndInsertOrderLines(OrderId, MockJOrderLines, TempOrderLine, DataCaptureDict);
+        if not TempOrderLine.FindSet() then
+            exit;
+        repeat
+            OrderLine.Copy(TempOrderLine);
+            OrderLine.Insert();
+        until TempOrderLine.Next() = 0;
     end;
 
     var
@@ -69,15 +83,18 @@ codeunit 30161 "Shpfy Import Order"
         JsonHelper: Codeunit "Shpfy Json Helper";
         OrderEvents: Codeunit "Shpfy Order Events";
         OrderFulfillments: Codeunit "Shpfy Order Fulfillments";
-        ProcessedConflictErr: Label 'The order has already been processed in Business Central, but an edition was received from Shopify. Changes were not propagated to the processed order. Update the processed documents to ensure data consistency.';
+        ImportActionAtConflict: Option SkipOrderSyncAndMark,SyncOrder,WarnAndSyncOrder;
+        ProcessedConflictErr: Label 'The order has already been processed in Business Central, but an edition was received from Shopify. Changes were not propagated to the processed order in Business Central. Update the processed documents to match the received data from Shopify. If you wish to force the synchronization use the action "Sync order from Shopify" in the Shopify Order card page.';
+        ReimportProcessedMsg: Label 'This order has linked documents in Business Central. Make sure to update the linked documents. Do you want to reimport the order?';
 
-
-    local procedure ImportOrderAndCreateOrUpdate(ShopCode: Code[20]; OrderId: BigInteger; SkipIfConclicting: Boolean)
+    local procedure ImportOrderAndCreateOrUpdate(ShopCode: Code[20]; OrderId: BigInteger; ActionAtConflict: Option)
     var
         OrderHeader: Record "Shpfy Order Header";
-        OrderLine: Record "Shpfy Order Line";
+        TempOrderLine: Record "Shpfy Order Line" temporary;
         UpdatingOrderHeader: Boolean;
         JOrder: JsonObject;
+        DataCaptureDict: Dictionary of [BigInteger, JsonToken];
+        Redundancy: Integer;
     begin
         if OrderId = 0 then
             exit;
@@ -86,25 +103,76 @@ codeunit 30161 "Shpfy Import Order"
             exit;
 
         UpdatingOrderHeader := EnsureOrderHeaderExists(OrderId, ShopCode, OrderHeader);
-        if UpdatingOrderHeader and SkipIfConclicting and OrderHeader.IsProcessed() then begin
-            SetOrderAsConflicting(OrderHeader);
-            exit;
-        end;
 
         if not RetrieveOrderHeaderJson(OrderId, OrderHeader.SystemId, JOrder) then
             exit;
 
+        RetrieveAndSetOrderLines(OrderId, TempOrderLine, DataCaptureDict);
+
+        if UpdatingOrderHeader then
+            if OrderHeader.IsProcessed() then
+                if IsImportedOrderConflictingExistingOrder(JOrder, OrderHeader, TempOrderLine) then begin
+                    if ActionAtConflict = ImportActionAtConflict::SkipOrderSyncAndMark then begin
+                        SetOrderAsConflicting(OrderHeader);
+                        exit;
+                    end;
+                    if ActionAtConflict = ImportActionAtConflict::WarnAndSyncOrder then begin
+                        if not GuiAllowed() then
+                            exit;
+                        if not Confirm(ReimportProcessedMsg) then
+                            exit;
+                    end;
+                end;
+
+        MarkOrderConflictAsResolved(OrderHeader);
         if not SetOrderHeaderValuesFromJson(JOrder, UpdatingOrderHeader, OrderHeader) then
             exit;
         SetAndCreateRelatedRecords(JOrder, OrderHeader);
         OrderHeader.Modify();
         OrderEvents.OnAfterImportShopifyOrderHeader(OrderHeader, not UpdatingOrderHeader);
-        OrderLine.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
-        OrderLine.DeleteAll();
-        RetrieveAndSetOrderLines(OrderId, OrderLine, true);
+        InsertOrderLinesAndRelatedRecords(TempOrderLine, DataCaptureDict, Redundancy);
+        OrderHeader."Line Items Redundancy Code" := Redundancy;
+        OrderHeader.Modify();
         OrderFulfillments.GetFulfillments(Shop, OrderHeader."Shopify Order Id");
+
+        ConsiderRefundsInQuantityAndAmounts(OrderHeader);
+        DeleteZeroQuantityLines(OrderHeader);
+
         if CheckToCloseOrder(OrderHeader) then
             CloseOrder(OrderHeader);
+    end;
+
+    local procedure InsertOrderLinesAndRelatedRecords(var TempOrderLine: Record "Shpfy Order Line" temporary; var DataCaptureDict: Dictionary of [BigInteger, JsonToken]; var Redundancy: Integer)
+    var
+        OrderLine: Record "Shpfy Order Line";
+        DataCapture: Record "Shpfy Data Capture";
+        Hash: Codeunit "Shpfy Hash";
+        JOrderLine: JsonToken;
+        LineIds: Text;
+    begin
+        TempOrderLine.SetCurrentKey("Line Id");
+        TempOrderLine.SetAscending("Line Id", true);
+        if not TempOrderLine.FindSet() then
+            exit;
+        repeat
+            LineIds += '|' + Format(TempOrderLine."Line Id");
+            JOrderLine := DataCaptureDict.Get(TempOrderLine."Line Id");
+            if OrderLine.Get(TempOrderLine."Shopify Order Id", TempOrderLine."Line Id") then begin
+                Clear(OrderLine);
+                OrderLine.Copy(TempOrderLine);
+                UpdateLocationIdAndDeliveryMethodOnOrderLine(OrderLine);
+                OrderLine.Modify();
+            end else begin
+                Clear(OrderLine);
+                OrderLine.Copy(TempOrderLine);
+                UpdateLocationIdAndDeliveryMethodOnOrderLine(OrderLine);
+                OrderLine.Insert();
+                AddTaxLines(OrderLine."Line Id", JsonHelper.GetJsonArray(JOrderLine, 'taxLines'));
+                ImportCustomAttributtes(OrderLine."Shopify Order Id", OrderLine.SystemId, JsonHelper.GetJsonArray(JOrderLine, 'customAttributes'));
+            end;
+            DataCapture.Add(Database::"Shpfy Order Line", OrderLine.SystemId, Format(JOrderLine));
+        until TempOrderLine.Next() = 0;
+        Redundancy := Hash.CalcHash(LineIds);
     end;
 
     local procedure EnsureOrderHeaderExists(OrderId: BigInteger; ShopCode: Code[20]; var OrderHeader: Record "Shpfy Order Header"): Boolean
@@ -114,6 +182,74 @@ codeunit 30161 "Shpfy Import Order"
         OrderHeader."Shopify Order Id" := OrderId;
         OrderHeader."Shop Code" := ShopCode;
         OrderHeader.Insert();
+        exit(false);
+    end;
+
+    local procedure DeleteZeroQuantityLines(OrderHeader: Record "Shpfy Order Header")
+    var
+        OrderLine: Record "Shpfy Order Line";
+    begin
+        OrderLine.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
+        OrderLine.SetRange(Quantity, 0);
+        OrderLine.DeleteAll();
+    end;
+
+    local procedure ConsiderRefundsInQuantityAndAmounts(var OrderHeader: Record "Shpfy Order Header")
+    var
+        OrderLine: Record "Shpfy Order Line";
+        RefundLine: Record "Shpfy Refund Line";
+        IReturnRefundProcess: Interface "Shpfy IReturnRefund Process";
+    begin
+        IReturnRefundProcess := Shop."Return and Refund Process";
+        if not IReturnRefundProcess.IsImportNeededFor("Shpfy Source Document Type"::Refund) then
+            exit;
+        OrderLine.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
+        if not OrderLine.FindSet() then
+            exit;
+        repeat
+            Clear(RefundLine);
+            RefundLine.SetRange("Order Line Id", OrderLine."Line Id");
+            RefundLine.SetRange("Can Create Credit Memo", false);
+            RefundLine.CalcSums("Presentment Amount", Amount, "Subtotal Amount", "Presentment Total Tax Amount", Quantity);
+            OrderLine.Quantity -= RefundLine.Quantity;
+            OrderLine.Modify();
+            OrderHeader."Total Amount" -= RefundLine."Subtotal Amount";
+            OrderHeader."Subtotal Amount" -= RefundLine."Subtotal Amount";
+            OrderHeader."Presentment Total Amount" -= RefundLine."Presentment Subtotal Amount";
+            OrderHeader."Presentment Subtotal Amount" -= RefundLine."Presentment Subtotal Amount";
+            OrderHeader."VAT Amount" -= RefundLine."Total Tax Amount";
+            OrderHeader."Presentment VAT Amount" -= RefundLine."Presentment Total Tax Amount";
+        until OrderLine.Next() = 0;
+        OrderHeader.Modify();
+    end;
+
+    local procedure IsImportedOrderConflictingExistingOrder(JOrder: JsonObject; OrderHeader: Record "Shpfy Order Header"; var TempOrderLine: Record "Shpfy Order Line" temporary): Boolean
+    var
+        Hash: Codeunit "Shpfy Hash";
+        LineIds: Text;
+        Redundancy: Integer;
+    begin
+        if OrderHeader."Cancelled At" = 0DT then
+            if JsonHelper.GetValueAsDateTime(JOrder, 'cancelledAt') <> 0DT then
+                exit(true);
+
+        if OrderHeader."Current Total Amount" <> 0 then
+            if OrderHeader."Current Total Amount" <> JsonHelper.GetValueAsDecimal(JOrder, 'currentTotalPriceSet.shopMoney.amount') then
+                exit(true);
+
+        if OrderHeader."Current Total Items Quantity" <> 0 then
+            if OrderHeader."Current Total Items Quantity" <> JsonHelper.GetValueAsDecimal(JOrder, 'currentSubtotalLineItemsQuantity') then
+                exit(true);
+
+        TempOrderLine.SetCurrentKey("Line Id");
+        TempOrderLine.SetAscending("Line Id", true);
+        if TempOrderLine.FindSet() then
+            repeat
+                LineIds += '|' + Format(TempOrderLine."Line Id");
+            until TempOrderLine.Next() = 0;
+        Redundancy := Hash.CalcHash(LineIds);
+        if Redundancy <> OrderHeader."Line Items Redundancy Code" then
+            exit(true);
         exit(false);
     end;
 
@@ -149,12 +285,11 @@ codeunit 30161 "Shpfy Import Order"
         OrderHeader.Modify();
     end;
 
-    local procedure MarkOrderConflictAsResolved(OrderHeader: Record "Shpfy Order Header")
+    local procedure MarkOrderConflictAsResolved(var OrderHeader: Record "Shpfy Order Header")
     begin
         OrderHeader."Has Order State Error" := false;
         OrderHeader."Has Error" := false;
         OrderHeader."Error Message" := '';
-        OrderHeader.Modify();
     end;
 
     local procedure RetrieveOrderHeaderJson(OrderId: BigInteger; DataCaptureSystemId: Guid; var JOrder: JsonObject): Boolean
@@ -181,14 +316,18 @@ codeunit 30161 "Shpfy Import Order"
     local procedure RetrieveOrderLinesJson(OrderId: BigInteger; After: Text; var JOrderLines: JsonArray; var HasNextPage: Boolean; var EndCursor: Text): Boolean
     var
         Parameters: Dictionary of [Text, Text];
+        GraphQLType: Enum "Shpfy GraphQL Type";
         JPageInfo: JsonObject;
         JResponse: JsonToken;
     begin
         Parameters.Add('OrderId', Format(OrderId));
-        if After <> '' then
+        GraphQLType := "Shpfy GraphQL Type"::GetOrderLines;
+        if After <> '' then begin
+            GraphQLType := "Shpfy GraphQL Type"::GetNextOrderLines;
             Parameters.Add('After', After);
+        end;
 
-        JResponse := CommunicationMgt.ExecuteGraphQL("Shpfy GraphQL Type"::GetOrderLines, Parameters);
+        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
         if JsonHelper.GetJsonObject(JResponse, JPageInfo, 'data.order.lineItems.pageInfo') then begin
             EndCursor := JsonHelper.GetValueAsText(JPageInfo, 'endCursor');
             HasNextPage := JsonHelper.GetValueAsBoolean(JPageInfo, 'hasNextPage');
@@ -204,6 +343,7 @@ codeunit 30161 "Shpfy Import Order"
         OrderId: BigInteger;
         CompanyId: BigInteger;
         MainContactId: BigInteger;
+        LocationId: BigInteger;
         CompanyName: Text;
         EMail: Text;
         FirstName: Text;
@@ -314,7 +454,7 @@ codeunit 30161 "Shpfy Import Order"
         end;
         #endregion
         #region B2B
-        if JsonHelper.GetJsonObject(JOrder, JObject, 'purchasingEntity') then
+        if JsonHelper.GetJsonObject(JOrder, JObject, 'purchasingEntity') then begin
             if JsonHelper.GetJsonObject(JOrder, JObject, 'purchasingEntity.company') then begin
                 CompanyId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JOrder, 'purchasingEntity.company.id'));
                 OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Company Id")).Value := CompanyId;
@@ -323,7 +463,14 @@ codeunit 30161 "Shpfy Import Order"
                 JsonHelper.GetValueIntoField(JOrder, 'purchasingEntity.company.mainContact.customer.legacyResourceId', OrderHeaderRecordRef, OrderHeader.FieldNo("Company Main Contact Cust. Id"));
                 JsonHelper.GetValueIntoField(JOrder, 'purchasingEntity.company.mainContact.customer.email', OrderHeaderRecordRef, OrderHeader.FieldNo("Company Main Contact Email"));
                 JsonHelper.GetValueIntoField(JOrder, 'purchasingEntity.company.mainContact.customer.phone', OrderHeaderRecordRef, OrderHeader.FieldNo("Company Main Contact Phone No."));
+                if Format(OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Sell-to Customer Name")).Value) = '' then
+                    JsonHelper.GetValueIntoField(JOrder, 'purchasingEntity.company.name', OrderHeaderRecordRef, OrderHeader.FieldNo("Sell-to Customer Name"));
             end;
+            if JsonHelper.GetJsonObject(JOrder, JObject, 'purchasingEntity.location') then begin
+                LocationId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JOrder, 'purchasingEntity.location.id'));
+                OrderHeaderRecordRef.Field(OrderHeader.FieldNo("Company Location Id")).Value := LocationId;
+            end;
+        end;
         #endregion
         OrderHeaderRecordRef.SetTable(OrderHeader);
         OrderHeader."Currency Code" := TranslateCurrencyCode(OrderHeader."Currency Code");
@@ -369,6 +516,9 @@ codeunit 30161 "Shpfy Import Order"
         JsonHelper.GetValueIntoField(JOrder, 'totalDiscountsSet.presentmentMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Presentment Discount Amount"));
         JsonHelper.GetValueIntoField(JOrder, 'totalShippingPriceSet.shopMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Shipping Charges Amount"));
         JsonHelper.GetValueIntoField(JOrder, 'totalShippingPriceSet.presentmentMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Pres. Shipping Charges Amount"));
+        JsonHelper.GetValueIntoField(JOrder, 'currentTotalPriceSet.shopMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Current Total Amount"));
+        JsonHelper.GetValueIntoField(JOrder, 'currentSubtotalLineItemsQuantity', OrderHeaderRecordRef, OrderHeader.FieldNo("Current Total Items Quantity"));
+        JsonHelper.GetValueIntoField(Jorder, 'poNumber', OrderHeaderRecordRef, OrderHeader.FieldNo("PO Number"));
         OrderHeaderRecordRef.SetTable(OrderHeader);
         if JsonHelper.GetJsonObject(JOrder, JObject, 'purchasingEntity') then
             if JsonHelper.GetJsonObject(JOrder, JObject, 'purchasingEntity.company') then
@@ -395,24 +545,21 @@ codeunit 30161 "Shpfy Import Order"
 
     local procedure SetOrderLineValuesFromJson(JOrderLine: JsonToken; OrderId: BigInteger; var OrderLine: Record "Shpfy Order Line"): Boolean
     var
+        LocalOrderLine: Record "Shpfy Order Line";
         OrderLineRecordRef: RecordRef;
-        CurrentQuantity: Decimal;
         LineId: BigInteger;
     begin
         LineId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JOrderLine, 'id'));
-        CurrentQuantity := JsonHelper.GetValueAsDecimal(JOrderLine, 'currentQuantity');
-
-        if CurrentQuantity = 0 then
-            exit(false);
-
         OrderLine."Shopify Order Id" := OrderId;
         OrderLine."Line Id" := LineId;
+        if LocalOrderLine.Get(OrderId, LineId) then
+            OrderLine.Copy(LocalOrderLine);
         OrderLineRecordRef.GetTable(OrderLine);
         if (JsonHelper.GetValueAsText(JOrderLine, 'name') = 'Tip') and JsonHelper.IsNull(JOrderLine, 'product') then
             OrderLineRecordRef.Field(OrderLine.FieldNo(Tip)).Value := true;
         JsonHelper.GetValueIntoField(JOrderLine, 'product.legacyResourceId', OrderLineRecordRef, OrderLine.FieldNo("Shopify Product Id"));
         JsonHelper.GetValueIntoField(JOrderLine, 'title', OrderLineRecordRef, OrderLine.FieldNo(Description));
-        JsonHelper.GetValueIntoField(JOrderLine, 'currentQuantity', OrderLineRecordRef, OrderLine.FieldNo(Quantity));
+        JsonHelper.GetValueIntoField(JOrderLine, 'quantity', OrderLineRecordRef, OrderLine.FieldNo(Quantity));
         JsonHelper.GetValueIntoField(JOrderLine, 'variant.legacyResourceId', OrderLineRecordRef, OrderLine.FieldNo("Shopify Variant Id"));
         JsonHelper.GetValueIntoField(JOrderLine, 'variantTitle', OrderLineRecordRef, OrderLine.FieldNo("Variant Description"));
         JsonHelper.GetValueIntoField(JOrderLine, 'fulfillmentService.location.legacyResourceId', OrderLineRecordRef, OrderLine.FieldNo("Location Id"));
@@ -425,11 +572,10 @@ codeunit 30161 "Shpfy Import Order"
         OrderLineRecordRef.SetTable(OrderLine);
         OrderLine."Discount Amount" := GetTotalLineDiscountAmount(JsonHelper.GetJsonArray(JOrderLine, 'discountAllocations'), 'shopMoney');
         OrderLine."Presentment Discount Amount" := GetTotalLineDiscountAmount(JsonHelper.GetJsonArray(JOrderLine, 'discountAllocations'), 'presentmentMoney');
-        UpdateLocationIdOnOrderLine(OrderLine);
         exit(true);
     end;
 
-    local procedure RetrieveAndSetOrderLines(OrderId: BigInteger; var OrderLine: Record "Shpfy Order Line"; InsertRelatedRecords: Boolean)
+    local procedure RetrieveAndSetOrderLines(OrderId: BigInteger; var OrderLine: Record "Shpfy Order Line" temporary; var DataCaptureDict: Dictionary of [BigInteger, JsonToken])
     var
         JOrderLines: JsonArray;
         After: Text;
@@ -438,24 +584,19 @@ codeunit 30161 "Shpfy Import Order"
     begin
         repeat
             RetrieveOrderLinesJson(OrderId, After, JOrderLines, HasNextPage, EndCursor);
-            SetAndInsertOrderLines(OrderId, JOrderLines, InsertRelatedRecords, OrderLine);
+            SetAndInsertOrderLines(OrderId, JOrderLines, OrderLine, DataCaptureDict);
             After := EndCursor;
         until not HasNextPage;
     end;
 
-    local procedure SetAndInsertOrderLines(OrderId: BigInteger; JOrderLines: JsonArray; InsertRelatedRecords: Boolean; var OrderLine: Record "Shpfy Order Line")
+    local procedure SetAndInsertOrderLines(OrderId: BigInteger; JOrderLines: JsonArray; var TempOrderLine: Record "Shpfy Order Line" temporary; var DataCaptureDict: Dictionary of [BigInteger, JsonToken])
     var
-        DataCapture: Record "Shpfy Data Capture";
         JOrderLine: JsonToken;
     begin
         foreach JOrderLine in JOrderLines do
-            if SetOrderLineValuesFromJson(JOrderLine, OrderId, OrderLine) then begin
-                OrderLine.Insert();
-                if InsertRelatedRecords then begin
-                    DataCapture.Add(Database::"Shpfy Order Line", OrderLine.SystemId, Format(JOrderLine));
-                    AddTaxLines(OrderLine."Line Id", JsonHelper.GetJsonArray(JOrderLine, 'taxLines'));
-                    ImportCustomAttributtes(OrderLine."Shopify Order Id", OrderLine.SystemId, JsonHelper.GetJsonArray(JOrderLine, 'customAttributes'));
-                end;
+            if SetOrderLineValuesFromJson(JOrderLine, OrderId, TempOrderLine) then begin
+                TempOrderLine.Insert();
+                DataCaptureDict.Add(TempOrderLine."Line Id", JOrderLine);
             end;
     end;
 
@@ -493,7 +634,12 @@ codeunit 30161 "Shpfy Import Order"
             Clear(OrderAttribute);
             OrderAttribute."Order Id" := ShopifyOrderId;
             OrderAttribute.Key := CopyStr(JsonHelper.GetValueAsText(JToken, 'key', MaxStrLen(OrderAttribute."Key")), 1, MaxStrLen(OrderAttribute."Key"));
-            OrderAttribute."Attribute Value" := CopyStr(JsonHelper.GetValueAsText(JToken, 'value', MaxStrLen(OrderAttribute."Attribute Value")), 1, MaxStrLen(OrderAttribute."Attribute Value"));
+#if not CLEAN24
+            if not Shop."Replace Order Attribute Value" then
+                OrderAttribute.Value := CopyStr(JsonHelper.GetValueAsText(JToken, 'value', MaxStrLen(OrderAttribute.Value)), 1, MaxStrLen(OrderAttribute.Value))
+            else
+#endif
+                OrderAttribute."Attribute Value" := CopyStr(JsonHelper.GetValueAsText(JToken, 'value', MaxStrLen(OrderAttribute."Attribute Value")), 1, MaxStrLen(OrderAttribute."Attribute Value"));
             OrderAttribute.Insert();
         end;
     end;
@@ -501,19 +647,19 @@ codeunit 30161 "Shpfy Import Order"
     [NonDebuggable]
     local procedure ImportCustomAttributtes(ShopifyOrderId: BigInteger; OrderLineId: Guid; JCustomAttributtes: JsonArray)
     var
-        OrderAttribute: Record "Shpfy Order Line Attribute";
+        OrderLineAttribute: Record "Shpfy Order Line Attribute";
         JToken: JsonToken;
     begin
-        OrderAttribute.SetRange("Order Id", ShopifyOrderId);
-        if not OrderAttribute.IsEmpty then
-            OrderAttribute.DeleteAll();
+        OrderLineAttribute.SetRange("Order Id", ShopifyOrderId);
+        if not OrderLineAttribute.IsEmpty then
+            OrderLineAttribute.DeleteAll();
         foreach JToken in JCustomAttributtes do begin
-            Clear(OrderAttribute);
-            OrderAttribute."Order Id" := ShopifyOrderId;
-            OrderAttribute."Order Line Id" := OrderLineId;
-            OrderAttribute.Key := JsonHelper.GetValueAsText(JToken, 'key', MaxStrLen(OrderAttribute."Key"));
-            OrderAttribute.Value := JsonHelper.GetValueAsText(JToken, 'value', MaxStrLen(OrderAttribute.Value));
-            OrderAttribute.Insert();
+            Clear(OrderLineAttribute);
+            OrderLineAttribute."Order Id" := ShopifyOrderId;
+            OrderLineAttribute."Order Line Id" := OrderLineId;
+            OrderLineAttribute.Key := JsonHelper.GetValueAsText(JToken, 'key', MaxStrLen(OrderLineAttribute."Key"));
+            OrderLineAttribute.Value := JsonHelper.GetValueAsText(JToken, 'value', MaxStrLen(OrderLineAttribute.Value));
+            OrderLineAttribute.Insert();
         end;
     end;
 
@@ -563,7 +709,7 @@ codeunit 30161 "Shpfy Import Order"
     /// Description for CloseOrder.
     /// </summary>
     /// <param name="OrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    internal procedure CloseOrder(OrderHeader: Record "Shpfy Order Header")
+    internal procedure CloseOrder(var OrderHeader: Record "Shpfy Order Header")
     var
         OrderHeaderRecordRef: RecordRef;
         JResponse: JsonToken;
@@ -707,16 +853,24 @@ codeunit 30161 "Shpfy Import Order"
             exit(Enum::"Shpfy Cancel Reason"::Unknown);
     end;
 
-    local procedure UpdateLocationIdOnOrderLine(var OrderLine: Record "Shpfy Order Line")
+    local procedure UpdateLocationIdAndDeliveryMethodOnOrderLine(var OrderLine: Record "Shpfy Order Line")
     var
         FulfillmentOrderLine: Record "Shpfy FulFillment Order Line";
+        TotalQuantity: Integer;
     begin
         FulfillmentOrderLine.Reset();
         FulfillmentOrderLine.SetRange("Shopify Order Id", OrderLine."Shopify Order Id");
         FulfillmentOrderLine.SetRange("Shopify Variant Id", OrderLine."Shopify Variant Id");
-        FulfillmentOrderLine.SetRange("Total Quantity", OrderLine.Quantity);
-        if FulfillmentOrderLine.FindFirst() then
-            OrderLine."Location Id" := FulfillmentOrderLine."Shopify Location Id";
+        if FulfillmentOrderLine.FindSet() then begin
+            repeat
+                TotalQuantity += FulfillmentOrderLine."Total Quantity";
+            until FulfillmentOrderLine.Next() = 0;
+
+            if TotalQuantity = OrderLine.Quantity then begin
+                OrderLine."Location Id" := FulfillmentOrderLine."Shopify Location Id";
+                OrderLine."Delivery Method Type" := FulfillmentOrderLine."Delivery Method Type";
+            end;
+        end;
     end;
 
     local procedure ConvertToOrderReturnStatus(Value: Text) OrderReturnStatus: Enum "Shpfy Order Return Status"

@@ -1,4 +1,8 @@
-permissionsetextension 6217 "D365 TeamMember Sustainability" extends "D365 TEAM MEMBER"
+namespace Microsoft.Sustainability;
+
+using System.Security.AccessControl;
+
+permissionsetextension 6211 "D365 TEAM MEMBER Sustainability" extends "D365 TEAM MEMBER"
 {
-    IncludedPermissionSets = "Sustainability View";
+    IncludedPermissionSets = "Sustainability Edit";
 }

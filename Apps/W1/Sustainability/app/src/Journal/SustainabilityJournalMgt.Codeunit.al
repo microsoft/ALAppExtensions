@@ -6,19 +6,8 @@ using Microsoft.Sustainability.Account;
 codeunit 6211 "Sustainability Journal Mgt."
 {
     Access = Public;
-    Permissions =
-        tabledata "Sustainability Jnl. Template" = ri,
-        tabledata "Sustainability Jnl. Batch" = ri,
-        tabledata "No. Series" = i;
 
-    /// <summary>
-    /// Insert the default Sustainability Journal Template, with Primary Key set to `GENERAL`.
-    /// Should only be used to initialize a new environment.
-    /// </summary>
-    /// <param name="IsRecurring">Specifies whether the default template is recurring.</param>
-    /// <returns>The created template.</returns>
-    /// <error>If the default template already exists.</error>
-    procedure InitializeDefaultTemplate(IsRecurring: Boolean): Record "Sustainability Jnl. Template"
+    local procedure InitializeDefaultTemplate(IsRecurring: Boolean): Record "Sustainability Jnl. Template"
     var
         SustainabilityJnlTemplate: Record "Sustainability Jnl. Template";
     begin
@@ -54,30 +43,22 @@ codeunit 6211 "Sustainability Journal Mgt."
         NoSeriesLine.Validate("Starting No.", '000010');
         NoSeriesLine.Validate("Ending No.", '999990');
         NoSeriesLine.Validate("Increment-by No.", 1);
-        NoSeriesLine.Validate("Allow Gaps in Nos.", false);
+        NoSeriesLine.Validate(Implementation, Enum::"No. Series Implementation"::Normal);
         NoSeriesLine.Validate("Line No.", 1000);
         NoSeriesLine.Insert(true);
 
         exit(NoSeriesCode);
     end;
 
-    /// <summary>
-    /// Insert the default Sustainability Journal Batch, with Primary Key set to `DEFAULT`.
-    /// Should only be used to initialize a new environment.
-    /// </summary>
-    /// <param name="TemplateName">Specifies the name of the template to initialize the Batch with.</param>
-    /// <param name="IsRecurring">Specifies whether the default batch is recurring.</param>
-    /// <returns>The created batch.</returns>
-    /// <error>If the default batch already exists.</error>
-    procedure InitializeDefaultBatch(TemplateName: Code[10]; IsRecurring: Boolean): Record "Sustainability Jnl. Batch"
+    local procedure InitializeDefaultBatch(TemplateName: Code[10]; IsRecurring: Boolean): Record "Sustainability Jnl. Batch"
     var
         SustainabilityJnlBatch: Record "Sustainability Jnl. Batch";
         NoSeriesCode: Code[20];
     begin
         if IsRecurring then
-            NoSeriesCode := InitializeDefaultNoSeries(GetRecurringNoSeriesCode(), RecurringNoSeriesDescriptionLbl)
+            NoSeriesCode := InitializeDefaultNoSeries(RecurringNoSeriesTok, RecurringNoSeriesDescriptionLbl)
         else
-            NoSeriesCode := InitializeDefaultNoSeries(GetSustainabilityNoSeriesCode(), SustainabilityNoSeriesDescriptionLbl);
+            NoSeriesCode := InitializeDefaultNoSeries(SustainabilityNoSeriesTok, SustainabilityNoSeriesDescriptionLbl);
 
         SustainabilityJnlBatch.Validate("Journal Template Name", TemplateName);
         SustainabilityJnlBatch.Validate(Name, DefaultBatchTok);
@@ -88,30 +69,14 @@ codeunit 6211 "Sustainability Journal Mgt."
         exit(SustainabilityJnlBatch);
     end;
 
-    procedure GetSustainabilityNoSeriesCode(): Code[20]
-    begin
-        exit(SustainabilityNoSeriesTok);
-    end;
-
-    procedure GetRecurringNoSeriesCode(): Code[20]
-    begin
-        exit(RecurringNoSeriesTok);
-    end;
-
     internal procedure GetDocumentNo(IsPreviousDocumentNoValid: Boolean; SustainabilityJnlBatch: Record "Sustainability Jnl. Batch"; PreviousDocumentNo: Code[20]; PostingDate: Date): Code[20]
     var
-        NoSeriesLine: Record "No. Series Line";
-        NoSeriesMgt: Codeunit NoSeriesManagement;
+        NoSeriesBatch: Codeunit "No. Series - Batch";
     begin
         if SustainabilityJnlBatch."No Series" <> '' then begin
             if not IsPreviousDocumentNoValid then
-                exit(NoSeriesMgt.TryGetNextNo(SustainabilityJnlBatch."No Series", PostingDate))
-            else begin
-                NoSeriesMgt.FindNoSeriesLine(NoSeriesLine, SustainabilityJnlBatch."No Series", PostingDate);
-                // TODO: need to check if the ending is integer otherwise runtime error
-                NoSeriesMgt.IncrementNoText(PreviousDocumentNo, NoSeriesLine."Increment-by No.");
-                exit(PreviousDocumentNo);
-            end
+                exit(NoSeriesBatch.PeekNextNo(SustainabilityJnlBatch."No Series", PostingDate));
+            exit(NoSeriesBatch.SimulateGetNextNo(SustainabilityJnlBatch."No Series", PostingDate, PreviousDocumentNo));
         end else
             if PreviousDocumentNo = '' then
                 exit('')
@@ -122,13 +87,21 @@ codeunit 6211 "Sustainability Journal Mgt."
     /// <summary>
     /// Get a Sustainability Journal Batch.
     /// If more than one Template exists, the user will be prompted to select one.
-    /// If no Template exists, a default one will be created.
+    /// If no Template/Batch exists, a default one will be created.
     /// </summary>  
     /// <param name="IsRecurring">Specifies whether the template is recurring.</param>
     procedure GetASustainabilityJournalBatch(IsRecurring: Boolean): Record "Sustainability Jnl. Batch"
-    var
-        SustainabilityJnlTemplate: Record "Sustainability Jnl. Template";
-        SustainabilityJnlBatch: Record "Sustainability Jnl. Batch";
+    begin
+        exit(SelectBatch(SelectTemplate(IsRecurring), ''));
+    end;
+
+    /// <summary>
+    /// Select a Sustainability Journal Template.
+    /// If more than one Template exists, the user will be prompted to select one.
+    /// If no Template exists, a default one will be created.
+    /// </summary>  
+    /// <param name="IsRecurring">Specifies whether the template is recurring.</param>
+    internal procedure SelectTemplate(IsRecurring: Boolean) SustainabilityJnlTemplate: Record "Sustainability Jnl. Template"
     begin
         SustainabilityJnlTemplate.SetRange(Recurring, IsRecurring);
 
@@ -141,13 +114,15 @@ codeunit 6211 "Sustainability Journal Mgt."
                 if not (Page.RunModal(Page::"Sustainability Jnl. Templates", SustainabilityJnlTemplate) = Action::LookupOK) then
                     Error('');
         end;
+    end;
 
+    internal procedure SelectBatch(SustainabilityJnlTemplate: Record "Sustainability Jnl. Template"; PreviousBatchName: Code[10]) SustainabilityJnlBatch: Record "Sustainability Jnl. Batch"
+    begin
         SustainabilityJnlBatch.SetRange("Journal Template Name", SustainabilityJnlTemplate.Name);
 
-        if not SustainabilityJnlBatch.FindFirst() then
-            SustainabilityJnlBatch := InitializeDefaultBatch(SustainabilityJnlTemplate.Name, IsRecurring);
-
-        exit(SustainabilityJnlBatch);
+        if not SustainabilityJnlBatch.Get(SustainabilityJnlTemplate.Name, PreviousBatchName) then
+            if not SustainabilityJnlBatch.FindFirst() then
+                SustainabilityJnlBatch := InitializeDefaultBatch(SustainabilityJnlTemplate.Name, SustainabilityJnlTemplate.Recurring);
     end;
 
     /// <summary>

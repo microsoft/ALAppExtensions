@@ -436,6 +436,11 @@ table 40105 "GP Company Additional Settings"
             DataClassification = SystemMetadata;
             InitValue = false;
         }
+        field(42; "Has Hybrid Company"; Boolean)
+        {
+            FieldClass = FlowField;
+            CalcFormula = exist("Hybrid Company" where("Name" = field(Name)));
+        }
     }
 
     keys

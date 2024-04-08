@@ -257,7 +257,7 @@ codeunit 31054 "Install Application CZP"
                 CashDeskEventCZP.Description := CashDeskEvent.Description;
                 CashDeskEventCZP."Account Type" := CashDeskEvent."Account Type";
                 CashDeskEventCZP."Account No." := CashDeskEvent."Account No.";
-                CashDeskEventCZP."Gen. Document Type" := CashDeskEvent."Document Type";
+                CashDeskEventCZP."Gen. Document Type" := "Cash Document Gen.Doc.Type CZP".FromInteger(CashDeskEvent."Document Type");
                 CashDeskEventCZP."Global Dimension 1 Code" := CashDeskEvent."Global Dimension 1 Code";
                 CashDeskEventCZP."Global Dimension 2 Code" := CashDeskEvent."Global Dimension 2 Code";
                 CashDeskEventCZP."Gen. Posting Type" := CashDeskEvent."Gen. Posting Type";

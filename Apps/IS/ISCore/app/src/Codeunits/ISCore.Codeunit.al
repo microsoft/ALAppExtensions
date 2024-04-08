@@ -5,9 +5,17 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance;
 
+using Microsoft.Bank.Payment;
 using Microsoft.Finance.GeneralLedger.IRS;
+using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Purchases.Payables;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Receivables;
 using Microsoft.Sales.Setup;
 using Microsoft.Utilities;
+using System.IO;
 
 codeunit 14600 "IS Core"
 {
@@ -23,7 +31,7 @@ codeunit 14600 "IS Core"
 
 #if not CLEAN24
     [Obsolete('The table used to enable IS Core App.', '24.0')]
-    [EventSubscriber(ObjectType::Table, Database::"IS Core App Setup", 'OnAfterValidateEvent', 'Enabled', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"IS Core App Setup", OnAfterValidateEvent, Enabled, false, false)]
     local procedure OnAfterValidateEnabledISCoreApp(var Rec: Record "IS Core App Setup")
     begin
         if Rec.Enabled then
@@ -31,7 +39,7 @@ codeunit 14600 "IS Core"
     end;
 #endif
 
-    [EventSubscriber(ObjectType::Table, Database::"Sales & Receivables Setup", 'OnAfterValidateEvent', 'Electronic Invoicing Reminder', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Sales & Receivables Setup", OnAfterValidateEvent, "Electronic Invoicing Reminder", false, false)]
     local procedure OnAfterValidateElectronicInvoicing(var Rec: Record "Sales & Receivables Setup")
     var
 #if not CLEAN24
@@ -48,6 +56,52 @@ codeunit 14600 "IS Core"
 #if not CLEAN24
         end;
 #endif
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Pmt Export Mgt Cust Ledg Entry", OnPreparePaymentExportDataCLEOnBeforeTempPaymentExportDataInsert, '', false, false)]
+    local procedure OnPreparePaymentExportDataCLEOnBeforeTempPaymentExportDataInsert(var TempPaymentExportData: Record "Payment Export Data" temporary; CustLedgerEntry: Record "Cust. Ledger Entry"; GeneralLedgerSetup: Record "General Ledger Setup")
+    var
+        Customer: Record Customer;
+    begin
+        if CustLedgerEntry."Customer No." = '' then
+            exit;
+        Customer.Get(CustLedgerEntry."Customer No.");
+        TempPaymentExportData."Recipient Reg. No." := CopyStr(Customer."Registration Number", 1, MaxStrLen(TempPaymentExportData."Recipient Reg. No."));
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Pmt Export Mgt Gen. Jnl Line", OnBeforeInsertPmtExportDataJnlFromGenJnlLine, '', false, false)]
+    local procedure OnBeforeInsertPmtExportDataJnlFromGenJnlLine(var PaymentExportData: Record "Payment Export Data"; GenJournalLine: Record "Gen. Journal Line"; GeneralLedgerSetup: Record "General Ledger Setup")
+    begin
+        UpdateRegistrationNoFromGenJournalLine(PaymentExportData, GenJournalLine);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Pmt Export Mgt Vend Ledg Entry", OnBeforeInsertPmtExportDataJnlFromVendorLedgerEntry, '', false, false)]
+    local procedure OnBeforeInsertPmtExportDataJnlFromVendorLedgerEntry(var PaymentExportData: Record "Payment Export Data"; VendorLedgerEntry: Record "Vendor Ledger Entry"; GeneralLedgerSetup: Record "General Ledger Setup")
+    var
+        Vendor: Record Vendor;
+    begin
+        if VendorLedgerEntry."Vendor No." = '' then
+            exit;
+        Vendor.Get(VendorLedgerEntry."Vendor No.");
+        PaymentExportData."Recipient Reg. No." := CopyStr(Vendor."Registration Number", 1, MaxStrLen(PaymentExportData."Recipient Reg. No."));
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Exp. Pre-Mapping Gen. Jnl.", OnBeforeInsertPaymentExoprtData, '', false, false)]
+    local procedure OnBeforeInsertPaymentExoprtData(var PaymentExportData: Record "Payment Export Data"; GenJournalLine: Record "Gen. Journal Line"; GeneralLedgerSetup: Record "General Ledger Setup")
+    begin
+        UpdateRegistrationNoFromGenJournalLine(PaymentExportData, GenJournalLine);
+    end;
+
+    local procedure UpdateRegistrationNoFromGenJournalLine(var PaymentExportData: Record "Payment Export Data"; GenJournalLine: Record "Gen. Journal Line")
+    var
+        Vendor: Record Vendor;
+    begin
+        if GenJournalLine."Account Type" = GenJournalLine."Account Type"::Employee then
+            exit;
+        if GenJournalLine."Account Type" = GenJournalLine."Account Type"::Vendor then begin
+            Vendor.Get(GenJournalLine."Account No.");
+            PaymentExportData."Recipient Reg. No." := CopyStr(Vendor."Registration Number", 1, MaxStrLen(PaymentExportData."Recipient Reg. No."));
+        end;
     end;
 
     local procedure ClassifyTablesToNormal()

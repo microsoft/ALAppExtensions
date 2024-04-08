@@ -12,8 +12,7 @@ report 31024 "Purch. Advance Letters CZZ"
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = Basic, Suite;
     Caption = 'Purchase Advance Letters';
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/PurchAdvanceLetters.rdl';
+    DefaultRenderingLayout = "PurchAdvanceLetters.rdl";
 
     dataset
     {
@@ -313,6 +312,24 @@ report 31024 "Purch. Advance Letters CZZ"
             if ToDate = 0D then
                 ToDate := WorkDate();
         end;
+    }
+
+    rendering
+    {
+        layout("PurchAdvanceLetters.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/PurchAdvanceLetters.rdl';
+            Caption = 'Purchase Advance Letters (RDL)';
+            Summary = 'The Purchase Advance Letters (RDL) provides a detailed layout.';
+        }
+        layout("PurchAdvanceLetters.xlsx")
+        {
+            Type = Excel;
+            LayoutFile = './Src/Reports/PurchAdvanceLetters.xlsx';
+            Caption = 'Purchase Advance Letters (Excel)';
+            Summary = 'The Purchase Advance Letters (Excel) provides a detailed layout.';
+        }
     }
 
     labels

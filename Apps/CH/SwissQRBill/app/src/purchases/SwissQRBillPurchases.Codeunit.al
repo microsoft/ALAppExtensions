@@ -423,6 +423,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
         GenJournalTemplate: Record "Gen. Journal Template";
         GenJournalBatch: Record "Gen. Journal Batch";
         NewGenJournalLine: Record "Gen. Journal Line";
+        NoSeriesBatch: Codeunit "No. Series - Batch";
         LastLineNo: Integer;
         Finish: Boolean;
         MessageResult: Text;
@@ -442,7 +443,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
                     LastLineNo += 10000;
                     NewGenJournalLine."Line No." := LastLineNo;
                     NewGenJournalLine.Insert();
-                    NewGenJournalLine.IncrementDocumentNo(GenJournalBatch, NewDocumentNo);
+                    NewDocumentNo := NoSeriesBatch.SimulateGetNextNo(GenJournalBatch."No. Series", NewGenJournalLine."Posting Date", NewDocumentNo);
                     Commit();
                     finish := not Confirm(MessageResult)
                 end else
@@ -454,7 +455,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
 
     local procedure PreparePurchaseJournalLine(var GenJournalLine: Record "Gen. Journal Line"; var GenJournalTemplate: Record "Gen. Journal Template"; var GenJournalBatch: Record "Gen. Journal Batch"; var LastLineNo: Integer; var NewDocumentNo: Code[20])
     var
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeriesBatch: Codeunit "No. Series - Batch";
     begin
         with GenJournalLine do begin
             GenJournalTemplate.Get("Journal Template Name");
@@ -466,9 +467,9 @@ codeunit 11502 "Swiss QR-Bill Purchases"
                 NewDocumentNo := "Document No.";
             end;
             if NewDocumentNo = '' then
-                NewDocumentNo := NoSeriesManagement.TryGetNextNo(GenJournalBatch."No. Series", WorkDate())
+                NewDocumentNo := NoSeriesBatch.PeekNextNo(GenJournalBatch."No. Series", WorkDate())
             else
-                IncrementDocumentNo(GenJournalBatch, NewDocumentNo);
+                NewDocumentNo := NoSeriesBatch.SimulateGetNextNo(GenJournalBatch."No. Series", GenJournalLine."Posting Date", NewDocumentNo)
         end;
     end;
 
@@ -531,7 +532,7 @@ codeunit 11502 "Swiss QR-Bill Purchases"
                 PurchaseHeader.TestField("Pay-to Vendor No.");
                 if Confirm(StrSubstNo(PurhDocVendBankAccountQst, IncomingDocument."Vendor IBAN")) then begin
                     VendorBankAccount."Vendor No." := PurchaseHeader."Pay-to Vendor No.";
-                    VendorBankAccount.IBAN := IncomingDocument."Vendor IBAN";
+                    VendorBankAccount.Validate(IBAN, IncomingDocument."Vendor IBAN");
                     VendorBankAccount."Payment Form" := VendorBankAccount."Payment Form"::"Bank Payment Domestic";
                     SwissQRBillCreateVendBank.LookupMode(true);
                     SwissQRBillCreateVendBank.SetDetails(VendorBankAccount);

@@ -545,17 +545,18 @@ codeunit 144112 "Serv. Decl. IT Tests"
 
     local procedure ResetNoSeries()
     var
-        NoSeriesLinePurchase: Record "No. Series Line Purchase";
-        NoSeriesLineSales: Record "No. Series Line Sales";
+        NoSeriesLine: Record "No. Series Line";
         VATBusinessPostingGroup: Record "VAT Business Posting Group";
     begin
         if VATBusinessPostingGroup.FindSet() then
             repeat
-                NoSeriesLineSales.SetRange("Series Code", VATBusinessPostingGroup."Default Sales Operation Type");
-                NoSeriesLineSales.ModifyAll("Last Date Used", 0D);
+                NoSeriesLine.SetRange("No. Series Type", NoSeriesLine."No. Series Type"::Sales);
+                NoSeriesLine.SetRange("Series Code", VATBusinessPostingGroup."Default Sales Operation Type");
+                NoSeriesLine.ModifyAll("Last Date Used", 0D);
 
-                NoSeriesLinePurchase.SetRange("Series Code", VATBusinessPostingGroup."Default Purch. Operation Type");
-                NoSeriesLinePurchase.ModifyAll("Last Date Used", 0D);
+                NoSeriesLine.SetRange("No. Series Type", NoSeriesLine."No. Series Type"::Purchase);
+                NoSeriesLine.SetRange("Series Code", VATBusinessPostingGroup."Default Purch. Operation Type");
+                NoSeriesLine.ModifyAll("Last Date Used", 0D);
             until VATBusinessPostingGroup.Next() = 0;
     end;
 

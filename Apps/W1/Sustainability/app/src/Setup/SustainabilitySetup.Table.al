@@ -40,11 +40,13 @@ table 6217 "Sustainability Setup"
                 GLSetup.CheckDecimalPlacesFormat("Emission Decimal Places");
             end;
         }
-        field(6; "Emission Rounding Precission"; Decimal)
+        field(6; "Emission Rounding Precision"; Decimal)
         {
-            Caption = 'Emission Rounding Precission';
+            Caption = 'Emission Rounding Precision';
             DecimalPlaces = 0 : 10;
             InitValue = 0.01;
+            NotBlank = true;
+            MinValue = 0;
         }
         field(7; "Emission Rounding Type"; Enum "Rounding Type")
         {
@@ -89,13 +91,15 @@ table 6217 "Sustainability Setup"
         {
             Caption = 'Responsibility Center Mandatory';
         }
-        field(14; "Block Sustain. Accs. Deletion"; Boolean)
-        {
-            Caption = 'Block Sustainability Accounts Deletion';
-        }
-        field(15; "Block Change If Entry Exists"; Boolean)
+        field(14; "Block Change If Entry Exists"; Boolean)
         {
             Caption = 'Block Calculation Foundation Change If Ledger Entries Exist';
+            InitValue = true;
+        }
+        field(15; "Enable Background Error Check"; Boolean)
+        {
+            Caption = 'Enable Background Error Check';
+            InitValue = true;
         }
     }
 
@@ -110,13 +114,12 @@ table 6217 "Sustainability Setup"
     var
         GLSetup: Record "General Ledger Setup";
         SustainabilitySetup: Record "Sustainability Setup";
-        SustainabilitySetupRetreived: Boolean;
+        SustainabilitySetupRetrieved: Boolean;
         AutoFormatExprLbl: Label '<Precision,%1><Standard Format,0>', Locked = true;
 
     internal procedure GetFormat(FieldNo: Integer): Text
     begin
-        if not SustainabilitySetupRetreived then
-            SustainabilitySetupRetreived := SustainabilitySetup.Get();
+        GetSustainabilitySetup();
 
         case FieldNo of
             SustainabilitySetup.FieldNo("Fuel/El. Decimal Places"):
@@ -127,6 +130,37 @@ table 6217 "Sustainability Setup"
                 exit(StrSubstNo(AutoFormatExprLbl, SustainabilitySetup."Custom Amt. Decimal Places"));
             SustainabilitySetup.FieldNo("Emission Decimal Places"):
                 exit(StrSubstNo(AutoFormatExprLbl, SustainabilitySetup."Emission Decimal Places"));
+        end;
+    end;
+
+    internal procedure GetReportingParameters(var UOMCode: Code[10]; var UseUOMReportingFactor: Boolean; var UOMFactor: Decimal; var Direction: Text; var Precision: Decimal)
+    begin
+        GetSustainabilitySetup();
+
+        if SustainabilitySetup."Emission Reporting UOM Code" <> '' then begin
+            UOMCode := SustainabilitySetup."Emission Reporting UOM Code";
+            case SustainabilitySetup."Emission Rounding Type" of
+                SustainabilitySetup."Emission Rounding Type"::Down:
+                    Direction := '<';
+                SustainabilitySetup."Emission Rounding Type"::Nearest:
+                    Direction := '=';
+                SustainabilitySetup."Emission Rounding Type"::Up:
+                    Direction := '>';
+            end;
+            UseUOMReportingFactor := true;
+            UOMFactor := SustainabilitySetup."Reporting UOM Factor";
+            Precision := SustainabilitySetup."Emission Rounding Precision";
+        end else begin
+            UOMCode := SustainabilitySetup."Emission Unit of Measure Code";
+            UseUOMReportingFactor := false;
+        end;
+    end;
+
+    local procedure GetSustainabilitySetup()
+    begin
+        if not SustainabilitySetupRetrieved then begin
+            SustainabilitySetup.Get();
+            SustainabilitySetupRetrieved := true;
         end;
     end;
 

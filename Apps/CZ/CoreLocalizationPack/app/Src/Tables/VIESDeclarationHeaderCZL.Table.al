@@ -29,10 +29,10 @@ table 31075 "VIES Declaration Header CZL"
 
             trigger OnValidate()
             var
-                NoSeriesMgt: Codeunit NoSeriesManagement;
+                NoSeries: Codeunit "No. Series";
             begin
                 if "No." <> xRec."No." then begin
-                    NoSeriesMgt.TestManual(GetNoSeriesCode());
+                    NoSeries.TestManual(GetNoSeriesCode());
                     "No. Series" := '';
                 end;
             end;
@@ -537,11 +537,33 @@ table 31075 "VIES Declaration Header CZL"
 
     trigger OnInsert()
     var
+        VIESDeclarationHeader: Record "VIES Declaration Header CZL";
+        NoSeries: Codeunit "No. Series";
+#if not CLEAN24
         NoSeriesManagement: Codeunit NoSeriesManagement;
+        IsHandled: Boolean;
+#endif
+        NoSeriesCode: Code[20];
     begin
-        if "No." = '' then
-            NoSeriesManagement.InitSeries(GetNoSeriesCode(), xRec."No. Series", WorkDate(), "No.", "No. Series");
-
+        if "No." = '' then begin
+            NoSeriesCode := GetNoSeriesCode();
+#if not CLEAN24
+            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(NoSeriesCode, xRec."No. Series", WorkDate(), "No.", "No. Series", IsHandled);
+            if not IsHandled then begin
+#endif
+                "No. Series" := NoSeriesCode;
+                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                    "No. Series" := xRec."No. Series";
+                "No." := NoSeries.GetNextNo("No. Series");
+                VIESDeclarationHeader.ReadIsolation(ReadIsolation::ReadUncommitted);
+                VIESDeclarationHeader.SetLoadFields("No.");
+                while VIESDeclarationHeader.Get("No.") do
+                    "No." := NoSeries.GetNextNo("No. Series");
+#if not CLEAN24
+                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", NoSeriesCode, WorkDate(), "No.");
+            end;
+#endif
+        end;
         InitRecord();
     end;
 
@@ -591,10 +613,10 @@ table 31075 "VIES Declaration Header CZL"
 
     procedure AssistEdit(OldVIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL"): Boolean
     var
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
-        if NoSeriesManagement.SelectSeries(GetNoSeriesCode(), OldVIESDeclarationHeaderCZL."No. Series", "No. Series") then begin
-            NoSeriesManagement.SetSeries("No.");
+        if NoSeries.LookupRelatedNoSeries(GetNoSeriesCode(), OldVIESDeclarationHeaderCZL."No. Series", "No. Series") then begin
+            "No." := NoSeries.GetNextNo("No. Series");
             exit(true);
         end;
     end;

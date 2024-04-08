@@ -24,10 +24,12 @@ table 1690 "Bank Deposit Header"
             Caption = 'No.';
 
             trigger OnValidate()
+            var
+                NoSeries: Codeunit "No. Series";
             begin
                 if "No." <> xRec."No." then begin
                     SalesReceivablesSetup.Get();
-                    NoSeriesManagement.TestManual(SalesReceivablesSetup."Bank Deposit Nos.");
+                    NoSeries.TestManual(SalesReceivablesSetup."Bank Deposit Nos.");
                     "No. Series" := '';
                 end;
             end;
@@ -323,7 +325,9 @@ table 1690 "Bank Deposit Header"
         SalesReceivablesSetup: Record "Sales & Receivables Setup";
         BankDepositHeader: Record "Bank Deposit Header";
         GenJournalBatch: Record "Gen. Journal Batch";
+#if not CLEAN24
         NoSeriesManagement: Codeunit NoSeriesManagement;
+#endif
         DimensionManagement: Codeunit DimensionManagement;
         GenJnlManagement: Codeunit GenJnlManagement;
         PostingDescriptionTxt: Label 'Deposit %1 %2', Comment = '%1 - the caption of field No.; %2 - the value of field No.';
@@ -335,6 +339,8 @@ table 1690 "Bank Deposit Header"
 
     local procedure InitInsert()
     var
+        NoSeries: Codeunit "No. Series";
+        NoSeriesCode: Code[20];
         IsHandled: Boolean;
     begin
         IsHandled := false;
@@ -342,7 +348,19 @@ table 1690 "Bank Deposit Header"
         if not IsHandled then
             if "No." = '' then begin
                 TestNoSeries();
-                NoSeriesManagement.InitSeries(GetNoSeriesCode(), xRec."No. Series", "Posting Date", "No.", "No. Series");
+                NoSeriesCode := GetNoSeriesCode();
+#if not CLEAN24
+                NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(NoSeriesCode, xRec."No. Series", "Posting Date", "No.", "No. Series", IsHandled);
+                if not IsHandled then begin
+#endif
+                    "No. Series" := NoSeriesCode;
+                    if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                        "No. Series" := xRec."No. Series";
+                    "No." := NoSeries.GetNextNo("No. Series", "Posting Date");
+#if not CLEAN24
+                    NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", NoSeriesCode, "Posting Date", "No.");
+                end;
+#endif
             end;
 
         OnInitInsertOnBeforeInitRecord(xRec);
@@ -485,12 +503,13 @@ table 1690 "Bank Deposit Header"
     internal procedure AssistEdit(OldBankDepositHeader: Record "Bank Deposit Header"): Boolean
     var
         LocalBankDepositHeader: Record "Bank Deposit Header";
+        NoSeries: Codeunit "No. Series";
     begin
         LocalBankDepositHeader := Rec;
         SalesReceivablesSetup.Get();
         SalesReceivablesSetup.TestField("Bank Deposit Nos.");
-        if NoSeriesManagement.SelectSeries(SalesReceivablesSetup."Bank Deposit Nos.", OldBankDepositHeader."No. Series", LocalBankDepositHeader."No. Series") then begin
-            NoSeriesManagement.SetSeries(LocalBankDepositHeader."No.");
+        if NoSeries.LookupRelatedNoSeries(SalesReceivablesSetup."Bank Deposit Nos.", OldBankDepositHeader."No. Series", LocalBankDepositHeader."No. Series") then begin
+            LocalBankDepositHeader."No." := NoSeries.GetNextNo(LocalBankDepositHeader."No. Series");
             Rec := LocalBankDepositHeader;
             exit(true);
         end;

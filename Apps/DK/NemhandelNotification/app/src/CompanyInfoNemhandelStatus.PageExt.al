@@ -2,6 +2,7 @@ namespace Microsoft.EServices;
 
 using Microsoft.Foundation.Company;
 using Microsoft.Utilities;
+using System.Telemetry;
 
 pageextension 13608 "Company Info. Nemhandel Status" extends "Company Information"
 {
@@ -10,16 +11,15 @@ pageextension 13608 "Company Info. Nemhandel Status" extends "Company Informatio
         modify("Registration No.")
         {
             Editable = Rec."Registered with Nemhandel" <> "Nemhandel Company Status"::Registered;
-            ToolTip = 'Specifies the company''s CVR number. Once the CVR number that is registered in Nemhandelsregisteret is set, it cannot changed.';
+            ToolTip = 'Specifies the company''s CVR number. Once the CVR number that is registered in Nemhandelsregisteret is set, it cannot be changed.';
 
             trigger OnAfterValidate()
             var
                 InputParams: Dictionary of [Text, Text];
             begin
-#if not CLEAN24
-                if not NemhandelStatusMgt.IsFeatureEnableDatePassed() then
+                if not NemhandelStatusMgt.IsSaaSProductionCompany() then
                     exit;
-#endif
+
                 if Rec."Registered with Nemhandel" = "Nemhandel Company Status"::Registered then
                     exit;
 
@@ -42,10 +42,6 @@ pageextension 13608 "Company Info. Nemhandel Status" extends "Company Informatio
     var
         InputParams: Dictionary of [Text, Text];
     begin
-#if not CLEAN24
-        if not NemhandelStatusMgt.IsFeatureEnableDatePassed() then
-            exit;
-#endif
         if NemhandelStatusMgt.IsNemhandelStatusCheckRequired(Rec) then begin
             InputParams.Add(NemhandelStatusPageBckgrnd.GetCVRNumberKey(), Rec."Registration No.");
             RunGetCompanyStatusBackgroundTask(InputParams);
@@ -59,6 +55,8 @@ pageextension 13608 "Company Info. Nemhandel Status" extends "Company Informatio
     trigger OnPageBackgroundTaskCompleted(TaskId: Integer; Results: Dictionary of [Text, Text])
     var
         ActivityLog: Record "Activity Log";
+        Telemetry: Codeunit Telemetry;
+        CustomDimensions: Dictionary of [Text, Text];
         CompanyStatusTextValue: Text;
         CompanyStatus: Enum "Nemhandel Company Status";
     begin
@@ -78,9 +76,10 @@ pageextension 13608 "Company Info. Nemhandel Status" extends "Company Informatio
 
         NemhandelStatusMgt.ManageNotRegisteredNotification(Rec."Registered with Nemhandel");
 
-        Session.LogMessage(
+        CustomDimensions.Add('Category', NemhandelsregisteretCategoryTxt);
+        Telemetry.LogMessage(
             '0000KXY', StrSubstNo(PageBckGrndTaskCompletedTxt, CompanyStatus, CompanyStatusTextValue), Verbosity::Normal,
-            DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NemhandelsregisteretCategoryTxt);
+            DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
         ActivityLog.LogActivity(
             Rec.RecordId(), ActivityLog.Status::Success, NemhandelPageBackgroundTaskTxt, NemhandelCheckCompanyStatusTxt,
             StrSubstNo(PageBckGrndTaskCompletedTxt, CompanyStatus, CompanyStatusTextValue));

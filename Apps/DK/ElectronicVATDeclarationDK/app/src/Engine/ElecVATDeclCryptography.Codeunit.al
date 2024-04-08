@@ -81,12 +81,12 @@ codeunit 13607 "Elec. VAT Decl. Cryptography"
         ElecVATDeclAzKeyVault: Codeunit "Elec. VAT Decl. Az. Key Vault";
         CertificateManagement: Codeunit "Certificate Management";
         FullCertificateBase64: Text;
+        EmptySecretText: SecretText;
     begin
         FullCertificateBase64 := ElecVATDeclAzKeyVault.GetClientCertificateBase64FromAKV();
-        SignatureKey.FromBase64String(FullCertificateBase64, '', true);
-        ClientPublicKeyBase64 := CertificateManagement.GetPublicKeyAsBase64String(FullCertificateBase64, '');
+        SignatureKey.FromBase64String(FullCertificateBase64, EmptySecretText, true);
+        ClientPublicKeyBase64 := CertificateManagement.GetPublicKeyAsBase64String(FullCertificateBase64, EmptySecretText);
     end;
-
 
     procedure InitServerSertificate(var ServerCertificateBase64: Text)
     var

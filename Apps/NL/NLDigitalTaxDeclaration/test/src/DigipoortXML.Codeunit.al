@@ -20,8 +20,8 @@ codeunit 148000 "Digipoort XML"
         XbrliXbrlTok: Label 'xbrli:xbrl';
         AttrBdITok: Label 'xmlns:bd-i';
         AttrBdObTok: Label 'xmlns:bd-ob';
-        BDDataEndpointTxt: Label 'http://www.nltaxonomie.nl/nt17/bd/20221207/dictionary/bd-data', Locked = true;
-        VATDeclarationSchemaEndpointTxt: Label 'http://www.nltaxonomie.nl/nt17/bd/20221207/entrypoints/bd-rpt-ob-aangifte-2023.xsd', Locked = true;
+        BDDataEndpointTxt: Label 'http://www.nltaxonomie.nl/nt18/bd/20231213/dictionary/bd-data', Locked = true;
+        VATDeclarationSchemaEndpointTxt: Label 'http://www.nltaxonomie.nl/nt18/bd/20231213/entrypoints/bd-rpt-ob-aangifte-2024.xsd', Locked = true;
         IncorrectNumberOfNodesErr: Label 'Incorrect number of node %1', Comment = '%1 = the name of the node';
 
     [Test]

@@ -30,10 +30,12 @@ table 31252 "Bank Statement Header CZB"
             DataClassification = CustomerContent;
 
             trigger OnValidate()
+            var
+                NoSeries: Codeunit "No. Series";
             begin
                 if ("No." <> xRec."No.") and ("Bank Account No." <> '') then begin
                     BankAccount.Get("Bank Account No.");
-                    NoSeriesManagement.TestManual(BankAccount."Bank Statement Nos. CZB");
+                    NoSeries.TestManual(BankAccount."Bank Statement Nos. CZB");
                     "No. Series" := '';
                 end;
             end;
@@ -384,11 +386,33 @@ table 31252 "Bank Statement Header CZB"
     end;
 
     trigger OnInsert()
+    var
+        BankStatementHeader: Record "Bank Statement Header CZB";
+        NoSeries: Codeunit "No. Series";
+#if not CLEAN24
+        NoSeriesManagement: Codeunit NoSeriesManagement;
+        IsHandled: Boolean;
+#endif
     begin
         if "No." = '' then begin
             BankAccount.Get("Bank Account No.");
             BankAccount.Testfield("Bank Statement Nos. CZB");
-            NoSeriesManagement.InitSeries(BankAccount."Bank Statement Nos. CZB", xRec."No. Series", 0D, "No.", "No. Series");
+#if not CLEAN24
+            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(BankAccount."Bank Statement Nos. CZB", xRec."No. Series", 0D, "No.", "No. Series", IsHandled);
+            if not IsHandled then begin
+#endif
+                "No. Series" := BankAccount."Bank Statement Nos. CZB";
+                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                    "No. Series" := xRec."No. Series";
+                "No." := NoSeries.GetNextNo("No. Series");
+                BankStatementHeader.ReadIsolation(ReadIsolation::ReadUncommitted);
+                BankStatementHeader.SetLoadFields("No.");
+                while BankStatementHeader.Get("No.") do
+                    "No." := NoSeries.GetNextNo("No. Series");
+#if not CLEAN24
+                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", BankAccount."Bank Statement Nos. CZB", 0D, "No.");
+            end;
+#endif
         end;
     end;
 
@@ -402,7 +426,6 @@ table 31252 "Bank Statement Header CZB"
     var
         BankAccount: Record "Bank Account";
         CurrencyExchangeRate: Record "Currency Exchange Rate";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
         ConfirmManagement: Codeunit "Confirm Management";
         HideValidationDialog: Boolean;
         Confirmed: Boolean;
@@ -411,14 +434,13 @@ table 31252 "Bank Statement Header CZB"
     procedure AssistEdit(OldBankStatementHeaderCZB: Record "Bank Statement Header CZB"): Boolean
     var
         BankStatementHeaderCZB: Record "Bank Statement Header CZB";
+        NoSeries: Codeunit "No. Series";
     begin
         BankStatementHeaderCZB := Rec;
         BankAccount.Get(BankStatementHeaderCZB."Bank Account No.");
         BankAccount.Testfield("Bank Statement Nos. CZB");
-        if NoSeriesManagement.SelectSeries(BankAccount."Bank Statement Nos. CZB", OldBankStatementHeaderCZB."No. Series", BankStatementHeaderCZB."No. Series") then begin
-            BankAccount.Get(BankStatementHeaderCZB."Bank Account No.");
-            BankAccount.Testfield("Bank Account No.");
-            NoSeriesManagement.SetSeries(BankStatementHeaderCZB."No.");
+        if NoSeries.LookupRelatedNoSeries(BankAccount."Bank Statement Nos. CZB", OldBankStatementHeaderCZB."No. Series", BankStatementHeaderCZB."No. Series") then begin
+            BankStatementHeaderCZB."No." := NoSeries.GetNextNo(BankStatementHeaderCZB."No. Series");
             Rec := BankStatementHeaderCZB;
             exit(true);
         end;

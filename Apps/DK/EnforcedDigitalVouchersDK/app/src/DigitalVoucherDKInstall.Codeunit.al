@@ -61,8 +61,11 @@ codeunit 13645 "Digital Voucher DK Install."
     local procedure InsertDigitalVoucherEntrySourceCode(EntryType: Enum "Digital Voucher Entry Type"; SourceCode: Code[10])
     var
         VoucherSourceCode: Record "Voucher Entry Source Code";
+        SourceCodeRec: Record "Source Code";
     begin
         if SourceCode = '' then
+            exit;
+        if not SourceCodeRec.Get(SourceCode) then
             exit;
         VoucherSourceCode.Validate("Entry Type", EntryType);
         VoucherSourceCode.Validate("Source Code", SourceCode);

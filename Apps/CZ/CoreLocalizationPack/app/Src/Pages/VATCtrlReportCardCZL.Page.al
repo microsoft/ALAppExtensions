@@ -349,10 +349,8 @@ page 31110 "VAT Ctrl. Report Card CZL"
     local procedure DetermineVATCtrlReportCZLSeriesNo(): Code[20]
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
-        VATCtrlReportHeaderCZL: Record "VAT Ctrl. Report Header CZL";
     begin
         StatutoryReportingSetupCZL.Get();
-        DocumentNoVisibility.CheckNumberSeries(VATCtrlReportHeaderCZL, StatutoryReportingSetupCZL."VAT Control Report Nos.", VATCtrlReportHeaderCZL.FieldNo("No."));
         exit(StatutoryReportingSetupCZL."VAT Control Report Nos.");
     end;
 }

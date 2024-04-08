@@ -63,6 +63,7 @@ codeunit 20341 "Tax Document GL Posting"
         ToTaxTransactionValue: Record "Tax Transaction Value";
     begin
         FromTaxTransactionValue.Reset();
+        FromTaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
         FromTaxTransactionValue.SetRange("Tax Record ID", FromRecID);
         if FromTaxTransactionValue.FindSet() then
             repeat

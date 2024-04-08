@@ -9,7 +9,6 @@ codeunit 147100 "Library - CD Tracking"
         Assert: Codeunit Assert;
         LibraryERM: Codeunit "Library - ERM";
         LibraryUtility: Codeunit "Library - Utility";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
         LibraryPurchase: Codeunit "Library - Purchase";
         LibrarySales: Codeunit "Library - Sales";
         LibraryWarehouse: Codeunit "Library - Warehouse";
@@ -71,6 +70,7 @@ codeunit 147100 "Library - CD Tracking"
     [Scope('OnPrem')]
     procedure CreateJnlLine(JnlTemplateName: Code[10]; JnlBatchName: Code[10]; JnlBatchSeries: Code[20]; var ItemJournalLine: Record "Item Journal Line"; EntryType: Enum "Item Ledger Entry Type"; PostingDate: Date; ItemNo: Code[20]; Qty: Decimal; LocationCode: Code[10])
     var
+        NoSeries: Codeunit "No. Series";
         LineNo: Integer;
     begin
         with ItemJournalLine do begin
@@ -85,7 +85,7 @@ codeunit 147100 "Library - CD Tracking"
             "Line No." := LineNo;
             Insert(true);
             Validate("Posting Date", PostingDate);
-            "Document No." := NoSeriesManagement.GetNextNo(JnlBatchSeries, "Posting Date", true);
+            "Document No." := NoSeries.GetNextNo(JnlBatchSeries, "Posting Date");
             Validate("Entry Type", EntryType);
             Validate("Item No.", ItemNo);
             Validate(Quantity, Qty);

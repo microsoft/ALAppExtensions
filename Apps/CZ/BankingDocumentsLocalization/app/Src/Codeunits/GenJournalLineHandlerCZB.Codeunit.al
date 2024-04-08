@@ -100,7 +100,9 @@ codeunit 31453 "Gen. Journal Line Handler CZB"
             if IssBankStatementHeader.Get(GenJnlLine."Bank Statement No. CZB") then
                 IssBankStatementHeader.UpdatePaymentJournalStatus(Enum::"Journal Status CZB"::Posted);
 
-        GenJnlLine."Bank Statement No. CZB" := '';
-        GenJnlLine.Modify();
+        if GenJournalLine.Get(GenJnlLine."Journal Template Name", GenJnlLine."Journal Batch Name", GenJnlLine."Line No.") then begin
+            GenJournalLine."Bank Statement No. CZB" := '';
+            GenJournalLine.Modify();
+        end;
     end;
 }

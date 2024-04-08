@@ -13,7 +13,16 @@ codeunit 31313 "Item Jnl.CheckLine Handler CZL"
     var
         UserSetupAdvManagementCZL: Codeunit "User Setup Adv. Management CZL";
     begin
-        if UserSetupAdvManagementCZL.IsCheckAllowed() and not CalledFromAdjustment then
+        if CalledFromAdjustment then
+            exit;
+        if ItemJnlLine.Correction and
+           (ItemJnlLine."Document Type" in [
+            ItemJnlLine."Document Type"::"Purchase Receipt",
+            ItemJnlLine."Document Type"::"Sales Shipment",
+            ItemJnlLine."Document Type"::"Transfer Shipment"])
+        then
+            exit;
+        if UserSetupAdvManagementCZL.IsCheckAllowed() then
             UserSetupAdvManagementCZL.CheckItemJournalLine(ItemJnlLine);
     end;
 

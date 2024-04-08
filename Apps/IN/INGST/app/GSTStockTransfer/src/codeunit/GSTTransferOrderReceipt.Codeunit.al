@@ -80,14 +80,14 @@ codeunit 18390 "GST Transfer Order Receipt"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Receipt", 'OnBeforeTransRcptHeaderInsert', '', false, false)]
     local procedure GetPostingNoSeries(TransferHeader: Record "Transfer Header"; var TransferReceiptHeader: Record "Transfer Receipt Header")
     var
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeriesCodeunit: Codeunit "No. Series";
         NoSeries: Code[20];
     begin
         NoSeries := GetTransferReceiptPostingNoSeries(TransferHeader);
         if NoSeries <> '' then begin
             TransferReceiptHeader."No. Series" := NoSeries;
             if TransferReceiptHeader."No. Series" <> '' then
-                TransferReceiptHeader."No." := NoSeriesManagement.GetNextNo(TransferReceiptHeader."No. Series", TransferHeader."Posting Date", true);
+                TransferReceiptHeader."No." := NoSeriesCodeunit.GetNextNo(TransferReceiptHeader."No. Series", TransferHeader."Posting Date");
         end;
     end;
 
@@ -156,7 +156,12 @@ codeunit 18390 "GST Transfer Order Receipt"
         GSTGroup: Record "GST Group";
         DocTransactionType: Enum "Transaction Type Enum";
         DocumentType: Enum "Document Type Enum";
+        IsHandled: Boolean;
     begin
+        OnBeforeInsertTransRcptLineFillBuffer(TransferLine, IsHandled);
+        if IsHandled then
+            exit;
+
         if TransferLine.Quantity <> 0 then
             GSTAmountLoaded := Abs(
                 RoundTotalGSTAmountLoadedQtyFactor(
@@ -215,10 +220,15 @@ codeunit 18390 "GST Transfer Order Receipt"
     var
         Item: Record Item;
         CustomDutyBase: Boolean;
+        IsHandled: Boolean;
     begin
         FirstExecution := true;
         if TransReceiptHeaderNo <> TransferReceiptHeader."No." then
             TransReceiptHeaderNo := TransferReceiptHeader."No.";
+
+        OnBeforePostTransferOrderReceiptGLEntries(TempTransferBufferfinal, TransferHeader, TransferReceiptHeader, IsHandled);
+        if IsHandled then
+            exit;
 
         //Post GL Entries
         TempTransferBufferfinal.Reset();
@@ -228,10 +238,12 @@ codeunit 18390 "GST Transfer Order Receipt"
                 // Post GST to G/L entries from GST posting buffer.. GST Sales
                 GSTPostingBufferforTransferDocument(CustomDutyBase, TransferHeader);
                 // Post Unrealized Profit Account Entries
+                OnBeforePostUnrealizedPorfitAccountEntries(TempTransferBufferfinal, TransferHeader, TransferReceiptHeader);
                 if not (TempTransferBufferfinal."Gen. Bus. Posting Group" <> '') then
                     PostUnrealizedProfitAccountEntries(TransferHeader, TempTransferBufferfinal, TransferReceiptHeader);
 
                 // Amount loaded on inventory
+                OnBeforePostInventoryEntries(TempTransferBufferfinal, TransferHeader);
                 if (TempTransferBufferfinal."Amount Loaded on Inventory" <> 0) or (TempTransferBufferfinal."GST Amount Loaded on Inventory" <> 0) then
                     PostInventoryEntries(TransferHeader, TempTransferBufferfinal);
 
@@ -725,21 +737,24 @@ codeunit 18390 "GST Transfer Order Receipt"
 
     local procedure GetGSTAmount(TaxRecordId: RecordID): Decimal
     var
-        TaxTransValue: Record "Tax Transaction Value";
+        TaxTransactionValue: Record "Tax Transaction Value";
         GSTSetup: Record "GST Setup";
     begin
         if not GSTSetup.Get() then
             exit;
 
-        GSTSetup.TestField("GST Tax Type");
-        GSTSetup.TestField("Cess Tax Type");
-        TaxTransValue.Reset();
-        TaxTransValue.SetFilter("Tax Type", '%1|%2', GSTSetup."GST Tax Type", GSTSetup."Cess Tax Type");
-        TaxTransValue.SetRange("Tax Record ID", TaxRecordId);
-        TaxTransValue.SetRange("Value Type", TaxTransValue."Value Type"::COMPONENT);
-        TaxTransValue.SetFilter(Amount, '<>%1', 0);
-        if TaxTransValue.FindFirst() then
-            exit(TaxTransValue.Amount);
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Value Type", "Tax Type", Percent);
+        TaxTransactionValue.SetRange("Tax Record ID", TaxRecordId);
+        TaxTransactionValue.SetRange("Value Type", TaxTransactionValue."Value Type"::COMPONENT);
+        if GSTSetup."Cess Tax Type" <> '' then
+            TaxTransactionValue.SetRange("Tax Type", GSTSetup."GST Tax Type", GSTSetup."Cess Tax Type")
+        else
+            TaxTransactionValue.SetRange("Tax Type", GSTSetup."GST Tax Type");
+        TaxTransactionValue.SetFilter(Percent, '<>%1', 0);
+        if not TaxTransactionValue.IsEmpty() then
+            TaxTransactionValue.CalcSums(Amount);
+
+        exit(TaxTransactionValue.Amount);
     end;
 
     local procedure FillTransferBuffer(TransferLine: Record "Transfer Line")
@@ -1270,5 +1285,25 @@ codeunit 18390 "GST Transfer Order Receipt"
 
         TotalQuantity := 0;
         TempItemJnlLine.DeleteAll();
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertTransRcptLineFillBuffer(var TransferLine: Record "Transfer Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostTransferOrderReceiptGLEntries(var TempTransferBufferFinal: Record "Transfer Buffer" temporary; var TransferHeader: Record "Transfer Header"; var TransferReceiptHeader: Record "Transfer Receipt Header"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostUnrealizedPorfitAccountEntries(var TempTransferBufferFinal: Record "Transfer Buffer" temporary; var TransferHeader: Record "Transfer Header"; var TransferReceiptHeader: Record "Transfer Receipt Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostInventoryEntries(var TempTransferBufferFinal: Record "Transfer Buffer" temporary; var TransferHeader: Record "Transfer Header")
+    begin
     end;
 }

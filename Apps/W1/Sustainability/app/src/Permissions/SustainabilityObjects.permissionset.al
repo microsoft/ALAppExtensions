@@ -5,6 +5,7 @@ using Microsoft.Sustainability.Ledger;
 using Microsoft.Sustainability.Calculation;
 using Microsoft.Sustainability.Posting;
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Reports;
 using Microsoft.Sustainability.Setup;
 
 permissionset 6210 "Sustainability - Objects"
@@ -38,6 +39,7 @@ permissionset 6210 "Sustainability - Objects"
         page "Recurring Sustainability Jnl." = X,
         page "Sustainability Ledger Entries" = X,
         page "Sustainability Setup" = X,
+        page "Sustain. Jnl. Errors Factbox" = X,
         codeunit "Sustainability Account Mgt." = X,
         codeunit "Sustainability Journal Mgt." = X,
         codeunit "Sustainability Jnl.-Post" = X,
@@ -45,5 +47,10 @@ permissionset 6210 "Sustainability - Objects"
         codeunit "Sustainability Post Mgt" = X,
         codeunit "Sustainability Jnl.-Check" = X,
         codeunit "Sustainability Calculation" = X,
-        codeunit "Sustainability Calc. Mgt." = X;
+        codeunit "Sustainability Calc. Mgt." = X,
+        codeunit "Sustain. Jnl. Errors Mgt." = X,
+        codeunit "Check Sust. Jnl. Line. Backgr." = X,
+        report "Emission By Category" = X,
+        report "Emission Per Facility" = X,
+        report "Total Emissions" = X;
 }

@@ -20,11 +20,11 @@ page 6213 "Sustain. Account Categories"
                 }
                 field(Description; Rec.Description)
                 {
-                    ToolTip = 'Specifies the description of the record.';
+                    ToolTip = 'Specifies the category description.';
                 }
                 field("Emission Scope"; Rec."Emission Scope")
                 {
-                    ToolTip = 'Specifies the type of the scope of the record.';
+                    ToolTip = 'Specifies the scope of the emissions that are associated with the sustainability category. Scope 1: Direct emissions from sources that are owned or controlled by the reporting entity. Scope 2: Indirect emissions from the generation of purchased electricity, heat, or steam consumed by the reporting entity. Scope 3: Other indirect emissions, such as the extraction and production of purchased materials and fuels, transport-related activities in vehicles not owned or controlled by the reporting entity, and waste disposal.';
                 }
                 field(CO2; Rec.CO2)
                 {
@@ -40,15 +40,15 @@ page 6213 "Sustain. Account Categories"
                 }
                 field("Calculation Foundation"; Rec."Calculation Foundation")
                 {
-                    ToolTip = 'Specifies the foundation for emission calculation.';
+                    ToolTip = 'Specifies the calculation foundation for emission calculation.';
                 }
                 field("Custom Value"; Rec."Custom Value")
                 {
-                    ToolTip = 'Specifies the custom foundation for emission calculation.';
+                    ToolTip = 'Specifies the custom value for emission calculation.';
                 }
                 field("Calculate from General Ledger"; Rec."Calculate from General Ledger")
                 {
-                    ToolTip = 'Specifies if the custom amount should be calculated from general ledger entries.';
+                    ToolTip = 'Specifies if the custom amount is calculated from general ledger.';
                 }
                 field("G/L Account Filter"; Rec."G/L Account Filter")
                 {
@@ -79,7 +79,7 @@ page 6213 "Sustain. Account Categories"
                     Image = Description;
                     RunObject = Page "Sustain. Account Subcategories";
                     RunPageLink = "Category Code" = field(Code);
-                    ToolTip = 'View or edit multiple subcategories for a specific category.';
+                    ToolTip = 'Open the Subcategories page to view and manage the subcategories for the selected category.';
                     Scope = Repeater;
                 }
             }

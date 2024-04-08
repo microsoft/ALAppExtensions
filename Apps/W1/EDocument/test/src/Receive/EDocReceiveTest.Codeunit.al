@@ -20,10 +20,12 @@ codeunit 139628 "E-Doc. Receive Test"
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryInventory: Codeunit "Library - Inventory";
         LibraryJournals: Codeunit "Library - Journals";
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         PurchOrderTestBuffer: Codeunit "E-Doc. Test Buffer";
         EDocImplState: Codeunit "E-Doc. Impl. State";
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
+        NullGuid: Guid;
         GetBasicInfoErr: Label 'Test Get Basic Info From Received Document Error.', Locked = true;
         GetCompleteInfoErr: Label 'Test Get Complete Info From Received Document Error.', Locked = true;
 
@@ -54,6 +56,8 @@ codeunit 139628 "E-Doc. Receive Test"
 
         // [GIVEN] purchase invoice
         LibraryPurchase.CreateVendorWithAddress(Vendor);
+        Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+        Vendor.Modify();
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
 
         for i := 1 to 3 do begin
@@ -93,10 +97,347 @@ codeunit 139628 "E-Doc. Receive Test"
             until CreatedPurchaseLine.Next() = 0;
 
         PurchaseHeader.SetHideValidationDialog(true);
+        PurchaseHeader."E-Document Link" := NullGuid;
         PurchaseHeader.Delete(true);
 
         CreatedPurchaseHeader.SetHideValidationDialog(true);
+        CreatedPurchaseHeader."E-Document Link" := NullGuid;
         CreatedPurchaseHeader.Delete(true);
+    end;
+
+    [Test]
+    [HandlerFunctions('SelectPOHandler')]
+    procedure ReceiveToPurchaseOrderLink()
+    var
+        Vendor1: Record Vendor;
+        EDocService: Record "E-Document Service";
+        EDocServiceStatus: Record "E-Document Service Status";
+        EDocument: Record "E-Document";
+        EDocServicePage: TestPage "E-Document Service";
+        OrderNo: Text;
+    begin
+        // [FEATURE] [E-Document] [Receive]
+        // [SCENARIO] Link to existing Purchase Order for vendor
+        Initialize();
+
+        // [GIVEN] E-Document service to receive one single purchase invoice
+        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService);
+        BindSubscription(EDocImplState);
+
+        EDocService."Lookup Account Mapping" := false;
+        EDocService."Lookup Item GTIN" := false;
+        EDocService."Lookup Item Reference" := false;
+        EDocService."Resolve Unit Of Measure" := false;
+        EDocService."Validate Line Discount" := false;
+        EDocService."Verify Totals" := false;
+        EDocService."Use Batch Processing" := false;
+        EDocService.Modify();
+
+        // [GIVEN] purchase invoice
+        LibraryPurchase.CreateVendorWithAddress(Vendor1);
+        Vendor1."Receive E-Document To" := Vendor1."Receive E-Document To"::"Purchase Order";
+        Vendor1.Modify();
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, Vendor1."No.");
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), 10);
+        PurchaseLine.Validate("Direct Unit Cost", 100);
+        PurchaseLine.Modify(true);
+        OrderNo := PurchaseHeader."No.";
+        LibraryVariableStorage.Enqueue(PurchaseHeader);
+
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor1."No.");
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), 10);
+        PurchaseLine.Validate("Direct Unit Cost", 100);
+        PurchaseLine.Modify(true);
+
+        PurchOrderTestBuffer.ClearTempVariables();
+        PurchOrderTestBuffer.AddPurchaseDocToTemp(PurchaseHeader);
+
+        // [WHEN] Running Receive
+        EDocServicePage.OpenView();
+        EDocServicePage.Filter.SetFilter(Code, EDocService.Code);
+        EDocServicePage.Receive.Invoke();
+
+        // [THEN] Page to pick Purchase Order appears
+        // Handler function
+
+        // [THEN] After processing, check fields
+        EDocument.FindLast();
+        PurchaseHeader.SetRange("No.", OrderNo);
+        PurchaseHeader.SetRange("Document Type", Enum::"Purchase Document Type"::Order);
+        PurchaseHeader.FindLast();
+        EDocServiceStatus.FindLast();
+
+        Assert.AreEqual(PurchaseHeader."No.", EDocument."Order No.", '');
+        Assert.AreEqual(Enum::"E-Document Type"::"Purchase Order", EDocument."Document Type", '');
+        Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, '');
+        Assert.AreEqual(PurchaseHeader.RecordId(), EDocument."Document Record ID", '');
+        Assert.AreEqual(EDocument.SystemId, PurchaseHeader."E-Document Link", '');
+
+        Assert.AreEqual(EDocument."Entry No", EDocServiceStatus."E-Document Entry No", '');
+        Assert.AreEqual(Enum::"E-Document Service Status"::"Order Linked", EDocServiceStatus.Status, '');
+    end;
+
+    [Test]
+    procedure ReceiveToPurchaseOrderLinkWithOrderNo()
+    var
+        EDocService: Record "E-Document Service";
+        EDocServiceStatus: Record "E-Document Service Status";
+        EDocument: Record "E-Document";
+        EDocServicePage: TestPage "E-Document Service";
+        OrderNo: Text;
+    begin
+        // [FEATURE] [E-Document] [Receive]
+        // [SCENARIO] Link two invoices to existing Purchase Order for vendor
+        Initialize();
+
+        // [GIVEN] E-Document service to receive one single purchase invoice
+        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService);
+        BindSubscription(EDocImplState);
+
+        EDocService."Lookup Account Mapping" := false;
+        EDocService."Lookup Item GTIN" := false;
+        EDocService."Lookup Item Reference" := false;
+        EDocService."Resolve Unit Of Measure" := false;
+        EDocService."Validate Line Discount" := false;
+        EDocService."Verify Totals" := false;
+        EDocService."Use Batch Processing" := false;
+        EDocService.Modify();
+
+        // [GIVEN] purchase invoice
+        LibraryPurchase.CreateVendorWithAddress(Vendor);
+        Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Order";
+        Vendor.Modify();
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, Vendor."No.");
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), 10);
+        PurchaseLine.Validate("Direct Unit Cost", 100);
+        PurchaseLine.Modify(true);
+        OrderNo := PurchaseHeader."No.";
+        LibraryVariableStorage.Enqueue(PurchaseHeader);
+
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), 10);
+        PurchaseLine.Validate("Direct Unit Cost", 100);
+        PurchaseLine.Modify(true);
+
+        PurchOrderTestBuffer.ClearTempVariables();
+        PurchOrderTestBuffer.AddPurchaseDocToTemp(PurchaseHeader);
+        PurchOrderTestBuffer.SetEDocOrderNo(CopyStr(OrderNo, 1, 20));
+
+        // [WHEN] Running Receive
+        EDocServicePage.OpenView();
+        EDocServicePage.Filter.SetFilter(Code, EDocService.Code);
+        EDocServicePage.Receive.Invoke();
+
+        // [THEN] After processing, check fields
+        EDocument.FindLast();
+        PurchaseHeader.SetRange("No.", OrderNo);
+        PurchaseHeader.SetRange("Document Type", Enum::"Purchase Document Type"::Order);
+        PurchaseHeader.FindLast();
+        EDocServiceStatus.FindLast();
+
+        Assert.AreEqual(PurchaseHeader."No.", EDocument."Order No.", '');
+        Assert.AreEqual(Enum::"E-Document Type"::"Purchase Order", EDocument."Document Type", '');
+        Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, '');
+        Assert.AreEqual(PurchaseHeader.RecordId(), EDocument."Document Record ID", '');
+        Assert.AreEqual(EDocument.SystemId, PurchaseHeader."E-Document Link", '');
+
+        Assert.AreEqual(EDocument."Entry No", EDocServiceStatus."E-Document Entry No", '');
+        Assert.AreEqual(Enum::"E-Document Service Status"::"Order Linked", EDocServiceStatus.Status, '');
+
+        // [GIVEN] One more invoice is received to PO
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), 10);
+        PurchaseLine.Validate("Direct Unit Cost", 100);
+        PurchaseLine.Modify(true);
+
+        PurchOrderTestBuffer.ClearTempVariables();
+        PurchOrderTestBuffer.AddPurchaseDocToTemp(PurchaseHeader);
+        PurchOrderTestBuffer.SetEDocOrderNo(CopyStr(OrderNo, 1, 20));
+
+        // [WHEN] Running Receive
+        EDocServicePage.Receive.Invoke();
+
+        // [THEN] After processing, check fields
+        EDocument.FindLast();
+        PurchaseHeader.SetRange("No.", OrderNo);
+        PurchaseHeader.SetRange("Document Type", Enum::"Purchase Document Type"::Order);
+        PurchaseHeader.FindLast();
+        EDocServiceStatus.FindLast();
+
+        Assert.AreEqual(PurchaseHeader."No.", EDocument."Order No.", '');
+        Assert.AreEqual(Enum::"E-Document Type"::"Purchase Order", EDocument."Document Type", '');
+        Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, '');
+        Assert.AreEqual(PurchaseHeader.RecordId(), EDocument."Document Record ID", '');
+        Assert.AreNotEqual(EDocument.SystemId, PurchaseHeader."E-Document Link", '');
+
+        Assert.AreEqual(EDocument."Entry No", EDocServiceStatus."E-Document Entry No", '');
+        Assert.AreEqual(Enum::"E-Document Service Status"::"Pending", EDocServiceStatus.Status, '');
+    end;
+
+    // [Test]
+    // [HandlerFunctions('MenuHandler')]
+    // procedure ReceiveToPurchaseOrderAndMatchWithOrder()
+    // var
+    //     EDocService: Record "E-Document Service";
+    //     PostedPurchHeader: Record "Purch. Inv. Header";
+    //     EDocument: Record "E-Document";
+    //     EDocServiceStatus: Record "E-Document Service Status";
+    //     PurchaseOrderPage: TestPage "Purchase Order";
+    //     EDocMatchingPage: TestPage "E-Doc. Order Line Matching";
+    //     EDocServicePage: TestPage "E-Document Service";
+    //     EDocumentPage: TestPage "E-Document";
+    //     OrderNo: Text;
+    //     ItemNo: Code[20];
+    // begin
+    //     // [FEATURE] [E-Document] [Receive]
+    //     // [SCENARIO] Receive Invoice to Order, Match it, Post it 
+    //     Initialize();
+
+    //     // [GIVEN] E-Document service to receive one single purchase invoice
+    //     LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService);
+    //     BindSubscription(EDocImplState);
+
+    //     EDocService."Lookup Account Mapping" := false;
+    //     EDocService."Lookup Item GTIN" := false;
+    //     EDocService."Lookup Item Reference" := false;
+    //     EDocService."Resolve Unit Of Measure" := false;
+    //     EDocService."Validate Line Discount" := false;
+    //     EDocService."Verify Totals" := false;
+    //     EDocService."Use Batch Processing" := false;
+    //     EDocService.Modify();
+
+    //     // [GIVEN] purchase invoice
+    //     LibraryPurchase.CreateVendorWithAddress(Vendor);
+    //     Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Order";
+    //     Vendor.Modify();
+    //     ItemNo := LibraryInventory.CreateItemNo();
+
+    //     LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, Vendor."No.");
+    //     LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, ItemNo, 10);
+    //     PurchaseLine.Validate("Direct Unit Cost", 100);
+    //     PurchaseLine.Modify(true);
+
+    //     LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, false);
+
+    //     OrderNo := PurchaseHeader."No.";
+    //     LibraryVariableStorage.Enqueue(PurchaseHeader);
+
+    //     LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
+    //     LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, ItemNo, 10);
+    //     PurchaseLine.Validate("Direct Unit Cost", 200);
+    //     PurchaseLine.Modify(true);
+
+    //     PurchOrderTestBuffer.ClearTempVariables();
+    //     PurchOrderTestBuffer.AddPurchaseDocToTemp(PurchaseHeader);
+    //     PurchOrderTestBuffer.SetEDocOrderNo(CopyStr(OrderNo, 1, 20));
+
+    //     // [WHEN] Running Receive
+    //     EDocServicePage.OpenView();
+    //     EDocServicePage.Filter.SetFilter(Code, EDocService.Code);
+    //     EDocServicePage.Receive.Invoke();
+    //     EDocumentPage.OpenView();
+    //     EDocumentPage.Last();
+    //     EDocumentPage.EdocoumentServiceStatus.Last();
+    //     Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Order Linked"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), '');
+
+    //     // [THEN] Run matching page
+    //     EDocMatchingPage.Trap();
+    //     EDocumentPage.MatchToOrder.Invoke();
+
+    //     // [THEN] Match manually
+    //     EDocMatchingPage.MatchManual.Invoke();
+
+    //     // [THEN] Open Purchase Order Page
+    //     PurchaseOrderPage.Trap();
+    //     EDocMatchingPage.ApplyToPO.Invoke();
+
+    //     // Check unit cost was updated on purchase line after apply
+    //     PurchaseOrderPage.PurchLines.Last();
+    //     Assert.AreEqual('200.00', PurchaseOrderPage.PurchLines."Direct Unit Cost".Value(), '');
+
+    //     // [THEN] Post
+    //     PurchaseOrderPage.Post.Invoke();
+    //     EDocument.FindLast();
+    //     EDocServiceStatus.FindLast();
+    //     PostedPurchHeader.FindLast();
+
+    //     // [THEN] Check that we have correct Amount on invoice and that E-Document is updated
+    //     PostedPurchHeader.CalcFields("Amount Including VAT");
+    //     Assert.AreEqual(EDocument."Document Record ID", PostedPurchHeader.RecordId(), '');
+    //     Assert.AreEqual(EDocument."Amount Incl. VAT", PostedPurchHeader."Amount Including VAT", '');
+    //     Assert.AreEqual(Enum::"E-Document Status"::Processed, EDocument.Status, '');
+    //     Assert.AreEqual(Enum::"E-Document Service Status"::"Imported Document Created", EDocServiceStatus.Status, '');
+    // end;
+
+    [Test]
+    [HandlerFunctions('SelectPOHandlerCancel')]
+    procedure ReceiveToPurchaseOrderCreated()
+    var
+        PurchHeader: Record "Purchase Header";
+        EDocService: Record "E-Document Service";
+        EDocServiceStatus: Record "E-Document Service Status";
+        EDocument: Record "E-Document";
+        EDocServicePage: TestPage "E-Document Service";
+        OrderNo: Text;
+    begin
+        // [FEATURE] [E-Document] [Receive]
+        // [SCENARIO] Link to Purchase Order where user click cancel to link
+        Initialize();
+
+        // [GIVEN] e-Document service to receive one single purchase invoice
+        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService);
+        BindSubscription(EDocImplState);
+
+        EDocService."Lookup Account Mapping" := false;
+        EDocService."Lookup Item GTIN" := false;
+        EDocService."Lookup Item Reference" := false;
+        EDocService."Resolve Unit Of Measure" := false;
+        EDocService."Validate Line Discount" := false;
+        EDocService."Verify Totals" := false;
+        EDocService."Use Batch Processing" := false;
+        EDocService.Modify();
+
+        // [GIVEN] purchase invoice
+        LibraryPurchase.CreateVendorWithAddress(Vendor);
+        Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Order";
+        Vendor.Modify();
+        LibraryPurchase.CreatePurchHeader(PurchHeader, PurchHeader."Document Type"::Order, Vendor."No.");
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), 10);
+        PurchaseLine.Validate("Direct Unit Cost", 100);
+        PurchaseLine.Modify(true);
+        OrderNo := PurchHeader."No.";
+        LibraryVariableStorage.Enqueue(PurchHeader);
+
+        LibraryPurchase.CreatePurchHeader(PurchHeader, PurchHeader."Document Type"::Invoice, Vendor."No.");
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchHeader, PurchaseLine.Type::Item, LibraryInventory.CreateItemNo(), 10);
+        PurchaseLine.Validate("Direct Unit Cost", 100);
+        PurchaseLine.Modify(true);
+
+        PurchOrderTestBuffer.ClearTempVariables();
+        PurchOrderTestBuffer.AddPurchaseDocToTemp(PurchHeader);
+
+        // [WHEN] Running Receive
+        EDocServicePage.OpenView();
+        EDocServicePage.Filter.SetFilter(Code, EDocService.Code);
+        EDocServicePage.Receive.Invoke();
+
+        // [THEN] Page to pick Purchase Order appears
+        // Handler functions
+
+        // [THEN] After processing, check fields
+        EDocument.FindLast();
+        PurchHeader.SetRange("Document Type", Enum::"Purchase Document Type"::Order);
+        PurchHeader.FindLast();
+        EDocServiceStatus.FindLast();
+        // PurchaseHeader.SetRange("No.", OrderNo);
+
+        Assert.AreEqual(Enum::"E-Document Type"::"Purchase Order", EDocument."Document Type", '');
+        Assert.AreEqual(Enum::"E-Document Status"::Processed, EDocument.Status, '');
+        Assert.AreEqual(PurchHeader.RecordId(), EDocument."Document Record ID", '');
+        Assert.AreEqual(EDocument.SystemId, PurchHeader."E-Document Link", '');
+
+        Assert.AreEqual(EDocument."Entry No", EDocServiceStatus."E-Document Entry No", '');
+        Assert.AreEqual(Enum::"E-Document Service Status"::"Imported Document Created", EDocServiceStatus.Status, '');
     end;
 
     [Test]
@@ -129,6 +470,8 @@ codeunit 139628 "E-Doc. Receive Test"
         // [GIVEN] multiple purchase invoices
         for i := 1 to 5 do begin
             LibraryPurchase.CreateVendorWithAddress(Vendor);
+            Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+            Vendor.Modify();
             LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
 
             for j := 1 to 3 do begin
@@ -177,9 +520,11 @@ codeunit 139628 "E-Doc. Receive Test"
                     until CreatedPurchaseLine.Next() = 0;
 
                 PurchaseHeader.SetHideValidationDialog(true);
+                PurchaseHeader."E-Document Link" := NullGuid;
                 PurchaseHeader.Delete(true);
 
                 CreatedPurchaseHeader.SetHideValidationDialog(true);
+                CreatedPurchaseHeader."E-Document Link" := NullGuid;
                 CreatedPurchaseHeader.Delete(true);
             until EDocument.Next() = 0;
     end;
@@ -214,6 +559,8 @@ codeunit 139628 "E-Doc. Receive Test"
 
         // [GIVEN] purchase credit memo
         LibraryPurchase.CreateVendorWithAddress(Vendor);
+        Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+        Vendor.Modify();
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo", Vendor."No.");
 
         for i := 1 to 3 do begin
@@ -260,9 +607,11 @@ codeunit 139628 "E-Doc. Receive Test"
             until CreatedPurchaseLine.Next() = 0;
 
         PurchaseHeader.SetHideValidationDialog(true);
+        PurchaseHeader."E-Document Link" := NullGuid;
         PurchaseHeader.Delete(true);
 
         CreatedPurchaseHeader.SetHideValidationDialog(true);
+        CreatedPurchaseHeader."E-Document Link" := NullGuid;
         CreatedPurchaseHeader.Delete(true);
     end;
 
@@ -299,6 +648,8 @@ codeunit 139628 "E-Doc. Receive Test"
         // [GIVEN] purchase credit memo
         for i := 1 to 5 do begin
             LibraryPurchase.CreateVendorWithAddress(Vendor);
+            Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+            Vendor.Modify();
             LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo", Vendor."No.");
 
             for j := 1 to 3 do begin
@@ -354,9 +705,11 @@ codeunit 139628 "E-Doc. Receive Test"
                     until CreatedPurchaseLine.Next() = 0;
 
                 PurchaseHeader.SetHideValidationDialog(true);
+                PurchaseHeader."E-Document Link" := NullGuid;
                 PurchaseHeader.Delete(true);
 
                 CreatedPurchaseHeader.SetHideValidationDialog(true);
+                CreatedPurchaseHeader."E-Document Link" := NullGuid;
                 CreatedPurchaseHeader.Delete(true);
             until EDocument.Next() = 0;
     end;
@@ -403,6 +756,8 @@ codeunit 139628 "E-Doc. Receive Test"
 
         // [GIVEN] purchase invoice
         LibraryPurchase.CreateVendorWithAddress(Vendor);
+        Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+        Vendor.Modify();
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
         PurchaseHeader."Pay-to Name" := 'Journal Test Invoice';
         PurchaseHeader.Modify();
@@ -433,6 +788,7 @@ codeunit 139628 "E-Doc. Receive Test"
         CheckGenJnlLineIsEqualToPurchaseHeader(PurchaseHeader, GenJnlLine);
 
         PurchaseHeader.SetHideValidationDialog(true);
+        PurchaseHeader."E-Document Link" := NullGuid;
         PurchaseHeader.Delete(true);
         GenJnlLine.Delete(true);
         GenJnlBatch.Delete(true);
@@ -482,6 +838,8 @@ codeunit 139628 "E-Doc. Receive Test"
         // [GIVEN] purchase invoices
         for i := 1 to 5 do begin
             LibraryPurchase.CreateVendorWithAddress(Vendor);
+            Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+            Vendor.Modify();
             LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
             PurchaseHeader."Pay-to Name" := 'Journal Test Invoice no. ' + Format(i);
             PurchaseHeader.Modify();
@@ -512,6 +870,7 @@ codeunit 139628 "E-Doc. Receive Test"
                 CheckGenJnlLineIsEqualToPurchaseHeader(PurchaseHeader, GenJnlLine);
 
                 PurchaseHeader.SetHideValidationDialog(true);
+                PurchaseHeader."E-Document Link" := NullGuid;
                 PurchaseHeader.Delete(true);
 
                 GenJnlLine.Delete(true);
@@ -560,6 +919,8 @@ codeunit 139628 "E-Doc. Receive Test"
 
         // [GIVEN] purchase credit memo
         LibraryPurchase.CreateVendorWithAddress(Vendor);
+        Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+        Vendor.Modify();
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo", Vendor."No.");
         PurchaseHeader."Pay-to Name" := 'Journal Test Invoice';
         PurchaseHeader.Modify();
@@ -590,6 +951,7 @@ codeunit 139628 "E-Doc. Receive Test"
         CheckGenJnlLineIsEqualToPurchaseHeader(PurchaseHeader, GenJnlLine);
 
         PurchaseHeader.SetHideValidationDialog(true);
+        PurchaseHeader."E-Document Link" := NullGuid;
         PurchaseHeader.Delete(true);
         GenJnlLine.Delete(true);
         GenJnlBatch.Delete(true);
@@ -639,6 +1001,8 @@ codeunit 139628 "E-Doc. Receive Test"
         // [GIVEN] purchase credit memos
         for i := 1 to 5 do begin
             LibraryPurchase.CreateVendorWithAddress(Vendor);
+            Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+            Vendor.Modify();
             LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::"Credit Memo", Vendor."No.");
             PurchaseHeader."Pay-to Name" := 'Journal Test Invoice no. ' + Format(i);
             PurchaseHeader.Modify();
@@ -669,6 +1033,7 @@ codeunit 139628 "E-Doc. Receive Test"
                 CheckGenJnlLineIsEqualToPurchaseHeader(PurchaseHeader, GenJnlLine);
 
                 PurchaseHeader.SetHideValidationDialog(true);
+                PurchaseHeader."E-Document Link" := NullGuid;
                 PurchaseHeader.Delete(true);
 
                 GenJnlLine.Delete(true);
@@ -695,6 +1060,8 @@ codeunit 139628 "E-Doc. Receive Test"
 
         // [GIVEN] purchase invoice
         LibraryPurchase.CreateVendorWithAddress(Vendor);
+        Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+        Vendor.Modify();
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
 
         for i := 1 to 3 do begin
@@ -717,6 +1084,7 @@ codeunit 139628 "E-Doc. Receive Test"
         Assert.AreEqual(GetBasicInfoErr, EDocumentPage.ErrorMessagesPart.Description.Value(), '');
 
         PurchaseHeader.SetHideValidationDialog(true);
+        PurchaseHeader."E-Document Link" := NullGuid;
         PurchaseHeader.Delete(true);
     end;
 
@@ -740,6 +1108,8 @@ codeunit 139628 "E-Doc. Receive Test"
 
         // [GIVEN] purchase invoice
         LibraryPurchase.CreateVendorWithAddress(Vendor);
+        Vendor."Receive E-Document To" := Vendor."Receive E-Document To"::"Purchase Invoice";
+        Vendor.Modify();
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, Vendor."No.");
 
         for i := 1 to 3 do begin
@@ -762,9 +1132,32 @@ codeunit 139628 "E-Doc. Receive Test"
         Assert.AreEqual(GetCompleteInfoErr, EDocumentPage.ErrorMessagesPart.Description.Value(), '');
 
         PurchaseHeader.SetHideValidationDialog(true);
+        PurchaseHeader."E-Document Link" := NullGuid;
         PurchaseHeader.Delete(true);
     end;
 
+    [ModalPageHandler]
+    procedure SelectPOHandler(var POList: TestPage "Purchase Order List")
+    var
+        Variant: Variant;
+    begin
+        LibraryVariableStorage.Dequeue(Variant);
+        POList.GoToRecord(Variant);
+        POList.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure SelectPOHandlerCancel(var POList: TestPage "Purchase Order List")
+    begin
+        POList.Cancel().Invoke();
+    end;
+
+
+    [ConfirmHandler]
+    procedure ConfirmHandlerYes(Message: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := true;
+    end;
 
     [ConfirmHandler]
     procedure ConfirmHandler(Message: Text[1024]; var Reply: Boolean)
@@ -772,9 +1165,17 @@ codeunit 139628 "E-Doc. Receive Test"
         Reply := false;
     end;
 
+    [StrMenuHandler]
+    procedure MenuHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
+    begin
+    end;
+
     local procedure Initialize()
     begin
         Clear(EDocImplState);
+        Clear(PurchaseHeader);
+        Clear(LibraryVariableStorage);
+        PurchaseHeader.DeleteAll();
     end;
 
     local procedure CheckPurchaseHeadersAreEqual(var PurchHeader1: Record "Purchase Header"; var PurchHeader2: Record "Purchase Header")

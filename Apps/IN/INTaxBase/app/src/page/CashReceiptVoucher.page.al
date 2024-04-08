@@ -1902,7 +1902,7 @@ page 18555 "Cash Receipt Voucher"
     var
         GenJournalLine: Record "Gen. Journal Line";
         GenJnlBatch: Record "Gen. Journal Batch";
-        NoSeriesMgt: Codeunit NoSeriesManagement;
+        NoSeriesBatch: Codeunit "No. Series - Batch";
         LastDocNo: Code[20];
     begin
         if Count() = 0 then
@@ -1914,9 +1914,9 @@ page 18555 "Cash Receipt Voucher"
         GenJournalLine.SetRange("Journal Batch Name", "Journal Batch Name");
         if GenJournalLine.FindLast() then begin
             LastDocNo := GenJournalLine."Document No.";
-            IncrementDocumentNo(GenJnlBatch, LastDocNo);
+            LastDocNo := NoSeriesBatch.SimulateGetNextNo(GenJnlBatch."No. Series", GenJournalLine."Posting Date", LastDocNo)
         end else
-            LastDocNo := NoSeriesMgt.TryGetNextNo(GenJnlBatch."No. Series", "Posting Date");
+            LastDocNo := NoSeriesBatch.PeekNextNo(GenJnlBatch."No. Series", "Posting Date");
 
         CurrentDocNo := LastDocNo;
         SetDocumentNumberFilter(CurrentDocNo);

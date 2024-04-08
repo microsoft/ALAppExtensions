@@ -13,15 +13,12 @@ using Microsoft.Purchases.Vendor;
 codeunit 18748 "TDS Adjustment Post"
 {
     var
-        TempNoSeries: Record "No. Series" temporary;
-        NoSeriesMgt2: array[10] of Codeunit NoSeriesManagement;
         DocNo: Code[20];
         CheckLineLbl: Label 'Checking lines        #1######\', Comment = '#1=Line check';
         PostLineLbl: Label 'Posting lines         #2###### @3@@@@@@@@@@@@@\', Comment = '#2=Post Line';
         JnlLinePostMsg: Label 'Journal lines posted successfully.';
         JnlBatchNameLbl: Label 'Journal Batch Name    #4##########\\', Comment = '#4=Journal Batch Name';
         PostTDSAdjQst: Label 'Do you want to post the journal lines?';
-        PostingNoSeriesErr: Label 'A maximum of %1 posting number series can be used in each journal.', Comment = '%1 Posting Number Series.,';
 
     procedure PostTaxJournal(var TDSJournalLine: Record "TDS Journal Line")
     var
@@ -117,22 +114,15 @@ codeunit 18748 "TDS Adjustment Post"
     procedure CheckDocumentNo(TDSJournalLine: Record "TDS Journal Line"): Code[20]
     var
         TDSJournalBatch: Record "TDS Journal Batch";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-        PostingNoSeriesNo: Integer;
+        NoSeries: Codeunit "No. Series";
     begin
         if (TDSJournalLine."Journal Template Name" = '') and (TDSJournalLine."Journal Batch Name" = '') and (TDSJournalLine."Document No." <> '') then
             exit(TDSJournalLine."Document No.");
 
         TDSJournalBatch.Get(TDSJournalLine."Journal Template Name", TDSJournalLine."Journal Batch Name");
-        if TDSJournalLine."Posting No. Series" = '' then begin
+        if TDSJournalLine."Posting No. Series" = '' then
             TDSJournalLine."Posting No. Series" := TDSJournalBatch."No. Series";
-            TDSJournalLine."Document No." := NoSeriesManagement.GetNextNo(TDSJournalLine."Posting No. Series", TDSJournalLine."Posting Date", true);
-        end else begin
-            InsertNoSeries(TDSJournalLine);
-            Evaluate(PostingNoSeriesNo, TempNoSeries.Description);
-            TDSJournalLine."Document No." :=
-              NoSeriesMgt2[PostingNoSeriesNo].GetNextNo(TDSJournalLine."Posting No. Series", TDSJournalLine."Posting Date", true);
-        end;
+        TDSJournalLine."Document No." := NoSeries.GetNextNo(TDSJournalLine."Posting No. Series", TDSJournalLine."Posting Date");
 
         exit(TDSJournalLine."Document No.");
     end;
@@ -305,22 +295,5 @@ codeunit 18748 "TDS Adjustment Post"
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
     begin
         GenJnlPostLine.RunWithCheck(GenJournalLine);
-    end;
-
-    local procedure InsertNoSeries(TDSJournalLine: Record "TDS Journal Line")
-    var
-        NoOfPostingNoSeries: Integer;
-    begin
-        if TempNoSeries.Get(TDSJournalLine."Posting No. Series") then
-            exit;
-
-        NoOfPostingNoSeries := NoOfPostingNoSeries + 1;
-        if NoOfPostingNoSeries > ArrayLen(NoSeriesMgt2) then
-            Error(PostingNoSeriesErr, ArrayLen(NoSeriesMgt2));
-
-        TempNoSeries.Init();
-        TempNoSeries.Code := TDSJournalLine."Posting No. Series";
-        TempNoSeries.Description := Format(NoOfPostingNoSeries);
-        TempNoSeries.Insert();
     end;
 }

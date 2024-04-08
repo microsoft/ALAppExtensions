@@ -358,6 +358,7 @@ page 30101 "Shpfy Shop Card"
                 {
                     ApplicationArea = All;
                     ShowMandatory = true;
+                    Caption = 'Customer/Company Template Code';
                     ToolTip = 'Specifies which customer template to use when creating unknown customers.';
                     Visible = not NewTemplatesEnabled;
                     ObsoleteReason = 'Generic Templates will be replaced with Customer Templates. Use Customer Templ. Code instead.';
@@ -367,7 +368,7 @@ page 30101 "Shpfy Shop Card"
 #endif
                 field(CustomerTemplCode; Rec."Customer Templ. Code")
                 {
-                    Caption = 'Customer Template Code';
+                    Caption = 'Customer/Company Template Code';
                     ToolTip = 'Specifies which customer template to use when creating unknown customers.';
                     ShowMandatory = true;
                     ApplicationArea = All;
@@ -421,7 +422,52 @@ page 30101 "Shpfy Shop Card"
                 field(CountySource; Rec."County Source")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies how to synchronize the county of the customer.';
+                    ToolTip = 'Specifies how to synchronize the county of the customer/company.';
+                }
+            }
+            group("B2B Company Synchronization")
+            {
+                Visible = Rec."B2B Enabled";
+                field("Company Import From Shopify"; Rec."Company Import From Shopify")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies how Shopify companies are synced to Business Central.';
+                    Importance = Promoted;
+                }
+                field("Company Mapping Type"; Rec."Company Mapping Type")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies how to map companies.';
+                }
+                field("Auto Create Unknown Companies"; Rec."Auto Create Unknown Companies")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies if unknown companies are automatically created in D365BC when synchronizing from Shopify.';
+                }
+                field("Default Company No."; Rec."Default Company No.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the default customer when not creating a company for each B2B company.';
+                }
+                field("Shopify Can Update Companies"; Rec."Shopify Can Update Companies")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies whether Shopify can update companies when synchronizing from Shopify.';
+                }
+                field("Can Update Shopify Companies"; Rec."Can Update Shopify Companies")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies whether D365BC can update companies when synchronizing to Shopify.';
+                }
+                field("Default Customer Permission"; Rec."Default Contact Permission")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the default customer permission for new companies.';
+                }
+                field("Auto Create Catalog"; Rec."Auto Create Catalog")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies whether a catalog is automatically created for new companies.';
                 }
             }
             group(OrderProcessing)
@@ -486,6 +532,23 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies whether the customer is notified when the shipment is synchronized to Shopify.';
                 }
+#if not CLEAN24
+                field(ReplaceOrderAttributeValue; Rec."Replace Order Attribute Value")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Feature Update: Enable Longer Order Attribute Value Length';
+                    ToolTip = 'Specifies if the connector stores order attribute values in a new field with a length of 2048 characters. Starting from version 27.0, this new field will be the only option available. However, until version 27.0 administrators can choose to continue using the old field if needed.';
+                    Enabled = not ReplaceOrderAttributeValueDisabled;
+                    ObsoleteReason = 'This feature will be enabled by default with version 27.0.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '24.0';
+
+                    trigger OnValidate()
+                    begin
+                        CurrPage.Update(true);
+                    end;
+                }
+#endif
             }
             group(ReturnsAndRefunds)
             {
@@ -540,50 +603,6 @@ page 30101 "Shpfy Shop Card"
                             CurrPage.Update(true);
                         end;
                     }
-                }
-            }
-            group("B2B Company Synchronization")
-            {
-                Visible = Rec."B2B Enabled";
-                field("Can Update Shopify Companies"; Rec."Can Update Shopify Companies")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies whether D365BC can update companies when synchronizing to Shopify.';
-                }
-                field("Shopify Can Update Companies"; Rec."Shopify Can Update Companies")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies whether Shopify can update companies when synchronizing from Shopify.';
-                }
-                field("Company Import From Shopify"; Rec."Company Import From Shopify")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies how Shopify companies are synced to Business Central.';
-                }
-                field("Auto Create Unknown Companies"; Rec."Auto Create Unknown Companies")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies if unknown companies are automatically created in D365BC when synchronizing from Shopify.';
-                }
-                field("Default Company No."; Rec."Default Company No.")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the default customer when not creating a company for each B2B company.';
-                }
-                field("Company Mapping Type"; Rec."Company Mapping Type")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies how to map companies.';
-                }
-                field("Default Customer Permission"; Rec."Default Contact Permission")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the default customer permission for new companies.';
-                }
-                field("Auto Create Catalog"; Rec."Auto Create Catalog")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies whether a catalog is automatically created for new companies.';
                 }
             }
         }
@@ -1101,6 +1120,9 @@ page 30101 "Shpfy Shop Card"
         ExpirationNotificationTxt: Label 'Shopify API version 30 days before expiry notification sent.', Locked = true;
         BlockedNotificationTxt: Label 'Shopify API version expired notification sent.', Locked = true;
         CategoryTok: Label 'Shopify Integration', Locked = true;
+#if not CLEAN24
+        ReplaceOrderAttributeValueDisabled: Boolean;
+#endif
 
     trigger OnOpenPage()
     var
@@ -1110,6 +1132,7 @@ page 30101 "Shpfy Shop Card"
 #endif
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         ShopMgt: Codeunit "Shpfy Shop Mgt.";
+
         ApiVersionExpiryDateTime: DateTime;
     begin
         FeatureTelemetry.LogUptake('0000HUU', 'Shopify', Enum::"Feature Uptake Status"::Discovered);
@@ -1134,6 +1157,9 @@ page 30101 "Shpfy Shop Card"
     trigger OnAfterGetCurrRecord()
     begin
         CheckReturnRefundsVisible();
+#if not CLEAN24
+        CheckReplaceOrderAttributeValueDisabled();
+#endif
     end;
 
     local procedure GetResetSyncTo(InitDateTime: DateTime): DateTime
@@ -1153,5 +1179,25 @@ page 30101 "Shpfy Shop Card"
     begin
         IsReturnRefundsVisible := Rec."Return and Refund Process" <> "Shpfy ReturnRefund ProcessType"::" ";
     end;
+
+#if not CLEAN24
+    local procedure CheckReplaceOrderAttributeValueDisabled()
+    var
+        OrderHeader: Record "Shpfy Order Header";
+        OrderAttribute: Record "Shpfy Order Attribute";
+    begin
+        if Rec."Replace Order Attribute Value" then begin
+            OrderHeader.SetRange("Shop Code", Rec.Code);
+            if OrderHeader.FindSet() then
+                repeat
+                    OrderAttribute.SetRange("Order Id", OrderHeader."Shopify Order Id");
+                    if not OrderAttribute.IsEmpty() then begin
+                        ReplaceOrderAttributeValueDisabled := true;
+                        exit;
+                    end;
+                until OrderHeader.Next() = 0;
+        end;
+    end;
+#endif
 }
 

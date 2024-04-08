@@ -22,8 +22,13 @@ codeunit 18151 "GST Ship To Address"
     var
         SelltoCustomer: Record Customer;
     begin
-        if SelltoCustomer.Get(SalesHeader."Sell-to Customer No.") then
-            SalesHeader.State := SelltoCustomer."State Code";
+        if SalesHeader."Sell-to Customer No." <> SalesHeader."Bill-to Customer No." then begin
+            if SelltoCustomer.Get(SalesHeader."Bill-to Customer No.") then
+                SalesHeader.State := SelltoCustomer."State Code";
+        end
+        else
+            if SelltoCustomer.Get(SalesHeader."Sell-to Customer No.") then
+                SalesHeader.State := SelltoCustomer."State Code";
     end;
 
     procedure UpdateShiptoAddressState(var SalesHeader: Record "Sales Header")
@@ -179,14 +184,15 @@ codeunit 18151 "GST Ship To Address"
                         PresentRegNo := ShipToAddress."ARN No.";
         end;
 
-        Exit(PresentRegNo);
+        exit(PresentRegNo);
     end;
 
-    procedure CheckUpdatePreviousLineGSTPlaceofSupply(Var SalesLine: Record "Sales Line")
+    procedure CheckUpdatePreviousLineGSTPlaceofSupply(var SalesLine: Record "Sales Line")
     var
         PreviousSalesLine: Record "Sales Line";
     begin
         PreviousSalesLine.SetCurrentKey("Document Type", "Document No.", Type, "No.");
+        PreviousSalesLine.LoadFields("Document Type", "Document No.", Type, "No.");
         PreviousSalesLine.SetRange("Document Type", SalesLine."Document Type");
         PreviousSalesLine.SetRange("Document No.", SalesLine."Document No.");
         PreviousSalesLine.SetFilter(Type, '<>%1', Type::" ");

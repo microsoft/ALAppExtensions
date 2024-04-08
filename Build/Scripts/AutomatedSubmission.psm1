@@ -1,3 +1,5 @@
+using module .\GitHub\GitHubPullRequest.class.psm1
+
 <#
 .Synopsis
     Set the git config for the current actor
@@ -113,23 +115,37 @@ function New-GitHubPullRequest
         [Parameter(Mandatory=$true)]
         [string] $TargetBranch,
         [Parameter(Mandatory=$false)]
-        [string] $label = "automation"
+        [string] $label = "automation",
+        [Parameter(Mandatory=$false)]
+        [string] $PullRequestDescription
     )
 
-    $openPullRequests = gh api "/repos/$Repository/pulls" --method GET -f state=open | ConvertFrom-Json
-    $existingPullRequest = $openPullRequests | Where-Object {$_.head.ref -eq $BranchName} | Select-Object -First 1
-
-    if ($existingPullRequest) {
-        Write-Host "Pull request already exists for branch ($BranchName): $($existingPullRequest.html_url)"
+    if ([GitHubPullRequest]::GetFromBranch($BranchName, $Repository)) {
+        Write-Host "Pull request already exists for branch $BranchName"
         return
     }
 
-    $availableLabels = gh label list --json name | ConvertFrom-Json
-    if ($label -in $availableLabels.name) {
-        gh pr create --fill --head $BranchName --base $TargetBranch --label $label
-    } else {
-        gh pr create --fill --head $BranchName --base $TargetBranch
+    $params = @(
+        "--head '$($BranchName)'",
+        "--base '$($TargetBranch)'",
+        "--fill"
+    )
+
+    if ($label) {
+        $availableLabels = gh label list --json name | ConvertFrom-Json
+        if ($label -in $availableLabels.name) {
+            $params += "--label '$($label)'"
+        }
     }
+
+    if ($PullRequestDescription) {
+        $params += "--body '$($PullRequestDescription)'"
+    }
+
+    $parameters = ($params -join " ")
+
+    Write-Host "gh pr create $parameters"
+    Invoke-Expression "gh pr create $parameters"
     gh pr merge --auto --squash --delete-branch
 }
 

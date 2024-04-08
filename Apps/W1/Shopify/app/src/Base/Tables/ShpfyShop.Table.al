@@ -74,7 +74,7 @@ table 30102 "Shpfy Shop"
                 end else begin
                     Rec.Enabled := true;
                     Rec.Validate("Order Created Webhooks", false);
-                    WebhooksMgt.DisableBulkOperationsWebhook(Rec);
+                    WebhooksMgt.DisableBulkOperationsWebhook(Rec, CompanyName());
                     Rec.Enabled := false;
                 end;
             end;
@@ -502,6 +502,7 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Return and Refund Process';
             DataClassification = CustomerContent;
+            InitValue = "Import Only";
 
             trigger OnValidate()
             var
@@ -630,7 +631,7 @@ table 30102 "Shpfy Shop"
                 if "Order Created Webhooks" then
                     ShpfyWebhooksMgt.EnableOrderCreatedWebhook(Rec)
                 else
-                    ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec);
+                    ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec, CompanyName());
             end;
         }
         field(109; "Order Created Webhook User"; Code[50])
@@ -765,6 +766,28 @@ table 30102 "Shpfy Shop"
             Caption = 'Company Mapping Type';
             DataClassification = CustomerContent;
         }
+        field(127; "Replace Order Attribute Value"; Boolean)
+        {
+            Caption = 'Replace Order Attribute Value';
+            DataClassification = SystemMetadata;
+            InitValue = true;
+            ObsoleteReason = 'This feature will be enabled by default with version 27.0.';
+#if not CLEAN24
+            ObsoleteState = Pending;
+            ObsoleteTag = '24.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '27.0';
+#endif
+
+#if not CLEAN24
+            trigger OnValidate()
+            begin
+                if "Replace Order Attribute Value" then
+                    UpdateOrderAttributes(Rec.Code);
+            end;
+#endif
+        }
         field(200; "Shop Id"; Integer)
         {
             DataClassification = SystemMetadata;
@@ -784,7 +807,7 @@ table 30102 "Shpfy Shop"
     var
         ShpfyWebhooksMgt: Codeunit "Shpfy Webhooks Mgt.";
     begin
-        ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec);
+        ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec, CompanyName());
     end;
 
     var
@@ -1019,4 +1042,23 @@ table 30102 "Shpfy Shop"
                     exit(true);
             end;
     end;
+
+#if not CLEAN24
+    local procedure UpdateOrderAttributes(ShopCode: Code[20])
+    var
+        OrderHeader: Record "Shpfy Order Header";
+        OrderAttribute: Record "Shpfy Order Attribute";
+    begin
+        OrderHeader.SetRange("Shop Code", ShopCode);
+        if OrderHeader.FindSet() then
+            repeat
+                OrderAttribute.SetRange("Order Id", OrderHeader."Shopify Order Id");
+                if OrderAttribute.FindSet() then
+                    repeat
+                        OrderAttribute."Attribute Value" := OrderAttribute.Value;
+                        OrderAttribute.Modify();
+                    until OrderAttribute.Next() = 0;
+            until OrderHeader.Next() = 0;
+    end;
+#endif
 }

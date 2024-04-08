@@ -9,11 +9,10 @@ using Microsoft.Finance.GeneralLedger.Ledger;
 
 report 31130 "Open G/L Entries To Date CZA"
 {
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/OpenGLEntriesToDate.rdl';
     ApplicationArea = Basic, Suite;
     Caption = 'Open G/L Entries To Date';
     UsageCategory = ReportsAndAnalysis;
+    DefaultRenderingLayout = "OpenGLEntriesToDate.rdl";
 
     dataset
     {
@@ -145,6 +144,24 @@ report 31130 "Open G/L Entries To Date CZA"
         begin
             BalanceToDate := WorkDate();
         end;
+    }
+
+    rendering
+    {
+        layout("OpenGLEntriesToDate.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/OpenGLEntriesToDate.rdl';
+            Caption = 'Open G/L Entries To Date (RDL)';
+            Summary = 'The Open G/L Entries To Date (RDL) provides a detailed layout.';
+        }
+        layout("OpenGLEntriesToDate.xlsx")
+        {
+            Type = Excel;
+            LayoutFile = './Src/Reports/OpenGLEntriesToDate.xlsx';
+            Caption = 'Open G/L Entries To Date (Excel)';
+            Summary = 'The Open G/L Entries To Date (Excel) provides a detailed layout.';
+        }
     }
 
     labels

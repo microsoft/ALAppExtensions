@@ -44,6 +44,18 @@ codeunit 31065 "Cash Document-Post Handler CZZ"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Sales Adv. Letter Entry CZZ", 'OnAfterInsertNewEntry', '', false, false)]
+    local procedure InsertTempSalesAdvLetterEntryOnAfterInsertAdvEntry(WriteToDatabase: Boolean; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
+    begin
+        if (not WriteToDatabase) or (not UseBuffer) then
+            exit;
+
+        if SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::Payment then begin
+            TempSalesAdvLetterEntryCZZ := SalesAdvLetterEntryCZZ;
+            TempSalesAdvLetterEntryCZZ.Insert();
+        end;
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cash Document-Post CZP", 'OnAfterPostLines', '', false, false)]
     local procedure PostAdvancePaymentVATOnAfterPostLines()
     var

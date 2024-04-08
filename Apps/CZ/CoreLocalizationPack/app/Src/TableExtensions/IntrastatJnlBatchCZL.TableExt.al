@@ -39,7 +39,9 @@ tableextension 31025 "Intrastat Jnl. Batch CZL" extends "Intrastat Jnl. Batch"
             end;
 #endif
         }
+#pragma warning disable AL0842
         field(31082; "Statement Type CZL"; Enum "Intrastat Statement Type CZL")
+#pragma warning restore AL0842
         {
             Caption = 'Statement Type';
 #if not CLEAN22
@@ -116,12 +118,12 @@ tableextension 31025 "Intrastat Jnl. Batch CZL" extends "Intrastat Jnl. Batch"
     procedure AssistEditCZL(): Boolean
     var
         StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
         if "Declaration No. CZL" = '' then begin
             StatutoryReportingSetupCZL.Get();
             StatutoryReportingSetupCZL.TestField("Intrastat Declaration Nos.");
-            "Declaration No. CZL" := NoSeriesManagement.GetNextNo(StatutoryReportingSetupCZL."Intrastat Declaration Nos.", 0D, true);
+            "Declaration No. CZL" := NoSeries.GetNextNo(StatutoryReportingSetupCZL."Intrastat Declaration Nos.");
             exit(true);
         end;
         exit(false);

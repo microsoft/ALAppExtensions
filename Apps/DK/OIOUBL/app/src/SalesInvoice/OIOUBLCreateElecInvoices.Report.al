@@ -34,8 +34,13 @@ report 13630 "OIOUBL-Create Elec. Invoices"
             end;
 
             trigger OnPostDataItem();
+            var
+             SkipMessage: Boolean;
             begin
-                MESSAGE(SuccessMsg, Counter);
+                SkipMessage := false;
+                OnBeforeOnPostDataItemSalesInvoiceHeader(SkipMessage);
+                if not SkipMessage then
+                    Message(SuccessMsg, Counter);
             end;
 
             trigger OnPreDataItem();
@@ -130,6 +135,11 @@ report 13630 "OIOUBL-Create Elec. Invoices"
     procedure InitLogInteraction();
     begin
         LogInteraction := SegManagement.FindInteractionTemplateCode(4) <> '';
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeOnPostDataItemSalesInvoiceHeader(var SkipMessage: Boolean)
+    begin        
     end;
 }
 

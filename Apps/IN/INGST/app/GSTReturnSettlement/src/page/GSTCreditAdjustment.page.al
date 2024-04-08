@@ -172,12 +172,9 @@ page 18317 "GST Credit Adjustment"
 
     trigger OnOpenPage()
     var
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
-        AdjDocNo := NoSeriesManagement.GetNextNo(
-            GSTSettlement.GetNoSeriesCode(false),
-            PostingDate,
-            false);
+        AdjDocNo := NoSeries.PeekNextNo(GSTSettlement.GetNoSeriesCode(false), PostingDate);
         AdjustmentPerc := 100;
     end;
 

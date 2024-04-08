@@ -304,6 +304,7 @@ codeunit 139540 "Sales Forecast Tests"
     procedure TestTimeout();
     var
         Item: Record Item;
+        ApiKey: Text;
     begin
         // [Scenario] Call to AzureML times out if no response from service
         Initialize();
@@ -316,7 +317,8 @@ codeunit 139540 "Sales Forecast Tests"
         // [Given] The Api Uri key is set to an invalid destination and timeout = 1 second
         MSSalesForecastSetup.GetSingleInstance();
         MSSalesForecastSetup.Validate("API URI", 'https://localhost:1234/services.azureml.net/workspaces/');
-        MSSalesForecastSetup.SetUserDefinedAPIKey(MockServiceKeyTxt);
+        ApiKey := MockServiceKeyTxt;
+        MSSalesForecastSetup.SetUserDefinedAPIKey(ApiKey);
         MSSalesForecastSetup.Validate("Timeout (seconds)", 1);
         MSSalesForecastSetup.Modify(true);
 
@@ -664,15 +666,12 @@ codeunit 139540 "Sales Forecast Tests"
     begin
         // [Scenario] When Job Queue creation in Process, Sales Item Forecast Setup record is locked
         // and the appropriate message is presented
-
         // [Given] A Job Queue Entry in creation
-        with JobQueueEntry do begin
-            Init();
-            Validate("Object Type to Run", "Object Type to Run"::Codeunit);
-            Validate("Object ID to Run", Codeunit::"Sales Forecast Update");
-            Validate(Status, Status::"In Process");
-            Insert(true);
-        end;
+        JobQueueEntry.Init();
+        JobQueueEntry.Validate("Object Type to Run", JobQueueEntry."Object Type to Run"::Codeunit);
+        JobQueueEntry.Validate("Object ID to Run", Codeunit::"Sales Forecast Update");
+        JobQueueEntry.Validate(Status, JobQueueEntry.Status::"In Process");
+        JobQueueEntry.Insert(true);
 
         // [When] Item Sales Forecast Setup is invoked from Item List
         // [Then] Message is displayed (JobCreationInProgressMsgHandler)
@@ -764,6 +763,7 @@ codeunit 139540 "Sales Forecast Tests"
     var
         Item: Record Item;
         LibraryPermissions: Codeunit "Library - Permissions";
+        ApiKey: Text;
     begin
         // [Scenario] Prediction doesn't throw Limit exceeded error, if user defined API is used in SaaS
         Initialize();
@@ -777,7 +777,8 @@ codeunit 139540 "Sales Forecast Tests"
         MSSalesForecastSetup.GetSingleInstance();
         MSSalesForecastSetup.Validate("Timeout (seconds)", 1);
         MSSalesForecastSetup.Validate("API URI", 'https://localhost:1234/services.azureml.net/workspaces/');
-        MSSalesForecastSetup.SetUserDefinedAPIKey(MockServiceKeyTxt);
+        ApiKey := MockServiceKeyTxt;
+        MSSalesForecastSetup.SetUserDefinedAPIKey(ApiKey);
         MSSalesForecastSetup.Modify(true);
 
         // [When] Item sales is being forecasted for the given item

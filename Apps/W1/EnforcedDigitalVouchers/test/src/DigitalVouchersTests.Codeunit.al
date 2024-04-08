@@ -9,10 +9,14 @@ codeunit 139515 "Digital Vouchers Tests"
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryERM: Codeunit "Library - ERM";
         LibraryUtility: Codeunit "Library - Utility";
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
         NotPossibleToPostWithoutVoucherErr: Label 'Not possible to post without attaching the digital voucher.';
         DialogErrorCodeTok: Label 'Dialog', Locked = true;
+        CannotRemoveReferenceRecordFromIncDocErr: Label 'Cannot remove the reference record from the incoming document because it is used for the enforced digital voucher functionality';
+        DetachQst: Label 'Do you want to remove the reference from this incoming document to posted document';
+        RemovePostedRecordManuallyMsg: Label 'The reference to the posted record has been removed.\\Remember to correct the posted record if needed.';
 
     trigger OnRun()
     begin
@@ -181,6 +185,63 @@ codeunit 139515 "Digital Vouchers Tests"
         UnbindSubscription(DigVouchersDisableEnforce);
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandler,MessageHandler')]
+    procedure DotNotCheckVoucherOnBeforeRemoveReferencedRecordsWhenFeatureDisabled()
+    var
+        IncomingDocument: Record "Incoming Document";
+        SalesInvHeader: Record "Sales Invoice Header";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        BlankRecID: RecordId;
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 498196] Stan can remove the reference to the posted document from the incoming document when the feature is disabled
+        Initialize();
+        BindSubscription(DigVouchersDisableEnforce);
+        DisableDigitalVoucherFeature();
+        // [GIVEN] Sales invoice and Incoming document is created
+        SalesInvHeader."No." := LibraryUtility.GenerateGUID();
+        SalesInvHeader.Insert();
+        IncomingDocument."Entry No." := LibraryUtility.GetNewRecNo(IncomingDocument, IncomingDocument.FieldNo("Entry No."));
+        IncomingDocument.Posted := true;
+        IncomingDocument."Related Record ID" := SalesInvHeader.RecordId();
+        IncomingDocument.Insert();
+        LibraryVariableStorage.Enqueue(DetachQst);
+        LibraryVariableStorage.Enqueue(true);
+        LibraryVariableStorage.Enqueue(RemovePostedRecordManuallyMsg);
+        // [WHEN] Remove the reference to the posted document from the incoming document
+        IncomingDocument.RemoveReferencedRecords();
+        // [THEN] The reference to the posted document is removed from the incoming document
+        IncomingDocument.Find();
+        IncomingDocument.TestField("Related Record ID", BlankRecID);
+
+        LibraryVariableStorage.AssertEmpty();
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    procedure CheckVoucherOnBeforeRemoveReferencedRecordsWhenFeatureEnabled()
+    var
+        IncomingDocument: Record "Incoming Document";
+        SalesInvHeader: Record "Sales Invoice Header";
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 498196] Stan cannot remove the reference to the posted document from the incoming document when the feature is enabled
+        Initialize();
+        EnableDigitalVoucherFeature();
+        // [GIVEN] Sales invoice and Incoming document is created
+        SalesInvHeader."No." := LibraryUtility.GenerateGUID();
+        SalesInvHeader.Insert();
+        IncomingDocument."Entry No." := LibraryUtility.GetNewRecNo(IncomingDocument, IncomingDocument.FieldNo("Entry No."));
+        IncomingDocument.Posted := true;
+        IncomingDocument."Related Record ID" := SalesInvHeader.RecordId();
+        IncomingDocument.Insert();
+        // [WHEN] Remove the reference to the posted document from the incoming document
+        asserterror IncomingDocument.RemoveReferencedRecords();
+        // [THEN] Error "Cannot remove the reference record from the incoming document because it is used for the enforced digital voucher functionality" is shown
+        Assert.ExpectedError(CannotRemoveReferenceRecordFromIncDocErr);
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"Digital Vouchers Tests");
@@ -313,5 +374,19 @@ codeunit 139515 "Digital Vouchers Tests"
         IncomingDocument.FindFirst();
         IncomingDocumentAttachment.SetRange("Incoming Document Entry No.", IncomingDocument."Entry No.");
         Assert.RecordCount(IncomingDocumentAttachment, AttachmentsCount);
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmHandler(Question: Text; var Reply: Boolean)
+    begin
+        Assert.ExpectedMessage(LibraryVariableStorage.DequeueText(), Question);
+        ;
+        Reply := LibraryVariableStorage.DequeueBoolean();
+    end;
+
+    [MessageHandler]
+    procedure MessageHandler(Message: Text)
+    begin
+        Assert.ExpectedMessage(LibraryVariableStorage.DequeueText(), Message);
     end;
 }

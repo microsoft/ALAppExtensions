@@ -8,7 +8,7 @@ page 1954 "LP - Invoices at Risk"
 {
     PageType = ListPart;
     SourceTable = "Cust. Ledger Entry";
-    Caption = 'Invoices at risk';
+    Caption = 'Overdue invoices';
     DeleteAllowed = false;
     InsertAllowed = false;
     Editable = false;

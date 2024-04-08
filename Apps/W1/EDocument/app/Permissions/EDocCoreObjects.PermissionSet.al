@@ -6,6 +6,8 @@ namespace Microsoft.eServices.EDocument;
 
 using Microsoft.eServices.EDocument.IO;
 using Microsoft.eServices.EDocument.IO.Peppol;
+using Microsoft.EServices.EDocument.OrderMatch;
+using Microsoft.EServices.EDocument.OrderMatch.Copilot;
 
 permissionset 6100 "E-Doc. Core - Objects"
 {
@@ -22,6 +24,9 @@ permissionset 6100 "E-Doc. Core - Objects"
         table "E-Document Service Status" = X,
         table "E-Doc. Service Data Exch. Def." = X,
         table "E-Doc. Service Supported Type" = X,
+        table "E-Doc. Order Match" = X,
+        table "E-Doc. Imported Line" = X,
+        table "E-Doc. PO Match Prop. Buffer" = X,
         codeunit "E-Document Import Job" = X,
         codeunit "E-Doc. Integration Management" = X,
         codeunit "E-Doc. Mapping" = X,
@@ -58,6 +63,9 @@ permissionset 6100 "E-Doc. Core - Objects"
         codeunit "Pre-Map Service Cr. Memo Line" = X,
         codeunit "Pre-Map Service Inv. Line" = X,
         codeunit "EDoc PEPPOL BIS 3.0" = X,
+        codeunit "E-Doc. Line Matching" = X,
+        codeunit "E-Doc. PO AOAI Function" = X,
+        codeunit "E-Doc. PO Copilot Matching" = X,
         page "E-Doc. Changes Part" = X,
         page "E-Doc. Changes Preview" = X,
         page "E-Document Activities" = X,
@@ -71,5 +79,13 @@ permissionset 6100 "E-Doc. Core - Objects"
         page "E-Document Service Status" = X,
         page "E-Document Integration Logs" = X,
         page "E-Doc. Service Data Exch. Sub" = X,
-        page "E-Doc Service Supported Types" = X;
+        page "E-Doc. Order Match" = X,
+        page "E-Doc. Order Line Matching" = X,
+        page "E-Doc. Imported Line Sub" = X,
+        page "E-Doc. Purchase Order Sub" = X,
+        page "E-Doc. Order Map. Activities" = X,
+        page "E-Doc Service Supported Types" = X,
+        page "E-Doc. PO Copilot Prop" = X,
+        page "E-Doc. PO Match Prop. Sub" = X,
+        page "E-Doc. Order Match Act." = X;
 }

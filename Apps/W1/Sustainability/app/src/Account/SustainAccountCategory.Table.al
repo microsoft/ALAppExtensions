@@ -3,6 +3,7 @@ namespace Microsoft.Sustainability.Account;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.Dimension;
+using Microsoft.Sustainability.Ledger;
 
 table 6211 "Sustain. Account Category"
 {
@@ -176,11 +177,18 @@ table 6211 "Sustain. Account Category"
     begin
         DeleteSubcategories();
         UpdateSustainabilityAccounts();
+        UpdateSustainabilityEntries();
     end;
 
     trigger OnInsert()
     begin
         TestField(Code);
+    end;
+
+    trigger OnModify()
+    begin
+        if "Calculation Foundation" = "Calculation Foundation"::Custom then
+            TestField("Custom Value");
     end;
 
     var
@@ -207,11 +215,20 @@ table 6211 "Sustain. Account Category"
             SustainAccount.ModifyAll(Category, '');
     end;
 
+    local procedure UpdateSustainabilityEntries()
+    var
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+    begin
+        SustainabilityLedgerEntry.SetRange("Account Category", Code);
+        if not SustainabilityLedgerEntry.IsEmpty() then
+            SustainabilityLedgerEntry.ModifyAll("Account Category", '');
+    end;
+
     local procedure CheckIfChangeIsAllowedForCategory(FieldCaption: Text)
     var
         SustainabilityAccountMgt: Codeunit "Sustainability Account Mgt.";
     begin
         SustainabilityAccountMgt.CheckIfChangeAllowedForCategory(Code, FieldCaption);
-        SustainabilityAccountMgt.ReCalculateJournalLinesForCategory(Code);
+        SustainabilityAccountMgt.ReCalculateJournalLinesForCategory(Rec);
     end;
 }

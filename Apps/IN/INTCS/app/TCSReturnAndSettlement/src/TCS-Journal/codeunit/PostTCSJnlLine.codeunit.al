@@ -11,8 +11,6 @@ using Microsoft.Finance.GeneralLedger.Journal;
 codeunit 18871 "Post-TCS Jnl. Line"
 {
     var
-        TempNoSeries: Record "No. Series" temporary;
-        NoSeriesMgt2: array[10] of Codeunit NoSeriesManagement;
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         DocNo: Code[20];
         CheckLineLbl: Label 'Checking lines        #1######\', Comment = '#1=Line check';
@@ -20,7 +18,6 @@ codeunit 18871 "Post-TCS Jnl. Line"
         JnlLinePostMsg: Label 'Journal lines posted successfully.';
         JnlBatchNameLbl: Label 'Journal Batch Name    #4##########\\', Comment = '#4=Journal Batch Name';
         PostTCSAdjQst: Label 'Do you want to post the journal lines?';
-        PostingNoSeriesErr: Label 'A maximum of %1 posting number series can be used in each journal.', Comment = '%1Posting Number Series.,';
 
     procedure PostTCSJournal(var TCSJournalLine: Record "TCS Journal Line")
     var
@@ -112,22 +109,15 @@ codeunit 18871 "Post-TCS Jnl. Line"
     procedure CheckDocumentNo(TCSJournalLine: Record "TCS Journal Line"): Code[20]
     var
         TCSJournalBatch: Record "TCS Journal Batch";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
-        PostingNoSeriesNo: Integer;
+        NoSeries: Codeunit "No. Series";
     begin
         if (TCSJournalLine."Journal Template Name" = '') and (TCSJournalLine."Journal Batch Name" = '') and (TCSJournalLine."Document No." <> '') then
             exit(TCSJournalLine."Document No.");
 
         TCSJournalBatch.Get(TCSJournalLine."Journal Template Name", TCSJournalLine."Journal Batch Name");
-        if TCSJournalLine."Posting No. Series" = '' then begin
+        if TCSJournalLine."Posting No. Series" = '' then
             TCSJournalLine."Posting No. Series" := TCSJournalBatch."No. Series";
-            TCSJournalLine."Document No." := NoSeriesManagement.GetNextNo(TCSJournalLine."Posting No. Series", TCSJournalLine."Posting Date", true);
-        end else begin
-            InsertNoSeries(TCSJournalLine);
-            Evaluate(PostingNoSeriesNo, TempNoSeries.Description);
-            TCSJournalLine."Document No." :=
-              NoSeriesMgt2[PostingNoSeriesNo].GetNextNo(TCSJournalLine."Posting No. Series", TCSJournalLine."Posting Date", true);
-        end;
+        TCSJournalLine."Document No." := NoSeries.GetNextNo(TCSJournalLine."Posting No. Series", TCSJournalLine."Posting Date");
 
         exit(TCSJournalLine."Document No.");
     end;
@@ -135,21 +125,5 @@ codeunit 18871 "Post-TCS Jnl. Line"
     local procedure RunGenJnlPostLine(var GenJournalLine: Record "Gen. Journal Line")
     begin
         GenJnlPostLine.RunWithCheck(GenJournalLine);
-    end;
-
-    local procedure InsertNoSeries(TCSJournalLine: Record "TCS Journal Line")
-    var
-        NoOfPostingNoSeries: Integer;
-    begin
-        if not TempNoSeries.Get(TCSJournalLine."Posting No. Series") then begin
-            NoOfPostingNoSeries := NoOfPostingNoSeries + 1;
-            if NoOfPostingNoSeries > ArrayLen(NoSeriesMgt2) then
-                Error(PostingNoSeriesErr, ArrayLen(NoSeriesMgt2));
-
-            TempNoSeries.Init();
-            TempNoSeries.Code := TCSJournalLine."Posting No. Series";
-            TempNoSeries.Description := Format(NoOfPostingNoSeries);
-            TempNoSeries.Insert();
-        end;
     end;
 }

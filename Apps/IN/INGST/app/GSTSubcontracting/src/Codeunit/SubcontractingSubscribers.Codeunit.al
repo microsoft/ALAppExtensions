@@ -286,6 +286,28 @@ codeunit 18469 "Subcontracting Subscribers"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterValidateEvent', 'Qty. to Invoice', false, false)]
+    local procedure OnValidateQtyToInvoiceSubcon(var Rec: Record "Purchase Line")
+    var
+        InvalidQtyErr: label 'Quantity should be less than or equal to outstanding quantity.';
+    begin
+        if (Rec.Subcontracting) and
+            (Rec."Prod. Order No." <> '') and
+            (Rec."Prod. Order Line No." <> 0) then
+            if Rec."Qty. to Invoice" > Rec.Quantity then
+                Error(InvalidQtyErr);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterInitOutstandingQty', '', false, false)]
+    local procedure OnAfterInitOutstandingQty(var PurchaseLine: Record "Purchase Line")
+    begin
+        if (PurchaseLine.Subcontracting) and
+            (PurchaseLine."Prod. Order No." <> '') and
+            (PurchaseLine."Prod. Order Line No." <> 0) then
+            if PurchaseLine."Outstanding Qty. (Base)" <> 0 then
+                PurchaseLine."Outstanding Qty. (Base)" := 0;
+    end;
+
     local procedure ValidateDeliveryChallanCreatedForOrder(PurchHeader: Record "Purchase Header")
     var
         DeliveryChallanLine: Record "Delivery Challan Line";

@@ -598,41 +598,36 @@ table 31273 "Compensation Line CZC"
 
     procedure CalcRelatedAmountToApply(): Decimal
     var
-        TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary;
+        CrossApplicationBufferCZL: Record "Cross Application Buffer CZL";
     begin
-        FindRelatedAmountToApply(TempCrossApplicationBufferCZL);
-        TempCrossApplicationBufferCZL.CalcSums("Amount (LCY)");
-        exit(TempCrossApplicationBufferCZL."Amount (LCY)");
+        CollectSuggestedApplication(CrossApplicationBufferCZL);
+        CrossApplicationBufferCZL.CalcSums("Amount (LCY)");
+        exit(CrossApplicationBufferCZL."Amount (LCY)");
     end;
 
     procedure DrillDownRelatedAmountToApply()
     var
-        TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary;
+        CrossApplicationBufferCZL: Record "Cross Application Buffer CZL";
     begin
-        FindRelatedAmountToApply(TempCrossApplicationBufferCZL);
-        Page.Run(Page::"Cross Application CZL", TempCrossApplicationBufferCZL);
+        CollectSuggestedApplication(CrossApplicationBufferCZL);
+        Page.Run(Page::"Cross Application CZL", CrossApplicationBufferCZL);
     end;
 
-    local procedure FindRelatedAmountToApply(var TempCrossApplicationBufferCZL: Record "Cross Application Buffer CZL" temporary)
+    local procedure CollectSuggestedApplication(var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL")
     var
         CustLedgerEntry: Record "Cust. Ledger Entry";
         VendorLedgerEntry: Record "Vendor Ledger Entry";
-        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
     begin
-        if Rec."Source No." = '' then
+        if ("Source No." = '') or ("Source Entry No." = 0) then
             exit;
 
-        case Rec."Source Type" of
-            Rec."Source Type"::Customer:
-                if Rec."Source Entry No." <> 0 then
-                    if CustLedgerEntry.Get(Rec."Source Entry No.") then
-                        CrossApplicationMgtCZL.OnGetSuggestedAmountForCustLedgerEntry(CustLedgerEntry, TempCrossApplicationBufferCZL,
-                                                                                      Database::"Compensation Line CZC", Rec."Compensation No.", Rec."Line No.");
-            Rec."Source Type"::Vendor:
-                if Rec."Source Entry No." <> 0 then
-                    if VendorLedgerEntry.Get(Rec."Source Entry No.") then
-                        CrossApplicationMgtCZL.OnGetSuggestedAmountForVendLedgerEntry(VendorLedgerEntry, TempCrossApplicationBufferCZL,
-                                                                                      Database::"Compensation Line CZC", Rec."Compensation No.", Rec."Line No.");
+        case "Source Type" of
+            "Source Type"::Customer:
+                if CustLedgerEntry.Get("Source Entry No.") then
+                    CustLedgerEntry.CollectSuggestedApplicationCZL(Rec, CrossApplicationBufferCZL);
+            "Source Type"::Vendor:
+                if VendorLedgerEntry.Get("Source Entry No.") then
+                    VendorLedgerEntry.CollectSuggestedApplicationCZL(Rec, CrossApplicationBufferCZL);
         end;
     end;
 }

@@ -146,12 +146,6 @@ table 31003 "Advance Letter Template CZZ"
             Caption = 'Automatic Post VAT Document';
             DataClassification = CustomerContent;
         }
-        field(26; "Post VAT Doc. for Rev. Charge"; Boolean)
-        {
-            Caption = 'Post VAT Document for Reverse Charge';
-            DataClassification = CustomerContent;
-            InitValue = true;
-        }
     }
     keys
     {

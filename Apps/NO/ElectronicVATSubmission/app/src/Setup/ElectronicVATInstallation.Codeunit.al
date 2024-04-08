@@ -23,7 +23,8 @@ codeunit 10681 "Electronic VAT Installation"
         AssistedSetupTxt: Label 'Set up an electronic VAT submission';
         AssistedSetupDescriptionTxt: Label 'Connect to the ID-porten integration point and submit your VAT return to Skatteetaten.';
         AssistedSetupHelpTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2181211', Locked = true;
-        AuthenticationURLTxt: Label 'https://oidc.difi.no/idporten-oidc-provider', Locked = true;
+        AuthenticationURLTxt: Label 'https://idporten.no', Locked = true;
+        LoginURLTxt: Label 'https://login.idporten.no', Locked = true;
 
         ValidateVATReturnUrlLbl: Label 'https://idporten.api.skatteetaten.no/api/mva/grensesnittstoette/mva-melding/valider', Locked = true;
         ExchangeIDPortenToAltinnUrlLbl: Label 'https://platform.altinn.no/authentication/api/v1/exchange/id-porten', Locked = true;
@@ -76,6 +77,7 @@ codeunit 10681 "Electronic VAT Installation"
         ElecVATSetup.Insert(true);
         ElecVATSetup.Validate("OAuth Feature GUID", CreateGuid());
         ElecVATSetup.Validate("Authentication URL", AuthenticationURLTxt);
+        ElecVATSetup.Validate("Login URL", LoginURLTxt);
         OAuth20.GetDefaultRedirectURL(RedirectUrl);
         ElecVATSetup.Validate("Redirect URL", CopyStr(RedirectUrl, 1, MaxStrLen(ElecVATSetup."Redirect URL")));
         ElecVATSetup.Validate("Validate VAT Return Url", ValidateVATReturnUrlLbl);
@@ -106,7 +108,7 @@ codeunit 10681 "Electronic VAT Installation"
         if VATReportsConfiguration.Get(VATReportsConfiguration."VAT Report Type"::"VAT Return", ElectronicVATLbl) then
             exit;
         VATReportsConfiguration.Validate("VAT Report Type", VATReportsConfiguration."VAT Report Type"::"VAT Return");
-        VATReportsConfiguration.validate("VAT Report Version", ElectronicVATLbl);
+        VATReportsConfiguration.Validate("VAT Report Version", ElectronicVATLbl);
         VATReportsConfiguration.Validate("Suggest Lines Codeunit ID", Codeunit::"VAT Report Suggest Lines");
         VATReportsConfiguration.Validate("Content Codeunit ID", Codeunit::"Elec. VAT Create Content");
         VATReportsConfiguration.Validate("Submission Codeunit ID", Codeunit::"Elec. VAT Submit Return");

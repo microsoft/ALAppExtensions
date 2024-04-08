@@ -30,6 +30,11 @@ table 11755 "Reg. No. Service Config CZL"
             Caption = 'Service Endpoint';
             DataClassification = CustomerContent;
         }
+        field(5; "Post Code without Space"; Boolean)
+        {
+            Caption = 'Post Code without Space';
+            DataClassification = CustomerContent;
+        }
     }
     keys
     {

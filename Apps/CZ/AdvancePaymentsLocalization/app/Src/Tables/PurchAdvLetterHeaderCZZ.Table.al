@@ -5,7 +5,9 @@
 namespace Microsoft.Finance.AdvancePayments;
 
 using Microsoft.Bank.BankAccount;
+#if not CLEAN25
 using Microsoft.Bank.Documents;
+#endif
 using Microsoft.Bank.Setup;
 using Microsoft.CRM.BusinessRelation;
 using Microsoft.CRM.Contact;
@@ -54,10 +56,12 @@ table 31008 "Purch. Adv. Letter Header CZZ"
             DataClassification = CustomerContent;
 
             trigger OnValidate()
+            var
+                NoSeries: Codeunit "No. Series";
             begin
                 if "No." <> xRec."No." then begin
                     GetSetup();
-                    NoSeriesManagement.TestManual(AdvanceLetterTemplateCZZ."Advance Letter Document Nos.");
+                    NoSeries.TestManual(AdvanceLetterTemplateCZZ."Advance Letter Document Nos.");
                     "No. Series" := '';
                 end;
             end;
@@ -807,13 +811,18 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                     IncomingDocument.SetPurchaseAdvanceCZZ(Rec);
             end;
         }
+#if not CLEAN25
         field(31040; "Amount on Iss. Payment Order"; Decimal)
         {
             Caption = 'Amount on Issued Payment Order';
             FieldClass = FlowField;
             CalcFormula = sum("Iss. Payment Order Line CZB".Amount where("Purch. Advance Letter No. CZZ" = field("No.")));
             Editable = false;
+            ObsoleteState = Pending;
+            ObsoleteReason = 'This field is obsolete and will be removed in a future release. The CalcSuggestedAmountToApply function should be used instead.';
+            ObsoleteTag = '25.0';
         }
+#endif
         field(31112; "Original Document VAT Date"; Date)
         {
             Caption = 'Original Document VAT Date';
@@ -853,7 +862,9 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         GeneralLedgerSetup: Record "General Ledger Setup";
         SalespersonPurchaser: Record "Salesperson/Purchaser";
         ResponsibilityCenter: Record "Responsibility Center";
+#if not CLEAN24
         NoSeriesManagement: Codeunit NoSeriesManagement;
+#endif
         DimensionManagement: Codeunit DimensionManagement;
         UserSetupManagement: Codeunit "User Setup Management";
 #if not CLEAN22
@@ -897,7 +908,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         if not PurchAdvLetterEntryCZZ.IsEmpty() then
             PurchAdvLetterEntryCZZ.DeleteAll();
 
-        AdvanceLetterApplicationCZZ.SetRange("Advance Letter Type", AdvanceLetterApplicationCZZ."Advance Letter Type"::Sales);
+        AdvanceLetterApplicationCZZ.SetRange("Advance Letter Type", AdvanceLetterApplicationCZZ."Advance Letter Type"::Purchase);
         AdvanceLetterApplicationCZZ.SetRange("Advance Letter No.", "No.");
         if not AdvanceLetterApplicationCZZ.IsEmpty() then
             AdvanceLetterApplicationCZZ.DeleteAll();
@@ -912,17 +923,20 @@ table 31008 "Purch. Adv. Letter Header CZZ"
     end;
 
     procedure AssistEdit(): Boolean
+    var
+        NoSeries: Codeunit "No. Series";
     begin
         GetSetup();
         AdvanceLetterTemplateCZZ.TestField("Advance Letter Document Nos.");
-        if NoSeriesManagement.SelectSeries(AdvanceLetterTemplateCZZ."Advance Letter Document Nos.", xRec."No. Series", "No. Series") then begin
-            NoSeriesManagement.SetSeries("No.");
+        if NoSeries.LookupRelatedNoSeries(AdvanceLetterTemplateCZZ."Advance Letter Document Nos.", xRec."No. Series", "No. Series") then begin
+            "No." := NoSeries.GetNextNo("No. Series");
             exit(true);
         end;
     end;
 
     procedure InitInsert()
     var
+        NoSeries: Codeunit "No. Series";
         IsHandled: Boolean;
     begin
         IsHandled := false;
@@ -931,9 +945,20 @@ table 31008 "Purch. Adv. Letter Header CZZ"
             if "No." = '' then begin
                 GetSetup();
                 AdvanceLetterTemplateCZZ.TestField("Advance Letter Document Nos.");
-                NoSeriesManagement.InitSeries(AdvanceLetterTemplateCZZ."Advance Letter Document Nos.", xRec."No. Series", "Posting Date", "No.", "No. Series")
+#if not CLEAN24
+                IsHandled := false;
+                NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(AdvanceLetterTemplateCZZ."Advance Letter Document Nos.", xRec."No. Series", "Posting Date", "No.", "No. Series", IsHandled);
+                if not IsHandled then begin
+#endif
+                    "No. Series" := AdvanceLetterTemplateCZZ."Advance Letter Document Nos.";
+                    if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                        "No. Series" := xRec."No. Series";
+                    "No." := NoSeries.GetNextNo("No. Series", "Posting Date");
+#if not CLEAN24
+                    NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", AdvanceLetterTemplateCZZ."Advance Letter Document Nos.", "Posting Date", "No.");
+                end;
+#endif
             end;
-
         OnInitInsertOnBeforeInitRecord(Rec, xRec);
         InitRecord();
     end;
@@ -1595,18 +1620,32 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         ApprovalsMgmt.OnDeleteRecordInApprovalRequest(RecordId);
     end;
 
+    procedure CollectSuggestedApplication(var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL"): Boolean
+    var
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+    begin
+        exit(CrossApplicationMgtCZL.CollectSuggestedApplication(Rec, CrossApplicationBufferCZL));
+    end;
+
+    procedure CollectSuggestedApplication(CalledFrom: Variant; var CrossApplicationBufferCZL: Record "Cross Application Buffer CZL"): Boolean
+    var
+        CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
+    begin
+        exit(CrossApplicationMgtCZL.CollectSuggestedApplication(Rec, CalledFrom, CrossApplicationBufferCZL));
+    end;
+
     procedure CalcSuggestedAmountToApply(): Decimal
     var
         CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
     begin
-        exit(CrossApplicationMgtCZL.CalcSuggestedAmountToApplyPurchAdvLetterHeader(Rec."No."));
+        exit(-CrossApplicationMgtCZL.CalcSuggestedAmountToApply(Rec));
     end;
 
     procedure DrillDownSuggestedAmountToApply()
     var
         CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
     begin
-        CrossApplicationMgtCZL.DrillDownSuggestedAmountToApplyPurchAdvLetterHeader(Rec."No.");
+        CrossApplicationMgtCZL.DrillDownSuggestedAmountToApply(Rec);
     end;
 
     internal procedure PerformManualRelease(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
@@ -1643,6 +1682,13 @@ table 31008 "Purch. Adv. Letter Header CZZ"
             exit;
 
         Validate("Document Date", "Posting Date");
+    end;
+
+    procedure UpdateStatus(AdvanceLetterDocStatus: Enum "Advance Letter Doc. Status CZZ")
+    var
+        PurchAdvLetterManagementCZZ: Codeunit "PurchAdvLetterManagement CZZ";
+    begin
+        PurchAdvLetterManagementCZZ.UpdateStatus(Rec, AdvanceLetterDocStatus);
     end;
 
     [IntegrationEvent(false, false)]

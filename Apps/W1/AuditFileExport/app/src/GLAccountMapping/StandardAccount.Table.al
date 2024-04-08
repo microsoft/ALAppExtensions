@@ -20,11 +20,12 @@ table 5263 "Standard Account"
         {
             DataClassification = CustomerContent;
             Caption = 'Category No.';
-            TableRelation = "Standard Account Category" where("Standard Account Type" = field(Type));
+            TableRelation = "Standard Account Category"."No." where("Standard Account Type" = field(Type));
         }
         field(3; "No."; Code[20])
         {
             DataClassification = CustomerContent;
+            NotBlank = true;
             Caption = 'No.';
         }
         field(4; Description; Text[250])
