@@ -249,10 +249,10 @@ codeunit 30169 "Shpfy Payments"
 
     internal procedure ImportDisputeData(DisputeToken: JsonToken)
     var
-        Id: BigInteger;
-        RecordRef: RecordRef;
         Dispute: Record "Shpfy Dispute";
         DisputeStatus: Enum "Shpfy Dispute Status";
+        RecordRef: RecordRef;
+        Id: BigInteger;
     begin
         Id := JsonHelper.GetValueAsBigInteger(DisputeToken, 'id');
         DisputeStatus := ConvertToDisputeStatus(JsonHelper.GetValueAsText(DisputeToken, 'status'));
