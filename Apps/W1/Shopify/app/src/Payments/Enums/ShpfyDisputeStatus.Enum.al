@@ -1,5 +1,5 @@
 namespace Microsoft.Integration.Shopify;
-enum 30150 "Shpfy Dispute Status"
+enum 30154 "Shpfy Dispute Status"
 {
     /// <summary>
     /// Enum Shpfy Dispute Status (ID 30150).

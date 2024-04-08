@@ -1,4 +1,4 @@
-page 30160 "Shpfy Disputes"
+page 30161 "Shpfy Disputes"
 {
     Editable = false;
     PageType = List;
