@@ -36,6 +36,9 @@ table 6138 "E-Document Service Status"
         key(Key2; Status, "E-Document Service Code")
         {
         }
+        key(Key3; "E-Document Entry No", Status)
+        {
+        }
     }
 
     internal procedure Logs(): Text

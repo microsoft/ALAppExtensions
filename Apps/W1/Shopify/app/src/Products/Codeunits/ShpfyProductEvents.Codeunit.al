@@ -191,6 +191,8 @@ codeunit 30177 "Shpfy Product Events"
     begin
     end;
 
+#if not CLEAN24
+    [Obsolete('This event is deprecated. Please use OnBeforeFindProductMapping', '24.0')]
     [IntegrationEvent(false, false)]
     /// <summary> 
     /// Raised Before Find Mapping.
@@ -202,6 +204,21 @@ codeunit 30177 "Shpfy Product Events"
     /// <param name="ItemVariant">Parameter of type Record "Item Variant".</param>
     /// <param name="Handled">Parameter of type Boolean.</param>
     internal procedure OnBeforeFindMapping(Direction: enum "Shpfy Mapping Direction"; var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var Item: Record Item; ItemVariant: Record "Item Variant"; var Handled: Boolean);
+    begin
+    end;
+#endif
+
+    [IntegrationEvent(false, false)]
+    /// <summary> 
+    /// Raised Before Find Mapping.
+    /// </summary>
+    /// <param name="Direction">Parameter of type enum "Shopify Mapping Direction".</param>
+    /// <param name="ShopifyProduct">Parameter of type Record "Shopify Product".</param>
+    /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
+    /// <param name="Item">Parameter of type Record Item.</param>
+    /// <param name="ItemVariant">Parameter of type Record "Item Variant".</param>
+    /// <param name="Handled">Parameter of type Boolean.</param>
+    internal procedure OnBeforeFindProductMapping(Direction: Enum "Shpfy Mapping Direction"; var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var Item: Record Item; var ItemVariant: Record "Item Variant"; var Handled: Boolean);
     begin
     end;
 
@@ -328,6 +345,41 @@ codeunit 30177 "Shpfy Product Events"
     /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
     /// <param name="xShopifyVariant">Parameter of type Record "Shopify Variant".</param>
     internal procedure OnBeforeSendUpdateShopifyProductVariant(ShopifyShop: Record "Shpfy Shop"; var ShopifyVariant: Record "Shpfy Variant"; xShopifyVariant: Record "Shpfy Variant")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    /// <summary> 
+    /// Raised Before Modify on Items.
+    /// </summary>
+    /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
+    /// <param name="ShopifyProduct">Parameter of type Record "Shpfy Product".</param>
+    /// <param name="Item">Parameter of type Record "Item".</param>
+    /// <param name="IsModified">Parameter of type Boolean.</param>
+    internal procedure OnDoUpdateItemBeforeModify(var ShopifyShop: Record "Shpfy Shop"; var ShopifyProduct: Record "Shpfy Product"; var Item: Record Item; var IsModifiedByEvent: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    /// <summary> 
+    /// Raised Before Modify Items Variant.
+    /// </summary>
+    /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
+    /// <param name="ShopifyVariant">Parameter of type Record "Shpfy Variant".</param>
+    /// <param name="ItemVariant">Parameter of type Record "Shpfy Variant".</param>
+    /// <param name="IsModified">Parameter of type Boolean.</param>
+    internal procedure OnDoUpdateItemVariantBeforeModify(var ShopifyShop: Record "Shpfy Shop"; var ShopifyVariant: Record "Shpfy Variant"; var ItemVariant: Record "Item Variant"; var IsModifiedByEvent: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    /// <summary> 
+    /// Raised After Modify Item Picture.
+    /// </summary>
+    /// <param name="Item">Parameter of type Record Item.</param>
+    /// <param name="ImageUrl">Parameter of type Text.</param>
+    /// <param name="InStream">Parameter of type InStream.</param>
+    internal procedure OnAfterUpdateItemPicture(var Item: Record Item; ImageUrl: Text; InStream: InStream)
     begin
     end;
 }

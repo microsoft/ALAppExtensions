@@ -22,10 +22,12 @@ table 4811 "Intrastat Report Header"
             Caption = 'No.';
 
             trigger OnValidate()
+            var
+                NoSeries: Codeunit "No. Series";
             begin
                 if "No." <> xRec."No." then begin
                     IntrastatReportSetup.Get();
-                    NoSeriesMgt.TestManual(IntrastatReportSetup."Intrastat Nos.");
+                    NoSeries.TestManual(IntrastatReportSetup."Intrastat Nos.");
                     "No. Series" := '';
                 end;
             end;
@@ -203,7 +205,9 @@ table 4811 "Intrastat Report Header"
     var
         IntrastatReportLine: Record "Intrastat Report Line";
         IntrastatReportSetup: Record "Intrastat Report Setup";
-        NoSeriesMgt: Codeunit NoSeriesManagement;
+#if not CLEAN24
+        NoSeriesManagement: Codeunit NoSeriesManagement;
+#endif
         Month: Integer;
         StatistiscPeriodFormatErr: Label '%1 must be 4 characters, for example, 9410 for October, 1994.', Comment = '%1 - Statistics Period';
         MonthNrErr: Label 'Please check the month number.';
@@ -212,6 +216,7 @@ table 4811 "Intrastat Report Header"
     procedure AssistEdit(xIntrastatReportHeader: Record "Intrastat Report Header") Result: Boolean
     var
         IntrastatReportHeader: Record "Intrastat Report Header";
+        NoSeries: Codeunit "No. Series";
         IsHandled: Boolean;
     begin
         IsHandled := false;
@@ -222,8 +227,8 @@ table 4811 "Intrastat Report Header"
         IntrastatReportHeader := Rec;
         IntrastatReportSetup.Get();
         IntrastatReportSetup.TestField("Intrastat Nos.");
-        if NoSeriesMgt.SelectSeries(IntrastatReportSetup."Intrastat Nos.", xIntrastatReportHeader."No. Series", IntrastatReportHeader."No. Series") then begin
-            NoSeriesMgt.SetSeries(IntrastatReportHeader."No.");
+        if NoSeries.LookupRelatedNoSeries(IntrastatReportSetup."Intrastat Nos.", xIntrastatReportHeader."No. Series", IntrastatReportHeader."No. Series") then begin
+            IntrastatReportHeader."No." := NoSeries.GetNextNo(IntrastatReportHeader."No. Series");
             Rec := IntrastatReportHeader;
             exit(true);
         end;
@@ -244,6 +249,7 @@ table 4811 "Intrastat Report Header"
 
     local procedure InitIntrastatNo()
     var
+        NoSeries: Codeunit "No. Series";
         IsHandled: Boolean;
     begin
         IsHandled := false;
@@ -253,7 +259,19 @@ table 4811 "Intrastat Report Header"
 
         if "No." = '' then begin
             IntrastatReportSetup.TestField("Intrastat Nos.");
-            NoSeriesMgt.InitSeries(IntrastatReportSetup."Intrastat Nos.", xRec."No. Series", 0D, "No.", "No. Series");
+#if not CLEAN24
+            IsHandled := false;
+            NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(IntrastatReportSetup."Intrastat Nos.", xRec."No. Series", 0D, "No.", "No. Series", IsHandled);
+            if not IsHandled then begin
+#endif
+                "No. Series" := IntrastatReportSetup."Intrastat Nos.";
+                if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                    "No. Series" := xRec."No. Series";
+                "No." := NoSeries.GetNextNo("No. Series");
+#if not CLEAN24
+                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", IntrastatReportSetup."Intrastat Nos.", 0D, "No.");
+            end;
+#endif
         end;
     end;
 

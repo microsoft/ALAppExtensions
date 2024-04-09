@@ -60,6 +60,64 @@ codeunit 18841 "TCS Sales Management"
         TCSAmount := TCSManagement.RoundTCSAmount(TCSAmount);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetPartialSalesHeaderTCSAmount', '', false, false)]
+    local procedure OnGetPartialSalesHeaderTCSAmount(SalesHeader: Record "Sales Header"; var PartialTCSAmount: Decimal)
+    begin
+        GetPartialSalesStatisticsAmount(SalesHeader, PartialTCSAmount);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetPartialSalesShptTCSAmount', '', false, false)]
+    local procedure OnGetPartialSalesShptTCSAmount(SalesHeader: Record "Sales Header"; var PartialTCSAmount: Decimal)
+    begin
+        GetPartialSalesShptStatisticsAmount(SalesHeader, PartialTCSAmount);
+    end;
+
+    procedure GetPartialSalesStatisticsAmount(
+        SalesHeader: Record "Sales Header";
+        var PartialTCSAmount: Decimal)
+    var
+        SalesLine: Record "Sales Line";
+        TCSManagement: Codeunit "TCS Management";
+    begin
+        Clear(PartialTCSAmount);
+
+        SalesLine.SetLoadFields("Document Type", "Document No.", Quantity, "Qty. to Invoice");
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document no.", SalesHeader."No.");
+        if SalesLine.FindSet() then
+            repeat
+                if SalesLine.Quantity <> 0 then
+                    PartialTCSAmount += (GetTCSAmount(SalesLine.RecordId()) * SalesLine."Qty. to Invoice" / SalesLine.Quantity);
+            until SalesLine.Next() = 0;
+
+        PartialTCSAmount := TCSManagement.RoundTCSAmount(PartialTCSAmount);
+    end;
+
+    procedure GetPartialSalesShptStatisticsAmount(
+        SalesHeader: Record "Sales Header";
+        var PartialTCSAmount: Decimal)
+    var
+        SalesLine: Record "Sales Line";
+        TCSManagement: Codeunit "TCS Management";
+    begin
+        Clear(PartialTCSAmount);
+
+        SalesLine.SetLoadFields("Document Type", "Document No.", Quantity, "Qty. to Ship", "Return Qty. to Receive");
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document no.", SalesHeader."No.");
+        if SalesLine.FindSet() then
+            repeat
+                if SalesLine.Quantity <> 0 then
+                    if SalesLine."Document Type" = SalesLine."Document Type"::Order then
+                        PartialTCSAmount += (GetTCSAmount(SalesLine.RecordId()) * SalesLine."Qty. to Ship" / SalesLine.Quantity)
+                    else
+                        if SalesLine."Document Type" = SalesLine."Document Type"::"Return Order" then
+                            PartialTCSAmount += (GetTCSAmount(SalesLine.RecordId()) * SalesLine."Return Qty. to Receive" / SalesLine.Quantity)
+            until SalesLine.Next() = 0;
+
+        PartialTCSAmount := TCSManagement.RoundTCSAmount(PartialTCSAmount);
+    end;
+
     procedure GetStatisticsAmountPostedInvoice(
         SalesInvoiceHeader: Record "Sales Invoice Header";
         var TCSAmount: Decimal)

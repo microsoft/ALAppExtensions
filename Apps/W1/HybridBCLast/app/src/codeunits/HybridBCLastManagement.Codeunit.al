@@ -1,7 +1,5 @@
 codeunit 4021 "Hybrid BC Last Management"
 {
-    Permissions = TableData "Intelligent Cloud Status" = rimd;
-
     var
         SqlCompatibilityErr: Label 'SQL database must be at compatibility level 130 or higher.';
         DatabaseTooLargeErr: Label 'The maximum allowed amount of data for migration has been exceeded. For more information on how to proceed, see  https://go.microsoft.com/fwlink/?linkid=2013440.';
@@ -13,7 +11,7 @@ codeunit 4021 "Hybrid BC Last Management"
         CloudMigrationTok: Label 'CloudMigration', Locked = true;
         CompanyUpgradeFailedMsg: Label 'Company upgrade failed', Locked = true;
         PerDatabaseUpgradeFailedMsg: Label 'Ped database upgrade failed', Locked = true;
-        CompanyUnderUpgradeErr: Label 'Cloud migration can�t be run, because an upgrade has started on company %1 (upgrade status: %2). Either exclude the company from migration or delete it, then try migration again.', Comment = '%1 - Name of company, %2 Status of upgrade for company';
+        CompanyUnderUpgradeErr: Label 'Cloud migration can''t be run, because an upgrade has started on company %1 (upgrade status: %2). Either exclude the company from migration or delete it, then try migration again.', Comment = '%1 - Name of company, %2 Status of upgrade for company';
 
     procedure GetAppId() AppId: Guid
     var
@@ -110,6 +108,53 @@ codeunit 4021 "Hybrid BC Last Management"
         exit;
     end;
 
+    [EventSubscriber(ObjectType::Page, Page::"Cloud Mig - Select Tables", 'OnCanChangeSetup', '', false, false)]
+    local procedure OnCanChangeSetup(var CanChangeSetup: Boolean)
+    var
+        HybridBCLastWizard: Codeunit "Hybrid BC Last Wizard";
+    begin
+        if not HybridBCLastWizard.IsBCLastMigration() then
+            exit;
+
+        CanChangeSetup := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Cloud Mig. Replicate Data Mgt.", 'OnCanIntelligentCloudSetupTableBeModified', '', false, false)]
+    local procedure CanIntelligentCloudSetupTableBeModified(TableID: Integer; var CanBeModified: Boolean)
+    var
+        HybridBCLastWizard: Codeunit "Hybrid BC Last Wizard";
+    begin
+        if not HybridBCLastWizard.IsBCLastMigration() then
+            exit;
+
+        CanBeModified := CheckRecordCanBeIncluded(TableID);
+    end;
+
+    local procedure CheckRecordCanBeIncluded(TableID: Integer): Boolean
+    var
+        CloudMigReplicateDataMgt: Codeunit "Cloud Mig. Replicate Data Mgt.";
+        IsObsolete: Boolean;
+    begin
+        if not CloudMigReplicateDataMgt.CanChangeIntelligentCloudStatus(TableID, IsObsolete) then
+            exit(false);
+
+        if IsObsolete then
+            exit(true);
+
+        if not TryOpenTable(TableID) then
+            exit(false);
+
+        exit(true);
+    end;
+
+    [TryFunction]
+    local procedure TryOpenTable(TableID: Integer)
+    var
+        TestRecordRef: RecordRef;
+    begin
+        TestRecordRef.Open(TableID, false);
+    end;
+
     local procedure UpdateStatusOnHybridReplicationCompleted(RunId: Text[50]; SubscriptionId: Text)
     var
         HybridReplicationDetail: Record "Hybrid Replication Detail";
@@ -148,31 +193,17 @@ codeunit 4021 "Hybrid BC Last Management"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Data Load", 'OnAfterCompanyTableLoad', '', false, false)]
     local procedure UpdateStatusOnTableLoaded(TableNo: Integer; SyncedVersion: BigInteger)
     var
-        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        CloudMigReplicateDataMgt: Codeunit "Cloud Mig. Replicate Data Mgt.";
     begin
-        // Need to update IC Status with new synced version on successful table load
-        IntelligentCloudStatus.SetRange("Table Id", TableNo);
-        IntelligentCloudStatus.SetRange("Company Name", CompanyName());
-        if IntelligentCloudStatus.FindFirst() then begin
-            IntelligentCloudStatus.Blocked := false;
-            IntelligentCloudStatus."Synced Version" := SyncedVersion;
-            IntelligentCloudStatus.Modify();
-        end;
+        CloudMigReplicateDataMgt.UpdateStatusOnTableLoaded(TableNo, SyncedVersion);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Data Load", 'OnAfterNonCompanyTableLoad', '', false, false)]
     local procedure UpdateStatusOnNonCompanyTableLoaded(TableNo: Integer; SyncedVersion: BigInteger)
     var
-        IntelligentCloudStatus: Record "Intelligent Cloud Status";
+        CloudMigReplicateDataMgt: Codeunit "Cloud Mig. Replicate Data Mgt.";
     begin
-        // Need to update IC Status with new synced version on successful table load
-        IntelligentCloudStatus.SetRange("Table Id", TableNo);
-        IntelligentCloudStatus.SetRange("Company Name", '');
-        if IntelligentCloudStatus.FindFirst() then begin
-            IntelligentCloudStatus.Blocked := false;
-            IntelligentCloudStatus."Synced Version" := SyncedVersion;
-            IntelligentCloudStatus.Modify();
-        end;
+        CloudMigReplicateDataMgt.UpdateStatusOnNonCompanyTableLoaded(TableNo, SyncedVersion);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Management", 'OnAfterCompanyUpgradeFailed', '', true, false)]

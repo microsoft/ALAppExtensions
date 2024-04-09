@@ -10,20 +10,44 @@ defaults:
     shell: powershell
 
 jobs:
-  UpdatePackageVersions:
-    if: github.repository_owner == 'microsoft'
+  GetBranches:
+    name: Get Branches
     runs-on: windows-latest
+    outputs:
+      UpdateBranches: ${{ steps.GetBranches.outputs.UpdateBranches }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get Branches
+        id: GetBranches
+        run: |
+          git fetch
+          $branches = @(git for-each-ref --format="'%(refname:short)'" refs/remotes/origin/release/ | % { $_ -replace 'origin/', '' })
+          $branches += "'main'"
+
+          $branchMatrix = "[$($branches -join ',')]"
+          Write-Host "Updating branches: $branchMatrix"
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "UpdateBranches=$branchMatrix"
+
+  UpdatePackageVersions:
+    name: "[${{ matrix.branch }}] Update Package Versions"
+    runs-on: windows-latest
+    environment: Official-Build
+    needs: GetBranches
     strategy:
       matrix:
-        branch: ['main']
+        branch: ${{ fromJson(needs.GetBranches.outputs.UpdateBranches) }}
+      fail-fast: false
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           ref: ${{ matrix.branch }}
-      
+
       - name: Update Package Versions
-        run: | 
-          Build/Scripts/UpdatePackageVersions.ps1 -TargetBranch ${{ matrix.branch }} -Actor $env:GITHUB_ACTOR
         env:
-          GITHUB_TOKEN: ${{ secrets.GHTOKENWORKFLOW }}
+          GH_TOKEN: ${{ secrets.GHTOKENWORKFLOW }}
+          InsiderSASToken: ${{ secrets.INSIDERSASTOKEN }}
+        run: |
+          build/scripts/UpdatePackageVersions.ps1 -Repository $ENV:GITHUB_REPOSITORY -TargetBranch ${{ matrix.branch }} -Actor $env:GITHUB_ACTOR

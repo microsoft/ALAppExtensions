@@ -5,6 +5,7 @@
 namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Finance.GeneralLedger.Journal;
+using System.Privacy;
 
 table 6103 "E-Document Service"
 {
@@ -33,8 +34,16 @@ table 6103 "E-Document Service"
         {
             Caption = 'Service Integration';
             DataClassification = SystemMetadata;
-        }
 
+            trigger OnValidate()
+            var
+                CustConcentMgt: Codeunit "Customer Consent Mgt.";
+            begin
+                if (xRec."Service Integration" = xRec."Service Integration"::"No Integration") and (Rec."Service Integration" <> xRec."Service Integration") then
+                    if not CustConcentMgt.ConfirmCustomConsent(ChooseIntegrationConsentTxt) then
+                        Rec."Service Integration" := xRec."Service Integration";
+            end;
+        }
         field(5; "Use Batch Processing"; Boolean)
         {
             Caption = 'Use Batch Processing';
@@ -43,7 +52,11 @@ table 6103 "E-Document Service"
         field(6; "Update Order"; Boolean)
         {
             Caption = 'Update Order';
-            DataClassification = SystemMetadata;
+#if not CLEAN24
+            ObsoleteState = Pending;
+            ObsoleteReason = 'Replaced by "Receive E-Document To" on Vendor table';
+            ObsoleteTag = '24.0';
+#endif
         }
         field(7; "Create Journal Lines"; Boolean)
         {
@@ -147,7 +160,7 @@ table 6103 "E-Document Service"
         {
             Caption = 'Auto Import';
             DataClassification = SystemMetadata;
-            InitValue = true;
+            InitValue = false;
         }
         field(19; "Import Start Time"; Time)
         {
@@ -205,6 +218,18 @@ table 6103 "E-Document Service"
         }
     }
 
+    trigger OnDelete()
+    var
+        EDocServiceSupportedType: Record "E-Doc. Service Supported Type";
+        EDocBackgroundJobs: Codeunit "E-Document Background Jobs";
+    begin
+        EDocServiceSupportedType.SetRange("E-Document Service Code", Rec.Code);
+        EDocServiceSupportedType.DeleteAll();
+
+        EDocBackgroundJobs.RemoveJob(Rec."Batch Recurrent Job Id");
+        EDocBackgroundJobs.RemoveJob(Rec."Import Recurrent Job Id");
+    end;
+
     internal procedure ToString(): Text
     begin
         exit(StrSubstNo(EDocStringLbl, SystemId, "Document Format", "Service Integration", "Use Batch Processing", "Batch Mode"));
@@ -213,4 +238,5 @@ table 6103 "E-Document Service"
     var
         EDocStringLbl: Label '%1,%2,%3,%4,%5', Locked = true;
         TemplateTypeErr: Label 'Only General Journal Templates of type %1, %2, %3, %4, or %5 are allowed.', Comment = '%1 - General, %2 - Purchases, %3 - Payments, %4 - Sales, %5 - Cash, %6 - Receipts';
+        ChooseIntegrationConsentTxt: Label 'By choosing this option, you consent to use third party systems. These systems may have their own terms of use, license, pricing and privacy, and they may not meet the same compliance and security standards as Microsoft Dynamics 365 Business Central. Your privacy is important to us.';
 }

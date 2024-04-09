@@ -75,8 +75,13 @@ table 40105 "GP Company Additional Settings"
 
             trigger OnValidate()
             begin
-                if Rec."Migrate Vendor Classes" then
+
+                if Rec."Migrate Vendor Classes" then begin
                     Rec.Validate("Migrate Payables Module", true);
+
+                    if not Rec."Migrate GL Module" then
+                        Rec.Validate("Migrate GL Module", true);
+                end;
             end;
         }
         field(12; "Migrate Customer Classes"; Boolean)
@@ -86,8 +91,12 @@ table 40105 "GP Company Additional Settings"
 
             trigger OnValidate()
             begin
-                if Rec."Migrate Customer Classes" then
+                if Rec."Migrate Customer Classes" then begin
                     Rec.Validate("Migrate Receivables Module", true);
+
+                    if not Rec."Migrate GL Module" then
+                        Rec.Validate("Migrate GL Module", true);
+                end;
             end;
         }
         field(13; "Migrate Item Classes"; Boolean)
@@ -97,8 +106,12 @@ table 40105 "GP Company Additional Settings"
 
             trigger OnValidate()
             begin
-                if Rec."Migrate Item Classes" then
+                if Rec."Migrate Item Classes" then begin
                     Rec.Validate("Migrate Inventory Module", true);
+
+                    if not Rec."Migrate GL Module" then
+                        Rec.Validate("Migrate GL Module", true);
+                end;
             end;
         }
         field(14; "Oldest GL Year to Migrate"; Integer)
@@ -221,6 +234,9 @@ table 40105 "GP Company Additional Settings"
                 if Rec."Migrate Open POs" then begin
                     Rec.Validate("Migrate Inventory Module", true);
                     Rec.Validate("Migrate Payables Module", true);
+
+                    if not Rec."Migrate GL Module" then
+                        Rec.Validate("Migrate GL Module", true);
                 end;
             end;
         }
@@ -228,6 +244,13 @@ table 40105 "GP Company Additional Settings"
         {
             InitValue = false;
             DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            begin
+                if Rec."Migrate Only GL Master" then
+                    if not Rec."Migrate GL Module" then
+                        Rec.Validate("Migrate GL Module", true);
+            end;
         }
         field(23; "Migrate Only Bank Master"; Boolean)
         {
@@ -236,8 +259,13 @@ table 40105 "GP Company Additional Settings"
 
             trigger OnValidate()
             begin
-                if Rec."Migrate Only Bank Master" then
-                    Rec.Validate("Migrate Bank Module", true);
+                if Rec."Migrate Only Bank Master" then begin
+                    if not Rec."Migrate Bank Module" then
+                        Rec.Validate("Migrate Bank Module", true)
+                end else
+                    if not Rec."Migrate GL Module" then
+                        if Rec."Migrate Bank Module" then
+                            Rec.Validate("Migrate GL Module", true);
             end;
         }
         field(24; "Migrate Only Payables Master"; Boolean)
@@ -247,8 +275,13 @@ table 40105 "GP Company Additional Settings"
 
             trigger OnValidate()
             begin
-                if Rec."Migrate Only Payables Master" then
-                    Rec.Validate("Migrate Payables Module", true);
+                if Rec."Migrate Only Payables Master" then begin
+                    if not Rec."Migrate Payables Module" then
+                        Rec.Validate("Migrate Payables Module", true)
+                end else
+                    if not Rec."Migrate GL Module" then
+                        if Rec."Migrate Payables Module" then
+                            Rec.Validate("Migrate GL Module", true);
             end;
         }
         field(25; "Migrate Only Rec. Master"; Boolean)
@@ -258,8 +291,13 @@ table 40105 "GP Company Additional Settings"
 
             trigger OnValidate()
             begin
-                if Rec."Migrate Only Rec. Master" then
-                    Rec.Validate("Migrate Receivables Module", true);
+                if Rec."Migrate Only Rec. Master" then begin
+                    if not Rec."Migrate Receivables Module" then
+                        Rec.Validate("Migrate Receivables Module", true)
+                end else
+                    if not Rec."Migrate GL Module" then
+                        if Rec."Migrate Receivables Module" then
+                            Rec.Validate("Migrate GL Module", true);
             end;
         }
         field(26; "Migrate Only Inventory Master"; Boolean)
@@ -269,8 +307,13 @@ table 40105 "GP Company Additional Settings"
 
             trigger OnValidate()
             begin
-                if Rec."Migrate Only Inventory Master" then
-                    Rec.Validate("Migrate Inventory Module", true);
+                if Rec."Migrate Only Inventory Master" then begin
+                    if not Rec."Migrate Inventory Module" then
+                        Rec.Validate("Migrate Inventory Module", true)
+                end else
+                    if not Rec."Migrate GL Module" then
+                        if Rec."Migrate Inventory Module" then
+                            Rec.Validate("Migrate GL Module", true);
             end;
         }
         field(27; "Migrate Inactive Items"; Boolean)
@@ -329,7 +372,6 @@ table 40105 "GP Company Additional Settings"
             FieldClass = FlowField;
             CalcFormula = exist("Hybrid Company Status" where("Name" = field(Name), "Upgrade Status" = const("Completed")));
         }
-
         field(36; "Skip Posting Account Batches"; Boolean)
         {
             DataClassification = SystemMetadata;
@@ -349,6 +391,55 @@ table 40105 "GP Company Additional Settings"
         {
             DataClassification = SystemMetadata;
             InitValue = false;
+        }
+        field(40; "Migrate GL Module"; Boolean)
+        {
+            InitValue = true;
+            DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            var
+                AllowedToMakeChange: Boolean;
+            begin
+                AllowedToMakeChange := true;
+
+                if (Name = '') and not Rec."Migrate GL Module" then
+                    if GuiAllowed() then
+                        AllowedToMakeChange := Confirm(DisableGLModuleQst);
+
+                if not AllowedToMakeChange then
+                    Error('');
+
+                if not Rec."Migrate GL Module" then begin
+                    Rec.Validate("Migrate Open POs", false);
+                    Rec.Validate("Migrate Customer Classes", false);
+                    Rec.Validate("Migrate Item Classes", false);
+                    Rec.Validate("Migrate Vendor Classes", false);
+                    Rec.Validate("Migrate Only GL Master", false);
+
+                    if Rec."Migrate Bank Module" then
+                        Rec.Validate("Migrate Only Bank Master", true);
+
+                    if Rec."Migrate Inventory Module" then
+                        Rec.Validate("Migrate Only Inventory Master", true);
+
+                    if Rec."Migrate Payables Module" then
+                        Rec.Validate("Migrate Only Payables Master", true);
+
+                    if Rec."Migrate Receivables Module" then
+                        Rec.Validate("Migrate Only Rec. Master", true);
+                end;
+            end;
+        }
+        field(41; "Skip Posting Item Batches"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = false;
+        }
+        field(42; "Has Hybrid Company"; Boolean)
+        {
+            FieldClass = FlowField;
+            CalcFormula = exist("Hybrid Company" where("Name" = field(Name)));
         }
     }
 
@@ -378,6 +469,12 @@ table 40105 "GP Company Additional Settings"
     end;
 
     // Modules
+    procedure GetGLModuleEnabled(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate GL Module");
+    end;
+
     procedure GetBankModuleEnabled(): Boolean
     begin
         GetSingleInstance();
@@ -490,7 +587,8 @@ table 40105 "GP Company Additional Settings"
         exit(Rec."Skip Posting Account Batches" and
              Rec."Skip Posting Customer Batches" and
              Rec."Skip Posting Vendor Batches" and
-             Rec."Skip Posting Bank Batches");
+             Rec."Skip Posting Bank Batches" and
+             Rec."Skip Posting Item Batches");
     end;
 
     procedure GetSkipPostingAccountBatches(): Boolean
@@ -515,6 +613,12 @@ table 40105 "GP Company Additional Settings"
     begin
         GetSingleInstance();
         exit(Rec."Skip Posting Bank Batches");
+    end;
+
+    procedure GetSkipPostingItemBatches(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Skip Posting Item Batches");
     end;
 
     // Other
@@ -588,4 +692,16 @@ table 40105 "GP Company Additional Settings"
 
         exit(false);
     end;
+
+    procedure AreAllModulesDisabled(): Boolean
+    begin
+        exit(not Rec."Migrate GL Module"
+            and not Rec."Migrate Bank Module"
+            and not Rec."Migrate Inventory Module"
+            and not Rec."Migrate Payables Module"
+            and not Rec."Migrate Receivables Module");
+    end;
+
+    var
+        DisableGLModuleQst: Label 'Are you sure you want to disable the General Ledger module? This action will result in no migration of General Ledger accounts or transactions across any module.';
 }

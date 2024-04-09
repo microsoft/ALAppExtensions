@@ -15,9 +15,76 @@ codeunit 4025 "GP Cloud Migration"
     trigger OnRun();
     var
         HybridCompanyStatus: Record "Hybrid Company Status";
-        AssistedCompanySetupStatus: Record "Assisted Company Setup Status";
-        HelperFunctions: Codeunit "Helper Functions";
+        GPUpgradeSettings: Record "GP Upgrade Settings";
         HybridGPManagement: Codeunit "Hybrid GP Management";
+        HelperFunctions: Codeunit "Helper Functions";
+        GPMigrationErrorHandler: Codeunit "GP Migration Error Handler";
+        HybridHandleGPUpgradeError: Codeunit "Hybrid Handle GP Upgrade Error";
+        GPCollectAllModifications: Codeunit "GP Collect All Modifications";
+        Success: Boolean;
+    begin
+        GPMigrationErrorHandler.ClearErrorOccured();
+
+        GPUpgradeSettings.GetonInsertGPUpgradeSettings(GPUpgradeSettings);
+        if GPUpgradeSettings."Log All Record Changes" then
+            if BindSubscription(GPCollectAllModifications) then;
+
+        ClearLastError();
+        OnUpgradeGPCompany(Success);
+
+        if GPUpgradeSettings."Log All Record Changes" then
+            if UnbindSubscription(GPCollectAllModifications) then;
+
+        if not Success then begin
+            HybridHandleGPUpgradeError.MarkUpgradeFailed(Rec);
+            Commit();
+
+            HelperFunctions.CheckAndLogErrors();
+            GPMigrationErrorHandler.ClearErrorOccured();
+            Commit();
+
+            GPUpgradeSettings.GetonInsertGPUpgradeSettings(GPUpgradeSettings);
+            if not GPUpgradeSettings."Collect All Errors" then
+                Error(DataTransformationErrorsPresentMsg);
+        end;
+
+        HybridCompanyStatus.SetFilter(Name, '<>''''');
+        HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Pending);
+        if HybridCompanyStatus.FindFirst() then begin
+            HybridGPManagement.InvokeCompanyUpgrade(Rec, HybridCompanyStatus.Name);
+            exit;
+        end;
+
+        if not Rec.Find() then
+            exit;
+
+        if Rec.Status = Rec.Status::Failed then
+            exit;
+
+        if GPMigrationErrorHandler.ErrorOccuredDuringLastUpgrade() then begin
+            HybridHandleGPUpgradeError.MarkUpgradeFailed(Rec);
+            exit;
+        end;
+
+        Rec.Status := Rec.Status::Completed;
+        Rec.Modify();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GP Cloud Migration", 'OnUpgradeGPCompany', '', false, false)]
+    local procedure HandleOnUpgradeGPCompany(var Success: Boolean)
+    var
+        GPMigrationErrorHandler: Codeunit "GP Migration Error Handler";
+    begin
+        ClearLastError();
+        UpgradeGPCompany();
+        Success := not GPMigrationErrorHandler.GetErrorOccured();
+    end;
+
+    internal procedure UpgradeGPCompany()
+    var
+        AssistedCompanySetupStatus: Record "Assisted Company Setup Status";
+        HybridCompanyStatus: Record "Hybrid Company Status";
+        HelperFunctions: Codeunit "Helper Functions";
         SetupStatus: Enum "Company Setup Status";
     begin
         if AssistedCompanySetupStatus.Get(CompanyName()) then begin
@@ -32,19 +99,6 @@ codeunit 4025 "GP Cloud Migration"
         HybridCompanyStatus.Get(CompanyName);
         HybridCompanyStatus."Upgrade Status" := HybridCompanyStatus."Upgrade Status"::Completed;
         HybridCompanyStatus.Modify();
-
-        Clear(HybridCompanyStatus);
-        HybridCompanyStatus.SetFilter(Name, '<>''''');
-        HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Pending);
-        if HybridCompanyStatus.FindFirst() then begin
-            HybridGPManagement.InvokeCompanyUpgrade(Rec, HybridCompanyStatus.Name);
-            exit;
-        end;
-
-        if Rec.Find() then begin
-            Rec.Status := Rec.Status::Completed;
-            Rec.Modify();
-        end;
     end;
 
     var
@@ -71,16 +125,7 @@ codeunit 4025 "GP Cloud Migration"
 
         SelectLatestVersion();
         HelperFunctions.SetProcessesRunning(true);
-        HelperFunctions.CleanupBeforeSynchronization();
 
-        if not HelperFunctions.PreMigrationCleanupCompleted() then begin
-            HelperFunctions.GetLastError();
-            HelperFunctions.SetProcessesRunning(false);
-            exit;
-        end;
-
-        GPPopulateCombinedTables.CleanupCombinedTables();
-        Commit();
         GPPopulateCombinedTables.PopulateAllMappedTables();
         Commit();
 
@@ -176,6 +221,17 @@ codeunit 4025 "GP Cloud Migration"
             CreateDataMigrationStatusRecords(Database::"Item", ItemsToMigrateCount, Database::"GP Item", Codeunit::"GP Item Migrator");
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnIsCloudMigrationCompleted', '', false, false)]
+    local procedure HandleIsCloudMigrationCompleted(SourceProduct: Text; var CloudMigrationCompleted: Boolean)
+    var
+        HybridGPWizard: Codeunit "Hybrid GP Wizard";
+    begin
+        if SourceProduct <> HybridGPWizard.ProductId() then
+            exit;
+
+        CloudMigrationCompleted := true;
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Cloud Management", 'OnInsertDefaultTableMappings', '', false, false)]
     local procedure OnInsertDefaultTableMappings(DeleteExisting: Boolean; ProductID: Text[250])
     var
@@ -218,15 +274,17 @@ codeunit 4025 "GP Cloud Migration"
         UpdateOrInsertRecord(Database::"GP Item Location", 'IV40700');
 
         UpdateOrInsertRecord(Database::"GP MC40000", 'MC40000');
-        UpdateOrInsertRecord(Database::"GP MC40200", 'MC40200');
+        UpdateOrInsertRecord(Database::"GP MC40200", 'MC40200', false);
 
         UpdateOrInsertRecord(Database::"GP PM00100", 'PM00100');
         UpdateOrInsertRecord(Database::"GP PM00200", 'PM00200');
         UpdateOrInsertRecord(Database::"GP PM00201", 'PM00201');
         UpdateOrInsertRecord(Database::"GP PM00204", 'PM00204');
         UpdateOrInsertRecord(Database::"GP Vendor Address", 'PM00300');
+        UpdateOrInsertRecord(Database::"GP PM10200", 'PM10200');
         UpdateOrInsertRecord(Database::"GP PM20000", 'PM20000');
         UpdateOrInsertRecord(Database::GPPMHist, 'PM30200');
+        UpdateOrInsertRecord(Database::"GP PM30300", 'PM30300');
 
         UpdateOrInsertRecord(Database::"GP POP10100", 'POP10100');
         UpdateOrInsertRecord(Database::"GP POP10110", 'POP10110');
@@ -247,7 +305,9 @@ codeunit 4025 "GP Cloud Migration"
         UpdateOrInsertRecord(Database::"GP RM00103", 'RM00103');
         UpdateOrInsertRecord(Database::"GP RM00201", 'RM00201');
         UpdateOrInsertRecord(Database::"GP RM20101", 'RM20101');
+        UpdateOrInsertRecord(Database::"GP RM20201", 'RM20201');
         UpdateOrInsertRecord(Database::GPRMHist, 'RM30101');
+        UpdateOrInsertRecord(Database::"GP RM30201", 'RM30201');
 
         UpdateOrInsertRecord(Database::GPSOPTrxHist, 'SOP30200');
         UpdateOrInsertRecord(Database::GPSOPDepositHist, 'SOP30201');
@@ -275,6 +335,11 @@ codeunit 4025 "GP Cloud Migration"
     end;
 
     local procedure UpdateOrInsertRecord(TableID: Integer; SourceTableName: Text[128])
+    begin
+        UpdateOrInsertRecord(TableID, SourceTableName, true);
+    end;
+
+    local procedure UpdateOrInsertRecord(TableID: Integer; SourceTableName: Text[128]; PerCompanyTable: Boolean)
     var
         MigrationTableMapping: Record "Migration Table Mapping";
         CurrentModuleInfo: ModuleInfo;
@@ -285,7 +350,16 @@ codeunit 4025 "GP Cloud Migration"
 
         MigrationTableMapping."App ID" := CurrentModuleInfo.Id();
         MigrationTableMapping.Validate("Table ID", TableID);
+        MigrationTableMapping."Data Per Company" := PerCompanyTable;
         MigrationTableMapping."Source Table Name" := SourceTableName;
         MigrationTableMapping.Insert();
     end;
+
+    [IntegrationEvent(false, false, true)]
+    local procedure OnUpgradeGPCompany(var Success: Boolean)
+    begin
+    end;
+
+    var
+        DataTransformationErrorsPresentMsg: Label 'Data transformation errors were found. You can inspect the errors on the "Data transformation errors" page.';
 }

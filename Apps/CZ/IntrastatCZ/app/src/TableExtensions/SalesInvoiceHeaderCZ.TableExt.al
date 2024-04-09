@@ -15,5 +15,10 @@ tableextension 31340 "Sales Invoice Header CZ" extends "Sales Invoice Header"
             Caption = 'Physical Transfer';
             DataClassification = CustomerContent;
         }
+        field(31310; "Intrastat Exclude CZ"; Boolean)
+        {
+            Caption = 'Intrastat Exclude';
+            DataClassification = CustomerContent;
+        }
     }
 }

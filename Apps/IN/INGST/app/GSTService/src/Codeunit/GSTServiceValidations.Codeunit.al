@@ -780,6 +780,26 @@ codeunit 18440 "GST Service Validations"
             Error(RefErr);
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnValidateShipToCodeOnAfterCalcShouldUpdateShipToAddressFields', '', false, false)]
+    local procedure OnValidateShipToCodeOnAfterCalcShouldUpdateShipToAddressFields(var ServiceHeader: Record "Service Header"; var ShouldUpdateShipToAddressFields: Boolean)
+    begin
+        UpdateShiptoCodeCreditMemoDocument(ServiceHeader, ShouldUpdateShipToAddressFields);
+    end;
+
+    local procedure UpdateShiptoCodeCreditMemoDocument(var ServiceHeader: Record "Service Header"; ShouldUpdateShipToAddressFields: Boolean)
+    var
+        ShipToAddress: Record "Ship-to Address";
+    begin
+        if ShouldUpdateShipToAddressFields then
+            exit;
+
+        if ServiceHeader."GST Customer Type" = ServiceHeader."GST Customer Type"::" " then
+            exit;
+
+        if ServiceHeader."Document Type" = ServiceHeader."Document Type"::"Credit Memo" then
+            if ShipToAddress.Get(ServiceHeader."Customer No.", ServiceHeader."Ship-to Code") then
+                ShipToAddrfields(ServiceHeader, ShipToAddress);
+    end;
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeServiceLineHSNSACEditable(ServiceLine: Record "Service Line"; var IsEditable: Boolean; var IsHandled: Boolean)

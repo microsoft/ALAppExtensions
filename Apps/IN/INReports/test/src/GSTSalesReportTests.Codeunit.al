@@ -292,7 +292,6 @@ codeunit 18046 "GST Sales Report Tests"
 
     [PageHandler]
     procedure TaxRatePageHandler(var TaxRates: TestPage "Tax Rates")
-    var
     begin
         TaxRates.New();
         TaxRates.AttributeValue1.SetValue(Storage.Get(GSTGroupCodeLbl));

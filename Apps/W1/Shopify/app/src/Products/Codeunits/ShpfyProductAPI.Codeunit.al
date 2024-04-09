@@ -78,11 +78,6 @@ codeunit 30176 "Shpfy Product API"
         GraphQuery.Append(', published: true');
         GraphQuery.Append(', variants: {inventoryPolicy: ');
         GraphQuery.Append(ShopifyVariant."Inventory Policy".Names.Get(ShopifyVariant."Inventory Policy".Ordinals.IndexOf(ShopifyVariant."Inventory Policy".AsInteger())));
-        if ShopifyVariant.Title <> '' then begin
-            GraphQuery.Append(', title: \"');
-            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyVariant.Title));
-            GraphQuery.Append('\"');
-        end;
         if ShopifyVariant.Barcode <> '' then begin
             GraphQuery.Append(', barcode: \"');
             GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyVariant.Barcode));
@@ -251,7 +246,6 @@ codeunit 30176 "Shpfy Product API"
                 exit(CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JResponse, 'id')));
     end;
 
-#if not CLEAN23
     local procedure UpdateProductImage(Product: Record "Shpfy Product"; ResourceUrl: Text): BigInteger
     var
         Parameters: Dictionary of [Text, Text];
@@ -262,7 +256,6 @@ codeunit 30176 "Shpfy Product API"
         CommunicationMgt.ExecuteGraphQL("Shpfy GraphQL Type"::UpdateProductImage, Parameters);
         exit(Product."Image Id");
     end;
-#endif
 
     internal procedure UpdateProductImage(Parameters: Dictionary of [Text, Text])
     begin
@@ -275,12 +268,10 @@ codeunit 30176 "Shpfy Product API"
     /// <param name="Product">Parameter of type Record "Shopify Product".</param>
     /// <param name="Item">Parameter of type Record Item.</param>
     /// <returns>Return value of type BigInteger.</returns>
-    internal procedure UpdateShopifyProductImage(Product: Record "Shpfy Product"; Item: Record Item; var BulkOperationInput: TextBuilder; var ParametersList: List of [Dictionary of [Text, Text]]): BigInteger
+    internal procedure UpdateShopifyProductImage(Product: Record "Shpfy Product"; Item: Record Item; var BulkOperationInput: TextBuilder; var ParametersList: List of [Dictionary of [Text, Text]]; RecordCount: Integer): BigInteger
     var
         TenantMedia: Record "Tenant Media";
-#if not CLEAN23
         BulkOperationMgt: Codeunit "Shpfy Bulk Operation Mgt.";
-#endif
         BulkOperationType: Enum "Shpfy Bulk Operation Type";
         IBulkOperation: Interface "Shpfy IBulk Operation";
         Parameters: Dictionary of [Text, Text];
@@ -289,9 +280,12 @@ codeunit 30176 "Shpfy Product API"
     begin
         if Item.Picture.Count > 0 then
             if CreateImageUploadUrl(Item, Url, ResourceUrl, TenantMedia) then
-#if not CLEAN23
                 if UploadImage(TenantMedia, Url) then
-                    if not BulkOperationMgt.IsBulkOperationFeatureEnabled() then
+#if not CLEAN23
+                    if not BulkOperationMgt.IsBulkOperationFeatureEnabled() or (RecordCount < BulkOperationMgt.GetBulkOperationThreshold()) then
+#else
+                    if RecordCount <= BulkOperationMgt.GetBulkOperationThreshold() then
+#endif
                         exit(UpdateProductImage(Product, ResourceUrl))
                     else begin
                         IBulkOperation := BulkOperationType::UpdateProductImage;
@@ -302,17 +296,6 @@ codeunit 30176 "Shpfy Product API"
                         BulkOperationInput.AppendLine(StrSubstNo(IBulkOperation.GetInput(), Format(Product."Image Id"), ResourceUrl, Format(Product.Id)));
                         exit(Product."Image Id");
                     end;
-#else
-                if UploadImage(TenantMedia, Url) then begin
-                    IBulkOperation := BulkOperationType::UpdateProductImage;
-                    Parameters.Add('ProductId', Format(Product.Id));
-                    Parameters.Add('ResourceUrl', ResourceUrl);
-                    Parameters.Add('ImageId', Format(Product."Image Id"));
-                    ParametersList.Add(Parameters);
-                    BulkOperationInput.AppendLine(StrSubstNo(IBulkOperation.GetInput(), Format(Product."Image Id"), ResourceUrl, Format(Product.Id)));
-                    exit(Product."Image Id");
-                end;
-#endif
     end;
 
     /// <summary> 
@@ -388,10 +371,7 @@ codeunit 30176 "Shpfy Product API"
         Clear(ProductIds);
         GraphQLType := GraphQLType::GetProductIds;
         LastSyncTime := Shop.GetLastSyncTime("Shpfy Synchronization Type"::Products);
-        if LastSyncTime > 0DT then
-            Parameters.Add('Time', Format(LastSyncTime, 0, 9))
-        else
-            Parameters.Add('Time', '');
+        Parameters.Add('Time', Format(LastSyncTime, 0, 9));
         repeat
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
             if JsonHelper.GetJsonArray(JResponse, JProducts, 'data.products.edges') then begin
@@ -519,9 +499,11 @@ codeunit 30176 "Shpfy Product API"
             GraphQuery.Append(ConvertToProductStatus(ShopifyProduct.Status));
         end;
         Data := ShopifyProduct.GetCommaSeparatedTags();
-        GraphQuery.Append(', tags: \"');
-        GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(Data));
-        GraphQuery.Append('\"');
+        if Data <> '' then begin
+            GraphQuery.Append(', tags: \"');
+            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(Data));
+            GraphQuery.Append('\"');
+        end;
         if ShopifyProduct.Vendor <> xShopifyProduct.Vendor then begin
             GraphQuery.Append(', vendor: \"');
             GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyProduct.Vendor));
@@ -548,6 +530,25 @@ codeunit 30176 "Shpfy Product API"
         ShopifyProduct.URL := JsonHelper.GetValueAsText(JResponse, 'data.productUpdate.product.onlineStoreUrl', MaxStrLen(ShopifyProduct.URL));
 #pragma warning restore AA0139
         ShopifyProduct."Updated At" := JsonHelper.GetValueAsDateTime(JResponse, 'data.productUpdate.product.updatedAt');
+    end;
+
+    internal procedure UpdateProductStatus(ShopifyProduct: Record "Shpfy Product"; Status: Enum "Shpfy Product Status")
+    var
+        JResponse: JsonToken;
+        GraphQuery: TextBuilder;
+    begin
+        GraphQuery.Append('{"query":"mutation {productUpdate(input: {id: \"gid://shopify/Product/');
+        GraphQuery.Append(Format(ShopifyProduct.Id));
+        GraphQuery.Append('\"');
+        if ShopifyProduct.Status <> Status then begin
+            GraphQuery.Append(', status: ');
+            GraphQuery.Append(ConvertToProductStatus(Status));
+        end;
+        GraphQuery.Append('}) ');
+        GraphQuery.Append('{product {id}, userErrors {field, message}}');
+        GraphQuery.Append('}"}');
+
+        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
     end;
 
     /// <summary> 

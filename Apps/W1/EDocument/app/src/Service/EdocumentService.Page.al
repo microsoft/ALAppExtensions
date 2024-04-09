@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using Microsoft.eServices.EDocument.IO.Peppol;
 using System.Telemetry;
 
 page 6133 "E-Document Service"
@@ -13,6 +14,7 @@ page 6133 "E-Document Service"
     Caption = 'E-Document Service';
     SourceTable = "E-Document Service";
     DataCaptionFields = Code;
+    AdditionalSearchTerms = 'Edoc service,Electronic Document';
 
     layout
     {
@@ -116,13 +118,20 @@ page 6133 "E-Document Service"
                 {
                     ToolTip = 'Specifies if an invoice total shall be verified during the import.';
                 }
+#if not CLEAN24
                 field("Update Order"; Rec."Update Order")
                 {
                     ToolTip = 'Specifies if corresponding purchase order must be updated.';
+                    Visible = false;
+                    Enabled = false;
+                    ObsoleteTag = '24.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'Replaced by "Receive E-Document To" on Vendor table';
                 }
+#endif
                 field("Create Journal Lines"; Rec."Create Journal Lines")
                 {
-                    ToolTip = 'Specifies if journal line must be created instead of purchase document.';
+                    ToolTip = 'Specifies if journal line must be created instead of purchase document. Only applicable if vendor receives e-document to purchase invoice.';
                 }
                 field("General Journal Template Name"; Rec."General Journal Template Name")
                 {
@@ -154,6 +163,13 @@ page 6133 "E-Document Service"
                         }
                     }
                 }
+            }
+            part(EDocumentDataExchDef; "E-Doc. Service Data Exch. Sub")
+            {
+                ApplicationArea = All;
+                Caption = 'Data Exchange Definition';
+                SubPageLink = "E-Document Format Code" = field(Code);
+                Visible = Rec."Document Format" = Rec."Document Format"::"Data Exchange";
             }
             part(EDocumentExportFormatMapping; "E-Doc. Mapping Part")
             {
@@ -190,6 +206,14 @@ page 6133 "E-Document Service"
                         Page.Run(SetupPage);
                 end;
             }
+            action(SupportedDocTypes)
+            {
+                Caption = 'Supported Document Types';
+                ToolTip = 'Setup Supported Document Types';
+                Image = Documents;
+                RunObject = Page "E-Doc Service Supported Types";
+                RunPageLink = "E-Document Service Code" = field(Code);
+            }
             action(Receive)
             {
                 Caption = 'Receive';
@@ -206,7 +230,8 @@ page 6133 "E-Document Service"
         }
         area(Promoted)
         {
-            actionref("Promoted Setup service integration"; SetupServiceIntegration) { }
+            actionref("Promoted Setup Service Integration"; SetupServiceIntegration) { }
+            actionref("Promoted Supported Doc Types"; SupportedDocTypes) { }
             actionref("Promoted Receive"; Receive) { }
         }
     }

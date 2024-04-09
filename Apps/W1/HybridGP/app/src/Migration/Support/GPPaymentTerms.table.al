@@ -97,5 +97,33 @@ table 4026 "GP Payment Terms"
             Clustered = true;
         }
     }
+
+    internal procedure GetCalculatedDateForumla(var CalculatedDateFormulaTxt: Text[50]): Boolean
+    var
+        HelperFunctions: Codeunit "Helper Functions";
+        DueDateCalculation: DateFormula;
+        DiscountDateCalculation: DateFormula;
+        DueDateCalculationText: Text[50];
+        DiscountDateCalculationText: Text[50];
+        DateFormulaIsValid: Boolean;
+    begin
+        DateFormulaIsValid := false;
+        DiscountDateCalculationText := HelperFunctions.CalculateDiscountDateFormula(Rec);
+        CalculatedDateFormulaTxt := DiscountDateCalculationText;
+        if Evaluate(DiscountDateCalculation, DiscountDateCalculationText) then begin
+            if Rec.CalculateDateFrom = Rec.CalculateDateFrom::"Transaction Date" then begin
+                DueDateCalculationText := HelperFunctions.CalculateDueDateFormula(Rec, false, '');
+                CalculatedDateFormulaTxt := DueDateCalculationText;
+            end else begin
+                DueDateCalculationText := HelperFunctions.CalculateDueDateFormula(Rec, true, CopyStr(DiscountDateCalculationText, 1, 32));
+                CalculatedDateFormulaTxt := DueDateCalculationText;
+            end;
+
+            if Evaluate(DueDateCalculation, DueDateCalculationText) then
+                DateFormulaIsValid := true;
+        end;
+
+        exit(DateFormulaIsValid);
+    end;
 }
 

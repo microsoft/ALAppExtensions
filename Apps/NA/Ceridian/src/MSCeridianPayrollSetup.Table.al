@@ -42,7 +42,6 @@ table 1665 "MS Ceridian Payroll Setup"
     [NonDebuggable]
     [Scope('OnPrem')]
     procedure SavePassword(var PasswordKey: Guid; PasswordText: Text);
-    var
     begin
         if ISNULLGUID(PasswordKey) or not IsolatedStorage.Contains(PasswordKey, Datascope::Company) then
             PasswordKey := FORMAT(CreateGuid());

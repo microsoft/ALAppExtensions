@@ -5,8 +5,6 @@
 
 namespace System.Email;
 
-using System.Security.AccessControl;
-
 permissionsetextension 4616 "Email - SMTP API" extends "Email - Edit"
 {
     IncludedPermissionSets = "Email - SMTP API - Objects";

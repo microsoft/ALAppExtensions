@@ -2,6 +2,8 @@ namespace Microsoft.Inventory.InventoryForecast;
 
 using System.Threading;
 using System.AI;
+using System.Privacy;
+using System.Security.User;
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -30,6 +32,17 @@ page 1853 "Sales Forecast Setup Card"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies if the forecasting feature is enabled.';
+                    trigger OnValidate();
+                    var
+                        CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
+                        UserPermissions: Codeunit "User Permissions";
+                    begin
+                        if (Rec.Enabled <> xRec.Enabled) and not UserPermissions.IsSuper(UserSecurityId()) then
+                            Error(NotAdminErr);
+
+                        if not xRec.Enabled and Rec.Enabled then
+                            Rec.Enabled := CustomerConsentMgt.ConsentToMicrosoftServiceWithAI();
+                    end;
                 }
                 field("Period Type"; "Period Type")
                 {
@@ -47,7 +60,7 @@ page 1853 "Sales Forecast Setup Card"
                     Importance = Additional;
                     ToolTip = 'Specifies how far in the future you want to look for stockouts. The value you enter works together with the unit of time specified in the Period Type field to determine the horizon.';
                 }
-                field("API URI"; "API URI")
+                field("API URI"; Rec."API URI")
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the API URI for the Azure Machine Learning instance.';
@@ -59,15 +72,10 @@ page 1853 "Sales Forecast Setup Card"
                     ExtendedDatatype = Masked;
                     ToolTip = 'Specifies the API key for the Time Series experiment in Azure Machine Learning.';
 
-                    trigger OnDrillDown()
-                    begin
-                        if not IsNullGuid("API Key ID") then
-                            Message(GetUserDefinedAPIKey());
-                    end;
-
                     trigger OnValidate()
                     begin
-                        SetUserDefinedAPIKey(APIKeyValue);
+                        if APIKeyValue <> DummyApiKeyTok then
+                            Rec.SetUserDefinedAPIKey(APIKeyValue);
                     end;
                 }
                 field("Timeout (seconds)"; "Timeout (seconds)")
@@ -193,15 +201,17 @@ page 1853 "Sales Forecast Setup Card"
     begin
         if SalesForecastScheduler.JobQueueEntryCreationInProcess() then
             Error(JobQueueCreationInProgressErr);
-        GetSingleInstance();
-        APIKeyValue := GetAPIKey();
+        Rec.GetSingleInstance();
+        SetApiKey();
     end;
 
     var
         UpdatingForecastsMsg: Label 'Sales forecasts are being updated in the background. This might take a minute.';
+        NotAdminErr: Label 'You must be an administrator to enable/disable sales forecasting. Ensure that you are assigned the ''SUPER'' user permission set.';
         [NonDebuggable]
         APIKeyValue: Text[250];
         JobQueueCreationInProgressErr: Label 'Sales forecast updates are being scheduled. Please wait until the process is complete.';
+        DummyApiKeyTok: Label '*', Locked = true;
 
     local procedure GetMLTotalProcessingTime(): Decimal
     var
@@ -212,6 +222,12 @@ page 1853 "Sales Forecast Setup Card"
         ProcessingTime := AzureAIUsage.GetTotalProcessingTime(AzureAIService::"Machine Learning");
 
         exit(Round(ProcessingTime, 1));
+    end;
+
+    local procedure SetApiKey()
+    begin
+        if not Rec.GetApiKeyAsSecret().IsEmpty() then
+            APIKeyValue := DummyApiKeyTok;
     end;
 }
 

@@ -27,9 +27,7 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
     value(3; GetCustomer)
     {
         Caption = 'Get Customer';
-
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL Customer";
-
     }
     value(4; GetOrdersToImport)
     {
@@ -311,5 +309,95 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
     {
         Caption = 'Get Bulk Operation';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL BulkOperation";
+    }
+    value(60; CompanyAssignCustomerAsContact)
+    {
+        Caption = 'Company Assign Customer As Contact';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL CompanyAssignContact";
+    }
+    value(61; CompanyAssignMainContact)
+    {
+        Caption = 'Company Assign Main Contact';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL CompanyAssignMainCon";
+    }
+    value(62; CompanyAssignContactRole)
+    {
+        Caption = 'Company Assign Contact Role';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL CompanyAssignConRole";
+    }
+    value(63; GetCatalogs)
+    {
+        Caption = 'Get Catalogs';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL Catalogs";
+    }
+    value(64; GetNextCatalogs)
+    {
+        Caption = 'Next Get Catalogs';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextCatalogs";
+    }
+    value(65; CreateCatalog)
+    {
+        Caption = 'Create Catalog';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL CreateCatalog";
+    }
+    value(66; CreatePublication)
+    {
+        Caption = 'Create Publication';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL CreatePublication";
+    }
+    value(67; GetCatalogPrices)
+    {
+        Caption = 'Get Catalog Prices';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL CatalogPrices";
+    }
+    value(68; GetNextCatalogPrices)
+    {
+        Caption = 'Get Next Catalog Prices';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextCatalogPrices";
+    }
+    value(69; UpdateCatalogPrices)
+    {
+        Caption = 'Update Catalog Prices';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL UpdateCatalogPrices";
+    }
+    value(70; GetCompanyIds)
+    {
+        Caption = 'Get Company Ids';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL CompanyIds";
+    }
+    value(71; GetNextCompanyIds)
+    {
+        Caption = 'Get Next Company Ids';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextCompanyIds";
+    }
+    value(72; GetCompany)
+    {
+        Caption = 'Get Company';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL Company";
+    }
+    value(73; MarkOrderAsPaid)
+    {
+        Caption = 'Mark Order As Paid';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL MarkOrderAsPaid";
+    }
+    value(74; OrderCancel)
+    {
+        Caption = 'Order Cancel';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL OrderCancel";
+    }
+    value(75; CreatePriceList)
+    {
+        Caption = 'Create Price List';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL CreatePriceList";
+    }
+    value(76; GetCatalogProducts)
+    {
+        Caption = 'Get Catalog Products';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL CatalogProducts";
+    }
+    value(77; GetNextCatalogProducts)
+    {
+        Caption = 'Get Next Catalog Products';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextCatalogProducts";
     }
 }

@@ -206,6 +206,11 @@ codeunit 10683 "Elec. VAT Data Mgt."
         exit(VATCode in ['81', '83', '86', '88', '91'])
     end;
 
+    procedure IsVATCodeWithDeductiblePart(VATCode: Code[20]): Boolean
+    begin
+        exit(VATCode in ['1', '11', '13'])
+    end;
+
     procedure GetDigitVATRegNo(): Text[20]
     var
         CompanyInformation: Record "Company Information";

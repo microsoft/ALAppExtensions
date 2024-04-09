@@ -14,6 +14,21 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
             part("Show Errors"; "Hybrid GP Errors Factbox")
             {
                 ApplicationArea = Basic, Suite;
+                Visible = false;
+            }
+#if not CLEAN24
+            part(Errors; "Hybrid GP Errors Overview Fb")
+            {
+                ApplicationArea = Basic, Suite;
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Replaced by Overview part.';
+                ObsoleteTag = '24.0';
+            }
+#endif
+            part(Overview; "Hybrid GP Overview Fb")
+            {
+                ApplicationArea = Basic, Suite;
                 Visible = FactBoxesVisible;
             }
             part("Show Detail Snapshot Errors"; "Hist. Migration Status Factbox")
@@ -77,7 +92,6 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
                         end;
 
                         WizardIntegration.ScheduleGPHistoricalSnapshotMigration();
-                        Message(SnapshotJobRunningMsg);
                     end;
                 end;
             }
@@ -101,11 +115,13 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
         HybridCompany.SetRange(Replicate, true);
         HasCompletedSetupWizard := not HybridCompany.IsEmpty();
 
-        if GetHasCompletedMigration() then
-            if GPCompanyAdditionalSettings.GetMigrateHistory() then
-                if GPConfiguration.Get() then
+        if HybridCompany.Get(CompanyName()) then begin
+            GPConfiguration.GetSingleInstance();
+            if GetHasCompletedMigration() then
+                if GPCompanyAdditionalSettings.GetMigrateHistory() then
                     if not GPConfiguration.HasHistoricalJobRan() then
                         ShowGPHistoricalJobNeedsToRunNotification();
+        end;
     end;
 
     local procedure GetHasCompletedMigration(): Boolean
@@ -135,7 +151,6 @@ pageextension 4015 "Intelligent Cloud Extension" extends "Intelligent Cloud Mana
         DetailSnapshotNotConfiguredMsg: Label 'GP Historical Snapshot is not configured to migrate.';
         ConfirmRerunQst: Label 'Are you sure you want to rerun the GP Historical Snapshot migration?';
         ResetPreviousRunQst: Label 'Do you want to reset your previous GP Historical Snapshot migration? Choose No if you want to continue progress from the previous attempt.';
-        SnapshotJobRunningMsg: Label 'The GP Historical Snapshot job is running.';
         HistoricalDataJobNotRanMsg: Label 'The GP Historical Snapshot job has not ran.';
         HistoricalDataStartJobMsg: Label 'Start GP Historical Snapshot job.';
 }

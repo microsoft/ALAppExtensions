@@ -1089,7 +1089,7 @@ codeunit 148017 "FEC Audit File Export Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandlerYes')]
+    [HandlerFunctions('ConfirmHandlerYes')]
     procedure ExportCustomerDetailedBalanceTwoAdjustedInvoicesFCYSameAccount()
     var
         AuditFile: Record "Audit File";
@@ -1118,11 +1118,7 @@ codeunit 148017 "FEC Audit File Export Tests"
 
         // [GIVEN] Adjusted currency exchange rate on 31.12.2018 with updated exchange rate
         CreateCurrencyExchRate(CurrencyCode, WorkDate() - 1);
-#if not CLEAN20
-        LibraryERM.RunAdjustExchangeRatesSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#else
         LibraryERM.RunExchRateAdjustmentSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#endif
         // [GIVEN] An entry for "Cust2" on 01.01.2019
         CreatePostCustGenJnlLineOnDate(CustomerNo[2], '', WorkDate());
 
@@ -1143,7 +1139,7 @@ codeunit 148017 "FEC Audit File Export Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandlerYes')]
+    [HandlerFunctions('ConfirmHandlerYes')]
     procedure ExportCustomerDetailedBalanceTwoAdjustedInvoicesFCYDiffAccount()
     var
         AuditFile: Record "Audit File";
@@ -1173,11 +1169,7 @@ codeunit 148017 "FEC Audit File Export Tests"
 
         // [GIVEN] Adjusted currency exchange rate on 31.12.2018 with updated exchange rate
         CreateCurrencyExchRate(CurrencyCode, WorkDate() - 1);
-#if not CLEAN20
-        LibraryERM.RunAdjustExchangeRatesSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#else
         LibraryERM.RunExchRateAdjustmentSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#endif
 
         // [GIVEN] An entry for "Cust2" on 01.01.2019
         CreatePostCustGenJnlLineOnDate(CustomerNo[2], '', WorkDate());
@@ -1510,7 +1502,7 @@ codeunit 148017 "FEC Audit File Export Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandlerYes')]
+    [HandlerFunctions('ConfirmHandlerYes')]
     procedure ExportVendorDetailedBalanceTwoAdjustedInvoicesFCYSameAccount()
     var
         AuditFile: Record "Audit File";
@@ -1539,11 +1531,7 @@ codeunit 148017 "FEC Audit File Export Tests"
 
         // [GIVEN] Adjusted currency exchange rate on 31.12.2018 with updated exchange rate
         CreateCurrencyExchRate(CurrencyCode, WorkDate() - 1);
-#if not CLEAN20
-        LibraryERM.RunAdjustExchangeRatesSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#else
         LibraryERM.RunExchRateAdjustmentSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#endif
         // [GIVEN] An entry for "Vend2" on 01.01.2019
         CreatePostVendGenJnlLineOnDate(VendorNo[2], '', WorkDate());
 
@@ -1564,7 +1552,7 @@ codeunit 148017 "FEC Audit File Export Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandlerYes')]
+    [HandlerFunctions('ConfirmHandlerYes')]
     procedure ExportVendorDetailedBalanceTwoAdjustedInvoicesFCYDiffAccount()
     var
         AuditFile: Record "Audit File";
@@ -1593,11 +1581,7 @@ codeunit 148017 "FEC Audit File Export Tests"
 
         // [GIVEN] Adjusted currency exchange rate on 31.12.2018 with updated exchange rate
         CreateCurrencyExchRate(CurrencyCode, WorkDate() - 1);
-#if not CLEAN20
-        LibraryERM.RunAdjustExchangeRatesSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#else
         LibraryERM.RunExchRateAdjustmentSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#endif
         // [GIVEN] An entry for "Vend2" on 01.01.2019
         CreatePostVendGenJnlLineOnDate(VendorNo[2], '', WorkDate());
 
@@ -1872,7 +1856,7 @@ codeunit 148017 "FEC Audit File Export Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandlerYes')]
+    [HandlerFunctions('ConfirmHandlerYes')]
     procedure ExportBankAccountDetailedBalanceTwoAdjustedEntriesFCYSameAccount()
     var
         AuditFile: Record "Audit File";
@@ -1902,11 +1886,7 @@ codeunit 148017 "FEC Audit File Export Tests"
 
         // [GIVEN] Adjusted currency exchange rate on 31.12.2018 with updated exchange rate
         CreateCurrencyExchRate(CurrencyCode, WorkDate() - 1);
-#if not CLEAN20
-        LibraryERM.RunAdjustExchangeRatesSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#else
         LibraryERM.RunExchRateAdjustmentSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#endif
 
         // [GIVEN] An entry for "Bank2" on 01.01.2019
         CreatePostBankAccGenJnlLineOnDate(BankAccountNo[2], CurrencyCode, WorkDate());
@@ -1928,7 +1908,7 @@ codeunit 148017 "FEC Audit File Export Tests"
     end;
 
     [Test]
-    [HandlerFunctions('MessageHandler,ConfirmHandlerYes')]
+    [HandlerFunctions('ConfirmHandlerYes')]
     procedure ExportBankAccountDetailedBalanceTwoAdjustedEntriesFCYDiffAccount()
     var
         AuditFile: Record "Audit File";
@@ -1958,11 +1938,7 @@ codeunit 148017 "FEC Audit File Export Tests"
 
         // [GIVEN] Adjusted currency exchange rate on 31.12.2018 with updated exchange rate
         CreateCurrencyExchRate(CurrencyCode, WorkDate() - 1);
-#if not CLEAN20
-        LibraryERM.RunAdjustExchangeRatesSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#else
         LibraryERM.RunExchRateAdjustmentSimple(CurrencyCode, WorkDate() - 1, WorkDate() - 1);
-#endif
 
         // [GIVEN] An entry for "Bank2" on 01.01.2019
         CreatePostBankAccGenJnlLineOnDate(BankAccountNo[2], CurrencyCode, WorkDate());
@@ -3332,7 +3308,7 @@ codeunit 148017 "FEC Audit File Export Tests"
         GLEntry.FindSet();
         repeat
             PopulateFieldsArray(iStream, FieldsValueArray);
-            VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLRegister."No.", GLRegister."Creation Date");
+            VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLRegister."No.", GLRegister.SystemCreatedAt);
             if GLEntry."G/L Account No." = GetPostingGLAccount(GLEntry) then
                 VerifyLedgerFieldValues(FieldsValueArray, PartyNo, PartyName)
             else
@@ -3355,7 +3331,7 @@ codeunit 148017 "FEC Audit File Export Tests"
         GLEntry.FindSet();
         repeat
             PopulateFieldsArray(iStream, FieldsValueArray);
-            VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLEntry."Transaction No.", GLRegister."Creation Date");
+            VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLEntry."Transaction No.", GLRegister.SystemCreatedAt);
             if GLEntry."G/L Account No." = GetPostingGLAccount(GLEntry) then
                 VerifyLedgerFieldValues(FieldsValueArray, PartyNo, PartyName)
             else
@@ -3377,7 +3353,7 @@ codeunit 148017 "FEC Audit File Export Tests"
         GLEntry.SetFilter("G/L Account No.", GLAccountNo);
         GLEntry.FindFirst();
         PopulateFieldsArray(iStream, FieldsValueArray);
-        VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLRegister."No.", GLRegister."Creation Date");
+        VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLRegister."No.", GLRegister.SystemCreatedAt);
         iStream.ReadText(LineToRead);
         Assert.AreEqual('', LineToRead, FilterErr); // Read the next line, empty string means there are no other entries and filter function work correctly.
     end;
@@ -3416,13 +3392,13 @@ codeunit 148017 "FEC Audit File Export Tests"
         if GLEntry.FindSet() then
             repeat
                 PopulateFieldsArray(iStream, FieldsValueArray);
-                VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLRegister."No.", GLRegister."Creation Date");
+                VerifyGLEntryFieldValues(FieldsValueArray, GLEntry, GLRegister."No.", GLRegister.SystemCreatedAt);
                 Assert.AreEqual(AppliedEntries, FieldsValueArray[14], GetErrorTextForAssertStmnt(14));
                 Assert.AreEqual(GetFormattedDate(AppliedDate), FieldsValueArray[15], GetErrorTextForAssertStmnt(15));
             until GLEntry.Next() = 0;
     end;
 
-    local procedure VerifyGLEntryFieldValues(FieldsValueArray: array[18] of Text[50]; GLEntry: Record "G/L Entry"; GLRegisterNo: Integer; GLRegisterCreationDate: Date)
+    local procedure VerifyGLEntryFieldValues(FieldsValueArray: array[18] of Text[50]; GLEntry: Record "G/L Entry"; GLRegisterNo: Integer; GLRegisterCreationDate: DateTime)
     begin
         GLEntry.CalcFields("G/L Account Name");
         Assert.AreEqual(GLEntry."Source Code", FieldsValueArray[1], GetErrorTextForAssertStmnt(1));
@@ -3436,7 +3412,7 @@ codeunit 148017 "FEC Audit File Export Tests"
         Assert.AreEqual(GLEntry.Description, FieldsValueArray[11], GetErrorTextForAssertStmnt(11));
         Assert.AreEqual(FormatAmount(GLEntry."Debit Amount"), FieldsValueArray[12], GetErrorTextForAssertStmnt(12));
         Assert.AreEqual(FormatAmount(GLEntry."Credit Amount"), FieldsValueArray[13], GetErrorTextForAssertStmnt(13));
-        Assert.AreEqual(GetFormattedDate(GLRegisterCreationDate), FieldsValueArray[16], GetErrorTextForAssertStmnt(16));
+        Assert.AreEqual(GetFormattedDate(DT2Date(GLRegisterCreationDate)), FieldsValueArray[16], GetErrorTextForAssertStmnt(16));
     end;
 
     local procedure VerifyExportGLEntriesReport2DecimalSymbols(AccountType: Enum "Gen. Journal Account Type"; AccountNo: Code[20];
@@ -3527,11 +3503,6 @@ codeunit 148017 "FEC Audit File Export Tests"
         ActivityLog."Detailed Info".CreateInStream(ErrorTextInStream);
         ErrorTextInStream.ReadText(ErrorText);
         Assert.AreEqual(ExpectedError, ErrorText, '');
-    end;
-
-    [MessageHandler]
-    procedure MessageHandler(Message: Text[1024])
-    begin
     end;
 
     [ConfirmHandler]

@@ -102,6 +102,74 @@ codeunit 1695 "Bank Deposit Subscribers"
         SetupBankDepositReports.SetupReportSelections();
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::GenJnlManagement, 'OnBeforeOpenJournalPageFromBatch', '', false, false)]
+    local procedure OnBeforeOpenJournalPageFromBatch(
+        var GenJnlBatch: Record "Gen. Journal Batch";
+        var GenJnlTemplate: Record "Gen. Journal Template";
+        var IsHandled: Boolean)
+    begin
+        if not (GenJnlTemplate.Type = GenJnlTemplate.Type::"Bank Deposits") then
+            exit;
+
+        OpenBankDepositPage(GenJnlBatch, GenJnlTemplate);
+        IsHandled := true;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Open Deposit List Page", 'OnOpenDepositListPage', '', false, false)]
+    local procedure OnOpenDepositListPage()
+    begin
+        Page.Run(Page::"Bank Deposit List");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Open Deposits Page", 'OnOpenDepositsPage', '', false, false)]
+    local procedure OnOpenDepositsPage()
+    begin
+        Page.Run(Page::"Bank Deposits");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Open Deposit Page", 'OnOpenDepositPage', '', false, false)]
+    local procedure OnOpenDepositPage()
+    begin
+        Page.Run(Page::"Bank Deposit List");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Open Deposit Report", 'OnOpenDepositReport', '', false, false)]
+    local procedure OnOpenDepositReport()
+    begin
+        Report.Run(Report::"Bank Deposit Test Report");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Open Deposit Test Report", 'OnOpenDepositTestReport', '', false, false)]
+    local procedure OnOpenDepositTestReport()
+    begin
+        Report.Run(Report::"Bank Deposit Test Report");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Open P. Bank Deposits L. Page", 'OnOpenPostedBankDepositsListPage', '', false, false)]
+    local procedure OnOpenPostedBankDepositsListPage()
+    begin
+        Page.Run(Page::"Posted Bank Deposit List");
+    end;
+
+    local procedure OpenBankDepositPage(GenJnlBatch: Record "Gen. Journal Batch"; GenJnlTemplate: Record "Gen. Journal Template")
+    var
+        BankDepositHeader: Record "Bank Deposit Header";
+        SetupBankDepositReports: Codeunit "Setup Bank Deposit Reports";
+    begin
+        BankDepositHeader.SetRange("Journal Template Name", GenJnlTemplate.Name);
+        BankDepositHeader.SetRange("Journal Batch Name", GenJnlBatch.Name);
+        if BankDepositHeader.IsEmpty() then begin
+            SetupBankDepositReports.InsertSetupData();
+
+            BankDepositHeader.Init();
+            BankDepositHeader."Journal Template Name" := GenJnlTemplate.Name;
+            BankDepositHeader."Journal Batch Name" := GenJnlBatch.Name;
+            BankDepositHeader.Insert(true);
+        end;
+
+        Page.Run(GenJnlTemplate."Page ID", BankDepositHeader);
+    end;
+
     var
         PostedBankDepositLinesLbl: Label 'Posted bank deposit - line information', Locked = true;
         PostingBankDepositLinesLbl: Label 'Before posting bank deposit - line information', Locked = true;

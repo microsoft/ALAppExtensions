@@ -151,7 +151,7 @@ report 11016 "Create XML-File VAT Adv.Notif."
         PrepareXmlDoc();
 
         if not XmlDocument.ReadFrom('<?xml version="1.0" encoding="UTF-8"?>' + '<Anmeldungssteuern xmlns="' + UseDataXmlNameSpace + '"></Anmeldungssteuern>', XmlSubDoc) then
-            LogInternalError(XMLDocHasNotBeenCreatedErr, DataClassification::SystemMetadata, Verbosity::Error);
+            Session.LogMessage('0000M0F', XMLDocHasNotBeenCreatedErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', ElsterTok);
 
         XmlSubDoc.GetRoot(XmlRootElem);
         AddUseData(XmlRootElem, UseDataXmlNameSpace);

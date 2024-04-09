@@ -101,6 +101,18 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         HandleOnFindingIfJobNeedsToBeRun(Sender, Result);
     end;
 
+    [EventSubscriber(ObjectType::Report, Report::"Copy Company", 'OnAfterCreatedNewCompanyByCopyCompany', '', false, false)]
+    local procedure CleanupSetupAfterCreatedNewCompanyByCopyCompany(NewCompanyName: Text[30])
+    var
+        MasterDataMgtCoupling: Record "Master Data Mgt. Coupling";
+        MasterDataManagementSetup: Record "Master Data Management Setup";
+    begin
+        MasterDataMgtCoupling.ChangeCompany(NewCompanyName);
+        MasterDataMgtCoupling.DeleteAll();
+        MasterDataManagementSetup.ChangeCompany(NewCompanyName);
+        MasterDataManagementSetup.DeleteAll();
+    end;
+
     internal procedure HandleOnFindingIfJobNeedsToBeRun(var Sender: Record "Job Queue Entry"; var Result: Boolean)
     var
         MasterDataManagementSetup: Record "Master Data Management Setup";
@@ -389,6 +401,23 @@ codeunit 7237 "Master Data Mgt. Subscribers"
     local procedure OnBeforeTransferRecordFields(SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
     begin
         ApplyTransformations(SourceRecordRef, DestinationRecordRef);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeDetermineConfigTemplateCode', '', false, false)]
+    local procedure OnBeforeDetermineConfigTemplateCode(IntegrationTableMapping: Record "Integration Table Mapping"; var TemplateCode: Code[10]; var Handled: Boolean)
+    begin
+        if Handled then
+            exit;
+
+        if IntegrationTableMapping.Type <> IntegrationTableMapping.Type::"Master Data Management" then
+            exit;
+
+        if IntegrationTableMapping."Table Config Template Code" <> '' then
+            TemplateCode := IntegrationTableMapping."Table Config Template Code"
+        else
+            TemplateCode := IntegrationTableMapping."Int. Tbl. Config Template Code";
+
+        Handled := true;
     end;
 
     local procedure ApplyTransformations(SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)

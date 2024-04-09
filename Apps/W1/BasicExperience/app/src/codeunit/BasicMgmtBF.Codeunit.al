@@ -6,7 +6,9 @@ namespace System.Environment.Configuration;
 
 using System.Environment;
 using System.Reflection;
+#if not CLEAN22
 using System.Security.AccessControl;
+#endif
 
 codeunit 20601 "Basic Mgmt BF"
 {

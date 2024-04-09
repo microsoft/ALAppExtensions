@@ -96,9 +96,11 @@ codeunit 139769 "Bank Deposit Posting Tests"
         GLAccount: Record "G/L Account";
         Vendor: Record Vendor;
         BankDepositHeader: Record "Bank Deposit Header";
+        PostedBankDepositLine: Record "Posted Bank Deposit Line";
         GenJournalLine: Record "Gen. Journal Line";
         SourceCodeSetup: Record "Source Code Setup";
         GLEntry: Record "G/L Entry";
+        TransactionNo: Integer;
     begin
         // Verify G/L Entry after post Deposit with Unchecked Force Doc. Balance.
 
@@ -108,7 +110,7 @@ codeunit 139769 "Bank Deposit Posting Tests"
         LibraryPurchase.CreateVendor(Vendor);
         CreateMultilineDepositDocument(
           BankDepositHeader, GLAccount."No.", GenJournalLine."Account Type"::"G/L Account", Vendor."No.", GenJournalLine."Account Type"::Vendor,
-          GenJournalLine."Document Type"::Refund);
+          GenJournalLine."Document Type"::" ", true);
 
         // Update Total Deposit Amount on header, set Post as Lump Sum to true and post Bank Deposit.
         UpdateBankDepositHeaderWithAmount(BankDepositHeader);
@@ -123,9 +125,67 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
         // Verify: Verify G/L Entry after post Deposit with Unchecked Force Doc. Balance.
         GLEntry.SetRange("Document No.", BankDepositHeader."No.");
+        GLEntry.SetRange(Amount, BankDepositHeader."Total Deposit Amount");
         GLEntry.FindFirst();
         GLEntry.TestField("Document Type", GLEntry."Document Type"::" ");
-        GLEntry.TestField(Amount, BankDepositHeader."Total Deposit Amount");
+
+        // Verify all entries are in the same transaction
+        PostedBankDepositLine.SetRange("Bank Deposit No.", BankDepositHeader."No.");
+        TransactionNo := 0;
+        PostedBankDepositLine.FindSet();
+        repeat
+            GLEntry.Reset();
+            GLEntry.Get(PostedBankDepositLine."Entry No.");
+            if TransactionNo = 0 then
+                TransactionNo := GLEntry."Transaction No.";
+            Assert.AreEqual(GLEntry."Transaction No.", TransactionNo, 'All GLEntries should be in the same transaction');
+        until PostedBankDepositLine.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
+    procedure PostingAsLumpSumInDifferentDocumentsShouldntBePossible()
+    var
+        GLAccount: Record "G/L Account";
+        Vendor: Record Vendor;
+        BankDepositHeader: Record "Bank Deposit Header";
+        GenJournalLine: Record "Gen. Journal Line";
+        SourceCodeSetup: Record "Source Code Setup";
+        First: Boolean;
+    begin
+        // Verify G/L Entry after post Deposit with Unchecked Force Doc. Balance.
+
+        // Setup: Create GL Account and Vendor, create Bank Deposit with Account Type GL, Vendor.
+        Initialize();
+        LibraryERM.CreateGLAccount(GLAccount);
+        LibraryPurchase.CreateVendor(Vendor);
+        CreateMultilineDepositDocument(
+          BankDepositHeader, GLAccount."No.", GenJournalLine."Account Type"::"G/L Account", Vendor."No.", GenJournalLine."Account Type"::Vendor,
+          GenJournalLine."Document Type"::" ", true);
+
+        // Update Total Deposit Amount on header, set Post as Lump Sum to true and post Bank Deposit.
+        UpdateBankDepositHeaderWithAmount(BankDepositHeader);
+        BankDepositHeader."Post as Lump Sum" := true;
+        BankDepositHeader.Modify();
+        SourceCodeSetup.Get();
+        SourceCodeSetup."Bank Deposit" := 'BankDep';
+        SourceCodeSetup.Modify();
+
+        // [WHEN] Lines have different document no, type or date
+        GenJournalLine.SetRange("Journal Batch Name", BankDepositHeader."Journal Batch Name");
+        GenJournalLine.SetRange("Journal Template Name", BankDepositHeader."Journal Template Name");
+        First := true;
+        repeat
+            if First then
+                First := false
+            else begin
+                GenJournalLine."Posting Date" += 1;
+                GenJournalLine.Modify();
+            end;
+        until GenJournalLine.Next() = 0;
+
+        // Exercise. It should fail the same transaction validation
+        asserterror PostBankDeposit(BankDepositHeader);
     end;
 
     [Test]
@@ -433,13 +493,20 @@ codeunit 139769 "Bank Deposit Posting Tests"
     local procedure CreateBankDeposit(var BankDepositHeader: Record "Bank Deposit Header"; AccountNo: Code[20]; AccountType: Enum "Gen. Journal Account Type"; SignFactor: Integer)
     var
         GenJournalLine: Record "Gen. Journal Line";
+    begin
+        CreateBankDeposit(BankDepositHeader, AccountNo, AccountType, SignFactor, GenJournalLine."Document Type"::Payment);
+    end;
+
+    local procedure CreateBankDeposit(var BankDepositHeader: Record "Bank Deposit Header"; AccountNo: Code[20]; AccountType: Enum "Gen. Journal Account Type"; SignFactor: Integer; DocumentType: Enum "Gen. Journal Document Type")
+    var
+        GenJournalLine: Record "Gen. Journal Line";
         GenJournalTemplate: Record "Gen. Journal Template";
         GenJournalBatch: Record "Gen. Journal Batch";
     begin
         CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Type::"Bank Deposits");
         CreateBankDepositHeaderWithBankAccount(BankDepositHeader, GenJournalBatch);
         LibraryERM.CreateGeneralJnlLine(
-          GenJournalLine, BankDepositHeader."Journal Template Name", BankDepositHeader."Journal Batch Name", GenJournalLine."Document Type"::Payment,
+          GenJournalLine, BankDepositHeader."Journal Template Name", BankDepositHeader."Journal Batch Name", DocumentType,
           AccountType, AccountNo, LibraryRandom.RandInt(1000) * SignFactor);  // Using Random value for Deposit Amount.
     end;
 
@@ -464,14 +531,38 @@ codeunit 139769 "Bank Deposit Posting Tests"
     end;
 
     local procedure CreateMultilineDepositDocument(var BankDepositHeader: Record "Bank Deposit Header"; AccountNo: Code[20]; AccountType: Enum "Gen. Journal Account Type"; AccountNo2: Code[20]; AccountType2: Enum "Gen. Journal Account Type"; DocumentType: Enum "Gen. Journal Document Type")
+    begin
+        CreateMultilineDepositDocument(BankDepositHeader, AccountNo, AccountType, AccountNo2, AccountType2, DocumentType, false);
+    end;
+
+    local procedure CreateMultilineDepositDocument(var BankDepositHeader: Record "Bank Deposit Header"; AccountNo: Code[20]; AccountType: Enum "Gen. Journal Account Type"; AccountNo2: Code[20]; AccountType2: Enum "Gen. Journal Account Type"; DocumentType: Enum "Gen. Journal Document Type"; PostAsLumpSum: Boolean)
     var
         GenJournalLine: Record "Gen. Journal Line";
+        DocumentNo: Code[20];
     begin
+        DocumentNo := '';
         // Create Bank Deposit WIth two line with different Account Type.
-        CreateBankDeposit(BankDepositHeader, AccountNo, AccountType, -1);
+        if PostAsLumpSum then
+            CreateBankDeposit(BankDepositHeader, AccountNo, AccountType, -1, DocumentType)
+        else
+            CreateBankDeposit(BankDepositHeader, AccountNo, AccountType, -1);
         LibraryERM.CreateGeneralJnlLine(
           GenJournalLine, BankDepositHeader."Journal Template Name", BankDepositHeader."Journal Batch Name", DocumentType,
           AccountType2, AccountNo2, -LibraryRandom.RandInt(1000));  // Using Random value for Deposit Amount.
+
+        BankDepositHeader."Post as Lump Sum" := PostAsLumpSum;
+        if not PostAsLumpSum then
+            exit;
+        GenJournalLine.SetRange("Journal Template Name", BankDepositHeader."Journal Template Name");
+        GenJournalLine.SetRange("Journal Batch Name", BankDepositHeader."Journal Batch Name");
+        GenJournalLine.FindSet();
+        repeat
+            if DocumentNo = '' then
+                DocumentNo := GenJournalLine."Document No."
+            else
+                GenJournalLine."Document No." := DocumentNo;
+            GenJournalLine.Modify();
+        until GenJournalLine.Next() = 0;
     end;
 
     local procedure SetupAndPostBankDeposit(var BankDepositHeader: Record "Bank Deposit Header"; GLAccountNo: Code[20]; VendorNo: Code[20]; BankAccountNo: Code[20])

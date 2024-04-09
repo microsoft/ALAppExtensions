@@ -764,7 +764,7 @@ report 18049 "GSTR-1 File Format"
         if GSTR1ExpQuery.Finance_Charge_Memo then
             AddNumberColumn(GetInvoiceValueFinCharge(GSTR1ExpQuery.Document_No_))
         else
-            AddNumberColumn(GetInvoiceValue(GSTR1ExpQuery.Document_No_, "GST Document Type"::Invoice));
+            AddNumberColumn(GetInvoiceValueForExportCustomerType(GSTR1ExpQuery.Document_No_, "GST Document Type"::Invoice));
 
         AddTextColumn(GetExitPoint(GSTR1ExpQuery.Document_No_));
         AddTextColumn(GSTR1ExpQuery.Bill_Of_Export_No_);
@@ -1598,6 +1598,16 @@ report 18049 "GSTR-1 File Format"
         if CustLedgerEntry.FindFirst() then
             CustLedgerEntry.CalcFields("Amount (LCY)");
         exit(Abs(CustLedgerEntry."Amount (LCY)"));
+    end;
+
+    local procedure GetInvoiceValueForExportCustomerType(DocumentNo: Code[20]; DocumentType: Enum "GST Document Type"): Decimal
+    var
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+    begin
+        CustLedgerEntry.SetRange("Document Type", GSTDocumentType2GenJnlDocumentType(DocumentType));
+        CustLedgerEntry.SetRange("Document No.", DocumentNo);
+        if CustLedgerEntry.FindFirst() then
+            exit(Abs(CustLedgerEntry."Sales (LCY)"));
     end;
 
     local procedure GSTDocumentType2GenJnlDocumentType(GSTDocumentType: Enum "GST Document Type"): Enum "Gen. Journal Document Type"

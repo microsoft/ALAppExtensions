@@ -50,6 +50,9 @@ table 30102 "Shpfy Shop"
                     if not "Shopify URL".ToLower().StartsWith('https://') then
                         "Shopify URL" := CopyStr('https://' + "Shopify URL", 1, MaxStrLen("Shopify URL"));
 
+                    if "Shopify URL".ToLower().StartsWith('https://admin.shopify.com/store/') then
+                        "Shopify URL" := CopyStr('https://' + "Shopify URL".Replace('https://admin.shopify.com/store/', '').Split('/').Get(1) + '.myshopify.com', 1, MaxStrLen("Shopify URL"));
+
                     if not AuthenticationMgt.IsValidShopUrl("Shopify URL") then
                         Error(InvalidShopUrlErr);
                 end;
@@ -71,7 +74,7 @@ table 30102 "Shpfy Shop"
                 end else begin
                     Rec.Enabled := true;
                     Rec.Validate("Order Created Webhooks", false);
-                    WebhooksMgt.DisableBulkOperationsWebhook(Rec);
+                    WebhooksMgt.DisableBulkOperationsWebhook(Rec, CompanyName());
                     Rec.Enabled := false;
                 end;
             end;
@@ -176,7 +179,6 @@ table 30102 "Shpfy Shop"
             trigger OnValidate()
             var
                 ErrorInfo: ErrorInfo;
-                AutoCreateErrorMsg: Label 'You cannot turn "%1" off if "%2" is set to the value of "%3".', Comment = '%1 = Field Caption of "Auto Create Orders", %2 = Field Caption of "Return and Refund Process", %3 = Field Value of "Return and Refund Process"';
             begin
                 if Rec."Return and Refund Process" = "Shpfy ReturnRefund ProcessType"::"Auto Create Credit Memo" then
                     if not Rec."Auto Create Orders" then begin
@@ -236,6 +238,14 @@ table 30102 "Shpfy Shop"
             Caption = 'Export Customer to Shopify';
             DataClassification = CustomerContent;
             InitValue = true;
+            ObsoleteReason = 'Replaced with action "Add Customer to Shopify" in Shopify Customers page.';
+#if not CLEAN24
+            ObsoleteState = Pending;
+            ObsoleteTag = '24.0';
+#else
+                    ObsoleteState = Removed;
+                    ObsoleteTag = '27.0';
+#endif
         }
         field(30; "Shopify Can Update Customer"; Boolean)
         {
@@ -411,6 +421,17 @@ table 30102 "Shpfy Shop"
             Caption = 'Currency Code';
             DataClassification = CustomerContent;
             TableRelation = Currency.Code;
+
+            trigger OnValidate()
+            var
+                CurrencyExchangeRate: Record "Currency Exchange Rate";
+            begin
+                if "Currency Code" <> '' then begin
+                    CurrencyExchangeRate.SetRange("Currency Code", "Currency Code");
+                    if CurrencyExchangeRate.IsEmpty() then
+                        Error(CurrencyExchangeRateNotDefinedErr);
+                end;
+            end;
         }
         field(53; "Gen. Bus. Posting Group"; Code[20])
         {
@@ -481,6 +502,7 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Return and Refund Process';
             DataClassification = CustomerContent;
+            InitValue = "Import Only";
 
             trigger OnValidate()
             var
@@ -501,7 +523,7 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Return Location';
             DataClassification = CustomerContent;
-            TableRelation = Location WHERE("Use As In-Transit" = CONST(false));
+            TableRelation = Location where("Use As In-Transit" = const(false));
         }
         field(75; "Refund Acc. non-restock Items"; Code[20])
         {
@@ -538,13 +560,8 @@ table 30102 "Shpfy Shop"
             Editable = false;
             Access = Internal;
             ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
-#if not CLEAN21
-            ObsoleteTag = '21.0';
-            ObsoleteState = Pending;
-#else
             ObsoleteTag = '24.0';
             ObsoleteState = Removed;
-#endif
         }
         field(101; "Collection Last Import Version"; BigInteger)
         {
@@ -553,13 +570,8 @@ table 30102 "Shpfy Shop"
             Editable = false;
             Access = Internal;
             ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
-#if not CLEAN21
-            ObsoleteTag = '21.0';
-            ObsoleteState = Pending;
-#else
             ObsoleteTag = '24.0';
             ObsoleteState = Removed;
-#endif
         }
         field(102; "Product Last Export Version"; BigInteger)
         {
@@ -568,13 +580,8 @@ table 30102 "Shpfy Shop"
             Editable = false;
             Access = Internal;
             ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
-#if not CLEAN21
-            ObsoleteTag = '21.0';
-            ObsoleteState = Pending;
-#else
             ObsoleteTag = '24.0';
             ObsoleteState = Removed;
-#endif
         }
         field(103; "Product Last Import Version"; BigInteger)
         {
@@ -583,13 +590,8 @@ table 30102 "Shpfy Shop"
             Editable = false;
             Access = Internal;
             ObsoleteReason = 'Not used. Moved to "Shpfy Synchronization Info" table.';
-#if not CLEAN21
-            ObsoleteTag = '21.0';
-            ObsoleteState = Pending;
-#else
             ObsoleteTag = '24.0';
             ObsoleteState = Removed;
-#endif
         }
 #pragma warning disable AS0004
         field(104; "SKU Mapping"; Enum "Shpfy SKU Mapping")
@@ -629,7 +631,7 @@ table 30102 "Shpfy Shop"
                 if "Order Created Webhooks" then
                     ShpfyWebhooksMgt.EnableOrderCreatedWebhook(Rec)
                 else
-                    ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec);
+                    ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec, CompanyName());
             end;
         }
         field(109; "Order Created Webhook User"; Code[50])
@@ -696,6 +698,96 @@ table 30102 "Shpfy Shop"
             DataClassification = SystemMetadata;
             InitValue = true;
         }
+        field(117; "B2B Enabled"; Boolean)
+        {
+            Caption = 'B2B Enabled';
+            DataClassification = SystemMetadata;
+        }
+        field(118; "Can Update Shopify Companies"; Boolean)
+        {
+            Caption = 'Can Update Shopify Companies';
+            DataClassification = CustomerContent;
+            InitValue = false;
+
+            trigger OnValidate()
+            begin
+                if "Can Update Shopify Companies" then
+                    "Shopify Can Update Companies" := false;
+            end;
+        }
+        field(119; "Default Contact Permission"; Enum "Shpfy Default Cont. Permission")
+        {
+            Caption = 'Default Contact Permission';
+            DataClassification = CustomerContent;
+            InitValue = "Ordering Only";
+        }
+        field(120; "Auto Create Catalog"; Boolean)
+        {
+            Caption = 'Auto Create Catalog';
+            DataClassification = CustomerContent;
+        }
+        field(121; "Company Import From Shopify"; Enum "Shpfy Company Import Range")
+        {
+            Caption = 'Company Import from Shopify';
+            DataClassification = CustomerContent;
+            InitValue = WithOrderImport;
+        }
+        field(122; "Shopify Can Update Companies"; Boolean)
+        {
+            Caption = 'Shopify Can Update Companies';
+            DataClassification = CustomerContent;
+            InitValue = false;
+
+            trigger OnValidate()
+            begin
+                if "Shopify Can Update Companies" then
+                    "Can Update Shopify Companies" := false;
+            end;
+        }
+        field(123; "Auto Create Unknown Companies"; Boolean)
+        {
+            Caption = 'Auto Create Unknown Companies';
+            DataClassification = CustomerContent;
+        }
+        field(124; "Send Shipping Confirmation"; Boolean)
+        {
+            Caption = 'Send Shipping Confirmation';
+            DataClassification = CustomerContent;
+            InitValue = true;
+        }
+        field(125; "Default Company No."; Code[20])
+        {
+            Caption = 'Default Company No.';
+            DataClassification = CustomerContent;
+            TableRelation = Customer;
+        }
+        field(126; "Company Mapping Type"; Enum "Shpfy Company Mapping")
+        {
+            Caption = 'Company Mapping Type';
+            DataClassification = CustomerContent;
+        }
+        field(127; "Replace Order Attribute Value"; Boolean)
+        {
+            Caption = 'Replace Order Attribute Value';
+            DataClassification = SystemMetadata;
+            InitValue = true;
+            ObsoleteReason = 'This feature will be enabled by default with version 27.0.';
+#if not CLEAN24
+            ObsoleteState = Pending;
+            ObsoleteTag = '24.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '27.0';
+#endif
+
+#if not CLEAN24
+            trigger OnValidate()
+            begin
+                if "Replace Order Attribute Value" then
+                    UpdateOrderAttributes(Rec.Code);
+            end;
+#endif
+        }
         field(200; "Shop Id"; Integer)
         {
             DataClassification = SystemMetadata;
@@ -715,11 +807,13 @@ table 30102 "Shpfy Shop"
     var
         ShpfyWebhooksMgt: Codeunit "Shpfy Webhooks Mgt.";
     begin
-        ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec);
+        ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec, CompanyName());
     end;
 
     var
         InvalidShopUrlErr: Label 'The URL must refer to the internal shop location at myshopify.com. It must not be the public URL that customers use, such as myshop.com.';
+        CurrencyExchangeRateNotDefinedErr: Label 'The specified currency must have exchange rates configured. If your online shop uses the same currency as Business Central then leave the field empty.';
+        AutoCreateErrorMsg: Label 'You cannot turn "%1" off if "%2" is set to the value of "%3".', Comment = '%1 = Field Caption of "Auto Create Orders", %2 = Field Caption of "Return and Refund Process", %3 = Field Value of "Return and Refund Process"';
 
     [NonDebuggable]
     [Scope('OnPrem')]
@@ -796,6 +890,11 @@ table 30102 "Shpfy Shop"
         end;
     end;
 
+    internal procedure GetEmptySyncTime(): DateTime
+    begin
+        exit(CreateDateTime(20040101D, 0T));
+    end;
+
     internal procedure GetLastSyncTime(Type: Enum "Shpfy Synchronization Type"): DateTime
     var
         SynchronizationInfo: Record "Shpfy Synchronization Info";
@@ -806,11 +905,17 @@ table 30102 "Shpfy Shop"
                 Rec.Modify();
             end;
             if SynchronizationInfo.Get(Format(Rec."Shop Id"), Type) then
-                exit(SynchronizationInfo."Last Sync Time");
+                if SynchronizationInfo."Last Sync Time" = 0DT then
+                    exit(GetEmptySyncTime())
+                else
+                    exit(SynchronizationInfo."Last Sync Time");
         end;
         if SynchronizationInfo.Get(Rec.Code, Type) then
-            exit(SynchronizationInfo."Last Sync Time");
-        exit(0DT);
+            if SynchronizationInfo."Last Sync Time" = 0DT then
+                exit(GetEmptySyncTime())
+            else
+                exit(SynchronizationInfo."Last Sync Time");
+        exit(GetEmptySyncTime());
     end;
 
     internal procedure SetLastSyncTime(Type: Enum "Shpfy Synchronization Type")
@@ -919,4 +1024,41 @@ table 30102 "Shpfy Shop"
         RetentionPolicySetup.Validate(Enabled, true);
         RetentionPolicySetup.Modify(true);
     end;
+
+    internal procedure GetB2BEnabled(): Boolean;
+    var
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        JsonHelper: Codeunit "Shpfy Json Helper";
+        JResponse: JsonToken;
+        JItem: JsonToken;
+    begin
+        CommunicationMgt.SetShop(Rec);
+        JResponse := CommunicationMgt.ExecuteGraphQL('{"query":"query { shop { name plan { partnerDevelopment shopifyPlus } } }"}');
+        if JResponse.SelectToken('$.data.shop.plan', JItem) then
+            if JItem.IsObject then begin
+                if JsonHelper.GetValueAsBoolean(JItem, 'shopifyPlus') then
+                    exit(true);
+                if JsonHelper.GetValueAsBoolean(JItem, 'partnerDevelopment') then
+                    exit(true);
+            end;
+    end;
+
+#if not CLEAN24
+    local procedure UpdateOrderAttributes(ShopCode: Code[20])
+    var
+        OrderHeader: Record "Shpfy Order Header";
+        OrderAttribute: Record "Shpfy Order Attribute";
+    begin
+        OrderHeader.SetRange("Shop Code", ShopCode);
+        if OrderHeader.FindSet() then
+            repeat
+                OrderAttribute.SetRange("Order Id", OrderHeader."Shopify Order Id");
+                if OrderAttribute.FindSet() then
+                    repeat
+                        OrderAttribute."Attribute Value" := OrderAttribute.Value;
+                        OrderAttribute.Modify();
+                    until OrderAttribute.Next() = 0;
+            until OrderHeader.Next() = 0;
+    end;
+#endif
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
@@ -40,34 +40,34 @@
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>1.5cm</Width>
+                  <Width>1.62065cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>6cm</Width>
+                  <Width>6.17709cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.8cm</Width>
+                  <Width>2.40446cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.8cm</Width>
+                  <Width>2.63225cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.8cm</Width>
+                  <Width>2.69071cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.8cm</Width>
+                  <Width>2.56684cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.2cm</Width>
+                  <Width>0.32065cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.2cm</Width>
+                  <Width>0.32065cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.2cm</Width>
+                  <Width>0.32065cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>0.2cm</Width>
+                  <Width>0.32065cm</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -387,7 +387,7 @@
                           <Style>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.225cm</PaddingLeft>
-                            <PaddingRight>0.975cm</PaddingRight>
+                            <PaddingRight>0.225cm</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
@@ -417,7 +417,7 @@
                           </Paragraphs>
                           <Style>
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.975cm</PaddingLeft>
+                            <PaddingLeft>0.225cm</PaddingLeft>
                             <PaddingRight>0.225cm</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
                             <PaddingBottom>2pt</PaddingBottom>
@@ -587,13 +587,15 @@
                                   </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style />
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
                             </Paragraph>
                           </Paragraphs>
                           <Style>
                             <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>0.225cm</PaddingLeft>
-                            <PaddingRight>0.975cm</PaddingRight>
+                            <PaddingRight>0.225cm</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
@@ -615,12 +617,14 @@
                                   </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style />
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
                             </Paragraph>
                           </Paragraphs>
                           <Style>
                             <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>0.975cm</PaddingLeft>
+                            <PaddingLeft>0.225cm</PaddingLeft>
                             <PaddingRight>0.225cm</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
                             <PaddingBottom>2pt</PaddingBottom>
@@ -825,7 +829,7 @@
             <DataSetName>DataSet_Result</DataSetName>
             <Top>0.846cm</Top>
             <Height>1.269cm</Height>
-            <Width>15.5cm</Width>
+            <Width>19.3746cm</Width>
             <ZIndex>1</ZIndex>
             <Style />
           </Tablix>
@@ -833,7 +837,7 @@
         <Height>2.115cm</Height>
         <Style />
       </Body>
-      <Width>22.775cm</Width>
+      <Width>19.52803cm</Width>
       <Page>
         <PageHeader>
           <Height>1.692cm</Height>

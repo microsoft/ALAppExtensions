@@ -40,6 +40,9 @@ table 2631 "Statistical Acc. Journal Line"
             var
                 StatisticalAccount: Record "Statistical Account";
             begin
+                if Rec."Statistical Account No." = '' then
+                    exit;
+
                 StatisticalAccount.Get("Statistical Account No.");
                 if StatisticalAccount.Blocked then
                     Error(StatisticalAccountIsBlockedErr, Rec."Statistical Account No.", Rec."Line No.");
@@ -151,13 +154,17 @@ table 2631 "Statistical Acc. Journal Line"
     var
         SourceCodeSetup: Record "Source Code Setup";
         DimensionManagement: Codeunit DimensionManagement;
+        OldDimSetID: Integer;
     begin
         "Shortcut Dimension 1 Code" := '';
         "Shortcut Dimension 2 Code" := '';
+        OldDimSetID := "Dimension Set ID";
 
         "Dimension Set ID" :=
           DimensionManagement.GetRecDefaultDimID(
             Rec, CurrFieldNo, DefaultDimSource, SourceCodeSetup.GetSourceCodeSetupSafe(), "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
+
+        OnAfterCreateDimensions(Rec, xRec, CurrFieldNo, OldDimSetID, DefaultDimSource);
     end;
 
     local procedure InitDefaultDimensionSources(var DefaultDimensionSource: List of [Dictionary of [Integer, Code[20]]])
@@ -235,7 +242,7 @@ table 2631 "Statistical Acc. Journal Line"
         StatisticalAccJournalBatch.SetRange(Name, JournalBatchName);
         StatisticalAccJournalBatch.FindFirst();
         if StatisticalAccJournalBatch."Statistical Account No." <> '' then
-            Rec."Statistical Account No." := StatisticalAccJournalBatch."Statistical Account No.";
+            Rec.Validate("Statistical Account No.", StatisticalAccJournalBatch."Statistical Account No.");
 
         StatisticalAccJournalLine.SetRange("Journal Batch Name", JournalBatchName);
         if not StatisticalAccJournalLine.IsEmpty() then begin
@@ -266,7 +273,19 @@ table 2631 "Statistical Acc. Journal Line"
         end;
     end;
 
+    internal procedure ShowShortcutDimCode(var ShortcutDimCode: array[8] of Code[20])
+    var
+        DimensionManagement: Codeunit DimensionManagement;
+    begin
+        DimensionManagement.GetShortcutDimensions(Rec."Dimension Set ID", ShortcutDimCode);
+    end;
+
     var
         DimensionSetLabelTxt: Label '%1 %2 %3', Locked = true;
         StatisticalAccountIsBlockedErr: Label 'Statistical account %1 is blocked. Journal line %2.', Comment = '%1 number of statistical account. %2 number of journal line';
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreateDimensions(var StatisticalAccJournalLine: Record "Statistical Acc. Journal Line"; xStatisticalAccJournalLine: Record "Statistical Acc. Journal Line"; CurrentFieldNo: Integer; OldDimSetID: Integer; DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    begin
+    end;
 }

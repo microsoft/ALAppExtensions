@@ -9,7 +9,11 @@ using System.Azure.Identity;
 using System.Text;
 using System.Utilities;
 
-codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Client"
+#if not CLEAN24
+codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Client", "Email - Outlook API Client v2"
+#else
+codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Client v2"
+#endif
 {
     var
         OutlookCategoryLbl: Label 'Outlook', Locked = true;
@@ -17,7 +21,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         SendEmailErr: Label 'Could not send the email message. Try again later.';
         SendEmailCodeErr: Label 'Failed to send email with status code %1.', Comment = '%1 - Http status code', Locked = true;
         SendEmailMessageErr: Label 'Failed to send email. Error:\\%1', Comment = '%1 = Error message';
-        SendEmailExternalUserErr: Label 'Could not send the email because the user is external.';
+        SendEmailExternalUserErr: Label 'Could not send the email, because the user is delegated or external.';
         EmailSentTxt: Label 'Email sent.', Locked = true;
         DraftEmailCreatedTxt: Label 'Draft email created.', Locked = true;
         AttachmentAddedTxt: Label 'Attachment added.', Locked = true;
@@ -31,15 +35,28 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         RestAPINotSupportedErr: Label 'REST API is not yet supported for this mailbox', Locked = true;
         TheMailboxIsNotValidErr: Label 'The mailbox is not valid.\\A likely cause is that the user does not have a valid license for Office 365. To read about other potential causes, visit https://go.microsoft.com/fwlink/?linkid=2206177';
         ExternalSecurityChallengeNotSatisfiedMsg: Label 'Multi-Factor Authentication is enabled on this account but the user did not complete the setup. Please sign in to the account and try again.';
+        EnvironmentBlocksErr: Label 'The request to send email has been blocked. To resolve the problem, enable outgoing HTTP requests for the Email - Outlook REST API app on the Extension Management page.';
+        ConnectionErr: Label 'Could not establish the connection to the remote service for sending email. Try again later.';
 
+#if not CLEAN24
     [NonDebuggable]
+    [Obsolete('Replaced by GetAccountInformation with SecretText data type for AccessToken parameter.', '24.0')]
     procedure GetAccountInformation(AccessToken: Text; var Email: Text[250]; var Name: Text[250]): Boolean
     begin
         exit(TryGetAccountInformation(AccessToken, Email, Name));
     end;
+#endif
 
     [NonDebuggable]
+    procedure GetAccountInformation(AccessToken: SecretText; var Email: Text[250]; var Name: Text[250]): Boolean
+    begin
+        exit(TryGetAccountInformation(AccessToken, Email, Name));
+    end;
+
+# if not CLEAN24
+    [NonDebuggable]
     [TryFunction]
+    [Obsolete('Replaced by TryGetAccountInformation with SecretText data type for AccessToken parameter.', '24.0')]
     procedure TryGetAccountInformation(AccessToken: Text; var Email: Text[250]; var Name: Text[250])
     var
         AccountHttpClient: HttpClient;
@@ -64,6 +81,52 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         JObject.Get('displayName', JToken);
         Name := CopyStr(JToken.AsValue().AsText(), 1, 250);
     end;
+#endif
+
+    [NonDebuggable]
+    [TryFunction]
+    procedure TryGetAccountInformation(AccessToken: SecretText; var Email: Text[250]; var Name: Text[250])
+    var
+        AccountHttpClient: HttpClient;
+        AccountRequestHeaders: HttpHeaders;
+        AccountResponseMessage: HttpResponseMessage;
+        ResponseContent: Text;
+        JObject: JsonObject;
+        JToken: JsonToken;
+    begin
+        AccountRequestHeaders := AccountHttpClient.DefaultRequestHeaders();
+        AccountRequestHeaders.Add('Authorization', SecretStrSubstNo('Bearer %1', AccessToken));
+
+        if not AccountHttpClient.Get(GraphURLTxt + '/v1.0/me', AccountResponseMessage) then
+            exit;
+
+        AccountResponseMessage.Content().ReadAs(ResponseContent);
+        JObject.ReadFrom(ResponseContent);
+
+        JObject.Get('userPrincipalName', JToken);
+        Email := CopyStr(JToken.AsValue().AsText(), 1, 250);
+
+        JObject.Get('displayName', JToken);
+        Name := CopyStr(JToken.AsValue().AsText(), 1, 250);
+    end;
+
+#if not CLEAN24
+    /// <summary>
+    /// Send email using Outlook API. If the message json parameter &lt;= 4 mb and wrapped in a message object it is sent in a single request, otherwise it is sent it in multiple requests.
+    /// </summary>
+    /// <error>User is external and cannot authenticate to the exchange server.</error>
+    /// <param name="AccessToken">Access token of the account.</param>
+    /// <param name="MessageJson">The JSON representing the email message.</param>
+    [NonDebuggable]
+    [Obsolete('Replaced by SendEmail with SecretText data type for AccessToken parameter.', '24.0')]
+    procedure SendEmail(AccessToken: Text; MessageJson: JsonObject)
+    var
+        AT: SecretText;
+    begin
+        AT := AccessToken;
+        SendEmail(AT, MessageJson);
+    end;
+#endif
 
     /// <summary>
     /// Send email using Outlook API. If the message json parameter &lt;= 4 mb and wrapped in a message object it is sent in a single request, otherwise it is sent it in multiple requests.
@@ -72,15 +135,17 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
     /// <param name="AccessToken">Access token of the account.</param>
     /// <param name="MessageJson">The JSON representing the email message.</param>
     [NonDebuggable]
-    procedure SendEmail(AccessToken: Text; MessageJson: JsonObject)
+    procedure SendEmail(AccessToken: SecretText; MessageJson: JsonObject)
     var
+        AzureADUserManagement: Codeunit "Azure AD User Management";
         AzureADPlan: Codeunit "Azure AD Plan";
+        PlanIds: Codeunit "Plan IDs";
         JToken: JsonToken;
         Attachments: JsonArray;
         Attachment: JsonToken;
         MessageId: Text;
     begin
-        if AzureADPlan.IsUserExternal() then
+        if AzureADUserManagement.IsUserDelegated(UserSecurityId()) or AzureADPlan.IsPlanAssignedToUser(PlanIds.GetExternalAccountantPlanId()) then
             Error(SendEmailExternalUserErr);
 
         if MessageJson.Contains('message') then
@@ -103,7 +168,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
     end;
 
     [NonDebuggable]
-    local procedure SendMailSingleRequest(AccessToken: Text; MessageJson: JsonObject)
+    local procedure SendMailSingleRequest(AccessToken: SecretText; MessageJson: JsonObject)
     var
         MailHttpContent: HttpContent;
         MailHttpRequestMessage: HttpRequestMessage;
@@ -121,7 +186,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         MailHttpRequestMessage.Method('POST');
         MailHttpRequestMessage.SetRequestUri(RequestUri);
         MailHttpRequestMessage.GetHeaders(MailRequestHeaders);
-        MailRequestHeaders.Add('Authorization', 'Bearer ' + AccessToken);
+        MailRequestHeaders.Add('Authorization', SecretStrSubstNo('Bearer %1', AccessToken));
 
         MailHttpContent.WriteFrom(MessageJsonText);
         MailHttpContent.GetHeaders(MailContentHeaders);
@@ -130,10 +195,11 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
 
         MailHttpRequestMessage.Content := MailHttpContent;
 
-        if not MailHttpClient.Send(MailHttpRequestMessage, MailHttpResponseMessage) then begin
-            Session.LogMessage('0000D1P', SendEmailErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
-            Error(SendEmailErr);
-        end;
+        if not MailHttpClient.Send(MailHttpRequestMessage, MailHttpResponseMessage) then
+            if MailHttpResponseMessage.IsBlockedByEnvironment() then
+                Error(EnvironmentBlocksErr)
+            else
+                Error(ConnectionErr);
 
         if MailHttpResponseMessage.HttpStatusCode <> 202 then begin
             HttpErrorMessage := GetHttpErrorMessageAsText(MailHttpResponseMessage);
@@ -157,7 +223,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
     end;
 
     [NonDebuggable]
-    local procedure CreateDraftMail(AccessToken: Text; MessageJson: JsonObject): Text
+    local procedure CreateDraftMail(AccessToken: SecretText; MessageJson: JsonObject): Text
     var
         MailHttpContent: HttpContent;
         MailHttpRequestMessage: HttpRequestMessage;
@@ -179,7 +245,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         MailHttpRequestMessage.Method('POST');
         MailHttpRequestMessage.SetRequestUri(RequestUri);
         MailHttpRequestMessage.GetHeaders(MailRequestHeaders);
-        MailRequestHeaders.Add('Authorization', 'Bearer ' + AccessToken);
+        MailRequestHeaders.Add('Authorization', SecretStrSubstNo('Bearer %1', AccessToken));
 
         MailHttpContent.WriteFrom(MessageJsonText);
         MailHttpContent.GetHeaders(MailContentHeaders);
@@ -188,10 +254,11 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
 
         MailHttpRequestMessage.Content := MailHttpContent;
 
-        if not MailHttpClient.Send(MailHttpRequestMessage, MailHttpResponseMessage) then begin
-            Session.LogMessage('0000E9Y', SendEmailErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
-            Error(SendEmailErr);
-        end;
+        if not MailHttpClient.Send(MailHttpRequestMessage, MailHttpResponseMessage) then
+            if MailHttpResponseMessage.IsBlockedByEnvironment() then
+                Error(EnvironmentBlocksErr)
+            else
+                Error(ConnectionErr);
 
         if MailHttpResponseMessage.HttpStatusCode <> 201 then begin
             HttpErrorMessage := GetHttpErrorMessageAsText(MailHttpResponseMessage);
@@ -209,7 +276,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
     end;
 
     [NonDebuggable]
-    local procedure SendDraftMail(AccessToken: Text; MessageId: Text): Text
+    local procedure SendDraftMail(AccessToken: SecretText; MessageId: Text): Text
     var
         MailHttpContent: HttpContent;
         MailHttpRequestMessage: HttpRequestMessage;
@@ -225,7 +292,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         MailHttpRequestMessage.Method('POST');
         MailHttpRequestMessage.SetRequestUri(RequestUri);
         MailHttpRequestMessage.GetHeaders(MailRequestHeaders);
-        MailRequestHeaders.Add('Authorization', 'Bearer ' + AccessToken);
+        MailRequestHeaders.Add('Authorization', SecretStrSubstNo('Bearer %1', AccessToken));
 
         MailHttpContent.GetHeaders(MailContentHeaders);
         MailContentHeaders.Clear();
@@ -245,7 +312,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
     end;
 
     [NonDebuggable]
-    local procedure PostAttachment(AccessToken: Text; AttachmentJson: JsonObject; MessageId: Text)
+    local procedure PostAttachment(AccessToken: SecretText; AttachmentJson: JsonObject; MessageId: Text)
     var
         AttachmentHttpContent: HttpContent;
         AttachmentHttpRequestMessage: HttpRequestMessage;
@@ -262,7 +329,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         AttachmentHttpRequestMessage.Method('POST');
         AttachmentHttpRequestMessage.SetRequestUri(RequestUri);
         AttachmentHttpRequestMessage.GetHeaders(AttachmentRequestHeaders);
-        AttachmentRequestHeaders.Add('Authorization', 'Bearer ' + AccessToken);
+        AttachmentRequestHeaders.Add('Authorization', SecretStrSubstNo('Bearer %1', AccessToken));
 
         AttachmentJson.WriteTo(AttachmentRequestJsonText);
         AttachmentHttpContent.WriteFrom(AttachmentRequestJsonText);
@@ -286,7 +353,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
     end;
 
     [NonDebuggable]
-    local procedure UploadAttachment(AccessToken: Text; AttachmentJson: JsonObject; MessageId: Text)
+    local procedure UploadAttachment(AccessToken: SecretText; AttachmentJson: JsonObject; MessageId: Text)
     var
         Base64Convert: Codeunit "Base64 Convert";
         AttachmentTempBlob: Codeunit "Temp Blob";
@@ -309,7 +376,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         AttachmentHttpRequestMessage.Method('POST');
         AttachmentHttpRequestMessage.SetRequestUri(RequestUri);
         AttachmentHttpRequestMessage.GetHeaders(AttachmentRequestHeaders);
-        AttachmentRequestHeaders.Add('Authorization', 'Bearer ' + AccessToken);
+        AttachmentRequestHeaders.Add('Authorization', SecretStrSubstNo('Bearer %1', AccessToken));
 
         AttachmentHttpContent.WriteFrom(RequestJsonText);
         AttachmentHttpContent.GetHeaders(AttachmentContentHeaders);

@@ -17,7 +17,7 @@ pageextension 6148 "E-Doc. Issued Reminder" extends "Issued Reminder"
                 action("OpenEDocument")
                 {
                     ApplicationArea = Basic, Suite;
-                    Caption = 'OpenEDocument';
+                    Caption = 'Open E-Document';
                     Image = CopyDocument;
                     ToolTip = 'Opens the electronic document card.';
 

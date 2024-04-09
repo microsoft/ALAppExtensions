@@ -3,6 +3,8 @@ namespace Microsoft.Foundation.DataSearch;
 codeunit 2682 "Data Search Events"
 {
     SingleInstance = true;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     /// <summary>
     /// Specifies the Field No. for the table type field. For example "Sales Header" would specify 1 = "Document Type"
@@ -21,6 +23,16 @@ codeunit 2682 "Data Search Events"
     /// <param name="ParentTableNo">If the the table is a sub-table, please specify the parent table here</param>
     [IntegrationEvent(false, false)]
     procedure OnGetParentTable(SubTableNo: Integer; var ParentTableNo: Integer)
+    begin
+    end;
+
+    /// <summary>
+    /// Specifies the sub table if a table is a parent table in a header/lines construct, such as Sales Line / Sales Header
+    /// </summary>
+    /// <param name="ParentTableNo">The table no. of the table that is being searched.</param>
+    /// <param name="SubTableNo">If the the table is a parent table, please specify the sub table here</param>
+    [IntegrationEvent(false, false)]
+    procedure OnGetSubTable(ParentTableNo: Integer; var SubTableNo: Integer)
     begin
     end;
 
@@ -90,11 +102,36 @@ codeunit 2682 "Data Search Events"
     end;
 
     /// <summary>
+    /// Specifies the table subtype for a page.
+    /// Typically this means 'document type' for a specific table that is source table for the page.
+    /// </summary>
+    /// <param name="PageNo">The page no. that we want to get the subtype ('document type') for.</param>
+    /// <param name="TableSubType">Integer. The value of the subtype/document type.</param>
+    [IntegrationEvent(false, false)]
+    procedure OnGetTableSubTypeFromPage(PageNo: Integer; var TableSubtype: Integer)
+    begin
+    end;
+
+    /// <summary>
     /// Allows the addition of additional filters for the specified <paramref name="RecordRef"/> during the search.
     /// </summary>
     /// <param name="RecordRef">The record on which the search is being conducted.</param>
     [IntegrationEvent(false, false)]
     procedure OnBeforeSearchTable(var RecordRef: RecordRef)
+    begin
+    end;
+
+    /// <summary>
+    /// Allows the different implementation of the SerachTable procedure.
+    /// </summary>
+    /// <param name="TableNo">The table no. of the table that is being displayed.</param>
+    /// <param name="TableType">If the table as a 'Document Type'-like field, this value specifies the type as integer.</param>
+    /// <param name="FieldList">List of integer. You can specifify additional fields for a table here or remove unwanted.</param>
+    /// <param name="SearchStrings">List of Text. </param>
+    /// <param name="Results">Dictionary of Text/Text values.</param>
+    /// <param name="IsHandled">Defines should system stop processing code in the procedure SearchTable.</param>
+    [IntegrationEvent(false, false)]
+    internal procedure OnBeforeSearchTableProcedure(TableNo: Integer; TableType: Integer; var FieldList: List of [Integer]; var SearchStrings: List of [Text]; var Results: Dictionary of [Text, Text]; var IsHandled: Boolean)
     begin
     end;
 }

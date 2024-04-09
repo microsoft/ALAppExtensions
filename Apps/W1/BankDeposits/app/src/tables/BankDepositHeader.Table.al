@@ -24,10 +24,12 @@ table 1690 "Bank Deposit Header"
             Caption = 'No.';
 
             trigger OnValidate()
+            var
+                NoSeries: Codeunit "No. Series";
             begin
                 if "No." <> xRec."No." then begin
                     SalesReceivablesSetup.Get();
-                    NoSeriesManagement.TestManual(SalesReceivablesSetup."Bank Deposit Nos.");
+                    NoSeries.TestManual(SalesReceivablesSetup."Bank Deposit Nos.");
                     "No. Series" := '';
                 end;
             end;
@@ -218,6 +220,42 @@ table 1690 "Bank Deposit Header"
         field(23; "Post as Lump Sum"; Boolean)
         {
             Caption = 'Post as Lump Sum';
+
+            trigger OnValidate()
+            var
+                GenJournalLine: Record "Gen. Journal Line";
+                GenJournalTemplate: Record "Gen. Journal Template";
+                GenJournalDocumentType: Enum "Gen. Journal Document Type";
+                NotFirstLine: Boolean;
+                InconsistentDocTypes: Boolean;
+            begin
+                if not Rec."Post as Lump Sum" then
+                    exit;
+                GenJournalTemplate.Get(Rec."Journal Template Name");
+                if not GenJournalTemplate."Force Doc. Balance" then
+                    exit;
+
+                GenJournalLine.SetRange("Journal Template Name", Rec."Journal Template Name");
+                GenJournalLine.SetRange("Journal Batch Name", Rec."Journal Batch Name");
+                if not GenJournalLine.FindSet() then
+                    exit;
+
+                if GuiAllowed() then
+                    if not Confirm(UpdateDocumentNosTxt) then
+                        Error('');
+                repeat
+                    GenJournalLine."Document No." := Rec."No.";
+                    if not NotFirstLine then
+                        NotFirstLine := true
+                    else
+                        if GenJournalDocumentType <> GenJournalLine."Document Type" then
+                            InconsistentDocTypes := true;
+                    GenJournalDocumentType := GenJournalLine."Document Type";
+                    GenJournalLine.Modify();
+                until GenJournalLine.Next() = 0;
+                if InconsistentDocTypes then
+                    Message(InconsistentDocTypesMsg);
+            end;
         }
         field(24; "Format Region"; Text[80])
         {
@@ -287,16 +325,22 @@ table 1690 "Bank Deposit Header"
         SalesReceivablesSetup: Record "Sales & Receivables Setup";
         BankDepositHeader: Record "Bank Deposit Header";
         GenJournalBatch: Record "Gen. Journal Batch";
+#if not CLEAN24
         NoSeriesManagement: Codeunit NoSeriesManagement;
+#endif
         DimensionManagement: Codeunit DimensionManagement;
         GenJnlManagement: Codeunit GenJnlManagement;
         PostingDescriptionTxt: Label 'Deposit %1 %2', Comment = '%1 - the caption of field No.; %2 - the value of field No.';
         OnlyOneAllowedErr: Label 'Only one %1 is allowed for each %2. Choose Change Batch action if you want to create a new bank deposit.', Comment = '%1 - bank deposit; %2 - general journal batch name';
         CannotRenameErr: Label 'You cannot rename a %1.', Comment = '%1 - bank deposit';
         UpdateDimensionsOnExistingLinesQst: Label 'Do you want to add the bank deposit dimensions to all bank deposit lines?';
+        UpdateDocumentNosTxt: Label 'When posting as lump sum all the lines must have the same Document No. as the bank deposit. Do you want to update the Document No. on all lines?';
+        InconsistentDocTypesMsg: Label 'The bank deposit lines have different Document Types. When posting as lump sum all the document types must be the same, please update them before posting.';
 
     local procedure InitInsert()
     var
+        NoSeries: Codeunit "No. Series";
+        NoSeriesCode: Code[20];
         IsHandled: Boolean;
     begin
         IsHandled := false;
@@ -304,7 +348,19 @@ table 1690 "Bank Deposit Header"
         if not IsHandled then
             if "No." = '' then begin
                 TestNoSeries();
-                NoSeriesManagement.InitSeries(GetNoSeriesCode(), xRec."No. Series", "Posting Date", "No.", "No. Series");
+                NoSeriesCode := GetNoSeriesCode();
+#if not CLEAN24
+                NoSeriesManagement.RaiseObsoleteOnBeforeInitSeries(NoSeriesCode, xRec."No. Series", "Posting Date", "No.", "No. Series", IsHandled);
+                if not IsHandled then begin
+#endif
+                    "No. Series" := NoSeriesCode;
+                    if NoSeries.AreRelated("No. Series", xRec."No. Series") then
+                        "No. Series" := xRec."No. Series";
+                    "No." := NoSeries.GetNextNo("No. Series", "Posting Date");
+#if not CLEAN24
+                    NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", NoSeriesCode, "Posting Date", "No.");
+                end;
+#endif
             end;
 
         OnInitInsertOnBeforeInitRecord(xRec);
@@ -392,7 +448,7 @@ table 1690 "Bank Deposit Header"
         IsHandled := false;
         OnBeforeGetNoSeriesCode(Rec, SalesReceivablesSetup, NoSeriesCode, IsHandled);
         if IsHandled then
-            exit;
+            exit(NoSeriesCode);
 
         NoSeriesCode := SalesReceivablesSetup."Bank Deposit Nos.";
         OnAfterGetNoSeriesCode(Rec, NoSeriesCode);
@@ -447,12 +503,13 @@ table 1690 "Bank Deposit Header"
     internal procedure AssistEdit(OldBankDepositHeader: Record "Bank Deposit Header"): Boolean
     var
         LocalBankDepositHeader: Record "Bank Deposit Header";
+        NoSeries: Codeunit "No. Series";
     begin
         LocalBankDepositHeader := Rec;
         SalesReceivablesSetup.Get();
         SalesReceivablesSetup.TestField("Bank Deposit Nos.");
-        if NoSeriesManagement.SelectSeries(SalesReceivablesSetup."Bank Deposit Nos.", OldBankDepositHeader."No. Series", LocalBankDepositHeader."No. Series") then begin
-            NoSeriesManagement.SetSeries(LocalBankDepositHeader."No.");
+        if NoSeries.LookupRelatedNoSeries(SalesReceivablesSetup."Bank Deposit Nos.", OldBankDepositHeader."No. Series", LocalBankDepositHeader."No. Series") then begin
+            LocalBankDepositHeader."No." := NoSeries.GetNextNo(LocalBankDepositHeader."No. Series");
             Rec := LocalBankDepositHeader;
             exit(true);
         end;

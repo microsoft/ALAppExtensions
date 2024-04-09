@@ -4,6 +4,14 @@ table 4037 "Stg Incoming Document"
 {
     ReplicateData = false;
     Extensible = false;
+#if not CLEAN24
+    ObsoleteState = Pending;
+    ObsoleteTag = '24.0';
+# else
+    ObsoleteState = Removed;
+    ObsoleteTag = '27.0';
+#endif
+    ObsoleteReason = 'Upgrade has moved away from using the duplicated codeuntis to actual upgrade objets';
 
     fields
     {

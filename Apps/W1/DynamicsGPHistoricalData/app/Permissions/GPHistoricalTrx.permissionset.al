@@ -21,5 +21,11 @@ permissionset 40900 "GP Historical Trx."
                   page "Hist. Sales Trx." = X,
                   page "Hist. Sales Trx. Headers" = X,
                   page "Hist. Sales Trx. Lines" = X,
-                  page "Hist. Migration Step Status" = X;
+                  page "Hist. Migration Step Status" = X,
+                  page "Hist. Payables Apply" = X,
+                  page "Hist. Payables Apply List" = X,
+                  page "Hist. Payables Document List" = X,
+                  page "Hist. Receivables Apply" = X,
+                  page "Hist. Receivables Apply List" = X,
+                  page "Hist. Recv. Document List" = X;
 }

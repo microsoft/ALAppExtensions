@@ -1,0 +1,22 @@
+[
+    {
+        "codeunitId": 139651,
+        "CodeunitName": "HybridBC Wizard Tests",
+        "Method": "TestAzureSqlScheduleFlow"
+    },
+    {
+        "codeunitId": 139651,
+        "CodeunitName": "HybridBC Wizard Tests",
+        "Method": "TestLocalSqlNextAndBackFlows"
+    },
+    {
+        "codeunitId": 139651,
+        "CodeunitName": "HybridBC Wizard Tests",
+        "Method": "TestExistingIntegrationRuntime"
+    },
+    {
+        "codeunitId": 139651,
+        "CodeunitName": "HybridBC Wizard Tests",
+        "Method": "TestNoCompanyMessage"
+    }
+]

@@ -36,12 +36,14 @@ codeunit 40112 "GP Migration Error Handler"
         Exists := GPMigrationErrorOverview.Get(DataMigrationError.Id, CompanyName());
         if not Exists then begin
             GPMigrationErrorOverview.Id := DataMigrationError.Id;
-            GPMigrationErrorOverview."Company Name" := CompanyName();
+            GPMigrationErrorOverview."Company Name" := CopyStr(CompanyName(), 1, MaxStrLen(GPMigrationErrorOverview."Company Name"));
             GPMigrationErrorOverview.Insert();
         end;
 
         GPMigrationErrorOverview.TransferFields(DataMigrationError);
         GPMigrationErrorOverview.SetFullExceptionMessage(DataMigrationError.GetFullExceptionMessage());
+        GPMigrationErrorOverview.SetLastRecordUnderProcessingLog(DataMigrationError.GetLastRecordsUnderProcessingLog());
+        GPMigrationErrorOverview.SetExceptionCallStack(DataMigrationError.GetExceptionCallStack());
         GPMigrationErrorOverview.Modify();
     end;
 

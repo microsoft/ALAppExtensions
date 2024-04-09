@@ -36,17 +36,14 @@ codeunit 30246 "Shpfy Create Sales Doc. Refund"
     var
         RefundHeader: Record "Shpfy Refund Header";
         ReleaseSalesDocument: Codeunit "Release Sales Document";
-        IsHandled: Boolean;
     begin
         if RefundHeader.Get(RefundId) then begin
             Shop.Get(RefundHeader."Shop Code");
             if DoCreateSalesHeader(RefundHeader, SalesDocumentType, SalesHeader) then begin
                 CreateSalesLines(RefundHeader, SalesHeader);
-                RefundProcessEvents.OnBeforeReleaseSalesHeader(SalesHeader, RefundHeader, IsHandled);
                 RefundHeader.Get(RefundHeader."Refund Id");
-                if not IsHandled then
-                    ReleaseSalesDocument.Run(SalesHeader);
-                RefundProcessEvents.OnAfterReleaseSalesHeader(SalesHeader, RefundHeader);
+                ReleaseSalesDocument.Run(SalesHeader);
+                RefundProcessEvents.OnAfterProcessSalesDocument(RefundHeader, SalesHeader);
             end;
         end;
     end;

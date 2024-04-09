@@ -9,14 +9,12 @@ using System.Reflection;
 
 codeunit 6138 "E-Document Update Order"
 {
-    Access = Internal;
-
     trigger OnRun()
     begin
         UpdateOrder(SourceEDocument, SourceDocumentHeader, UpdatedDocumentHeader)
     end;
 
-    procedure SetSource(var SourceEDocument2: Record "E-Document"; var SourceDocumentHeader2: RecordRef; var SourceDocumentLine2: RecordRef; var UpdatedDocumentHeader2: RecordRef)
+    internal procedure SetSource(var SourceEDocument2: Record "E-Document"; var SourceDocumentHeader2: RecordRef; var SourceDocumentLine2: RecordRef; var UpdatedDocumentHeader2: RecordRef)
     begin
         SourceEDocument := SourceEDocument2;
         SourceDocumentHeader := SourceDocumentHeader2;
@@ -24,7 +22,7 @@ codeunit 6138 "E-Document Update Order"
         UpdatedDocumentHeader := UpdatedDocumentHeader2;
     end;
 
-    procedure GetUpdatedDocument(): RecordRef;
+    internal procedure GetUpdatedDocument(): RecordRef;
     begin
         exit(UpdatedDocumentHeader);
     end;

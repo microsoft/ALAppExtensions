@@ -199,6 +199,17 @@ page 30010 "APIV2 - Vendors"
                 field(irs1099Code; IRS1099VendorCode)
                 {
                     Caption = 'IRS1099 Code';
+
+                    trigger OnValidate()
+                    var
+                        IRS1099CodeFieldRef: FieldRef;
+                    begin
+                        if IsIRS1099Code(IRS1099CodeFieldRef) then begin
+                            IRS1099CodeFieldRef.Validate(IRS1099VendorCode);
+                            IRS1099CodeFieldRef.Record().SetTable(Rec);
+                            RegisterFieldSet(IRS1099CodeFieldRef.Number);
+                        end;
+                    end;
                 }
                 field(paymentTermsId; Rec."Payment Terms Id")
                 {
@@ -377,6 +388,7 @@ page 30010 "APIV2 - Vendors"
     local procedure SetCalculatedFields()
     var
         EnterpriseNoFieldRef: FieldRef;
+        IRS1099CodeFieldRef: FieldRef;
     begin
         CurrencyCodeTxt := GraphMgtGeneralTools.TranslateNAVCurrencyCodeToCurrencyCode(LCYCurrencyCode, Rec."Currency Code");
 
@@ -387,6 +399,9 @@ page 30010 "APIV2 - Vendors"
                 TaxRegistrationNumber := EnterpriseNoFieldRef.Value();
         end else
             TaxRegistrationNumber := Rec."VAT Registration No.";
+
+        if IsIRS1099Code(IRS1099CodeFieldRef) then
+            IRS1099VendorCode := IRS1099CodeFieldRef.Value();
     end;
 
     local procedure ClearCalculatedFields()
@@ -418,6 +433,17 @@ page 30010 "APIV2 - Vendors"
             exit((EnterpriseNoFieldRef.Type = FieldType::Text) and (EnterpriseNoFieldRef.Name = 'Enterprise No.'));
         end else
             exit(false);
+    end;
+
+    local procedure IsIRS1099Code(var IRS1099CodeFieldRef: FieldRef): Boolean
+    var
+        VendorRecordRef: RecordRef;
+    begin
+        VendorRecordRef.GetTable(Rec);
+        if VendorRecordRef.FieldExist(10020) then begin
+            IRS1099CodeFieldRef := VendorRecordRef.Field(10020);
+            exit(true);
+        end;
     end;
 }
 

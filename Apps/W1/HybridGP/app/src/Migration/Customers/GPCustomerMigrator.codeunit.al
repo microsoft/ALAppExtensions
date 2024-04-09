@@ -14,6 +14,7 @@ codeunit 4018 "GP Customer Migrator"
         CustomerBatchNameTxt: Label 'GPCUST', Locked = true;
         SourceCodeTxt: Label 'GENJNL', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
+        CustomerEmailTypeCodeLbl: Label 'CUS', Locked = true;
 
 #if not CLEAN22
 #pragma warning disable AA0207
@@ -48,6 +49,7 @@ codeunit 4018 "GP Customer Migrator"
     internal procedure OnMigrateCustomerPostingGroups(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
 #endif
     var
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         HelperFunctions: Codeunit "Helper Functions";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         PostingGroupNo: Code[20];
@@ -58,6 +60,9 @@ codeunit 4018 "GP Customer Migrator"
         if RecordIdToMigrate.TableNo() <> Database::"GP Customer" then
             exit;
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordIdToMigrate));
+
+        if not GPCompanyAdditionalSettings.GetGLModuleEnabled() then
+            exit;
 
         Sender.CreatePostingSetupIfNeeded(
             CopyStr(PostingGroupCodeTxt, 1, 5),
@@ -93,6 +98,9 @@ codeunit 4018 "GP Customer Migrator"
             exit;
 
         if RecordIdToMigrate.TableNo() <> Database::"GP Customer" then
+            exit;
+
+        if not GPCompanyAdditionalSettings.GetGLModuleEnabled() then
             exit;
 
         if GPCompanyAdditionalSettings.GetMigrateOnlyReceivablesMaster() then
@@ -280,6 +288,10 @@ codeunit 4018 "GP Customer Migrator"
     var
         CompanyInformation: Record "Company Information";
         GPKnownCountries: Record "GP Known Countries";
+        GPRM00101: Record "GP RM00101";
+        GPSY01200: Record "GP SY01200";
+        Customer: Record Customer;
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         HelperFunctions: Codeunit "Helper Functions";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         PaymentTermsFormula: DateFormula;
@@ -322,10 +334,18 @@ codeunit 4018 "GP Customer Migrator"
         MigrationGPCustomer.FAX := HelperFunctions.CleanGPPhoneOrFaxNumber(MigrationGPCustomer.FAX);
         CustomerDataMigrationFacade.SetPhoneNo(MigrationGPCustomer.PHONE1);
         CustomerDataMigrationFacade.SetFaxNo(MigrationGPCustomer.FAX);
-        CustomerDataMigrationFacade.SetCustomerPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
-        CustomerDataMigrationFacade.SetGenBusPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
-        CustomerDataMigrationFacade.SetEmail(COPYSTR(MigrationGPCustomer.INET1, 1, 80));
+
+        if GPCompanyAdditionalSettings.GetGLModuleEnabled() then begin
+            CustomerDataMigrationFacade.SetCustomerPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
+            CustomerDataMigrationFacade.SetGenBusPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
+        end;
+
         CustomerDataMigrationFacade.SetHomePage(COPYSTR(MigrationGPCustomer.INET2, 1, 80));
+
+        GPRM00101.SetLoadFields(ADRSCODE);
+        if GPRM00101.Get(MigrationGPCustomer.CUSTNMBR) then
+            if GPSY01200.Get(CustomerEmailTypeCodeLbl, GPRM00101.CUSTNMBR, GPRM00101.ADRSCODE) then
+                CustomerDataMigrationFacade.SetEmail(CopyStr(GPSY01200.GetAllEmailAddressesText(MaxStrLen(Customer."E-Mail")), 1, MaxStrLen(Customer."E-Mail")));
 
         if MigrationGPCustomer.STMTCYCL = true then
             CustomerDataMigrationFacade.SetPrintStatement(true);
@@ -378,23 +398,8 @@ codeunit 4018 "GP Customer Migrator"
 #if not CLEAN22
     [Obsolete('Method is not supported, it was using files', '22.0')]
     procedure GetAll()
-#if not CLEAN21
-    var
-        MigrationGPCustomer: Record "GP Customer";
-        HelperFunctions: Codeunit "Helper Functions";
-        JArray: JsonArray;
-    begin
-#pragma warning disable AL0432        
-        HelperFunctions.GetEntities('Customer', JArray);
-        MigrationGPCustomer.DeleteAll();
-        GetCustomersFromJson(JArray);
-        GetTransactions();
-#pragma warning restore AL0432               
-    end;
-#else
     begin
     end;
-#endif
 #endif
 
     procedure PopulateStagingTable(JArray: JsonArray)
@@ -473,21 +478,7 @@ codeunit 4018 "GP Customer Migrator"
 #if not CLEAN22
     [Obsolete('Method is not supported, it was using files', '22.0')]
     local procedure GetTransactions()
-#if not CLEAN21    
-    var
-        MigrationGPCustTrans: Record "GP Customer Transactions";
-        HelperFunctions: Codeunit "Helper Functions";
-        JArray: JsonArray;
-#endif
     begin
-#if not CLEAN21
-        MigrationGPCustTrans.DeleteAll();
-        GlobalDocumentNo := 'C00000';
-#pragma warning disable AL0432
-        if (HelperFunctions.GetEntities('RMTrx', JArray)) then
-            GetRMTrxFromJson(JArray);
-#pragma warning restore AL0432            
-#endif
     end;
 #endif
 

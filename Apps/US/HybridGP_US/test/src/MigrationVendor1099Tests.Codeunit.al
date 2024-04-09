@@ -198,7 +198,9 @@ codeunit 139684 "Migration Vendor 1099 Tests"
 
         // [THEN] The Vendor record will have correct 1099 data
         Assert.IsTrue(Vendor.Get(TestVendorNoLbl), 'Vendor not found.');
+#if not CLEAN25
         Assert.AreEqual('NEC-01', Vendor."IRS 1099 Code", 'Incorrect IRS 1099 Code.');
+#endif
         Assert.AreEqual('123456789', Vendor."Federal ID No.", 'Incorrect Federal ID No.');
         Assert.AreEqual(Vendor."Tax Identification Type"::"Legal Entity", Vendor."Tax Identification Type", 'Incorrect Tax Identification Type.');
 
@@ -214,8 +216,10 @@ codeunit 139684 "Migration Vendor 1099 Tests"
 
         DocumentNo := VendorLedgerEntry."Document No.";
         Assert.AreEqual('NEC-01', VendorLedgerEntry.Description, 'Invoice Vendor ledger entry description is incorrect.');
+#if not CLEAN25
         Assert.AreEqual('NEC-01', VendorLedgerEntry."IRS 1099 Code", 'Invoice Vendor ledger entry IRS 1099 Code is incorrect.');
         Assert.AreEqual(-120, VendorLedgerEntry."IRS 1099 Amount", 'Invoice Vendor ledger entry IRS 1099 Amount is incorrect.');
+#endif
         Assert.AreEqual(0, VendorLedgerEntry."Remaining Amount", 'Invoice Vendor ledger entry Remaining Amount should be zero.');
 
         VendorLedgerEntry.SetRange("Vendor No.", TestVendorNoLbl);
@@ -223,7 +227,9 @@ codeunit 139684 "Migration Vendor 1099 Tests"
         VendorLedgerEntry.SetRange(Description, 'NEC-01');
         Assert.IsTrue(VendorLedgerEntry.FindFirst(), 'NEC-01 Payment Vendor ledger entry not found.');
         Assert.AreEqual('NEC-01', VendorLedgerEntry.Description, 'Payment Vendor ledger entry description is incorrect.');
+#if not CLEAN25
         Assert.AreEqual('NEC-01', VendorLedgerEntry."IRS 1099 Code", 'Payment Vendor ledger entry IRS 1099 Code is incorrect.');
+#endif
 
         DetailedVendorLedgEntry.SetRange("Vendor No.", TestVendorNoLbl);
         DetailedVendorLedgEntry.SetRange("Initial Document Type", DetailedVendorLedgEntry."Initial Document Type"::Payment);
@@ -269,7 +275,11 @@ codeunit 139684 "Migration Vendor 1099 Tests"
         // [GIVEN] The Intelligent Cloud migration is completed
         CreateVendorData();
 
+        GPCompanyAdditionalSettings.Get();
+        Assert.AreEqual(CurrentYear, GPCompanyAdditionalSettings."1099 Tax Year", 'Incorrect configured default tax year');
+
         // Enable Migrate Vendor 1099 setting, and the 1099 Tax Year is not set
+        Clear(GPCompanyAdditionalSettings);
         GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Vendor 1099", true);
         GPCompanyAdditionalSettings.Modify();
@@ -343,15 +353,23 @@ codeunit 139684 "Migration Vendor 1099 Tests"
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         CompanyNameText: Text[30];
     begin
+        Clear(GPCompanyMigrationSettings);
+        GPCompanyMigrationSettings.Insert(true);
+
+        Clear(GPCompanyAdditionalSettings);
+        GPCompanyAdditionalSettings.Insert(true);
+
 #pragma warning disable AA0139
         CompanyNameText := CompanyName();
 #pragma warning restore AA0139
 
+        Clear(GPCompanyMigrationSettings);
         if not GPCompanyMigrationSettings.Get(CompanyNameText) then begin
             GPCompanyMigrationSettings.Name := CompanyNameText;
             GPCompanyMigrationSettings.Insert(true);
         end;
 
+        Clear(GPCompanyAdditionalSettings);
         if not GPCompanyAdditionalSettings.Get(CompanyNameText) then begin
             GPCompanyAdditionalSettings.Name := CompanyNameText;
             GPCompanyAdditionalSettings.Insert(true);

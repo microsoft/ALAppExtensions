@@ -2,7 +2,6 @@ namespace Microsoft.DataMigration;
 
 using System.Reflection;
 using System.Apps;
-using System.Environment.Configuration;
 
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved. 
@@ -114,6 +113,7 @@ page 40010 "Add Migration Table Mappings"
                             ExtensionManagement: Page "Extension Management";
                         begin
                             MigrationTableMapping.FilterOutBlacklistedPublishers(PublishedApplication);
+                            PublishedApplication.SetRange(Installed, true);
 
                             ExtensionManagement.SetTableView(PublishedApplication);
                             ExtensionManagement.LookupMode(true);

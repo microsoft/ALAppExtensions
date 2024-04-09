@@ -75,10 +75,17 @@ tableextension 4816 "Intrastat Report Serv. Head." extends "Service Header"
             Validate("Transport Method", '');
             Validate("Transaction Type", '');
         end;
+
+        OnAfterUpdateIntrastatFields(Rec, Customer, IntrastatReportSetup, FieldNo);
     end;
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeUpdateIntrastatFields(var ServiceHeader: Record "Service Header"; FieldNo: Integer; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateIntrastatFields(var ServiceHeader: Record "Service Header"; var Customer: Record Customer; var IntrastatReportSetup: Record "Intrastat Report Setup"; FieldNo: Integer);
     begin
     end;
 }

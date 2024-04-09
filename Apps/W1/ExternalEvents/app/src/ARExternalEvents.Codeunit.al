@@ -161,7 +161,7 @@ codeunit 38502 "AR External Events"
     begin
         if not Customer.Get(CustLedgerEntry."Customer No.") then
             exit;
-        if not PreviewMode then
+        if PreviewMode then
             exit;
         Url := ExternalEventsHelper.CreateLink(CopyStr(CustomerApiUrlTok, 1, 250), Customer.SystemId);
         WebClientUrl := CopyStr(GetUrl(ClientType::Web, CompanyName(), ObjectType::Page, Page::"Customer Card", Customer), 1, MaxStrLen(WebClientUrl));

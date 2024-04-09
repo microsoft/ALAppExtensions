@@ -11,10 +11,12 @@ codeunit 10856 "Common Module FR"
         CommonGLAccount: Codeunit "Create Common GL Account";
         LocalStandardVATPercentage: Decimal;
     begin
-         if Module = Enum::"Contoso Demo Data Module"::"Common Module" then
+        if Module = Enum::"Contoso Demo Data Module"::"Common Module" then
             if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Setup Data" then begin
-            LocalStandardVATPercentage := 20;
-            ContosoPostingSetup.InsertVATPostingSetup(CommonPostingGroup.Domestic(), CommonPostingGroup.StandardVAT(), CommonGLAccount.SalesVATStandard(), CommonGLAccount.PurchaseVATStandard(), CommonPostingGroup.StandardVAT(), LocalStandardVATPercentage, Enum::"Tax Calculation Type"::"Normal VAT");
-        end;
+                LocalStandardVATPercentage := 20;
+                ContosoPostingSetup.SetOverwriteData(true);
+                ContosoPostingSetup.InsertVATPostingSetup(CommonPostingGroup.Domestic(), CommonPostingGroup.StandardVAT(), CommonGLAccount.SalesVATStandard(), CommonGLAccount.PurchaseVATStandard(), CommonPostingGroup.StandardVAT(), LocalStandardVATPercentage, Enum::"Tax Calculation Type"::"Normal VAT");
+                ContosoPostingSetup.SetOverwriteData(false);
+            end;
     end;
 }

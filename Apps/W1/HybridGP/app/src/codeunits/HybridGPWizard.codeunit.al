@@ -143,6 +143,8 @@ codeunit 4015 "Hybrid GP Wizard"
         HybridCompany: Record "Hybrid Company";
         HybridCompanyStatus: Record "Hybrid Company Status";
         HybridReplicationDetail: Record "Hybrid Replication Detail";
+        GPMigrationErrorOverview: Record "GP Migration Error Overview";
+        GPMigrationWarnings: Record "GP Migration Warnings";
     begin
         GPCompanyMigrationSettings.Reset();
         if GPCompanyMigrationSettings.FindSet() then
@@ -159,6 +161,12 @@ codeunit 4015 "Hybrid GP Wizard"
 
         if not HybridReplicationDetail.IsEmpty() then
             HybridReplicationDetail.DeleteAll();
+
+        if not GPMigrationErrorOverview.IsEmpty() then
+            GPMigrationErrorOverview.DeleteAll();
+
+        if not GPMigrationWarnings.IsEmpty() then
+            GPMigrationWarnings.DeleteAll();
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Company", 'OnAfterDeleteEvent', '', false, false)]
@@ -169,6 +177,8 @@ codeunit 4015 "Hybrid GP Wizard"
         HybridCompany: Record "Hybrid Company";
         HybridCompanyStatus: Record "Hybrid Company Status";
         HybridReplicationDetail: Record "Hybrid Replication Detail";
+        GPMigrationErrorOverview: Record "GP Migration Error Overview";
+        GPMigrationWarnings: Record "GP Migration Warnings";
     begin
         if Rec.IsTemporary() then
             exit;
@@ -188,6 +198,14 @@ codeunit 4015 "Hybrid GP Wizard"
         HybridReplicationDetail.SetRange("Company Name", Rec.Name);
         if not HybridReplicationDetail.IsEmpty() then
             HybridReplicationDetail.DeleteAll();
+
+        GPMigrationErrorOverview.SetRange("Company Name", Rec.Name);
+        if not GPMigrationErrorOverview.IsEmpty() then
+            GPMigrationErrorOverview.DeleteAll();
+
+        GPMigrationWarnings.SetRange("Company Name", Rec.Name);
+        if not GPMigrationWarnings.IsEmpty() then
+            GPMigrationWarnings.DeleteAll();
     end;
 
     local procedure ProcessesAreRunning(): Boolean

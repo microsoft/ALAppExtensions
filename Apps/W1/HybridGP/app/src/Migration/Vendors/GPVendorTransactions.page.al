@@ -2,9 +2,12 @@ namespace Microsoft.DataMigration.GP;
 
 page 4097 "GP Vendor Transactions"
 {
+    Caption = 'GP Vendor Transactions';
+    AdditionalSearchTerms = 'staging';
     PageType = List;
     SourceTable = "GP Vendor Transactions";
-    Caption = 'Vendor Transactions';
+    ApplicationArea = All;
+    UsageCategory = Lists;
 
     layout
     {

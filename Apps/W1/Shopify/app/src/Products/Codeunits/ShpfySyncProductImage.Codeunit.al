@@ -24,6 +24,7 @@ codeunit 30184 "Shpfy Sync Product Image"
     var
         Shop: Record "Shpfy Shop";
         ProductImageExport: Codeunit "Shpfy Product Image Export";
+        ProductEvents: Codeunit "Shpfy Product Events";
         ProductFilter: Text;
 
     /// <summary> 
@@ -42,6 +43,7 @@ codeunit 30184 "Shpfy Sync Product Image"
         ShopifyProduct.SetRange("Shop Code", Shop.Code);
         if ProductFilter <> '' then
             ShopifyProduct.SetFilter(Id, ProductFilter);
+        ProductImageExport.SetRecordCount(ShopifyProduct.Count());
         if ShopifyProduct.FindSet() then
             repeat
                 Commit();
@@ -68,34 +70,43 @@ codeunit 30184 "Shpfy Sync Product Image"
         VariantApi: Codeunit "Shpfy Variant API";
         ImageId: BigInteger;
         Id: BigInteger;
-        Images: Dictionary of [BigInteger, Dictionary of [BigInteger, Text]];
-        ImageData: Dictionary of [BigInteger, Text];
+        ProductImages: Dictionary of [BigInteger, Dictionary of [BigInteger, Text]];
+        ProductImageData: Dictionary of [BigInteger, Text];
+        VariantImages: Dictionary of [BigInteger, Dictionary of [BigInteger, Text]];
+        VariantImageData: Dictionary of [BigInteger, Text];
     begin
         ProductApi.SetShop(Shop);
-        ProductApi.RetrieveShopifyProductImages(Images);
-        foreach Id in Images.Keys do
+        ProductApi.RetrieveShopifyProductImages(ProductImages);
+        foreach Id in ProductImages.Keys do
             if ShopifyProduct.Get(Id) and Item.GetBySystemId(ShopifyProduct."Item SystemId") then begin
-                ImageData := Images.Get(Id);
-                foreach ImageId in ImageData.Keys do
+                ProductImageData := ProductImages.Get(Id);
+                foreach ImageId in ProductImageData.Keys do
                     if ImageId <> ShopifyProduct."Image Id" then
-                        if UpdateItemImage(Item, ImageData.Get(ImageId)) then begin
+                        if UpdateItemImage(Item, ProductImageData.Get(ImageId)) then begin
                             ShopifyProduct."Image Id" := ImageId;
                             ShopifyProduct.Modify();
                         end;
             end;
 
         VariantApi.SetShop(Shop);
-        Clear(Images);
-        VariantApi.RetrieveShopifyProductVaraintImages(Images);
-        foreach Id in Images.Keys do
+        VariantApi.RetrieveShopifyProductVariantImages(VariantImages);
+        foreach Id in VariantImages.Keys do
             if ShopifyVariant.Get(Id) and Item.GetBySystemId(ShopifyVariant."Item SystemId") then begin
-                ImageData := Images.Get(Id);
-                foreach ImageId in ImageData.Keys do
-                    if ImageId <> ShopifyVariant."Image Id" then
-                        if UpdateItemImage(Item, ImageData.Get(ImageId)) then begin
-                            ShopifyVariant."Image Id" := ImageId;
-                            ShopifyVariant.Modify();
-                        end;
+                VariantImageData := VariantImages.Get(Id);
+                if VariantImageData.Keys.Count > 0 then
+                    foreach ImageId in VariantImageData.Keys do
+                        if ImageId <> ShopifyVariant."Image Id" then
+                            if UpdateItemImage(Item, VariantImageData.Get(ImageId)) then begin
+                                ShopifyVariant."Image Id" := ImageId;
+                                ShopifyVariant.Modify();
+                            end;
+                if VariantImageData.Keys.Count = 0 then
+                    if ProductImages.ContainsKey(ShopifyVariant."Product Id") then begin
+                        ProductImageData := ProductImages.Get(ShopifyVariant."Product Id");
+                        foreach ImageId in ProductImageData.Keys do
+                            if ImageId <> ShopifyProduct."Image Id" then
+                                UpdateItemImage(Item, ProductImageData.Get(ImageId));
+                    end;
             end;
 
     end;
@@ -126,7 +137,8 @@ codeunit 30184 "Shpfy Sync Product Image"
             HttpResponseMessage.Content.ReadAs(InStream);
             Clear(Item.Picture);
             Item.Picture.ImportStream(InStream, Item.Description);
-            Item.Modify();
+            Item.Modify(true);
+            ProductEvents.OnAfterUpdateItemPicture(Item, ImageUrl, InStream);
         end;
     end;
 

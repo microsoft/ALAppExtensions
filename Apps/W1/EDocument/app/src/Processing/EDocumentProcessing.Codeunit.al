@@ -9,6 +9,8 @@ using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.FinanceCharge;
 using Microsoft.Sales.History;
@@ -53,6 +55,16 @@ codeunit 6108 "E-Document Processing"
                     SourceDocumentLines.Open(Database::"Sales Cr.Memo Line");
                     SourceDocumentLines.Field(3).SetRange(EDocument."Document No.");
                 end;
+            EDocument."Document Type"::"Service Invoice":
+                begin
+                    SourceDocumentLines.Open(Database::"Service Invoice Line");
+                    SourceDocumentLines.Field(3).SetRange(EDocument."Document No.");
+                end;
+            EDocument."Document Type"::"Service Credit Memo":
+                begin
+                    SourceDocumentLines.Open(Database::"Service Cr.Memo Line");
+                    SourceDocumentLines.Field(3).SetRange(EDocument."Document No.");
+                end;
             EDocument."Document Type"::"Purchase Invoice":
                 begin
                     SourceDocumentLines.Open(Database::"Purch. Inv. Line");
@@ -84,6 +96,62 @@ codeunit 6108 "E-Document Processing"
         EDocument.SetRange(Direction, Direction);
 
         exit(EDocument.Count());
+    end;
+
+    procedure MatchedPurchaseOrdersCount(): Integer
+    var
+        PurchaseHeader: Record "Purchase Header";
+        Guid: Guid;
+    begin
+        PurchaseHeader.SetFilter("E-Document Link", '<>%1', Guid);
+        exit(PurchaseHeader.Count());
+    end;
+
+    procedure MatchedPurchaseEDocumentsCount(): Integer
+    var
+        EDocument: Record "E-Document";
+        EDocumentServiceStatus: Record "E-Document Service Status";
+    begin
+        EDocument.SetRange("Document Type", Enum::"E-Document Type"::"Purchase Order");
+        EDocument.SetRange(Status, Enum::"E-Document Status"::"In Progress");
+        if EDocument.FindSet() then
+            repeat
+                EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
+                EDocumentServiceStatus.SetRange(Status, Enum::"E-Document Service Status"::Pending);
+                if not EDocumentServiceStatus.IsEmpty() then
+                    EDocument.Mark(true);
+            until EDocument.Next() = 0;
+
+        EDocument.MarkedOnly(true);
+        exit(EDocument.Count());
+    end;
+
+    procedure OpenWaitingPurchaseEDoc()
+    var
+        EDocument: Record "E-Document";
+        EDocumentServiceStatus: Record "E-Document Service Status";
+    begin
+        EDocument.SetRange("Document Type", Enum::"E-Document Type"::"Purchase Order");
+        EDocument.SetRange(Status, Enum::"E-Document Status"::"In Progress");
+        if EDocument.FindSet() then
+            repeat
+                EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
+                EDocumentServiceStatus.SetRange(Status, Enum::"E-Document Service Status"::Pending);
+                if not EDocumentServiceStatus.IsEmpty() then
+                    EDocument.Mark(true);
+            until EDocument.Next() = 0;
+
+        EDocument.MarkedOnly(true);
+        Page.Run(Page::"E-Documents", EDocument);
+    end;
+
+    procedure OpenMatchedPurchaseOrders()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        Guid: Guid;
+    begin
+        PurchaseHeader.SetFilter("E-Document Link", '<>%1', Guid);
+        Page.Run(Page::"Purchase Order List", PurchaseHeader);
     end;
 
     procedure OpenEDocuments(Status: Enum "E-Document Status"; Direction: Enum "E-Document Direction"): Integer
@@ -142,11 +210,22 @@ codeunit 6108 "E-Document Processing"
     end;
 
     local procedure GetDocSendingProfileForCustVend(CustomerNo: Code[20]; VendorNo: Code[20]) DocumentSendingProfile: Record "Document Sending Profile";
+    var
+        Customer: Record Customer;
+        Vendor: Record Vendor;
     begin
-        if CustomerNo <> '' then
-            DocumentSendingProfile.GetDefaultForCustomer(CustomerNo, DocumentSendingProfile)
-        else
-            DocumentSendingProfile.GetDefaultForVendor(VendorNo, DocumentSendingProfile);
+        if CustomerNo <> '' then begin
+            if Customer.Get(CustomerNo) then
+                if DocumentSendingProfile.Get(Customer."Document Sending Profile") then
+                    exit;
+        end else
+            if Vendor.Get(VendorNo) then
+                if DocumentSendingProfile.Get(Vendor."Document Sending Profile") then
+                    exit;
+
+        DocumentSendingProfile.SetRange(Default, true);
+        if not DocumentSendingProfile.FindFirst() then
+            Clear(DocumentSendingProfile);
     end;
 
     local procedure GetPostedRecord(var EDocument: Record "E-Document"; var RelatedRecord: Variant): Boolean

@@ -109,11 +109,12 @@ codeunit 30166 "Shpfy Process Order"
             SalesHeader."Ship-to Post Code" := CopyStr(ShopifyOrderHeader."Ship-to Post Code", 1, MaxStrLen(SalesHeader."Ship-to Post Code"));
             SalesHeader."Ship-to County" := CopyStr(ShopifyOrderHeader."Ship-to County", 1, MaxStrLen(SalesHeader."Ship-to County"));
             SalesHeader."Ship-to Contact" := ShopifyOrderHeader."Ship-to Contact Name";
-            SalesHeader.Validate("Prices Including VAT", ShopifyOrderHeader."VAT Included" and ProductPriceCalc.PricesIncludingVAT(ShopifyOrderHeader."Shop Code"));
+            SalesHeader.Validate("Prices Including VAT", ShopifyOrderHeader."VAT Included" and ProductPriceCalc.DoPricesIncludingVAT(ShopifyOrderHeader."Shop Code"));
             SalesHeader.Validate("Currency Code", ShopifyShop."Currency Code");
             SalesHeader."Shpfy Order Id" := ShopifyOrderHeader."Shopify Order Id";
             SalesHeader."Shpfy Order No." := ShopifyOrderHeader."Shopify Order No.";
             SalesHeader.Validate("Document Date", ShopifyOrderHeader."Document Date");
+            SalesHeader.Validate("External Document No.", ShopifyOrderHeader."PO Number");
             if ShopLocation.Get(ShopifyOrderHeader."Shop Code", ShopifyOrderHeader."Location Id") and (ShopLocation."Default Location Code" <> '') then
                 SalesHeader.Validate("Location Code", ShopLocation."Default Location Code");
             if OrderMgt.FindTaxArea(ShopifyOrderHeader, ShopifyTaxArea) and (ShopifyTaxArea."Tax Area Code" <> '') then
@@ -135,7 +136,11 @@ codeunit 30166 "Shpfy Process Order"
             if ShopifyOrderHeader."Work Description".HasValue then
                 SalesHeader.SetWorkDescription(ShopifyOrderHeader.GetWorkDescription());
         end;
+#if not CLEAN24
+        OrdersAPI.AddOrderAttribute(ShopifyOrderHeader, 'BC Doc. No.', SalesHeader."No.", ShopifyShop);
+#else
         OrdersAPI.AddOrderAttribute(ShopifyOrderHeader, 'BC Doc. No.', SalesHeader."No.");
+#endif
         DocLinkToBCDoc.Init();
         DocLinkToBCDoc."Shopify Document Type" := "Shpfy Shop Document Type"::"Shopify Shop Order";
         DocLinkToBCDoc."Shopify Document Id" := ShopifyOrderHeader."Shopify Order Id";
@@ -212,7 +217,7 @@ codeunit 30166 "Shpfy Process Order"
                         end else begin
                             SalesLine.Validate(Type, SalesLine.Type::Item);
                             SalesLine.Validate("No.", ShopifyOrderLine."Item No.");
-                            if Item.Get(SalesLine."No.") and (Item.Type = Item.Type::Inventory) then begin
+                            if Item.Get(SalesLine."No.") then begin
                                 if (ShopifyOrderLine."Location Id" <> 0) then
                                     if ShopLocation.Get(ShopifyOrderHeader."Shop Code", ShopifyOrderLine."Location Id") then
                                         SalesLine.Validate("Location Code", ShopLocation."Default Location Code");

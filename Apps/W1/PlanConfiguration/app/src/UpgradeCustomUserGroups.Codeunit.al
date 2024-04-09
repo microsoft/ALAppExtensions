@@ -13,6 +13,7 @@ codeunit 9032 "Upgrade Custom User Groups"
     // Even though this codeunit will not have the OnUpgradePerDatabase trigger,
     // in v25+ the event subscriber will always run in the upgrade context.
     Subtype = Upgrade;
+    Permissions = tabledata "Custom User Group In Plan" = r;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade User Groups", 'OnMigrateUserGroups', '', false, false)]
     local procedure TransferCustomPermissionsPerPlan()

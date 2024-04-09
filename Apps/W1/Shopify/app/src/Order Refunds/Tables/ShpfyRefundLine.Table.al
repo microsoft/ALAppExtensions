@@ -81,6 +81,12 @@ table 30145 "Shpfy Refund Line"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+        field(13; "Can Create Credit Memo"; Boolean)
+        {
+            Caption = 'Can Create Credit Memo';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
         field(101; "Item No."; Code[20])
         {
             Caption = 'Item No.';

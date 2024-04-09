@@ -5,7 +5,7 @@ page 4051 "GP Company Add. Settings List"
     Caption = 'GP Company Additional Settings List';
     PageType = ListPart;
     SourceTable = "GP Company Additional Settings";
-    SourceTableView = sorting(Name) where("Name" = filter(<> ''), "Migration Completed" = const(false));
+    SourceTableView = sorting(Name) where("Name" = filter(<> ''), "Migration Completed" = const(false), "Has Hybrid Company" = const(true));
     DeleteAllowed = false;
     InsertAllowed = false;
     ModifyAllowed = true;
@@ -48,6 +48,12 @@ page 4051 "GP Company Add. Settings List"
                 {
                     Caption = 'Open POs';
                     ToolTip = 'Specify whether to migrate open Purchase Orders.';
+                    ApplicationArea = All;
+                }
+                field("Migrate GL Module"; Rec."Migrate GL Module")
+                {
+                    Caption = 'GL Module';
+                    ToolTip = 'Specify whether to migrate the GL module.';
                     ApplicationArea = All;
                 }
                 field("Migrate Bank Module"; Rec."Migrate Bank Module")
@@ -211,6 +217,12 @@ page 4051 "GP Company Add. Settings List"
                 {
                     Caption = 'Skip Posting Bank Trx.';
                     ToolTip = 'Specify whether to disable auto posting Bank batches.';
+                    ApplicationArea = All;
+                }
+                field("Skip Posting Item Batches"; Rec."Skip Posting Item Batches")
+                {
+                    Caption = 'Skip Posting Item Trx.';
+                    ToolTip = 'Specify whether to disable auto posting Item batches.';
                     ApplicationArea = All;
                 }
             }

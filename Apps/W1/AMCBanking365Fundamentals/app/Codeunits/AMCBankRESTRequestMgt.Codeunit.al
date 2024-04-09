@@ -60,7 +60,6 @@ codeunit 20124 "AMC Bank REST Request Mgt."
     end;
 
     local procedure SetHttpClientDefaults();
-    var
     begin
         if (GLBHeadersHttpClient.Contains('Accept')) THEN
             GLBHeadersHttpClient.Remove('Accept');
@@ -69,7 +68,6 @@ codeunit 20124 "AMC Bank REST Request Mgt."
     end;
 
     procedure SetHttpContentsDefaults(Var HeaderHttpRequestMessage: HttpRequestMessage);
-    var
     begin
         HeaderHttpRequestMessage.Content().GetHeaders(GLBHeadersContentHttp);
 

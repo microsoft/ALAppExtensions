@@ -123,9 +123,9 @@ table 10682 "SAF-T Export Header"
         {
             DataClassification = CustomerContent;
             Caption = 'SAF-T File';
-            ObsoleteState = Pending;
+            ObsoleteState = Removed;
             ObsoleteReason = 'Replaced with the SAF-T Export File table';
-            ObsoleteTag = '17.0';
+            ObsoleteTag = '24.0';
         }
         field(30; "Latest Data Check Date/Time"; DateTime)
         {
@@ -177,6 +177,18 @@ table 10682 "SAF-T Export Header"
         {
             Caption = 'Export Currency Information';
             InitValue = true;
+        }
+        field(50; "Number of G/L Entries"; Integer)
+        {
+            Caption = 'Number of G/L Entries';
+        }
+        field(51; "Total G/L Entry Debit"; Decimal)
+        {
+            Caption = 'Total G/L Entry Debit';
+        }
+        field(52; "Total G/L Entry Credit"; Decimal)
+        {
+            Caption = 'Total G/L Entry Credit';
         }
     }
 

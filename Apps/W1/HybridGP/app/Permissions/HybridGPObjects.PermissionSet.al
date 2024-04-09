@@ -1,7 +1,5 @@
 namespace Microsoft.DataMigration.GP;
 
-using System.Integration;
-
 permissionset 4029 "HybridGP - Objects"
 {
     Assignable = false;
@@ -63,14 +61,8 @@ permissionset 4029 "HybridGP - Objects"
                     codeunit "GPForecastHandler" = X,
                     codeunit "GP PO Migrator" = X,
                     codeunit "GP Populate Hist. Tables" = X,
-#if not CLEAN21
-#pragma warning disable AL0432
-#endif
                     table "GPForecastTemp" = X,
                     codeunit "Install GP SmartLists" = X,
-#if not CLEAN21
-#pragma warning restore AL0432
-#endif
 #if not CLEAN22
 #pragma warning disable AL0432
                     table "GP POPPOHeader" = X,
@@ -154,8 +146,17 @@ permissionset 4029 "HybridGP - Objects"
                     query "GP Item Aggregate" = X,
                     codeunit "GP Migration Error Handler" = X,
                     page "GP Migration Error Overview" = X,
+#if not CLEAN24
                     page "Hybrid GP Errors Overview Fb" = X,
+#endif
                     table "GP Migration Error Overview" = X,
                     table "GP Upgrade Settings" = X,
-                    codeunit "Data Migration Error Logging" = X;
+                    codeunit "Start Data Upgrade" = X,
+                    table "GP PM10200" = X,
+                    table "GP PM30300" = X,
+                    table "GP RM20201" = X,
+                    table "GP RM30201" = X,
+                    table "GP Migration Warnings" = X,
+                    page "GP Migration Warnings" = X,
+                    page "GP Payment Terms" = X;
 }

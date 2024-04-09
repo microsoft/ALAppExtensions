@@ -212,4 +212,18 @@ codeunit 30162 "Shpfy Order Events"
     internal procedure OnBeforeConvertToOrderReturnStatus(Value: Text; var ShpfyOrderReturnStatus: Enum "Shpfy Order Return Status"; var IsHandled: Boolean)
     begin
     end;
+
+    [InternalEvent(false)]
+    internal procedure OnBeforeMapCompany(var ShopifyOrderHeader: Record "Shpfy Order Header"; var Handled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    /// <summary> 
+    /// Description for OnAfterMapCompany.
+    /// </summary>
+    /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
+    internal procedure OnAfterMapCompany(var ShopifyOrderHeader: Record "Shpfy Order Header")
+    begin
+    end;
 }

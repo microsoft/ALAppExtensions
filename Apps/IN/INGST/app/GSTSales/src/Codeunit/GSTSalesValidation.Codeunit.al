@@ -20,7 +20,9 @@ using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Posting;
+#if not CLEAN23
 using Microsoft.Sales.Pricing;
+#endif
 using Microsoft.Sales.Receivables;
 using Microsoft.Sales.Setup;
 using Microsoft.Utilities;
@@ -87,6 +89,9 @@ codeunit 18143 "GST Sales Validation"
             if ShiptoAddr.Get(ToSalesHeader."Bill-to Customer No.", ToSalesHeader."Ship-to Code") then
                 ToSalesHeader."GST-Ship to Customer Type" := ShiptoAddr."Ship-to GST Customer Type";
 
+        if ToSalesHeader."GST Customer Type" = ToSalesHeader."GST Customer Type"::Unregistered then
+            ToSalesHeader."GST-Ship to Customer Type" := ToSalesHeader."GST Customer Type";
+
         AssignInvoiceType(ToSalesHeader);
     end;
 
@@ -142,7 +147,7 @@ codeunit 18143 "GST Sales Validation"
         SalesLine."Total UPIT Amount" := SalesLine."Unit Price Incl. of Tax" * SalesLine.Quantity - SalesLine."Line Discount Amount";
     end;
 
-#if not CLEAN21
+#if not CLEAN23
     //AssignPrice Inclusice of Tax
 #pragma warning disable AS0072
     [Obsolete('Replaced by the new implementation (V16) of price calculation.', '19.0')]
@@ -1211,14 +1216,18 @@ codeunit 18143 "GST Sales Validation"
             SalesHeader."Customer GST Reg. No." := Customer."GST Registration No.";
 
         if SalesHeader."GST Customer Type" = "GST Customer Type"::Unregistered then
-            SalesHeader."Nature Of Supply" := SalesHeader."Nature Of Supply"::B2C;
+            SalesHeader."Nature Of Supply" := SalesHeader."Nature Of Supply"::B2C
+        else
+            SalesHeader."Nature of Supply" := SalesHeader."Nature of Supply"::B2B;
     end;
 
     local procedure BilltoNatureOfSupply(var SalesHeader: Record "Sales Header"; Customer: Record Customer)
     begin
         SalesHeader."GST Customer Type" := Customer."GST Customer Type";
         if SalesHeader."GST Customer Type" = "GST Customer Type"::Unregistered then
-            SalesHeader."Nature Of Supply" := SalesHeader."Nature Of Supply"::B2C;
+            SalesHeader."Nature Of Supply" := SalesHeader."Nature Of Supply"::B2C
+        else
+            SalesHeader."Nature of Supply" := SalesHeader."Nature of Supply"::B2B;
     end;
 
     local procedure ShipToAddrfields(var SalesHeader: Record "Sales Header"; ShipToAddress: Record "Ship-to Address")

@@ -1,13 +1,12 @@
 namespace Microsoft.Foundation.DataSearch;
 
 using System.Reflection;
-using Microsoft.Sales.Document;
-using Microsoft.Purchases.Document;
-using Microsoft.Service.Document;
-using Microsoft.Service.Contract;
 
 codeunit 2680 "Data Search in Table"
 {
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
     var
         SetViewLbl: Label 'SORTING(%1) ORDER(Descending)', Comment = 'Do not translate! It will break the feature. %1 is a field name', Locked = true;
 
@@ -125,19 +124,9 @@ codeunit 2680 "Data Search in Table"
             until DataSearchSetupField.Next() = 0;
     end;
 
-    local procedure SetTypeFilterOnRecRef(var RecRef: RecordRef; TableType: Integer; FieldNo: Integer)
-    var
-        FldRef: FieldRef;
-    begin
-        if not RecRef.FieldExist(FieldNo) then
-            exit;
-        FldRef := RecRef.Field(FieldNo);
-        FldRef.SetRange(TableType);
-    end;
-
     local procedure SetListedFieldFiltersOnRecRef(var RecRef: RecordRef; TableType: Integer; SearchString: Text; UseTextSearch: Boolean; var FieldList: List of [Integer])
     var
-        DataSearchEvents: Codeunit "Data Search Events";
+        DataSearchObjectMapping: Codeunit "Data Search Object Mapping";
         FldRef: FieldRef;
         FieldNo: Integer;
         LoadFieldsSet: Boolean;
@@ -145,21 +134,10 @@ codeunit 2680 "Data Search in Table"
         if RecRef.Number = 0 then
             exit;
 
-        case RecRef.Number of
-            Database::"Sales Header", Database::"Sales Line",
-            Database::"Purchase Header", Database::"Purchase Line",
-            Database::"Service Header", Database::"Service Line",
-            Database::"Service Contract Line":
-                FieldNo := 1;
-            Database::"Service Item Line":
-                FieldNo := 43;
-            Database::"Service Contract Header":
-                FieldNo := 2;
-        end;
-        if FieldNo = 0 then
-            DataSearchEvents.OnGetFieldNoForTableType(RecRef.Number, FieldNo);
+        FieldNo := DataSearchObjectMapping.GetTypeNoField(RecRef.Number);
+
         if FieldNo > 0 then
-            SetTypeFilterOnRecRef(RecRef, TableType, FieldNo);
+            DataSearchObjectMapping.SetTypeFilterOnRecRef(RecRef, TableType, FieldNo);
 
         RecRef.FilterGroup(-1); // 'OR' group
         foreach FieldNo in FieldList do
@@ -197,7 +175,13 @@ codeunit 2680 "Data Search in Table"
         SearchString: Text;
         SearchString1: Text;
         FieldMatchString: Text;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        DataSearchEvents.OnBeforeSearchTableProcedure(TableNo, TableType, FieldList, SearchStrings, Results, IsHandled);
+        if IsHandled then
+            exit;
+
         SearchStrings.Get(1, SearchString1);
         UseTextSearch := IsTextSearch(SearchString1);
 

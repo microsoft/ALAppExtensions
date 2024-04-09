@@ -68,7 +68,7 @@ codeunit 18903 "TCS On Receipt Of Pmt. Handler"
         TaxTransactionValue: Record "Tax Transaction Value";
         TCSPostingSetup: Record "TCS Posting Setup";
         Customer: Record Customer;
-        NoSeriesMgt: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         TCSManagement: Codeunit "TCS Management";
         TCSAmount, TCSAmountLCY : Decimal;
         TCSAccount: Code[20];
@@ -83,7 +83,7 @@ codeunit 18903 "TCS On Receipt Of Pmt. Handler"
 
         GLSetup.Get();
         GLSetup.TestField("TCS Debit Note No.");
-        TCSDebitNoteNo := NoSeriesMgt.GetNextNo(GLSetup."TCS Debit Note No.", GenJnlLine."Posting Date", true);
+        TCSDebitNoteNo := NoSeries.GetNextNo(GLSetup."TCS Debit Note No.", GenJnlLine."Posting Date");
 
         TCSPostingSetup.SetRange("TCS Nature of Collection", GenJnlLine."TCS Nature of Collection");
         TCSPostingSetup.SetFilter("Effective Date", '<=%1', GenJnlLine."Posting Date");

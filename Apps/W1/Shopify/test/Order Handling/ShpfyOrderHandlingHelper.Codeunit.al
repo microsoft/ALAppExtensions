@@ -4,7 +4,7 @@ codeunit 139607 "Shpfy Order Handling Helper"
         Any: Codeunit Any;
         JsonHelper: codeunit "Shpfy Json Helper";
 
-    internal procedure GetOrdersToImport() JResult: JsonObject
+    internal procedure GetOrdersToImport(B2B: Boolean) JResult: JsonObject
     var
         OrdersToImport: Integer;
         Index: Integer;
@@ -21,7 +21,7 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JPageInfo.Add('hasNextPage', false);
         JOrders.Add('pageInf', JPageInfo);
         for Index := 1 to OrdersToImport do
-            JEdges.Add(OrderToImport());
+            JEdges.Add(OrderToImport(B2B));
         JOrders.Add('edges', JEdges);
         JData.Add('orders', JOrders);
         JResult.Add('data', JData);
@@ -35,12 +35,14 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JResult.Add('extensions', JExtensions);
     end;
 
-    local procedure OrderToImport() JResult: JsonObject
+    local procedure OrderToImport(B2B: Boolean) JResult: JsonObject
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
         JNode: JsonObject;
         JTotalPriceSet: JsonObject;
         JShopMoney: JsonObject;
+        JPurchasingEntity: JsonObject;
+        JCompany: JsonObject;
         JCustomAttributes: JsonArray;
         JTags: JsonArray;
     begin
@@ -63,6 +65,12 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JNode.Add('totalPriceSet', JTotalPriceSet);
         JNode.Add('customAttributtes', JCustomAttributes);
         JNode.Add('tags', JTags);
+        if B2B then begin
+            JCompany.Add('id', 'gid://shopify/Company/1234567890');
+            JPurchasingEntity.Add('company', JCompany);
+            JNode.Add('purchasingEntity', JPurchasingEntity);
+        end else
+            JNode.Add('purchasingEntity', JPurchasingEntity);
         JResult.Add('node', JNode);
     end;
 
@@ -75,14 +83,19 @@ codeunit 139607 "Shpfy Order Handling Helper"
     end;
 
 
-    internal procedure CreateShopifyOrderAsJson(Shop: Record "Shpfy Shop"; var OrdersToImport: Record "Shpfy Orders to Import"; var JShopifyLineItems: JsonArray) JOrder: JsonObject
+    internal procedure CreateShopifyOrderAsJson(Shop: Record "Shpfy Shop"; var OrdersToImport: Record "Shpfy Orders to Import"; var JShopifyLineItems: JsonArray; B2B: Boolean) JOrder: JsonObject
     var
         Customer: Record Customer;
+        ShopifyCustomer: Record "Shpfy Customer";
         OrdersAPI: Codeunit "Shpfy Orders API";
         BrowserIp: Text;
         Cursor: Text;
         JNull: JsonValue;
         JStore: JsonObject;
+        JPurchasingEntity: JsonObject;
+        JCompany: JsonObject;
+        JMainContact: JsonObject;
+        JCustomer: JsonObject;
         JArray: JsonArray;
         Price: Decimal;
         ItemPrice: Decimal;
@@ -96,7 +109,7 @@ codeunit 139607 "Shpfy Order Handling Helper"
         Clear(OrdersToImport);
         if not OrdersToImport.IsEmpty then
             OrdersToImport.DeleteAll();
-        OrdersAPI.ExtractShopifyOrdersToImport(Shop, GetOrdersToImport(), Cursor);
+        OrdersAPI.ExtractShopifyOrdersToImport(Shop, GetOrdersToImport(B2B), Cursor);
         OrdersToImport.FindFirst();
         OrdersToImport.SetRecFilter();
         JNull.SetValueToNull();
@@ -123,7 +136,7 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JOrder.Add('test', true);
         JOrder.Add('email', Customer."E-Mail");
         JOrder.Add('phone', Customer."Phone No.");
-        JOrder.Add('customer', CreateCustomer(Customer));
+        JOrder.Add('customer', CreateCustomer(Customer, ShopifyCustomer));
         JOrder.Add('displayAddress', CreateAddress(Customer, AddressId, false, false));
         JOrder.Add('shippingAddress', CreateAddress(Customer, AddressId, true, true));
         JOrder.Add('billingAddressMatchesShippingAddress', true);
@@ -171,6 +184,18 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JOrder.Add('totalShippingPriceSet', AddPriceSet(ItemPrice));
         JOrder.Add('totalTaxSet', CreateTaxLines(TaxPrice, TaxRate));
         JOrder.Add('totalTipReceivedSet', AddPriceSet(0));
+        if B2B then begin
+            JCustomer.Add('legacyResourceId', ShopifyCustomer.Id);
+            JCustomer.Add('email', ShopifyCustomer.Email);
+            JCustomer.Add('phone', ShopifyCustomer."Phone No.");
+            JMainContact.Add('id', 'gid://shopify/CompanyContact/1234567890');
+            JMainContact.Add('customer', JCustomer);
+            JCompany.Add('id', CreateCompany(Customer, ShopifyCustomer));
+            JCompany.Add('mainContact', JMainContact);
+            JPurchasingEntity.Add('company', JCompany);
+            JOrder.Add('purchasingEntity', JPurchasingEntity);
+        end else
+            JOrder.Add('purchasingEntity', JPurchasingEntity);
 
         JShopifyLineItems := CreateLineItem(Shop, Price, TaxPrice, TaxRate, DiscountPrice);
     end;
@@ -180,6 +205,7 @@ codeunit 139607 "Shpfy Order Handling Helper"
         Item: Record Item;
         Location: Record Location;
         ShopLocation: Record "Shpfy Shop Location";
+        ShopifyVariant: Record "Shpfy Variant";
         TempShopifyProduct: Record "Shpfy Product" temporary;
         TempShopifyVariant: Record "Shpfy Variant" temporary;
         TempTag: Record "Shpfy Tag" temporary;
@@ -198,6 +224,9 @@ codeunit 139607 "Shpfy Order Handling Helper"
         Item := ProductInitTest.CreateItem();
         Item.SetRecFilter();
         CreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant, TempTag);
+        ShopifyVariant := TempShopifyVariant;
+        ShopifyVariant.Id := ProductInitTest.GetShopifyVariantId();
+        ShopifyVariant.Insert();
 
         ShopLocation.Init();
         ShopLocation."Shop Code" := Shop.Code;
@@ -211,7 +240,7 @@ codeunit 139607 "Shpfy Order Handling Helper"
         Id := Any.IntegerInRange(10000, 99999);
         JProduct.Add('legacyResourceId', TempShopifyProduct.Id);
         JProduct.Add('isGiftCard', false);
-        JVariant.Add('legacyResourceId', TempShopifyVariant.Id);
+        JVariant.Add('legacyResourceId', ShopifyVariant.Id);
         JLocation.Add('legacyResourceId', ShopLocation.Id);
         JLocation.Add('name', ShopLocation.Name);
         JFulfillmentService.Add('location', JLocation);
@@ -278,7 +307,7 @@ codeunit 139607 "Shpfy Order Handling Helper"
 
     local procedure GetCustomer(): Record Customer
     var
-        InitializeTest: codeunit "Shpfy Initialize Test";
+        InitializeTest: Codeunit "Shpfy Initialize Test";
     begin
         exit(InitializeTest.GetDummyCustomer());
     end;
@@ -352,10 +381,9 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JAddress.Add('phone', Customer."Phone No.");
     end;
 
-    local procedure CreateCustomer(Customer: Record Customer) JCustomer: JsonObject
+    local procedure CreateCustomer(Customer: Record Customer; var ShopifyCustomer: Record "Shpfy Customer") JCustomer: JsonObject
     var
-        ShopifyCustomer: Record "Shpfy Customer";
-        CustomerInitTest: codeunit "Shpfy Customer Init Test";
+        CustomerInitTest: Codeunit "Shpfy Customer Init Test";
         JNull: JsonValue;
     begin
         CustomerInitTest.CreateShopifyCustomer(ShopifyCustomer);
@@ -366,5 +394,17 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JCustomer.Add('email', Customer."E-Mail");
         JCustomer.Add('phone', Customer."Phone No.");
         JCustomer.Add('defaultAddress', CreateCustomerAddress(Customer));
+    end;
+
+    local procedure CreateCompany(Customer: Record Customer; ShopifyCustomer: Record "Shpfy Customer"): BigInteger
+    var
+        ShopifyCompany: Record "Shpfy Company";
+        CompanyInitialize: Codeunit "Shpfy Company Initialize";
+    begin
+        CompanyInitialize.CreateShopifyCompany(ShopifyCompany);
+        ShopifyCompany."Customer SystemId" := Customer.SystemId;
+        ShopifyCompany."Main Contact Customer Id" := ShopifyCustomer.Id;
+        ShopifyCompany.Modify();
+        exit(ShopifyCompany.Id);
     end;
 }

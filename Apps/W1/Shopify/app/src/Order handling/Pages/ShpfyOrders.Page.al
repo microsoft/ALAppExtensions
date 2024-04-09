@@ -1,3 +1,8 @@
+namespace Microsoft.Integration.Shopify;
+
+using Microsoft.Sales.Document;
+using Microsoft.Sales.Customer;
+
 /// <summary>
 /// Page Shpfy Orders (ID 30115).
 /// </summary>
@@ -117,7 +122,7 @@ page 30115 "Shpfy Orders"
                 field(FulfillmentStatus; Rec."Fulfillment Status")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies the order''s status in terms of fulfilled line items. Valid values are: fulfilled, in progress, open, pending fulfillment, restocked, unfulfilled, partially fulfilled.';
+                    ToolTip = 'Specifies the order''s status in terms of fulfilled line items. Valid values are: fulfilled, in progress, open, pending fulfillment, restocked, unfulfilled, partially fulfilled, on hold.';
                 }
                 field(ReturnStatus; Rec."Return Status")
                 {
@@ -204,7 +209,7 @@ page 30115 "Shpfy Orders"
     {
         area(processing)
         {
-            Action(DeleteSelected)
+            action(DeleteSelected)
             {
                 ApplicationArea = All;
                 Caption = 'Delete Selected Rows';
@@ -223,7 +228,7 @@ page 30115 "Shpfy Orders"
                     OrderHeader.DeleteAll(true);
                 end;
             }
-            Action(SyncOrdersFromShopify)
+            action(SyncOrdersFromShopify)
             {
                 ApplicationArea = All;
                 Caption = 'Sync Orders From Shopify';
@@ -246,7 +251,7 @@ page 30115 "Shpfy Orders"
                     BackgroundSyncs.OrderSync(Shop);
                 end;
             }
-            Action(CreateSalesDocuments)
+            action(CreateSalesDocuments)
             {
                 ApplicationArea = All;
                 Caption = 'Create Sales Documents';
@@ -303,7 +308,7 @@ page 30115 "Shpfy Orders"
                     RunPageMode = View;
                     ToolTip = 'View the level and message that indicates the results of the fraud check.';
                 }
-                Action(SalesOrder)
+                action(SalesOrder)
                 {
                     ApplicationArea = All;
                     Caption = 'Sales Order';
@@ -325,7 +330,7 @@ page 30115 "Shpfy Orders"
                         SalesOrder.Run();
                     end;
                 }
-                Action(SalesInvoice)
+                action(SalesInvoice)
                 {
                     ApplicationArea = All;
                     Caption = 'Sales Invoice';
@@ -347,7 +352,7 @@ page 30115 "Shpfy Orders"
                         SalesOrder.Run();
                     end;
                 }
-                Action(ShopifyStatusPage)
+                action(ShopifyStatusPage)
                 {
                     ApplicationArea = All;
                     Caption = 'Shopify Status Page';

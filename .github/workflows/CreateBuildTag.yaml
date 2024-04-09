@@ -3,46 +3,42 @@ name: 'Create Build Tag'
 on:
   workflow_run:
     workflows: [' CI/CD']
-    types: ['completed']
-    branches: ['main', 'release/*']
+    types: [completed]
+    branches: ['main']
 
-run-name: Create build tag on branch ${{ github.ref_name }}.
+run-name: "[${{ github.ref_name }}] Create build tag"
+
+permissions:
+  contents: write
 
 jobs:
-  TagSuccessfulBuild:
-    if: github.event.workflow_run.conclusion == 'success' && github.repository_owner == 'microsoft'
+  CreateTag:
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: windows-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get Build Version
+        id: GetBuildVersion
+        env:
+          buildNumber: ${{ github.event.workflow_run.run_number }}
+        run: |
+          Import-Module ".\build\scripts\EnlistmentHelperFunctions.psm1"
+          $majorMinor = Get-ConfigValue -ConfigType "AL-GO" -Key RepoVersion
+          $buildVersion = "$($majorMinor).$($env:buildNumber)"
+          Write-Host "Build Version: $buildVersion"
+          Add-Content -Encoding UTF8 -Path $env:GITHUB_OUTPUT -Value "BuildVersion=$buildVersion"
+
       - name: Create version tag
         uses: actions/github-script@v6
+        env:
+          BuildVersion: ${{ steps.GetBuildVersion.outputs.BuildVersion}}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            // Query all artifacts from the build workflow
-            const allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              run_id: context.payload.workflow_run.id,
-            });
-
-            if(!allArtifacts) {
-              console.log(`Could not fetch artifacts from run ID ${context.payload.workflow_run.id}`)
-              return;
-            }
-
-            // Determine the build number, based on the apps artifact name
-            const appsArtifact = allArtifacts.data.artifacts.filter((artifact) => {
-              return artifact.name.match(/.*-Apps-.*/)
-            })[0];
-
-            if(!appsArtifact) {
-              console.log(`Could not find apps artifact from run ID ${context.payload.workflow_run.id}`)
-              return;
-            }
-
-            // The build number is after -Apps-
-            const buildNumber = appsArtifact.name.replace(/.*-Apps-/, "")
-            const tag = `refs/tags/builds/${buildNumber}`
+            const {BuildVersion} = process.env
+            const tag = `refs/tags/builds/${BuildVersion}`
 
             console.log(`Creating tag: ${tag}`)
 

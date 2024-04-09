@@ -1347,6 +1347,17 @@ codeunit 7233 "Master Data Management"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Integration Synch. Job Errors", 'OnIsDataIntegrationEnabled', '', false, false)]
+    local procedure HandleOnIsDataIntegrationEnabled(var IsIntegrationEnabled: Boolean)
+    var
+        MasterDataManagementSetup: Record "Master Data Management Setup";
+    begin
+        if IsIntegrationEnabled then
+            exit;
+
+        if MasterDataManagementSetup.Get() then
+            IsIntegrationEnabled := MasterDataManagementSetup."Is Enabled";
+    end;
+
     local procedure IsDataIntegrationEnabled(var IsIntegrationEnabled: Boolean)
     var
         MasterDataManagementSetup: Record "Master Data Management Setup";
@@ -1728,7 +1739,9 @@ codeunit 7233 "Master Data Management"
     local procedure HandleOnIsRecordRefModifiedAfterRecordLastSynch(IntegrationTableConnectionType: TableConnectionType; var SourceRecordRef: RecordRef; LastModifiedOn: DateTime; var IsModified: Boolean; var IsHandled: Boolean)
     var
         MasterDataMgtCoupling: Record "Master Data Mgt. Coupling";
+        IntegrationTableMapping: Record "Integration Table Mapping";
         TypeHelper: Codeunit "Type Helper";
+        DateToCompareWith: DateTime;
     begin
         if IntegrationTableConnectionType <> IntegrationTableConnectionType::ExternalSQL then
             exit;
@@ -1736,11 +1749,31 @@ codeunit 7233 "Master Data Management"
         if not IsEnabled() then
             exit;
 
+        OnIsRecordRefModifiedAfterRecordLastSynch(SourceRecordRef, LastModifiedOn, IsModified, IsHandled);
+        if IsHandled then
+            exit;
+
         if MasterDataMgtCoupling.FindRowFromRecordRef(SourceRecordRef, MasterDataMgtCoupling) then begin
-            if (MasterDataMgtCoupling."Last Synch. Int. Result" = MasterDataMgtCoupling."Last Synch. Int. Result"::Failure) and (MasterDataMgtCoupling.Skipped = false) then
-                IsModified := true
-            else
-                IsModified := TypeHelper.CompareDateTime(LastModifiedOn, MasterDataMgtCoupling."Last Synch. Modified On") > 0;
+            if (MasterDataMgtCoupling."Last Synch. Int. Result" = MasterDataMgtCoupling."Last Synch. Int. Result"::Failure) and (MasterDataMgtCoupling.Skipped = false) then begin
+                IsModified := true;
+                IsHandled := true;
+                exit;
+            end;
+            DateToCompareWith := MasterDataMgtCoupling."Last Synch. Modified On";
+            IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
+            IntegrationTableMapping.SetRange("Delete After Synchronization", false);
+            IntegrationTableMapping.SetRange("Table ID", SourceRecordRef.Number());
+            IntegrationTableMapping.SetRange("Integration Table ID", SourceRecordRef.Number());
+            if IntegrationTableMapping.FindFirst() then begin
+                if IntegrationTableMapping."Synch. Modified On Filter" = 0DT then begin
+                    IsModified := true;
+                    IsHandled := true;
+                    exit;
+                end;
+                if IntegrationTableMapping."Synch. Modified On Filter" < DateToCompareWith then
+                    DateToCompareWith := IntegrationTableMapping."Synch. Modified On Filter" - 999;
+            end;
+            IsModified := TypeHelper.CompareDateTime(LastModifiedOn, DateToCompareWith) > 0;
             IsHandled := true;
         end;
     end;
@@ -2351,6 +2384,11 @@ codeunit 7233 "Master Data Management"
 
     [IntegrationEvent(false, false)]
     internal procedure OnLocalRecordChangeOverwrite(var SourceFieldRef: FieldRef; var DestinationFieldRef: FieldRef; var ThrowError: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnIsRecordRefModifiedAfterRecordLastSynch(var SourceRecordRef: RecordRef; LastModifiedOn: DateTime; var IsModified: Boolean; var IsHandled: Boolean)
     begin
     end;
 }

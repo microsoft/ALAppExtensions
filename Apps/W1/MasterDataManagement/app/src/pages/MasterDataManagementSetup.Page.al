@@ -56,7 +56,7 @@ page 7230 "Master Data Management Setup"
                 ApplicationArea = Suite;
                 Caption = 'Use Default Synchronization Setup';
                 Image = ResetStatus;
-                ToolTip = 'Resets the integration table mappings and synchronization jobs to the default values for a connection with the source company. All current mappings are deleted and recreated.', Comment = 'Business Central is the name of a Microsoft Service and should not be translated.';
+                ToolTip = 'Resets the synchronization tables, fields, and job queue entries to the default values for the connection with the source company. All current synchronization tables are deleted and recreated.';
 
                 trigger OnAction()
                 var

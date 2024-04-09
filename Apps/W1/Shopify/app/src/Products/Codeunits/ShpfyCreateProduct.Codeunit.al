@@ -70,6 +70,8 @@ codeunit 30174 "Shpfy Create Product"
         ICreateProductStatus := Shop."Status for Created Products";
         TempShopifyProduct.Status := ICreateProductStatus.GetStatus(Item);
         ItemVariant.SetRange("Item No.", Item."No.");
+        ItemVariant.SetRange(Blocked, false);
+        ItemVariant.SetRange("Sales Blocked", false);
         if ItemVariant.FindSet(false) then
             repeat
                 TempShopifyProduct."Has Variants" := true;
@@ -283,5 +285,16 @@ codeunit 30174 "Shpfy Create Product"
     internal procedure GetProductId(): BigInteger
     begin
         exit(ProductId);
+    end;
+
+    internal procedure ChangeDefaultProductLocation(ErrorInfo: ErrorInfo)
+    var
+        ShpfyShop: Record "Shpfy Shop";
+        ShopLocation: Record "Shpfy Shop Location";
+    begin
+        if ShpfyShop.Get(ErrorInfo.RecordId) then begin
+            ShopLocation.SetRange("Shop Code", ShpfyShop.Code);
+            Page.Run(Page::"Shpfy Shop Locations Mapping", ShopLocation);
+        end;
     end;
 }

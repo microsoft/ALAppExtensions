@@ -91,6 +91,7 @@ codeunit 30191 "Shpfy Shipping Charges"
             RecordRef.GetTable(OrderShippingCharges);
             JsonHelper.GetValueIntoField(JToken, 'title', RecordRef, OrderShippingCharges.FieldNo(Title));
             JsonHelper.GetValueIntoField(JToken, 'code', RecordRef, OrderShippingCharges.FieldNo(Code));
+            JsonHelper.GetValueIntoField(JToken, 'code', RecordRef, OrderShippingCharges.FieldNo("Code Value"));
             JsonHelper.GetValueIntoField(JToken, 'source', RecordRef, OrderShippingCharges.FieldNo(Source));
             JsonHelper.GetValueIntoField(JToken, 'originalPriceSet.shopMoney.amount', RecordRef, OrderShippingCharges.FieldNo(Amount));
             JsonHelper.GetValueIntoField(JToken, 'originalPriceSet.presentmentMoney.amount', RecordRef, OrderShippingCharges.FieldNo("Presentment Amount"));

@@ -49,6 +49,12 @@ table 30143 "Shpfy FulFillment Order Header"
             CalcFormula = lookup("Shpfy Order Header"."Shopify Order No." where("Shopify Order Id" = field("Shopify Order Id")));
             Editable = false;
         }
+        field(9; "Delivery Method Type"; Enum "Shpfy Delivery Method Type")
+        {
+            Caption = 'Delivery Method Type';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
     }
     keys
     {

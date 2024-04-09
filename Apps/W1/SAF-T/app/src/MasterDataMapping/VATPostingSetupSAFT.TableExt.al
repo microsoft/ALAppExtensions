@@ -44,7 +44,7 @@ tableextension 5285 "VAT Posting Setup SAF-T" extends "VAT Posting Setup"
 
         Validate("Sales Tax Code SAF-T", Format(SalesTaxCodeSAFT));
         Validate("Purchase Tax Code SAF-T", Format(PurchaseTaxCodeSAFT));
-        Modify(true);
+        Modify();
 
         AuditFileExportSetup."Last Tax Code" := PurchaseTaxCodeSAFT;
         AuditFileExportSetup.Modify(true);

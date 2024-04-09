@@ -2118,7 +2118,7 @@ codeunit 18916 "TCS On Sales"
             true);
         TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Charge (Item)", false);
         SalesLine.Validate("TCS Nature of Collection", TCSNatureOfCollection2.Code);
-        SalesLine.validate("Unit Price");
+        SalesLine.Validate("Unit Price");
         SalesLine.Modify(true);
 
         SalesLine.SetRange("Document Type", SalesHeader."Document Type");
@@ -2733,7 +2733,7 @@ codeunit 18916 "TCS On Sales"
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         if SalesLine.FindFirst() then begin
             SalesLine.Validate("TCS Nature of Collection", '');
-            SalesLine.validate("Unit Price");
+            SalesLine.Validate("Unit Price");
             SalesLine.Modify(true);
         end;
         TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Fixed Asset", false);
@@ -2771,7 +2771,7 @@ codeunit 18916 "TCS On Sales"
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         if SalesLine.FindFirst() then begin
             SalesLine.Validate("TCS Nature of Collection", '');
-            SalesLine.validate("Unit Price");
+            SalesLine.Validate("Unit Price");
             SalesLine.Modify(true);
         end;
         TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::"Fixed Asset", false);
@@ -2809,7 +2809,7 @@ codeunit 18916 "TCS On Sales"
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         if SalesLine.FindFirst() then begin
             SalesLine.Validate("TCS Nature of Collection", '');
-            SalesLine.validate("Unit Price");
+            SalesLine.Validate("Unit Price");
             SalesLine.Modify(true);
         end;
         TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::Resource, false);
@@ -2848,7 +2848,7 @@ codeunit 18916 "TCS On Sales"
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         if SalesLine.FindFirst() then begin
             SalesLine.Validate("TCS Nature of Collection", '');
-            SalesLine.validate("Unit Price");
+            SalesLine.Validate("Unit Price");
             SalesLine.Modify(true);
         end;
         TCSSalesLibrary.CreateSalesLine(SalesHeader, SalesLine, SalesLine.Type::Resource, false);
@@ -3071,7 +3071,7 @@ codeunit 18916 "TCS On Sales"
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         if SalesLine.FindFirst() then begin
             SalesLine.Validate("TCS Nature of Collection", TCSNatureOfCollection2.Code);
-            SalesLine.validate("Unit Price");
+            SalesLine.Validate("Unit Price");
             SalesLine.Modify(true);
         end;
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
@@ -3114,7 +3114,7 @@ codeunit 18916 "TCS On Sales"
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         if SalesLine.FindFirst() then begin
             SalesLine.Validate("TCS Nature of Collection", TCSNatureOfCollection2.Code);
-            SalesLine.validate("Unit Price");
+            SalesLine.Validate("Unit Price");
             SalesLine.Modify(true);
         end;
         DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
@@ -4583,7 +4583,6 @@ codeunit 18916 "TCS On Sales"
     end;
 
     local procedure GenerateTaxComponentsPercentage()
-    var
     begin
         Storage.Set(TCSPercentageLbl, Format(LibraryRandom.RandIntInRange(2, 4)));
         Storage.Set(NonPANTCSPercentageLbl, Format(LibraryRandom.RandIntInRange(6, 10)));
@@ -4738,7 +4737,6 @@ codeunit 18916 "TCS On Sales"
 
     [PageHandler]
     procedure CustomerInvoiceDiscountPageHandler(var CustInvDisc: TestPage "Cust. Invoice Discounts");
-    var
     begin
         CustInvDisc."Discount %".SetValue(LibraryRandom.RandIntInRange(1, 4));
         CustInvDisc.OK().Invoke();

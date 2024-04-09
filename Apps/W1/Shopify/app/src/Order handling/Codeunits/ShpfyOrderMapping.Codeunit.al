@@ -29,22 +29,34 @@ codeunit 30163 "Shpfy Order Mapping"
     begin
         Shop.Get(OrderHeader."Shop Code");
 
-        if CustomerTemplate.Get(OrderHeader."Shop Code", OrderHeader."Ship-to Country/Region Code") then begin
-            if CustomerTemplate."Default Customer No." <> '' then begin
-                OrderHeader."Bill-to Customer No." := CustomerTemplate."Default Customer No.";
-                OrderHeader."Sell-to Customer No." := CustomerTemplate."Default Customer No.";
-                OrderHeader.Modify();
-            end;
+        if not OrderHeader.B2B then begin
+            if CustomerTemplate.Get(OrderHeader."Shop Code", OrderHeader."Ship-to Country/Region Code") then begin
+                if CustomerTemplate."Default Customer No." <> '' then begin
+                    OrderHeader."Bill-to Customer No." := CustomerTemplate."Default Customer No.";
+                    OrderHeader."Sell-to Customer No." := CustomerTemplate."Default Customer No.";
+                    OrderHeader.Modify();
+                end;
+            end else
+                if Shop."Customer Import From Shopify" = Shop."Customer Import From Shopify"::None then begin
+                    if OrderHeader."Bill-to Customer No." = '' then
+                        OrderHeader."Bill-to Customer No." := Shop."Default Customer No.";
+                    if OrderHeader."Sell-to Customer No." = '' then
+                        OrderHeader."Sell-to Customer No." := Shop."Default Customer No.";
+                    OrderHeader.Modify();
+                end
         end else
-            if Shop."Customer Import From Shopify" = Shop."Customer Import From Shopify"::None then begin
+            if Shop."Company Import From Shopify" = Shop."Company Import From Shopify"::None then begin
                 if OrderHeader."Bill-to Customer No." = '' then
-                    OrderHeader."Bill-to Customer No." := Shop."Default Customer No.";
+                    OrderHeader."Bill-to Customer No." := Shop."Default Company No.";
                 if OrderHeader."Sell-to Customer No." = '' then
-                    OrderHeader."Sell-to Customer No." := Shop."Default Customer No.";
+                    OrderHeader."Sell-to Customer No." := Shop."Default Company No.";
                 OrderHeader.Modify();
             end;
 
-        Result := MapHeaderFields(OrderHeader, Shop, Shop."Auto Create Unknown Customers" and (Shop."Customer Import From Shopify" <> "Shpfy Customer Import Range"::None));
+        if not OrderHeader.B2B then
+            Result := MapHeaderFields(OrderHeader, Shop, Shop."Auto Create Unknown Customers" and (Shop."Customer Import From Shopify" <> "Shpfy Customer Import Range"::None))
+        else
+            Result := MapB2BHeaderFields(OrderHeader, Shop, Shop."Auto Create Unknown Companies" and (Shop."Company Import From Shopify" <> "Shpfy Company Import Range"::None));
 
         OrderLine.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
         if OrderLine.FindSet(true) then
@@ -68,16 +80,12 @@ codeunit 30163 "Shpfy Order Mapping"
     /// <returns>Return variable "Boolean".</returns>
     internal procedure MapHeaderFields(var OrderHeader: Record "Shpfy Order Header"; Shop: Record "Shpfy Shop"; AllowCreateCustomer: Boolean): Boolean
     var
-        OrderShippingCharges: Record "Shpfy Order Shipping Charges";
-        OrderTransaction: Record "Shpfy Order Transaction";
-        ShipmentMethodMapping: Record "Shpfy Shipment Method Mapping";
         CustomerMapping: Codeunit "Shpfy Customer Mapping";
 #if not CLEAN22
         ShpfyTemplates: Codeunit "Shpfy Templates";
 #endif
         CustomerTemplateCode: Code[20];
         IsHandled: Boolean;
-        Priority: Integer;
         JCustomer: JsonObject;
     begin
 #if not CLEAN22
@@ -128,41 +136,54 @@ codeunit 30163 "Shpfy Order Mapping"
             end;
         end;
 
-        if OrderHeader."Shipping Method Code" = '' then begin
-            Clear(IsHandled);
-            OrderEvents.OnBeforeMapShipmentMethod(OrderHeader, IsHandled);
+        MapShippingMethodCode(OrderHeader);
+        MapPaymentMethodCode(OrderHeader);
+        OrderHeader.Modify();
+        exit((OrderHeader."Bill-to Customer No." <> '') and (OrderHeader."Sell-to Customer No." <> ''));
+    end;
+
+    internal procedure MapB2BHeaderFields(var OrderHeader: Record "Shpfy Order Header"; Shop: Record "Shpfy Shop"; AllowCreateCompany: Boolean): Boolean
+    var
+        CompanyMapping: Codeunit "Shpfy Company Mapping";
+#if not CLEAN22
+        ShpfyTemplates: Codeunit "Shpfy Templates";
+#endif
+        CustomerTemplateCode: Code[20];
+        IsHandled: Boolean;
+    begin
+#if not CLEAN22
+        if not ShpfyTemplates.NewTemplatesEnabled() then
+            CustomerTemplateCode := OrderHeader."Customer Template Code"
+        else
+            CustomerTemplateCode := OrderHeader."Customer Templ. Code";
+#else
+        CustomerTemplateCode := OrderHeader."Customer Templ. Code";
+#endif
+
+        CompanyMapping.SetShop(OrderHeader."Shop Code");
+        if OrderHeader."Bill-to Customer No." = '' then begin
+            OrderEvents.OnBeforeMapCompany(OrderHeader, IsHandled);
             if not IsHandled then begin
-                OrderShippingCharges.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
-                if OrderShippingCharges.FindFirst() then
-                    if ShipmentMethodMapping.Get(OrderHeader."Shop Code", OrderShippingCharges.Title) then
-                        OrderHeader."Shipping Method Code" := ShipmentMethodMapping."Shipment Method Code";
-                OrderEvents.OnAfterMapShipmentMethod(OrderHeader);
+                OrderHeader."Sell-to Customer No." := CompanyMapping.DoMapping(OrderHeader."Company Id", CustomerTemplateCode, AllowCreateCompany);
+                OrderHeader."Bill-to Customer No." := OrderHeader."Sell-to Customer No.";
+
+                if (OrderHeader."Bill-to Customer No." = '') and (not Shop."Auto Create Unknown Customers") and (Shop."Default Company No." <> '') then
+                    OrderHeader."Bill-to Customer No." := Shop."Default Company No.";
+                if OrderHeader."Sell-to Customer No." = '' then
+                    OrderHeader."Sell-to Customer No." := OrderHeader."Bill-to Customer No.";
+
+                if OrderHeader."Bill-to Customer No." <> Shop."Default Company No." then
+                    OrderHeader."Bill-to Contact No." := FindContactNo(OrderHeader."Bill-to Contact Name", OrderHeader."Bill-to Customer No.");
+                if OrderHeader."Sell-to Customer No." <> Shop."Default Company No." then
+                    OrderHeader."Sell-to Contact No." := FindContactNo(OrderHeader."Sell-to Contact Name", OrderHeader."Sell-to Customer No.");
+
+                OrderHeader."Ship-to Contact No." := FindContactNo(OrderHeader."Ship-to Contact Name", OrderHeader."Sell-to Customer No.");
+                OrderEvents.OnAfterMapCompany(OrderHeader);
             end;
         end;
 
-        if OrderHeader."Payment Method Code" = '' then begin
-            Clear(IsHandled);
-            OrderEvents.OnBeforeMapPaymentMethod(OrderHeader, IsHandled);
-            if not IsHandled then begin
-                OrderTransaction.SetAutoCalcFields("Payment Priority", "Payment Method");
-                OrderTransaction.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
-                OrderTransaction.SetCurrentKey("Shopify Order Id", Amount);
-                OrderTransaction.SetRange(Status, "Shpfy Transaction Status"::Success);
-                OrderTransaction.SetAscending(Amount, false);
-                if OrderTransaction.FindSet(false) then begin
-                    OrderHeader."Payment Method Code" := OrderTransaction."Payment Method";
-                    Priority := OrderTransaction."Payment Priority";
-                    repeat
-                        if Priority < OrderTransaction."Payment Priority" then begin
-                            OrderHeader."Payment Method Code" := OrderTransaction."Payment Method";
-                            Priority := OrderTransaction."Payment Priority";
-                        end;
-                    until OrderTransaction.Next() = 0;
-                end;
-                OrderEvents.OnAfterMapPaymentMethod(OrderHeader);
-            end;
-        end;
-
+        MapShippingMethodCode(OrderHeader);
+        MapPaymentMethodCode(OrderHeader);
         OrderHeader.Modify();
         exit((OrderHeader."Bill-to Customer No." <> '') and (OrderHeader."Sell-to Customer No." <> ''));
     end;
@@ -225,6 +246,53 @@ codeunit 30163 "Shpfy Order Mapping"
             Contact.SetFilter(Name, '''@' + ContactName.Replace('''', '''''') + '''');
             if Contact.FindFirst() then
                 exit(Contact."No.");
+        end;
+    end;
+
+    local procedure MapShippingMethodCode(var OrderHeader: Record "Shpfy Order Header")
+    var
+        OrderShippingCharges: Record "Shpfy Order Shipping Charges";
+        ShipmentMethodMapping: Record "Shpfy Shipment Method Mapping";
+        IsHandled: Boolean;
+    begin
+        if OrderHeader."Shipping Method Code" = '' then begin
+            OrderEvents.OnBeforeMapShipmentMethod(OrderHeader, IsHandled);
+            if not IsHandled then begin
+                OrderShippingCharges.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
+                if OrderShippingCharges.FindFirst() then
+                    if ShipmentMethodMapping.Get(OrderHeader."Shop Code", OrderShippingCharges.Title) then
+                        OrderHeader."Shipping Method Code" := ShipmentMethodMapping."Shipment Method Code";
+                OrderEvents.OnAfterMapShipmentMethod(OrderHeader);
+            end;
+        end;
+    end;
+
+    local procedure MapPaymentMethodCode(var OrderHeader: Record "Shpfy Order Header")
+    var
+        OrderTransaction: Record "Shpfy Order Transaction";
+        IsHandled: Boolean;
+        Priority: Integer;
+    begin
+        if OrderHeader."Payment Method Code" = '' then begin
+            OrderEvents.OnBeforeMapPaymentMethod(OrderHeader, IsHandled);
+            if not IsHandled then begin
+                OrderTransaction.SetAutoCalcFields("Payment Priority", "Payment Method");
+                OrderTransaction.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
+                OrderTransaction.SetCurrentKey("Shopify Order Id", Amount);
+                OrderTransaction.SetRange(Status, "Shpfy Transaction Status"::Success);
+                OrderTransaction.SetAscending(Amount, false);
+                if OrderTransaction.FindSet(false) then begin
+                    OrderHeader."Payment Method Code" := OrderTransaction."Payment Method";
+                    Priority := OrderTransaction."Payment Priority";
+                    repeat
+                        if Priority < OrderTransaction."Payment Priority" then begin
+                            OrderHeader."Payment Method Code" := OrderTransaction."Payment Method";
+                            Priority := OrderTransaction."Payment Priority";
+                        end;
+                    until OrderTransaction.Next() = 0;
+                end;
+                OrderEvents.OnAfterMapPaymentMethod(OrderHeader);
+            end;
         end;
     end;
 }

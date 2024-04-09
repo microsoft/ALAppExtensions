@@ -36,8 +36,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         DummyMTDReturnDetails: Record "MTD Return Details";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() in case of HTTP error response and disabled message output
-        // <parse key="Packet303" compare="MockServicePacket303" response="MakingTaxDigital\400_blanked.txt"/>
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket303');
+        // <parse key="Packet303" compare="333333303" response="MakingTaxDigital\400_blanked.txt"/>
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333303');
 
         GetVATReturn(DummyMTDReturnDetails, false, false, 0, 0, 0);
 
@@ -55,8 +55,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         HttpError: Text;
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() in case of HTTP error response with details
-        // <parse key="Packet310" compare="MockServicePacket310" response="MakingTaxDigital\400_vrn_invalid.txt"/>
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket310');
+        // <parse key="Packet310" compare="333333310" response="MakingTaxDigital\400_vrn_invalid.txt"/>
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333310');
         HttpError := 'The provided VRN is invalid.';
 
         asserterror GetVATReturn(DummyMTDReturnDetails, true, true, 0, 0, 0);
@@ -75,8 +75,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         DummyMTDReturnDetails: Record "MTD Return Details";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() in case of blanked http json response
-        // <parse key="Packet301" compare="MockServicePacket301" response="MakingTaxDigital\200_blanked.txt"/>
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket301');
+        // <parse key="Packet301" compare="333333301" response="MakingTaxDigital\200_blanked.txt"/>
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333301');
 
         asserterror GetVATReturn(DummyMTDReturnDetails, true, true, 0, 0, 0);
 
@@ -91,8 +91,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         DummyMTDReturnDetails: Record "MTD Return Details";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() in case of wrong http json response
-        // <parse key="Packet302" compare="MockServicePacket302" response="MakingTaxDigital\200_dummyjson.txt"/>
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket302');
+        // <parse key="Packet302" compare="333333302" response="MakingTaxDigital\200_dummyjson.txt"/>
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333302');
 
         asserterror GetVATReturn(DummyMTDReturnDetails, true, true, 0, 0, 0);
 
@@ -107,8 +107,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         DummyMTDReturnDetails: Record "MTD Return Details";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() in case of a new return and disabled message output
-        // <parse key="Packet338" compare="MockServicePacket338" response="MakingTaxDigital\200_vatreturn.txt"/>
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket338');
+        // <parse key="Packet338" compare="333333338" response="MakingTaxDigital\200_vatreturn.txt"/>
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333338');
 
         GetVATReturn(DummyMTDReturnDetails, false, true, 1, 1, 0);
 
@@ -126,8 +126,8 @@ codeunit 148085 "MTDTestReturnsWebService"
     begin
         // [FEATURE] [UI]
         // [SCENARIO 258181] PAG 738 "VAT Return Period Card" action "Receive Submitted VAT Returns" in case of a new return
-        // <parse key="Packet338" compare="MockServicePacket338" response="MakingTaxDigital\200_vatreturn.txt"/>
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket338');
+        // <parse key="Packet338" compare="333333338" response="MakingTaxDigital\200_vatreturn.txt"/>
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333338');
 
         GetVATReturnAndShowResultViaPage(DummyMTDReturnDetails);
 
@@ -145,10 +145,10 @@ codeunit 148085 "MTDTestReturnsWebService"
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() in case of a new return and expired access token
         // <parse key="Packet355" compare="MockServicePacket355" response="MakingTaxDigital\200_vatreturn.txt"/>
-        // <parse key="Packet356" compare="MockServicePacket356" response="MakingTaxDigital\401_unauthorized.txt"/>
+        // <parse key="Packet356" compare="333333356" response="MakingTaxDigital\401_unauthorized.txt"/>
         // <parse key="Packet357" compare="MockServicePacket357" response="MakingTaxDigital\200_authorize_355.txt"/>
         Initialize();
-        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '\MockServicePacket357', 'MockServicePacket356');
+        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '\MockServicePacket357', '333333356');
         InitDummyVATReturn(DummyMTDReturnDetails);
 
         GetVATReturn(DummyMTDReturnDetails, false, true, 1, 1, 0);
@@ -166,8 +166,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         DummyMTDReturnDetails: Record "MTD Return Details";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() in case of up to date return
-        // <parse key="Packet338" compare="MockServicePacket338" response="MakingTaxDigital\200_vatreturn.txt"/>
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket338');
+        // <parse key="Packet338" compare="333333338" response="MakingTaxDigital\200_vatreturn.txt"/>
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333338');
         with DummyMTDReturnDetails do
             MockVATReturnDetail(
                 DummyMTDReturnDetails, "Period Key", "VAT Due Sales", "VAT Due Acquisitions", "Total VAT Due",
@@ -187,8 +187,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         DummyMTDReturnDetails: Record "MTD Return Details";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() in case of a modified return ("Period Key")
-        // <parse key="Packet338" compare="MockServicePacket338" response="MakingTaxDigital\200_vatreturn.txt"/>
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket338');
+        // <parse key="Packet338" compare="333333338" response="MakingTaxDigital\200_vatreturn.txt"/>
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333338');
         with DummyMTDReturnDetails do
             MockVATReturnDetail(
                 DummyMTDReturnDetails, LibraryUtility.GenerateGUID(), "VAT Due Sales", "VAT Due Acquisitions", "Total VAT Due",
@@ -208,8 +208,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         DummyMTDReturnDetails: Record "MTD Return Details";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() in case of a modified return ("VAT Due Sales")
-        // <parse key="Packet338" compare="MockServicePacket338" response="MakingTaxDigital\200_vatreturn.txt"/>
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket338');
+        // <parse key="Packet338" compare="333333338" response="MakingTaxDigital\200_vatreturn.txt"/>
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333338');
         with DummyMTDReturnDetails do
             MockVATReturnDetail(
                 DummyMTDReturnDetails, "Period Key", "VAT Due Sales" + 0.01, "VAT Due Acquisitions", "Total VAT Due",
@@ -229,8 +229,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         DummyMTDReturnDetails: Record "MTD Return Details";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() in case of a modified return ("VAT Due Acquisitions")
-        // <parse key="Packet338" compare="MockServicePacket338" response="MakingTaxDigital\200_vatreturn.txt"/>
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket338');
+        // <parse key="Packet338" compare="333333338" response="MakingTaxDigital\200_vatreturn.txt"/>
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333338');
         with DummyMTDReturnDetails do
             MockVATReturnDetail(
                 DummyMTDReturnDetails, "Period Key", "VAT Due Sales", "VAT Due Acquisitions" + 0.01, "Total VAT Due",
@@ -250,8 +250,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         DummyMTDReturnDetails: Record "MTD Return Details";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() in case of a modified return ("Total VAT Due")
-        // <parse key="Packet338" compare="MockServicePacket338" response="MakingTaxDigital\200_vatreturn.txt"/>
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket338');
+        // <parse key="Packet338" compare="333333338" response="MakingTaxDigital\200_vatreturn.txt"/>
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333338');
         with DummyMTDReturnDetails do
             MockVATReturnDetail(
                 DummyMTDReturnDetails, "Period Key", "VAT Due Sales", "VAT Due Acquisitions", "Total VAT Due" + 0.01,
@@ -271,8 +271,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         DummyMTDReturnDetails: Record "MTD Return Details";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() in case of a modified return ("VAT Reclaimed Curr Period")
-        // <parse key="Packet338" compare="MockServicePacket338" response="MakingTaxDigital\200_vatreturn.txt"/>
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket338');
+        // <parse key="Packet338" compare="333333338" response="MakingTaxDigital\200_vatreturn.txt"/>
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333338');
         with DummyMTDReturnDetails do
             MockVATReturnDetail(
                 DummyMTDReturnDetails, "Period Key", "VAT Due Sales", "VAT Due Acquisitions", "Total VAT Due",
@@ -292,8 +292,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         DummyMTDReturnDetails: Record "MTD Return Details";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() in case of a modified return ("Net VAT Due")
-        // <parse key="Packet338" compare="MockServicePacket338" response="MakingTaxDigital\200_vatreturn.txt"/>
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket338');
+        // <parse key="Packet338" compare="333333338" response="MakingTaxDigital\200_vatreturn.txt"/>
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333338');
         with DummyMTDReturnDetails do
             MockVATReturnDetail(
                 DummyMTDReturnDetails, "Period Key", "VAT Due Sales", "VAT Due Acquisitions", "Total VAT Due", "VAT Reclaimed Curr Period",
@@ -313,8 +313,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         DummyMTDReturnDetails: Record "MTD Return Details";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() in case of a modified return ("Total Value Sales Excl. VAT")
-        // <parse key="Packet338" compare="MockServicePacket338" response="MakingTaxDigital\200_vatreturn.txt"/>
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket338');
+        // <parse key="Packet338" compare="333333338" response="MakingTaxDigital\200_vatreturn.txt"/>
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333338');
         with DummyMTDReturnDetails do
             MockVATReturnDetail(
                 DummyMTDReturnDetails, "Period Key", "VAT Due Sales", "VAT Due Acquisitions", "Total VAT Due", "VAT Reclaimed Curr Period",
@@ -334,8 +334,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         DummyMTDReturnDetails: Record "MTD Return Details";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() in case of a modified return ("Total Value Purchases Excl.VAT")
-        // <parse key="Packet338" compare="MockServicePacket338" response="MakingTaxDigital\200_vatreturn.txt"/>
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket338');
+        // <parse key="Packet338" compare="333333338" response="MakingTaxDigital\200_vatreturn.txt"/>
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333338');
         with DummyMTDReturnDetails do
             MockVATReturnDetail(
                 DummyMTDReturnDetails, "Period Key", "VAT Due Sales", "VAT Due Acquisitions", "Total VAT Due", "VAT Reclaimed Curr Period",
@@ -355,8 +355,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         DummyMTDReturnDetails: Record "MTD Return Details";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() in case of a modified return ("Total Value Goods Suppl. ExVAT")
-        // <parse key="Packet338" compare="MockServicePacket338" response="MakingTaxDigital\200_vatreturn.txt"/>
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket338');
+        // <parse key="Packet338" compare="333333338" response="MakingTaxDigital\200_vatreturn.txt"/>
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333338');
         with DummyMTDReturnDetails do
             MockVATReturnDetail(
                 DummyMTDReturnDetails, "Period Key", "VAT Due Sales", "VAT Due Acquisitions", "Total VAT Due", "VAT Reclaimed Curr Period",
@@ -376,8 +376,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         DummyMTDReturnDetails: Record "MTD Return Details";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() in case of a modified return ("Total Acquisitions Excl. VAT")
-        // <parse key="Packet338" compare="MockServicePacket338" response="MakingTaxDigital\200_vatreturn.txt"/>
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket338');
+        // <parse key="Packet338" compare="333333338" response="MakingTaxDigital\200_vatreturn.txt"/>
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333338');
         with DummyMTDReturnDetails do
             MockVATReturnDetail(
                 DummyMTDReturnDetails, "Period Key", "VAT Due Sales", "VAT Due Acquisitions", "Total VAT Due", "VAT Reclaimed Curr Period",
@@ -397,9 +397,9 @@ codeunit 148085 "MTDTestReturnsWebService"
         DummyMTDReturnDetails: Record "MTD Return Details";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() in case of error 404 "NOT FOUND"
-        // <parse key="Packet305" compare="MockServicePacket305" response="MakingTaxDigital\404_not_found_blanked.txt"/>
+        // <parse key="Packet305" compare="333333305" response="MakingTaxDigital\404_not_found_blanked.txt"/>
         Initialize();
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket305');
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333305');
 
         GetVATReturn(DummyMTDReturnDetails, true, false, 0, 0, 0);
 
@@ -418,9 +418,9 @@ codeunit 148085 "MTDTestReturnsWebService"
         HttpError: Text;
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.SubmitVATReturn() in case of HTTP error response with details
-        // <parse key="Packet310" compare="MockServicePacket310" response="MakingTaxDigital\400_vrn_invalid.txt"/>
+        // <parse key="Packet310" compare="333333310" response="MakingTaxDigital\400_vrn_invalid.txt"/>
         Initialize();
-        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', 'MockServicePacket310');
+        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', '333333310');
         HttpError := 'The provided VRN is invalid.';
 
         asserterror SubmitVATReturn(RequestJson, ResponseJson, false);
@@ -442,9 +442,9 @@ codeunit 148085 "MTDTestReturnsWebService"
         ResponseJson: Text;
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.SubmitVATReturn() in case of blanked json response
-        // <parse key="Packet301" compare="MockServicePacket301" response="MakingTaxDigital\200_blanked.txt"/>
+        // <parse key="Packet301" compare="333333301" response="MakingTaxDigital\200_blanked.txt"/>
         Initialize();
-        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', 'MockServicePacket301');
+        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '333333301', '');
 
         SubmitVATReturn(RequestJson, ResponseJson, true);
 
@@ -462,9 +462,9 @@ codeunit 148085 "MTDTestReturnsWebService"
         ResponseJson: Text;
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.SubmitVATReturn() in case of a wrong json response
-        // <parse key="Packet302" compare="MockServicePacket302" response="MakingTaxDigital\200_dummyjson.txt"/>
+        // <parse key="Packet302" compare="333333302" response="MakingTaxDigital\200_dummyjson.txt"/>
         Initialize();
-        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', 'MockServicePacket302');
+        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '333333302', '');
 
         SubmitVATReturn(RequestJson, ResponseJson, true);
 
@@ -482,9 +482,9 @@ codeunit 148085 "MTDTestReturnsWebService"
         ResponseJson: Text;
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.SubmitVATReturn() in case of json response
-        // <parse key="Packet339" compare="MockServicePacket339" response="MakingTaxDigital\201_submit.txt"/>
+        // <parse key="Packet339" compare="333333339" response="MakingTaxDigital\201_submit.txt"/>
         Initialize();
-        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', 'MockServicePacket339');
+        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', '333333339');
 
         RequestJson := '{}';
         SubmitVATReturn(RequestJson, ResponseJson, true);
@@ -506,10 +506,10 @@ codeunit 148085 "MTDTestReturnsWebService"
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.SubmitVATReturn() in case of expired access token
         // <parse key="Packet343" compare="MockServicePacket343" response="MakingTaxDigital\201_submit.txt"/>
-        // <parse key="Packet344" compare="MockServicePacket344" response="MakingTaxDigital\401_unauthorized.txt"/>
+        // <parse key="Packet344" compare="333333344" response="MakingTaxDigital\401_unauthorized.txt"/>
         // <parse key="Packet345" compare="MockServicePacket345" response="MakingTaxDigital\200_authorize_343.txt"/>
         Initialize();
-        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '\MockServicePacket345', 'MockServicePacket344');
+        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '\MockServicePacket345', '333333344');
 
         RequestJson := '{}';
         SubmitVATReturn(RequestJson, ResponseJson, true);
@@ -534,7 +534,7 @@ codeunit 148085 "MTDTestReturnsWebService"
         // MockServicePacket360 MockService\MakingTaxDigital\200_authorize_submit.txt
         // MockServicePacket358 MockService\MakingTaxDigital\201_submit.txt
         Initialize();
-        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '\MockServicePacket360', 'MockServicePacket358');
+        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '\MockServicePacket358\MockServicePacket360', '');
 
         RequestJson := '{}';
         SubmitVATReturn(RequestJson, ResponseJson, true);
@@ -556,8 +556,8 @@ codeunit 148085 "MTDTestReturnsWebService"
         VATReportHeader: Record "VAT Report Header";
     begin
         // [SCENARIO 258181] COD 10530 MTDMgt.RetrieveVATReturns() updates linked VATReturn.Status from "Submitted" to "Accepted"
-        // <parse key="Packet338" compare="MockServicePacket338" response="MakingTaxDigital\200_vatreturn.txt"/>
-        InitGetReturnScenario(DummyMTDReturnDetails, 'MockServicePacket338');
+        // <parse key="Packet338" compare="333333338" response="MakingTaxDigital\200_vatreturn.txt"/>
+        InitGetReturnScenario(DummyMTDReturnDetails, '333333338');
         MockAndGetVATPeriod(VATReturnPeriod, DummyMTDReturnDetails);
         LibraryMakingTaxDigital.MockLinkedVATReturnHeader(VATReportHeader, VATReturnPeriod, VATReportHeader.Status::Submitted);
 
@@ -579,9 +579,9 @@ codeunit 148085 "MTDTestReturnsWebService"
         DummyGUID: Guid;
     begin
         // [SCENARIO 258181] COD 10532 "MTD Submit Return" in case of submitted return,but not accepted
-        // <parse key="Packet339" compare="MockServicePacket339" response="MakingTaxDigital\201_submit.txt"/>
+        // <parse key="Packet339" compare="333333339" response="MakingTaxDigital\201_submit.txt"/>
         Initialize();
-        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', 'MockServicePacket339');
+        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', '333333339');
         InitSubmitReturnScenario(VATReturnPeriod, VATReportHeader, VATReportHeader.Status::Released);
 
         SubmitVATReturnScenario(VATReportHeader, true);
@@ -602,10 +602,10 @@ codeunit 148085 "MTDTestReturnsWebService"
         VATReportHeader: Record "VAT Report Header";
     begin
         // [SCENARIO 258181] COD 10532 "MTD Submit Return" in case of submitted return and accepted later
-        // <parse key="Packet339" compare="MockServicePacket339" response="MakingTaxDigital\201_submit.txt"/>
         // <parse key="Packet338" compare="MockServicePacket338" response="MakingTaxDigital\200_vatreturn.txt"/>
+        // <parse key="Packet339" compare="333333339" response="MakingTaxDigital\201_submit.txt"/>
         Initialize();
-        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', 'MockServicePacket339');
+        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', '333333339');
         InitSubmitReturnScenario(VATReturnPeriod, VATReportHeader, VATReportHeader.Status::Released);
 
         SubmitAndGetVATReturnScenario(VATReportHeader);
@@ -783,7 +783,7 @@ codeunit 148085 "MTDTestReturnsWebService"
         VATReturnPeriod.Get(VATReportHeader."Return Period No.");
         LibraryVariableStorage.Enqueue(true);
         Codeunit.Run(Codeunit::"MTD Submit Return", VATReportHeader);
-        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', 'MockServicePacket338');
+        LibraryMakingTaxDigital.SetupOAuthAndVATRegNo(true, '', '333333338');
         Assert.AreEqual(
             true,
             MTDMgt.RetrieveVATReturns(VATReturnPeriod, ResponseJson, TotalCount, NewCount, ModifiedCount, false, true),

@@ -84,6 +84,8 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
             "Token DataScope" := "Token DataScope"::UserAndCompany;
             "Daily Limit" := 1000;
             "Feature GUID" := ElecVATSetup."OAuth Feature GUID";
+            "Code Challenge Method" := "Code Challenge Method"::S256;
+            "Use Nonce" := true;
             "User ID" := CopyStr(UserId(), 1, MaxStrLen("User ID"));
             Modify();
         end;
@@ -303,7 +305,10 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
                 exit(false);
             end;
 
-        ServicerrorMessage := JToken.AsValue().AsText();
+        if JToken.IsObject then
+            JToken.WriteTo(ServicerrorMessage)
+        else
+            ServicerrorMessage := JToken.AsValue().AsText();
         if ServicerrorMessage = '' then begin
             Session.LogMessage('0000G8J', EmptyJsonErrMsgErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', NOVATReturnSubmissionTok);
             exit(false);
@@ -352,12 +357,14 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
             TestField("Refresh Token URL Path", RefreshTokenURLPathTxt);
             TestField("Authorization Response Type", AuthorizationResponseTypeTxt);
             TestField("Daily Limit", 1000);
+            TestField("Code Challenge Method", "Code Challenge Method"::S256);
+            TestField("Use Nonce");
         end;
     end;
 
 
     [NonDebuggable]
-    internal procedure SetToken(var TokenKey: Guid; TokenValue: Text; TokenDataScope: DataScope) NewToken: Boolean
+    internal procedure SetToken(var TokenKey: Guid; TokenValue: SecretText; TokenDataScope: DataScope) NewToken: Boolean
     begin
         if IsNullGuid(TokenKey) then
             NewToken := true;
@@ -378,10 +385,10 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
     end;
 
     [NonDebuggable]
-    local procedure GetToken(TokenKey: Guid; TokenDataScope: DataScope) TokenValue: Text
+    local procedure GetToken(TokenKey: Guid; TokenDataScope: DataScope) TokenValue: SecretText
     begin
         if not HasToken(TokenKey, TokenDataScope) then
-            exit('');
+            exit;
 
         IsolatedStorage.Get(TokenKey, TokenDataScope, TokenValue);
     end;
@@ -425,7 +432,8 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
         CheckOAuthConsistencySetup(OAuth20Setup);
         state := Format(CreateGuid(), 0, 4);
         url :=
-            StrSubstNo(CurrUrlWithStateTxt, OAuth20Mgt.GetAuthorizationURL(OAuth20Setup, GetToken(OAuth20Setup."Client ID", DataScope::Company)), state);
+            StrSubstNo(CurrUrlWithStateTxt, OAuth20Mgt.GetAuthorizationURLAsSecretText(OAuth20Setup, GetToken(OAuth20Setup."Client ID", DataScope::Company).Unwrap()).Unwrap(), state);
+        Commit();
         OAuth2ControlAddIn.SetOAuth2Properties(url, state);
         OAuth2ControlAddIn.RunModal();
         auth_error := OAuth2ControlAddIn.GetAuthError();
@@ -440,12 +448,13 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
         end;
     end;
 
+    [NonDebuggable]
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeRequestAccessToken', '', true, true)]
     local procedure OnBeforeRequestAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; AuthorizationCode: Text; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
     var
         RequestJSON: Text;
-        AccessToken: Text;
-        RefreshToken: Text;
+        AccessToken: SecretText;
+        RefreshToken: SecretText;
         TokenDataScope: DataScope;
     begin
         if not IsElectronicVATOAuthSetup(OAuth20Setup) or Processed then
@@ -459,8 +468,8 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
         Result :=
             OAuth20Mgt.RequestAccessTokenWithContentType(
                 OAuth20Setup, RequestJSON, MessageText, AuthorizationCode,
-                GetToken(OAuth20Setup."Client ID", DataScope::Company),
-                GetToken(OAuth20Setup."Client Secret", DataScope::Company),
+                GetToken(OAuth20Setup."Client ID", DataScope::Company).Unwrap(),
+                GetToken(OAuth20Setup."Client Secret", DataScope::Company).Unwrap(),
                 AccessToken, RefreshToken, true);
 
         if Result then
@@ -472,8 +481,8 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
     local procedure OnBeforeRefreshAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
     var
         RequestJSON: Text;
-        AccessToken: Text;
-        RefreshToken: Text;
+        AccessToken: SecretText;
+        RefreshToken: SecretText;
         TokenDataScope: DataScope;
         OldServiceUrl: Text[250];
     begin
@@ -491,8 +500,8 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
         Result :=
             OAuth20Mgt.RefreshAccessTokenWithContentType(
                 OAuth20Setup, RequestJSON, MessageText,
-                GetToken(OAuth20Setup."Client ID", DataScope::Company),
-                GetToken(OAuth20Setup."Client Secret", DataScope::Company),
+                GetToken(OAuth20Setup."Client ID", DataScope::Company).Unwrap(),
+                GetToken(OAuth20Setup."Client Secret", DataScope::Company).Unwrap(),
                 AccessToken, RefreshToken, true);
         OAuth20Setup."Service URL" := OldServiceUrl;
 
@@ -501,7 +510,7 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
     end;
 
     [NonDebuggable]
-    local procedure SaveTokens(var OAuth20Setup: Record "OAuth 2.0 Setup"; TokenDataScope: DataScope; AccessToken: Text; RefreshToken: Text)
+    local procedure SaveTokens(var OAuth20Setup: Record "OAuth 2.0 Setup"; TokenDataScope: DataScope; AccessToken: SecretText; RefreshToken: SecretText)
     var
         TypeHelper: Codeunit "Type Helper";
         NewAccessTokenDateTime: DateTime;
@@ -532,9 +541,9 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
         ElecVATSetup.GetRecordOnce();
         ElecVATSetup.TestField("Submission Environment URL");
         if StrPos(OAuth20Setup."Service URL", ElecVATSetup."Submission Environment URL") = 1 then
-            TokenValue := GetToken(OAuth20Setup."Altinn Token", OAuth20Setup.GetTokenDataScope())
+            TokenValue := GetToken(OAuth20Setup."Altinn Token", OAuth20Setup.GetTokenDataScope()).Unwrap()
         else
-            TokenValue := GetToken(OAuth20Setup."Access Token", OAuth20Setup.GetTokenDataScope());
+            TokenValue := GetToken(OAuth20Setup."Access Token", OAuth20Setup.GetTokenDataScope()).Unwrap();
         Result :=
             OAuth20Mgt.InvokeRequest(
                 OAuth20Setup, RequestJSON, ResponseJSON, HttpError, TokenValue, RetryOnCredentialsFailure);
@@ -569,5 +578,15 @@ codeunit 10680 "Elec. VAT OAuth Mgt."
         ServiceConnection.Status := OAuth20Setup.Status;
         ServiceConnection.InsertServiceConnection(
           ServiceConnection, OAuth20Setup.RecordId(), ServiceConnectionSetupLbl, '', PAGE::"OAuth 2.0 Setup");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"OAuth 2.0 Mgt.", 'OnBeforeGetServiceUrlForAuthorizationURL', '', false, false)]
+    local procedure OnBeforeGetServiceUrlForAuthorizationURL(var ServiceUrl: Text; OAuth20Setup: Record "OAuth 2.0 Setup")
+    begin
+        if not IsElectronicVATOAuthSetup(OAuth20Setup) then
+            exit;
+        ElecVATSetup.GetRecordOnce();
+        ElecVATSetup.TestField("Login URL");
+        ServiceUrl := ElecVATSetup."Login URL";
     end;
 }

@@ -7,26 +7,26 @@ codeunit 4797 "Create Whse No Series"
     var
         ContosoNoSeries: codeunit "Contoso No Series";
     begin
-        ContosoNoSeries.InsertNoSeries(TransferOrder(), TransferOrderLbl, '1001', '9999', '', '', 1, true, false);
-        ContosoNoSeries.InsertNoSeries(TransferShipment(), TransferShipmentLbl, '108001', '108999', '', '', 1, true, false);
-        ContosoNoSeries.InsertNoSeries(TransferReceipt(), TransferReceiptLbl, '109000', '109999', '', '', 1, true, false);
-        ContosoNoSeries.InsertNoSeries(InventoryPick(), InventoryPickLbl, 'IPI000001', 'IPI999999', '', '', 1, true, false);
-        ContosoNoSeries.InsertNoSeries(PostedInventoryPick(), PostedInventoryPickLbl, 'PPI000001', 'PPI999999', '', '', 1, true, false);
-        ContosoNoSeries.InsertNoSeries(InventoryPutAway(), InventoryPutAwayLbl, 'IPU000001', 'IPU999999', '', '', 1, true, false);
-        ContosoNoSeries.InsertNoSeries(PostedInventoryPutAway(), PostedInventoryPutAwayLbl, 'PPU000001', 'PPU999999', '', '', 1, true, false);
-        ContosoNoSeries.InsertNoSeries(InventoryMovement(), InventoryMovementLbl, 'IM000001', 'IM999999', '', '', 1, true, false);
-        ContosoNoSeries.InsertNoSeries(RegisteredInventoryMovement(), RegisteredInventoryMomentLbl, 'RIM000001', 'RIM999999', '', '', 1, true, false);
+        ContosoNoSeries.InsertNoSeries(TransferOrder(), TransferOrderLbl, '1001', '9999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
+        ContosoNoSeries.InsertNoSeries(TransferShipment(), TransferShipmentLbl, '108001', '108999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
+        ContosoNoSeries.InsertNoSeries(TransferReceipt(), TransferReceiptLbl, '109000', '109999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
+        ContosoNoSeries.InsertNoSeries(InventoryPick(), InventoryPickLbl, 'IPI000001', 'IPI999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
+        ContosoNoSeries.InsertNoSeries(PostedInventoryPick(), PostedInventoryPickLbl, 'PPI000001', 'PPI999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
+        ContosoNoSeries.InsertNoSeries(InventoryPutAway(), InventoryPutAwayLbl, 'IPU000001', 'IPU999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
+        ContosoNoSeries.InsertNoSeries(PostedInventoryPutAway(), PostedInventoryPutAwayLbl, 'PPU000001', 'PPU999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
+        ContosoNoSeries.InsertNoSeries(InventoryMovement(), InventoryMovementLbl, 'IM000001', 'IM999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
+        ContosoNoSeries.InsertNoSeries(RegisteredInventoryMovement(), RegisteredInventoryMomentLbl, 'RIM000001', 'RIM999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
 
-        ContosoNoSeries.InsertNoSeries(WarehouseReceipt(), WarehouseReceiptLbl, 'RE000001', 'RE999999', '', '', 1, true, false);
-        ContosoNoSeries.InsertNoSeries(PostedWarehouseReceipt(), PostedWarehouseReceiptLbl, 'R_000001', 'R_999999', '', '', 1, true, false);
-        ContosoNoSeries.InsertNoSeries(WarehouseShipment(), WarehouseShipmentLbl, 'SH000001', 'SH999999', '', '', 1, true, false);
-        ContosoNoSeries.InsertNoSeries(PostedWarehouseShipment(), PostedWarehouseShipmentLbl, 'S_000001', 'S_999999', '', '', 1, true, false);
-        ContosoNoSeries.InsertNoSeries(WarehousePutAway(), WarehousePutAwayLbl, 'PU000001', 'PU999999', '', '', 1, true, false);
-        ContosoNoSeries.InsertNoSeries(RegisteredWarehousePutAway(), RegisteredWarehousePutAwayLbl, 'PU_000001', 'PU_999999', '', '', 1, true, false);
-        ContosoNoSeries.InsertNoSeries(WarehousePick(), WarehousePickLbl, 'PI000001', 'PI999999', '', '', 1, true, false);
-        ContosoNoSeries.InsertNoSeries(RegisteredWarehousePick(), RegisteredWarehousePickLbl, 'P_000001', 'P_999999', '', '', 1, true, false);
-        ContosoNoSeries.InsertNoSeries(WarehouseMovement(), WarehouseMovementLbl, 'WM000001', 'WM999999', '', '', 1, true, false);
-        ContosoNoSeries.InsertNoSeries(RegisteredWarehouseMovement(), RegisteredWarehouseMovementLbl, 'WM_000001', 'WM_999999', '', '', 1, true, false);
+        ContosoNoSeries.InsertNoSeries(WarehouseReceipt(), WarehouseReceiptLbl, 'RE000001', 'RE999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
+        ContosoNoSeries.InsertNoSeries(PostedWarehouseReceipt(), PostedWarehouseReceiptLbl, 'R_000001', 'R_999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
+        ContosoNoSeries.InsertNoSeries(WarehouseShipment(), WarehouseShipmentLbl, 'SH000001', 'SH999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
+        ContosoNoSeries.InsertNoSeries(PostedWarehouseShipment(), PostedWarehouseShipmentLbl, 'S_000001', 'S_999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
+        ContosoNoSeries.InsertNoSeries(WarehousePutAway(), WarehousePutAwayLbl, 'PU000001', 'PU999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
+        ContosoNoSeries.InsertNoSeries(RegisteredWarehousePutAway(), RegisteredWarehousePutAwayLbl, 'PU_000001', 'PU_999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
+        ContosoNoSeries.InsertNoSeries(WarehousePick(), WarehousePickLbl, 'PI000001', 'PI999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
+        ContosoNoSeries.InsertNoSeries(RegisteredWarehousePick(), RegisteredWarehousePickLbl, 'P_000001', 'P_999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
+        ContosoNoSeries.InsertNoSeries(WarehouseMovement(), WarehouseMovementLbl, 'WM000001', 'WM999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
+        ContosoNoSeries.InsertNoSeries(RegisteredWarehouseMovement(), RegisteredWarehouseMovementLbl, 'WM_000001', 'WM_999999', '', '', 1, Enum::"No. Series Implementation"::Sequence, false);
     end;
 
     var

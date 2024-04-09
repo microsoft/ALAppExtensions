@@ -38,7 +38,7 @@ table 30130 "Shpfy Order Shipping Charges"
         }
         field(6; "Code"; Code[50])
         {
-            Caption = 'Code';
+            Caption = 'Code Preview';
             DataClassification = SystemMetadata;
         }
         field(7; "Discount Amount"; Decimal)
@@ -54,6 +54,11 @@ table 30130 "Shpfy Order Shipping Charges"
         field(9; "Presentment Discount Amount"; Decimal)
         {
             Caption = 'Presentment Discount Amount';
+            DataClassification = SystemMetadata;
+        }
+        field(10; "Code Value"; Text[2048])
+        {
+            Caption = 'Code Value';
             DataClassification = SystemMetadata;
         }
     }

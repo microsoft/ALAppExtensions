@@ -98,6 +98,16 @@ page 30012 "APIV2 - Sales Invoices"
                         RegisterFieldSet(Rec.FieldNo("Due Date"));
                     end;
                 }
+
+                field(promisedPayDate; Rec."Promised Pay Date")
+                {
+                    Caption = 'Promised Pay Date';
+                    trigger OnValidate()
+                    begin
+                        Rec.TestField(Posted);
+                        RegisterFieldSet(Rec.FieldNo("Promised Pay Date"));
+                    end;
+                }
                 field(customerPurchaseOrderReference; Rec."Your Reference")
                 {
                     Caption = 'Customer Purchase Order Reference',;
@@ -485,6 +495,40 @@ page 30012 "APIV2 - Sales Invoices"
                         RegisterFieldSet(Rec.FieldNo("Salesperson Code"));
                     end;
                 }
+                field(disputeStatusId; Rec."Dispute Status Id")
+                {
+                    Caption = 'Dispute Status Id';
+
+                    trigger OnValidate()
+                    begin
+                        Rec.TestField(Posted);
+                        if Rec."Dispute Status Id" = BlankGUID then
+                            Rec."Dispute Status" := ''
+                        else begin
+                            if not DisputeStatus.GetBySystemId(Rec."Dispute Status Id") then
+                                Error(DisputeStatusIdDoesNotMatchADisputeStatusErr);
+
+                            Rec."Dispute Status" := DisputeStatus.Code;
+                        end;
+
+                        RegisterFieldSet(Rec.FieldNo("Dispute Status Id"));
+                        RegisterFieldSet(Rec.FieldNo("Dispute Status"));
+                    end;
+                }
+                field(disputeStatus; Rec."Dispute Status")
+                {
+                    Caption = 'Dispute Status';
+                    trigger OnValidate()
+                    begin
+                        Rec.TestField(Posted);
+                        if not DisputeStatus.Get(Rec."Dispute Status") then
+                            Error(CouldNotFindDisputeStatusErr);
+
+                        Rec."Dispute Status Id" := DisputeStatus.SystemId;
+                        RegisterFieldSet(Rec.FieldNo("Dispute Status Id"));
+                        RegisterFieldSet(Rec.FieldNo("Dispute Status"));
+                    end;
+                }
                 field(pricesIncludeTax; Rec."Prices Including VAT")
                 {
                     Caption = 'Prices Include Tax';
@@ -679,6 +723,7 @@ page 30012 "APIV2 - Sales Invoices"
         TempFieldBuffer: Record 8450 temporary;
         SellToCustomer: Record "Customer";
         BillToCustomer: Record "Customer";
+        DisputeStatus: Record "Dispute Status";
         Currency: Record "Currency";
         PaymentTerms: Record "Payment Terms";
         ShipmentMethod: Record "Shipment Method";
@@ -693,12 +738,14 @@ page 30012 "APIV2 - Sales Invoices"
         BillToCustomerValuesDontMatchErr: Label 'The bill-to customer values do not match to a specific Customer.';
         CouldNotFindSellToCustomerErr: Label 'The sell-to customer cannot be found.';
         CouldNotFindBillToCustomerErr: Label 'The bill-to customer cannot be found.';
+        CouldNotFindDisputeStatusErr: Label 'The dispute status cannot be found.';
         CurrencyValuesDontMatchErr: Label 'The currency values do not match to a specific Currency.';
         CurrencyIdDoesNotMatchACurrencyErr: Label 'The "currencyId" does not match to a Currency.', Comment = 'currencyId is a field name and should not be translated.';
         CurrencyCodeDoesNotMatchACurrencyErr: Label 'The "currencyCode" does not match to a Currency.', Comment = 'currencyCode is a field name and should not be translated.';
         BlankGUID: Guid;
         PaymentTermsIdDoesNotMatchAPaymentTermsErr: Label 'The "paymentTermsId" does not match to a Payment Terms.', Comment = 'paymentTermsId is a field name and should not be translated.';
         ShipmentMethodIdDoesNotMatchAShipmentMethodErr: Label 'The "shipmentMethodId" does not match to a Shipment Method.', Comment = 'shipmentMethodId is a field name and should not be translated.';
+        DisputeStatusIdDoesNotMatchADisputeStatusErr: Label 'The "disputeStatusId" does not match to a Dispute Status.', Comment = 'disputeStatusId is a field name and should not be translated.';
         PermissionFilterFormatTxt: Label '<>%1&<>%2', Locked = true;
         PermissionInvoiceFilterformatTxt: Label '<>%1&<>%2&<>%3&<>%4', Locked = true;
         DiscountAmountSet: Boolean;
@@ -995,13 +1042,11 @@ page 30012 "APIV2 - Sales Invoices"
     end;
 
     local procedure SetActionResponse(var ActionContext: WebServiceActionContext; InvoiceId: Guid)
-    var
     begin
         SetActionResponse(ActionContext, Page::"APIV2 - Sales Invoices", InvoiceId);
     end;
 
     local procedure SetActionResponse(var ActionContext: WebServiceActionContext; PageId: Integer; DocumentId: Guid)
-    var
     begin
         ActionContext.SetObjectType(ObjectType::Page);
         ActionContext.SetObjectId(PageId);

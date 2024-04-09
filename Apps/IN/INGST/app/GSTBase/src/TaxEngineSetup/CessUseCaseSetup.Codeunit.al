@@ -103,5 +103,6 @@ codeunit 18009 "Cess Use Case Setup"
         CaseList.Add('{F748E0D1-BC76-4D68-8CBD-FF4189DC3517}');
         CaseList.Add('{37EFA642-056C-45E8-974E-6B41B335FC81}');
         CaseList.Add('{DE8006B8-CF9F-474A-AE29-C7903A148261}');
+        CaseList.Add('{631DEFA0-165E-4BDC-8F8A-AB2A88DF90AD}');
     end;
 }

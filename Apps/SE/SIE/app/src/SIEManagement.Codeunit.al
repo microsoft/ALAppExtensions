@@ -5,8 +5,10 @@
 namespace Microsoft.Finance.AuditFileExport;
 
 using Microsoft.Finance.GeneralLedger.Setup;
+#if not CLEAN22
 using System.Environment;
 using System.Environment.Configuration;
+#endif
 
 codeunit 5316 "SIE Management"
 {

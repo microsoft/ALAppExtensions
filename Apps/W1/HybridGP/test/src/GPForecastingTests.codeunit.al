@@ -164,9 +164,11 @@ codeunit 139668 "GP Forecasting Tests"
     local procedure CreateCashFlowSetup()
     var
         CashFlowSetup: Record "Cash Flow Setup";
+        ApiKey: Text;
     begin
         CashFlowSetup.Get();
-        CashFlowSetup.SaveUserDefinedAPIKey('dummykey');
+        ApiKey := 'dummykey';
+        CashFlowSetup.SaveUserDefinedAPIKey(ApiKey);
         CashFlowSetup.Validate("API URL", 'https://ussouthcentral.services.azureml.net');
         CashFlowSetup.Validate("Period Type", CashFlowSetup."Period Type"::Year);
         CashFlowSetup.Validate("Historical Periods", 18);
@@ -474,10 +476,13 @@ codeunit 139668 "GP Forecasting Tests"
     end;
 
     procedure SetupSI();
+    var
+        ApiKey: Text;
     begin
         MSSalesForecastSetup.GetSingleInstance();
         MSSalesForecastSetup.Validate("API URI", MockServiceURITxt);
-        MSSalesForecastSetup.SetUserDefinedAPIKey(MockServiceKeyTxt);
+        ApiKey := MockServiceKeyTxt;
+        MSSalesForecastSetup.SetUserDefinedAPIKey(ApiKey);
         MSSalesForecastSetup.Modify(true);
     end;
 

@@ -23,6 +23,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPPOP10100: Record "GP POP10100";
         GPPOP10110: Record "GP POP10110";
         GPSY01200: Record "GP SY01200";
+        Item: Record Item;
         GPTestHelperFunctions: Codeunit "GP Test Helper Functions";
         CustomerFacade: Codeunit "Customer Data Migration Facade";
         CustomerMigrator: Codeunit "GP Customer Migrator";
@@ -226,9 +227,12 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.IsTrue(GenJournalLine.FindFirst(), 'Could not locate Gen. Journal Line.');
         Assert.AreEqual(HelperFunctions.GetPostingAccountNumber('ReceivablesAccount'), GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
 
-
         // [WHEN] Customer addresses are migrated
         // [THEN] Email addresses are included with the addresses when they are valid
+        Customer.SetRange("No.", '#1');
+        Customer.FindFirst();
+        Assert.AreEqual('GoodEmailAddress@testing.tst;support@testing.tst', Customer."E-Mail", 'E-Mail of Migrated Customer is wrong');
+
         Assert.IsTrue(ShipToAddress.Get('#1', 'PRIMARY'), 'Customer primary address does not exist.');
         Assert.AreEqual('GoodEmailAddress@testing.tst', ShipToAddress."E-Mail", 'Customer primary address email was not set correctly.');
 
@@ -240,6 +244,47 @@ codeunit 139664 "GP Data Migration Tests"
 
         Assert.IsTrue(ShipToAddress.Get('#1', 'OTHER'), 'Customer other address does not exist.');
         Assert.AreEqual('', ShipToAddress."E-Mail", 'Customer other address email should be empty.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestEmailAddressSelection()
+    begin
+        // [SCENARIO] Data migrated from GP contains records and email info in SY01200
+
+        Clear(GPSY01200);
+        GPSY01200.EmailToAddress := 'longeremailaddressshouldnotbeselected@test.net';
+        GPSY01200.EmailCcAddress := 'ANOTHEREMAILADDRESS@test.net';
+        GPSY01200.EmailBccAddress := 'anotheremailaddress@test.net';
+        GPSY01200.INET1 := 'shortemail@test.net';
+
+        // [WHEN] 20 is the max length
+        // [THEN] The shorter email in INET1 will be selected
+        Assert.AreEqual('shortemail@test.net', GPSY01200.GetSingleEmailAddress(20), 'Incorrect email address. (20 max length)');
+        Assert.AreEqual('shortemail@test.net', GPSY01200.GetAllEmailAddressesText(20), 'Incorrect multiple email text. (20 max length)');
+
+        // [WHEN] 50 is the max length
+        // [THEN] Only the EmailToAddress will be selected
+        Assert.AreEqual('longeremailaddressshouldnotbeselected@test.net', GPSY01200.GetSingleEmailAddress(50), 'Incorrect email address. (50 max length)');
+        Assert.AreEqual('longeremailaddressshouldnotbeselected@test.net', GPSY01200.GetAllEmailAddressesText(50), 'Incorrect multiple email text. (50 max length)');
+
+        // [WHEN] 100 is the max length
+        // [THEN] The EmailToAddress will be selected since the max is large enough
+        Assert.AreEqual('longeremailaddressshouldnotbeselected@test.net', GPSY01200.GetSingleEmailAddress(100), 'Incorrect email address. (100 max length)');
+
+        // [THEN] All non-duplicate email addresses will be selected
+        Assert.AreEqual('longeremailaddressshouldnotbeselected@test.net;ANOTHEREMAILADDRESS@test.net;shortemail@test.net', GPSY01200.GetAllEmailAddressesText(100), 'Incorrect multiple email text. (100 max length)');
+
+        // [WHEN] The only valid email address is INET1, and it's within the max length boundary
+        Clear(GPSY01200);
+        GPSY01200.EmailToAddress := '';
+        GPSY01200.EmailCcAddress := 'bad data;';
+        GPSY01200.EmailBccAddress := '';
+        GPSY01200.INET1 := 'OnlyEmailAddress@test.net';
+
+        // [THEN] The correct email address will be selected
+        Assert.AreEqual('OnlyEmailAddress@test.net', GPSY01200.GetSingleEmailAddress(80), 'Incorrect email address. (80 max length)');
+        Assert.AreEqual('OnlyEmailAddress@test.net', GPSY01200.GetAllEmailAddressesText(80), 'Incorrect email address. (80 max length)');
     end;
 
     [Test]
@@ -968,6 +1013,1016 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.AreEqual(DueDateCalculation, PaymentTerms."Due Date Calculation", StrSubstNo('Invalid Due Date Calculation for %1', CurrentPaymentTerm));
     end;
 
+    local procedure IsDateFormulaValid(DateFormulaTxt: Text): Boolean
+    var
+        DateFormulaObj: DateFormula;
+    begin
+        exit(Evaluate(DateFormulaObj, DateFormulaTxt));
+    end;
+
+    [Test]
+    procedure TestCalculateDueDateFormulaEmptyRecord()
+    var
+        GPPaymentTerms: Record "GP Payment Terms";
+        DateFormulaText: Text;
+    begin
+        // [SCENARIO] GP Payment Terms staging table is populated.
+        // [GIVEN] Payment term date formula calculations are to be performed.
+
+        // [WHEN] An empty record is encountered.
+        GPPaymentTerms.DUETYPE := 0;
+
+        // [THEN] The date formula string will be empty.
+        DateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, false, '');
+        Assert.AreEqual('', DateFormulaText, 'The payment term date formula should be empty for an empty record.');
+
+        // Same for discount date formula
+        DateFormulaText := HelperFunctions.CalculateDiscountDateFormula(GPPaymentTerms);
+        Assert.AreEqual('', DateFormulaText, 'The payment term discount date formula should be empty for an empty record.');
+    end;
+
+    [Test]
+    procedure TestCalculateDueDateFormulaDueTypeNetDays()
+    var
+        GPPaymentTerms: Record "GP Payment Terms";
+        DateFormulaText: Text;
+    begin
+        // [SCENARIO] GP Payment Terms staging table is populated.
+        // [GIVEN] Payment term date formula calculations are to be performed.
+
+        // [WHEN] The payment term is configured for Net Days
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Net Days";
+
+        // [WHEN] DUEDTDS < 1
+        GPPaymentTerms.DUEDTDS := 0;
+
+        // [THEN] The date formula string will be empty.
+        DateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, false, '');
+        Assert.AreEqual('', DateFormulaText, 'The payment term date formula should be empty for DueType Net Days, DUEDTDS < 1.');
+
+        // [WHEN] DUEDTDS > 0
+        GPPaymentTerms.DUEDTDS := 30;
+
+        // [THEN] A valid payment term date formula will be generated.
+        DateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, false, '');
+        Assert.AreEqual(true, IsDateFormulaValid(DateFormulaText), 'The payment term date formula is invalid. ' + DateFormulaText);
+        Assert.AreEqual('<30D>', DateFormulaText, 'The payment term date formula is incorrect for DueType Net Days, DUEDTDS = 30.');
+    end;
+
+    [Test]
+    procedure TestCalculateDueDateFormulaDueTypeDate()
+    var
+        GPPaymentTerms: Record "GP Payment Terms";
+        DateFormulaText: Text;
+    begin
+        // [SCENARIO] GP Payment Terms staging table is populated.
+        // [GIVEN] Payment term date formula calculations are to be performed.
+
+        // [WHEN] The payment term is configured for Date
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Date;
+
+        // [WHEN] DUEDTDS < 1
+        GPPaymentTerms.DUEDTDS := 0;
+
+        // [THEN] The date formula string will be empty.
+        DateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, false, '');
+        Assert.AreEqual('', DateFormulaText, 'The payment term date formula should be empty for DueType Date, DUEDTDS < 1.');
+
+        // [WHEN] DUEDTDS > 0
+        GPPaymentTerms.DUEDTDS := 30;
+
+        // [THEN] A valid payment term date formula will be generated.
+        DateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, false, '');
+        Assert.AreEqual(true, IsDateFormulaValid(DateFormulaText), 'The payment term date formula is invalid. ' + DateFormulaText);
+        Assert.AreEqual('<D30>', DateFormulaText, 'The payment term date formula is incorrect for DueType Date, DUEDTDS = 30.');
+    end;
+
+    [Test]
+    procedure TestCalculateDueDateFormulaDueTypeEOM()
+    var
+        GPPaymentTerms: Record "GP Payment Terms";
+        DateFormulaText: Text;
+    begin
+        // [SCENARIO] GP Payment Terms staging table is populated.
+        // [GIVEN] Payment term date formula calculations are to be performed.
+
+        // [WHEN] The payment term is configured for EOM
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::EOM;
+
+        // [WHEN] DUEDTDS < 1
+        GPPaymentTerms.DUEDTDS := 0;
+
+        // [THEN] The date formula string will have a correct value.
+        DateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, false, '');
+        Assert.AreEqual(true, IsDateFormulaValid(DateFormulaText), 'The payment term date formula is invalid. ' + DateFormulaText);
+        Assert.AreEqual('<CM>', DateFormulaText, 'The payment term date formula should be correct for DueType EOM, DUEDTDS < 1.');
+
+        // [WHEN] DUEDTDS > 0
+        GPPaymentTerms.DUEDTDS := 2;
+
+        // [THEN] A valid payment term date formula will be generated.
+        DateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, false, '');
+        Assert.AreEqual(true, IsDateFormulaValid(DateFormulaText), 'The payment term date formula is invalid. ' + DateFormulaText);
+        Assert.AreEqual('<CM+2D>', DateFormulaText, 'The payment term date formula is incorrect for DueType EOM, DUEDTDS = 2.');
+    end;
+
+    [Test]
+    procedure TestCalculateDueDateFormulaDueTypeNone()
+    var
+        GPPaymentTerms: Record "GP Payment Terms";
+        DateFormulaText: Text;
+    begin
+        // [SCENARIO] GP Payment Terms staging table is populated.
+        // [GIVEN] Payment term date formula calculations are to be performed.
+
+        // [WHEN] The payment term is configured for None
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::None;
+
+        // [WHEN] CalculateDateFromDays < 1
+        GPPaymentTerms.CalculateDateFromDays := 0;
+
+        // [THEN] The date formula string will have a correct value.
+        DateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, false, '');
+        Assert.AreEqual(true, IsDateFormulaValid(DateFormulaText), 'The payment term date formula is invalid. ' + DateFormulaText);
+        Assert.AreEqual('<0D>', DateFormulaText, 'The payment term date formula should be correct for DueType None, CalculateDateFromDays < 1.');
+
+        // [WHEN] CalculateDateFromDays > 0
+        GPPaymentTerms.CalculateDateFromDays := 2;
+
+        // [THEN] A valid payment term date formula will be generated.
+        DateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, false, '');
+        Assert.AreEqual(true, IsDateFormulaValid(DateFormulaText), 'The payment term date formula is invalid. ' + DateFormulaText);
+        Assert.AreEqual('<2D>', DateFormulaText, 'The payment term date formula is incorrect for DueType None, CalculateDateFromDays = 2.');
+    end;
+
+    [Test]
+    procedure TestCalculateDueDateFormulaDueTypeNextMonth()
+    var
+        GPPaymentTerms: Record "GP Payment Terms";
+        DateFormulaText: Text;
+    begin
+        // [SCENARIO] GP Payment Terms staging table is populated.
+        // [GIVEN] Payment term date formula calculations are to be performed.
+
+        // [WHEN] The payment term is configured for Next Month
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Next Month";
+
+        // [WHEN] DUEDTDS < 1
+        GPPaymentTerms.DUEDTDS := 0;
+
+        // [THEN] The date formula string will have a correct value.
+        DateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, false, '');
+        Assert.AreEqual(true, IsDateFormulaValid(DateFormulaText), 'The payment term date formula is invalid. ' + DateFormulaText);
+        Assert.AreEqual('<-CM+1M+0D>', DateFormulaText, 'The payment term date formula should be correct for DueType Next Month, DUEDTDS < 1.');
+
+        // [WHEN] DUEDTDS > 0
+        GPPaymentTerms.DUEDTDS := 16;
+
+        // [THEN] A valid payment term date formula will be generated.
+        DateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, false, '');
+        Assert.AreEqual(true, IsDateFormulaValid(DateFormulaText), 'The payment term date formula is invalid. ' + DateFormulaText);
+        Assert.AreEqual('<-CM+1M+15D>', DateFormulaText, 'The payment term date formula is incorrect for DueType Next Month, DUEDTDS = 16.');
+    end;
+
+    [Test]
+    procedure TestCalculateDueDateFormulaDueTypeMonths()
+    var
+        GPPaymentTerms: Record "GP Payment Terms";
+        DateFormulaText: Text;
+    begin
+        // [SCENARIO] GP Payment Terms staging table is populated.
+        // [GIVEN] Payment term date formula calculations are to be performed.
+
+        // [WHEN] The payment term is configured for Months
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Months;
+
+        // [WHEN] DUEDTDS < 1
+        GPPaymentTerms.DUEDTDS := 0;
+
+        // [THEN] The date formula string will have a correct value.
+        DateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, false, '');
+        Assert.AreEqual(true, IsDateFormulaValid(DateFormulaText), 'The payment term date formula is invalid. ' + DateFormulaText);
+        Assert.AreEqual('<0M+0D>', DateFormulaText, 'The payment term date formula should be correct for DueType Months, DUEDTDS < 1.');
+
+        // [WHEN] DUEDTDS > 0
+        GPPaymentTerms.DUEDTDS := 1;
+
+        // [THEN] A valid payment term date formula will be generated.
+        DateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, false, '');
+        Assert.AreEqual(true, IsDateFormulaValid(DateFormulaText), 'The payment term date formula is invalid. ' + DateFormulaText);
+        Assert.AreEqual('<1M+0D>', DateFormulaText, 'The payment term date formula is incorrect for DueType Months, DUEDTDS = 1.');
+    end;
+
+    [Test]
+    procedure TestCalculateDueDateFormulaDueTypeMonthDay()
+    var
+        GPPaymentTerms: Record "GP Payment Terms";
+        DateFormulaText: Text;
+    begin
+        // [SCENARIO] GP Payment Terms staging table is populated.
+        // [GIVEN] Payment term date formula calculations are to be performed.
+
+        // [WHEN] The payment term is configured for Month/Day
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Month/Day";
+
+        // [WHEN] DueMonth and DUEDTDS < 1
+        GPPaymentTerms.DueMonth := 0;
+        GPPaymentTerms.DUEDTDS := 0;
+
+        // [THEN] The date formula string will have a correct value.
+        DateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, false, '');
+        Assert.AreEqual(false, IsDateFormulaValid(DateFormulaText), 'The payment term date formula should have been invalid. ' + DateFormulaText);
+        Assert.AreEqual('<M0+D0>', DateFormulaText, 'The payment term date formula should be correct for DueType Month/Day, DUEDTDS < 1.');
+
+        // [WHEN] DueMonth and DUEDTDS > 0
+        GPPaymentTerms.DueMonth := 1;
+        GPPaymentTerms.DUEDTDS := 1;
+
+        // [THEN] A valid payment term date formula will be generated.
+        DateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, false, '');
+        Assert.AreEqual(true, IsDateFormulaValid(DateFormulaText), 'The payment term date formula is invalid. ' + DateFormulaText);
+        Assert.AreEqual('<M1+D1>', DateFormulaText, 'The payment term date formula is incorrect for DueType Month/Day, DueMonth = 1, DUEDTDS = 1.');
+    end;
+
+    [Test]
+    procedure TestCalculateDueDateFormulaDueTypeAnnual()
+    var
+        GPPaymentTerms: Record "GP Payment Terms";
+        DateFormulaText: Text;
+    begin
+        // [SCENARIO] GP Payment Terms staging table is populated.
+        // [GIVEN] Payment term date formula calculations are to be performed.
+
+        // [WHEN] The payment term is configured for Annual
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Annual;
+
+        // [WHEN] CalculateDateFromDays and DUEDTDS < 1
+        GPPaymentTerms.CalculateDateFromDays := 0;
+        GPPaymentTerms.DUEDTDS := 0;
+
+        // [THEN] The date formula string will have a correct value.
+        DateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, false, '');
+        Assert.AreEqual(true, IsDateFormulaValid(DateFormulaText), 'The payment term date formula is invalid. ' + DateFormulaText);
+        Assert.AreEqual('<0Y+0D>', DateFormulaText, 'The payment term date formula should be correct for DueType Annual, DUEDTDS < 1.');
+
+        // [WHEN] CalculateDateFromDays and DUEDTDS > 0
+        GPPaymentTerms.CalculateDateFromDays := 15;
+        GPPaymentTerms.DUEDTDS := 1;
+
+        // [THEN] A valid payment term date formula will be generated.
+        DateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, false, '');
+        Assert.AreEqual(true, IsDateFormulaValid(DateFormulaText), 'The payment term date formula is invalid. ' + DateFormulaText);
+        Assert.AreEqual('<1Y+15D>', DateFormulaText, 'The payment term date formula is incorrect for DueType Annual, CalculateDateFromDays = 15, DUEDTDS = 1.');
+    end;
+
+    [Test]
+    procedure TestCalculateDiscountDateFormulaDueTypeDays()
+    var
+        GPPaymentTerms: Record "GP Payment Terms";
+        DiscountDateFormulaText: Text;
+        CombinedDateFormulaText: Text;
+        ExpectedDiscountDateFormulaMinusBrackets: Text;
+    begin
+        // [SCENARIO] GP Payment Terms staging table is populated.
+        // [GIVEN] Payment term date formula calculations are to be performed.
+
+        // [WHEN] The payment term discount is configured.
+        GPPaymentTerms.DISCTYPE := GPPaymentTerms.DISCTYPE::Days;
+
+        // [WHEN] DISCDTDS < 1
+        GPPaymentTerms.DISCDTDS := 0;
+
+        // [THEN] The date formula string will be empty.
+        DiscountDateFormulaText := HelperFunctions.CalculateDiscountDateFormula(GPPaymentTerms);
+        Assert.AreEqual('', DiscountDateFormulaText, 'The payment term discount date formula should be empty.');
+
+        // [WHEN] DISCDTDS > 0
+        GPPaymentTerms.DISCDTDS := 15;
+
+        // [THEN] A valid payment term date formula will be generated.
+        ExpectedDiscountDateFormulaMinusBrackets := '15D';
+        DiscountDateFormulaText := HelperFunctions.CalculateDiscountDateFormula(GPPaymentTerms);
+        Assert.AreEqual(true, IsDateFormulaValid(DiscountDateFormulaText), 'The payment term discount date formula is invalid. ' + DiscountDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>', DiscountDateFormulaText, 'The payment term discount date formula is incorrect.');
+
+        // [WHEN] Combined with Due Date calculation, the correct combined date formula text will be correct.
+        // [THEN] A valid payment term date formula will be generated.
+
+        // Net Days
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Net Days";
+        GPPaymentTerms.DUEDTDS := 30;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+30D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 1');
+
+        // Date
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Date;
+        GPPaymentTerms.DUEDTDS := 30;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+D30>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 2');
+
+        // EOM
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::EOM;
+        GPPaymentTerms.DUEDTDS := 2;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+CM+2D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 3');
+
+        // None
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::None;
+        GPPaymentTerms.CalculateDateFromDays := 2;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+2D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 4');
+
+        // Next Month
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Next Month";
+        GPPaymentTerms.DUEDTDS := 16;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '-CM+1M+15D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 5');
+
+        // Months
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Months;
+        GPPaymentTerms.DUEDTDS := 1;
+        GPPaymentTerms.CalculateDateFromDays := 0;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+1M+0D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 6');
+
+        // Month/Day
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Month/Day";
+        GPPaymentTerms.DueMonth := 1;
+        GPPaymentTerms.DUEDTDS := 1;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+M1+D1>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 7');
+
+        // Annual
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Annual;
+        GPPaymentTerms.CalculateDateFromDays := 15;
+        GPPaymentTerms.DUEDTDS := 1;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+1Y+15D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 8');
+    end;
+
+    [Test]
+    procedure TestCalculateDiscountDateFormulaDueTypeDate()
+    var
+        GPPaymentTerms: Record "GP Payment Terms";
+        DiscountDateFormulaText: Text;
+        CombinedDateFormulaText: Text;
+        ExpectedDiscountDateFormulaMinusBrackets: Text;
+    begin
+        // [SCENARIO] GP Payment Terms staging table is populated.
+        // [GIVEN] Payment term date formula calculations are to be performed.
+
+        // [WHEN] The payment term discount is configured.
+        GPPaymentTerms.DISCTYPE := GPPaymentTerms.DISCTYPE::Date;
+
+        // [WHEN] DISCDTDS < 1
+        GPPaymentTerms.DISCDTDS := 0;
+
+        // [THEN] The date formula string will be empty.
+        DiscountDateFormulaText := HelperFunctions.CalculateDiscountDateFormula(GPPaymentTerms);
+        Assert.AreEqual('', DiscountDateFormulaText, 'The payment term discount date formula should be empty.');
+
+        // [WHEN] DISCDTDS > 0
+        GPPaymentTerms.DISCDTDS := 15;
+
+        // [THEN] A valid payment term date formula will be generated.
+        ExpectedDiscountDateFormulaMinusBrackets := 'D15';
+        DiscountDateFormulaText := HelperFunctions.CalculateDiscountDateFormula(GPPaymentTerms);
+        Assert.AreEqual(true, IsDateFormulaValid(DiscountDateFormulaText), 'The payment term discount date formula is invalid. ' + DiscountDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>', DiscountDateFormulaText, 'The payment term discount date formula is incorrect.');
+
+        // [WHEN] Combined with Due Date calculation, the correct combined date formula text will be correct.
+        // [THEN] A valid payment term date formula will be generated.
+
+        // Net Days
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Net Days";
+        GPPaymentTerms.DUEDTDS := 30;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+30D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 1');
+
+        // Date
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Date;
+        GPPaymentTerms.DUEDTDS := 30;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+D30>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 2');
+
+        // EOM
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::EOM;
+        GPPaymentTerms.DUEDTDS := 2;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+CM+2D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 3');
+
+        // None
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::None;
+        GPPaymentTerms.CalculateDateFromDays := 2;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+2D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 4');
+
+        // Next Month
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Next Month";
+        GPPaymentTerms.DUEDTDS := 16;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '-CM+1M+15D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 5');
+
+        // Months
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Months;
+        GPPaymentTerms.DUEDTDS := 1;
+        GPPaymentTerms.CalculateDateFromDays := 0;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+1M+0D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 6');
+
+        // Month/Day
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Month/Day";
+        GPPaymentTerms.DueMonth := 1;
+        GPPaymentTerms.DUEDTDS := 1;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+M1+D1>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 7');
+
+        // Annual
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Annual;
+        GPPaymentTerms.CalculateDateFromDays := 15;
+        GPPaymentTerms.DUEDTDS := 1;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+1Y+15D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 8');
+    end;
+
+    [Test]
+    procedure TestCalculateDiscountDateFormulaDueTypeEOM()
+    var
+        GPPaymentTerms: Record "GP Payment Terms";
+        DiscountDateFormulaText: Text;
+        CombinedDateFormulaText: Text;
+        ExpectedDiscountDateFormulaMinusBrackets: Text;
+    begin
+        // [SCENARIO] GP Payment Terms staging table is populated.
+        // [GIVEN] Payment term date formula calculations are to be performed.
+
+        // [WHEN] The payment term discount is configured.
+        GPPaymentTerms.DISCTYPE := GPPaymentTerms.DISCTYPE::EOM;
+
+        // [WHEN] DISCDTDS < 1
+        GPPaymentTerms.DISCDTDS := 0;
+
+        // [THEN] The date formula string will be correct.
+        DiscountDateFormulaText := HelperFunctions.CalculateDiscountDateFormula(GPPaymentTerms);
+        Assert.AreEqual(true, IsDateFormulaValid(DiscountDateFormulaText), 'The payment term discount date formula is invalid. ' + DiscountDateFormulaText);
+        Assert.AreEqual('<CM>', DiscountDateFormulaText, 'The payment term discount date formula is not correct.');
+
+        // [WHEN] DISCDTDS > 0
+        GPPaymentTerms.DISCDTDS := 2;
+
+        // [THEN] A valid date formula will be generated.
+        ExpectedDiscountDateFormulaMinusBrackets := 'CM+2D';
+        DiscountDateFormulaText := HelperFunctions.CalculateDiscountDateFormula(GPPaymentTerms);
+        Assert.AreEqual(true, IsDateFormulaValid(DiscountDateFormulaText), 'The payment term discount date formula is invalid. ' + DiscountDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>', DiscountDateFormulaText, 'The payment term discount date formula is incorrect.');
+
+        // [WHEN] Combined with Due Date calculation, the correct combined date formula text will be correct.
+        // [THEN] A valid payment term date formula will be generated.
+
+        // Net Days
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Net Days";
+        GPPaymentTerms.DUEDTDS := 30;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+30D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 1');
+
+        // Date
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Date;
+        GPPaymentTerms.DUEDTDS := 30;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+D30>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 2');
+
+        // EOM
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::EOM;
+        GPPaymentTerms.DUEDTDS := 2;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+CM+2D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 3');
+
+        // None
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::None;
+        GPPaymentTerms.CalculateDateFromDays := 2;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+2D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 4');
+
+        // Next Month
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Next Month";
+        GPPaymentTerms.DUEDTDS := 16;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '-CM+1M+15D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 5');
+
+        // Months
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Months;
+        GPPaymentTerms.DUEDTDS := 1;
+        GPPaymentTerms.CalculateDateFromDays := 0;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+1M+0D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 6');
+
+        // Month/Day
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Month/Day";
+        GPPaymentTerms.DueMonth := 1;
+        GPPaymentTerms.DUEDTDS := 1;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+M1+D1>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 7');
+
+        // Annual
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Annual;
+        GPPaymentTerms.CalculateDateFromDays := 15;
+        GPPaymentTerms.DUEDTDS := 1;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+1Y+15D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 8');
+    end;
+
+    [Test]
+    procedure TestCalculateDiscountDateFormulaDueTypeNone()
+    var
+        GPPaymentTerms: Record "GP Payment Terms";
+        DiscountDateFormulaText: Text;
+        CombinedDateFormulaText: Text;
+        ExpectedDiscountDateFormulaMinusBrackets: Text;
+    begin
+        // [SCENARIO] GP Payment Terms staging table is populated.
+        // [GIVEN] Payment term date formula calculations are to be performed.
+
+        // [WHEN] The payment term discount is configured.
+        GPPaymentTerms.DISCTYPE := GPPaymentTerms.DISCTYPE::None;
+
+        // [WHEN] CalculateDateFromDays < 1
+        GPPaymentTerms.CalculateDateFromDays := -1;
+
+        // [THEN] The date formula string will be empty.
+        DiscountDateFormulaText := HelperFunctions.CalculateDiscountDateFormula(GPPaymentTerms);
+        Assert.AreEqual(true, IsDateFormulaValid(DiscountDateFormulaText), 'The payment term discount date formula is invalid. ' + DiscountDateFormulaText);
+        Assert.AreEqual('<+0D>', DiscountDateFormulaText, 'The payment term discount date formula is not correct.');
+
+        // [WHEN] CalculateDateFromDays > 0
+        GPPaymentTerms.CalculateDateFromDays := 2;
+
+        // [THEN] The date formula string will be empty.
+        DiscountDateFormulaText := HelperFunctions.CalculateDiscountDateFormula(GPPaymentTerms);
+        Assert.AreEqual(true, IsDateFormulaValid(DiscountDateFormulaText), 'The payment term discount date formula is invalid. ' + DiscountDateFormulaText);
+        Assert.AreEqual('<+2D>', DiscountDateFormulaText, 'The payment term discount date formula is not correct.');
+
+        // [THEN] A valid date formula will be generated.
+        ExpectedDiscountDateFormulaMinusBrackets := '+2D';
+        DiscountDateFormulaText := HelperFunctions.CalculateDiscountDateFormula(GPPaymentTerms);
+        Assert.AreEqual(true, IsDateFormulaValid(DiscountDateFormulaText), 'The payment term discount date formula is invalid. ' + DiscountDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>', DiscountDateFormulaText, 'The payment term discount date formula is incorrect.');
+
+        // [WHEN] Combined with Due Date calculation, the correct combined date formula text will be correct.
+        // [THEN] A valid payment term date formula will be generated.
+
+        // Net Days
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Net Days";
+        GPPaymentTerms.DUEDTDS := 30;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+32D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 1');
+
+        // Date
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Date;
+        GPPaymentTerms.DUEDTDS := 30;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+D30>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 2');
+
+        // EOM
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::EOM;
+        GPPaymentTerms.DUEDTDS := 2;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+CM+4D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 3');
+
+        // None
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::None;
+        GPPaymentTerms.CalculateDateFromDays := 2;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+2D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 4');
+
+        // Next Month
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Next Month";
+        GPPaymentTerms.DUEDTDS := 16;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '-CM+1M+15D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 5');
+
+        // Months
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Months;
+        GPPaymentTerms.DUEDTDS := 1;
+        GPPaymentTerms.CalculateDateFromDays := 0;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+1M+0D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 6');
+
+        // Month/Day
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Month/Day";
+        GPPaymentTerms.DueMonth := 1;
+        GPPaymentTerms.DUEDTDS := 1;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+M1+D1>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 7');
+
+        // Annual
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Annual;
+        GPPaymentTerms.CalculateDateFromDays := 15;
+        GPPaymentTerms.DUEDTDS := 1;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+1Y+15D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 8');
+    end;
+
+    [Test]
+    procedure TestCalculateDiscountDateFormulaDueTypeNextMonth()
+    var
+        GPPaymentTerms: Record "GP Payment Terms";
+        DiscountDateFormulaText: Text;
+        CombinedDateFormulaText: Text;
+        ExpectedDiscountDateFormulaMinusBrackets: Text;
+    begin
+        // [SCENARIO] GP Payment Terms staging table is populated.
+        // [GIVEN] Payment term date formula calculations are to be performed.
+
+        // [WHEN] The payment term discount is configured.
+        GPPaymentTerms.DISCTYPE := GPPaymentTerms.DISCTYPE::"Next Month";
+
+        // [WHEN] DISCDTDS < 1
+        GPPaymentTerms.DISCDTDS := 0;
+
+        // [THEN] The date formula string will be correct.
+        DiscountDateFormulaText := HelperFunctions.CalculateDiscountDateFormula(GPPaymentTerms);
+        Assert.AreEqual(true, IsDateFormulaValid(DiscountDateFormulaText), 'The payment term discount date formula is invalid. ' + DiscountDateFormulaText);
+        Assert.AreEqual('<-CM+1M+0D>;', DiscountDateFormulaText, 'The payment term discount date formula is not correct.');
+
+        // [WHEN] DISCDTDS > 0
+        GPPaymentTerms.DISCDTDS := 3;
+
+        // [THEN] A valid date formula will be generated.
+        ExpectedDiscountDateFormulaMinusBrackets := '-CM+1M+2D';
+        DiscountDateFormulaText := HelperFunctions.CalculateDiscountDateFormula(GPPaymentTerms);
+        Assert.AreEqual(true, IsDateFormulaValid(DiscountDateFormulaText), 'The payment term discount date formula is invalid. ' + DiscountDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>;', DiscountDateFormulaText, 'The payment term discount date formula is incorrect.');
+
+        // [WHEN] Combined with Due Date calculation, the correct combined date formula text will be correct.
+        // [THEN] A valid payment term date formula will be generated.
+
+        // Net Days
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Net Days";
+        GPPaymentTerms.DUEDTDS := 30;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+30D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 1');
+
+        // Date
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Date;
+        GPPaymentTerms.DUEDTDS := 30;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+D30>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 2');
+
+        // EOM
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::EOM;
+        GPPaymentTerms.DUEDTDS := 2;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+CM+2D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 3');
+
+        // None
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::None;
+        GPPaymentTerms.CalculateDateFromDays := 2;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+2D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 4');
+
+        // Next Month
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Next Month";
+        GPPaymentTerms.DUEDTDS := 16;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>-CM+1M+15D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 5');
+
+        // Months
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Months;
+        GPPaymentTerms.DUEDTDS := 1;
+        GPPaymentTerms.CalculateDateFromDays := 0;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+1M+0D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 6');
+
+        // Month/Day
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Month/Day";
+        GPPaymentTerms.DueMonth := 1;
+        GPPaymentTerms.DUEDTDS := 1;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+M1+D1>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 7');
+
+        // Annual
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Annual;
+        GPPaymentTerms.CalculateDateFromDays := 15;
+        GPPaymentTerms.DUEDTDS := 1;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+1Y+15D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 8');
+    end;
+
+    [Test]
+    procedure TestCalculateDiscountDateFormulaDueTypeMonths()
+    var
+        GPPaymentTerms: Record "GP Payment Terms";
+        DiscountDateFormulaText: Text;
+        CombinedDateFormulaText: Text;
+        ExpectedDiscountDateFormulaMinusBrackets: Text;
+    begin
+        // [SCENARIO] GP Payment Terms staging table is populated.
+        // [GIVEN] Payment term date formula calculations are to be performed.
+
+        // [WHEN] The payment term discount is configured.
+        GPPaymentTerms.DISCTYPE := GPPaymentTerms.DISCTYPE::Months;
+
+        // [WHEN] CalculateDateFromDays and DISCDTDS < 1
+        GPPaymentTerms.CalculateDateFromDays := 0;
+        GPPaymentTerms.DISCDTDS := 0;
+
+        // [THEN] The date formula string will be correct.
+        DiscountDateFormulaText := HelperFunctions.CalculateDiscountDateFormula(GPPaymentTerms);
+        Assert.AreEqual(true, IsDateFormulaValid(DiscountDateFormulaText), 'The payment term discount date formula is invalid. ' + DiscountDateFormulaText);
+        Assert.AreEqual('<0M+0D>;', DiscountDateFormulaText, 'The payment term discount date formula is not correct.');
+
+        // [WHEN] DISCDTDS > 0
+        GPPaymentTerms.DISCDTDS := 1;
+
+        // [THEN] A valid date formula will be generated.
+        ExpectedDiscountDateFormulaMinusBrackets := '1M+0D';
+        DiscountDateFormulaText := HelperFunctions.CalculateDiscountDateFormula(GPPaymentTerms);
+        Assert.AreEqual(true, IsDateFormulaValid(DiscountDateFormulaText), 'The payment term discount date formula is invalid. ' + DiscountDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>;', DiscountDateFormulaText, 'The payment term discount date formula is incorrect.');
+
+        // [WHEN] Combined with Due Date calculation, the correct combined date formula text will be correct.
+        // [THEN] A valid payment term date formula will be generated.
+
+        // Net Days
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Net Days";
+        GPPaymentTerms.DUEDTDS := 30;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+30D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 1');
+
+        // Date
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Date;
+        GPPaymentTerms.DUEDTDS := 30;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+D30>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 2');
+
+        // EOM
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::EOM;
+        GPPaymentTerms.DUEDTDS := 2;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+CM+2D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 3');
+
+        // None
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::None;
+        GPPaymentTerms.CalculateDateFromDays := 2;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+2D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 4');
+
+        // Next Month
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Next Month";
+        GPPaymentTerms.DUEDTDS := 16;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>-CM+1M+15D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 5');
+
+        // Months
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Months;
+        GPPaymentTerms.DUEDTDS := 1;
+        GPPaymentTerms.CalculateDateFromDays := 0;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+1M+0D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 6');
+
+        // Month/Day
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Month/Day";
+        GPPaymentTerms.DueMonth := 1;
+        GPPaymentTerms.DUEDTDS := 1;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+M1+D1>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 7');
+
+        // Annual
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Annual;
+        GPPaymentTerms.CalculateDateFromDays := 15;
+        GPPaymentTerms.DUEDTDS := 1;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+1Y+15D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 8');
+    end;
+
+    [Test]
+    procedure TestCalculateDiscountDateFormulaDueTypeMonthDay()
+    var
+        GPPaymentTerms: Record "GP Payment Terms";
+        DiscountDateFormulaText: Text;
+        CombinedDateFormulaText: Text;
+        ExpectedDiscountDateFormulaMinusBrackets: Text;
+    begin
+        // [SCENARIO] GP Payment Terms staging table is populated.
+        // [GIVEN] Payment term date formula calculations are to be performed.
+
+        // [WHEN] The payment term discount is configured.
+        GPPaymentTerms.DISCTYPE := GPPaymentTerms.DISCTYPE::"Month/Day";
+
+        // [WHEN] DiscountMonth and DISCDTDS > 1
+        GPPaymentTerms.DiscountMonth := 2;
+        GPPaymentTerms.DISCDTDS := 1;
+
+        // [THEN] A valid date formula will be generated.
+        ExpectedDiscountDateFormulaMinusBrackets := 'M2+D1';
+        DiscountDateFormulaText := HelperFunctions.CalculateDiscountDateFormula(GPPaymentTerms);
+        Assert.AreEqual(true, IsDateFormulaValid(DiscountDateFormulaText), 'The payment term discount date formula is invalid. ' + DiscountDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>', DiscountDateFormulaText, 'The payment term discount date formula is incorrect.');
+
+        // [WHEN] Combined with Due Date calculation, the correct combined date formula text will be correct.
+        // [THEN] A valid payment term date formula will be generated.
+
+        // Net Days
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Net Days";
+        GPPaymentTerms.DUEDTDS := 30;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+30D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 1');
+
+        // Date
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Date;
+        GPPaymentTerms.DUEDTDS := 30;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+D30>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 2');
+
+        // EOM
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::EOM;
+        GPPaymentTerms.DUEDTDS := 2;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+CM+2D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 3');
+
+        // None
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::None;
+        GPPaymentTerms.CalculateDateFromDays := 2;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+2D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 4');
+
+        // Next Month
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Next Month";
+        GPPaymentTerms.DUEDTDS := 16;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '-CM+1M+15D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 5');
+
+        // Months
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Months;
+        GPPaymentTerms.DUEDTDS := 1;
+        GPPaymentTerms.CalculateDateFromDays := 0;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+1M+0D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 6');
+
+        // Month/Day
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Month/Day";
+        GPPaymentTerms.DueMonth := 1;
+        GPPaymentTerms.DUEDTDS := 1;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+M1+D1>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 7');
+
+        // Annual
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Annual;
+        GPPaymentTerms.CalculateDateFromDays := 15;
+        GPPaymentTerms.DUEDTDS := 1;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '+1Y+15D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 8');
+    end;
+
+    [Test]
+    procedure TestCalculateDiscountDateFormulaDueTypeAnnual()
+    var
+        GPPaymentTerms: Record "GP Payment Terms";
+        DiscountDateFormulaText: Text;
+        CombinedDateFormulaText: Text;
+        ExpectedDiscountDateFormulaMinusBrackets: Text;
+    begin
+        // [SCENARIO] GP Payment Terms staging table is populated.
+        // [GIVEN] Payment term date formula calculations are to be performed.
+
+        // [WHEN] The payment term discount is configured.
+        GPPaymentTerms.DISCTYPE := GPPaymentTerms.DISCTYPE::Annual;
+
+        // [WHEN] DISCDTDS < 1
+        GPPaymentTerms.DISCDTDS := -1;
+
+        DiscountDateFormulaText := HelperFunctions.CalculateDiscountDateFormula(GPPaymentTerms);
+        Assert.AreEqual(true, IsDateFormulaValid(DiscountDateFormulaText), 'The payment term discount date formula is invalid. ' + DiscountDateFormulaText);
+        Assert.AreEqual('<0Y+0D>;', DiscountDateFormulaText, 'The payment term discount date formula is incorrect.');
+
+        // [WHEN] DISCDTDS > 0
+        GPPaymentTerms.DISCDTDS := 1;
+
+        // [THEN] A valid date formula will be generated.
+        ExpectedDiscountDateFormulaMinusBrackets := '1Y+0D';
+        DiscountDateFormulaText := HelperFunctions.CalculateDiscountDateFormula(GPPaymentTerms);
+        Assert.AreEqual(true, IsDateFormulaValid(DiscountDateFormulaText), 'The payment term discount date formula is invalid. ' + DiscountDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>;', DiscountDateFormulaText, 'The payment term discount date formula is incorrect.');
+
+        // [WHEN] Combined with Due Date calculation, the correct combined date formula text will be correct.
+        // [THEN] A valid payment term date formula will be generated.
+
+        // Net Days
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Net Days";
+        GPPaymentTerms.DUEDTDS := 30;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+30D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 1');
+
+        // Date
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Date;
+        GPPaymentTerms.DUEDTDS := 30;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+D30>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 2');
+
+        // EOM
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::EOM;
+        GPPaymentTerms.DUEDTDS := 2;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+CM+2D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 3');
+
+        // None
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::None;
+        GPPaymentTerms.CalculateDateFromDays := 2;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+2D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 4');
+
+        // Next Month
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Next Month";
+        GPPaymentTerms.DUEDTDS := 16;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>-CM+1M+15D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 5');
+
+        // Months
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Months;
+        GPPaymentTerms.DUEDTDS := 1;
+        GPPaymentTerms.CalculateDateFromDays := 0;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+1M+0D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 6');
+
+        // Month/Day
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::"Month/Day";
+        GPPaymentTerms.DueMonth := 1;
+        GPPaymentTerms.DUEDTDS := 1;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+M1+D1>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 7');
+
+        // Annual
+        GPPaymentTerms.DUETYPE := GPPaymentTerms.DUETYPE::Annual;
+        GPPaymentTerms.CalculateDateFromDays := 15;
+        GPPaymentTerms.DUEDTDS := 1;
+        CombinedDateFormulaText := HelperFunctions.CalculateDueDateFormula(GPPaymentTerms, true, CopyStr(DiscountDateFormulaText, 1, 32));
+        Assert.AreEqual(true, IsDateFormulaValid(CombinedDateFormulaText), 'The combined payment term date formula is invalid. ' + CombinedDateFormulaText);
+        Assert.AreEqual('<' + ExpectedDiscountDateFormulaMinusBrackets + '>+1Y+15D>', CombinedDateFormulaText, 'The combined payment term date formula is incorrect. 8');
+    end;
+
     local procedure CreateGPPaymentTermsRecords()
     var
         GPPaymentTerms: Record "GP Payment Terms";
@@ -1170,11 +2225,11 @@ codeunit 139664 "GP Data Migration Tests"
         // [THEN] The fields for Vendors 1 are correctly applied
         Clear(VendorBankAccount);
         VendorBankAccount.SetRange("Vendor No.", VendorIdWithBankStr1Txt);
-        VendorBankAccount.SetRange(Code, 'V01_REMITTO');
+        VendorBankAccount.SetRange("Name", 'V01_RemitTo_Name');
         VendorBankAccount.FindFirst();
 
         Assert.AreEqual(VendorIdWithBankStr1Txt, VendorBankAccount."Vendor No.", 'Vendor No. of VendorBankAccount is wrong.');
-        Assert.AreEqual('V01_REMITTO', VendorBankAccount.Code, 'Code of VendorBankAccount is wrong.');
+        Assert.IsTrue(StrPos(VendorBankAccount.Code, '-') > 0, 'Vendor Bank Account Code missing dash (-).');
         Assert.AreEqual('V01_RemitTo_Name', VendorBankAccount.Name, 'Name of VendorBankAccount is wrong.');
         Assert.AreEqual('01234', VendorBankAccount."Bank Branch No.", 'Bank Branch No. of VendorBankAccount is wrong.');
         Assert.AreEqual('123456789', VendorBankAccount."Bank Account No.", 'Bank Account No. of VendorBankAccount is wrong.');
@@ -1189,7 +2244,9 @@ codeunit 139664 "GP Data Migration Tests"
         Vendor.FindFirst();
 
         // [THEN] The Remit To bank account will be the Vendor's preferred bank account
-        Assert.AreEqual('V01_REMITTO', Vendor."Preferred Bank Account Code", 'Preferred Bank Account Code of migrated Vendor should be Remit To account.');
+        Clear(VendorBankAccount);
+        VendorBankAccount.Get(Vendor."No.", Vendor."Preferred Bank Account Code");
+        Assert.AreEqual('V01_RemitTo_Name', VendorBankAccount.Name, 'Preferred Bank Account Code of migrated Vendor should be the Remit To account.');
 
         // [WHEN] The Vendor does not have a Remit To bank account, but has a Primary bank account
         Clear(Vendor);
@@ -1197,7 +2254,9 @@ codeunit 139664 "GP Data Migration Tests"
         Vendor.FindFirst();
 
         // [THEN] The Primary bank account will be the Vendor's preferred bank account
-        Assert.AreEqual('V02_PRIMARY', Vendor."Preferred Bank Account Code", 'Preferred Bank Account Code of migrated Vendor should be Primary account.');
+        Clear(VendorBankAccount);
+        VendorBankAccount.Get(Vendor."No.", Vendor."Preferred Bank Account Code");
+        Assert.AreEqual('V02_Primary_Name', VendorBankAccount.Name, 'Preferred Bank Account Code of migrated Vendor should be the Primary account.');
 
         // [WHEN] The Vendor does not have either a Remit To or Primary bank account
         Clear(Vendor);
@@ -1213,7 +2272,9 @@ codeunit 139664 "GP Data Migration Tests"
         Vendor.FindFirst();
 
         // [THEN] The Primary bank account will be the Vendor's preferred bank account
-        Assert.AreEqual('V04_PRIMARY', Vendor."Preferred Bank Account Code", 'Preferred Bank Account Code of migrated Vendor should be Primary account.');
+        Clear(VendorBankAccount);
+        VendorBankAccount.Get(Vendor."No.", Vendor."Preferred Bank Account Code");
+        Assert.AreEqual('V04_Primary_Name', VendorBankAccount.Name, 'Preferred Bank Account Code of migrated Vendor should be the Primary account.');
 
         // [WHEN] The Vendor Bank Accounts are created
         // [THEN] The IBAN field will get populated only if it passed validation checks
@@ -1221,41 +2282,41 @@ codeunit 139664 "GP Data Migration Tests"
         // Vendor 2, V02_Primary - Invalid IBAN
         Clear(VendorBankAccount);
         VendorBankAccount.SetRange("Vendor No.", VendorIdWithBankStr2Txt);
-        VendorBankAccount.SetRange(Code, 'V02_Primary');
+        VendorBankAccount.SetRange("Name", 'V02_Primary_Name');
         VendorBankAccount.FindFirst();
 
         Assert.AreEqual(VendorIdWithBankStr2Txt, VendorBankAccount."Vendor No.", 'Vendor No. of VendorBankAccount is wrong.');
-        Assert.AreEqual('V02_PRIMARY', VendorBankAccount.Code, 'Code of VendorBankAccount is wrong.');
+        Assert.IsTrue(StrPos(VendorBankAccount.Code, '-') > 0, 'Vendor Bank Account Code not generated in the correct format.');
         Assert.AreEqual('', VendorBankAccount.IBAN, 'IBAN of VendorBankAccount should be empty because it was invalid. V02_PRIMARY');
 
         // Vendor 2, V02_Other - Valid IBAN
         Clear(VendorBankAccount);
         VendorBankAccount.SetRange("Vendor No.", VendorIdWithBankStr2Txt);
-        VendorBankAccount.SetRange(Code, 'V02_Other');
+        VendorBankAccount.SetRange("Name", 'V02_Other_Name');
         VendorBankAccount.FindFirst();
 
         Assert.AreEqual(VendorIdWithBankStr2Txt, VendorBankAccount."Vendor No.", 'Vendor No. of VendorBankAccount is wrong.');
-        Assert.AreEqual('V02_OTHER', VendorBankAccount.Code, 'Code of VendorBankAccount is wrong.');
+        Assert.IsTrue(StrPos(VendorBankAccount.Code, '-') > 0, 'Vendor Bank Account Code not generated in the correct format.');
         Assert.AreEqual(ValidIBANStrTxt, VendorBankAccount.IBAN, 'IBAN of VendorBankAccount is wrong. V02_OTHER');
 
         // Vendor 3, V03_Other2 - Invalid IBAN
         Clear(VendorBankAccount);
         VendorBankAccount.SetRange("Vendor No.", VendorIdWithBankStr3Txt);
-        VendorBankAccount.SetRange(Code, 'V03_Other2');
+        VendorBankAccount.SetRange("Name", 'V03_Other2_Name');
         VendorBankAccount.FindFirst();
 
         Assert.AreEqual(VendorIdWithBankStr3Txt, VendorBankAccount."Vendor No.", 'Vendor No. of VendorBankAccount is wrong.');
-        Assert.AreEqual('V03_OTHER2', VendorBankAccount.Code, 'Code of VendorBankAccount is wrong.');
+        Assert.IsTrue(StrPos(VendorBankAccount.Code, '-') > 0, 'Vendor Bank Account Code not generated in the correct format.');
         Assert.AreEqual('', VendorBankAccount.IBAN, 'IBAN of VendorBankAccount should be empty because it was invalid. V03_OTHER2');
 
         // Vendor 3, V03_Other - Valid IBAN
         Clear(VendorBankAccount);
         VendorBankAccount.SetRange("Vendor No.", VendorIdWithBankStr3Txt);
-        VendorBankAccount.SetRange(Code, 'V03_Other');
+        VendorBankAccount.SetRange("Name", 'V03_Other_Name');
         VendorBankAccount.FindFirst();
 
         Assert.AreEqual(VendorIdWithBankStr3Txt, VendorBankAccount."Vendor No.", 'Vendor No. of VendorBankAccount is wrong.');
-        Assert.AreEqual('V03_OTHER', VendorBankAccount.Code, 'Code of VendorBankAccount is wrong.');
+        Assert.IsTrue(StrPos(VendorBankAccount.Code, '-') > 0, 'Vendor Bank Account Code not generated in the correct format.');
         Assert.AreEqual(ValidIBANStrTxt, VendorBankAccount.IBAN, 'IBAN of VendorBankAccount is wrong. V03_OTHER');
 
         // Vendor 5
@@ -1486,61 +2547,6 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.IsTrue(PurchaseHeader.IsEmpty(), 'POs should not have been created.');
     end;
 
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    procedure TestOpenPOSettingEnabled()
-    var
-        PurchaseHeader: Record "Purchase Header";
-        PaymentTerms: Record "Payment Terms";
-        GPPaymentTerms: Record "GP Payment Terms";
-        Currency: Record Currency;
-    begin
-        // [SCENARIO] Vendors and their PO information are queried from GP
-        // [GIVEN] GP data
-        Initialize();
-
-        // [WHEN] Data is imported and migrated
-        CreateVendorData();
-        CreateVendorClassData();
-        CreateOpenPOData();
-        GPTestHelperFunctions.CreateConfigurationSettings();
-
-        // Enable Migrate Open POs setting
-        GPCompanyAdditionalSettings.GetSingleInstance();
-        GPCompanyAdditionalSettings.Validate("Migrate Open POs", true);
-        GPCompanyAdditionalSettings.Modify();
-
-        CreateGPPaymentTermsRecords();
-
-        // [WHEN] The Payment Terms migration code is run.
-        PaymentTerms.DeleteAll();
-        HelperFunctions.CreatePaymentTerms();
-
-        GPTestHelperFunctions.InitializeMigration();
-
-        GPVendor.Reset();
-        MigrateVendors(GPVendor);
-        HelperFunctions.CreatePostMigrationData();
-
-        // [THEN] the too long PYMTRMID will be generated correctly
-        GPPaymentTerms.SetRange(PYMTRMID, '5% 10/NET 30');
-        GPPaymentTerms.FindFirst();
-        Assert.AreEqual('5% 10/NET2', GPPaymentTerms.PYMTRMID_New, 'Incorrect new PYMTRMID_New.');
-
-        GPPOP10100.FindFirst();
-        Assert.AreEqual('5% 10/NET2', GPPOP10100.PYMTRMID, 'Incorrect payment terms code in staging table.');
-
-        // [THEN] the POs will be migrated
-        PurchaseHeader.SetRange("No.", PONumberTxt);
-        Assert.IsTrue(PurchaseHeader.FindFirst(), 'POs should have been created.');
-
-        // With the correct generated Payment Terms Code
-        Assert.AreEqual('5% 10/NET2', PurchaseHeader."Payment Terms Code", 'Incorrect payment terms code.');
-
-        // [THEN] the new Currency is created
-        Assert.IsTrue(Currency.Get(TestMoneyCurrencyCodeTxt), 'The new Currency was not created.');
-    end;
-
     [Normal]
     local procedure Initialize()
     var
@@ -1549,11 +2555,15 @@ codeunit 139664 "GP Data Migration Tests"
         VendorPostingGroup: Record "Vendor Posting Group";
         GPConfiguration: Record "GP Configuration";
         GPPostingAccounts: Record "GP Posting Accounts";
+        PurchaseHeader: Record "Purchase Header";
+        GenProductPostingGroup: Record "Gen. Product Posting Group";
+        InventoryPostingGroup: Record "Inventory Posting Group";
     begin
         if not BindSubscription(GPDataMigrationTests) then
             exit;
 
         DataMigrationEntity.DeleteAll();
+        PurchaseHeader.DeleteAll();
         GPConfiguration.DeleteAll();
         GPTestHelperFunctions.DeleteAllSettings();
         GPCustomer.DeleteAll();
@@ -1582,6 +2592,16 @@ codeunit 139664 "GP Data Migration Tests"
             GPPostingAccounts.PayablesAccount := '1';
             GPPostingAccounts.ReceivablesAccount := '100';
             GPPostingAccounts.Insert();
+        end;
+
+        if not GenProductPostingGroup.Get(PostingGroupCodeTxt) then begin
+            GenProductPostingGroup.Code := PostingGroupCodeTxt;
+            GenProductPostingGroup.Insert();
+        end;
+
+        if not InventoryPostingGroup.Get(PostingGroupCodeTxt) then begin
+            InventoryPostingGroup.Code := PostingGroupCodeTxt;
+            InventoryPostingGroup.Insert();
         end;
 
         if UnbindSubscription(GPDataMigrationTests) then
@@ -1621,10 +2641,16 @@ codeunit 139664 "GP Data Migration Tests"
 
     local procedure CreateCustomerData()
     begin
+        Clear(GPRM00101);
+        GPRM00101.CUSTNMBR := '!WOW!';
+        GPRM00101.CUSTNAME := 'Oh! What a feeling!';
+        GPRM00101.ADRSCODE := '';
+        GPRM00101.Insert();
+
         Clear(GPCustomer);
-        GPCustomer.CUSTNMBR := '!WOW!';
-        GPCustomer.CUSTNAME := 'Oh! What a feeling!';
-        GPCustomer.STMTNAME := 'Oh! What a feeling!';
+        GPCustomer.CUSTNMBR := GPRM00101.CUSTNMBR;
+        GPCustomer.CUSTNAME := GPRM00101.CUSTNAME;
+        GPCustomer.STMTNAME := GPRM00101.CUSTNAME;
         GPCustomer.ADDRESS1 := '';
         GPCustomer.ADDRESS2 := 'Toyota Land';
         GPCustomer.CITY := '!What a city!';
@@ -1648,10 +2674,16 @@ codeunit 139664 "GP Data Migration Tests"
         GPCustomer.TAXEXMT1 := '';
         GPCustomer.Insert();
 
+        Clear(GPRM00101);
+        GPRM00101.CUSTNMBR := '"AMERICAN"';
+        GPRM00101.CUSTNAME := '"American Clothing"';
+        GPRM00101.ADRSCODE := '';
+        GPRM00101.Insert();
+
         Clear(GPCustomer);
-        GPCustomer.CUSTNMBR := '"AMERICAN"';
-        GPCustomer.CUSTNAME := '"American Clothing"';
-        GPCustomer.STMTNAME := '"American Clothing"';
+        GPCustomer.CUSTNMBR := GPRM00101.CUSTNMBR;
+        GPCustomer.CUSTNAME := GPRM00101.CUSTNAME;
+        GPCustomer.STMTNAME := GPRM00101.CUSTNAME;
         GPCustomer.ADDRESS1 := '';
         GPCustomer.ADDRESS2 := '';
         GPCustomer.CITY := '"CITY"';
@@ -1675,10 +2707,16 @@ codeunit 139664 "GP Data Migration Tests"
         GPCustomer.TAXEXMT1 := '';
         GPCustomer.Insert();
 
+        Clear(GPRM00101);
+        GPRM00101.CUSTNMBR := '#1';
+        GPRM00101.CUSTNAME := '#1 Company';
+        GPRM00101.ADRSCODE := 'PRIMARY';
+        GPRM00101.Insert();
+
         Clear(GPCustomer);
-        GPCustomer.CUSTNMBR := '#1';
-        GPCustomer.CUSTNAME := '#1 Company';
-        GPCustomer.STMTNAME := '#1 Company';
+        GPCustomer.CUSTNMBR := GPRM00101.CUSTNMBR;
+        GPCustomer.CUSTNAME := GPRM00101.CUSTNAME;
+        GPCustomer.STMTNAME := GPRM00101.CUSTNAME;
         GPCustomer.ADDRESS1 := 'GPS Alley';
         GPCustomer.ADDRESS2 := '';
         GPCustomer.CITY := '#1 City';
@@ -1718,7 +2756,8 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY01200.Master_Type := 'CUS';
         GPSY01200.Master_ID := GPCustomerAddress.CUSTNMBR;
         GPSY01200.ADRSCODE := GPCustomerAddress.ADRSCODE;
-        GPSY01200.INET1 := 'GoodEmailAddress@testing.tst';
+        GPSY01200.EmailToAddress := 'GoodEmailAddress@testing.tst';
+        GPSY01200.INET1 := 'support@testing.tst';
         GPSY01200.Insert();
 
         Clear(GPCustomerAddress);
@@ -1737,7 +2776,8 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY01200.Master_Type := 'CUS';
         GPSY01200.Master_ID := GPCustomerAddress.CUSTNMBR;
         GPSY01200.ADRSCODE := GPCustomerAddress.ADRSCODE;
-        GPSY01200.INET1 := 'GoodEmailAddress2@testing.tst';
+        GPSY01200.INET1 := 'AP@testing.tst';
+        GPSY01200.EmailToAddress := 'GoodEmailAddress2@testing.tst';
         GPSY01200.Insert();
 
         Clear(GPCustomerAddress);
@@ -1756,7 +2796,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY01200.Master_Type := 'CUS';
         GPSY01200.Master_ID := GPCustomerAddress.CUSTNMBR;
         GPSY01200.ADRSCODE := GPCustomerAddress.ADRSCODE;
-        GPSY01200.INET1 := 'bad.email(address@testing.tst';
+        GPSY01200.INET1 := '@testing.tst';
         GPSY01200.Insert();
 
         Clear(GPCustomerAddress);
@@ -1811,9 +2851,6 @@ codeunit 139664 "GP Data Migration Tests"
         GLAccount: Record "G/L Account";
         GPAccount: Record "GP Account";
     begin
-        GPRM00201.DeleteAll();
-        GPRM00101.DeleteAll();
-
         if not GPAccount.Get('1') then begin
             GPAccount.AcctNum := '1';
             GPAccount.AcctIndex := 1;
@@ -1879,23 +2916,17 @@ codeunit 139664 "GP Data Migration Tests"
         GPRM00201.RMWRACC := 0;
         GPRM00201.Insert();
 
-        GPRM00101.Init();
-        GPRM00101.CUSTNMBR := '!WOW!';
-        GPRM00101.CUSTNAME := 'Oh! What a feeling!';
+        GPRM00101.Get('!WOW!');
         GPRM00101.CUSTCLAS := 'TEST';
-        GPRM00101.Insert();
+        GPRM00101.Modify();
 
-        GPRM00101.Init();
-        GPRM00101.CUSTNMBR := '"AMERICAN"';
-        GPRM00101.CUSTNAME := '"American Clothing"';
+        GPRM00101.Get('"AMERICAN"');
         GPRM00101.CUSTCLAS := 'USA-TEST-1';
-        GPRM00101.Insert();
+        GPRM00101.Modify();
 
-        GPRM00101.Init();
-        GPRM00101.CUSTNMBR := '#1';
-        GPRM00101.CUSTNAME := '#1 Company';
+        GPRM00101.Get('#1');
         GPRM00101.CUSTCLAS := 'USA-TEST-2';
-        GPRM00101.Insert();
+        GPRM00101.Modify();
 
         GPAccount.Init();
         GPAccount.AcctNum := 'TEST987';
@@ -2685,7 +3716,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPSY01200.Master_Type := 'VEN';
         GPSY01200.Master_ID := GPVendorAddress.VENDORID;
         GPSY01200.ADRSCODE := GPVendorAddress.ADRSCODE;
-        GPSY01200.INET1 := 'bad.email(address@testing.tst';
+        GPSY01200.INET1 := '@testing.tst';
         GPSY01200.Insert();
 
         Clear(GPVendorAddress);
@@ -4015,6 +5046,12 @@ codeunit 139664 "GP Data Migration Tests"
 
     local procedure CreateOpenPOData()
     begin
+        Clear(Item);
+        Item."No." := 'ITEM-1';
+        Item.Validate("Gen. Prod. Posting Group", PostingGroupCodeTxt);
+        Item.Validate("Inventory Posting Group", PostingGroupCodeTxt);
+        Item.Insert();
+
         Clear(GPMC40200);
         GPMC40200.CURNCYID := TestMoneyCurrencyCodeTxt;
         GPMC40200.CRNCYDSC := 'Test Money :)';
@@ -4030,9 +5067,42 @@ codeunit 139664 "GP Data Migration Tests"
         GPPOP10100.PRMDATE := 20230101D;
         GPPOP10100.PYMTRMID := '5% 10/NET 30';
         GPPOP10100.SHIPMTHD := 'Space Ship';
+        GPPOP10100.XCHGRATE := 0.01;
+        GPPOP10100.EXCHDATE := 20230101D;
+        GPPOP10100.Insert();
+
+        Clear(GPPOP10110);
+        GPPOP10110.PONUMBER := GPPOP10100.PONUMBER;
+        GPPOP10110.QTYORDER := 1;
+        GPPOP10110.QTYCANCE := 0;
+        GPPOP10110.ORD := 1;
+        GPPOP10110.UOFM := 'EACH';
+        GPPOP10110.ITEMNMBR := Item."No.";
+        GPPOP10110.VENDORID := GPPOP10100.VENDORID;
+        GPPOP10110.Insert();
+
+        // PO with a line that won't be migrated.
+        GPPOP10100.POTYPE := GPPOP10100.POTYPE::Standard;
+        GPPOP10100.POSTATUS := GPPOP10100.POSTATUS::New;
+        GPPOP10100.PONUMBER := 'PO002';
+        GPPOP10100.VENDORID := 'DUFFY';
+        GPPOP10100.DOCDATE := 20230101D;
+        GPPOP10100.PRMDATE := 20230101D;
+        GPPOP10100.PYMTRMID := '5% 10/NET 30';
+        GPPOP10100.SHIPMTHD := 'Space Ship';
         GPPOP10100.CURNCYID := TestMoneyCurrencyCodeTxt;
         GPPOP10100.XCHGRATE := 0.01;
         GPPOP10100.EXCHDATE := 20230101D;
         GPPOP10100.Insert();
+
+        Clear(GPPOP10110);
+        GPPOP10110.PONUMBER := GPPOP10100.PONUMBER;
+        GPPOP10110.QTYORDER := 1;
+        GPPOP10110.QTYCANCE := 1;
+        GPPOP10110.ORD := 1;
+        GPPOP10110.UOFM := 'EACH';
+        GPPOP10110.ITEMNMBR := Item."No.";
+        GPPOP10110.VENDORID := GPPOP10100.VENDORID;
+        GPPOP10110.Insert();
     end;
 }

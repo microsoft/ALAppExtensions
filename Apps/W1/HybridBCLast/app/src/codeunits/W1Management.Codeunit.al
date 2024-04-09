@@ -1,7 +1,6 @@
 namespace Microsoft.DataMigration.BC;
 
 using Microsoft.DataMigration;
-using Microsoft.EServices.EDocument;
 using System.Environment;
 using System.Upgrade;
 using System.Text;
@@ -18,25 +17,19 @@ codeunit 4026 "W1 Management"
         FinishNonCompanyTxt: Label 'Finish BC Last Intelligent Cloud transformation for non company tables.', Locked = true;
         CompanyTransformationFailedTxt: Label 'Company transformation failed with error: %1', Locked = true;
         NonCompanyTransformationFailedTxt: Label 'Non company transformation failed with error: %1', Locked = true;
-        UpgradeWillDisableReplicatonsQst: Label 'The upgrade must be triggered as the last step, because you''ll not be able to migrate further data after the upgrade. Before you start the upgrade, make sure that you have moved all companies that you want to move. Are you sure that you want to proceed?';
-        UpgradeWillDisableReplicatonAndSignOutUserQst: Label 'The upgrade must be triggered as the last step, because you''ll not be able to migrate further data after the upgrade. Before you start the upgrade, make sure that you have moved all companies that you want to move.\\You''ll lose access to the environment when you start the upgrade process. You can track the process and manage the environment at the Business Central admin center.\\Are you sure that you want to proceed?';
-        TelemetryCategoryTok: Label 'HybridBCLast', Locked = true;
-        W1CountryCodeTxt: Label 'W1', Locked = true;
-        BaseAppExtensionIdTxt: Label '437dbf0e-84ff-417a-965d-ed2bb9650972', Locked = true;
+        UpgradeWillDisableReplicatonsQst: Label 'IMPORTANT - The upgrade must be triggered as the last step, because you''ll not be able to run the upgrade again if upgrade is successful. Before you start the upgrade, make sure that you have moved all companies that you want to move and upgrade. You should not replicate additional On-premise data after the upgrade is completed as per database data can be corrupted. Consult official documentation for more information.\\ Are you sure that you want to proceed?';
+        UpgradeWillDisableReplicatonAndSignOutUserQst: Label 'IMPORTANT - The upgrade must be triggered as the last step, because you''ll not be able to run the upgrade again if upgrade is successful. Before you start the upgrade, make sure that you have moved all companies that you want to move and upgrade. You should not replicate additional On-premise data after the upgrade is completed as per database data can be corrupted. Consult official documentation for more information.\\You''ll lose access to the environment when you start the upgrade process. You can track the process and manage the environment at the Business Central admin center.\\Are you sure that you want to proceed?';
         UpgradeWasScheduledMsg: Label 'Upgrade was succesfully scheduled';
         UpgradeWasScheduledTrackStatusInTACMsg: Label 'Upgrade was succesfully scheduled. You can track the status in the Tenant Admin Center under Operations tab.';
         VerifyCanStartUpgradeForCompanyMsg: Label 'Verifying if the upgrade can be started for the company %1.', Locked = true;
         SettingCanUpgradeToTrueForCompanyNameMsg: Label 'Setting can start upgrade to true, for the company %1', Locked = true;
         UpdatingUpgradeStatusOfTheCompanyMsg: Label 'Setting can start upgrade to true, for the company %1', Locked = true;
         CloudMigrationTok: Label 'CloudMigration', Locked = true;
-        CannotStartUpgradeCompanyUpgradeCompletedErr: Label 'You cannot start the upgrade because one or more companies are already upgraded. If you want to run the upgrade again, you must delete these companies and start the migration again.';
+        CannotStartReplicationUpgradeCompletedErr: Label 'You cannot start the replication from the previous version because one or more companies are already upgraded. Consult the official documentation for more information how to proceed.';
+        CannotStartUpgradeCompanyUpgradeCompletedErr: Label 'You cannot start the upgrade because one or more companies are already upgraded. Consult the official documentation for more information how to proceed.';
         PleaseWaitForUpgradeToBeTriggeredErr: Label 'The upgrade has been scheduled at %1. Please wait for %2 minutes for the task to start. You can check if the upgrade was scheduled and track the progress in on the Operations tab in the Business Central admin center. If the task does not start during this time, start the process again.', Comment = '%1 - Time upgrade action was invoked. %2 Time in minutes to wait.';
         CheckUpgradeStatusInTenantAdminCenterMsg: Label 'The upgrade was scheduled at %1. You can see if the upgrade has run on the Operations tab in the Business Central admin center. In case the upgrade fails, we will have restored the tenant to the point before the upgrade, so you can fix any issues and start a new upgrade run.', Comment = '%1 - Time upgrade action was invoked.';
         SettingTheHybridReplicationSummaryToCompletedTxt: Label 'Updating Hybrid Replication Summary records to completed.', Locked = true;
-#if not CLEAN21
-        UpgradeEngineSelectQst: Label 'AL Code,Invoke Full Upgrade (New)';
-        UseLegacyUpgradeEngineWasChangedTxt: Label 'The setting for using the legacy upgrade engine was changed to %1', Locked = true;
-#endif
 
     trigger OnRun()
     begin
@@ -88,7 +81,6 @@ codeunit 4026 "W1 Management"
         HybridCompanyStatus: Record "Hybrid Company Status";
         HybridBCLastManagement: Codeunit "Hybrid BC Last Management";
         HybridCloudManagement: Codeunit "Hybrid Cloud Management";
-        HybridDeployment: Codeunit "Hybrid Deployment";
         UpgradeTag: Codeunit "Upgrade Tag";
         UseLegacyUpgrade: Boolean;
         BlankDateTime: DateTime;
@@ -99,6 +91,7 @@ codeunit 4026 "W1 Management"
 
         if not HybridBCLastManagement.GetBCLastProductEnabled() then
             exit;
+
         Clear(BlankDateTime);
         HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Completed);
         if not HybridCompanyStatus.IsEmpty() then
@@ -140,7 +133,7 @@ codeunit 4026 "W1 Management"
 
             HybridReplicationSummary."Upgrade Started DateTime" := CurrentDateTime();
             HybridReplicationSummary.Modify();
-            HybridDeployment.StartDataUpgrade();
+            HybridCloudManagement.StartDataUpgrade();
             Handled := true;
             if GuiAllowed() then
                 Message(UpgradeWasScheduledTrackStatusInTACMsg);
@@ -192,6 +185,7 @@ codeunit 4026 "W1 Management"
         if not HybridReplicationSummary.FindLast() then
             exit;
 
+        Clear(BlankDateTime);
         if HybridReplicationSummary."Upgrade Started DateTime" = BlankDateTime then
             exit;
 
@@ -288,30 +282,9 @@ codeunit 4026 "W1 Management"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"W1 Management", 'OnPopulateW1TableMappingForVersion', '', false, false)]
-    local procedure PopulateW1TableMapping15x(CountryCode: Text; TargetVersion: Decimal)
-    var
-        SourceTableMapping: Record "Source Table Mapping";
-        IncomingDocument: Record "Incoming Document";
-        StgIncomingDocument: Record "Stg Incoming Document";
-        W1Management: Codeunit "W1 Management";
-        ExtensionInfo: ModuleInfo;
-    begin
-        if TargetVersion <> 15.0 then
-            exit;
-
-        if not W1Management.GetLegacyUpgradeSupported() then
-            exit;
-
-        NavApp.GetCurrentModuleInfo(ExtensionInfo);
-        // Provide table mappings here to assist upgrading from 14x -> 15x
-        SourceTableMapping.MapTable(IncomingDocument.TableName(), W1CountryCodeTxt, StgIncomingDocument.TableName(), true, BaseAppExtensionIdTxt, ExtensionInfo.Id());
-        SourceTableMapping.MapTable(IncomingDocument.TableName(), W1CountryCodeTxt, IncomingDocument.TableName(), false, BaseAppExtensionIdTxt, BaseAppExtensionIdTxt);
-    end;
-
     procedure TelemetryCategory(): Text
     begin
-        exit(TelemetryCategoryTok);
+        exit(CloudMigrationTok);
     end;
 
     procedure InvokePerCompanyUpgrade(HybridReplicationSummary: Record "Hybrid Replication Summary"; CompanyName: Text[50])
@@ -346,16 +319,16 @@ codeunit 4026 "W1 Management"
     var
         ErrorMessage: Text;
     begin
-        SendTraceTag('0000CA0', TelemetryCategory(), Verbosity::Normal, BeginNonCompanyTxt, DataClassification::SystemMetadata);
+        Session.LogMessage('0000CA0', BeginNonCompanyTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategory());
 
         Commit();
         if not Codeunit.Run(CODEUNIT::"Execute Non-Company Upgrade", HybridReplicationSummary) then begin
             ErrorMessage := GetLastErrorText();
-            SendTraceTag('0000CA1', TelemetryCategory(), Verbosity::Error, StrSubstNo(NonCompanyTransformationFailedTxt, ErrorMessage), DataClassification::SystemMetadata);
+            Session.LogMessage('0000CA1', StrSubstNo(NonCompanyTransformationFailedTxt, ErrorMessage), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategory());
             ClearLastError();
             OnAfterNonCompanyUpgradeFailed(HybridReplicationSummary, ErrorMessage);
         end else begin
-            SendTraceTag('0000CA2', TelemetryCategory(), Verbosity::Normal, FinishNonCompanyTxt, DataClassification::SystemMetadata);
+            Session.LogMessage('0000CA2', FinishNonCompanyTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategory());
             OnAfterNonCompanyUpgradeCompleted(HybridReplicationSummary);
         end;
     end;
@@ -365,14 +338,14 @@ codeunit 4026 "W1 Management"
         Company: Record Company;
         ErrorMessage: Text;
     begin
-        SendTraceTag('00007EB', TelemetryCategory(), Verbosity::Normal, StrSubstNo(BeginCompanyTxt, Company.Name), DataClassification::SystemMetadata);
+        Session.LogMessage('00007EB', StrSubstNo(BeginCompanyTxt, Company.Name), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategory());
         Commit();
         if not Codeunit.Run(Codeunit::"W1 Company Handler", HybridReplicationSummary) then begin
             ErrorMessage := GetLastErrorText() + GetLastErrorCallStack();
-            SendTraceTag('00007KD', TelemetryCategory(), Verbosity::Error, StrSubstNo(CompanyTransformationFailedTxt, ErrorMessage), DataClassification::SystemMetadata);
+            Session.LogMessage('00007KD', StrSubstNo(CompanyTransformationFailedTxt, ErrorMessage), Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategory());
             OnAfterCompanyUpgradeFailed(HybridReplicationSummary, ErrorMessage);
         end else begin
-            SendTraceTag('00007EC', TelemetryCategory(), Verbosity::Normal, StrSubstNo(FinishCompanyTxt, Company.Name), DataClassification::SystemMetadata);
+            Session.LogMessage('00007EC', StrSubstNo(FinishCompanyTxt, Company.Name), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', TelemetryCategory());
             OnAfterCompanyUpgradeCompleted(HybridReplicationSummary);
         end;
     end;
@@ -473,36 +446,6 @@ codeunit 4026 "W1 Management"
         exit(HybridCompanyStatus."Upgrade Status" = HybridCompanyStatus."Upgrade Status"::Pending);
     end;
 
-#if not CLEAN21
-#pragma warning disable AS0072
-    [Obsolete('No longer supported.', '21.0')]
-    procedure ChangeUpgradeEngine()
-    var
-        IntelligentCloudSetup: Record "Intelligent Cloud Setup";
-        HybridBCLastManagement: Codeunit "Hybrid BC Last Management";
-        Selection: Integer;
-        CurrentlySelected: Integer;
-    begin
-        if not HybridBCLastManagement.GetBCLastProductEnabled() then
-            exit;
-
-        IntelligentCloudSetup.Get();
-
-        CurrentlySelected := 1;
-        if IntelligentCloudSetup."Use Legacy Upgrade Engine" then
-            CurrentlySelected := 1;
-
-        Selection := StrMenu(UpgradeEngineSelectQst, CurrentlySelected);
-        if Selection = 0 then
-            exit;
-
-        IntelligentCloudSetup."Use Legacy Upgrade Engine" := Selection = 1;
-        IntelligentCloudSetup.Modify();
-        Session.LogMessage('0000IG9', StrSubstNo(UseLegacyUpgradeEngineWasChangedTxt, Format(IntelligentCloudSetup."Use Legacy Upgrade Engine", 0, 9)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CloudMigrationTok);
-    end;
-#pragma warning restore AS0072
-#endif
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Hybrid Deployment", 'OnHandleVerifyCanStartUpgrade', '', false, false)]
     local procedure HandleVerifyCanStartUpgrade(var CanStartUpgrade: Boolean; var Handled: Boolean)
     begin
@@ -526,6 +469,16 @@ codeunit 4026 "W1 Management"
             exit;
 
         SourceBC := true;
+    end;
+
+    [EventSubscriber(ObjectType::Page, Page::"Hybrid Cloud Setup Wizard", 'OnSelectedProduct', '', false, false)]
+    local procedure HandleOnSelectedProduct(ProductId: Text)
+    var
+        HybridCompanyStatus: Record "Hybrid Company Status";
+    begin
+        HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Completed);
+        if not HybridCompanyStatus.IsEmpty() then
+            Error(CannotStartReplicationUpgradeCompletedErr);
     end;
 
     [IntegrationEvent(false, false)]

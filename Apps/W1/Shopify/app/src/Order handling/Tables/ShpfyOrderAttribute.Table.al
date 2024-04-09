@@ -24,6 +24,19 @@ table 30116 "Shpfy Order Attribute"
         {
             Caption = 'Value';
             DataClassification = CustomerContent;
+            ObsoleteReason = 'Replaced with Attribute Value';
+#if not CLEAN24
+            ObsoleteState = Pending;
+            ObsoleteTag = '24.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '27.0';
+#endif
+        }
+        field(4; "Attribute Value"; Text[2048])
+        {
+            Caption = 'Value';
+            DataClassification = CustomerContent;
         }
     }
     keys

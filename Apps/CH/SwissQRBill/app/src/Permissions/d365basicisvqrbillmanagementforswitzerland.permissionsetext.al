@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Bank.Payment;
 
-using Microsoft.Bank.Payment;
 using System.Security.AccessControl;
 
 permissionsetextension 11501 "D365 BASIC ISV - QR-Bill Management for Switzerland" extends "D365 BASIC ISV"

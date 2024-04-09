@@ -377,15 +377,13 @@ page 18747 "TDS Adjustment Journal"
         GetTDSEntry: Record "TDS Entry";
         TDSJournalLine: Record "TDS Journal Line";
         TDSJournalBatch: Record "TDS Journal Batch";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         DocumentNo: Code[20];
         LineNo: Integer;
     begin
         TDSJournalBatch.Get(Rec."Journal Template Name", Rec."Journal Batch Name");
-        if TDSJournalBatch."No. Series" <> '' then begin
-            Clear(NoSeriesManagement);
-            DocumentNo := NoSeriesManagement.TryGetNextNo(TDSJournalBatch."No. Series", Rec."Posting Date");
-        end;
+        if TDSJournalBatch."No. Series" <> '' then
+            DocumentNo := NoSeries.PeekNextNo(TDSJournalBatch."No. Series", Rec."Posting Date");
         TDSJournalLine.LockTable();
         TDSJournalLine.SetRange("Journal Template Name", Rec."Journal Template Name");
         TDSJournalLine.SetRange("Journal Batch Name", Rec."Journal Batch Name");

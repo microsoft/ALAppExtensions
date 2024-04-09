@@ -1,7 +1,7 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Codeunit Shpfy GQL FindCustByPhone (ID 30130) implements Interface Shpfy IGarphQL.
+/// Codeunit Shpfy GQL FindCustByPhone (ID 30130) implements Interface Shpfy IGraphQL.
 /// </summary>
 codeunit 30130 "Shpfy GQL FindCustByPhone" implements "Shpfy IGraphQL"
 {

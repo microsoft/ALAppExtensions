@@ -53,6 +53,8 @@ codeunit 30175 "Shpfy Item Reference Mgt."
     var
         ItemReference: Record "Item Reference";
     begin
+        if ReferenceNo = '' then
+            exit(false);
         ItemReference.SetRange("Reference Type", ReferenceType);
         ItemReference.SetRange("Reference No.", ReferenceNo);
         if UnitOfMeasure <> '' then

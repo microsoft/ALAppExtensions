@@ -1,3 +1,4 @@
+#if not CLEAN24
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
@@ -7,9 +8,12 @@ codeunit 30105 "Shpfy Install Mgt."
 {
     Access = Internal;
     Subtype = Install;
+    ObsoleteReason = 'This codeunit is obsolete. Use Shpfy Installer instead.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '24.0';
 
     trigger OnInstallAppPerDatabase()
-    var
     begin
     end;
 }
+#endif

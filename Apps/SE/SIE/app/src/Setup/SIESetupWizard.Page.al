@@ -144,10 +144,10 @@ page 5314 "SIE Setup Wizard"
 
                         trigger OnDrillDown()
                         var
-                            GLAccountMappingCard: Page "G/L Account Mapping Card";
+                            GLAccMappingCard: Page "G/L Acc. Mapping Card";
                         begin
-                            GLAccountMappingCard.SetTableView(Rec);
-                            GLAccountMappingCard.RunModal();
+                            GLAccMappingCard.SetTableView(Rec);
+                            GLAccMappingCard.RunModal();
                             UpdateGLAccountsMappedInfo();
                         end;
                     }
@@ -254,7 +254,6 @@ page 5314 "SIE Setup Wizard"
     }
 
     trigger OnQueryClosePage(CloseAction: action): Boolean;
-    var
     begin
         if GetLastErrorText() <> '' then
             exit(true);

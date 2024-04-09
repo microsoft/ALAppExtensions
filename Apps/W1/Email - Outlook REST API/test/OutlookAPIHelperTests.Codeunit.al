@@ -9,25 +9,27 @@ codeunit 139752 "Outlook API Helper Tests"
 
     var
         LibraryAssert: Codeunit "Library Assert";
-        SendEmailExternalUserErr: Label 'Could not send the email because the user is external.';
+        SendEmailExternalUserErr: Label 'Could not send the email, because the user is delegated or external.';
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestSendMailDelegatedAdmin()
     var
+        PlanIds: Codeunit "Plan Ids";
+        AzureADPlanTestLibrary: Codeunit "Azure AD Plan Test Library";
         AzureADUserTestLibrary: Codeunit "Azure AD User Test Library";
         OutlookAPIClient: Codeunit "Email - Outlook API Client";
         EmailMessage: Codeunit "Email Message";
+        AccessToken: SecretText;
     begin
         // [SCENARIO] External user (Delegated Admin) are prevented from sending emails
-        DeleteAllFromTablePlanAndUserPlan();
-
         // [GIVEN] The user is a delegated admin
         BindSubscription(AzureADUserTestLibrary);
-        AzureADUserTestLibrary.SetIsUserDelegatedtAdmin(true);
+        AzureADUserTestLibrary.SetIsUserDelegatedAdmin(true);
+        AzureADPlanTestLibrary.AssignUserToPlan(UserSecurityId(), PlanIds.GetDelegatedAdminPlanId());
 
         // [WHEN] The user attempts to send an email
-        asserterror OutlookAPIClient.SendEmail('', GetEmailJson(EmailMessage));
+        asserterror OutlookAPIClient.SendEmail(AccessToken, GetEmailJson(EmailMessage));
 
         // [THEN] The email is blocked and an error is shown
         LibraryAssert.ExpectedError(SendEmailExternalUserErr);
@@ -37,19 +39,21 @@ codeunit 139752 "Outlook API Helper Tests"
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestSendMailDelegatedHelpdesk()
     var
+        PlanIds: Codeunit "Plan Ids";
+        AzureADPlanTestLibrary: Codeunit "Azure AD Plan Test Library";
         AzureADUserTestLibrary: Codeunit "Azure AD User Test Library";
         OutlookAPIClient: Codeunit "Email - Outlook API Client";
         EmailMessage: Codeunit "Email Message";
+        AccessToken: SecretText;
     begin
         // [SCENARIO] External user (Delegated Helpdesk) is prevented from sending emails
-        DeleteAllFromTablePlanAndUserPlan();
-
         // [GIVEN] The user is a delegated helpdesk
         BindSubscription(AzureADUserTestLibrary);
-        AzureADUserTestLibrary.SetIsUserDelegatedtHelpdesk(true);
+        AzureADUserTestLibrary.SetIsUserDelegatedHelpdesk(true);
+        AzureADPlanTestLibrary.AssignUserToPlan(UserSecurityId(), PlanIds.GetHelpDeskPlanId());
 
         // [WHEN] The user attempts to send an email
-        asserterror OutlookAPIClient.SendEmail('', GetEmailJson(EmailMessage));
+        asserterror OutlookAPIClient.SendEmail(AccessToken, GetEmailJson(EmailMessage));
 
         // [THEN] The email is blocked and an error is shown
         LibraryAssert.ExpectedError(SendEmailExternalUserErr);
@@ -64,6 +68,7 @@ codeunit 139752 "Outlook API Helper Tests"
         EmailMessage: Codeunit "Email Message";
         AzureADPlan: Codeunit "Azure AD Plan";
         PlanIds: Codeunit "Plan Ids";
+        AccessToken: SecretText;
     begin
         // [SCENARIO] External user (External Accountant) is prevented from sending emails
         DeleteAllFromTablePlanAndUserPlan();
@@ -73,7 +78,7 @@ codeunit 139752 "Outlook API Helper Tests"
         LibraryAssert.IsTrue(AzureADPlan.IsPlanAssignedToUser(PlanIds.GetExternalAccountantPlanId()), 'User has no assigned external accountant plan.');
 
         // [WHEN] The user attempts to send an email
-        asserterror OutlookAPIClient.SendEmail('', GetEmailJson(EmailMessage));
+        asserterror OutlookAPIClient.SendEmail(AccessToken, GetEmailJson(EmailMessage));
 
         // [THEN] The email is blocked and an error is shown
         LibraryAssert.ExpectedError(SendEmailExternalUserErr);

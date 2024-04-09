@@ -24,7 +24,7 @@ table 30118 "Shpfy Order Header"
         {
             DataClassification = SystemMetadata;
         }
-        field(2; Email; Text[50])
+        field(2; Email; Text[80])
         {
             Caption = 'Email';
             DataClassification = CustomerContent;
@@ -559,7 +559,62 @@ table 30118 "Shpfy Order Header"
             Caption = 'Return Status';
             DataClassification = SystemMetadata;
         }
-
+        field(117; "Company Id"; BigInteger)
+        {
+            Caption = 'Company Id';
+            DataClassification = SystemMetadata;
+        }
+        field(118; "Company Main Contact Id"; BigInteger)
+        {
+            Caption = 'Company Main Contact Id';
+            DataClassification = SystemMetadata;
+        }
+        field(119; "Company Main Contact Email"; Text[100])
+        {
+            Caption = 'Company Main Contact Email';
+            DataClassification = SystemMetadata;
+        }
+        field(120; "Company Main Contact Phone No."; Text[50])
+        {
+            Caption = 'Company Main Contact Phone No.';
+            DataClassification = SystemMetadata;
+            ExtendedDatatype = PhoneNo;
+        }
+        field(121; "Company Main Contact Cust. Id"; BigInteger)
+        {
+            Caption = 'Company Main Contact Customer Id';
+            DataClassification = SystemMetadata;
+        }
+        field(122; B2B; Boolean)
+        {
+            Caption = 'B2B';
+            DataClassification = SystemMetadata;
+        }
+        field(123; "Current Total Amount"; Decimal)
+        {
+            Caption = 'Current Total Amount';
+            DataClassification = SystemMetadata;
+        }
+        field(124; "Current Total Items Quantity"; Integer)
+        {
+            Caption = 'Current Total Items Quantity';
+            DataClassification = SystemMetadata;
+        }
+        field(125; "Line Items Redundancy Code"; Integer)
+        {
+            Caption = 'Line Items Redundancy Code';
+            DataClassification = SystemMetadata;
+        }
+        field(126; "PO Number"; Text[512])
+        {
+            Caption = 'PO Number';
+            DataClassification = SystemMetadata;
+        }
+        field(127; "Company Location Id"; BigInteger)
+        {
+            Caption = 'Company Location Id';
+            DataClassification = SystemMetadata;
+        }
         field(500; "Shop Code"; Code[20])
         {
             Caption = 'Shop Code';
@@ -711,6 +766,11 @@ table 30118 "Shpfy Order Header"
         {
             Caption = 'Ship-to Contact No.';
             DataClassification = CustomerContent;
+        }
+        field(1020; "Has Order State Error"; Boolean)
+        {
+            Caption = 'Has Order State Error';
+            DataClassification = SystemMetadata;
         }
     }
     keys

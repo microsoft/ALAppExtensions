@@ -2,6 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+
+namespace Microsoft.Shared.Error;
+
+using System.Utilities;
 page 7900 "Error Messages Card Part"
 {
     Caption = 'Details';
@@ -152,9 +156,7 @@ page 7900 "Error Messages Card Part"
 
     procedure SetRecords(var TempErrorMessage: Record "Error Message" temporary)
     begin
-        Rec.Reset();
-        Rec.DeleteAll();
-        Rec.Copy(TempErrorMessage);
+        Rec.Copy(TempErrorMessage, true);
     end;
 }
 

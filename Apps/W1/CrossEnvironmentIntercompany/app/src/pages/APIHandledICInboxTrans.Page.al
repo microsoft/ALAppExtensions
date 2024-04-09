@@ -26,58 +26,92 @@ page 30400 "API - Handled IC Inbox Trans."
     {
         area(Content)
         {
-            field(id; Rec.SystemId)
+            repeater(Records)
             {
-                Caption = 'Id';
-            }
-            field(transactionNumber; Rec."Transaction No.")
-            {
-                Caption = 'Transaction Number';
-            }
-            field(icPartnerCode; Rec."IC Partner Code")
-            {
-                Caption = 'Intercompany Partner Code';
-            }
-            field(sourceType; Rec."Source Type")
-            {
-                Caption = 'Source Type';
-            }
-            field(documentType; Rec."Document Type")
-            {
-                Caption = 'Document Type';
-            }
-            field(documentNumber; Rec."Document No.")
-            {
-                Caption = 'Document Number';
-            }
-            field(postingDate; Rec."Posting Date")
-            {
-                Caption = 'Posting Date';
-            }
-            field(transactionSource; Rec."Transaction Source")
-            {
-                Caption = 'Transaction Source';
-            }
-            field(documentDate; Rec."Document Date")
-            {
-                Caption = 'Document Date';
-            }
-            field(status; Rec."Status")
-            {
-                Caption = 'Status';
-            }
-            field(sourceLineNumber; Rec."Source Line No.")
-            {
-                Caption = 'Source Line Number';
-            }
-            field(icAccountType; Rec."IC Account Type")
-            {
-                Caption = 'Intercompany Account Type';
-            }
-            field(icAccountNumber; Rec."IC Account No.")
-            {
-                Caption = 'Intercompany Account Number';
+                field(id; Rec.SystemId)
+                {
+                    Caption = 'Id';
+                }
+                field(transactionNumber; Rec."Transaction No.")
+                {
+                    Caption = 'Transaction Number';
+                }
+                field(icPartnerCode; Rec."IC Partner Code")
+                {
+                    Caption = 'Intercompany Partner Code';
+                }
+                field(sourceType; Rec."Source Type")
+                {
+                    Caption = 'Source Type';
+                }
+                field(sourceTypeIndex; SourceTypeIndex)
+                {
+                    Caption = 'Source Type Index';
+                }
+                field(documentType; Rec."Document Type")
+                {
+                    Caption = 'Document Type';
+                }
+                field(documentTypeOrdinal; DocumentTypeOrdinal)
+                {
+                    Caption = 'Document Type Ordinal';
+                }
+                field(documentNumber; Rec."Document No.")
+                {
+                    Caption = 'Document Number';
+                }
+                field(postingDate; Rec."Posting Date")
+                {
+                    Caption = 'Posting Date';
+                }
+                field(transactionSource; Rec."Transaction Source")
+                {
+                    Caption = 'Transaction Source';
+                }
+                field(transactionSourceIndex; TransactionSourceIndex)
+                {
+                    Caption = 'Transaction Source Index';
+                }
+                field(documentDate; Rec."Document Date")
+                {
+                    Caption = 'Document Date';
+                }
+                field(status; Rec."Status")
+                {
+                    Caption = 'Status';
+                }
+                field(statusIndex; StatusIndex)
+                {
+                    Caption = 'Status Index';
+                }
+                field(sourceLineNumber; Rec."Source Line No.")
+                {
+                    Caption = 'Source Line Number';
+                }
+                field(icAccountType; Rec."IC Account Type")
+                {
+                    Caption = 'Intercompany Account Type';
+                }
+                field(icAccountTypeOrdinal; IcAccountTypeOrdinal)
+                {
+                    Caption = 'Intercompany Account Type Ordinal';
+                }
+                field(icAccountNumber; Rec."IC Account No.")
+                {
+                    Caption = 'Intercompany Account Number';
+                }
             }
         }
     }
+
+    trigger OnAfterGetRecord()
+    begin
+        SourceTypeIndex := Rec."Source Type";
+        DocumentTypeOrdinal := Rec."Document Type".AsInteger();
+        TransactionSourceIndex := Rec."Transaction Source";
+        StatusIndex := Rec."Status";
+    end;
+
+    var
+        SourceTypeIndex, DocumentTypeOrdinal, TransactionSourceIndex, StatusIndex, IcAccountTypeOrdinal : Integer;
 }

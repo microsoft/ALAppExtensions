@@ -2,12 +2,12 @@ namespace Microsoft.Finance.Analysis.StatisticalAccount;
 
 using Microsoft.Foundation.AuditCodes;
 using System.Globalization;
-using System.Reflection;
 
 tableextension 2630 StatAccSourceCodeSetup extends "Source Code Setup"
 {
     fields
     {
+#pragma warning disable PTE0022
         field(50050; "Statistical Account Journal"; Code[10])
         {
             Caption = 'Statistical Account Journal';
@@ -26,6 +26,7 @@ tableextension 2630 StatAccSourceCodeSetup extends "Source Code Setup"
             ObsoleteTag = '26.0';
 #endif
         }
+#pragma warning restore PTE0022
 
         field(2630; "Stat. Account Journal"; Code[10])
         {

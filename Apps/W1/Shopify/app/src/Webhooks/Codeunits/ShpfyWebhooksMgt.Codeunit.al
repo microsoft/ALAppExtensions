@@ -3,6 +3,7 @@ namespace Microsoft.Integration.Shopify;
 using System.Integration;
 using System.Telemetry;
 using System.Threading;
+using System.Environment;
 
 codeunit 30269 "Shpfy Webhooks Mgt."
 {
@@ -93,13 +94,13 @@ codeunit 30269 "Shpfy Webhooks Mgt."
         Shop.Modify();
     end;
 
-    internal procedure DisableBulkOperationsWebhook(var Shop: Record "Shpfy Shop")
+    internal procedure DisableBulkOperationsWebhook(var Shop: Record "Shpfy Shop"; CompanyName: Text)
     var
         WebhookSubscription: Record "Webhook Subscription";
         ShpfyWebhooksAPI: Codeunit "Shpfy Webhooks API";
     begin
         WebhookSubscription.SetRange("Subscription ID", GetShopDomain(Shop."Shopify URL"));
-        WebhookSubscription.SetRange("Company Name", CopyStr(CompanyName(), 1, MaxStrLen(WebhookSubscription."Company Name")));
+        WebhookSubscription.SetRange("Company Name", CopyStr(CompanyName, 1, MaxStrLen(WebhookSubscription."Company Name")));
         WebhookSubscription.SetRange(Endpoint, BulkOperationTopicLbl);
         if WebhookSubscription.FindFirst() then begin
             ShpfyWebhooksAPI.DeleteWebhookSubscription(Shop, Shop."Bulk Operation Webhook Id");
@@ -118,19 +119,42 @@ codeunit 30269 "Shpfy Webhooks Mgt."
         FeatureTelemetry.LogUptake('0000K8E', 'Shopify Webhooks', Enum::"Feature Uptake Status"::"Set up");
     end;
 
-    internal procedure DisableOrderCreatedWebhook(var Shop: Record "Shpfy Shop")
+    internal procedure DisableOrderCreatedWebhook(var Shop: Record "Shpfy Shop"; CompanyName: Text)
     var
         WebhookSubscription: Record "Webhook Subscription";
         ShpfyWebhooksAPI: Codeunit "Shpfy Webhooks API";
     begin
         WebhookSubscription.SetRange("Subscription ID", GetShopDomain(Shop."Shopify URL"));
-        WebhookSubscription.SetRange("Company Name", CopyStr(CompanyName(), 1, MaxStrLen(WebhookSubscription."Company Name")));
+        WebhookSubscription.SetRange("Company Name", CopyStr(CompanyName, 1, MaxStrLen(WebhookSubscription."Company Name")));
         WebhookSubscription.SetRange(Endpoint, OrdersCreateTopicLbl);
         if WebhookSubscription.FindFirst() then begin
             ShpfyWebhooksAPI.DeleteWebhookSubscription(Shop, Shop."Order Created Webhook Id");
             Clear(Shop."Order Created Webhook Id");
             Shop.Modify();
             WebhookSubscription.Delete();
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::Company, 'OnBeforeDeleteEvent', '', false, false)]
+    local procedure HandleOnCompanyBeforeDelete(var Rec: Record Company; RunTrigger: Boolean)
+    var
+        Shop: Record "Shpfy Shop";
+        TenantLicenseState: Codeunit "Tenant License State";
+        EnumTenantLicenseState: Enum "Tenant License State";
+    begin
+        if Rec.IsTemporary() then
+            exit;
+
+        if Shop.ChangeCompany(Rec.Name) then begin
+            if not GuiAllowed() then
+                if TenantLicenseState.GetLicenseState() in [EnumTenantLicenseState::Suspended, EnumTenantLicenseState::Deleted, EnumTenantLicenseState::LockedOut] then
+                    exit;
+            Shop.SetRange(Enabled, true);
+            if Shop.FindSet() then
+                repeat
+                    DisableOrderCreatedWebhook(Shop, Rec.Name);
+                    DisableBulkOperationsWebhook(Shop, Rec.Name);
+                until Shop.Next() = 0;
         end;
     end;
 

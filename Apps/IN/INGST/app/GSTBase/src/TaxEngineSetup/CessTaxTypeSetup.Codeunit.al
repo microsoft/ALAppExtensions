@@ -122,6 +122,7 @@ codeunit 18007 "Cess Tax Type Setup"
         "{F748E0D1-BC76-4D68-8CBD-FF4189DC3517}Lbl": Label 'GST Use Cases';
         "{37EFA642-056C-45E8-974E-6B41B335FC81}Lbl": Label 'GST Use Cases';
         "{DE8006B8-CF9F-474A-AE29-C7903A148261}Lbl": Label 'GST Use Cases';
+        "{631DEFA0-165E-4BDC-8F8A-AB2A88DF90AD}Lbl": Label 'GST Use Cases';
     begin
         Handled := true;
 
@@ -238,6 +239,8 @@ codeunit 18007 "Cess Tax Type Setup"
                 exit("{37EFA642-056C-45E8-974E-6B41B335FC81}Lbl");
             '{DE8006B8-CF9F-474A-AE29-C7903A148261}':
                 exit("{DE8006B8-CF9F-474A-AE29-C7903A148261}Lbl");
+            '{631DEFA0-165E-4BDC-8F8A-AB2A88DF90AD}':
+                exit("{631DEFA0-165E-4BDC-8F8A-AB2A88DF90AD}Lbl");
         end;
 
         Handled := false;

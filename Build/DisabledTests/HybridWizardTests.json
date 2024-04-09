@@ -1,0 +1,12 @@
+[
+    {
+        "codeunitId": 139650,
+        "CodeunitName": "Hybrid Wizard Tests",
+        "Method": "TestEstimatedDatabaseSizeLimitExceeded"
+    },
+    {
+        "codeunitId": 139650,
+        "CodeunitName": "Hybrid Wizard Tests",
+        "Method": "TestEstimatedDatabaseSizeLimitNotExceeded"
+    }
+]
