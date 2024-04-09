@@ -90,7 +90,7 @@ codeunit 139566 "Shpfy Payments Test"
         DisputeObject.Add('id', id);
         DisputeObject.Add('order_id', Any.IntegerInRange(10000, 99999));
         DisputeObject.Add('type', 'chargeback');
-        DisputeObject.Add('amount', Any.DecimalInRange(100, 2););
+        DisputeObject.Add('amount', Any.DecimalInRange(100, 2));
         DisputeObject.Add('currency', Any.IntegerInRange(10000, 99999));
         DisputeObject.Add('reason', 'fraudulent');
         DisputeObject.Add('network_reason_code', Any.IntegerInRange(10000, 99999));
