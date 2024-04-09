@@ -250,8 +250,8 @@ codeunit 30169 "Shpfy Payments"
     internal procedure ImportDisputeData(DisputeToken: JsonToken)
     var
         Dispute: Record "Shpfy Dispute";
-        DisputeStatus: Enum "Shpfy Dispute Status";
         RecordRef: RecordRef;
+        DisputeStatus: Enum "Shpfy Dispute Status";
         Id: BigInteger;
     begin
         Id := JsonHelper.GetValueAsBigInteger(DisputeToken, 'id');
