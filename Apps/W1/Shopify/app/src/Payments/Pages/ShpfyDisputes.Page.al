@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 page 30161 "Shpfy Disputes"
 {
     Editable = false;

@@ -1,3 +1,5 @@
+namespace Microsoft.Integration.Shopify;
+
 report 30120 "Shpfy Sync Disputes"
 {
     ApplicationArea = All;

@@ -5,6 +5,7 @@ namespace Microsoft.Integration.Shopify;
 /// </summary>
 table 30155 "Shpfy Dispute"
 {
+    Access = Internal;
     Caption = 'Shopify Dispute';
     DataClassification = CustomerContent;
 
