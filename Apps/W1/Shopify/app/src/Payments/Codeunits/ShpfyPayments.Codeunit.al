@@ -251,11 +251,9 @@ codeunit 30169 "Shpfy Payments"
     var
         Dispute: Record "Shpfy Dispute";
         RecordRef: RecordRef;
-        DisputeStatus: Enum "Shpfy Dispute Status";
         Id: BigInteger;
     begin
         Id := JsonHelper.GetValueAsBigInteger(DisputeToken, 'id');
-        DisputeStatus := ConvertToDisputeStatus(JsonHelper.GetValueAsText(DisputeToken, 'status'));
 
         Clear(Dispute);
         if not Dispute.Get(Id) then begin
@@ -264,6 +262,7 @@ codeunit 30169 "Shpfy Payments"
             JsonHelper.GetValueIntoField(DisputeToken, 'order_id', RecordRef, Dispute.FieldNo("Source Order Id"));
             JsonHelper.GetValueIntoField(DisputeToken, 'currency', RecordRef, Dispute.FieldNo(Currency));
             JsonHelper.GetValueIntoField(DisputeToken, 'amount', RecordRef, Dispute.FieldNo(Amount));
+            JsonHelper.GetValueIntoField(DisputeToken, 'network_reason_code', RecordRef, Dispute.FieldNo("Network Reason Code"));
             JsonHelper.GetValueIntoField(DisputeToken, 'evidence_due_by', RecordRef, Dispute.FieldNo("Evidence Due By"));
             JsonHelper.GetValueIntoField(DisputeToken, 'evidence_sent_on', RecordRef, Dispute.FieldNo("Evidence Sent On"));
             JsonHelper.GetValueIntoField(DisputeToken, 'finalized_on', RecordRef, Dispute.FieldNo("Finalized On"));
@@ -278,7 +277,6 @@ codeunit 30169 "Shpfy Payments"
             Dispute.Status := ConvertToDisputeStatus(JsonHelper.GetValueAsText(DisputeToken, 'status'));
             Dispute."Evidence Sent On" := JsonHelper.GetValueAsDateTime(DisputeToken, 'evidence_due_by');
             Dispute."Finalized On" := JsonHelper.GetValueAsDateTime(DisputeToken, 'finalized_on');
-
             Dispute.Modify();
         end;
     end;
