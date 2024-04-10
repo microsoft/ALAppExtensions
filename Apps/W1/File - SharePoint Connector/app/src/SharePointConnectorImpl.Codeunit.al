@@ -63,14 +63,12 @@ codeunit 80300 "SharePoint Connector Impl." implements "File System Connector"
     var
         SharePointFile: Record "SharePoint File";
         SharePointClient: Codeunit "SharePoint Client";
-        TempBlob, TempBlob2 : Codeunit "Temp Blob";
         Content: HttpContent;
         TempBlobStream: InStream;
     begin
         InitPath(AccountId, Path);
         InitSharePointClient(AccountId, SharePointClient);
 
-        TempBlob.CreateInStream(Stream);
         if not SharePointClient.DownloadFileContentByServerRelativeUrl(Path, TempBlobStream) then
             ShowError(SharePointClient);
 
@@ -125,11 +123,8 @@ codeunit 80300 "SharePoint Connector Impl." implements "File System Connector"
     /// <param name="TargetPath">The target file path.</param>
     procedure MoveFile(AccountId: Guid; SourcePath: Text; TargetPath: Text)
     var
-        TempBlob: Codeunit "Temp Blob";
         Stream: InStream;
     begin
-        TempBlob.CreateInStream(Stream);
-
         GetFile(AccountId, SourcePath, Stream);
         CreateFile(AccountId, TargetPath, Stream);
         DeleteFile(AccountId, SourcePath);
