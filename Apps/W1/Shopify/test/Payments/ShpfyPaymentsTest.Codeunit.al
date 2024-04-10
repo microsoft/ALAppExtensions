@@ -55,58 +55,49 @@ codeunit 139566 "Shpfy Payments Test"
     end;
 
     [Test]
-    procedure UnitTestImportDisputeStatus()
+    procedure UnitTestImportDispute()
     var
-        TestPayments: Codeunit "Shpfy Payments";
-        PaymentTransaction: Record "Shpfy Payment Transaction";
+        Dispute: Record "Shpfy Dispute";
+        Payments: Codeunit "Shpfy Payments";
         DisputeToken: JsonToken;
-        ShpfyPaytransDispStatus: enum "Shpfy Dispute Status";
-        finalizedOn: DateTime;
+        DisputeStatus: Enum "Shpfy Dispute Status";
+        FinalizedOn: DateTime;
         Id: BigInteger;
     begin
-        // [SCENARIO] Extract the data out json token that contains a Dipsute info into the "Shpfy Payment Transaction" record.
+        // [SCENARIO] Extract the data out json token that contains a Dispute info into the "Shpfy Dispute" record.
         // [GIVEN] A random Generated Dispute
         Id := Any.IntegerInRange(10000, 99999);
-        MockPaymentTransaction(Id, PaymentTransaction);
-        DisputeToken := GetRandomDisputeAsJsonToken(Id, ShpfyPaytransDispStatus, finalizedOn);
+        DisputeToken := GetRandomDisputeAsJsonToken(Id, DisputeStatus, FinalizedOn);
 
         // [WHEN] Invoke the function ImportDisputeData(JToken)
-        TestPayments.ImportDisputeData(DisputeToken);
+        Payments.ImportDisputeData(DisputeToken);
 
-        // Assert
-        LibraryAssert.IsTrue(PaymentTransaction.get(Id), 'At least one "Shpfy Payment Transaction" record should be found');
-
-        LibraryAssert.AreEqual(ShpfyPaytransDispStatus, PaymentTransaction."Dispute Status", PaymentTransaction."Dispute Status", 'Dispute status should match the generated one');
-        LibraryAssert.AreEqual(finalizedOn, PaymentTransaction."Dispute Finalized On", 'Dispute finalized on should match the generated one');
+        // // [THEN] A dispute record is created and the dispute status and finalized on should match the generated one
+        Dispute.Get(Id);
+        LibraryAssert.AreEqual(DisputeStatus, Dispute.Status, 'Dispute status should match the generated one');
+        LibraryAssert.AreEqual(FinalizedOn, Dispute."Finalized On", 'Dispute finalized on should match the generated one');
     end;
 
-    local procedure GetRandomDisputeAsJsonToken(id: BigInteger; var ShpfyPaytransDispStatus: enum "Shpfy Dispute Status"; var finalizedOn: DateTime): JsonToken
+    local procedure GetRandomDisputeAsJsonToken(Id: BigInteger; var DisputeStatus: Enum "Shpfy Dispute Status"; var FinalizedOn: DateTime): JsonToken
     var
         DisputeObject: JsonObject;
     begin
-        ShpfyPaytransDispStatus := Enum::"Shpfy Dispute Status".FromInteger(Any.IntegerInRange(0, 6));
-        finalizedOn := CurrentDateTime - 1;
+        DisputeStatus := Enum::"Shpfy Dispute Status".FromInteger(Any.IntegerInRange(0, 6));
+        FinalizedOn := CurrentDateTime - 1;
 
-        DisputeObject.Add('id', id);
+        DisputeObject.Add('id', Id);
         DisputeObject.Add('order_id', Any.IntegerInRange(10000, 99999));
         DisputeObject.Add('type', 'chargeback');
         DisputeObject.Add('amount', Any.DecimalInRange(100, 2));
         DisputeObject.Add('currency', Any.IntegerInRange(10000, 99999));
         DisputeObject.Add('reason', 'fraudulent');
         DisputeObject.Add('network_reason_code', Any.IntegerInRange(10000, 99999));
-        DisputeObject.Add('status', Format(ShpfyPaytransDispStatus));
+        DisputeObject.Add('status', Format(DisputeStatus));
         DisputeObject.Add('evidence_due_by', Format(CurrentDateTime - 1, 0, 9));
         DisputeObject.Add('evidence_sent_on', Format(CurrentDateTime - 1, 0, 9));
-        DisputeObject.Add('finalized_on', Format(finalizedOn, 0, 9));
+        DisputeObject.Add('finalized_on', Format(FinalizedOn, 0, 9));
         DisputeObject.Add('initiated_at', Format(CurrentDateTime - 1, 0, 9));
 
         exit(DisputeObject.AsToken());
-    end;
-
-    local procedure MockPaymentTransaction(Id: BigInteger; var PaymentTransaction: Record "Shpfy Payment Transaction")
-    begin
-        PaymentTransaction.Init();
-        PaymentTransaction.Id := Id;
-        PaymentTransaction.Insert();
     end;
 }
