@@ -999,6 +999,23 @@ page 30101 "Shpfy Shop Card"
                         Report.Run(Report::"Shpfy Sync Shipm. to Shopify");
                     end;
                 }
+                action(SyncDisputes)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Sync Disputes';
+                    Image = ErrorLog;
+                    Promoted = true;
+                    PromotedCategory = Category5;
+                    PromotedOnly = true;
+                    ToolTip = 'Synchronize dispute information with related payment transactions.';
+
+                    trigger OnAction()
+                    var
+                        BackgroundSyncs: Codeunit "Shpfy Background Syncs";
+                    begin
+                        BackgroundSyncs.DisputesSync(Rec.Code);
+                    end;
+                }
                 action(SyncAll)
                 {
                     ApplicationArea = All;
