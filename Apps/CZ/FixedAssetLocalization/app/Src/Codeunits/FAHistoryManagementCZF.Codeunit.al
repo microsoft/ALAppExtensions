@@ -18,10 +18,10 @@ codeunit 31237 "FA History Management CZF"
     var
         FASetup: Record "FA Setup";
         FADepreciationBook: Record "FA Depreciation Book";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
 
     procedure CreateFAHistoryEntry(FAHistoryTypeCZF: Enum "FA History Type CZF"; var FixedAsset: Record "Fixed Asset"; var xFixedAsset: Record "Fixed Asset")
     var
+        NoSeries: Codeunit "No. Series";
         CreateFAHistoryCZF: Page "Create FA History CZF";
         OldValue, NewValue : Code[20];
         IsHandled: Boolean;
@@ -48,7 +48,7 @@ codeunit 31237 "FA History Management CZF"
             OnBeforeShowInsertFAHistoryPage(PostingDate, DocumentNo);
             if (PostingDate = 0D) or (DocumentNo = '') then begin
                 FASetup.TestField("Fixed Asset History Nos. CZF");
-                CreateFAHistoryCZF.SetValues(WorkDate(), NoSeriesManagement.GetNextNo(FASetup."Fixed Asset History Nos. CZF", WorkDate(), true));
+                CreateFAHistoryCZF.SetValues(WorkDate(), NoSeries.GetNextNo(FASetup."Fixed Asset History Nos. CZF"));
                 Commit();
                 if CreateFAHistoryCZF.RunModal() = Action::OK then begin
                     CreateFAHistoryCZF.GetValues(PostingDate, DocumentNo);

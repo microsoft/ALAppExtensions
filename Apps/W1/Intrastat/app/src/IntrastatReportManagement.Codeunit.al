@@ -45,8 +45,14 @@ codeunit 4810 IntrastatReportManagement
         ReturnRcptHeader: Record "Return Receipt Header";
         PurchRcptHeader: Record "Purch. Rcpt. Header";
         ReturnShptHeader: Record "Return Shipment Header";
+        IsHandled: Boolean;
     begin
         IntrastatReportSetup.Get();
+
+        IsHandled := false;
+        OnBeforeGetIntrastatBaseCountryCode(ItemLedgEntry, IntrastatReportSetup, CountryCode, IsHandled);
+        if IsHandled then
+            exit(CountryCode);
 
         CountryCode := ItemLedgEntry."Country/Region Code";
 
@@ -1155,6 +1161,11 @@ codeunit 4810 IntrastatReportManagement
 
     [IntegrationEvent(true, false)]
     local procedure OnAfterGetIntrastatBaseCountryCodeFromFAEntry(var FALedgerEntry: Record "FA Ledger Entry"; var IntrastatReportSetup: Record "Intrastat Report Setup"; var CountryCode: Code[10]);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetIntrastatBaseCountryCode(var ItemLedgerEntry: Record "Item Ledger Entry"; var IntrastatReportSetup: Record "Intrastat Report Setup"; var CountryCode: Code[10]; var IsHandled: Boolean)
     begin
     end;
 }

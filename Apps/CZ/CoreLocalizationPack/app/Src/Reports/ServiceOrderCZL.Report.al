@@ -503,21 +503,10 @@ report 31194 "Service Order CZL"
     }
 
     var
-        PaymentTerms: Record "Payment Terms";
-        PaymentMethod: Record "Payment Method";
-        ShipmentMethod: Record "Shipment Method";
         LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
-        CompanyAddr: array[8] of Text[100];
-        CustAddr: array[8] of Text[100];
-        ShipToAddr: array[8] of Text[100];
-        DocFooterText: Text[1000];
-        NoOfCopies: Integer;
-        NoOfLoops: Integer;
-        Number1: Integer;
-        Number2: Integer;
         DocumentLbl: Label 'Service Order';
         PageLbl: Label 'Page';
         CopyLbl: Label 'Copy';
@@ -536,6 +525,19 @@ report 31194 "Service Order CZL"
         AmountLbl: Label 'Amount';
         GrossAmountLbl: Label 'Gross Amount';
         TotalLbl: Label 'Total';
+
+    protected var
+        PaymentTerms: Record "Payment Terms";
+        PaymentMethod: Record "Payment Method";
+        ShipmentMethod: Record "Shipment Method";
+        CompanyAddr: array[8] of Text[100];
+        CustAddr: array[8] of Text[100];
+        ShipToAddr: array[8] of Text[100];
+        DocFooterText: Text[1000];
+        NoOfCopies: Integer;
+        NoOfLoops: Integer;
+        Number1: Integer;
+        Number2: Integer;
 
     procedure InitializeRequest(NoOfCopiesFrom: Integer)
     begin

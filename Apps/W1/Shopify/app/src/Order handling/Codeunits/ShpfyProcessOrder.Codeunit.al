@@ -114,6 +114,7 @@ codeunit 30166 "Shpfy Process Order"
             SalesHeader."Shpfy Order Id" := ShopifyOrderHeader."Shopify Order Id";
             SalesHeader."Shpfy Order No." := ShopifyOrderHeader."Shopify Order No.";
             SalesHeader.Validate("Document Date", ShopifyOrderHeader."Document Date");
+            SalesHeader.Validate("External Document No.", ShopifyOrderHeader."PO Number");
             if ShopLocation.Get(ShopifyOrderHeader."Shop Code", ShopifyOrderHeader."Location Id") and (ShopLocation."Default Location Code" <> '') then
                 SalesHeader.Validate("Location Code", ShopLocation."Default Location Code");
             if OrderMgt.FindTaxArea(ShopifyOrderHeader, ShopifyTaxArea) and (ShopifyTaxArea."Tax Area Code" <> '') then
@@ -135,8 +136,11 @@ codeunit 30166 "Shpfy Process Order"
             if ShopifyOrderHeader."Work Description".HasValue then
                 SalesHeader.SetWorkDescription(ShopifyOrderHeader.GetWorkDescription());
         end;
-        OrdersAPI.SetShop(ShopifyShop);
+#if not CLEAN24
+        OrdersAPI.AddOrderAttribute(ShopifyOrderHeader, 'BC Doc. No.', SalesHeader."No.", ShopifyShop);
+#else
         OrdersAPI.AddOrderAttribute(ShopifyOrderHeader, 'BC Doc. No.', SalesHeader."No.");
+#endif
         DocLinkToBCDoc.Init();
         DocLinkToBCDoc."Shopify Document Type" := "Shpfy Shop Document Type"::"Shopify Shop Order";
         DocLinkToBCDoc."Shopify Document Id" := ShopifyOrderHeader."Shopify Order Id";

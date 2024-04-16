@@ -2,6 +2,7 @@ namespace Microsoft.eServices.EDocument.OrderMatch;
 
 using Microsoft.Purchases.Document;
 using Microsoft.eServices.EDocument;
+using Microsoft.eServices.EDocument.OrderMatch.Copilot;
 
 table 6164 "E-Doc. Order Match"
 {
@@ -34,26 +35,36 @@ table 6164 "E-Doc. Order Match"
         {
             Caption = 'Quantity';
         }
-        field(6; "Direct Unit Cost"; Decimal)
+#pragma warning disable AS0005, AS0125
+        field(6; "E-Document Direct Unit Cost"; Decimal)
         {
-            Caption = 'Unit Cost';
+            Caption = 'E-Document Unit Cost';
         }
-        field(7; "Line Discount %"; Decimal)
+        field(7; "PO Direct Unit Cost"; Decimal)
+        {
+            Caption = 'Purchase Order Unit Cost';
+        }
+        field(8; "Line Discount %"; Decimal)
         {
             Caption = 'Discount %';
         }
-        field(8; "Unit of Measure Code"; Code[20])
+        field(9; "Unit of Measure Code"; Code[20])
         {
             Caption = 'Unit of Measure';
         }
-        field(9; Description; Text[100])
+        field(10; "E-Document Description"; Text[100])
         {
-            Caption = 'Description';
+            Caption = 'E-Document Description';
         }
-        field(10; "Fully Matched"; Boolean)
+        field(11; "PO Description"; Text[100])
+        {
+            Caption = 'Purchase Order Description';
+        }
+        field(12; "Fully Matched"; Boolean)
         {
             Caption = 'Fully Matched';
         }
+#pragma warning restore AS0005, AS0125
     }
 
     keys
@@ -76,6 +87,21 @@ table 6164 "E-Doc. Order Match"
     procedure GetImportedLine() ImportedLine: Record "E-Doc. Imported Line";
     begin
         ImportedLine.Get(Rec."E-Document Entry No.", Rec."E-Document Line No.");
+    end;
+
+    procedure InsertMatch(var TempAIProposalBuffer: Record "E-Doc. PO Match Prop. Buffer" temporary; var TempEDocMatches: Record "E-Doc. Order Match" temporary)
+    begin
+        TempEDocMatches.Init();
+        TempEDocMatches.Validate("Document Order No.", TempAIProposalBuffer."Document Order No.");
+        TempEDocMatches.Validate("Document Line No.", TempAIProposalBuffer."Document Line No.");
+        TempEDocMatches.Validate("E-Document Entry No.", TempAIProposalBuffer."E-Document Entry No.");
+        TempEDocMatches.Validate("E-Document Line No.", TempAIProposalBuffer."E-Document Line No.");
+        TempEDocMatches.Validate(Quantity, TempAIProposalBuffer."Matched Quantity");
+        TempEDocMatches.Validate("E-Document Direct Unit Cost", TempAIProposalBuffer."E-Document Direct Unit Cost");
+        TempEDocMatches.Validate("PO Direct Unit Cost", TempAIProposalBuffer."PO Direct Unit Cost");
+        TempEDocMatches."E-Document Description" := TempAIProposalBuffer."E-Document Description";
+        TempEDocMatches."PO Description" := TempAIProposalBuffer."PO Description";
+        TempEDocMatches.Insert();
     end;
 
 

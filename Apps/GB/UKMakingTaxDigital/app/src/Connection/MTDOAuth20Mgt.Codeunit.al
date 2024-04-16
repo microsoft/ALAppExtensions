@@ -172,12 +172,12 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         CheckOAuthConsistencySetup(OAuth20Setup);
         UpdateClientTokens(OAuth20Setup);
         if not EnvironmentInfo.IsSaaS() then begin
-            Hyperlink(OAuth20Mgt.GetAuthorizationURL(OAuth20Setup, GetToken(OAuth20Setup."Client ID", OAuth20Setup.GetTokenDataScope())));
+            Hyperlink(OAuth20Mgt.GetAuthorizationURLAsSecretText(OAuth20Setup, GetToken(OAuth20Setup."Client ID", OAuth20Setup.GetTokenDataScope()).Unwrap()).Unwrap());
             exit;
         end;
 
         state := Format(CreateGuid(), 0, 4);
-        url := OAuth20Mgt.GetAuthorizationURL(OAuth20Setup, GetToken(OAuth20Setup."Client ID", OAuth20Setup.GetTokenDataScope())) + '&state=' + state;
+        url := OAuth20Mgt.GetAuthorizationURLAsSecretText(OAuth20Setup, GetToken(OAuth20Setup."Client ID", OAuth20Setup.GetTokenDataScope()).Unwrap() + '&state=' + state).Unwrap();
         OAuth2ControlAddIn.SetOAuth2Properties(url, state);
         OAuth2ControlAddIn.RunModal();
 
@@ -193,14 +193,14 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         end;
     end;
 
-    [NonDebuggable]
     [EventSubscriber(ObjectType::Table, Database::"OAuth 2.0 Setup", 'OnBeforeRequestAccessToken', '', true, true)]
+    [NonDebuggable]
     local procedure OnBeforeRequestAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; AuthorizationCode: Text; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
     var
         MTDSessionFraudPrevHdr: Record "MTD Session Fraud Prev. Hdr";
         RequestJSON: Text;
-        AccessToken: Text;
-        RefreshToken: Text;
+        AccessToken: SecretText;
+        RefreshToken: SecretText;
         TokenDataScope: DataScope;
     begin
         if not IsMTDOAuthSetup(OAuth20Setup) or Processed then
@@ -216,7 +216,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         Result :=
             OAuth20Mgt.RequestAccessTokenWithGivenRequestJson(
                 OAuth20Setup, RequestJSON, MessageText, AuthorizationCode,
-                GetToken(OAuth20Setup."Client ID", TokenDataScope),
+                GetToken(OAuth20Setup."Client ID", TokenDataScope).Unwrap(),
                 GetToken(OAuth20Setup."Client Secret", TokenDataScope),
                 AccessToken, RefreshToken);
 
@@ -242,8 +242,8 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
     local procedure OnBeforeRefreshAccessToken(var OAuth20Setup: Record "OAuth 2.0 Setup"; var Result: Boolean; var MessageText: Text; var Processed: Boolean)
     var
         RequestJSON: Text;
-        AccessToken: Text;
-        RefreshToken: Text;
+        AccessToken: SecretText;
+        RefreshToken: SecretText;
         TokenDataScope: DataScope;
     begin
         if not IsMTDOAuthSetup(OAuth20Setup) or Processed then
@@ -259,7 +259,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         Result :=
             OAuth20Mgt.RefreshAccessTokenWithGivenRequestJson(
                 OAuth20Setup, RequestJSON, MessageText,
-                GetToken(OAuth20Setup."Client ID", TokenDataScope),
+                GetToken(OAuth20Setup."Client ID", TokenDataScope).Unwrap(),
                 GetToken(OAuth20Setup."Client Secret", TokenDataScope),
                 AccessToken, RefreshToken);
 
@@ -268,7 +268,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
     end;
 
     [NonDebuggable]
-    local procedure SaveTokens(var OAuth20Setup: Record "OAuth 2.0 Setup"; TokenDataScope: DataScope; AccessToken: Text; RefreshToken: Text)
+    local procedure SaveTokens(var OAuth20Setup: Record "OAuth 2.0 Setup"; TokenDataScope: DataScope; AccessToken: SecretText; RefreshToken: SecretText)
     var
         TypeHelper: Codeunit "Type Helper";
         NewAccessTokenDateTime: DateTime;
@@ -309,7 +309,7 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         EnvironmentInformation: Codeunit "Environment Information";
         AzureClientIDTxt: Text;
         AzureClientSecretTxt: Text;
-        KeyValue: Text;
+        KeyValue: SecretText;
         IsModify: Boolean;
         TokenDataScope: DataScope;
     begin
@@ -325,19 +325,19 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
         end;
         TokenDataScope := OAuth20Setup.GetTokenDataScope();
         if AzureKeyVault.GetAzureKeyVaultSecret(AzureClientIDTxt, KeyValue) then
-            if KeyValue <> '' then
-                if KeyValue <> GetToken(OAuth20Setup."Client ID", TokenDataScope) then
+            if not KeyValue.IsEmpty() then
+                if KeyValue.Unwrap() <> GetToken(OAuth20Setup."Client ID", TokenDataScope).Unwrap() then
                     IsModify := SetToken(OAuth20Setup."Client ID", KeyValue, TokenDataScope);
         if AzureKeyVault.GetAzureKeyVaultSecret(AzureClientSecretTxt, KeyValue) then
-            if KeyValue <> '' then
-                if KeyValue <> GetToken(OAuth20Setup."Client Secret", TokenDataScope) then
+            if not KeyValue.IsEmpty() then
+                if KeyValue.Unwrap() <> GetToken(OAuth20Setup."Client Secret", TokenDataScope).Unwrap() then
                     IsModify := SetToken(OAuth20Setup."Client Secret", KeyValue, TokenDataScope);
         if IsModify then
             OAuth20Setup.Modify();
     end;
 
     [NonDebuggable]
-    internal procedure SetToken(var TokenKey: Guid; TokenValue: Text; TokenDataScope: DataScope) NewToken: Boolean
+    internal procedure SetToken(var TokenKey: Guid; TokenValue: SecretText; TokenDataScope: DataScope) NewToken: Boolean
     begin
         if IsNullGuid(TokenKey) then
             NewToken := true;
@@ -350,11 +350,10 @@ codeunit 10538 "MTD OAuth 2.0 Mgt"
             IsolatedStorage.Set(TokenKey, TokenValue, TokenDataScope);
     end;
 
-    [NonDebuggable]
-    local procedure GetToken(TokenKey: Guid; TokenDataScope: DataScope) TokenValue: Text
+    local procedure GetToken(TokenKey: Guid; TokenDataScope: DataScope) TokenValue: SecretText
     begin
         if not HasToken(TokenKey, TokenDataScope) then
-            exit('');
+            exit(TokenValue);
 
         IsolatedStorage.Get(TokenKey, TokenDataScope, TokenValue);
     end;

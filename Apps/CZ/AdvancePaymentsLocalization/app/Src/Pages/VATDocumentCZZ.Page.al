@@ -42,9 +42,9 @@ page 31185 "VAT Document CZZ"
 
                     trigger OnAssistEdit()
                     var
-                        NoSeriesManagement2: Codeunit NoSeriesManagement;
+                        NoSeries: Codeunit "No. Series";
                     begin
-                        if NoSeriesManagement2.SelectSeries(InitNoSeriesCode, NoSeriesCode, NoSeriesCode) then begin
+                        if NoSeries.LookupRelatedNoSeries(InitNoSeriesCode, NoSeriesCode, NoSeriesCode) then begin
                             DocumentNo := NoSeriesBatch.GetNextNo(NoSeriesCode, PostingDate);
                             InitDocumentNo := DocumentNo;
                         end;
@@ -136,6 +136,12 @@ page 31185 "VAT Document CZZ"
         }
     }
 
+    trigger OnOpenPage()
+    begin
+        if DocumentNo = '' then
+            DocumentNo := NoSeriesBatch.GetNextNo(NoSeriesCode, PostingDate);
+    end;
+
     var
         NoSeriesBatch: Codeunit "No. Series - Batch";
         NoSeries: Codeunit "No. Series";
@@ -185,13 +191,8 @@ page 31185 "VAT Document CZZ"
                 GeneralLedgerSetup.GetOriginalDocumentVATDateCZL(PostingDate, VATDate, DocumentDate);
         CurrPage.Lines.Page.InitDocumentLines(NewCurrencyCode, NewCurrencyFactor, AdvancePostingBufferCZZ);
 
-        if NewDocumentNo <> '' then begin
-            DocumentNo := NewDocumentNo;
-            DocumentNoEditable := false;
-        end else begin
-            DocumentNo := NoSeriesBatch.GetNextNo(NoSeriesCode, PostingDate);
-            DocumentNoEditable := true;
-        end;
+        DocumentNo := NewDocumentNo;
+        DocumentNoEditable := NewDocumentNo = '';
         InitDocumentNo := DocumentNo;
     end;
 

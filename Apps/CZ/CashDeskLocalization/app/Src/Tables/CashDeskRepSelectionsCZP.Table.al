@@ -27,7 +27,7 @@ table 11748 "Cash Desk Rep. Selections CZP"
         field(3; "Report ID"; Integer)
         {
             Caption = 'Report ID';
-            TableRelation = AllObj."Object ID" where("Object Type" = const(Report));
+            TableRelation = AllObjWithCaption."Object ID" where("Object Type" = const(Report));
             DataClassification = CustomerContent;
 
             trigger OnValidate()

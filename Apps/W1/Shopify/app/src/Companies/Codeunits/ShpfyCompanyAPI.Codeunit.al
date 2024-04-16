@@ -121,6 +121,8 @@ codeunit 30286 "Shpfy Company API"
             AddFieldToGraphQuery(GraphQuery, 'phone', CompanyLocation."Phone No.");
         if CompanyLocation."Country/Region Code" <> '' then
             AddFieldToGraphQuery(GraphQuery, 'countryCode', CompanyLocation."Country/Region Code", false);
+        if CompanyLocation."Province Code" <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'zoneCode', CompanyLocation."Province Code");
         GraphQuery.Remove(GraphQuery.Length - 1, 2);
         GraphQuery.Append('}}}) {company {id, name, locations(first: 1) {edges {node {id, name}}}, contactRoles(first:10) {edges {node {id,name}}}}, userErrors {field, message}}}"}');
         exit(GraphQuery.ToText());
@@ -205,6 +207,8 @@ codeunit 30286 "Shpfy Company API"
             HasChange := AddFieldToGraphQuery(GraphQuery, 'phone', CompanyLocation."Phone No.");
         if CompanyLocation."Country/Region Code" <> xCompanyLocation."Country/Region Code" then
             HasChange := AddFieldToGraphQuery(GraphQuery, 'countryCode', CompanyLocation."Country/Region Code", false);
+        if CompanyLocation."Province Code" <> xCompanyLocation."Province Code" then
+            HasChange := AddFieldToGraphQuery(GraphQuery, 'zoneCode', CompanyLocation."Province Code");
         GraphQuery.Remove(GraphQuery.Length - 1, 2);
 
         if HasChange then begin
@@ -332,6 +336,8 @@ codeunit 30286 "Shpfy Company API"
                     CompanyLocation.Zip := CopyStr(JsonHelper.GetValueAsCode(JItem, 'node.billingAddress.zip', MaxStrLen(CompanyLocation.Zip)), 1, MaxStrLen(CompanyLocation.Zip));
                     CompanyLocation.City := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.city', MaxStrLen(CompanyLocation.City)), 1, MaxStrLen(CompanyLocation.City));
                     CompanyLocation."Country/Region Code" := CopyStr(JsonHelper.GetValueAsCode(JItem, 'node.billingAddress.countryCode', MaxStrLen(CompanyLocation."Country/Region Code")), 1, MaxStrLen(CompanyLocation."Country/Region Code"));
+                    CompanyLocation."Province Code" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.zoneCode', MaxStrLen(CompanyLocation."Province Code")), 1, MaxStrLen(CompanyLocation."Province Code"));
+                    CompanyLocation."Province Name" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.province', MaxStrLen(CompanyLocation."Province Name")), 1, MaxStrLen(CompanyLocation."Province Name"));
                     PhoneNo := JsonHelper.GetValueAsText(JItem, 'node.billingAddress.phone');
                     PhoneNo := CopyStr(DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()')), 1, MaxStrLen(CompanyLocation."Phone No."));
                     CompanyLocation."Phone No." := CopyStr(PhoneNo, 1, MaxStrLen(CompanyLocation."Phone No."));

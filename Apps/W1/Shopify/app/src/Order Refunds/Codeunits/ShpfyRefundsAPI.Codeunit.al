@@ -113,22 +113,9 @@ codeunit 30228 "Shpfy Refunds API"
         JsonHelper.GetValueIntoField(JLine, 'totalTaxSet.shopMoney.amount', RefundLineRecordRef, RefundLine.FieldNo("Total Tax Amount"));
         JsonHelper.GetValueIntoField(JLine, 'totalTaxSet.presentmentMoney.amount', RefundLineRecordRef, RefundLine.FieldNo("Presentment Total Tax Amount"));
         RefundLineRecordRef.SetTable(RefundLine);
-        RefundLine."Can Create Credit Memo" := CanRefundCreateCreditMemo(RefundLine, NonZeroRefund);
+        RefundLine."Can Create Credit Memo" := NonZeroRefund;
         RefundLine.Modify();
         RefundLineRecordRef.Close();
         DataCapture.Add(Database::"Shpfy Refund Line", RefundLine.SystemId, JLine);
-    end;
-
-    local procedure CanRefundCreateCreditMemo(RefundLine: Record "Shpfy Refund Line"; NonZeroRefund: Boolean): Boolean
-    begin
-        case RefundLine."Restock Type" of
-            RefundLine."Restock Type"::Cancel:
-                exit(false);
-            RefundLine."Restock Type"::Return,
-            RefundLine."Restock Type"::"Legacy Restock":
-                exit(true);
-            RefundLine."Restock Type"::"No Restock":
-                exit(NonZeroRefund);
-        end;
     end;
 }

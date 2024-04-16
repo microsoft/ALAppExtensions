@@ -8,12 +8,24 @@ pageextension 7254 BankAccReconciliationListExt extends "Bank Acc. Reconciliatio
 {
     actions
     {
-        addbefore(ChangeStatementNo)
+#if not CLEAN24
+        addbefore(Category_Posting)
+        {
+            actionref("Reconcile With Copilot_Promoted"; "Reconcile With Copilot")
+            {
+                Visible = false;
+                ObsoleteReason = 'Action in the Prompting area.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '24.0';
+            }
+        }
+#endif
+        addfirst(Prompting)
         {
             action("Reconcile With Copilot")
             {
                 ApplicationArea = All;
-                Caption = 'Reconcile with Copilot';
+                Caption = 'Reconcile';
 #pragma warning disable AL0482
                 Image = SparkleFilled;
 #pragma warning restore AL0482
@@ -38,12 +50,6 @@ pageextension 7254 BankAccReconciliationListExt extends "Bank Acc. Reconciliatio
                     BankAccRecAIProposal.LookupMode := true;
                     BankAccRecAIProposal.Run();
                 end;
-            }
-        }
-        addbefore(Category_Posting)
-        {
-            actionref("Reconcile With Copilot_Promoted"; "Reconcile With Copilot")
-            {
             }
         }
     }

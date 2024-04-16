@@ -162,9 +162,17 @@ page 30159 "Shpfy Catalogs"
 
                 trigger OnAction()
                 var
+                    Shop: Record "Shpfy Shop";
+                    SyncCatalogsPrices: Report "Shpfy Sync Catalog Prices";
                     BackgroundSyncs: Codeunit "Shpfy Background Syncs";
                 begin
-                    BackgroundSyncs.CatalogPricesSync(Rec."Shop Code", Rec.GetFilter("Company SystemId"));
+                    if Rec.GetFilter("Company SystemId") <> '' then
+                        BackgroundSyncs.CatalogPricesSync(Rec."Shop Code", Rec.GetFilter("Company SystemId"))
+                    else begin
+                        Shop.SetRange(Code, Rec."Shop Code");
+                        SyncCatalogsPrices.SetTableView(Shop);
+                        SyncCatalogsPrices.Run();
+                    end;
                 end;
             }
         }

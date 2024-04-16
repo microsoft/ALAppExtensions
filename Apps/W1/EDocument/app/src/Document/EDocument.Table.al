@@ -14,7 +14,7 @@ using System.Threading;
 
 table 6121 "E-Document"
 {
-    DataCaptionFields = "Document No.", "Bill-to/Pay-to Name";
+    DataCaptionFields = "Entry No", "Bill-to/Pay-to Name";
     LookupPageId = "E-Documents";
     DrillDownPageId = "E-Documents";
     DataClassification = CustomerContent;

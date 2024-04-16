@@ -69,7 +69,9 @@ codeunit 1458 "Yodlee API Strings"
         exit(GetFullURL('/user/register'));
     end;
 
+#if not CLEAN24
     [Scope('OnPrem')]
+    [Obsolete('Replaced by GetRegisterConsumerBody with SecretText data type for UserPassword parameter')]
     procedure GetRegisterConsumerBody(CobrandToken: Text; UserName: Text; UserPassword: Text; UserEmail: Text; UserCurrency: Text): Text;
     var
         GetRegisterConsumerRequestBodyJsonObject: JsonObject;
@@ -79,6 +81,26 @@ codeunit 1458 "Yodlee API Strings"
     begin
         UserJsonObject.Add('loginName', UserName);
         UserJsonObject.Add('password', UserPassword);
+        UserJsonObject.Add('email', UserEmail);
+        UserPreferencesJsonObject.Add('currency', UserCurrency);
+        UserJsonObject.Add('preferences', UserPreferencesJsonObject);
+        GetRegisterConsumerRequestBodyJsonObject.Add('user', UserJsonObject);
+        GetRegisterConsumerRequestBodyJsonObject.WriteTo(GetRegisterConsumerRequestBodyText);
+        exit(GetRegisterConsumerRequestBodyText);
+    end;
+#endif
+
+    [Scope('OnPrem')]
+    [NonDebuggable]
+    procedure GetRegisterConsumerBody(CobrandToken: Text; UserName: Text; UserPassword: SecretText; UserEmail: Text; UserCurrency: Text): Text;
+    var
+        GetRegisterConsumerRequestBodyJsonObject: JsonObject;
+        GetRegisterConsumerRequestBodyText: Text;
+        UserJsonObject: JsonObject;
+        UserPreferencesJsonObject: JsonObject;
+    begin
+        UserJsonObject.Add('loginName', UserName);
+        UserJsonObject.Add('password', UserPassword.Unwrap());
         UserJsonObject.Add('email', UserEmail);
         UserPreferencesJsonObject.Add('currency', UserCurrency);
         UserJsonObject.Add('preferences', UserPreferencesJsonObject);

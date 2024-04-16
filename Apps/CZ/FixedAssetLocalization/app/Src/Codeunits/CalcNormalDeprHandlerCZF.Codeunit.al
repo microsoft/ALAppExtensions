@@ -134,11 +134,12 @@ codeunit 31247 "Calc. Normal Depr. Handler CZF"
             CalculatedFADepreciationBook."Book Value" := BookValue;
         TempDepBasis := CalculatedFADepreciationBook."Depreciable Basis";
         TempBookValue := CalculatedFADepreciationBook."Book Value" - TaxDeprAmount + CalculatedFADepreciationBook."Salvage Value";
-        if FADepreciationBook."Prorated CZF" then begin
-            CalculatedFADepreciationBook.SetRange("FA Posting Date Filter", CalcStartOfFiscalYear(UntilDate), UntilDate);
-            CalculatedFADepreciationBook.CalcFields(Depreciation);
-            TempBookValue := TempBookValue - CalculatedFADepreciationBook.Depreciation;
-        end;
+        if TaxDepreciationGroupCZF."Depreciation Type" <> TaxDepreciationGroupCZF."Depreciation Type"::"Straight-line Intangible" then
+            if FADepreciationBook."Prorated CZF" then begin
+                CalculatedFADepreciationBook.SetRange("FA Posting Date Filter", CalcStartOfFiscalYear(UntilDate), UntilDate);
+                CalculatedFADepreciationBook.CalcFields(Depreciation);
+                TempBookValue := TempBookValue - CalculatedFADepreciationBook.Depreciation;
+            end;
 
         FALedgerEntry.SetFilter("FA Posting Date", '..%1', UntilDate);
         if FALedgerEntry.FindLast() then

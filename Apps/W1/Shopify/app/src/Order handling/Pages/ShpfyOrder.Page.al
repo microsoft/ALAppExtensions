@@ -87,6 +87,11 @@ page 30113 "Shpfy Order"
                     ApplicationArea = All;
                     ToolTip = 'Specifies how to make a payment, such as with bank transfer, cash, or check.';
                 }
+                field("PO Number"; Rec."PO Number")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the purchase order number that is associated with the Shopify order.';
+                }
                 field(Closed; Rec.Closed)
                 {
                     ApplicationArea = All;
@@ -234,7 +239,7 @@ page 30113 "Shpfy Order"
                 {
                     ApplicationArea = All;
                     Editable = false;
-                    ToolTip = 'Specifies the order''s status in terms of fulfilled line items. Valid values are: fulfilled, in progress, open, pending fulfillment, restocked, unfulfilled, partially fulfilled.';
+                    ToolTip = 'Specifies the order''s status in terms of fulfilled line items. Valid values are: fulfilled, in progress, open, pending fulfillment, restocked, unfulfilled, partially fulfilled, on hold.';
                 }
                 field(ReturnStatus; Rec."Return Status")
                 {
@@ -571,6 +576,9 @@ page 30113 "Shpfy Order"
                         ShopifyOrderHeader: Record "Shpfy Order Header";
                         ProcessShopifyOrders: Codeunit "Shpfy Process Orders";
                     begin
+                        if Rec.Processed then
+                            Error(ClearProcessedErr);
+
                         if Confirm(StrSubstNo(CreateShopifyMsg, Rec."Shopify Order No.")) then begin
                             CurrPage.Update(true);
                             Commit();
@@ -662,19 +670,35 @@ page 30113 "Shpfy Order"
                         end;
                     end;
                 }
-                action(ResolveOrderProcessingConflicts)
+                action(UnlinkProcessedShopifyOrder)
                 {
                     ApplicationArea = All;
-                    Enabled = Rec."Has Order State Error";
-                    Caption = 'Resolve conflicts';
-                    ToolTip = 'An order from Shopify will be marked with conflicts if it has been already processed in Business Central and new changes are detected in Shopify. In this page you can inspect the changes and resolve the conflicts appropriately.';
-                    RunObject = page "Shpfy Resolve Order Conflicts";
-                    Image = TaskList;
-                    RunPageOnRec = true;
-                    Promoted = true;
-                    PromotedCategory = Process;
-                    PromotedIsBig = true;
-                    PromotedOnly = true;
+                    Caption = 'Unlink Processed Documents';
+                    Enabled = Rec.Processed;
+                    Image = UnLinkAccount;
+                    ToolTip = 'Unlink the processed Shopify order from the sales document in Business Central.';
+
+                    trigger OnAction()
+                    var
+                        ProcessShopifyOrders: Codeunit "Shpfy Process Orders";
+                    begin
+                        if Confirm(ClearProcessedMsg) then
+                            ProcessShopifyOrders.ClearProcessedDocuments(Rec);
+                    end;
+                }
+                action(ForceSync)
+                {
+                    ApplicationArea = All;
+                    Image = Refresh;
+                    Caption = 'Synch order from Shopify';
+                    ToolTip = 'Update your Shopify Order with the current data from Shopify.';
+
+                    trigger OnAction()
+                    var
+                        ImportOrder: Codeunit "Shpfy Import Order";
+                    begin
+                        ImportOrder.ReimportExistingOrderConfirmIfConflicting(Rec);
+                    end;
                 }
             }
         }
@@ -875,12 +899,29 @@ page 30113 "Shpfy Order"
                     Page.Run(Page::"Shpfy Data Capture List", DataCapture);
                 end;
             }
+            action(Disputes)
+            {
+                ApplicationArea = All;
+                Caption = 'Show Related Disputes';
+                Image = Entry;
+                ToolTip = 'View the disputes related to order of the selected transaction.';
+
+                trigger OnAction();
+                var
+                    Dispute: Record "Shpfy Dispute";
+                begin
+                    Dispute.SetRange("Source Order Id", Rec."Shopify Order Id");
+                    Page.Run(Page::"Shpfy Disputes", Dispute);
+                end;
+            }
         }
     }
 
     var
         CreateShopifyMsg: Label 'Create sales document from Shopify order %1?', Comment = '%1 = Order No.';
         MarkAsPaidMsg: Label 'The order has been marked as paid.';
+        ClearProcessedMsg: Label 'This order is already linked to a sales document in Business Central. Do you want to unlink it?';
+        ClearProcessedErr: Label 'This order is already linked to a sales document in Business Central.';
         MarkAsPaidFailedErr: Label 'The order could not be marked as paid. You can see the error message from Shopify Log Entries.';
         OrderCancelledMsg: Label 'Order has been cancelled successfully.';
         OrderCancelFailedErr: Label 'The order could not be cancelled. You can see the error message from Shopify Log Entries.';

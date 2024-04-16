@@ -29,6 +29,7 @@ using System.EMail;
 using System.Globalization;
 using System.Security.User;
 using System.Utilities;
+using System.Text;
 
 report 31018 "Sales - Invoice with Adv. CZZ"
 {
@@ -179,6 +180,9 @@ report 31018 "Sales - Invoice with Adv. CZZ"
             {
             }
             column(DocumentNoLbl; DocumentNoLbl)
+            {
+            }
+            column(QRPaymentLbl; QRPaymentLbl)
             {
             }
             column(No_SalesInvoiceHeader; "No.")
@@ -338,6 +342,9 @@ report 31018 "Sales - Invoice with Adv. CZZ"
             {
             }
             column(ShipToAddr6; ShipToAddr[6])
+            {
+            }
+            column(QRPaymentCode; QRPaymentCode)
             {
             }
             dataitem(CopyLoop; "Integer")
@@ -649,6 +656,12 @@ report 31018 "Sales - Invoice with Adv. CZZ"
                     "VAT Reporting Date" := "VAT Date CZL";
 #pragma warning restore AL0432
 #endif
+                Clear(QRPaymentCode);
+                if "Sales & Receivables Setup"."Print QR Payment CZL" and PaymentMethod."Print QR Payment CZL" then begin
+                    CalcFields("Remaining Amount");
+                    if "Remaining Amount" <> 0 then
+                        GenerateQRPaymentCode();
+                end;
             end;
         }
     }
@@ -710,13 +723,8 @@ report 31018 "Sales - Invoice with Adv. CZZ"
     end;
 
     var
-        TempVATAmountLine: Record "VAT Amount Line" temporary;
         TempLineFeeNoteOnReportHist: Record "Line Fee Note on Report Hist." temporary;
         Customer: Record Customer;
-        PaymentTerms: Record "Payment Terms";
-        PaymentMethod: Record "Payment Method";
-        ShipmentMethod: Record "Shipment Method";
-        ReasonCode: Record "Reason Code";
         CurrencyExchangeRate: Record "Currency Exchange Rate";
         VATClause: Record "VAT Clause";
         SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ";
@@ -730,20 +738,8 @@ report 31018 "Sales - Invoice with Adv. CZZ"
         ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
 #pragma warning restore AL0432
 #endif
-        ExchRateText: Text[50];
-        VATClauseText: Text;
-        CompanyAddr: array[8] of Text[100];
-        CustAddr: array[8] of Text[100];
-        ShipToAddr: array[8] of Text[100];
-        DocFooterText: Text[1000];
-        PaymentSymbol: array[2] of Text;
-        PaymentSymbolLabel: array[2] of Text;
-        CalculatedExchRate: Decimal;
-        PrepaymentAmt: Decimal;
-        TotalAfterPrepayed: Decimal;
-        NoOfCop: Integer;
+        LogInteractionEnable: Boolean;
         NoOfLoops: Integer;
-        LogInteract: Boolean;
         ExchRateLbl: Label 'Exchange Rate %1 %2 / %3 %4', Comment = '%1 = Calculated Exch. Rate, %2 = General Ledger Setup LCY Code, %3 = Exch. Rate Exchange Rate Amount, %4 = Currency Code';
         DocumentLbl: Label 'Invoice';
         PageLbl: Label 'Page';
@@ -772,7 +768,28 @@ report 31018 "Sales - Invoice with Adv. CZZ"
         ClosingLbl: Label 'Sincerely';
         BodyLbl: Label 'Thank you for your business. Your invoice is attached to this message.';
         DocumentNoLbl: Label 'No.';
-        LogInteractionEnable: Boolean;
+        QRPaymentLbl: Label 'QR Payment';
+
+    protected var
+        PaymentTerms: Record "Payment Terms";
+        PaymentMethod: Record "Payment Method";
+        ReasonCode: Record "Reason Code";
+        ShipmentMethod: Record "Shipment Method";
+        TempVATAmountLine: Record "VAT Amount Line" temporary;
+        CompanyAddr: array[8] of Text[100];
+        CustAddr: array[8] of Text[100];
+        ShipToAddr: array[8] of Text[100];
+        PaymentSymbol: array[2] of Text;
+        PaymentSymbolLabel: array[2] of Text;
+        DocFooterText: Text[1000];
+        ExchRateText: Text[50];
+        VATClauseText: Text;
+        CalculatedExchRate: Decimal;
+        PrepaymentAmt: Decimal;
+        TotalAfterPrepayed: Decimal;
+        NoOfCop: Integer;
+        LogInteract: Boolean;
+        QRPaymentCode: Text;
         DisplayAddFeeNote: Boolean;
 
     procedure InitLogInteraction()
@@ -843,6 +860,18 @@ report 31018 "Sales - Invoice with Adv. CZZ"
         MailManagement: Codeunit "Mail Management";
     begin
         exit(CurrReport.Preview or MailManagement.IsHandlingGetEmailBody());
+    end;
+
+    local procedure GenerateQRPaymentCode()
+    var
+        BarcodeSymbology2D: Enum "Barcode Symbology 2D";
+        BarcodeFontProvider2D: Interface "Barcode Font Provider 2D";
+        BarcodeString: Text;
+    begin
+        BarcodeFontProvider2D := Enum::"Barcode Font Provider 2D"::IDAutomation2D;
+        BarcodeSymbology2D := Enum::"Barcode Symbology 2D"::"QR-Code";
+        BarcodeString := "Sales Invoice Header".CreateSalesInvoicePaymentQRCodeStringCZL();
+        QRPaymentCode := BarcodeFontProvider2D.EncodeFont(BarcodeString, BarcodeSymbology2D);
     end;
 }
 

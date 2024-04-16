@@ -24,7 +24,7 @@
               </TablixColumns>
               <TablixRows>
                 <TablixRow>
-                  <Height>4.57135in</Height>
+                  <Height>5.99843in</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -2609,8 +2609,8 @@ Cstr(Fields!PageLbl.Value)</Value>
                                   </FilterValues>
                                 </Filter>
                               </Filters>
-                              <Top>11.16122cm</Top>
-                              <Left>11.99999cm</Left>
+                              <Top>14.69038cm</Top>
+                              <Left>11.99995cm</Left>
                               <Height>0.45001cm</Height>
                               <Width>6.00001cm</Width>
                               <ZIndex>2</ZIndex>
@@ -2620,6 +2620,74 @@ Cstr(Fields!PageLbl.Value)</Value>
                                 </Border>
                               </Style>
                             </Tablix>
+                            <Textbox Name="QRCode">
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Fields!QRPaymentCode.Value</Value>
+                                      <Style>
+                                        <FontFamily>IDAutomation2D</FontFamily>
+                                        <FontSize>8pt</FontSize>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>QRCode</rd:DefaultName>
+                              <Top>10.93148cm</Top>
+                              <Left>14.30806cm</Left>
+                              <Height>3.3441cm</Height>
+                              <Width>3.6919cm</Width>
+                              <ZIndex>3</ZIndex>
+                              <Visibility>
+                                <Hidden>=IIF(Fields!QRPaymentCode.Value = "", True, False)</Hidden>
+                              </Visibility>
+                              <Style>
+                                <Border />
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                            <Textbox Name="Textbox1">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=Fields!QRPaymentLbl.Value</Value>
+                                      <Style>
+                                        <FontWeight>Bold</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox1</rd:DefaultName>
+                              <Top>14.34614cm</Top>
+                              <Left>14.50001cm</Left>
+                              <Height>0.30896cm</Height>
+                              <Width>2.5cm</Width>
+                              <ZIndex>4</ZIndex>
+                              <Visibility>
+                                <Hidden>=IIF(Fields!QRPaymentCode.Value = "", True, False)</Hidden>
+                              </Visibility>
+                              <Style>
+                                <Border>
+                                  <Style>None</Style>
+                                </Border>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
                           </ReportItems>
                           <KeepTogether>true</KeepTogether>
                           <Style>
@@ -2628,6 +2696,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                             </Border>
                           </Style>
                         </Rectangle>
+                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                   </TablixCells>
@@ -2665,7 +2734,7 @@ Cstr(Fields!PageLbl.Value)</Value>
               </Filter>
             </Filters>
             <Left>0.00001cm</Left>
-            <Height>4.57135in</Height>
+            <Height>5.99843in</Height>
             <Width>17.99999cm</Width>
             <Style>
               <Border>
@@ -2674,7 +2743,7 @@ Cstr(Fields!PageLbl.Value)</Value>
             </Style>
           </Tablix>
         </ReportItems>
-        <Height>11.61123cm</Height>
+        <Height>15.23602cm</Height>
         <Style>
           <Border />
         </Style>
@@ -2861,6 +2930,7 @@ Cstr(Fields!PageLbl.Value)</Value>
                   <Style />
                 </Paragraph>
               </Paragraphs>
+              <Top>0in</Top>
               <Height>0.5cm</Height>
               <Width>12cm</Width>
               <Style>
@@ -3122,6 +3192,9 @@ End Function</Code>
         <Field Name="DocumentNoLbl">
           <DataField>DocumentNoLbl</DataField>
         </Field>
+        <Field Name="QRPaymentLbl">
+          <DataField>QRPaymentLbl</DataField>
+        </Field>
         <Field Name="No_SalesAdvanceLetterHeader">
           <DataField>No_SalesAdvanceLetterHeader</DataField>
         </Field>
@@ -3217,6 +3290,9 @@ End Function</Code>
         </Field>
         <Field Name="AmountIncludingVATFormat">
           <DataField>AmountIncludingVATFormat</DataField>
+        </Field>
+        <Field Name="QRPaymentCode">
+          <DataField>QRPaymentCode</DataField>
         </Field>
         <Field Name="CopyNo">
           <DataField>CopyNo</DataField>

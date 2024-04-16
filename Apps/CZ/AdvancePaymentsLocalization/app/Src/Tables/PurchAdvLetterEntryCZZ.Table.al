@@ -6,6 +6,7 @@ namespace Microsoft.Finance.AdvancePayments;
 
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.Dimension;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.VAT.Setup;
@@ -224,6 +225,9 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
         }
     }
 
+    var
+        PurchAdvLetterManagementCZZ: Codeunit "PurchAdvLetterManagement CZZ";
+
     procedure ShowDimensions()
     var
         DimensionManagement: Codeunit DimensionManagement;
@@ -280,8 +284,183 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
         exit(PurchAdvLetterEntryCZZ.Amount)
     end;
 
+    procedure InitNewEntry()
+    begin
+        if ("Entry No." = 0) and (not IsTemporary()) then begin
+            LockTable();
+            if FindLast() then;
+        end;
+        Init();
+        "Entry No." += 1;
+        OnAfterInitNewEntry(Rec);
+    end;
+
+    procedure InitRelatedEntry(EntryNo: Integer)
+    var
+        PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
+    begin
+        if not PurchAdvLetterEntryCZZ.Get(EntryNo) then
+            PurchAdvLetterEntryCZZ."Entry No." := EntryNo;
+        InitRelatedEntry(PurchAdvLetterEntryCZZ);
+    end;
+
+    procedure InitRelatedEntry(PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
+    begin
+        "Related Entry" := PurchAdvLetterEntryCZZ."Entry No.";
+        OnAfterInitRelatedEntry(PurchAdvLetterEntryCZZ, Rec);
+    end;
+
+    procedure InitVendorLedgerEntry(VendorLedgerEntry: Record "Vendor Ledger Entry")
+    begin
+        "Vendor Ledger Entry No." := VendorLedgerEntry."Entry No.";
+        OnAfterInitVendorLedgerEntry(VendorLedgerEntry, Rec);
+    end;
+
+    procedure InitDetailedVendorLedgerEntry(DetailedVendorLedgEntryNo: Integer)
+    var
+        DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
+    begin
+        if not DetailedVendorLedgEntry.Get(DetailedVendorLedgEntryNo) then
+            DetailedVendorLedgEntry."Entry No." := DetailedVendorLedgEntryNo;
+        InitDetailedVendorLedgerEntry(DetailedVendorLedgEntry);
+    end;
+
+    procedure InitDetailedVendorLedgerEntry(DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry")
+    begin
+        "Det. Vendor Ledger Entry No." := DetailedVendorLedgEntry."Entry No.";
+        OnAfterInitDetailedVendorLedgerEntry(DetailedVendorLedgEntry, Rec);
+    end;
+
+    procedure CopyFromGenJnlLine(GenJournalLine: Record "Gen. Journal Line")
+    begin
+        "Document No." := GenJournalLine."Document No.";
+        "External Document No." := GenJournalLine."External Document No.";
+        "Global Dimension 1 Code" := GenJournalLine."Shortcut Dimension 1 Code";
+        "Global Dimension 2 Code" := GenJournalLine."Shortcut Dimension 2 Code";
+        "Dimension Set ID" := GenJournalLine."Dimension Set ID";
+        "Posting Date" := GenJournalLine."Posting Date";
+        "VAT Date" := GenJournalLine."VAT Reporting Date";
+        "Original Document VAT Date" := GenJournalLine."Original Doc. VAT Date CZL";
+        "VAT Bus. Posting Group" := GenJournalLine."VAT Bus. Posting Group";
+        "VAT Prod. Posting Group" := GenJournalLine."VAT Prod. Posting Group";
+        "VAT %" := GenJournalLine."VAT %";
+        "VAT Calculation Type" := GenJournalLine."VAT Calculation Type";
+        "Currency Code" := GenJournalLine."Currency Code";
+        "Currency Factor" := GenJournalLine."Currency Factor";
+        Amount := GenJournalLine.Amount;
+        "Amount (LCY)" := GenJournalLine."Amount (LCY)";
+        "VAT Amount" := GenJournalLine."VAT Amount";
+        "VAT Amount (LCY)" := GenJournalLine."VAT Amount (LCY)";
+        "VAT Base Amount" := GenJournalLine."VAT Base Amount";
+        "VAT Base Amount (LCY)" := GenJournalLine."VAT Base Amount (LCY)";
+        OnAfterCopyFromGenJnlLine(GenJournalLine, Rec);
+    end;
+
+    procedure CopyFromVATPostingSetup(VATPostingSetup: Record "VAT Posting Setup")
+    begin
+        "VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
+        "VAT Prod. Posting Group" := VATPostingSetup."VAT Prod. Posting Group";
+        "VAT %" := VATPostingSetup."VAT %";
+        "VAT Identifier" := VATPostingSetup."VAT Identifier";
+        "VAT Calculation Type" := VATPostingSetup."VAT Calculation Type";
+        OnAfterCopyFromVATPostingSetup(VATPostingSetup, Rec);
+    end;
+
+    procedure InsertNewEntry(WriteToDatabase: Boolean) EntryNo: Integer
+    var
+        PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
+    begin
+        OnBeforeInsertNewEntry(WriteToDatabase, Rec);
+        if not IsTemporary() then
+            exit;
+
+        "User ID" := CopyStr(UserId(), 1, MaxStrLen("User ID"));
+        EntryNo := "Entry No.";
+        if WriteToDatabase then begin
+            PurchAdvLetterEntryCZZ.InitNewEntry();
+            EntryNo := PurchAdvLetterEntryCZZ."Entry No.";
+            PurchAdvLetterEntryCZZ := Rec;
+            PurchAdvLetterEntryCZZ."Entry No." := EntryNo;
+            PurchAdvLetterEntryCZZ.Insert(true);
+        end else
+            Insert();
+        OnAfterInsertNewEntry(WriteToDatabase, Rec);
+    end;
+
+    procedure GetRemainingAmount(): Decimal
+    begin
+        exit(GetRemainingAmount(0D))
+    end;
+
+    procedure GetRemainingAmount(BalanceAtDate: Date) RemainingAmount: Decimal
+    begin
+        RemainingAmount := PurchAdvLetterManagementCZZ.GetRemAmtPurchAdvPayment(Rec, BalanceAtDate);
+        OnAfterRemainingAmount(Rec, BalanceAtDate, RemainingAmount);
+    end;
+
+    procedure GetRemainingAmountLCY(): Decimal
+    begin
+        exit(GetRemainingAmountLCY(0D))
+    end;
+
+    procedure GetRemainingAmountLCY(BalanceAtDate: Date) RemainingAmountLCY: Decimal
+    begin
+        RemainingAmountLCY := PurchAdvLetterManagementCZZ.GetRemAmtLCYPurchAdvPayment(Rec, BalanceAtDate);
+        OnAfterRemainingAmountLCY(Rec, BalanceAtDate, RemainingAmountLCY);
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforePrintRecords(var ReportSelections: Record "Report Selections"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; ShowRequestPage: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInitNewEntry(var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInitRelatedEntry(RelatedPurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInitVendorLedgerEntry(VendorLedgerEntry: Record "Vendor Ledger Entry"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInitDetailedVendorLedgerEntry(DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFromGenJnlLine(GenJournalLine: Record "Gen. Journal Line"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFromVATPostingSetup(VATPostingSetup: Record "VAT Posting Setup"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertNewEntry(WriteToDatabase: Boolean; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInsertNewEntry(WriteToDatabase: Boolean; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterRemainingAmount(PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; BalanceAtDate: Date; var RemainingAmount: Decimal)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterRemainingAmountLCY(PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; BalanceAtDate: Date; var RemainingAmountLCY: Decimal)
     begin
     end;
 }

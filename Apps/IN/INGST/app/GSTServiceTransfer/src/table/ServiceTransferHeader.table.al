@@ -457,7 +457,7 @@ table 18350 "Service Transfer Header"
                     "No. Series" := xRec."No. Series";
                 "No." := NoSeries.GetNextNo("No. Series", "Shipment Date");
 #if not CLEAN24
-            NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", NoSeriesCode, "Shipment Date", "No.");
+                NoSeriesManagement.RaiseObsoleteOnAfterInitSeries("No. Series", NoSeriesCode, "Shipment Date", "No.");
             end;
 #endif
         end;
@@ -519,13 +519,13 @@ table 18350 "Service Transfer Header"
 
     procedure AssistEdit(OldServiceTransferHeader: Record "Service Transfer Header"): Boolean
     var
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
         ServiceTransferHeader := Rec;
         GetInventorySetup();
         InventorySetup.TestField("Service Transfer Order Nos.");
-        if NoSeriesManagement.SelectSeries(GetNoSeriesCode(), OldServiceTransferHeader."No. Series", "No. Series") then begin
-            NoSeriesManagement.SetSeries("No.");
+        if NoSeries.LookupRelatedNoSeries(GetNoSeriesCode(), OldServiceTransferHeader."No. Series", "No. Series") then begin
+            "No." := NoSeries.GetNextNo("No. Series");
             Rec := ServiceTransferHeader;
             exit(true);
         end;

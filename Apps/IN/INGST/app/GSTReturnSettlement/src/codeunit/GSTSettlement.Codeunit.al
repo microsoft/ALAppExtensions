@@ -218,7 +218,7 @@ codeunit 18318 "GST Settlement"
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
         GenLedgerSetup: Record "General Ledger Setup";
         GenJournalPostLine: Codeunit "Gen. Jnl.-Post Line";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         GSTHelpers: Codeunit "GST Helpers";
         GSTBaseValidation: Codeunit "GST Base Validation";
         EntryNo: Integer;
@@ -344,7 +344,7 @@ codeunit 18318 "GST Settlement"
                             EntryNo := GenJournalPostLine.RunWithCheck(GenJnlLine);
                         until TempGSTPostingBuffer[1].Next(-1) = 0;
                 until GSTCreditAdjustmentJournal.Next() = 0;
-                NoSeriesManagement.GetNextNo(GetNoSeriesCode(false), GSTCreditAdjustmentJournal."Posting Date", true);
+                NoSeries.GetNextNo(GetNoSeriesCode(false), GSTCreditAdjustmentJournal."Posting Date");
             end;
         end;
 
@@ -576,7 +576,7 @@ codeunit 18318 "GST Settlement"
         GSTLiabilityBuffer: Record "GST Liability Buffer";
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
         GenJnlLine: Record "Gen. Journal Line";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         AppliedBase: Decimal;
         AppliedAmount: Decimal;
         RemainingBase: Decimal;
@@ -732,7 +732,7 @@ codeunit 18318 "GST Settlement"
                     until TempGSTPostingBuffer1[1].Next(-1) = 0;
             until GSTLiabilityAdjustment.Next() = 0;
 
-            NoSeriesManagement.GetNextNo(GetNoSeriesCode(true), GSTLiabilityAdjustment."Adjustment Posting Date", true);
+            NoSeries.GetNextNo(GetNoSeriesCode(true), GSTLiabilityAdjustment."Adjustment Posting Date");
         end;
     end;
 
@@ -1127,7 +1127,7 @@ codeunit 18318 "GST Settlement"
         DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
         GeneralPostingSetup: Record "General Posting Setup";
         GenJournalLine: Record "Gen. Journal Line";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
         GSTHelpers: Codeunit "GST Helpers";
         TotalGSTAmt: Decimal;
         TotalGSTAmt1: Decimal;
@@ -1266,7 +1266,7 @@ codeunit 18318 "GST Settlement"
                 if GSTCreditAdjustmentJournal.Type = Type::Item then
                     PostRevaluationEntry(GSTCreditAdjustmentJournal)
             until GSTCreditAdjustmentJournal.Next() = 0;
-            NoSeriesManagement.GetNextNo(GetNoSeriesCode(false), GSTCreditAdjustmentJournal."Posting Date", true);
+            NoSeries.GetNextNo(GetNoSeriesCode(false), GSTCreditAdjustmentJournal."Posting Date");
         end;
 
         Clear(GenJnlPostLine);
@@ -2006,14 +2006,16 @@ codeunit 18318 "GST Settlement"
             Error(PostingDateErr);
     end;
 
-    local procedure GetSettlementDocumentNo(PostingDate: Date; modifyTrue: Boolean): Code[20]
+    local procedure GetSettlementDocumentNo(PostingDate: Date; ModifyNoSeries: Boolean): Code[20]
     var
         GenLedgerSetup: Record "General Ledger Setup";
-        NoSeriesMgmt: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
         GenLedgerSetup.Get();
         GenLedgerSetup.TestField("GST Settlement Nos.");
-        exit(NoSeriesMgmt.GetNextNo(GenLedgerSetup."GST Settlement Nos.", PostingDate, modifyTrue));
+        if ModifyNoSeries then
+            exit(NoSeries.GetNextNo(GenLedgerSetup."GST Settlement Nos.", PostingDate));
+        exit(NoSeries.PeekNextNo(GenLedgerSetup."GST Settlement Nos.", PostingDate));
     end;
 
     local procedure CreateGSTPaymentBuffer(

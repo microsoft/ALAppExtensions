@@ -23,4 +23,23 @@ tableextension 31007 "Vendor Ledger Entry CZZ" extends "Vendor Ledger Entry"
             TableRelation = "Advance Letter Template CZZ" where("Sales/Purchase" = const(Purchase));
         }
     }
+
+    internal procedure SetApplication(AdvanceLetterCode: Code[20]; AdvanceLetterNo: Code[20])
+    begin
+        CalcFields("Remaining Amount");
+        "Amount to Apply" := "Remaining Amount";
+        "Applies-to ID" := CopyStr("Document No." + Format("Entry No.", 0, '<Integer>'), 1, MaxStrLen("Applies-to ID"));
+        Prepayment := false;
+        if AdvanceLetterCode <> '' then
+            "Adv. Letter Template Code CZZ" := AdvanceLetterCode;
+        if AdvanceLetterNo <> '' then
+            "Advance Letter No. CZZ" := AdvanceLetterNo;
+        OnSetApplicationOnBeforeVendEntryEditCZZ(Rec);
+        Codeunit.Run(Codeunit::"Vend. Entry-Edit", Rec);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSetApplicationOnBeforeVendEntryEditCZZ(var VendorLedgerEntry: Record "Vendor Ledger Entry")
+    begin
+    end;
 }

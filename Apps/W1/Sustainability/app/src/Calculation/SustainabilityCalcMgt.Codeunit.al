@@ -6,23 +6,27 @@ using Microsoft.Finance.GeneralLedger.Ledger;
 
 codeunit 6218 "Sustainability Calc. Mgt."
 {
-    Access = Internal;
-
     var
         FromToFilterLbl: Label '%1..%2', Locked = true;
 
-    procedure CalculationEmissions(var SustainabilityJnlLine: Record "Sustainability Jnl. Line")
+    internal procedure CalculationEmissions(var SustainabilityJnlLine: Record "Sustainability Jnl. Line")
     var
         SustainAccountCategory: Record "Sustain. Account Category";
         SustainAccountSubcategory: Record "Sustain. Account Subcategory";
+        IsHandled: Boolean;
     begin
+        OnBeforeCalculationEmissions(IsHandled, SustainabilityJnlLine);
+
+        if IsHandled then
+            exit;
+
         SustainAccountCategory.Get(SustainabilityJnlLine."Account Category");
         SustainAccountSubcategory.Get(SustainabilityJnlLine."Account Category", SustainabilityJnlLine."Account Subcategory");
 
         CalculationEmissions(SustainabilityJnlLine, SustainAccountCategory, SustainAccountSubcategory);
     end;
 
-    procedure CalculationEmissions(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SustainAccountCategory: Record "Sustain. Account Category"; SustainAccountSubcategory: Record "Sustain. Account Subcategory")
+    internal procedure CalculationEmissions(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SustainAccountCategory: Record "Sustain. Account Category"; SustainAccountSubcategory: Record "Sustain. Account Subcategory")
     var
         SustainabilityCalculation: Codeunit "Sustainability Calculation";
     begin
@@ -96,5 +100,10 @@ codeunit 6218 "Sustainability Calc. Mgt."
         GLEntry.SetFilter("Global Dimension 2 Code", SustainAccountCategory."Global Dimension 2 Filter");
         if (FromDate <> 0D) or (ToDate <> 0D) then
             GLEntry.SetFilter("Posting Date", StrSubstNo(FromToFilterLbl, FromDate, ToDate));
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCalculationEmissions(var IsHandled: Boolean; var SustainabilityJnlLine: Record "Sustainability Jnl. Line")
+    begin
     end;
 }

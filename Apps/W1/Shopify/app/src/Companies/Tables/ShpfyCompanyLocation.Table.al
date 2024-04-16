@@ -58,6 +58,16 @@ table 30151 "Shpfy Company Location"
             DataClassification = CustomerContent;
             Editable = false;
         }
+        field(10; "Province Code"; Code[2])
+        {
+            Caption = 'Province';
+            DataClassification = CustomerContent;
+        }
+        field(11; "Province Name"; Text[50])
+        {
+            Caption = 'Province Name';
+            DataClassification = CustomerContent;
+        }
     }
     keys
     {

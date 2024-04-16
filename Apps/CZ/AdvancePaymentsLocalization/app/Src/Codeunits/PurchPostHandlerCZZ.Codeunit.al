@@ -18,13 +18,10 @@ codeunit 31022 "Purch.-Post Handler CZZ"
     var
         PurchAdvLetterManagement: Codeunit "PurchAdvLetterManagement CZZ";
     begin
-        if (not PurchaseHeader.Invoice) or (not (PurchaseHeader."Document Type" in [PurchaseHeader."Document Type"::Order, PurchaseHeader."Document Type"::Invoice])) then
+        if (not PurchaseHeader.Invoice) or (not PurchaseHeader.IsAdvanceLetterDocTypeCZZ()) then
             exit;
 
-        if PurchaseHeader."Document Type" = PurchaseHeader."Document Type"::Order then
-            PurchAdvLetterManagement.CheckAdvancePayment("Adv. Letter Usage Doc.Type CZZ"::"Purchase Order", PurchaseHeader)
-        else
-            PurchAdvLetterManagement.CheckAdvancePayment("Adv. Letter Usage Doc.Type CZZ"::"Purchase Invoice", PurchaseHeader);
+        PurchAdvLetterManagement.CheckAdvancePayment(PurchaseHeader.GetAdvLetterUsageDocTypeCZZ(), PurchaseHeader)
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purchase Handler CZP", 'OnBeforeCreateCashDocument', '', false, false)]
@@ -42,13 +39,10 @@ codeunit 31022 "Purch.-Post Handler CZZ"
         PurchAdvLetterManagementCZZ: Codeunit "PurchAdvLetterManagement CZZ";
         AdvLetterUsageDocTypeCZZ: Enum "Adv. Letter Usage Doc.Type CZZ";
     begin
-        if (not PurchHeader.Invoice) or (not (PurchHeader."Document Type" in [PurchHeader."Document Type"::Order, PurchHeader."Document Type"::Invoice])) then
+        if (not PurchHeader.Invoice) or (not PurchHeader.IsAdvanceLetterDocTypeCZZ()) then
             exit;
 
-        if PurchHeader."Document Type" = PurchHeader."Document Type"::Order then
-            AdvLetterUsageDocTypeCZZ := AdvLetterUsageDocTypeCZZ::"Purchase Order"
-        else
-            AdvLetterUsageDocTypeCZZ := AdvLetterUsageDocTypeCZZ::"Purchase Invoice";
+        AdvLetterUsageDocTypeCZZ := PurchHeader.GetAdvLetterUsageDocTypeCZZ();
 
         VendorLedgerEntry.Get(PurchInvHeader."Vendor Ledger Entry No.");
         BindSubscription(GetLastGLEntryNoCZZ);

@@ -14,7 +14,7 @@ enum 6106 "E-Document Service Status"
     value(3; "Cancel Error") { Caption = 'Cancel error'; }
     value(4; "Canceled") { Caption = 'Canceled'; }
     value(5; "Imported") { Caption = 'Imported'; }
-    value(6; "Imported Document Processing Error") { Caption = 'Imported document erocessing error'; }
+    value(6; "Imported Document Processing Error") { Caption = 'Imported document processing error'; }
     value(7; "Imported Document Created") { Caption = 'Imported document created'; }
     value(8; "Order Updated") { Caption = 'Order updated'; }
     value(9; "Journal Line Created") { Caption = 'Journal line created'; }
@@ -26,5 +26,5 @@ enum 6106 "E-Document Service Status"
     value(15; "Rejected") { Caption = 'Rejected'; }
     value(16; "Batch Imported") { Caption = 'Batch imported'; }
     value(17; "Order Linked") { Caption = 'Order linked'; }
-    value(18; "Pending") { Caption = 'Pending'; }
+    value(18; "Pending") { Caption = 'Pending Document Link'; }
 }

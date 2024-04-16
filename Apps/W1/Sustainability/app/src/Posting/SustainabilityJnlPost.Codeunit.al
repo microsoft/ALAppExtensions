@@ -2,6 +2,7 @@ namespace Microsoft.Sustainability.Posting;
 
 using Microsoft.Sustainability.Journal;
 using Microsoft.Foundation.NoSeries;
+using System.Utilities;
 
 codeunit 6213 "Sustainability Jnl.-Post"
 {
@@ -9,9 +10,13 @@ codeunit 6213 "Sustainability Jnl.-Post"
 
     trigger OnRun()
     var
+        ConfirmManagement: Codeunit "Confirm Management";
         SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
         Window: Dialog;
     begin
+        if not ConfirmManagement.GetResponseOrDefault(SustainabilityPostMgt.GetPostConfirmMessage(), true) then
+            exit;
+
         Rec.LockTable();
 
         if GuiAllowed() then
@@ -23,8 +28,12 @@ codeunit 6213 "Sustainability Jnl.-Post"
 
         Rec.DeleteAll(true);
 
-        if GuiAllowed() then
+        if GuiAllowed() then begin
             Window.Close();
+            Message(SustainabilityPostMgt.GetJnlLinesPostedMessage());
+        end;
+
+        SustainabilityPostMgt.ResetFilters(Rec);
     end;
 
     local procedure CheckJournalLinesBeforePosting(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; var DialogInstance: Dialog)

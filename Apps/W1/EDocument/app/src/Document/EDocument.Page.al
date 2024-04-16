@@ -1,4 +1,4 @@
-﻿// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -6,6 +6,8 @@ namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Bank.Reconciliation;
 using Microsoft.eServices.EDocument.OrderMatch;
+using Microsoft.eServices.EDocument.OrderMatch.Copilot;
+using System.Telemetry;
 using System.Utilities;
 
 page 6121 "E-Document"
@@ -166,7 +168,7 @@ page 6121 "E-Document"
 #endif
             part(ErrorMessagesPart; "Error Messages Part")
             {
-                Visible = HasErrorsAndWarnings;
+                Visible = HasErrorsOrWarnings;
                 ShowFilter = false;
                 UpdatePropagation = Both;
             }
@@ -281,26 +283,30 @@ page 6121 "E-Document"
                 }
                 action(CreateDocument)
                 {
-                    Caption = 'Recreate Document';
-                    ToolTip = 'Recreate the document based on imported electronic document.';
+                    Caption = 'Reprocess Document';
+                    ToolTip = 'Reprocess the electronic file to a purchase document.';
                     Image = CreateXMLFile;
-                    Visible = (not ShowCreateJnlLine) and IsIncomingDoc and HasErrorsAndWarnings;
+                    Visible = IsIncomingDoc and (not IsProcessed);
 
                     trigger OnAction()
                     begin
                         EDocImport.ProcessDocument(Rec, false);
+                        if EDocumentErrorHelper.HasErrors(Rec) then
+                            Message(DocNotCreatedMsg, Rec."Document Type");
                     end;
                 }
                 action(CreateJournal)
                 {
-                    Caption = 'Recreate Journal Line';
-                    ToolTip = 'Recreate the journal line.';
+                    Caption = 'Reprocess Journal Line';
+                    ToolTip = 'Reprocess the electronic file to a journal line.';
                     Image = Journal;
-                    Visible = ShowCreateJnlLine and IsIncomingDoc and HasErrorsAndWarnings;
+                    Visible = IsIncomingDoc and (not IsProcessed);
 
                     trigger OnAction()
                     begin
                         EDocImport.ProcessDocument(Rec, true);
+                        if EDocumentErrorHelper.HasErrors(Rec) then
+                            Message(DocNotCreatedMsg, Rec."Document Type");
                     end;
                 }
 #if not CLEAN24
@@ -321,12 +327,26 @@ page 6121 "E-Document"
                     end;
                 }
 #endif
+                action(MatchToOrderCopilotEnabled)
+                {
+                    Caption = 'Match Purchase Order';
+                    ToolTip = 'Match E-document lines to Purchase Order.';
+                    Image = SparkleFilled;
+                    Visible = ShowMapToOrder and CopilotEnabled;
+
+                    trigger OnAction()
+                    var
+                        EDocOrderMatch: Codeunit "E-Doc. Line Matching";
+                    begin
+                        EDocOrderMatch.RunMatching(Rec);
+                    end;
+                }
                 action(MatchToOrder)
                 {
                     Caption = 'Match Purchase Order';
                     ToolTip = 'Match E-document lines to Purchase Order.';
                     Image = Reconcile;
-                    Visible = ShowMapToOrder;
+                    Visible = ShowMapToOrder and (not CopilotEnabled);
 
                     trigger OnAction()
                     var
@@ -344,11 +364,12 @@ page 6121 "E-Document"
                     Caption = 'Replace Source Document';
                     ToolTip = 'Import and replace the electronic document.';
                     Image = UpdateXML;
-                    Visible = IsIncomingDoc and HasErrorsAndWarnings;
+                    Visible = IsIncomingDoc and (not IsProcessed);
 
                     trigger OnAction()
                     begin
                         EDocImport.UploadDocument(Rec);
+                        CurrPage.Update();
                     end;
                 }
                 action(TextToAccountMapping)
@@ -357,7 +378,19 @@ page 6121 "E-Document"
                     Image = MapAccounts;
                     RunObject = Page "Text-to-Account Mapping Wksh.";
                     ToolTip = 'Create a mapping of text on electronic documents to identical text on specific debit, credit, and balancing accounts in the general ledger or on bank accounts so that the resulting document or journal lines are prefilled with the specified information.';
-                    Visible = IsIncomingDoc and HasErrorsAndWarnings;
+                    Visible = IsIncomingDoc and HasErrors and (not ShowRelink);
+                }
+                action(LinkOrder)
+                {
+                    Caption = 'Update Purchase Order Link';
+                    ToolTip = 'Updated Purchase Order link for E-Document to different Purchase Order.';
+                    Image = LinkAccount;
+                    Visible = IsIncomingDoc and ShowRelink and (not IsProcessed);
+
+                    trigger OnAction()
+                    begin
+                        EDocImport.UpdatePurchaseOrderLink(Rec);
+                    end;
                 }
             }
 
@@ -378,19 +411,23 @@ page 6121 "E-Document"
         {
             group(Category_Process)
             {
+                actionref(MatchToOrderCE_Promoted; MatchToOrderCopilotEnabled) { }
                 actionref(MatchToOrder_Promoted; MatchToOrder) { }
+                actionref(LinkOrder_Promoted; LinkOrder) { }
                 actionref(CreateDocument_Promoted; CreateDocument) { }
                 actionref(CreateJournal_Promoted; CreateJournal) { }
+                actionref(ImportManually_Promoted; ImportManually) { }
+                actionref(TextToAccountMapping_Promoted; TextToAccountMapping) { }
                 actionref(Send_Promoted; Send) { }
                 actionref(Recreate_Promoted; Recreate) { }
                 actionref(Cancel_promoteed; Cancel) { }
                 actionref(Approval_promoteed; GetApproval) { }
+
             }
             group(Category_Troubleshoot)
             {
                 Caption = 'Troubleshoot';
-                actionref(ImportManually_Promoted; ImportManually) { }
-                actionref(TextToAccountMapping_Promoted; TextToAccountMapping) { }
+                Visible = false;
             }
 #if not CLEAN24            
             group(Out)
@@ -436,18 +473,36 @@ page 6121 "E-Document"
     }
 
     trigger OnOpenPage()
+    var
+        EDocPOMatching: Codeunit "E-Doc. PO Copilot Matching";
     begin
         ShowMapToOrder := false;
-        HasErrorsAndWarnings := false;
+        HasErrorsOrWarnings := false;
+        HasErrors := false;
+        IsProcessed := false;
+        CopilotEnabled := EDocPOMatching.IsCopilotEnabled();
     end;
 
     trigger OnAfterGetRecord()
     begin
-        RecordLinkTxt := EDocumentHelper.GetRecordLinkText(Rec);
-        HasErrorsAndWarnings := EDocumentErrorHelper.HasErrors(Rec);
-        if HasErrorsAndWarnings then
-            ShowErrors();
+        IsProcessed := Rec.Status = Rec.Status::Processed;
+        IsIncomingDoc := Rec.Direction = Rec.Direction::Incoming;
 
+        RecordLinkTxt := EDocumentHelper.GetRecordLinkText(Rec);
+        HasErrorsOrWarnings := (EDocumentErrorHelper.ErrorMessageCount(Rec) + EDocumentErrorHelper.WarningMessageCount(Rec)) > 0;
+        HasErrors := EDocumentErrorHelper.ErrorMessageCount(Rec) > 0;
+        if HasErrorsOrWarnings then
+            ShowErrorsAndWarnings();
+
+        SetStyle();
+        ResetActionVisiability();
+        SetIncomingDocActions();
+
+        EDocImport.ProcessEDocPendingOrderMatch(Rec);
+    end;
+
+    local procedure SetStyle()
+    begin
         case Rec.Status of
             Rec.Status::Error:
                 StyleStatusTxt := 'Unfavorable';
@@ -456,11 +511,9 @@ page 6121 "E-Document"
             else
                 StyleStatusTxt := 'None';
         end;
-
-        ShowActionsForEDocument();
     end;
 
-    local procedure ShowErrors()
+    local procedure ShowErrorsAndWarnings()
     var
         ErrorMessage: Record "Error Message";
         TempErrorMessage: Record "Error Message" temporary;
@@ -469,6 +522,9 @@ page 6121 "E-Document"
         ErrorMessage.CopyToTemp(TempErrorMessage);
         CurrPage.ErrorMessagesPart.Page.SetRecords(TempErrorMessage);
         CurrPage.ErrorMessagesPart.Page.Update(false);
+
+        ErrorsAndWarningsNotification.Message(EDocHasErrorOrWarningMsg);
+        ErrorsAndWarningsNotification.Send();
     end;
 
     local procedure SendEDocument()
@@ -488,25 +544,30 @@ page 6121 "E-Document"
             EDocumentBackgroundjobs.GetEDocumentResponse();
     end;
 
-    local procedure ShowActionsForEDocument()
-    begin
-        IsIncomingDoc := Rec.Direction = Rec.Direction::Incoming;
-        if IsIncomingDoc then
-            SetIncomingDocActions();
-    end;
-
     local procedure SetIncomingDocActions()
     var
         EDocService: Record "E-Document Service";
-        EDocServiceStatus: Record "E-Document Service Status";
+        EDocServiceStatus2: Record "E-Document Service Status";
         EDocLog: Codeunit "E-Document Log";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
+        EDocPOCopilotMatching: Codeunit "E-Doc. PO Copilot Matching";
     begin
-        EDocService := EDocLog.GetLastServiceFromLog(Rec);
-        ShowCreateJnlLine := EDocService."Create Journal Lines";
-        if (Rec."Document Type" = Enum::"E-Document Type"::"Purchase Order") and (Rec.Status <> Rec.Status::Processed) then
-            if EDocServiceStatus.Get(Rec."Entry No", EDocService.Code) then
-                ShowMapToOrder := EDocServiceStatus.Status = EDocServiceStatus.Status::"Order Linked";
+        if not IsIncomingDoc then
+            exit;
 
+        EDocService := EDocLog.GetLastServiceFromLog(Rec);
+        if (Rec."Document Type" = Enum::"E-Document Type"::"Purchase Order") and (Rec.Status <> Rec.Status::Processed) then begin
+            EDocServiceStatus2.Get(Rec."Entry No", EDocService.Code);
+            ShowMapToOrder := EDocServiceStatus2.Status = Enum::"E-Document Service Status"::"Order Linked";
+            ShowRelink := true;
+            FeatureTelemetry.LogUptake('0000MMK', EDocPOCopilotMatching.FeatureName(), Enum::"Feature Uptake Status"::Discovered);
+        end;
+    end;
+
+    local procedure ResetActionVisiability()
+    begin
+        ShowMapToOrder := false;
+        ShowRelink := false;
     end;
 
     var
@@ -515,6 +576,10 @@ page 6121 "E-Document"
         EDocImport: Codeunit "E-Doc. Import";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         EDocumentHelper: Codeunit "E-Document Processing";
+        ErrorsAndWarningsNotification: Notification;
         RecordLinkTxt, StyleStatusTxt : Text;
-        ShowMapToOrder, HasErrorsAndWarnings, ShowCreateJnlLine, IsIncomingDoc : Boolean;
+        ShowRelink, ShowMapToOrder, HasErrorsOrWarnings, HasErrors, IsIncomingDoc, IsProcessed, CopilotEnabled : Boolean;
+        EDocHasErrorOrWarningMsg: Label 'Errors or warnings found for E-Document. Please review below in "Error Messages" section.';
+        DocNotCreatedMsg: Label 'Failed to create new %1 from E-Document. Please review errors below.', Comment = '%1 - E-Document Document Type';
+
 }

@@ -472,31 +472,33 @@ report 31182 "Reminder CZL"
         FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
-        AmtDueTxt: Text;
-        LineAmountText: Text;
-        CompanyAddr: array[8] of Text[100];
+        LogInteractionEnable: Boolean;
+        TotalLbl: Label 'Total';
         DocumentLbl: Label 'Reminder';
         PageLbl: Label 'Page';
         CopyLbl: Label 'Copy';
         VendLbl: Label 'Vendor';
         CustLbl: Label 'Customer';
-        CustAddr: array[8] of Text[100];
-        DocFooterText: Text[1000];
-        NoOfCopies: Integer;
-        NoOfLoops: Integer;
-        LogInteraction: Boolean;
-        LogInteractionEnable: Boolean;
-        TotalLbl: Label 'Total';
-        ShowNotDueAmounts: Boolean;
-        AmountInclVAT: Decimal;
-        LineAmount: Decimal;
-        TotalLineAmount: Decimal;
         CreatorLbl: Label 'Created by';
         InterestAmountLbl: Label 'Interest Amount';
         GreetingLbl: Label 'Hello';
         AmtDueLbl: Label 'You are receiving this email to formally notify you that payment owed by you is past due. The payment was due on %1. Enclosed is a copy of invoice with the details of remaining amount.', Comment = '%1 = A due date';
         BodyLbl: Label 'If you have already made the payment, please disregard this email. Thank you for your business.';
         ClosingLbl: Label 'Sincerely';
+
+    protected var
+        CompanyAddr: array[8] of Text[100];
+        CustAddr: array[8] of Text[100];
+        DocFooterText: Text[1000];
+        NoOfCopies: Integer;
+        NoOfLoops: Integer;
+        LogInteraction: Boolean;
+        ShowNotDueAmounts: Boolean;
+        AmtDueTxt: Text;
+        LineAmountText: Text;
+        AmountInclVAT: Decimal;
+        LineAmount: Decimal;
+        TotalLineAmount: Decimal;
 
     procedure InitializeRequest(NoOfCopiesFrom: Integer; LogInteractionFrom: Boolean; ShowNotDueAmountsFrom: Boolean)
     begin

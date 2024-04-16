@@ -33,6 +33,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Security.User;
 using System.Utilities;
+using Microsoft.Foundation.Company;
 
 table 31004 "Sales Adv. Letter Header CZZ"
 {
@@ -49,6 +50,8 @@ table 31004 "Sales Adv. Letter Header CZZ"
             DataClassification = CustomerContent;
 
             trigger OnValidate()
+            var
+                NoSeries: Codeunit "No. Series";
             begin
                 if "No." <> xRec."No." then begin
                     GetSetup();
@@ -867,8 +870,9 @@ table 31004 "Sales Adv. Letter Header CZZ"
         Customer: Record Customer;
         SalespersonPurchaser: Record "Salesperson/Purchaser";
         ResponsibilityCenter: Record "Responsibility Center";
+#if not CLEAN24
         NoSeriesManagement: Codeunit NoSeriesManagement;
-        NoSeries: Codeunit "No. Series";
+#endif
         DimensionManagement: Codeunit DimensionManagement;
         UserSetupManagement: Codeunit "User Setup Management";
 #if not CLEAN22
@@ -885,17 +889,20 @@ table 31004 "Sales Adv. Letter Header CZZ"
         DocumentDeleteErr: Label 'You cannot delete this document. Your identification is set up to process from %1 %2 only.', Comment = '%1 = table caption of responsibility center, %2 = code of responsibility center';
 
     procedure AssistEdit(): Boolean
+    var
+        NoSeries: Codeunit "No. Series";
     begin
         GetSetup();
         AdvanceLetterTemplateCZZ.TestField("Advance Letter Document Nos.");
-        if NoSeriesManagement.SelectSeries(AdvanceLetterTemplateCZZ."Advance Letter Document Nos.", xRec."No. Series", "No. Series") then begin
-            NoSeriesManagement.SetSeries("No.");
+        if NoSeries.LookupRelatedNoSeries(AdvanceLetterTemplateCZZ."Advance Letter Document Nos.", xRec."No. Series", "No. Series") then begin
+            "No." := NoSeries.GetNextNo("No. Series");
             exit(true);
         end;
     end;
 
     procedure InitInsert()
     var
+        NoSeries: Codeunit "No. Series";
         IsHandled: Boolean;
     begin
         IsHandled := false;
@@ -1669,6 +1676,127 @@ table 31004 "Sales Adv. Letter Header CZZ"
         Validate("Document Date", "Posting Date");
     end;
 
+    procedure CreateSalesAdvInvoicePaymentQRCodeString(): Text
+    var
+        CompanyInformation: Record "Company Information";
+        IBANCode: Code[50];
+        SWIFT: Code[20];
+        QRCode: Text;
+        InvoiceTxt: Label 'Invoice';
+    begin
+        if "Bank Account Code" <> '' then begin
+            IBANCode := IBAN;
+            SWIFT := "SWIFT Code";
+        end else begin
+            CompanyInformation.Get();
+            IBANCode := CompanyInformation.IBAN;
+            SWIFT := CompanyInformation."SWIFT Code";
+            if IBAN <> '' then
+                IBANCode := IBAN;
+            if "SWIFT Code" <> '' then
+                SWIFT := "SWIFT Code";
+        end;
+
+        CalcFields("Amount Including VAT");
+
+        QRCode := 'SPD*1.0*';
+
+        // ACC
+        if SWIFT <> '' then
+            QRCode := QRCode + 'ACC:' + IBANCode + '+' + SWIFT + '*'
+        else
+            QRCode := QRCode + 'ACC:' + IBANCode + '*';
+
+        // AM
+        QRCode := QRCode + 'AM:' + format("Amount Including VAT", 0, '<Precision,2:2><Standard Format,2>') + '*';
+
+        // CC
+        if "Currency Code" = '' then begin
+            GetSetup();
+            QRCode := QRCode + 'CC:' + UpperCase(GeneralLedgerSetup."LCY Code") + '*';
+        end else
+            QRCode := QRCode + 'CC:' + UpperCase("Currency Code") + '*';
+
+        // DT
+        QRCode := QRCode + 'DT:' + format("Advance Due Date", 0, '<Year4><Month,2><Day,2>') + '*';
+
+        // MSG
+        QRCode := QRCode + 'MSG:' + InvoiceTxt + ' ' + "No." + '*';
+
+        // XVS
+        QRCode := QRCode + 'X-VS:' + "Variable Symbol" + '*';
+
+        // X-KS
+        QRCode := QRCode + 'X-KS:' + "Constant Symbol" + '*';
+
+        if IBANCode = '' then
+            QRCode := '';
+        OnBeforeExitSalesAdvInvoicePaymentQRCodeString(Rec, QRCode);
+        exit(QRCode);
+    end;
+
+    procedure CheckPaymentQRCodePrintIBAN()
+    var
+        PaymentMethod: Record "Payment Method";
+        CompanyInformation: Record "Company Information";
+    begin
+        if "Payment Method Code" = '' then
+            exit;
+
+        GetSetup();
+
+        if not SalesReceivablesSetup."Print QR Payment CZL" then
+            exit;
+
+        PaymentMethod.Get("Payment Method Code");
+        if not PaymentMethod."Print QR Payment CZL" then
+            exit;
+
+        if "Bank Account Code" = '' then begin
+            CompanyInformation.Get();
+            if CompanyInformation.IBAN <> '' then
+                exit;
+        end else
+            if IBAN <> '' then
+                exit;
+
+        ConfirmCheckPaymentQRCodePrintIBAN();
+    end;
+
+    local procedure ConfirmCheckPaymentQRCodePrintIBAN()
+    var
+        EmptyIBANQst: Label 'Bank Account has empty IBAN, QR payment will not be printed on Sales document.\\Do you want to continue?';
+    begin
+        ConfirmProcess(EmptyIBANQst);
+    end;
+
+    local procedure ConfirmProcess(ConfirmQuestion: Text)
+    var
+        ConfirmManagement: Codeunit "Confirm Management";
+        IsHandled: Boolean;
+    begin
+        OnBeforeConfirmProcess(ConfirmQuestion, IsHandled);
+        if IsHandled then
+            exit;
+        if not IsConfirmDialogAllowed() then
+            exit;
+        if not ConfirmManagement.GetResponse(ConfirmQuestion, false) then
+            Error('');
+    end;
+
+    local procedure IsConfirmDialogAllowed() IsAllowed: Boolean
+    begin
+        IsAllowed := GuiAllowed();
+        OnIsConfirmDialogAllowed(IsAllowed);
+    end;
+
+    procedure UpdateStatus(AdvanceLetterDocStatus: Enum "Advance Letter Doc. Status CZZ")
+    var
+        SalesAdvLetterManagementCZZ: Codeunit "SalesAdvLetterManagement CZZ";
+    begin
+        SalesAdvLetterManagementCZZ.UpdateStatus(Rec, AdvanceLetterDocStatus);
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeValidateBillToPostCode(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var PostCodeRec: Record "Post Code")
     begin
@@ -1896,6 +2024,21 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeValidateDocumentDateWithPostingDate(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; CurrFieldNo: Integer; var IsHandled: Boolean; xSalesAdvLetterHeader: Record "Sales Adv. Letter Header CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeExitSalesAdvInvoicePaymentQRCodeString(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var QRCode: Text)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeConfirmProcess(ConfirmQuestion: Text; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnIsConfirmDialogAllowed(var IsAllowed: Boolean)
     begin
     end;
 }

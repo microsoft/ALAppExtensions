@@ -175,7 +175,13 @@ codeunit 2680 "Data Search in Table"
         SearchString: Text;
         SearchString1: Text;
         FieldMatchString: Text;
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        DataSearchEvents.OnBeforeSearchTableProcedure(TableNo, TableType, FieldList, SearchStrings, Results, IsHandled);
+        if IsHandled then
+            exit;
+
         SearchStrings.Get(1, SearchString1);
         UseTextSearch := IsTextSearch(SearchString1);
 

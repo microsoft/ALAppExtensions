@@ -275,12 +275,12 @@ codeunit 144109 "Library - IT Serv. Declaration"
     var
         ServDeclSetup: Record "Service Declaration Setup";
         NoSeries: Record "No. Series";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeriesCodeunit: Codeunit "No. Series";
     begin
         ServDeclSetup.Get();
         NoSeries.SetFilter(NoSeries.Code, ServDeclSetup."Declaration No. Series");
         NoSeries.FindFirst();
-        NoSeriesCode := NoSeriesManagement.GetNextNo(NoSeries.Code, WorkDate(), true);
+        NoSeriesCode := NoSeriesCodeunit.GetNextNo(NoSeries.Code);
     end;
 
     procedure GetStatisticalPeriod(ReportDate: Date): Code[20]

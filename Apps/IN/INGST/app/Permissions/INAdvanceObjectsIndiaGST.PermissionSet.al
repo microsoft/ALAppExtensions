@@ -70,6 +70,8 @@ permissionset 18358 "IN Advance Objects - India GST"
                   codeunit "GST Ship To Address" = X,
                   codeunit "e-Invoice Json Handler for Ser" = X,
                   codeunit "e-Invoice Management for Ser." = X,
+                  codeunit "E-InvJsonHandlerForTransShpt" = X,
+                  codeunit "EInvTransshptJsonManagement" = X,
                   codeunit "GST Service Posting No. Series" = X,
                   codeunit "GST Service Ship To Address" = X,
                   codeunit "GST Service Validations" = X,

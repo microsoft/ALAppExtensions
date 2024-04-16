@@ -12,8 +12,7 @@ report 31026 "Sales Adv. Letters Recap. CZZ"
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = Basic, Suite;
     Caption = 'Sales Advance Letters Recapitulation';
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/SalesAdvLettersRecap.rdl';
+    DefaultRenderingLayout = "SalesAdvLettersRecap.rdl";
 
     dataset
     {
@@ -152,6 +151,24 @@ report 31026 "Sales Adv. Letters Recap. CZZ"
             if ToDate = 0D then
                 ToDate := WorkDate();
         end;
+    }
+
+    rendering
+    {
+        layout("SalesAdvLettersRecap.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/SalesAdvLettersRecap.rdl';
+            Caption = 'Sales Advance Letters Recapitulation (RDL)';
+            Summary = 'The Sales Advance Letters Recapitulation (RDL) provides a detailed layout.';
+        }
+        layout("SalesAdvLettersRecap.xlsx")
+        {
+            Type = Excel;
+            LayoutFile = './Src/Reports/SalesAdvLettersRecap.xlsx';
+            Caption = 'Sales Advance Letters Recapitulation (Excel)';
+            Summary = 'The Sales Advance Letters Recapitulation (Excel) provides a detailed layout.';
+        }
     }
 
     labels

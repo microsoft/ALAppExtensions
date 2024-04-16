@@ -112,7 +112,8 @@ pageextension 31023 "Sales Order CZZ" extends "Sales Order"
                     var
                         SalesAdvLetterManagementCZZ: Codeunit "SalesAdvLetterManagement CZZ";
                     begin
-                        SalesAdvLetterManagementCZZ.LinkAdvanceLetter("Adv. Letter Usage Doc.Type CZZ"::"Sales Order", Rec."No.", Rec."Bill-to Customer No.", Rec."Posting Date", Rec."Currency Code");
+                        SalesAdvLetterManagementCZZ.LinkAdvanceLetter(
+                            Rec.GetAdvLetterUsageDocTypeCZZ(), Rec."No.", Rec."Bill-to Customer No.", Rec."Posting Date", Rec."Currency Code");
                     end;
                 }
             }

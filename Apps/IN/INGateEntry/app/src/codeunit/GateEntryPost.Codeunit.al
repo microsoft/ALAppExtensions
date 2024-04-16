@@ -12,6 +12,8 @@ codeunit 18602 "Gate Entry Post"
     TableNo = "Gate Entry Header";
 
     trigger OnRun()
+    var
+        NoSeries: Codeunit "No. Series";
     begin
         GateEntryHeader := Rec;
         Rec.TestField("Posting Date");
@@ -44,7 +46,7 @@ codeunit 18602 "Gate Entry Post"
             Rec.Modify();
         end;
         if Rec."Posting No." = '' then begin
-            Rec."Posting No." := NoSeriesMgt.GetNextNo(Rec."Posting No. Series", Rec."Posting Date", true);
+            Rec."Posting No." := NoSeries.GetNextNo(Rec."Posting No. Series", Rec."Posting Date");
             ModifyHeader := true;
         end;
         if ModifyHeader then
@@ -90,7 +92,6 @@ codeunit 18602 "Gate Entry Post"
         PostedGateEntryHeader: Record "Posted Gate Entry Header";
         PostedGateEntryLine: Record "Posted Gate Entry Line";
         PostingNoSeries: Record "Posting No. Series";
-        NoSeriesMgt: Codeunit NoSeriesManagement;
         GateEntryHandler: Codeunit "Gate Entry Handler";
         Record: Variant;
         Window: Dialog;

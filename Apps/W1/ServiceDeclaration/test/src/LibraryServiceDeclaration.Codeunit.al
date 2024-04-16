@@ -71,7 +71,7 @@ codeunit 139900 "Library - Service Declaration"
     procedure CreateItemChargeSalesDocWithServTransTypeCode(var SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line")
     begin
         CreateItemChargeSalesDocApplicableForServDecl(SalesHeader, SalesLine);
-        SalesLine.validate("Service Transaction Type Code", CreateServTransTypeCode());
+        SalesLine.Validate("Service Transaction Type Code", CreateServTransTypeCode());
         SalesLine.Modify(true);
     end;
 
@@ -233,7 +233,7 @@ codeunit 139900 "Library - Service Declaration"
     begin
         LibraryPurchase.CreatePurchaseLine(
             PurchLine, PurchHeader, PurchLine.Type::Resource, LibraryResource.CreateResourceNo(), LibraryRandom.RandInt(100));
-        PurchLine.validate("Direct Unit Cost", LibraryRandom.RandDec(100, 2));
+        PurchLine.Validate("Direct Unit Cost", LibraryRandom.RandDec(100, 2));
         PurchLine.Modify(true);
     end;
 

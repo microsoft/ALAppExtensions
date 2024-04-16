@@ -21,6 +21,26 @@ pageextension 18842 "Sales Order Statistics" extends "Sales Order Statistics"
                 Caption = 'TCS Amount';
             }
         }
+        addlast(Invoicing)
+        {
+            field("TCS Amt"; PartialInvTCSAmount)
+            {
+                Caption = 'TCS Amount';
+                ToolTip = 'Specifies the total TCS amount that has been calculated for all the lines in the sales document.';
+                ApplicationArea = Basic, Suite;
+                Editable = false;
+            }
+        }
+        addlast(Shipping)
+        {
+            field("TCS Ship Amt"; PartialShptTCSAmount)
+            {
+                Caption = 'TCS Amount';
+                ToolTip = 'Specifies the total TCS amount that has been calculated for all the lines in the sales document.';
+                ApplicationArea = Basic, Suite;
+                Editable = false;
+            }
+        }
         modify(InvDiscountAmount_General)
         {
             trigger OnAfterValidate()
@@ -40,8 +60,11 @@ pageextension 18842 "Sales Order Statistics" extends "Sales Order Statistics"
     local procedure GetTCSAmount()
     var
         TCSStatsManagement: Codeunit "TCS Stats Management";
+        TCSSalesManagement: Codeunit "TCS Sales Management";
     begin
         TCSAmount := TCSStatsManagement.GetTCSStatsAmount();
+        TCSSalesManagement.GetPartialSalesStatisticsAmount(Rec, PartialInvTCSAmount);
+        TCSSalesManagement.GetPartialSalesShptStatisticsAmount(Rec, PartialShptTCSAmount);
         Calculated := true;
         TCSStatsManagement.ClearSessionVariable();
     end;
@@ -54,5 +77,7 @@ pageextension 18842 "Sales Order Statistics" extends "Sales Order Statistics"
 
     var
         TCSAmount: Decimal;
+        PartialInvTCSAmount: Decimal;
+        PartialShptTCSAmount: Decimal;
         Calculated: Boolean;
 }

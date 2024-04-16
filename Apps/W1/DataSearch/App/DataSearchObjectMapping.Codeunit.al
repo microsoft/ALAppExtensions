@@ -146,6 +146,36 @@ codeunit 2685 "Data Search Object Mapping"
                 ParentTableNo := Database::"Reminder Header";
             Database::"Issued Reminder Line":
                 ParentTableNo := Database::"Issued Reminder Header";
+            Database::"Sales Line Archive":
+                ParentTableNo := Database::"Sales Header Archive";
+            Database::"Purchase Line Archive":
+                ParentTableNo := Database::"Purchase Header Archive";
+            Database::"Job Task":
+                ParentTableNo := Database::"Job";
+            Database::"Job Planning Line":
+                ParentTableNo := Database::"Job";
+            Database::"Prod. Order Line":
+                ParentTableNo := Database::"Production Order";
+            Database::"Production BOM Line":
+                ParentTableNo := Database::"Production BOM Header";
+            Database::"Routing Line":
+                ParentTableNo := Database::"Routing Header";
+            Database::"Warehouse Shipment Line":
+                ParentTableNo := Database::"Warehouse Shipment Header";
+            Database::"Warehouse Receipt Line":
+                ParentTableNo := Database::"Warehouse Receipt Header";
+            Database::"Warehouse Activity Line":
+                ParentTableNo := Database::"Warehouse Activity Header";
+            Database::"Registered Whse. Activity Line":
+                ParentTableNo := Database::"Registered Whse. Activity Hdr.";
+            Database::"Posted Whse. Receipt Line":
+                ParentTableNo := Database::"Posted Whse. Receipt Header";
+            Database::"Assembly Line":
+                ParentTableNo := Database::"Assembly Header";
+            Database::"Transfer Line":
+                ParentTableNo := Database::"Transfer Header";
+            else
+                ParentTableNo := 0;
         end;
         if ParentTableNo = 0 then
             DataSearchEvents.OnGetParentTable(TableNo, ParentTableNo);
@@ -192,6 +222,35 @@ codeunit 2685 "Data Search Object Mapping"
                 SubTableNos.Add(Database::"Reminder Line");
             Database::"Issued Reminder Header":
                 SubTableNos.Add(Database::"Issued Reminder Line");
+            Database::"Sales Header Archive":
+                SubTableNos.Add(Database::"Sales Line Archive");
+            Database::"Purchase Header Archive":
+                SubTableNos.Add(Database::"Purchase Line Archive");
+            Database::Job:
+                begin
+                    SubTableNos.Add(Database::"Job Task");
+                    SubTableNos.Add(Database::"Job Planning Line");
+                end;
+            Database::"Production Order":
+                SubTableNos.Add(Database::"Prod. Order Line");
+            Database::"Production BOM Header":
+                SubTableNos.Add(Database::"Production BOM Line");
+            Database::"Routing Header":
+                SubTableNos.Add(Database::"Routing Line");
+            Database::"Warehouse Shipment Header":
+                SubTableNos.Add(Database::"Warehouse Shipment Line");
+            Database::"Warehouse Receipt Header":
+                SubTableNos.Add(Database::"Warehouse Receipt Line");
+            Database::"Warehouse Activity Header":
+                SubTableNos.Add(Database::"Warehouse Activity Line");
+            Database::"Registered Whse. Activity Hdr.":
+                SubTableNos.Add(Database::"Registered Whse. Activity Line");
+            Database::"Posted Whse. Receipt Header":
+                SubTableNos.Add(Database::"Posted Whse. Receipt Line");
+            Database::"Assembly Header":
+                SubTableNos.Add(Database::"Assembly Line");
+            Database::"Transfer Header":
+                SubTableNos.Add(Database::"Transfer Line");
         end;
         if SubTableNos.Count() = 0 then begin
             DataSearchEvents.OnGetSubTable(TableNo, SubTableNo);

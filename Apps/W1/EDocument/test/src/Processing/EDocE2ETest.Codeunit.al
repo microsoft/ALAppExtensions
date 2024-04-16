@@ -12,6 +12,7 @@ codeunit 139624 "E-Doc E2E Test"
         LibraryEDoc: Codeunit "Library - E-Document";
         LibraryWorkflow: codeunit "Library - Workflow";
         LibraryJobQueue: Codeunit "Library - Job Queue";
+        LibraryPurchase: Codeunit "Library - Purchase";
         EDocImplState: Codeunit "E-Doc. Impl. State";
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Incorrect value found';
@@ -19,6 +20,7 @@ codeunit 139624 "E-Doc E2E Test"
         EDocEmptyErr: Label 'The E-Document table is empty.';
         FailedToGetBlobErr: Label 'Failed to get exported blob from EDocument %1', Comment = '%1 - E-Document No.';
         SendingErrStateErr: Label 'E-document is Pending response and can not be sent in this state.';
+        DeleteNotAllowedErr: Label 'Deletion of Purchase Header linked to E-Document is not allowed.';
 
     [Test]
     procedure CreateEDocumentBeforeAfterEventsSuccessful()
@@ -1371,6 +1373,34 @@ codeunit 139624 "E-Doc E2E Test"
         // [THEN] No e-Document is created
         asserterror LibraryEDoc.CreateEDocumentFromSales(EDocument);
         Assert.AreEqual(EDocEmptyErr, GetLastErrorText(), IncorrectValueErr);
+    end;
+
+    [Test]
+    procedure DeleteLinkedPurchaseHeaderNoAllowedSuccess()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        NullGuid: Guid;
+    begin
+        // [FEATURE] [E-Document] [Processing] 
+        // [SCENARIO] 
+        Initialize();
+
+        // [GIVEN] PO with link
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Invoice, LibraryPurchase.CreateVendorNo());
+        PurchaseHeader."E-Document Link" := CreateGuid();
+        PurchaseHeader.Modify();
+        Commit();
+
+        // [THEN] Fails to delete
+        asserterror PurchaseHeader.Delete(true);
+        Assert.ExpectedError(DeleteNotAllowedErr);
+
+        // [GIVEN] Reset link 
+        PurchaseHeader."E-Document Link" := NullGuid;
+        PurchaseHeader.Modify();
+
+        // [THEN] Delete ok
+        PurchaseHeader.Delete();
     end;
 
     [ModalPageHandler]

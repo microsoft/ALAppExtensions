@@ -12,8 +12,7 @@ report 31027 "Purch. Adv. Letters Recap. CZZ"
     UsageCategory = ReportsAndAnalysis;
     ApplicationArea = Basic, Suite;
     Caption = 'Purch. Advance Letters Recapitulation';
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/PurchAdvLettersRecap.rdl';
+    DefaultRenderingLayout = "PurchAdvLettersRecap.rdl";
 
     dataset
     {
@@ -152,6 +151,24 @@ report 31027 "Purch. Adv. Letters Recap. CZZ"
             if ToDate = 0D then
                 ToDate := WorkDate();
         end;
+    }
+
+    rendering
+    {
+        layout("PurchAdvLettersRecap.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/PurchAdvLettersRecap.rdl';
+            Caption = 'Purchase Advance Letters Recapitulation (RDL)';
+            Summary = 'The Purchase Advance Letters Recapitulation (RDL) provides a detailed layout.';
+        }
+        layout("PurchAdvLettersRecap.xlsx")
+        {
+            Type = Excel;
+            LayoutFile = './Src/Reports/PurchAdvLettersRecap.xlsx';
+            Caption = 'Purchase Advance Letters Recapitulation (Excel)';
+            Summary = 'The Purchase Advance Letters Recapitulation (Excel) provides a detailed layout.';
+        }
     }
 
     labels

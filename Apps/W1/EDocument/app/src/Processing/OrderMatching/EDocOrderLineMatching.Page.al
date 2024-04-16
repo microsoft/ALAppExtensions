@@ -1,9 +1,10 @@
 namespace Microsoft.eServices.EDocument.OrderMatch;
 
 using Microsoft.eServices.EDocument;
-using System.Utilities;
+using Microsoft.eServices.EDocument.OrderMatch.Copilot;
 using Microsoft.Purchases.Document;
-
+using System.Telemetry;
+#pragma warning disable AS0032
 page 6167 "E-Doc. Order Line Matching"
 {
     Caption = 'Purchase Order Matching';
@@ -11,9 +12,11 @@ page 6167 "E-Doc. Order Line Matching"
     PageType = Card;
     ApplicationArea = All;
     SourceTable = "E-Document";
+    SourceTableTemporary = true;
     InsertAllowed = false;
     DeleteAllowed = false;
     RefreshOnActivate = true;
+    Permissions = tabledata "E-Document" = m;
 
     layout
     {
@@ -37,12 +40,11 @@ page 6167 "E-Doc. Order Line Matching"
                     Caption = 'E-Document Date';
                     ToolTip = 'Specifies the electronic document date.';
                 }
-                field("Amount Excl. VAT"; Rec."Amount Excl. VAT")
+                field("Amount Incl. VAT"; Rec."Amount Incl. VAT")
                 {
                     Caption = 'E-Document Amount';
-                    ToolTip = 'Specifies the e-document amount excluding VAT.';
+                    ToolTip = 'Specifies the e-document amount including VAT.';
                 }
-
             }
             group(Control8)
             {
@@ -107,6 +109,20 @@ page 6167 "E-Doc. Order Line Matching"
                     SetUserInteractions();
                 end;
             }
+            action(MatchCopilot)
+            {
+                Caption = 'Match with Copilot';
+                ToolTip = 'Match e-document lines with the assistance of Copilot';
+                ApplicationArea = All;
+                Image = SparkleFilled;
+                Visible = CopilotActionVisible;
+
+                trigger OnAction()
+                begin
+                    MatchWithCopilot(true);
+                    SetUserInteractions();
+                end;
+            }
             action(RemoveMatch)
             {
                 Caption = 'Remove Match';
@@ -130,6 +146,8 @@ page 6167 "E-Doc. Order Line Matching"
                 trigger OnAction()
                 begin
                     EDocMatchOrderLines.RemoveAllMatches(Rec);
+                    if DiscountNotification.Recall() then;
+                    if CostNotification.Recall() then;
                     SetUserInteractions();
                 end;
             }
@@ -184,6 +202,7 @@ page 6167 "E-Doc. Order Line Matching"
             }
             group(Matching)
             {
+                actionref(MatchCopilot_Promoted; MatchCopilot) { }
                 actionref(MatchManual_Promoted; MatchManual) { }
                 actionref(MatchAuto_Promoted; MatchAutomatic) { }
                 actionref(RemoveMatch_Promoted; RemoveMatch) { }
@@ -198,31 +217,50 @@ page 6167 "E-Doc. Order Line Matching"
     }
 
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
         EDocMatchOrderLines: Codeunit "E-Doc. Line Matching";
-        OpenPurchaseOrderMsg: Label 'Purchase order is not Open, which is required in order to match with e-document. Do you want to reopen purchase order?';
+        DiscountNotification, CostNotification : Notification;
+        CopilotActionVisible, AutoRunCopilot : Boolean;
         LineDiscountVaryMatchMsg: Label 'Matched e-document lines (%1) has Line Discount % different from matched purchase order line. Please verify matches are correct.', Comment = '%1 - Line number';
         LineCostVaryMatchMsg: Label 'Matched e-document lines (%1) has Direct Unit Cost different from matched purchase order line. Please verify matches are correct.', Comment = '%1 - Line number';
+        NoMatchesFoundMsg: Label 'Copilot could not find any line matches. Please review manually';
 
-    trigger OnAfterGetCurrRecord()
+    trigger OnOpenPage()
+    var
+        EDocPOMatching: Codeunit "E-Doc. PO Copilot Matching";
+    begin
+        CopilotActionVisible := EDocPOMatching.IsCopilotEnabled();
+    end;
+
+    trigger OnInit()
+    begin
+        AutoRunCopilot := true;
+    end;
+
+    trigger OnAfterGetRecord()
+    var
+        EDocOrderMatch: Record "E-Doc. Order Match";
     begin
         CurrPage.OrderLines.Page.SetEDocumentBeingMatched(Rec);
         CurrPage.ImportedLines.Page.SetEDocumentBeingMatched(Rec);
         CurrPage.OrderLines.Page.ResetQtyOnNonMatchedLines();
 
-        CheckPurchaseHeaderOpen();
+        OpenPurchaseHeader();
+
+        if CopilotActionVisible and AutoRunCopilot then begin
+            AutoRunCopilot := false;
+            EDocOrderMatch.SetRange("E-Document Entry No.", Rec."Entry No");
+            if EDocOrderMatch.IsEmpty() then
+                MatchWithCopilot(false);
+        end;
     end;
 
-    local procedure CheckPurchaseHeaderOpen()
+    local procedure OpenPurchaseHeader()
     var
         PurchaseHeader: Record "Purchase Header";
-        ConfirmManagement: Codeunit "Confirm Management";
     begin
         PurchaseHeader.Get(Rec."Document Record ID");
-        if PurchaseHeader.Status <> Enum::"Purchase Document Status"::Open then
-            if ConfirmManagement.GetResponseOrDefault(OpenPurchaseOrderMsg, true) then
-                PurchaseHeader.SetStatus(0) // Open
-            else
-                Error('');
+        Codeunit.Run(Codeunit::"Purchase Manual Reopen", PurchaseHeader);
     end;
 
     local procedure ApplyToPurchaseOrder()
@@ -231,6 +269,7 @@ page 6167 "E-Doc. Order Line Matching"
         PurchaseHeader: Record "Purchase Header";
         PurchaseOrderPage: Page "Purchase Order";
     begin
+        OpenPurchaseHeader();
         CurrPage.ImportedLines.Page.GetRecords(TempEDocImportedLines);
         EDocMatchOrderLines.ApplyToPurchaseOrder(Rec, TempEDocImportedLines);
 
@@ -285,6 +324,32 @@ page 6167 "E-Doc. Order Line Matching"
         end;
     end;
 
+    local procedure MatchWithCopilot(CheckToOverwrite: Boolean)
+    var
+        TempEDocImportedLines: Record "E-Doc. Imported Line" temporary;
+        TempPurchaseLines: Record "Purchase Line" temporary;
+        AIMatchingImpl: Codeunit "E-Doc. PO Copilot Matching";
+        EDocOrderMatchAIProposal: Page "E-Doc. PO Copilot Prop";
+    begin
+        FeatureTelemetry.LogUptake('0000MB0', AIMatchingImpl.FeatureName(), Enum::"Feature Uptake Status"::Discovered);
+        FeatureTelemetry.LogUptake('0000MB1', AIMatchingImpl.FeatureName(), Enum::"Feature Uptake Status"::"Set up");
+
+        CurrPage.ImportedLines.Page.GetRecords(TempEDocImportedLines);
+        CurrPage.OrderLines.Page.GetRecords(TempPurchaseLines);
+
+        if CheckToOverwrite then
+            EDocMatchOrderLines.AskToOverwrite(Rec, TempEDocImportedLines, TempPurchaseLines);
+        Commit();
+        EDocOrderMatchAIProposal.SetData(Rec, TempEDocImportedLines, TempPurchaseLines);
+        EDocOrderMatchAIProposal.SetGenerateMode();
+        EDocOrderMatchAIProposal.LookupMode(true);
+        if EDocOrderMatchAIProposal.RunModal() = Action::Cancel then
+            if ((not EDocOrderMatchAIProposal.WasCopilotMatchesFound()) and EDocOrderMatchAIProposal.IsCopilotRequestSuccessful()) then
+                Message(NoMatchesFoundMsg);
+
+        CurrPage.Update();
+    end;
+
     local procedure SetUserInteractions()
     begin
         CurrPage.ImportedLines.Page.SetUserInteractions();
@@ -295,7 +360,6 @@ page 6167 "E-Doc. Order Line Matching"
     var
         EDocImportedLine: Record "E-Doc. Imported Line";
         PurchaseLine: Record "Purchase Line";
-        DiscountNotification, CostNotification : Notification;
         LineDiscountNos, DirectUnitCostNos : Text;
     begin
         if TempEDocMatches.FindSet() then
@@ -325,4 +389,13 @@ page 6167 "E-Doc. Order Line Matching"
         SelectionNotification.Send();
     end;
 
+    internal procedure SetTempRecord(var EDocument: Record "E-Document")
+    begin
+        Rec.DeleteAll();
+        Rec.TransferFields(EDocument);
+        Rec.SystemId := EDocument.SystemId;
+        Rec.Insert(false);
+    end;
+
 }
+#pragma warning restore AS0032

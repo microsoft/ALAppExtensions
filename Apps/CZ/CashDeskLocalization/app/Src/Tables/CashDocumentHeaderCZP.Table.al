@@ -60,6 +60,8 @@ table 11732 "Cash Document Header CZP"
             DataClassification = CustomerContent;
 
             trigger OnValidate()
+            var
+                NoSeries: Codeunit "No. Series";
             begin
                 if xRec."No." <> '' then
                     TestField("No.", "No.");
@@ -239,6 +241,8 @@ table 11732 "Cash Document Header CZP"
             trigger OnValidate()
             begin
                 CreateDimFromDefaultDim(Rec.FieldNo("Salespers./Purch. Code"));
+                UpdateCashDocumentLinesByFieldNo(
+                    Rec.FieldNo("Salespers./Purch. Code"), CurrFieldNo = Rec.FieldNo("Salespers./Purch. Code"));
             end;
         }
         field(45; "Amounts Including VAT"; Boolean)
@@ -302,7 +306,8 @@ table 11732 "Cash Document Header CZP"
 
             trigger OnValidate()
             begin
-                UpdateCashDocumentLinesByFieldNo(FieldNo("External Document No."), CurrFieldNo <> 0);
+                UpdateCashDocumentLinesByFieldNo(
+                    FieldNo("External Document No."), CurrFieldNo = Rec.FieldNo("External Document No."));
             end;
         }
         field(62; "Responsibility Center"; Code[10])
@@ -317,6 +322,8 @@ table 11732 "Cash Document Header CZP"
                     Error(RespCenterErr, FieldCaption("Responsibility Center"), CashDeskManagementCZP.GetUserCashResponsibilityFilter(CopyStr(UserId(), 1, 50)));
 
                 CreateDimFromDefaultDim(Rec.FieldNo("Responsibility Center"));
+                UpdateCashDocumentLinesByFieldNo(
+                    FieldNo("Responsibility Center"), CurrFieldNo = Rec.FieldNo("Responsibility Center"));
             end;
         }
         field(65; "Payment Purpose"; Text[100])
@@ -618,6 +625,7 @@ table 11732 "Cash Document Header CZP"
     trigger OnInsert()
     var
         CashDeskUserCZP: Record "Cash Desk User CZP";
+        NoSeries: Codeunit "No. Series";
 #if not CLEAN24
         IsHandled: Boolean;
 #endif
@@ -713,8 +721,9 @@ table 11732 "Cash Document Header CZP"
         Contact: Record Contact;
         SalespersonPurchaser: Record "Salesperson/Purchaser";
         Employee: Record Employee;
+#if not CLEAN24
         NoSeriesManagement: Codeunit NoSeriesManagement;
-        NoSeries: Codeunit "No. Series";
+#endif
         DimensionManagement: Codeunit DimensionManagement;
         UserSetupManagement: Codeunit "User Setup Management";
         ConfirmManagement: Codeunit "Confirm Management";
@@ -734,11 +743,13 @@ table 11732 "Cash Document Header CZP"
         HideValidationDialog: Boolean;
 
     procedure AssistEdit(OldCashDocumentHeaderCZP: Record "Cash Document Header CZP"): Boolean
+    var
+        NoSeries: Codeunit "No. Series";
     begin
         OldCashDocumentHeaderCZP.Copy(Rec);
         TestNoSeries();
-        if NoSeriesManagement.SelectSeries(GetNoSeriesCode(), OldCashDocumentHeaderCZP."No. Series", OldCashDocumentHeaderCZP."No. Series") then begin
-            NoSeriesManagement.SetSeries(OldCashDocumentHeaderCZP."No.");
+        if NoSeries.LookupRelatedNoSeries(GetNoSeriesCode(), OldCashDocumentHeaderCZP."No. Series", OldCashDocumentHeaderCZP."No. Series") then begin
+            OldCashDocumentHeaderCZP."No." := NoSeries.GetNextNo(OldCashDocumentHeaderCZP."No. Series");
             Rec := OldCashDocumentHeaderCZP;
             exit(true);
         end;
@@ -947,6 +958,10 @@ table 11732 "Cash Document Header CZP"
                     FieldNo("Amounts Including VAT"):
                         if CashDocumentLineCZP.Amount <> 0 then
                             CashDocumentLineCZP.Validate(Amount);
+                    FieldNo("Salespers./Purch. Code"):
+                        CashDocumentLineCZP."Salespers./Purch. Code" := "Salespers./Purch. Code";
+                    FieldNo("Responsibility Center"):
+                        CashDocumentLineCZP."Responsibility Center" := "Responsibility Center";
                 end;
                 CashDocumentLineCZP.Modify(true);
             until CashDocumentLineCZP.Next() = 0;

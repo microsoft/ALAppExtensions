@@ -116,6 +116,12 @@ table 6214 "Sustainability Jnl. Line"
             var
                 SustainabilityCalcMgt: Codeunit "Sustainability Calc. Mgt.";
             begin
+                Validate(Distance, 0);
+                Validate("Fuel/Electricity", 0);
+                Validate("Custom Amount", 0);
+                Validate("Installation Multiplier", 1);
+                Validate("Time Factor", 0);
+
                 SustainabilityCalcMgt.CalculationEmissions(Rec);
             end;
         }
@@ -317,9 +323,10 @@ table 6214 "Sustainability Jnl. Line"
         SustainabilityJnlLine.SetRange("Journal Batch Name", "Journal Batch Name");
         IsPreviousLineValid := not SustainabilityJnlLine.IsEmpty();
 
-        if IsPreviousLineValid then
-            Validate("Posting Date", PreviousLine."Posting Date")
-        else
+        if IsPreviousLineValid then begin
+            Validate("Posting Date", PreviousLine."Posting Date");
+            Validate("Document Type", PreviousLine."Document Type");
+        end else
             Validate("Posting Date", WorkDate());
 
         Validate("Reason Code", SustainabilityJnlBatch."Reason Code");

@@ -960,10 +960,10 @@ codeunit 18649 "FA Depreciation"
     local procedure GetDocumentNo(FAJournalBatch: Record "FA Journal Batch"): Code[20]
     var
         NoSeries: Record "No. Series";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeriesCodeunit: Codeunit "No. Series";
     begin
         NoSeries.Get(FAJournalBatch."No. Series");
-        exit(NoSeriesManagement.GetNextNo(FAJournalBatch."No. Series", WorkDate(), FALSE));
+        exit(NoSeriesCodeunit.PeekNextNo(FAJournalBatch."No. Series"));
     end;
 
     local procedure CheckFAValueAndBookValue(
@@ -1043,7 +1043,7 @@ codeunit 18649 "FA Depreciation"
                 FADepreciationBook.Validate("Declining-Balance %", StorageDec.Get(XDepRateTok));
         end;
         Evaluate(DayCalculation, Format(-DepreciationBook."Depr. Threshold Days" - LibraryRandom.RandInt(DepreciationBook."Depr. Threshold Days")) + 'D');
-        FADepreciationBook.validate("Depreciation Starting Date", CalcDate(DayCalculation, NewPostingDate));
+        FADepreciationBook.Validate("Depreciation Starting Date", CalcDate(DayCalculation, NewPostingDate));
         FADepreciationBook.Modify();
         RunCalculateDepreciation(No, DepreciationBookCode, true, NewPostingDate, DocNo);
         if FirstYearUtilizationFullYear then

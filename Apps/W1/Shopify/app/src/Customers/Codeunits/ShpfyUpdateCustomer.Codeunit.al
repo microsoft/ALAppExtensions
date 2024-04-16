@@ -121,7 +121,7 @@ codeunit 30124 "Shpfy Update Customer"
         if ShopifyCustomer.Email <> '' then
             Customer.Validate("E-Mail", CopyStr(ShopifyCustomer.Email, 1, MaxStrLen(Customer."E-Mail")));
 
-        if ShopifyTaxArea.Get(CustomerAddress."Country/Region Code", CustomerAddress."Province Name") then begin
+        if ShopifyTaxArea.Get(CustomerAddress."Country/Region Code", CustomerAddress."Province Name") then begin // TODONAT
             if (ShopifyTaxArea."Tax Area Code" <> '') then begin
                 Customer.Validate("Tax Area Code", ShopifyTaxArea."Tax Area Code");
                 Customer.Validate("Tax Liable", ShopifyTaxArea."Tax Liable");
@@ -136,6 +136,8 @@ codeunit 30124 "Shpfy Update Customer"
         Customer: Record Customer;
         CountryRegion: Record "Country/Region";
         CompanyLocation: Record "Shpfy Company Location";
+        ShopifyTaxArea: Record "Shpfy Tax Area";
+        ICounty: Interface "Shpfy ICounty";
     begin
         if not Customer.GetBySystemId(ShopifyCompany."Customer SystemId") then
             exit;
@@ -155,9 +157,22 @@ codeunit 30124 "Shpfy Update Customer"
 
         Customer.Validate(City, CompanyLocation.City);
         Customer.Validate("Post Code", CompanyLocation.Zip);
+        Customer.Validate(County, CompanyLocation."Province Code");
+
+        ICounty := Shop."County Source";
+        Customer.Validate(County, ICounty.County(CompanyLocation));
 
         if CompanyLocation."Phone No." <> '' then
             Customer.Validate("Phone No.", CompanyLocation."Phone No.");
+
+        if ShopifyTaxArea.Get(CompanyLocation."Country/Region Code", CompanyLocation."Province Name") then begin
+            if (ShopifyTaxArea."Tax Area Code" <> '') then begin
+                Customer.Validate("Tax Area Code", ShopifyTaxArea."Tax Area Code");
+                Customer.Validate("Tax Liable", ShopifyTaxArea."Tax Liable");
+            end;
+            if (ShopifyTaxArea."VAT Bus. Posting Group" <> '') then
+                Customer.Validate("VAT Bus. Posting Group", ShopifyTaxArea."VAT Bus. Posting Group");
+        end;
 
         Customer.Modify();
     end;

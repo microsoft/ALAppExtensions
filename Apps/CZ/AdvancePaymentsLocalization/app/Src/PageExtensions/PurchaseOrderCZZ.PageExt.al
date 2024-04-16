@@ -104,7 +104,8 @@ pageextension 31037 "Purchase Order CZZ" extends "Purchase Order"
                     var
                         PurchAdvLetterManagementCZZ: Codeunit "PurchAdvLetterManagement CZZ";
                     begin
-                        PurchAdvLetterManagementCZZ.LinkAdvanceLetter("Adv. Letter Usage Doc.Type CZZ"::"Purchase Order", Rec."No.", Rec."Pay-to Vendor No.", Rec."Posting Date", Rec."Currency Code");
+                        PurchAdvLetterManagementCZZ.LinkAdvanceLetter(
+                            Rec.GetAdvLetterUsageDocTypeCZZ(), Rec."No.", Rec."Pay-to Vendor No.", Rec."Posting Date", Rec."Currency Code");
                     end;
                 }
             }

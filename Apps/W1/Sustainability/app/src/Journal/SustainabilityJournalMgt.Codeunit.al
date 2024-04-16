@@ -91,9 +91,17 @@ codeunit 6211 "Sustainability Journal Mgt."
     /// </summary>  
     /// <param name="IsRecurring">Specifies whether the template is recurring.</param>
     procedure GetASustainabilityJournalBatch(IsRecurring: Boolean): Record "Sustainability Jnl. Batch"
-    var
-        SustainabilityJnlTemplate: Record "Sustainability Jnl. Template";
-        SustainabilityJnlBatch: Record "Sustainability Jnl. Batch";
+    begin
+        exit(SelectBatch(SelectTemplate(IsRecurring), ''));
+    end;
+
+    /// <summary>
+    /// Select a Sustainability Journal Template.
+    /// If more than one Template exists, the user will be prompted to select one.
+    /// If no Template exists, a default one will be created.
+    /// </summary>  
+    /// <param name="IsRecurring">Specifies whether the template is recurring.</param>
+    internal procedure SelectTemplate(IsRecurring: Boolean) SustainabilityJnlTemplate: Record "Sustainability Jnl. Template"
     begin
         SustainabilityJnlTemplate.SetRange(Recurring, IsRecurring);
 
@@ -106,13 +114,15 @@ codeunit 6211 "Sustainability Journal Mgt."
                 if not (Page.RunModal(Page::"Sustainability Jnl. Templates", SustainabilityJnlTemplate) = Action::LookupOK) then
                     Error('');
         end;
+    end;
 
+    internal procedure SelectBatch(SustainabilityJnlTemplate: Record "Sustainability Jnl. Template"; PreviousBatchName: Code[10]) SustainabilityJnlBatch: Record "Sustainability Jnl. Batch"
+    begin
         SustainabilityJnlBatch.SetRange("Journal Template Name", SustainabilityJnlTemplate.Name);
 
-        if not SustainabilityJnlBatch.FindFirst() then
-            SustainabilityJnlBatch := InitializeDefaultBatch(SustainabilityJnlTemplate.Name, IsRecurring);
-
-        exit(SustainabilityJnlBatch);
+        if not SustainabilityJnlBatch.Get(SustainabilityJnlTemplate.Name, PreviousBatchName) then
+            if not SustainabilityJnlBatch.FindFirst() then
+                SustainabilityJnlBatch := InitializeDefaultBatch(SustainabilityJnlTemplate.Name, SustainabilityJnlTemplate.Recurring);
     end;
 
     /// <summary>

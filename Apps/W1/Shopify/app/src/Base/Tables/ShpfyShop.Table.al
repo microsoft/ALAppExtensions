@@ -74,7 +74,7 @@ table 30102 "Shpfy Shop"
                 end else begin
                     Rec.Enabled := true;
                     Rec.Validate("Order Created Webhooks", false);
-                    WebhooksMgt.DisableBulkOperationsWebhook(Rec);
+                    WebhooksMgt.DisableBulkOperationsWebhook(Rec, CompanyName());
                     Rec.Enabled := false;
                 end;
             end;
@@ -631,7 +631,7 @@ table 30102 "Shpfy Shop"
                 if "Order Created Webhooks" then
                     ShpfyWebhooksMgt.EnableOrderCreatedWebhook(Rec)
                 else
-                    ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec);
+                    ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec, CompanyName());
             end;
         }
         field(109; "Order Created Webhook User"; Code[50])
@@ -807,7 +807,7 @@ table 30102 "Shpfy Shop"
     var
         ShpfyWebhooksMgt: Codeunit "Shpfy Webhooks Mgt.";
     begin
-        ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec);
+        ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec, CompanyName());
     end;
 
     var

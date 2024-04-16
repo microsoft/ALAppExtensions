@@ -517,19 +517,19 @@ codeunit 148087 "Fixed Assets CZF"
     local procedure GetFAJournalLineDocumentNo(FAJournalBatch: Record "FA Journal Batch"): Code[20]
     var
         NoSeries: Record "No. Series";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeriesCodeunit: Codeunit "No. Series";
     begin
         NoSeries.Get(FAJournalBatch."No. Series");
-        exit(NoSeriesManagement.GetNextNo(FAJournalBatch."No. Series", WorkDate(), false));
+        exit(NoSeriesCodeunit.PeekNextNo(FAJournalBatch."No. Series"));
     end;
 
     local procedure GetGenJournalLineDocumentNo(GenJournalBatch: Record "Gen. Journal Batch"): Code[20]
     var
         NoSeries: Record "No. Series";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeriesCodeunit: Codeunit "No. Series";
     begin
         NoSeries.Get(GenJournalBatch."No. Series");
-        exit(NoSeriesManagement.GetNextNo(GenJournalBatch."No. Series", WorkDate(), false));
+        exit(NoSeriesCodeunit.PeekNextNo(GenJournalBatch."No. Series"));
     end;
 
     local procedure GetNewGLAccountNo(): Code[20]

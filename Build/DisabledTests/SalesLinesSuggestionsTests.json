@@ -1,0 +1,32 @@
+[
+    {
+        "codeunitId": 139784,
+        "CodeunitName": "Document Lookup Prompt Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139783,
+        "CodeunitName": "Document Lookup Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139782,
+        "CodeunitName": "Magic Function Prompt Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139781,
+        "CodeunitName": "Search Item Prompt Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139780,
+        "CodeunitName": "Search Item Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139785,
+        "CodeunitName": "SLS Test Utility",
+        "Method": "*"
+    }
+]

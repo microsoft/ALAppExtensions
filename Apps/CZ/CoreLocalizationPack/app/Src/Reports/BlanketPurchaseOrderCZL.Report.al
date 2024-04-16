@@ -500,23 +500,12 @@ report 31204 "Blanket Purchase Order CZL"
     var
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         Vendor: Record Vendor;
-        PaymentTerms: Record "Payment Terms";
-        PaymentMethod: Record "Payment Method";
-        ShipmentMethod: Record "Shipment Method";
         LanguageMgt: Codeunit Language;
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
         ArchiveManagement: Codeunit ArchiveManagement;
-        CompanyAddr: array[8] of Text[100];
-        VendAddr: array[8] of Text[100];
-        ShipToAddr: array[8] of Text[100];
-        DocFooterText: Text[1000];
-        NoOfCopies: Integer;
-        NoOfLoops: Integer;
-        LogInteraction: Boolean;
-        ArchiveDocument: Boolean;
         LogInteractionEnable: Boolean;
         DocumentLbl: Label 'Blanket Purchase Order';
         PageLbl: Label 'Page';
@@ -538,6 +527,19 @@ report 31204 "Blanket Purchase Order CZL"
         ClosingLbl: Label 'Sincerely';
         BodyLbl: Label 'The blanket purchase order is attached to this message.';
         DocumentNoLbl: Label 'No.';
+
+    protected var
+        PaymentMethod: Record "Payment Method";
+        PaymentTerms: Record "Payment Terms";
+        ShipmentMethod: Record "Shipment Method";
+        CompanyAddr: array[8] of Text[100];
+        ShipToAddr: array[8] of Text[100];
+        VendAddr: array[8] of Text[100];
+        DocFooterText: Text[1000];
+        NoOfCopies: Integer;
+        NoOfLoops: Integer;
+        ArchiveDocument: Boolean;
+        LogInteraction: Boolean;
 
     procedure InitializeRequest(NoOfCopiesFrom: Integer; ArchiveDocumentFrom: Boolean; LogInteractionFrom: Boolean)
     begin

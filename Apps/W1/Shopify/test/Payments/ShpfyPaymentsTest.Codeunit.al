@@ -53,4 +53,51 @@ codeunit 139566 "Shpfy Payments Test"
         JPayment.Add('processed_at', Format(CurrentDateTime - 1, 0, 9));
         exit(JPayment.AsToken());
     end;
+
+    [Test]
+    procedure UnitTestImportDispute()
+    var
+        Dispute: Record "Shpfy Dispute";
+        Payments: Codeunit "Shpfy Payments";
+        DisputeToken: JsonToken;
+        DisputeStatus: Enum "Shpfy Dispute Status";
+        FinalizedOn: DateTime;
+        Id: BigInteger;
+    begin
+        // [SCENARIO] Extract the data out json token that contains a Dispute info into the "Shpfy Dispute" record.
+        // [GIVEN] A random Generated Dispute
+        Id := Any.IntegerInRange(10000, 99999);
+        DisputeToken := GetRandomDisputeAsJsonToken(Id, DisputeStatus, FinalizedOn);
+
+        // [WHEN] Invoke the function ImportDisputeData(JToken)
+        Payments.ImportDisputeData(DisputeToken);
+
+        // // [THEN] A dispute record is created and the dispute status and finalized on should match the generated one
+        Dispute.Get(Id);
+        LibraryAssert.AreEqual(DisputeStatus, Dispute.Status, 'Dispute status should match the generated one');
+        LibraryAssert.AreEqual(FinalizedOn, Dispute."Finalized On", 'Dispute finalized on should match the generated one');
+    end;
+
+    local procedure GetRandomDisputeAsJsonToken(Id: BigInteger; var DisputeStatus: Enum "Shpfy Dispute Status"; var FinalizedOn: DateTime): JsonToken
+    var
+        DisputeObject: JsonObject;
+    begin
+        DisputeStatus := Enum::"Shpfy Dispute Status".FromInteger(Any.IntegerInRange(0, 6));
+        FinalizedOn := CurrentDateTime - 1;
+
+        DisputeObject.Add('id', Id);
+        DisputeObject.Add('order_id', Any.IntegerInRange(10000, 99999));
+        DisputeObject.Add('type', 'chargeback');
+        DisputeObject.Add('amount', Any.DecimalInRange(100, 2));
+        DisputeObject.Add('currency', Any.IntegerInRange(10000, 99999));
+        DisputeObject.Add('reason', 'fraudulent');
+        DisputeObject.Add('network_reason_code', Any.IntegerInRange(10000, 99999));
+        DisputeObject.Add('status', Format(DisputeStatus));
+        DisputeObject.Add('evidence_due_by', Format(CurrentDateTime - 1, 0, 9));
+        DisputeObject.Add('evidence_sent_on', Format(CurrentDateTime - 1, 0, 9));
+        DisputeObject.Add('finalized_on', Format(FinalizedOn, 0, 9));
+        DisputeObject.Add('initiated_at', Format(CurrentDateTime - 1, 0, 9));
+
+        exit(DisputeObject.AsToken());
+    end;
 }

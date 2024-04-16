@@ -44,6 +44,7 @@ codeunit 9092 "Postcode Service GetAddress.io"
         IsConfigured := IsServiceConfigured();
     end;
 
+    [NonDebuggable]
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Postcode Service Manager", 'OnRetrieveAddressList', '', false, false)]
     procedure GetAddressListOnAddressListRetrieved(ServiceKey: Text; TempEnteredAutocompleteAddress: Record "Autocomplete Address" temporary; var TempAddressListNameValueBuffer: Record "Name/Value Buffer" temporary; var IsSuccessful: Boolean; var ErrorMsg: Text)
     var
@@ -72,7 +73,11 @@ codeunit 9092 "Postcode Service GetAddress.io"
 
         GetConfigAndIfNecessaryCreate();
 
-        Url := BuildUrl(TempEnteredAutocompleteAddress.Postcode);
+        // Build URL and include property number if provided
+        Url := PostcodeGetAddressIoConfig.EndpointURL + TempEnteredAutocompleteAddress.Postcode;
+        Url := Url + '?api-key=' + PostcodeGetAddressIoConfig.GetAPIPasswordAsSecret(PostcodeGetAddressIoConfig.APIKey).Unwrap();
+        Url := Url + '&expand=true';
+
         PrepareWebRequest(HttpClientInstance);
 
         if not HttpClientInstance.Get(Url, HttpResponse) then begin
@@ -167,7 +172,7 @@ codeunit 9092 "Postcode Service GetAddress.io"
         Successful := Successful AND not IsNullGuid(PostcodeGetAddressIoConfig.APIKey);
     end;
 
-    local procedure PrepareWebRequest(HTTPClientInstance: HttpClient)
+    local procedure PrepareWebRequest(var HTTPClientInstance: HttpClient)
     begin
         HttpClientInstance.DefaultRequestHeaders().Add('Accept-Encoding', 'utf-8');
         HttpClientInstance.DefaultRequestHeaders().Add('Accept', 'application/json');
@@ -179,18 +184,6 @@ codeunit 9092 "Postcode Service GetAddress.io"
             exit;
 
         exit(not IsNullGuid(PostcodeGetAddressIoConfig.APIKey) AND (PostcodeGetAddressIoConfig.EndpointURL <> ''));
-    end;
-
-    local procedure BuildUrl(Postcode: Text): Text
-    var
-        Url: Text;
-    begin
-        // Build URL and include property number if provided
-        Url := PostcodeGetAddressIoConfig.EndpointURL + Postcode;
-
-        Url := Url + '?api-key=' + PostcodeGetAddressIoConfig.GetAPIKey(PostcodeGetAddressIoConfig.APIKey);
-        Url := Url + '&expand=true';
-        exit(Url);
     end;
 
     local procedure GetConfigAndIfNecessaryCreate()

@@ -44,13 +44,37 @@ tableextension 31005 "Sales Header CZZ" extends "Sales Header"
     var
         AdvanceLetterApplication: Record "Advance Letter Application CZZ";
     begin
-        if "Document Type" in ["Document Type"::Order, "Document Type"::Invoice] then begin
-            if "Document Type" = "Document Type"::Order then
-                AdvanceLetterApplication.SetRange("Document Type", "Adv. Letter Usage Doc.Type CZZ"::"Sales Order")
-            else
-                AdvanceLetterApplication.SetRange("Document Type", "Adv. Letter Usage Doc.Type CZZ"::"Sales Invoice");
+        if IsAdvanceLetterDocTypeCZZ() then begin
+            AdvanceLetterApplication.SetRange("Document Type", GetAdvLetterUsageDocTypeCZZ());
             AdvanceLetterApplication.SetRange("Document No.", "No.");
             AdvanceLetterApplication.DeleteAll();
         end;
+    end;
+
+    procedure IsAdvanceLetterDocTypeCZZ() AdvanceLetterDocType: Boolean
+    begin
+        AdvanceLetterDocType := "Document Type" in ["Document Type"::Order, "Document Type"::Invoice];
+        OnAfterIsAdvanceLetterDocTypeCZZ(Rec, AdvanceLetterDocType);
+    end;
+
+    procedure GetAdvLetterUsageDocTypeCZZ() AdvLetterUsageDocType: Enum "Adv. Letter Usage Doc.Type CZZ"
+    begin
+        case "Document Type" of
+            "Document Type"::Order:
+                AdvLetterUsageDocType := "Adv. Letter Usage Doc.Type CZZ"::"Sales Order";
+            "Document Type"::Invoice:
+                AdvLetterUsageDocType := "Adv. Letter Usage Doc.Type CZZ"::"Sales Invoice";
+        end;
+        OnAfterGetAdvLetterUsageDocTypeCZZ(Rec, AdvLetterUsageDocType);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterIsAdvanceLetterDocTypeCZZ(Rec: Record "Sales Header"; var AdvanceLetterDocType: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetAdvLetterUsageDocTypeCZZ(Rec: Record "Sales Header"; var AdvLetterUsageDocType: Enum "Adv. Letter Usage Doc.Type CZZ")
+    begin
     end;
 }

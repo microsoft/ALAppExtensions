@@ -99,11 +99,7 @@ page 4509 "Email - Outlook API Setup"
                         begin
                             if ClientSecretText = HiddenValueTxt then
                                 exit;
-                            if isNullGuid(Rec.ClientSecret) then
-                                Rec.ClientSecret := CreateGuid();
-                            IsolatedStorage.Set(Rec.ClientSecret, ClientSecretText, DataScope::Module);
-                            ClientSecretText := HiddenValueTxt;
-
+                            SetClientSecretInStorage();
                             SetTestSetupEnabled();
                         end;
                     }
@@ -253,13 +249,23 @@ page 4509 "Email - Outlook API Setup"
     local procedure TestSetup()
     var
         EmailOAuthClient: Codeunit "Email - OAuth Client";
-        [NonDebuggable]
-        AccessToken: Text;
+        AccessToken: SecretText;
     begin
         if not EmailOAuthClient.TryGetAccessToken(AccessToken) then
             Message(UnsuccessfulTestMsg, EmailOAuthClient.GetLastAuthorizationErrorMessage())
         else
             Message(SuccessfulTestMsg);
+    end;
+
+    local procedure SetClientSecretInStorage()
+    var
+        SecretClientSecret: SecretText;
+    begin
+        if isNullGuid(Rec.ClientSecret) then
+            Rec.ClientSecret := CreateGuid();
+        SecretClientSecret := ClientSecretText;
+        IsolatedStorage.Set(Rec.ClientSecret, SecretClientSecret, DataScope::Module);
+        ClientSecretText := HiddenValueTxt;
     end;
 
     var

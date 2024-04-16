@@ -113,6 +113,7 @@ page 40010 "Add Migration Table Mappings"
                             ExtensionManagement: Page "Extension Management";
                         begin
                             MigrationTableMapping.FilterOutBlacklistedPublishers(PublishedApplication);
+                            PublishedApplication.SetRange(Installed, true);
 
                             ExtensionManagement.SetTableView(PublishedApplication);
                             ExtensionManagement.LookupMode(true);

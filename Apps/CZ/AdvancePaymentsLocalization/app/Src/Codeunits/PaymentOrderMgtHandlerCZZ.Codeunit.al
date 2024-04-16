@@ -12,18 +12,16 @@ codeunit 31398 "Payment Order Mgt. Handler CZZ"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Payment Order Management CZB", 'OnBeforeCheckPaymentOrderLineApplyToOtherEntries', '', false, false)]
     local procedure IsPurchAdvanceAppliedOnBeforeCheckPaymentOrderLineApplyToOtherEntries(var PaymentOrderLineCZB: Record "Payment Order Line CZB"; var TempErrorMessage: Record "Error Message"; var IsHandled: Boolean)
     var
-        IssPaymentOrderLineCZB: Record "Iss. Payment Order Line CZB";
         PaymentOrderLineCZB2: Record "Payment Order Line CZB";
-        PurchAdvanceAlreadyAppliedErr: Label '%1 %2 in %3 is already applied on other or the same payment order.', Comment = '%1 = Purch. Advance Letter No. CZZ FieldCaption; %2 = Purch. Advance Letter No. CZZ; %3 = RecordId';
+        SuggestedAmountToApplyErr: Label 'Purchase Advance %1 is suggested to application on other documents in the system.', Comment = '%1 = Advance Letter No.';
     begin
         if IsHandled then
             exit;
         if PaymentOrderLineCZB."Purch. Advance Letter No. CZZ" = '' then
             exit;
 
-        IssPaymentOrderLineCZB.SetRange("Purch. Advance Letter No. CZZ", PaymentOrderLineCZB."Purch. Advance Letter No. CZZ");
-        IssPaymentOrderLineCZB.SetRange(Status, IssPaymentOrderLineCZB.Status::" ");
-        IsHandled := not IssPaymentOrderLineCZB.IsEmpty();
+        IsHandled := PaymentOrderLineCZB.CalcRelatedAmountToApply() <> 0;
+
         if not IsHandled then begin
             PaymentOrderLineCZB2.SetRange("Purch. Advance Letter No. CZZ", PaymentOrderLineCZB."Purch. Advance Letter No. CZZ");
             PaymentOrderLineCZB2.SetFilter("Payment Order No.", '<>%1', PaymentOrderLineCZB."Payment Order No.");
@@ -37,8 +35,9 @@ codeunit 31398 "Payment Order Mgt. Handler CZZ"
 
         if IsHandled then
             TempErrorMessage.LogMessage(
-                PaymentOrderLineCZB, PaymentOrderLineCZB.FieldNo(PaymentOrderLineCZB."Purch. Advance Letter No. CZZ"), TempErrorMessage."Message Type"::Warning,
-                StrSubstNo(PurchAdvanceAlreadyAppliedErr,
-                    PaymentOrderLineCZB.FieldCaption(PaymentOrderLineCZB."Purch. Advance Letter No. CZZ"), PaymentOrderLineCZB."Purch. Advance Letter No. CZZ", PaymentOrderLineCZB.RecordId()));
+                PaymentOrderLineCZB,
+                PaymentOrderLineCZB.FieldNo(PaymentOrderLineCZB."Purch. Advance Letter No. CZZ"),
+                TempErrorMessage."Message Type"::Warning,
+                StrSubstNo(SuggestedAmountToApplyErr, PaymentOrderLineCZB."Purch. Advance Letter No. CZZ"));
     end;
 }

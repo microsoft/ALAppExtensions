@@ -677,7 +677,7 @@ table 18870 "TCS Journal Line"
     var
         TCSJournalLine: Record "TCS Journal Line";
         TCSJournalTemplate: Record "TCS Journal Template";
-        NoSeriesManagement: Codeunit NoSeriesManagement;
+        NoSeries: Codeunit "No. Series";
     begin
         TCSJournalTemplate.Get("Journal Template Name");
         TCSJournalBatch.Get("Journal Template Name", "Journal Batch Name");
@@ -695,10 +695,8 @@ table 18870 "TCS Journal Line"
         end else begin
             Validate("Posting Date", WorkDate());
             Validate("Document Date", WorkDate());
-            if TCSJournalBatch."No. Series" <> '' then begin
-                Clear(NoSeriesManagement);
-                "Document No." := NoSeriesManagement.GetNextNo(TCSJournalBatch."No. Series", "Posting Date", false);
-            end;
+            if TCSJournalBatch."No. Series" <> '' then
+                "Document No." := NoSeries.PeekNextNo(TCSJournalBatch."No. Series", "Posting Date");
         end;
 
         Validate("Account Type", LastTCSJournalLine."Account Type");

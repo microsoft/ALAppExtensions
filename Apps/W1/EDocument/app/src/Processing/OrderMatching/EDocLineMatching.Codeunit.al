@@ -9,6 +9,9 @@ using System.Utilities;
 codeunit 6164 "E-Doc. Line Matching"
 {
     Access = Internal;
+    Permissions =
+        tabledata "E-Doc. Imported Line" = im,
+        tabledata "E-Doc. Order Match" = idm;
 
     var
         EmptyRecordErr: Label 'Empty selection cannot be matched.';
@@ -16,7 +19,7 @@ codeunit 6164 "E-Doc. Line Matching"
         DiscountDiffErr: Label 'Varied Discount found in existing matching for Import line %1. Please review and undo previous matching in order to match selection', Comment = '%1 - Import line number';
         UnitCostErr: Label 'Varied Unit Costs found among selected %1 entries. Please review and deselect entries with different Unit Costs in order to match selection', Comment = '%1 - Table name for selected entries';
         UnitCostDiffErr: Label 'Varied Unit Cost found in existing matching for Import line %1. Please review and undo previous matching in order to match selection', Comment = '%1 - Import line number';
-        MatchErr: Label '%1 discrepancy detected in 1 or more matches for Purchase Line %2. %3 is required across all matches.', Comment = '%1 - Field Caption, %2 - Purchase Line No., %3 - Field Caption';
+        MatchErr: Label 'Discrepancy detected in line amount for 1 or more matches for Purchase Line %1.', Comment = '%1 - Purchase Line No';
         UOMErr: Label 'Varied Unit Of Measures found among selected %1 entries. Please review and deselect entries with different Unit Of Measures in order to match selection', Comment = '%1 - Table name for selected entries';
         UnmatchedImportLineErr: Label 'Matching of Imported Line %1 is incomplete. It is not fully matched to purchase order lines.', Comment = '%1 - Imported Line No.';
         OverwriteExistingMatchesTxt: Label 'There are lines for this e-document that are already matched with this purchase order.\\ Do you want to overwrite the existing matches?';
@@ -25,10 +28,18 @@ codeunit 6164 "E-Doc. Line Matching"
 
     procedure RunMatching(var EDocument: Record "E-Document")
     var
+        EDocService: Record "E-Document Service";
+        EDocServiceStatus: Record "E-Document Service Status";
+        EDocLog: Codeunit "E-Document Log";
         EDocOrderLineMatching: Page "E-Doc. Order Line Matching";
     begin
-        EDocOrderLineMatching.SetRecord(EDocument);
-        EDocOrderLineMatching.RunModal();
+        EDocument.TestField("Document Type", Enum::"E-Document Type"::"Purchase Order");
+        EDocument.TestField(EDocument.Status, Enum::"E-Document Status"::"In Progress");
+        EDocService := EDocLog.GetLastServiceFromLog(EDocument);
+        EDocServiceStatus.Get(EDocument."Entry No", EDocService.Code);
+        EDocServiceStatus.TestField(Status, Enum::"E-Document Service Status"::"Order Linked");
+        EDocOrderLineMatching.SetTempRecord(EDocument);
+        EDocOrderLineMatching.Run();
     end;
 
     procedure ApplyToPurchaseOrder(var EDocument: Record "E-Document"; var TempEDocumentImportedLine: Record "E-Doc. Imported Line" temporary)
@@ -57,22 +68,20 @@ codeunit 6164 "E-Doc. Line Matching"
         PurchaseHeader.Validate("E-Document Link", EDocument.SystemId);
         PurchaseHeader.Modify();
 
-
         EDocOrderMatch.SetRange("E-Document Entry No.", EDocument."Entry No");
         EDocOrderMatch.SetRange("Document Order No.", EDocument."Order No.");
         PurchaseLine.SetRange("Document Type", Enum::"Purchase Document Type"::Order);
         PurchaseLine.SetRange("Document No.", EDocument."Order No.");
 
-
         if PurchaseLine.FindSet() then
             repeat
                 EDocOrderMatch.SetRange("Document Line No.", PurchaseLine."Line No.");
                 // We check that if there is a set, then Direct Cost, UOM and Discount % is all the same, otherwise we cant
-                TestFieldsAreTheSameInSet(EDocOrderMatch);
+                TestLineTotalAreTheSameInSet(EDocOrderMatch);
 
                 if EDocOrderMatch.FindFirst() then begin
-                    if PurchaseLine."Direct Unit Cost" <> EDocOrderMatch."Direct Unit Cost" then
-                        PurchaseLine.Validate("Direct Unit Cost", EDocOrderMatch."Direct Unit Cost");
+                    if PurchaseLine."Direct Unit Cost" <> EDocOrderMatch."E-Document Direct Unit Cost" then
+                        PurchaseLine.Validate("Direct Unit Cost", EDocOrderMatch."E-Document Direct Unit Cost");
                     if PurchaseLine."Line Discount %" <> EDocOrderMatch."Line Discount %" then
                         PurchaseLine.Validate("Line Discount %", EDocOrderMatch."Line Discount %");
                     PurchaseLine.Validate("Amount Including VAT");
@@ -84,20 +93,21 @@ codeunit 6164 "E-Doc. Line Matching"
         EDocLogHelper.InsertLog(EDocument, EDocService, Enum::"E-Document Service Status"::"Order Updated");
     end;
 
-    local procedure TestFieldsAreTheSameInSet(var EDocOrderMatch: Record "E-Doc. Order Match")
+    local procedure TestLineTotalAreTheSameInSet(var EDocOrderMatch: Record "E-Doc. Order Match")
     var
         EDocOrderMatch2: Record "E-Doc. Order Match";
+        Total, Total2 : Decimal;
     begin
         if not EDocOrderMatch.FindFirst() then
             exit;
 
+        Total := EDocOrderMatch."E-Document Direct Unit Cost" - (EDocOrderMatch."E-Document Direct Unit Cost" * EDocOrderMatch."Line Discount %" / 100);
         EDocOrderMatch2.Copy(EDocOrderMatch);
         if EDocOrderMatch2.FindSet() then
             repeat
-                if EDocOrderMatch2."Direct Unit Cost" <> EDocOrderMatch."Direct Unit Cost" then
-                    Error(MatchErr, EDocOrderMatch.FieldCaption("Direct Unit Cost"), EDocOrderMatch."Document Line No.", EDocOrderMatch.FieldCaption("Direct Unit Cost"));
-                if EDocOrderMatch2."Line Discount %" <> EDocOrderMatch."Line Discount %" then
-                    Error(MatchErr, EDocOrderMatch.FieldCaption("Line Discount %"), EDocOrderMatch."Document Line No.", EDocOrderMatch.FieldCaption("Line Discount %"));
+                Total2 := EDocOrderMatch2."E-Document Direct Unit Cost" - (EDocOrderMatch2."E-Document Direct Unit Cost" * EDocOrderMatch2."Line Discount %" / 100);
+                if Total <> Total2 then
+                    Error(MatchErr, EDocOrderMatch."Document Line No.");
             until EDocOrderMatch2.Next() = 0;
     end;
 
@@ -280,7 +290,7 @@ codeunit 6164 "E-Doc. Line Matching"
         EDocOrderMatch.SetRange("E-Document Entry No.", TempEDocImportedLine."E-Document Entry No.");
         EDocOrderMatch.SetRange("Document Line No.", TempPurchaseLine."Line No.");
         if EDocOrderMatch.FindFirst() then begin
-            if EDocOrderMatch."Direct Unit Cost" <> TempEDocImportedLine."Direct Unit Cost" then
+            if EDocOrderMatch."E-Document Direct Unit Cost" <> TempEDocImportedLine."Direct Unit Cost" then
                 Error(UnitCostDiffErr, EDocOrderMatch."E-Document Line No.");
             if EDocOrderMatch."Line Discount %" <> TempEDocImportedLine."Line Discount %" then
                 Error(DiscountDiffErr, EDocOrderMatch."E-Document Line No.");
@@ -328,37 +338,24 @@ codeunit 6164 "E-Doc. Line Matching"
         if TempEDocumentImportedLine.IsEmpty() or TempPurchaseLine.IsEmpty() then
             Error(EmptyRecordErr);
 
-        // Automatic matching will do the following
-        // - For each Import Line, try to get full assignment in 1 or more PO lines
-        // - Filter on Type, then Number, Then Text 
+        // Automatic matching will do the following:
+        // - Filter on items with the same unit of measure, direct unit cost and line discount %
+        // - If string nearness is above 80% then match automatically 
 
         if TempEDocumentImportedLine.FindSet() then
             repeat
-
-                // Match based on Number
-                TempPurchaseLine.Reset();
-                TempPurchaseLine.SetRange("No.", TempEDocumentImportedLine."No.");
                 TempPurchaseLine.SetRange("Unit of Measure Code", TempEDocumentImportedLine."Unit Of Measure Code");
                 TempPurchaseLine.SetRange("Direct Unit Cost", TempEDocumentImportedLine."Direct Unit Cost");
                 TempPurchaseLine.SetRange("Line Discount %", TempEDocumentImportedLine."Line Discount %");
-
-                MatchOneToMany(TempEDocumentImportedLine, TempPurchaseLine, TempEDocMatchesThatWasMatched);
-
-                if TempEDocumentImportedLine.Quantity > TempEDocumentImportedLine."Matched Quantity" then begin
-
-                    // We still have more to match for imported line
-                    TempPurchaseLine.SetRange("No.");
-                    TempPurchaseLine.SetFilter("No.", '<>%1', TempEDocumentImportedLine."No.");
-                    if TempPurchaseLine.FindSet() then
-                        // TO precheck to avoid unessesary Calc String Nearness
+                if TempPurchaseLine.FindSet() then
+                    repeat
                         if TempPurchaseLine.MaxQtyToInvoice() > TempPurchaseLine."Qty. to Invoice" then
                             // If substring is 80% match
                             if RecordMatchMgt.CalculateStringNearness(TempPurchaseLine.Description, TempEDocumentImportedLine.Description, 4, 100) > 80 then
                                 MatchOneToOne(TempEDocumentImportedLine, TempPurchaseLine, TempEDocMatchesThatWasMatched);
-                end;
+                    until TempPurchaseLine.Next() = 0;
             until TempEDocumentImportedLine.Next() = 0;
 
-        // Reset filters before exit
         TempPurchaseLine.Reset();
         TempEDocumentImportedLine.Reset();
     end;
@@ -378,11 +375,13 @@ codeunit 6164 "E-Doc. Line Matching"
         TempEDocMatchesThatWasMatched.Validate("E-Document Entry No.", TempEDocumentImportedLine."E-Document Entry No.");
         TempEDocMatchesThatWasMatched.Validate("E-Document Line No.", TempEDocumentImportedLine."Line No.");
         TempEDocMatchesThatWasMatched.Validate(Quantity, Quantity);
-        TempEDocMatchesThatWasMatched.Validate("Direct Unit Cost", TempEDocumentImportedLine."Direct Unit Cost");
+        TempEDocMatchesThatWasMatched.Validate("E-Document Direct Unit Cost", TempEDocumentImportedLine."Direct Unit Cost");
+        TempEDocMatchesThatWasMatched.Validate("PO Direct Unit Cost", TempPurchaseLine."Direct Unit Cost");
         TempEDocMatchesThatWasMatched.Validate("Line Discount %", TempEDocumentImportedLine."Line Discount %");
         TempEDocMatchesThatWasMatched.Validate("Unit of Measure Code", TempEDocumentImportedLine."Unit of Measure Code");
         TempEDocMatchesThatWasMatched.Validate("Fully Matched", FullMatch);
-        TempEDocMatchesThatWasMatched.Description := TempEDocumentImportedLine.Description;
+        TempEDocMatchesThatWasMatched."PO Description" := TempPurchaseLine.Description;
+        TempEDocMatchesThatWasMatched."E-Document Description" := TempEDocumentImportedLine.Description;
         TempEDocMatchesThatWasMatched.Insert();
     end;
 
@@ -453,7 +452,7 @@ codeunit 6164 "E-Doc. Line Matching"
         EDocOrderMatch.SetRange("Document Order No.", EDocument."Order No.");
         if EDocOrderMatch.FindSet() then
             repeat
-                Sum += EDocOrderMatch.Quantity * EDocOrderMatch."Direct Unit Cost";
+                Sum += EDocOrderMatch.Quantity * EDocOrderMatch."E-Document Direct Unit Cost";
             until EDocOrderMatch.Next() = 0;
     end;
 }
