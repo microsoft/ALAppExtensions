@@ -1,0 +1,9 @@
+AppSource Description
+Norsk:
+AutoBank har som hovedfokus å effektivisere, forenkle og utvide funksjonalitet rundt betaling, innbetalinger, refusjoner og avstemming av banktransaksjoner i alle valutaer. Du kan nå trygt integrere banken din direkte i Business Central uten filhåndtering. AutoBank støtter alle banker i Norge, samt utvalgte banker i Sverige, Danmark, Finland, Tyskland, Portugal, England og USA. (www.sumango.no)
+
+Svensk:
+AutoBanks huvudfokus är att effektivisera, förenkla och utöka funktionaliteten kring leverantör betalningar, kund betalningar, återbetalning och avstämning av banktransaktioner i alla valutor. Du kan nu säkert integrera din bank direkt i Business Central utan filhantering. AutoBank stödjer följande bankar Handelsbanken, SEB, Nordea, Danske Bank, och DNB.
+
+Engelsk:
+AutoBank manage payments, receivables, refunds and reconciliation in all currencies directly from Business Central. Streamlines, simplifies and expands bank functionality without leaving your Business Central environment. Sumango AutoBank support banks in Norway, Sweden, Denmark, Finland, Germany, Portugal, United Kingdom and United States. Visit www.sumango.no for more information.
