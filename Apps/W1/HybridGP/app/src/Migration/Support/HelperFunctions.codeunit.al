@@ -1021,11 +1021,23 @@ codeunit 4037 "Helper Functions"
     var
         GPVendor: Record "GP Vendor";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPVendorMigrator: Codeunit "GP Vendor Migrator";
+        IsTemporaryVendor: Boolean;
+        HasOpenPurchaseOrders: Boolean;
+        HasOpenTransactions: Boolean;
+        VendorCount: Integer;
     begin
         if not GPCompanyAdditionalSettings.GetPayablesModuleEnabled() then
             exit(0);
 
-        exit(GPVendor.Count());
+        if GPVendor.FindSet() then
+            repeat
+                if GPVendorMigrator.ShouldMigrateVendor(GPVendor.VENDORID, IsTemporaryVendor, HasOpenPurchaseOrders, HasOpenTransactions) then
+                    VendorCount := VendorCount + 1;
+
+            until GPVendor.Next() = 0;
+
+        exit(VendorCount);
     end;
 
     procedure RemoveEmptyGLTransactions()
@@ -1545,10 +1557,12 @@ codeunit 4037 "Helper Functions"
     var
         GPSegments: Record "GP Segments";
         Dimension: Record Dimension;
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         DimCode: Code[20];
     begin
         if GPSegments.FindSet() then begin
             repeat
+                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPSegments.RecordId()));
                 DimCode := CheckDimensionName(GPSegments.Id);
                 if not Dimension.Get(DimCode) then begin
                     Dimension.Init();
@@ -1572,6 +1586,7 @@ codeunit 4037 "Helper Functions"
         GPPaymentTerms: Record "GP Payment Terms";
         PaymentTerms: Record "Payment Terms";
         GPMigrationWarnings: Record "GP Migration Warnings";
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         DueDateCalculation: DateFormula;
         DiscountDateCalculation: DateFormula;
         SeedValue: integer;
@@ -1585,6 +1600,7 @@ codeunit 4037 "Helper Functions"
         SeedValue := 0;
         if GPPaymentTerms.FindSet() then begin
             repeat
+                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPPaymentTerms.RecordId()));
                 IsPaymentTermHandled := false;
                 OnHandlePaymentTerm(GPPaymentTerms, IsPaymentTermHandled);
                 if not IsPaymentTermHandled then begin
@@ -1635,9 +1651,11 @@ codeunit 4037 "Helper Functions"
     var
         GPItemLocation: Record "GP Item Location";
         Location: Record Location;
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
     begin
         if GPItemLocation.FindSet() then
             repeat
+                DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPItemLocation.RecordId()));
                 Location.Init();
                 Location.Code := Text.CopyStr(GPItemLocation.LOCNCODE, 1, 10);
                 Location.Name := GPItemLocation.LOCNDSCR;

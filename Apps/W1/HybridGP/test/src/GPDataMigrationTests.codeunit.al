@@ -702,6 +702,227 @@ codeunit 139664 "GP Data Migration Tests"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestDisableTemporaryVendors()
+    var
+        Vendor: Record Vendor;
+        CompanyInformation: Record "Company Information";
+        OrderAddress: Record "Order Address";
+        RemitAddress: Record "Remit Address";
+        GenJournalLine: Record "Gen. Journal Line";
+        InitialGenJournalLineCount: Integer;
+        Country: Code[10];
+        VendorCount: Integer;
+        VendorsToMigrateCount: Integer;
+    begin
+        // [SCENARIO] All Vendor are queried from GP
+        // [GIVEN] GP data
+        Initialize();
+        InitialGenJournalLineCount := GenJournalLine.Count();
+
+        GPTestHelperFunctions.CreateConfigurationSettings();
+
+        // Disable temporary Vendors
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Temporary Vendors", false);
+        GPCompanyAdditionalSettings.Modify();
+
+        // [WHEN] Data is imported
+        CreateVendorData();
+        CreateVendorClassData();
+        CreateVendorTrx();
+
+        GPTestHelperFunctions.InitializeMigration();
+
+        // [WHEN] adding Vendors, update the expected count here
+        VendorCount := 54;
+        VendorsToMigrateCount := 53;
+
+        // [Then] the correct number of Vendors are imported
+        Assert.AreEqual(VendorCount, GPVendor.Count(), 'Wrong number of Vendor read');
+        Assert.AreEqual(VendorsToMigrateCount, HelperFunctions.GetNumberOfVendors(), 'Wrong number of Vendors calculated.');
+
+        // [THEN] Then fields for Vendor 1 are correctly imported to temporary table
+        GPVendor.SetRange(VENDORID, '1160');
+        GPVendor.FindFirst();
+        Assert.AreEqual('Risco, Inc.', GPVendor.VENDNAME, 'VENDNAME of Vendor is wrong');
+        Assert.AreEqual('Risco, Inc.', GPVendor.SEARCHNAME, 'SEARCHNAME of Vendor is wrong');
+        Assert.AreEqual('Risco, Inc.', GPVendor.VNDCHKNM, 'VNDCHKNM of Vendor is wrong');
+        Assert.AreEqual('2344 Brookings St', GPVendor.ADDRESS1, 'ADDRESS2 of Vendor is wrong');
+        Assert.AreEqual('Suite 234', GPVendor.ADDRESS2, 'ADDRESS2 of Vendor is wrong');
+        Assert.AreEqual('Fort Worth', GPVendor.CITY, 'CITY of Vendor is wrong');
+        Assert.AreEqual('Roger', GPVendor.VNDCNTCT, 'VNDCNTCT Phone of Vendor is wrong');
+        Assert.AreEqual('50482743320000', GPVendor.PHNUMBR1, 'PHNUMBR1 of Vendor is wrong');
+        Assert.AreEqual('3% 15th/Net 30', GPVendor.PYMTRMID, 'PYMTRMID of Vendor is wrong');
+        Assert.AreEqual('UPS BLUE', GPVendor.SHIPMTHD, 'SHIPMTHD of Vendor is wrong');
+        Assert.AreEqual('', GPVendor.COUNTRY, 'SLPRSNID of Vendor is wrong');
+        Assert.AreEqual('', GPVendor.PYMNTPRI, 'PYMNTPRI of Vendor is wrong');
+        Assert.AreEqual(12.18, GPVendor.AMOUNT, 'AMOUNT of Vendor is wrong');
+        Assert.AreEqual('50482743400000', GPVendor.FAXNUMBR, 'FAXNUMBR of Vendor is wrong');
+        Assert.AreEqual('TX', GPVendor.STATE, 'STATE of Vendor is wrong');
+        Assert.AreEqual('', GPVendor.INET1, 'INET1 of Vendor is wrong');
+        Assert.AreEqual(' ', GPVendor.INET2, 'INET2 of Vendor is wrong');
+        Assert.AreEqual('P-N-TXB-%P*6', GPVendor.TAXSCHID, 'TAXSCHID of Vendor is wrong');
+        Assert.AreEqual('T3', GPVendor.UPSZONE, 'UPSZONE of Vendor is wrong');
+        Assert.AreEqual('45-0029728', GPVendor.TXIDNMBR, 'TXIDNMBR of Vendor is wrong');
+
+        // [WHEN] data is migrated
+        Vendor.DeleteAll();
+        GPVendor.Reset();
+        MigrateVendors(GPVendor);
+
+        // [THEN] The correct number of Vendors are applied
+        Assert.AreEqual(VendorsToMigrateCount, Vendor.Count(), 'Wrong number of Migrated Vendors read');
+
+        // [THEN] The fields for Vendors 1 are correctly applied
+        Vendor.SetRange("No.", '1160');
+        Vendor.FindFirst();
+
+        CompanyInformation.Get();
+        Country := CompanyInformation."Country/Region Code";
+
+        Assert.AreEqual('Risco, Inc.', Vendor.Name, 'Name of Migrated Vendor is wrong');
+
+        // [THEN] The Vendor Name 2 will be blank because it is the same as the Vendor name
+        Assert.AreEqual('', Vendor."Name 2", 'Name 2 of Migrated Vendor is wrong');
+        Assert.AreEqual('Roger', Vendor.Contact, 'Contact Name of Migrated Vendor is wrong');
+        Assert.AreEqual('RISCO, INC.', Vendor."Search Name", 'Search Name of Migrated Vendor is wrong');
+        Assert.AreEqual('2344 Brookings St', Vendor.Address, 'Address of Migrated Vendor is wrong');
+        Assert.AreEqual('Suite 234', Vendor."Address 2", 'Address2 of Migrated Vendor is wrong');
+        Assert.AreEqual('Fort Worth', Vendor.City, 'City of Migrated Vendor is wrong');
+        Assert.AreEqual('50482743320000', Vendor."Phone No.", 'Phone No. of Migrated Vendor is wrong');
+        Assert.AreEqual('50482743400000', Vendor."Fax No.", 'Fax No. of Migrated Vendor is wrong');
+        Assert.AreEqual(Country, Vendor."Country/Region Code", 'Country/Region of Migrated Vendor is wrong');
+        Assert.AreEqual('UPS BLUE', Vendor."Shipment Method Code", 'Shipment Method Code of Migrated Vendor is wrong');
+        Assert.AreEqual('3% 15TH/NE', Vendor."Payment Terms Code", 'Payment Terms Code of Migrated Vendor is wrong');
+        Assert.AreEqual('P-N-TXB-%P*6', Vendor."Tax Area Code", 'Tax Area Code of Migrated Vendor is wrong');
+        Assert.AreEqual(true, Vendor."Tax Liable", 'Tax Liable of Migrated Vendor is wrong');
+
+        // [THEN] The Order addresses will be created correctly
+        OrderAddress.SetRange("Vendor No.", 'ACETRAVE0001');
+        Assert.RecordCount(OrderAddress, 1);
+
+        OrderAddress.FindFirst();
+        Assert.AreEqual(AddressCodePrimaryTxt, OrderAddress.Code, 'Code of Order Address is wrong.');
+        Assert.AreEqual('Greg Powell', OrderAddress.Contact, 'Contact of Order Address is wrong.');
+        Assert.AreEqual('123 Riley Street', OrderAddress.Address, 'Address of Order Address is wrong.');
+        Assert.AreEqual('Sydney', OrderAddress.City, 'City of Order Address is wrong.');
+        Assert.AreEqual('NSW', OrderAddress.County, 'State/Region code of Order Address is wrong.');
+        Assert.AreEqual('2086', OrderAddress."Post Code", 'Post Code of Order Address is wrong.');
+        Assert.AreEqual('29855501010000', OrderAddress."Phone No.", 'Phone No. of Order Address is wrong.');
+        Assert.AreEqual('29455501010000', OrderAddress."Fax No.", 'Fax No. of Order Address is wrong.');
+
+        // [THEN] The Remit addresses will be created correctly
+        RemitAddress.SetRange("Vendor No.", 'ACETRAVE0001');
+        Assert.RecordCount(RemitAddress, 1);
+
+        // [THEN] The Order addresses will be created correctly
+        OrderAddress.SetRange("Vendor No.", 'ACETRAVE0002');
+        Assert.RecordCount(OrderAddress, 2);
+
+        RemitAddress.FindFirst();
+        Assert.AreEqual('Greg Powell', RemitAddress.Contact, 'Contact of Remit Address is wrong.');
+        Assert.AreEqual('Box 342', RemitAddress.Address, 'Address of Remit Address is wrong.');
+        Assert.AreEqual('Sydney', RemitAddress.City, 'City of Remit Address is wrong.');
+        Assert.AreEqual('NSW', RemitAddress.County, 'State/Region code of Remit Address is wrong.');
+        Assert.AreEqual('2000', RemitAddress."Post Code", 'Post Code of Remit Address is wrong.');
+        Assert.AreEqual('29855501020000', RemitAddress."Phone No.", 'Phone No. of Remit Address is wrong.');
+        Assert.AreEqual('29455501020000', RemitAddress."Fax No.", 'Fax No. of Remit Address is wrong.');
+
+        RemitAddress.SetRange("Vendor No.", 'ACETRAVE0002');
+        Assert.RecordCount(RemitAddress, 0);
+
+        // [WHEN] The Primary and Remit to is the same
+
+        // [THEN] The Order address will be created
+        OrderAddress.SetRange("Vendor No.", 'ACME');
+        OrderAddress.FindFirst();
+        Assert.AreEqual(AddressCodePrimaryTxt, OrderAddress.Code, 'Code of Order Address is wrong.');
+        Assert.AreEqual('Mr. Lashro', OrderAddress.Contact, 'Contact of Order Address is wrong.');
+        Assert.AreEqual('P.O. Box 183', OrderAddress.Address, 'Address of Order Address is wrong.');
+        Assert.AreEqual('Harvey', OrderAddress.City, 'City of Order Address is wrong.');
+        Assert.AreEqual('ND', OrderAddress.County, 'State/Region code of Order Address is wrong.');
+        Assert.AreEqual('70059', OrderAddress."Post Code", 'Post Code of Order Address is wrong.');
+        Assert.AreEqual('30543212880000', OrderAddress."Phone No.", 'Phone No. of Order Address is wrong.');
+        Assert.AreEqual('30543212900000', OrderAddress."Fax No.", 'Fax No. of Order Address is wrong.');
+
+        // [THEN] The Remit address will be created
+        RemitAddress.SetRange("Vendor No.", 'ACME');
+        RemitAddress.FindFirst();
+        Assert.AreEqual(AddressCodeRemitToTxt, RemitAddress.Code, 'Code of Remit Address is wrong.');
+        Assert.AreEqual('Mr. Lashro', RemitAddress.Contact, 'Contact of Remit Address is wrong.');
+        Assert.AreEqual('P.O. Box 183', RemitAddress.Address, 'Address of Remit Address is wrong.');
+        Assert.AreEqual('Harvey', RemitAddress.City, 'City of Remit Address is wrong.');
+        Assert.AreEqual('ND', RemitAddress.County, 'State/Region code of Remit Address is wrong.');
+        Assert.AreEqual('70059', RemitAddress."Post Code", 'Post Code of Remit Address is wrong.');
+        Assert.AreEqual('30543212880000', RemitAddress."Phone No.", 'Phone No. of Remit Address is wrong.');
+        Assert.AreEqual('30543212900000', RemitAddress."Fax No.", 'Fax No. of Remit Address is wrong.');
+
+        // [WHEN] the Vendor phone and/or fax were default (00000000000000)
+        Vendor.Reset();
+        Vendor.SetRange("No.", 'ACETRAVE0002');
+        Vendor.FindFirst();
+
+        // [THEN] The phone and/or fax values are empty
+        Assert.AreEqual('', Vendor."Phone No.", 'Phone No. of Migrated Vendor should be empty');
+        Assert.AreEqual('', Vendor."Fax No.", 'Fax No. of Migrated Vendor should be empty');
+
+        // [WHEN] the Vendor address phone and/or fax were default (00000000000000)
+        OrderAddress.Reset();
+        OrderAddress.SetRange("Vendor No.", 'ACETRAVE0002');
+        OrderAddress.SetRange(Code, 'WAREHOUSE');
+        OrderAddress.FindFirst();
+
+        // [THEN] The phone and/or fax values are empty
+        Assert.AreEqual('', OrderAddress."Phone No.", 'Phone No. of Migrated Vendor Address should be empty');
+        Assert.AreEqual('', OrderAddress."Fax No.", 'Fax No. of Migrated Vendor Address should be empty');
+
+        // [WHEN] the Vendor address phone and/or fax were not default (00000000000000)
+        OrderAddress.Reset();
+        OrderAddress.SetRange("Vendor No.", 'ACETRAVE0002');
+        OrderAddress.SetRange(Code, 'Primary');
+        OrderAddress.FindFirst();
+
+        // [THEN] The phone and/or fax values will be set to the migrated value
+        Assert.AreEqual('61855501040000', OrderAddress."Phone No.", 'Phone No. of Migrated Vendor Address should be empty');
+        Assert.AreEqual('61855501040000', OrderAddress."Fax No.", 'Fax No. of Migrated Vendor Address should be empty');
+
+        // [THEN] Vendor transactions will be created
+        Assert.RecordCount(GenJournalLine, 2 + InitialGenJournalLineCount);
+
+        // [WHEN] Vendor classes are migrated
+        Assert.AreEqual('1', HelperFunctions.GetPostingAccountNumber('PayablesAccount'), 'Default Payables account is incorrect.');
+
+        // [THEN] The class Payables account will be used for transactions when an account is configured for the class
+        Clear(GenJournalLine);
+        GenJournalLine.SetRange("Account Type", "Gen. Journal Account Type"::Vendor);
+        GenJournalLine.SetRange("Account No.", '1160');
+        Assert.IsTrue(GenJournalLine.FindFirst(), 'Could not locate Gen. Journal Line.');
+        Assert.AreEqual('TEST123', GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
+
+        // [THEN] The default Payables account is used when no class is set on the Vender
+        Clear(GenJournalLine);
+        GenJournalLine.SetRange("Account Type", "Gen. Journal Account Type"::Vendor);
+        GenJournalLine.SetRange("Account No.", 'V3130');
+        Assert.IsTrue(GenJournalLine.FindFirst(), 'Could not locate Gen. Journal Line.');
+        Assert.AreEqual(HelperFunctions.GetPostingAccountNumber('PayablesAccount'), GenJournalLine."Bal. Account No.", 'Incorrect Bal. Account No. on Gen. Journal Line.');
+
+        // [WHEN] Vendor addresses are migrated
+        // [THEN] Email addresses are included with the addresses when they are valid
+        Assert.IsTrue(OrderAddress.Get('ACME', 'PRIMARY'), 'Vendor primary address does not exist.');
+        Assert.AreEqual('GoodEmailAddress@testing.tst', OrderAddress."E-Mail", 'Vendor primary address email was not set correctly.');
+
+        Assert.IsTrue(RemitAddress.Get('REMIT TO', 'ACME'), 'Vendor remit address does not exist.');
+        Assert.AreEqual('GoodEmailAddress2@testing.tst', RemitAddress."E-Mail", 'Vendor remit address email was not set correctly.');
+
+        Assert.IsTrue(OrderAddress.Get('ACETRAVE0001', 'PRIMARY'), 'Vendor primary address does not exist.');
+        Assert.AreEqual('', OrderAddress."E-Mail", 'Vendor primary address email should be empty.');
+
+        Assert.IsTrue(RemitAddress.Get('REMIT TO', 'ACETRAVE0001'), 'Vendor remit address does not exist.');
+        Assert.AreEqual('', RemitAddress."E-Mail", 'Vendor remit address email should be empty.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestGPVendorImportWithName2()
     var
         Vendor: Record Vendor;
@@ -797,6 +1018,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
         GPCompanyAdditionalSettings.Validate("Migrate Only Payables Master", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Temporary Vendors", true);
         GPCompanyAdditionalSettings.Modify();
 
         // [WHEN] Data is imported
@@ -813,7 +1035,7 @@ codeunit 139664 "GP Data Migration Tests"
         Clear(Vendor);
 
         // [THEN] Then the correct number of Vendors are imported
-        Assert.AreEqual(VendorCount, GPVendor.Count(), 'Wrong number of Vendor read');
+        Assert.AreEqual(VendorCount, GPVendor.Count(), 'Wrong number of Vendors read');
 
         // [WHEN] data is migrated
         Vendor.DeleteAll();
@@ -844,6 +1066,7 @@ codeunit 139664 "GP Data Migration Tests"
         GPCompanyAdditionalSettings.Validate("Migrate Payables Module", true);
         GPCompanyAdditionalSettings.Validate("Migrate Only Payables Master", false);
         GPCompanyAdditionalSettings.Validate("Skip Posting Vendor Batches", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Temporary Vendors", true);
         GPCompanyAdditionalSettings.Modify();
 
         // [WHEN] Data is imported
@@ -2973,6 +3196,11 @@ codeunit 139664 "GP Data Migration Tests"
         GPVendor.UPSZONE := '';
         GPVendor.TXIDNMBR := '45-0029728';
         GPVendor.Insert();
+
+        Clear(GPPM00200);
+        GPPM00200.VENDORID := CopyStr(GPVendor.VENDORID, 1, MaxStrLen(GPPM00200.VENDORID));
+        GPPM00200.VENDSTTS := 3;
+        GPPM00200.Insert();
 
         Clear(GPVendor);
         GPVendor.VENDORID := '&2010';
