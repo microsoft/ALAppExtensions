@@ -20,6 +20,10 @@ codeunit 4022 "GP Vendor Migrator"
         PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
         VendorEmailTypeCodeLbl: Label 'VEN', Locked = true;
         MigrationLogAreaTxt: Label 'Vendor', Locked = true;
+        TemporaryVendorMigratedTxt: Label 'Temporary vendor was migrated because %1', Comment = '%1 is the reason the temporary Vendor was migrated.';
+        TemporaryVendorHasOpenPOsAndAPTrxTxt: Label 'it has open POs and open AP transactions.';
+        TemporaryVendorHasOpenPOsTxt: Label 'it has open POs.';
+        TemporaryVendorHasOpenAPTrxTxt: Label 'it has open AP transactions.';
 
 #if not CLEAN22
 #pragma warning disable AA0207
@@ -56,6 +60,7 @@ codeunit 4022 "GP Vendor Migrator"
 #endif
     var
         GPVendor: Record "GP Vendor";
+        Vendor: Record Vendor;
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         HelperFunctions: Codeunit "Helper Functions";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
@@ -68,7 +73,7 @@ codeunit 4022 "GP Vendor Migrator"
             exit;
 
         if GPVendor.Get(RecordIdToMigrate) then
-            if not Sender.DoesVendorExist(CopyStr(GPVendor.VENDORID, 1, 20)) then
+            if not Sender.DoesVendorExist(CopyStr(GPVendor.VENDORID, 1, MaxStrLen(Vendor."No."))) then
                 exit;
 
         if not GPCompanyAdditionalSettings.GetGLModuleEnabled() then
@@ -104,6 +109,7 @@ codeunit 4022 "GP Vendor Migrator"
     procedure MigrateVendorTransactions(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         GPVendor: Record "GP Vendor";
+        Vendor: Record Vendor;
         GPVendorTransactions: Record "GP Vendor Transactions";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
@@ -124,7 +130,7 @@ codeunit 4022 "GP Vendor Migrator"
             exit;
 
         if GPVendor.Get(RecordIdToMigrate) then
-            if not Sender.DoesVendorExist(CopyStr(GPVendor.VENDORID, 1, 20)) then
+            if not Sender.DoesVendorExist(CopyStr(GPVendor.VENDORID, 1, MaxStrLen(Vendor."No."))) then
                 exit;
 
         GetVendorPayablesAccount(GPVendor, GPCompanyAdditionalSettings, PayablesAccountNo);
@@ -325,28 +331,22 @@ codeunit 4022 "GP Vendor Migrator"
         IsTemporaryVendor: Boolean;
         HasOpenPurchaseOrders: Boolean;
         HasOpenTransactions: Boolean;
-        TemporaryVendorMigratedLogTxt: Text[500];
     begin
         VendorNo := CopyStr(GPVendor.VENDORID, 1, MaxStrLen(Vendor."No."));
 
         if not ShouldMigrateVendor(VendorNo, IsTemporaryVendor, HasOpenPurchaseOrders, HasOpenTransactions) then
             exit;
 
-        if IsTemporaryVendor then begin
-            TemporaryVendorMigratedLogTxt := 'Temporary vendor was migrated because it ';
-
+        if IsTemporaryVendor then
             if HasOpenPurchaseOrders and HasOpenTransactions then
-                TemporaryVendorMigratedLogTxt += 'has open POs and open AP transactions.'
+                GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, VendorNo, StrSubstNo(TemporaryVendorMigratedTxt, TemporaryVendorHasOpenPOsAndAPTrxTxt))
             else begin
                 if HasOpenPurchaseOrders then
-                    TemporaryVendorMigratedLogTxt += 'has open POs.';
+                    GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, VendorNo, StrSubstNo(TemporaryVendorMigratedTxt, TemporaryVendorHasOpenPOsTxt));
 
                 if HasOpenTransactions then
-                    TemporaryVendorMigratedLogTxt += 'has open AP transactions.';
+                    GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, VendorNo, StrSubstNo(TemporaryVendorMigratedTxt, TemporaryVendorHasOpenAPTrxTxt));
             end;
-
-            GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, VendorNo, TemporaryVendorMigratedLogTxt);
-        end;
 
         VendorName := CopyStr(GPVendor.VENDNAME.TrimEnd(), 1, MaxStrLen(VendorName));
 
