@@ -1,6 +1,6 @@
 namespace Microsoft.DataMigration.GP.HistoricalData;
 
-page 041029 "Hist. Invt. Trx. SerialLot"
+page 41029 "Hist. Invt. Trx. SerialLot"
 {
     Caption = 'Historical Inventory Transaction Serial/Lot Detail';
     PageType = Card;
