@@ -14,6 +14,7 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
         LibrarySetupStorage: Codeunit "Library - Setup Storage";
         LibraryRandom: Codeunit "Library - Random";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        LibraryMasterDataMgt: Codeunit "Library - Master Data Mgt.";
         InitializeHandled: Boolean;
 
     [Test]
@@ -326,7 +327,6 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
     [Test]
     procedure NoDuplicatesAddedToSetupOnSelectingTableWithCyclicReference()
     var
-        MasterDataSynchTables: Page "Master Data Synch. Tables";
         SynchTables: List of [Integer];
         RelatedTablesToAdd: List of [Integer];
         TablesToAddText: Text;
@@ -336,7 +336,7 @@ codeunit 139770 "Master Data Mgt. Setup Tests"
 
         Initialize();
 
-        MasterDataSynchTables.FindRelatedTables(SynchTables, RelatedTablesToAdd, TablesToAddText, Database::"MDM Test Table A");
+        LibraryMasterDataMgt.FindRelatedTables(SynchTables, RelatedTablesToAdd, TablesToAddText, Database::"MDM Test Table A");
 
         Assert.AreEqual(1, RelatedTablesToAdd.Count, IncorrectTablesListErr);
         Assert.IsTrue(RelatedTablesToAdd.Contains(Database::"MDM Test Table B"), IncorrectTablesListErr);
