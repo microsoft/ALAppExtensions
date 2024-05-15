@@ -154,6 +154,7 @@ report 31077 "Suggest VIES Declaration CZL"
         TempVIESDeclarationLineCZL.SetRange("EU Service", VIESDeclarationLineCZL."EU Service");
         if TempVIESDeclarationLineCZL.FindFirst() then begin
             TempVIESDeclarationLineCZL."Amount (LCY)" += VIESDeclarationLineCZL."Amount (LCY)";
+            TempVIESDeclarationLineCZL."Additional-Currency Amount" += VIESDeclarationLineCZL."Additional-Currency Amount";
             UpdateNumberOfSupplies(TempVIESDeclarationLineCZL, TransactionNo);
             TempVIESDeclarationLineCZL.Modify();
         end else begin
@@ -181,6 +182,7 @@ report 31077 "Suggest VIES Declaration CZL"
                 LineNo += 10000;
                 VIESDeclarationLineCZL := TempVIESDeclarationLineCZL;
                 VIESDeclarationLineCZL."Amount (LCY)" := Round(TempVIESDeclarationLineCZL."Amount (LCY)", 1, '>');
+                VIESDeclarationLineCZL."Additional-Currency Amount" := Round(TempVIESDeclarationLineCZL."Additional-Currency Amount", 1, '>');
                 VIESDeclarationLineCZL."Line No." := LineNo;
                 VIESDeclarationLineCZL.Insert();
             until TempVIESDeclarationLineCZL.Next() = 0;
@@ -232,6 +234,7 @@ report 31077 "Suggest VIES Declaration CZL"
             VIESDeclarationLineCZL."VAT Registration No." := VATEntry."VAT Registration No.";
             VIESDeclarationLineCZL."Registration No." := VATEntry."Registration No. CZL";
             VIESDeclarationLineCZL."Amount (LCY)" := -VATEntry.Base;
+            VIESDeclarationLineCZL."Additional-Currency Amount" := -VATEntry."Additional-Currency Base";
             VIESDeclarationLineCZL."EU 3-Party Trade" := VATEntry."EU 3-Party Trade";
             VIESDeclarationLineCZL."EU 3-Party Intermediate Role" := VATEntry."EU 3-Party Intermed. Role CZL";
             if VIESDeclarationLineCZL."EU 3-Party Trade" and VIESDeclarationLineCZL."EU 3-Party Intermediate Role" then
@@ -266,13 +269,6 @@ report 31077 "Suggest VIES Declaration CZL"
             VIESDeclarationHeaderCZL."EU Goods/Services"::Services:
                 VATEntry.SetRange("EU Service", true);
         end;
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not VATEntry.IsReplaceVATDateEnabled() then
-            VATEntry.SetRange("VAT Date CZL", VIESDeclarationHeaderCZL."Start Date", VIESDeclarationHeaderCZL."End Date")
-        else
-#pragma warning restore AL0432
-#endif
         VATEntry.SetRange("VAT Reporting Date", VIESDeclarationHeaderCZL."Start Date", VIESDeclarationHeaderCZL."End Date");
         VATEntry.SetFilter(Base, '<>%1', 0);
     end;

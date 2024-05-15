@@ -18,11 +18,12 @@ pageextension 6137 "E-Doc. Purchase Order List" extends "Purchase Order List"
             {
                 action(MatchToOrderCopilotEnabled)
                 {
-                    Caption = 'Map E-Document Lines';
+                    Caption = 'Map E-Document Lines With Copilot';
                     ToolTip = 'Map received E-Document to the Purchase Order';
                     ApplicationArea = All;
                     Image = SparkleFilled;
-                    Visible = ShowMapToEDocument and CopilotEnabled;
+                    Visible = ShowMapToEDocument and CopilotVisible;
+                    Enabled = CopilotEnabled;
 
                     trigger OnAction()
                     var
@@ -30,7 +31,7 @@ pageextension 6137 "E-Doc. Purchase Order List" extends "Purchase Order List"
                         EDocOrderMatch: Codeunit "E-Doc. Line Matching";
                     begin
                         EDocument.GetBySystemId(Rec."E-Document Link");
-                        EDocOrderMatch.RunMatching(EDocument);
+                        EDocOrderMatch.RunMatching(EDocument, true);
                     end;
                 }
                 action(MatchToOrder)
@@ -39,7 +40,7 @@ pageextension 6137 "E-Doc. Purchase Order List" extends "Purchase Order List"
                     ToolTip = 'Map received E-Document to the Purchase Order';
                     ApplicationArea = All;
                     Image = Reconcile;
-                    Visible = ShowMapToEDocument and (not CopilotEnabled);
+                    Visible = ShowMapToEDocument;
 
                     trigger OnAction()
                     var
@@ -81,13 +82,14 @@ pageextension 6137 "E-Doc. Purchase Order List" extends "Purchase Order List"
 
 
     var
-        ShowMapToEDocument, CopilotEnabled : Boolean;
+        ShowMapToEDocument, CopilotEnabled, CopilotVisible : Boolean;
 
     trigger OnOpenPage()
     var
         EDocPOMatching: Codeunit "E-Doc. PO Copilot Matching";
     begin
         CopilotEnabled := EDocPOMatching.IsCopilotEnabled();
+        CopilotVisible := EDocPOMatching.IsCopilotVisible();
     end;
 
     trigger OnAfterGetCurrRecord()

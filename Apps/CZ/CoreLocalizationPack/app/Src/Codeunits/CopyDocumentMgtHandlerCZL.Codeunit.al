@@ -17,11 +17,6 @@ codeunit 11740 "Copy Document Mgt. Handler CZL"
     local procedure TariffNoOnAfterTransfldsFromSalesToPurchLine(var FromSalesLine: Record "Sales Line"; var ToPurchaseLine: Record "Purchase Line")
     begin
         ToPurchaseLine."Tariff No. CZL" := FromSalesLine."Tariff No. CZL";
-#if not CLEAN22
-#pragma warning disable AL0432
-        ToPurchaseLine."Country/Reg. of Orig. Code CZL" := FromSalesLine."Country/Reg. of Orig. Code CZL";
-#pragma warning restore AL0432
-#endif
         ToPurchaseLine."Net Weight" := FromSalesLine."Net Weight";
     end;
 
@@ -105,22 +100,4 @@ codeunit 11740 "Copy Document Mgt. Handler CZL"
             else
                 ToPurchaseHeader."Posting Date" := OldPurchaseHeader."Posting Date";
     end;
-#if not CLEAN22
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnAfterUpdatePurchLine', '', false, false)]
-    local procedure UpdatePurchLineOnAfterUpdatePurchLine(var ToPurchHeader: Record "Purchase Header"; var ToPurchLine: Record "Purchase Line")
-    begin
-#pragma warning disable AL0432
-        ToPurchLine."Physical Transfer CZL" := ToPurchHeader."Physical Transfer CZL";
-#pragma warning restore AL0432
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnAfterUpdateSalesLine', '', false, false)]
-    local procedure UpdateSalesLineOnAfterUpdateSalesLine(var ToSalesHeader: Record "Sales Header"; var ToSalesLine: Record "Sales Line")
-    begin
-#pragma warning disable AL0432
-        ToSalesLine."Physical Transfer CZL" := ToSalesHeader."Physical Transfer CZL";
-#pragma warning restore AL0432
-    end;
-#endif
 }

@@ -12,20 +12,8 @@ codeunit 11784 "Purchase Line Handler CZL"
 {
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnAfterAssignItemValues', '', false, false)]
     local procedure CopyFromItemOnAfterAssignItemValues(var PurchLine: Record "Purchase Line"; Item: Record Item)
-#if not CLEAN22
-    var
-        PurchaseHeader: Record "Purchase Header";
-#endif
     begin
         PurchLine."Tariff No. CZL" := Item."Tariff No.";
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchLine."Country/Reg. of Orig. Code CZL" := Item."Country/Region of Origin Code";
-        PurchLine."Statistic Indication CZL" := Item."Statistic Indication CZL";
-        if PurchaseHeader.Get(PurchLine."Document Type", PurchLine."Document No.") then
-            PurchLine."Physical Transfer CZL" := PurchaseHeader."Physical Transfer CZL";
-#pragma warning restore AL0432
-#endif
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Line", 'OnBeforeGetPurchHeader', '', false, false)]

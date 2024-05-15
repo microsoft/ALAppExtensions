@@ -9,13 +9,8 @@ table 30108 "Shpfy Province"
     Caption = 'Shopify Province';
     DataClassification = SystemMetadata;
     ObsoleteReason = 'Replaced by Shpfy Tax Area';
-#if not CLEAN22
-    ObsoleteState = Pending;
-    ObsoleteTag = '22.0';
-#else
     ObsoleteState = Removed;
     ObsoleteTag = '25.0';
-#endif
 
     fields
     {

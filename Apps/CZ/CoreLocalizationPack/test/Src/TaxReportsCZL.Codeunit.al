@@ -63,15 +63,8 @@ codeunit 148100 "Tax Reports CZL"
 
         // [GIVEN] The purchase invoice has been created.
         CreatePurchInvoice(PurchaseHeader, PurchaseLine);
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchaseHeader.Validate("VAT Date CZL", CalcDate('<+1M>', PurchaseHeader."Posting Date"));
-        PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Date CZL");
-#pragma warning restore AL0432
-#else
         PurchaseHeader.Validate("VAT Reporting Date", CalcDate('<+1M>', PurchaseHeader."Posting Date"));
         PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Reporting Date");
-#endif
         PurchaseHeader.Modify();
 
         // [GIVEN] The purchase invoice has been posted.
@@ -81,13 +74,7 @@ codeunit 148100 "Tax Reports CZL"
         if OutVATDate then
             StartDate := CalcDate('<-CM>', PurchaseHeader."Posting Date")
         else
-#if not CLEAN22
-#pragma warning disable AL0432
-            StartDate := CalcDate('<-CM>', PurchaseHeader."VAT Date CZL");
-#pragma warning restore AL0432
-#else
             StartDate := CalcDate('<-CM>', PurchaseHeader."VAT Reporting Date");
-#endif
         PrintDocumentationForVAT(StartDate, Enum::"VAT Statement Report Selection"::Open, true);
 
         // [THEN] If the start date of report was equal to posting date of purchase invoice then the purchase invoice won't be printed else the document will be printed.

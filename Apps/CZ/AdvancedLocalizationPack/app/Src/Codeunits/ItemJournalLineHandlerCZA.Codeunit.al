@@ -53,21 +53,21 @@ codeunit 31253 "Item Journal Line Handler CZA"
         ItemJnlLine."Currency Factor CZA" := PurchHeader."Currency Factor";
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromServHeader', '', false, false)]
-    local procedure AddFieldsOnAfterCopyItemJnlLineFromServHeader(var ItemJnlLine: Record "Item Journal Line"; ServHeader: Record "Service Header")
+    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterCopyToItemJnlLine', '', false, false)]
+    local procedure AddFieldsOnAfterCopyItemJnlLineFromServHeader(var ItemJournalLine: Record "Item Journal Line"; ServiceHeader: Record "Service Header")
     begin
-        ItemJnlLine."Source No." := ServHeader."Customer No.";
-        ItemJnlLine."Invoice-to Source No." := ServHeader."Bill-to Customer No.";
-        ItemJnlLine."Delivery-to Source No. CZA" := ServHeader."Ship-to Code";
-        ItemJnlLine."Currency Code CZA" := ServHeader."Currency Code";
-        ItemJnlLine."Currency Factor CZA" := ServHeader."Currency Factor";
+        ItemJournalLine."Source No." := ServiceHeader."Customer No.";
+        ItemJournalLine."Invoice-to Source No." := ServiceHeader."Bill-to Customer No.";
+        ItemJournalLine."Delivery-to Source No. CZA" := ServiceHeader."Ship-to Code";
+        ItemJournalLine."Currency Code CZA" := ServiceHeader."Currency Code";
+        ItemJournalLine."Currency Factor CZA" := ServiceHeader."Currency Factor";
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromServShptHeader', '', false, false)]
-    local procedure AddFieldsOnAfterCopyItemJnlLineFromServShptHeader(var ItemJnlLine: Record "Item Journal Line"; ServShptHeader: Record "Service Shipment Header")
+    [EventSubscriber(ObjectType::Table, Database::"Service Shipment Header", 'OnAfterCopyToItemJnlLine', '', false, false)]
+    local procedure AddFieldsOnAfterCopyItemJnlLineFromServShptHeader(var ItemJournalLine: Record "Item Journal Line"; ServiceShipmentHeader: Record "Service Shipment Header")
     begin
-        ItemJnlLine."Currency Code CZA" := ServShptHeader."Currency Code";
-        ItemJnlLine."Currency Factor CZA" := ServShptHeader."Currency Factor";
+        ItemJournalLine."Currency Code CZA" := ServiceShipmentHeader."Currency Code";
+        ItemJournalLine."Currency Factor CZA" := ServiceShipmentHeader."Currency Factor";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterValidateEvent', 'Applies-from Entry', false, false)]

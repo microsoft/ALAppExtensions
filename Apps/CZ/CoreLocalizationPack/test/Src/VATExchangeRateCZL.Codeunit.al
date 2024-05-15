@@ -96,13 +96,7 @@ codeunit 148066 "VAT Exchange Rate CZL"
         // [GIVEN] New Purchase Invoice has been created
         LibraryPurchase.CreatePurchaseInvoiceForVendorNo(PurchaseHeader, Vendor."No.");
         PurchaseHeader.Validate("Posting Date", WorkDate());
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Date CZL");
-#pragma warning restore AL0432
-#else
         PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Reporting Date");
-#endif
         PurchaseHeader.Validate("Currency Code", 'EUR');
         PurchaseHeader.Modify();
 
@@ -145,22 +139,10 @@ codeunit 148066 "VAT Exchange Rate CZL"
         PurchaseHeader.Modify();
 
         // [WHEN] VAT Date is validated
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchaseHeader.Validate("VAT Date CZL", CalcDate('<+1D>', WorkDate()));
-#pragma warning restore AL0432
-#else
         PurchaseHeader.Validate("VAT Reporting Date", CalcDate('<+1D>', WorkDate()));
-#endif
 
         // [THEN] VAT Date will not be Posting Date
-#if not CLEAN22
-#pragma warning disable AL0432
-        Assert.AreNotEqual(PurchaseHeader."Posting Date", PurchaseHeader."VAT Date CZL", PurchaseHeader.FieldCaption("VAT Date CZL"));
-#pragma warning restore AL0432
-#else
         Assert.AreNotEqual(PurchaseHeader."Posting Date", PurchaseHeader."VAT Reporting Date", PurchaseHeader.FieldCaption("VAT Reporting Date"));
-#endif
 
         // [THEN] VAT Currency Factor will not be Currency Factor
         Assert.AreNotEqual(PurchaseHeader."Currency Factor", PurchaseHeader."VAT Currency Factor CZL", PurchaseHeader.FieldCaption("VAT Currency Factor CZL"));
@@ -186,22 +168,10 @@ codeunit 148066 "VAT Exchange Rate CZL"
         PurchaseHeader.Modify();
 
         // [WHEN] VAT Date is validated
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchaseHeader.Validate("VAT Date CZL", CalcDate('<+1D>', WorkDate()));
-#pragma warning restore AL0432
-#else
         PurchaseHeader.Validate("VAT Reporting Date", CalcDate('<+1D>', WorkDate()));
-#endif
 
         // [THEN] VAT Date will not be Posting Date
-#if not CLEAN22
-#pragma warning disable AL0432
-        Assert.AreNotEqual(PurchaseHeader."Posting Date", PurchaseHeader."VAT Date CZL", PurchaseHeader.FieldCaption("VAT Date CZL"));
-#pragma warning restore AL0432
-#else
         Assert.AreNotEqual(PurchaseHeader."Posting Date", PurchaseHeader."VAT Reporting Date", PurchaseHeader.FieldCaption("VAT Reporting Date"));
-#endif
 
         // [THEN] VAT Currency Factor will be Currency Factor
         Assert.AreEqual(PurchaseHeader."Currency Factor", PurchaseHeader."VAT Currency Factor CZL", PurchaseHeader.FieldCaption("VAT Currency Factor CZL"));
@@ -225,13 +195,7 @@ codeunit 148066 "VAT Exchange Rate CZL"
         // [GIVEN] New Purchase Invoice has been created
         LibraryPurchase.CreatePurchaseInvoiceForVendorNo(PurchaseHeader, Vendor."No.");
         PurchaseHeader.Validate("Posting Date", WorkDate());
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Date CZL");
-#pragma warning restore AL0432
-#else
         PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Reporting Date");
-#endif
         PurchaseHeader.Validate("Currency Code", 'EUR');
         PurchaseHeader.Modify();
 
@@ -241,13 +205,7 @@ codeunit 148066 "VAT Exchange Rate CZL"
         PurchaseLine.Modify(true);
 
         // [GIVEN] VAT Date has been validated
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchaseHeader.Validate("VAT Date CZL", CalcDate('<+1D>', WorkDate()));
-#pragma warning restore AL0432
-#else
         PurchaseHeader.Validate("VAT Reporting Date", CalcDate('<+1D>', WorkDate()));
-#endif
 
         // [GIVEN] Purchase Invoice has been posted
         PurchPost.Run(PurchaseHeader);
@@ -257,13 +215,7 @@ codeunit 148066 "VAT Exchange Rate CZL"
         PurchInvHeader.FindLast();
 
         // [THEN] VAT Date will not be Posting Date
-#if not CLEAN22
-#pragma warning disable AL0432
-        Assert.AreNotEqual(PurchInvHeader."Posting Date", PurchInvHeader."VAT Date CZL", PurchInvHeader.FieldCaption("VAT Date CZL"));
-#pragma warning restore AL0432
-#else
         Assert.AreNotEqual(PurchInvHeader."Posting Date", PurchInvHeader."VAT Reporting Date", PurchInvHeader.FieldCaption("VAT Reporting Date"));
-#endif
 
         // [THEN] VAT Currency Factor will not be Currency Factor
         Assert.AreNotEqual(PurchInvHeader."Currency Factor", PurchInvHeader."VAT Currency Factor CZL", PurchInvHeader.FieldCaption("VAT Currency Factor CZL"));
@@ -288,13 +240,7 @@ codeunit 148066 "VAT Exchange Rate CZL"
         // [GIVEN] New Sales Invoice has been created
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Invoice, Customer."No.");
         SalesHeader.Validate("Posting Date", WorkDate());
-#if not CLEAN22
-#pragma warning disable AL0432
-        SalesHeader.Validate("Original Doc. VAT Date CZL", SalesHeader."VAT Date CZL");
-#pragma warning restore AL0432
-#else
         SalesHeader.Validate("Original Doc. VAT Date CZL", SalesHeader."VAT Reporting Date");
-#endif
         SalesHeader.Validate("Currency Code", 'EUR');
         SalesHeader.Modify();
 
@@ -309,22 +255,10 @@ codeunit 148066 "VAT Exchange Rate CZL"
         SalesLine.Modify(true);
 
         // [WHEN] VAT Date has been validated
-#if not CLEAN22
-#pragma warning disable AL0432
-        SalesHeader.Validate("VAT Date CZL", CalcDate('<+1D>', WorkDate()));
-#pragma warning restore AL0432
-#else
         SalesHeader.Validate("VAT Reporting Date", CalcDate('<+1D>', WorkDate()));
-#endif
 
         // [THEN] VAT Date will not be Posting Date
-#if not CLEAN22
-#pragma warning disable AL0432
-        Assert.AreNotEqual(SalesHeader."Posting Date", SalesHeader."VAT Date CZL", SalesHeader.FieldCaption("VAT Date CZL"));
-#pragma warning restore AL0432
-#else
         Assert.AreNotEqual(SalesHeader."Posting Date", SalesHeader."VAT Reporting Date", SalesHeader.FieldCaption("VAT Reporting Date"));
-#endif
 
         // [THEN] VAT Currency Factor will not be Currency Factor
         Assert.AreNotEqual(SalesHeader."Currency Factor", SalesHeader."VAT Currency Factor CZL", SalesHeader.FieldCaption("VAT Currency Factor CZL"));
@@ -351,13 +285,7 @@ codeunit 148066 "VAT Exchange Rate CZL"
         // [GIVEN] New Sales Invoice has been created
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Invoice, Customer."No.");
         SalesHeader.Validate("Posting Date", WorkDate());
-#if not CLEAN22
-#pragma warning disable AL0432
-        SalesHeader.Validate("Original Doc. VAT Date CZL", SalesHeader."VAT Date CZL");
-#pragma warning restore AL0432
-#else
         SalesHeader.Validate("Original Doc. VAT Date CZL", SalesHeader."VAT Reporting Date");
-#endif
         SalesHeader.Validate("Currency Code", 'EUR');
         SalesHeader.Modify();
 
@@ -375,13 +303,7 @@ codeunit 148066 "VAT Exchange Rate CZL"
         SalesLine.Modify(true);
 
         // [GIVEN] VAT Date has been validated
-#if not CLEAN22
-#pragma warning disable AL0432
-        SalesHeader.Validate("VAT Date CZL", CalcDate('<+1D>', WorkDate()));
-#pragma warning restore AL0432
-#else
         SalesHeader.Validate("VAT Reporting Date", CalcDate('<+1D>', WorkDate()));
-#endif
 
         // [WHEN] Post Sales Invoice
         PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
@@ -412,13 +334,7 @@ codeunit 148066 "VAT Exchange Rate CZL"
         // [GIVEN] New Sales Invoice has been created
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Invoice, Customer."No.");
         SalesHeader.Validate("Posting Date", WorkDate());
-#if not CLEAN22
-#pragma warning disable AL0432
-        SalesHeader.Validate("Original Doc. VAT Date CZL", SalesHeader."VAT Date CZL");
-#pragma warning restore AL0432
-#else
         SalesHeader.Validate("Original Doc. VAT Date CZL", SalesHeader."VAT Reporting Date");
-#endif
         SalesHeader.Validate("Currency Code", 'EUR');
         SalesHeader.Modify();
 
@@ -436,13 +352,7 @@ codeunit 148066 "VAT Exchange Rate CZL"
         SalesLine.Modify(true);
 
         // [GIVEN] VAT Date has been validated
-#if not CLEAN22
-#pragma warning disable AL0432
-        SalesHeader.Validate("VAT Date CZL", CalcDate('<+1D>', WorkDate()));
-#pragma warning restore AL0432
-#else
         SalesHeader.Validate("VAT Reporting Date", CalcDate('<+1D>', WorkDate()));
-#endif
 
         // [WHEN] Post Sales Invoice
         SalesPost.Run(SalesHeader);

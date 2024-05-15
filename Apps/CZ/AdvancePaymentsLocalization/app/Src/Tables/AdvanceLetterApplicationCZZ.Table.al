@@ -91,6 +91,11 @@ table 31007 "Advance Letter Application CZZ"
             Caption = 'Amount to Use';
             DataClassification = CustomerContent;
         }
+        field(12; "Amount to Use (LCY)"; Decimal)
+        {
+            Caption = 'Amount to Use (LCY)';
+            DataClassification = CustomerContent;
+        }
         field(20; "Currency Code"; Code[10])
         {
             Caption = 'Currency Code';
@@ -263,30 +268,128 @@ table 31007 "Advance Letter Application CZZ"
         NewAdvanceLetterApplicationCZZ.Reset();
         NewAdvanceLetterApplicationCZZ.DeleteAll();
 
-        AdvanceLetterApplicationCZZ.SetRange("Document Type", NewFromAdvLetterUsageDocTypeCZZ);
-        AdvanceLetterApplicationCZZ.SetRange("Document No.", NewFromDocumentNo);
-        if AdvanceLetterApplicationCZZ.FindSet() then
-            repeat
-                NewAdvanceLetterApplicationCZZ := AdvanceLetterApplicationCZZ;
-                case AdvanceLetterApplicationCZZ."Advance Letter Type" of
-                    AdvanceLetterApplicationCZZ."Advance Letter Type"::Sales:
-                        begin
-                            SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", AdvanceLetterApplicationCZZ."Advance Letter No.");
-                            SalesAdvLetterEntryCZZ.SetFilter("Entry Type", '%1|%2|%3', SalesAdvLetterEntryCZZ."Entry Type"::Payment, SalesAdvLetterEntryCZZ."Entry Type"::Usage, SalesAdvLetterEntryCZZ."Entry Type"::Close);
-                            SalesAdvLetterEntryCZZ.CalcSums(Amount);
-                            NewAdvanceLetterApplicationCZZ."Amount to Use" := -SalesAdvLetterEntryCZZ.Amount;
-                        end;
-                    AdvanceLetterApplicationCZZ."Advance Letter Type"::Purchase:
-                        begin
-                            PurchAdvLetterEntryCZZ.SetRange("Purch. Adv. Letter No.", AdvanceLetterApplicationCZZ."Advance Letter No.");
-                            PurchAdvLetterEntryCZZ.SetFilter("Entry Type", '%1|%2|%3', PurchAdvLetterEntryCZZ."Entry Type"::Payment, PurchAdvLetterEntryCZZ."Entry Type"::Usage, PurchAdvLetterEntryCZZ."Entry Type"::Close);
-                            PurchAdvLetterEntryCZZ.CalcSums(Amount);
-                            NewAdvanceLetterApplicationCZZ."Amount to Use" := PurchAdvLetterEntryCZZ.Amount;
-                        end;
+        case NewFromAdvLetterUsageDocTypeCZZ of
+            NewFromAdvLetterUsageDocTypeCZZ::"Purchase Invoice",
+            NewFromAdvLetterUsageDocTypeCZZ::"Purchase Order",
+            NewFromAdvLetterUsageDocTypeCZZ::"Sales Invoice",
+            NewFromAdvLetterUsageDocTypeCZZ::"Sales Order":
+                begin
+                    AdvanceLetterApplicationCZZ.SetRange("Document Type", NewFromAdvLetterUsageDocTypeCZZ);
+                    AdvanceLetterApplicationCZZ.SetRange("Document No.", NewFromDocumentNo);
+                    if AdvanceLetterApplicationCZZ.FindSet() then
+                        repeat
+                            NewAdvanceLetterApplicationCZZ := AdvanceLetterApplicationCZZ;
+                            case AdvanceLetterApplicationCZZ."Advance Letter Type" of
+                                AdvanceLetterApplicationCZZ."Advance Letter Type"::Sales:
+                                    begin
+                                        SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", AdvanceLetterApplicationCZZ."Advance Letter No.");
+                                        SalesAdvLetterEntryCZZ.SetFilter("Entry Type", '%1|%2|%3', SalesAdvLetterEntryCZZ."Entry Type"::Payment, SalesAdvLetterEntryCZZ."Entry Type"::Usage, SalesAdvLetterEntryCZZ."Entry Type"::Close);
+                                        SalesAdvLetterEntryCZZ.CalcSums(Amount, "Amount (LCY)");
+                                        NewAdvanceLetterApplicationCZZ."Amount to Use" := -SalesAdvLetterEntryCZZ.Amount;
+                                        NewAdvanceLetterApplicationCZZ."Amount to Use (LCY)" := -SalesAdvLetterEntryCZZ."Amount (LCY)";
+                                    end;
+                                AdvanceLetterApplicationCZZ."Advance Letter Type"::Purchase:
+                                    begin
+                                        PurchAdvLetterEntryCZZ.SetRange("Purch. Adv. Letter No.", AdvanceLetterApplicationCZZ."Advance Letter No.");
+                                        PurchAdvLetterEntryCZZ.SetFilter("Entry Type", '%1|%2|%3', PurchAdvLetterEntryCZZ."Entry Type"::Payment, PurchAdvLetterEntryCZZ."Entry Type"::Usage, PurchAdvLetterEntryCZZ."Entry Type"::Close);
+                                        PurchAdvLetterEntryCZZ.CalcSums(Amount, "Amount (LCY)");
+                                        NewAdvanceLetterApplicationCZZ."Amount to Use" := PurchAdvLetterEntryCZZ.Amount;
+                                        NewAdvanceLetterApplicationCZZ."Amount to Use (LCY)" := PurchAdvLetterEntryCZZ."Amount (LCY)";
+                                    end;
+                            end;
+                            OnGetAssignedAdvanceOnBeforeInsertNewAdvanceLetterApplication(NewAdvanceLetterApplicationCZZ, AdvanceLetterApplicationCZZ);
+                            NewAdvanceLetterApplicationCZZ.Insert();
+                        until AdvanceLetterApplicationCZZ.Next() = 0;
                 end;
-                OnGetAssignedAdvanceOnBeforeInsertNewAdvanceLetterApplication(NewAdvanceLetterApplicationCZZ, AdvanceLetterApplicationCZZ);
-                NewAdvanceLetterApplicationCZZ.Insert();
-            until AdvanceLetterApplicationCZZ.Next() = 0;
+            NewFromAdvLetterUsageDocTypeCZZ::"Posted Purchase Invoice":
+                GetAssignedAdvanceToPostedPurchaseInvoice(NewFromDocumentNo, NewAdvanceLetterApplicationCZZ);
+            NewFromAdvLetterUsageDocTypeCZZ::"Posted Sales Invoice":
+                GetAssignedAdvanceToPostedSalesInvoice(NewFromDocumentNo, NewAdvanceLetterApplicationCZZ);
+        end;
+    end;
+
+    local procedure GetAssignedAdvanceToPostedPurchaseInvoice(DocumentNo: Code[20]; var AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")
+    var
+        PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
+        PurchAdvLetterEntryCZZ2: Record "Purch. Adv. Letter Entry CZZ";
+    begin
+        PurchAdvLetterEntryCZZ.SetRange("Document No.", DocumentNo);
+        PurchAdvLetterEntryCZZ.SetRange(Cancelled, false);
+        PurchAdvLetterEntryCZZ.SetRange("Entry Type", PurchAdvLetterEntryCZZ."Entry Type"::Usage);
+        if PurchAdvLetterEntryCZZ.FindSet() then
+            repeat
+                if not AdvanceLetterApplicationCZZ.Get(
+                    "Advance Letter Type CZZ"::Purchase, PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.",
+                    "Adv. Letter Usage Doc.Type CZZ"::"Posted Purchase Invoice", DocumentNo)
+                then begin
+                    PurchAdvLetterEntryCZZ2.SetRange("Purch. Adv. Letter No.", PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.");
+                    PurchAdvLetterEntryCZZ2.SetFilter("Entry Type", '%1|%2|%3',
+                        PurchAdvLetterEntryCZZ."Entry Type"::Payment,
+                        PurchAdvLetterEntryCZZ."Entry Type"::Usage,
+                        PurchAdvLetterEntryCZZ."Entry Type"::Close);
+                    PurchAdvLetterEntryCZZ2.CalcSums(Amount);
+
+                    AdvanceLetterApplicationCZZ.Init();
+                    AdvanceLetterApplicationCZZ."Advance Letter Type" := AdvanceLetterApplicationCZZ."Advance Letter Type"::Purchase;
+                    AdvanceLetterApplicationCZZ."Advance Letter No." := PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.";
+                    AdvanceLetterApplicationCZZ."Document Type" := "Adv. Letter Usage Doc.Type CZZ"::"Posted Purchase Invoice";
+                    AdvanceLetterApplicationCZZ."Document No." := DocumentNo;
+                    AdvanceLetterApplicationCZZ."Posting Date" := PurchAdvLetterEntryCZZ."Posting Date";
+                    AdvanceLetterApplicationCZZ."Currency Code" := PurchAdvLetterEntryCZZ."Currency Code";
+                    AdvanceLetterApplicationCZZ."Currency Factor" := PurchAdvLetterEntryCZZ."Currency Factor";
+                    AdvanceLetterApplicationCZZ."Amount to Use" := PurchAdvLetterEntryCZZ2.Amount;
+                    AdvanceLetterApplicationCZZ."Amount to Use (LCY)" := PurchAdvLetterEntryCZZ2."Amount (LCY)";
+                    AdvanceLetterApplicationCZZ.Amount := -PurchAdvLetterEntryCZZ.Amount;
+                    AdvanceLetterApplicationCZZ."Amount (LCY)" := -PurchAdvLetterEntryCZZ."Amount (LCY)";
+                    AdvanceLetterApplicationCZZ.Insert();
+                end else begin
+                    AdvanceLetterApplicationCZZ.Amount -= PurchAdvLetterEntryCZZ.Amount;
+                    AdvanceLetterApplicationCZZ."Amount (LCY)" -= PurchAdvLetterEntryCZZ."Amount (LCY)";
+                    AdvanceLetterApplicationCZZ.Modify();
+                end;
+            until PurchAdvLetterEntryCZZ.Next() = 0;
+    end;
+
+    local procedure GetAssignedAdvanceToPostedSalesInvoice(DocumentNo: Code[20]; var AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")
+    var
+        SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ";
+        SalesAdvLetterEntryCZZ2: Record "Sales Adv. Letter Entry CZZ";
+    begin
+        SalesAdvLetterEntryCZZ.SetRange("Document No.", DocumentNo);
+        SalesAdvLetterEntryCZZ.SetRange(Cancelled, false);
+        SalesAdvLetterEntryCZZ.SetRange("Entry Type", SalesAdvLetterEntryCZZ."Entry Type"::Usage);
+        if SalesAdvLetterEntryCZZ.FindSet() then
+            repeat
+                if not AdvanceLetterApplicationCZZ.Get(
+                    "Advance Letter Type CZZ"::Sales, SalesAdvLetterEntryCZZ."Sales Adv. Letter No.",
+                    "Adv. Letter Usage Doc.Type CZZ"::"Posted Sales Invoice", DocumentNo)
+                then begin
+                    SalesAdvLetterEntryCZZ2.SetRange("Sales Adv. Letter No.", SalesAdvLetterEntryCZZ."Sales Adv. Letter No.");
+                    SalesAdvLetterEntryCZZ2.SetFilter("Entry Type", '%1|%2|%3',
+                        SalesAdvLetterEntryCZZ."Entry Type"::Payment,
+                        SalesAdvLetterEntryCZZ."Entry Type"::Usage,
+                        SalesAdvLetterEntryCZZ."Entry Type"::Close);
+                    SalesAdvLetterEntryCZZ2.CalcSums(Amount, "Amount (LCY)");
+
+                    AdvanceLetterApplicationCZZ.Init();
+                    AdvanceLetterApplicationCZZ."Advance Letter Type" := AdvanceLetterApplicationCZZ."Advance Letter Type"::Sales;
+                    AdvanceLetterApplicationCZZ."Advance Letter No." := SalesAdvLetterEntryCZZ."Sales Adv. Letter No.";
+                    AdvanceLetterApplicationCZZ."Document Type" := "Adv. Letter Usage Doc.Type CZZ"::"Posted Sales Invoice";
+                    AdvanceLetterApplicationCZZ."Document No." := DocumentNo;
+                    AdvanceLetterApplicationCZZ."Posting Date" := SalesAdvLetterEntryCZZ."Posting Date";
+                    AdvanceLetterApplicationCZZ."Currency Code" := SalesAdvLetterEntryCZZ."Currency Code";
+                    AdvanceLetterApplicationCZZ."Currency Factor" := SalesAdvLetterEntryCZZ."Currency Factor";
+                    AdvanceLetterApplicationCZZ."Amount to Use" := -SalesAdvLetterEntryCZZ2.Amount;
+                    AdvanceLetterApplicationCZZ."Amount to Use (LCY)" := -SalesAdvLetterEntryCZZ2."Amount (LCY)";
+                    AdvanceLetterApplicationCZZ.Amount := SalesAdvLetterEntryCZZ.Amount;
+                    AdvanceLetterApplicationCZZ."Amount (LCY)" := SalesAdvLetterEntryCZZ."Amount (LCY)";
+                    AdvanceLetterApplicationCZZ.Insert();
+                end else begin
+                    AdvanceLetterApplicationCZZ.Amount += SalesAdvLetterEntryCZZ.Amount;
+                    AdvanceLetterApplicationCZZ."Amount (LCY)" += SalesAdvLetterEntryCZZ."Amount (LCY)";
+                    AdvanceLetterApplicationCZZ.Modify();
+                end;
+            until SalesAdvLetterEntryCZZ.Next() = 0;
     end;
 
     internal procedure CopyFrom(AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")
@@ -301,6 +404,7 @@ table 31007 "Advance Letter Application CZZ"
         Amount := AdvanceLetterApplicationCZZ.Amount;
         "Amount (LCY)" := AdvanceLetterApplicationCZZ."Amount (LCY)";
         "Amount to Use" := AdvanceLetterApplicationCZZ."Amount to Use";
+        "Amount to Use (LCY)" := AdvanceLetterApplicationCZZ."Amount to Use (LCY)";
     end;
 
     internal procedure Add(AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")

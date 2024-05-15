@@ -20,16 +20,8 @@ codeunit 4022 "GP Vendor Migrator"
         PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
         VendorEmailTypeCodeLbl: Label 'VEN', Locked = true;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made internal.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendor', '', true, true)]
-    procedure OnMigrateVendor(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendor', '', true, true)]
     internal procedure OnMigrateVendor(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
-#endif
     var
         GPVendor: Record "GP Vendor";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
@@ -43,16 +35,8 @@ codeunit 4022 "GP Vendor Migrator"
         MigrateVendorAddresses(GPVendor);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made internal.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorPostingGroups', '', true, true)]
-    procedure OnMigrateVendorPostingGroups(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorPostingGroups', '', true, true)]
     internal procedure OnMigrateVendorPostingGroups(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#endif
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         HelperFunctions: Codeunit "Helper Functions";
@@ -81,16 +65,8 @@ codeunit 4022 "GP Vendor Migrator"
         Sender.ModifyVendor(true);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made internal.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorTransactions', '', true, true)]
-    procedure OnMigrateVendorTransactions(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorTransactions', '', true, true)]
     internal procedure OnMigrateVendorTransactions(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#endif
     begin
         MigrateVendorTransactions(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
     end;

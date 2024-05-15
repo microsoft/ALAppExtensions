@@ -53,7 +53,10 @@ table 30100 "Shpfy Cue"
                                                                 Report::"Shpfy Sync Stock to Shopify" |
                                                                 Report::"Shpfy Sync Images" |
                                                                 Report::"Shpfy Sync Customers" |
-                                                                Report::"Shpfy Sync Payments")));
+                                                                Report::"Shpfy Sync Payments" |
+                                                                Report::"Shpfy Sync Companies" |
+                                                                Report::"Shpfy Sync Catalogs" |
+                                                                Report::"Shpfy Sync Catalog Prices")));
             Caption = 'Synchronization Errors';
             FieldClass = FlowField;
         }
@@ -67,6 +70,12 @@ table 30100 "Shpfy Cue"
         {
             CalcFormula = count("Shpfy Order Header" where("Has Order State Error" = const(true)));
             Caption = 'Unprocessed Order Updates';
+            FieldClass = FlowField;
+        }
+        field(9; "Unmapped Companies"; Integer)
+        {
+            CalcFormula = count("Shpfy Company" where("Customer No." = const('')));
+            Caption = 'Unmapped Companies';
             FieldClass = FlowField;
         }
     }

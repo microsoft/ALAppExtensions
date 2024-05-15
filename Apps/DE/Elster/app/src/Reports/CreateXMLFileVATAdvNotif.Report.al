@@ -45,6 +45,7 @@ report 11016 "Create XML-File VAT Adv.Notif."
                 if GuiAllowed() then
                     Window.Update(1, CalcTaxAmountMsg);
                 VATStmtName.SetRange("Sales VAT Adv. Notif.", true);
+                OnAfterGetRecordOnAfterVATStmtNameSetFilters("Sales VAT Advance Notif.", VATStmtName);
                 VATStmtName.FindFirst();
                 CheckDate("Starting Date");
                 CheckVATNo(PosTaxOffice, NumberTaxOffice, PosArea, NumberArea, PosDistinction, NumberDistinction);
@@ -528,6 +529,12 @@ report 11016 "Create XML-File VAT Adv.Notif."
             end;
         end;
     end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterGetRecordOnAfterVATStmtNameSetFilters(var SalesVATAdvanceNotif: Record "Sales VAT Advance Notif."; var VATStatementName: Record "VAT Statement Name")
+    begin
+    end;
+
 #if not CLEAN23
     [Obsolete('Removing with local function.', '23.0')]
     [IntegrationEvent(false, false)]

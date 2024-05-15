@@ -18,33 +18,16 @@ codeunit 139565 "Shpfy Create Customer Test"
     [HandlerFunctions('OnCreateCustomerHandler')]
     procedure UniTestCreateCustomerFromShopifyInfo()
     var
-#if not CLEAN22
-        ConfigTemplateHeader: Record "Config. Template Header";
-#endif
         Customer: Record Customer;
         CustomerTempl: Record "Customer Templ.";
         ShpfyCustomerAddress: Record "Shpfy Customer Address";
         ShpfyCreateCustomer: Codeunit "Shpfy Create Customer";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
     begin
         // Creating Test data. The database must have a Config Template for creating a customer.
         Init();
         ShpfyCreateCustomer.SetShop(CommunicationMgt.GetShopRecord());
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then begin
-            ConfigTemplateHeader.SetRange("Table ID", Database::Customer);
-            if not ConfigTemplateHeader.FindFirst() then
-                exit;
-        end
-        else
-            if not CustomerTempl.FindFirst() then
-                exit;
-#else
         if not CustomerTempl.FindFirst() then
             exit;
-#endif
 
         // [SCENARIO] Create a customer from an new Shopify Customer Address.
         ShpfyCustomerAddress := CustomerInitTest.CreateShopifyCustomerAddress();
@@ -53,14 +36,7 @@ codeunit 139565 "Shpfy Create Customer Test"
         // [GIVEN] The shop
         ShpfyCreateCustomer.SetShop(CommunicationMgt.GetShopRecord());
         // [GIVEN] The customer template code
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ShpfyCreateCustomer.SetTemplateCode(ConfigTemplateHeader.Code)
-        else
-            ShpfyCreateCustomer.SetTemplateCode(CustomerTempl.Code);
-#else
         ShpfyCreateCustomer.SetTemplateCode(CustomerTempl.Code);
-#endif
         // [GIVEN] The Shopify Customer Address record.
         BindSubscription(CreateCustomerTest);
         ShpfyCreateCustomer.Run(ShpfyCustomerAddress);

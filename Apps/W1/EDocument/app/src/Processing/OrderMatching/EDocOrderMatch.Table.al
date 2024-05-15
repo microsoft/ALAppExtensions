@@ -98,6 +98,7 @@ table 6164 "E-Doc. Order Match"
         TempEDocMatches.Validate("E-Document Line No.", TempAIProposalBuffer."E-Document Line No.");
         TempEDocMatches.Validate(Quantity, TempAIProposalBuffer."Matched Quantity");
         TempEDocMatches.Validate("E-Document Direct Unit Cost", TempAIProposalBuffer."E-Document Direct Unit Cost");
+        TempEDocMatches.Validate("Line Discount %", TempAIProposalBuffer."E-Document Line Discount");
         TempEDocMatches.Validate("PO Direct Unit Cost", TempAIProposalBuffer."PO Direct Unit Cost");
         TempEDocMatches."E-Document Description" := TempAIProposalBuffer."E-Document Description";
         TempEDocMatches."PO Description" := TempAIProposalBuffer."PO Description";

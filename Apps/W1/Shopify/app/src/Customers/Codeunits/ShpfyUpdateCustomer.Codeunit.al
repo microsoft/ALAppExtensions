@@ -3,10 +3,6 @@ namespace Microsoft.Integration.Shopify;
 using Microsoft.Sales.Customer;
 using Microsoft.CRM.BusinessRelation;
 using Microsoft.Foundation.Address;
-#if not CLEAN22
-using System.IO;
-using Microsoft.Finance.Dimension;
-#endif
 
 /// <summary>
 /// Codeunit Shpfy Update Customer (ID 30124).
@@ -15,11 +11,6 @@ codeunit 30124 "Shpfy Update Customer"
 {
     Access = Internal;
     Permissions =
-#if not CLEAN22
-        tabledata "Config. Template Header" = r,
-        tabledata "Config. Template Line" = r,
-        tabledata "Dimensions Template" = r,
-#endif
         tabledata "Country/Region" = r,
         tabledata Customer = rim;
 

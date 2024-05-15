@@ -359,13 +359,6 @@ report 31287 "Create General Journal CZB"
     local procedure OnAfterAssignGenJournalLine(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; IssBankStatementLineCZB: Record "Iss. Bank Statement Line CZB"; BankAccount: Record "Bank Account"; var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
-#if not CLEAN22
-    [Obsolete('The event is replaced by the OnAfterMatchingBankPayment event.', '22.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterApplyGenJournalLine(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; IssBankStatementLineCZB: Record "Iss. Bank Statement Line CZB"; var GenJournalLine: Record "Gen. Journal Line")
-    begin
-    end;
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterMatchingBankPayment(IssBankStatementHeaderCZB: Record "Iss. Bank Statement Header CZB"; var GenJournalLine: Record "Gen. Journal Line")

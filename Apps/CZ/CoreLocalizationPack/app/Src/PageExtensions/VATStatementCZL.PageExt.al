@@ -114,8 +114,6 @@ pageextension 11701 "VAT Statement CZL" extends "VAT Statement"
                 ApplicationArea = VAT;
                 Caption = 'P&review';
                 Image = View;
-                Promoted = true;
-                PromotedCategory = Process;
                 RunObject = page "VAT Statement Preview CZL";
                 RunPageLink = "Statement Template Name" = field("Statement Template Name"), Name = field("Statement Name");
                 ToolTip = 'Preview the VAT statement report.';
@@ -129,9 +127,6 @@ pageextension 11701 "VAT Statement CZL" extends "VAT Statement"
                 Caption = 'Export';
                 Ellipsis = true;
                 Image = Export;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
                 ToolTip = 'Export VAT statement data to XML format. The structure of the output XML file is determined by the VAT statement template field XML format.';
 
                 trigger OnAction()
@@ -171,6 +166,18 @@ pageextension 11701 "VAT Statement CZL" extends "VAT Statement"
                 Image = PrintForm;
                 RunObject = report "G/L VAT Reconciliation CZL";
                 ToolTip = 'Print reconciliation G/L entries and VAT entries.';
+            }
+        }
+        addfirst(Category_Process)
+        {
+            actionref(ExportCZL_Promoted; ExportCZL)
+            {
+            }
+        }
+        addlast(Category_Process)
+        {
+            actionref("P&review CZL_Promoted"; "P&review CZL")
+            {
             }
         }
     }

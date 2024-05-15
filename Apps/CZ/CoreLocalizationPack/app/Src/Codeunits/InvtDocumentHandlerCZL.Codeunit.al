@@ -5,6 +5,7 @@
 namespace Microsoft.Inventory.Document;
 
 using Microsoft.Inventory.History;
+using Microsoft.Inventory.Journal;
 
 codeunit 31369 "Invt. Document Handler CZL"
 {
@@ -25,9 +26,21 @@ codeunit 31369 "Invt. Document Handler CZL"
         InvtRcptHeader."Invt. Movement Template CZL" := InvtDocHeader."Invt. Movement Template CZL";
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Invt. Doc.-Post Receipt", 'OnPostItemJnlLineOnBeforeItemJnlPostLineRunWithCheck', '', false, false)]
+    local procedure CopyInvtMovementTemplateToItemJnlLineOnPostItemJnlLineOnBeforeItemJnlPostLineRunWithCheckReceipt(var ItemJnlLine: Record "Item Journal Line"; InvtRcptHeader2: Record "Invt. Receipt Header")
+    begin
+        ItemJnlLine."Invt. Movement Template CZL" := InvtRcptHeader2."Invt. Movement Template CZL";
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Invt. Doc.-Post Shipment", 'OnRunOnBeforeInvtShptHeaderInsert', '', false, false)]
     local procedure CopyInvtDocumentToInvtShipmentOnRunOnBeforeInvtShptHeaderInsert(var InvtShptHeader: Record "Invt. Shipment Header"; InvtDocHeader: Record "Invt. Document Header")
     begin
         InvtShptHeader."Invt. Movement Template CZL" := InvtDocHeader."Invt. Movement Template CZL";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Invt. Doc.-Post Shipment", 'OnPostItemJnlLineOnBeforeItemJnlPostLineRunWithCheck', '', false, false)]
+    local procedure CopyInvtMovementTemplateToItemJnlLineOnPostItemJnlLineOnBeforeItemJnlPostLineRunWithCheckShipment(var ItemJnlLine: Record "Item Journal Line"; InvtShptHeader2: Record "Invt. Shipment Header")
+    begin
+        ItemJnlLine."Invt. Movement Template CZL" := InvtShptHeader2."Invt. Movement Template CZL";
     end;
 }

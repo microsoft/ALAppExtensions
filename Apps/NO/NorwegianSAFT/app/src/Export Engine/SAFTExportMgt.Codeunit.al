@@ -17,6 +17,7 @@ using System;
 using System.Environment;
 using System.IO;
 using System.Reflection;
+using System.Telemetry;
 using System.Utilities;
 
 codeunit 10675 "SAF-T Export Mgt."
@@ -152,8 +153,12 @@ codeunit 10675 "SAF-T Export Mgt."
     end;
 
     procedure SendTraceTagOfExport(Category: Text; TraceTagMessage: Text)
+    var
+        Telemetry: Codeunit Telemetry;
+        CustomDimensions: Dictionary of [Text, Text];
     begin
-        Session.LogMessage('0000A4J', TraceTagMessage, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', Category);
+        CustomDimensions.Add('Category', Category);
+        Telemetry.LogMessage('0000A4J', TraceTagMessage, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
     end;
 
     procedure UpdateExportStatus(var SAFTExportHeader: Record "SAF-T Export Header")

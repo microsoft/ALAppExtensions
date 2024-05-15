@@ -95,7 +95,7 @@ page 7275 "Sales Line AI Suggestions"
             systemaction(Generate)
             {
                 Caption = 'Generate';
-                ToolTip = 'Generate sales line suggestions from Dynamics 365 Copilot.';
+                ToolTip = 'Generate sales line suggestions from Copilot.';
 
                 trigger OnAction()
                 var
@@ -120,13 +120,13 @@ page 7275 "Sales Line AI Suggestions"
             systemaction(OK)
             {
                 Caption = 'Insert';
-                ToolTip = 'Keep sales line suggestions proposed by Dynamics 365 Copilot.';
+                ToolTip = 'Keep sales line suggestions proposed by Copilot.';
                 Enabled = IsInsertEnabled;
             }
             systemaction(Cancel)
             {
                 Caption = 'Discard';
-                ToolTip = 'Discard sales line suggestions proposed by Dynamics 365 Copilot.';
+                ToolTip = 'Discard sales line suggestions proposed by Copilot.';
             }
         }
         area(PromptGuide)
@@ -140,12 +140,28 @@ page 7275 "Sales Line AI Suggestions"
                 {
 #pragma warning restore AW0005
 
-                    Caption = 'Copy from [order no.]';
+                    Caption = 'Copy from order [No.]';
                     ToolTip = 'Sample prompt for copying line items from another sales document. Text in brackets specifies the document no.';
 
                     trigger OnAction()
                     var
-                        CopyFromLbl: Label 'Copy from ';
+                        CopyFromLbl: Label 'Copy from order ';
+                    begin
+                        SearchQueryTxt := CopyFromLbl;
+                        CurrPage.Update(false);
+                    end;
+                }
+#pragma warning disable AW0005
+                action(DocumentSearchCopyFromInvoicePrompt)
+                {
+#pragma warning restore AW0005
+
+                    Caption = 'Copy from invoice [No.]';
+                    ToolTip = 'Sample prompt for copying line items from another sales document. Text in brackets specifies the document no.';
+
+                    trigger OnAction()
+                    var
+                        CopyFromLbl: Label 'Copy from invoice ';
                     begin
                         SearchQueryTxt := CopyFromLbl;
                         CurrPage.Update(false);

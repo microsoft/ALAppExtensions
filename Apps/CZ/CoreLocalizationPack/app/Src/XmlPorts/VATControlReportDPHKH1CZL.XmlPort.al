@@ -299,7 +299,6 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
                     trigger OnAfterGetRecord()
                     begin
                         A1_c_evid_dd := A1."Document No.";
-                        A1_zakl_dane1 := FormatDec(A1."Base 1" + A1."Base 2" + A1."Base 3");
                         A1_c_radku := FormatInt(A1."Line No.");
                         A1_duzp := FormatDate(A1."VAT Date");
                         A1_dic_odb := FormatVATRegistration(A1."VAT Registration No.");
@@ -307,6 +306,11 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
 
                         if A1."Original Document VAT Date" <> 0D then
                             A1_duzp := FormatDate(A1."Original Document VAT Date");
+
+                        if UseAmtsInAddCurr then
+                            A1_zakl_dane1 := FormatDec(A1."Add.-Currency Base 1" + A1."Add.-Currency Base 2" + A1."Add.-Currency Base 3")
+                        else
+                            A1_zakl_dane1 := FormatDec(A1."Base 1" + A1."Base 2" + A1."Base 3");
                     end;
 
                     trigger OnPreXmlItem()
@@ -377,16 +381,26 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
                     trigger OnAfterGetRecord()
                     begin
                         A2_c_evid_dd := A2."Document No.";
-                        A2_dan1 := FormatDec(A2."Amount 1");
                         A2_c_radku := FormatInt(A2."Line No.");
                         A2_dppd := FormatDate(A2."VAT Date");
-                        A2_zakl_dane2 := FormatDec(A2."Base 2");
-                        A2_dan2 := FormatDec(A2."Amount 2");
-                        A2_dan3 := FormatDec(A2."Amount 3");
                         A2_vatid_dod := FormatVATRegistration(A2."VAT Registration No.");
-                        A2_zakl_dane1 := FormatDec(A2."Base 1");
-                        A2_zakl_dane3 := FormatDec(A2."Base 3");
                         A2_k_stat := GetCountryCodeFromVATRegistrationNo(A2."VAT Registration No.");
+
+                        if UseAmtsInAddCurr then begin
+                            A2_zakl_dane1 := FormatDec(A2."Add.-Currency Base 1");
+                            A2_zakl_dane2 := FormatDec(A2."Add.-Currency Base 2");
+                            A2_zakl_dane3 := FormatDec(A2."Add.-Currency Base 3");
+                            A2_dan1 := FormatDec(A2."Add.-Currency Amount 1");
+                            A2_dan2 := FormatDec(A2."Add.-Currency Amount 2");
+                            A2_dan3 := FormatDec(A2."Add.-Currency Amount 3");
+                        end else begin
+                            A2_zakl_dane1 := FormatDec(A2."Base 1");
+                            A2_zakl_dane2 := FormatDec(A2."Base 2");
+                            A2_zakl_dane3 := FormatDec(A2."Base 3");
+                            A2_dan1 := FormatDec(A2."Amount 1");
+                            A2_dan2 := FormatDec(A2."Amount 2");
+                            A2_dan3 := FormatDec(A2."Amount 3");
+                        end;
 
                         if A2."Original Document VAT Date" <> 0D then
                             A2_dppd := FormatDate(A2."Original Document VAT Date");
@@ -454,13 +468,17 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
                         A3_c_evid_dd := A3."Document No.";
                         A3_c_radku := FormatInt(A3."Line No.");
                         A3_vatid_odb := FormatVATRegistration(A3."VAT Registration No.");
-                        A3_osv_plneni := FormatDec(A3."Base 1" + A3."Amount 1");
                         A3_d_narozeni := FormatDate(A3."Birth Date");
                         A3_dup := FormatDate(A3."VAT Date");
                         A3_k_stat := GetCountryCodeFromVATRegistrationNo(A3."VAT Registration No.");
 
                         if A3."Original Document VAT Date" <> 0D then
                             A3_dup := FormatDate(A3."Original Document VAT Date");
+
+                        if UseAmtsInAddCurr then
+                            A3_osv_plneni := FormatDec(A3."Add.-Currency Base 1" + A3."Add.-Currency Amount 1")
+                        else
+                            A3_osv_plneni := FormatDec(A3."Base 1" + A3."Amount 1")
                     end;
 
                     trigger OnPreXmlItem()
@@ -536,20 +554,30 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
                     trigger OnAfterGetRecord()
                     begin
                         A4_c_evid_dd := A4."Document No.";
-                        A4_zakl_dane1 := FormatDec(A4."Base 1");
-                        A4_zakl_dane2 := FormatDec(A4."Base 2");
-                        A4_dan1 := FormatDec(A4."Amount 1");
                         A4_dic_odb := FormatVATRegistration(A4."VAT Registration No.");
                         A4_dppd := FormatDate(A4."VAT Date");
-                        A4_dan2 := FormatDec(A4."Amount 2");
                         A4_kod_rezim_pl := Format(A4."Supplies Mode Code");
                         A4_zdph_44 := ConvertCorrectionsForBadReceivable(A4."Corrections for Bad Receivable");
                         A4_c_radku := FormatInt(A4."Line No.");
-                        A4_zakl_dane3 := FormatDec(A4."Base 3");
-                        A4_dan3 := FormatDec(A4."Amount 3");
 
                         if A4."Original Document VAT Date" <> 0D then
                             A4_dppd := FormatDate(A4."Original Document VAT Date");
+
+                        if UseAmtsInAddCurr then begin
+                            A4_dan1 := FormatDec(A4."Add.-Currency Amount 1");
+                            A4_dan2 := FormatDec(A4."Add.-Currency Amount 2");
+                            A4_dan3 := FormatDec(A4."Add.-Currency Amount 3");
+                            A4_zakl_dane1 := FormatDec(A4."Add.-Currency Base 1");
+                            A4_zakl_dane2 := FormatDec(A4."Add.-Currency Base 2");
+                            A4_zakl_dane3 := FormatDec(A4."Add.-Currency Base 3");
+                        end else begin
+                            A4_dan1 := FormatDec(A4."Amount 1");
+                            A4_dan2 := FormatDec(A4."Amount 2");
+                            A4_dan3 := FormatDec(A4."Amount 3");
+                            A4_zakl_dane1 := FormatDec(A4."Base 1");
+                            A4_zakl_dane2 := FormatDec(A4."Base 2");
+                            A4_zakl_dane3 := FormatDec(A4."Base 3");
+                        end;
                     end;
 
                     trigger OnPreXmlItem()
@@ -594,12 +622,21 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
                     }
                     trigger OnAfterGetRecord()
                     begin
-                        A5_dan1 := FormatDec(A5."Amount 1");
-                        A5_dan2 := FormatDec(A5."Amount 2");
-                        A5_dan3 := FormatDec(A5."Amount 3");
-                        A5_zakl_dane1 := FormatDec(A5."Base 1");
-                        A5_zakl_dane2 := FormatDec(A5."Base 2");
-                        A5_zakl_dane3 := FormatDec(A5."Base 3");
+                        if UseAmtsInAddCurr then begin
+                            A5_dan1 := FormatDec(A5."Add.-Currency Amount 1");
+                            A5_dan2 := FormatDec(A5."Add.-Currency Amount 2");
+                            A5_dan3 := FormatDec(A5."Add.-Currency Amount 3");
+                            A5_zakl_dane1 := FormatDec(A5."Add.-Currency Base 1");
+                            A5_zakl_dane2 := FormatDec(A5."Add.-Currency Base 2");
+                            A5_zakl_dane3 := FormatDec(A5."Add.-Currency Base 3");
+                        end else begin
+                            A5_dan1 := FormatDec(A5."Amount 1");
+                            A5_dan2 := FormatDec(A5."Amount 2");
+                            A5_dan3 := FormatDec(A5."Amount 3");
+                            A5_zakl_dane1 := FormatDec(A5."Base 1");
+                            A5_zakl_dane2 := FormatDec(A5."Base 2");
+                            A5_zakl_dane3 := FormatDec(A5."Base 3");
+                        end;
                     end;
 
                     trigger OnPreXmlItem()
@@ -669,20 +706,30 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
                     }
                     trigger OnAfterGetRecord()
                     begin
-                        B1_zakl_dane2 := FormatDec(B1."Base 2");
-                        B1_zakl_dane3 := FormatDec(B1."Base 3");
-                        B1_dan3 := FormatDec(B1."Amount 3");
                         B1_duzp := FormatDate(B1."VAT Date");
-                        B1_dan2 := FormatDec(B1."Amount 2");
                         B1_c_radku := FormatInt(B1."Line No.");
-                        B1_dan1 := FormatDec(B1."Amount 1");
                         B1_kod_pred_pl := LowerCase(B1."Commodity Code");
                         B1_dic_dod := FormatVATRegistration(B1."VAT Registration No.");
-                        B1_zakl_dane1 := FormatDec(B1."Base 1");
                         B1_c_evid_dd := B1."Document No.";
 
                         if B1."Original Document VAT Date" <> 0D then
                             B1_duzp := FormatDate(B1."Original Document VAT Date");
+
+                        if UseAmtsInAddCurr then begin
+                            B1_dan1 := FormatDec(B1."Add.-Currency Amount 1");
+                            B1_dan2 := FormatDec(B1."Add.-Currency Amount 2");
+                            B1_dan3 := FormatDec(B1."Add.-Currency Amount 3");
+                            B1_zakl_dane1 := FormatDec(B1."Add.-Currency Base 1");
+                            B1_zakl_dane2 := FormatDec(B1."Add.-Currency Base 2");
+                            B1_zakl_dane3 := FormatDec(B1."Add.-Currency Base 3");
+                        end else begin
+                            B1_dan1 := FormatDec(B1."Amount 1");
+                            B1_dan2 := FormatDec(B1."Amount 2");
+                            B1_dan3 := FormatDec(B1."Amount 3");
+                            B1_zakl_dane1 := FormatDec(B1."Base 1");
+                            B1_zakl_dane2 := FormatDec(B1."Base 2");
+                            B1_zakl_dane3 := FormatDec(B1."Base 3");
+                        end;
                     end;
 
                     trigger OnPreXmlItem()
@@ -757,21 +804,31 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
                     }
                     trigger OnAfterGetRecord()
                     begin
-                        B2_zakl_dane3 := FormatDec(B2."Base 3");
                         B2_pomer := VATStmtXMLExportHelperCZL.ConvertBoolean(B2."Ratio Use");
                         B2_dppd := FormatDate(B2."VAT Date");
                         B2_c_radku := FormatInt(B2."Line No.");
-                        B2_dan2 := FormatDec(B2."Amount 2");
-                        B2_zakl_dane1 := FormatDec(B2."Base 1");
                         B2_zdph_44 := ConvertCorrectionsForBadReceivable(B2."Corrections for Bad Receivable");
                         B2_dic_dod := FormatVATRegistration(B2."VAT Registration No.");
-                        B2_zakl_dane2 := FormatDec(B2."Base 2");
-                        B2_dan1 := FormatDec(B2."Amount 1");
                         B2_c_evid_dd := B2."Document No.";
-                        B2_dan3 := FormatDec(B2."Amount 3");
 
                         if B2."Original Document VAT Date" <> 0D then
                             B2_dppd := FormatDate(B2."Original Document VAT Date");
+
+                        if UseAmtsInAddCurr then begin
+                            B2_dan1 := FormatDec(B2."Add.-Currency Amount 1");
+                            B2_dan2 := FormatDec(B2."Add.-Currency Amount 2");
+                            B2_dan3 := FormatDec(B2."Add.-Currency Amount 3");
+                            B2_zakl_dane1 := FormatDec(B2."Add.-Currency Base 1");
+                            B2_zakl_dane2 := FormatDec(B2."Add.-Currency Base 2");
+                            B2_zakl_dane3 := FormatDec(B2."Add.-Currency Base 3");
+                        end else begin
+                            B2_dan1 := FormatDec(B2."Amount 1");
+                            B2_dan2 := FormatDec(B2."Amount 2");
+                            B2_dan3 := FormatDec(B2."Amount 3");
+                            B2_zakl_dane1 := FormatDec(B2."Base 1");
+                            B2_zakl_dane2 := FormatDec(B2."Base 2");
+                            B2_zakl_dane3 := FormatDec(B2."Base 3");
+                        end;
                     end;
 
                     trigger OnPreXmlItem()
@@ -816,12 +873,21 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
                     }
                     trigger OnAfterGetRecord()
                     begin
-                        B3_dan1 := FormatDec(B3."Amount 1");
-                        B3_dan2 := FormatDec(B3."Amount 2");
-                        B3_dan3 := FormatDec(B3."Amount 3");
-                        B3_zakl_dane1 := FormatDec(B3."Base 1");
-                        B3_zakl_dane2 := FormatDec(B3."Base 2");
-                        B3_zakl_dane3 := FormatDec(B3."Base 3");
+                        if UseAmtsInAddCurr then begin
+                            B3_dan1 := FormatDec(B3."Add.-Currency Amount 1");
+                            B3_dan2 := FormatDec(B3."Add.-Currency Amount 2");
+                            B3_dan3 := FormatDec(B3."Add.-Currency Amount 3");
+                            B3_zakl_dane1 := FormatDec(B3."Add.-Currency Base 1");
+                            B3_zakl_dane2 := FormatDec(B3."Add.-Currency Base 2");
+                            B3_zakl_dane3 := FormatDec(B3."Add.-Currency Base 3");
+                        end else begin
+                            B3_dan1 := FormatDec(B3."Amount 1");
+                            B3_dan2 := FormatDec(B3."Amount 2");
+                            B3_dan3 := FormatDec(B3."Amount 3");
+                            B3_zakl_dane1 := FormatDec(B3."Base 1");
+                            B3_zakl_dane2 := FormatDec(B3."Base 2");
+                            B3_zakl_dane3 := FormatDec(B3."Base 3");
+                        end;
                     end;
 
                     trigger OnPreXmlItem()
@@ -936,6 +1002,7 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
         ReasonsObservedOnDate: Date;
         FastAppelReaction: Option " ",B,P;
         AppelDocumentNo: Text;
+        UseAmtsInAddCurr: Boolean;
 
 
     procedure SetXMLParams(NewXMLParams: Text)
@@ -952,7 +1019,7 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
         VATStmtXMLExportHelperCZL.GetSelection(VATStatementReportSelection, ParamsXmlDoc);
         VATStmtXMLExportHelperCZL.GetRounding(PrintInIntegers, ParamsXmlDoc);
         VATStmtXMLExportHelperCZL.GetDeclarationAndFilledBy(DeclarationType, FilledByEmployeeNo, ParamsXmlDoc);
-        VATStmtXMLExportHelperCZL.GetVATControlReportAddParams(ReasonsObservedOnDate, FastAppelReaction, AppelDocumentNo, ParamsXmlDoc);
+        VATStmtXMLExportHelperCZL.GetVATControlReportAddParams(ReasonsObservedOnDate, FastAppelReaction, AppelDocumentNo, UseAmtsInAddCurr, ParamsXmlDoc);
     end;
 
     local procedure PrepareExportData()
@@ -1052,23 +1119,42 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
         TempVATCtrlReportBufferCZL.SetRange("VAT Ctrl. Report Section Code", SectionCode);
         if TempVATCtrlReportBufferCZL.FindSet() then
             repeat
-                if ((TempVATCtrlReportBufferCZL."Base 1" + TempVATCtrlReportBufferCZL."Amount 1") <> 0) or
-                   ((TempVATCtrlReportBufferCZL."Base 2" + TempVATCtrlReportBufferCZL."Amount 2") <> 0) or
-                   ((TempVATCtrlReportBufferCZL."Base 3" + TempVATCtrlReportBufferCZL."Amount 3") <> 0)
+                if UseAmtsInAddCurr then begin
+                    if ((TempVATCtrlReportBufferCZL."Add.-Currency Base 1" + TempVATCtrlReportBufferCZL."Add.-Currency Amount 1") <> 0) or
+                       ((TempVATCtrlReportBufferCZL."Add.-Currency Base 2" + TempVATCtrlReportBufferCZL."Add.-Currency Amount 2") <> 0) or
+                       ((TempVATCtrlReportBufferCZL."Add.-Currency Base 3" + TempVATCtrlReportBufferCZL."Add.-Currency Amount 3") <> 0)
                 then begin
-                    SectionTempVATCtrlReportBufferCZL := TempVATCtrlReportBufferCZL;
-                    if SectionTempVATCtrlReportBufferCZL."VAT Ctrl. Report Section Code" in ['A1', 'A3', 'A4', 'A5'] then begin
-                        SectionTempVATCtrlReportBufferCZL."Base 1" *= -1;
-                        SectionTempVATCtrlReportBufferCZL."Amount 1" *= -1;
-                        SectionTempVATCtrlReportBufferCZL."Base 2" *= -1;
-                        SectionTempVATCtrlReportBufferCZL."Amount 2" *= -1;
-                        SectionTempVATCtrlReportBufferCZL."Base 3" *= -1;
-                        SectionTempVATCtrlReportBufferCZL."Amount 3" *= -1;
-                        SectionTempVATCtrlReportBufferCZL."Total Base" *= -1;
-                        SectionTempVATCtrlReportBufferCZL."Total Amount" *= -1;
+                        SectionTempVATCtrlReportBufferCZL := TempVATCtrlReportBufferCZL;
+                        if SectionTempVATCtrlReportBufferCZL."VAT Ctrl. Report Section Code" in ['A1', 'A3', 'A4', 'A5'] then begin
+                            SectionTempVATCtrlReportBufferCZL."Add.-Currency Base 1" *= -1;
+                            SectionTempVATCtrlReportBufferCZL."Add.-Currency Amount 1" *= -1;
+                            SectionTempVATCtrlReportBufferCZL."Add.-Currency Base 2" *= -1;
+                            SectionTempVATCtrlReportBufferCZL."Add.-Currency Amount 2" *= -1;
+                            SectionTempVATCtrlReportBufferCZL."Add.-Currency Base 3" *= -1;
+                            SectionTempVATCtrlReportBufferCZL."Add.-Currency Amount 3" *= -1;
+                            SectionTempVATCtrlReportBufferCZL."Add.-Currency Total Base" *= -1;
+                            SectionTempVATCtrlReportBufferCZL."Add.-Currency Total Amount" *= -1;
+                        end;
+                        SectionTempVATCtrlReportBufferCZL.Insert();
                     end;
-                    SectionTempVATCtrlReportBufferCZL.Insert();
-                end;
+                end else
+                    if ((TempVATCtrlReportBufferCZL."Base 1" + TempVATCtrlReportBufferCZL."Amount 1") <> 0) or
+                       ((TempVATCtrlReportBufferCZL."Base 2" + TempVATCtrlReportBufferCZL."Amount 2") <> 0) or
+                       ((TempVATCtrlReportBufferCZL."Base 3" + TempVATCtrlReportBufferCZL."Amount 3") <> 0)
+                    then begin
+                        SectionTempVATCtrlReportBufferCZL := TempVATCtrlReportBufferCZL;
+                        if SectionTempVATCtrlReportBufferCZL."VAT Ctrl. Report Section Code" in ['A1', 'A3', 'A4', 'A5'] then begin
+                            SectionTempVATCtrlReportBufferCZL."Base 1" *= -1;
+                            SectionTempVATCtrlReportBufferCZL."Amount 1" *= -1;
+                            SectionTempVATCtrlReportBufferCZL."Base 2" *= -1;
+                            SectionTempVATCtrlReportBufferCZL."Amount 2" *= -1;
+                            SectionTempVATCtrlReportBufferCZL."Base 3" *= -1;
+                            SectionTempVATCtrlReportBufferCZL."Amount 3" *= -1;
+                            SectionTempVATCtrlReportBufferCZL."Total Base" *= -1;
+                            SectionTempVATCtrlReportBufferCZL."Total Amount" *= -1;
+                        end;
+                        SectionTempVATCtrlReportBufferCZL.Insert();
+                    end;
             until TempVATCtrlReportBufferCZL.Next() = 0;
     end;
 
@@ -1088,23 +1174,34 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
         CalcTotalAmountsBuffer(B2);
         CalcTotalAmountsBuffer(B3);
 
-        celk_zd_a2 := FormatDec(A2."Base 1" + A2."Base 2" + A2."Base 3");
-        obrat23 := FormatDec(A4."Base 1" + A5."Base 1");
-        obrat5 := FormatDec(A4."Base 2" + A4."Base 3" + A5."Base 2" + A5."Base 3");
-        pln23 := FormatDec(B2."Base 1" + B3."Base 1");
-        pln5 := FormatDec(B2."Base 2" + B2."Base 3" + B3."Base 2" + B3."Base 3");
-        pln_rez_pren := FormatDec(A1."Base 1" + A1."Base 2" + A1."Base 3");
-        rez_pren23 := FormatDec(B1."Base 1");
-        rez_pren5 := FormatDec(B1."Base 2" + B1."Base 3");
+        if UseAmtsInAddCurr then begin
+            celk_zd_a2 := FormatDec(A2."Add.-Currency Base 1" + A2."Add.-Currency Base 2" + A2."Add.-Currency Base 3");
+            obrat23 := FormatDec(A4."Add.-Currency Base 1" + A5."Add.-Currency Base 1");
+            obrat5 := FormatDec(A4."Add.-Currency Base 2" + A4."Add.-Currency Base 3" + A5."Add.-Currency Base 2" + A5."Add.-Currency Base 3");
+            pln23 := FormatDec(B2."Add.-Currency Base 1" + B3."Add.-Currency Base 1");
+            pln5 := FormatDec(B2."Add.-Currency Base 2" + B2."Add.-Currency Base 3" + B3."Add.-Currency Base 2" + B3."Add.-Currency Base 3");
+            pln_rez_pren := FormatDec(A1."Add.-Currency Base 1" + A1."Add.-Currency Base 2" + A1."Add.-Currency Base 3");
+            rez_pren23 := FormatDec(B1."Add.-Currency Base 1");
+            rez_pren5 := FormatDec(B1."Add.-Currency Base 2" + B1."Add.-Currency Base 3");
+        end else begin
+            celk_zd_a2 := FormatDec(A2."Base 1" + A2."Base 2" + A2."Base 3");
+            obrat23 := FormatDec(A4."Base 1" + A5."Base 1");
+            obrat5 := FormatDec(A4."Base 2" + A4."Base 3" + A5."Base 2" + A5."Base 3");
+            pln23 := FormatDec(B2."Base 1" + B3."Base 1");
+            pln5 := FormatDec(B2."Base 2" + B2."Base 3" + B3."Base 2" + B3."Base 3");
+            pln_rez_pren := FormatDec(A1."Base 1" + A1."Base 2" + A1."Base 3");
+            rez_pren23 := FormatDec(B1."Base 1");
+            rez_pren5 := FormatDec(B1."Base 2" + B1."Base 3");
+        end;
     end;
 
-    local procedure CalcTotalAmountsBuffer(var TempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary)
+    local procedure CalcTotalAmountsBuffer(var VarTempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary)
     begin
-        TempVATCtrlReportBufferCZL.Reset();
-        TempVATCtrlReportBufferCZL.SetFilter("Corrections for Bad Receivable", '%1|%2',
-            TempVATCtrlReportBufferCZL."Corrections for Bad Receivable"::" ",
-            TempVATCtrlReportBufferCZL."Corrections for Bad Receivable"::"Bad Receivable (p.46 resp. 74a)");
-        TempVATCtrlReportBufferCZL.CalcSums("Base 1", "Base 2", "Base 3");
+        VarTempVATCtrlReportBufferCZL.Reset();
+        VarTempVATCtrlReportBufferCZL.SetFilter("Corrections for Bad Receivable", '%1|%2',
+            VarTempVATCtrlReportBufferCZL."Corrections for Bad Receivable"::" ",
+            VarTempVATCtrlReportBufferCZL."Corrections for Bad Receivable"::"Bad Receivable (p.46 resp. 74a)");
+        VarTempVATCtrlReportBufferCZL.CalcSums("Base 1", "Base 2", "Base 3", "Add.-Currency Base 1", "Add.-Currency Base 2", "Add.-Currency Base 3");
     end;
 
     local procedure SkipEmptyValue(Value: Text[1024])
@@ -1133,28 +1230,28 @@ xmlport 31110 "VAT Control Report DPHKH1 CZL"
         exit(CopyStr(VATRegistration, 3));
     end;
 
-    local procedure FormatFastAppelReaction(FastAppelReaction: Option " ",B,P): Text
+    local procedure FormatFastAppelReaction(OptionFastAppelReaction: Option " ",B,P): Text
     begin
-        case FastAppelReaction of
-            FastAppelReaction::" ":
+        case OptionFastAppelReaction of
+            OptionFastAppelReaction::" ":
                 exit('');
-            FastAppelReaction::B:
+            OptionFastAppelReaction::B:
                 exit('B');
-            FastAppelReaction::P:
+            OptionFastAppelReaction::P:
                 exit('P');
         end;
     end;
 
-    local procedure ConvertDeclarationType(DeclarationType: Enum "VAT Ctrl. Report Decl Type CZL"): Text
+    local procedure ConvertDeclarationType(EnumDeclarationType: Enum "VAT Ctrl. Report Decl Type CZL"): Text
     begin
-        case DeclarationType of
-            DeclarationType::Recapitulative:
+        case EnumDeclarationType of
+            EnumDeclarationType::Recapitulative:
                 exit('B');
-            DeclarationType::"Recapitulative-Corrective":
+            EnumDeclarationType::"Recapitulative-Corrective":
                 exit('O');
-            DeclarationType::Supplementary:
+            EnumDeclarationType::Supplementary:
                 exit('N');
-            DeclarationType::"Supplementary-Corrective":
+            EnumDeclarationType::"Supplementary-Corrective":
                 exit('E');
         end;
     end;

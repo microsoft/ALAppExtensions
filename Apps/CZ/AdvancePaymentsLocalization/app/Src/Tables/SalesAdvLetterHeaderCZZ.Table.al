@@ -379,19 +379,8 @@ table 31004 "Sales Adv. Letter Header CZZ"
                     ValidateDocumentDateWithPostingDate();
 
                 GetSetup();
-#if not CLEAN22
-#pragma warning disable AL0432
-                if not ReplaceVATDateMgtCZL.IsEnabled() then begin
-                    if SalesReceivablesSetup."Default VAT Date CZL" = SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date" then
-                        Validate("VAT Date", "Posting Date");
-                end else begin
-#pragma warning restore AL0432
-#endif
                     GeneralLedgerSetup.UpdateVATDate("Posting Date", Enum::"VAT Reporting Date"::"Posting Date", "VAT Date");
                     Validate("VAT Date");
-#if not CLEAN22
-                end;
-#endif
 
                 if "Currency Code" <> '' then begin
                     UpdateCurrencyFactor();
@@ -415,14 +404,6 @@ table 31004 "Sales Adv. Letter Header CZZ"
                 Validate("Payment Terms Code");
 
                 GetSetup();
-#if not CLEAN22
-#pragma warning disable AL0432
-                if not ReplaceVATDateMgtCZL.IsEnabled() then begin
-                    if SalesReceivablesSetup."Default VAT Date CZL" = SalesReceivablesSetup."Default VAT Date CZL"::"Document Date" then
-                        Validate("VAT Date", "Document Date");
-                end else
-#pragma warning restore AL0432
-#endif
                     if GeneralLedgerSetup."VAT Reporting Date" = GeneralLedgerSetup."VAT Reporting Date"::"Document Date" then
                         Validate("VAT Date", "Document Date");
             end;
@@ -875,11 +856,6 @@ table 31004 "Sales Adv. Letter Header CZZ"
 #endif
         DimensionManagement: Codeunit DimensionManagement;
         UserSetupManagement: Codeunit "User Setup Management";
-#if not CLEAN22
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-#endif
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         HideValidationDialog: Boolean;
         SkipBillToContact: Boolean;
@@ -945,20 +921,6 @@ table 31004 "Sales Adv. Letter Header CZZ"
             "Posting Date" := 0D;
 
         "Document Date" := WorkDate();
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not ReplaceVATDateMgtCZL.IsEnabled() then
-            case SalesReceivablesSetup."Default VAT Date CZL" of
-                SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date":
-                    "VAT Date" := "Posting Date";
-                SalesReceivablesSetup."Default VAT Date CZL"::"Document Date":
-                    "VAT Date" := "Document Date";
-                SalesReceivablesSetup."Default VAT Date CZL"::Blank:
-                    "VAT Date" := 0D;
-            end
-        else
-#pragma warning restore AL0432
-#endif
         "VAT Date" := GeneralLedgerSetup.GetVATDate("Posting Date", "Document Date");
 
         "Posting Description" := AdvanceLbl + ' ' + "No.";

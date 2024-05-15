@@ -72,25 +72,44 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
     end;
 
     internal procedure IncludeExcludeTablesFromCloudMigration(var IntelligentCloudStatus: Record "Intelligent Cloud Status"; NewReplicateData: Boolean)
+    var
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        TelemetryDictionary: Dictionary of [Text, Text];
+        TablesModified: Text;
+        SeparatorChar: Char;
     begin
         if not IntelligentCloudStatus.FindSet() then
             exit;
 
+        SeparatorChar := ',';
         repeat
             if IntelligentCloudStatus."Replicate Data" <> NewReplicateData then begin
                 InsertInitialLog(IntelligentCloudStatus);
                 IntelligentCloudStatus."Replicate Data" := NewReplicateData;
                 IntelligentCloudStatus.Modify();
                 InsertModifyLog(IntelligentCloudStatus);
+                TablesModified += IntelligentCloudStatus."Table Name" + SeparatorChar;
             end;
         until IntelligentCloudStatus.Next() = 0;
+
+        TablesModified := TablesModified.TrimEnd(SeparatorChar);
+        TelemetryDictionary.Add('Category', HybridCloudManagement.GetTelemetryCategory());
+        TelemetryDictionary.Add('TablesModified', TablesModified);
+        TelemetryDictionary.Add('ReplicateData', Format(NewReplicateData, 0, 9));
+        Session.LogMessage('0000MRJ', ChangedReplicationPropertyLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDictionary);
     end;
 
     internal procedure ChangePreserveCloudData(var IntelligentCloudStatus: Record "Intelligent Cloud Status"; NewPreserveCloudData: Boolean)
+    var
+        HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+        TelemetryDictionary: Dictionary of [Text, Text];
+        TablesModified: Text;
+        SeparatorChar: Char;
     begin
         if not IntelligentCloudStatus.FindSet() then
             exit;
 
+        SeparatorChar := ',';
         repeat
             if IntelligentCloudStatus."Preserve Cloud Data" <> NewPreserveCloudData then begin
                 if (not NewPreserveCloudData) and (IntelligentCloudStatus."Table Id" = Database::"Tenant Media") then
@@ -105,6 +124,12 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
                 InsertModifyLog(IntelligentCloudStatus);
             end;
         until IntelligentCloudStatus.Next() = 0;
+
+        TablesModified := TablesModified.TrimEnd(SeparatorChar);
+        TelemetryDictionary.Add('Category', HybridCloudManagement.GetTelemetryCategory());
+        TelemetryDictionary.Add('TablesModified', TablesModified);
+        TelemetryDictionary.Add('PreserveCloudData', Format(NewPreserveCloudData, 0, 9));
+        Session.LogMessage('0000MRK', ChangedPreserveCloudDataPropertyLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDictionary);
     end;
 
     local procedure GetDocumentationNotificationID(): Guid
@@ -310,4 +335,6 @@ codeunit 40021 "Cloud Mig. Replicate Data Mgt."
         NotPossibleToReplaceTenantMediaTableErr: Label 'It is not possible to overwrite the data in the Tenant Media table as it contains the data needed for the system to run correctly.';
         DocumentationNotificationTitleTxt: Label 'We strongly recommend reading the documentation before making changes, to avoid data loss and incorrect data replication.';
         NotPossibleToDeltaSyncDataPerCompanyErr: Label 'Delta syncing per-company data is not supported. This process is not supported by the service, because it could result in slower replication and incorrect data replication.';
+        ChangedReplicationPropertyLbl: Label 'The replication property has been changed.', Locked = true;
+        ChangedPreserveCloudDataPropertyLbl: Label 'The Preserve Cloud Data property has been changed.', Locked = true;
 }

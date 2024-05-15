@@ -26,9 +26,11 @@ table 1950 "LP Machine Learning Setup"
                     if "Standard Model Quality" = 0 then begin // ensure that the model quality of the standard model is correctly evaluated for data on this company if it has never been tried before
                         LPModelManagement.EvaluateModel("Selected Model"::Standard, false);
                         GetSingleInstance(); // to refresh the standard model quality after evaluation
+                        Session.LogSecurityAudit(LatePaymentPredictionTxt, SecurityOperationResult::Success, LatePaymentPredcitionEnabledTxt, AuditCategory::PolicyManagement);
                     end;
                     CheckModelQuality();
-                end;
+                end else
+                    Session.LogSecurityAudit(LatePaymentPredictionTxt, SecurityOperationResult::Success, LatePaymentPredcitionDisabledTxt, AuditCategory::PolicyManagement);
             end;
         }
 
@@ -148,6 +150,8 @@ table 1950 "LP Machine Learning Setup"
     var
         LPModelManagement: Codeunit "LP Model Management";
     begin
+        if not Rec.ReadPermission() then
+            exit;
         if Get() then
             exit;
 
@@ -346,4 +350,7 @@ table 1950 "LP Machine Learning Setup"
     var
         CurrentModelLowerQualityThanDesiredErr: Label 'You cannot use the model because its quality of %1 is below the value in the Model Quality Threshold field. That means its predictions are unlikely to meet your accuracy requirements. You can evaluate the model again to confirm its quality. To use the model anyway, enter a value that is less than or equal to %1 in the Model Quality Threshold field.', Comment = '%1 = current model quality (decimal)';
         CurrentModelDoesNotExistErr: Label 'Cannot use the model because it does not exist. Try training a new model.';
+        LatePaymentPredictionTxt: Label 'Late Payment Prediction', Locked = true;
+        LatePaymentPredcitionEnabledTxt: Label 'Late Payment Prediction enabled', Locked = true;
+        LatePaymentPredcitionDisabledTxt: Label 'Late Payment Prediction disabled', Locked = true;
 }

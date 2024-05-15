@@ -212,6 +212,15 @@ tableextension 31286 "Bank Account CZB" extends "Bank Account"
         exit(BankExportImportSetup."Processing Codeunit ID");
     end;
 
+    procedure GetForeignPaymentExportXMLPortIdCZB(): Integer
+    var
+        BankExportImportSetup: Record "Bank Export/Import Setup";
+    begin
+        Testfield("Foreign Payment Ex. Format CZB");
+        BankExportImportSetup.Get("Foreign Payment Ex. Format CZB");
+        exit(BankExportImportSetup."Processing XMLport ID");
+    end;
+
     procedure GetPaymentImportCodeunitIdCZB(): Integer
     var
         BankExportImportSetup: Record "Bank Export/Import Setup";

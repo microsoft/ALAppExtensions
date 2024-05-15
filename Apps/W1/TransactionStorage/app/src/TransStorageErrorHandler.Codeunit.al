@@ -30,7 +30,7 @@ codeunit 6204 "Trans. Storage Error Handler"
 
         TransactStorageExportState.Get();
         if TransactStorageExportState."Number Of Attempts" = 0 then begin
-            FeatureTelemetry.LogError('0000LNA', TransactionStorageTok, TaskFailedMultipleTimesErr, '');
+            FeatureTelemetry.LogError('0000LNA', TransactionStorageTok, '', TaskFailedMultipleTimesErr);
             CheckMultipleTaskFailures();
             exit;
         end;
@@ -59,7 +59,7 @@ codeunit 6204 "Trans. Storage Error Handler"
                 if TransactStorageTaskEntry.Status <> Enum::"Trans. Storage Export Status"::Failed then
                     exit;
             until TransactStorageTaskEntry.Next() = 0;
-            FeatureTelemetry.LogError('0000LQX', TransactionStorageTok, StrSubstNo(TaskFailedMultipleDaysErr, MaxNumberFailureDays), '');
+            FeatureTelemetry.LogError('0000LQX', TransactionStorageTok, '', StrSubstNo(TaskFailedMultipleDaysErr, MaxNumberFailureDays));
         end;
     end;
 }

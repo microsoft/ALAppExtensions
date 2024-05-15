@@ -340,8 +340,8 @@ report 31195 "Service Contract Quote CZL"
                 CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
                 CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
-                FormatAddress.ServContractSellto(CustAddr, "Service Contract Header");
-                FormatAddress.ServContractShipto(ShipToAddr, "Service Contract Header");
+                ServiceFormatAddress.ServContractSellto(CustAddr, "Service Contract Header");
+                ServiceFormatAddress.ServContractShipto(ShipToAddr, "Service Contract Header");
                 DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText("Language Code");
                 if not Customer.Get("Customer No.") then
                     Customer.Init();
@@ -406,6 +406,7 @@ report 31195 "Service Contract Quote CZL"
         FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
+        ServiceFormatAddress: Codeunit "Service Format Address";
         LogInteractionEnable: Boolean;
         DocumentLbl: Label 'Service Contract Quote';
         PageLbl: Label 'Page';

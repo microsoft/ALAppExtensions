@@ -28,6 +28,30 @@ codeunit 139566 "Shpfy Payments Test"
         LibraryAssert.IsTrue(PaymentTransaction.Get(Id), 'Get "Shpfy Payment Transaction" record');
     end;
 
+    [Test]
+    procedure UnitTestImportDispute()
+    var
+        Dispute: Record "Shpfy Dispute";
+        Payments: Codeunit "Shpfy Payments";
+        DisputeToken: JsonToken;
+        DisputeStatus: Enum "Shpfy Dispute Status";
+        FinalizedOn: DateTime;
+        Id: BigInteger;
+    begin
+        // [SCENARIO] Extract the data out json token that contains a Dispute info into the "Shpfy Dispute" record.
+        // [GIVEN] A random Generated Dispute
+        Id := Any.IntegerInRange(10000, 99999);
+        DisputeToken := GetRandomDisputeAsJsonToken(Id, DisputeStatus, FinalizedOn);
+
+        // [WHEN] Invoke the function ImportDisputeData(JToken)
+        Payments.ImportDisputeData(DisputeToken);
+
+        // // [THEN] A dispute record is created and the dispute status and finalized on should match the generated one
+        Dispute.Get(Id);
+        LibraryAssert.AreEqual(DisputeStatus, Dispute.Status, 'Dispute status should match the generated one');
+        LibraryAssert.AreEqual(FinalizedOn, Dispute."Finalized On", 'Dispute finalized on should match the generated one');
+    end;
+
     local procedure GetRandomPaymentAsJsonToken(id: BigInteger): JsonToken
     var
         JPayment: JsonObject;
@@ -52,30 +76,6 @@ codeunit 139566 "Shpfy Payments Test"
         JPayment.Add('source_order_transaction_id', Any.IntegerInRange(10000, 99999));
         JPayment.Add('processed_at', Format(CurrentDateTime - 1, 0, 9));
         exit(JPayment.AsToken());
-    end;
-
-    [Test]
-    procedure UnitTestImportDispute()
-    var
-        Dispute: Record "Shpfy Dispute";
-        Payments: Codeunit "Shpfy Payments";
-        DisputeToken: JsonToken;
-        DisputeStatus: Enum "Shpfy Dispute Status";
-        FinalizedOn: DateTime;
-        Id: BigInteger;
-    begin
-        // [SCENARIO] Extract the data out json token that contains a Dispute info into the "Shpfy Dispute" record.
-        // [GIVEN] A random Generated Dispute
-        Id := Any.IntegerInRange(10000, 99999);
-        DisputeToken := GetRandomDisputeAsJsonToken(Id, DisputeStatus, FinalizedOn);
-
-        // [WHEN] Invoke the function ImportDisputeData(JToken)
-        Payments.ImportDisputeData(DisputeToken);
-
-        // // [THEN] A dispute record is created and the dispute status and finalized on should match the generated one
-        Dispute.Get(Id);
-        LibraryAssert.AreEqual(DisputeStatus, Dispute.Status, 'Dispute status should match the generated one');
-        LibraryAssert.AreEqual(FinalizedOn, Dispute."Finalized On", 'Dispute finalized on should match the generated one');
     end;
 
     local procedure GetRandomDisputeAsJsonToken(Id: BigInteger; var DisputeStatus: Enum "Shpfy Dispute Status"; var FinalizedOn: DateTime): JsonToken

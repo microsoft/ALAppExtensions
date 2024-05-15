@@ -71,13 +71,8 @@ table 30118 "Shpfy Order Header"
             Caption = 'Token';
             DataClassification = CustomerContent;
             Editable = false;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Not available in GraphQL data.';
         }
         field(13; Gateway; Text[50])
@@ -101,13 +96,8 @@ table 30118 "Shpfy Order Header"
             Caption = 'Currency';
             DataClassification = Customercontent;
             Editable = false;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Replaced with the fields "Currency Code" and "Presentment Currency Code".';
         }
         field(17; "Cart Token"; Text[50])
@@ -115,13 +105,8 @@ table 30118 "Shpfy Order Header"
             Caption = 'Cart Token';
             DataClassification = CustomerContent;
             Editable = false;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Not available in GraphQL data.';
         }
         field(18; "Checkout Token"; Text[50])
@@ -129,13 +114,8 @@ table 30118 "Shpfy Order Header"
             Caption = 'Checkout Token';
             DataClassification = CustomerContent;
             Editable = false;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Not available in GraphQL data.';
         }
         field(19; Reference; Text[50])
@@ -143,13 +123,8 @@ table 30118 "Shpfy Order Header"
             Caption = 'Reference';
             DataClassification = CustomerContent;
             Editable = false;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Not available in GraphQL data.';
         }
         field(21; "Risk Level"; Enum "Shpfy Risk Level")
@@ -181,13 +156,8 @@ table 30118 "Shpfy Order Header"
             Caption = 'Contact Email';
             DataClassification = CustomerContent;
             Editable = false;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Not available in GraphQL data.';
         }
         field(26; "Total Tip Received"; Decimal)
@@ -201,13 +171,8 @@ table 30118 "Shpfy Order Header"
             Caption = 'Session Hash';
             DataClassification = SystemMetadata;
             Editable = false;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Not available in GraphQL data.';
         }
         field(48; "Ship-to First Name"; Text[50])
@@ -368,13 +333,8 @@ table 30118 "Shpfy Order Header"
         {
             Caption = 'Buyer Accepts Marketing';
             DataClassification = SystemMetadata;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Not available in GraphQL data.';
         }
         field(80; "Cancelled At"; DateTime)
@@ -627,13 +587,8 @@ table 30118 "Shpfy Order Header"
             DataClassification = SystemMetadata;
             TableRelation = "Config. Template Header".Code where("Table Id" = const(18));
             ObsoleteReason = 'Replaced by Customer Templ. Code';
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
         }
         field(502; "Customer Templ. Code"; Code[20])
         {

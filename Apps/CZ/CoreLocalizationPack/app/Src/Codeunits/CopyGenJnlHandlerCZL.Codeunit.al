@@ -12,17 +12,8 @@ codeunit 31063 "Copy Gen. Jnl. Handler CZL"
     local procedure ReplaceVATDateOnAfterInsertGenJournalLine(PostedGenJournalLine: Record "Posted Gen. Journal Line"; CopyGenJournalParameters: Record "Copy Gen. Journal Parameters"; var GenJournalLine: Record "Gen. Journal Line")
     begin
         GenJournalLine."VAT Reporting Date" := PostedGenJournalLine."VAT Date CZL";
-#if not CLEAN22
-#pragma warning disable AL0432
-        if CopyGenJournalParameters."Replace VAT Date CZL" <> 0D then begin
-            GenJournalLine."VAT Date CZL" := CopyGenJournalParameters."Replace VAT Date CZL";
-            GenJournalLine."VAT Reporting Date" := CopyGenJournalParameters."Replace VAT Date CZL";
-        end;
-#pragma warning restore AL0432
-#else
         if CopyGenJournalParameters."Replace VAT Date CZL" <> 0D then
             GenJournalLine."VAT Reporting Date" := CopyGenJournalParameters."Replace VAT Date CZL";
-#endif
         GenJournalLine.Modify();
     end;
 

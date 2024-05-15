@@ -6,6 +6,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
+using Microsoft.Finance.GeneralLedger.Setup;
 
 page 31139 "VIES Declaration Subform CZL"
 {
@@ -117,6 +118,19 @@ page 31139 "VIES Declaration Subform CZL"
                         CurrPage.Update();
                     end;
                 }
+                field("Additional-Currency Amount"; Rec."Additional-Currency Amount")
+                {
+                    ApplicationArea = Basic, Suite;
+                    BlankZero = true;
+                    Editable = AmountLCYEditable;
+                    ToolTip = 'Specifies total additional currency amounts of partner trades for selected period.';
+                    Visible = UseAmtsInAddCurrVisible;
+
+                    trigger OnValidate()
+                    begin
+                        CurrPage.Update();
+                    end;
+                }
                 field("Trade Role Type"; Rec."Trade Role Type")
                 {
                     ApplicationArea = Basic, Suite;
@@ -152,6 +166,11 @@ page 31139 "VIES Declaration Subform CZL"
         CurrPage.Update();
     end;
 
+    trigger OnOpenPage()
+    begin
+        SetUseAmtsInAddCurrVisible();
+    end;
+
     trigger OnNewRecord(BelowxRec: Boolean)
     var
         VIESDeclarationHeaderCZL: Record "VIES Declaration Header CZL";
@@ -165,6 +184,7 @@ page 31139 "VIES Declaration Subform CZL"
         AmountLCYEditable: Boolean;
         TradeRoleTypeEditable: Boolean;
         VATRegNoOfOriginalCustEditable: Boolean;
+        UseAmtsInAddCurrVisible: Boolean;
 
     procedure SetControlsEditable()
     begin
@@ -172,5 +192,13 @@ page 31139 "VIES Declaration Subform CZL"
         AmountLCYEditable := Rec."Trade Type" <> Rec."Trade Type"::" ";
         TradeRoleTypeEditable := Rec."Trade Type" <> Rec."Trade Type"::" ";
         VATRegNoOfOriginalCustEditable := Rec."Record Code" = Rec."Record Code"::"3";
+    end;
+
+    local procedure SetUseAmtsInAddCurrVisible()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        UseAmtsInAddCurrVisible := GeneralLedgerSetup."Additional Reporting Currency" <> '';
     end;
 }

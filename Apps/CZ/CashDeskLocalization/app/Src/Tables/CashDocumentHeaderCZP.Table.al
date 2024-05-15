@@ -96,7 +96,7 @@ table 11732 "Cash Document Header CZP"
                 end;
 
                 "Document Date" := "Posting Date";
-                "VAT Date" := "Posting Date";
+                Validate("VAT Date", "Posting Date");
             end;
         }
         field(7; Amount; Decimal)
@@ -221,6 +221,11 @@ table 11732 "Cash Document Header CZP"
         {
             Caption = 'VAT Date';
             DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                UpdateCashDocumentLinesByFieldNo(FieldNo("VAT Date"), CurrFieldNo <> 0);
+            end;
         }
         field(38; "Created Date"; Date)
         {
@@ -599,6 +604,7 @@ table 11732 "Cash Document Header CZP"
     var
         PaymentTxt: Label 'Payment %1', Comment = '%1 = Document No.';
         RefundTxt: Label 'Refund %1', Comment = '%1 = Document No.';
+        InvoiceTxt: Label 'Invoice %1', Comment = '%1 = Document No.';
 
     trigger OnDelete()
     var
@@ -962,6 +968,8 @@ table 11732 "Cash Document Header CZP"
                         CashDocumentLineCZP."Salespers./Purch. Code" := "Salespers./Purch. Code";
                     FieldNo("Responsibility Center"):
                         CashDocumentLineCZP."Responsibility Center" := "Responsibility Center";
+                    FieldNo("VAT Date"):
+                        CashDocumentLineCZP.UpdateAmounts();
                 end;
                 CashDocumentLineCZP.Modify(true);
             until CashDocumentLineCZP.Next() = 0;
@@ -1242,7 +1250,7 @@ table 11732 "Cash Document Header CZP"
         "Shortcut Dimension 1 Code" := PurchInvHeader."Shortcut Dimension 1 Code";
         "Shortcut Dimension 2 Code" := PurchInvHeader."Shortcut Dimension 2 Code";
         "Dimension Set ID" := PurchInvHeader."Dimension Set ID";
-        "Payment Purpose" := StrSubstNo(RefundTxt, PurchInvHeader."No.");
+        "Payment Purpose" := StrSubstNo(InvoiceTxt, PurchInvHeader."No.");
         "Partner Type" := "Partner Type"::Vendor;
         Validate("Partner No.", PurchInvHeader."Buy-from Vendor No.");
         OnAfterCopyCashDocumentHeaderFromPurchInvHeader(PurchInvHeader, Rec);

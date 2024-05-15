@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.CashDesk;
 
+using Microsoft.Finance.AllocationAccount;
 using Microsoft.Finance.Dimension;
 
 page 31161 "Cash Document Subform CZP"
@@ -87,6 +88,19 @@ page 31161 "Cash Document Subform CZP"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies a VAT product posting group code for the VAT Statement.';
                     Visible = false;
+                }
+                field("Allocation Account No."; Rec."Selected Alloc. Account No.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the allocation account number that will be used to distribute the amounts during the posting process.';
+                    Visible = UseAllocationAccountNumber;
+
+                    trigger OnValidate()
+                    var
+                        CashDocAllocAccMgtCZP: Codeunit "Cash Doc. Alloc. Acc. Mgt. CZP";
+                    begin
+                        CashDocAllocAccMgtCZP.VerifySelectedAllocationAccountNo(Rec);
+                    end;
                 }
                 field(Amount; Rec.Amount)
                 {
@@ -385,6 +399,52 @@ page 31161 "Cash Document Subform CZP"
                     end;
                 }
             }
+            group("Related Information")
+            {
+                Caption = 'Related Information';
+                action(RedistributeAccAllocations)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Redistribute Account Allocations';
+                    Image = EditList;
+#pragma warning disable AA0219
+                    ToolTip = 'Use this action to redistribute the account allocations for this line.';
+#pragma warning restore AA0219
+
+                    trigger OnAction()
+                    var
+                        AllocAccManualOverride: Page "Redistribute Acc. Allocations";
+                    begin
+                        if ((Rec."Account Type" <> Rec."Account Type"::"Allocation Account") and (Rec."Selected Alloc. Account No." = '')) then
+                            Error(ActionOnlyAllowedForAllocationAccountsErr);
+
+                        AllocAccManualOverride.SetParentSystemId(Rec.SystemId);
+                        AllocAccManualOverride.SetParentTableId(Database::"Cash Document Line CZP");
+                        AllocAccManualOverride.RunModal();
+                    end;
+                }
+                action(ReplaceAllocationAccountWithLines)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Generate lines from Allocation Account Line';
+                    Image = CreateLinesFromJob;
+#pragma warning disable AA0219
+                    ToolTip = 'Use this action to replace the Allocation Account line with the actual lines that would be generated from the line itself.';
+#pragma warning restore AA0219
+
+                    trigger OnAction()
+                    var
+                        CashDocAllocAccMgtCZP: Codeunit "Cash Doc. Alloc. Acc. Mgt. CZP";
+                    begin
+                        if ((Rec."Account Type" <> Rec."Account Type"::"Allocation Account") and (Rec."Selected Alloc. Account No." = '')) then
+                            Error(ActionOnlyAllowedForAllocationAccountsErr);
+
+                        CashDocAllocAccMgtCZP.CreateLinesFromAllocationAccountLine(Rec);
+                        Rec.Delete();
+                        CurrPage.Update(false);
+                    end;
+                }
+            }
         }
     }
 
@@ -407,15 +467,18 @@ page 31161 "Cash Document Subform CZP"
 
     trigger OnOpenPage()
     begin
+        UseAllocationAccountNumber := AllocationAccountMgt.UseAllocationAccountNoField();
         SetDimensionsVisibility();
     end;
 
     var
         TotalCashDocumentHeaderCZP: Record "Cash Document Header CZP";
+        AllocationAccountMgt: Codeunit "Allocation Account Mgt.";
         CashDocumentTotalsCZP: Codeunit "Cash Document Totals CZP";
         AccountTypeIsFilled: Boolean;
         VATAmount: Decimal;
         RelatedAmountToApply: Decimal;
+        ActionOnlyAllowedForAllocationAccountsErr: Label 'This action is only available for lines that have Allocation Account set as Type.';
 
     protected var
         ShortcutDimCode: array[8] of Code[20];
@@ -427,6 +490,7 @@ page 31161 "Cash Document Subform CZP"
         DimVisible6: Boolean;
         DimVisible7: Boolean;
         DimVisible8: Boolean;
+        UseAllocationAccountNumber: Boolean;
 
     procedure ShowStatistics()
     begin

@@ -34,11 +34,6 @@ codeunit 31014 "Fin. Charge Memo Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"FinChrgMemo-Issue", 'OnAfterInitGenJnlLine', '', false, false)]
     local procedure UpdateBankInfoOnAfterInitGenJnlLine(var GenJnlLine: Record "Gen. Journal Line"; FinChargeMemoHeader: Record "Finance Charge Memo Header")
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        GenJnlLine."VAT Date CZL" := FinChargeMemoHeader."Posting Date";
-#pragma warning restore AL0432
-#endif
         GenJnlLine."VAT Reporting Date" := FinChargeMemoHeader."Posting Date";
         if GenJnlLine."Account Type" <> GenJnlLine."Account Type"::Customer then
             exit;

@@ -91,6 +91,7 @@ table 1917 "MigrationQB Config"
         IsolatedStorage.Set('Migration QB Access Token', AccessToken, DataScope::Company);
     end;
 
+#if not CLEAN25
     [Obsolete('Do not use. Replaced with InitializeOnlineConfig() for OAuth 2.0 implementation.', '15.4')]
     procedure InitializeOnlineSetup(TokenKey: Text; TokenSecret: Text; RealmId: Text)
     var
@@ -114,6 +115,7 @@ table 1917 "MigrationQB Config"
             IsolatedStorage.Set('Migration QB Token Secret', TokenSecret, DataScope::Company);
         end;
     end;
+# endif
 
     procedure IsOnlineData(): Boolean
     begin

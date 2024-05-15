@@ -134,6 +134,6 @@ page 6127 "E-Document Activities"
         IncomingEDocumentProcessedCount := EDocumentHelper.GetEDocumentCount(Enum::"E-Document Status"::Processed, Enum::"E-Document Direction"::Incoming);
         IncomingEDocumentErrorCount := EDocumentHelper.GetEDocumentCount(Enum::"E-Document Status"::Error, Enum::"E-Document Direction"::Incoming);
         MatchedPurchaseOrderCount := EDocumentHelper.MatchedPurchaseOrdersCount();
-        WaitingPurchaseEDocCount := EDocumentHelper.MatchedPurchaseEDocumentsCount();
+        WaitingPurchaseEDocCount := EDocumentHelper.WaitingPurchaseEDocCount();
     end;
 }

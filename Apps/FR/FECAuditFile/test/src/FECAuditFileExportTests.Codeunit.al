@@ -25,7 +25,6 @@ codeunit 148017 "FEC Audit File Export Tests"
         UnknownFieldErr: Label 'Unknown field No! Fld #%1.', Comment = '%1 - Field No.';
         WrongFieldErr: Label 'Wrong %1. Fld #%2.', Comment = '%1 - Field Name, %2 - Field No.';
         FilterErr: Label 'Filter function does not work.';
-        CompRegNoTestfieldErr: Label 'Registration No. must have a value in Company Information: Primary Key=. It cannot be zero or empty.';
         TwoDocumentNosTxt: Label '%1;%2', Comment = '%1, %2 - Document No.';
 
     [Test]
@@ -2110,8 +2109,7 @@ codeunit 148017 "FEC Audit File Export Tests"
         asserterror RunFECExport(AuditFile, '', StartingDate, StartingDate, false);
 
         // [THEN] An error is thrown: "Registration No. must have a value in Company Information: Primary Key=. It cannot be zero or empty."
-        Assert.ExpectedErrorCode('TestField');
-        Assert.ExpectedError(CompRegNoTestfieldErr);
+        Assert.ExpectedTestFieldError(CompanyInformation.FieldCaption("Registration No."), '');
     end;
 
     [Test]
