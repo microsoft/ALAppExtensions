@@ -1,3 +1,4 @@
+#pragma warning disable AS0032
 // ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
@@ -12,10 +13,11 @@ pageextension 4884 "EU3 Posted Purch. Invoice" extends "Posted Purchase Invoice"
     {
         addafter("Currency Code")
         {
-            field("EU 3 Party Trade"; Rec."EU 3 Party Trade")
+            field("EU 3rd Party Trade"; Rec."EU 3 Party Trade")
             {
                 ApplicationArea = VAT;
                 ToolTip = 'Specifies whether or not totals for transactions involving EU 3-party trades are displayed in the VAT Statement.';
+                Caption = 'EU 3-Party Trade';
                 Visible = EU3AppEnabled;
                 Enabled = EU3AppEnabled;
             }
@@ -31,3 +33,4 @@ pageextension 4884 "EU3 Posted Purch. Invoice" extends "Posted Purchase Invoice"
         EU3PartyTradeFeatureMgt: Codeunit "EU3 Party Trade Feature Mgt.";
         EU3AppEnabled: Boolean;
 }
+#pragma warning restore AS0032

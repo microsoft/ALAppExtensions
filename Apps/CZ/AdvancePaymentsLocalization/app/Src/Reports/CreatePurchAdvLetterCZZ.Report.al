@@ -5,9 +5,6 @@
 namespace Microsoft.Finance.AdvancePayments;
 
 using Microsoft.Finance.Currency;
-#if not CLEAN22
-using Microsoft.Finance.VAT.Calculation;
-#endif
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Posting;
 using System.Utilities;
@@ -84,11 +81,6 @@ report 31029 "Create Purch. Adv. Letter CZZ"
         PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ";
         TempAdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ" temporary;
         AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
-#if not CLEAN22
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-#endif
         PurchPost: Codeunit "Purch.-Post";
         AdvanceLetterCode: Code[20];
         AdvancePer: Decimal;
@@ -192,13 +184,6 @@ report 31029 "Create Purch. Adv. Letter CZZ"
         PurchAdvLetterHeaderCZZ."Posting Date" := PurchaseHeader."Posting Date";
         PurchAdvLetterHeaderCZZ."Advance Due Date" := PurchaseHeader."Due Date";
         PurchAdvLetterHeaderCZZ."Document Date" := PurchaseHeader."Document Date";
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not ReplaceVATDateMgtCZL.IsEnabled() then
-            PurchAdvLetterHeaderCZZ."VAT Date" := PurchaseHeader."VAT Date CZL"
-        else
-#pragma warning restore AL0432
-#endif
         PurchAdvLetterHeaderCZZ."VAT Date" := PurchaseHeader."VAT Reporting Date";
         PurchAdvLetterHeaderCZZ."Posting Description" := PurchaseHeader."Posting Description";
         PurchAdvLetterHeaderCZZ."Payment Method Code" := PurchaseHeader."Payment Method Code";

@@ -37,7 +37,19 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         FeatureConsentErr: Label 'The AMC Banking 365 Fundamentals feature is not enabled. You can enable the feature on the AMC Banking Setup page by turning on the Enabled toggle, or by using the assisted setup guide.';
         FeatureConsentQst: Label '%1\\Do you want us to open the AMC Banking Setup page for you?', Comment = '%1 = FeatureConsentErr';
 
-    procedure CreateEnvelope(VAR requestDocXML: XmlDocument; VAR EnvXmlElement: XmlElement; Username: Text; Password: Text; UsernameTokenValue: Text);
+#if not CLEAN25
+    [Obsolete('Use the procedure that receives Password as a SecretText instead.', '25.0')]
+    procedure CreateEnvelope(var requestDocXML: XmlDocument; var EnvXmlElement: XmlElement; Username: Text; Password: Text; UsernameTokenValue: Text);
+    var
+        SecretPassword: SecretText;
+    begin
+        SecretPassword := Password;
+        CreateEnvelope(requestDocXML, EnvXmlElement, Username, SecretPassword, UsernameTokenValue);
+    end;
+#endif
+
+    [NonDebuggable]
+    procedure CreateEnvelope(VAR requestDocXML: XmlDocument; VAR EnvXmlElement: XmlElement; Username: Text; Password: SecretText; UsernameTokenValue: Text);
     var
         HeaderXMLElement: XmlElement;
         SecurityXMLElement: XmlElement;
@@ -56,10 +68,11 @@ codeunit 20118 "AMC Bank Service Request Mgt."
             AddElement(SecurityXMLElement, SecurityXMLElement.NamespaceUri(), 'UsernameToken', '', TokenXMLElement, 'Id', GetWSSSecurityUtilityNamespaceUri(), GetUsernameTokenFixedValue());
 
         AddElement(TokenXMLElement, SecurityXMLElement.NamespaceUri(), 'Username', Username, TokenChildXMLElement, '', '', '');
-        AddElement(TokenXMLElement, SecurityXMLElement.NamespaceUri(), 'Password', Password, TokenChildXMLElement, 'Type', '', GetWSSUsernameTokenNamespaceUri());
+        AddElement(TokenXMLElement, SecurityXMLElement.NamespaceUri(), 'Password', Password.Unwrap(), TokenChildXMLElement, 'Type', '', GetWSSUsernameTokenNamespaceUri());
 
     end;
 
+    [NonDebuggable]
     procedure AddElement(VAR ParentElement: XmlElement; NameSpace: Text; ElementName: Text; ElementValue: Text; VAR CreatedChildElement: XmlElement; AttribName: Text; AttribNameSpace: Text; AttribValue: Text)
     begin
         CLEAR(CreatedChildElement);
@@ -115,14 +128,20 @@ codeunit 20118 "AMC Bank Service Request Mgt."
     end;
 
     procedure SetHttpContentsDefaults(Var HeaderHttpRequestMessage: HttpRequestMessage);
+    var
+        Content: HttpContent;
     begin
-        HeaderHttpRequestMessage.Content().GetHeaders(GLBHeadersContentHttp);
+        Content := HeaderHttpRequestMessage.Content();
+        Content.GetHeaders(GLBHeadersContentHttp);
 
-        if (GLBHeadersContentHttp.Contains('Content-Type')) THEN
-            GLBHeadersContentHttp.Remove('Content-Type');
+        if Content.IsSecretContent() then begin
+            if GLBHeadersContentHttp.ContainsSecret('Content-Type') then
+                GLBHeadersContentHttp.Remove('Content-Type')
+        end else
+            if GLBHeadersContentHttp.Contains('Content-Type') then
+                GLBHeadersContentHttp.Remove('Content-Type');
 
         GLBHeadersContentHttp.Add('Content-Type', ContentTypeTxt);
-
         AddAMCSpecificHttpHeaders(HeaderHttpRequestMessage, GLBHeadersContentHttp);
 
     end;
@@ -485,24 +504,23 @@ codeunit 20118 "AMC Bank Service Request Mgt."
         exit(AMCBankWebLogStatus::Failed);
     end;
 
+    [NonDebuggable]
     local procedure CleanSecureContent(LogHttpContent: HttpContent; var LogInStream: Instream);
     var
-        TempBlob: CodeUnit "Temp Blob";
         LogXMLDoc: XmlDocument;
         LogXmlNodeList: XmlNodeList;
         DataXmlNode: XmlNode;
         ParentXmlElement: XmlElement;
         baseHttpContent: HttpContent;
-        CleanInStream: InStream;
         DataXMLAttributeCollection: XMLAttributeCollection;
         DataXmlAttribute: XmlAttribute;
+        SecretHttpContentText: SecretText;
         AttribCounter: Integer;
         LogCounter: Integer;
         LogText: Text;
     begin
-        TempBlob.CreateInStream(CleanInStream);
-        LogHttpContent.ReadAs(CleanInStream);
-        XmlDocument.ReadFrom(CleanInStream, LogXMLDoc);
+        LogHttpContent.ReadAs(SecretHttpContentText);
+        XmlDocument.ReadFrom(SecretHttpContentText.Unwrap(), LogXMLDoc);
 
         LogXmlNodeList := LogXMLDoc.GetDescendantNodes();
         IF LogXmlNodeList.Count() > 0 THEN

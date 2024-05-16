@@ -56,8 +56,7 @@ codeunit 6202 "Transact. Storage Export Data"
         FeatureTelemetry: Codeunit "Feature Telemetry";
         TransactStorageExport: Codeunit "Transact. Storage Export";
         TransactionStorageTok: Label 'Transaction Storage', Locked = true;
-        ExportActionTok: Label 'Export of the table %1 %2', Comment = '%1 = table name; %2 = either ''starts'' or ''ends''';
-        NoOfCollectedRecordsTxt: Label '%1 records collected from the table %2', Comment = '%1 = number; %2 = table name';
+        NoOfCollectedRecordsTxt: Label 'Number of collected records.', Locked = true;
         NoPermissionsForTableErr: Label 'User does not have permissions to read the table %1', Comment = '%1 = table name', Locked = true;
 
     procedure ExportData(TaskStartingDateTime: DateTime)
@@ -73,6 +72,7 @@ codeunit 6202 "Transact. Storage Export Data"
         TablesToExport := GetTablesToExport();
         foreach TableID in TablesToExport do
             CollectDataFromTable(DataJsonArrays, HandledIncomingDocs, TempFieldList, MasterData, TaskStartingDateTime, TableID);
+        LogNumberOfCollectedRecords(DataJsonArrays);
         CollectMasterData(DataJsonArrays, MasterData);
         if (DataJsonArrays.Count() <> 0) or (HandledIncomingDocs.Count() <> 0) then
             TransactionStorageABS.ArchiveTransactionsToABS(DataJsonArrays, HandledIncomingDocs);
@@ -95,7 +95,6 @@ codeunit 6202 "Transact. Storage Export Data"
         TransactStorageExport.GetExportDataTrack(TransactStorageTableEntry, RecRef);
         SetRangeOnDataTable(RecRef, TransactStorageTableEntry, TaskStartingDateTime);
         TransactStorageTableEntry."No. Of Records Exported" := 0;
-        FeatureTelemetry.LogUsage('0000LK5', TransactionStorageTok, StrSubstNo(ExportActionTok, RecRef.Name, 'started'));
         if RecRef.FindSet() then begin
             Clear(TableJsonArray);
             repeat
@@ -108,9 +107,6 @@ codeunit 6202 "Transact. Storage Export Data"
         end else
             TransactStorageExport.SetTableEntryProcessed(TransactStorageTableEntry, TransactStorageTableEntry."Filter Record To DT", false, '');
         TransactStorageExport.CheckTimeDeadline(TaskStartingDateTime);
-        FeatureTelemetry.LogUsage('0000LK6', TransactionStorageTok, StrSubstNo(ExportActionTok, RecRef.Name, 'ended'));
-        FeatureTelemetry.LogUsage(
-            '0000LK7', TransactionStorageTok, StrSubstNo(NoOfCollectedRecordsTxt, TransactStorageTableEntry."No. Of Records Exported", RecRef.Name));
         TransactStorageTableEntry."Record Filters" := CopyStr(RecRef.GetFilters(), 1, MaxStrLen(TransactStorageTableEntry."Record Filters"));
         TransactStorageTableEntry.Modify();
         RecRef.Close();
@@ -226,6 +222,19 @@ codeunit 6202 "Transact. Storage Export Data"
         FieldsToExport := GetFieldsToExport(TableID);
         foreach FieldID in FieldsToExport do
             UpdateTempFieldList(TempFieldList, TableID, FieldID);
+    end;
+
+    local procedure LogNumberOfCollectedRecords(var DataJsonArrays: Dictionary of [Integer, JsonArray])
+    var
+        TableMetadata: Record "Table Metadata";
+        CustomDimensions: Dictionary of [Text, Text];
+        TableID: Integer;
+    begin
+        foreach TableID in DataJsonArrays.Keys() do begin
+            TableMetadata.Get(TableID);
+            CustomDimensions.Add(TableMetadata.Name, Format(DataJsonArrays.Get(TableID).Count()));
+        end;
+        FeatureTelemetry.LogUsage('0000LK7', TransactionStorageTok, NoOfCollectedRecordsTxt, CustomDimensions);
     end;
 
     local procedure GetTablesToExport() TablesToExport: List of [Integer]

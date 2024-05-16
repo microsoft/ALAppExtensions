@@ -21,11 +21,10 @@ using System.Utilities;
 
 report 31015 "Sales - Advance VAT Doc. CZZ"
 {
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/SalesAdvanceVATDoc.rdl';
     Caption = 'Sales - Advance VAT Document';
     PreviewMode = PrintLayout;
     UsageCategory = None;
+    DefaultRenderingLayout = "SalesAdvanceVATDoc.rdl";
     WordMergeDataItem = TempSalesAdvLetterEntry;
 
     dataset
@@ -449,6 +448,7 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                 if IsCreditMemo(TempSalesAdvLetterEntry) then begin
                     SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", TempSalesAdvLetterEntry."Sales Adv. Letter No.");
                     SalesAdvLetterEntryCZZ.SetRange("Related Entry", TempSalesAdvLetterEntry."Related Entry");
+                    SalesAdvLetterEntryCZZ.SetFilter("Document No.", '<>%1', TempSalesAdvLetterEntry."Document No.");
                     SalesAdvLetterEntryCZZ.SetFilter("Entry No.", '<%1', TempSalesAdvLetterEntry."Entry No.");
                     if SalesAdvLetterEntryCZZ.FindLast() then
                         OriginalAdvanceVATDocumentNo := SalesAdvLetterEntryCZZ."Document No.";
@@ -476,6 +476,24 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                     }
                 }
             }
+        }
+    }
+
+    rendering
+    {
+        layout("SalesAdvanceVATDoc.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/SalesAdvanceVATDoc.rdl';
+            Caption = 'Sales Advance VAT Document (RDL)';
+            Summary = 'The Sales Advance VAT Document (RDL) provides a detailed layout.';
+        }
+        layout("SalesAdvanceVATDocEmail.docx")
+        {
+            Type = Word;
+            LayoutFile = './Src/Reports/SalesAdvanceVATDocEmail.docx';
+            Caption = 'Sales Advance VAT Document Email (Word)';
+            Summary = 'The Sales Advance VAT Document Email (Word) provides an email body layout.';
         }
     }
 

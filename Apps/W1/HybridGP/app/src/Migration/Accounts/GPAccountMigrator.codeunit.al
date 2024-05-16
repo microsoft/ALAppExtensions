@@ -16,16 +16,8 @@ codeunit 4017 "GP Account Migrator"
         BeginningBalanceTrxTxt: Label 'Beginning Balance', Locked = true;
         MigrationLogAreaTxt: Label 'Account', Locked = true;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccount', '', true, true)]
-    procedure OnMigrateGlAccount(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccount', '', true, true)]
     local procedure OnMigrateGlAccount(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
-#endif
     var
         GPAccount: Record "GP Account";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
@@ -49,16 +41,8 @@ codeunit 4017 "GP Account Migrator"
         MigrateAccountDetails(GPAccount, Sender);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateAccountTransactions', '', true, true)]
-    procedure OnMigrateAccountTransactions(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateAccountTransactions', '', true, true)]
     local procedure OnMigrateAccountTransactions(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
-#endif
     var
         GPAccount: Record "GP Account";
         GLAccount: Record "G/L Account";
@@ -81,16 +65,8 @@ codeunit 4017 "GP Account Migrator"
         GenerateGLTransactionBatches(GPAccount);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigratePostingGroups', '', true, true)]
-    procedure OnMigratePostingGroups(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigratePostingGroups', '', true, true)]
     local procedure OnMigratePostingGroups(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
-#endif
     var
         GPAccount: Record "GP Account";
         GLAccount: Record "G/L Account";
@@ -140,16 +116,8 @@ codeunit 4017 "GP Account Migrator"
         Sender.ModifyGLAccount(true);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnCreateOpeningBalanceTrx', '', true, true)]
-    procedure OnCreateOpeningBalanceTrx(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnCreateOpeningBalanceTrx', '', true, true)]
     local procedure OnCreateOpeningBalanceTrx(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
-#endif
     var
         GPAccount: Record "GP Account";
         GLAccount: Record "G/L Account";

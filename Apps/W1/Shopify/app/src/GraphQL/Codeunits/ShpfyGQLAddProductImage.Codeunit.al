@@ -10,7 +10,7 @@ codeunit 30219 "Shpfy GQL AddProductImage" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query": "mutation { productCreateMedia(media: {mediaContentType: IMAGE, originalSource: \"{{ResourceUrl}}\"}, productId: \"gid://shopify/Product/{{ProductId}}\") { media { ...mediaFieldsByType }}} fragment mediaFieldsByType on Media { ... on MediaImage { id }}"}');
+        exit('{"query": "mutation { productCreateMedia(media: {mediaContentType: IMAGE, originalSource: \"{{ResourceUrl}}\"}, productId: \"gid://shopify/Product/{{ProductId}}\") { media { ...mediaFieldsByType } mediaUserErrors {code field message}}} fragment mediaFieldsByType on Media { ... on MediaImage { id }}"}');
     end;
 
     /// <summary>

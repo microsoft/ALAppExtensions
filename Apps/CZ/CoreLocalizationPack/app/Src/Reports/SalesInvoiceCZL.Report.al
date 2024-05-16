@@ -32,10 +32,9 @@ using System.Text;
 
 report 31189 "Sales Invoice CZL"
 {
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/SalesInvoice.rdl';
     Caption = 'Sales Invoice';
     PreviewMode = PrintLayout;
+    DefaultRenderingLayout = "SalesInvoice.rdl";
     WordMergeDataItem = "Sales Invoice Header";
 
     dataset
@@ -154,26 +153,6 @@ report 31189 "Sales Invoice CZL"
             column(VATLbl; VATLbl)
             {
             }
-#if not CLEAN22
-            column(PrepayedLbl; PrepayedLbl)
-            {
-                ObsoleteState = Pending;
-                ObsoleteReason = 'The advance letters are not supported in this report any more. For invoice with advance letter use report 31018 from "Advance Payments Localization for Czech" app.';
-                ObsoleteTag = '22.0';
-            }
-            column(TotalAfterPrepayedLbl; TotalAfterPrepayedLbl)
-            {
-                ObsoleteState = Pending;
-                ObsoleteReason = 'The advance letters are not supported in this report any more. For invoice with advance letter use report 31018 from "Advance Payments Localization for Czech" app.';
-                ObsoleteTag = '22.0';
-            }
-            column(PaymentsLbl; PaymentsLbl)
-            {
-                ObsoleteState = Pending;
-                ObsoleteReason = 'The advance letters are not supported in this report any more. For invoice with advance letter use report 31018 from "Advance Payments Localization for Czech" app.';
-                ObsoleteTag = '22.0';
-            }
-#endif
             column(DisplayAdditionalFeeNote; DisplayAdditionalFeeNote)
             {
             }
@@ -633,12 +612,6 @@ report 31189 "Sales Invoice CZL"
 
                 if "Currency Code" = '' then
                     "Currency Code" := "General Ledger Setup"."LCY Code";
-#if not CLEAN22
-#pragma warning disable AL0432
-                if not ReplaceVATDateMgtCZL.IsEnabled() then
-                    "VAT Reporting Date" := "VAT Date CZL";
-#pragma warning restore AL0432
-#endif
                 Clear(QRPaymentCode);
                 if "Sales & Receivables Setup"."Print QR Payment CZL" and PaymentMethod."Print QR Payment CZL" then begin
                     CalcFields("Remaining Amount");
@@ -692,6 +665,25 @@ report 31189 "Sales Invoice CZL"
             LogInteractionEnable := LogInteraction;
         end;
     }
+
+    rendering
+    {
+        layout("SalesInvoice.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/SalesInvoice.rdl';
+            Caption = 'Sales Invoice (RDL)';
+            Summary = 'The Sales Invoice (RDL) provides a detailed layout.';
+        }
+        layout("SalesInvoiceEmail.docx")
+        {
+            Type = Word;
+            LayoutFile = './Src/Reports/SalesInvoiceEmail.docx';
+            Caption = 'Sales Invoice Email (Word)';
+            Summary = 'The Sales Invoice Email (Word) provides an email body layout.';
+        }
+    }
+
     trigger OnPreReport()
     begin
         if not CurrReport.UseRequestPage then
@@ -708,11 +700,6 @@ report 31189 "Sales Invoice CZL"
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
-#if not CLEAN22
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-#endif
         SegManagement: Codeunit SegManagement;
         LogInteractionEnable: Boolean;
         DocumentLbl: Label 'Invoice';
@@ -736,11 +723,6 @@ report 31189 "Sales Invoice CZL"
         VATAmtLbl: Label 'VAT Amount';
         TotalLbl: Label 'total';
         VATLbl: Label 'VAT';
-#if not CLEAN22
-        PrepayedLbl: Label 'Prepayed Advances';
-        TotalAfterPrepayedLbl: Label 'Total after Prepayed Advances';
-        PaymentsLbl: Label 'Payments List';
-#endif
         UnitPriceExclVATLbl: Label 'Unit Price Excl. VAT';
         GreetingLbl: Label 'Hello';
         ClosingLbl: Label 'Sincerely';

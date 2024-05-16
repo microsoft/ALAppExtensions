@@ -196,8 +196,7 @@ codeunit 148015 "SIE Import Export Tests"
         // [THEN] G/L Account "GLNO" is created. G/L Account with empty No is not created.
         GLAccount.Get(GLAccountNo);
         asserterror GLAccount.Get();
-        Assert.ExpectedError('The G/L Account does not exist.');
-        Assert.ExpectedErrorCode('DB:RecordNotFound');
+        Assert.ExpectedErrorCannotFind(Database::"G/L Account");
 
         LibraryVariableStorage.AssertEmpty();
     end;

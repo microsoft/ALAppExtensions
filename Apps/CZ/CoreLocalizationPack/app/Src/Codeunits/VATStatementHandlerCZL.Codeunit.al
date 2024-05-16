@@ -16,11 +16,6 @@ codeunit 31140 "VAT Statement Handler CZL"
     var
         GlobalGLAccount: Record "G/L Account";
         VATStatement: Report "VAT Statement";
-#if not CLEAN22
-#pragma warning disable AL0432
-        ReplaceVATDateMgt: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-#endif
         SettlementNoFilter: Text[50];
         StartDate: Date;
         EndDate: Date;
@@ -51,34 +46,6 @@ codeunit 31140 "VAT Statement Handler CZL"
     [EventSubscriber(ObjectType::Report, Report::"VAT Statement", 'OnCalcLineTotalOnBeforeCalcTotalAmountAccountTotaling', '', false, false)]
     local procedure CalcLineTotalOnCalcLineTotalOnBeforeCalcTotalAmountAccountTotaling(VATStmtLine: Record "VAT Statement Line"; var Amount: Decimal; UseAmtsInAddCurr: Boolean)
     begin
-#if not CLEAN22
-        if not ReplaceVATDateMgt.IsEnabled() then begin
-            Amount := 0;
-            GlobalGLAccount.CopyFilter("VAT Reporting Date Filter", GlobalGLAccount."Date Filter");
-            GlobalGLAccount.SetRange("VAT Reporting Date Filter");
-            if GlobalGLAccount.FindSet() and (VATStmtLine."Account Totaling" <> '') then
-                repeat
-                    case VATStmtLine."G/L Amount Type CZL" of
-                        VATStmtLine."G/L Amount Type CZL"::"Net Change":
-                            begin
-                                GlobalGLAccount.CalcFields("Net Change (VAT Date) CZL", "Net Change ACY (VAT Date) CZL");
-                                Amount := ConditionalAdd(Amount, GlobalGLAccount."Net Change (VAT Date) CZL", GlobalGLAccount."Net Change ACY (VAT Date) CZL", UseAmtsInAddCurr);
-                            end;
-                        VATStmtLine."G/L Amount Type CZL"::Debit:
-                            begin
-                                GlobalGLAccount.CalcFields("Debit Amount (VAT Date) CZL", "Debit Amt. ACY (VAT Date) CZL");
-                                Amount := ConditionalAdd(Amount, GlobalGLAccount."Debit Amount (VAT Date) CZL", GlobalGLAccount."Debit Amt. ACY (VAT Date) CZL", UseAmtsInAddCurr);
-                            end;
-                        VATStmtLine."G/L Amount Type CZL"::Credit:
-                            begin
-                                GlobalGLAccount.CalcFields("Credit Amount (VAT Date) CZL", "Credit Amt. ACY (VAT Date) CZL");
-                                Amount := ConditionalAdd(Amount, GlobalGLAccount."Credit Amount (VAT Date) CZL", GlobalGLAccount."Credit Amt. ACY (VAT Date) CZL", UseAmtsInAddCurr);
-                            end;
-                    end;
-                until GlobalGLAccount.Next() = 0;
-            exit;
-        end;
-#endif
         if VATStmtLine."G/L Amount Type CZL" = VATStmtLine."G/L Amount Type CZL"::"Net Change" then
             exit;
 
@@ -112,10 +79,6 @@ codeunit 31140 "VAT Statement Handler CZL"
     var
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
     begin
-#if not CLEAN22
-        if not ReplaceVATDateMgt.IsEnabled() then
-            VATEntry.SetRange("VAT Reporting Date");
-#endif
         VATEntry.SetVATStatementLineFiltersCZL(VATStmtLine);
         VATEntry.SetPeriodFilterCZL(
             PeriodSelection, StartDate, EndDate, VATReportingDateMgt.IsVATDateEnabled());

@@ -20,8 +20,6 @@ pageextension 31002 "Phys. Invt. Ledger Entries CZL" extends "Phys. Inventory Le
                 Caption = 'Counting Document';
                 Image = Print;
                 Ellipsis = true;
-                Promoted = true;
-                PromotedCategory = Process;
                 ToolTip = 'Print physical inventory counting document.';
 
                 trigger OnAction()
@@ -32,6 +30,12 @@ pageextension 31002 "Phys. Invt. Ledger Entries CZL" extends "Phys. Inventory Le
                     PhysInventoryLedgerEntry.SetRange("Posting Date", Rec."Posting Date");
                     Report.Run(Report::"Phys. Inventory Document CZL", true, false, PhysInventoryLedgerEntry);
                 end;
+            }
+        }
+        addlast(Category_Process)
+        {
+            actionref(PhysInventoryDocumentCZL_Promoted; PhysInventoryDocumentCZL)
+            {
             }
         }
     }

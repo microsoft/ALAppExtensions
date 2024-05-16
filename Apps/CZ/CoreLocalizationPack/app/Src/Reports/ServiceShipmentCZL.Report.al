@@ -408,8 +408,8 @@ report 31199 "Service Shipment CZL"
                 CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
                 CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
 
-                FormatAddress.ServiceShptShipTo(ShipToAddr, "Service Shipment Header");
-                FormatAddress.ServiceShptBillTo(CustAddr, ShipToAddr, "Service Shipment Header");
+                ServiceFormatAddress.ServiceShptShipTo(ShipToAddr, "Service Shipment Header");
+                ServiceFormatAddress.ServiceShptBillTo(CustAddr, ShipToAddr, "Service Shipment Header");
                 DocFooterText := FormatDocumentMgtCZL.GetDocumentFooterText("Language Code");
 
                 ItemTrackingDocManagement.SetRetrieveAsmItemTracking(true);
@@ -456,6 +456,7 @@ report 31199 "Service Shipment CZL"
         FormatAddress: Codeunit "Format Address";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         ItemTrackingDocManagement: Codeunit "Item Tracking Doc. Management";
+        ServiceFormatAddress: Codeunit "Service Format Address";
         DocumentLbl: Label 'Shipment';
         PageLbl: Label 'Page';
         CopyLbl: Label 'Copy';

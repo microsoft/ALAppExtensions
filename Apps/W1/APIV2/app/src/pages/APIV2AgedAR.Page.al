@@ -51,13 +51,25 @@ page 30031 "APIV2 - Aged AR"
                 {
                     Caption = 'Before';
                 }
+                field(period1Label; Rec."Period 1 Label")
+                {
+                    Caption = 'Period 1 Label';
+                }
                 field(period1Amount; Rec."Period 1")
                 {
                     Caption = 'Period 1';
                 }
+                field(period2Label; Rec."Period 2 Label")
+                {
+                    Caption = 'Period 2 Label';
+                }
                 field(period2Amount; Rec."Period 2")
                 {
                     Caption = 'Period 2';
+                }
+                field(period3Label; Rec."Period 3 Label")
+                {
+                    Caption = 'Period 3 Label';
                 }
                 field(period3Amount; Rec."Period 3")
                 {

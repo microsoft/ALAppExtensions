@@ -13,23 +13,12 @@ using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Reporting;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.AuditCodes;
-#if not CLEAN22
-using Microsoft.Foundation.BatchProcessing;
-using Microsoft.Foundation.Company;
-#endif
 using Microsoft.Inventory.Counting.Journal;
 using Microsoft.Inventory.Intrastat;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
-#if not CLEAN22
-using Microsoft.Purchases.Document;
-#endif
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
-#if not CLEAN22
-using Microsoft.Sales.Reports;
-using System.Environment.Configuration;
-#endif
 using System.Utilities;
 
 codeunit 31038 "Sales Posting Handler CZL"
@@ -157,9 +146,6 @@ codeunit 31038 "Sales Posting Handler CZL"
             GenJournalLine."Bal. Account No." := VATPostingSetup."Sales VAT Curr. Exch. Acc CZL";
         GenJournalLine."Posting Date" := SalesHeader."Posting Date";
         GenJournalLine."Document Date" := SalesHeader."Document Date";
-#if not CLEAN22
-        GenJournalLine."VAT Date CZL" := SalesHeader."VAT Date CZL";
-#endif
         GenJournalLine."VAT Reporting Date" := SalesHeader."VAT Reporting Date";
         GenJournalLine."Original Doc. VAT Date CZL" := SalesHeader."Original Doc. VAT Date CZL";
         GenJournalLine.Description := SalesHeader."Posting Description";
@@ -303,11 +289,6 @@ codeunit 31038 "Sales Posting Handler CZL"
             GenJournalLine."Bal. Account No." := VATPostingSetup."Sales VAT Curr. Exch. Acc CZL";
         GenJournalLine."Posting Date" := SalesHeader."Posting Date";
         GenJournalLine."Document Date" := SalesHeader."Document Date";
-#if not CLEAN22
-#pragma warning disable AL0432
-        GenJournalLine."VAT Date CZL" := SalesHeader."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
         GenJournalLine."VAT Reporting Date" := SalesHeader."VAT Reporting Date";
         GenJournalLine."Original Doc. VAT Date CZL" := SalesHeader."Original Doc. VAT Date CZL";
         GenJournalLine.Description := SalesHeader."Posting Description";
@@ -354,11 +335,6 @@ codeunit 31038 "Sales Posting Handler CZL"
     var
         VATDateHandlerCZL: Codeunit "VAT Date Handler CZL";
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        SalesHeader.CheckIntrastatMandatoryFieldsCZL();
-#pragma warning restore AL0432
-#endif
         VATDateHandlerCZL.CheckVATDateCZL(SalesHeader);
     end;
 
@@ -393,12 +369,6 @@ codeunit 31038 "Sales Posting Handler CZL"
         OnBeforeCheckTariffNo(SalesHeader, IsHandled);
         if IsHandled then
             exit;
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not SalesHeader.IsReplaceVATDateEnabled() then
-            SalesHeader."VAT Reporting Date" := SalesHeader."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
 
         CommoditySetupCZL.SetFilter("Valid From", '..%1', SalesHeader."VAT Reporting Date");
         CommoditySetupCZL.SetFilter("Valid To", '%1|%2..', 0D, SalesHeader."VAT Reporting Date");
@@ -590,73 +560,6 @@ codeunit 31038 "Sales Posting Handler CZL"
         if SalesCrMemoHeader."Variable Symbol CZL" = '' then
             SalesCrMemoHeader."Variable Symbol CZL" := BankOperationsFunctionsCZL.CreateVariableSymbol(SalesCrMemoHeader."No.");
     end;
-#if not CLEAN22
-#pragma warning disable AL0432
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterTestSalesLine', '', false, false)]
-    local procedure CheckIntrastatOnAfterTestSalesLine(SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")
-    begin
-        SalesLine.CheckIntrastatMandatoryFieldsCZL(SalesHeader);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterInitAssocItemJnlLine', '', false, false)]
-    local procedure CopyFieldsOnAfterInitAssocItemJnlLine(var ItemJournalLine: Record "Item Journal Line"; PurchaseHeader: Record "Purchase Header"; PurchaseLine: Record "Purchase Line")
-    begin
-        ItemJournalLine."Intrastat Transaction CZL" := PurchaseHeader.IsIntrastatTransactionCZL();
-        // recalc to base UOM
-        if ItemJournalLine."Net Weight CZL" <> 0 then
-            if PurchaseLine."Qty. per Unit of Measure" <> 0 then
-                ItemJournalLine."Net Weight CZL" := Round(ItemJournalLine."Net Weight CZL" / PurchaseLine."Qty. per Unit of Measure", 0.00001);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnPostItemJnlLineOnAfterCopyItemCharge', '', false, false)]
-    local procedure CopyFieldsOnPostItemJnlLineOnAfterCopyItemCharge(var ItemJournalLine: Record "Item Journal Line"; var TempItemChargeAssgntSales: Record "Item Charge Assignment (Sales)")
-    begin
-        ItemJournalLine."Incl. in Intrastat Amount CZL" := TempItemChargeAssgntSales."Incl. in Intrastat Amount CZL";
-        ItemJournalLine."Incl. in Intrastat S.Value CZL" := TempItemChargeAssgntSales."Incl. in Intrastat S.Value CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnPostItemChargePerOrderOnAfterCopyToItemJnlLine', '', false, false)]
-    local procedure CopyFieldsOnPostItemChargePerOrderOnAfterCopyToItemJnlLine(var ItemJournalLine: Record "Item Journal Line"; var TempItemChargeAssignmentSales: Record "Item Charge Assignment (Sales)")
-    begin
-        ItemJournalLine."Incl. in Intrastat Amount CZL" := TempItemChargeAssignmentSales."Incl. in Intrastat Amount CZL";
-        ItemJournalLine."Incl. in Intrastat S.Value CZL" := TempItemChargeAssignmentSales."Incl. in Intrastat S.Value CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnAfterValidatePostingAndDocumentDate', '', false, false)]
-    local procedure ValidateVATDateOnAfterValidatePostingAndDocumentDate(var SalesHeader: Record "Sales Header")
-    var
-        BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
-        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
-        VATDate: Date;
-        VATDateExists: Boolean;
-        ReplaceVATDate: Boolean;
-        PostingDate: Date;
-    begin
-        if SalesHeader.IsReplaceVATDateEnabled() then
-            exit;
-        if VATReportingDateMgt.IsVATDateEnabled() then begin
-            VATDateExists :=
-                BatchProcessingMgt.GetBooleanParameter(SalesHeader.RecordId, Enum::"Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDate) and
-                BatchProcessingMgt.GetDateParameter(SalesHeader.RecordId, Enum::"Batch Posting Parameter Type"::"VAT Date", VATDate);
-            if not VATDateExists then
-                VATDateExists :=
-                    BatchProcessingMgt.GetBooleanParameter(SalesHeader.RecordId, Enum::"Batch Posting Parameter Type"::"Replace VAT Date CZL", ReplaceVATDate) and
-                    BatchProcessingMgt.GetDateParameter(SalesHeader.RecordId, Enum::"Batch Posting Parameter Type"::"VAT Date CZL", VATDate);
-            if VATDateExists and (ReplaceVATDate or (SalesHeader."VAT Date CZL" = 0D)) then begin
-                SalesHeader.Validate("VAT Date CZL", VATDate);
-                SalesHeader.Modify();
-            end;
-        end else
-            if BatchProcessingMgt.GetDateParameter(SalesHeader.RecordId, Enum::"Batch Posting Parameter Type"::"Posting Date", PostingDate) and
-               (SalesHeader."Posting Date" <> SalesHeader."VAT Date CZL")
-            then begin
-                SalesHeader.Validate("VAT Date CZL", PostingDate);
-                SalesHeader.Modify();
-            end;
-    end;
-#pragma warning restore AL0432
-#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforeTestSalesLineItemCharge', '', false, false)]
     local procedure SkipCheckOnBeforeTestSalesLineItemCharge(SalesLine: Record "Sales Line"; var IsHandled: Boolean)
@@ -673,45 +576,6 @@ codeunit 31038 "Sales Posting Handler CZL"
     begin
         ItemJournalLine."G/L Correction CZL" := SalesHeader.Correction xor SalesLine."Negative CZL";
     end;
-#if not CLEAN22
-
-    [EventSubscriber(ObjectType::Report, Report::"Sales Document - Test", 'OnAfterCheckSalesDoc', '', false, false)]
-    local procedure CheckIntrastatMandatoryFieldsOnAfterCheckSalesDoc(SalesHeader: Record "Sales Header"; var ErrorCounter: Integer; var ErrorText: array[99] of Text[250])
-    var
-        StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
-        FeatureMgtFacade: Codeunit "Feature Management Facade";
-        MustBeSpecifiedLbl: Label '%1 must be specified.', Comment = '%1 = FieldCaption';
-        IntrastatFeatureKeyIdTok: Label 'ReplaceIntrastat', Locked = true;
-    begin
-        if FeatureMgtFacade.IsEnabled(IntrastatFeatureKeyIdTok) then
-            exit;
-        if not (SalesHeader.Ship or SalesHeader.Receive) then
-            exit;
-        if SalesHeader.IsIntrastatTransactionCZL() and SalesHeader.ShipOrReceiveInventoriableTypeItemsCZL() then begin
-            StatutoryReportingSetupCZL.Get();
-#pragma warning disable AL0432
-            if StatutoryReportingSetupCZL."Transaction Type Mandatory" then
-                if SalesHeader."Transaction Type" = '' then
-                    AddError(StrSubstNo(MustBeSpecifiedLbl, SalesHeader.FieldCaption("Transaction Type")), ErrorCounter, ErrorText);
-            if StatutoryReportingSetupCZL."Transaction Spec. Mandatory" then
-                if SalesHeader."Transaction Specification" = '' then
-                    AddError(StrSubstNo(MustBeSpecifiedLbl, SalesHeader.FieldCaption("Transaction Specification")), ErrorCounter, ErrorText);
-            if StatutoryReportingSetupCZL."Transport Method Mandatory" then
-                if SalesHeader."Transport Method" = '' then
-                    AddError(StrSubstNo(MustBeSpecifiedLbl, SalesHeader.FieldCaption("Transport Method")), ErrorCounter, ErrorText);
-            if StatutoryReportingSetupCZL."Shipment Method Mandatory" then
-                if SalesHeader."Shipment Method Code" = '' then
-                    AddError(StrSubstNo(MustBeSpecifiedLbl, SalesHeader.FieldCaption("Shipment Method Code")), ErrorCounter, ErrorText);
-#pragma warning restore AL0432
-        end;
-    end;
-
-    local procedure AddError(Text: Text[250]; var ErrorCounter: Integer; var ErrorText: array[99] of Text[250])
-    begin
-        ErrorCounter += 1;
-        ErrorText[ErrorCounter] := Text;
-    end;
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCheckTariffNo(SalesHeader: Record "Sales Header"; var IsHandled: Boolean);

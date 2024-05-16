@@ -404,6 +404,11 @@ table 11738 "Posted Cash Document Line CZP"
                 ShowDimensions();
             end;
         }
+        field(2678; "Allocation Account No."; Code[20])
+        {
+            Caption = 'Allocation Account No.';
+            DataClassification = CustomerContent;
+        }
     }
 
     keys

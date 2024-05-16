@@ -16,7 +16,6 @@ codeunit 147107 "CD Red Storno"
         LibrarySales: Codeunit "Library - Sales";
         Assert: Codeunit Assert;
         isInitialized: Boolean;
-        NoAppliesEntryErr: Label 'Applies-from Entry must have a value in Item Journal Line: Journal Template Name=, Journal Batch Name=, Line No.=0.';
         WrongValueErr: Label 'Wrong value of field %1 in table %2.';
 
     [Test]
@@ -90,6 +89,7 @@ codeunit 147107 "CD Red Storno"
     [Scope('OnPrem')]
     procedure TFS336176_CheckErrNoApplyEntry()
     var
+        ItemJnlLine: Record "Item Journal Line";
         ItemCode: Code[20];
         LocationCode: Code[10];
         ItemQty: Integer;
@@ -106,7 +106,7 @@ codeunit 147107 "CD Red Storno"
         CreatePostItemJnlLine(ItemCode, LocationCode, ItemQty, Amount);
         CreatePostInvtDocument("Invt. Doc. Document Type"::Shipment, LocationCode, ItemCode, ItemQty, Amount);
         asserterror CreatePostShipCorrItDocNoApply(LocationCode, ItemCode, ItemQty, Amount);
-        Assert.ExpectedError(NoAppliesEntryErr);
+        Assert.ExpectedTestFieldError(ItemJnlLine.FieldCaption("Applies-from Entry"), '');
     end;
 
     local procedure TFS336176_ShipReceipt(DocType: Enum "Invt. Doc. Document Type")

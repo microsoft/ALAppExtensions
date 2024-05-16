@@ -95,14 +95,20 @@ page 11753 "Unreliable Payer Entries CZL"
                 ToolTip = 'Create the account as a vendor''s bank account (if does not exists).';
                 Image = BankAccount;
                 Ellipsis = true;
-                Promoted = true;
-                PromotedCategory = New;
-                PromotedOnly = true;
 
                 trigger OnAction()
                 begin
                     Rec.CreateVendorBankAccountCZL(UnreliablePayerNoCZL);
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_New)
+            {
+                actionref(CreateVendorBankAccountCZL_Promoted; CreateVendorBankAccountCZL)
+                {
+                }
             }
         }
     }

@@ -7,9 +7,6 @@ namespace Microsoft.Finance.AdvancePayments;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
-#if not CLEAN22
-using Microsoft.Finance.VAT.Calculation;
-#endif
 using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Enums;
@@ -28,11 +25,6 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
     var
         SalesAdvLetterEntryCZZGlob: Record "Sales Adv. Letter Entry CZZ";
         TempSalesAdvLetterEntryCZZGlob: Record "Sales Adv. Letter Entry CZZ" temporary;
-#if not CLEAN22
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-#endif
         SalesAdvLetterPostCZZ: Codeunit "Sales Adv. Letter-Post CZZ";
         DocumentNoOrDatesEmptyErr: Label 'Document No. and Dates cannot be empty.';
         VATDocumentExistsErr: Label 'VAT Document already exists.';
@@ -781,13 +773,6 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         GenJournalLine."Salespers./Purch. Code" := CustLedgerEntry."Salesperson Code";
         GenJournalLine."On Hold" := CustLedgerEntry."On Hold";
         GenJournalLine."Posting Group" := CustLedgerEntry."Customer Posting Group";
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not ReplaceVATDateMgtCZL.IsEnabled() then
-            GenJournalLine.Validate("VAT Date CZL", CustLedgerEntry."VAT Date CZL")
-        else
-#pragma warning restore AL0432
-#endif
         GenJournalLine.Validate("VAT Reporting Date", CustLedgerEntry."VAT Date CZL");
         GenJournalLine."System-Created Entry" := true;
         OnAfterInitGenJnlLineFromCustLedgEntry(CustLedgerEntry, GenJournalLine);

@@ -374,9 +374,11 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         Application1patch: Text;
         Application1Version: Text;
         Command: Text;
-        Password: Text;
+        Password: SecretText;
+        PasswordFromEvent: Text;
         Serialnumber: Text;
         System: Text;
+        SecretContent: SecretText;
     begin
 
         BodyContentXmlDoc := XmlDocument.Create();
@@ -396,14 +398,16 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         System := 'Business Central';
 
         OnPrepareSOAPRequestBodyModuleCreate(Application1, Application1patch, Application1Version,
-                                             Command, Password, Serialnumber, System);
+                                             Command, PasswordFromEvent, Serialnumber, System);
+        if PasswordFromEvent <> '' then
+            Password := PasswordFromEvent;
 
         FunctionXmlElement := XmlElement.Create('function');
         FunctionXmlElement.SetAttribute('application1', Application1);
         FunctionXmlElement.SetAttribute('application1patch', Application1patch);
         FunctionXmlElement.SetAttribute('application1version', Application1Version);
         FunctionXmlElement.SetAttribute('command', Command);
-        FunctionXmlElement.SetAttribute('password', Password);
+        FunctionXmlElement.SetAttribute('password', Password.Unwrap());
         FunctionXmlElement.SetAttribute('serialnumber', Serialnumber);
         FunctionXmlElement.SetAttribute('system', System);
 
@@ -415,9 +419,9 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         if (EncodPos > 0) THEN
             TempXmlDocText := DelStr(TempXmlDocText, EncodPos, STRLEN(' standalone="No"'));
 
-        contentHttpContent.WriteFrom(TempXmlDocText);
+        SecretContent := TempXmlDocText;
+        contentHttpContent.WriteFrom(SecretContent);
         HttpRequestMessage.Content(contentHttpContent);
-
     end;
 
     [IntegrationEvent(false, false)]
@@ -546,6 +550,7 @@ codeunit 20117 "AMC Bank Assisted Mgt."
         OperationXmlNode: XMLElement;
         ChildXmlElement: XmlElement;
         TempXmlDocText: Text;
+        SecretContent: SecretText;
     begin
         BodyContentXmlDoc := XmlDocument.Create();
         BodyDeclaration := XmlDeclaration.Create('1.0', 'UTF-8', 'No');
@@ -567,7 +572,8 @@ codeunit 20117 "AMC Bank Assisted Mgt."
 
         BodyContentXmlDoc.WriteTo(TempXmlDocText);
         AMCBankServiceRequestMgt.RemoveUTF16(TempXmlDocText);
-        contentHttpContent.WriteFrom(TempXmlDocText);
+        SecretContent := TempXmlDocText;
+        contentHttpContent.WriteFrom(SecretContent);
         HttpRequestMessage.Content(contentHttpContent);
     end;
 

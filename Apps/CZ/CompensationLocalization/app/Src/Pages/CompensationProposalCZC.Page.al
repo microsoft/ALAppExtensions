@@ -205,13 +205,17 @@ page 31276 "Compensation Proposal CZC"
         FilteredCustLedgerEntry.SetRange(Open, true);
         FilteredCustLedgerEntry.SetRange(Prepayment, false);
         FilteredCustLedgerEntry.SetRange("Compensation Amount (LCY) CZC", 0);
+        FilteredCustLedgerEntry.SetRange("On Hold", '');
         FilteredCustLedgerEntry.SetFilter("Posting Date", '<=%1', PostingDate);
+        OnApplyFilterOnAfterSetCustLedgerEntryFilter(PostingDate, FilteredCustLedgerEntry);
 
         Clear(FilteredVendorLedgerEntry);
         FilteredVendorLedgerEntry.SetRange(Open, true);
         FilteredVendorLedgerEntry.SetRange(Prepayment, false);
         FilteredVendorLedgerEntry.SetRange("Compensation Amount (LCY) CZC", 0);
+        FilteredVendorLedgerEntry.SetRange("On Hold", '');
         FilteredVendorLedgerEntry.SetFilter("Posting Date", '<=%1', PostingDate);
+        OnApplyFilterOnAfterSetVendLedgerEntryFilter(PostingDate, FilteredVendorLedgerEntry);
 
         case CompensationTypeCZC of
             CompensationTypeCZC::Customer:
@@ -374,5 +378,15 @@ page 31276 "Compensation Proposal CZC"
         Clear(VendorLedgerEntry);
         CurrPage.CustLedgEntries.Page.GetEntries(CustLedgerEntry);
         CurrPage.VendLedgEntries.Page.GetEntries(VendorLedgerEntry);
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnApplyFilterOnAfterSetCustLedgerEntryFilter(PostingDate: Date; var CustLedgerEntry: Record "Cust. Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnApplyFilterOnAfterSetVendLedgerEntryFilter(PostingDate: Date; var VendorLedgerEntry: Record "Vendor Ledger Entry")
+    begin
     end;
 }

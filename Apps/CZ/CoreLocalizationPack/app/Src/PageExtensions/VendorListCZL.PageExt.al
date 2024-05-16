@@ -81,10 +81,14 @@ pageextension 11768 "Vendor List CZL" extends "Vendor List"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Balance Reconciliation';
                 Image = Balance;
-                Promoted = true;
-                PromotedCategory = "Report";
                 RunObject = report "Vendor-Bal. Reconciliation CZL";
                 ToolTip = 'Open the report for vendor''s balance reconciliation.';
+            }
+        }
+        addlast(Category_Report)
+        {
+            actionref("Balance Reconciliation CZL_Promoted"; "Balance Reconciliation CZL")
+            {
             }
         }
     }

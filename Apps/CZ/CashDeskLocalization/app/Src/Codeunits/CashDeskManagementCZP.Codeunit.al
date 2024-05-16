@@ -6,9 +6,6 @@ namespace Microsoft.Finance.CashDesk;
 
 using Microsoft.Bank.BankAccount;
 using Microsoft.Finance.GeneralLedger.Account;
-#if not CLEAN22
-using Microsoft.Finance.ReceivablesPayables;
-#endif
 using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.Foundation.Company;
 using Microsoft.HumanResources.Employee;
@@ -728,32 +725,6 @@ codeunit 11724 "Cash Desk Management CZP"
     begin
         PreviewMode := NewPreviewMode;
     end;
-#if not CLEAN22
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Posting Group Management CZL", 'OnCheckPostingGroupChange', '', false, false)]
-#pragma warning restore AL0432
-    local procedure OnCheckPostingGroupChange(NewPostingGroup: Code[20]; OldPostingGroup: Code[20]; SourceRecordRef: RecordRef; var CheckedPostingGroup: Option "None",Customer,CustomerInService,Vendor; var CustomerVendorNo: Code[20])
-    var
-        CashDocumentLineCZP: Record "Cash Document Line CZP";
-    begin
-        if not (SourceRecordRef.Number = Database::"Cash Document Line CZP") then
-            exit;
-
-        SourceRecordRef.SetTable(CashDocumentLineCZP);
-        case CashDocumentLineCZP."Account Type" of
-            CashDocumentLineCZP."Account Type"::Customer:
-                begin
-                    CheckedPostingGroup := CheckedPostingGroup::Customer;
-                    CustomerVendorNo := CashDocumentLineCZP."Account No.";
-                end;
-            CashDocumentLineCZP."Account Type"::Vendor:
-                begin
-                    CheckedPostingGroup := CheckedPostingGroup::Vendor;
-                    CustomerVendorNo := CashDocumentLineCZP."Account No.";
-                end;
-        end;
-    end;
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCheckUserRights(CashDeskNo: Code[20]; ActionType: Enum "Cash Document Action CZP"; var IsHandled: Boolean)

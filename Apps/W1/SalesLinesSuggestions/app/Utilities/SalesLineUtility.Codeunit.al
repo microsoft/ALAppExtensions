@@ -54,6 +54,7 @@ codeunit 7280 "Sales Line Utility"
         if FromSalesLine.FindSet() then begin
             OpenProgressWindow(ProgressDialog);
             TotalLines := FromSalesLine.Count();
+            CopyDocMgt.SetCopyExtendedText(true);
             repeat
                 if CopyDocMgt.CopySalesDocLine(
                      ToSalesHeader, ToSalesLine, ToSalesHeader, FromSalesLine,
@@ -67,6 +68,7 @@ codeunit 7280 "Sales Line Utility"
                 end;
                 ProgressDialog.Update(1, StrSubstNo(InsertingSalesLineLbl, Counter, TotalLines));
             until FromSalesLine.Next() = 0;
+            CopyDocMgt.SetCopyExtendedText(false);
             ProgressDialog.Close();
         end;
     end;

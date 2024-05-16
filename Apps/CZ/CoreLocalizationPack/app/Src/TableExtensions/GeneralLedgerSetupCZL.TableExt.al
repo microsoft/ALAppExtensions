@@ -16,21 +16,12 @@ using Microsoft.Purchases.Archive;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Payables;
-#if not CLEAN22
-using Microsoft.Purchases.Setup;
-#endif
 using Microsoft.Sales.Archive;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Receivables;
-#if not CLEAN22
-using Microsoft.Sales.Setup;
-#endif
 using Microsoft.Service.Document;
 using Microsoft.Service.History;
-#if not CLEAN22
-using Microsoft.Service.Setup;
-#endif
 using System.Utilities;
 
 tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
@@ -47,10 +38,6 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
                 CannotChangeFieldErr: Label 'You cannot change the contents of the %1 field because there are posted ledger entries.', Comment = '%1 = field caption';
                 DisableVATDateQst: Label 'Are you sure you want to disable VAT Date functionality?';
             begin
-#if not CLEAN22
-                if not ReplaceVATDateMgtCZL.IsEnabled() then
-                    exit;
-#endif
                 if ("VAT Reporting Date Usage" <> "VAT Reporting Date Usage"::Disabled) and
                    (xRec."VAT Reporting Date Usage" = xRec."VAT Reporting Date Usage"::Disabled)
                 then
@@ -128,53 +115,9 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
         {
             Caption = 'Use VAT Date';
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Replaced by VAT Reporting Date.';
-#if not CLEAN22
-            trigger OnValidate()
-            var
-                SalesSetup: Record "Sales & Receivables Setup";
-                PurchSetup: Record "Purchases & Payables Setup";
-                ServiceSetup: Record "Service Mgt. Setup";
-                GLEntry: Record "G/L Entry";
-                ConfirmManagement: Codeunit "Confirm Management";
-                InitVATDateQst: Label 'If you check field %1 you will let system post using %2 different from %3. Field %2 will be initialized from field %3 in all tables. It may take some time and you will not be able to undo this change after posting entries. Do you really want to continue?', Comment = '%1 = fieldcaption of Use VAT Date; %2 = fieldcaption of VAT Date; %3 = fieldcaption of Posting Date';
-                CannotChangeFieldErr: Label 'You cannot change the contents of the %1 field because there are posted ledger entries.', Comment = '%1 = field caption';
-                DisableVATDateQst: Label 'Are you sure you want to disable VAT Date functionality?';
-            begin
-                if ReplaceVATDateMgtCZL.IsEnabled() then
-                    exit;
-                if "Use VAT Date CZL" then begin
-                    if ConfirmManagement.GetResponseOrDefault(StrSubstNo(InitVATDateQst, FieldCaption("Use VAT Date CZL"),
-                      GLEntry.FieldCaption("VAT Date CZL"), GLEntry.FieldCaption("Posting Date")), true)
-                    then
-                        InitVATDateCZL()
-                    else
-                        "Use VAT Date CZL" := xRec."Use VAT Date CZL";
-                end else begin
-                    GLEntry.SetFilter("VAT Date CZL", '>%1', 0D);
-                    if not GLEntry.IsEmpty() then
-                        Error(CannotChangeFieldErr, FieldCaption("Use VAT Date CZL"));
-                    if ConfirmManagement.GetResponseOrDefault(DisableVATDateQst, false) then begin
-                        "Allow VAT Posting From CZL" := 0D;
-                        "Allow VAT Posting To CZL" := 0D;
-                        if SalesSetup.Get() then
-                            SalesSetup."Default VAT Date CZL" := SalesSetup."Default VAT Date CZL"::"Posting Date";
-                        if PurchSetup.Get() then
-                            PurchSetup."Default VAT Date CZL" := PurchSetup."Default VAT Date CZL"::"Posting Date";
-                        if ServiceSetup.Get() then
-                            ServiceSetup."Default VAT Date CZL" := ServiceSetup."Default VAT Date CZL"::"Posting Date";
-                    end else
-                        "Use VAT Date CZL" := xRec."Use VAT Date CZL";
-                end;
-            end;
-#endif
         }
         field(11781; "Do Not Check Dimensions CZL"; Boolean)
         {
@@ -224,12 +167,6 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
             DataClassification = CustomerContent;
         }
     }
-#if not CLEAN22
-#pragma warning disable AL0432
-    var
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-#endif
 
     procedure InitVATDateCZL()
     var
@@ -258,12 +195,6 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
 
     procedure TestIsVATDateEnabledCZL()
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not ReplaceVATDateMgtCZL.IsEnabled() then
-            TestField("Use VAT Date CZL");
-#pragma warning restore AL0432
-#endif
         if "VAT Reporting Date Usage" = "VAT Reporting Date Usage"::Disabled then
             FieldError("VAT Reporting Date Usage");
     end;

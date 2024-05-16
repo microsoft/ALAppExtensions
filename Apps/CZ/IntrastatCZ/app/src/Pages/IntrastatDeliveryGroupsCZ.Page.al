@@ -4,10 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Intrastat;
 
-#if not CLEAN22
-using System.Environment.Configuration;
-#endif
-
 page 31301 "Intrastat Delivery Groups CZ"
 {
     ApplicationArea = Basic, Suite;
@@ -49,23 +45,4 @@ page 31301 "Intrastat Delivery Groups CZ"
             }
         }
     }
-#if not CLEAN22
-
-    trigger OnOpenPage()
-    var
-        IntrastatReportMgt: Codeunit IntrastatReportManagement;
-        ApplicationAreaMgmt: Codeunit "Application Area Mgmt.";
-    begin
-        if not IntrastatReportMgt.IsFeatureEnabled() then begin
-            IntrastatReportMgt.ShowNotEnabledMessage(CurrPage.Caption);
-            if ApplicationAreaMgmt.IsBasicCountryEnabled('EU') then
-#pragma warning disable AL0432
-                Page.Run(Page::"Intrastat Delivery Groups CZL")
-#pragma warning restore AL0432
-            else
-                Page.Run(Page::"Feature Management");
-            Error('');
-        end;
-    end;
-#endif
 }

@@ -2332,6 +2332,8 @@ codeunit 20361 "Tax Json Deserialization"
                         ActionLoopThroughRecords."Case ID",
                         ActionLoopThroughRecords."Script ID",
                         JToken2Text30(JToken));
+                'CalculateSum':
+                    ActionLoopThroughRecField."Calculate Sum" := JToken.AsValue().AsBoolean();
                 else
                     Error(CannotReadPropertyErr, property);
             end;

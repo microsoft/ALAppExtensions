@@ -4,18 +4,25 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sales.Document;
 
+using System.AI;
 using System.Telemetry;
+using Microsoft.Inventory.Item;
+using System.Text;
 
-codeunit 7283 "Document Lookup Function" implements SalesAzureOpenAITools
+codeunit 7283 "Document Lookup Function" implements "AOAI Function"
 {
     Access = Internal;
 
     var
+        SourceDocumentRecordId: RecordId;
+        SearchQuery: Text;
+        SearchStyle: Enum "Search Style";
+        FunctionNameLbl: Label 'lookup_from_document', Locked = true;
         DocumentLookUpLbl: Label 'function_call: lookup_from_document', Locked = true;
         SourceDocumentRecordIDLbl: Label 'SourceDocumentRecordID', Locked = true;
 
     [NonDebuggable]
-    procedure GetToolPrompt(): JsonObject
+    procedure GetPrompt(): JsonObject
     var
         Prompt: Codeunit "SLS Prompts";
         PromptJson: JsonObject;
@@ -25,41 +32,43 @@ codeunit 7283 "Document Lookup Function" implements SalesAzureOpenAITools
     end;
 
     [NonDebuggable]
-    procedure ToolCall(Arguments: JsonObject; CustomDimension: Dictionary of [Text, Text]): Variant
+    procedure Execute(Arguments: JsonObject): Variant
     var
-        TempSalesLineAiSuggestion: Record "Sales Line AI Suggestions" temporary;
+        TempSalesLineAiSuggestionFromDocLookup: Record "Sales Line AI Suggestions" temporary;
+        TempSalesLineAiSuggestionFromItemSearch: Record "Sales Line AI Suggestions" temporary;
+        TempSalesLineAiSuggestionFiltered: Record "Sales Line AI Suggestions" temporary;
+        Item: Record Item;
         SalesLineAISuggestionImpl: Codeunit "Sales Lines Suggestions Impl.";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         NotificationManager: Codeunit "Notification Manager";
+        SearchUtility: Codeunit "Search";
+        SelectionFilterManagement: Codeunit SelectionFilterManagement;
         FeatureTelemetryCD: Dictionary of [Text, Text];
         DocLookupType: Enum "Document Lookup Types";
         DocumentLookupSubType: Interface DocumentLookupSubType;
-        ItemResults: JsonToken;
+        ItemsResults: JsonToken;
         ItemResultsArray: JsonArray;
         DocumentNo: Text;
         StartDateTxt: Text;
         EndDateTxt: Text;
-        SourceDocumentRecIdTxt: Text;
-        SearchQuery: Text;
+        ItemNoFilter: Text;
+        SearchIntentLbl: Label 'Add products to a sales order.', Locked = true;
     begin
-        if Arguments.Get('results', ItemResults) then begin
-            ItemResultsArray := ItemResults.AsArray();
+        if Arguments.Get('results', ItemsResults) then begin
+            ItemResultsArray := ItemsResults.AsArray();
 
             if not GetDetailsFromUserQuery(DocumentNo, StartDateTxt, EndDateTxt, DocLookupType, ItemResultsArray) then begin
                 FeatureTelemetry.LogError('0000MDX', SalesLineAISuggestionImpl.GetFeatureName(), DocumentLookUpLbl, 'Error in retrieving filters from user query', GetLastErrorCallStack());
                 NotificationManager.SendNotification(GetLastErrorText());
-                exit(TempSalesLineAiSuggestion);
+                exit(TempSalesLineAiSuggestionFromDocLookup);
             end;
-
-            CustomDimension.Get(SourceDocumentRecordIDLbl, SourceDocumentRecIdTxt);
-            CustomDimension.Get('SearchQuery', SearchQuery);
 
             DocumentLookupSubType := DocLookupType;
             FeatureTelemetryCD.Add('Document Type', DocLookupType.Names().Get(DocLookupType.Ordinals.IndexOf(DocLookupType.AsInteger())));
 
-            if SearchSalesDocument(TempSalesLineAiSuggestion, DocumentLookupSubType, SourceDocumentRecIdTxt, DocumentNo, StartDateTxt, EndDateTxt) then begin
+            if SearchSalesDocument(TempSalesLineAiSuggestionFromDocLookup, DocumentLookupSubType, Format(SourceDocumentRecordId), DocumentNo, StartDateTxt, EndDateTxt) then begin
                 FeatureTelemetry.LogUsage('0000ME0', SalesLineAISuggestionImpl.GetFeatureName(), DocumentLookUpLbl, FeatureTelemetryCD);
-                if TempSalesLineAiSuggestion.Count = 0 then
+                if TempSalesLineAiSuggestionFromDocLookup.Count = 0 then
                     NotificationManager.SendNotification(SalesLineAISuggestionImpl.GetNoSalesLinesSuggestionsMsg());
             end
             else begin
@@ -71,7 +80,70 @@ codeunit 7283 "Document Lookup Function" implements SalesAzureOpenAITools
             FeatureTelemetry.LogError('0000MML', SalesLineAISuggestionImpl.GetFeatureName(), 'Process Document Lookup', 'results not found in tools object.');
             NotificationManager.SendNotification(SalesLineAISuggestionImpl.GetChatCompletionResponseErr());
         end;
-        exit(TempSalesLineAiSuggestion);
+
+        // Check to see if there is a need to do a item search as well
+        if Arguments.Get('search_items', ItemsResults) then begin
+            FeatureTelemetry.LogUsage('0000MVF', SalesLineAISuggestionImpl.GetFeatureName(), DocumentLookUpLbl + ' Item Search in document.');
+
+            ItemResultsArray := ItemsResults.AsArray();
+
+            if not TempSalesLineAiSuggestionFromDocLookup.IsEmpty() then begin
+                if TempSalesLineAiSuggestionFromDocLookup.FindSet() then
+                    repeat
+                        if Item.Get(TempSalesLineAiSuggestionFromDocLookup."No.") then
+                            Item.Mark(true);
+                    until TempSalesLineAiSuggestionFromDocLookup.Next() = 0;
+                Item.MarkedOnly(true);
+                ItemNoFilter := SelectionFilterManagement.GetSelectionFilterForItem(Item);
+            end;
+            if SearchUtility.SearchMultiple(ItemResultsArray, SearchStyle, SearchIntentLbl, SearchQuery, 1, 25, false, true, TempSalesLineAiSuggestionFromItemSearch, ItemNoFilter) then begin
+                if TempSalesLineAiSuggestionFromItemSearch.Count = 0 then begin
+                    FeatureTelemetry.LogError('0000MVH', SalesLineAISuggestionImpl.GetFeatureName(), 'Process Document Lookup', 'Item search inside document returned no items.');
+                    NotificationManager.SendNotification(SalesLineAISuggestionImpl.GetNoSalesLinesSuggestionsMsg());
+                    exit(TempSalesLineAiSuggestionFromItemSearch);
+                end;
+                TempSalesLineAiSuggestionFromItemSearch.FindSet();
+                repeat
+                    TempSalesLineAiSuggestionFromDocLookup.SetRange("No.", TempSalesLineAiSuggestionFromItemSearch."No.");
+                    if TempSalesLineAiSuggestionFromDocLookup.FindSet() then
+                        repeat
+                            TempSalesLineAiSuggestionFiltered.Init();
+                            TempSalesLineAiSuggestionFiltered.Copy(TempSalesLineAiSuggestionFromDocLookup);
+                            TempSalesLineAiSuggestionFiltered.Quantity := TempSalesLineAiSuggestionFromItemSearch.Quantity;
+                            TempSalesLineAiSuggestionFiltered.Insert();
+                        until TempSalesLineAiSuggestionFromDocLookup.Next() = 0;
+                until TempSalesLineAiSuggestionFromItemSearch.Next() = 0;
+                TempSalesLineAiSuggestionFiltered.Reset();
+                FeatureTelemetry.LogUsage('0000MVG', SalesLineAISuggestionImpl.GetFeatureName(), 'Process Document Lookup' + ': Item Search inside document returned items.');
+                exit(TempSalesLineAiSuggestionFiltered);
+            end
+            else begin
+                FeatureTelemetry.LogError('0000MVE', SalesLineAISuggestionImpl.GetFeatureName(), 'Process Document Lookup', 'Item search inside document returned no items.');
+                NotificationManager.SendNotification(SalesLineAISuggestionImpl.GetChatCompletionResponseErr());
+            end;
+        end;
+
+        exit(TempSalesLineAiSuggestionFromDocLookup);
+    end;
+
+    procedure GetName(): Text
+    begin
+        exit(FunctionNameLbl);
+    end;
+
+    procedure SetSearchQuery(NewSearchQuery: Text)
+    begin
+        SearchQuery := NewSearchQuery;
+    end;
+
+    procedure SetSearchStyle(NewSearchStyle: Enum "Search Style")
+    begin
+        SearchStyle := NewSearchStyle;
+    end;
+
+    procedure SetSourceDocumentRecordId(NewSourceDocumentRecordId: RecordId)
+    begin
+        SourceDocumentRecordId := NewSourceDocumentRecordId;
     end;
 
     [TryFunction]

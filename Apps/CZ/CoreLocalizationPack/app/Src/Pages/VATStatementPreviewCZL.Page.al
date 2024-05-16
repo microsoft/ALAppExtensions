@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using System.Text;
+using Microsoft.Finance.GeneralLedger.Setup;
 
 page 31135 "VAT Statement Preview CZL"
 {
@@ -163,6 +164,7 @@ page 31135 "VAT Statement Preview CZL"
             DateFilter := Rec.GetFilter("Date Filter");
         end else
             DateFilter := '';
+        SetUseAmtsInAddCurr();
         UpdateSubForm();
     end;
 
@@ -241,5 +243,13 @@ page 31135 "VAT Statement Preview CZL"
     local procedure BeforeandWithinPeriodSelection()
     begin
         BeforeandWithinPeriodSelOnPush();
+    end;
+
+    local procedure SetUseAmtsInAddCurr()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        UseAmtsInAddCurr := GeneralLedgerSetup."Additional Reporting Currency" <> '';
     end;
 }

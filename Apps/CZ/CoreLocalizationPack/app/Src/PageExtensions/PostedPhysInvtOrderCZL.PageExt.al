@@ -19,8 +19,6 @@ pageextension 31003 "Posted Phys. Invt. Order CZL" extends "Posted Phys. Invt. O
                 Caption = 'Counting Document';
                 Image = Print;
                 Ellipsis = true;
-                Promoted = true;
-                PromotedCategory = Process;
                 ToolTip = 'Print physical inventory counting document.';
 
                 trigger OnAction()
@@ -31,6 +29,12 @@ pageextension 31003 "Posted Phys. Invt. Order CZL" extends "Posted Phys. Invt. O
                     PhysInventoryLedgerEntry.SetRange("Posting Date", Rec."Posting Date");
                     Report.Run(Report::"Phys. Inventory Document CZL", true, false, PhysInventoryLedgerEntry);
                 end;
+            }
+        }
+        addlast(Category_Process)
+        {
+            actionref(PhysInventoryDocumentCZL_Promoted; PhysInventoryDocumentCZL)
+            {
             }
         }
     }

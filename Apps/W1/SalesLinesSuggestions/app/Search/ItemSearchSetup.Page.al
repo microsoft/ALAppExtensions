@@ -26,8 +26,9 @@ page 7280 "Item Search Setup"
                     ApplicationArea = All;
                     QuickEntry = false;
                     Editable = false;
+#pragma warning disable AA0219
                     ToolTip = 'Status of the item search capability.';
-
+#pragma warning restore AA0219
                 }
             }
         }

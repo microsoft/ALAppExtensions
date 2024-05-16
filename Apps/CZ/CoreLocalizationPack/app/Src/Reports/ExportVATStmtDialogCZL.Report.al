@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Foundation.Company;
+using Microsoft.Finance.GeneralLedger.Setup;
 using System.Utilities;
 
 report 31003 "Export VAT Stmt. Dialog CZL"
@@ -49,6 +50,7 @@ report 31003 "Export VAT Stmt. Dialog CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Starting Date';
+                        TableRelation = "VAT Period CZL";
                         ToolTip = 'Specifies the first date in the period for which VAT statement were exported.';
 
                         trigger OnValidate()
@@ -202,7 +204,6 @@ report 31003 "Export VAT Stmt. Dialog CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Amounts in Add. Reporting Currency';
-                        Visible = false;
                         ToolTip = 'Specifies whether to show the reported amounts in the additional reporting currency.';
                     }
                 }
@@ -218,24 +219,14 @@ report 31003 "Export VAT Stmt. Dialog CZL"
         end;
     }
 
+    trigger OnInitReport()
+    begin
+        SetUseAmtsInAddCurr();
+    end;
+
     var
         RecordVATStatementName: Record "VAT Statement Name";
         VATStatementTemplate: Record "VAT Statement Template";
-        NoTax: Boolean;
-        PrintInIntegers: Boolean;
-        UseAmtsInAddCurr: Boolean;
-        ReasonsObservedOnCtrlEditable: Boolean;
-        RoundingDirectionCtrlVisible: Boolean;
-        FilledByEmployeeNo: Code[20];
-        VATStatementTemplateName: Code[10];
-        VATStatementName: Code[10];
-        NextYearVATPeriodCode: Code[3];
-        StartDate: Date;
-        EndDate: Date;
-        ReasonsObservedOn: Date;
-        Month: Integer;
-        Quarter: Integer;
-        Year: Integer;
         Comments: Integer;
         Attachments: Integer;
         Selection: Enum "VAT Statement Report Selection";
@@ -247,6 +238,23 @@ report 31003 "Export VAT Stmt. Dialog CZL"
         MonthDontEmptyIfQuarErr: Label 'Quarter must be 0 if Month is filled in.';
         MonthZeroIfQuarterErr: Label 'Month must be 0 if Quarter is filled in.';
         PageCaptionLbl: Label '%1: %2, %3', Comment = '%1=report caption, %2=VAT statement template name, %3=VAT statement name', Locked = true;
+
+    protected var
+        FilledByEmployeeNo: Code[20];
+        NextYearVATPeriodCode: Code[3];
+        VATStatementTemplateName: Code[10];
+        VATStatementName: Code[10];
+        StartDate: Date;
+        EndDate: Date;
+        ReasonsObservedOn: Date;
+        NoTax: Boolean;
+        PrintInIntegers: Boolean;
+        ReasonsObservedOnCtrlEditable: Boolean;
+        RoundingDirectionCtrlVisible: Boolean;
+        UseAmtsInAddCurr: Boolean;
+        Month: Integer;
+        Quarter: Integer;
+        Year: Integer;
 
     local procedure GetStatementNameRec()
     begin
@@ -307,7 +315,21 @@ report 31003 "Export VAT Stmt. Dialog CZL"
     end;
 
     local procedure StartDateOnAfterValidate()
+    var
+        VATPeriodCZL: Record "VAT Period CZL";
     begin
+        VATPeriodCZL.SetFilter("Starting Date", '%1..', StartDate);
+        VATPeriodCZL.FindSet();
+        if VATPeriodCZL.Next() > 0 then
+            EndDate := CalcDate('<-1D>', VATPeriodCZL."Starting Date");
         UpdateDateParameters();
+    end;
+
+    local procedure SetUseAmtsInAddCurr()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        UseAmtsInAddCurr := GeneralLedgerSetup."Additional Reporting Currency" <> '';
     end;
 }

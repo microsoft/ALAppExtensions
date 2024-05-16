@@ -89,10 +89,6 @@ page 11754 "Unrel. Payer Service Setup CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Set Default Web Service';
                 Image = Default;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 ToolTip = 'Set the default URL in the Unreliable Payer Web Service field.';
 
                 trigger OnAction()
@@ -100,6 +96,15 @@ page 11754 "Unrel. Payer Service Setup CZL"
                     UnreliablePayerMgtCZL.SetDefaultUnreliablePayerServiceURL(Rec);
                     Rec.Modify(true);
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(SettoDefault_Promoted; SettoDefault)
+                {
+                }
             }
         }
     }

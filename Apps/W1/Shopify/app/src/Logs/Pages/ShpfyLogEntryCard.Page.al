@@ -68,7 +68,7 @@ page 30120 "Shpfy Log Entry Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies if the request has errors.';
                 }
-                field(RequestId; Rec."Request Id")
+                field(RequestId; Rec."Shpfy Request Id")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the request ID.';

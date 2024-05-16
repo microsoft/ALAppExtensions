@@ -115,12 +115,12 @@ table 20101 "AMC Banking Setup"
         DemoUserNameTxt: Label 'demouser', Locked = true;
         DemoPasswordTxt: Label 'Demo Password', Locked = true;
 
-    internal procedure SavePassword(PasswordText: Text)
+    internal procedure SavePassword(PasswordText: SecretText)
     begin
         if IsNullGuid("Password Key") then
             "Password Key" := CreateGuid();
 
-        if (PasswordText <> '') then begin
+        if (not PasswordText.IsEmpty()) then begin
             if not EncryptionEnabled() then
                 IsolatedStorage.Set(CopyStr("Password Key", 1, 200), PasswordText, Datascope::Company)
             else
@@ -144,10 +144,9 @@ table 20101 "AMC Banking Setup"
         exit(ServiceUserName);
     end;
 
-    [NonDebuggable]
-    internal procedure GetPassword(): Text
+    internal procedure GetPassword(): SecretText
     var
-        Value: Text;
+        Value: SecretText;
     begin
         if ("User Name" = GetDemoUserName()) then
             exit(GetDemoPass());

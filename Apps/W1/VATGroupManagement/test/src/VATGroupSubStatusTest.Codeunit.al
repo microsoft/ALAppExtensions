@@ -486,7 +486,7 @@ codeunit 139741 "VAT Group Sub. Status Test"
         asserterror VATGroupSubmissionStatus.UpdateSingleVATReportStatus('VAT_CODE_1');
 
         // [THEN] Error will be thrown about missing setup table
-        Assert.ExpectedError('The VAT Report Setup does not exist. Identification fields and values: Primary key=''''');
+        Assert.ExpectedErrorCannotFind(Database::"VAT Report Setup");
     end;
 
     [Test]

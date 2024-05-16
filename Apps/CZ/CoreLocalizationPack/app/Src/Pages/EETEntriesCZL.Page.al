@@ -182,9 +182,6 @@ page 31145 "EET Entries CZL"
                 Caption = 'Send';
                 Image = SendElectronicDocument;
                 ToolTip = 'Sends the selected entry to the EET service to register.';
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
 
                 trigger OnAction()
                 begin
@@ -198,9 +195,6 @@ page 31145 "EET Entries CZL"
                 Caption = 'Verify';
                 Image = SendApprovalRequest;
                 ToolTip = 'Sends the selected entry to the EET service to verification.';
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
 
                 trigger OnAction()
                 begin
@@ -247,6 +241,18 @@ page 31145 "EET Entries CZL"
                     EETConfirmationCZL.SetTableView(EETEntryCZL);
                     EETConfirmationCZL.RunModal();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(Send_Promoted; Send)
+                {
+                }
+                actionref(Verify_Promoted; Verify)
+                {
+                }
             }
         }
     }

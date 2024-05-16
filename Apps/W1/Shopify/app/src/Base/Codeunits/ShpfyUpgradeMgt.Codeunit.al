@@ -22,13 +22,7 @@ codeunit 30106 "Shpfy Upgrade Mgt."
 
     trigger OnUpgradePerCompany()
     begin
-#if not CLEAN22
-        SetShpfyStockCalculation();
-#endif
         SetAllowOutgoingRequests();
-#if CLEAN22
-        MoveTemplatesData();
-#endif
         PriceCalculationUpgrade();
         LoggingModeUpgrade();
         LocationUpgrade();
@@ -39,17 +33,6 @@ codeunit 30106 "Shpfy Upgrade Mgt."
 #endif
         CreditMemoCanBeCreatedUpgrade();
     end;
-
-#if CLEAN22
-    local procedure MoveTemplatesData()
-    var
-        UpgradeTag: Codeunit "Upgrade Tag";
-    begin
-        if UpgradeTag.HasUpgradeTag(GetMoveTemplatesDataTag()) then
-            exit;
-        UpgradeTemplatesData();
-    end;
-#endif
 
     internal procedure UpgradeTemplatesData()
     var
@@ -255,11 +238,7 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         Shop.SetRange("Customer Posting Group", '');
         if Shop.FindSet(true) then
             repeat
-#if not CLEAN22
-                Shop.CopyPriceCalculationFieldsFromCustomerTemplate(Shop."Customer Template Code");
-#else
                 Shop.CopyPriceCalculationFieldsFromCustomerTempl(Shop."Customer Templ. Code");
-#endif
                 Shop.Modify();
             until Shop.Next() = 0;
 
@@ -318,28 +297,6 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         UpgradeTag.SetUpgradeTag(GetSyncPricesWithProductsUpgradeTag());
     end;
 
-#if not CLEAN22
-    internal procedure SetShpfyStockCalculation()
-    var
-        ShopLocation: Record "Shpfy Shop Location";
-        UpgradeTag: Codeunit "Upgrade Tag";
-    begin
-        if UpgradeTag.HasUpgradeTag(GetStockCalculationUpgradeTag()) then
-            exit;
-
-        if ShopLocation.FindSet() then
-            repeat
-                if ShopLocation.Disabled then begin
-                    ShopLocation.Disabled := false;
-                    ShopLocation."Stock Calculation" := ShopLocation."Stock Calculation"::Disabled;
-                    ShopLocation.Modify();
-                end;
-            until ShopLocation.Next() = 0;
-
-        UpgradeTag.SetUpgradeTag(GetStockCalculationUpgradeTag());
-    end;
-#endif
-
     internal procedure SetAutoReleaseSalesOrder()
     var
         ShpfyShop: Record "Shpfy Shop";
@@ -349,24 +306,6 @@ codeunit 30106 "Shpfy Upgrade Mgt."
             exit;
         ShpfyShop.ModifyAll("Auto Release Sales Orders", true);
         UpgradeTag.SetUpgradeTag(GetAutoReleaseSalesOrderTag());
-    end;
-
-    internal procedure SetB2BEnabled()
-    var
-        Shop: Record "Shpfy Shop";
-        UpgradeTag: Codeunit "Upgrade Tag";
-    begin
-        if UpgradeTag.HasUpgradeTag(GetShopifyB2BEnabledUpgradeTag()) then
-            exit;
-
-        Shop.SetRange(Enabled, true);
-        if Shop.FindSet() then
-            repeat
-                Shop."B2B Enabled" := Shop.GetB2BEnabled();
-                Shop.Modify();
-            until Shop.Next() = 0;
-
-        UpgradeTag.SetUpgradeTag(GetShopifyB2BEnabledUpgradeTag());
     end;
 
     local procedure SendShippingConfirmationUpgrade()
@@ -449,11 +388,6 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         RefundLineDataTransfer.CopyFields();
     end;
 
-    local procedure GetShopifyB2BEnabledUpgradeTag(): Code[250]
-    begin
-        exit('MS-490178-ShopifyB2B-20231101');
-    end;
-
     internal procedure GetAllowOutgoingRequestseUpgradeTag(): Code[250]
     begin
         exit('MS-445989-AllowOutgoingRequestseUpgradeTag-20220816');
@@ -468,13 +402,6 @@ codeunit 30106 "Shpfy Upgrade Mgt."
     begin
         exit('MS-459849-AutoReleaseSalesOrderTag-20230106')
     end;
-
-#if CLEAN22
-    local procedure GetMoveTemplatesDataTag(): Code[250]
-    begin
-        exit('MS-445489-MoveTemplatesData-20230209');
-    end;
-#endif
 
     internal procedure GetPriceCalculationUpgradeTag(): Code[250]
     begin
@@ -501,13 +428,6 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         exit('MS-495193-SendShippingConfirmationUpgradeTag-20231221');
     end;
 
-#if not CLEAN22
-    local procedure GetStockCalculationUpgradeTag(): Code[250]
-    begin
-        exit('MS-495993-StockCalculationUpgradeTag-20240108');
-    end;
-#endif
-
 #if CLEAN24
     local procedure GetOrderAttributeValueUpgradeTag(): Code[250]
     begin
@@ -532,9 +452,6 @@ codeunit 30106 "Shpfy Upgrade Mgt."
         PerCompanyUpgradeTags.Add(GetPriceCalculationUpgradeTag());
         PerCompanyUpgradeTags.Add(GetNewAvailabilityCalculationTag());
         PerCompanyUpgradeTags.Add(GetAutoReleaseSalesOrderTag());
-#if CLEAN22
-        PerCompanyUpgradeTags.Add(GetMoveTemplatesDataTag());
-#endif
         PerCompanyUpgradeTags.Add(GetLoggingModeUpgradeTag());
         PerCompanyUpgradeTags.Add(GetLocationUpgradeTag());
         PerCompanyUpgradeTags.Add(GetSyncPricesWithProductsUpgradeTag());

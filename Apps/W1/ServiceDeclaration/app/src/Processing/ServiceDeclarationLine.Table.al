@@ -64,13 +64,8 @@ table 5024 "Service Declaration Line"
         {
             Caption = 'VAT Registration No.';
             ObsoleteReason = 'Replaced with the VAT Reg. No.';
-#if CLEAN22
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#else
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#endif
         }
         field(15; "VAT Reg. No."; Text[50])
         {

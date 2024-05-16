@@ -6,40 +6,16 @@ namespace Microsoft.Purchases.Document;
 
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Setup;
-#if not CLEAN22
-using Microsoft.Purchases.Setup;
-#endif
 using Microsoft.Purchases.Vendor;
 
 codeunit 11744 "Purchase Header Handler CZL"
 {
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
-#if not CLEAN22
-        PurchasesPayablesSetup: Record "Purchases & Payables Setup";
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterInitRecord', '', false, false)]
     local procedure UpdateVatDateOnAfterInitRecord(var PurchHeader: Record "Purchase Header")
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not PurchHeader.IsReplaceVATDateEnabled() then begin
-            PurchasesPayablesSetup.Get();
-            case PurchasesPayablesSetup."Default VAT Date CZL" of
-                PurchasesPayablesSetup."Default VAT Date CZL"::"Posting Date":
-                    PurchHeader."VAT Date CZL" := PurchHeader."Posting Date";
-                PurchasesPayablesSetup."Default VAT Date CZL"::"Document Date":
-                    PurchHeader."VAT Date CZL" := PurchHeader."Document Date";
-                PurchasesPayablesSetup."Default VAT Date CZL"::Blank:
-                    PurchHeader."VAT Date CZL" := 0D;
-            end
-        end else
-            PurchHeader."VAT Date CZL" := GeneralLedgerSetup.GetVATDate(PurchHeader."Posting Date", PurchHeader."Document Date");
-        if PurchHeader."VAT Reporting Date" = 0D then
-            PurchHeader."VAT Reporting Date" := PurchHeader."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
         PurchHeader."Original Doc. VAT Date CZL" :=
             GeneralLedgerSetup.GetOriginalDocumentVATDateCZL(PurchHeader."Posting Date", PurchHeader."VAT Reporting Date", PurchHeader."Document Date");
     end;
@@ -47,14 +23,6 @@ codeunit 11744 "Purchase Header Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeValidateEvent', 'Posting Date', false, false)]
     local procedure UpdateVatDateOnBeforePostingDateValidate(var Rec: Record "Purchase Header")
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchasesPayablesSetup.Get();
-        if not Rec.IsReplaceVATDateEnabled() then
-            if PurchasesPayablesSetup."Default VAT Date CZL" = PurchasesPayablesSetup."Default VAT Date CZL"::"Posting Date" then
-                Rec.Validate("VAT Date CZL", Rec."Posting Date");
-#pragma warning restore AL0432
-#endif
         GeneralLedgerSetup.Get();
         GeneralLedgerSetup.UpdateOriginalDocumentVATDateCZL(Rec."Posting Date", Enum::"Default Orig.Doc. VAT Date CZL"::"Posting Date", Rec."Original Doc. VAT Date CZL");
         Rec.Validate("Original Doc. VAT Date CZL");
@@ -63,14 +31,6 @@ codeunit 11744 "Purchase Header Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeValidateEvent', 'Document Date', false, false)]
     local procedure UpdateVatDateOnBeforeDocumentDateValidate(var Rec: Record "Purchase Header")
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchasesPayablesSetup.Get();
-        if not Rec.IsReplaceVATDateEnabled() then
-            if PurchasesPayablesSetup."Default VAT Date CZL" = PurchasesPayablesSetup."Default VAT Date CZL"::"Document Date" then
-                Rec.Validate("VAT Date CZL", Rec."Document Date");
-#pragma warning restore AL0432
-#endif
         GeneralLedgerSetup.Get();
         GeneralLedgerSetup.UpdateOriginalDocumentVATDateCZL(Rec."Document Date", Enum::"Default Orig.Doc. VAT Date CZL"::"Document Date", Rec."Original Doc. VAT Date CZL");
         Rec.Validate("Original Doc. VAT Date CZL");
@@ -81,18 +41,6 @@ codeunit 11744 "Purchase Header Handler CZL"
     begin
         PurchaseHeader."Registration No. CZL" := Vendor.GetRegistrationNoTrimmedCZL();
         PurchaseHeader."Tax Registration No. CZL" := Vendor."Tax Registration No. CZL";
-#if not CLEAN22
-#pragma warning disable AL0432
-        if (Vendor."Transaction Type CZL" <> '') and
-           (Vendor."Transaction Type CZL" <> PurchaseHeader."Transaction Type")
-        then
-            PurchaseHeader.Validate("Transaction Type", Vendor."Transaction Type CZL");
-        if Vendor."Transaction Specification CZL" <> PurchaseHeader."Transaction Specification" then
-            PurchaseHeader.Validate("Transaction Specification", Vendor."Transaction Specification CZL");
-        if Vendor."Transport Method CZL" <> PurchaseHeader."Transport Method" then
-            PurchaseHeader.Validate("Transport Method", Vendor."Transport Method CZL");
-#pragma warning restore AL0432
-#endif
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnValidatePurchaseHeaderPayToVendorNoOnBeforeCheckDocType', '', false, false)]
@@ -135,19 +83,6 @@ codeunit 11744 "Purchase Header Handler CZL"
         PurchaseHeader."SWIFT Code CZL" := SourcePurchaseHeader."SWIFT Code CZL";
         PurchaseHeader."Transit No. CZL" := SourcePurchaseHeader."Transit No. CZL";
     end;
-#if not CLEAN22
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnUpdatePurchLinesByChangedFieldName', '', false, false)]
-    local procedure UpdatePurchLinesByChangedFieldName(PurchHeader: Record "Purchase Header"; var PurchLine: Record "Purchase Line"; ChangedFieldName: Text[100]; ChangedFieldNo: Integer)
-    begin
-        case ChangedFieldNo of
-#pragma warning disable AL0432
-            PurchHeader.FieldNo("Physical Transfer CZL"):
-                if (PurchLine.Type = PurchLine.Type::Item) and (PurchLine."No." <> '') then
-                    PurchLine."Physical Transfer CZL" := PurchHeader."Physical Transfer CZL";
-#pragma warning restore AL0432
-        end;
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'VAT Country/Region Code', false, false)]
     local procedure UpdateVATRegistrationNoCodeOnAfterVATCountryRegionCodeValidate(var Rec: Record "Purchase Header")

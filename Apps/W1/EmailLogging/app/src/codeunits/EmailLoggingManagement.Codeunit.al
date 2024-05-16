@@ -9,9 +9,6 @@ using Microsoft.CRM.Interaction;
 using System.Globalization;
 using System.Media;
 using System;
-#if not CLEAN22
-using System.EMail;
-#endif
 using System.Utilities;
 using System.Security.Encryption;
 using Microsoft.Utilities;
@@ -22,9 +19,6 @@ codeunit 1681 "Email Logging Management"
     Permissions = tabledata "Email Logging Setup" = rimd;
 
     var
-#if not CLEAN22
-        EmailLoggingUsingGraphApiFeatureIdTok: Label 'EmailLoggingUsingGraphApi', Locked = true;
-#endif
         EmailLoggingSetupHelpTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2115467', Locked = true;
         CategoryTok: Label 'Email Logging', Locked = true;
         ActivityLogRelatedRecordCodeTxt: Label 'EMLLOGGING', Locked = true;
@@ -56,28 +50,6 @@ codeunit 1681 "Email Logging Management"
         TenantIdExtractedTxt: Label 'Tenant ID has been extracted from token.', Locked = true;
         CannotExtractTenantIdTxt: Label 'Cannot extract the tenant ID from the access token.', Locked = true;
         CannotExtractTenantIdErr: Label 'Cannot extract the tenant ID from the access token.';
-
-#if not CLEAN22
-    [Obsolete('Feature EmailLoggingUsingGraphApi will be enabled by default in version 22.0', '22.0')]
-    internal procedure IsEmailLoggingUsingGraphApiFeatureEnabled() FeatureEnabled: Boolean;
-    var
-        FeatureManagementFacade: Codeunit "Feature Management Facade";
-    begin
-        FeatureEnabled := FeatureManagementFacade.IsEnabled(GetEmailLoggingUsingGraphApiFeatureKey());
-        OnIsEmailLoggingUsingGraphApiFeatureEnabled(FeatureEnabled);
-    end;
-
-    [Obsolete('Feature EmailLoggingUsingGraphApi will be enabled by default in version 22.0', '22.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnIsEmailLoggingUsingGraphApiFeatureEnabled(var FeatureEnabled: Boolean)
-    begin
-    end;
-
-    local procedure GetEmailLoggingUsingGraphApiFeatureKey(): Text[50]
-    begin
-        exit(EmailLoggingUsingGraphApiFeatureIdTok);
-    end;
-#endif
 
     internal procedure IsEmailLoggingEnabled(): Boolean
     var
@@ -167,13 +139,6 @@ codeunit 1681 "Email Logging Management"
         CurrentGlobalLanguage: Integer;
         NeedCommit: Boolean;
     begin
-#if not CLEAN22        
-        if GuidedExperience.Exists(GuidedExperienceType::"Assisted Setup", ObjectType::Page, Page::"Setup Email Logging") then begin
-            GuidedExperience.Remove(GuidedExperienceType::"Assisted Setup", ObjectType::Page, Page::"Setup Email Logging");
-            NeedCommit := true;
-        end;
-#endif
-
         if GuidedExperience.Exists(GuidedExperienceType::"Assisted Setup", ObjectType::Page, Page::"Email Logging Setup Wizard") then begin
             if NeedCommit then
                 Commit();
@@ -291,10 +256,9 @@ codeunit 1681 "Email Logging Management"
         exit(true);
     end;
 
-    [NonDebuggable]
-    internal procedure ExtractTenantIdFromAccessToken(AccessToken: Text) TenantId: Text
+    internal procedure ExtractTenantIdFromAccessToken(AccessToken: SecretText) TenantId: Text
     begin
-        if AccessToken <> '' then begin
+        if not AccessToken.IsEmpty() then begin
             if TryExtractTenantIdFromAccessToken(TenantId, AccessToken) then begin
                 if TenantId <> '' then begin
                     Session.LogMessage('0000G01', TenantIdExtractedTxt, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
@@ -311,13 +275,13 @@ codeunit 1681 "Email Logging Management"
 
     [TryFunction]
     [NonDebuggable]
-    internal procedure TryExtractTenantIdFromAccessToken(var TenantId: Text; AccessToken: Text)
+    internal procedure TryExtractTenantIdFromAccessToken(var TenantId: Text; AccessToken: SecretText)
     var
         JwtSecurityTokenHandler: DotNet JwtSecurityTokenHandler;
         JwtSecurityToken: DotNet JwtSecurityToken;
     begin
         JwtSecurityTokenHandler := JwtSecurityTokenHandler.JwtSecurityTokenHandler();
-        JwtSecurityToken := JwtSecurityTokenHandler.ReadToken(AccessToken);
+        JwtSecurityToken := JwtSecurityTokenHandler.ReadToken(AccessToken.Unwrap());
         JwtSecurityToken.Payload().TryGetValue('tid', TenantId);
     end;
 

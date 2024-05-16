@@ -146,13 +146,6 @@ pageextension 11710 "G/L Account Balance Lines CZL" extends "G/L Account Balance
         GLEntry.SetRange("G/L Account No.", GLAcc."No.");
         if GLAcc.Totaling <> '' then
             GLEntry.SetFilter("G/L Account No.", GLAcc.Totaling);
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not GLEntry.IsReplaceVATDateEnabled() then
-            GLEntry.SetFilter("VAT Date CZL", GLAcc.GetFilter("Date Filter"))
-        else
-#pragma warning restore AL0432
-#endif
             GLEntry.SetFilter("VAT Reporting Date", GLAcc.GetFilter("Date Filter"));
         GLEntry.SetFilter("Global Dimension 1 Code", GLAcc.GetFilter("Global Dimension 1 Filter"));
         GLEntry.SetFilter("Global Dimension 2 Code", GLAcc.GetFilter("Global Dimension 2 Filter"));
