@@ -27,7 +27,6 @@ codeunit 148053 "Invt. Mvmt. Templates CZL"
         Assert: Codeunit Assert;
         isInitialized: Boolean;
         TemplateNotFoundErr: Label 'The field Inventory Movement Template of table Item Document Header contains a value (%1) that cannot be found in the related table (Inventory Movement Template).', Comment = '%1 = name of Invt. Movement Template';
-        TemplateMustBeEmptyErr: Label 'Inventory Movement Template must be equal to %1  in Item Document Header', Comment = '%1 = expected value of template';
 
     local procedure Initialize();
     var
@@ -158,7 +157,7 @@ codeunit 148053 "Invt. Mvmt. Templates CZL"
         asserterror JobJournalLine.Validate("Invt. Movement Template CZL", PositiveInvtMovementTemplateCZL.Name);
 
         // [THEN] Error on Entry Type will occurs
-        Assert.ExpectedError('Entry Type must be equal to ''Negative Adjmt.''  in Inventory Movement Template');
+        Assert.ExpectedTestFieldError(PositiveInvtMovementTemplateCZL.FieldCaption("Entry Type"), Format(PositiveInvtMovementTemplateCZL."Entry Type"::"Negative Adjmt."));
     end;
 
     [Test]
@@ -277,6 +276,6 @@ codeunit 148053 "Invt. Mvmt. Templates CZL"
         asserterror InvtDocumentHeader.Validate("Gen. Bus. Posting Group", '');
 
         // [THEN] The error will occur
-        Assert.ExpectedError(StrSubstNo(TemplateMustBeEmptyErr, ''''''));
+        Assert.ExpectedTestFieldError(InvtDocumentHeader.FieldCaption("Invt. Movement Template CZL"), '');
     end;
 }

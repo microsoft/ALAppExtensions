@@ -104,13 +104,8 @@ tableextension 11701 "Customer CZL" extends Customer
             Caption = 'Transaction Type';
             TableRelation = "Transaction Type";
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31071; "Transaction Specification CZL"; Code[10])
@@ -118,13 +113,8 @@ tableextension 11701 "Customer CZL" extends Customer
             Caption = 'Transaction Specification';
             TableRelation = "Transaction Specification";
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field will not be used anymore.';
         }
         field(31072; "Transport Method CZL"; Code[10])
@@ -132,13 +122,8 @@ tableextension 11701 "Customer CZL" extends Customer
             Caption = 'Transport Method';
             TableRelation = "Transport Method";
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
     }

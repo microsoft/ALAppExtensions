@@ -95,10 +95,6 @@ codeunit 11748 "Install Application CZL"
                   tabledata "EET Entry CZL" = im,
                   tabledata "EET Entry Status Log CZL" = im,
                   tabledata "Constant Symbol CZL" = im,
-#if not CLEAN22
-                  tabledata "Subst. Cust. Posting Group CZL" = i,
-                  tabledata "Subst. Vend. Posting Group CZL" = i,
-#endif
                   tabledata "Specific Movement CZL" = im,
                   tabledata "Intrastat Delivery Group CZL" = im,
                   tabledata "User Setup Line CZL" = im,
@@ -264,10 +260,6 @@ codeunit 11748 "Install Application CZL"
         InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"EET Entry", Database::"EET Entry CZL");
         InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"EET Entry Status", Database::"EET Entry Status Log CZL");
         InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"EET Service Setup", Database::"EET Service Setup CZL");
-#if not CLEAN22
-        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Subst. Customer Posting Group", Database::"Subst. Cust. Posting Group CZL");
-        InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Subst. Vendor Posting Group", Database::"Subst. Vend. Posting Group CZL");
-#endif
         InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Subst. Customer Posting Group", Database::"Alt. Customer Posting Group");
         InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Subst. Vendor Posting Group", Database::"Alt. Vendor Posting Group");
         InstallApplicationsMgtCZL.InsertTableDataPermissions(AppInfo.Id(), Database::"Specific Movement", Database::"Specific Movement CZL");
@@ -669,9 +661,6 @@ codeunit 11748 "Install Application CZL"
         VATSetup: Record "VAT Setup";
     begin
         if GeneralLedgerSetup.Get() then begin
-#if not CLEAN22
-            GeneralLedgerSetup."Use VAT Date CZL" := GeneralLedgerSetup."Use VAT Date";
-#endif
             if GeneralLedgerSetup."Use VAT Date" then
                 GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::"Enabled (Prevent modification)"
             else
@@ -724,9 +713,6 @@ codeunit 11748 "Install Application CZL"
         if PurchasesPayablesSetup.Get() then begin
             PurchasesPayablesSetup."Default VAT Date CZL" := PurchasesPayablesSetup."Default VAT Date";
             PurchasesPayablesSetup."Allow Multiple Posting Groups" := PurchasesPayablesSetup."Allow Alter Posting Groups";
-#if not CLEAN22
-            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" := PurchasesPayablesSetup."Default Orig. Doc. VAT Date";
-#endif
             GeneralLedgerSetup.Get();
             case PurchasesPayablesSetup."Default Orig. Doc. VAT Date" of
                 PurchasesPayablesSetup."Default Orig. Doc. VAT Date"::Blank:
@@ -827,9 +813,6 @@ codeunit 11748 "Install Application CZL"
             GLEntryDataTransfer.SetTables(Database::"G/L Entry", Database::"G/L Entry");
             GLEntryDataTransfer.AddSourceFilter(GLEntry.FieldNo("Entry No."), '%1..%2', FromNo, ToNo);
             GLEntryDataTransfer.AddSourceFilter(GLEntry.FieldNo("VAT Date"), '<>%1', 0D);
-#if not CLEAN22
-            GLEntryDataTransfer.AddFieldValue(GLEntry.FieldNo("VAT Date"), GLEntry.FieldNo("VAT Date CZL"));
-#endif
             GLEntryDataTransfer.AddFieldValue(GLEntry.FieldNo("VAT Date"), GLEntry.FieldNo("VAT Reporting Date"));
             GLEntryDataTransfer.CopyFields();
             Clear(GLEntryDataTransfer);
@@ -857,31 +840,16 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyDetailedCustLedgEntry();
     var
         DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
-#if not CLEAN22
-        ApplTransactionDictionary: Dictionary of [Integer, Boolean];
-#endif
     begin
         DetailedCustLedgEntry.SetLoadFields("Entry No.", "Customer Posting Group", "Entry Type", "Transaction No.");
         if DetailedCustLedgEntry.FindSet(true) then
             repeat
-#if not CLEAN22
-                DetailedCustLedgEntry."Customer Posting Group CZL" := DetailedCustLedgEntry."Customer Posting Group";
                 DetailedCustLedgEntry."Posting Group" := DetailedCustLedgEntry."Customer Posting Group";
-                if DetailedCustLedgEntry."Entry Type" = DetailedCustLedgEntry."Entry Type"::Application then
-                    DetailedCustLedgEntry."Appl. Across Post. Groups CZL" :=
-                        IsCustomerApplAcrossPostGrpTransaction(DetailedCustLedgEntry."Transaction No.", ApplTransactionDictionary);
-#else
-                DetailedCustLedgEntry."Posting Group" := DetailedCustLedgEntry."Customer Posting Group";
-#endif
                 DetailedCustLedgEntry.Modify(false);
             until DetailedCustLedgEntry.Next() = 0;
     end;
-#if not CLEAN22
-    [Obsolete('The "Alter Posting Groups" feature is replaced by standard "Multiple Posting Groups" feature.', '22.0')]
-    procedure IsCustomerApplAcrossPostGrpTransaction(TransactionNo: Integer; var ApplTransactionDictionary: Dictionary of [Integer, Boolean]) ApplAcrossPostGroups: Boolean
-#else
+
     internal procedure IsCustomerApplAcrossPostGrpTransaction(TransactionNo: Integer; var ApplTransactionDictionary: Dictionary of [Integer, Boolean]) ApplAcrossPostGroups: Boolean
-#endif
     var
         DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
         FirstCustomerPostingGroup: Code[20];
@@ -923,31 +891,16 @@ codeunit 11748 "Install Application CZL"
     local procedure CopyDetailedVendorLedgEntry();
     var
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
-#if not CLEAN22
-        ApplTransactionDictionary: Dictionary of [Integer, Boolean];
-#endif
     begin
         DetailedVendorLedgEntry.SetLoadFields("Entry No.", "Vendor Posting Group", "Entry Type", "Transaction No.");
         if DetailedVendorLedgEntry.FindSet(true) then
             repeat
-#if not CLEAN22
-                DetailedVendorLedgEntry."Vendor Posting Group CZL" := DetailedVendorLedgEntry."Vendor Posting Group";
                 DetailedVendorLedgEntry."Posting Group" := DetailedVendorLedgEntry."Vendor Posting Group";
-                if DetailedVendorLedgEntry."Entry Type" = DetailedVendorLedgEntry."Entry Type"::Application then
-                    DetailedVendorLedgEntry."Appl. Across Post. Groups CZL" :=
-                        IsVendorApplAcrossPostGrpTransaction(DetailedVendorLedgEntry."Transaction No.", ApplTransactionDictionary);
-#else
-                DetailedVendorLedgEntry."Posting Group" := DetailedVendorLedgEntry."Vendor Posting Group";
-#endif
                 DetailedVendorLedgEntry.Modify(false);
             until DetailedVendorLedgEntry.Next() = 0;
     end;
-#if not CLEAN22
-    [Obsolete('The "Alter Posting Groups" feature is replaced by standard "Multiple Posting Groups" feature.', '22.0')]
-    procedure IsVendorApplAcrossPostGrpTransaction(TransactionNo: Integer; var ApplTransactionDictionary: Dictionary of [Integer, Boolean]) ApplAcrossPostGroups: Boolean
-#else
+
     internal procedure IsVendorApplAcrossPostGrpTransaction(TransactionNo: Integer; var ApplTransactionDictionary: Dictionary of [Integer, Boolean]) ApplAcrossPostGroups: Boolean
-#endif
     var
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
         FirstVendorPostingGroup: Code[20];
@@ -974,9 +927,6 @@ codeunit 11748 "Install Application CZL"
         VATEntryDataTransfer: DataTransfer;
     begin
         VATEntryDataTransfer.SetTables(Database::"VAT Entry", Database::"VAT Entry");
-#if not CLEAN22
-        VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo("VAT Date"), VATEntry.FieldNo("VAT Date CZL"));
-#endif
         VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo("VAT Date"), VATEntry.FieldNo("VAT Reporting Date"));
         VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo("Registration No."), VATEntry.FieldNo("Registration No. CZL"));
         VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo("VAT Settlement No."), VATEntry.FieldNo("VAT Settlement No. CZL"));
@@ -1001,9 +951,6 @@ codeunit 11748 "Install Application CZL"
         GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Transit No."), GenJournalLine.FieldNo("Transit No. CZL"));
         GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo(IBAN), GenJournalLine.FieldNo("IBAN CZL"));
         GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("SWIFT Code"), GenJournalLine.FieldNo("SWIFT Code CZL"));
-#if not CLEAN22
-        GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("VAT Date"), GenJournalLine.FieldNo("VAT Date CZL"));
-#endif
         GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("VAT Date"), GenJournalLine.FieldNo("VAT Reporting Date"));
         GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Registration No."), GenJournalLine.FieldNo("Registration No. CZL"));
         GenJournalLineDataTransfer.AddFieldValue(GenJournalLine.FieldNo("Tax Registration No."), GenJournalLine.FieldNo("Tax Registration No. CZL"));
@@ -1033,9 +980,6 @@ codeunit 11748 "Install Application CZL"
         SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Transit No."), SalesHeader.FieldNo("Transit No. CZL"));
         SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo(IBAN), SalesHeader.FieldNo("IBAN CZL"));
         SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("SWIFT Code"), SalesHeader.FieldNo("SWIFT Code CZL"));
-#if not CLEAN22
-        SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("VAT Date"), SalesHeader.FieldNo("VAT Date CZL"));
-#endif
         SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("VAT Date"), SalesHeader.FieldNo("VAT Reporting Date"));
         SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Registration No."), SalesHeader.FieldNo("Registration No. CZL"));
         SalesHeaderDataTransfer.AddFieldValue(SalesHeader.FieldNo("Tax Registration No."), SalesHeader.FieldNo("Tax Registration No. CZL"));
@@ -1079,9 +1023,6 @@ codeunit 11748 "Install Application CZL"
         SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Transit No."), SalesInvoiceHeader.FieldNo("Transit No. CZL"));
         SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo(IBAN), SalesInvoiceHeader.FieldNo("IBAN CZL"));
         SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("SWIFT Code"), SalesInvoiceHeader.FieldNo("SWIFT Code CZL"));
-#if not CLEAN22
-        SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("VAT Date"), SalesInvoiceHeader.FieldNo("VAT Date CZL"));
-#endif
         SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("VAT Date"), SalesInvoiceHeader.FieldNo("VAT Reporting Date"));
         SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Registration No."), SalesInvoiceHeader.FieldNo("Registration No. CZL"));
         SalesInvoiceHeaderDataTransfer.AddFieldValue(SalesInvoiceHeader.FieldNo("Tax Registration No."), SalesInvoiceHeader.FieldNo("Tax Registration No. CZL"));
@@ -1109,9 +1050,6 @@ codeunit 11748 "Install Application CZL"
         SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Transit No."), SalesCrMemoHeader.FieldNo("Transit No. CZL"));
         SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo(IBAN), SalesCrMemoHeader.FieldNo("IBAN CZL"));
         SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("SWIFT Code"), SalesCrMemoHeader.FieldNo("SWIFT Code CZL"));
-#if not CLEAN22
-        SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("VAT Date"), SalesCrMemoHeader.FieldNo("VAT Date CZL"));
-#endif
         SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("VAT Date"), SalesCrMemoHeader.FieldNo("VAT Reporting Date"));
         SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Registration No."), SalesCrMemoHeader.FieldNo("Registration No. CZL"));
         SalesCrMemoHeaderDataTransfer.AddFieldValue(SalesCrMemoHeader.FieldNo("Tax Registration No."), SalesCrMemoHeader.FieldNo("Tax Registration No. CZL"));
@@ -1151,9 +1089,6 @@ codeunit 11748 "Install Application CZL"
         SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Transit No."), SalesHeaderArchive.FieldNo("Transit No. CZL"));
         SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo(IBAN), SalesHeaderArchive.FieldNo("IBAN CZL"));
         SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("SWIFT Code"), SalesHeaderArchive.FieldNo("SWIFT Code CZL"));
-#if not CLEAN22
-        SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("VAT Date"), SalesHeaderArchive.FieldNo("VAT Date CZL"));
-#endif
         SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("VAT Date"), SalesHeaderArchive.FieldNo("VAT Reporting Date"));
         SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Registration No."), SalesHeaderArchive.FieldNo("Registration No. CZL"));
         SalesHeaderArchiveDataTransfer.AddFieldValue(SalesHeaderArchive.FieldNo("Tax Registration No."), SalesHeaderArchive.FieldNo("Tax Registration No. CZL"));
@@ -1181,9 +1116,6 @@ codeunit 11748 "Install Application CZL"
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Transit No."), PurchaseHeader.FieldNo("Transit No. CZL"));
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo(IBAN), PurchaseHeader.FieldNo("IBAN CZL"));
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("SWIFT Code"), PurchaseHeader.FieldNo("SWIFT Code CZL"));
-#if not CLEAN22
-        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("VAT Date"), PurchaseHeader.FieldNo("VAT Date CZL"));
-#endif
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("VAT Date"), PurchaseHeader.FieldNo("VAT Reporting Date"));
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Registration No."), PurchaseHeader.FieldNo("Registration No. CZL"));
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Tax Registration No."), PurchaseHeader.FieldNo("Tax Registration No. CZL"));
@@ -1229,9 +1161,6 @@ codeunit 11748 "Install Application CZL"
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Transit No."), PurchInvHeader.FieldNo("Transit No. CZL"));
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo(IBAN), PurchInvHeader.FieldNo("IBAN CZL"));
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("SWIFT Code"), PurchInvHeader.FieldNo("SWIFT Code CZL"));
-#if not CLEAN22
-        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("VAT Date"), PurchInvHeader.FieldNo("VAT Date CZL"));
-#endif
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("VAT Date"), PurchInvHeader.FieldNo("VAT Reporting Date"));
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Registration No."), PurchInvHeader.FieldNo("Registration No. CZL"));
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Tax Registration No."), PurchInvHeader.FieldNo("Tax Registration No. CZL"));
@@ -1262,9 +1191,6 @@ codeunit 11748 "Install Application CZL"
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Transit No."), PurchCrMemoHdr.FieldNo("Transit No. CZL"));
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo(IBAN), PurchCrMemoHdr.FieldNo("IBAN CZL"));
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("SWIFT Code"), PurchCrMemoHdr.FieldNo("SWIFT Code CZL"));
-#if not CLEAN22
-        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("VAT Date"), PurchCrMemoHdr.FieldNo("VAT Date CZL"));
-#endif
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("VAT Date"), PurchCrMemoHdr.FieldNo("VAT Reporting Date"));
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Registration No."), PurchCrMemoHdr.FieldNo("Registration No. CZL"));
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Tax Registration No."), PurchCrMemoHdr.FieldNo("Tax Registration No. CZL"));
@@ -1309,9 +1235,6 @@ codeunit 11748 "Install Application CZL"
         PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Transit No."), PurchaseHeaderArchive.FieldNo("Transit No. CZL"));
         PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo(IBAN), PurchaseHeaderArchive.FieldNo("IBAN CZL"));
         PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("SWIFT Code"), PurchaseHeaderArchive.FieldNo("SWIFT Code CZL"));
-#if not CLEAN22
-        PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("VAT Date"), PurchaseHeaderArchive.FieldNo("VAT Date CZL"));
-#endif
         PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("VAT Date"), PurchaseHeaderArchive.FieldNo("VAT Reporting Date"));
         PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Registration No."), PurchaseHeaderArchive.FieldNo("Registration No. CZL"));
         PurchaseHeaderArchiveDataTransfer.AddFieldValue(PurchaseHeaderArchive.FieldNo("Tax Registration No."), PurchaseHeaderArchive.FieldNo("Tax Registration No. CZL"));
@@ -1339,9 +1262,6 @@ codeunit 11748 "Install Application CZL"
         ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Transit No."), ServiceHeader.FieldNo("Transit No. CZL"));
         ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo(IBAN), ServiceHeader.FieldNo("IBAN CZL"));
         ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("SWIFT Code"), ServiceHeader.FieldNo("SWIFT Code CZL"));
-#if not CLEAN22
-        ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("VAT Date"), ServiceHeader.FieldNo("VAT Date CZL"));
-#endif
         ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("VAT Date"), ServiceHeader.FieldNo("VAT Reporting Date"));
         ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Registration No."), ServiceHeader.FieldNo("Registration No. CZL"));
         ServiceHeaderDataTransfer.AddFieldValue(ServiceHeader.FieldNo("Tax Registration No."), ServiceHeader.FieldNo("Tax Registration No. CZL"));
@@ -1384,9 +1304,6 @@ codeunit 11748 "Install Application CZL"
         ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Transit No."), ServiceInvoiceHeader.FieldNo("Transit No. CZL"));
         ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo(IBAN), ServiceInvoiceHeader.FieldNo("IBAN CZL"));
         ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("SWIFT Code"), ServiceInvoiceHeader.FieldNo("SWIFT Code CZL"));
-#if not CLEAN22
-        ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("VAT Date"), ServiceInvoiceHeader.FieldNo("VAT Date CZL"));
-#endif
         ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("VAT Date"), ServiceInvoiceHeader.FieldNo("VAT Reporting Date"));
         ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Registration No."), ServiceInvoiceHeader.FieldNo("Registration No. CZL"));
         ServiceInvoiceHeaderDataTransfer.AddFieldValue(ServiceInvoiceHeader.FieldNo("Tax Registration No."), ServiceInvoiceHeader.FieldNo("Tax Registration No. CZL"));
@@ -1414,9 +1331,6 @@ codeunit 11748 "Install Application CZL"
         ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Transit No."), ServiceCrMemoHeader.FieldNo("Transit No. CZL"));
         ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo(IBAN), ServiceCrMemoHeader.FieldNo("IBAN CZL"));
         ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("SWIFT Code"), ServiceCrMemoHeader.FieldNo("SWIFT Code CZL"));
-#if not CLEAN22
-        ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("VAT Date"), ServiceCrMemoHeader.FieldNo("VAT Date CZL"));
-#endif
         ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("VAT Date"), ServiceCrMemoHeader.FieldNo("VAT Reporting Date"));
         ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Registration No."), ServiceCrMemoHeader.FieldNo("Registration No. CZL"));
         ServiceCrMemoHeaderDataTransfer.AddFieldValue(ServiceCrMemoHeader.FieldNo("Tax Registration No."), ServiceCrMemoHeader.FieldNo("Tax Registration No. CZL"));
@@ -2663,21 +2577,9 @@ codeunit 11748 "Install Application CZL"
     var
         AltCustomerPostingGroup: Record "Alt. Customer Posting Group";
         SubstCustomerPostingGroup: Record "Subst. Customer Posting Group";
-#if not CLEAN22
-        SubstCustPostingGroupCZL: Record "Subst. Cust. Posting Group CZL";
-#endif
     begin
         if SubstCustomerPostingGroup.FindSet() then
             repeat
-#if not CLEAN22
-                if not SubstCustPostingGroupCZL.Get(SubstCustomerPostingGroup."Parent Cust. Posting Group", SubstCustomerPostingGroup."Customer Posting Group") then begin
-                    SubstCustPostingGroupCZL.Init();
-                    SubstCustPostingGroupCZL."Parent Customer Posting Group" := SubstCustomerPostingGroup."Parent Cust. Posting Group";
-                    SubstCustPostingGroupCZL."Customer Posting Group" := SubstCustomerPostingGroup."Customer Posting Group";
-                    SubstCustPostingGroupCZL.SystemId := SubstCustomerPostingGroup.SystemId;
-                    SubstCustPostingGroupCZL.Insert(false, true);
-                end;
-#endif
                 if not AltCustomerPostingGroup.Get(SubstCustomerPostingGroup."Parent Cust. Posting Group", SubstCustomerPostingGroup."Customer Posting Group") then begin
                     AltCustomerPostingGroup.Init();
                     AltCustomerPostingGroup."Customer Posting Group" := SubstCustomerPostingGroup."Parent Cust. Posting Group";
@@ -2692,21 +2594,9 @@ codeunit 11748 "Install Application CZL"
     var
         AltVendorPostingGroup: Record "Alt. Vendor Posting Group";
         SubstVendorPostingGroup: Record "Subst. Vendor Posting Group";
-#if not CLEAN22
-        SubstVendPostingGroupCZL: Record "Subst. Vend. Posting Group CZL";
-#endif
     begin
         if SubstVendorPostingGroup.FindSet() then
             repeat
-#if not CLEAN22
-                if not SubstVendPostingGroupCZL.Get(SubstVendorPostingGroup."Parent Vend. Posting Group", SubstVendorPostingGroup."Vendor Posting Group") then begin
-                    SubstVendPostingGroupCZL.Init();
-                    SubstVendPostingGroupCZL."Parent Vendor Posting Group" := SubstVendorPostingGroup."Parent Vend. Posting Group";
-                    SubstVendPostingGroupCZL."Vendor Posting Group" := SubstVendorPostingGroup."Vendor Posting Group";
-                    SubstVendPostingGroupCZL.SystemId := SubstVendorPostingGroup.SystemId;
-                    SubstVendPostingGroupCZL.Insert(false, true);
-                end;
-#endif
                 if not AltVendorPostingGroup.Get(SubstVendorPostingGroup."Parent Vend. Posting Group", SubstVendorPostingGroup."Vendor Posting Group") then begin
                     AltVendorPostingGroup.Init();
                     AltVendorPostingGroup."Vendor Posting Group" := SubstVendorPostingGroup."Parent Vend. Posting Group";

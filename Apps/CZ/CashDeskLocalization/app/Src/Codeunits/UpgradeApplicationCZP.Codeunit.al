@@ -135,7 +135,8 @@ codeunit 31107 "Upgrade Application CZP"
         then
             exit;
 
-        GeneralLedgerSetup.Get();
+        if not GeneralLedgerSetup.Get() then
+            GeneralLedgerSetup.Init();
         CashDocumentLine.SetLoadFields("Cash Desk No.", "Cash Document No.", "Line No.", Prepayment, "Advance Letter Link Code", "EET Transaction");
         if CashDocumentLine.FindSet() then
             repeat

@@ -27,13 +27,18 @@ codeunit 6205 "Transaction Storage ABS"
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
         CVRNumberGlobal: Text;
+        VATRegNoGlobal: Text;
         TransactionStorageTok: Label 'Transaction Storage', Locked = true;
         JsonContentTypeHeaderTok: Label 'application/json', Locked = true;
         ExportLogFileNameTxt: Label 'ExportLog', Locked = true;
         SendBlobBlockForTableTok: Label 'Send blob block for table %1 with name %2 to Azure Function', Comment = '%1 - table id, %2 - blob name', Locked = true;
         ExportOfIncomingDocTok: Label 'Export of incoming document %1 with name %2', Comment = '%1 - incoming document file name, %2 - blob name', Locked = true;
-        ExportedDocCountTxt: Label 'Export of incoming documents completed. Collected %1 documents, exported %2 documents', Comment = '%1 - collected documents count, %2 - exported documents count', Locked = true;
-        ExportedTablesCountTxt: Label 'Export of tables completed. Collected %1 tables, exported %2 tables', Comment = '%1 - collected tables count, %2 - exported tables count', Locked = true;
+        IncomingDocsExportedTxt: Label 'Incoming documents were exported.', Locked = true;
+        CollectedDocsCountTxt: Label 'Collected docs count', Locked = true;
+        ExportedDocsCountTxt: Label 'Exported docs count', Locked = true;
+        TablesExportedTxt: Label 'Tables were exported.', Locked = true;
+        CollectedTablesCountTxt: Label 'Collected tables count', Locked = true;
+        ExportedTablesCountTxt: Label 'Exported tables count', Locked = true;
         ExportedToABSTxt: Label 'Exported to Azure Blob Storage', Locked = true;
         BlobFolderNameTxt: Label '%1_%2/%3', Comment = '%1 - aad tenant id, %2 - environment name, %3 - date', Locked = true;
         JsonBlobNameTxt: Label '%1/%2.json', Comment = '%1 - blob folder name, %2 - table name', Locked = true;
@@ -97,6 +102,7 @@ codeunit 6205 "Transaction Storage ABS"
         BlobFolder: Text;
         BlobName: Text;
         JsonData: Text;
+        CustomDimensions: Dictionary of [Text, Text];
         BlobExpirationDate: Date;
     begin
         ContainerName := GetCompanyCVRNumber();
@@ -108,14 +114,16 @@ codeunit 6205 "Transaction Storage ABS"
             TableMetadata.Get(TableID);
             BlobName := StrSubstNo(JsonBlobNameTxt, BlobFolder, StringConversionManagement.RemoveNonAlphaNumericCharacters(TableMetadata.Name));
             AzureFunctionsResponse := SendJsonTextToAzureFunction(AzureFunctionsAuth, ContainerName, BlobName, JsonData, BlobExpirationDate);
-            HandleAzureFunctionResponse(AzureFunctionsResponse, StrSubstNo(SendBlobBlockForTableTok, TableID, BlobName));
+            HandleAzureFunctionResponse(AzureFunctionsResponse, StrSubstNo(SendBlobBlockForTableTok, TableID, BlobName), TableID);
             ExportedTableCount += 1;
             ExportLog.Add(BlobName, TableDataJsonArray.Count());
 
             if TransactStorageTableEntry.Get(TableID) then
                 TransactStorageExport.SetTableEntryProcessed(TransactStorageTableEntry, TransactStorageTableEntry."Filter Record To DT", true, CopyStr(BlobName, 1, MaxStrLen(TransactStorageTableEntry."Blob Name in ABS")));
         end;
-        FeatureTelemetry.LogUsage('0000LQ6', TransactionStorageTok, StrSubstNo(ExportedTablesCountTxt, DataJsonArrays.Count(), ExportedTableCount))
+        CustomDimensions.Add(CollectedTablesCountTxt, Format(DataJsonArrays.Count()));
+        CustomDimensions.Add(ExportedTablesCountTxt, Format(ExportedTableCount));
+        FeatureTelemetry.LogUsage('0000LQ6', TransactionStorageTok, TablesExportedTxt, CustomDimensions);
     end;
 
     [NonDebuggable]
@@ -130,6 +138,7 @@ codeunit 6205 "Transaction Storage ABS"
         AttachmentName: Text;
         FileExtension: Text;
         ContainerName: Text;
+        CustomDimensions: Dictionary of [Text, Text];
         IncomingDocEntryNo: Integer;
         ExportedDocCount: Integer;
         LargeFileCount: Integer;
@@ -158,7 +167,7 @@ codeunit 6205 "Transaction Storage ABS"
                             FileExtension := RemoveProhibitedChars(IncomingDocAttachment."File Extension");
                             BlobName := StrSubstNo(IncomingDocBlobNameTxt, BlobFolder, IncomingDocKey, AttachmentName, FileExtension);
                             AzureFunctionsResponse := SendDocumentToAzureFunction(AzureFunctionsAuth, ContainerName, BlobName, TempBlob, BlobExpirationDate);
-                            HandleAzureFunctionResponse(AzureFunctionsResponse, StrSubstNo(ExportOfIncomingDocTok, IncomingDocAttachment.Name, BlobName));
+                            HandleAzureFunctionResponse(AzureFunctionsResponse, StrSubstNo(ExportOfIncomingDocTok, IncomingDocAttachment.Name, BlobName), 0);
                             ExportedDocCount += 1;
                         end;
                 until IncomingDocAttachment.Next() = 0;
@@ -166,7 +175,9 @@ codeunit 6205 "Transaction Storage ABS"
         ExportLog.Add(IncomingDocAttachment.TableName, ExportedDocCount);
         if LargeFileCount > 0 then
             FeatureTelemetry.LogError('0000M7H', TransactionStorageTok, '', StrSubstNo(LargeFileFoundErr, LargeFileCount));
-        FeatureTelemetry.LogUsage('0000LT3', TransactionStorageTok, StrSubstNo(ExportedDocCountTxt, IncomingDocAttachment.Count(), ExportedDocCount));
+        CustomDimensions.Add(CollectedDocsCountTxt, Format(IncomingDocAttachment.Count()));
+        CustomDimensions.Add(ExportedDocsCountTxt, Format(ExportedDocCount));
+        FeatureTelemetry.LogUsage('0000LT3', TransactionStorageTok, IncomingDocsExportedTxt, CustomDimensions);
     end;
 
     [NonDebuggable]
@@ -190,13 +201,19 @@ codeunit 6205 "Transaction Storage ABS"
     local procedure SendJsonTextToAzureFunction(var AzureFunctionsAuth: Interface "Azure Functions Authentication"; ContainerName: Text; BlobName: Text; JsonText: Text; BlobExpirationDate: Date) AzureFunctionsResponse: Codeunit "Azure Functions Response"
     var
         AzureFunctions: Codeunit "Azure Functions";
+        AppInfo: ModuleInfo;
         RequestBodyJson: JsonObject;
         RequestBody: Text;
     begin
+        NavApp.GetCurrentModuleInfo(AppInfo);
         RequestBodyJson.Add('containerName', ContainerName);
         RequestBodyJson.Add('blobName', BlobName);
         RequestBodyJson.Add('blobContent', JsonText);
         RequestBodyJson.Add('blobExpirationDate', BlobExpirationDate);
+        RequestBodyJson.Add('aadTenantId', GetAadTenantId());
+        RequestBodyJson.Add('companyName', CompanyName());
+        RequestBodyJson.Add('vatRegistrationNo', GetCompanyVATRegistrationNo());
+        RequestBodyJson.Add('bcVersion', Format(AppInfo.DataVersion()));
         RequestBodyJson.WriteTo(RequestBody);
         AzureFunctionsResponse := AzureFunctions.SendPostRequest(AzureFunctionsAuth, RequestBody, JsonContentTypeHeaderTok);
     end;
@@ -206,22 +223,29 @@ codeunit 6205 "Transaction Storage ABS"
     var
         AzureFunctions: Codeunit "Azure Functions";
         Base64Convert: Codeunit "Base64 Convert";
+        AppInfo: ModuleInfo;
         BlobInStream: InStream;
         RequestBodyJson: JsonObject;
         RequestBody: Text;
     begin
+        NavApp.GetCurrentModuleInfo(AppInfo);
         Tempblob.CreateInStream(BlobInStream);
         RequestBodyJson.Add('containerName', ContainerName);
         RequestBodyJson.Add('blobName', BlobName);
         RequestBodyJson.Add('blobContent', Base64Convert.ToBase64(BlobInStream));
         RequestBodyJson.Add('blobExpirationDate', BlobExpirationDate);
+        RequestBodyJson.Add('aadTenantId', GetAadTenantId());
+        RequestBodyJson.Add('companyName', CompanyName());
+        RequestBodyJson.Add('vatRegistrationNo', GetCompanyVATRegistrationNo());
+        RequestBodyJson.Add('bcVersion', Format(AppInfo.DataVersion()));
         RequestBodyJson.WriteTo(RequestBody);
         AzureFunctionsResponse := AzureFunctions.SendPostRequest(AzureFunctionsAuth, RequestBody, JsonContentTypeHeaderTok);
     end;
 
     [NonDebuggable]
-    local procedure HandleAzureFunctionResponse(AzureFunctionsResponse: Codeunit "Azure Functions Response"; ActionText: Text)
+    local procedure HandleAzureFunctionResponse(AzureFunctionsResponse: Codeunit "Azure Functions Response"; ActionText: Text; TableID: Integer)
     var
+        TransactStorageTableEntry: Record "Transact. Storage Table Entry";
         ResultResponseMsg: HttpResponseMessage;
         CustomDimensions: Dictionary of [Text, Text];
     begin
@@ -230,6 +254,12 @@ codeunit 6205 "Transaction Storage ABS"
             CustomDimensions.Add('HttpStatusCode', Format(ResultResponseMsg.HttpStatusCode));
             CustomDimensions.Add('ResponseError', AzureFunctionsResponse.GetError());
             CustomDimensions.Add('ReasonPhrase', ResultResponseMsg.ReasonPhrase);
+            CustomDimensions.Add('CVR Number', GetCompanyCVRNumber());
+            if TableID <> 0 then begin
+                CustomDimensions.Add('Table ID', Format(TableID));
+                if TransactStorageTableEntry.Get(TableID) then
+                    CustomDimensions.Add('Record Filters', TransactStorageTableEntry."Record Filters");
+            end;
             FeatureTelemetry.LogError('0000LQ7', TransactionStorageTok, '', StrSubstNo(ActionFailedErr, ActionText), '', CustomDimensions);
             Error(AzFunctionResponseErr, ResultResponseMsg.HttpStatusCode, AzureFunctionsResponse.GetError(), ResultResponseMsg.ReasonPhrase);
         end;
@@ -253,10 +283,10 @@ codeunit 6205 "Transaction Storage ABS"
         ExpirationDate: Date;
         FiscalYearEndDate: Date;
     begin
-        ExpirationDate := CalcDate('<+5Y + 1D>', CurrentDate);
+        ExpirationDate := CalcDate('<+6Y>', CurrentDate);
         FiscalYearEndDate := AccountingPeriodMgt.FindEndOfFiscalYear(CurrentDate);
         if Date2DMY(FiscalYearEndDate, 3) <> 9999 then      // if end date of fiscal year was found
-            ExpirationDate := CalcDate('<+5Y + 1D>', FiscalYearEndDate);
+            ExpirationDate := CalcDate('<+6Y>', FiscalYearEndDate);
 
         exit(ExpirationDate);
     end;
@@ -319,11 +349,20 @@ codeunit 6205 "Transaction Storage ABS"
     begin
         if CVRNumberGlobal = '' then begin
             CompanyInformation.Get();
-            CVRNumberGlobal := RemoveProhibitedChars(CompanyInformation."Registration No.");
-            if CVRNumberGlobal = '' then
-                CVRNumberGlobal := ' ';
+            CVRNumberGlobal := FormatContainerName(CompanyInformation."Registration No.");
         end;
         exit(CVRNumberGlobal);
+    end;
+
+    local procedure GetCompanyVATRegistrationNo(): Text
+    var
+        CompanyInformation: Record "Company Information";
+    begin
+        if VATRegNoGlobal = '' then begin
+            CompanyInformation.Get();
+            VATRegNoGlobal := CompanyInformation."VAT Registration No.";
+        end;
+        exit(VATRegNoGlobal);
     end;
 
     [NonDebuggable]
@@ -336,5 +375,27 @@ codeunit 6205 "Transaction Storage ABS"
     local procedure RemoveProhibitedChars(InputValue: Text): Text
     begin
         exit(DelChr(InputValue, '=', './\'));
+    end;
+
+    [NonDebuggable]
+    local procedure FormatContainerName(InputValue: Text) OutputValue: Text
+    var
+        Regex: Codeunit Regex;
+        Ch: Char;
+    begin
+        InputValue := InputValue.ToLower();
+        foreach Ch in InputValue do
+            if ((Ch >= 'a') and (Ch <= 'z')) or
+               ((Ch >= '0') and (Ch <= '9')) or
+               (Ch = '-')
+            then
+                OutputValue += Ch;
+
+        // remove hypens from start and end of string
+        OutputValue := OutputValue.TrimStart('-');
+        OutputValue := OutputValue.TrimEnd('-');
+
+        // remove consecutive hypens
+        OutputValue := Regex.Replace(OutputValue, '-+', '-');
     end;
 }

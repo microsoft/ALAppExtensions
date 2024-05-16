@@ -63,6 +63,7 @@ codeunit 40112 "GP Migration Error Handler"
         GPUpgradeSettings: Record "GP Upgrade Settings";
     begin
         GPUpgradeSettings.GetonInsertGPUpgradeSettings(GPUpgradeSettings);
+        GPMigrationErrorOverview.SetRange("Company Name", CompanyName());
         GPMigrationErrorOverview.SetFilter(SystemModifiedAt, '>%1', GPUpgradeSettings."Data Upgrade Started");
         exit(not GPMigrationErrorOverview.IsEmpty());
     end;

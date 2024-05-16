@@ -52,30 +52,5 @@ pageextension 31115 "Posted Return Receipt CZL" extends "Posted Return Receipt"
                 ToolTip = 'Specifies the customerÍs market type to link business transactions to.';
             }
         }
-#if not CLEAN22
-        addlast(Shipping)
-        {
-            field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Intrastat Exclude (Obsolete)';
-                ToolTip = 'Specifies that entry will be excluded from intrastat.';
-                Editable = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
-            }
-            field("Physical Transfer CZL"; Rec."Physical Transfer CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Physical Transfer (Obsolete)';
-                ToolTip = 'Specifies if there is physical transfer of the item.';
-                Editable = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-            }
-        }
-#endif
     }
 }

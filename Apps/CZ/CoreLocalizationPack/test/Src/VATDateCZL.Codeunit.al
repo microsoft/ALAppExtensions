@@ -14,13 +14,7 @@ codeunit 148054 "VAT Date CZL"
         SalesReceivablesSetup: Record "Sales & Receivables Setup";
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
         ServiceMgtSetup: Record "Service Mgt. Setup";
-#if not CLEAN22
-        SalesHeader: Record "Sales Header";
-#endif
         PurchaseHeader: Record "Purchase Header";
-#if not CLEAN22
-        ServiceHeader: Record "Service Header";
-#endif
         GenJournalTemplate: Record "Gen. Journal Template";
         GenJournalBatch: Record "Gen. Journal Batch";
         GenJournalLine: Record "Gen. Journal Line";
@@ -29,24 +23,13 @@ codeunit 148054 "VAT Date CZL"
         VATStatementTemplate: Record "VAT Statement Template";
         VATSetup: Record "VAT Setup";
         LibraryERM: Codeunit "Library - ERM";
-#if not CLEAN22
-        LibrarySales: Codeunit "Library - Sales";
-#endif
         LibraryPurchase: Codeunit "Library - Purchase";
-#if not CLEAN22
-        LibraryService: Codeunit "Library - Service";
-#endif
         LibraryRandom: Codeunit "Library - Random";
         LibraryReportDataset: Codeunit "Library - Report Dataset";
         LibraryTaxCZL: Codeunit "Library - Tax CZL";
         PurchPost: Codeunit "Purch.-Post";
         Assert: Codeunit Assert;
         AccountType: Enum "Gen. Journal Account Type";
-#if not CLEAN22
-        SalesDocumentType: Enum "Sales Document Type";
-        PurchaseDocumentType: Enum "Purchase Document Type";
-        ServiceDocumentType: Enum "Service Document Type";
-#endif
         isInitialized: Boolean;
         RequestPageXML: Text;
         GLAccountNo: Code[20];
@@ -70,14 +53,8 @@ codeunit 148054 "VAT Date CZL"
         UserSetup.ModifyAll(UserSetup."Allow VAT Date To", 0D);
 
         GeneralLedgerSetup.Get();
-#if not CLEAN22
-#pragma warning disable AL0432
-        GeneralLedgerSetup."Use VAT Date CZL" := true;
-#pragma warning restore AL0432
-#else
         GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::Enabled;
         GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL"::Blank;
-#endif
 #if not CLEAN24
         GeneralLedgerSetup."Allow VAT Posting From CZL" := 0D;
         GeneralLedgerSetup."Allow VAT Posting To CZL" := 0D;
@@ -91,29 +68,14 @@ codeunit 148054 "VAT Date CZL"
 
         SalesReceivablesSetup.Get();
         SalesReceivablesSetup."Order Nos." := LibraryERM.CreateNoSeriesCode();
-#if not CLEAN22
-#pragma warning disable AL0432
-        SalesReceivablesSetup."Default VAT Date CZL" := SalesReceivablesSetup."Default VAT Date CZL"::Blank;
-#pragma warning restore AL0432
-#endif
         SalesReceivablesSetup.Modify();
 
         PurchasesPayablesSetup.Get();
         PurchasesPayablesSetup."Order Nos." := LibraryERM.CreateNoSeriesCode();
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchasesPayablesSetup."Default VAT Date CZL" := PurchasesPayablesSetup."Default VAT Date CZL"::Blank;
-#pragma warning restore AL0432
-#endif
         PurchasesPayablesSetup.Modify();
 
         ServiceMgtSetup.Get();
         ServiceMgtSetup."Service Order Nos." := LibraryERM.CreateNoSeriesCode();
-#if not CLEAN22
-#pragma warning disable AL0432
-        ServiceMgtSetup."Default VAT Date CZL" := ServiceMgtSetup."Default VAT Date CZL"::Blank;
-#pragma warning restore AL0432
-#endif
         ServiceMgtSetup.Modify();
         VATStatementTemplate.FindFirst();
         GLAccountNo := LibraryERM.CreateGLAccountNoWithDirectPosting();
@@ -122,141 +84,6 @@ codeunit 148054 "VAT Date CZL"
         Commit();
         LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"VAT Date CZL");
     end;
-#if not CLEAN22
-#pragma warning disable AL0432, AS0072
-
-    [Test]
-    [Obsolete('Not used.', '22.0')]
-    procedure SalesHeaderWithBlankVatDate()
-    begin
-        // [SCENARIO] Sales Header with blank VAT Date
-        Initialize();
-
-        // [GIVEN] Sales Setup has been set with blank VAT Date
-        SalesReceivablesSetup."Default VAT Date CZL" := SalesReceivablesSetup."Default VAT Date CZL"::Blank;
-        SalesReceivablesSetup.Modify();
-
-        // [GIVEN] New Sales Order has been created
-        LibrarySales.CreateSalesHeader(SalesHeader, SalesDocumentType::Order, LibrarySales.CreateCustomerNo());
-
-        // [WHEN] Validate Posting Date
-        SalesHeader.Validate("Posting Date", LibraryRandom.RandDate(30));
-
-        // [THEN] VAT Date will be blank
-        Assert.AreEqual(0D, SalesHeader."VAT Date CZL", SalesHeader.FieldCaption(SalesHeader."VAT Date CZL"));
-    end;
-
-    [Test]
-    [Obsolete('Not used.', '22.0')]
-    procedure SalesHeaderWithPostingVatDate()
-    begin
-        // [SCENARIO] Sales Header with VAT Date as Posting Date
-        Initialize();
-
-        // [GIVEN] Sales Setup has been set with VAT Date as Posting Date
-        SalesReceivablesSetup.Get();
-        SalesReceivablesSetup."Default VAT Date CZL" := SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date";
-        SalesReceivablesSetup.Modify();
-
-        // [GIVEN] New Sales Order has been created
-        LibrarySales.CreateSalesHeader(SalesHeader, SalesDocumentType::Order, LibrarySales.CreateCustomerNo());
-
-        // [WHEN] Validate Posting Date
-        SalesHeader.Validate("Posting Date", LibraryRandom.RandDate(30));
-
-        // [THEN] VAT Date will be Posting Date
-        Assert.AreEqual(SalesHeader."Posting Date", SalesHeader."VAT Date CZL", SalesHeader.FieldCaption(SalesHeader."VAT Date CZL"));
-    end;
-
-    [Test]
-    [Obsolete('Not used.', '22.0')]
-    procedure PurchaseHeaderWithBlankVatDate()
-    begin
-        // [SCENARIO] Purchase Header with blank VAT Date
-        Initialize();
-
-        // [GIVEN] Purchase Setup has been set with blank VAT Date
-        PurchasesPayablesSetup."Default VAT Date CZL" := PurchasesPayablesSetup."Default VAT Date CZL"::Blank;
-        PurchasesPayablesSetup.Modify();
-
-        // [GIVEN] New Purchase Order has been created
-        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseDocumentType::Order, LibraryPurchase.CreateVendorNo());
-
-        // [WHEN] Validate Posting Date
-        PurchaseHeader.Validate("Posting Date", LibraryRandom.RandDate(30));
-
-        // [THEN] VAT Date will be blank
-        Assert.AreEqual(0D, PurchaseHeader."VAT Date CZL", PurchaseHeader.FieldCaption(PurchaseHeader."VAT Date CZL"));
-    end;
-
-    [Test]
-    [Obsolete('Not used.', '22.0')]
-    procedure PurchaseHeaderWithPostingVatDate()
-    begin
-        // [SCENARIO] Purchase Header with VAT Date as Posting Date
-        Initialize();
-
-        // [GIVEN] Purchase Setup has been set with VAT Date as Posting Date
-        PurchasesPayablesSetup.Get();
-        PurchasesPayablesSetup."Default VAT Date CZL" := PurchasesPayablesSetup."Default VAT Date CZL"::"Posting Date";
-        PurchasesPayablesSetup.Modify();
-
-        // [GIVEN] New Purchase Order has been created
-        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseDocumentType::Order, LibraryPurchase.CreateVendorNo());
-
-        // [WHEN] Validate Posting Date
-        PurchaseHeader.Validate("Posting Date", LibraryRandom.RandDate(30));
-
-        // [THEN] VAT Date will be Posting Date
-        Assert.AreEqual(PurchaseHeader."Posting Date", PurchaseHeader."VAT Date CZL", PurchaseHeader.FieldCaption(PurchaseHeader."VAT Date CZL"));
-    end;
-
-    [Test]
-    [Obsolete('Not used.', '22.0')]
-    procedure ServiceHeaderWithBlankVatDate()
-    begin
-        // [SCENARIO] Service Header with blank VAT Date
-        Initialize();
-
-        // [GIVEN] Service Setup has been set with blank VAT Date
-        ServiceMgtSetup."Default VAT Date CZL" := ServiceMgtSetup."Default VAT Date CZL"::Blank;
-        ServiceMgtSetup.Modify();
-
-        // [GIVEN] New Service Order has been created
-        Clear(ServiceHeader);
-        LibraryService.CreateServiceHeader(ServiceHeader, ServiceDocumentType::Order, LibrarySales.CreateCustomerNo());
-
-        // [WHEN] Validate Posting Date
-        ServiceHeader.Validate("Posting Date", LibraryRandom.RandDate(30));
-
-        // [THEN] VAT Date will be blank
-        Assert.AreEqual(0D, ServiceHeader."VAT Date CZL", ServiceHeader.FieldCaption(ServiceHeader."VAT Date CZL"));
-    end;
-
-    [Test]
-    [Obsolete('Not used.', '22.0')]
-    procedure ServiceHeaderWithPostingVatDate()
-    begin
-        // [SCENARIO] Service Header with VAT Date as Posting Date
-        Initialize();
-
-        // [GIVEN] Service Setup has been set with VAT Date as Posting Date
-        ServiceMgtSetup.Get();
-        ServiceMgtSetup."Default VAT Date CZL" := ServiceMgtSetup."Default VAT Date CZL"::"Posting Date";
-        ServiceMgtSetup.Modify();
-
-        // [GIVEN] New Service Order has been created
-        Clear(ServiceHeader);
-        LibraryService.CreateServiceHeader(ServiceHeader, ServiceDocumentType::Order, LibrarySales.CreateCustomerNo());
-
-        // [WHEN] Validate Posting Date
-        ServiceHeader.Validate("Posting Date", LibraryRandom.RandDate(30));
-
-        // [THEN] VAT Date will be Posting Date
-        Assert.AreEqual(ServiceHeader."Posting Date", ServiceHeader."VAT Date CZL", ServiceHeader.FieldCaption(ServiceHeader."VAT Date CZL"));
-    end;
-#pragma warning restore AL0432, AS0072
-#endif    
 
     [Test]
     procedure GenJnlLineWithoutUseVatDate()
@@ -277,13 +104,7 @@ codeunit 148054 "VAT Date CZL"
         GenJournalLine.Validate("Posting Date", LibraryRandom.RandDate(30));
 
         // [THEN] VAT Date will be Posting Date
-#if not CLEAN22
-#pragma warning disable AL0432
-        Assert.AreEqual(GenJournalLine."Posting Date", GenJournalLine."VAT Date CZL", GenJournalLine.FieldCaption(GenJournalLine."VAT Date CZL"));
-#pragma warning restore AL0432
-#else
         Assert.AreEqual(GenJournalLine."Posting Date", GenJournalLine."VAT Reporting Date", GenJournalLine.FieldCaption(GenJournalLine."VAT Reporting Date"));
-#endif
     end;
 
     [Test]
@@ -305,13 +126,7 @@ codeunit 148054 "VAT Date CZL"
         GenJournalLine.Validate("Posting Date", LibraryRandom.RandDate(30));
 
         // [THEN] VAT Date is Posting Date
-#if not CLEAN22
-#pragma warning disable AL0432
-        Assert.AreEqual(GenJournalLine."Posting Date", GenJournalLine."VAT Date CZL", GenJournalLine.FieldCaption(GenJournalLine."VAT Date CZL"));
-#pragma warning restore AL0432
-#else
         Assert.AreEqual(GenJournalLine."Posting Date", GenJournalLine."VAT Reporting Date", GenJournalLine.FieldCaption(GenJournalLine."VAT Reporting Date"));
-#endif
     end;
 
     [Test]
@@ -344,13 +159,7 @@ codeunit 148054 "VAT Date CZL"
 
         // [THEN] VAT Entry will have VAT Date
         VATEntry.FindLast();
-#if not CLEAN22
-#pragma warning disable AL0432
-        Assert.AreEqual(VatEntry."Posting Date", VatEntry."VAT Date CZL", VatEntry.FieldCaption(VatEntry."VAT Date CZL"));
-#pragma warning restore AL0432
-#else
         Assert.AreEqual(VatEntry."Posting Date", VatEntry."VAT Reporting Date", VatEntry.FieldCaption(VatEntry."VAT Reporting Date"));
-#endif
     end;
 
     [Test]
@@ -380,13 +189,7 @@ codeunit 148054 "VAT Date CZL"
 
         // [GIVEN] Gen. Journal Line dates have been modified
         GenJournalLine.Validate("Posting Date", VATPeriodCZL."Starting Date");
-#if not CLEAN22
-#pragma warning disable AL0432
-        GenJournalLine.Validate("VAT Date CZL", 0D);
-#pragma warning restore AL0432
-#else
         GenJournalLine.Validate("VAT Reporting Date", 0D);
-#endif
         GenJournalLine.Validate("Gen. Posting Type", Enum::"General Posting Type"::" ");
         GenJournalLine.Validate("Gen. Bus. Posting Group", '');
         GenJournalLine.Validate("Gen. Prod. Posting Group", '');
@@ -406,7 +209,6 @@ codeunit 148054 "VAT Date CZL"
     var
         VATPeriodCZL: Record "VAT Period CZL";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
-        TestClosedFieldErr: Label 'Closed must be equal to ''No''  in VAT Period: Starting Date=%1. Current value is ''Yes''.', Comment = '%1 = Starting Date of VAT period';
     begin
         // [SCENARIO] If the Gen. Journal Line is posting to closed VAT period with VAT then VAT Date check is performed
         Initialize();
@@ -434,7 +236,7 @@ codeunit 148054 "VAT Date CZL"
         asserterror GenJnlPostLine.Run(GenJournalLine);
 
         // [THEN] Error will occurs because VAT period must be open
-        Assert.ExpectedError(StrSubstNo(TestClosedFieldErr, VATPeriodCZL."Starting Date"));
+        Assert.ExpectedTestFieldError(VATPeriodCZL.FieldCaption(Closed), Format(false));
     end;
 
     [Test]
@@ -469,15 +271,8 @@ codeunit 148054 "VAT Date CZL"
 #pragma warning restore AA0233, AA0181
         PurchaseHeader.Validate("Posting Date", VATPeriodCZL."Starting Date");
         VATPeriodCZL.Next();
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchaseHeader.Validate("VAT Date CZL", VATPeriodCZL."Starting Date");
-        PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Date CZL");
-#pragma warning restore AL0432
-#else
         PurchaseHeader.Validate("VAT Reporting Date", VATPeriodCZL."Starting Date");
         PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Reporting Date");
-#endif
         PurchaseHeader.Modify();
 
         // [GIVEN] New Purchase Invoice line has been created
@@ -549,15 +344,8 @@ codeunit 148054 "VAT Date CZL"
 #pragma warning restore AA0233, AA0181
         PurchaseHeader.Validate("Posting Date", VATPeriodCZL."Starting Date");
         VATPeriodCZL.Next();
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchaseHeader.Validate("VAT Date CZL", VATPeriodCZL."Starting Date");
-        PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Date CZL");
-#pragma warning restore AL0432
-#else
         PurchaseHeader.Validate("VAT Reporting Date", VATPeriodCZL."Starting Date");
         PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Reporting Date");
-#endif
         PurchaseHeader.Modify();
 
         // [GIVEN] New Purchase Invoice line has been created
@@ -580,13 +368,7 @@ codeunit 148054 "VAT Date CZL"
         VATStatement."P&review CZL".Invoke();
 
         // [GIVEN] VAT Date and report selections has been set
-#if not CLEAN22
-#pragma warning disable AL0432
-        VATStatementPreviewCZL.DateFilter.SetValue(PurchaseHeader."VAT Date CZL");
-#pragma warning restore AL0432
-#else
         VATStatementPreviewCZL.DateFilter.SetValue(PurchaseHeader."VAT Reporting Date");
-#endif
         VATStatementPreviewCZL.Selection.SetValue("VAT Statement Report Selection"::Open);
         VATStatementPreviewCZL.PeriodSelection.SetValue("VAT Statement Report Period Selection"::"Within Period");
         VATEntries.Trap();
@@ -631,15 +413,8 @@ codeunit 148054 "VAT Date CZL"
         VATPeriodCZL.SetRange(Closed, false);
         VATPeriodCZL.FindLast();
         PurchaseHeader.Validate("Posting Date", VATPeriodCZL."Starting Date");
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchaseHeader.Validate("VAT Date CZL", VATPeriodCZL."Starting Date");
-        PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Date CZL");
-#pragma warning restore AL0432
-#else
         PurchaseHeader.Validate("VAT Reporting Date", VATPeriodCZL."Starting Date");
         PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Reporting Date");
-#endif
         PurchaseHeader.Modify();
 
         // [GIVEN] New Purchase Invoice line has been created
@@ -667,13 +442,7 @@ codeunit 148054 "VAT Date CZL"
         VATStatement."P&review CZL".Invoke();
 
         // [GIVEN] VAT Date and report selections has been set
-#if not CLEAN22
-#pragma warning disable AL0432
-        VATStatementPreviewCZL.DateFilter.SetValue(PurchaseHeader."VAT Date CZL");
-#pragma warning restore AL0432
-#else
         VATStatementPreviewCZL.DateFilter.SetValue(PurchaseHeader."VAT Reporting Date");
-#endif
         VATStatementPreviewCZL.Selection.SetValue("VAT Statement Report Selection"::"Open and Closed");
         VATStatementPreviewCZL.PeriodSelection.SetValue("VAT Statement Report Period Selection"::"Within Period");
         VATStatementPreviewCZL.SettlementNoFilter.SetValue(VATSettlementDocNoTok);
@@ -720,15 +489,8 @@ codeunit 148054 "VAT Date CZL"
 #pragma warning restore AA0233, AA0181
         PurchaseHeader.Validate("Posting Date", VATPeriodCZL."Starting Date");
         VATPeriodCZL.Next();
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchaseHeader.Validate("VAT Date CZL", VATPeriodCZL."Starting Date");
-        PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Date CZL");
-#pragma warning restore AL0432
-#else
         PurchaseHeader.Validate("VAT Reporting Date", VATPeriodCZL."Starting Date");
         PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Reporting Date");
-#endif
         PurchaseHeader.Modify();
 
         // [GIVEN] New Purchase Invoice line has been created
@@ -776,15 +538,8 @@ codeunit 148054 "VAT Date CZL"
 #pragma warning restore AA0233, AA0181
         PurchaseHeader.Validate("Posting Date", VATPeriodCZL."Starting Date");
         VATPeriodCZL.Next();
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchaseHeader.Validate("VAT Date CZL", VATPeriodCZL."Starting Date");
-        PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Date CZL");
-#pragma warning restore AL0432
-#else
         PurchaseHeader.Validate("VAT Reporting Date", VATPeriodCZL."Starting Date");
         PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Reporting Date");
-#endif
         PurchaseHeader.Modify();
 
         // [GIVEN] New Purchase Invoice line has been created
@@ -832,15 +587,8 @@ codeunit 148054 "VAT Date CZL"
 #pragma warning restore AA0233, AA0181
         PurchaseHeader.Validate("Posting Date", VATPeriodCZL."Starting Date");
         VATPeriodCZL.Next();
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchaseHeader.Validate("VAT Date CZL", VATPeriodCZL."Starting Date");
-        PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Date CZL");
-#pragma warning restore AL0432
-#else
         PurchaseHeader.Validate("VAT Reporting Date", VATPeriodCZL."Starting Date");
         PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Reporting Date");
-#endif
         PurchaseHeader.Modify();
 
         // [GIVEN] New Purchase Invoice line has been created

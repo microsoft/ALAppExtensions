@@ -4,10 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Inventory.Intrastat;
 
-#if not CLEAN22
-using System.Environment.Configuration;
-#endif
-
 page 4810 "Intrastat Report Setup"
 {
     ApplicationArea = BasicEU, BasicCH, BasicNO;
@@ -215,24 +211,4 @@ page 4810 "Intrastat Report Setup"
             }
         }
     }
-
-#if not CLEAN22
-    trigger OnOpenPage()
-    var
-        IntrastatReportMgt: Codeunit IntrastatReportManagement;
-        ApplicationAreaMgmt: Codeunit "Application Area Mgmt.";
-    begin
-        if not IntrastatReportMgt.IsFeatureEnabled() then begin
-            IntrastatReportMgt.ShowNotEnabledMessage(CurrPage.Caption);
-            if ApplicationAreaMgmt.IsBasicCountryEnabled('EU') then
-                Page.Run(Page::"Intrastat Setup")
-            else
-                Page.Run(page::"Feature Management");
-            Error('');
-        end;
-
-        if not Rec.Get() then
-            Rec.Insert();
-    end;
-#endif
 }

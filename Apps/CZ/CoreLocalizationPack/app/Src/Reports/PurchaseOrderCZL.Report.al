@@ -25,10 +25,9 @@ using System.Utilities;
 
 report 31185 "Purchase Order CZL"
 {
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/PurchaseOrder.rdl';
     Caption = 'Purchase Order';
     PreviewMode = PrintLayout;
+    DefaultRenderingLayout = "PurchaseOrder.rdl";
     WordMergeDataItem = "Purchase Header";
 
     dataset
@@ -155,14 +154,6 @@ report 31185 "Purchase Order CZL"
             column(UoMLbl; UoMLbl)
             {
             }
-#if not CLEAN22
-            column(CreatorLbl; CreatedByLbl)
-            {
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Replaced by column CreatedByLbl.';
-            }
-#endif
             column(SubtotalLbl; SubtotalLbl)
             {
             }
@@ -394,45 +385,6 @@ report 31185 "Purchase Order CZL"
                     {
                     }
                 }
-#if not CLEAN22
-                dataitem("User Setup"; "User Setup")
-                {
-                    DataItemTableView = sorting("User ID");
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Replaced by dataitem UserCreator.';
-                    dataitem(Employee; Employee)
-                    {
-                        DataItemLink = "No." = field("Employee No. CZL");
-                        DataItemTableView = sorting("No.");
-                        ObsoleteState = Pending;
-                        ObsoleteTag = '22.0';
-                        ObsoleteReason = 'Replaced by dataitem EmployeeCreator.';
-                        column(FullName_Employee; FullName())
-                        {
-                            ObsoleteState = Pending;
-                            ObsoleteTag = '22.0';
-                            ObsoleteReason = 'Replaced by column FullName_EmployeeCreator.';
-                        }
-                        column(PhoneNo_Employee; "Phone No.")
-                        {
-                            ObsoleteState = Pending;
-                            ObsoleteTag = '22.0';
-                            ObsoleteReason = 'Replaced by column PhoneNo_EmployeeCreator.';
-                        }
-                        column(CompanyEMail_Employee; "Company E-Mail")
-                        {
-                            ObsoleteState = Pending;
-                            ObsoleteTag = '22.0';
-                            ObsoleteReason = 'Replaced by column CompanyEMail_EmployeeCreator.';
-                        }
-                    }
-                    trigger OnPreDataItem()
-                    begin
-                        SetRange("User ID", UserId);
-                    end;
-                }
-#endif
                 trigger OnPostDataItem()
                 begin
                     if not IsReportInPreviewMode() then
@@ -532,6 +484,25 @@ report 31185 "Purchase Order CZL"
             LogInteractionEnable := LogInteraction;
         end;
     }
+
+    rendering
+    {
+        layout("PurchaseOrder.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/PurchaseOrder.rdl';
+            Caption = 'Purchase Order (RDL)';
+            Summary = 'The Purchase Order (RDL) provides a detailed layout.';
+        }
+        layout("PurchaseOrderEmail.docx")
+        {
+            Type = Word;
+            LayoutFile = './Src/Reports/PurchaseOrderEmail.docx';
+            Caption = 'Purchase Order Email (Word)';
+            Summary = 'The Purchase Order Email (Word) provides an email body layout.';
+        }
+    }
+
     trigger OnInitReport()
     begin
         PurchasesPayablesSetup.Get();

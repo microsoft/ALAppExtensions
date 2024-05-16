@@ -57,12 +57,12 @@ codeunit 18815 "TCS Tax Configuration"
 
     local procedure UpdateTCSUseCases()
     begin
-        UseCases.Add('{BC834CD9-7782-4B77-8D0E-0D7EF1679775}', 8);
+        UseCases.Add('{BC834CD9-7782-4B77-8D0E-0D7EF1679775}', 10);
         UseCases.Add('{42747DC4-6388-459E-9D2E-103F3F4E2AB0}', 1);
         UseCases.Add('{E696BECA-20A6-498E-9615-114585216ABA}', 1);
         UseCases.Add('{4BC77C19-4CA3-4913-8EB5-11EDAE308A25}', 1);
         UseCases.Add('{B3983817-AAEE-4AD8-97D8-16A875361BA7}', 1);
-        UseCases.Add('{91492C74-9837-4256-8B07-1BA40247EA73}', 2);
+        UseCases.Add('{91492C74-9837-4256-8B07-1BA40247EA73}', 3);
         UseCases.Add('{6AD030DC-AE48-48C9-9651-36BA6742BDED}', 1);
         UseCases.Add('{800AD5B2-89E5-4616-8281-37DDEC382E76}', 1);
         UseCases.Add('{F687A3C1-9192-42D2-A042-39C2B63B35D7}', 1);

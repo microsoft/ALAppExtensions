@@ -13,13 +13,15 @@ table 18009 "HSN/SAC"
 
     fields
     {
-        field(1; "GST Group Code"; Code[10])
+#pragma warning disable AS0118
+        field(1; "GST Group Code"; Code[20])
         {
             Caption = 'GST Group Code';
             NotBlank = true;
             DataClassification = CustomerContent;
             TableRelation = "GST Group";
         }
+#pragma warning restore AS0118
         field(2; "Code"; code[10])
         {
             Caption = 'Code';

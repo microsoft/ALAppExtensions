@@ -81,21 +81,11 @@ codeunit 30163 "Shpfy Order Mapping"
     internal procedure MapHeaderFields(var OrderHeader: Record "Shpfy Order Header"; Shop: Record "Shpfy Shop"; AllowCreateCustomer: Boolean): Boolean
     var
         CustomerMapping: Codeunit "Shpfy Customer Mapping";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         CustomerTemplateCode: Code[20];
         IsHandled: Boolean;
         JCustomer: JsonObject;
     begin
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            CustomerTemplateCode := OrderHeader."Customer Template Code"
-        else
-            CustomerTemplateCode := OrderHeader."Customer Templ. Code";
-#else
         CustomerTemplateCode := OrderHeader."Customer Templ. Code";
-#endif
         CustomerMapping.SetShop(OrderHeader."Shop Code");
         if OrderHeader."Bill-to Customer No." = '' then begin
             OrderEvents.OnBeforeMapCustomer(OrderHeader, IsHandled);
@@ -145,20 +135,10 @@ codeunit 30163 "Shpfy Order Mapping"
     internal procedure MapB2BHeaderFields(var OrderHeader: Record "Shpfy Order Header"; Shop: Record "Shpfy Shop"; AllowCreateCompany: Boolean): Boolean
     var
         CompanyMapping: Codeunit "Shpfy Company Mapping";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         CustomerTemplateCode: Code[20];
         IsHandled: Boolean;
     begin
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            CustomerTemplateCode := OrderHeader."Customer Template Code"
-        else
-            CustomerTemplateCode := OrderHeader."Customer Templ. Code";
-#else
         CustomerTemplateCode := OrderHeader."Customer Templ. Code";
-#endif
 
         CompanyMapping.SetShop(OrderHeader."Shop Code");
         if OrderHeader."Bill-to Customer No." = '' then begin
@@ -271,28 +251,28 @@ codeunit 30163 "Shpfy Order Mapping"
     var
         OrderTransaction: Record "Shpfy Order Transaction";
         IsHandled: Boolean;
-        Priority: Integer;
+        PaymentMethods: List of [Code[10]];
     begin
         if OrderHeader."Payment Method Code" = '' then begin
             OrderEvents.OnBeforeMapPaymentMethod(OrderHeader, IsHandled);
             if not IsHandled then begin
-                OrderTransaction.SetAutoCalcFields("Payment Priority", "Payment Method");
+                OrderTransaction.SetAutoCalcFields("Payment Method");
                 OrderTransaction.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
-                OrderTransaction.SetCurrentKey("Shopify Order Id", Amount);
                 OrderTransaction.SetRange(Status, "Shpfy Transaction Status"::Success);
-                OrderTransaction.SetAscending(Amount, false);
-                if OrderTransaction.FindSet(false) then begin
-                    OrderHeader."Payment Method Code" := OrderTransaction."Payment Method";
-                    Priority := OrderTransaction."Payment Priority";
+                if OrderTransaction.FindSet() then begin
                     repeat
-                        if Priority < OrderTransaction."Payment Priority" then begin
-                            OrderHeader."Payment Method Code" := OrderTransaction."Payment Method";
-                            Priority := OrderTransaction."Payment Priority";
+                        if not PaymentMethods.Contains(OrderTransaction."Payment Method") then
+                            PaymentMethods.Add(OrderTransaction."Payment Method");
+
+                        if PaymentMethods.Count > 1 then begin
+                            OrderEvents.OnAfterMapPaymentMethod(OrderHeader);
+                            exit;
                         end;
                     until OrderTransaction.Next() = 0;
+                    OrderHeader."Payment Method Code" := PaymentMethods.Get(1);
                 end;
-                OrderEvents.OnAfterMapPaymentMethod(OrderHeader);
             end;
+            OrderEvents.OnAfterMapPaymentMethod(OrderHeader);
         end;
     end;
 }

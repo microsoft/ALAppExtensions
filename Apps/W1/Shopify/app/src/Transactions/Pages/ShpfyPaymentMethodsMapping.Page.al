@@ -32,11 +32,17 @@ page 30132 "Shpfy Payment Methods Mapping"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the corresponding payment method in D365BC.';
                 }
+#if not CLEAN24
                 field(Priority; Rec.Priority)
                 {
                     ApplicationArea = All;
                     Tooltip = 'Specifies the priority when a customers pays with multiple payment methods. If there is more then one payment method, it will take the payment with the highest priority follow by the highest amount.';
+                    Visible = false;
+                    ObsoleteReason = 'Priority is no longer used.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '25.0';
                 }
+#endif
             }
         }
     }

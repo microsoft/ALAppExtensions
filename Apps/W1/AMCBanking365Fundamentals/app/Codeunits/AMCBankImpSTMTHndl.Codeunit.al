@@ -95,6 +95,7 @@ codeunit 20114 "AMC Bank Imp.STMT. Hndl"
         ChildXmlElement: XmlElement;
         PackXmlElement: XmlElement;
         TempXmlDocText: Text;
+        SecretContent: SecretText;
     begin
 
         BodyContentXmlDoc := XmlDocument.Create();
@@ -115,8 +116,9 @@ codeunit 20114 "AMC Bank Imp.STMT. Hndl"
 
         BodyContentXmlDoc.WriteTo(TempXmlDocText);
         AMCBankServiceRequestMgt.RemoveUTF16(TempXmlDocText);
-        contentHttpContent.WriteFrom(TempXmlDocText);
-        ReportExportHttpRequestMessage.Content(contentHttpContent);
+        SecretContent := TempXmlDocText;
+        ContentHttpContent.WriteFrom(SecretContent);
+        ReportExportHttpRequestMessage.Content(ContentHttpContent);
     end;
 
     local procedure EncodeBankStatementFile(TempBlob: Codeunit "Temp Blob"): Text

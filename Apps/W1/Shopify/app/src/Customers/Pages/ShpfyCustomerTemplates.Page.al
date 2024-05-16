@@ -21,26 +21,11 @@ page 30108 "Shpfy Customer Templates"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the Country Code.';
                 }
-#if not CLEAN22
-                field(CustomerTemlateCode; Rec."Customer Template Code")
-                {
-                    ApplicationArea = All;
-                    Caption = 'Customer/Company Template Code';
-                    ToolTip = 'Specifies which customer template to use when creating unknown customers for this country. This template will only be used if the  field "Fix CustomerNo." is blank';
-                    Visible = not NewTemplatesEnabled;
-                    ObsoleteReason = 'Replaced by Customer Templ. Code';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                }
-#endif
                 field(CustomerTemplCode; Rec."Customer Templ. Code")
                 {
                     ApplicationArea = All;
                     Caption = 'Customer/Company Template Code';
                     ToolTip = 'Specifies which customer template to use when creating unknown customers for this country. This template will only be used if the  field "Fix CustomerNo." is blank';
-#if not CLEAN22
-                    Visible = NewTemplatesEnabled;
-#endif
                 }
                 field(FixCustomerNo; Rec."Default Customer No.")
                 {
@@ -84,19 +69,8 @@ page 30108 "Shpfy Customer Templates"
             }
         }
     }
-#if not CLEAN22
-    var
-        NewTemplatesEnabled: Boolean;
-#endif
 
     trigger OnOpenPage()
-#if not CLEAN22
-    var
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
     begin
-#if not CLEAN22
-        NewTemplatesEnabled := ShpfyTemplates.NewTemplatesEnabled();
-#endif
     end;
 }

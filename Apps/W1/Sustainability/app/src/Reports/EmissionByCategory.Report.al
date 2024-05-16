@@ -6,9 +6,7 @@ using Microsoft.Sustainability.Account;
 
 report 6210 "Emission By Category"
 {
-    DefaultLayout = Excel;
-    ExcelLayout = './src/Reports/EmissionByCategory.xlsx';
-    RDLCLayout = './src/Reports/EmissionByCategory.rdlc';
+    DefaultRenderingLayout = EmissionByCategoryExcel;
     ApplicationArea = Basic, Suite;
     Caption = 'Emission By Category';
     UsageCategory = ReportsAndAnalysis;
@@ -98,6 +96,28 @@ report 6210 "Emission By Category"
                     "Emission N2O" := Round("Emission N2O" * ReportingUOMFactor, RoundingPrecision, RoundingDirection);
                 end;
             end;
+        }
+    }
+    requestpage
+    {
+        AboutText = 'This report presents information on greenhouse gas (GHG) emissions categorized by Sustainability Categories.';
+        AboutTitle = 'Emission By Category';
+    }
+    rendering
+    {
+        layout(EmissionByCategoryExcel)
+        {
+            Type = Excel;
+            Caption = 'Emission By Category Excel Layout';
+            LayoutFile = './src/Reports/EmissionByCategory.xlsx';
+            Summary = 'Built in layout for the Emission By Category excel report. This report presents information on greenhouse gas (GHG) emissions categorized by Sustainability Categories.';
+        }
+        layout(EmissionByCategoryRDLC)
+        {
+            Type = RDLC;
+            Caption = 'Emission By Category RDLC Layout';
+            LayoutFile = './src/Reports/EmissionByCategory.rdlc';
+            Summary = 'Built in layout for the Emission By Category RDLC report. This report presents information on greenhouse gas (GHG) emissions categorized by Sustainability Categories.';
         }
     }
     labels

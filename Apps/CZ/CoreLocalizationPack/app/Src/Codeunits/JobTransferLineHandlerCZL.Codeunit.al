@@ -20,16 +20,6 @@ codeunit 31026 "Job Transfer Line Handler CZL"
         CorrectionsPostingMgtCZL: Codeunit "Corrections Posting Mgt. CZL";
     begin
         JobJnlLine."Shpt. Method Code" := SalesHeader."Shipment Method Code";
-#if not CLEAN22
-#pragma warning disable AL0432
-        JobJnlLine."Tariff No. CZL" := SalesLine."Tariff No. CZL";
-        JobJnlLine."Net Weight CZL" := SalesLine."Net Weight";
-        JobJnlLine."Country/Reg. of Orig. Code CZL" := SalesLine."Country/Reg. of Orig. Code CZL";
-        JobJnlLine."Statistic Indication CZL" := SalesLine."Statistic Indication CZL";
-        JobJnlLine."Intrastat Transaction CZL" := SalesHeader.IsIntrastatTransactionCZL();
-        JobJnlLine.CheckIntrastatCZL();
-#pragma warning restore AL0432
-#endif
         CorrectionsPostingMgtCZL.SetCorrectionIfNegQty(JobJnlLine);
     end;
 
@@ -61,29 +51,12 @@ codeunit 31026 "Job Transfer Line Handler CZL"
         JobJnlLine."Country/Region Code" := PurchHeader."VAT Country/Region Code";
         JobJnlLine."Transaction Specification" := PurchLine."Transaction Specification";
         JobJnlLine."Shpt. Method Code" := PurchHeader."Shipment Method Code";
-#if not CLEAN22
-#pragma warning disable AL0432
-        JobJnlLine."Tariff No. CZL" := PurchLine."Tariff No. CZL";
-        JobJnlLine."Statistic Indication CZL" := PurchLine."Statistic Indication CZL";
-        JobJnlLine."Net Weight CZL" := PurchLine."Net Weight";
-        JobJnlLine."Country/Reg. of Orig. Code CZL" := PurchLine."Country/Reg. of Orig. Code CZL";
-#pragma warning restore AL0432
-#endif
         CorrectionsPostingMgtCZL.SetCorrectionIfNegQty(JobJnlLine);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Job Transfer Line", 'OnAfterFromJnlLineToLedgEntry', '', false, false)]
     local procedure OnAfterFromJnlLineToLedgEntry(var JobLedgerEntry: Record "Job Ledger Entry"; JobJournalLine: Record "Job Journal Line")
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        JobLedgerEntry."Tariff No. CZL" := JobJournalLine."Tariff No. CZL";
-        JobLedgerEntry."Statistic Indication CZL" := JobJournalLine."Statistic Indication CZL";
-        JobLedgerEntry."Intrastat Transaction CZL" := JobJournalLine."Intrastat Transaction CZL";
-        JobLedgerEntry."Net Weight CZL" := JobJournalLine."Net Weight CZL";
-        JobLedgerEntry."Country/Reg. of Orig. Code CZL" := JobJournalLine."Country/Reg. of Orig. Code CZL";
-#pragma warning restore AL0432
-#endif
         JobLedgerEntry."Correction CZL" := JobJournalLine."Correction CZL";
     end;
 }

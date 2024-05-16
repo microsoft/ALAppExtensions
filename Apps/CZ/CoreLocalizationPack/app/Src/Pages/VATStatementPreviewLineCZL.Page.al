@@ -145,13 +145,6 @@ page 31136 "VAT Statement Preview Line CZL"
                                         GLEntry.SetRange("VAT Bus. Posting Group", Rec."VAT Bus. Posting Group");
                                     if Rec."VAT Prod. Posting Group" <> '' then
                                         GLEntry.SetRange("VAT Prod. Posting Group", Rec."VAT Prod. Posting Group");
-#if not CLEAN22
-#pragma warning disable AL0432
-                                    if not GLEntry.IsReplaceVATDateEnabled() then
-                                        Rec.CopyFilter("Date Filter", GLEntry."VAT Date CZL")
-                                    else
-#pragma warning restore AL0432
-#endif
                                     Rec.CopyFilter("Date Filter", GLEntry."VAT Reporting Date");
 
                                     Page.Run(Page::"General Ledger Entries", GLEntry);

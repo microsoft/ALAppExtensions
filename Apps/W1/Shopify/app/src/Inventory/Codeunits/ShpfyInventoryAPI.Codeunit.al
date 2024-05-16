@@ -177,22 +177,23 @@ codeunit 30195 "Shpfy Inventory API"
         end;
 
         if ShopifyVariant.Get(ShopInventory."Variant Id") then
-            if Item.GetBySystemId(ShopifyVariant."Item SystemId") then begin
-                ShopInventory.Validate(Stock, Round(GetStock(ShopInventory), 1, '<'));
-                ShopInventory.Modify();
-                if ShopInventory.Stock <> ShopInventory."Shopify Stock" then
-                    if ShopLocation.Get(ShopInventory."Shop Code", ShopInventory."Location Id") then begin
-                        IStockAvailable := ShopLocation."Stock Calculation";
-                        if IStockAvailable.CanHaveStock() then begin
-                            JSetQuantity.Add('inventoryItemId', StrSubstNo(InventoryItemIdTxt, ShopInventory."Inventory Item Id"));
-                            JSetQuantity.Add('locationId', StrSubstNo(LocationIdTxt, ShopLocation.Id));
-                            if ShopInventory.Stock < 0 then
-                                JSetQuantity.Add('quantity', 0)
-                            else
-                                JSetQuantity.Add('quantity', ShopInventory.Stock);
+            if Item.GetBySystemId(ShopifyVariant."Item SystemId") then
+                if not (Item.Type in [Item.Type::"Non-Inventory", Item.Type::Service]) then begin
+                    ShopInventory.Validate(Stock, Round(GetStock(ShopInventory), 1, '<'));
+                    ShopInventory.Modify();
+                    if ShopInventory.Stock <> ShopInventory."Shopify Stock" then
+                        if ShopLocation.Get(ShopInventory."Shop Code", ShopInventory."Location Id") then begin
+                            IStockAvailable := ShopLocation."Stock Calculation";
+                            if IStockAvailable.CanHaveStock() then begin
+                                JSetQuantity.Add('inventoryItemId', StrSubstNo(InventoryItemIdTxt, ShopInventory."Inventory Item Id"));
+                                JSetQuantity.Add('locationId', StrSubstNo(LocationIdTxt, ShopLocation.Id));
+                                if ShopInventory.Stock < 0 then
+                                    JSetQuantity.Add('quantity', 0)
+                                else
+                                    JSetQuantity.Add('quantity', ShopInventory.Stock);
+                            end;
                         end;
-                    end;
-            end;
+                end;
     end;
 
     /// <summary> 

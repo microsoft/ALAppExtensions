@@ -364,11 +364,6 @@ table 31258 "Iss. Payment Order Header CZB"
 
                 GenJournalLine."Posting Date" := "Document Date";
                 GenJournalLine."Document Date" := "Document Date";
-#if not CLEAN22
-#pragma warning disable AL0432
-                GenJournalLine."VAT Date CZL" := "Document Date";
-#pragma warning restore AL0432
-#endif
                 GenJournalLine."VAT Reporting Date" := "Document Date";
 
                 case IssPaymentOrderLineCZB.Type of

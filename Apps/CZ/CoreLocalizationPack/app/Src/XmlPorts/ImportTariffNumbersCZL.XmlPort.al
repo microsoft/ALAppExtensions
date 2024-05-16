@@ -127,11 +127,6 @@ xmlport 31106 "Import Tariff Numbers CZL"
 
                         TempTariffNumber.Description := CopyStr(popis, 1, MaxStrlen(TempTariffNumber.Description));
                         TempTariffNumber."Description EN CZL" := CopyStr(popisan, 1, MaxStrlen(TempTariffNumber."Description EN CZL"));
-#if not CLEAN22
-#pragma warning disable AL0432
-                        TempTariffNumber."Suppl. Unit of Meas. Code CZL" := CopyStr(mj_i, 1, MaxStrlen(TempTariffNumber."Suppl. Unit of Meas. Code CZL"));
-#pragma warning restore AL0432
-#endif
                         OnBeforeInsertTariffNumber(TempTariffNumber, LineDataDictionary);
 
                         if GuiAllowed then begin
@@ -262,22 +257,9 @@ xmlport 31106 "Import Tariff Numbers CZL"
     end;
 
     local procedure CopyFromTemp(var TariffNumber: Record "Tariff Number"; UoMMappingDictionary: Dictionary of [Code[10], Code[10]])
-#if not CLEAN22
-    var
-        UnitofMeasureCode: Code[10];
-#endif
     begin
         TariffNumber.Description := TempTariffNumber.Description;
         TariffNumber."Description EN CZL" := TempTariffNumber."Description EN CZL";
-#if not CLEAN22
-#pragma warning disable AL0432
-        if (TempTariffNumber."Suppl. Unit of Meas. Code CZL" <> '') and (TempTariffNumber."Suppl. Unit of Meas. Code CZL" <> DummyUoMTok) then
-            if UoMMappingDictionary.Get(TempTariffNumber."Suppl. Unit of Meas. Code CZL", UnitofMeasureCode) then begin
-                TariffNumber."Suppl. Unit of Meas. Code CZL" := UnitofMeasureCode;
-                TariffNumber."Supplementary Units" := true;
-            end;
-#pragma warning restore AL0432
-#endif
         OnAfterCopyFromTemp(TariffNumber, TempTariffNumber, UoMMappingDictionary);
     end;
 

@@ -148,6 +148,7 @@ codeunit 132558 "AMC Banking Credential UT"
     procedure DemoUserNamePasswordShouldNotBeSetOnInsertWithFilledUser()
     var
         AMCBankingSetup: Record "AMC Banking Setup";
+        NewPassword: Text;
     begin
         // [FEATURE] [Password] [Demo Company]
         // [SCENARIO] Setup URLS will always be set to default on insert NO matter what
@@ -159,7 +160,8 @@ codeunit 132558 "AMC Banking Credential UT"
             // [GIVEN] New "AMC Bank Service Setup", where "User Name" is 'X'
             "User Name" := 'X';
             // [GIVEN] The Password and URLs are filled
-            SavePassword('P');
+            NewPassword := 'P';
+            SavePassword(NewPassword);
             "Sign-up URL" := CopyStr(FieldName("Sign-up URL"), 1, 250);
             "Service URL" := CopyStr(FieldName("Service URL"), 1, 250);
             "Support URL" := CopyStr(FieldName("Support URL"), 1, 250);
@@ -170,7 +172,7 @@ codeunit 132558 "AMC Banking Credential UT"
 
             // [THEN] Setup is not set to default values
             Assert.AreEqual('X', "User Name", FieldCaption("User Name"));
-            Assert.AreEqual('P', GetPassword(), FieldCaption("Password Key"));
+            AssertPassword('P', FieldCaption("Password Key"), true);
             Assert.ExpectedMessage(AMCBankingMgt.GetLicenseServerName() + AMCBankingMgt.GetLicenseRegisterTag(), AMCBankingSetup."Sign-up URL");
             Assert.ExpectedMessage('https://amcbanking.com/landing365bc/help/', AMCBankingSetup."Support URL");
             if ((Solution = AMCBankingMgt.GetDemoSolutionCode()) or
@@ -199,7 +201,7 @@ codeunit 132558 "AMC Banking Credential UT"
         // [THEN] "User Name" is 'DemoUser', Password is 'Demo Password'
         AMCBankingSetup.Get();
         Assert.AreEqual(AMCBankingSetup.GetDemoUserName(), AMCBankingSetup."User Name", AMCBankingSetup.FieldCaption("User Name"));
-        Assert.AreEqual('Demo Password', AMCBankingSetup.GetPassword(), AMCBankingSetup.FieldCaption("Password Key"));
+        AssertPassword('Demo Password', AMCBankingSetup.FieldCaption("Password Key"), true);
 
     end;
 
@@ -571,6 +573,18 @@ codeunit 132558 "AMC Banking Credential UT"
         CompanyInformation.Get();
         CompanyInformation."Demo Company" := DemoCompany;
         CompanyInformation.Modify();
+    end;
+
+    [NonDebuggable]
+    local procedure AssertPassword(Expected: Text; Message: Text; AreEqual: Boolean)
+    var
+        AMCBankingSetup: Record "AMC Banking Setup";
+    begin
+        AMCBankingSetup.Get();
+        if AreEqual then
+            Assert.AreEqual(Expected, AMCBankingSetup.GetPassword().Unwrap(), Message)
+        else
+            Assert.AreNotEqual(Expected, AMCBankingSetup.GetPassword().Unwrap(), Message);
     end;
 
     [ConfirmHandler]

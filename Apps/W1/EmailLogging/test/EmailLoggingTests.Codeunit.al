@@ -110,12 +110,16 @@ codeunit 139763 "Email Logging Tests"
     procedure TestClearEmailLoggingSetup()
     var
         EmailLoggingSetup: Record "Email Logging Setup";
+        ClientSecret: SecretText;
+        TextClientSecret: Text;
     begin
         Initialize();
         InitializeSetup();
         EmailLoggingSetup.Get();
         EmailLoggingSetup."Client Id" := 'some value';
-        EmailLoggingSetup.SetClientSecret('some value');
+        TextClientSecret := 'some value';
+        ClientSecret := TextClientSecret;
+        EmailLoggingSetup.SetClientSecret(ClientSecret);
         EmailLoggingSetup."Consent Given" := true;
         EmailLoggingSetup.Enabled := false;
         EmailLoggingSetup.Modify();
@@ -123,7 +127,7 @@ codeunit 139763 "Email Logging Tests"
         Assert.IsTrue(EmailLoggingSetup."Email Address" <> '', 'Email address is not set');
         Assert.IsTrue(EmailLoggingSetup."Email Batch Size" > 0, 'Email batch size is not set');
         Assert.IsTrue(EmailLoggingSetup."Client Id" <> '', 'Client id is not set');
-        Assert.IsTrue(EmailLoggingSetup.GetClientSecret() <> '', 'Client secret is not set');
+        Assert.IsTrue(not EmailLoggingSetup.GetClientSecret().IsEmpty(), 'Client secret is not set');
         Assert.IsTrue(EmailLoggingSetup."Consent Given", 'Consent is not set');
         EmailLoggingManagement.ClearEmailLoggingSetup(EmailLoggingSetup);
 
@@ -131,7 +135,7 @@ codeunit 139763 "Email Logging Tests"
         Assert.IsFalse(EmailLoggingSetup."Email Address" <> '', 'E-mail address is not cleared');
         Assert.AreEqual(EmailLoggingSetup.GetDefaultEmailBatchSize(), EmailLoggingSetup."Email Batch Size", 'Email batch size is not reset to default value');
         Assert.IsFalse(EmailLoggingSetup."Client Id" <> '', 'Client id is not cleared');
-        Assert.IsFalse(EmailLoggingSetup.GetClientSecret() <> '', 'Client secret is not cleared');
+        Assert.IsFalse(not EmailLoggingSetup.GetClientSecret().IsEmpty(), 'Client secret is not cleared');
         Assert.IsFalse(EmailLoggingSetup."Consent Given", 'Consent is not cleared');
     end;
 

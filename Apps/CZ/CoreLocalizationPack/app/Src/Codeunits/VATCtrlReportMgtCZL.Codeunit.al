@@ -38,11 +38,6 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         TempDocumentBudgetBuffer: Record "Budget Buffer" temporary;
         TempErrorBuffer: Record "Error Buffer" temporary;
         TempGlobalVATEntry: Record "VAT Entry" temporary;
-#if not CLEAN22
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-#endif
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         WindowDialog: Dialog;
         ProgressDialogMsg: Label 'VAT Statement Line Progress     #1######## #2######## #3########', Comment = '%1 = Statement Template Name; %2 = Statement Name; %3 = Line No.';
@@ -54,6 +49,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         GlobalLineNo: Integer;
         InternalDocCheckMsg: Label 'There is nothing internal document to exclusion in VAT Control Report No. %1.', Comment = '%1 = VAT Control Report No.';
         AmountTxt: Label 'Amount';
+        AdditionalCurrencyAmountTxt: Label 'Additional-Currency Amount';
 
     procedure GetVATCtrlReportLines(VATCtrlReportHeaderCZL: Record "VAT Ctrl. Report Header CZL"; StartDate: Date; EndDate: Date; VATStmTemplCode: Code[10]; VATStmName: Code[10]; ProcessType: Option Add,Rewrite; ShowMessage: Boolean; UseMergeVATEntries: Boolean)
     var
@@ -417,6 +413,8 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         else begin
             TempVATCtrlReportBufferCZL."Total Base" += VATEntry.Base;
             TempVATCtrlReportBufferCZL."Total Amount" += VATEntry.Amount;
+            TempVATCtrlReportBufferCZL."Add.-Currency Total Base" += VATEntry."Additional-Currency Base";
+            TempVATCtrlReportBufferCZL."Add.-Currency Total Amount" += VATEntry."Additional-Currency Amount";
             TempVATCtrlReportBufferCZL.Modify();
         end;
         InsertVATCtrlReportEntryLink(TempVATCtrlReportEntLinkCZL, TempVATCtrlReportBufferCZL."Line No.", VATEntry."Entry No.");
@@ -432,12 +430,6 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         GlobalLineNo += 1;
         TempVATCtrlReportBufferCZL."Line No." := GlobalLineNo;
         TempVATCtrlReportBufferCZL."Posting Date" := VATEntry."Posting Date";
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not VATEntry.IsReplaceVATDateEnabled() then
-            VATEntry."VAT Reporting Date" := VATEntry."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
         TempVATCtrlReportBufferCZL."VAT Date" := VATEntry."VAT Reporting Date";
         TempVATCtrlReportBufferCZL."Original Document VAT Date" := VATEntry."Original Doc. VAT Date CZL";
         TempVATCtrlReportBufferCZL."Bill-to/Pay-to No." := VATEntry."Bill-to/Pay-to No.";
@@ -467,6 +459,8 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         TempVATCtrlReportBufferCZL."Ratio Use" := VATPostingSetup."Ratio Coefficient CZL";
         TempVATCtrlReportBufferCZL."Total Base" := VATEntry.Base;
         TempVATCtrlReportBufferCZL."Total Amount" := VATEntry.Amount;
+        TempVATCtrlReportBufferCZL."Add.-Currency Total Base" := VATEntry."Additional-Currency Base";
+        TempVATCtrlReportBufferCZL."Add.-Currency Total Amount" := VATEntry."Additional-Currency Amount";
         OnInsertVATCtrlReportBufferOnBeforeInsert(VATEntry, VATPostingSetup, TempVATCtrlReportBufferCZL);
         TempVATCtrlReportBufferCZL.Insert();
     end;
@@ -572,12 +566,6 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             if SalesInvoiceHeader."No." <> SalesInvoiceLine."Document No." then
                 SalesInvoiceHeader.Get(SalesInvoiceLine."Document No.");
             repeat
-#if not CLEAN22
-#pragma warning disable AL0432
-                if not ReplaceVATDateMgtCZL.IsEnabled() then
-                    SalesInvoiceHeader."VAT Reporting Date" := SalesInvoiceHeader."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
                 IsHandled := false;
                 OnSplitFromSalesInvLineOnBeforeUpdateTempDropShptPostBuffer(SalesInvoiceHeader, SalesInvoiceLine, TempDropShptPostBuffer, IsHandled);
                 if not IsHandled then
@@ -604,12 +592,6 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             if SalesCrMemoHeader."No." <> SalesCrMemoLine."Document No." then
                 SalesCrMemoHeader.Get(SalesCrMemoLine."Document No.");
             repeat
-#if not CLEAN22
-#pragma warning disable AL0432
-                if not ReplaceVATDateMgtCZL.IsEnabled() then
-                    SalesCrMemoHeader."VAT Reporting Date" := SalesCrMemoHeader."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
                 IsHandled := false;
                 OnSplitFromSalesCrMemoLineOnBeforeUpdateTempDropShptPostBuffer(SalesCrMemoHeader, SalesCrMemoLine, TempDropShptPostBuffer, IsHandled);
                 if not IsHandled then
@@ -637,12 +619,6 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             if PurchInvHeader."No." <> PurchInvLine."Document No." then
                 PurchInvHeader.Get(PurchInvLine."Document No.");
             repeat
-#if not CLEAN22
-#pragma warning disable AL0432
-                if not ReplaceVATDateMgtCZL.IsEnabled() then
-                    PurchInvHeader."VAT Reporting Date" := PurchInvHeader."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
                 IsHandled := false;
                 OnSplitFromPurchInvLineOnBeforeUpdateTempDropShptPostBuffer(PurchInvHeader, PurchInvLine, TempDropShptPostBuffer, IsHandled);
                 if not IsHandled then
@@ -669,12 +645,6 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             if PurchCrMemoHdr."No." <> PurchCrMemoLine."Document No." then
                 PurchCrMemoHdr.Get(PurchCrMemoLine."Document No.");
             repeat
-#if not CLEAN22
-#pragma warning disable AL0432
-                if not ReplaceVATDateMgtCZL.IsEnabled() then
-                    PurchCrMemoHdr."VAT Reporting Date" := PurchCrMemoHdr."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
                 IsHandled := false;
                 OnSplitFromPurchCrMemoLineOnBeforeUpdateTempDropShptPostBuffer(PurchCrMemoHdr, PurchCrMemoLine, TempDropShptPostBuffer, IsHandled);
                 if not IsHandled then
@@ -784,21 +754,29 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                         begin
                             TempVATCtrlReportBufferCZL."Base 1" += VATCtrlReportLineCZL.Base;
                             TempVATCtrlReportBufferCZL."Amount 1" += VATCtrlReportLineCZL.Amount;
+                            TempVATCtrlReportBufferCZL."Add.-Currency Base 1" += VATCtrlReportLineCZL."Additional-Currency Base";
+                            TempVATCtrlReportBufferCZL."Add.-Currency Amount 1" += VATCtrlReportLineCZL."Additional-Currency Amount";
                         end;
                     VATCtrlReportLineCZL."VAT Rate"::Reduced:
                         begin
                             TempVATCtrlReportBufferCZL."Base 2" += VATCtrlReportLineCZL.Base;
                             TempVATCtrlReportBufferCZL."Amount 2" += VATCtrlReportLineCZL.Amount;
+                            TempVATCtrlReportBufferCZL."Add.-Currency Base 2" += VATCtrlReportLineCZL."Additional-Currency Base";
+                            TempVATCtrlReportBufferCZL."Add.-Currency Amount 2" += VATCtrlReportLineCZL."Additional-Currency Amount";
                         end;
                     VATCtrlReportLineCZL."VAT Rate"::"Reduced 2":
                         begin
                             TempVATCtrlReportBufferCZL."Base 3" += VATCtrlReportLineCZL.Base;
                             TempVATCtrlReportBufferCZL."Amount 3" += VATCtrlReportLineCZL.Amount;
+                            TempVATCtrlReportBufferCZL."Add.-Currency Base 3" += VATCtrlReportLineCZL."Additional-Currency Base";
+                            TempVATCtrlReportBufferCZL."Add.-Currency Amount 3" += VATCtrlReportLineCZL."Additional-Currency Amount";
                         end;
                 end;
                 if VATCtrlReportLineCZL."VAT Rate" > VATCtrlReportLineCZL."VAT Rate"::" " then begin
                     TempVATCtrlReportBufferCZL."Total Base" += VATCtrlReportLineCZL.Base;
                     TempVATCtrlReportBufferCZL."Total Amount" += VATCtrlReportLineCZL.Amount;
+                    TempVATCtrlReportBufferCZL."Add.-Currency Total Base" += VATCtrlReportLineCZL."Additional-Currency Base";
+                    TempVATCtrlReportBufferCZL."Add.-Currency Total Amount" += VATCtrlReportLineCZL."Additional-Currency Amount";
                 end;
                 OnBeforeModifyVATCtrlReportBufferForStatistics(TempVATCtrlReportBufferCZL, VATCtrlReportLineCZL);
                 TempVATCtrlReportBufferCZL.Modify();
@@ -894,17 +872,31 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                         begin
                             TempVATCtrlReportBufferCZL."Base 1" += VATCtrlReportLineCZL.Base;
                             TempVATCtrlReportBufferCZL."Amount 1" += VATCtrlReportLineCZL.Amount;
+                            TempVATCtrlReportBufferCZL."Add.-Currency Base 1" += VATCtrlReportLineCZL."Additional-Currency Base";
+                            TempVATCtrlReportBufferCZL."Add.-Currency Amount 1" += VATCtrlReportLineCZL."Additional-Currency Amount";
                         end;
                     VATCtrlReportLineCZL."VAT Rate"::Reduced:
                         begin
                             TempVATCtrlReportBufferCZL."Base 2" += VATCtrlReportLineCZL.Base;
                             TempVATCtrlReportBufferCZL."Amount 2" += VATCtrlReportLineCZL.Amount;
+                            TempVATCtrlReportBufferCZL."Add.-Currency Base 2" += VATCtrlReportLineCZL."Additional-Currency Base";
+                            TempVATCtrlReportBufferCZL."Add.-Currency Amount 2" += VATCtrlReportLineCZL."Additional-Currency Amount";
                         end;
                     VATCtrlReportLineCZL."VAT Rate"::"Reduced 2":
                         begin
                             TempVATCtrlReportBufferCZL."Base 3" += VATCtrlReportLineCZL.Base;
                             TempVATCtrlReportBufferCZL."Amount 3" += VATCtrlReportLineCZL.Amount;
+                            TempVATCtrlReportBufferCZL."Add.-Currency Base 3" += VATCtrlReportLineCZL."Additional-Currency Base";
+                            TempVATCtrlReportBufferCZL."Add.-Currency Amount 3" += VATCtrlReportLineCZL."Additional-Currency Amount";
                         end;
+                end;
+
+                if (VATCtrlReportSectionCZL.Code in ['A4', 'B2']) and
+                   (VATCtrlReportLineCZL."Corrections for Bad Receivable" = "VAT Ctrl. Report Corect. CZL"::"Insolvency Proceedings (p.44)")
+                then begin
+                    TempVATCtrlReportBufferCZL."Base 1" := 0;
+                    TempVATCtrlReportBufferCZL."Base 2" := 0;
+                    TempVATCtrlReportBufferCZL."Base 3" := 0;
                 end;
 
                 OnBeforeModifyVATCtrlReportBufferForExport(TempVATCtrlReportBufferCZL, VATCtrlReportLineCZL);
@@ -928,6 +920,14 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             TempVATCtrlReportBufferCZL."Amount 3" := Round(TempVATCtrlReportBufferCZL."Amount 3", Precision);
             TempVATCtrlReportBufferCZL."Total Base" := Round(TempVATCtrlReportBufferCZL."Total Base", Precision);
             TempVATCtrlReportBufferCZL."Total Amount" := Round(TempVATCtrlReportBufferCZL."Total Amount", Precision);
+            TempVATCtrlReportBufferCZL."Add.-Currency Base 1" := Round(TempVATCtrlReportBufferCZL."Add.-Currency Base 1", Precision);
+            TempVATCtrlReportBufferCZL."Add.-Currency Base 2" := Round(TempVATCtrlReportBufferCZL."Add.-Currency Base 2", Precision);
+            TempVATCtrlReportBufferCZL."Add.-Currency Base 3" := Round(TempVATCtrlReportBufferCZL."Add.-Currency Base 3", Precision);
+            TempVATCtrlReportBufferCZL."Add.-Currency Amount 1" := Round(TempVATCtrlReportBufferCZL."Add.-Currency Amount 1", Precision);
+            TempVATCtrlReportBufferCZL."Add.-Currency Amount 2" := Round(TempVATCtrlReportBufferCZL."Add.-Currency Amount 2", Precision);
+            TempVATCtrlReportBufferCZL."Add.-Currency Amount 3" := Round(TempVATCtrlReportBufferCZL."Add.-Currency Amount 3", Precision);
+            TempVATCtrlReportBufferCZL."Add.-Currency Total Base" := Round(TempVATCtrlReportBufferCZL."Add.-Currency Total Base", Precision);
+            TempVATCtrlReportBufferCZL."Add.-Currency Total Amount" := Round(TempVATCtrlReportBufferCZL."Add.-Currency Total Amount", Precision);
             TempVATCtrlReportBufferCZL.Modify();
         until TempVATCtrlReportBufferCZL.Next() = 0;
         TempVATCtrlReportBufferCZL.FindSet();
@@ -1036,6 +1036,8 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         if VATCtrlReportHeaderCZL."No." = '' then
             exit;
 
+        GeneralLedgerSetup.Get();
+
         Temp1VATCtrlReportBufferCZL.Reset();
         Temp1VATCtrlReportBufferCZL.DeleteAll();
 
@@ -1093,6 +1095,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                     Temp3VATCtrlReportBufferCZL := Temp2VATCtrlReportBufferCZL;
                     Temp3VATCtrlReportBufferCZL."External Document No." := Temp1VATCtrlReportBufferCZL."Document No.";
                     Temp3VATCtrlReportBufferCZL."Total Base" := Temp1VATCtrlReportBufferCZL."Total Amount";
+                    Temp3VATCtrlReportBufferCZL."Add.-Currency Total Base" := Temp1VATCtrlReportBufferCZL."Add.-Currency Total Amount";
                     Temp3VATCtrlReportBufferCZL.Insert();
 
                     Temp1VATCtrlReportBufferCZL.Delete();
@@ -1112,6 +1115,10 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             AddToExcelBuffer(TempExcelBuffer, i, 4, CopyStr(Temp1VATCtrlReportBufferCZL.FieldCaption("Document No.") + ' 2', 1, 250));
             AddToExcelBuffer(TempExcelBuffer, i, 5, AmountTxt);
             AddToExcelBuffer(TempExcelBuffer, i, 6, AmountTxt + ' 2');
+            if GeneralLedgerSetup."Additional Reporting Currency" <> '' then begin
+                AddToExcelBuffer(TempExcelBuffer, i, 7, AdditionalCurrencyAmountTxt);
+                AddToExcelBuffer(TempExcelBuffer, i, 8, AdditionalCurrencyAmountTxt + ' 2');
+            end;
             repeat
                 i += 1;
                 AddToExcelBuffer(TempExcelBuffer, i, 1, Temp3VATCtrlReportBufferCZL."Bill-to/Pay-to No.");
@@ -1120,6 +1127,10 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                 AddToExcelBuffer(TempExcelBuffer, i, 4, Temp3VATCtrlReportBufferCZL."External Document No.");
                 AddToExcelBuffer(TempExcelBuffer, i, 5, Format(Temp3VATCtrlReportBufferCZL."Total Amount"));
                 AddToExcelBuffer(TempExcelBuffer, i, 6, Format(Temp3VATCtrlReportBufferCZL."Total Base"));
+                if GeneralLedgerSetup."Additional Reporting Currency" <> '' then begin
+                    AddToExcelBuffer(TempExcelBuffer, i, 7, Format(Temp3VATCtrlReportBufferCZL."Add.-Currency Total Amount"));
+                    AddToExcelBuffer(TempExcelBuffer, i, 8, Format(Temp3VATCtrlReportBufferCZL."Add.-Currency Total Base"));
+                end;
             until Temp3VATCtrlReportBufferCZL.Next() = 0;
             TempExcelBuffer.CreateNewBook('KH1');
             TempExcelBuffer.WriteSheet(
@@ -1161,6 +1172,8 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
         VATCtrlReportLineCZL."VAT Prod. Posting Group" := TempVATCtrlReportBufferCZL."VAT Prod. Posting Group";
         VATCtrlReportLineCZL.Base := Round(TempVATCtrlReportBufferCZL."Total Base", 0.01);
         VATCtrlReportLineCZL.Amount := Round(TempVATCtrlReportBufferCZL."Total Amount", 0.01);
+        VATCtrlReportLineCZL."Additional-Currency Base" := Round(TempVATCtrlReportBufferCZL."Add.-Currency Total Base", 0.01);
+        VATCtrlReportLineCZL."Additional-Currency Amount" := Round(TempVATCtrlReportBufferCZL."Add.-Currency Total Amount", 0.01);
         VATCtrlReportLineCZL."VAT Rate" := TempVATCtrlReportBufferCZL."VAT Rate";
         VATCtrlReportLineCZL."Commodity Code" := TempVATCtrlReportBufferCZL."Commodity Code";
         VATCtrlReportLineCZL."Supplies Mode Code" := TempVATCtrlReportBufferCZL."Supplies Mode Code";
@@ -1281,6 +1294,10 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
             repeat
                 TempVATEntry.Init();
                 TempVATEntry := VATEntry;
+                if TempVATEntry."Original VAT Entry No. CZL" <> 0 then begin
+                    TempVATEntry.Base := TempVATEntry."Original VAT Base CZL";
+                    TempVATEntry.Amount := TempVATEntry."Original VAT Amount CZL";
+                end;
                 OnBeforeInsertTempVATEntryForForPeriod(TempVATEntry);
                 TempVATEntry.Insert();
             until VATEntry.Next() = 0;

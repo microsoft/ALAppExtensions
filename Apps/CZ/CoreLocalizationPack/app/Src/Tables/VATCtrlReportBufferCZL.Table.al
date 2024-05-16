@@ -8,6 +8,8 @@ using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Enums;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
+using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.Currency;
 
 table 31109 "VAT Ctrl. Report Buffer CZL"
 {
@@ -198,6 +200,70 @@ table 31109 "VAT Ctrl. Report Buffer CZL"
             Caption = 'Total Amount';
             DataClassification = SystemMetadata;
         }
+        field(80; "Add.-Currency Base 1"; Decimal)
+        {
+            AccessByPermission = TableData Currency = R;
+            AutoFormatExpression = GetCurrencyCode();
+            AutoFormatType = 1;
+            Caption = 'Add.-Currency Base (base)';
+            DataClassification = SystemMetadata;
+        }
+        field(81; "Add.-Currency Amount 1"; Decimal)
+        {
+            AccessByPermission = TableData Currency = R;
+            AutoFormatExpression = GetCurrencyCode();
+            AutoFormatType = 1;
+            Caption = 'Add.-Currency Amount (base)';
+            DataClassification = SystemMetadata;
+        }
+        field(82; "Add.-Currency Base 2"; Decimal)
+        {
+            AccessByPermission = TableData Currency = R;
+            AutoFormatExpression = GetCurrencyCode();
+            AutoFormatType = 1;
+            Caption = 'Add.-Currency Base (reduced)';
+            DataClassification = SystemMetadata;
+        }
+        field(83; "Add.-Currency Amount 2"; Decimal)
+        {
+            AccessByPermission = TableData Currency = R;
+            AutoFormatExpression = GetCurrencyCode();
+            AutoFormatType = 1;
+            Caption = 'Add.-Currency Amount (reduced)';
+            DataClassification = SystemMetadata;
+        }
+        field(84; "Add.-Currency Base 3"; Decimal)
+        {
+            AccessByPermission = TableData Currency = R;
+            AutoFormatExpression = GetCurrencyCode();
+            AutoFormatType = 1;
+            Caption = 'Add.-Currency Base (2.reduced)';
+            DataClassification = SystemMetadata;
+        }
+        field(85; "Add.-Currency Amount 3"; Decimal)
+        {
+            AccessByPermission = TableData Currency = R;
+            AutoFormatExpression = GetCurrencyCode();
+            AutoFormatType = 1;
+            Caption = 'Add.-Currency Amount (2.reduced)';
+            DataClassification = SystemMetadata;
+        }
+        field(86; "Add.-Currency Total Base"; Decimal)
+        {
+            AccessByPermission = TableData Currency = R;
+            AutoFormatExpression = GetCurrencyCode();
+            AutoFormatType = 1;
+            Caption = 'Add.-Currency Total Base';
+            DataClassification = SystemMetadata;
+        }
+        field(87; "Add.-Currency Total Amount"; Decimal)
+        {
+            AccessByPermission = TableData Currency = R;
+            AutoFormatExpression = GetCurrencyCode();
+            AutoFormatType = 1;
+            Caption = 'Add.-Currency Total Amount';
+            DataClassification = SystemMetadata;
+        }
         field(100; "VAT Control Rep. Section Desc."; Text[50])
         {
             CalcFormula = lookup("VAT Ctrl. Report Section CZL".Description where(Code = field("VAT Ctrl. Report Section Code")));
@@ -219,4 +285,12 @@ table 31109 "VAT Ctrl. Report Buffer CZL"
         {
         }
     }
+
+    local procedure GetCurrencyCode(): Code[10]
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.GetRecordOnce();
+        exit(GeneralLedgerSetup."Additional Reporting Currency");
+    end;
 }

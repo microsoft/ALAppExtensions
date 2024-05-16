@@ -221,6 +221,54 @@ codeunit 18191 "GST Sales Ship To Addr Tests"
         LibraryGST.VerifyGLEntries(SalesHeader."Document Type"::Invoice, PostedDocumentNo, 4);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromUnRegCustSalesInvInterstateWithShipToAddrItem()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] Check if the system is calculating Inter State Sales of Service from UnRegistered Customer through Sales Order/Invoice.
+
+        // [GIVEN] Create GST Setup and tax rates for Registered Customer where GST Group Type is Goods for InterState Transactions
+        CreateGSTSetup(Enum::"GST Customer Type"::Unregistered, Enum::"GST Group Type"::Service, true, true);
+        InitializeShareStep(false, false);
+
+        // [WHEN] Create and Post Sales Invoice with GST and Line Type as Item for Interstate Transaction With Ship To Address
+        PostedDocumentNo := CreateAndPostSalesDocument(
+            SalesHeader,
+            SalesLine, Enum::"Sales Line Type"::Item,
+            Enum::"Sales Document Type"::Invoice);
+
+        // [THEN] Verify G/L Entry
+        LibraryGST.VerifyGLEntries(SalesHeader."Document Type"::Invoice, PostedDocumentNo, 3);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromUnRegCustSalesInvIntrastateWithShipToAddrItem()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        PostedDocumentNo: Code[20];
+    begin
+        // [SCENARIO] Check if the system is calculating Intra State Sales of Goods from UnRegistered Customer through Sales Order/Invoice.
+
+        // [GIVEN] Create GST Setup and tax rates for Registered Customer where GST Group Type is Goods for IntraState Transactions
+        CreateGSTSetup(Enum::"GST Customer Type"::Unregistered, Enum::"GST Group Type"::Service, false, true);
+        InitializeShareStep(false, false);
+
+        // [WHEN] Create and Post Sales Invoice with GST and Line Type as Item for Intrastate Transaction With Ship To Address
+        PostedDocumentNo := CreateAndPostSalesDocument(
+            SalesHeader,
+            SalesLine, Enum::"Sales Line Type"::Item,
+            Enum::"Sales Document Type"::Invoice);
+
+        // [THEN] Verify G/L Entry
+        LibraryGST.VerifyGLEntries(SalesHeader."Document Type"::Invoice, PostedDocumentNo, 2);
+    end;
+
     local procedure CreateSalesHeaderWithGST(
         var SalesHeader: Record "Sales Header";
         CustomerNo: Code[20];
@@ -275,12 +323,16 @@ codeunit 18191 "GST Sales Ship To Addr Tests"
     local procedure CreateShipToAddress(): Code[10]
     var
         ShipToAddress: Record "Ship-to Address";
+        Customer: Record Customer;
     begin
-        LibrarySales.CreateShipToAddress(ShipToAddress, Storage.Get(CustomerNoLbl));
+        Customer.Get(Storage.Get(CustomerNoLbl));
+        LibrarySales.CreateShipToAddress(ShipToAddress, Customer."No.");
         ShipToAddress.Validate(State, Storage.Get(ShipToGSTStateCodeLbl));
         ShipToAddress.Validate(Address, LibraryRandom.RandText(10));
-        ShipToAddress.Validate("GST Registration No.", Storage.Get(ShipToGSTRegNoLbl));
-        ShipToAddress.Validate("Ship-to GST Customer Type", Storage2.Get(ShipToAddrCustomerType));
+        if Customer."GST Customer Type" <> Customer."GST Customer Type"::Unregistered then begin
+            ShipToAddress.Validate("GST Registration No.", Storage.Get(ShipToGSTRegNoLbl));
+            ShipToAddress.Validate("Ship-to GST Customer Type", Storage2.Get(ShipToAddrCustomerType));
+        end;
         ShipToAddress.Modify(true);
         exit(ShipToAddress.Code);
     end;

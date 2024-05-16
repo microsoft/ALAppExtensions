@@ -29,7 +29,6 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         ElecDocumentType: Option "Fin. Charge Memo","Reminder","Sales Invoice","Service Invoice";
         ContactEmptyErr: Label 'Contact must have a value';
         AccountCodeTxt: Label 'Account Code';
-        BlankLCYCodeErr: Label 'LCY Code must have a value in General Ledger Setup: Primary Key=. It cannot be zero or empty.';
         cbcNameCapTxt: Label 'cbc:Name';
         cbcPercentCapTxt: Label 'cbc:Percent';
         cbcAmountInclTaxCapTxt: Label 'cbc:TaxInclusiveAmount';
@@ -360,7 +359,7 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
     begin
         // Verify error while creating Electronic Service Invoice with blank LCY Code on G/L Setup.
         Initialize();
-        PostServiceOrderAndCreateElecServiceInvoice('', BlankLCYCodeErr);
+        PostServiceOrderAndCreateElecServiceInvoice('', '');
     end;
 
     [Test]
@@ -373,6 +372,7 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
 
     local procedure PostServiceOrderAndCreateElecServiceInvoice(LCYCode: Code[10]; ExpectedError: Text[1024]);
     var
+        GLSetup: Record "General Ledger Setup";
         DocumentNo: Code[20];
     begin
         // Setup: Update LCY Code on G/L Setup, create and post Serive Order.
@@ -383,7 +383,10 @@ codeunit 148052 "OIOUBL-ERM Misc Elec. Invoice"
         asserterror CreateElecServiceInvoicesDocument(DocumentNo);
 
         // Verify: Verify LCY Code error while creating Electronic Service Invoice.
-        Assert.ExpectedError(ExpectedError);
+        if ExpectedError = '' then
+            Assert.ExpectedTestFieldError(GLSetup.FieldCaption("LCY Code"), '')
+        else
+            Assert.ExpectedError(ExpectedError);
     end;
 
     [Test]

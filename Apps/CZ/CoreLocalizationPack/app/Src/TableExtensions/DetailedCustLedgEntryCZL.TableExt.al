@@ -15,13 +15,8 @@ tableextension 11785 "Detailed Cust. Ledg. Entry CZL" extends "Detailed Cust. Le
             Caption = 'Customer Posting Group';
             TableRelation = "Customer Posting Group";
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Replaced by "Posting Group" field.';
         }
         field(11790; "Appl. Across Post. Groups CZL"; Boolean)
@@ -29,13 +24,8 @@ tableextension 11785 "Detailed Cust. Ledg. Entry CZL" extends "Detailed Cust. Le
             Caption = 'Application Across Posting Groups';
             Editable = false;
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'The "Alter Posting Groups" feature is replaced by standard "Multiple Posting Groups" feature.';
         }
     }

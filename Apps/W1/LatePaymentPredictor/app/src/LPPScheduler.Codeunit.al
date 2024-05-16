@@ -124,6 +124,9 @@ codeunit 1956 "LPP Scheduler"
         if not EnvironmentInfo.IsSaaS() then
             exit(false);
 
+        if not LPMachineLearningSetup.ReadPermission() then
+            exit(false);
+
         if not LPMachineLearningSetup.Get() then
             exit(false);
 

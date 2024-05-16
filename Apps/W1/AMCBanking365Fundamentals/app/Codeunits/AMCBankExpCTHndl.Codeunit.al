@@ -115,6 +115,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
         BodyXMLElement: XmlElement;
         Found: Boolean;
         TempXmlDocText: text;
+        SecretContent: SecretText;
         contentHttpContent: HttpContent;
     begin
         AMCBankingSetup.Get();
@@ -131,6 +132,7 @@ codeunit 20113 "AMC Bank Exp. CT Hndl"
 
         EnvelopeXmlDoc.WriteTo(TempXmlDocText);
         AMCBankServiceRequestMgt.RemoveUTF16(TempXmlDocText);
+        SecretContent := TempXmlDocText;
         contentHttpContent.WriteFrom(TempXmlDocText);
         PaymentHttpRequestMessage.Content(contentHttpContent);
     end;

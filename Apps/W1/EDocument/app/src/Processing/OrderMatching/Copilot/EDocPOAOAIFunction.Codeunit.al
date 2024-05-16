@@ -1,16 +1,15 @@
-codeunit 6167 "E-Doc. PO AOAI Function" implements EDocAOAITools
+codeunit 6167 "E-Doc. PO AOAI Function" implements "AOAI Function"
 {
     Access = Internal;
     InherentPermissions = X;
     InherentEntitlements = X;
 
     [NonDebuggable]
-    procedure GetToolPrompt() Prompt: JsonObject
+    procedure GetPrompt() Prompt: JsonObject
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
         EDocPOCopilotMatching: Codeunit "E-Doc. PO Copilot Matching";
         EDocumentMappingToolPrompt: Text;
-
     begin
         if AzureKeyVault.GetAzureKeyVaultSecret('EDocumentMappingToolStruct', EDocumentMappingToolPrompt) then
             Prompt.ReadFrom(EDocumentMappingToolPrompt)
@@ -18,7 +17,7 @@ codeunit 6167 "E-Doc. PO AOAI Function" implements EDocAOAITools
             Session.LogMessage('0000MOW', FailedToGetPromptSecretErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', EDocPOCopilotMatching.FeatureName());
     end;
 
-    procedure ToolCall(Arguments: JsonObject; CustomDimension: Dictionary of [Text, Text]): Variant
+    procedure Execute(Arguments: JsonObject): Variant
     var
         Result, Results, PurchaseOrderLineId, EDocumentLineId : JsonToken;
     begin
@@ -51,13 +50,9 @@ codeunit 6167 "E-Doc. PO AOAI Function" implements EDocAOAITools
         exit(TempAIProposalBuffer);
     end;
 
-    procedure GetRecord(var TempAIProposalBufferLocal: Record "E-Doc. PO Match Prop. Buffer" temporary)
+    procedure GetName(): Text
     begin
-        if TempAIProposalBuffer.FindSet() then
-            repeat
-                TempAIProposalBufferLocal.TransferFields(TempAIProposalBuffer);
-                TempAIProposalBufferLocal.Insert();
-            until TempAIProposalBuffer.Next() = 0;
+        exit(FunctionNameLbl);
     end;
 
     procedure SetRecords(var TempEDocumentImportedLineLocal: Record "E-Doc. Imported Line" temporary; var TempPurchaseLineLocal: Record "Purchase Line" temporary)
@@ -78,16 +73,11 @@ codeunit 6167 "E-Doc. PO AOAI Function" implements EDocAOAITools
             until TempPurchaseLineLocal.Next() = 0;
     end;
 
-    procedure FunctionName(): Text
-    begin
-        exit(FunctionNameLbl);
-    end;
-
     var
         TempEDocumentImportedLine: Record "E-Doc. Imported Line" temporary;
         TempPurchaseLine: Record "Purchase Line" temporary;
         TempAIProposalBuffer: Record "E-Doc. PO Match Prop. Buffer" temporary;
         FunctionNameLbl: Label 'match-lines', Locked = true;
-        MatchLineTxt: Label 'Matched to Purchase Order Line %1', Comment = 'Number of the order line that the E-Document line is matched to';
+        MatchLineTxt: Label 'Matched to Purchase Order Line %1', Comment = '%1 = Number of the order line that the E-Document line is matched to';
         FailedToGetPromptSecretErr: Label 'Failed to get the prompt secret from Azure Key Vault', Locked = true;
 }

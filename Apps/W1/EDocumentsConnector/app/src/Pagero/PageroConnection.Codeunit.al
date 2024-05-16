@@ -43,17 +43,22 @@ codeunit 6361 "Pagero Connection"
 
     procedure GetADocument(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     var
+        EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         InputTxt: Text;
     begin
-        if not PageroAPIRequests.GetADocument(EDocument, HttpRequest, HttpResponse) then
+        if not PageroAPIRequests.GetADocument(EDocument, HttpRequest, HttpResponse) then begin
+            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(UnsuccessfulResponseErr, HttpResponse.HttpStatusCode(), HttpResponse.ReasonPhrase()));
             exit(false);
+        end;
 
         if not CheckIfSuccessfulRequest(EDocument, HttpResponse) then
             exit(false);
 
         InputTxt := ParseJsonString(HttpResponse.Content);
-        if InputTxt = '' then
+        if InputTxt = '' then begin
+            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, UnsuccessfulResponseParseErr);
             exit;
+        end;
 
         EDocument."Document Id" := CopyStr(ParseGetADocumentResponse(InputTxt), 1, MaxStrLen(EDocument."Document Id"));
         EDocument.Modify();
@@ -234,5 +239,6 @@ codeunit 6361 "Pagero Connection"
     var
         PageroAPIRequests: Codeunit "Pagero API Requests";
         UnsuccessfulResponseErr: Label 'There was an error sending the request. Response code: %1 and error message: %2', Comment = '%1 - http response status code, e.g. 400, %2- error message';
+        UnsuccessfulResponseParseErr: Label 'Failed to parse response from document';
         EnvironmentBlocksErr: Label 'The request to send documents has been blocked. To resolve the problem, enable outgoing HTTP requests for the E-Document apps on the Extension Management page.';
 }

@@ -56,14 +56,14 @@ table 5375 "E-Document Module Setup"
         Rec.InitRecord();
 
         if Rec."Vendor No. 1" = '' then
-            if IsDomesticVendor(CreateContosoCustomerVendor.DomesticVendor1()) then
+            if IsDomesticVendor() then
                 Rec.Validate("Vendor No. 1", CreateContosoCustomerVendor.DomesticVendor1())
             else
                 Rec.Validate("Vendor No. 1", CreateContosoCustomerVendor.DomesticVendor2());
         if Rec."Vendor No. 2" = '' then
             Rec.Validate("Vendor No. 2", CreateContosoCustomerVendor.DomesticVendor2());
         if Rec."Vendor No. 3" = '' then
-            if IsDomesticVendor(CreateContosoCustomerVendor.DomesticVendor3()) then
+            if IsDomesticVendor() then
                 Rec.Validate("Vendor No. 3", CreateContosoCustomerVendor.DomesticVendor3())
             else
                 Rec.Validate("Vendor No. 3", CreateContosoCustomerVendor.DomesticVendor2());
@@ -71,16 +71,16 @@ table 5375 "E-Document Module Setup"
         Rec.Modify();
     end;
 
-    local procedure IsDomesticVendor(VendorNo: Code[20]): Boolean
+    local procedure IsDomesticVendor(): Boolean
     var
         EnvironmentInformation: Codeunit "Environment Information";
-        CreateContosoCustomerVendor: Codeunit "Create Common Customer/Vendor";
         ApplicationFamily: Text;
     begin
         // Temporary address incorrect local vendors in these countries.
         ApplicationFamily := EnvironmentInformation.GetApplicationFamily();
         if ApplicationFamily in ['NL', 'FR', 'BE'] then
-            if VendorNo = CreateContosoCustomerVendor.DomesticVendor2() then
-                exit(true);
+            exit(false);
+
+        exit(true);
     end;
 }

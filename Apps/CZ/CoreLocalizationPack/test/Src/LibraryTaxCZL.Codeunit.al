@@ -458,11 +458,6 @@ Codeunit 148003 "Library - Tax CZL"
         GeneralLedgerSetup: Record "General Ledger Setup";
     begin
         GeneralLedgerSetup.Get();
-#if not CLEAN22
-#pragma warning disable AL0432
-        GeneralLedgerSetup."Use VAT Date CZL" := UseVATDate;
-#pragma warning restore AL0432
-#endif
         GeneralLedgerSetup."VAT Reporting Date Usage" := Enum::"VAT Reporting Date Usage"::Disabled;
         if UseVATDate then
             GeneralLedgerSetup."VAT Reporting Date Usage" := Enum::"VAT Reporting Date Usage"::Enabled;

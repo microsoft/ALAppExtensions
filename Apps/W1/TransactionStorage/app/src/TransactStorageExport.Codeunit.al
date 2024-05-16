@@ -23,7 +23,7 @@ codeunit 6203 "Transact. Storage Export"
         TransactionStorageTok: Label 'Transaction Storage', Locked = true;
         ExportStartedTxt: Label 'Export started', Locked = true;
         ExportEndedTxt: Label 'Export ended', Locked = true;
-        TimeDeadlineExceededErr: Label 'A time deadline of %1 hours for the export has been exceeded. The export has been stopped.', Comment = '%1 = number of hours';
+        TimeDeadlineExceededErr: Label 'Export task timed out. Time deadline: %1 hours. Task time: %2 hours.', Comment = '%1, %2 - number of hours', Locked = true;
 
     trigger OnRun()
     var
@@ -42,11 +42,14 @@ codeunit 6203 "Transact. Storage Export"
     procedure CheckTimeDeadline(TaskStartingDateTime: DateTime)
     var
         TransactionStorageSetup: Record "Transaction Storage Setup";
+        TaskTimeHours: Decimal;
     begin
         if not TransactionStorageSetup.Get() then
             TransactionStorageSetup.Insert(true);
         if (CurrentDateTime() - TaskStartingDateTime) >= (TransactionStorageSetup."Max. Number of Hours" * 60 * 60 * 1000) then begin
-            FeatureTelemetry.LogError('0000LNB', TransactionStorageTok, '', StrSubstNo(TimeDeadlineExceededErr, TransactionStorageSetup."Max. Number of Hours"));
+            TaskTimeHours := Round((CurrentDateTime() - TaskStartingDateTime) / (60 * 60 * 1000), 0.1);
+            FeatureTelemetry.LogError(
+                '0000LNB', TransactionStorageTok, '', StrSubstNo(TimeDeadlineExceededErr, TransactionStorageSetup."Max. Number of Hours", TaskTimeHours));
             Error('');
         end;
     end;

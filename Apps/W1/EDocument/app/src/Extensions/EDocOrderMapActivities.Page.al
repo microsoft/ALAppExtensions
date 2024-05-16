@@ -30,7 +30,7 @@ page 6159 "E-Doc. Order Map. Activities"
                         EDocumentHelper.OpenMatchedPurchaseOrders();
                     end;
                 }
-                field(WaitingPurchaseOrderCount; EDocumentHelper.MatchedPurchaseEDocumentsCount())
+                field(WaitingPurchaseOrderCount; EDocumentHelper.WaitingPurchaseEDocCount())
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Waiting Purchase E-Invoices';

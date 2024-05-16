@@ -51,17 +51,6 @@ page 5024 "Service Declaration Subform"
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the country/region code of the source entry.';
                 }
-#if not CLEAN22                
-                field("VAT Registration No."; Rec."VAT Registration No.")
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the VAT registration No. of the customer or vendor associated with a source entry.';
-                    ObsoleteReason = 'Replaced with VAT Reg. No.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    Visible = false;
-                }
-#endif
                 field("VAT Reg. No."; Rec."VAT Reg. No.")
                 {
                     ApplicationArea = Basic, Suite;

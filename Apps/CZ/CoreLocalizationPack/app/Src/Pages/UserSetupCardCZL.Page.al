@@ -164,9 +164,6 @@ page 31198 "User Setup Card CZL"
                 Caption = 'Print';
                 Ellipsis = true;
                 Image = Print;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 ToolTip = 'Allows the user setup card printout.';
 
                 trigger OnAction()
@@ -177,6 +174,15 @@ page 31198 "User Setup Card CZL"
                     UserSetup.SetRecFilter();
                     REPORT.RunModal(REPORT::"User Setup List CZL", true, false, UserSetup);
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(Print_Promoted; Print)
+                {
+                }
             }
         }
     }

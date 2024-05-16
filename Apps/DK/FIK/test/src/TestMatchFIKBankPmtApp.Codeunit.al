@@ -195,7 +195,7 @@ Codeunit 148033 TestMatchFIKBankPmtApp
         // Verify
         ASSERTERROR
           VerifyBankAccReconciliationLines(BankAccReconciliation, FIKStatusDescriptionExpected, 0);
-        Assert.ExpectedError('The Applied Payment Entry does not exist.');
+        Assert.ExpectedErrorCannotFind(Database::"Applied Payment Entry");
     END;
 
     [Test]

@@ -18,8 +18,6 @@ codeunit 147102 "CD Purchase"
         LibraryWarehouse: Codeunit "Library - Warehouse";
         LibraryUtility: Codeunit "Library - Utility";
         isInitialized: Boolean;
-        PackageNoInfoDoesNotExistErr: Label 'The Package No. Information does not exist.';
-        TemporaryPackageMustBeNoErr: Label 'Temporary CD Number must be equal to ''No''  in Package No. Information';
         ItemTrackingDoesNotMatchErr: Label 'Item Tracking does not match for line 10000, Item %1, Qty. to Receive 4';
 
     local procedure Initialize()
@@ -79,7 +77,7 @@ codeunit 147102 "CD Purchase"
         LibraryItemTracking.CreatePurchOrderItemTracking(ReservationEntry, PurchaseLine, '', '', PackageNo[2], Qty);
 
         asserterror LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
-        Assert.ExpectedError(PackageNoInfoDoesNotExistErr);
+        Assert.ExpectedErrorCannotFind(Database::"Package No. Information");
     end;
 
     [Test]
@@ -263,7 +261,7 @@ codeunit 147102 "CD Purchase"
         LibraryItemTracking.CreatePurchOrderItemTracking(ReservationEntry, PurchaseLine, '', '', PackageNo[2], Qty);
 
         asserterror LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
-        Assert.ExpectedError(TemporaryPackageMustBeNoErr);
+        Assert.ExpectedTestFieldError(PackageNoInfo[i].FieldCaption("Temporary CD Number"), 'No');
     end;
 
     [Test]

@@ -46,7 +46,9 @@ report 10033 "IRS 1099 Send Email"
                         ApplicationArea = BasicUS;
                         Visible = ResendEmailVisible;
                         Caption = 'Resend Email';
+#pragma warning disable AA0219
                         ToolTip = 'The selected report type may have been sent to some vendors. Set the flag if you want to resend email to them.';
+#pragma warning restore AA0219
                     }
                 }
             }

@@ -203,11 +203,11 @@ codeunit 30189 "Shpfy Variant API"
     /// </summary>
     /// <param name="JImageNode">Parameter of type JsonToken.</param>
     /// <param name="ImageData">Parameter of type Dictionary of [BigInteger, Text].</param>
-    local procedure GetImageData(JImageNode: JsonObject; var ImageData: Dictionary of [BigInteger, Text])
+    local procedure GetImageData(JImageNode: JsonToken; var ImageData: Dictionary of [BigInteger, Text])
     var
         Data: Dictionary of [BigInteger, Text];
     begin
-        Data.Add(CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JImageNode, 'id')), JsonHelper.GetValueAsText(JImageNode, 'transformedSrc'));
+        Data.Add(CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JImageNode, 'node.id')), JsonHelper.GetValueAsText(JImageNode, 'node.image.url'));
         ImageData := Data;
     end;
 
@@ -221,8 +221,9 @@ codeunit 30189 "Shpfy Variant API"
         ImageData: Dictionary of [BigInteger, Text];
         Parameters: Dictionary of [Text, Text];
         GraphQLType: Enum "Shpfy GraphQL Type";
+        JImages: JsonArray;
         JProductVariants: JsonArray;
-        JImage: JsonObject;
+        JImage: JsonToken;
         JNode: JsonObject;
         JItem: JsonToken;
         JResponse: JsonToken;
@@ -237,10 +238,12 @@ codeunit 30189 "Shpfy Variant API"
                     Cursor := JsonHelper.GetValueAsText(JItem.AsObject(), 'cursor');
                     if JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
                         Id := JsonHelper.GetValueAsBigInteger(JNode, 'legacyResourceId');
-                        if JsonHelper.GetJsonObject(JNode, JImage, 'image') then
-                            GetImageData(JImage, ImageData)
-                        else
-                            Clear(ImageData);
+                        if JsonHelper.GetJsonArray(JNode, JImages, 'media.edges') then
+                            if JImages.Count = 1 then begin
+                                JImages.Get(0, JImage);
+                                GetImageData(JImage, ImageData);
+                            end else
+                                Clear(ImageData);
                         ProductVariantImages.Add(Id, ImageData);
                     end;
                 end;

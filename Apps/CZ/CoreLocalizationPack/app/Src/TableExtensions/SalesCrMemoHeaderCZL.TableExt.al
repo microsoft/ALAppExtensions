@@ -6,17 +6,8 @@ namespace Microsoft.Sales.History;
 
 using Microsoft.Bank.Setup;
 using Microsoft.Finance.Currency;
-#if not CLEAN22
-using Microsoft.Finance.GeneralLedger.Ledger;
-using Microsoft.Finance.GeneralLedger.Setup;
-using Microsoft.Finance.VAT.Calculation;
-using Microsoft.Finance.VAT.Ledger;
-#endif
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
-#if not CLEAN22
-using System.Utilities;
-#endif
 
 tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
 {
@@ -107,61 +98,9 @@ tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
         {
             Caption = 'VAT Date';
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Replaced by VAT Reporting Date.';
-#if not CLEAN22
-            trigger OnValidate()
-            var
-                VATEntry: Record "VAT Entry";
-                GLEntry: Record "G/L Entry";
-                ConfirmManagement: Codeunit "Confirm Management";
-                VATDateModifyQst: Label 'Do you really want to modify VAT Date?';
-                VATEntryClosedErr: Label 'VAT Entry is already closed and the date cannot be modified. VAT Date = %1.', Comment = '%1 = VAT Date';
-                VATDateCannotBeChangedErr: Label 'Selected document is not Credit Memo. Field VAT Date cannot be changed.';
-            begin
-                if not ConfirmManagement.GetResponse(VATDateModifyQst, false) then begin
-                    "VAT Date CZL" := xRec."VAT Date CZL";
-                    exit;
-                end;
-#pragma warning disable AL0432
-                CheckVATDateCZL();
-#pragma warning restore AL0432
-                VATEntry.LockTable();
-                VATEntry.SetCurrentKey("Document No.", "Posting Date");
-                VATEntry.SetRange("Document Type", VATEntry."Document Type"::"Credit Memo");
-                VATEntry.SetRange("Posting Date", "Posting Date");
-                VATEntry.SetRange("Document No.", "No.");
-                VATEntry.SetRange(Type, VATEntry.Type::Sale);
-                if VATEntry.FindSet(true) then
-                    repeat
-                        if VATEntry.Closed then
-                            Error(VATEntryClosedErr, VATEntry."VAT Date CZL");
-                        VATEntry.Validate("VAT Date CZL", "VAT Date CZL");
-                        Codeunit.Run(Codeunit::"VAT Entry - Edit", VATEntry);
-                    until VATEntry.Next() = 0
-                else begin
-                    "VAT Date CZL" := xRec."VAT Date CZL";
-                    Error(VATDateCannotBeChangedErr);
-                end;
-
-                GLEntry.SetCurrentKey("Document No.", "Posting Date");
-                GLEntry.SetRange("Document Type", GLEntry."Document Type"::"Credit Memo");
-                GLEntry.SetRange("Posting Date", "Posting Date");
-                GLEntry.SetRange("Document No.", "No.");
-                GLEntry.LockTable();
-                if GLEntry.FindSet(true) then
-                    repeat
-                        GLEntry.Validate("VAT Date CZL", "VAT Date CZL");
-                        Codeunit.Run(Codeunit::"G/L Entry-Edit", GLEntry);
-                    until GLEntry.Next() = 0;
-            end;
-#endif
         }
         field(11781; "Registration No. CZL"; Text[20])
         {
@@ -183,26 +122,16 @@ tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
         {
             Caption = 'Physical Transfer';
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
         field(31069; "Intrastat Exclude CZL"; Boolean)
         {
             Caption = 'Intrastat Exclude';
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
         field(31072; "EU 3-Party Intermed. Role CZL"; Boolean)
@@ -211,27 +140,4 @@ tableextension 11727 "Sales Cr.Memo Header CZL" extends "Sales Cr.Memo Header"
             DataClassification = CustomerContent;
         }
     }
-#if not CLEAN22
-
-    [Obsolete('The VAT Date CZL will be replaced by VAT Reporting Date.', '22.0')]
-    procedure CheckVATDateCZL()
-    var
-        GeneralLedgerSetup: Record "General Ledger Setup";
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-        VATDateHandlerCZL: Codeunit "VAT Date Handler CZL";
-        VATDateRangeErr: Label 'VAT Date %1 is not within your range of allowed VAT dates.\Correct the date or change VAT posting period.', Comment = '%1 = VAT Date';
-    begin
-        if ReplaceVATDateMgtCZL.IsEnabled() then
-            exit;
-        GeneralLedgerSetup.Get();
-        if GeneralLedgerSetup."Use VAT Date CZL" then begin
-            TestField("VAT Date CZL");
-            if not VATDateHandlerCZL.IsVATDateInAllowedPeriod("VAT Date CZL") then
-                Error(VATDateRangeErr, "VAT Date CZL");
-            VATDateHandlerCZL.VATPeriodCZLCheck("VAT Date CZL");
-        end;
-    end;
-#endif
 }

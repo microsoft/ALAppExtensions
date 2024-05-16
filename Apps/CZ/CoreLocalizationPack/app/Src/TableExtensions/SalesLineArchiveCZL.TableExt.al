@@ -12,13 +12,8 @@ tableextension 31016 "Sales Line Archive CZL" extends "Sales Line Archive"
         {
             Caption = 'Physical Transfer';
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
         }
     }
