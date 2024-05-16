@@ -77,7 +77,7 @@ table 6214 "Sustainability Jnl. Line"
                     "Account Name" := SustainabilityAccount.Name;
                 end;
 
-                GetDefaultDimensionsFromAccount();
+                CreateDimFromDefaultDim(FieldNo("Account No."));
             end;
         }
         field(8; "Account Name"; Text[100])
@@ -334,15 +334,30 @@ table 6214 "Sustainability Jnl. Line"
         Validate("Document No.", SustainabilityJournalMgt.GetDocumentNo(IsPreviousLineValid, SustainabilityJnlBatch, PreviousLine."Document No.", "Posting Date"));
     end;
 
-    local procedure GetDefaultDimensionsFromAccount()
+    procedure CreateDimFromDefaultDim(FieldNo: Integer)
     var
         DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
     begin
+        InitDefaultDimensionSources(DefaultDimSource, FieldNo);
+        CreateDim(DefaultDimSource);
+    end;
+
+    local procedure InitDefaultDimensionSources(var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; FieldNo: Integer)
+    begin
+        DimMgt.AddDimSource(DefaultDimSource, Database::"Sustainability Account", "Account No.", FieldNo = Rec.FieldNo("Account No."));
+        OnAfterInitDefaultDimensionSources(Rec, DefaultDimSource, FieldNo);
+    end;
+
+    procedure CreateDim(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    var
+        OldDimSetID: Integer;
+    begin
         "Shortcut Dimension 1 Code" := '';
         "Shortcut Dimension 2 Code" := '';
+        OldDimSetID := "Dimension Set ID";
+        "Dimension Set ID" := DimMgt.GetRecDefaultDimID(Rec, CurrFieldNo, DefaultDimSource, "Source Code", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0);
 
-        DimMgt.AddDimSource(DefaultDimSource, Database::"Sustainability Account", "Account No.", true);
-        Validate("Dimension Set ID", DimMgt.GetRecDefaultDimID(Rec, CurrFieldNo, DefaultDimSource, "Source Code", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code", 0, 0));
+        OnAfterCreateDim(Rec, CurrFieldNo, xRec, OldDimSetID, DefaultDimSource);
     end;
 
     internal procedure ShowDimensions() IsChanged: Boolean
@@ -355,5 +370,17 @@ table 6214 "Sustainability Jnl. Line"
             "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
 
         IsChanged := OldDimSetID <> "Dimension Set ID";
+    end;
+
+
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterInitDefaultDimensionSources(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; FieldNo: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCreateDim(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; CurrFieldNo: Integer; xSustainabilityJnlLine: Record "Sustainability Jnl. Line"; OldDimSetID: Integer; DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
+    begin
     end;
 }
