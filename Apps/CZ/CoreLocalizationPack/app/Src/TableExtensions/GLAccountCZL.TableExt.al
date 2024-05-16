@@ -27,13 +27,7 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
                                                     "Business Unit Code" = field("Business Unit Filter"),
                                                     "Global Dimension 1 Code" = field("Global Dimension 1 filter"),
                                                     "Global Dimension 2 Code" = field("Global Dimension 2 filter"),
-#if not CLEAN22
-#pragma warning disable AL0432
-                                                    "VAT Date CZL" = field("Date Filter")));
-#pragma warning restore AL0432
-#else
                                                     "VAT Reporting Date" = field("Date Filter")));
-#endif
             AutoFormatType = 1;
             BlankZero = true;
         }
@@ -47,13 +41,7 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
                                                             "Business Unit Code" = field("Business Unit Filter"),
                                                             "Global Dimension 1 Code" = field("Global Dimension 1 filter"),
                                                             "Global Dimension 2 Code" = field("Global Dimension 2 filter"),
-#if not CLEAN22
-#pragma warning disable AL0432
-                                                            "VAT Date CZL" = field("Date Filter")));
-#pragma warning restore AL0432
-#else
                                                             "VAT Reporting Date" = field("Date Filter")));
-#endif
             AutoFormatType = 1;
             BlankZero = true;
         }
@@ -67,13 +55,7 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
                                                             "Business Unit Code" = field("Business Unit Filter"),
                                                             "Global Dimension 1 Code" = field("Global Dimension 1 filter"),
                                                             "Global Dimension 2 Code" = field("Global Dimension 2 filter"),
-#if not CLEAN22
-#pragma warning disable AL0432
-                                                            "VAT Date CZL" = field("Date Filter")));
-#pragma warning restore AL0432
-#else
                                                             "VAT Reporting Date" = field("Date Filter")));
-#endif
             AutoFormatType = 1;
             BlankZero = true;
         }
@@ -87,13 +69,7 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
                                                                               "Business Unit Code" = field("Business Unit Filter"),
                                                                               "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
                                                                               "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
-#if not CLEAN22
-#pragma warning disable AL0432
-                                                                              "VAT Date CZL" = field("Date Filter")));
-#pragma warning restore AL0432
-#else
                                                                               "VAT Reporting Date" = field("Date Filter")));
-#endif
             AutoFormatExpression = GetCurrencyCode();
             AutoFormatType = 1;
         }
@@ -107,13 +83,7 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
                                                                               "Business Unit Code" = field("Business Unit Filter"),
                                                                               "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
                                                                               "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
-#if not CLEAN22
-#pragma warning disable AL0432
-                                                                              "VAT Date CZL" = field("Date Filter")));
-#pragma warning restore AL0432
-#else
                                                                               "VAT Reporting Date" = field("Date Filter")));
-#endif
             AutoFormatExpression = GetCurrencyCode();
             AutoFormatType = 1;
         }
@@ -127,13 +97,7 @@ tableextension 11718 "G/L Account CZL" extends "G/L Account"
                                                                               "Business Unit Code" = field("Business Unit Filter"),
                                                                               "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
                                                                               "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
-#if not CLEAN22
-#pragma warning disable AL0432
-                                                                              "VAT Date CZL" = field("Date Filter")));
-#pragma warning restore AL0432
-#else
                                                                               "VAT Reporting Date" = field("Date Filter")));
-#endif
             AutoFormatExpression = GetCurrencyCode();
             AutoFormatType = 1;
         }

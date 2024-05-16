@@ -23,7 +23,6 @@ codeunit 148027 "TestPmtExport Validation DK UT"
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         IsInitialized: Boolean;
         EmptyPaymentDetailsErr: Label '%1, %2 or %3 must be used for payments.', Comment = '%1=Field;%2=Field;%3=Field', Locked = true;
-        FieldMustBeEqualErr: Label '%1 must be equal to ''%2''', Comment = '%1=Field;%2=Value', Locked = true;
         FieldMustNotBeEqualErr: Label '%1 must not be %2', Comment = '%1=Field;%2=Value', Locked = true;
         FieldIsNotEmptyErr: Label '%1 cannot be used while %2 has a value.', Comment = '%1=Field;%2=Field', Locked = true;
         FieldMustHaveValueErr: Label '%1 must have a value', Comment = '%1 = Field', Locked = true;
@@ -240,9 +239,7 @@ codeunit 148027 "TestPmtExport Validation DK UT"
         ASSERTERROR CODEUNIT.RUN(CODEUNIT::"Pmt. Export Cust. Ledger Check", CustLedgEntry);
 
         // Verify
-        Assert.ExpectedError(
-          STRSUBSTNO(FieldMustBeEqualErr, PaymentMethod.FIELDCAPTION(PaymentTypeValidation),
-            PaymentMethod.PaymentTypeValidation::International));
+        Assert.ExpectedTestFieldError(PaymentMethod.FieldCaption(PaymentTypeValidation), Format(PaymentMethod.PaymentTypeValidation::International));
     end;
 
     [Test]
@@ -1460,8 +1457,7 @@ codeunit 148027 "TestPmtExport Validation DK UT"
         PaymentMethod: Record "Payment Method";
     begin
         asserterror SuggestPaymentsPopulatePaymentAccFields(PaymentMethod.PaymentTypeValidation::International);
-        Assert.ExpectedError(STRSUBSTNO(FieldMustNotBeEqualErr, PaymentMethod.FIELDCAPTION(PaymentTypeValidation),
-            PaymentMethod.PaymentTypeValidation::International));
+        Assert.ExpectedTestFieldError(PaymentMethod.FIELDCAPTION(PaymentTypeValidation), Format(PaymentMethod.PaymentTypeValidation::International));
     end;
 
     [Test]
@@ -2088,9 +2084,7 @@ codeunit 148027 "TestPmtExport Validation DK UT"
         ASSERTERROR CODEUNIT.RUN(CODEUNIT::"Pmt. Export Vend. Ledger Check", VendLedgEntry);
 
         // Verify
-        Assert.ExpectedError(
-          STRSUBSTNO(FieldMustNotBeEqualErr,
-            PaymentMethod.FIELDCAPTION(PaymentTypeValidation), PaymentMethod.PaymentTypeValidation::International));
+        Assert.ExpectedTestFieldError(PaymentMethod.FIELDCAPTION(PaymentTypeValidation), Format(PaymentMethod.PaymentTypeValidation::International));
     end;
 
     [Test]
@@ -2127,9 +2121,7 @@ codeunit 148027 "TestPmtExport Validation DK UT"
         ASSERTERROR CODEUNIT.RUN(CODEUNIT::"Pmt. Export Vend. Ledger Check", VendLedgEntry);
 
         // Verify
-        Assert.ExpectedError(
-          STRSUBSTNO(FieldMustBeEqualErr,
-            PaymentMethod.FIELDCAPTION(PaymentTypeValidation), PaymentMethod.PaymentTypeValidation::International));
+        Assert.ExpectedTestFieldError(PaymentMethod.FIELDCAPTION(PaymentTypeValidation), Format(PaymentMethod.PaymentTypeValidation::International));
     end;
 
     [Test]

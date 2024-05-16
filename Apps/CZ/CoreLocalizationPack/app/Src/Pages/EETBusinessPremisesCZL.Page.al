@@ -49,13 +49,18 @@ page 31143 "EET Business Premises CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Cash Registers';
                 Image = ElectronicPayment;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 RunObject = page "EET Cash Registers CZL";
                 RunPageLink = "Business Premises Code" = field(Code);
                 ToolTip = 'Displays a list of POS devices assigned to the promises.';
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref("Cash Registers_Promoted"; "Cash Registers")
+                {
+                }
             }
         }
     }

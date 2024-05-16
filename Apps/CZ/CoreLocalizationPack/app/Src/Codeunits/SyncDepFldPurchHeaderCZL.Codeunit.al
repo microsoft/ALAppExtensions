@@ -34,12 +34,6 @@ codeunit 31159 "Sync.Dep.Fld-PurchHeader CZL"
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Purchase Header") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Purchase Header");
-#if not CLEAN22
-        if not Rec.IsReplaceVATDateEnabled() then
-            Rec."VAT Reporting Date" := Rec."VAT Date CZL"
-        else
-            Rec."VAT Date CZL" := Rec."VAT Reporting Date";
-#endif
         if not Rec.IsEU3PartyTradeFeatureEnabled() then
             Rec."EU 3 Party Trade" := Rec."EU 3-Party Trade CZL"
         else
@@ -47,22 +41,6 @@ codeunit 31159 "Sync.Dep.Fld-PurchHeader CZL"
         Rec.Modify();
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Purchase Header");
     end;
-#if not CLEAN22
-
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'VAT Date CZL', false, false)]
-    local procedure SyncOnAfterValidateVatDate(var Rec: Record "Purchase Header")
-    begin
-        if not Rec.IsReplaceVATDateEnabled() then
-            Rec."VAT Reporting Date" := Rec."VAT Date CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'VAT Reporting Date', false, false)]
-    local procedure SyncOnAfterValidateVatReportingDate(var Rec: Record "Purchase Header")
-    begin
-        if Rec.IsReplaceVATDateEnabled() then
-            Rec."VAT Date CZL" := Rec."VAT Reporting Date";
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'EU 3-Party Trade CZL', false, false)]
     local procedure SyncOnAfterValidateEU3PartyTradeCZL(var Rec: Record "Purchase Header")

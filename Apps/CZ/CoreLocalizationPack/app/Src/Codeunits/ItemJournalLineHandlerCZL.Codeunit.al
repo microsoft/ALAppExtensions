@@ -9,12 +9,6 @@ using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Location;
 using Microsoft.Inventory.Setup;
 using Microsoft.Manufacturing.Document;
-#if not CLEAN22
-using Microsoft.Purchases.Document;
-using Microsoft.Sales.Document;
-using Microsoft.Service.Document;
-using Microsoft.Service.History;
-#endif
 using System.Security.User;
 
 codeunit 31078 "Item Journal Line Handler CZL"
@@ -110,94 +104,6 @@ codeunit 31078 "Item Journal Line Handler CZL"
     begin
         ItemJournalLine.Validate("Invt. Movement Template CZL", LastItemJournalLine."Invt. Movement Template CZL");
     end;
-#if not CLEAN22
-#pragma warning disable AL0432
-
-    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnValidateItemNoOnAfterGetItem', '', false, false)]
-    local procedure CopyFromItemOnValidateItemNoOnAfterGetItem(var ItemJournalLine: Record "Item Journal Line"; Item: Record Item)
-    begin
-        ItemJournalLine."Tariff No. CZL" := Item."Tariff No.";
-        ItemJournalLine."Statistic Indication CZL" := Item."Statistic Indication CZL";
-        ItemJournalLine."Net Weight CZL" := Item."Net Weight";
-        ItemJournalLine."Country/Reg. of Orig. Code CZL" := Item."Country/Region of Origin Code";
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromSalesHeader', '', false, false)]
-    local procedure SetIntrastatTransactionOnAfterCopyItemJnlLineFromSalesHeader(var ItemJnlLine: Record "Item Journal Line"; SalesHeader: Record "Sales Header")
-    begin
-        ItemJnlLine."Physical Transfer CZL" := SalesHeader."Physical Transfer CZL";
-        ItemJnlLine."Intrastat Transaction CZL" := SalesHeader.IsIntrastatTransactionCZL();
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromSalesLine', '', false, false)]
-    local procedure CopyFieldsOnAfterCopyItemJnlLineFromSalesLine(var ItemJnlLine: Record "Item Journal Line"; SalesLine: Record "Sales Line")
-    begin
-        ItemJnlLine."Tariff No. CZL" := SalesLine."Tariff No. CZL";
-        ItemJnlLine."Net Weight CZL" := SalesLine."Net Weight";
-        // recalc to base UOM
-        if ItemJnlLine."Net Weight CZL" <> 0 then
-            if SalesLine."Qty. per Unit of Measure" <> 0 then
-                ItemJnlLine."Net Weight CZL" := Round(ItemJnlLine."Net Weight CZL" / SalesLine."Qty. per Unit of Measure", 0.00001);
-        ItemJnlLine."Country/Reg. of Orig. Code CZL" := SalesLine."Country/Reg. of Orig. Code CZL";
-        ItemJnlLine."Statistic Indication CZL" := SalesLine."Statistic Indication CZL";
-        ItemJnlLine."Physical Transfer CZL" := SalesLine."Physical Transfer CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromPurchHeader', '', false, false)]
-    local procedure SetIntrastatTransactionOnAfterCopyItemJnlLineFromPurchHeader(var ItemJnlLine: Record "Item Journal Line"; PurchHeader: Record "Purchase Header")
-    begin
-        ItemJnlLine."Physical Transfer CZL" := PurchHeader."Physical Transfer CZL";
-        ItemJnlLine."Intrastat Transaction CZL" := PurchHeader.IsIntrastatTransactionCZL();
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromPurchLine', '', false, false)]
-    local procedure CopyFieldsOnAfterCopyItemJnlLineFromPurchLine(var ItemJnlLine: Record "Item Journal Line"; PurchLine: Record "Purchase Line")
-    begin
-        ItemJnlLine."Tariff No. CZL" := PurchLine."Tariff No. CZL";
-        ItemJnlLine."Net Weight CZL" := PurchLine."Net Weight";
-        // recalc to base UOM
-        if ItemJnlLine."Net Weight CZL" <> 0 then
-            if PurchLine."Qty. per Unit of Measure" <> 0 then
-                ItemJnlLine."Net Weight CZL" := Round(ItemJnlLine."Net Weight CZL" / PurchLine."Qty. per Unit of Measure", 0.00001);
-        ItemJnlLine."Country/Reg. of Orig. Code CZL" := PurchLine."Country/Reg. of Orig. Code CZL";
-        ItemJnlLine."Statistic Indication CZL" := PurchLine."Statistic Indication CZL";
-        ItemJnlLine."Physical Transfer CZL" := PurchLine."Physical Transfer CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromServHeader', '', false, false)]
-    local procedure SetIntrastatTransactionOnAfterCopyItemJnlLineFromServHeader(var ItemJnlLine: Record "Item Journal Line"; ServHeader: Record "Service Header")
-    begin
-        ItemJnlLine."Physical Transfer CZL" := ServHeader."Physical Transfer CZL";
-        ItemJnlLine."Intrastat Transaction CZL" := ServHeader.IsIntrastatTransactionCZL();
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromServLine', '', false, false)]
-    local procedure CopyFieldsOnAfterCopyItemJnlLineFromServLine(var ItemJnlLine: Record "Item Journal Line"; ServLine: Record "Service Line")
-    begin
-        ItemJnlLine."Tariff No. CZL" := ServLine."Tariff No. CZL";
-        ItemJnlLine."Net Weight CZL" := ServLine."Net Weight";
-        // recalc to base UOM
-        if ItemJnlLine."Net Weight CZL" <> 0 then
-            if ServLine."Qty. per Unit of Measure" <> 0 then
-                ItemJnlLine."Net Weight CZL" := Round(ItemJnlLine."Net Weight CZL" / ServLine."Qty. per Unit of Measure", 0.00001);
-        ItemJnlLine."Country/Reg. of Orig. Code CZL" := ServLine."Country/Reg. of Orig. Code CZL";
-        ItemJnlLine."Statistic Indication CZL" := ServLine."Statistic Indication CZL";
-        ItemJnlLine."Physical Transfer CZL" := ServLine."Physical Transfer CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromServShptLine', '', false, false)]
-    local procedure CopyFieldsOnAfterCopyItemJnlLineFromServShptLine(var ItemJnlLine: Record "Item Journal Line"; ServShptLine: Record "Service Shipment Line")
-    begin
-        ItemJnlLine.CopyFromServiceShipmentLineCZL(ServShptLine);
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromServShptLineUndo', '', false, false)]
-    local procedure CopyFieldsOnAfterCopyItemJnlLineFromServShptLineUndo(var ItemJnlLine: Record "Item Journal Line"; ServShptLine: Record "Service Shipment Line")
-    begin
-        ItemJnlLine.CopyFromServiceShipmentLineCZL(ServShptLine);
-    end;
-#pragma warning restore AL0432
-#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::ItemJnlManagement, 'OnBeforeOpenJnl', '', false, false)]
     local procedure JournalTemplateUserRestrictionsOnBeforeOpenJnl(var ItemJnlLine: Record "Item Journal Line")

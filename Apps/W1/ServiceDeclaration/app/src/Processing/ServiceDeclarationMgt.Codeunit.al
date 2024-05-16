@@ -629,13 +629,13 @@ codeunit 5012 "Service Declaration Mgt."
         ItemJournalLine."Applicable For Serv. Decl." := PurchaseLine."Applicable For Serv. Decl.";
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromServLine', '', false, false)]
-    local procedure OnAfterCopyItemJnlLineFromServiceLine(var ItemJnlLine: Record "Item Journal Line"; ServLine: Record "Service Line")
+    [EventSubscriber(ObjectType::Table, Database::"Service Line", 'OnAfterCopyToItemJnlLine', '', false, false)]
+    local procedure OnAfterCopyItemJnlLineFromServiceLine(var ItemJournalLine: Record "Item Journal Line"; ServiceLine: Record "Service Line")
     begin
         if not IsFeatureEnabled() then
             exit;
-        ItemJnlLine."Service Transaction Type Code" := ServLine."Service Transaction Type Code";
-        ItemJnlLine."Applicable For Serv. Decl." := ServLine."Applicable For Serv. Decl.";
+        ItemJournalLine."Service Transaction Type Code" := ServiceLine."Service Transaction Type Code";
+        ItemJournalLine."Applicable For Serv. Decl." := ServiceLine."Applicable For Serv. Decl.";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromPurchLine', '', false, false)]

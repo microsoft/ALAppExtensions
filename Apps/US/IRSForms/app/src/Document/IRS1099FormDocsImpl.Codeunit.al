@@ -59,17 +59,26 @@ codeunit 10036 "IRS 1099 Form Docs Impl." implements "IRS 1099 Create Form Docs"
     local procedure SkipFormDocumentCreation(var VendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer"; IRS1099CalcParameters: Record "IRS 1099 Calc. Params"): Boolean
     var
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+        IRS1099FormDocument: Codeunit "IRS 1099 Form Document";
     begin
         VendFormBoxBuffer.SetRange("Vendor No.", VendFormBoxBuffer."Vendor No.");
         VendFormBoxBuffer.SetRange("Form No.", VendFormBoxBuffer."Form No.");
         IRS1099FormDocHeader.SetRange("Period No.", VendFormBoxBuffer."Period No.");
         IRS1099FormDocHeader.SetRange("Vendor No.", VendFormBoxBuffer."Vendor No.");
         IRS1099FormDocHeader.SetRange("Form No.", VendFormBoxBuffer."Form No.");
-        if IRS1099FormDocHeader.FindFirst() then
-            if IRS1099CalcParameters.Replace then
-                IRS1099FormDocHeader.Delete(true)
-            else
-                exit(true);
+        if not IRS1099FormDocHeader.FindFirst() then
+            exit(false);
+
+        if IRS1099FormDocHeader.Status = IRS1099FormDocHeader.Status::Submitted then
+            exit(true);
+
+        if not IRS1099CalcParameters.Replace then
+            exit(true);
+
+        if IRS1099FormDocHeader.Status = IRS1099FormDocHeader.Status::Released then
+            IRS1099FormDocument.Reopen(IRS1099FormDocHeader);
+
+        IRS1099FormDocHeader.Delete(true);
         exit(false);
     end;
 

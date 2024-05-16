@@ -10,18 +10,6 @@ pageextension 11752 "Posted Service Invoices CZL" extends "Posted Service Invoic
     {
         addafter("Posting Date")
         {
-#if not CLEAN22
-            field("VAT Date CZL"; Rec."VAT Date CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'VAT Date (Obsolete)';
-                ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Replaced by VAT Reporting Date.';
-            }
-#endif
             field("VAT Reporting Date CZL"; Rec."VAT Reporting Date")
             {
                 ApplicationArea = Basic, Suite;
@@ -64,18 +52,6 @@ pageextension 11752 "Posted Service Invoices CZL" extends "Posted Service Invoic
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the bank account''s international bank account number.';
             }
-#if not CLEAN22
-            field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Intrastat Exclude (Obsolete)';
-                ToolTip = 'Specifies that entry will be excluded from intrastat.';
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
-            }
-#endif
         }
     }
 }

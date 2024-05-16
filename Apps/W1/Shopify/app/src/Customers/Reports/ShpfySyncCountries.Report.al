@@ -18,7 +18,7 @@ report 30110 "Shpfy Sync Countries"
 
             trigger OnAfterGetRecord()
             begin
-                Codeunit.Run(Codeunit::"Shpfy Sync Countries", Shop)
+                Codeunit.Run(Codeunit::"Shpfy Sync Countries", Shop);
             end;
         }
     }

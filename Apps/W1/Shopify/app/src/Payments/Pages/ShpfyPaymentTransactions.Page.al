@@ -105,8 +105,8 @@ page 30124 "Shpfy Payment Transactions"
             action(Disputes)
             {
                 ApplicationArea = All;
-                Caption = 'Show Related Disputes';
-                Image = Entry;
+                Caption = 'Disputes';
+                Image = OrderList;
                 ToolTip = 'View the disputes related to order of the selected transaction.';
 
                 trigger OnAction();

@@ -77,6 +77,7 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
         OperationXmlNode: XMLElement;
         ChildXmlElement: XmlElement;
         TempXmlDocText: Text;
+        SecretContent: SecretText;
     begin
         BodyContentXmlDoc := XmlDocument.Create();
         BodyDeclaration := XmlDeclaration.Create('1.0', 'UTF-8', 'No');
@@ -93,7 +94,8 @@ codeunit 20115 "AMC Bank Imp.BankList Hndl"
 
         BodyContentXmlDoc.WriteTo(TempXmlDocText);
         AMCBankServiceRequestMgt.RemoveUTF16(TempXmlDocText);
-        contentHttpContent.WriteFrom(TempXmlDocText);
+        SecretContent := TempXmlDocText;
+        contentHttpContent.WriteFrom(SecretContent);
         BankListExchHttpRequestMessage.Content(contentHttpContent);
     end;
 

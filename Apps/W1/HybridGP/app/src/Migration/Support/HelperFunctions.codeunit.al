@@ -2092,6 +2092,24 @@ codeunit 4037 "Helper Functions"
         DataMigrationErrorLogging.ClearLastRecordUnderProcessing();
     end;
 
+    internal procedure ShouldMigrateItem(ItemNo: Text): Boolean
+    var
+        GPIV00101: Record "GP IV00101";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+    begin
+        if GPIV00101.Get(ItemNo) then begin
+            if GPIV00101.INACTIVE then
+                if not GPCompanyAdditionalSettings.GetMigrateInactiveItems() then
+                    exit(false);
+
+            if GPIV00101.IsDiscontinued() then
+                if not GPCompanyAdditionalSettings.GetMigrateDiscontinuedItems() then
+                    exit(false);
+        end;
+
+        exit(true);
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnSkipPostingGLAccounts(var SkipPosting: Boolean)
     begin

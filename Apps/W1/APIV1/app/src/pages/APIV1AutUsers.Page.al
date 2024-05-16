@@ -47,19 +47,6 @@ page 20004 "APIV1 - Aut. Users"
                 {
                     Caption = 'expiryDate', Locked = true;
                 }
-#if not CLEAN22
-                part(userGroupMember; "APIV1 - Aut. User Group Member")
-                {
-                    Caption = 'userGroupMember', Locked = true;
-                    EntityName = 'userGroupMember';
-                    EntitySetName = 'userGroupMembers';
-                    SubPageLink = "User Security ID" = field("User Security ID");
-                    Visible = LegacyUserGroupsVisible;
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'The user groups functionality is deprecated.';
-                    ObsoleteTag = '22.0';
-                }
-#endif
                 part(userPermission; "APIV1 - Aut. User Permission")
                 {
                     Caption = 'userPermission', Locked = true;
@@ -77,16 +64,8 @@ page 20004 "APIV1 - Aut. Users"
 
     trigger OnOpenPage()
     var
-#if not CLEAN22
-#pragma warning disable AL0432
-        LegacyUserGroups: Codeunit "Legacy User Groups";
-#pragma warning restore AL0432
-#endif
         EnvironmentInformation: Codeunit "Environment Information";
     begin
-#if not CLEAN22
-        LegacyUserGroupsVisible := LegacyUserGroups.UiElementsVisible();
-#endif
         BindSubscription(AutomationAPIManagement);
         if EnvironmentInformation.IsSaaS() then
             Rec.SetFilter("License Type", '<>%1', Rec."License Type"::"External User");
@@ -94,9 +73,6 @@ page 20004 "APIV1 - Aut. Users"
 
     var
         AutomationAPIManagement: Codeunit "Automation - API Management";
-#if not CLEAN22
-        LegacyUserGroupsVisible: Boolean;
-#endif
 }
 
 

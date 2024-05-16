@@ -71,9 +71,10 @@ codeunit 30290 "Shpfy Catalog API"
         JResponse: JsonToken;
         Parameters: Dictionary of [Text, Text];
     begin
+        GraphQLType := "Shpfy GraphQL Type"::GetCatalogs;
         Parameters.Add('CompanyId', Format(ShopifyCompany.Id));
         repeat
-            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::GetCatalogs, Parameters);
+            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
             if JResponse.IsObject() then
                 if ExtractShopifyCatalogs(ShopifyCompany, JResponse.AsObject(), Cursor) then begin
                     if Parameters.ContainsKey('After') then
@@ -95,9 +96,10 @@ codeunit 30290 "Shpfy Catalog API"
         Parameters: Dictionary of [Text, Text];
     begin
         GetIncludedProductsInCatalog(CatalogId, ProductList);
+        GraphQLType := "Shpfy GraphQL Type"::GetCatalogPrices;
         Parameters.Add('CatalogId', Format(CatalogId));
         repeat
-            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::GetCatalogPrices, Parameters);
+            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
             if JResponse.IsObject() then
                 if ExtractShopifyCatalogPrices(TempCatalogPrice, ProductList, JResponse.AsObject(), Cursor) then begin
                     if Parameters.ContainsKey('After') then
@@ -226,9 +228,10 @@ codeunit 30290 "Shpfy Catalog API"
         JResponse: JsonToken;
         Parameters: Dictionary of [Text, Text];
     begin
+        GraphQLType := "Shpfy GraphQL Type"::GetCatalogProducts;
         Parameters.Add('CatalogId', Format(CatalogId));
         repeat
-            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::GetCatalogProducts, Parameters);
+            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
             if JResponse.IsObject() then
                 if ExtractShopifyCatalogProducts(ProductList, JResponse.AsObject(), Cursor) then begin
                     if Parameters.ContainsKey('After') then

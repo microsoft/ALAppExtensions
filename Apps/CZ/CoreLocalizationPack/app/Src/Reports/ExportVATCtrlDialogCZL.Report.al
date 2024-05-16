@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Foundation.Company;
+using Microsoft.Finance.GeneralLedger.Setup;
 
 report 31104 "Export VAT Ctrl. Dialog CZL"
 {
@@ -113,6 +114,12 @@ report 31104 "Export VAT Ctrl. Dialog CZL"
                         Caption = 'Appel Document No.';
                         ToolTip = 'Specifies the number of appel document.';
                     }
+                    field(UseAmtsInAddCurrField; UseAmtsInAddCurr)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Amounts in Add. Reporting Currency';
+                        ToolTip = 'Specifies whether to show the reported amounts in the additional reporting currency.';
+                    }
                 }
             }
         }
@@ -123,6 +130,12 @@ report 31104 "Export VAT Ctrl. Dialog CZL"
             UpdateControls();
         end;
     }
+
+    trigger OnInitReport()
+    begin
+        SetUseAmtsInAddCurr();
+    end;
+
     var
         VATCtrlReportHeaderCZL: Record "VAT Ctrl. Report Header CZL";
         VATControlReportNo: Code[20];
@@ -137,8 +150,11 @@ report 31104 "Export VAT Ctrl. Dialog CZL"
         ReasonsObservedOn: Date;
         XMLFormat: Enum "VAT Ctrl. Report Format CZL";
         FastAppelReaction: Option " ",B,P;
-        AppelDocumentNo: Text;
+        AppelDocumentNo: Text;        
         PageCaptionLbl: Label '%1: %2, %3', Comment = '%1=report caption, %2=VAT control report number, %3=VAT control report description', Locked = true;
+
+    protected var
+        UseAmtsInAddCurr: Boolean;
 
     local procedure GetStatementNameRec()
     begin
@@ -162,5 +178,13 @@ report 31104 "Export VAT Ctrl. Dialog CZL"
     local procedure DeclarationIsSupplementary(): Boolean
     begin
         exit(DeclarationType in [DeclarationType::Supplementary, DeclarationType::"Supplementary-Corrective"]);
+    end;
+
+    local procedure SetUseAmtsInAddCurr()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        UseAmtsInAddCurr := GeneralLedgerSetup."Additional Reporting Currency" <> '';
     end;
 }

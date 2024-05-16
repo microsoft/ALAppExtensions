@@ -2323,25 +2323,26 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceVATDateCZLSetupUpgradeTag()) then
             exit;
 
-        GeneralLedgerSetup.Get();
-        if GeneralLedgerSetup."Use VAT Date CZL" then
-            GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::"Enabled (Prevent modification)"
-        else
-            GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::Disabled;
+        if GeneralLedgerSetup.Get() then begin
+            if GeneralLedgerSetup."Use VAT Date CZL" then
+                GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::"Enabled (Prevent modification)"
+            else
+                GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::Disabled;
 
-        PurchasesPayablesSetup.Get();
-        case PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" of
-            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::Blank:
-                GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::Blank;
-            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Posting Date":
-                GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::"Posting Date";
-            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date":
-                GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::"VAT Date";
-            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Document Date":
-                GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::"Document Date";
+            if PurchasesPayablesSetup.Get() then
+                case PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" of
+                    PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::Blank:
+                        GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::Blank;
+                    PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Posting Date":
+                        GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::"Posting Date";
+                    PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date":
+                        GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::"VAT Date";
+                    PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Document Date":
+                        GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::"Document Date";
+                end;
+
+            GeneralLedgerSetup.Modify();
         end;
-
-        GeneralLedgerSetup.Modify();
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceVATDateCZLSetupUpgradeTag());
     end;
@@ -2363,17 +2364,20 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceAllowAlterPostingGroupsUpgradeTag()) then
             exit;
 
-        PurchasesPayablesSetup.Get();
-        PurchasesPayablesSetup."Allow Multiple Posting Groups" := PurchasesPayablesSetup."Allow Alter Posting Groups CZL";
-        PurchasesPayablesSetup.Modify();
+        if PurchasesPayablesSetup.Get() then begin
+            PurchasesPayablesSetup."Allow Multiple Posting Groups" := PurchasesPayablesSetup."Allow Alter Posting Groups CZL";
+            PurchasesPayablesSetup.Modify();
+        end;
 
-        SalesReceivablesSetup.Get();
-        SalesReceivablesSetup."Allow Multiple Posting Groups" := SalesReceivablesSetup."Allow Alter Posting Groups CZL";
-        SalesReceivablesSetup.Modify();
+        if SalesReceivablesSetup.Get() then begin
+            SalesReceivablesSetup."Allow Multiple Posting Groups" := SalesReceivablesSetup."Allow Alter Posting Groups CZL";
+            SalesReceivablesSetup.Modify();
+        end;
 
-        ServiceMgtSetup.Get();
-        ServiceMgtSetup."Allow Multiple Posting Groups" := ServiceMgtSetup."Allow Alter Posting Groups CZL";
-        ServiceMgtSetup.Modify();
+        if ServiceMgtSetup.Get() then begin
+            ServiceMgtSetup."Allow Multiple Posting Groups" := ServiceMgtSetup."Allow Alter Posting Groups CZL";
+            ServiceMgtSetup.Modify();
+        end;
 
         VendorDataTransfer.SetTables(Database::"Vendor", Database::"Vendor");
         VendorDataTransfer.AddConstantValue(true, Vendor.FieldNo("Allow Multiple Posting Groups"));

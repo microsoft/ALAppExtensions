@@ -3,14 +3,18 @@ codeunit 5376 "Create E-Document Transactions"
     InherentEntitlements = X;
     InherentPermissions = X;
     EventSubscriberInstance = Manual;
+    Permissions = tabledata "Sales Invoice Header" = rimd,
+                  tabledata "Sales Invoice Line" = rimd;
 
 
     trigger OnRun()
     var
+        SalesTempBlobList: Codeunit "Temp Blob List";
         PurchaseOrdersList: List of [Code[20]];
     begin
+        SalesTempBlobList := CreateSalesInvoicesAndExportToBlobList();
         PurchaseOrdersList := CreatePurchaseOrders();
-        CreateEdocs(PurchaseOrdersList);
+        CreateEdocs(SalesTempBlobList, PurchaseOrdersList);
     end;
 
     internal procedure TryCreatePurchaseOrders() PurchaseOrdersList: List of [Code[20]]
@@ -76,32 +80,309 @@ codeunit 5376 "Create E-Document Transactions"
 
     local procedure CreatePurchaseOrders() PurchaseOrdersList: List of [Code[20]];
     var
-        CreateEDocDataEntry: Codeunit "Create E-Document Transactions";
+        CreateEDocTransactions: Codeunit "Create E-Document Transactions";
     begin
-        BindSubscription(CreateEDocDataEntry);
-        PurchaseOrdersList := CreateEDocDataEntry.TryCreatePurchaseOrders();
-        UnbindSubscription(CreateEDocDataEntry);
+        BindSubscription(CreateEDocTransactions);
+        PurchaseOrdersList := CreateEDocTransactions.TryCreatePurchaseOrders();
+        UnbindSubscription(CreateEDocTransactions);
     end;
 
-    local procedure CreateEdocs(PurchaseOrdersList: List of [Code[20]])
+    /// <summary>
+    /// Some localisations set the customer country region code to empty when domestic.
+    /// PEPPOL export requires bill and ship to fields to be filled out, so this correction is nessesary in those countries.
+    /// </summary>
+    local procedure CorrectSalesInvHeader(var SalesInvHeader: Record "Sales Invoice Header")
+    var
+        CompanyInfo: Record "Company Information";
+        Modified: Boolean;
+    begin
+        if SalesInvHeader."Bill-to Country/Region Code" = '' then begin
+            CompanyInfo.Get();
+            SalesInvHeader."Bill-to Country/Region Code" := CompanyInfo."Country/Region Code";
+            Modified := true;
+        end;
+        if SalesInvHeader."Ship-to Country/Region Code" = '' then begin
+            CompanyInfo.Get();
+            SalesInvHeader."Ship-to Country/Region Code" := CompanyInfo."Country/Region Code";
+            Modified := true;
+        end;
+        if Modified then
+            SalesInvHeader.Modify();
+    end;
+
+    local procedure CreateSalesInvoicesAndExportToBlobList(): Codeunit "Temp Blob List";
+    var
+        SalesHeader: Record "Sales Header";
+        SalesInvHeader: Record "Sales Invoice Header";
+        ContosoCustomer: Codeunit "Create Common Customer/Vendor";
+        CreateEDocTransactions: Codeunit "Create E-Document Transactions";
+        ExportSalesInv: Codeunit "Exp. Sales Inv. PEPPOL BIS3.0";
+        TempBlob: Codeunit "Temp Blob";
+        TempBlobList: Codeunit "Temp Blob List";
+        OutStr: OutStream;
+    begin
+        BindSubscription(CreateEDocTransactions);
+
+        SalesHeader := CreateSalesInvoice(ContosoCustomer.DomesticCustomer1());
+        SalesHeader."Your Reference" := '1';
+        SalesHeader."External Document No." := '1';
+        SalesHeader.Modify();
+        SalesInvHeader.TransferFields(SalesHeader);
+        SalesInvHeader.Insert();
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 20, 'Colombian Roasted Coffee', 125.0, 20);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 20, 'Rio BR Whole Roasted Beans', 125.0, 20);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 20, 'Fortaleza BR Whole Roasted Beans', 125.0, 20);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 20, 'Espresso Roast. Beans, Mexico', 120.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 20, 'Mexican Mocha Beans', 120.0);
+        CorrectSalesInvHeader(SalesInvHeader);
+
+        TempBlob.CreateOutStream(OutStr);
+        ExportSalesInv.GenerateXMLFile(SalesInvHeader, OutStr);
+        TempBlobList.Add(TempBlob);
+        SalesInvHeader.Delete();
+        SalesHeader.Delete();
+
+        SalesHeader := CreateSalesInvoice(ContosoCustomer.DomesticCustomer1());
+        SalesHeader."Your Reference" := '1';
+        SalesHeader."External Document No." := '1';
+        SalesHeader.Modify();
+        SalesInvHeader.TransferFields(SalesHeader);
+        SalesInvHeader.Insert();
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 25, 'Kenyan Espresso Coffee', 120.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 25, 'Mocha Beans from Kenia', 120.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 20, 'Costa Rica - cafe noir', 120.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 20, 'C.Rica Jamocha Rst. Beans', 120.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 20, 'Roasted Cafe Costa Rica Beans', 120.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 50, 'Ethiop. Whole Roasted Beans', 120.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 60, 'Roasted Coffee Beans, Hawaii', 120.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 30, 'Colombian Demitasse', 113.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 20, 'Colombian Decaf', 113.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 36, 'Brazilian Roast Whole Decaf', 113.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 10, 'Grind - Brew Like a Pro', 149.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 10, 'Coffee Grinder Contoso', 149.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 5, 'Smart Metal Grinder Black', 219.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 5, 'Super Metal Grinder Red Color', 219.0);
+        CorrectSalesInvHeader(SalesInvHeader);
+
+        Clear(TempBlob);
+        TempBlob.CreateOutStream(OutStr);
+        ExportSalesInv.GenerateXMLFile(SalesInvHeader, OutStr);
+        TempBlobList.Add(TempBlob);
+        SalesInvHeader.Delete();
+        SalesHeader.Delete();
+
+        SalesHeader := CreateSalesInvoice(ContosoCustomer.DomesticCustomer1());
+        SalesHeader."Your Reference" := '1';
+        SalesHeader."External Document No." := '1';
+        SalesHeader.Modify();
+        SalesInvHeader.TransferFields(SalesHeader);
+        SalesInvHeader.Insert();
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 3, 'Precision Home Crusher', 124.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 3, 'Home Coffee Mill', 124.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 4, 'Home Coffee Mincer Purple', 124.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 2, 'LuxuryHome Grinder', 235.0);
+        CorrectSalesInvHeader(SalesInvHeader);
+
+        Clear(TempBlob);
+        TempBlob.CreateOutStream(OutStr);
+        ExportSalesInv.GenerateXMLFile(SalesInvHeader, OutStr);
+        TempBlobList.Add(TempBlob);
+        SalesInvHeader.Delete();
+        SalesHeader.Delete();
+
+        SalesHeader := CreateSalesInvoice(ContosoCustomer.DomesticCustomer1());
+        SalesHeader."Your Reference" := '1';
+        SalesHeader."External Document No." := '1';
+        SalesHeader.Modify();
+        SalesInvHeader.TransferFields(SalesHeader);
+        SalesInvHeader.Insert();
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 25, 'Fresh Dark Brazilian Roast', 100.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 25, 'Whole Bean Coffee - Brazil', 100.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 25, 'Medium Roast Braz. Coffee', 100.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 10, 'Whole Decaf Beans Tijuana', 170.0, 10);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 35, '100% Decaf Kenya, Whole Bean', 120.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 20, 'Rio BR Whole Roasted Beans', 125.0, 20);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 20, 'Decaf Costa Rica Whole Bean Coffee Medium Roast', 140.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 20, 'Ethiopian Decaf Dark Roast Coffee Bag', 140.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 5, 'Whole Bean Coffee - Hawaii Decaf', 119.0);
+        CorrectSalesInvHeader(SalesInvHeader);
+
+        Clear(TempBlob);
+        TempBlob.CreateOutStream(OutStr);
+        ExportSalesInv.GenerateXMLFile(SalesInvHeader, OutStr);
+        TempBlobList.Add(TempBlob);
+        SalesInvHeader.Delete();
+        SalesHeader.Delete();
+
+        SalesHeader := CreateSalesInvoice(ContosoCustomer.DomesticCustomer1());
+        SalesHeader."Your Reference" := '1';
+        SalesHeader."External Document No." := '1';
+        SalesHeader.Modify();
+        SalesInvHeader.TransferFields(SalesHeader);
+        SalesInvHeader.Insert();
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 20, 'Whole Indonesian Coffee Beans, Roasted', 110.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 20, 'Kenyan Organic Whole Roasted Coffee Bean', 110.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 15, 'Whole Roasted Coffe Beans, Costa Rica', 110.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 15, 'Talamanca Origin Coffee Whole Beans', 110.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 5, 'Organic Decaf Roast Beans - Nairobi', 110.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 5, 'Organic Decaf Roast Beans - Mombasa', 110.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 15, 'Decaf Roasted Beans - Costa Rica', 110.0);
+        CorrectSalesInvHeader(SalesInvHeader);
+
+        Clear(TempBlob);
+        TempBlob.CreateOutStream(OutStr);
+        ExportSalesInv.GenerateXMLFile(SalesInvHeader, OutStr);
+        TempBlobList.Add(TempBlob);
+        SalesInvHeader.Delete();
+        SalesHeader.Delete();
+
+        SalesHeader := CreateSalesInvoice(ContosoCustomer.DomesticCustomer1());
+        SalesHeader."Your Reference" := '1';
+        SalesHeader."External Document No." := '1';
+        SalesHeader.Modify();
+        SalesInvHeader.TransferFields(SalesHeader);
+        SalesInvHeader.Insert();
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 5, 'Stainless Steel Basic Coffee Bean Grinder', 289.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 5, 'Flat Coffee Grinder, Electric', 289.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 5, 'One-touch Home Coffee Grinder', 289.0);
+        CreateSalesInvLine(SalesHeader, GetItemWRB1003(), 5, 'Coffee Grinder- Electric Coffee Mill for Espresso', 289.0);
+        CorrectSalesInvHeader(SalesInvHeader);
+
+        Clear(TempBlob);
+        TempBlob.CreateOutStream(OutStr);
+        ExportSalesInv.GenerateXMLFile(SalesInvHeader, OutStr);
+        TempBlobList.Add(TempBlob);
+        SalesInvHeader.Delete();
+        SalesHeader.Delete();
+
+        UnbindSubscription(CreateEDocTransactions);
+        exit(TempBlobList);
+    end;
+
+    local procedure CreateEdocs(var SalesTempBlobList: Codeunit "Temp Blob List"; PurchaseOrdersList: List of [Code[20]])
     var
         Vendor: Record Vendor;
+        EDocumentModuleSetup: Record "E-Document Module Setup";
         CompanyInfo: Record "Company Information";
-        CreateCommonCustomerVendor: Codeunit "Create Common Customer/Vendor";
+        TempBlob: Codeunit "Temp Blob";
+        InStream: InStream;
+        XML: Text;
     begin
+        if EDocumentModuleSetup.Get() then;
         if CompanyInfo.Get() then;
-        Vendor.Get(CreateCommonCustomerVendor.DomesticVendor1());
+        Vendor.Get(EDocumentModuleSetup."Vendor No. 1");
+        SalesTempBlobList.Get(1, TempBlob);
+        UpdateXMLWihVendorAndCompInfo(Vendor, CompanyInfo, 'FK24-8691', PurchaseOrdersList.Get(1), TempBlob);
+        TempBlob.CreateInStream(InStream);
+        InStream.Read(XML, TempBlob.Length());
+        CreateEDocument(XML);
 
-        CreateEDocument(StrSubstNo(FK248691XmlTxt, Vendor.Name, CompanyInfo."VAT Registration No.", PurchaseOrdersList.Get(1), CompanyInfo."VAT Registration No.", CompanyInfo.Name, CompanyInfo.Address, CompanyInfo."Post Code"));
-        CreateEDocument(StrSubstNo(FK246222XmlTxt, Vendor.Name, CompanyInfo."VAT Registration No.", PurchaseOrdersList.Get(2), CompanyInfo."VAT Registration No.", CompanyInfo.Name, CompanyInfo.Address, CompanyInfo."Post Code"));
+        SalesTempBlobList.Get(2, TempBlob);
+        UpdateXMLWihVendorAndCompInfo(Vendor, CompanyInfo, 'FK24-6222', PurchaseOrdersList.Get(2), TempBlob);
+        TempBlob.CreateInStream(InStream);
+        InStream.Read(XML, TempBlob.Length());
+        CreateEDocument(XML);
 
-        Vendor.Get(CreateCommonCustomerVendor.DomesticVendor2());
-        CreateEDocument(StrSubstNo(FK246098XmlTxt, Vendor.Name, CompanyInfo."VAT Registration No.", PurchaseOrdersList.Get(3), CompanyInfo."VAT Registration No.", CompanyInfo.Name, CompanyInfo.Address, CompanyInfo."Post Code"));
-        CreateEDocument(StrSubstNo(FK245260XmlTxt, Vendor.Name, CompanyInfo."VAT Registration No.", PurchaseOrdersList.Get(4), CompanyInfo."VAT Registration No.", CompanyInfo.Name, CompanyInfo.Address, CompanyInfo."Post Code"));
+        Vendor.Get(EDocumentModuleSetup."Vendor No. 2");
+        SalesTempBlobList.Get(3, TempBlob);
+        UpdateXMLWihVendorAndCompInfo(Vendor, CompanyInfo, 'FK24-6098', PurchaseOrdersList.Get(3), TempBlob);
+        TempBlob.CreateInStream(InStream);
+        InStream.Read(XML, TempBlob.Length());
+        CreateEDocument(XML);
 
-        Vendor.Get(CreateCommonCustomerVendor.DomesticVendor3());
-        CreateEDocument(StrSubstNo(FK242896XmlTxt, Vendor.Name, CompanyInfo."VAT Registration No.", PurchaseOrdersList.Get(5), CompanyInfo."VAT Registration No.", CompanyInfo.Name, CompanyInfo.Address, CompanyInfo."Post Code"));
-        CreateEDocument(StrSubstNo(FK242811XmlTxt, Vendor.Name, CompanyInfo."VAT Registration No.", PurchaseOrdersList.Get(6), CompanyInfo."VAT Registration No.", CompanyInfo.Name, CompanyInfo.Address, CompanyInfo."Post Code"));
+        SalesTempBlobList.Get(4, TempBlob);
+        UpdateXMLWihVendorAndCompInfo(Vendor, CompanyInfo, 'FK24-5260', PurchaseOrdersList.Get(4), TempBlob);
+        TempBlob.CreateInStream(InStream);
+        InStream.Read(XML, TempBlob.Length());
+        CreateEDocument(XML);
+
+        Vendor.Get(EDocumentModuleSetup."Vendor No. 3");
+        SalesTempBlobList.Get(5, TempBlob);
+        UpdateXMLWihVendorAndCompInfo(Vendor, CompanyInfo, 'FK24-2896', PurchaseOrdersList.Get(5), TempBlob);
+        TempBlob.CreateInStream(InStream);
+        InStream.Read(XML, TempBlob.Length());
+        CreateEDocument(XML);
+
+        SalesTempBlobList.Get(6, TempBlob);
+        UpdateXMLWihVendorAndCompInfo(Vendor, CompanyInfo, 'FK24-2811', PurchaseOrdersList.Get(6), TempBlob);
+        TempBlob.CreateInStream(InStream);
+        InStream.Read(XML, TempBlob.Length());
+        CreateEDocument(XML);
+    end;
+
+    local procedure UpdateXMLWihVendorAndCompInfo(Vendor: Record Vendor; CompanyInfo: Record "Company Information"; OrderNo: Code[20]; RefNo: Code[20]; var TempBlob: Codeunit "Temp Blob")
+    var
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        InStream: InStream;
+    begin
+        TempBlob.CreateInStream(InStream);
+        TempXMLBuffer.LoadFromStream(InStream);
+        UpdateValueInBuffer(TempXMLBuffer, '/Invoice/cbc:ID', OrderNo);
+        UpdateValueInBuffer(TempXMLBuffer, '/Invoice/cac:OrderReference/cbc:ID', RefNo);
+        UpdateValueInBuffer(TempXMLBuffer, '/Invoice/cbc:BuyerReference', RefNo);
+        // Update Supplier
+        UpdateValueInBuffer(TempXMLBuffer, '/Invoice/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID', Vendor."VAT Registration No.");
+        UpdateValueInBuffer(TempXMLBuffer, '/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name', Vendor.Name);
+        UpdateValueInBuffer(TempXMLBuffer, '/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode', Vendor."Country/Region Code");
+        DeleteInBuffer(TempXMLBuffer, '/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName');
+        DeleteInBuffer(TempXMLBuffer, '/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:CityName');
+        DeleteInBuffer(TempXMLBuffer, '/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:PostalZone');
+        UpdateValueInBuffer(TempXMLBuffer, '/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID', Vendor."VAT Registration No.");
+        UpdateValueInBuffer(TempXMLBuffer, '/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName', Vendor.Name);
+        UpdateValueInBuffer(TempXMLBuffer, '/Invoice/cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cbc:CompanyID', Vendor."VAT Registration No.");
+        // Update Customer
+        UpdateValueInBuffer(TempXMLBuffer, '/Invoice/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID', CompanyInfo."VAT Registration No.");
+        UpdateValueInBuffer(TempXMLBuffer, '/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyName/cbc:Name', CompanyInfo.Name);
+        UpdateValueInBuffer(TempXMLBuffer, '/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode', CompanyInfo."Country/Region Code");
+        DeleteInBuffer(TempXMLBuffer, '/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:StreetName');
+        DeleteInBuffer(TempXMLBuffer, '/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:CityName');
+        DeleteInBuffer(TempXMLBuffer, '/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:PostalZone');
+        UpdateValueInBuffer(TempXMLBuffer, '/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID', CompanyInfo."VAT Registration No.");
+        UpdateValueInBuffer(TempXMLBuffer, '/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:RegistrationName', CompanyInfo.Name);
+        UpdateValueInBuffer(TempXMLBuffer, '/Invoice/cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cbc:CompanyID', CompanyInfo."VAT Registration No.");
+
+        DeleteInBuffer(TempXMLBuffer, '/Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:StreetName');
+        DeleteInBuffer(TempXMLBuffer, '/Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CityName');
+        DeleteInBuffer(TempXMLBuffer, '/Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:PostalZone');
+        UpdateValueInBuffer(TempXMLBuffer, '/Invoice/cac:Delivery/cac:DeliveryLocation/cac:Address/cac:Country/cbc:IdentificationCode', CompanyInfo."Country/Region Code");
+
+        SetRandomLineItemNumbers(TempXMLBuffer);
+
+        Clear(TempBlob);
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.FindSet();
+        TempXMLBuffer.Save(TempBlob);
+    end;
+
+    local procedure SetRandomLineItemNumbers(var TempXMLBuffer: Record "XML Buffer" temporary)
+    begin
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.SetRange(Type, TempXMLBuffer.Type::Element);
+        TempXMLBuffer.SetRange(Path, '/Invoice/cac:InvoiceLine/cac:Item/cac:StandardItemIdentification/cbc:ID');
+        if TempXMLBuffer.FindSet() then
+            repeat
+                TempXMLBuffer.Value := Format(Random(100000));
+                TempXMLBuffer.Modify();
+            until TempXMLBuffer.Next() = 0;
+    end;
+
+    local procedure UpdateValueInBuffer(var TempXMLBuffer: Record "XML Buffer" temporary; XPath: Text; XValue: Text[250])
+    begin
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.SetRange(Type, TempXMLBuffer.Type::Element);
+        TempXMLBuffer.SetRange(Path, XPath);
+        if TempXMLBuffer.FindFirst() then begin
+            TempXMLBuffer.Value := XValue;
+            TempXMLBuffer.Modify();
+        end;
+    end;
+
+    local procedure DeleteInBuffer(var TempXMLBuffer: Record "XML Buffer" temporary; XPath: Text)
+    begin
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.SetRange(Type, TempXMLBuffer.Type::Element);
+        TempXMLBuffer.SetRange(Path, XPath);
+        TempXMLBuffer.DeleteAll();
     end;
 
     local procedure CreateEDocument(Filetxt: Text)
@@ -137,6 +418,58 @@ codeunit 5376 "Create E-Document Transactions"
         exit(EDocument);
     end;
 
+    local procedure CreateSalesInvoice(CustomerNo: Code[20]): Record "Sales Header"
+    var
+        ContosoSales: Codeunit "Contoso Sales";
+    begin
+        exit(ContosoSales.InsertSalesHeader(Enum::"Sales Document Type"::Invoice, CustomerNo, '', WorkDate(), ''))
+    end;
+
+    local procedure CreateSalesInvLine(var SalesHeader: Record "Sales Header"; ItemNo: Code[20]; Quantity: Integer; NewDescription: Text[100]; Cost: Decimal): Record "Sales Header"
+    begin
+        exit(CreateSalesInvLine(SalesHeader, ItemNo, Quantity, NewDescription, Cost, 0));
+    end;
+
+    local procedure CreateSalesInvLine(var SalesHeader: Record "Sales Header"; ItemNo: Code[20]; Quantity: Integer; NewDescription: Text[100]; Cost: Decimal; Discount: Decimal): Record "Sales Header"
+    var
+        SalesLine: Record "Sales Line";
+        SalesInvoiceLine: Record "Sales Invoice Line";
+        SalesInvHeader: Record "Sales Invoice Header";
+        ContosoSales: Codeunit "Contoso Sales";
+    begin
+        ContosoSales.InsertSalesLineWithItem(SalesHeader, ItemNo, Quantity);
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.FindLast();
+        SalesLine.Description := NewDescription;
+        SalesLine.Validate("Unit Price", Cost);
+        SalesLine.Validate("Line Discount %", Discount);
+        SalesLine.Modify();
+        SalesInvHeader.Get(SalesHeader."No.");
+        SalesInvoiceLine.InitFromSalesLine(SalesInvHeader, SalesLine);
+        SalesInvoiceLine."Line No." := GetNextSalesInvLineNo(SalesInvHeader);
+        SalesInvoiceLine.Insert();
+        SalesLine.Delete();
+    end;
+
+    local procedure GetNextSalesInvLineNo(SalesInvHeader: Record "Sales Invoice Header"): Integer
+    var
+        SalesInvLine: Record "Sales Invoice Line";
+    begin
+        SalesInvLine.SetRange("Document No.", SalesInvHeader."No.");
+        SalesInvLine.SetCurrentKey("Line No.");
+
+        if SalesInvLine.FindLast() then
+            exit(SalesInvLine."Line No." + 10000)
+        else
+            exit(10000);
+    end;
+
+    local procedure GetItemWRB1003(): Code[20]
+    begin
+        exit('WRB-1003');
+    end;
+
     local procedure CreateOrder(VendorNo: Code[20]): Record "Purchase Header";
     var
         ContosoPurchase: Codeunit "Contoso Purchase";
@@ -145,17 +478,10 @@ codeunit 5376 "Create E-Document Transactions"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post (Yes/No)", OnBeforeConfirmPost, '', false, false)]
-    local procedure OnBeforeConfirmPost(var PurchaseHeader: Record "Purchase Header"; var HideDialog: Boolean; var IsHandled: Boolean; var DefaultOption: Integer)
+    local procedure OnBeforeConfirmPurchPost(var PurchaseHeader: Record "Purchase Header"; var HideDialog: Boolean; var IsHandled: Boolean; var DefaultOption: Integer)
     begin
         HideDialog := true;
         DefaultOption := 1;
     end;
 
-    var
-        FK248691XmlTxt: Label '<?xml version="1.0" encoding="UTF-8" standalone="no"?><Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:qdt="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2" xmlns:udt="urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"><cbc:CustomizationID>urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0</cbc:CustomizationID><cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID><cbc:ID>FK24-8691</cbc:ID><cbc:IssueDate>2024-03-01</cbc:IssueDate><cbc:DueDate>2024-03-01</cbc:DueDate><cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode><cbc:DocumentCurrencyCode /><cac:OrderReference><cbc:ID>%3</cbc:ID></cac:OrderReference><cac:ContractDocumentReference><cbc:ID>FK24-8691</cbc:ID></cac:ContractDocumentReference><cac:AccountingSupplierParty><cac:Party><cbc:EndpointID schemeID="" /><cac:PartyName><cbc:Name>%1</cbc:Name></cac:PartyName><cac:PostalAddress><cac:Country><cbc:IdentificationCode>%4</cbc:IdentificationCode></cac:Country></cac:PostalAddress><cac:PartyTaxScheme><cbc:CompanyID /><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme><cac:PartyLegalEntity><cbc:CompanyID /></cac:PartyLegalEntity></cac:Party></cac:AccountingSupplierParty><cac:AccountingCustomerParty><cac:Party><cbc:EndpointID schemeID="">%2</cbc:EndpointID><cac:PartyName><cbc:Name>%5</cbc:Name></cac:PartyName><cac:PostalAddress><cbc:StreetName>%6</cbc:StreetName><cbc:CityName /><cbc:PostalZone>%7</cbc:PostalZone><cac:Country><cbc:IdentificationCode>%4</cbc:IdentificationCode></cac:Country></cac:PostalAddress><cac:PartyTaxScheme><cbc:CompanyID>%2</cbc:CompanyID><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme><cac:PartyLegalEntity><cbc:RegistrationName>%5</cbc:RegistrationName><cbc:CompanyID>%2</cbc:CompanyID></cac:PartyLegalEntity><cac:Contact><cbc:Name>%5</cbc:Name></cac:Contact></cac:Party></cac:AccountingCustomerParty><cac:Delivery><cbc:ActualDeliveryDate>2024-02-25</cbc:ActualDeliveryDate><cac:DeliveryLocation><cac:Address><cbc:StreetName /><cac:Country><cbc:IdentificationCode>%4</cbc:IdentificationCode></cac:Country></cac:Address></cac:DeliveryLocation></cac:Delivery><cac:PaymentMeans><cbc:PaymentMeansCode>31</cbc:PaymentMeansCode><cac:PayeeFinancialAccount><cbc:ID /><cac:FinancialInstitutionBranch><cbc:ID /></cac:FinancialInstitutionBranch></cac:PayeeFinancialAccount></cac:PaymentMeans><cac:TaxTotal><cbc:TaxAmount currencyID="">159.28</cbc:TaxAmount><cac:TaxSubtotal><cbc:TaxableAmount currencyID="">637.1</cbc:TaxableAmount><cbc:TaxAmount currencyID="">159.28</cbc:TaxAmount><cac:TaxCategory><cbc:ID /><cbc:Percent>25</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:TaxCategory></cac:TaxSubtotal></cac:TaxTotal><cac:LegalMonetaryTotal><cbc:LineExtensionAmount currencyID="">12100</cbc:LineExtensionAmount><cbc:TaxExclusiveAmount currencyID="">12100</cbc:TaxExclusiveAmount><cbc:TaxInclusiveAmount currencyID="">15125</cbc:TaxInclusiveAmount><cbc:AllowanceTotalAmount currencyID="">0</cbc:AllowanceTotalAmount><cbc:PrepaidAmount currencyID="">0.00</cbc:PrepaidAmount><cbc:PayableRoundingAmount currencyID="">0</cbc:PayableRoundingAmount><cbc:PayableAmount currencyID="">15125</cbc:PayableAmount></cac:LegalMonetaryTotal><cac:InvoiceLine><cbc:ID>10000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">20</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">2000</cbc:LineExtensionAmount><cac:Item><cbc:Name>Colombian Roasted Coffee</cbc:Name><cac:SellersItemIdentification><cbc:ID>PH0005</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">50695063</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">125</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>20000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">20</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">2000</cbc:LineExtensionAmount><cac:Item><cbc:Name>Rio BR Whole Roasted Beans</cbc:Name><cac:SellersItemIdentification><cbc:ID>55555</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">43495471</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">125</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>30000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">20</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">2000</cbc:LineExtensionAmount><cac:Item><cbc:Name>Fortaleza BR Whole Roasted Beans</cbc:Name><cac:SellersItemIdentification><cbc:ID>SL4250</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">26325609</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">125</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>40000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">20</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">2400</cbc:LineExtensionAmount><cac:Item><cbc:Name>Espresso Roast. Beans, Mexico</cbc:Name><cac:SellersItemIdentification><cbc:ID>B22002</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">45669145</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">120</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>50000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">10</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">1200</cbc:LineExtensionAmount><cac:Item><cbc:Name>Mexican Mocha Beans</cbc:Name><cac:SellersItemIdentification><cbc:ID>52640</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">91696886</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">120</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine></Invoice>', Locked = true;
-        FK246222XmlTxt: Label '<?xml version="1.0" encoding="UTF-8" standalone="no"?><Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:qdt="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2" xmlns:udt="urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"><cbc:CustomizationID>urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0</cbc:CustomizationID><cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID><cbc:ID>FK24-6222</cbc:ID><cbc:IssueDate>2024-03-01</cbc:IssueDate><cbc:DueDate>2024-03-01</cbc:DueDate><cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode><cbc:DocumentCurrencyCode /><cac:OrderReference><cbc:ID>%3</cbc:ID></cac:OrderReference><cac:ContractDocumentReference><cbc:ID>FK24-6222</cbc:ID></cac:ContractDocumentReference><cac:AccountingSupplierParty><cac:Party><cbc:EndpointID schemeID="" /><cac:PartyName><cbc:Name>%1</cbc:Name></cac:PartyName><cac:PostalAddress><cac:Country><cbc:IdentificationCode>%4</cbc:IdentificationCode></cac:Country></cac:PostalAddress><cac:PartyTaxScheme><cbc:CompanyID /><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme><cac:PartyLegalEntity><cbc:CompanyID /></cac:PartyLegalEntity></cac:Party></cac:AccountingSupplierParty><cac:AccountingCustomerParty><cac:Party><cbc:EndpointID schemeID="">%2</cbc:EndpointID><cac:PartyName><cbc:Name>%5</cbc:Name></cac:PartyName><cac:PostalAddress><cbc:StreetName>%6</cbc:StreetName><cbc:CityName /><cbc:PostalZone>%7</cbc:PostalZone><cac:Country><cbc:IdentificationCode>%4</cbc:IdentificationCode></cac:Country></cac:PostalAddress><cac:PartyTaxScheme><cbc:CompanyID>%2</cbc:CompanyID><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme><cac:PartyLegalEntity><cbc:RegistrationName>%5</cbc:RegistrationName><cbc:CompanyID>%2</cbc:CompanyID></cac:PartyLegalEntity><cac:Contact><cbc:Name>%5</cbc:Name></cac:Contact></cac:Party></cac:AccountingCustomerParty><cac:Delivery><cbc:ActualDeliveryDate>2024-02-25</cbc:ActualDeliveryDate><cac:DeliveryLocation><cac:Address><cbc:StreetName /><cac:Country><cbc:IdentificationCode>%4</cbc:IdentificationCode></cac:Country></cac:Address></cac:DeliveryLocation></cac:Delivery><cac:PaymentMeans><cbc:PaymentMeansCode>31</cbc:PaymentMeansCode><cac:PayeeFinancialAccount><cbc:ID /><cac:FinancialInstitutionBranch><cbc:ID /></cac:FinancialInstitutionBranch></cac:PayeeFinancialAccount></cac:PaymentMeans><cac:TaxTotal><cbc:TaxAmount currencyID="">176.25</cbc:TaxAmount><cac:TaxSubtotal><cbc:TaxableAmount currencyID="">705</cbc:TaxableAmount><cbc:TaxAmount currencyID="">176.25</cbc:TaxAmount><cac:TaxCategory><cbc:ID /><cbc:Percent>25</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:TaxCategory></cac:TaxSubtotal></cac:TaxTotal><cac:LegalMonetaryTotal><cbc:LineExtensionAmount currencyID="">46938</cbc:LineExtensionAmount><cbc:TaxExclusiveAmount currencyID="">46938</cbc:TaxExclusiveAmount><cbc:TaxInclusiveAmount currencyID="">58672.5</cbc:TaxInclusiveAmount><cbc:AllowanceTotalAmount currencyID="">0</cbc:AllowanceTotalAmount><cbc:PrepaidAmount currencyID="">0.00</cbc:PrepaidAmount><cbc:PayableRoundingAmount currencyID="">0</cbc:PayableRoundingAmount><cbc:PayableAmount currencyID="">58672.5</cbc:PayableAmount></cac:LegalMonetaryTotal><cac:InvoiceLine><cbc:ID>10000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">25</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">3000</cbc:LineExtensionAmount><cac:Item><cbc:Name>Kenyan Espresso Coffee</cbc:Name><cac:SellersItemIdentification><cbc:ID>PH0005</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">50695063</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">120</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>20000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">25</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">3000</cbc:LineExtensionAmount><cac:Item><cbc:Name>Mocha Beans from Kenia</cbc:Name><cac:SellersItemIdentification><cbc:ID>55555</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">43495471</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">120</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>30000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">20</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">2400</cbc:LineExtensionAmount><cac:Item><cbc:Name>Costa Rica - cafe noir</cbc:Name><cac:SellersItemIdentification><cbc:ID>SL4250</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">26325609</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">120</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>40000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">20</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">2400</cbc:LineExtensionAmount><cac:Item><cbc:Name>C.Rica Jamocha Rst. Beans</cbc:Name><cac:SellersItemIdentification><cbc:ID>B22001</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">17556079</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">120</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>50000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">20</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">2400</cbc:LineExtensionAmount><cac:Item><cbc:Name>Roasted Cafe Costa Rica Beans</cbc:Name><cac:SellersItemIdentification><cbc:ID>B22002</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">45669145</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">120</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>60000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">50</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">6000</cbc:LineExtensionAmount><cac:Item><cbc:Name>Ethiop. Whole Roasted Beans</cbc:Name><cac:SellersItemIdentification><cbc:ID>52640</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">91696886</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">120</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>70000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">60</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">7200</cbc:LineExtensionAmount><cac:Item><cbc:Name>Roasted Coffee Beans, Hawaii</cbc:Name><cac:SellersItemIdentification><cbc:ID>52640</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">91696886</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">120</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>80000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">30</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">3390</cbc:LineExtensionAmount><cac:Item><cbc:Name>Colombian Demitasse</cbc:Name><cac:SellersItemIdentification><cbc:ID>52640</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">91696886</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">113</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>90000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">20</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">2260</cbc:LineExtensionAmount><cac:Item><cbc:Name>Colombian Decaf</cbc:Name><cac:SellersItemIdentification><cbc:ID>52640</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">91696886</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">113</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>100000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">36</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">4068</cbc:LineExtensionAmount><cac:Item><cbc:Name>Brazilian Roast Whole Decaf</cbc:Name><cac:SellersItemIdentification><cbc:ID>52640</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">91696886</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">113</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>110000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">10</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">1490</cbc:LineExtensionAmount><cac:Item><cbc:Name>Grind - Brew Like a Pro</cbc:Name><cac:SellersItemIdentification><cbc:ID>52640</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">91696886</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">149</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>120000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">10</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">1490</cbc:LineExtensionAmount><cac:Item><cbc:Name>Coffee Grinder Contoso</cbc:Name><cac:SellersItemIdentification><cbc:ID>52640</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">91696886</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">149</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>130000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">5</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">1095</cbc:LineExtensionAmount><cac:Item><cbc:Name>Smart Metal Grinder Black</cbc:Name><cac:SellersItemIdentification><cbc:ID>52640</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">91696886</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">219</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>140000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">5</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">1095</cbc:LineExtensionAmount><cac:Item><cbc:Name>Super Metal Grinder Red Color</cbc:Name><cac:SellersItemIdentification><cbc:ID>52640</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">91696886</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">219</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine></Invoice>', Locked = true;
-        FK246098XmlTxt: Label '<?xml version="1.0" encoding="UTF-8" standalone="no"?><Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:qdt="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2" xmlns:udt="urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"><cbc:CustomizationID>urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0</cbc:CustomizationID><cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID><cbc:ID>FK24-6098</cbc:ID><cbc:IssueDate>2024-03-01</cbc:IssueDate><cbc:DueDate>2024-03-01</cbc:DueDate><cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode><cbc:DocumentCurrencyCode /><cac:OrderReference><cbc:ID>%3</cbc:ID></cac:OrderReference><cac:ContractDocumentReference><cbc:ID>FK24-6098</cbc:ID></cac:ContractDocumentReference><cac:AccountingSupplierParty><cac:Party><cbc:EndpointID schemeID="" /><cac:PartyName><cbc:Name>%1</cbc:Name></cac:PartyName><cac:PostalAddress><cac:Country><cbc:IdentificationCode>%4</cbc:IdentificationCode></cac:Country></cac:PostalAddress><cac:PartyTaxScheme><cbc:CompanyID /><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme><cac:PartyLegalEntity><cbc:CompanyID /></cac:PartyLegalEntity></cac:Party></cac:AccountingSupplierParty><cac:AccountingCustomerParty><cac:Party><cbc:EndpointID schemeID="">%2</cbc:EndpointID><cac:PartyName><cbc:Name>%5</cbc:Name></cac:PartyName><cac:PostalAddress><cbc:StreetName>%6</cbc:StreetName><cbc:CityName /><cbc:PostalZone>%7</cbc:PostalZone><cac:Country><cbc:IdentificationCode>%4</cbc:IdentificationCode></cac:Country></cac:PostalAddress><cac:PartyTaxScheme><cbc:CompanyID>%2</cbc:CompanyID><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme><cac:PartyLegalEntity><cbc:RegistrationName>%5</cbc:RegistrationName><cbc:CompanyID>%2</cbc:CompanyID></cac:PartyLegalEntity><cac:Contact><cbc:Name>%5</cbc:Name></cac:Contact></cac:Party></cac:AccountingCustomerParty><cac:Delivery><cbc:ActualDeliveryDate>2024-02-25</cbc:ActualDeliveryDate><cac:DeliveryLocation><cac:Address><cbc:StreetName /><cac:Country><cbc:IdentificationCode>%4</cbc:IdentificationCode></cac:Country></cac:Address></cac:DeliveryLocation></cac:Delivery><cac:PaymentMeans><cbc:PaymentMeansCode>31</cbc:PaymentMeansCode><cac:PayeeFinancialAccount><cbc:ID /><cac:FinancialInstitutionBranch><cbc:ID /></cac:FinancialInstitutionBranch></cac:PayeeFinancialAccount></cac:PaymentMeans><cac:TaxTotal><cbc:TaxAmount currencyID="">566.75</cbc:TaxAmount><cac:TaxSubtotal><cbc:TaxableAmount currencyID="">2267</cbc:TaxableAmount><cbc:TaxAmount currencyID="">566.75</cbc:TaxAmount><cac:TaxCategory><cbc:ID /><cbc:Percent>25</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:TaxCategory></cac:TaxSubtotal></cac:TaxTotal><cac:LegalMonetaryTotal><cbc:LineExtensionAmount currencyID="">1710</cbc:LineExtensionAmount><cbc:TaxExclusiveAmount currencyID="">1710</cbc:TaxExclusiveAmount><cbc:TaxInclusiveAmount currencyID="">2137.5</cbc:TaxInclusiveAmount><cbc:AllowanceTotalAmount currencyID="">0</cbc:AllowanceTotalAmount><cbc:PrepaidAmount currencyID="">0.00</cbc:PrepaidAmount><cbc:PayableRoundingAmount currencyID="">0</cbc:PayableRoundingAmount><cbc:PayableAmount currencyID="">2137.5</cbc:PayableAmount></cac:LegalMonetaryTotal><cac:InvoiceLine><cbc:ID>10000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">3</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">372</cbc:LineExtensionAmount><cac:Item><cbc:Name>Precision Home Crusher</cbc:Name><cac:SellersItemIdentification><cbc:ID>PH0005</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">50695063</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">124</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>20000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">3</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">372</cbc:LineExtensionAmount><cac:Item><cbc:Name>Home Coffee Mill</cbc:Name><cac:SellersItemIdentification><cbc:ID>55555</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">43495471</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">124</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>30000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">4</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">496</cbc:LineExtensionAmount><cac:Item><cbc:Name>Home Coffee Mincer Purple</cbc:Name><cac:SellersItemIdentification><cbc:ID>SL4250</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">26325609</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">124</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>40000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">2</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">470</cbc:LineExtensionAmount><cac:Item><cbc:Name>LuxuryHome Grinder</cbc:Name><cac:SellersItemIdentification><cbc:ID>B22001</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">17556079</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">235</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine></Invoice>', Locked = true;
-        FK245260XmlTxt: Label '<?xml version="1.0" encoding="UTF-8" standalone="no"?><Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:qdt="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2" xmlns:udt="urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"><cbc:CustomizationID>urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0</cbc:CustomizationID><cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID><cbc:ID>FK24-5260</cbc:ID><cbc:IssueDate>2024-03-01</cbc:IssueDate><cbc:DueDate>2024-03-01</cbc:DueDate><cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode><cbc:DocumentCurrencyCode /><cac:OrderReference><cbc:ID>%3</cbc:ID></cac:OrderReference><cac:ContractDocumentReference><cbc:ID>FK24-5260</cbc:ID></cac:ContractDocumentReference><cac:AccountingSupplierParty><cac:Party><cbc:EndpointID schemeID="" /><cac:PartyName><cbc:Name>%1</cbc:Name></cac:PartyName><cac:PostalAddress><cac:Country><cbc:IdentificationCode>%4</cbc:IdentificationCode></cac:Country></cac:PostalAddress><cac:PartyTaxScheme><cbc:CompanyID /><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme><cac:PartyLegalEntity><cbc:CompanyID /></cac:PartyLegalEntity></cac:Party></cac:AccountingSupplierParty><cac:AccountingCustomerParty><cac:Party><cbc:EndpointID schemeID="">%2</cbc:EndpointID><cac:PartyName><cbc:Name>%5</cbc:Name></cac:PartyName><cac:PostalAddress><cbc:StreetName>%6</cbc:StreetName><cbc:CityName /><cbc:PostalZone>%7</cbc:PostalZone><cac:Country><cbc:IdentificationCode>%4</cbc:IdentificationCode></cac:Country></cac:PostalAddress><cac:PartyTaxScheme><cbc:CompanyID>%2</cbc:CompanyID><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme><cac:PartyLegalEntity><cbc:RegistrationName>%5</cbc:RegistrationName><cbc:CompanyID>%2</cbc:CompanyID></cac:PartyLegalEntity><cac:Contact><cbc:Name>%5</cbc:Name></cac:Contact></cac:Party></cac:AccountingCustomerParty><cac:Delivery><cbc:ActualDeliveryDate>2024-02-25</cbc:ActualDeliveryDate><cac:DeliveryLocation><cac:Address><cbc:StreetName /><cac:Country><cbc:IdentificationCode>%4</cbc:IdentificationCode></cac:Country></cac:Address></cac:DeliveryLocation></cac:Delivery><cac:PaymentMeans><cbc:PaymentMeansCode>31</cbc:PaymentMeansCode><cac:PayeeFinancialAccount><cbc:ID /><cac:FinancialInstitutionBranch><cbc:ID /></cac:FinancialInstitutionBranch></cac:PayeeFinancialAccount></cac:PaymentMeans><cac:TaxTotal><cbc:TaxAmount currencyID="">1254.83</cbc:TaxAmount><cac:TaxSubtotal><cbc:TaxableAmount currencyID="">5019.3</cbc:TaxableAmount><cbc:TaxAmount currencyID="">1254.83</cbc:TaxAmount><cac:TaxCategory><cbc:ID /><cbc:Percent>25</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:TaxCategory></cac:TaxSubtotal></cac:TaxTotal><cac:LegalMonetaryTotal><cbc:LineExtensionAmount currencyID="">30225</cbc:LineExtensionAmount><cbc:TaxExclusiveAmount currencyID="">30225</cbc:TaxExclusiveAmount><cbc:TaxInclusiveAmount currencyID="">37781.25</cbc:TaxInclusiveAmount><cbc:AllowanceTotalAmount currencyID="">0</cbc:AllowanceTotalAmount><cbc:PrepaidAmount currencyID="">0.00</cbc:PrepaidAmount><cbc:PayableRoundingAmount currencyID="">0</cbc:PayableRoundingAmount><cbc:PayableAmount currencyID="">37781.25</cbc:PayableAmount></cac:LegalMonetaryTotal><cac:InvoiceLine><cbc:ID>10000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">25</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">2500</cbc:LineExtensionAmount><cac:Item><cbc:Name>Fresh Dark Brazilian Roast</cbc:Name><cac:SellersItemIdentification><cbc:ID>PH0005</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">50695063</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">100</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>20000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">25</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">2500</cbc:LineExtensionAmount><cac:Item><cbc:Name>Whole Bean Coffee - Brazil</cbc:Name><cac:SellersItemIdentification><cbc:ID>55555</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">43495471</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">100</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>30000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">25</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">2500</cbc:LineExtensionAmount><cac:Item><cbc:Name>Medium Roast Braz. Coffee</cbc:Name><cac:SellersItemIdentification><cbc:ID>SL4250</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">26325609</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">100</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>40000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">10</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">1530</cbc:LineExtensionAmount><cac:Item><cbc:Name>Whole Decaf Beans Tijuana</cbc:Name><cac:SellersItemIdentification><cbc:ID>52640</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">91696886</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">170</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>50000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">35</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">4200</cbc:LineExtensionAmount><cac:Item><cbc:Name>100% Decaf Kenya, Whole Bean</cbc:Name><cac:SellersItemIdentification><cbc:ID>PH0005</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">50695063</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">120</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>60000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">20</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">2000</cbc:LineExtensionAmount><cac:Item><cbc:Name>Rio BR Whole Roasted Beans</cbc:Name><cac:SellersItemIdentification><cbc:ID>55555</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">43495471</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">125</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>70000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">20</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">2800</cbc:LineExtensionAmount><cac:Item><cbc:Name>Decaf Costa Rica Whole Bean Coffee Medium Roast</cbc:Name><cac:SellersItemIdentification><cbc:ID>SL4250</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">26325609</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">140</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>80000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">20</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">2800</cbc:LineExtensionAmount><cac:Item><cbc:Name>Ethiopian Decaf Dark Roast Coffee Bag</cbc:Name><cac:SellersItemIdentification><cbc:ID>B22001</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">17556079</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">140</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>90000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">5</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">595</cbc:LineExtensionAmount><cac:Item><cbc:Name>Whole Bean Coffee - Hawaii Decaf</cbc:Name><cac:SellersItemIdentification><cbc:ID>B22002</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">45669145</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">119</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine></Invoice>', Locked = true;
-        FK242896XmlTxt: Label '<?xml version="1.0" encoding="UTF-8" standalone="no"?><Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:qdt="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2" xmlns:udt="urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"><cbc:CustomizationID>urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0</cbc:CustomizationID><cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID> <cbc:ID>FK24-2896</cbc:ID> <cbc:IssueDate>2024-03-01</cbc:IssueDate> <cbc:DueDate>2024-03-01</cbc:DueDate> <cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode> <cbc:DocumentCurrencyCode /> <cac:OrderReference> <cbc:ID>%3</cbc:ID> </cac:OrderReference> <cac:ContractDocumentReference> <cbc:ID>FK24-2896</cbc:ID> </cac:ContractDocumentReference> <cac:AccountingSupplierParty> <cac:Party><cbc:EndpointID schemeID="" /><cac:PartyName><cbc:Name>%1</cbc:Name></cac:PartyName><cac:PostalAddress><cac:Country>  <cbc:IdentificationCode>%4</cbc:IdentificationCode></cac:Country></cac:PostalAddress><cac:PartyTaxScheme><cbc:CompanyID /><cac:TaxScheme>  <cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme><cac:PartyLegalEntity><cbc:CompanyID /></cac:PartyLegalEntity> </cac:Party> </cac:AccountingSupplierParty> <cac:AccountingCustomerParty> <cac:Party><cbc:EndpointID schemeID="">%2</cbc:EndpointID><cac:PartyName><cbc:Name>%5</cbc:Name></cac:PartyName><cac:PostalAddress><cbc:StreetName>%6</cbc:StreetName><cbc:CityName /><cbc:PostalZone>%7</cbc:PostalZone><cac:Country>  <cbc:IdentificationCode>%4</cbc:IdentificationCode></cac:Country></cac:PostalAddress><cac:PartyTaxScheme><cbc:CompanyID>%2</cbc:CompanyID><cac:TaxScheme>  <cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme><cac:PartyLegalEntity><cbc:RegistrationName>%5</cbc:RegistrationName><cbc:CompanyID>%2</cbc:CompanyID></cac:PartyLegalEntity><cac:Contact><cbc:Name>%5</cbc:Name></cac:Contact> </cac:Party> </cac:AccountingCustomerParty> <cac:Delivery> <cbc:ActualDeliveryDate>2024-02-25</cbc:ActualDeliveryDate> <cac:DeliveryLocation><cac:Address><cbc:StreetName /><cac:Country>  <cbc:IdentificationCode>%4</cbc:IdentificationCode></cac:Country></cac:Address> </cac:DeliveryLocation> </cac:Delivery> <cac:PaymentMeans> <cbc:PaymentMeansCode>31</cbc:PaymentMeansCode> <cac:PayeeFinancialAccount><cbc:ID /><cac:FinancialInstitutionBranch><cbc:ID /></cac:FinancialInstitutionBranch> </cac:PayeeFinancialAccount> </cac:PaymentMeans> <cac:TaxTotal> <cbc:TaxAmount currencyID="">493.25</cbc:TaxAmount> <cac:TaxSubtotal><cbc:TaxableAmount currencyID="">1973</cbc:TaxableAmount><cbc:TaxAmount currencyID="">493.25</cbc:TaxAmount><cac:TaxCategory><cbc:ID /><cbc:Percent>25</cbc:Percent><cac:TaxScheme>  <cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:TaxCategory> </cac:TaxSubtotal> </cac:TaxTotal> <cac:LegalMonetaryTotal> <cbc:LineExtensionAmount currencyID="">10450</cbc:LineExtensionAmount> <cbc:TaxExclusiveAmount currencyID="">10450</cbc:TaxExclusiveAmount> <cbc:TaxInclusiveAmount currencyID="">13062.5</cbc:TaxInclusiveAmount> <cbc:AllowanceTotalAmount currencyID="">0</cbc:AllowanceTotalAmount> <cbc:PrepaidAmount currencyID="">0.00</cbc:PrepaidAmount> <cbc:PayableRoundingAmount currencyID="">0</cbc:PayableRoundingAmount> <cbc:PayableAmount currencyID="">13062.5</cbc:PayableAmount> </cac:LegalMonetaryTotal> <cac:InvoiceLine> <cbc:ID>10000</cbc:ID> <cbc:Note>Item</cbc:Note> <cbc:InvoicedQuantity unitCode="EA">20</cbc:InvoicedQuantity> <cbc:LineExtensionAmount currencyID="">2200</cbc:LineExtensionAmount> <cac:Item><cbc:Name>Whole Indonesian Coffee Beans, Roasted</cbc:Name><cac:SellersItemIdentification><cbc:ID>PH0005</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">50695063</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme>  <cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory> </cac:Item> <cac:Price><cbc:PriceAmount currencyID="">110</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity> </cac:Price> </cac:InvoiceLine> <cac:InvoiceLine> <cbc:ID>20000</cbc:ID> <cbc:Note>Item</cbc:Note> <cbc:InvoicedQuantity unitCode="EA">20</cbc:InvoicedQuantity> <cbc:LineExtensionAmount currencyID="">2200</cbc:LineExtensionAmount> <cac:Item><cbc:Name>Kenyan Organic Whole Roasted Coffee Bean</cbc:Name><cac:SellersItemIdentification><cbc:ID>55555</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">43495471</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme>  <cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory> </cac:Item> <cac:Price><cbc:PriceAmount currencyID="">110</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity> </cac:Price> </cac:InvoiceLine> <cac:InvoiceLine> <cbc:ID>30000</cbc:ID> <cbc:Note>Item</cbc:Note> <cbc:InvoicedQuantity unitCode="EA">15</cbc:InvoicedQuantity> <cbc:LineExtensionAmount currencyID="">1650</cbc:LineExtensionAmount> <cac:Item><cbc:Name>Whole Roasted Coffe Beans, Costa Rica</cbc:Name><cac:SellersItemIdentification><cbc:ID>SL4250</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">26325609</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme>  <cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory> </cac:Item> <cac:Price><cbc:PriceAmount currencyID="">110</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity> </cac:Price> </cac:InvoiceLine> <cac:InvoiceLine> <cbc:ID>40000</cbc:ID> <cbc:Note>Item</cbc:Note> <cbc:InvoicedQuantity unitCode="EA">15</cbc:InvoicedQuantity> <cbc:LineExtensionAmount currencyID="">2200</cbc:LineExtensionAmount> <cac:Item><cbc:Name>Talamanca Origin Coffee Whole Beans</cbc:Name><cac:SellersItemIdentification><cbc:ID>B22001</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">17556079</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme>  <cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory> </cac:Item> <cac:Price><cbc:PriceAmount currencyID="">110</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity> </cac:Price> </cac:InvoiceLine> <cac:InvoiceLine> <cbc:ID>50000</cbc:ID> <cbc:Note>Item</cbc:Note> <cbc:InvoicedQuantity unitCode="EA">5</cbc:InvoicedQuantity> <cbc:LineExtensionAmount currencyID="">550</cbc:LineExtensionAmount> <cac:Item><cbc:Name>Organic Decaf Roast Beans - Nairobi</cbc:Name><cac:SellersItemIdentification><cbc:ID>B22002</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">45669145</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme>  <cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory> </cac:Item> <cac:Price><cbc:PriceAmount currencyID="">110</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity> </cac:Price> </cac:InvoiceLine> <cac:InvoiceLine> <cbc:ID>60000</cbc:ID> <cbc:Note>Item</cbc:Note> <cbc:InvoicedQuantity unitCode="EA">5</cbc:InvoicedQuantity> <cbc:LineExtensionAmount currencyID="">550</cbc:LineExtensionAmount> <cac:Item><cbc:Name>Organic Decaf Roast Beans - Mombasa</cbc:Name><cac:SellersItemIdentification><cbc:ID>52640</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">91696886</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme>  <cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory> </cac:Item> <cac:Price><cbc:PriceAmount currencyID="">110</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity> </cac:Price> </cac:InvoiceLine> <cac:InvoiceLine> <cbc:ID>70000</cbc:ID> <cbc:Note>Item</cbc:Note> <cbc:InvoicedQuantity unitCode="EA">15</cbc:InvoicedQuantity> <cbc:LineExtensionAmount currencyID="">1650</cbc:LineExtensionAmount> <cac:Item><cbc:Name>Decaf Roasted Beans - Costa Rica</cbc:Name><cac:SellersItemIdentification><cbc:ID>52640</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">91696886</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme>  <cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory> </cac:Item> <cac:Price><cbc:PriceAmount currencyID="">110</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity> </cac:Price> </cac:InvoiceLine></Invoice>', Locked = true;
-        FK242811XmlTxt: Label '<?xml version="1.0" encoding="UTF-8" standalone="no"?><Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:qdt="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2" xmlns:udt="urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"><cbc:CustomizationID>urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0</cbc:CustomizationID><cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID><cbc:ID>FK24-2811</cbc:ID><cbc:IssueDate>2024-03-01</cbc:IssueDate><cbc:DueDate>2024-03-01</cbc:DueDate><cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode><cbc:DocumentCurrencyCode /><cac:OrderReference><cbc:ID>%3</cbc:ID></cac:OrderReference><cac:ContractDocumentReference><cbc:ID>FK24-2811</cbc:ID></cac:ContractDocumentReference><cac:AccountingSupplierParty><cac:Party><cbc:EndpointID schemeID="" /><cac:PartyName><cbc:Name>%1</cbc:Name></cac:PartyName><cac:PostalAddress><cac:Country><cbc:IdentificationCode>%4</cbc:IdentificationCode></cac:Country></cac:PostalAddress><cac:PartyTaxScheme><cbc:CompanyID /><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme><cac:PartyLegalEntity><cbc:CompanyID /></cac:PartyLegalEntity></cac:Party></cac:AccountingSupplierParty><cac:AccountingCustomerParty><cac:Party><cbc:EndpointID schemeID="">%2</cbc:EndpointID><cac:PartyName><cbc:Name>%5</cbc:Name></cac:PartyName><cac:PostalAddress><cbc:StreetName>%6</cbc:StreetName><cbc:CityName /><cbc:PostalZone>%7</cbc:PostalZone><cac:Country><cbc:IdentificationCode>%4</cbc:IdentificationCode></cac:Country></cac:PostalAddress><cac:PartyTaxScheme><cbc:CompanyID>%2</cbc:CompanyID><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme><cac:PartyLegalEntity><cbc:RegistrationName>%5</cbc:RegistrationName><cbc:CompanyID>%2</cbc:CompanyID></cac:PartyLegalEntity><cac:Contact><cbc:Name>%5</cbc:Name></cac:Contact></cac:Party></cac:AccountingCustomerParty><cac:Delivery><cbc:ActualDeliveryDate>2024-02-25</cbc:ActualDeliveryDate><cac:DeliveryLocation><cac:Address><cbc:StreetName /><cac:Country><cbc:IdentificationCode>%4</cbc:IdentificationCode></cac:Country></cac:Address></cac:DeliveryLocation></cac:Delivery><cac:PaymentMeans><cbc:PaymentMeansCode>31</cbc:PaymentMeansCode><cac:PayeeFinancialAccount><cbc:ID /><cac:FinancialInstitutionBranch><cbc:ID /></cac:FinancialInstitutionBranch></cac:PayeeFinancialAccount></cac:PaymentMeans><cac:TaxTotal><cbc:TaxAmount currencyID="">5980</cbc:TaxAmount><cac:TaxSubtotal><cbc:TaxableAmount currencyID="">9127.53</cbc:TaxableAmount><cbc:TaxAmount currencyID="">5780</cbc:TaxAmount><cac:TaxCategory><cbc:ID /><cbc:Percent>25</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:TaxCategory></cac:TaxSubtotal></cac:TaxTotal><cac:LegalMonetaryTotal><cbc:LineExtensionAmount currencyID="">5980</cbc:LineExtensionAmount><cbc:TaxExclusiveAmount currencyID="">5780</cbc:TaxExclusiveAmount><cbc:TaxInclusiveAmount currencyID="">7225</cbc:TaxInclusiveAmount><cbc:AllowanceTotalAmount currencyID="">0</cbc:AllowanceTotalAmount><cbc:PrepaidAmount currencyID="">0.00</cbc:PrepaidAmount><cbc:PayableRoundingAmount currencyID="">0</cbc:PayableRoundingAmount><cbc:PayableAmount currencyID="">7225</cbc:PayableAmount></cac:LegalMonetaryTotal><cac:InvoiceLine><cbc:ID>10000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">5</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">1495</cbc:LineExtensionAmount><cac:Item><cbc:Name>Stainless Steel Basic Coffee Bean Grinder</cbc:Name><cac:SellersItemIdentification><cbc:ID>PH0005</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">50695063</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">289</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>20000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">5</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">1495</cbc:LineExtensionAmount><cac:Item><cbc:Name>Flat Coffee Grinder, Electric</cbc:Name><cac:SellersItemIdentification><cbc:ID>55555</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">43495471</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">289</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>30000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">5</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">1495</cbc:LineExtensionAmount><cac:Item><cbc:Name>One-touch Home Coffee Grinder</cbc:Name><cac:SellersItemIdentification><cbc:ID>SL4250</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">26325609</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">289</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>40000</cbc:ID><cbc:Note>Item</cbc:Note><cbc:InvoicedQuantity unitCode="EA">5</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="">1495</cbc:LineExtensionAmount><cac:Item><cbc:Name>Coffee Grinder- Electric Coffee Mill for Espresso</cbc:Name><cac:SellersItemIdentification><cbc:ID>B22001</cbc:ID></cac:SellersItemIdentification><cac:StandardItemIdentification><cbc:ID schemeID="0160">17556079</cbc:ID></cac:StandardItemIdentification><cac:ClassifiedTaxCategory><cbc:ID>E</cbc:ID><cbc:Percent>0</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="">289</cbc:PriceAmount><cbc:BaseQuantity unitCode="EA">1</cbc:BaseQuantity></cac:Price></cac:InvoiceLine></Invoice>', Locked = true;
 }

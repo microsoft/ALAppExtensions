@@ -122,7 +122,7 @@ table 7233 "Master Data Full Synch. R. Ln."
         GenerateDataSynchReviewLines(InitialSynchRecommendations, SkipEntitiesNotFullSyncReady, DeletedLines);
     end;
 
-    internal procedure Generate(var InitialSynchRecommendations: Dictionary of [Code[20], Integer]; SkipEntitiesNotFullSyncReady: Boolean; DeletedLines: List of [Code[20]])
+    procedure Generate(var InitialSynchRecommendations: Dictionary of [Code[20], Integer]; SkipEntitiesNotFullSyncReady: Boolean; DeletedLines: List of [Code[20]])
     begin
         GenerateDataSynchReviewLines(InitialSynchRecommendations, SkipEntitiesNotFullSyncReady, DeletedLines);
     end;
@@ -147,6 +147,7 @@ table 7233 "Master Data Full Synch. R. Ln."
     local procedure GenerateDataSynchReviewLines(var InitialSynchRecommendations: Dictionary of [Code[20], Integer]; SkipNotFullSyncReady: Boolean; DeletedLines: List of [Code[20]])
     var
         IntegrationTableMapping: Record "Integration Table Mapping";
+        MasterDataManagement: Codeunit "Master Data Management";
         IntegrationTableMappingFilter: Text;
     begin
         IntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);
@@ -154,6 +155,7 @@ table 7233 "Master Data Full Synch. R. Ln."
         IntegrationTableMapping.SetRange("Synch. Codeunit ID", CODEUNIT::"Integration Master Data Synch.");
         IntegrationTableMapping.SetRange("Delete After Synchronization", false);
         IntegrationTableMappingFilter := 'MDM_BUSINESSRELATION|MDM_CUSTOMER|MDM_VENDOR|MDM_CONTACT|MDM_CURRENCY|MDM_CURRENCYEXCHRATE|MDM_COUNTRYREGION|MDM_POSTCODE|MDM_SALESPERSON|MDM_PAYMENTTERMS|MDM_SHIPPINGAGENT|MDM_SHIPMENTMETHOD|MDM_NUMBERSERIES|MDM_NUMBERSERIESLINE|MDM_MARKETINGSETUP|MDM_SALESRECSETUP|MDM_PURCHPAYSETUP|MDM_VATBUSPGROUP|MDM_VATPRODPGROUP|MDM_GENBUSPGROUP|MDM_GENPRODPGROUP|MDM_TAXAREA|MDM_TAXGROUP|MDM_GLACCOUNT|MDM_VATPOSTINGSETUP|MDM_TAXJURISDICTION|MDM_DIMENSION|MDM_DIMENSIONVALUE|MDM_CUSTOMERPGROUP|MDM_VENDORPGROUP';
+        MasterDataManagement.OnAfterSetIntegrationTableMappingFilterForInitialSynch(IntegrationTableMappingFilter);
         if IntegrationTableMappingFilter <> '' then
             IntegrationTableMapping.SetFilter(Name, IntegrationTableMappingFilter);
 
@@ -187,7 +189,7 @@ table 7233 "Master Data Full Synch. R. Ln."
         end;
     end;
 
-    internal procedure Start()
+    procedure Start()
     var
         TempMasterDataFullSynchRLn: Record "Master Data Full Synch. R. Ln." temporary;
         IntegrationTableMapping: Record "Integration Table Mapping";

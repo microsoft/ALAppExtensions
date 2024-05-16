@@ -2148,6 +2148,42 @@
       </DefaultValue>
       <Prompt>DocumentDate_InvtDocumentHeaderCaption</Prompt>
     </ReportParameter>
+    <ReportParameter Name="PostingDescription_InvtDocumentHeaderCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>PostingDescription_InvtDocumentHeaderCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>PostingDescription_InvtDocumentHeaderCaption</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="SalespersonCode_InvtDocumentHeaderCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>SalespersonCode_InvtDocumentHeaderCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>SalespersonCode_InvtDocumentHeaderCaption</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="SalespersonName_InvtDocumentHeaderCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>SalespersonName_InvtDocumentHeaderCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>SalespersonName_InvtDocumentHeaderCaption</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="ExternalDocumentNo_InvtDocumentHeaderCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>ExternalDocumentNo_InvtDocumentHeaderCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>ExternalDocumentNo_InvtDocumentHeaderCaption</Prompt>
+    </ReportParameter>
     <ReportParameter Name="ItemNo_InvtDocumentLineCaption">
       <DataType>String</DataType>
       <DefaultValue>
@@ -2211,11 +2247,38 @@
       </DefaultValue>
       <Prompt>Amount_InvtDocumentLineCaption</Prompt>
     </ReportParameter>
+    <ReportParameter Name="VariantCode_InvtShipmentLineCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>VariantCode_InvtShipmentLineCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>VariantCode_InvtShipmentLineCaption</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="BinCode_InvtShipmentLineCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>BinCode_InvtShipmentLineCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>BinCode_InvtShipmentLineCaption</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="ItemCategoryCode_InvtShipmentLineCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>ItemCategoryCode_InvtShipmentLineCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>ItemCategoryCode_InvtShipmentLineCaption</Prompt>
+    </ReportParameter>
   </ReportParameters>
   <ReportParametersLayout>
     <GridLayoutDefinition>
       <NumberOfColumns>1</NumberOfColumns>
-      <NumberOfRows>17</NumberOfRows>
+      <NumberOfRows>24</NumberOfRows>
       <CellDefinitions>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
@@ -2270,37 +2333,72 @@
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>10</RowIndex>
-          <ParameterName>ItemNo_InvtDocumentLineCaption</ParameterName>
+          <ParameterName>PostingDescription_InvtDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>11</RowIndex>
-          <ParameterName>Description_InvtDocumentLineCaption</ParameterName>
+          <ParameterName>SalespersonCode_InvtDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>12</RowIndex>
-          <ParameterName>LocationCode_InvtDocumentLineCaption</ParameterName>
+          <ParameterName>SalespersonName_InvtDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>13</RowIndex>
-          <ParameterName>UnitofMeasureCode_InvtDocumentLineCaption</ParameterName>
+          <ParameterName>ExternalDocumentNo_InvtDocumentHeaderCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>14</RowIndex>
-          <ParameterName>UnitAmount_InvtDocumentLineCaption</ParameterName>
+          <ParameterName>ItemNo_InvtDocumentLineCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>15</RowIndex>
-          <ParameterName>Quantity_InvtDocumentLineCaption</ParameterName>
+          <ParameterName>Description_InvtDocumentLineCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>16</RowIndex>
+          <ParameterName>LocationCode_InvtDocumentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>17</RowIndex>
+          <ParameterName>UnitofMeasureCode_InvtDocumentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>18</RowIndex>
+          <ParameterName>UnitAmount_InvtDocumentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>19</RowIndex>
+          <ParameterName>Quantity_InvtDocumentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>20</RowIndex>
           <ParameterName>Amount_InvtDocumentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>21</RowIndex>
+          <ParameterName>VariantCode_InvtShipmentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>22</RowIndex>
+          <ParameterName>BinCode_InvtShipmentLineCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>23</RowIndex>
+          <ParameterName>ItemCategoryCode_InvtShipmentLineCaption</ParameterName>
         </CellDefinition>
       </CellDefinitions>
     </GridLayoutDefinition>
@@ -2386,6 +2484,18 @@ End Function
         <Field Name="DocumentDate_InvtDocumentHeader">
           <DataField>DocumentDate_InvtDocumentHeader</DataField>
         </Field>
+        <Field Name="PostingDescription_InvtDocumentHeader">
+          <DataField>PostingDescription_InvtDocumentHeader</DataField>
+        </Field>
+        <Field Name="SalespersonCode_InvtDocumentHeader">
+          <DataField>SalespersonCode_InvtDocumentHeader</DataField>
+        </Field>
+        <Field Name="SalespersonName_InvtDocumentHeader">
+          <DataField>SalespersonName_InvtDocumentHeader</DataField>
+        </Field>
+        <Field Name="ExternalDocumentNo_InvtDocumentHeader">
+          <DataField>ExternalDocumentNo_InvtDocumentHeader</DataField>
+        </Field>
         <Field Name="ItemNo_InvtDocumentLine">
           <DataField>ItemNo_InvtDocumentLine</DataField>
         </Field>
@@ -2415,6 +2525,15 @@ End Function
         </Field>
         <Field Name="Amount_InvtDocumentLineFormat">
           <DataField>Amount_InvtDocumentLineFormat</DataField>
+        </Field>
+        <Field Name="VariantCode_InvtShipmentLine">
+          <DataField>VariantCode_InvtShipmentLine</DataField>
+        </Field>
+        <Field Name="BinCode_InvtShipmentLine">
+          <DataField>BinCode_InvtShipmentLine</DataField>
+        </Field>
+        <Field Name="ItemCategoryCode_InvtShipmentLine">
+          <DataField>ItemCategoryCode_InvtShipmentLine</DataField>
         </Field>
       </Fields>
       <Query>

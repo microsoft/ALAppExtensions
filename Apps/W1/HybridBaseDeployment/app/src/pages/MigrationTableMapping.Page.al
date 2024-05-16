@@ -209,7 +209,7 @@ page 4009 "Migration Table Mapping"
                             if not ExtensionTableMapping.Get(PublishedApplication.ID, ApplicationObjectMetadata."Object ID") then
                                 if TableMetadata.Get(ApplicationObjectMetadata."Object ID") then
                                     if TableMetadata.ReplicateData then begin
-                                        ExtensionTableMapping.Init();
+                                        Clear(ExtensionTableMapping);
                                         ExtensionTableMapping.Validate("App ID", PublishedApplication.ID);
                                         ExtensionTableMapping.Validate("Table ID", ApplicationObjectMetadata."Object ID");
                                         ExtensionTableMapping.Insert(true);

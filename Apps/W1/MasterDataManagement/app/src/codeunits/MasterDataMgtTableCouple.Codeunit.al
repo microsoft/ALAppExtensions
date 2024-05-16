@@ -89,6 +89,7 @@ codeunit 7235 "Master Data Mgt. Table Couple"
         FilterList: List of [Text];
         MatchPriorityList: List of [Integer];
         MatchPriority: Integer;
+        SourceCompanyName: Text[30];
     begin
         // collect the matching criteria fields in a temporary record
         IntegrationFieldMapping.SetRange("Integration Table Mapping Name", IntegrationTableMapping.Name);
@@ -117,7 +118,10 @@ codeunit 7235 "Master Data Mgt. Table Couple"
         // iterate through integration records and for each of them try to find a match in local system
         MasterDataManagementSetup.Get();
         IntegrationRecordRef.Open(IntegrationTableMapping."Integration Table ID");
-        IntegrationRecordRef.ChangeCompany(MasterDataManagementSetup."Company Name");
+        MasterDataManagement.OnSetSourceCompanyName(SourceCompanyName, IntegrationTableMapping."Table ID");
+        if SourceCompanyName = '' then
+            SourceCompanyName := MasterDataManagementSetup."Company Name";
+        IntegrationRecordRef.ChangeCompany(SourceCompanyName);
         IntegrationMasterDataSynch.SplitIntegrationTableFilter(IntegrationTableMapping, FilterList);
         foreach TableFilter in FilterList do begin
             if TableFilter <> '' then

@@ -422,6 +422,7 @@ report 31017 "Purchase - Advance VAT Doc.CZZ"
                 if IsCreditMemo(TempPurchAdvLetterEntry) then begin
                     PurchAdvLetterEntryCZZ.SetRange("Purch. Adv. Letter No.", TempPurchAdvLetterEntry."Purch. Adv. Letter No.");
                     PurchAdvLetterEntryCZZ.SetRange("Related Entry", TempPurchAdvLetterEntry."Related Entry");
+                    PurchAdvLetterEntryCZZ.SetFilter("Document No.", '<>%1', TempPurchAdvLetterEntry."Document No.");
                     PurchAdvLetterEntryCZZ.SetFilter("Entry No.", '<%1', TempPurchAdvLetterEntry."Entry No.");
                     if PurchAdvLetterEntryCZZ.FindLast() then
                         OriginalAdvanceVATDocumentNo := PurchAdvLetterEntryCZZ."Document No.";

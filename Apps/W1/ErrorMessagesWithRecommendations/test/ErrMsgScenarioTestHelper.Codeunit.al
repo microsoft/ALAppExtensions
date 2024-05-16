@@ -57,6 +57,13 @@ codeunit 139620 ErrMsgScenarioTestHelper
         end;
     end;
 
+    local procedure CreateGLAccountDefaultDimensionWithSameCode(GLAccountNo: Code[20]; var DefaultDimension: Record "Default Dimension"; var DimensionValue: Record "Dimension Value")
+    begin
+        LibraryDimension.CreateDefaultDimensionGLAcc(DefaultDimension, GLAccountNo, DimensionValue."Dimension Code", DimensionValue.Code);
+        DefaultDimension.Validate("Value Posting", DefaultDimension."Value Posting"::"Same Code");
+        DefaultDimension.Modify();
+    end;
+
     internal procedure SetupPurchaseOrderForDimMustBeBlankError(var PurchaseHeader: Record "Purchase Header")
     var
         Vendor: Record Vendor;
@@ -110,6 +117,32 @@ codeunit 139620 ErrMsgScenarioTestHelper
         DefaultDimension.Validate("Dimension Value Code", DimensionValue.Code);
         DefaultDimension.Modify();
         Commit();
+    end;
+
+    internal procedure SetupForDimensionMustBeSameError(var Customer: Record Customer; var DimensionValue: Record "Dimension Value")
+    var
+        DefaultDimension: Record "Default Dimension";
+        Currency: Record Currency;
+        LibrarySales: Codeunit "Library - Sales";
+        CurrencyCode: Code[10];
+    begin
+        // Create a new currency with GL account setup and two exchange rates for the currency
+        CurrencyCode := LibraryERM.CreateCurrencyWithGLAccountSetup();
+        LibraryERM.CreateExchangeRate(CurrencyCode, Today() - 1, 100, 100);
+        LibraryERM.CreateExchangeRate(CurrencyCode, Today() + 5, 101, 101);
+
+        // Create a customer with new currency
+        LibrarySales.CreateCustomer(Customer);
+        Customer.Validate("Currency Code", CurrencyCode);
+        Customer.Modify();
+
+        // Create dimension value for dimension code 1
+        LibraryDimension.CreateDimensionValue(DimensionValue, LibraryERM.GetGlobalDimensionCode(1));
+
+        // Set default dimension 1 with same code setup for G/L accounts used on the currency 
+        Currency.Get(CurrencyCode);
+        CreateGLAccountDefaultDimensionWithSameCode(Currency."Unrealized Gains Acc.", DefaultDimension, DimensionValue);
+        CreateGLAccountDefaultDimensionWithSameCode(Currency."Realized Gains Acc.", DefaultDimension, DimensionValue);
     end;
 
     internal procedure SetupPurchaseOrderForDimMustBeSameButMissingDimError(var PurchaseHeader: Record "Purchase Header")

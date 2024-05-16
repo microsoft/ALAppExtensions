@@ -7,8 +7,10 @@ using Microsoft.EServices.EDocument;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Purchases.Document;
 using Microsoft.Utilities;
+using System.Telemetry;
 using System.Text;
 using System.Utilities;
+
 codeunit 6369 "Pagero Processing"
 {
     Access = Internal;
@@ -19,6 +21,7 @@ codeunit 6369 "Pagero Processing"
     var
         EDocumentServiceStatus: Record "E-Document Service Status";
         EdocumentService: Record "E-Document Service";
+        FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
         IsAsync := true;
 
@@ -34,6 +37,8 @@ codeunit 6369 "Pagero Processing"
                 else
                     RestartEDocument(EDocument, HttpRequest, HttpResponse);
         end;
+
+        FeatureTelemetry.LogUptake('0000MSC', ExternalServiceTok, Enum::"Feature Uptake Status"::Used);
     end;
 
     procedure GetDocumentResponse(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
@@ -358,19 +363,73 @@ codeunit 6369 "Pagero Processing"
 
     local procedure CheckIfDocumentStatusSuccessful(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     var
-        EdocumentService: Record "E-Document Service";
-        FilepartID, ErrorDescription : Text;
+        EDocumentService: Record "E-Document Service";
+        Telemetry: Codeunit Telemetry;
+        Status, FilepartID, ErrorDescription : Text;
     begin
         if not PageroConnection.CheckDocumentFileParts(EDocument, HttpRequestMessage, HttpResponse, true) then
             exit(false);
 
-        if DocumentHasErrorOrProcessing(HttpResponse, FilepartID, ErrorDescription) then
+        if IsFilePartsDocumentProcessed(HttpResponse, Status, FilepartID, ErrorDescription) then begin
+            EDocumentHelper.GetEdocumentService(EDocument, EDocumentService);
+            EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, HttpRequestMessage, HttpResponse);
+            exit(true);
+        end;
+
+        // FilepartID only exists when document is not processed 
+        if FilepartID = '' then
             exit(false);
 
-        EDocumentHelper.GetEdocumentService(EDocument, EdocumentService);
-        EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, HttpRequestMessage, HttpResponse);
+        EDocument."Filepart Id" := CopyStr(FilepartID, 1, MaxStrLen(EDocument."Filepart Id"));
+        EDocument.Modify();
 
-        exit(true);
+        case Status of
+            PageroProcessingStatusLbl:
+                exit(false);
+            PageroErrorStatusLbl:
+                begin
+                    EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, ErrorDescription);
+                    exit(false);
+                end;
+            PageroAwaitingInteractionStatusLbl:
+                exit(false);
+            else begin
+                Telemetry.LogMessage('0000MSB', StrSubstNo(WrongParseStatusErr, Status), Verbosity::Error, DataClassification::SystemMetadata);
+                exit(false);
+            end;
+        end;
+    end;
+
+    local procedure IsFilePartsDocumentProcessed(HttpResponse: HttpResponseMessage; var Status: Text; var FilepartID: Text; var ErrorDescription: Text): Boolean
+    var
+        JsonManagement: Codeunit "JSON Management";
+        HttpContentResponse: HttpContent;
+        IncrementalTable, Result, Value : Text;
+    begin
+        HttpContentResponse := HttpResponse.Content;
+        Result := ParseJsonString(HttpContentResponse);
+        if Result = '' then
+            Error(ParseErr);
+
+        if not JsonManagement.InitializeFromString(Result) then
+            Error(ParseErr);
+
+        JsonManagement.GetArrayPropertyValueAsStringByName('items', Value);
+        JsonManagement.InitializeCollection(Value);
+
+        // A Filepart which has been successfully processed will not be visible in the API.
+        if JsonManagement.GetCollectionCount() = 0 then
+            exit(true);
+
+        JsonManagement.GetObjectFromCollectionByIndex(IncrementalTable, 0);
+        JsonManagement.InitializeObject(IncrementalTable);
+
+        JsonManagement.GetStringPropertyValueByName('status', Status);
+        JsonManagement.GetStringPropertyValueByName('id', FilepartID);
+        JsonManagement.GetArrayPropertyValueAsStringByName('error', ErrorDescription);
+        JsonManagement.InitializeFromString(ErrorDescription);
+        JsonManagement.GetArrayPropertyValueAsStringByName('description', ErrorDescription);
+        exit(false);
     end;
 
     local procedure ParseSendFileResponse(HttpContentResponse: HttpContent): Text
@@ -402,39 +461,6 @@ codeunit 6369 "Pagero Processing"
         EDocument.Modify();
     end;
 
-    local procedure DocumentHasErrorOrProcessing(HttpResponse: HttpResponseMessage; var FilepartID: Text; var ErrorDescription: Text): Boolean
-    var
-        JsonManagement: Codeunit "JSON Management";
-        HttpContentResponse: HttpContent;
-        IncrementalTable, Result, Value : Text;
-    begin
-        HttpContentResponse := HttpResponse.Content;
-        Result := ParseJsonString(HttpContentResponse);
-        if Result = '' then
-            exit(true);
-
-        if not JsonManagement.InitializeFromString(Result) then
-            exit(true);
-
-        JsonManagement.GetArrayPropertyValueAsStringByName('items', Value);
-        JsonManagement.InitializeCollection(Value);
-
-        if JsonManagement.GetCollectionCount() = 0 then
-            exit(false);
-
-        JsonManagement.GetObjectFromCollectionByIndex(IncrementalTable, 0);
-        JsonManagement.InitializeObject(IncrementalTable);
-
-        JsonManagement.GetStringPropertyValueByName('status', Value);
-        if Value = 'Processing' then
-            exit(true);
-
-        JsonManagement.GetStringPropertyValueByName('id', FilepartID);
-        JsonManagement.GetArrayPropertyValueAsStringByName('error', ErrorDescription);
-        JsonManagement.InitializeFromString(ErrorDescription);
-        JsonManagement.GetArrayPropertyValueAsStringByName('description', ErrorDescription);
-        exit(true);
-    end;
 
     procedure ParseGetADocumentApprovalResponse(HttpContentResponse: HttpContent; var Status: Text; var StatusDescription: Text): Boolean
     var
@@ -560,31 +586,6 @@ codeunit 6369 "Pagero Processing"
             EDocumentServices.GetRecord(EDocumentService);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Document Get Response", 'OnGetEdocumentResponseReturnsFalse', '', false, false)]
-    local procedure OnGetEdocumentResponseReturnsFalse(EDocuments: Record "E-Document"; EDocumentService: Record "E-Document Service"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage; var IsHandled: Boolean)
-    var
-        EDocumentServiceStatus: Record "E-Document Service Status";
-        FilepartID, ErrorDescription : Text;
-    begin
-        if EDocumentService."Service Integration" <> EDocumentService."Service Integration"::Pagero then
-            exit;
-
-        if not DocumentHasErrorOrProcessing(HttpResponse, FilepartID, ErrorDescription) then
-            exit;
-
-        if FilepartID = '' then
-            exit;
-
-        IsHandled := true;
-
-        EDocuments."Filepart Id" := CopyStr(FilepartID, 1, MaxStrLen(EDocuments."Filepart Id"));
-        EDocuments.Modify();
-        EDocumentErrorHelper.LogSimpleErrorMessage(EDocuments, ErrorDescription);
-
-        EDocumentServiceStatus.Get(EDocuments."Entry No", EDocumentService.Code);
-        EDocumentServiceStatus.Status := EDocumentServiceStatus.Status::"Sending Error";
-        EDocumentServiceStatus.Modify();
-    end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Integration Management", 'OnGetEDocumentApprovalReturnsFalse', '', false, false)]
     local procedure OnGetEDocumentApprovalReturnsFalse(EDocuments: Record "E-Document"; EDocumentService: Record "E-Document Service"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage; var IsHandled: Boolean)
@@ -641,4 +642,10 @@ codeunit 6369 "Pagero Processing"
         CancelCheckStatusErr: Label 'You cannot ask for cancel with the E-Document in this current status %1. You can request for cancel when E-document status is ''Cancel Error'' or ''Sending Error''.', Comment = '%1 - Status';
         CouldNotRetrieveDocumentErr: Label 'Could not retrieve document with id: %1 from the service', Comment = '%1 - Document ID';
         DocumentIdNotFoundErr: Label 'Document ID not found in response';
+        ParseErr: Label 'Failed to parse document from Pagero API';
+        WrongParseStatusErr: Label 'Got unexected status from Pagero API: %1', Comment = '%1 - Status that we received from API', Locked = true;
+        PageroAwaitingInteractionStatusLbl: Label 'AwaitingInteraction', Locked = true;
+        PageroErrorStatusLbl: Label 'Error', Locked = true;
+        PageroProcessingStatusLbl: Label 'Processing', Locked = true;
+        ExternalServiceTok: Label 'ExternalServiceConnector', Locked = true;
 }

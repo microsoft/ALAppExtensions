@@ -1,4 +1,5 @@
 namespace Microsoft.Bank.StatementImport.Yodlee;
+using System.Reflection;
 
 codeunit 1458 "Yodlee API Strings"
 {
@@ -13,17 +14,39 @@ codeunit 1458 "Yodlee API Strings"
 
     [Scope('OnPrem')]
     procedure GetCobrandTokenURL(): Text;
+    var
+        MSYodleeServiceMgt: Codeunit "MS - Yodlee Service Mgt.";
     begin
-        exit(GetFullURL('/cobrand/login'));
+        if MSYodleeServiceMgt.ClientCredentialsAuthEnabled() then
+            exit(GetFullURL('/auth/token'))
+        else
+            exit(GetFullURL('/cobrand/login'));
     end;
 
     [Scope('OnPrem')]
+    [NonDebuggable]
     procedure GetCobrandTokenBody(CobrandLogin: Text; CobrandPassword: Text): Text;
     var
+        MSYodleeServiceMgt: Codeunit "MS - Yodlee Service Mgt.";
+        TypeHelper: Codeunit "Type Helper";
         GetCobrandTokenRequestBodyJsonObject: JsonObject;
         GetCobrandTokenRequestBodyText: Text;
+        YodleeClientId: Text;
+        YodleeClientSecret: Text;
         CobrandCredentialsJsonObject: JsonObject;
     begin
+        if MSYodleeServiceMgt.ClientCredentialsAuthEnabled() then begin
+            if MSYodleeServiceMgt.GetYodleeClientIdFromAzureKeyVault(YodleeClientId) then
+                if MSYodleeServiceMgt.GetYodleeClientSecretFromAzureKeyVault(YodleeClientSecret) then
+                    exit('clientId=' + TypeHelper.UrlEncode(YodleeClientId) + '&secret=' + TypeHelper.UrlEncode(YodleeClientSecret));
+
+            if MSYodleeBankServiceSetup.Get() then begin
+                YodleeClientId := MSYodleeBankServiceSetup.GetClientId(MSYodleeBankServiceSetup."Client Id");
+                YodleeClientSecret := MSYodleeBankServiceSetup.GetClientSecret(MSYodleeBankServiceSetup."Client Secret");
+                exit('clientId=' + TypeHelper.UrlEncode(YodleeClientId) + '&secret=' + TypeHelper.UrlEncode(YodleeClientSecret));
+            end;
+        end;
+
         CobrandCredentialsJsonObject.Add('cobrandLogin', CobrandLogin);
         CobrandCredentialsJsonObject.Add('cobrandPassword', CobrandPassword);
         GetCobrandTokenRequestBodyJsonObject.Add('cobrand', CobrandCredentialsJsonObject);
@@ -43,13 +66,36 @@ codeunit 1458 "Yodlee API Strings"
         exit(StrSubstno(AuthHeaderUserSessionTok, CobrandSessionToken, UserSessionToken))
     end;
 
+    [NonDebuggable]
+    internal procedure GetAuthorizationHeaderValue(var AccessToken: Text): Text;
+    begin
+        exit('Bearer ' + AccessToken)
+    end;
+
     [Scope('OnPrem')]
+    [NonDebuggable]
     procedure GetConsumerTokenBody(UserLogin: Text; UserPassword: Text; CobrandSessionToken: Text): Text;
     var
+        MSYodleeServiceMgt: Codeunit "MS - Yodlee Service Mgt.";
+        TypeHelper: Codeunit "Type Helper";
         GetConsumerTokenRequestBodyJsonObject: JsonObject;
         GetConsumerTokenRequestBodyText: Text;
         UserCredentialsJsonObject: JsonObject;
+        YodleeClientId: Text;
+        YodleeClientSecret: Text;
     begin
+        if MSYodleeServiceMgt.ClientCredentialsAuthEnabled() then begin
+            if MSYodleeServiceMgt.GetYodleeClientIdFromAzureKeyVault(YodleeClientId) then
+                if MSYodleeServiceMgt.GetYodleeClientSecretFromAzureKeyVault(YodleeClientSecret) then
+                    exit('clientId=' + TypeHelper.UrlEncode(YodleeClientId) + '&secret=' + TypeHelper.UrlEncode(YodleeClientSecret));
+
+            if MSYodleeBankServiceSetup.Get() then begin
+                YodleeClientId := MSYodleeBankServiceSetup.GetClientId(MSYodleeBankServiceSetup."Client Id");
+                YodleeClientSecret := MSYodleeBankServiceSetup.GetClientSecret(MSYodleeBankServiceSetup."Client Secret");
+                exit('clientId=' + TypeHelper.UrlEncode(YodleeClientId) + '&secret=' + TypeHelper.UrlEncode(YodleeClientSecret));
+            end;
+        end;
+
         UserCredentialsJsonObject.Add('loginName', UserLogin);
         UserCredentialsJsonObject.Add('password', UserPassword);
         GetConsumerTokenRequestBodyJsonObject.Add('user', UserCredentialsJsonObject);
@@ -59,8 +105,13 @@ codeunit 1458 "Yodlee API Strings"
 
     [Scope('OnPrem')]
     procedure GetConsumerTokenURL(): Text;
+    var
+        MSYodleeServiceMgt: Codeunit "MS - Yodlee Service Mgt.";
     begin
-        exit(GetFullURL('/user/login'));
+        if MSYodleeServiceMgt.ClientCredentialsAuthEnabled() then
+            exit(GetFullURL('/auth/token'))
+        else
+            exit(GetFullURL('/user/login'));
     end;
 
     [Scope('OnPrem')]
@@ -80,7 +131,8 @@ codeunit 1458 "Yodlee API Strings"
         UserPreferencesJsonObject: JsonObject;
     begin
         UserJsonObject.Add('loginName', UserName);
-        UserJsonObject.Add('password', UserPassword);
+        if UserPassword <> '' then
+            UserJsonObject.Add('password', UserPassword);
         UserJsonObject.Add('email', UserEmail);
         UserPreferencesJsonObject.Add('currency', UserCurrency);
         UserJsonObject.Add('preferences', UserPreferencesJsonObject);
@@ -100,7 +152,8 @@ codeunit 1458 "Yodlee API Strings"
         UserPreferencesJsonObject: JsonObject;
     begin
         UserJsonObject.Add('loginName', UserName);
-        UserJsonObject.Add('password', UserPassword.Unwrap());
+        if not UserPassword.IsEmpty() then
+            UserJsonObject.Add('password', UserPassword.Unwrap());
         UserJsonObject.Add('email', UserEmail);
         UserPreferencesJsonObject.Add('currency', UserCurrency);
         UserJsonObject.Add('preferences', UserPreferencesJsonObject);
@@ -249,14 +302,24 @@ codeunit 1458 "Yodlee API Strings"
 
     [Scope('OnPrem')]
     procedure GetCobrandTokenXPath(): Text;
+    var
+        MSYodleeServiceMgt: Codeunit "MS - Yodlee Service Mgt.";
     begin
-        exit('//session/cobSession');
+        if MSYodleeServiceMgt.ClientCredentialsAuthEnabled() then
+            exit('//token/accessToken')
+        else
+            exit('//session/cobSession');
     end;
 
     [Scope('OnPrem')]
     procedure GetConsumerTokenXPath(): Text;
+    var
+        MSYodleeServiceMgt: Codeunit "MS - Yodlee Service Mgt.";
     begin
-        exit('//session/userSession');
+        if MSYodleeServiceMgt.ClientCredentialsAuthEnabled() then
+            exit('//token/accessToken')
+        else
+            exit('//session/userSession');
     end;
 
     procedure GetFastLinkTokenXPath(): Text;

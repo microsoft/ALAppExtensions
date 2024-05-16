@@ -75,6 +75,11 @@ page 31166 "Posted Cash Document Subf. CZP"
                     ToolTip = 'Specifies a VAT product posting group code for the VAT Statement.';
                     Visible = false;
                 }
+                field("Allocation Account No."; Rec."Allocation Account No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the allocation account number.';
+                }
                 field(Amount; Rec.Amount)
                 {
                     ApplicationArea = Basic, Suite;

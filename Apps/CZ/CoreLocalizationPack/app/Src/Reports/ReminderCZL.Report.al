@@ -20,10 +20,9 @@ using System.Utilities;
 
 report 31182 "Reminder CZL"
 {
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/Reminder.rdl';
     Caption = 'Reminder';
     PreviewMode = PrintLayout;
+    DefaultRenderingLayout = "Reminder.rdl";
     WordMergeDataItem = "Issued Reminder Header";
 
     dataset
@@ -459,6 +458,24 @@ report 31182 "Reminder CZL"
             InitLogInteraction();
             LogInteractionEnable := LogInteraction;
         end;
+    }
+
+    rendering
+    {
+        layout("Reminder.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/Reminder.rdl';
+            Caption = 'Reminder (RDL)';
+            Summary = 'The Reminder (RDL) provides a detailed layout.';
+        }
+        layout("ReminderEmail.docx")
+        {
+            Type = Word;
+            LayoutFile = './Src/Reports/ReminderEmail.docx';
+            Caption = 'Reminder Email (Word)';
+            Summary = 'The Reminder Email (Word) provides an email body layout.';
+        }
     }
 
     trigger OnPreReport()

@@ -1,4 +1,6 @@
 namespace Microsoft.Sales.Document.Test;
+
+using System.TestLibraries.Utilities;
 codeunit 139784 "Document Lookup Prompt Test"
 {
     Subtype = Test;
@@ -11,6 +13,7 @@ codeunit 139784 "Document Lookup Prompt Test"
     end;
 
     var
+        LibraryVariableStorage: Codeunit "Library - Variable Storage";
         // Sales Order
         SalesOrderPrompt01Lbl: Label 'Need all the items from previous sales order';
         SalesOrderPrompt02Lbl: Label 'Need all the items from sales order SO12345';
@@ -375,7 +378,7 @@ codeunit 139784 "Document Lookup Prompt Test"
         CallCompletionAnswerTxt: SecretText;
     begin
         TestUtil.RepeatAtMost100TimesToFetchCompletion(CallCompletionAnswerTxt, SalesOrderPrompt24Lbl);
-        TestUtil.CheckDocumentLookupJSONContent(CallCompletionAnswerTxt, 'lookup_from_document', 'sales_order', '', '', '');
+        TestUtil.CheckMagicFunction(CallCompletionAnswerTxt);
     end;
 
     [Test]
@@ -405,7 +408,12 @@ codeunit 139784 "Document Lookup Prompt Test"
         CallCompletionAnswerTxt: SecretText;
     begin
         TestUtil.RepeatAtMost100TimesToFetchCompletion(CallCompletionAnswerTxt, SalesOrderPrompt27Lbl);
-        TestUtil.CheckDocumentLookupJSONContent(CallCompletionAnswerTxt, 'lookup_from_document', 'sales_order', '', '', '');
+        LibraryVariableStorage.Clear();
+        LibraryVariableStorage.Enqueue('eco-friendly items');
+        LibraryVariableStorage.Enqueue('');
+        LibraryVariableStorage.Enqueue('0');
+        LibraryVariableStorage.Enqueue('eco-friendly');
+        TestUtil.CheckSearchItemJSONContent(CallCompletionAnswerTxt, 1, LibraryVariableStorage);
     end;
 
     [Test]
@@ -435,7 +443,7 @@ codeunit 139784 "Document Lookup Prompt Test"
         CallCompletionAnswerTxt: SecretText;
     begin
         TestUtil.RepeatAtMost100TimesToFetchCompletion(CallCompletionAnswerTxt, SalesOrderPrompt30Lbl);
-        TestUtil.CheckDocumentLookupJSONContent(CallCompletionAnswerTxt, 'lookup_from_document', 'sales_order', '', '', '');
+        TestUtil.CheckMagicFunction(CallCompletionAnswerTxt);
     end;
 
     [Test]
@@ -680,7 +688,7 @@ codeunit 139784 "Document Lookup Prompt Test"
         CallCompletionAnswerTxt: SecretText;
     begin
         TestUtil.RepeatAtMost100TimesToFetchCompletion(CallCompletionAnswerTxt, SalesInvoicePrompt24Lbl);
-        TestUtil.CheckDocumentLookupJSONContent(CallCompletionAnswerTxt, 'lookup_from_document', 'sales_invoice', '55566', '', '');
+        TestUtil.CheckMagicFunction(CallCompletionAnswerTxt);
     end;
 
     [Test]
@@ -751,7 +759,20 @@ codeunit 139784 "Document Lookup Prompt Test"
         CallCompletionAnswerTxt: SecretText;
     begin
         TestUtil.RepeatAtMost100TimesToFetchCompletion(CallCompletionAnswerTxt, SalesInvoicePrompt31Lbl);
-        TestUtil.CheckDocumentLookupJSONContent(CallCompletionAnswerTxt, 'lookup_from_document', 'sales_invoice', '123456', '', '');
+        LibraryVariableStorage.Clear();
+        LibraryVariableStorage.Enqueue('product A');
+        LibraryVariableStorage.Enqueue('');
+        LibraryVariableStorage.Enqueue('10');
+        LibraryVariableStorage.Enqueue('SKU: 789012');
+        LibraryVariableStorage.Enqueue('product B');
+        LibraryVariableStorage.Enqueue('');
+        LibraryVariableStorage.Enqueue('5');
+        LibraryVariableStorage.Enqueue('SKU: 345678');
+        LibraryVariableStorage.Enqueue('product C');
+        LibraryVariableStorage.Enqueue('');
+        LibraryVariableStorage.Enqueue('3');
+        LibraryVariableStorage.Enqueue('SKU: 901234');
+        TestUtil.CheckSearchItemJSONContent(CallCompletionAnswerTxt, 3, LibraryVariableStorage);
     end;
 
     [Test]
@@ -1045,7 +1066,7 @@ codeunit 139784 "Document Lookup Prompt Test"
         CallCompletionAnswerTxt: SecretText;
     begin
         TestUtil.RepeatAtMost100TimesToFetchCompletion(CallCompletionAnswerTxt, SalesShipmentPrompt29Lbl);
-        TestUtil.CheckDocumentLookupJSONContent(CallCompletionAnswerTxt, 'lookup_from_document', 'sales_shipment', 'SHIP-987651', '', '');
+        TestUtil.CheckMagicFunction(CallCompletionAnswerTxt);
     end;
 
     [Test]

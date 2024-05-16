@@ -83,6 +83,7 @@ codeunit 10673 "Generate SAF-T File"
         ExportingGLEntriesTxt: Label 'Exporting G/L entries...';
         SkatteetatenMsg: Label 'Skatteetaten', Locked = true;
         BlankTxt: Label 'Blank';
+        NATxt: Label 'NA', Comment = 'Stands for Not Applicable';
 
     local procedure ExportHeaderWithMasterFiles(SAFTExportHeader: Record "SAF-T Export Header")
     begin
@@ -761,9 +762,7 @@ codeunit 10673 "Generate SAF-T File"
                             SAFTXMLHelper.AppendXMLNode('SupplierID', GLEntry."Source No.");
                     end;
             end;
-            if GLEntry.Description = '' then
-                GLEntry.Description := GLEntry."G/L Account No.";
-            SAFTXMLHelper.AppendXMLNode('Description', GLEntry.Description);
+            SAFTXMLHelper.AppendXMLNode('Description', GetGLEntryDescription(GLEntry));
             SAFTExportMgt.GetAmountInfoFromGLEntry(AmountXMLNode, Amount, GLEntry);
             IsHandled := false;
             OnBeforeExportGLEntryAmountInfo(SAFTXMLHelper, AmountXMLNode, GLEntry, IsHandled);
@@ -798,7 +797,7 @@ codeunit 10673 "Generate SAF-T File"
         else
             TransactionTypeValue := Format(GLEntry."Document Type");
         SAFTXMLHelper.AppendXMLNode('TransactionType', TransactionTypeValue);
-        SAFTXMLHelper.AppendXMLNode('Description', GLEntry.Description);
+        SAFTXMLHelper.AppendXMLNode('Description', GetGLEntryDescription(GLEntry));
         SAFTXMLHelper.AppendXMLNode('BatchID', Format(GLEntry."Transaction No."));
         if GLEntry."Last Modified DateTime" = 0DT then
             SystemEntryDate := GLEntry."Posting Date"
@@ -1183,6 +1182,15 @@ codeunit 10673 "Generate SAF-T File"
     local procedure GetSAFTTransactionIDFromGLEntry(GLEntry: Record "G/L Entry"): Text
     begin
         exit(GLEntry."Document No." + Format(GLEntry."Posting Date", 0, '<Day,2><Month,2><Year,2>'));
+    end;
+
+    local procedure GetGLEntryDescription(var GLEntry: Record "G/L Entry") Description: Text
+    begin
+        Description := GLEntry.Description;
+        if Description = '' then
+            Description := GLEntry."G/L Account No.";
+        if Description = '' then
+            Description := NATxt;
     end;
 
     [IntegrationEvent(false, false)]

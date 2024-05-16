@@ -45,5 +45,5 @@ tableextension 7235 MasterDataMgtTableMapping extends "Integration Table Mapping
     }
 
     var
-        OverwriteLocalChangesQst: Label 'This will make the synchronization engine overwrite any local changes that are done on this table. \\To enable this setting only for chosen fields, choose the Synchronization Fields action. \\Do you want to continue and enable it for the table?';
+        OverwriteLocalChangesQst: Label 'This will make the synchronization engine overwrite any local changes that are done on this table. \\To enable this setting only for chosen fields, choose the Synchronization Fields action. \\To allow the current company to change values of a field independently from changes in the source company, you must disable the synchronization on that field. \\Do you want to continue and enable it for the table?';
 }

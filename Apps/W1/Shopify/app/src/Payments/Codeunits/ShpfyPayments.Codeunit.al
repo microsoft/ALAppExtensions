@@ -221,7 +221,6 @@ codeunit 30169 "Shpfy Payments"
 
         repeat
             JResponse := CommunicationMgt.ExecuteWebRequest(Url, 'GET', JResponse, Url);
-
             if JsonHelper.GetJsonArray(JResponse, JDisputes, 'disputes') then
                 foreach JItem in JDisputes do
                     ImportDisputeData(JItem);
@@ -302,7 +301,7 @@ codeunit 30169 "Shpfy Payments"
     local procedure ConvertToDisputeReason(Value: Text): Enum "Shpfy Dispute Reason"
     begin
         Value := CommunicationMgt.ConvertToCleanOptionValue(Value);
-        if Enum::"Shpfy Dispute Status".Names().Contains(Value) then
+        if Enum::"Shpfy Dispute Reason".Names().Contains(Value) then
             exit(Enum::"Shpfy Dispute Reason".FromInteger(Enum::"Shpfy Dispute Reason".Ordinals().Get(Enum::"Shpfy Dispute Reason".Names().IndexOf(Value))))
         else
             exit(Enum::"Shpfy Dispute Reason"::Unknown);

@@ -114,7 +114,8 @@ reportextension 31001 "Suggest Worksheet Lines CZZ" extends "Suggest Worksheet L
                 if not TempCFWorksheetLine.Find() then
                     exit;
                 PurchaseHeader."Document Type" := "Document Type";
-                AdvanceLetterApplication.GetAssignedAdvance(PurchaseHeader.GetAdvLetterUsageDocTypeCZZ(), "Document No.", TempAdvanceLetterApplication);
+                AdvanceLetterApplication.GetAssignedAdvance(
+                    PurchaseHeader.GetAdvLetterUsageDocTypeCZZ(), "Document No.", TempAdvanceLetterApplication);
                 TempAdvanceLetterApplication.CalcSums("Amount (LCY)");
                 TempCFWorksheetLine."Amount (LCY)" += TempAdvanceLetterApplication."Amount (LCY)";
                 if TempCFWorksheetLine."Amount (LCY)" = 0 then

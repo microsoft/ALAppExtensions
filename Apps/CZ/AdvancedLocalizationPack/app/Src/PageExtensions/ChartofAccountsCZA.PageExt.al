@@ -17,10 +17,6 @@ pageextension 31259 "Chart of Accounts CZA" extends "Chart of Accounts"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Open G/L Entries To Date';
                 Image = EntriesList;
-                Promoted = true;
-                PromotedCategory = Report;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 RunObject = Report "Open G/L Entries To Date CZA";
                 ToolTip = 'View the list of open G/L entries to specific date.';
             }
@@ -30,10 +26,6 @@ pageextension 31259 "Chart of Accounts CZA" extends "Chart of Accounts"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Inventory Account to the date';
                 Image = Inventory;
-                Promoted = true;
-                PromotedCategory = Report;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 RunObject = Report "Inventory Account To Date CZA";
                 ToolTip = 'View the inventory account to specific date.';
             }
@@ -45,12 +37,23 @@ pageextension 31259 "Chart of Accounts CZA" extends "Chart of Accounts"
                 ApplicationArea = Basic, Suite;
                 Caption = 'G/L Entry Applying';
                 Image = ApplyEntries;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 RunObject = Report "G/L Entry Applying CZA";
                 ToolTip = 'Apply the G/L Entries.';
+            }
+        }
+        addfirst(Category_Report)
+        {
+            actionref("Open G/L Entries To Date CZA_Promoted"; "Open G/L Entries To Date CZA")
+            {
+            }
+            actionref("Inventory Account To Date CZA_Promoted"; "Inventory Account To Date CZA")
+            {
+            }
+        }
+        addfirst(Category_Process)
+        {
+            actionref("G/L Entry Applying CZA_Promoted"; "G/L Entry Applying CZA")
+            {
             }
         }
     }

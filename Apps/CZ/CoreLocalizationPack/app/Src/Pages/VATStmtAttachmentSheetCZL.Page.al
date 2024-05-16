@@ -50,9 +50,6 @@ page 31134 "VAT Stmt. Attachment Sheet CZL"
                 Caption = 'Import';
                 Ellipsis = true;
                 Image = Import;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 ToolTip = 'Import an attachment.';
 
                 trigger OnAction()
@@ -60,6 +57,15 @@ page 31134 "VAT Stmt. Attachment Sheet CZL"
                     if Rec.Import() then
                         CurrPage.SaveRecord();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(Import_Promoted; Import)
+                {
+                }
             }
         }
     }

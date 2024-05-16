@@ -13,7 +13,7 @@ codeunit 30148 "Shpfy GQL ProductImages" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{products(first:100){pageInfo{hasNextPage},edges{cursor node{legacyResourceId images(maxHeight: 360, maxWidth: 360, first: 1) {edges {node {id, transformedSrc}}}}}}}"}');
+        exit('{"query":"{products(first:100){pageInfo{hasNextPage},edges{cursor node{legacyResourceId media(first:1) { edges { node { mediaContentType ... on MediaImage { id image { url(transform: {maxHeight: 360, maxWidth: 360})}}}}}}}}}"}');
     end;
 
     /// <summary>

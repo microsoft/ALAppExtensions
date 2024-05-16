@@ -1,8 +1,5 @@
 namespace Microsoft.Integration.Shopify;
 
-#if not CLEAN22
-using System.IO;
-#endif
 using Microsoft.Inventory.Item;
 using Microsoft.Sales.Customer;
 using Microsoft.Sales.Document;
@@ -46,20 +43,6 @@ page 30113 "Shpfy Order"
                     Editable = false;
                     ToolTip = 'Specifies the risk level from the Shopify order.';
                 }
-#if not CLEAN22
-                field(TemplateCodeField; Rec."Customer Template Code")
-                {
-                    ApplicationArea = All;
-                    Caption = 'Customer Template Code';
-                    Lookup = true;
-                    TableRelation = "Config. Template Header".Code where("Table Id" = const(18));
-                    ToolTip = 'Specifies the code for the template to create a new customer.';
-                    ObsoleteReason = 'Replaced by Customer Templ. Code';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    Visible = not NewTemplatesEnabled;
-                }
-#endif
                 field(TemplCodeField; Rec."Customer Templ. Code")
                 {
                     ApplicationArea = All;
@@ -67,9 +50,6 @@ page 30113 "Shpfy Order"
                     Lookup = true;
                     TableRelation = "Customer Templ.".Code;
                     ToolTip = 'Specifies the code for the template to create a new customer.';
-#if not CLEAN22
-                    Visible = NewTemplatesEnabled;
-#endif
                 }
                 field(SellToCustomerNo; Rec."Sell-to Customer No.")
                 {
@@ -686,11 +666,27 @@ page 30113 "Shpfy Order"
                             ProcessShopifyOrders.ClearProcessedDocuments(Rec);
                     end;
                 }
+                action(MarkConflictAsResolved)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Mark Conflict as Resolved';
+                    Enabled = Rec."Has Order State Error";
+                    Image = Approval;
+                    ToolTip = 'Mark the conflict as resolved.';
+
+                    trigger OnAction()
+                    var
+                        ImportOrder: Codeunit "Shpfy Import Order";
+                    begin
+                        ImportOrder.MarkOrderConflictAsResolved(Rec);
+                        Rec.Modify();
+                    end;
+                }
                 action(ForceSync)
                 {
                     ApplicationArea = All;
                     Image = Refresh;
-                    Caption = 'Synch order from Shopify';
+                    Caption = 'Sync order from Shopify';
                     ToolTip = 'Update your Shopify Order with the current data from Shopify.';
 
                     trigger OnAction()
@@ -902,8 +898,12 @@ page 30113 "Shpfy Order"
             action(Disputes)
             {
                 ApplicationArea = All;
-                Caption = 'Show Related Disputes';
-                Image = Entry;
+                Caption = 'Disputes';
+                Image = OrderList;
+                Promoted = true;
+                PromotedCategory = Category4;
+                PromotedIsBig = true;
+                PromotedOnly = true;
                 ToolTip = 'View the disputes related to order of the selected transaction.';
 
                 trigger OnAction();
@@ -927,9 +927,6 @@ page 30113 "Shpfy Order"
         OrderCancelFailedErr: Label 'The order could not be cancelled. You can see the error message from Shopify Log Entries.';
         LogEntriesLbl: Label 'Log Entries';
         WorkDescription: Text;
-#if not CLEAN22
-        NewTemplatesEnabled: Boolean;
-#endif
 
     trigger OnAfterGetRecord()
     begin
@@ -937,14 +934,7 @@ page 30113 "Shpfy Order"
     end;
 
     trigger OnOpenPage()
-#if not CLEAN22
-    var
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
     begin
-#if not CLEAN22
-        NewTemplatesEnabled := ShpfyTemplates.NewTemplatesEnabled();
-#endif
     end;
 }
 

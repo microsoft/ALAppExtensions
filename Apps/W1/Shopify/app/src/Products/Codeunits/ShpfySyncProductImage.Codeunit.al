@@ -70,6 +70,7 @@ codeunit 30184 "Shpfy Sync Product Image"
         VariantApi: Codeunit "Shpfy Variant API";
         ImageId: BigInteger;
         Id: BigInteger;
+        UpdatedItems: List of [Guid];
         ProductImages: Dictionary of [BigInteger, Dictionary of [BigInteger, Text]];
         ProductImageData: Dictionary of [BigInteger, Text];
         VariantImages: Dictionary of [BigInteger, Dictionary of [BigInteger, Text]];
@@ -83,6 +84,7 @@ codeunit 30184 "Shpfy Sync Product Image"
                 foreach ImageId in ProductImageData.Keys do
                     if ImageId <> ShopifyProduct."Image Id" then
                         if UpdateItemImage(Item, ProductImageData.Get(ImageId)) then begin
+                            UpdatedItems.Add(Item.SystemId);
                             ShopifyProduct."Image Id" := ImageId;
                             ShopifyProduct.Modify();
                         end;
@@ -104,11 +106,14 @@ codeunit 30184 "Shpfy Sync Product Image"
                     if ProductImages.ContainsKey(ShopifyVariant."Product Id") then begin
                         ProductImageData := ProductImages.Get(ShopifyVariant."Product Id");
                         foreach ImageId in ProductImageData.Keys do
-                            if ImageId <> ShopifyProduct."Image Id" then
-                                UpdateItemImage(Item, ProductImageData.Get(ImageId));
+                            if ImageId <> ShopifyVariant."Image Id" then
+                                if not UpdatedItems.Contains(Item.SystemId) then
+                                    if UpdateItemImage(Item, ProductImageData.Get(ImageId)) then begin
+                                        ShopifyVariant."Image Id" := ImageId;
+                                        ShopifyVariant.Modify();
+                                    end;
                     end;
             end;
-
     end;
 
     /// <summary> 
@@ -139,6 +144,7 @@ codeunit 30184 "Shpfy Sync Product Image"
             Item.Picture.ImportStream(InStream, Item.Description);
             Item.Modify(true);
             ProductEvents.OnAfterUpdateItemPicture(Item, ImageUrl, InStream);
+            exit(true);
         end;
     end;
 

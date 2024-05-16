@@ -21,12 +21,12 @@ codeunit 6133 "E-Document Background Jobs"
         EDocument.Modify();
     end;
 
-    procedure GetEDocumentResponse()
+    procedure ScheduleGetResponseJob()
     begin
-        GetEDocumentResponse(true);
+        ScheduleGetResponseJob(true);
     end;
 
-    procedure GetEDocumentResponse(SkipSchedulingIfJobExists: Boolean)
+    procedure ScheduleGetResponseJob(SkipSchedulingIfJobExists: Boolean)
     var
         BlankRecord: RecordId;
     begin
