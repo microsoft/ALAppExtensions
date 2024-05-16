@@ -249,6 +249,10 @@ table 4402 "EXR Trial Balance Buffer"
         {
             Caption = 'All Zero';
         }
+        field(201; "Business Unit Code"; Code[20])
+        {
+            Caption = 'Business Unit Code';
+        }
         field(1000; "Account Type"; Enum "G/L Account Type")
         {
             CalcFormula = lookup("G/L Account"."Account Type" where("No." = field("G/L Account No.")));
@@ -259,7 +263,7 @@ table 4402 "EXR Trial Balance Buffer"
     }
     keys
     {
-        key(PK; "G/L Account No.", "Dimension 1 Code", "Dimension 2 Code", "Period Start")
+        key(PK; "G/L Account No.", "Dimension 1 Code", "Dimension 2 Code", "Business Unit Code", "Period Start")
         {
             Clustered = true;
         }

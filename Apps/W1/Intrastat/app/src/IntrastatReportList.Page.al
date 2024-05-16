@@ -64,21 +64,4 @@ page 4811 "Intrastat Report List"
             }
         }
     }
-
-#if not CLEAN22
-    trigger OnOpenPage()
-    var
-        IntrastatReportMgt: Codeunit IntrastatReportManagement;
-        ApplicationAreaMgmt: Codeunit "Application Area Mgmt.";
-    begin
-        if not IntrastatReportMgt.IsFeatureEnabled() then begin
-            IntrastatReportMgt.ShowNotEnabledMessage(CurrPage.Caption);
-            if ApplicationAreaMgmt.IsBasicCountryEnabled('EU') then
-                Page.Run(Page::"Intrastat Journal")
-            else
-                Page.Run(Page::"Feature Management");
-            Error('');
-        end;
-    end;
-#endif
 }

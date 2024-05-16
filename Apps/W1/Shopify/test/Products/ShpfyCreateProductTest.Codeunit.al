@@ -19,9 +19,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU empty.
         // [SCENARIO] Don't copy the extended text of the item.
@@ -36,14 +33,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            Item := ProductInitTest.CreateItem(Shop."Item Template Code", Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2))
-        else
-            Item := ProductInitTest.CreateItem(Shop."Item Templ. Code", Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
-#else
         Item := ProductInitTest.CreateItem(Shop."Item Templ. Code", Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
-#endif
         Item.SetRecFilter();
 
         // [WHEN] Invoke CreateProduct.CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant)
@@ -79,9 +69,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU empty.
@@ -97,14 +84,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -141,9 +121,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
         InitializeTest: Codeunit "Shpfy Initialize Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU empty.
@@ -159,14 +136,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -203,9 +173,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU empty.
@@ -221,14 +188,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -266,9 +226,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with variants from a Shopify Product with the SKU empty.
@@ -284,14 +241,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -345,9 +295,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with variants from a Shopify Product with the SKU empty.
@@ -363,14 +310,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -424,9 +364,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
         InitializeTest: Codeunit "Shpfy Initialize Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with variants from a Shopify Product with the SKU empty.
@@ -442,14 +379,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -503,9 +433,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with variants from a Shopify Product with the SKU empty.
@@ -521,14 +448,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -581,9 +501,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU mapped to Item No.
@@ -599,14 +516,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -643,9 +553,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU mapped to Item No.
@@ -661,14 +568,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -705,9 +605,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU mapped to Item No.
@@ -723,14 +620,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -767,9 +657,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU mapped to Item No.
@@ -785,14 +672,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -830,9 +710,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with variants from a Shopify Product with the SKU mapped to Item No.
@@ -848,14 +725,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -909,9 +779,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with variants from a Shopify Product with the SKU mapped to Item No.
@@ -927,14 +794,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -988,9 +848,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with variants from a Shopify Product with the SKU mapped to Item No.
@@ -1006,14 +863,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -1067,9 +917,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with variants from a Shopify Product with the SKU mapped to Item No.
@@ -1085,14 +932,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -1145,9 +985,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU mapped to Variant Code.
@@ -1163,14 +1000,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -1207,9 +1037,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU mapped to Variant Code.
@@ -1225,14 +1052,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -1269,9 +1089,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU mapped to Variant Code.
@@ -1287,14 +1104,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -1331,9 +1141,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU mapped to Variant Code.
@@ -1349,14 +1156,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -1394,9 +1194,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with variants from a Shopify Product with the SKU mapped to Variant Code.
@@ -1412,14 +1209,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -1473,9 +1263,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with variants from a Shopify Product with the SKU mapped to Variant Code.
@@ -1491,14 +1278,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -1552,9 +1332,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with variants from a Shopify Product with the SKU mapped to Variant Code.
@@ -1570,14 +1347,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -1631,9 +1401,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with variants from a Shopify Product with the SKU mapped to Variant Code.
@@ -1649,14 +1416,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -1709,9 +1469,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU mapped to Item No. + Variant Code.
@@ -1727,14 +1484,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -1771,9 +1521,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU mapped to Item No. + Variant Code.
@@ -1789,14 +1536,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -1833,9 +1573,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU mapped to Item No. + Variant Code.
@@ -1851,14 +1588,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -1895,9 +1625,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU mapped to Item No. + Variant Code.
@@ -1913,14 +1640,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -1958,9 +1678,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with variants from a Shopify Product with the SKU mapped to Item No. + Variant Code.
@@ -1976,14 +1693,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -2037,9 +1747,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with variants from a Shopify Product with the SKU mapped to Item No. + Variant Code.
@@ -2055,14 +1762,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -2116,9 +1816,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with variants from a Shopify Product with the SKU mapped to Item No. + Variant Code.
@@ -2134,14 +1831,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -2195,9 +1885,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with variants from a Shopify Product with the SKU mapped to Item No. + Variant Code.
@@ -2213,14 +1900,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -2273,9 +1953,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU mapped to Vendor Item No.
@@ -2291,14 +1968,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -2335,9 +2005,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU mapped to Vendor Item No.
@@ -2353,14 +2020,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -2397,9 +2057,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU mapped to Vendor Item No.
@@ -2415,14 +2072,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -2459,9 +2109,6 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct: Codeunit "Shpfy Create Product";
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
     begin
         // [SCENARIO] Create a Item with no variants from a Shopify Product with the SKU mapped to Vendor Item No.
@@ -2477,14 +2124,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -2523,9 +2163,6 @@ codeunit 139601 "Shpfy Create Product Test"
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
         ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
         VendorItemNo: Text;
     begin
@@ -2542,14 +2179,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -2605,9 +2235,6 @@ codeunit 139601 "Shpfy Create Product Test"
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
         ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
         VendorItemNo: Text;
     begin
@@ -2624,14 +2251,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -2687,9 +2307,6 @@ codeunit 139601 "Shpfy Create Product Test"
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
         ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
         VendorItemNo: Text;
     begin
@@ -2706,14 +2323,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -2769,9 +2379,6 @@ codeunit 139601 "Shpfy Create Product Test"
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
         ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
         VendorItemNo: Text;
     begin
@@ -2788,14 +2395,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -2850,9 +2450,6 @@ codeunit 139601 "Shpfy Create Product Test"
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
         ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
         BarCode: Text;
     begin
@@ -2869,14 +2466,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -2915,9 +2505,6 @@ codeunit 139601 "Shpfy Create Product Test"
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
         ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
         BarCode: Text;
     begin
@@ -2934,14 +2521,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -2980,9 +2560,6 @@ codeunit 139601 "Shpfy Create Product Test"
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
         ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
         BarCode: Text;
     begin
@@ -2999,14 +2576,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -3045,9 +2615,6 @@ codeunit 139601 "Shpfy Create Product Test"
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
         ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
         BarCode: Text;
     begin
@@ -3064,14 +2631,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2));
         Item.SetRecFilter();
 
@@ -3111,9 +2671,6 @@ codeunit 139601 "Shpfy Create Product Test"
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
         ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
         BarCode: Text;
     begin
@@ -3130,14 +2687,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -3193,9 +2743,6 @@ codeunit 139601 "Shpfy Create Product Test"
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
         ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
         BarCode: Text;
     begin
@@ -3212,14 +2759,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -3275,9 +2815,6 @@ codeunit 139601 "Shpfy Create Product Test"
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
         ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
         BarCode: Text;
     begin
@@ -3294,14 +2831,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 
@@ -3357,9 +2887,6 @@ codeunit 139601 "Shpfy Create Product Test"
         InitializeTest: Codeunit "Shpfy Initialize Test";
         ProductInitTest: Codeunit "Shpfy Product Init Test";
         ItemReferenceMgt: Codeunit "Shpfy Item Reference Mgt.";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         ItemTemplateCode: Code[20];
         BarCode: Text;
     begin
@@ -3376,14 +2903,7 @@ codeunit 139601 "Shpfy Create Product Test"
         CreateProduct.SetShop(Shop);
 
         // [GIVEN] a Item record
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            ItemTemplateCode := Shop."Item Template Code"
-        else
-            ItemTemplateCode := Shop."Item Templ. Code";
-#else
         ItemTemplateCode := Shop."Item Templ. Code";
-#endif
         Item := ProductInitTest.CreateItem(ItemTemplateCode, Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 1000, 2), true);
         Item.SetRecFilter();
 

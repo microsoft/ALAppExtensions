@@ -342,6 +342,113 @@ codeunit 148017 "Posting Restrictions Tests"
         EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
     end;
 
+    [Test]
+    procedure PostToGLInProdSaaSWhenEvaluationCompanyCVRNotSpecified()
+    var
+        GeneralJournalLine: Record "Gen. Journal Line";
+    begin
+        // [SCENARIO 504365] Stan can post to general ledger in production SaaS environment in Evaluation company when CVR number is not specified.
+        Initialize();
+
+        // [GIVEN] SaaS environment
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
+
+        // [GIVEN] Production environment
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
+
+        // [GIVEN] Current company is evaluation company
+        UpdateEvaluationOnCompany(true);
+
+        // [GIVEN] CVR number is not specified
+        SetCVRNumberInCompanyInformation('');
+
+        LibraryLowerPermissions.SetJournalsPost();
+        LibraryLowerPermissions.AddO365Setup();
+
+        // [WHEN] Stan posts to general ledger
+        PostGeneralJournal(GeneralJournalLine);
+
+        // [THEN] General ledger entries have been created
+        VerifyGLEntry(GeneralJournalLine."Posting Date", GeneralJournalLine."Document No.");
+
+        // restore environment
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
+        UpdateEvaluationOnCompany(false);
+    end;
+
+    [Test]
+    procedure PostSalesInvInProdSaaSWhenEvaluationCompanyCVRNotSpecified()
+    var
+        SalesHeader: Record "Sales Header";
+        InvNo: Code[20];
+    begin
+        // [FEATURE] [Sales]
+        // [SCENARIO 504365] Stan can post sales invoice in production SaaS environment in Evaluation company when CVR number is not specified.
+        Initialize();
+
+        // [GIVEN] SaaS environment
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
+
+        // [GIVEN] Production environment
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
+
+        // [GIVEN] CVR number is not specified
+        SetCVRNumberInCompanyInformation('');
+
+        // [GIVEN] Current company is evaluation company
+        UpdateEvaluationOnCompany(true);
+
+        LibraryLowerPermissions.SetSalesDocsPost();
+        LibraryLowerPermissions.AddO365Setup();
+
+        // [WHEN] Stan posts to general ledger
+        InvNo := PostSalesInvoice(SalesHeader);
+
+        // [THEN] General ledger entries have been created
+        VerifyGLEntry(SalesHeader."Posting Date", InvNo);
+
+        // restore environment
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
+        UpdateEvaluationOnCompany(false);
+    end;
+
+    [Test]
+    procedure PostPurchInvInProdSaaSWhenEvaluationCompanyCVRNotSpecified()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        InvNo: Code[20];
+    begin
+        // [FEATURE] [Purchase]
+        // [SCENARIO 504365] Stan can post purchase invoice in Production SaaS environment in Evaluation company when the CVR number is not specified.
+        Initialize();
+
+        // [GIVEN] SaaS environment
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(true);
+
+        // [GIVEN] Production environment
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
+
+        // [GIVEN] CVR number is not specified
+        SetCVRNumberInCompanyInformation('');
+
+        // [GIVEN] Current company is evaluation company
+        UpdateEvaluationOnCompany(true);
+
+        LibraryLowerPermissions.SetPurchDocsPost();
+        LibraryLowerPermissions.AddO365Setup();
+        // [WHEN] Stan posts a purchase invoice
+        InvNo := PostPurchaseInvoice(PurchaseHeader);
+        // [THEN] General ledger entries have been created
+        VerifyGLEntry(PurchaseHeader."Posting Date", InvNo);
+
+        // restore environment
+        EnvironmentInfoTestLibrary.SetTestabilitySoftwareAsAService(false);
+        EnvironmentInfoTestLibrary.SetTestabilitySandbox(false);
+        UpdateEvaluationOnCompany(false);
+    end;
+
     local procedure Initialize()
     begin
         LibrarySetupStorage.Restore();
@@ -362,6 +469,15 @@ codeunit 148017 "Posting Restrictions Tests"
         CompanyInformation.Get();
         CompanyInformation."Registration No." := CVRNumber;
         CompanyInformation.Modify();
+    end;
+
+    local procedure UpdateEvaluationOnCompany(IsEvaluation: Boolean)
+    var
+        Company: Record Company;
+    begin
+        Company.Get(CompanyName());
+        Company."Evaluation Company" := IsEvaluation;
+        Company.Modify();
     end;
 
     local procedure PostGeneralJournal()

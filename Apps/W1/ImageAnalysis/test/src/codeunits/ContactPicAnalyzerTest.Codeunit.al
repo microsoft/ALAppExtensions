@@ -1,3 +1,4 @@
+#if not CLEAN25
 namespace Microsoft.Utility.ImageAnalysis;
 
 using Microsoft.CRM.Contact;
@@ -13,6 +14,9 @@ codeunit 139593 "Contact Pic Analyzer Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;
+    ObsoleteReason = 'Image analyzer for contacts is being removed.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '25.0';
 
     var
         Assert: Codeunit Assert;
@@ -179,3 +183,4 @@ codeunit 139593 "Contact Pic Analyzer Test"
         exit(true);
     end;
 }
+#endif

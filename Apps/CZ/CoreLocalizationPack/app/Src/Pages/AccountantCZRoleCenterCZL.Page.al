@@ -21,7 +21,6 @@ using Microsoft.CostAccounting.Reports;
 using Microsoft.CRM.Contact;
 using Microsoft.EServices.EDocument;
 using Microsoft.Finance;
-using Microsoft.Finance.VAT.Registration;
 using Microsoft.Finance.Analysis;
 using Microsoft.Finance.Consolidation;
 using Microsoft.Finance.Currency;
@@ -34,7 +33,9 @@ using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Reports;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Finance.VAT.Registration;
 using Microsoft.Finance.VAT.Reporting;
 using Microsoft.FixedAssets.Depreciation;
 using Microsoft.FixedAssets.FixedAsset;
@@ -260,19 +261,6 @@ page 31210 "Accountant CZ Role Center CZL"
                 RunObject = page "G/L Budget Names";
                 ToolTip = 'View or edit estimated amounts for a range of accounting periods.';
             }
-#if not CLEAN22
-            action(Intrastat)
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Intrastat';
-                RunObject = page "Intrastat Jnl. Batches";
-                ToolTip = 'Report your trade with other EU countries/regions for Intrastat reporting.';
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-            }
-#endif
             action(Items)
             {
                 ApplicationArea = Basic, Suite;
@@ -412,19 +400,6 @@ page 31210 "Accountant CZ Role Center CZL"
                     ToolTip = 'Post intercompany transactions. IC general journal lines must contain either an IC partner account or a customer or vendor account that has been assigned an intercompany partner code.';
                     Visible = false;
                 }
-#if not CLEAN22
-                action("Intrastat Journals")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Intrastat Journals';
-                    Image = Report;
-                    RunObject = page "Intrastat Jnl. Batches";
-                    ToolTip = 'Summarize the value of your purchases and sales with business partners in the EU for statistical purposes and prepare to send it to the relevant authority.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-                }
-#endif
                 action("Posted General Journals")
                 {
                     ApplicationArea = Basic, Suite;
@@ -826,20 +801,6 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Post Inventory Cost to G/L";
                     ToolTip = 'Record the quantity and value changes to the inventory in the item ledger entries and the value entries when you post inventory transactions, such as sales shipments or purchase receipts.';
                 }
-#if not CLEAN22
-                action("Intrastat J1ournal")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Intrastat Journal';
-                    Image = Journal;
-                    RunObject = page "Intrastat Jnl. Batches";
-                    ToolTip = 'Summarize the value of your purchases and sales with business partners in the EU for statistical purposes and prepare to send it to the relevant authority.';
-                    Visible = false;
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-                }
-#endif
                 action("Create Reminders")
                 {
                     ApplicationArea = Basic, Suite;
@@ -936,6 +897,22 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Calc. and Post VAT Settlement";
                     Ellipsis = true;
                     ToolTip = 'Close open VAT entries and transfers purchase and sales VAT amounts to the VAT settlement account. For every VAT posting group, the batch job finds all the VAT entries in the VAT Entry table that are included in the filters in the definition window.';
+                }
+                action("Non-Deductible VAT Setup CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Non-Deductible VAT Setup';
+                    Image = VATPostingSetup;
+                    RunObject = page "Non-Deductible VAT Setup CZL";
+                    ToolTip = 'Set up VAT coefficient correction.';
+                }
+                action("VAT Coeff. Correction CZL")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'VAT Coefficient Correction';
+                    Image = AdjustVATExemption;
+                    RunObject = report "VAT Coeff. Correction CZL";
+                    ToolTip = 'The report recalculate the value of non-deductible VAT according to settlement coeffiecient on VAT entries.';
                 }
             }
             group(History)
@@ -1528,33 +1505,6 @@ page 31210 "Accountant CZ Role Center CZL"
                     RunObject = report "Retained Earnings Statement";
                     ToolTip = 'View a report that shows your company''s changes in retained earnings for a specified period by reconciling the beginning and ending retained earnings for the period, using information such as net income from the other financial statements.';
                 }
-#if not CLEAN22
-                action("Intrastat - Checklist")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Intrastat - Checklist';
-                    Ellipsis = true;
-                    Image = Report;
-                    RunObject = report "Intrastat - Checklist";
-                    ToolTip = 'View a checklist that you can use to find possible errors before printing and also as documentation for what is printed. You can use the report to check the Intrastat journal before you use the Intrastat - Make Disk Tax Auth batch job.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-                }
-                action("Intrastat - Form")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Intrastat - Form';
-                    Ellipsis = true;
-                    Image = Report;
-                    RunObject = report "Intrastat - Form";
-                    ToolTip = 'View all the information that must be transferred to the printed Intrastat form.';
-                    Visible = false;
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-                }
-#endif
                 action("Cost Accounting P/L Statement")
                 {
                     ApplicationArea = Basic, Suite;

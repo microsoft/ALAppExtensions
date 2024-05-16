@@ -6,9 +6,6 @@ namespace Microsoft.Inventory.Intrastat;
 
 using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.FixedAssets.Ledger;
-#if not CLEAN24
-using Microsoft.Foundation.Company;
-#endif
 using Microsoft.Foundation.Shipping;
 using Microsoft.Foundation.UOM;
 using Microsoft.Inventory.Item;
@@ -43,26 +40,10 @@ codeunit 31302 IntrastatReportManagementCZ
     #region Init Setup
     [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeInitSetup', '', true, true)]
     local procedure OnBeforeInitSetup(var IntrastatReportSetup: Record "Intrastat Report Setup"; var IsHandled: Boolean)
-#if not CLEAN22
-    var
-        StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
-#endif
     begin
         IsHandled := true;
 
         CreateDefaultDataExchangeDef();
-#if not CLEAN22
-#pragma warning disable AL0432
-        if StatutoryReportingSetupCZL.Get() then begin
-            IntrastatReportSetup."No Item Charges in Int. CZ" := StatutoryReportingSetupCZL."No Item Charges in Intrastat";
-            IntrastatReportSetup."Transaction Type Mandatory CZ" := StatutoryReportingSetupCZL."Transaction Type Mandatory";
-            IntrastatReportSetup."Transaction Spec. Mandatory CZ" := StatutoryReportingSetupCZL."Transaction Spec. Mandatory";
-            IntrastatReportSetup."Transport Method Mandatory CZ" := StatutoryReportingSetupCZL."Transport Method Mandatory";
-            IntrastatReportSetup."Shipment Method Mandatory CZ" := StatutoryReportingSetupCZL."Shipment Method Mandatory";
-            IntrastatReportSetup."Intrastat Rounding Type CZ" := Enum::"Intrastat Rounding Type CZ".FromInteger(StatutoryReportingSetupCZL."Intrastat Rounding Type");
-        end;
-#pragma warning restore AL0432
-#endif
 
         IntrastatReportSetup."Report Shipments" := true;
         IntrastatReportSetup."Report Receipts" := true;
@@ -279,17 +260,17 @@ codeunit 31302 IntrastatReportManagementCZ
         ItemJnlLine."Physical Transfer CZ" := PurchLine."Physical Transfer CZ";
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromServHeader', '', false, false)]
-    local procedure CopyFieldsOnAfterCopyItemJnlLineFromServHeader(var ItemJnlLine: Record "Item Journal Line"; ServHeader: Record "Service Header")
+    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterCopyToItemJnlLine', '', false, false)]
+    local procedure CopyFieldsOnAfterCopyItemJnlLineFromServHeader(var ItemJournalLine: Record "Item Journal Line"; ServiceHeader: Record "Service Header")
     begin
-        ItemJnlLine."Physical Transfer CZ" := ServHeader."Physical Transfer CZ";
+        ItemJournalLine."Physical Transfer CZ" := ServiceHeader."Physical Transfer CZ";
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromServLine', '', false, false)]
-    local procedure CopyFieldsOnAfterCopyItemJnlLineFromServLine(var ItemJnlLine: Record "Item Journal Line"; ServLine: Record "Service Line")
+    [EventSubscriber(ObjectType::Table, Database::"Service Line", 'OnAfterCopyToItemJnlLine', '', false, false)]
+    local procedure CopyFieldsOnAfterCopyItemJnlLineFromServLine(var ItemJournalLine: Record "Item Journal Line"; ServiceLine: Record "Service Line")
     begin
-        ItemJnlLine."Statistic Indication CZ" := ServLine."Statistic Indication CZ";
-        ItemJnlLine."Physical Transfer CZ" := ServLine."Physical Transfer CZ";
+        ItemJournalLine."Statistic Indication CZ" := ServiceLine."Statistic Indication CZ";
+        ItemJournalLine."Physical Transfer CZ" := ServiceLine."Physical Transfer CZ";
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Receipt", 'OnBeforePostItemJournalLine', '', false, false)]
@@ -304,16 +285,16 @@ codeunit 31302 IntrastatReportManagementCZ
         ItemJournalLine."Statistic Indication CZ" := TransferLine."Statistic Indication CZ";
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromServShptLine', '', false, false)]
-    local procedure CopyFieldsOnAfterCopyItemJnlLineFromServShptLine(var ItemJnlLine: Record "Item Journal Line"; ServShptLine: Record "Service Shipment Line")
+    [EventSubscriber(ObjectType::Table, Database::"Service Shipment Line", 'OnAfterCopyToItemJnlLine', '', false, false)]
+    local procedure CopyFieldsOnAfterCopyItemJnlLineFromServShptLine(var ItemJournalLine: Record "Item Journal Line"; ServiceShipmentLine: Record "Service Shipment Line")
     begin
-        ItemJnlLine."Statistic Indication CZ" := ServShptLine."Statistic Indication CZ";
+        ItemJournalLine."Statistic Indication CZ" := ServiceShipmentLine."Statistic Indication CZ";
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Item Journal Line", 'OnAfterCopyItemJnlLineFromServShptLineUndo', '', false, false)]
-    local procedure CopyFieldsOnAfterCopyItemJnlLineFromServShptLineUndo(var ItemJnlLine: Record "Item Journal Line"; ServShptLine: Record "Service Shipment Line")
+    [EventSubscriber(ObjectType::Table, Database::"Service Shipment Line", 'OnAfterCopyToItemJnlLineUndo', '', false, false)]
+    local procedure CopyFieldsOnAfterCopyItemJnlLineFromServShptLineUndo(var ItemJournalLine: Record "Item Journal Line"; ServiceShipmentLine: Record "Service Shipment Line")
     begin
-        ItemJnlLine."Statistic Indication CZ" := ServShptLine."Statistic Indication CZ";
+        ItemJournalLine."Statistic Indication CZ" := ServiceShipmentLine."Statistic Indication CZ";
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Job Transfer Line", 'OnAfterFromPlanningSalesLineToJnlLine', '', false, false)]
@@ -1013,11 +994,6 @@ codeunit 31302 IntrastatReportManagementCZ
     local procedure CopyPhysicalTransferOnBeforePurchCrMemoHdrModify(var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; PurchCrMemoHdrRec: Record "Purch. Cr. Memo Hdr.")
     begin
         PurchCrMemoHdr."Physical Transfer CZ" := PurchCrMemoHdrRec."Physical Transfer CZ";
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchCrMemoHdr."Physical Transfer CZL" := PurchCrMemoHdrRec."Physical Transfer CZ";
-#pragma warning restore AL0432
-#endif
         PurchCrMemoHdr."Transaction Type" :=
             GetDefaultTransactionType(
                 GetVendorBasedOnSetup(PurchCrMemoHdrRec."Buy-from Vendor No.", PurchCrMemoHdrRec."Pay-to Vendor No."),
@@ -1028,11 +1004,6 @@ codeunit 31302 IntrastatReportManagementCZ
     local procedure CopyPhysicalTransferOnBeforeReturnReceiptHeaderModify(var ReturnReceiptHeader: Record "Return Receipt Header"; ReturnReceiptHeaderRec: Record "Return Receipt Header")
     begin
         ReturnReceiptHeader."Physical Transfer CZ" := ReturnReceiptHeaderRec."Physical Transfer CZ";
-#if not CLEAN22
-#pragma warning disable AL0432
-        ReturnReceiptHeader."Physical Transfer CZL" := ReturnReceiptHeaderRec."Physical Transfer CZ";
-#pragma warning restore AL0432
-#endif
         ReturnReceiptHeader."Transaction Type" :=
             GetDefaultTransactionType(
                 GetCustomerBasedOnSetup(ReturnReceiptHeaderRec."Sell-to Customer No.", ReturnReceiptHeaderRec."Bill-to Customer No."),
@@ -1043,11 +1014,6 @@ codeunit 31302 IntrastatReportManagementCZ
     local procedure CopyPhysicalTransferOnBeforeSalesCrMemoHeaderModify(var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; FromSalesCrMemoHeader: Record "Sales Cr.Memo Header")
     begin
         SalesCrMemoHeader."Physical Transfer CZ" := FromSalesCrMemoHeader."Physical Transfer CZ";
-#if not CLEAN22
-#pragma warning disable AL0432
-        SalesCrMemoHeader."Physical Transfer CZL" := FromSalesCrMemoHeader."Physical Transfer CZ";
-#pragma warning restore AL0432
-#endif
         SalesCrMemoHeader."Transaction Type" :=
             GetDefaultTransactionType(
                 GetCustomerBasedOnSetup(FromSalesCrMemoHeader."Sell-to Customer No.", FromSalesCrMemoHeader."Bill-to Customer No."),
@@ -1058,11 +1024,6 @@ codeunit 31302 IntrastatReportManagementCZ
     local procedure CopyPhysicalTransferOnBeforeReturnShipmentHeaderModify(var ReturnShipmentHeader: Record "Return Shipment Header"; ReturnShipmentHeaderRec: Record "Return Shipment Header")
     begin
         ReturnShipmentHeader."Physical Transfer CZ" := ReturnShipmentHeaderRec."Physical Transfer CZ";
-#if not CLEAN22
-#pragma warning disable AL0432
-        ReturnShipmentHeader."Physical Transfer CZL" := ReturnShipmentHeaderRec."Physical Transfer CZ";
-#pragma warning restore AL0432
-#endif
         ReturnShipmentHeader."Transaction Type" :=
             GetDefaultTransactionType(
                 GetVendorBasedOnSetup(ReturnShipmentHeaderRec."Buy-from Vendor No.", ReturnShipmentHeaderRec."Pay-to Vendor No."),
@@ -1097,11 +1058,6 @@ codeunit 31302 IntrastatReportManagementCZ
     local procedure CopyPhysicalTransferOnRunOnBeforeItemLedgEntryModify(var ItemLedgerEntry: Record "Item Ledger Entry"; FromItemLedgerEntry: Record "Item Ledger Entry")
     begin
         ItemLedgerEntry."Physical Transfer CZ" := FromItemLedgerEntry."Physical Transfer CZ";
-#if not CLEAN22
-#pragma warning disable AL0432
-        ItemLedgerEntry."Physical Transfer CZL" := FromItemLedgerEntry."Physical Transfer CZ";
-#pragma warning restore AL0432
-#endif
         ItemLedgerEntry."Transaction Type" := FromItemLedgerEntry."Transaction Type";
     end;
 
@@ -1116,11 +1072,6 @@ codeunit 31302 IntrastatReportManagementCZ
         if ItemLedgerEntry.FindSet() then
             repeat
                 ItemLedgerEntry."Physical Transfer CZ" := PhysicalTransfer;
-#if not CLEAN22
-#pragma warning disable AL0432
-                ItemLedgerEntry."Physical Transfer CZL" := PhysicalTransfer;
-#pragma warning restore AL0432
-#endif
                 case ItemLedgerEntry."Source Type" of
                     ItemLedgerEntry."Source Type"::Customer:
                         Partner := GetCustomerBasedOnSetup(ItemLedgerEntry."Source No.", ItemLedgerEntry."Invoice-to Source No. CZA");

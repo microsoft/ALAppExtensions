@@ -10,36 +10,6 @@ using Microsoft.Sales.Reports;
 
 pageextension 11769 "Item List CZL" extends "Item List"
 {
-#if not CLEAN22
-#pragma warning disable AL0432
-    layout
-    {
-        addafter("Tariff No.")
-        {
-            field("Statistic Indication CZL"; Rec."Statistic Indication CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Statistic Indication (Obsolete)';
-                ToolTip = 'Specifies the Statistic indication for Intrastat reporting purposes.';
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-            }
-            field("Specific Movement CZL"; Rec."Specific Movement CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Specific Movement (Obsolete)';
-                ToolTip = 'Specifies the Specific Movement for Intrastat reporting purposes.';
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-            }
-        }
-    }
-#pragma warning restore AL0432
-#endif
     actions
     {
         addafter("Inventory - Sales Back Orders")

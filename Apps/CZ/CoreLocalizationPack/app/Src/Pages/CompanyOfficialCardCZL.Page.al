@@ -13,7 +13,6 @@ page 11766 "Company Official Card CZL"
     Caption = 'Company Official Card';
     PageType = Card;
     SourceTable = "Company Official CZL";
-    PromotedActionCategories = 'New,Process,Report,Company Official,Navigate';
 
     layout
     {
@@ -183,11 +182,22 @@ page 11766 "Company Official Card CZL"
                 ApplicationArea = BasicHR;
                 SubPageLink = "No." = field("No.");
             }
+#if not CLEAN25
             part("Attached Documents"; "Document Attachment Factbox")
             {
+                ObsoleteTag = '25.0';
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The "Document Attachment FactBox" has been replaced by "Doc. Attachment List Factbox", which supports multiple files upload.';
                 ApplicationArea = All;
                 Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(11793), "No." = field("No.");
+                SubPageLink = "Table ID" = const(Database::"Company Official CZL"), "No." = field("No.");
+            }
+#endif
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
+            {
+                ApplicationArea = All;
+                Caption = 'Documents';
+                SubPageLink = "Table ID" = const(Database::"Company Official CZL"), "No." = field("No.");
             }
             systempart(Links; Links)
             {
@@ -214,9 +224,6 @@ page 11766 "Company Official Card CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Attachments';
                     Image = Attach;
-                    Promoted = true;
-                    PromotedCategory = Category4;
-                    PromotedOnly = true;
                     ToolTip = 'Add a file as an attachment. You can attach images as well as documents.';
 
                     trigger OnAction()
@@ -234,13 +241,32 @@ page 11766 "Company Official Card CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = '&Picture';
                     Image = Picture;
-                    Promoted = true;
-                    PromotedCategory = Category4;
-                    PromotedOnly = true;
                     RunObject = page "Company Official Picture CZL";
                     RunPageLink = "No." = field("No.");
                     ToolTip = 'View or add a picture of the employee or, for example, the company''s logo.';
                 }
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Report)
+            {
+                Caption = 'Report', Comment = 'Generated from the PromotedActionCategories property index 2.';
+            }
+            group(Category_Category4)
+            {
+                Caption = 'Company Official', Comment = 'Generated from the PromotedActionCategories property index 3.';
+
+                actionref(Attachments_Promoted; Attachments)
+                {
+                }
+                actionref("&Picture_Promoted"; "&Picture")
+                {
+                }
+            }
+            group(Category_Category5)
+            {
+                Caption = 'Navigate', Comment = 'Generated from the PromotedActionCategories property index 4.';
             }
         }
     }

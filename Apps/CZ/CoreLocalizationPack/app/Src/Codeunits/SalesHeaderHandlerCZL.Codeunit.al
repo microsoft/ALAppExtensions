@@ -6,61 +6,16 @@ namespace Microsoft.Sales.Document;
 
 using Microsoft.CRM.Contact;
 using Microsoft.Sales.Customer;
-#if not CLEAN22
-using Microsoft.Sales.Setup;
-#endif
 
 codeunit 11743 "Sales Header Handler CZL"
 {
-#if not CLEAN22
-    var
-        SalesReceivablesSetup: Record "Sales & Receivables Setup";
-#endif
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterInitRecord', '', false, false)]
     local procedure UpdateVatDateOnAfterInitRecord(var SalesHeader: Record "Sales Header")
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not SalesHeader.IsReplaceVATDateEnabled() then begin
-            SalesReceivablesSetup.Get();
-            case SalesReceivablesSetup."Default VAT Date CZL" of
-                SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date":
-                    SalesHeader."VAT Date CZL" := SalesHeader."Posting Date";
-                SalesReceivablesSetup."Default VAT Date CZL"::"Document Date":
-                    SalesHeader."VAT Date CZL" := SalesHeader."Document Date";
-                SalesReceivablesSetup."Default VAT Date CZL"::Blank:
-                    SalesHeader."VAT Date CZL" := 0D;
-            end;
-        end;
-#pragma warning restore AL0432
-#endif
         if SalesHeader.IsCreditDocType() then
             SalesHeader."Credit Memo Type CZL" := SalesHeader."Credit Memo Type CZL"::"Corrective Tax Document";
         SalesHeader.Validate("Credit Memo Type CZL");
     end;
-#if not CLEAN22
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeValidateEvent', 'Posting Date', false, false)]
-    local procedure UpdateVatDateOnBeforePostingDateValidate(var Rec: Record "Sales Header")
-    begin
-        if Rec.IsReplaceVATDateEnabled() then
-            exit;
-        SalesReceivablesSetup.Get();
-        if SalesReceivablesSetup."Default VAT Date CZL" = SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date" then
-            Rec.Validate("VAT Date CZL", Rec."Posting Date");
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeValidateEvent', 'Document Date', false, false)]
-    local procedure UpdateVatDateOnBeforeDocumentDateValidate(var Rec: Record "Sales Header")
-    begin
-        if Rec.IsReplaceVATDateEnabled() then
-            exit;
-        SalesReceivablesSetup.Get();
-        if SalesReceivablesSetup."Default VAT Date CZL" = SalesReceivablesSetup."Default VAT Date CZL"::"Document Date" then
-            Rec.Validate("VAT Date CZL", Rec."Document Date");
-    end;
-#pragma warning restore AL0432
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnUpdateBillToCustOnAfterSalesQuote', '', false, false)]
     local procedure UpdateRegNoOnUpdateBillToCustOnAfterSalesQuote(var SalesHeader: Record "Sales Header"; Contact: Record Contact)
@@ -85,14 +40,6 @@ codeunit 11743 "Sales Header Handler CZL"
     begin
         SalesHeader."Registration No. CZL" := SellToCustomer.GetRegistrationNoTrimmedCZL();
         SalesHeader."Tax Registration No. CZL" := SellToCustomer."Tax Registration No. CZL";
-#if not CLEAN22
-#pragma warning disable AL0432
-        if SellToCustomer."Transaction Type CZL" <> '' then
-            SalesHeader."Transaction Type" := SellToCustomer."Transaction Type CZL";
-        SalesHeader."Transaction Specification" := SellToCustomer."Transaction Specification CZL";
-        SalesHeader."Transport Method" := SellToCustomer."Transport Method CZL";
-#pragma warning restore AL0432
-#endif
         if SalesHeader.IsCreditDocType() then
             SalesHeader.Validate("Shipment Method Code", SellToCustomer."Shipment Method Code");
     end;
@@ -139,19 +86,6 @@ codeunit 11743 "Sales Header Handler CZL"
         SalesHeader."SWIFT Code CZL" := SourceSalesHeader."SWIFT Code CZL";
         SalesHeader."Transit No. CZL" := SourceSalesHeader."Transit No. CZL";
     end;
-#if not CLEAN22
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnUpdateSalesLineByChangedFieldName', '', false, false)]
-    local procedure UpdateSalesLineByChangedFieldName(SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line"; ChangedFieldName: Text[100]; ChangedFieldNo: Integer)
-    begin
-        case ChangedFieldNo of
-#pragma warning disable AL0432
-            SalesHeader.FieldNo("Physical Transfer CZL"):
-                if (SalesLine.Type = SalesLine.Type::Item) and (SalesLine."No." <> '') then
-                    SalesLine."Physical Transfer CZL" := SalesHeader."Physical Transfer CZL";
-#pragma warning restore AL0432
-        end;
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterUpdateShipToAddress', '', false, false)]
     local procedure UpdateVATCountryRegionCodeOnAfterUpdateShipToAddress(var SalesHeader: Record "Sales Header")

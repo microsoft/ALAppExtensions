@@ -49,9 +49,6 @@ page 31199 "User Setup Lines CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'List';
                 Image = List;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 ToolTip = 'Open the page for user setup lines.';
 
                 trigger OnAction()
@@ -61,6 +58,15 @@ page 31199 "User Setup Lines CZL"
                     UserSetupLineCZL.SetRange("User ID", Rec.GetRangeMin("User ID"));
                     Page.Run(Page::"User Setup Lines List CZL", UserSetupLineCZL);
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(List_Promoted; List)
+                {
+                }
             }
         }
     }

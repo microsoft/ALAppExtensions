@@ -21,42 +21,32 @@ codeunit 13668 "Elec. VAT Decl. Az. Key Vault"
 
     [NonDebuggable]
     procedure GetClientCertificateBase64FromAKV() ClientCertificateBase64: Text
+    var
+        AzureKeyVault: Codeunit "Azure Key Vault";
     begin
-        ClientCertificateBase64 := GetCertificateFromAzureKeyVault(AVKCompanyCertTok);
+        if not AzureKeyVault.GetAzureKeyVaultCertificate(AVKCompanyCertTok, ClientCertificateBase64) then begin
+            FeatureTelemetry.LogError('0000M7L', FeatureNameTxt, '', StrSubstNo(CannotGetCertFromKeyVaultErr, AVKCompanyCertTok));
+            Error(CannotGetCertFromKeyVaultErr, AVKCompanyCertTok);
+        end;
     end;
 
     [NonDebuggable]
     procedure GetEndpointURLForRequestType(RequestType: enum "Elec. VAT Decl. Request Type") EndpointText: Text
+    var
+        AzureKeyVault: Codeunit "Azure Key Vault";
+        KeyName: Text;
     begin
         case RequestType of
             RequestType::"Get VAT Return Periods":
-                exit(GetSecretFromAzureKeyVault(AKVGetPeriodsEndpointKeyTok));
+                KeyName := AKVGetPeriodsEndpointKeyTok;
             RequestType::"Submit VAT Return":
-                exit(GetSecretFromAzureKeyVault(AKVSubmitDraftEndpointKeyTok));
+                KeyName := AKVSubmitDraftEndpointKeyTok;
             RequestType::"Check VAT Return Status":
-                exit(GetSecretFromAzureKeyVault(AKVGetStatusEndpointKeyTok));
+                KeyName := AKVGetStatusEndpointKeyTok;
         end;
-    end;
-
-    [NonDebuggable]
-    local procedure GetSecretFromAzureKeyVault(KeyName: Text) Secret: Text
-    var
-        AzureKeyVault: Codeunit "Azure Key Vault";
-    begin
-        if not AzureKeyVault.GetAzureKeyVaultSecret(KeyName, Secret) then begin
+        if not AzureKeyVault.GetAzureKeyVaultSecret(KeyName, EndpointText) then begin
             FeatureTelemetry.LogError('0000M7K', FeatureNameTxt, '', StrSubstNo(CannotGetSecretFromKeyVaultErr, KeyName));
             Error(CannotGetSecretFromKeyVaultErr, KeyName);
-        end;
-    end;
-
-    [NonDebuggable]
-    local procedure GetCertificateFromAzureKeyVault(CertificateName: Text) Certificate: Text
-    var
-        AzureKeyVault: Codeunit "Azure Key Vault";
-    begin
-        if not AzureKeyVault.GetAzureKeyVaultCertificate(CertificateName, Certificate) then begin
-            FeatureTelemetry.LogError('0000M7L', FeatureNameTxt, '', StrSubstNo(CannotGetCertFromKeyVaultErr, CertificateName));
-            Error(CannotGetCertFromKeyVaultErr, CertificateName);
         end;
     end;
 }

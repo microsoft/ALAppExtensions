@@ -27,10 +27,9 @@ using System.Utilities;
 
 report 31187 "Sales Order Confirmation CZL"
 {
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/SalesOrderConfirmation.rdl';
     Caption = 'Sales Order Confirmation';
     PreviewMode = PrintLayout;
+    DefaultRenderingLayout = "SalesOrderConfirmation.rdl";
     WordMergeDataItem = "Sales Header";
 
     dataset
@@ -521,6 +520,25 @@ report 31187 "Sales Order Confirmation CZL"
             LogInteractionEnable := LogInteraction;
         end;
     }
+
+    rendering
+    {
+        layout("SalesOrderConfirmation.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/SalesOrderConfirmation.rdl';
+            Caption = 'Sales Order Confirmation (RDL)';
+            Summary = 'The Sales Order Confirmation (RDL) provides a detailed layout.';
+        }
+        layout("SalesOrderConfirmationEmail.docx")
+        {
+            Type = Word;
+            LayoutFile = './Src/Reports/SalesOrderConfirmationEmail.docx';
+            Caption = 'Sales Order Confirmation Email (Word)';
+            Summary = 'The Sales Order Confirmation Email (Word) provides an email body layout.';
+        }
+    }
+
     trigger OnInitReport()
     begin
         "Sales & Receivables Setup".Get();

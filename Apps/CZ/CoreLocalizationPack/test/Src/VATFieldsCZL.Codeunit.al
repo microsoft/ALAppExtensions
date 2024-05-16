@@ -62,13 +62,7 @@ codeunit 148065 "VAT Fields CZL"
 
         // [GIVEN] New Purchase Invoice has been created
         LibraryPurchase.CreatePurchaseInvoiceForVendorNo(PurchaseHeader, Vendor."No.");
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchaseHeader."Original Doc. VAT Date CZL" := PurchaseHeader."VAT Date CZL";
-#pragma warning restore AL0432
-#else
         PurchaseHeader."Original Doc. VAT Date CZL" := PurchaseHeader."VAT Reporting Date";
-#endif
         LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLineType::"G/L Account",
             LibraryERM.CreateGLAccountWithPurchSetup(), 1);
         PurchaseLine.Validate("Direct Unit Cost", 1000);
@@ -139,13 +133,7 @@ codeunit 148065 "VAT Fields CZL"
         PurchaseLine.Modify(true);
 
         // [GIVEN] Original Document VAT Date has been set
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchaseHeader.Validate("Original Doc. VAT Date CZL", CalcDate('<+1D>', PurchaseHeader."VAT Date CZL"));
-#pragma warning restore AL0432
-#else
         PurchaseHeader.Validate("Original Doc. VAT Date CZL", CalcDate('<+1D>', PurchaseHeader."VAT Reporting Date"));
-#endif
         PurchaseHeader.Modify();
 
         // [WHEN] Purchase Invoice has been posted
@@ -177,13 +165,7 @@ codeunit 148065 "VAT Fields CZL"
         GenJournalLine.Validate("Bal. Account No.", LibraryERM.CreateGLAccountNoWithDirectPosting());
         GenJournalLine.Validate(Amount, 100);
         GenJournalLine.Validate("Posting Date", VATPeriodCZL."Starting Date");
-#if not CLEAN22
-#pragma warning disable AL0432
-        GenJournalLine.Validate("VAT Date CZL", VATPeriodCZL."Starting Date");
-#pragma warning restore AL0432
-#else
         GenJournalLine.Validate("VAT Reporting Date", VATPeriodCZL."Starting Date");
-#endif
         GenJournalLine.Validate("Original Doc. VAT Date CZL", 0D);
 
         // [WHEN] Gen. Journal Line has been posted
@@ -221,13 +203,7 @@ codeunit 148065 "VAT Fields CZL"
                        GenJournalLine."Bal. Account Type"::"G/L Account", LibraryERM.CreateGLAccountNoWithDirectPosting(), 100);
         DocumentNo := GenJournalLine."Document No.";
         GenJournalLine.Validate("Posting Date", VATPeriodCZL."Starting Date");
-#if not CLEAN22
-#pragma warning disable AL0432
-        GenJournalLine.Validate("VAT Date CZL", VATPeriodCZL."Starting Date");
-#pragma warning restore AL0432
-#else
         GenJournalLine.Validate("VAT Reporting Date", VATPeriodCZL."Starting Date");
-#endif
         GenJournalLine.Modify();
 
         // [WHEN] Gen. Journal Line has been posted
@@ -477,13 +453,7 @@ codeunit 148065 "VAT Fields CZL"
         GenJournalLine.Validate("Bal. Account No.", BalAccNo);
         GenJournalLine.Validate(Amount, 100);
         GenJournalLine.Validate("Posting Date", VATPeriodCZL."Starting Date");
-#if not CLEAN22
-#pragma warning disable AL0432
-        GenJournalLine.Validate("VAT Date CZL", VATPeriodCZL."Starting Date");
-#pragma warning restore AL0432
-#else
         GenJournalLine.Validate("VAT Reporting Date", VATPeriodCZL."Starting Date");
-#endif
         GenJournalLine.Validate("Original Doc. VAT Date CZL", 0D);
         Clear(GenJnlPostLine);
         GenJnlPostLine.Run(GenJournalLine);

@@ -6,9 +6,7 @@ using Microsoft.Inventory.Location;
 
 report 6211 "Emission Per Facility"
 {
-    DefaultLayout = Excel;
-    ExcelLayout = './src/Reports/EmissionPerFacility.xlsx';
-    RDLCLayout = './src/Reports/EmissionPerFacility.rdlc';
+    DefaultRenderingLayout = EmissionPerFacilityExcel;
     ApplicationArea = Basic, Suite;
     Caption = 'Emission Per Facility';
     UsageCategory = ReportsAndAnalysis;
@@ -86,6 +84,28 @@ report 6211 "Emission Per Facility"
                     "Emission N2O" := Round("Emission N2O" * ReportingUOMFactor, RoundingPrecision, RoundingDirection);
                 end;
             end;
+        }
+    }
+    requestpage
+    {
+        AboutText = 'This report encompasses greenhouse gas (GHG) emission data documented across various facilities - Responsibility Centers.';
+        AboutTitle = 'Emission Per Facility';
+    }
+    rendering
+    {
+        layout(EmissionPerFacilityExcel)
+        {
+            Type = Excel;
+            Caption = 'Emission Per Facility Excel Layout';
+            LayoutFile = './src/Reports/EmissionPerFacility.xlsx';
+            Summary = 'Built in layout for the Emission Per Facility excel report. This report encompasses greenhouse gas (GHG) emission data documented across various facilities - Responsibility Centers.';
+        }
+        layout(EmissionPerFacilityRDLC)
+        {
+            Type = RDLC;
+            Caption = 'Emission Per Facility RDLC Layout';
+            LayoutFile = './src/Reports/EmissionPerFacility.rdlc';
+            Summary = 'Built in layout for the Emission Per Facility RDLC report. This report encompasses greenhouse gas (GHG) emission data documented across various facilities - Responsibility Centers.';
         }
     }
     labels

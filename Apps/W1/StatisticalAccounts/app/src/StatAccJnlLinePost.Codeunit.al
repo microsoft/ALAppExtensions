@@ -52,10 +52,16 @@ codeunit 2624 "Stat. Acc. Jnl. Line Post"
         StatisticalLedgerEntry."Document No." := StatisticalAccJournalLine."Document No.";
         StatisticalLedgerEntry."Global Dimension 1 Code" := StatisticalAccJournalLine."Shortcut Dimension 1 Code";
         StatisticalLedgerEntry."Global Dimension 2 Code" := StatisticalAccJournalLine."Shortcut Dimension 2 Code";
+        OnAfterTransferStatisticalAccJournalLineTo(StatisticalAccJournalLine, StatisticalLedgerEntry);
     end;
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeInsertStatisticalLedgerEntry(var StatisticalAccJournalLine: Record "Statistical Acc. Journal Line"; var StatisticalLedgerEntry: Record "Statistical Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterTransferStatisticalAccJournalLineTo(var StatisticalAccJournalLine: Record "Statistical Acc. Journal Line"; var StatisticalLedgerEntry: Record "Statistical Ledger Entry")
     begin
     end;
 }

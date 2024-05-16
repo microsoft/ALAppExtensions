@@ -87,17 +87,6 @@ pageextension 11737 "Purchase Quote CZL" extends "Purchase Quote"
                 Editable = false;
                 ToolTip = 'Specifies if the entry is an Intrastat transaction.';
             }
-#if not CLEAN22
-            field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Intrastat Exclude (Obsolete)';
-                ToolTip = 'Specifies that entry will be excluded from intrastat.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
-            }
-#endif
         }
         movebefore("EU 3-Party Intermed. Role CZL"; "EU 3rd Party Trade")
         addafter("Foreign Trade")

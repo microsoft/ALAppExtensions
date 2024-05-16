@@ -107,42 +107,37 @@ codeunit 6108 "E-Document Processing"
         exit(PurchaseHeader.Count());
     end;
 
-    procedure MatchedPurchaseEDocumentsCount(): Integer
+    procedure WaitingPurchaseEDocCount(): Integer
     var
         EDocument: Record "E-Document";
-        EDocumentServiceStatus: Record "E-Document Service Status";
     begin
-        EDocument.SetRange("Document Type", Enum::"E-Document Type"::"Purchase Order");
-        EDocument.SetRange(Status, Enum::"E-Document Status"::"In Progress");
-        if EDocument.FindSet() then
-            repeat
-                EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
-                EDocumentServiceStatus.SetRange(Status, Enum::"E-Document Service Status"::Pending);
-                if not EDocumentServiceStatus.IsEmpty() then
-                    EDocument.Mark(true);
-            until EDocument.Next() = 0;
-
-        EDocument.MarkedOnly(true);
+        GetWaitingPurchaseEDoc(EDocument);
         exit(EDocument.Count());
     end;
 
     procedure OpenWaitingPurchaseEDoc()
     var
         EDocument: Record "E-Document";
+    begin
+        GetWaitingPurchaseEDoc(EDocument);
+        Page.Run(Page::"E-Documents", EDocument);
+    end;
+
+    local procedure GetWaitingPurchaseEDoc(var EDocument: Record "E-Document")
+    var
         EDocumentServiceStatus: Record "E-Document Service Status";
     begin
         EDocument.SetRange("Document Type", Enum::"E-Document Type"::"Purchase Order");
-        EDocument.SetRange(Status, Enum::"E-Document Status"::"In Progress");
+        EDocument.SetFilter(Status, '%1|%2', Enum::"E-Document Status"::"In Progress", Enum::"E-Document Status"::Error);
         if EDocument.FindSet() then
             repeat
                 EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
-                EDocumentServiceStatus.SetRange(Status, Enum::"E-Document Service Status"::Pending);
+                EDocumentServiceStatus.SetFilter(Status, '%1|%2', Enum::"E-Document Service Status"::Pending, Enum::"E-Document Service Status"::"Imported Document Processing Error");
                 if not EDocumentServiceStatus.IsEmpty() then
                     EDocument.Mark(true);
             until EDocument.Next() = 0;
 
         EDocument.MarkedOnly(true);
-        Page.Run(Page::"E-Documents", EDocument);
     end;
 
     procedure OpenMatchedPurchaseOrders()

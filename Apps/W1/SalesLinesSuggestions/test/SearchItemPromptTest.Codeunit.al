@@ -100,6 +100,7 @@ codeunit 139781 "Search Item Prompt Test"
 
         // [START] Multiple Language
         MultiLanguagePrompt01Lbl: Label 'I need one bike with brand ''凤凰''';
+        MultiLanguagePrompt02Lbl: Label 'I need one bicikl';
     // [END] Multiple Language
 
     [Test]
@@ -774,20 +775,12 @@ codeunit 139781 "Search Item Prompt Test"
         CallCompletionAnswerTxt: SecretText;
     begin
         TestUtil.RepeatAtMost100TimesToFetchCompletion(CallCompletionAnswerTxt, EmailPrompt17Lbl);
-        LibraryVariableStorage.Clear();
-        LibraryVariableStorage.Enqueue('Keyboard');
-        LibraryVariableStorage.Enqueue('Orion Keyboards');
-        LibraryVariableStorage.Enqueue('10');
-        LibraryVariableStorage.Enqueue('Orion');
-        LibraryVariableStorage.Enqueue('Mouse');
-        LibraryVariableStorage.Enqueue('Andromeda Mice');
-        LibraryVariableStorage.Enqueue('15');
-        LibraryVariableStorage.Enqueue('Andromeda');
-        LibraryVariableStorage.Enqueue('HDMI Cable');
-        LibraryVariableStorage.Enqueue('Pegasus High-Speed HDMI Cables');
-        LibraryVariableStorage.Enqueue('5');
-        LibraryVariableStorage.Enqueue('Pegasus|High-Speed');
-        TestUtil.CheckSearchItemJSONContent(CallCompletionAnswerTxt, 3, LibraryVariableStorage);
+        TestUtil.AddDocument('sales_order', 'SO4567', '', '');
+        TestUtil.AddItem('Keyboard', 'Orion Keyboards', '10', 'Orion');
+        TestUtil.AddItem('Mouse', 'Andromeda Mice', '15', 'Andromeda');
+        TestUtil.AddItem('HDMI Cable', 'Pegasus High-Speed HDMI Cables', '5', 'Pegasus|High-Speed');
+
+        TestUtil.CheckItemSearchInDocJSONContent(CallCompletionAnswerTxt);
     end;
 
     [Test]
@@ -1000,7 +993,7 @@ codeunit 139781 "Search Item Prompt Test"
         LibraryVariableStorage.Enqueue('item');
         LibraryVariableStorage.Enqueue('');
         LibraryVariableStorage.Enqueue('1');
-        LibraryVariableStorage.Enqueue('GTIN 987651|GTIN ''987651''');
+        LibraryVariableStorage.Enqueue('reference number: 987651');
         TestUtil.CheckSearchItemJSONContent(CallCompletionAnswerTxt, 1, LibraryVariableStorage);
     end;
 
@@ -1094,7 +1087,7 @@ codeunit 139781 "Search Item Prompt Test"
         LibraryVariableStorage.Enqueue('electric car');
         LibraryVariableStorage.Enqueue('');
         LibraryVariableStorage.Enqueue('1');
-        LibraryVariableStorage.Enqueue('city driving|Tesla|Nissan|$30,000 - $50,000');
+        LibraryVariableStorage.Enqueue('city driving|Tesla|Nissan|price range: $30,000 - $50,000');
         TestUtil.CheckSearchItemJSONContent(CallCompletionAnswerTxt, 1, LibraryVariableStorage);
     end;
 
@@ -1185,6 +1178,20 @@ codeunit 139781 "Search Item Prompt Test"
         LibraryVariableStorage.Enqueue('');
         LibraryVariableStorage.Enqueue('1');
         LibraryVariableStorage.Enqueue('凤凰');
+        TestUtil.CheckSearchItemJSONContent(CallCompletionAnswerTxt, 1, LibraryVariableStorage);
+    end;
+
+    [Test]
+    procedure TestSearchPrompt68()
+    var
+        TestUtil: Codeunit "SLS Test Utility";
+        CallCompletionAnswerTxt: SecretText;
+    begin
+        TestUtil.RepeatAtMost100TimesToFetchCompletion(CallCompletionAnswerTxt, MultiLanguagePrompt02Lbl);
+        LibraryVariableStorage.Clear();
+        LibraryVariableStorage.Enqueue('Bicycle');
+        LibraryVariableStorage.Enqueue('Bicikl');
+        LibraryVariableStorage.Enqueue('1');
         TestUtil.CheckSearchItemJSONContent(CallCompletionAnswerTxt, 1, LibraryVariableStorage);
     end;
 }

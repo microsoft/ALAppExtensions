@@ -7,9 +7,6 @@ namespace Microsoft.Finance.GeneralLedger.Journal;
 #if not CLEAN24
 using Microsoft.Finance.GeneralLedger.Ledger;
 #endif
-#if not CLEAN22
-using Microsoft.Finance.GeneralLedger.Posting;
-#endif
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Purchases.Document;
@@ -43,18 +40,6 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
     begin
         Rec.Validate("Bank Account Code CZL", '');
     end;
-#if not CLEAN22
-
-    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnBeforeValidateEvent', 'Posting Date', false, false)]
-    local procedure UpdateVatDateOnBeforeGenJnlLinePostingDateValidate(var Rec: Record "Gen. Journal Line")
-    begin
-        if Rec.IsReplaceVATDateEnabled() then
-            exit;
-#pragma warning disable AL0432
-        Rec.Validate("VAT Date CZL", Rec."Posting Date");
-#pragma warning restore AL0432
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnBeforeValidateEvent', 'Account No.', false, false)]
     local procedure UpdateOriginalDocPartnerTypeOnBeforeGenJnlLineAccountNoValidate(var Rec: Record "Gen. Journal Line")
@@ -71,17 +56,6 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterSetUpNewLine', '', false, false)]
     local procedure UpdateVatDateOnAfterGenJnlLineSetUpNewLine(var GenJournalLine: Record "Gen. Journal Line")
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not GenJournalLine.IsReplaceVATDateEnabled() then begin
-            GenJournalLine."VAT Date CZL" := GenJournalLine."Posting Date";
-            if GenJournalLine."VAT Date CZL" = 0D then
-                GenJournalLine.Validate("VAT Date CZL", WorkDate());
-            GenJournalLine."Original Doc. VAT Date CZL" := GenJournalLine."VAT Date CZL";
-            exit;
-        end;
-#pragma warning restore AL0432
-#endif
         if GenJournalLine."VAT Reporting Date" = 0D then
             GenJournalLine."VAT Reporting Date" := WorkDate();
         GenJournalLine."Original Doc. VAT Date CZL" := GenJournalLine."VAT Reporting Date";
@@ -123,11 +97,6 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterCopyGenJnlLineFromSalesHeader', '', false, false)]
     local procedure UpdateFieldsOnAfterCopyGenJnlLineFromSalesHeader(var GenJournalLine: Record "Gen. Journal Line"; SalesHeader: Record "Sales Header")
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        GenJournalLine."VAT Date CZL" := SalesHeader."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
         GenJournalLine."VAT Reporting Date" := SalesHeader."VAT Reporting Date";
         GenJournalLine."Registration No. CZL" := SalesHeader."Registration No. CZL";
         GenJournalLine."Tax Registration No. CZL" := SalesHeader."Tax Registration No. CZL";
@@ -138,11 +107,6 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterCopyGenJnlLineFromPurchHeader', '', false, false)]
     local procedure UpdateFieldsOnAfterCopyGenJnlLineFromPurchHeader(var GenJournalLine: Record "Gen. Journal Line"; PurchaseHeader: Record "Purchase Header")
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        GenJournalLine."VAT Date CZL" := PurchaseHeader."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
         GenJournalLine."VAT Reporting Date" := PurchaseHeader."VAT Reporting Date";
         GenJournalLine."Registration No. CZL" := PurchaseHeader."Registration No. CZL";
         GenJournalLine."Tax Registration No. CZL" := PurchaseHeader."Tax Registration No. CZL";
@@ -156,14 +120,9 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
         GenJournalLine."Original Doc. VAT Date CZL" := PurchaseHeader."Original Doc. VAT Date CZL";
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterCopyGenJnlLineFromServHeader', '', false, false)]
-    local procedure UpdateVatDateOnAfterCopyGenJnlLineFromServHeader(var GenJournalLine: Record "Gen. Journal Line"; ServiceHeader: Record "Service Header")
+    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterCopyToGenJnlLine', '', false, false)]
+    local procedure UpdateVatDateOnAfterCopyToGenJnlLineFromServiceHeader(var GenJournalLine: Record "Gen. Journal Line"; ServiceHeader: Record "Service Header")
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        GenJournalLine."VAT Date CZL" := ServiceHeader."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
         GenJournalLine."VAT Reporting Date" := ServiceHeader."VAT Reporting Date";
         GenJournalLine."Registration No. CZL" := ServiceHeader."Registration No. CZL";
         GenJournalLine."Tax Registration No. CZL" := ServiceHeader."Tax Registration No. CZL";
@@ -220,22 +179,6 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
     end;
 
 #endif
-#if not CLEAN22
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CustEntry-Apply Posted Entries", 'OnBeforePostApplyCustLedgEntry', '', false, false)]
-    local procedure UpdateVATDateOnBeforePostApplyCustLedgEntry(var GenJournalLine: Record "Gen. Journal Line")
-    begin
-        GenJournalLine."VAT Date CZL" := GenJournalLine."Posting Date";
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CustEntry-Apply Posted Entries", 'OnBeforePostUnapplyCustLedgEntry', '', false, false)]
-    local procedure UpdateVATDateOnBeforePostUnapplyCustLedgEntry(var GenJournalLine: Record "Gen. Journal Line"; CustLedgerEntry: Record "Cust. Ledger Entry"; DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
-    begin
-        GenJournalLine."VAT Date CZL" := GenJournalLine."Posting Date";
-    end;
-
-#pragma warning restore AL0432
-#endif
 #if not CLEAN24
     internal procedure UpdateVATAmountOnAfterInitVAT(var GenJournalLine: Record "Gen. Journal Line"; var GLEntry: Record "G/L Entry")
     var
@@ -262,56 +205,26 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterCopyGenJnlLineFromSalesHeaderPrepmt', '', false, false)]
     local procedure CopyVATDateOnAfterCopyGenJnlLineFromSalesHeaderPrepmt(SalesHeader: Record "Sales Header"; var GenJournalLine: Record "Gen. Journal Line")
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        GenJournalLine."VAT Date CZL" := SalesHeader."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
         GenJournalLine."VAT Reporting Date" := SalesHeader."VAT Reporting Date";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterCopyGenJnlLineFromSalesHeaderPrepmtPost', '', false, false)]
     local procedure CopyVATDateOnAfterCopyGenJnlLineFromSalesHeaderPrepmtPost(SalesHeader: Record "Sales Header"; var GenJournalLine: Record "Gen. Journal Line"; UsePmtDisc: Boolean)
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        GenJournalLine."VAT Date CZL" := SalesHeader."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
         GenJournalLine."VAT Reporting Date" := SalesHeader."VAT Reporting Date";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterCopyGenJnlLineFromPurchHeaderPrepmt', '', false, false)]
     local procedure CopyVATDateOnAfterCopyGenJnlLineFromPurchHeaderPrepmt(PurchaseHeader: Record "Purchase Header"; var GenJournalLine: Record "Gen. Journal Line")
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        GenJournalLine."VAT Date CZL" := PurchaseHeader."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
         GenJournalLine."VAT Reporting Date" := PurchaseHeader."VAT Reporting Date";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterCopyGenJnlLineFromPurchHeaderPrepmtPost', '', false, false)]
     local procedure CopyVATDateOnAfterCopyGenJnlLineFromPurchHeaderPrepmtPost(PurchaseHeader: Record "Purchase Header"; var GenJournalLine: Record "Gen. Journal Line"; UsePmtDisc: Boolean)
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        GenJournalLine."VAT Date CZL" := PurchaseHeader."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
         GenJournalLine."VAT Reporting Date" := PurchaseHeader."VAT Reporting Date";
     end;
-#if not CLEAN22
-#pragma warning disable AL0432
-
-    [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterInitNewLine', '', false, false)]
-    local procedure CopyVATDateOnAfterInitNewLine(var GenJournalLine: Record "Gen. Journal Line")
-    begin
-        GenJournalLine."VAT Date CZL" := GenJournalLine."VAT Reporting Date";
-    end;
-#pragma warning restore AL0432
-#endif
 
 #if not CLEAN24
     [Obsolete('Replaced by OnBeforeGetReceivablesAccountNoCZL function in "Cust. Ledger Entry" table.', '24.0')]

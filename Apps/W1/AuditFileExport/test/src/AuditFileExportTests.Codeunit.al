@@ -15,8 +15,6 @@ codeunit 148035 "Audit File Export Tests"
         LibraryMarketing: Codeunit "Library - Marketing";
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
-        AddressMustHaveValueErr: label 'Address must have a value in Contact: No.=%1', Comment = '%1 - Contact No.';
-        CommentMustHaveValueErr: label 'Header Comment must have a value in Audit File Export Header: ID=%1', Comment = 'Audit File Export Header ID';
 
     [Test]
     [HandlerFunctions('ConfirmHandlerYes')]
@@ -148,8 +146,7 @@ codeunit 148035 "Audit File Export Tests"
         asserterror AuditFileExportTestHelper.StartExport(AuditFileExportHeader);
 
         // [THEN] Error "Header Comment must have a value" is shown.
-        Assert.ExpectedError(StrSubstNo(CommentMustHaveValueErr, AuditFileExportHeader.ID));
-        Assert.ExpectedErrorCode('TestField');
+        Assert.ExpectedTestFieldError(AuditFileExportHeader.FieldCaption("Header Comment"), '');
     end;
 
     [Test]
@@ -204,8 +201,7 @@ codeunit 148035 "Audit File Export Tests"
         asserterror AuditFileExportDocCard.DataCheck.Invoke();
 
         // [THEN] Error "Address must have a value in Contact: No.=A" is shown.
-        Assert.ExpectedError(StrSubstNo(AddressMustHaveValueErr, Contact."No."));
-        Assert.ExpectedErrorCode('TestField');
+        Assert.ExpectedTestFieldError(Contact.FieldCaption(Address), '');
     end;
 
     [Test]

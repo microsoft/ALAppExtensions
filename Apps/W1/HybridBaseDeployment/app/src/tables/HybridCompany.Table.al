@@ -26,9 +26,21 @@ table 4005 "Hybrid Company"
             DataClassification = SystemMetadata;
 
             trigger OnValidate()
+            var
+                HybridCloudManagement: Codeunit "Hybrid Cloud Management";
+                TelemetryDictionary: Dictionary of [Text, Text];
             begin
                 if not Rec.IsTemporary() then
                     ShowWarningForTooManyCompanies();
+
+                if not Replicate then
+                    exit;
+
+                TelemetryDictionary.Add('Category', HybridCloudManagement.GetTelemetryCategory());
+                TelemetryDictionary.Add('Company Name', Rec.Name);
+                TelemetryDictionary.Add('Company Display Name', Rec."Display Name");
+                TelemetryDictionary.Add('Estimated size', Format(Rec."Estimated Size", 0, 9));
+                Session.LogMessage('0000MRI', CompanyIncludedInReplicationLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, TelemetryDictionary);
             end;
         }
         field(4; "Estimated Size"; Decimal)
@@ -169,4 +181,5 @@ table 4005 "Hybrid Company"
     var
         WarningShown: Boolean;
         MovingTooManyCompaniesQst: Label 'You''ve selected many companies to move in the batch. This may lead to an error because of the large amount of metadata when you attempt to replicate the data. If this occurs, we recommend you return to this page and select fewer companies to move in a batch.\\Do you want to continue?';
+        CompanyIncludedInReplicationLbl: Label 'Company included in replication.', Locked = true;
 }

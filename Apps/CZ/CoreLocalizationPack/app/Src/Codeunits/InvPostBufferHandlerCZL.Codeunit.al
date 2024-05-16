@@ -36,20 +36,8 @@ codeunit 31307 "Inv. Post. Buffer Handler CZL"
     local procedure CopyFieldsOnAfterCopyToGenJnlLineOld(var GenJnlLine: Record "Gen. Journal Line"; InvoicePostBuffer: Record "Invoice Post. Buffer");
     begin
         GenJnlLine.Correction := InvoicePostBuffer."Correction CZL";
-        GenJnlLine."VAT Date CZL" := InvoicePostBuffer."VAT Date CZL";
         GenJnlLine."VAT Reporting Date" := InvoicePostBuffer."VAT Date CZL";
         GenJnlLine."Original Doc. VAT Date CZL" := InvoicePostBuffer."Original Doc. VAT Date CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterCopyToGenJnlLineFA', '', false, false)]
-    local procedure Custom2OnAfterCopyGenJnlLineFromInvPostBufferFA(var GenJnlLine: Record "Gen. Journal Line"; InvoicePostBuffer: Record "Invoice Post. Buffer")
-    begin
-        if InvoicePostBuffer.Type <> InvoicePostBuffer.Type::"Fixed Asset" then
-            exit;
-        case InvoicePostBuffer."FA Posting Type" of
-            InvoicePostBuffer."FA Posting Type"::"Custom 2":
-                GenJnlLine."FA Posting Type" := GenJnlLine."FA Posting Type"::"Custom 2";
-        end;
     end;
 #pragma warning restore AL0432
 #endif
@@ -58,11 +46,6 @@ codeunit 31307 "Inv. Post. Buffer Handler CZL"
     local procedure CopyFieldsOnAfterCopyToGenJnlLine(var GenJnlLine: Record "Gen. Journal Line"; InvoicePostingBuffer: Record "Invoice Posting Buffer");
     begin
         GenJnlLine.Correction := InvoicePostingBuffer."Correction CZL";
-#if not CLEAN22
-#pragma warning disable AL0432
-        GenJnlLine."VAT Date CZL" := InvoicePostingBuffer."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
         GenJnlLine."VAT Reporting Date" := InvoicePostingBuffer."VAT Date CZL";
         GenJnlLine."Original Doc. VAT Date CZL" := InvoicePostingBuffer."Original Doc. VAT Date CZL";
     end;

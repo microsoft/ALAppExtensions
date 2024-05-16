@@ -113,6 +113,7 @@ codeunit 13601 "DK Core Event Subscribers"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeStartOrContinuePosting', '', false, false)]
     local procedure CheckCVRNumberOnBeforeStartOrContinuePosting()
     var
+        Company: Record Company;
         CompanyInformation: Record "Company Information";
         EnvironmentInformation: Codeunit "Environment Information";
     begin
@@ -120,6 +121,9 @@ codeunit 13601 "DK Core Event Subscribers"
             exit;
         if EnvironmentInformation.IsSandbox() then
             exit;
+        if Company.Get(CompanyName()) then
+            if Company."Evaluation Company" then
+                exit;
 
         CompanyInformation.Get();
         if CompanyInformation."Registration No." = '' then

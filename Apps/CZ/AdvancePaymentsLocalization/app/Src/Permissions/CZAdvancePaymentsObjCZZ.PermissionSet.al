@@ -59,6 +59,7 @@
                   Page "Advance Letter Application CZZ" = X,
                   Page "Advance Letter Link CZZ" = X,
                   Page "Advance Letter Templates CZZ" = X,
+                  Page "Advance Usage FactBox CZZ" = X,
                   Page "Adv. Payment Close Dialog CZZ" = X,
                   Page "Preview Adv. VAT Entries CZZ" = X,
                   Page "Pur. Adv. Letter Ent.Prev. CZZ" = X,
@@ -68,7 +69,11 @@
                   Page "Purch. Advance Letters CZZ" = X,
                   Page "Purch. Adv. Letter Entries CZZ" = X,
                   Page "Purch. Adv. Letter FactBox CZZ" = X,
+#if not CLEAN25
+#pragma warning disable AL0432
                   Page "Purch. Adv. Usage FactBox CZZ" = X,
+#pragma warning restore AL0432
+#endif
                   Page "Sal. Adv. Letter Ent.Prev. CZZ" = X,
                   Page "Sales Advance Letter CZZ" = X,
                   Page "Sales Advance Letter Line CZZ" = X,
@@ -76,7 +81,11 @@
                   Page "Sales Advance Letters CZZ" = X,
                   Page "Sales Adv. Letter Entries CZZ" = X,
                   Page "Sales Adv. Letter FactBox CZZ" = X,
+#if not CLEAN25
+#pragma warning disable AL0432
                   Page "Sales Adv. Usage FactBox CZZ" = X,
+#pragma warning restore AL0432
+#endif
                   Page "Suggested Usage CZZ" = X,
                   Page "VAT Document CZZ" = X,
                   Page "VAT Document Line CZZ" = X,

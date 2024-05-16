@@ -5,9 +5,7 @@ using Microsoft.Sustainability.Setup;
 
 report 6212 "Total Emissions"
 {
-    DefaultLayout = Excel;
-    ExcelLayout = './src/Reports/TotalEmissions.xlsx';
-    RDLCLayout = './src/Reports/TotalEmissions.rdlc';
+    DefaultRenderingLayout = TotalEmissionsExcel;
     ApplicationArea = Basic, Suite;
     Caption = 'Total Emissions';
     UsageCategory = ReportsAndAnalysis;
@@ -86,6 +84,8 @@ report 6212 "Total Emissions"
 
     requestpage
     {
+        AboutText = 'This report provides information on the cumulative greenhouse gas (GHG) emissions across the chosen Sustainability Accounts and periods.';
+        AboutTitle = 'Total Emissions';
         SaveValues = true;
 
         layout
@@ -103,6 +103,23 @@ report 6212 "Total Emissions"
                     }
                 }
             }
+        }
+    }
+    rendering
+    {
+        layout(TotalEmissionsExcel)
+        {
+            Type = Excel;
+            Caption = 'Total Emissions Excel Layout';
+            LayoutFile = './src/Reports/TotalEmissions.xlsx';
+            Summary = 'Built in layout for the Total Emissions excel report. This report provides information on the cumulative greenhouse gas (GHG) emissions across the chosen Sustainability Accounts and periods.';
+        }
+        layout(TotalEmissionsRDLC)
+        {
+            Type = RDLC;
+            Caption = 'Total Emissions RDLC Layout';
+            LayoutFile = './src/Reports/TotalEmissions.rdlc';
+            Summary = 'Built in layout for the Total Emissions RDLC report. This report provides information on the cumulative greenhouse gas (GHG) emissions across the chosen Sustainability Accounts and periods.';
         }
     }
     labels

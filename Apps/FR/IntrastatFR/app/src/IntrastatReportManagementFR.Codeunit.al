@@ -323,15 +323,6 @@ codeunit 10851 IntrastatReportManagementFR
         IntrastatReportLine.SetFilter("Transaction Specification", IntrastatReportHeader."Trans. Spec. Filter");
     end;
 
-#if not CLEAN22
-    [EventSubscriber(ObjectType::Page, Page::"Intrastat Report Setup Wizard", 'OnBeforeFinishAction', '', true, true)]
-    local procedure OnBeforeFinishAction();
-    begin
-        CompanyInformation.Get();
-        CompanyInformation."Last Intr. Declaration ID" := CompanyInformation."Last Intrastat Declaration ID";
-        CompanyInformation.Modify();
-    end;
-#endif
     [EventSubscriber(ObjectType::Codeunit, Codeunit::IntrastatReportManagement, 'OnBeforeCreateDefaultDataExchangeDef', '', true, true)]
     local procedure OnBeforeCreateDefaultDataExchangeDef(var IsHandled: Boolean);
     begin

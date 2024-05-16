@@ -163,11 +163,6 @@ report 31240 "Calculate Depreciation CZF"
                         LineNo := LineNo + 1;
                         WindowDialog.Update(3, LineNo);
                         GenJournalLine."Posting Date" := PostingDate;
-#if not CLEAN22
-#pragma warning disable AL0432
-                        GenJournalLine."VAT Date CZL" := PostingDate;
-#pragma warning restore AL0432
-#endif
                         GenJournalLine."VAT Reporting Date" := PostingDate;
                         GenJournalLine."FA Posting Date" := DeprUntilDate;
                         if GenJournalLine."Posting Date" = GenJournalLine."FA Posting Date" then

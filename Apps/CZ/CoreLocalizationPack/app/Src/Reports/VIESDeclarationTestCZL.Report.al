@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using System.Utilities;
+using Microsoft.Finance.GeneralLedger.Setup;
 
 report 31064 "VIES Declaration - Test CZL"
 {
@@ -125,6 +126,10 @@ report 31064 "VIES Declaration - Test CZL"
             {
                 IncludeCaption = true;
             }
+            column(VIESDeclarationHeader_Additional_Currency_Amount; "Additional-Currency Amount")
+            {
+                IncludeCaption = true;
+            }
             column(VIESDeclarationHeader_NumberOfSupplies; "Number of Supplies")
             {
                 IncludeCaption = true;
@@ -136,6 +141,12 @@ report 31064 "VIES Declaration - Test CZL"
             column(VIESDeclarationHeader_DeclarationPeriod; "Declaration Period")
             {
                 IncludeCaption = true;
+            }
+            column(VIESDeclarationHeader_LineAmountCaption; LineAmountCaption)
+            {
+            }
+            column(Show_AmtInAddCurrency; ShowAmtInAddCurrency)
+            {
             }
             dataitem(HeaderErrorCounter; "Integer")
             {
@@ -195,6 +206,10 @@ report 31064 "VIES Declaration - Test CZL"
                 {
                     IncludeCaption = true;
                 }
+                column(VIESDeclarationLine_AdditionalCurrencyAmount; "Additional-Currency Amount")
+                {
+                    IncludeCaption = true;
+                }
                 column(VIESDeclarationLine_CorrectedRegNo; "Corrected Reg. No.")
                 {
                     IncludeCaption = true;
@@ -210,6 +225,9 @@ report 31064 "VIES Declaration - Test CZL"
                 column(VIESDeclarationLine_VATRegNoOfOriginalCust; "VAT Reg. No. of Original Cust.")
                 {
                     IncludeCaption = true;
+                }
+                column(VIESDeclarationLine_LineAmount; LineAmount)
+                {
                 }
                 dataitem(LineErrorCounter; "Integer")
                 {
@@ -234,6 +252,11 @@ report 31064 "VIES Declaration - Test CZL"
                         AddNotSpecifiedError(FieldCaption("Country/Region Code"));
                     if "VAT Registration No." = '' then
                         AddNotSpecifiedError(FieldCaption("VAT Registration No."));
+
+                    if ShowAmtInAddCurrency then
+                        LineAmount := VIESDeclarationLineCZL."Additional-Currency Amount"
+                    else
+                        LineAmount := VIESDeclarationLineCZL."Amount (LCY)";
                 end;
             }
             trigger OnAfterGetRecord()
@@ -271,8 +294,41 @@ report 31064 "VIES Declaration - Test CZL"
                 if "Declaration Type" = "Declaration Type"::Corrective then
                     if "Corrected Declaration No." = '' then
                         AddNotSpecifiedError(FieldCaption("Corrected Declaration No."));
+
+                if ShowAmtInAddCurrency then
+                    LineAmountCaption := VIESDeclarationLineCZL.FieldCaption("Additional-Currency Amount")
+                else
+                    LineAmountCaption := VIESDeclarationLineCZL.FieldCaption("Amount (LCY)");
             end;
         }
+    }
+
+    requestpage
+    {
+        layout
+        {
+            area(content)
+            {
+                group(Options)
+                {
+                    Caption = 'Options';
+
+                    field(ShowAmtInAddCurrencyField; ShowAmtInAddCurrency)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Show Amounts in Add. Reporting Currency';
+                        Importance = Additional;
+                        MultiLine = true;
+                        ToolTip = 'Specifies if you want report amounts to be shown in the additional reporting currency.';
+                    }
+                }
+            }
+        }
+        trigger OnOpenPage()
+        begin
+            GeneralLedgerSetup.Get();
+            ShowAmtInAddCurrency := GeneralLedgerSetup."Additional Reporting Currency" <> '';
+        end;
     }
     labels
     {
@@ -282,8 +338,12 @@ report 31064 "VIES Declaration - Test CZL"
         SectionCLbl = 'SECTION C';
     }
     var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        ShowAmtInAddCurrency: Boolean;
         ErrorText: array[99] of Text;
         ErrorCounter: Integer;
+        LineAmount: Decimal;
+        LineAmountCaption: Text;
 
     local procedure AddNotSpecifiedError(Text: Text)
     var

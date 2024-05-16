@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Reporting;
+using Microsoft.Finance.GeneralLedger.Setup;
 
 page 31114 "VAT Ctrl. Report St. Subf. CZL"
 {
@@ -81,9 +82,76 @@ page 31114 "VAT Ctrl. Report St. Subf. CZL"
                     StyleExpr = true;
                     ToolTip = 'Specifies the Total Amount of all VAT for selected VAT Ctrl. Report statement Section';
                 }
+                field("Add.-Currency Base 1"; Rec."Add.-Currency Base 1")
+                {
+                    ApplicationArea = VAT;
+                    BlankZero = true;
+                    ToolTip = 'Specifies the total additional currency base amount for the base VAT.';
+                    Visible = UseAmtsInAddCurrVisible;
+                }
+                field("Add.-Currency Base 2"; Rec."Add.-Currency Base 2")
+                {
+                    ApplicationArea = VAT;
+                    BlankZero = true;
+                    ToolTip = 'Specifies the total additional currency base amount for the base VAT.';
+                    Visible = UseAmtsInAddCurrVisible;
+                }
+                field("Add.-Currency Base 3"; Rec."Add.-Currency Base 3")
+                {
+                    ApplicationArea = VAT;
+                    BlankZero = true;
+                    ToolTip = 'Specifies the total additional currency base amount for the base VAT.';
+                    Visible = UseAmtsInAddCurrVisible;
+                }
+                field("Add.-Currency Amount 1"; Rec."Add.-Currency Amount 1")
+                {
+                    ApplicationArea = VAT;
+                    BlankZero = true;
+                    ToolTip = 'Specifies the total additional currency amount for the base VAT.';
+                    Visible = UseAmtsInAddCurrVisible;
+                }
+                field("Add.-Currency Amount 2"; Rec."Add.-Currency Amount 2")
+                {
+                    ApplicationArea = VAT;
+                    BlankZero = true;
+                    ToolTip = 'Specifies the total additional currency amount for the base VAT.';
+                    Visible = UseAmtsInAddCurrVisible;
+                }
+                field("Add.-Currency Amount 3"; Rec."Add.-Currency Amount 3")
+                {
+                    ApplicationArea = VAT;
+                    BlankZero = true;
+                    ToolTip = 'Specifies the total additional currency amount for the base VAT.';
+                    Visible = UseAmtsInAddCurrVisible;
+                }
+                field("Add.-Currency Total Base"; Rec."Add.-Currency Total Base")
+                {
+                    ApplicationArea = VAT;
+                    BlankZero = true;
+                    Style = Strong;
+                    StyleExpr = true;
+                    ToolTip = 'Specifies the total additional currency amount of all VAT Base for selected VAT Ctrl. Report statement Section';
+                    Visible = UseAmtsInAddCurrVisible;
+                }
+                field("Add.-Currency Total Amount"; Rec."Add.-Currency Total Amount")
+                {
+                    ApplicationArea = VAT;
+                    BlankZero = true;
+                    Style = Strong;
+                    StyleExpr = true;
+                    ToolTip = 'Specifies the total additional currency amount of all VAT for selected VAT Ctrl. Report statement Section';
+                    Visible = UseAmtsInAddCurrVisible;
+                }
             }
         }
     }
+    var
+        UseAmtsInAddCurrVisible: Boolean;
+
+    trigger OnOpenPage()
+    begin
+        SetUseAmtsInAddCurrVisible();
+    end;
 
     procedure SetTempVATCtrlRepBuffer(var NewVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL")
     begin
@@ -94,5 +162,13 @@ page 31114 "VAT Ctrl. Report St. Subf. CZL"
                 Rec.Insert();
             until NewVATCtrlReportBufferCZL.Next() = 0;
         CurrPage.Update(false);
+    end;
+
+    local procedure SetUseAmtsInAddCurrVisible()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        UseAmtsInAddCurrVisible := GeneralLedgerSetup."Additional Reporting Currency" <> '';
     end;
 }

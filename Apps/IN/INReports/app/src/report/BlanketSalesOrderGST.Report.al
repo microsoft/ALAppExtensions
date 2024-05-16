@@ -873,8 +873,8 @@ report 18006 "Blanket Sales Order GST"
 
             trigger OnAfterGetRecord()
             begin
-                CurrReport.Language := Language.GetLanguageID("Language Code");
-                CurrReport.FormatRegion := Language.GetFormatRegionOrDefault("Format Region");
+                CurrReport.Language := GlobalLanguage.GetLanguageID("Language Code");
+                CurrReport.FormatRegion := GlobalLanguage.GetFormatRegionOrDefault("Format Region");
 
                 CompanyInfo.Get();
                 IsGSTApplicable := CheckGSTDoc("Sales Header");
@@ -1060,7 +1060,7 @@ report 18006 "Blanket Sales Order GST"
         CurrExchRate: Record "Currency Exchange Rate";
         SalesCountPrinted: Codeunit "Sales-Printed";
         FormatAddr: Codeunit "Format Address";
-        Language: Codeunit "Language";
+        GlobalLanguage: Codeunit "Language";
         SegManagement: Codeunit "SegManagement";
         GSTCompAmount: array[20] of Decimal;
         GSTComponentCode: array[20] of Integer;

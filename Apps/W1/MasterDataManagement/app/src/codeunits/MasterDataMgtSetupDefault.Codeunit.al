@@ -1674,7 +1674,7 @@ codeunit 7230 "Master Data Mgt. Setup Default"
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnBeforeResetTableMapping(var IntegrationTableMappingName: Code[20]; var ShouldRecreateJobQueueEntry: Boolean; var IsHandled: Boolean)
+    internal procedure OnBeforeResetTableMapping(var IntegrationTableMappingName: Code[20]; var ShouldRecreateJobQueueEntry: Boolean; var IsHandled: Boolean)
     begin
     end;
 

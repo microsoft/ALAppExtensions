@@ -21,11 +21,10 @@ using System.Text;
 
 report 31014 "Sales - Advance Letter CZZ"
 {
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/SalesAdvanceLetter.rdl';
     Caption = 'Sales - Advance Letter';
     PreviewMode = PrintLayout;
     UsageCategory = None;
+    DefaultRenderingLayout = "SalesAdvanceLetter.rdl";
     Permissions = tabledata "Sales Adv. Letter Header CZZ" = m;
     WordMergeDataItem = "Sales Advance Letter Header";
 
@@ -374,6 +373,24 @@ report 31014 "Sales - Advance Letter CZZ"
                     }
                 }
             }
+        }
+    }
+
+    rendering
+    {
+        layout("SalesAdvanceLetter.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/SalesAdvanceLetter.rdl';
+            Caption = 'Sales Advance Letter (RDL)';
+            Summary = 'The Sales Advance Letter (RDL) provides a detailed layout.';
+        }
+        layout("SalesAdvanceLetterEmail.docx")
+        {
+            Type = Word;
+            LayoutFile = './Src/Reports/SalesAdvanceLetterEmail.docx';
+            Caption = 'Sales Advance Letter Email (Word)';
+            Summary = 'The Sales Advance Letter Email (Word) provides an email body layout.';
         }
     }
 

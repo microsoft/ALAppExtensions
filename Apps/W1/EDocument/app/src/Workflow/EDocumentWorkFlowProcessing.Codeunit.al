@@ -137,7 +137,7 @@ codeunit 6135 "E-Document WorkFlow Processing"
         if not AnyErrors then begin
             EDocIntMgt.SendBatch(EDocument, EDocumentService, IsAsync);
             if IsAsync then
-                EDocumentBackgroundjobs.GetEDocumentResponse()
+                EDocumentBackgroundjobs.ScheduleGetResponseJob()
             else
                 HandleNextEvent(EDocument);
         end;
@@ -177,15 +177,17 @@ codeunit 6135 "E-Document WorkFlow Processing"
         EDocExport: Codeunit "E-Doc. Export";
         EDocIntMgt: Codeunit "E-Doc. Integration Management";
         EDocumentBackgroundjobs: Codeunit "E-Document Background Jobs";
-        IsAsync: Boolean;
+        IsAsync, Sent : Boolean;
     begin
+        Sent := false;
         if EDocExport.ExportEDocument(EDocument, EDocumentService) then
-            EDocIntMgt.Send(EDocument, EDocumentService, IsAsync);
+            Sent := EDocIntMgt.Send(EDocument, EDocumentService, IsAsync);
 
-        if IsAsync then
-            EDocumentBackgroundjobs.GetEDocumentResponse()
-        else
-            HandleNextEvent(EDocument);
+        if Sent then
+            if IsAsync then
+                EDocumentBackgroundjobs.ScheduleGetResponseJob()
+            else
+                HandleNextEvent(EDocument);
     end;
 
     local procedure ValidateFlowStep(var EDocument: Record "E-Document"; var WorkflowStepArgument: Record "Workflow Step Argument"; WorkflowStepInstance: Record "Workflow Step Instance"): Boolean

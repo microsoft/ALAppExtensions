@@ -227,7 +227,8 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
     procedure CopyFromCustLedgerEntryCZZ(CustLedgerEntry: Record "Cust. Ledger Entry")
     begin
         CopyDocumentFields(
-            "Document Type"::" ", CustLedgerEntry."Document No.", '', CustLedgerEntry."Source Code", '');
+            "Document Type"::" ", CustLedgerEntry."Document No.",
+            CustLedgerEntry."External Document No.", CustLedgerEntry."Source Code", '');
         "Account Type" := "Account Type"::Customer;
         "Account No." := CustLedgerEntry."Customer No.";
         SetCurrencyFactor(CustLedgerEntry."Currency Code", CustLedgerEntry."Original Currency Factor");

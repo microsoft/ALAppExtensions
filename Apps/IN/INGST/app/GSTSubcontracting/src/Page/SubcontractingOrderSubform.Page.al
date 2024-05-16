@@ -931,10 +931,10 @@ page 18493 "Subcontracting Order Subform"
 
     procedure ShowTracking()
     var
-        TrackingForm: Page "Order Tracking";
+        OrderTracking: Page "Order Tracking";
     begin
-        TrackingForm.SetPurchLine(Rec);
-        TrackingForm.RunModal();
+        OrderTracking.SetVariantRec(Rec, Rec."No.", Rec."Outstanding Qty. (Base)", Rec."Expected Receipt Date", Rec."Expected Receipt Date");
+        OrderTracking.RunModal();
     end;
 
     procedure ShowDimension()

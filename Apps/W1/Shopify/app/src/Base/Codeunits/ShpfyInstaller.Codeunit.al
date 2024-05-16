@@ -4,6 +4,7 @@ using Microsoft.Foundation.Company;
 using System.DataAdministration;
 using System.Environment.Configuration;
 using System.Upgrade;
+using System.Visualization;
 
 codeunit 30273 "Shpfy Installer"
 {
@@ -14,6 +15,7 @@ codeunit 30273 "Shpfy Installer"
     trigger OnInstallAppPerCompany()
     begin
         AddRetentionPolicyAllowedTables();
+        AddShopifyCueSetup();
     end;
 
     procedure AddRetentionPolicyAllowedTables()
@@ -56,6 +58,95 @@ codeunit 30273 "Shpfy Installer"
         RetentionPolicySetup.Validate("Retention Period", RetentionPeriodCode);
         RetentionPolicySetup.Validate(Enabled, false);
         RetentionPolicySetup.Insert(true);
+    end;
+
+    procedure AddShopifyCueSetup()
+    var
+        ShopifyCue: Record "Shpfy Cue";
+        CuesAndKPIs: Codeunit "Cues And KPIs";
+        UpgradeTag: Codeunit "Upgrade Tag";
+    begin
+        if UpgradeTag.HasUpgradeTag(GetShopifyCueSetupUpgradeTag()) then
+            exit;
+
+        CuesAndKPIs.InsertData(
+            Database::"Shpfy Cue",
+            ShopifyCue.FieldNo("Unmapped Customers"),
+            "Cues And KPIs Style"::Favorable,
+            1,// Threshold 1
+            "Cues And KPIs Style"::Ambiguous,
+            5,// Threshold 2
+            "Cues And KPIs Style"::Unfavorable);
+
+        CuesAndKPIs.InsertData(
+            Database::"Shpfy Cue",
+            ShopifyCue.FieldNo("Unmapped Products"),
+            "Cues And KPIs Style"::Favorable,
+            1,// Threshold 1
+            "Cues And KPIs Style"::Ambiguous,
+            5,// Threshold 2
+            "Cues And KPIs Style"::Unfavorable);
+
+        CuesAndKPIs.InsertData(
+            Database::"Shpfy Cue",
+            ShopifyCue.FieldNo("Unprocessed Orders"),
+            "Cues And KPIs Style"::Favorable,
+            1,// Threshold 1
+            "Cues And KPIs Style"::Ambiguous,
+            5,// Threshold 2
+            "Cues And KPIs Style"::Unfavorable);
+
+        CuesAndKPIs.InsertData(
+            Database::"Shpfy Cue",
+            ShopifyCue.FieldNo("Unprocessed Shipments"),
+            "Cues And KPIs Style"::Favorable,
+            1,// Threshold 1
+            "Cues And KPIs Style"::Ambiguous,
+            5,// Threshold 2
+            "Cues And KPIs Style"::Unfavorable);
+
+        CuesAndKPIs.InsertData(
+            Database::"Shpfy Cue",
+            ShopifyCue.FieldNo("Synchronization Errors"),
+            "Cues And KPIs Style"::Favorable,
+            1,// Threshold 1
+            "Cues And KPIs Style"::Ambiguous,
+            5,// Threshold 2
+            "Cues And KPIs Style"::Unfavorable);
+
+        CuesAndKPIs.InsertData(
+            Database::"Shpfy Cue",
+            ShopifyCue.FieldNo("Shipment Errors"),
+            "Cues And KPIs Style"::Favorable,
+            1,// Threshold 1
+            "Cues And KPIs Style"::Ambiguous,
+            5,// Threshold 2
+            "Cues And KPIs Style"::Unfavorable);
+
+        CuesAndKPIs.InsertData(
+            Database::"Shpfy Cue",
+            ShopifyCue.FieldNo("Unprocessed Order Updates"),
+            "Cues And KPIs Style"::Favorable,
+            1,// Threshold 1
+            "Cues And KPIs Style"::Ambiguous,
+            5,// Threshold 2
+            "Cues And KPIs Style"::Unfavorable);
+
+        CuesAndKPIs.InsertData(
+            Database::"Shpfy Cue",
+            ShopifyCue.FieldNo("Unmapped Companies"),
+            "Cues And KPIs Style"::Favorable,
+            1,// Threshold 1
+            "Cues And KPIs Style"::Ambiguous,
+            5,// Threshold 2
+            "Cues And KPIs Style"::Unfavorable);
+
+        UpgradeTag.SetUpgradeTag(GetShopifyCueSetupUpgradeTag());
+    end;
+
+    local procedure GetShopifyCueSetupUpgradeTag(): Code[250]
+    begin
+        exit('MS-522567-ShopifyCueSetupAdded-20240326');
     end;
 
     local procedure GetShopifyLogEntryAddedToAllowedListUpgradeTag(): Code[250]

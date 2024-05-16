@@ -24,7 +24,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
         InvalidResponseTxt: Label 'The response was not valid.';
         DataEncryptExportTxt: Label 'The encryption key file must be protected by a password and stored in a safe location.';
         DataEncryptConfirmTxt: Label 'Enabling encryption will generate an encryption key on the server.';
-        MissingPasswordTxt: Label 'The password is missing in the Envestnet Yodlee Bank Feeds Service Setup window.';
+        MissingPasswordTxt: Label 'The client secret is missing in the Envestnet Yodlee Bank Feeds Service Setup window.';
         CobrandMustBeSpecifiedTxt: Label 'By modifying the Service URL you must specify your own Cobrand credentials.';
         DisableServiceAndRemoveAccTxt: Label 'Disabling the service will unlink all online bank accounts.';
         NoLinkedBankAccountsTxt: Label 'Do you want to clear the online bank login details?';
@@ -1974,6 +1974,7 @@ codeunit 139501 "MS - Yodlee Bank Service Tests"
 
         // Assert
         asserterror MSYodleeBankServiceSetup.GET();
+        Assert.ExpectedErrorCannotFind(Database::"MS - Yodlee Bank Service Setup");
         Assert.ExpectedError('The MS - Yodlee Bank Service Setup does not exist');
     end;
 

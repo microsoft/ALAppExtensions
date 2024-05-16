@@ -20,14 +20,13 @@ codeunit 1164 "COHUB API Request"
     end;
 
     [Scope('OnPrem')]
-    [NonDebuggable]
     procedure InvokePostUserTaskComplete(var COHUBCompanyEndpoint: Record "COHUB Company Endpoint"; var APIResponse: Text; TaskId: Integer): Boolean
     var
         COHUBEnviroment: Record "COHUB Enviroment";
         COHUBCore: Codeunit "COHUB Core";
         CompanyEndpointRecordRef: RecordRef;
         EntityBaseUrl: Text;
-        AccessToken: Text;
+        AccessToken: SecretText;
         EnvironmentName: Text;
         EnvironmentNameAndEnvironment: Text;
         UserTaskUrl: Text;
@@ -47,12 +46,11 @@ codeunit 1164 "COHUB API Request"
 
 
     [Scope('OnPrem')]
-    [NonDebuggable]
     procedure InvokeGetCompanies(var COHUBEnviroment: Record "COHUB Enviroment"; var APIResponse: Text; var CompanyAPIUrl: Text): Boolean
     var
         COHUBCore: Codeunit "COHUB Core";
         COHUBEnvironmentRecordRef: RecordRef;
-        AccessToken: Text;
+        AccessToken: SecretText;
         EnvironmentName: Text;
         EnvironmentNameAndEnvirnoment: Text;
         ResourceUrl: Text;
@@ -68,28 +66,24 @@ codeunit 1164 "COHUB API Request"
     end;
 
     [Scope('OnPrem')]
-    [NonDebuggable]
     procedure InvokeActivityCuesAPI(var COHUBCompanyEndpoint: Record "COHUB Company Endpoint"; var APIResponse: Text): Boolean
     begin
         exit(InvokeAPI(COHUBCompanyEndpoint, ActivityCuesSuffixParmsTxt, APIResponse));
     end;
 
     [Scope('OnPrem')]
-    [NonDebuggable]
     procedure InvokeFinanceCuesAPI(var COHUBCompanyEndpoint: Record "COHUB Company Endpoint"; var APIResponse: Text): Boolean
     begin
         exit(InvokeAPI(COHUBCompanyEndpoint, FinanceCuesSuffixParmsTxt, APIResponse));
     end;
 
     [Scope('OnPrem')]
-    [NonDebuggable]
     procedure InvokeUserTasksAPI(var COHUBCompanyEndpoint: Record "COHUB Company Endpoint"; var APIResponse: Text): Boolean
     begin
         exit(InvokeAPI(COHUBCompanyEndpoint, UserTasksSuffixParmsTxt, APIResponse));
     end;
 
     [Scope('OnPrem')]
-    [NonDebuggable]
     local procedure InvokeAPI(var COHUBCompanyEndpoint: Record "COHUB Company Endpoint"; CueAPISuffix: Text; var APIResponse: Text): Boolean
     var
         COHUBEnviroment: Record "COHUB Enviroment";
@@ -97,7 +91,7 @@ codeunit 1164 "COHUB API Request"
         COHUBCompanyEndpointRecordRef: RecordRef;
         EntityBaseUrl: Text;
         CuesAPIUrl: Text;
-        AccessToken: Text;
+        AccessToken: SecretText;
         EnvironmentName: Text;
         EnvironmentNameAndEnvironment: Text;
     begin
@@ -115,30 +109,26 @@ codeunit 1164 "COHUB API Request"
     end;
 
     [Scope('OnPrem')]
-    [NonDebuggable]
-    local procedure InvokeSecuredWebApiGetRequest(Url: Text; AccessToken: Text; var ResponseContent: Text; SourceRecordRef: RecordRef): Boolean;
+    local procedure InvokeSecuredWebApiGetRequest(Url: Text; AccessToken: SecretText; var ResponseContent: Text; SourceRecordRef: RecordRef): Boolean;
     var
         RequestHttpClient: HttpClient;
     begin
         GetHttpClient(RequestHttpClient);
-        RequestHttpClient.DefaultRequestHeaders().Add('Authorization', 'Bearer ' + AccessToken);
+        RequestHttpClient.DefaultRequestHeaders().Add('Authorization', SecretStrSubstNo('Bearer %1', AccessToken));
         exit(InvokeWebApiGetRequestAndLogErrors(RequestHttpClient, Url, ResponseContent, SourceRecordRef));
     end;
 
     [Scope('OnPrem')]
-    [NonDebuggable]
-    local procedure InvokeSecuredWebApiPostRequest(Url: Text; AccessToken: Text; var ResponseContent: Text; SourceRecordRef: RecordRef): Boolean;
+    local procedure InvokeSecuredWebApiPostRequest(Url: Text; AccessToken: SecretText; var ResponseContent: Text; SourceRecordRef: RecordRef): Boolean;
     var
         RequestHttpClient: HttpClient;
     begin
         GetHttpClient(RequestHttpClient);
-        RequestHttpClient.DefaultRequestHeaders().Add('Authorization', 'Bearer ' + AccessToken);
+        RequestHttpClient.DefaultRequestHeaders().Add('Authorization', SecretStrSubstNo('Bearer %1', AccessToken));
         exit(InvokeWebApiPostRequestAndLogErrors(RequestHttpClient, Url, ResponseContent, SourceRecordRef));
     end;
 
     [Scope('OnPrem')]
-    [NonDebuggable]
-
     local procedure TryInvokeWebApiGetRequest(WebRequestHttpClient: HttpClient; Url: Text; var ResponseContent: Text; var WasSuccessful: Boolean): Boolean;
     var
         WebHttpResponseMessage: HttpResponseMessage;
@@ -154,7 +144,6 @@ codeunit 1164 "COHUB API Request"
     end;
 
     [Scope('OnPrem')]
-    [NonDebuggable]
     local procedure TryInvokeWebApiPostRequest(WebRequestHttpClient: HttpClient; Url: Text; var ResponseContent: Text; var WasSuccessful: Boolean): Boolean;
     var
         WebHttpRequestMessage: HttpRequestMessage;
@@ -180,7 +169,6 @@ codeunit 1164 "COHUB API Request"
     end;
 
     [Scope('OnPrem')]
-    [NonDebuggable]
     local procedure InvokeWebApiGetRequestAndLogErrors(WebRequestHttpClient: HttpClient; Url: Text; var ResponseContent: Text; SourceRecordRef: RecordRef): Boolean;
     var
         COHUBCore: Codeunit "COHUB Core";
@@ -200,7 +188,6 @@ codeunit 1164 "COHUB API Request"
     end;
 
     [Scope('OnPrem')]
-    [NonDebuggable]
     local procedure InvokeWebApiPostRequestAndLogErrors(WebRequestHttpClient: HttpClient; Url: Text; var ResponseContent: Text; SourceRecordRef: RecordRef): Boolean;
     var
         COHUBCore: Codeunit "COHUB Core";
@@ -220,14 +207,12 @@ codeunit 1164 "COHUB API Request"
     end;
 
     [Scope('OnPrem')]
-    [NonDebuggable]
     local procedure GetHttpClient(var WebRequestHttpClient: HttpClient)
     begin
         WebRequestHttpClient.DefaultRequestHeaders().Clear();
     end;
 
     [Scope('OnPrem')]
-    [NonDebuggable]
     local procedure GetEntityBaseUrl(var COHUBCompanyEndpoint: Record "COHUB Company Endpoint"): Text;
     var
         CompanyName: Text;
@@ -241,14 +226,13 @@ codeunit 1164 "COHUB API Request"
     end;
 
     [Scope('OnPrem')]
-    [NonDebuggable]
-    local procedure GetGuestAccessToken(ResourceUrl: Text; EnvironmentName: Text; var AccessToken: Text; SourceRecordRef: RecordRef): Boolean
+    local procedure GetGuestAccessToken(ResourceUrl: Text; EnvironmentName: Text; var AccessToken: SecretText; SourceRecordRef: RecordRef): Boolean
     var
         AzureADMgt: Codeunit "Azure AD Mgt.";
         COHUBCore: Codeunit "COHUB Core";
     begin
         AccessToken := AzureADMgt.GetGuestAccessToken(ResourceUrl, EnvironmentName);
-        if AccessToken = '' then begin
+        if AccessToken.IsEmpty() then begin
             COHUBCore.LogFailure(StrSubstNo(ErrorAcquiringTokenTxt, EnvironmentName), SourceRecordRef);
             exit(false);
         end;

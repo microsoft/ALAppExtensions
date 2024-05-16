@@ -7,13 +7,9 @@ namespace Microsoft.Finance.AdvancePayments;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Posting;
-#if not CLEAN22
-using Microsoft.Finance.VAT.Calculation;
-#endif
 using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Enums;
-using Microsoft.Foundation.NoSeries;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Payables;
@@ -29,11 +25,6 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         TempPurchAdvLetterEntryCZZGlob: Record "Purch. Adv. Letter Entry CZZ" temporary;
         CurrencyGlob: Record Currency;
         PurchAdvLetterPostCZZ: Codeunit "Purch. Adv. Letter-Post CZZ";
-#if not CLEAN22
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-#endif
         DateEmptyErr: Label 'Posting Date and VAT Date cannot be empty.';
         DocumentNoOrDatesEmptyErr: Label 'Document No. and Dates cannot be empty.';
         ExternalDocumentNoEmptyErr: Label 'External Document No. cannot be empty.';
@@ -903,9 +894,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         VATPostingSetup: Record "VAT Posting Setup";
         GenJournalLine: Record "Gen. Journal Line";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
-        NoSeries: Codeunit "No. Series";
         VATPostingSetupHandlerCZZ: Codeunit "VAT Posting Setup Handler CZZ";
-        DocumentNo: Code[20];
     begin
         PurchAdvLetterEntryCZZ.TestField("Entry Type", PurchAdvLetterEntryCZZ."Entry Type"::"VAT Usage");
         PurchAdvLetterEntryCZZ.TestField(Cancelled, false);
@@ -913,7 +902,6 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
         PurchAdvLetterHeaderCZZ.Get(PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.");
         AdvanceLetterTemplateCZZ.Get(PurchAdvLetterHeaderCZZ."Advance Letter Code");
         AdvanceLetterTemplateCZZ.TestField("Advance Letter Cr. Memo Nos.");
-        DocumentNo := NoSeries.GetNextNo(AdvanceLetterTemplateCZZ."Advance Letter Cr. Memo Nos.");
 
         GetCurrency(PurchAdvLetterEntryCZZ."Currency Code");
 
@@ -930,7 +918,7 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                     begin
                         VATPostingSetup.Get(PurchAdvLetterEntryCZZ2."VAT Bus. Posting Group", PurchAdvLetterEntryCZZ2."VAT Prod. Posting Group");
                         PostUnrealizedExchangeRate(PurchAdvLetterEntryCZZ2, PurchAdvLetterHeaderCZZ, VATPostingSetup, -PurchAdvLetterEntryCZZ2."Amount (LCY)", -PurchAdvLetterEntryCZZ2."VAT Amount (LCY)",
-                            PurchAdvLetterEntryCZZ2."Related Entry", 0, DocumentNo, PurchAdvLetterEntryCZZ2."Posting Date", PurchAdvLetterEntryCZZ2."VAT Date", '', GenJnlPostLine, true, false);
+                            PurchAdvLetterEntryCZZ2."Related Entry", 0, PurchAdvLetterEntryCZZ2."Document No.", PurchAdvLetterEntryCZZ2."Posting Date", PurchAdvLetterEntryCZZ2."VAT Date", '', GenJnlPostLine, true, false);
                     end;
                 PurchAdvLetterEntryCZZ2."Entry Type"::"VAT Rate":
                     begin
@@ -945,13 +933,6 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                         InitGenJnlLineFromAdvance(PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ2, PurchAdvLetterEntryCZZ2."Document No.", PurchAdvLetterEntryCZZ2."External Document No.",
                             '', '', GenJournalLine);
                         GenJournalLine.Validate("Posting Date", PurchAdvLetterEntryCZZ2."Posting Date");
-#if not CLEAN22
-#pragma warning disable AL0432
-                        if not ReplaceVATDateMgtCZL.IsEnabled() then
-                            GenJournalLine.Validate("VAT Date CZL", PurchAdvLetterEntryCZZ2."VAT Date")
-                        else
-#pragma warning restore AL0432
-#endif
                         GenJournalLine.Validate("VAT Reporting Date", PurchAdvLetterEntryCZZ2."VAT Date");
                         GenJournalLine.Validate("Original Doc. VAT Date CZL", PurchAdvLetterEntryCZZ2."Original Document VAT Date");
                         GenJournalLine."Account No." := VATPostingSetup."Purch. Adv. Letter Account CZZ";
@@ -979,12 +960,6 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
                         GenJnlPostLine.RunWithCheck(GenJournalLine);
                         UnbindSubscription(VATPostingSetupHandlerCZZ);
 
-#if not CLEAN22
-#pragma warning disable AL0432
-                        if not ReplaceVATDateMgtCZL.IsEnabled() then
-                            GenJournalLine."VAT Reporting Date" := GenJournalLine."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
                         AdvEntryInit(false);
                         AdvEntryInitRelatedEntry(PurchAdvLetterEntryCZZ2."Related Entry");
                         AdvEntryInitCancel();
@@ -999,13 +974,6 @@ codeunit 31019 "PurchAdvLetterManagement CZZ"
 
                         InitGenJnlLineFromAdvance(PurchAdvLetterHeaderCZZ, PurchAdvLetterEntryCZZ2, PurchAdvLetterEntryCZZ2."Document No.", PurchAdvLetterEntryCZZ2."External Document No.", '', '', GenJournalLine);
                         GenJournalLine.Validate("Posting Date", PurchAdvLetterEntryCZZ2."Posting Date");
-#if not CLEAN22
-#pragma warning disable AL0432
-                        if not ReplaceVATDateMgtCZL.IsEnabled() then
-                            GenJournalLine.Validate("VAT Date CZL", PurchAdvLetterEntryCZZ2."VAT Date")
-                        else
-#pragma warning restore AL0432
-#endif
                         GenJournalLine.Validate("VAT Reporting Date", PurchAdvLetterEntryCZZ2."VAT Date");
                         GenJournalLine.Validate("Original Doc. VAT Date CZL", PurchAdvLetterEntryCZZ2."Original Document VAT Date");
                         GenJournalLine."Account No." := VATPostingSetup."Purch. Adv. Letter Account CZZ";

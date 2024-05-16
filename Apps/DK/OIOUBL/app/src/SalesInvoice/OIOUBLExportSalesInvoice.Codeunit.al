@@ -267,6 +267,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         SalesInvLine.SETFILTER(Type, '>%1', 0);
         SalesInvLine.SETFILTER("No.", '<>%1', ' ');
         SalesInvLine.SETFILTER(Quantity, '<>0');
+        OnCreateXMLOnAfterSalesInvLineSetFilters(SalesInvLine, SalesInvoiceHeader);
         if NOT SalesInvLine.FINDSET() then
             EXIT;
 
@@ -483,6 +484,11 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
 
     [IntegrationEvent(false, false)]
     local procedure OnCreateXMLOnAfterInsertInvoiceTypeCode(var XMLCurrNode: XmlElement; SalesInvoiceHeader: Record "Sales Invoice Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateXMLOnAfterSalesInvLineSetFilters(var SalesInvoiceLine: Record "Sales Invoice Line"; SalesInvoiceHeader: Record "Sales Invoice Header")
     begin
     end;
 }

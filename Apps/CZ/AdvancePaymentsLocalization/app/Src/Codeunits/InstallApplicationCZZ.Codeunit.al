@@ -1152,10 +1152,11 @@ codeunit 31087 "Install Application CZZ"
         CashFlowSetup: Record "Cash Flow Setup";
     begin
         CashFlowSetup.SetLoadFields("S. Adv. Letter CF Account No.", "P. Adv. Letter CF Account No.");
-        CashFlowSetup.Get();
-        CashFlowSetup."S. Adv. Letter CF Acc. No. CZZ" := CashFlowSetup."S. Adv. Letter CF Account No.";
-        CashFlowSetup."P. Adv. Letter CF Acc. No. CZZ" := CashFlowSetup."P. Adv. Letter CF Account No.";
-        CashFlowSetup.Modify(false);
+        if CashFlowSetup.Get() then begin
+            CashFlowSetup."S. Adv. Letter CF Acc. No. CZZ" := CashFlowSetup."S. Adv. Letter CF Account No.";
+            CashFlowSetup."P. Adv. Letter CF Acc. No. CZZ" := CashFlowSetup."P. Adv. Letter CF Account No.";
+            CashFlowSetup.Modify(false);
+        end;
     end;
 
     local procedure CopyAccScheduleExtension()
