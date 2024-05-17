@@ -2,6 +2,7 @@ namespace Microsoft.DataMigration.GP;
 
 using Microsoft.Bank.BankAccount;
 using Microsoft.Finance.GeneralLedger.Journal;
+using System.Integration;
 
 codeunit 40025 "GP Checkbook Migrator"
 {
@@ -15,6 +16,7 @@ codeunit 40025 "GP Checkbook Migrator"
         GPCheckbookMSTR: Record "GP Checkbook MSTR";
         BankAccount: Record "Bank Account";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         MigrateInactiveCheckbooks: Boolean;
     begin
         MigrateInactiveCheckbooks := GPCompanyAdditionalSettings.GetMigrateInactiveCheckbooks();
@@ -25,6 +27,7 @@ codeunit 40025 "GP Checkbook Migrator"
         repeat
             if not BankAccount.Get(GPCheckbookMSTR.CHEKBKID) then
                 if MigrateInactiveCheckbooks or not GPCheckbookMSTR.INACTIVE then begin
+                    DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPCheckbookMSTR.RecordId()));
                     Clear(BankAccount);
                     BankAccount."No." := DelChr(GPCheckbookMSTR.CHEKBKID, '>', ' ');
                     BankAccount.Name := DelChr(GPCheckbookMSTR.DSCRIPTN, '>', ' ');
