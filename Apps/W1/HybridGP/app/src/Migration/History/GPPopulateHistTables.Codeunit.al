@@ -390,11 +390,50 @@ codeunit 40900 "GP Populate Hist. Tables"
             HistSalesTrxLine."Location Code" := GPSOPTrxAmountsHist.LOCNCODE;
             HistSalesTrxLine."Ship-to Name" := CopyStr(GPSOPTrxAmountsHist.ShipToName, 1, MaxStrLen(HistSalesTrxLine."Ship-to Name"));
 
-            if not HistSalesTrxLine.Insert() then
+            if HistSalesTrxLine.Insert() then
+                PopulateSalesLineTrxSerialLotDetail(HistSalesTrxLine, GPSOPTrxAmountsHist)
+            else
                 ReportLastError(Database::GPSOPTrxAmountsHist, GPSOPTrxAmountsHist.DEX_ROW_ID, "Hist. Migration Step Type"::"GP Receivables Trx.", GPSOPTrxHist.SOPNUMBE);
 
             AfterProcessedNextChildRecord();
         until GPSOPTrxAmountsHist.Next() = 0;
+    end;
+
+    local procedure PopulateSalesLineTrxSerialLotDetail(var HistSalesTrxLine: Record "Hist. Sales Trx. Line"; var GPSOPTrxAmountsHist: Record GPSOPTrxAmountsHist)
+    var
+        GPSOPSerialLotWorkHist: Record GPSOPSerialLotWorkHist;
+        HistRecvTrxSerialLot: Record "Hist. Recv. Trx. SerialLot";
+    begin
+        GPSOPSerialLotWorkHist.SetLoadFields(SOPTYPE, SOPNUMBE, LNITMSEQ, POSTED, SERLTNUM, SERLTQTY, DATERECD, DTSEQNUM, UNITCOST, CMPNTSEQ, SLTSQNUM, OVRSERLT, BIN, MFGDATE, EXPNDATE, TRXSORCE);
+        GPSOPSerialLotWorkHist.SetRange(SOPTYPE, GPSOPTrxAmountsHist.SOPTYPE);
+        GPSOPSerialLotWorkHist.SetRange(SOPNUMBE, GPSOPTrxAmountsHist.SOPNUMBE);
+        GPSOPSerialLotWorkHist.SetRange(LNITMSEQ, GPSOPTrxAmountsHist.LNITMSEQ);
+        GPSOPSerialLotWorkHist.SetRange(POSTED, true);
+
+        if not GPSOPSerialLotWorkHist.FindSet() then
+            exit;
+
+        repeat
+            Clear(HistRecvTrxSerialLot);
+            HistRecvTrxSerialLot."Item No." := HistSalesTrxLine."Item No.";
+            HistRecvTrxSerialLot."Qty. Type" := ConvertGPQtyTypeToHistQtyType(GPSOPSerialLotWorkHist.QTYTYPE);
+            HistRecvTrxSerialLot."Serial/Lot Number" := CopyStr(GPSOPSerialLotWorkHist.SERLTNUM.TrimEnd(), 1, MaxStrLen(HistRecvTrxSerialLot."Serial/Lot Number"));
+            HistRecvTrxSerialLot."Serial/Lot Qty." := GPSOPSerialLotWorkHist.SERLTQTY;
+            HistRecvTrxSerialLot."Date Received" := GPSOPSerialLotWorkHist.DATERECD;
+            HistRecvTrxSerialLot."Date Sequence No." := GPSOPSerialLotWorkHist.DTSEQNUM;
+            HistRecvTrxSerialLot."Unit Cost" := GPSOPSerialLotWorkHist.UNITCOST;
+            HistRecvTrxSerialLot."No." := CopyStr(GPSOPSerialLotWorkHist.SOPNUMBE.TrimEnd(), 1, MaxStrLen(HistRecvTrxSerialLot."No."));
+            HistRecvTrxSerialLot."Sales Trx. Type" := HistSalesTrxLine."Sales Trx. Type";
+            HistRecvTrxSerialLot."Line Item Sequence" := GPSOPSerialLotWorkHist.LNITMSEQ;
+            HistRecvTrxSerialLot."Component Sequence" := GPSOPSerialLotWorkHist.CMPNTSEQ;
+            HistRecvTrxSerialLot."Serial/Lot Seq. Number" := GPSOPSerialLotWorkHist.SLTSQNUM;
+            HistRecvTrxSerialLot."Override Serial/Lot" := (GPSOPSerialLotWorkHist.OVRSERLT = 1);
+            HistRecvTrxSerialLot.Bin := CopyStr(GPSOPSerialLotWorkHist.BIN.TrimEnd(), 1, MaxStrLen(HistRecvTrxSerialLot.Bin));
+            HistRecvTrxSerialLot."Manufacture Date" := GPSOPSerialLotWorkHist.MFGDATE;
+            HistRecvTrxSerialLot."Expiration Date" := GPSOPSerialLotWorkHist.EXPNDATE;
+            HistRecvTrxSerialLot."Audit Code" := CopyStr(GPSOPSerialLotWorkHist.TRXSORCE.TrimEnd(), 1, MaxStrLen(HistRecvTrxSerialLot."Audit Code"));
+            HistRecvTrxSerialLot.Insert();
+        until GPSOPSerialLotWorkHist.Next() = 0;
     end;
 
     local procedure PopulateRecvDocuments()
@@ -1106,11 +1145,44 @@ codeunit 40900 "GP Populate Hist. Tables"
             HistInventoryTrxLine."Transfer To Location Code" := GPIVTrxAmountsHist.TRNSTLOC;
             HistInventoryTrxLine."Reason Code" := GPIVTrxAmountsHist.Reason_Code;
 
-            if not HistInventoryTrxLine.Insert() then
+            if HistInventoryTrxLine.Insert() then
+                PopulateInventoryTrxLineSerialLotDetail(HistInventoryTrxLine, GPIVTrxAmountsHist)
+            else
                 ReportLastError(Database::GPIVTrxAmountsHist, GPIVTrxAmountsHist.DEX_ROW_ID, "Hist. Migration Step Type"::"GP Inventory Trx.", DocumentNo);
 
             AfterProcessedNextChildRecord();
         until GPIVTrxAmountsHist.Next() = 0;
+    end;
+
+    local procedure PopulateInventoryTrxLineSerialLotDetail(var HistInventoryTrxLine: Record "Hist. Inventory Trx. Line"; var GPIVTrxAmountsHist: Record GPIVTrxAmountsHist)
+    var
+        GPIVSerialLotNumberHist: Record GPIVSerialLotNumberHist;
+        HistInvtTrxSerialLot: Record "Hist. Invt. Trx. SerialLot";
+    begin
+        GPIVSerialLotNumberHist.SetLoadFields(IVDOCTYP, DOCNUMBR, LNSEQNBR, SERLTNUM, SERLTQTY, FROMBIN, TOBIN, MFGDATE, EXPNDATE, TRXSORCE);
+        GPIVSerialLotNumberHist.SetRange(IVDOCTYP, GPIVTrxAmountsHist.DOCTYPE);
+        GPIVSerialLotNumberHist.SetRange(DOCNUMBR, GPIVTrxAmountsHist.DOCNUMBR);
+        GPIVSerialLotNumberHist.SetRange(LNSEQNBR, GPIVTrxAmountsHist.LNSEQNBR);
+
+        if not GPIVSerialLotNumberHist.FindSet() then
+            exit;
+
+        repeat
+            Clear(HistInvtTrxSerialLot);
+            HistInvtTrxSerialLot."Item No." := HistInventoryTrxLine."Item No.";
+            HistInvtTrxSerialLot."Serial/Lot Number" := CopyStr(GPIVSerialLotNumberHist.SERLTNUM.TrimEnd(), 1, MaxStrLen(HistInvtTrxSerialLot."Serial/Lot Number"));
+            HistInvtTrxSerialLot."Serial/Lot Qty." := GPIVSerialLotNumberHist.SERLTQTY;
+            HistInvtTrxSerialLot."Document No." := HistInventoryTrxLine."Document No.";
+            HistInvtTrxSerialLot."Document Type" := HistInventoryTrxLine."Document Type";
+            HistInvtTrxSerialLot."Line Sequence Number" := GPIVTrxAmountsHist.LNSEQNBR;
+            HistInvtTrxSerialLot."Serial/Lot Seq. Number" := GPIVSerialLotNumberHist.SLTSQNUM;
+            HistInvtTrxSerialLot."From Bin" := CopyStr(GPIVSerialLotNumberHist.FROMBIN.TrimEnd(), 1, MaxStrLen(HistInvtTrxSerialLot."From Bin"));
+            HistInvtTrxSerialLot."To Bin" := CopyStr(GPIVSerialLotNumberHist.TOBIN.TrimEnd(), 1, MaxStrLen(HistInvtTrxSerialLot."To Bin"));
+            HistInvtTrxSerialLot."Manufacture Date" := GPIVSerialLotNumberHist.MFGDATE;
+            HistInvtTrxSerialLot."Expiration Date" := GPIVSerialLotNumberHist.EXPNDATE;
+            HistInvtTrxSerialLot."Audit Code" := CopyStr(GPIVSerialLotNumberHist.TRXSORCE.TrimEnd(), 1, MaxStrLen(HistInvtTrxSerialLot."Audit Code"));
+            HistInvtTrxSerialLot.Insert();
+        until GPIVSerialLotNumberHist.Next() = 0;
     end;
 
     local procedure PopulateAssemblyItemTransactions()
@@ -1678,6 +1750,24 @@ codeunit 40900 "GP Populate Hist. Tables"
         end;
 
         exit("Hist. Purchase Recv. Doc. Type"::Blank);
+    end;
+
+    local procedure ConvertGPQtyTypeToHistQtyType(GPQtyType: Integer): enum "Hist. Inventory Qty. Type"
+    begin
+        case GPQtyType of
+            1:
+                exit("Hist. Inventory Qty. Type"::"On Hand");
+            2:
+                exit("Hist. Inventory Qty. Type"::Returned);
+            3:
+                exit("Hist. Inventory Qty. Type"::"In Use");
+            4:
+                exit("Hist. Inventory Qty. Type"::"In Service");
+            5:
+                exit("Hist. Inventory Qty. Type"::Damaged);
+        end;
+
+        exit("Hist. Inventory Qty. Type"::Unknown);
     end;
 
     local procedure ConvertGPVoidOptionToBoolean(OptionIntValue: Integer): Boolean
