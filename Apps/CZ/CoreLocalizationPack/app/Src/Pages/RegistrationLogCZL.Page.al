@@ -139,10 +139,6 @@ page 11756 "Registration Log CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Verify Registration No.';
                 Image = Start;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 RunObject = codeunit "Reg. Lookup Ext. Data CZL";
                 ToolTip = 'Verify a Registration number. If the number is verified the Status field contains the value Valid.';
             }
@@ -152,15 +148,24 @@ page 11756 "Registration Log CZL"
                 Caption = 'Validation Detail';
                 Enabled = DetailExist;
                 Image = List;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
                 ToolTip = 'Open the list of fields that have been processed by the registration number validation service.';
 
                 trigger OnAction()
                 begin
                     Rec.OpenModifyDetails();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref("Verify Registration No._Promoted"; "Verify Registration No.")
+                {
+                }
+                actionref(ValidationDetail_Promoted; ValidationDetail)
+                {
+                }
             }
         }
     }

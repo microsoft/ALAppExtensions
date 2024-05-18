@@ -507,6 +507,7 @@ report 31194 "Service Order CZL"
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
+        ServiceFormatAddress: Codeunit "Service Format Address";
         DocumentLbl: Label 'Service Order';
         PageLbl: Label 'Page';
         CopyLbl: Label 'Copy';
@@ -554,8 +555,8 @@ report 31194 "Service Order CZL"
 
     local procedure FormatAddressFields(ServiceHeader: Record "Service Header")
     begin
-        FormatAddress.ServiceOrderSellto(CustAddr, ServiceHeader);
-        FormatAddress.ServiceHeaderShipTo(ShipToAddr, ServiceHeader);
+        ServiceFormatAddress.ServiceOrderSellto(CustAddr, ServiceHeader);
+        ServiceFormatAddress.ServiceHeaderShipTo(ShipToAddr, ServiceHeader);
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

@@ -12,10 +12,6 @@ using Microsoft.Finance.ReceivablesPayables;
 using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.AuditCodes;
-#if not CLEAN22
-using Microsoft.Foundation.BatchProcessing;
-using Microsoft.Foundation.Company;
-#endif
 using Microsoft.Inventory.Intrastat;
 using Microsoft.Inventory.Journal;
 using Microsoft.Purchases.Document;
@@ -24,10 +20,6 @@ using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Reports;
 using Microsoft.Purchases.Setup;
 using Microsoft.Purchases.Vendor;
-#if not CLEAN22
-using Microsoft.Sales.Document;
-using System.Environment.Configuration;
-#endif
 using System.Utilities;
 
 codeunit 31039 "Purchase Posting Handler CZL"
@@ -160,9 +152,6 @@ codeunit 31039 "Purchase Posting Handler CZL"
             GenJournalLine."Bal. Account No." := VATPostingSetup."Purch. VAT Curr. Exch. Acc CZL";
         GenJournalLine."Posting Date" := PurchaseHeader."Posting Date";
         GenJournalLine."Document Date" := PurchaseHeader."Document Date";
-#if not CLEAN22
-        GenJournalLine."VAT Date CZL" := PurchaseHeader."VAT Date CZL";
-#endif
         GenJournalLine."VAT Reporting Date" := PurchaseHeader."VAT Reporting Date";
         GenJournalLine."Original Doc. VAT Date CZL" := PurchaseHeader."Original Doc. VAT Date CZL";
         GenJournalLine.Description := PurchaseHeader."Posting Description";
@@ -314,11 +303,6 @@ codeunit 31039 "Purchase Posting Handler CZL"
             GenJournalLine."Bal. Account No." := VATPostingSetup."Purch. VAT Curr. Exch. Acc CZL";
         GenJournalLine."Posting Date" := PurchaseHeader."Posting Date";
         GenJournalLine."Document Date" := PurchaseHeader."Document Date";
-#if not CLEAN22
-#pragma warning disable AL0432
-        GenJournalLine."VAT Date CZL" := PurchaseHeader."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
         GenJournalLine."VAT Reporting Date" := PurchaseHeader."VAT Reporting Date";
         GenJournalLine."Original Doc. VAT Date CZL" := PurchaseHeader."Original Doc. VAT Date CZL";
         GenJournalLine.Description := PurchaseHeader."Posting Description";
@@ -365,11 +349,6 @@ codeunit 31039 "Purchase Posting Handler CZL"
     var
         VATDateHandlerCZL: Codeunit "VAT Date Handler CZL";
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchHeader.CheckIntrastatMandatoryFieldsCZL();
-#pragma warning restore AL0432
-#endif
         VATDateHandlerCZL.CheckVATDateCZL(PurchHeader);
     end;
 
@@ -505,102 +484,6 @@ codeunit 31039 "Purchase Posting Handler CZL"
         if PurchCrMemoHdr."Variable Symbol CZL" = '' then
             PurchCrMemoHdr."Variable Symbol CZL" := BankOperationsFunctionsCZL.CreateVariableSymbol(PurchCrMemoHdr."Vendor Cr. Memo No.");
     end;
-#if not CLEAN22
-#pragma warning disable AL0432
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterTestPurchLine', '', false, false)]
-    local procedure CheckIntrastatOnAfterTestPurchLine(PurchHeader: Record "Purchase Header"; PurchLine: Record "Purchase Line")
-    begin
-        PurchLine.CheckIntrastatMandatoryFieldsCZL(PurchHeader);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterInitAssocItemJnlLine', '', false, false)]
-    local procedure CopyFieldsOnAfterInitAssocItemJnlLine(var ItemJournalLine: Record "Item Journal Line"; SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")
-    begin
-        ItemJournalLine."Intrastat Transaction CZL" := SalesHeader.IsIntrastatTransactionCZL();
-        // recalc to base UOM
-        if ItemJournalLine."Net Weight CZL" <> 0 then
-            if SalesLine."Qty. per Unit of Measure" <> 0 then
-                ItemJournalLine."Net Weight CZL" := Round(ItemJournalLine."Net Weight CZL" / SalesLine."Qty. per Unit of Measure", 0.00001);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostItemJnlLineOnAfterCopyItemCharge', '', false, false)]
-    local procedure CopyFieldsOnPostItemJnlLineOnAfterCopyItemCharge(var ItemJournalLine: Record "Item Journal Line"; var TempItemChargeAssgntPurch: Record "Item Charge Assignment (Purch)")
-    begin
-        ItemJournalLine."Incl. in Intrastat Amount CZL" := TempItemChargeAssgntPurch."Incl. in Intrastat Amount CZL";
-        ItemJournalLine."Incl. in Intrastat S.Value CZL" := TempItemChargeAssgntPurch."Incl. in Intrastat S.Value CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnPostItemChargePerOrderOnAfterCopyToItemJnlLine', '', false, false)]
-    local procedure CopyFieldsOnPostItemChargePerOrderOnAfterCopyToItemJnlLine(var ItemJournalLine: Record "Item Journal Line"; var TempItemChargeAssignmentPurch: Record "Item Charge Assignment (Purch)")
-    begin
-        ItemJournalLine."Incl. in Intrastat Amount CZL" := TempItemChargeAssignmentPurch."Incl. in Intrastat Amount CZL";
-        ItemJournalLine."Incl. in Intrastat S.Value CZL" := TempItemChargeAssignmentPurch."Incl. in Intrastat S.Value CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterValidatePostingAndDocumentDate', '', false, false)]
-    local procedure ValidateVATDateOnAfterValidatePostingAndDocumentDate(var PurchaseHeader: Record "Purchase Header"; CommitIsSuppressed: Boolean; PreviewMode: Boolean)
-    var
-        BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
-        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
-        VATDate: Date;
-        VATDateExists: Boolean;
-        ReplaceVATDate: Boolean;
-        PostingDate: Date;
-    begin
-        if PurchaseHeader.IsReplaceVATDateEnabled() then
-            exit;
-        if VATReportingDateMgt.IsVATDateEnabled() then begin
-            VATDateExists :=
-                BatchProcessingMgt.GetBooleanParameter(PurchaseHeader.RecordId, Enum::"Batch Posting Parameter Type"::"Replace VAT Date", ReplaceVATDate) and
-                BatchProcessingMgt.GetDateParameter(PurchaseHeader.RecordId, Enum::"Batch Posting Parameter Type"::"VAT Date", VATDate);
-            if not VATDateExists then
-                VATDateExists :=
-                    BatchProcessingMgt.GetBooleanParameter(PurchaseHeader.RecordId, Enum::"Batch Posting Parameter Type"::"Replace VAT Date CZL", ReplaceVATDate) and
-                    BatchProcessingMgt.GetDateParameter(PurchaseHeader.RecordId, Enum::"Batch Posting Parameter Type"::"VAT Date CZL", VATDate);
-            if VATDateExists and (ReplaceVATDate or (PurchaseHeader."VAT Date CZL" = 0D)) then begin
-                PurchaseHeader.Validate("VAT Date CZL", VATDate);
-                PurchaseHeader.Modify();
-            end;
-        end else
-            if BatchProcessingMgt.GetDateParameter(PurchaseHeader.RecordId, Enum::"Batch Posting Parameter Type"::"Posting Date", PostingDate) and
-               (PurchaseHeader."Posting Date" <> PurchaseHeader."VAT Date CZL")
-            then begin
-                PurchaseHeader.Validate("VAT Date CZL", PurchaseHeader."Posting Date");
-                PurchaseHeader.Modify();
-            end;
-    end;
-
-    [EventSubscriber(ObjectType::Report, Report::"Purchase Document - Test", 'OnAfterCheckPurchaseDoc', '', false, false)]
-    local procedure CheckIntrastatMandatoryFieldsOnAfterCheckPurchaseDoc(PurchaseHeader: Record "Purchase Header"; var ErrorCounter: Integer; var ErrorText: array[99] of Text[250])
-    var
-        StatutoryReportingSetupCZL: Record "Statutory Reporting Setup CZL";
-        FeatureMgtFacade: Codeunit "Feature Management Facade";
-        MustBeSpecifiedLbl: Label '%1 must be specified.', Comment = '%1 = FieldCaption';
-        IntrastatFeatureKeyIdTok: Label 'ReplaceIntrastat', Locked = true;
-    begin
-        if FeatureMgtFacade.IsEnabled(IntrastatFeatureKeyIdTok) then
-            exit;
-        if not (PurchaseHeader.Ship or PurchaseHeader.Receive) then
-            exit;
-        if PurchaseHeader.IsIntrastatTransactionCZL() and PurchaseHeader.ShipOrReceiveInventoriableTypeItemsCZL() then begin
-            StatutoryReportingSetupCZL.Get();
-            if StatutoryReportingSetupCZL."Transaction Type Mandatory" then
-                if PurchaseHeader."Transaction Type" = '' then
-                    AddError(StrSubstNo(MustBeSpecifiedLbl, PurchaseHeader.FieldCaption("Transaction Type")), ErrorCounter, ErrorText);
-            if StatutoryReportingSetupCZL."Transaction Spec. Mandatory" then
-                if PurchaseHeader."Transaction Specification" = '' then
-                    AddError(StrSubstNo(MustBeSpecifiedLbl, PurchaseHeader.FieldCaption("Transaction Specification")), ErrorCounter, ErrorText);
-            if StatutoryReportingSetupCZL."Transport Method Mandatory" then
-                if PurchaseHeader."Transport Method" = '' then
-                    AddError(StrSubstNo(MustBeSpecifiedLbl, PurchaseHeader.FieldCaption("Transport Method")), ErrorCounter, ErrorText);
-            if StatutoryReportingSetupCZL."Shipment Method Mandatory" then
-                if PurchaseHeader."Shipment Method Code" = '' then
-                    AddError(StrSubstNo(MustBeSpecifiedLbl, PurchaseHeader.FieldCaption("Shipment Method Code")), ErrorCounter, ErrorText);
-        end;
-    end;
-#pragma warning restore AL0432 
-#endif
 
     [EventSubscriber(ObjectType::Report, Report::"Purchase Document - Test", 'OnAfterCheckPurchaseDoc', '', false, false)]
     local procedure CheckExternalDocumentNoOnAfterCheckPurchaseDoc(PurchaseHeader: Record "Purchase Header"; var ErrorCounter: Integer; var ErrorText: array[99] of Text[250])

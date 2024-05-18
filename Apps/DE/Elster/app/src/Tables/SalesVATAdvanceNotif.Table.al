@@ -541,14 +541,20 @@ table 11021 "Sales VAT Advance Notif."
         end;
     end;
 
-    local procedure CalcLineTotal(VATStmtLine2: Record "VAT Statement Line"; Level: Integer): Boolean
+    local procedure CalcLineTotal(VATStmtLine2: Record "VAT Statement Line"; Level: Integer) Result: Boolean
     var
         GLAcc: Record "G/L Account";
         VATEntry: Record "VAT Entry";
         i: Integer;
         ErrorText: Text[80];
         LineNo: array[6] of Code[10];
+        IsHandled: Boolean;
     begin
+        IsHandled := false;
+        OnBeforeCalcLineTotal(Rec, VATStmtLine2, Level, IsHandled, Result);
+        if IsHandled then
+            exit(Result);
+
         case VATStmtLine2.Type of
             VATStmtLine2.Type::"Account Totaling":
                 if VATStmtLine2."Account Totaling" <> '' then begin
@@ -679,6 +685,11 @@ table 11021 "Sales VAT Advance Notif."
         if "Starting Date" = 0D then
             exit('');
         exit(Format("Starting Date") + '..' + Format(CalcEndDate("Starting Date")));
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCalcLineTotal(SalesVATAdvanceNotif: Record "Sales VAT Advance Notif."; VATStmtLine2: Record "VAT Statement Line"; Level: Integer; var IsHandled: Boolean; var Result: Boolean)
+    begin
     end;
 
     [IntegrationEvent(true, false)]

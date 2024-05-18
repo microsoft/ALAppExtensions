@@ -7,7 +7,13 @@ using Microsoft.Sales.History;
 /// </summary>
 codeunit 30192 "Shpfy Shipping Events"
 {
-    [InternalEvent(false)]
+    [IntegrationEvent(false, false)]
+    /// <summary> 
+    /// Raised Before Retrieve Tracking Url.
+    /// </summary>
+    /// <param name="SalesShipmentHeader">Parameter of type Record "Sales Shipment Header".</param>
+    /// <param name="TrackingUrl">Parameter of type Text.</param>
+    /// <param name="IsHandled">Parameter of type Boolean.</param>
     internal procedure OnBeforeRetrieveTrackingUrl(var SalesShipmentHeader: Record "Sales Shipment Header"; var TrackingUrl: Text; var IsHandled: Boolean)
     begin
     end;

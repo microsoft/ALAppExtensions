@@ -9,8 +9,7 @@ table 30149 "Shpfy Order Line Attribute"
     DataClassification = SystemMetadata;
     DrillDownPageID = "Shpfy Order Lines Attributes";
     LookupPageID = "Shpfy Order Lines Attributes";
-    Access = Internal;
-    extensible = false;
+    Extensible = false;
 
     fields
     {
@@ -42,5 +41,4 @@ table 30149 "Shpfy Order Line Attribute"
             Clustered = true;
         }
     }
-
 }

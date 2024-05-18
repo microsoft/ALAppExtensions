@@ -204,11 +204,22 @@ page 31165 "Posted Cash Document CZP"
         }
         area(FactBoxes)
         {
+#if not CLEAN25
             part("Attached Documents"; "Document Attachment Factbox")
             {
+                ObsoleteTag = '25.0';
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The "Document Attachment FactBox" has been replaced by "Doc. Attachment List Factbox", which supports multiple files upload.';
                 ApplicationArea = All;
                 Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(11737), "No." = field("No.");
+                SubPageLink = "Table ID" = const(database::"Posted Cash Document Hdr. CZP"), "No." = field("No.");
+            }
+#endif
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
+            {
+                ApplicationArea = All;
+                Caption = 'Documents';
+                SubPageLink = "Table ID" = const(database::"Posted Cash Document Hdr. CZP"), "No." = field("No.");
             }
             systempart(Links; Links)
             {
@@ -315,31 +326,6 @@ page 31165 "Posted Cash Document CZP"
                 {
                 }
             }
-#if not CLEAN22
-#pragma warning disable AS0072
-            group(Category_Report)
-            {
-                Caption = 'Report';
-                ObsoleteTag = '22.0';
-                ObsoleteState = Pending;
-                ObsoleteReason = 'This group has been removed.';
-                Visible = false;
-
-                actionref(PrinttoAttachmentPromoted; PrintToAttachment)
-                {
-                    ObsoleteTag = '22.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This group has been removed.';
-                }
-                actionref(PrintPromoted; "&Print")
-                {
-                    ObsoleteTag = '22.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This group has been removed.';
-                }
-            }
-#pragma warning restore AS0072
-#endif
             group(Category_Category8)
             {
                 Caption = 'Print';

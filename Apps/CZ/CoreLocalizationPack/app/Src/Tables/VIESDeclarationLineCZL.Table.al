@@ -7,6 +7,8 @@ namespace Microsoft.Finance.VAT.Reporting;
 using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Address;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
 
 table 31076 "VIES Declaration Line CZL"
 {
@@ -39,6 +41,7 @@ table 31076 "VIES Declaration Line CZL"
                     "Trade Role Type" := "Trade Role Type"::" ";
                     "Number of Supplies" := 0;
                     "Amount (LCY)" := 0;
+                    "Additional-Currency Amount" := 0;
                 end;
 
                 "Record Code" := "Record Code"::" ";
@@ -231,21 +234,36 @@ table 31076 "VIES Declaration Line CZL"
                 TestField("Record Code", "Record Code"::"3");
             end;
         }
+        field(41; "Additional-Currency Amount"; Decimal)
+        {
+            AccessByPermission = TableData Currency = R;
+            AutoFormatExpression = GetCurrencyCode();
+            AutoFormatType = 1;
+            Caption = 'Additional-Currency Amount';
+            DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                TestStatusOpen();
+                CheckLineType();
+                CheckTradeType();
+            end;
+        }
     }
     keys
     {
         key(Key1; "VIES Declaration No.", "Line No.")
         {
             Clustered = true;
-            SumIndexFields = "Amount (LCY)", "Number of Supplies";
+            SumIndexFields = "Amount (LCY)", "Additional-Currency Amount", "Number of Supplies";
         }
         key(Key2; "Trade Type", "Country/Region Code", "VAT Registration No.", "Trade Role Type", "EU Service")
         {
-            SumIndexFields = "Amount (LCY)";
+            SumIndexFields = "Amount (LCY)", "Additional-Currency Amount";
         }
         key(Key3; "VAT Registration No.")
         {
-            SumIndexFields = "Amount (LCY)";
+            SumIndexFields = "Amount (LCY)", "Additional-Currency Amount";
         }
     }
     trigger OnDelete()
@@ -274,6 +292,14 @@ table 31076 "VIES Declaration Line CZL"
     begin
         GetHeader();
         VIESDeclarationHeaderCZL.TestField(Status, VIESDeclarationHeaderCZL.Status::Open);
+    end;
+
+    local procedure GetCurrencyCode(): Code[10]
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.GetRecordOnce();
+        exit(GeneralLedgerSetup."Additional Reporting Currency");
     end;
 
     procedure GetTradeRole(): Code[10]
@@ -345,13 +371,6 @@ table 31076 "VIES Declaration Line CZL"
             "Trade Role Type"::"Property Movement":
                 exit;
         end;
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not VATEntry.IsReplaceVATDateEnabled() then
-            VATEntry.SetRange("VAT Date CZL", VIESDeclarationHeaderCZL."Start Date", VIESDeclarationHeaderCZL."End Date")
-        else
-#pragma warning restore AL0432
-#endif
         VATEntry.SetRange("VAT Reporting Date", VIESDeclarationHeaderCZL."Start Date", VIESDeclarationHeaderCZL."End Date");
         VATEntry.SetRange("EU Service", "EU Service");
         OnDrillDownAmountLCYOnBeforeVATEntryFind(Rec, VIESDeclarationHeaderCZL, VATEntry);

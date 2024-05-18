@@ -1078,6 +1078,66 @@ codeunit 139835 "APIV2 - Sales Order Lines E2E"
         Assert.IsFalse(ReservationEntry.IsEmpty(), 'Reservation links should be created');
     end;
 
+    [Test]
+    procedure TestExpandReturnsCorrectDocumentLines()
+    var
+        SalesHeader: Record "Sales Header";
+        ResponseText: Text;
+        SalesOrderLinesSet: Text;
+        TargetURL: Text;
+        OrderId: Text;
+    begin
+        // [SCENARIO] Call GET on the Header with expand Lines 
+        // [GIVEN] An order with lines.
+        Initialize();
+        OrderId := CreateSalesOrderWithLines(SalesHeader);
+
+        // [WHEN] we GET all the lines by $expand
+        TargetURL := GetHeadersURLWithExpandedLines(OrderId, Page::"APIV2 - Sales Orders", OrderServiceNameTxt);
+        LibraryGraphMgt.GetFromWebService(ResponseText, TargetURL);
+
+        // [THEN] the lines returned should be valid (numbers and integration ids)
+        LibraryGraphMgt.GetPropertyValueFromJSON(ResponseText, 'salesOrderLines', SalesOrderLinesSet);
+        VerifyOrderLines(SalesOrderLinesSet, OrderId);
+    end;
+
+    [Test]
+    procedure TestExpandReturnsCorrectDocumentLinesWithMultipleDocuments()
+    var
+        SalesHeader: Record "Sales Header";
+        ResponseText1: Text;
+        ResponseText2: Text;
+        ResponseText3: Text;
+        SalesOrderLinesSet: Text;
+        TargetURL: Text;
+        OrderId1: Text;
+        OrderId2: Text;
+        OrderId3: Text;
+    begin
+        // [SCENARIO] Call GET on the Header with expand Lines 
+        // [GIVEN] Three orders with lines.
+        Initialize();
+        OrderId1 := CreateSalesOrderWithLines(SalesHeader);
+        OrderId2 := CreateSalesOrderWithLines(SalesHeader);
+        OrderId3 := CreateSalesOrderWithLines(SalesHeader);
+
+        // [WHEN] we GET all the lines by $expand
+        TargetURL := GetHeadersURLWithExpandedLines(OrderId1, Page::"APIV2 - Sales Orders", OrderServiceNameTxt);
+        LibraryGraphMgt.GetFromWebService(ResponseText1, TargetURL);
+        TargetURL := GetHeadersURLWithExpandedLines(OrderId2, Page::"APIV2 - Sales Orders", OrderServiceNameTxt);
+        LibraryGraphMgt.GetFromWebService(ResponseText2, TargetURL);
+        TargetURL := GetHeadersURLWithExpandedLines(OrderId3, Page::"APIV2 - Sales Orders", OrderServiceNameTxt);
+        LibraryGraphMgt.GetFromWebService(ResponseText3, TargetURL);
+
+        // [THEN] the lines returned should be valid (numbers and integration ids)
+        LibraryGraphMgt.GetPropertyValueFromJSON(ResponseText1, 'salesOrderLines', SalesOrderLinesSet);
+        VerifyOrderLines(SalesOrderLinesSet, OrderId1);
+        LibraryGraphMgt.GetPropertyValueFromJSON(ResponseText2, 'salesOrderLines', SalesOrderLinesSet);
+        VerifyOrderLines(SalesOrderLinesSet, OrderId2);
+        LibraryGraphMgt.GetPropertyValueFromJSON(ResponseText3, 'salesOrderLines', SalesOrderLinesSet);
+        VerifyOrderLines(SalesOrderLinesSet, OrderId3);
+    end;
+
     local procedure CreateOrderWithAllPossibleLineTypes(var SalesHeader: Record "Sales Header"; var ExpectedNumberOfLines: Integer)
     var
         SalesLine: Record "Sales Line";
@@ -1158,6 +1218,23 @@ codeunit 139835 "APIV2 - Sales Order Lines E2E"
         LibraryGraphMgt.GetObjectIDFromJSON(LineJSON1, 'itemId', ItemId1);
         LibraryGraphMgt.GetObjectIDFromJSON(LineJSON2, 'itemId', ItemId2);
         Assert.AreNotEqual(ItemId1, ItemId2, 'Item Ids should be different for different items');
+    end;
+
+    local procedure VerifyOrderLines(SalesOrderLinesSetValue: Text; IdTxt: Text)
+    var
+        Index: Integer;
+        SalesOrderLineTxt: Text;
+        DocumentIdValue: Text;
+    begin
+        Index := 0;
+        repeat
+            SalesOrderLineTxt := LibraryGraphMgt.GetObjectFromCollectionByIndex(SalesOrderLinesSetValue, Index);
+            LibraryGraphMgt.GetPropertyValueFromJSON(SalesOrderLineTxt, 'documentId', DocumentIdValue);
+            LibraryGraphMgt.VerifyIDFieldInJson(SalesOrderLineTxt, 'documentId');
+            DocumentIdValue := '{' + DocumentIdValue + '}';
+            Assert.AreEqual(DocumentIdValue, IdTxt.ToLower(), 'The parent ID value is wrong.');
+            Index := Index + 1;
+        until (Index = LibraryGraphMgt.GetCollectionCountFromJSON(SalesOrderLinesSetValue))
     end;
 
     local procedure VerifySalesOrderLinesForSalesHeader(var SalesHeader: Record "Sales Header"; JsonObjectTxt: Text)
@@ -1292,6 +1369,22 @@ codeunit 139835 "APIV2 - Sales Order Lines E2E"
         NotificationLifecycleMgt: Codeunit "Notification Lifecycle Mgt.";
     begin
         NotificationLifecycleMgt.RecallAllNotifications();
+    end;
+
+    local procedure GetHeadersURLWithExpandedLines(DocumentId: Text; PageNumber: Integer; ServiceName: Text): Text
+    var
+        TargetURL: Text;
+        URLFilter: Text;
+    begin
+        TargetURL := LibraryGraphMgt.CreateTargetURL(DocumentId, PageNumber, ServiceName);
+        URLFilter := '$expand=salesOrderLines';
+
+        if StrPos(TargetURL, '?') <> 0 then
+            TargetURL := TargetURL + '&' + UrlFilter
+        else
+            TargetURL := TargetURL + '?' + UrlFilter;
+
+        exit(TargetURL);
     end;
 }
 

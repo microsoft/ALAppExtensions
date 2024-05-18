@@ -545,12 +545,6 @@ report 31197 "Service Invoice CZL"
 
                 if "Currency Code" = '' then
                     "Currency Code" := "General Ledger Setup"."LCY Code";
-#if not CLEAN22
-#pragma warning disable AL0432
-                if not ReplaceVATDateMgtCZL.IsEnabled() then
-                    "VAT Reporting Date" := "VAT Date CZL";
-#pragma warning restore AL0432
-#endif
                 Clear(QRPaymentCode);
                 if SalesReceivablesSetup."Print QR Payment CZL" and PaymentMethod."Print QR Payment CZL" then
                     GenerateQRPaymentCode();
@@ -594,11 +588,7 @@ report 31197 "Service Invoice CZL"
         FormatAddress: Codeunit "Format Address";
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
-#if not CLEAN22
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-#endif
+        ServiceFormatAddress: Codeunit "Service Format Address";
         DocumentLbl: Label 'Invoice';
         OrderNoLbl: Label 'Order No.';
         ExchRateLbl: Label 'Exchange Rate %1 %2 / %3 %4', Comment = '%1 = Calculated Exchange Rate, %2 = LCY Code, %3 = Exchange Rate, %4 = Currency Code';
@@ -694,8 +684,8 @@ report 31197 "Service Invoice CZL"
 
     local procedure FormatAddressFields(ServiceInvoiceHeader: Record "Service Invoice Header")
     begin
-        FormatAddress.ServiceInvBillTo(CustAddr, ServiceInvoiceHeader);
-        FormatAddress.ServiceInvShipTo(ShipToAddr, CustAddr, ServiceInvoiceHeader);
+        ServiceFormatAddress.ServiceInvBillTo(CustAddr, ServiceInvoiceHeader);
+        ServiceFormatAddress.ServiceInvShipTo(ShipToAddr, CustAddr, ServiceInvoiceHeader);
     end;
 
     local procedure IsReportInPreviewMode(): Boolean

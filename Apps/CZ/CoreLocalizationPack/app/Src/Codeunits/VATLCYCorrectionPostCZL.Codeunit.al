@@ -124,11 +124,6 @@ codeunit 31013 "VAT LCY Correction-Post CZL"
         GenJournalLine."Document No." := VATLCYCorrectionBufferCZL."Document No.";
         GenJournalLine.Description := PostingDescriptionTxt;
         GenJournalLine."Posting Date" := VATLCYCorrectionBufferCZL."Posting Date";
-#if not CLEAN22
-#pragma warning disable AL0432
-        GenJournalLine."VAT Date CZL" := VATLCYCorrectionBufferCZL."VAT Date";
-#pragma warning restore AL0432
-#endif
         GenJournalLine."VAT Reporting Date" := VATLCYCorrectionBufferCZL."VAT Date";
         GenJournalLine."Account Type" := GenJournalLine."Account Type"::"G/L Account";
         GenJournalLine."System-Created Entry" := true;

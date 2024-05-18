@@ -15,7 +15,7 @@ codeunit 30161 "Shpfy Import Order"
 
     trigger OnRun()
     begin
-        ImportOrderAndCreateOrUpdate(Rec."Shop Code", Rec.Id, ImportActionAtConflict::SkipOrderSyncAndMark);
+        ImportOrderAndCreateOrUpdate(Rec."Shop Code", Rec.Id);
     end;
 
     internal procedure SetShop(ShopCode: Code[20]): Boolean
@@ -28,23 +28,12 @@ codeunit 30161 "Shpfy Import Order"
         exit(true);
     end;
 
-    internal procedure RetrieveOrderAndOrderLines(OrderId: BigInteger; var OrderHeader: Record "Shpfy Order Header" temporary; var OrderLine: Record "Shpfy Order Line" temporary)
-    var
-        DataCaptureDict: Dictionary of [BigInteger, JsonToken];
-        JOrder: JsonObject;
-    begin
-        if RetrieveOrderHeaderJson(OrderId, JOrder) then
-            if not SetOrderHeaderValuesFromJson(JOrder, false, OrderHeader) then
-                exit;
-        RetrieveAndSetOrderLines(OrderId, OrderLine, DataCaptureDict);
-    end;
-
     internal procedure ReimportExistingOrderConfirmIfConflicting(OrderHeader: Record "Shpfy Order Header")
     var
         OrderMapping: Codeunit "Shpfy Order Mapping";
     begin
         OrderHeader.Get(OrderHeader."Shopify Order Id");
-        ImportOrderAndCreateOrUpdate(OrderHeader."Shop Code", OrderHeader."Shopify Order Id", ImportActionAtConflict::WarnAndSyncOrder);
+        ImportOrderAndCreateOrUpdate(OrderHeader."Shop Code", OrderHeader."Shopify Order Id");
         OrderHeader.Get(OrderHeader."Shopify Order Id");
         if not OrderHeader."Has Error" then
             if OrderMapping.DoMapping(OrderHeader) then;
@@ -83,11 +72,9 @@ codeunit 30161 "Shpfy Import Order"
         JsonHelper: Codeunit "Shpfy Json Helper";
         OrderEvents: Codeunit "Shpfy Order Events";
         OrderFulfillments: Codeunit "Shpfy Order Fulfillments";
-        ImportActionAtConflict: Option SkipOrderSyncAndMark,SyncOrder,WarnAndSyncOrder;
-        ProcessedConflictErr: Label 'The order has already been processed in Business Central, but an edition was received from Shopify. Changes were not propagated to the processed order in Business Central. Update the processed documents to match the received data from Shopify. If you wish to force the synchronization use the action "Sync order from Shopify" in the Shopify Order card page.';
-        ReimportProcessedMsg: Label 'This order has linked documents in Business Central. Make sure to update the linked documents. Do you want to reimport the order?';
+        ProcessedConflictErr: Label 'The order has already been processed in Business Central, but an edition was received from Shopify. Changes were not propagated to the processed order in Business Central. Update the processed documents to match the received data from Shopify.';
 
-    local procedure ImportOrderAndCreateOrUpdate(ShopCode: Code[20]; OrderId: BigInteger; ActionAtConflict: Option)
+    local procedure ImportOrderAndCreateOrUpdate(ShopCode: Code[20]; OrderId: BigInteger)
     var
         OrderHeader: Record "Shpfy Order Header";
         TempOrderLine: Record "Shpfy Order Line" temporary;
@@ -108,25 +95,14 @@ codeunit 30161 "Shpfy Import Order"
             exit;
 
         RetrieveAndSetOrderLines(OrderId, TempOrderLine, DataCaptureDict);
+        if OrderHeader.IsProcessed() then
+            if not OrderHeader."Has Order State Error" then
+                if IsImportedOrderConflictingExistingOrder(JOrder, OrderHeader, TempOrderLine) then
+                    SetOrderAsConflicting(OrderHeader);
 
-        if UpdatingOrderHeader then
-            if OrderHeader.IsProcessed() then
-                if IsImportedOrderConflictingExistingOrder(JOrder, OrderHeader, TempOrderLine) then begin
-                    if ActionAtConflict = ImportActionAtConflict::SkipOrderSyncAndMark then begin
-                        SetOrderAsConflicting(OrderHeader);
-                        exit;
-                    end;
-                    if ActionAtConflict = ImportActionAtConflict::WarnAndSyncOrder then begin
-                        if not GuiAllowed() then
-                            exit;
-                        if not Confirm(ReimportProcessedMsg) then
-                            exit;
-                    end;
-                end;
-
-        MarkOrderConflictAsResolved(OrderHeader);
         if not SetOrderHeaderValuesFromJson(JOrder, UpdatingOrderHeader, OrderHeader) then
             exit;
+
         SetAndCreateRelatedRecords(JOrder, OrderHeader);
         OrderHeader.Modify();
         OrderEvents.OnAfterImportShopifyOrderHeader(OrderHeader, not UpdatingOrderHeader);
@@ -209,7 +185,18 @@ codeunit 30161 "Shpfy Import Order"
         repeat
             Clear(RefundLine);
             RefundLine.SetRange("Order Line Id", OrderLine."Line Id");
+            if not OrderHeader."Has Order State Error" then
+                if OrderHeader."Cancelled At" <> 0DT then
+                    if RefundLine.IsEmpty() then
+                        if OrderHeader.IsProcessed() then
+                            SetOrderAsConflicting(OrderHeader);
+
             RefundLine.SetRange("Can Create Credit Memo", false);
+            if not OrderHeader."Has Order State Error" then
+                if not RefundLine.IsEmpty() then
+                    if OrderHeader.IsProcessed() then
+                        SetOrderAsConflicting(OrderHeader);
+
             RefundLine.CalcSums("Presentment Amount", Amount, "Subtotal Amount", "Presentment Total Tax Amount", Quantity);
             OrderLine.Quantity -= RefundLine.Quantity;
             OrderLine.Modify();
@@ -229,28 +216,22 @@ codeunit 30161 "Shpfy Import Order"
         LineIds: Text;
         Redundancy: Integer;
     begin
-        if OrderHeader."Cancelled At" = 0DT then
-            if JsonHelper.GetValueAsDateTime(JOrder, 'cancelledAt') <> 0DT then
-                exit(true);
-
-        if OrderHeader."Current Total Amount" <> 0 then
-            if OrderHeader."Current Total Amount" <> JsonHelper.GetValueAsDecimal(JOrder, 'currentTotalPriceSet.shopMoney.amount') then
-                exit(true);
-
         if OrderHeader."Current Total Items Quantity" <> 0 then
-            if OrderHeader."Current Total Items Quantity" <> JsonHelper.GetValueAsDecimal(JOrder, 'currentSubtotalLineItemsQuantity') then
+            if OrderHeader."Current Total Items Quantity" < JsonHelper.GetValueAsDecimal(JOrder, 'currentSubtotalLineItemsQuantity') then
                 exit(true);
 
-        TempOrderLine.SetCurrentKey("Line Id");
-        TempOrderLine.SetAscending("Line Id", true);
-        if TempOrderLine.FindSet() then
-            repeat
-                LineIds += '|' + Format(TempOrderLine."Line Id");
-            until TempOrderLine.Next() = 0;
-        Redundancy := Hash.CalcHash(LineIds);
-        if Redundancy <> OrderHeader."Line Items Redundancy Code" then
-            exit(true);
-        exit(false);
+        if OrderHeader."Line Items Redundancy Code" <> 0 then begin
+            TempOrderLine.SetCurrentKey("Line Id");
+            TempOrderLine.SetAscending("Line Id", true);
+            if TempOrderLine.FindSet() then
+                repeat
+                    LineIds += '|' + Format(TempOrderLine."Line Id");
+                until TempOrderLine.Next() = 0;
+            Redundancy := Hash.CalcHash(LineIds);
+            if Redundancy <> OrderHeader."Line Items Redundancy Code" then
+                exit(true);
+            exit(false);
+        end;
     end;
 
     local procedure SetAndCreateRelatedRecords(JOrder: JsonObject; var OrderHeader: Record "Shpfy Order Header")
@@ -277,15 +258,14 @@ codeunit 30161 "Shpfy Import Order"
             RefundsAPI.GetRefunds(JsonHelper.GetJsonArray(JOrder, 'refunds'));
     end;
 
-    local procedure SetOrderAsConflicting(OrderHeader: Record "Shpfy Order Header")
+    local procedure SetOrderAsConflicting(var OrderHeader: Record "Shpfy Order Header")
     begin
         OrderHeader."Has Order State Error" := true;
         OrderHeader."Has Error" := true;
         OrderHeader."Error Message" := CopyStr(ProcessedConflictErr, 1, MaxStrLen(OrderHeader."Error Message"));
-        OrderHeader.Modify();
     end;
 
-    local procedure MarkOrderConflictAsResolved(var OrderHeader: Record "Shpfy Order Header")
+    internal procedure MarkOrderConflictAsResolved(var OrderHeader: Record "Shpfy Order Header")
     begin
         OrderHeader."Has Order State Error" := false;
         OrderHeader."Has Error" := false;
@@ -600,7 +580,6 @@ codeunit 30161 "Shpfy Import Order"
             end;
     end;
 
-    [NonDebuggable]
     local procedure TranslateCurrencyCode(ShopifyCurrencyCode: Text): Code[10]
     var
         Currency: Record Currency;
@@ -621,7 +600,6 @@ codeunit 30161 "Shpfy Import Order"
             exit(CurrencyCode);
     end;
 
-    [NonDebuggable]
     local procedure ImportCustomAttributtes(ShopifyOrderId: BigInteger; JCustomAttributtes: JsonArray)
     var
         OrderAttribute: Record "Shpfy Order Attribute";
@@ -644,7 +622,6 @@ codeunit 30161 "Shpfy Import Order"
         end;
     end;
 
-    [NonDebuggable]
     local procedure ImportCustomAttributtes(ShopifyOrderId: BigInteger; OrderLineId: Guid; JCustomAttributtes: JsonArray)
     var
         OrderLineAttribute: Record "Shpfy Order Line Attribute";
@@ -664,7 +641,6 @@ codeunit 30161 "Shpfy Import Order"
         end;
     end;
 
-    [NonDebuggable]
     local procedure ImportRisks(OrderHeader: Record "Shpfy Order Header"; JRisks: JsonArray)
     var
         ShpfyOrderRisks: Codeunit "Shpfy Order Risks";
@@ -737,7 +713,6 @@ codeunit 30161 "Shpfy Import Order"
     /// </summary>
     /// <param name="ParentId">Parameter of type BigInteger.</param>
     /// <param name="JTaxLines">Parameter of type JsonArray.</param>
-    [NonDebuggable]
     local procedure AddTaxLines(ParentId: BigInteger; JTaxLines: JsonArray)
     var
         OrderTaxLine: Record "Shpfy Order Tax Line";

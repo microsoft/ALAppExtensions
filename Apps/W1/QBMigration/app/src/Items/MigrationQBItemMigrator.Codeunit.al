@@ -8,16 +8,8 @@ codeunit 1920 "MigrationQB Item Migrator"
         ItemType: Option Inventory,Service;
         CostingMethod: Option FIFO,LIFO,Specific,Average,Standard;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItem', '', true, true)]
-    procedure OnMigrateItem(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItem', '', true, true)]
     local procedure OnMigrateItem(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
-#endif
     var
         MigrationQBItem: Record "MigrationQB Item";
     begin
@@ -40,16 +32,8 @@ codeunit 1920 "MigrationQB Item Migrator"
         ItemDataMigrationFacade.ModifyItem(true);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemPostingGroups', '', true, true)]
-    procedure OnMigrateItemPostingGroups(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemPostingGroups', '', true, true)]
     local procedure OnMigrateItemPostingGroups(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#endif
     begin
         MigrateItemPostingGroups(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
     end;
@@ -75,16 +59,8 @@ codeunit 1920 "MigrationQB Item Migrator"
         Sender.ModifyItem(true);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateInventoryTransactions', '', true, true)]
-    procedure OnMigrateInventoryTransactions(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateInventoryTransactions', '', true, true)]
     local procedure OnMigrateInventoryTransactions(VAR Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#endif
     begin
         MigrateInventoryTransactions(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
     end;

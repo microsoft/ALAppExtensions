@@ -1292,6 +1292,7 @@ report 31004 "Adjust Exchange Rates CZL"
                 GenJournalLine."Source Currency Amount" := 0;
             GenJournalLine."Source Code" := SourceCodeSetup."Exchange Rate Adjmt.";
             GenJournalLine."System-Created Entry" := true;
+            OnPostAdjmtOnBeforePostGenJnlLine(GenJournalLine, SummarizeEntries, TempAdjExchangeRateBufferCZL2);
             TransactionNo := PostGenJnlLine(GenJournalLine, DimensionSetEntry);
         end;
     end;
@@ -1450,6 +1451,7 @@ report 31004 "Adjust Exchange Rates CZL"
                     TempAdjExchangeRateBufferCZL2.Insert();
                 end else
                     TempAdjExchangeRateBufferCZL2.Modify();
+                OnHandlePostAdjmtOnAfterUpdateBuffer(TempAdjExchangeRateBufferCZL2, TempAdjExchangeRateBufferCZL);
             until TempAdjExchangeRateBufferCZL.Next() = 0;
 
             // Post per posting group and per currency
@@ -1962,11 +1964,6 @@ report 31004 "Adjust Exchange Rates CZL"
             TempDetailedCustLedgEntry."Entry No." := NewEntryNo;
             TempDetailedCustLedgEntry."Posting Date" := PostingDate2;
             TempDetailedCustLedgEntry."Document No." := PostingDocNo;
-#if not CLEAN22
-#pragma warning disable AL0432
-            TempDetailedCustLedgEntry."Customer Posting Group CZL" := CustLedgerEntry."Customer Posting Group";
-#pragma warning restore AL0432
-#endif
             TempDetailedCustLedgEntry."Posting Group" := CustLedgerEntry."Customer Posting Group";
 
             Correction :=
@@ -2018,6 +2015,7 @@ report 31004 "Adjust Exchange Rates CZL"
 
                 TempAdjExchangeRateBufferCZL."Document Type" := CustLedgerEntry."Document Type";
                 TempAdjExchangeRateBufferCZL."Document No." := CustLedgerEntry."Document No.";
+                OnAdjustCustomerLedgerEntryOnBeforeModifyBuffer(TempAdjExchangeRateBufferCZL, CustLedgerEntry);
                 TempAdjExchangeRateBufferCZL.Modify();
             end;
         end;
@@ -2084,11 +2082,6 @@ report 31004 "Adjust Exchange Rates CZL"
             TempDetailedVendorLedgEntry."Entry No." := NewEntryNo;
             TempDetailedVendorLedgEntry."Posting Date" := PostingDate2;
             TempDetailedVendorLedgEntry."Document No." := PostingDocNo;
-#if not CLEAN22
-#pragma warning disable AL0432
-            TempDetailedVendorLedgEntry."Vendor Posting Group CZL" := VendorLedgerEntry."Vendor Posting Group";
-#pragma warning restore AL0432
-#endif
             TempDetailedVendorLedgEntry."Posting Group" := VendorLedgerEntry."Vendor Posting Group";
 
             Correction :=
@@ -2139,6 +2132,7 @@ report 31004 "Adjust Exchange Rates CZL"
 
                 TempAdjExchangeRateBufferCZL."Document Type" := VendorLedgerEntry."Document Type";
                 TempAdjExchangeRateBufferCZL."Document No." := VendorLedgerEntry."Document No.";
+                OnAdjustVendorLedgerEntryOnBeforeModifyBuffer(TempAdjExchangeRateBufferCZL, VendorLedgerEntry);
                 TempAdjExchangeRateBufferCZL.Modify();
             end;
         end;
@@ -2337,6 +2331,7 @@ report 31004 "Adjust Exchange Rates CZL"
 
             TempAdjExchangeRateBufferCZL."Document Type" := CustLedgerEntry."Document Type";
             TempAdjExchangeRateBufferCZL."Document No." := CustLedgerEntry."Document No.";
+            OnCreateDtldCustLedgEntryUnrealOnBeforeModifyBuffer(TempAdjExchangeRateBufferCZL, CustLedgerEntry);
             TempAdjExchangeRateBufferCZL.Modify();
 
             DetailedCustLedgEntry."Transaction No." := AdjExchRateBufIndex;
@@ -2404,6 +2399,7 @@ report 31004 "Adjust Exchange Rates CZL"
 
             TempAdjExchangeRateBufferCZL."Document Type" := VendorLedgerEntry."Document Type";
             TempAdjExchangeRateBufferCZL."Document No." := VendorLedgerEntry."Document No.";
+            OnCreateDtldVendLedgEntryUnrealOnBeforeModifyBuffer(TempAdjExchangeRateBufferCZL, VendorLedgerEntry);
             TempAdjExchangeRateBufferCZL.Modify();
 
             DetailedVendorLedgEntry."Transaction No." := AdjExchRateBufIndex;
@@ -2645,6 +2641,36 @@ report 31004 "Adjust Exchange Rates CZL"
 
     [IntegrationEvent(true, false)]
     local procedure OnPostGenJnlLineOnBeforeGenJnlPostLineRun(var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; var GenJournalLine: Record "Gen. Journal Line"; var DimensionSetEntry: Record "Dimension Set Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnPostAdjmtOnBeforePostGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; SummarizeEntries: Boolean; AdjExchangeRateBufferCZL: Record "Adj. Exchange Rate Buffer CZL")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnHandlePostAdjmtOnAfterUpdateBuffer(var NewAdjExchangeRateBufferCZL: Record "Adj. Exchange Rate Buffer CZL"; AdjExchangeRateBufferCZL: Record "Adj. Exchange Rate Buffer CZL")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAdjustCustomerLedgerEntryOnBeforeModifyBuffer(var AdjExchangeRateBufferCZL: Record "Adj. Exchange Rate Buffer CZL"; CustLedgerEntry: Record "Cust. Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAdjustVendorLedgerEntryOnBeforeModifyBuffer(var AdjExchangeRateBufferCZL: Record "Adj. Exchange Rate Buffer CZL"; VendorLedgerEntry: Record "Vendor Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateDtldCustLedgEntryUnrealOnBeforeModifyBuffer(var AdjExchangeRateBufferCZL: Record "Adj. Exchange Rate Buffer CZL"; CustLedgerEntry: Record "Cust. Ledger Entry")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateDtldVendLedgEntryUnrealOnBeforeModifyBuffer(var AdjExchangeRateBufferCZL: Record "Adj. Exchange Rate Buffer CZL"; VendorLedgerEntry: Record "Vendor Ledger Entry")
     begin
     end;
 }

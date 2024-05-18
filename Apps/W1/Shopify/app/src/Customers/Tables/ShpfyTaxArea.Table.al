@@ -40,7 +40,7 @@ table 30109 "Shpfy Tax Area"
             DataClassification = CustomerContent;
             TableRelation = "VAT Business Posting Group";
         }
-        field(6; "County Code"; Code[2])
+        field(6; "County Code"; Code[10])
         {
             Caption = 'County Code';
             DataClassification = CustomerContent;

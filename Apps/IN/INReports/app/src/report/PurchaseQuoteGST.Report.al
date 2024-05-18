@@ -537,8 +537,8 @@ report 18012 "Purchase - Quote GST"
 
             trigger OnAfterGetRecord()
             begin
-                CurrReport.Language := Language.GetLanguageIdOrDefault("Language Code");
-                CurrReport.FormatRegion := Language.GetFormatRegionOrDefault("Format Region");
+                CurrReport.Language := GlobalLanguage.GetLanguageIdOrDefault("Language Code");
+                CurrReport.FormatRegion := GlobalLanguage.GetFormatRegionOrDefault("Format Region");
 
                 CompanyInfo.Get();
                 IsGSTApplicable := CheckGSTDoc("Purchase Line");
@@ -686,7 +686,7 @@ report 18012 "Purchase - Quote GST"
         RespCenter: Record "Responsibility Center";
         PurchSetup: Record "Purchases & Payables Setup";
         Vendor: Record Vendor;
-        Language: Codeunit Language;
+        GlobalLanguage: Codeunit Language;
         PurchCountPrinted: Codeunit "Purch.Header-Printed";
         FormatAddr: Codeunit "Format Address";
         PurchPost: Codeunit "Purch.-Post";

@@ -19,6 +19,8 @@ codeunit 1951 "LP Model Management"
         LabelsLbl: Label 'Not Late,Late';
         StandardModelLbl: Label 'Standard Model';
         MyModelLbl: Label 'My Model';
+        LatePaymentPredcitionModelTrainedTxt: Label 'Late Payment Prediction model trained', Locked = true;
+        LatePaymentPredictionTxt: Label 'Late Payment Prediction', Locked = true;
 
     trigger OnRun()
     var
@@ -249,7 +251,7 @@ codeunit 1951 "LP Model Management"
         LPMachineLearningSetup.CalcFields("My Model Pdf");
         Clear(LPMachineLearningSetup."My Model Pdf");
         LPMachineLearningSetup.Modify(true);
-
+        Session.LogSecurityAudit(LatePaymentPredictionTxt, SecurityOperationResult::Success, LatePaymentPredcitionModelTrainedTxt, AuditCategory::PolicyManagement);
         OnModelTrainingComplete(LPMachineLearningSetup."Model Quality Threshold", ModelQuality, TotalInvoiceCount);
         exit(true);
     end;

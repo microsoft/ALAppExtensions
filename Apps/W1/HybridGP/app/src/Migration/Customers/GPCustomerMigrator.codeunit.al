@@ -16,16 +16,8 @@ codeunit 4018 "GP Customer Migrator"
         PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
         CustomerEmailTypeCodeLbl: Label 'CUS', Locked = true;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made internal.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomer', '', true, true)]
-    procedure OnMigrateCustomer(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomer', '', true, true)]
     internal procedure OnMigrateCustomer(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId)
-#endif
     var
         GPCustomer: Record "GP Customer";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
@@ -38,16 +30,8 @@ codeunit 4018 "GP Customer Migrator"
         MigrateCustomerAddresses(GPCustomer);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made internal.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerPostingGroups', '', true, true)]
-    procedure OnMigrateCustomerPostingGroups(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerPostingGroups', '', true, true)]
     internal procedure OnMigrateCustomerPostingGroups(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#endif
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         HelperFunctions: Codeunit "Helper Functions";
@@ -75,16 +59,8 @@ codeunit 4018 "GP Customer Migrator"
         Sender.ModifyCustomer(true);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made internal.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerTransactions', '', true, true)]
-    procedure OnMigrateCustomerTransactions(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomerTransactions', '', true, true)]
     internal procedure OnMigrateCustomerTransactions(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#endif
     var
         MigrationGPCustomer: Record "GP Customer";
         MigrationGPCustTrans: Record "GP Customer Transactions";
@@ -395,13 +371,6 @@ codeunit 4018 "GP Customer Migrator"
             until GPCustomerAddress.Next() = 0;
     end;
 
-#if not CLEAN22
-    [Obsolete('Method is not supported, it was using files', '22.0')]
-    procedure GetAll()
-    begin
-    end;
-#endif
-
     procedure PopulateStagingTable(JArray: JsonArray)
     begin
         GetCustomersFromJson(JArray);
@@ -474,13 +443,6 @@ codeunit 4018 "GP Customer Migrator"
         HelperFunctions.UpdateFieldValue(RecordVariant, MigrationGPCustomer.FieldNo(UPSZONE), JToken.AsObject(), 'UPSZONE');
         HelperFunctions.UpdateFieldValue(RecordVariant, MigrationGPCustomer.FieldNo(TAXEXMT1), JToken.AsObject(), 'TAXEXMT1');
     end;
-
-#if not CLEAN22
-    [Obsolete('Method is not supported, it was using files', '22.0')]
-    local procedure GetTransactions()
-    begin
-    end;
-#endif
 
     local procedure GetRMTrxFromJson(JArray: JsonArray);
     var

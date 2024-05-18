@@ -84,6 +84,10 @@ page 40056 "GP Company Migration Settings"
                 {
                     ToolTip = 'Specify whether to migrate inactive vendors.';
                 }
+                field("Migrate Temporary Vendors"; Rec."Migrate Temporary Vendors")
+                {
+                    ToolTip = 'Specify whether to migrate temporary vendors.';
+                }
                 field("Migrate Inventory Module"; Rec."Migrate Inventory Module")
                 {
                     ToolTip = 'Specify whether to migrate the Inventory module.';

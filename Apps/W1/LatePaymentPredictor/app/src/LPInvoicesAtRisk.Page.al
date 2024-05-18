@@ -77,7 +77,7 @@ page 1954 "LP - Invoices at Risk"
         Rec.SetRange("Document Type", Rec."Document Type"::Invoice);
         Rec.SetRange(Open, true);
         Rec.SetFilter("Remaining Amount", '>%1', 0);
-        Rec.SetFilter("Due Date", '>=%1', WorkDate());
+        Rec.SetFilter("Due Date", '<=%1', WorkDate());
         Rec.SetCurrentKey("Due Date");
         Rec.SetAscending("Due Date", true);
         Rec.FilterGroup(0);

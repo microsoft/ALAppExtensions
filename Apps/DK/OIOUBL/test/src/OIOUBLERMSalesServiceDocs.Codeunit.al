@@ -24,13 +24,9 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
         LibraryMarketing: Codeunit "Library - Marketing";
         LibrarySetupStorage: Codeunit "Library - Setup Storage";
         IsInitialized: Boolean;
-        BlankOrderDateErr: Label 'Order Date must have a value in Sales Header: Document Type=Invoice, No.=%1. It cannot be zero or empty.', Comment = '%1 = Sales Line Document No.';
         CrMemoPathTxt: Label 'OIOUBL Service Cr. Memo Path';
         DescriptionErr: Label 'The %1 %2 contains lines in which the Type and the No. are specified, but the Description is empty.', Comment = '%1 = Field Caption, %2 = Field Value';
-        ExternalDocumentNoErr: Label 'You must specify the External Document No.';
         InvoicePathTxt: Label 'OIOUBL Service Invoice Path';
-        SalesInvoiceFieldsErr: Label '%1 must have a value in Sales Header: Document Type=Invoice, No.=%2. It cannot be zero or empty', Comment = '%1 = Field Caption; %2 = Sales Header No.';
-        ServiceFieldsErr: Label '%1 must have a value in Service Header: Document Type=Credit Memo, No.=%2. It cannot be zero or empty.', Comment = '%1 = Field Caption; %2 = Service Header No.';
         UOMErr: Label 'The %1 %2 contains lines in which the Unit of Measure field is empty.', Comment = '%1 = Field Caption, %2 = Field Value';
         YourReferenceErr: Label 'Your Reference must have a value in Service Header';
         MissingOIOUBMInfoErr: Label 'The needed information to support OIOUBL is not provided in %1.', Comment = '%1 = Company Information Table Caption';
@@ -59,6 +55,7 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
 
     local procedure SetupForExtDocNoError(DocumentType: Enum "Sales Document Type");
     var
+        SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
     begin
         // [GIVEN] Sales Document with blank External Document No..
@@ -69,7 +66,7 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
         asserterror PostSalesDocument(SalesLine);
 
         // [THEN] Error "You must specify the External Document No." is thrown.
-        Assert.ExpectedError(ExternalDocumentNoErr);
+        Assert.ExpectedTestFieldError(SalesHeader.FieldCaption("External Document No."), '');
     end;
 
     [Test]
@@ -347,7 +344,7 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
           ServiceHeader.FIELDCAPTION("Bill-to Post Code"));
     end;
 
-    local procedure PostServiceCrMemoWithMandatoryFields(BillToName: Text[50]; BillToAddress: Text[50]; BillToCity: Text[30]; BillToPostCode: Code[20]; FieldCaption: Text);
+    local procedure PostServiceCrMemoWithMandatoryFields(BillToName: Text[50]; BillToAddress: Text[50]; BillToCity: Text[30]; BillToPostCode: Code[20]; FieldCaptionTxt: Text);
     var
         ServiceHeader: Record "Service Header";
         ServiceLine: Record "Service Line";
@@ -365,8 +362,8 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
         // Exercise.
         asserterror LibraryService.PostServiceOrder(ServiceHeader, true, false, true);
 
-        // Verify: Verify expected error on Service Credit Memo.
-        Assert.ExpectedError(STRSUBSTNO(ServiceFieldsErr, FieldCaption, ServiceHeader."No."));
+        // Verify: Verify expectedror on Service Credit Memo.
+        Assert.ExpectedTestFieldError(FieldCaptionTxt, '');
     end;
 
     [Test]
@@ -556,6 +553,7 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
     procedure PostSalesInvoiceWithBlankOrderDateError();
     var
         SalesLine: Record "Sales Line";
+        SalesHeader: Record "Sales Header";
     begin
         // Verify error while posting Sales Invoice with blank Order Date on Sales Header.
 
@@ -567,7 +565,7 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
         asserterror PostSalesDocument(SalesLine);
 
         // Verify: Verify error while posting Sales Invoice with blank Order Date on Sales Header.
-        Assert.ExpectedError(STRSUBSTNO(BlankOrderDateErr, SalesLine."Document No."));
+        Assert.ExpectedTestFieldError(SalesHeader.FieldCaption("Order Date"), '');
     end;
 
     [Test]
@@ -609,7 +607,7 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
           SalesHeader.FIELDCAPTION("Bill-to Post Code"));
     end;
 
-    local procedure PostSalesInvoiceWithMandatoryFields(BillToName: Text[50]; BillToAddress: Text[50]; BillToCity: Text[30]; BillToPostCode: Code[20]; FieldCaption: Text);
+    local procedure PostSalesInvoiceWithMandatoryFields(BillToName: Text[50]; BillToAddress: Text[50]; BillToCity: Text[30]; BillToPostCode: Code[20]; FieldCaptionTxt: Text);
     var
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
@@ -628,7 +626,7 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
         asserterror PostSalesDocument(SalesLine);
 
         // Verify: Verify expected error on Sales Invoice.
-        Assert.ExpectedError(STRSUBSTNO(SalesInvoiceFieldsErr, FieldCaption, SalesHeader."No."));
+        Assert.ExpectedTestFieldError(FieldCaptionTxt, '');
     end;
 
     [Test]
@@ -648,8 +646,7 @@ codeunit 148051 "OIOUBL-ERM Sales/Service Docs"
         asserterror PostSalesDocument(SalesLine);
 
         // Verify: Verify expected error on Sales Invoice.
-        Assert.ExpectedError(
-          STRSUBSTNO(SalesInvoiceFieldsErr, SalesHeader.FIELDCAPTION("Payment Terms Code"), SalesLine."Document No."));
+        Assert.ExpectedTestFieldError(SalesHeader.FieldCaption("Payment Terms Code"), '');
     end;
 
     [Test]

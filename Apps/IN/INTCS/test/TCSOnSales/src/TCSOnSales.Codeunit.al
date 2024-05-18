@@ -4458,6 +4458,39 @@ codeunit 18916 "TCS On Sales"
             StrSubstNo(VerifyErr, SalesLine.FieldCaption("TCS Nature of Collection"), SalesLine.TableCaption));
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromSalesOrderTCSWithoutCustPANNoWithExcludeGSTInTCS()
+    var
+        Customer: Record Customer;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        TCSPostingSetup: Record "TCS Posting Setup";
+        ConcessionalCode: Record "Concessional Code";
+        DocumentNo: Code[20];
+    begin
+        // [SCENARIO] Exclude GST in TCS base not working for unregistered customer
+        // [GIVEN] Created Setup for NOC, Assessee Code, Customer, TCS Setup, Tax Accounting Period and TCS Rates
+        TCSLibrary.CreateTCSSetup(Customer, TCSPostingSetup, ConcessionalCode);
+        TCSLibrary.UpdateCustomerWithoutPANWithoutConcessional(Customer, false, false);
+        CreateTaxRateSetup(TCSPostingSetup."TCS Nature of Collection", Customer."Assessee Code", '', WorkDate());
+
+        // [WHEN] Create and Post Sales Order
+        TCSSalesLibrary.CreateSalesDocumentWithExcludeGSTInTCS(
+            SalesHeader,
+            SalesHeader."Document Type"::Order,
+            Customer."No.",
+            WorkDate(),
+            SalesLine.Type::Item,
+            false);
+
+        DocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        // [THEN] TCS and G/L Entry Created and Verified
+        TCSLibrary.VerifyGLEntryCount(DocumentNo, 3);
+        TCSLibrary.VerifyGLEntryWithTCS(DocumentNo, TCSPostingSetup."TCS Account No.");
+    end;
+
     local procedure UpdateTCSNOCSection(SalesHeader: Record "Sales Header")
     var
         SalesInvoice: TestPage "Sales Invoice";

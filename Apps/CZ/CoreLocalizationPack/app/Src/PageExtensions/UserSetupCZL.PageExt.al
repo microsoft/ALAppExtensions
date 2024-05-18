@@ -3,25 +3,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace System.Security.User;
-#if not CLEAN24
-
-using Microsoft.Finance.VAT.Calculation;
-#endif
 
 pageextension 11721 "User Setup CZL" extends "User Setup"
 {
     layout
     {
-#if not CLEAN22
-        modify("Allow VAT From")
-        {
-            Visible = ReplaceVATDateEnabled;
-        }
-        modify("Allow VAT To")
-        {
-            Visible = ReplaceVATDateEnabled;
-        }
-#endif
 #if not CLEAN24
         addafter("Allow Posting To")
         {
@@ -33,11 +19,7 @@ pageextension 11721 "User Setup CZL" extends "User Setup"
                 ObsoleteState = Pending;
                 ObsoleteTag = '24.0';
                 ObsoleteReason = 'Replaced by "Allow VAT Date From" field.';
-#if not CLEAN22
-                Visible = not ReplaceVATDateEnabled;
-#else
                 Visible = false;
-#endif
             }
             field("Allow VAT Posting To CZL"; Rec."Allow VAT Posting To CZL")
             {
@@ -47,11 +29,7 @@ pageextension 11721 "User Setup CZL" extends "User Setup"
                 ObsoleteState = Pending;
                 ObsoleteTag = '24.0';
                 ObsoleteReason = 'Replaced by "Allow VAT Date To" field.';
-#if not CLEAN22
-                Visible = not ReplaceVATDateEnabled;
-#else
                 Visible = false;
-#endif
             }
         }
 #endif
@@ -210,8 +188,6 @@ pageextension 11721 "User Setup CZL" extends "User Setup"
                     Caption = 'Print';
                     Ellipsis = true;
                     Image = Print;
-                    Promoted = true;
-                    PromotedCategory = Process;
                     ToolTip = 'Open the report for user setup.';
 
                     trigger OnAction()
@@ -226,18 +202,11 @@ pageextension 11721 "User Setup CZL" extends "User Setup"
                 }
             }
         }
+        addlast(Category_Process)
+        {
+            actionref("Print CZL_Promoted"; "Print CZL")
+            {
+            }
+        }
     }
-#if not CLEAN22
-
-    trigger OnOpenPage()
-    begin
-        ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
-    end;
-
-    var
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-        ReplaceVATDateEnabled: Boolean;
-#endif
 }

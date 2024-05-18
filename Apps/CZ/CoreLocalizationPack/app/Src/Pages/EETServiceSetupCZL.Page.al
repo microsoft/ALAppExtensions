@@ -121,9 +121,6 @@ page 31142 "EET Service Setup CZL"
                 Caption = 'Set URL to Default';
                 Enabled = not Rec.Enabled;
                 Image = Restore;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 ToolTip = 'Change the Service URL to its default value. You cannot cancel this action to revert back to the current value.';
 
                 trigger OnAction()
@@ -137,15 +134,24 @@ page 31142 "EET Service Setup CZL"
                 Caption = 'Job Queue Entry';
                 Enabled = Rec.Enabled;
                 Image = JobListSetup;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 ToolTip = 'View or edit the jobs that automatically process the incoming and outgoing electronic documents.';
 
                 trigger OnAction()
                 begin
                     Rec.ShowJobQueueEntry();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(SetURLToDefault_Promoted; SetURLToDefault)
+                {
+                }
+                actionref(JobQueueEntry_Promoted; JobQueueEntry)
+                {
+                }
             }
         }
     }

@@ -122,6 +122,12 @@ page 4051 "GP Company Add. Settings List"
                     ToolTip = 'Specify whether to migrate inactive vendors.';
                     ApplicationArea = All;
                 }
+                field("Migrate Temporary Vendors"; Rec."Migrate Temporary Vendors")
+                {
+                    Caption = 'Temporary Vendors';
+                    ToolTip = 'Specify whether to migrate temporary vendors.';
+                    ApplicationArea = All;
+                }
                 field("Migrate Inactive Checkbooks"; Rec."Migrate Inactive Checkbooks")
                 {
                     Caption = 'Inactive Checkbooks';

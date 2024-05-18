@@ -8,7 +8,7 @@ using Microsoft.Inventory.Item;
 
 page 7276 "Sales Line AI Suggestions Sub"
 {
-    Caption = 'Lines proposed by Dynamics 365 Copilot';
+    Caption = 'Lines proposed by Copilot';
     PageType = ListPart;
     ApplicationArea = All;
     SourceTable = "Sales Line AI Suggestions";

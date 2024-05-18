@@ -17,9 +17,6 @@ codeunit 139509 "Azure AD Plan Module Test"
         MockGraphQueryTestLibrary: Codeunit "MockGraphQuery Test Library";
         FirstUserAuthenticationEmail: Text;
         SecondUserAuthenticationEmail: Text;
-#if not CLEAN22
-        TestUserGroupTxt: Label 'TEST UG';
-#endif
         TestPlanIdTxt: Label '{6fe0b5b8-d2df-4741-8d03-f57ac1101851}';
         TestRoleIdTxt: Label 'TEST PS';
         MixedPlansExpectedErr: Label 'Expected mixed plans';
@@ -204,38 +201,6 @@ codeunit 139509 "Azure AD Plan Module Test"
         TearDown();
     end;
 
-#if not CLEAN22
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [CommitBehavior(CommitBehavior::Ignore)]
-    [Scope('OnPrem')]
-    procedure TestLegacyRefreshUserPlanAssignments()
-    var
-        User: Record User;
-        UserGroupPlan: Record "User Group Plan";
-        AzureADPlan: Codeunit "Azure AD Plan";
-    begin
-        // [SCENARIO] User should get the User Groups of the plan
-        Initialize();
-        LibraryLowerPermissions.SetOutsideO365Scope();
-        LibraryLowerPermissions.AddSecurity();
-
-        // [GIVEN] A user with a plan that contains user groups
-        CreateUserWithPlanAndUserGroups(User, UserGroupPlan, 'Test User');
-
-        // [WHEN] RefreshUserPlanAssignments is invoked
-        LibraryLowerPermissions.SetO365BusFull();
-        LibraryLowerPermissions.AddSecurity();
-        AzureADPlan.RefreshUserPlanAssignments(User."User Security ID");
-
-        // Rollback SaaS test
-        TearDown();
-
-        // [THEN] User gets the User Groups of the plan
-        ValidateUserGetsTheUserGroupsOfThePlan(User, UserGroupPlan);
-    end;
-#endif
-
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     [Scope('OnPrem')]
@@ -280,167 +245,6 @@ codeunit 139509 "Azure AD Plan Module Test"
         // Rollback SaaS test
         TearDown();
     end;
-
-#if not CLEAN22
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [CommitBehavior(CommitBehavior::Ignore)]
-    [Scope('OnPrem')]
-    procedure TestLegacyRemovePlanFromUserAtRefresh()
-    var
-        User: Record User;
-        UserGroupPlan: Record "User Group Plan";
-        AzureADPlan: Codeunit "Azure AD Plan";
-        AzureADPlanTestLibrary: Codeunit "Azure AD Plan Test Library";
-        PlanID: Guid;
-        PlanName: Text[50];
-    begin
-        // [SCENARIO] When user plans are updated in the Azure Graph, old plans are removed from the user
-        Initialize();
-        LibraryLowerPermissions.SetOutsideO365Scope();
-        LibraryLowerPermissions.AddSecurity();
-
-        // [GIVEN] A user with a plan that contains user groups
-        CreateUserWithPlanAndUserGroups(User, UserGroupPlan, 'Test User');
-
-        // [GIVEN] Only in NAV, the user has an additional plan assigned
-        PlanName := 'TestPlan';
-        PlanID := AzureADPlanTestLibrary.CreatePlan(PlanName);
-        LibraryPermissions.AddUserToPlan(User."User Security ID", PlanID);
-        Assert.IsTrue(
-            AzureADPlan.IsPlanAssignedToUser(PlanID, User."User Security ID"), 'Test prerequisite failed.');
-
-        // [WHEN] RefreshUserPlanAssignments invoked
-        LibraryLowerPermissions.SetO365BusFull();
-        LibraryLowerPermissions.AddSecurity();
-        AzureADPlan.RefreshUserPlanAssignments(User."User Security ID");
-
-        // Rollback SaaS test
-        TearDown();
-
-        // [THEN] The additional plan is removed from the user
-        Assert.IsFalse(
-            AzureADPlan.IsPlanAssignedToUser(PlanID, User."User Security ID"),
-            StrSubstNo('Plan %1 should not be assigned to the user.', PlanName));
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [CommitBehavior(CommitBehavior::Ignore)]
-    [Scope('OnPrem')]
-    procedure TestRemoveUserGroupsFromUserAtRefresh()
-    var
-        User: Record User;
-        UserGroupPlan: Record "User Group Plan";
-        AzureADPlan: Codeunit "Azure AD Plan";
-        AzureADPlanTestLibrary: Codeunit "Azure AD Plan Test Library";
-        PlanID: Guid;
-    begin
-        // [SCENARIO] When users are updated from the Azure Graph,
-        // [SCENARIO] Only the user groups allowed by the plan remain assigned to the user
-        // [SCENARIO] i.e. the user groups from old plans are removed from the user
-        Initialize();
-        LibraryLowerPermissions.SetOutsideO365Scope();
-        LibraryLowerPermissions.AddSecurity();
-
-        // [GIVEN] A user with a plan that contains user groups
-        CreateUserWithPlanAndUserGroups(User, UserGroupPlan, 'Test User');
-
-        // [GIVEN] Only in NAV, the user has an additional plan assigned
-        PlanID := AzureADPlanTestLibrary.CreatePlan('TestPlan');
-        LibraryPermissions.AddUserToPlan(User."User Security ID", PlanID);
-        Assert.IsTrue(
-            AzureADPlan.IsPlanAssignedToUser(PlanID, User."User Security ID"), 'Test prerequisite failed.');
-
-        // [GIVEN] The user is also assigned some user groups
-        AddUserToUserGroupNAVOnly(User, TestUserGroupTxt, PlanID);
-
-        // [WHEN] RefreshUserPlanAssignments invoked
-        LibraryLowerPermissions.SetO365BusFull();
-        LibraryLowerPermissions.AddSecurity();
-        AzureADPlan.RefreshUserPlanAssignments(User."User Security ID");
-
-        // Rollback SaaS test
-        TearDown();
-
-        // [THEN] The user should be removed from Test user group. Only the user groups allowed by the plan remain
-        Assert.IsFalse(
-          IsUserInUserGroup(User."User Security ID", TestUserGroupTxt),
-          StrSubstNo('User Group %1 should not be assigned to the user.', TestUserGroupTxt));
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [CommitBehavior(CommitBehavior::Ignore)]
-    [Scope('OnPrem')]
-    procedure TestRemoveExtraUserGroupsFromUserAtRefresh()
-    var
-        User: Record User;
-        UserGroupPlan: Record "User Group Plan";
-        AzureADPlan: Codeunit "Azure AD Plan";
-    begin
-        // [SCENARIO] When users are updated from the Azure Graph,
-        // [SCENARIO] The manually assigned user groups remain assigned to the user
-        Initialize();
-        LibraryLowerPermissions.SetOutsideO365Scope();
-        LibraryLowerPermissions.AddSecurity();
-
-        // [GIVEN] A user with a plan that contains user groups
-        CreateUserWithPlanAndUserGroups(User, UserGroupPlan, 'Test User');
-
-        // [GIVEN] The user is also assigned some user groups, but those user groups are not part of any plan
-        AddUserToUserGroupNAVOnly(User, TestUserGroupTxt, CreateGuid());
-
-        // [WHEN] RefreshUserPlanAssignments invoked
-        LibraryLowerPermissions.SetO365BusFull();
-        LibraryLowerPermissions.AddSecurity();
-        AzureADPlan.RefreshUserPlanAssignments(User."User Security ID");
-
-        // Rollback SaaS test
-        TearDown();
-
-        // [THEN] The user should not be removed from Test user group
-        Assert.IsTrue(
-          IsUserInUserGroup(User."User Security ID", TestUserGroupTxt),
-          StrSubstNo('User Group %1 should be assigned to the user.', TestUserGroupTxt));
-    end;
-
-    [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
-    [CommitBehavior(CommitBehavior::Ignore)]
-    [Scope('OnPrem')]
-    procedure TestLegacyUpdateUserPlansAllUsers()
-    var
-        UserCassie: Record User;
-        UserDebra: Record User;
-        UserGroupPlan: Record "User Group Plan";
-        AzureADPlan: Codeunit "Azure AD Plan";
-    begin
-        // [SCENARIO] Multiple users get the User Groups of the plan when created
-        Initialize();
-        LibraryLowerPermissions.SetOutsideO365Scope();
-        LibraryLowerPermissions.AddSecurity();
-
-        // [GIVEN] SUPER User
-        CODEUNIT.Run(CODEUNIT::"Users - Create Super User");
-
-        // [GIVEN] Two users with a plan that contains user groups
-        CreateUserWithPlanAndUserGroups(UserCassie, UserGroupPlan, 'Cassie');
-        CreateUserWithPlanAndUserGroups(UserDebra, UserGroupPlan, 'Debra');
-
-        // [WHEN] UpdateUserPlans for all users is invoked
-        LibraryLowerPermissions.SetO365BusFull();
-        LibraryLowerPermissions.AddSecurity();
-        AzureADPlan.UpdateUserPlans();
-
-        // Rollback SaaS test
-        TearDown();
-
-        // [THEN] Both users get the User Groups of the plan
-        ValidateUserGetsTheUserGroupsOfThePlan(UserCassie, UserGroupPlan);
-        ValidateUserGetsTheUserGroupsOfThePlan(UserDebra, UserGroupPlan);
-    end;
-#endif
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -1271,47 +1075,6 @@ codeunit 139509 "Azure AD Plan Module Test"
             MockGraphQueryTestLibrary.AddSubscribedSkuWithServicePlan(CreateGuid(), Plan.Plan_ID, Plan.Plan_Name);
     end;
 
-#if not CLEAN22
-    local procedure ValidateUserGetsTheUserGroupsOfThePlan(User: Record User; UserGroupPlan: Record "User Group Plan")
-    var
-        UserGroupMember: Record "User Group Member";
-    begin
-        UserGroupMember.SetRange("User Security ID", User."User Security ID");
-        UserGroupMember.SetRange("User Group Code", TestUserGroupTxt);
-        UserGroupMember.FindSet();
-        UserGroupPlan.SetRange("Plan ID", UserGroupPlan."Plan ID");
-        UserGroupPlan.FindSet();
-
-        Assert.RecordCount(UserGroupMember, UserGroupPlan.Count);
-        repeat
-            Assert.AreEqual(UserGroupPlan."User Group Code", UserGroupMember."User Group Code", 'Only the enabled plan should be returned');
-            UserGroupMember.Next();
-        until UserGroupPlan.Next() = 0;
-    end;
-
-    local procedure CreateUserWithPlanAndUserGroups(var User: Record User; var UserGroupPlan: Record "User Group Plan"; UserName: Text[50])
-    var
-        AggregatePermissionSet: Record "Aggregate Permission Set";
-        UserGroupMember: Record "User Group Member";
-    begin
-        UserGroupPlan.SetRange("User Group Code", TestUserGroupTxt);
-
-        if not UserGroupPlan.FindFirst() then begin
-            // first time setup
-            LibraryPermissions.CreateUserGroupInPlan(TestUserGroupTxt, TestPlanIdTxt);
-            AggregatePermissionSet.FindFirst();
-            LibraryPermissions.AddPermissionSetToUserGroup(AggregatePermissionSet, TestUserGroupTxt);
-        end;
-
-        UserGroupPlan.FindFirst();
-        LibraryPermissions.CreateAzureActiveDirectoryUser(User, UserName);
-        MockGraphQueryTestLibrary.AddGraphUser(GetUserAuthenticationId(User), User."User Name", '', '', UserGroupPlan."Plan ID", '', 'Enabled');
-        UserGroupMember."User Group Code" := TestUserGroupTxt;
-        UserGroupMember."User Security ID" := User."User Security ID";
-        UserGroupMember.Insert();
-    end;
-#endif
-
     local procedure CreateUserWithPlanAndDefaultPermissions(var User: Record User; UserName: Text[50]; PlanId: Guid)
     begin
         LibraryPermissions.CreateAzureActiveDirectoryUser(User, UserName);
@@ -1375,17 +1138,6 @@ codeunit 139509 "Azure AD Plan Module Test"
         MockGraphQueryTestLibrary.AddGraphUser(GetUserAuthenticationId(User), User."User Name", '', '', Plan.Plan_ID, Plan.Plan_Name, 'Enabled');
     end;
 
-#if not CLEAN22
-    local procedure IsUserInUserGroup(UserID: Guid; UserGroupCode: Text): Boolean
-    var
-        UserGroupMember: Record "User Group Member";
-    begin
-        UserGroupMember.SetRange("User Group Code", UserGroupCode);
-        UserGroupMember.SetRange("User Security ID", UserID);
-        exit(not UserGroupMember.IsEmpty());
-    end;
-#endif
-
     local procedure IsUserInPermissionSet(UserID: Guid; PermissionSetCode: Text): Boolean
     var
         AccessControl: Record "Access Control";
@@ -1395,14 +1147,5 @@ codeunit 139509 "Azure AD Plan Module Test"
         exit(not AccessControl.IsEmpty());
     end;
 
-#if not CLEAN22
-    local procedure AddUserToUserGroupNAVOnly(User: Record User; UserGroupCode: Code[20]; PlanId: Guid)
-    begin
-        LibraryPermissions.CreateUserGroupInPlan(UserGroupCode, PlanId);
-        LibraryPermissions.AddUserToUserGroupByCode(User."User Security ID", UserGroupCode);
-        Assert.IsTrue(
-          IsUserInUserGroup(User."User Security ID", UserGroupCode), 'Test prerequisite failed.');
-    end;
-#endif
 }
 

@@ -10,25 +10,14 @@ tableextension 11715 "Purchases & Payables Setup CZL" extends "Purchases & Payab
 {
     fields
     {
-#if not CLEAN22
-#pragma warning disable AL0432
-#endif
 #pragma warning disable AL0842
         field(11780; "Default VAT Date CZL"; Enum "Default VAT Date CZL")
 #pragma warning restore AL0842
-#if not CLEAN22
-#pragma warning restore AL0432
-#endif
         {
             Caption = 'Default VAT Date';
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Replaced by VAT Reporting Date in General Ledger Setup.';
         }
         field(11781; "Allow Alter Posting Groups CZL"; Boolean)
@@ -45,13 +34,8 @@ tableextension 11715 "Purchases & Payables Setup CZL" extends "Purchases & Payab
             OptionCaption = 'Blank,Posting Date,VAT Date,Document Date';
             OptionMembers = Blank,"Posting Date","VAT Date","Document Date";
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Replaced by Def. Orig. Doc. VAT Date CZL in General Ledger Setup.';
         }
     }

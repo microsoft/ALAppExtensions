@@ -7,14 +7,8 @@ namespace Microsoft.Purchases.Vendor;
 table 11729 "Subst. Vend. Posting Group CZL"
 {
     Caption = 'Subst. Vendor Posting Group';
-#if not CLEAN22
-    LookupPageId = "Subst. Vend. Post. Groups CZL";
-    ObsoleteState = Pending;
-    ObsoleteTag = '22.0';
-#else
     ObsoleteState = Removed;
     ObsoleteTag = '25.0';
-#endif
     ObsoleteReason = 'Replaced by Alt. Vendor Posting Group table.';
 
     fields
@@ -30,13 +24,6 @@ table 11729 "Subst. Vend. Posting Group CZL"
             Caption = 'Vendor Posting Group';
             TableRelation = "Vendor Posting Group";
             DataClassification = CustomerContent;
-#if not CLEAN22
-            trigger OnValidate()
-            begin
-                if "Vendor Posting Group" = "Parent Vendor Posting Group" then
-                    Error(PostGrpSubstErr);
-            end;
-#endif
         }
     }
 
@@ -47,9 +34,5 @@ table 11729 "Subst. Vend. Posting Group CZL"
             Clustered = true;
         }
     }
-#if not CLEAN22
-    var
-        PostGrpSubstErr: Label 'Posting Group cannot substitute itself.';
-#endif
 }
 

@@ -16,9 +16,8 @@ codeunit 6164 "E-Doc. Line Matching"
     var
         EmptyRecordErr: Label 'Empty selection cannot be matched.';
         DiscountErr: Label 'Varied Discount found among selected %1 entries. Please review and deselect entries with different Discount in order to match selection', Comment = '%1 - Table name for selected entries';
-        DiscountDiffErr: Label 'Varied Discount found in existing matching for Import line %1. Please review and undo previous matching in order to match selection', Comment = '%1 - Import line number';
         UnitCostErr: Label 'Varied Unit Costs found among selected %1 entries. Please review and deselect entries with different Unit Costs in order to match selection', Comment = '%1 - Table name for selected entries';
-        UnitCostDiffErr: Label 'Varied Unit Cost found in existing matching for Import line %1. Please review and undo previous matching in order to match selection', Comment = '%1 - Import line number';
+        AmountDiffErr: Label 'Varied amounts found in matching for Import line %1. Please review and undo previous matching in order to match selection', Comment = '%1 - Import line number';
         MatchErr: Label 'Discrepancy detected in line amount for 1 or more matches for Purchase Line %1.', Comment = '%1 - Purchase Line No';
         UOMErr: Label 'Varied Unit Of Measures found among selected %1 entries. Please review and deselect entries with different Unit Of Measures in order to match selection', Comment = '%1 - Table name for selected entries';
         UnmatchedImportLineErr: Label 'Matching of Imported Line %1 is incomplete. It is not fully matched to purchase order lines.', Comment = '%1 - Imported Line No.';
@@ -27,6 +26,11 @@ codeunit 6164 "E-Doc. Line Matching"
 
 
     procedure RunMatching(var EDocument: Record "E-Document")
+    begin
+        RunMatching(EDocument, false);
+    end;
+
+    procedure RunMatching(var EDocument: Record "E-Document"; WithCopilot: Boolean)
     var
         EDocService: Record "E-Document Service";
         EDocServiceStatus: Record "E-Document Service Status";
@@ -39,6 +43,7 @@ codeunit 6164 "E-Doc. Line Matching"
         EDocServiceStatus.Get(EDocument."Entry No", EDocService.Code);
         EDocServiceStatus.TestField(Status, Enum::"E-Document Service Status"::"Order Linked");
         EDocOrderLineMatching.SetTempRecord(EDocument);
+        EDocOrderLineMatching.SetAutoRunCopilot(WithCopilot);
         EDocOrderLineMatching.Run();
     end;
 
@@ -282,6 +287,7 @@ codeunit 6164 "E-Doc. Line Matching"
     local procedure VerifyExistingMatchesHasSameFieldValue(var TempEDocImportedLine: Record "E-Doc. Imported Line" temporary; var TempPurchaseLine: Record "Purchase Line" temporary)
     var
         EDocOrderMatch: Record "E-Doc. Order Match";
+        TempTotal, Total : Decimal;
     begin
         TempPurchaseLine.FindFirst();
         TempEDocImportedLine.FindFirst();
@@ -289,11 +295,12 @@ codeunit 6164 "E-Doc. Line Matching"
         EDocOrderMatch.SetRange("Document Order No.", TempPurchaseLine."Document No.");
         EDocOrderMatch.SetRange("E-Document Entry No.", TempEDocImportedLine."E-Document Entry No.");
         EDocOrderMatch.SetRange("Document Line No.", TempPurchaseLine."Line No.");
+        // We only have to check first match as other matches would also have been checked.
         if EDocOrderMatch.FindFirst() then begin
-            if EDocOrderMatch."E-Document Direct Unit Cost" <> TempEDocImportedLine."Direct Unit Cost" then
-                Error(UnitCostDiffErr, EDocOrderMatch."E-Document Line No.");
-            if EDocOrderMatch."Line Discount %" <> TempEDocImportedLine."Line Discount %" then
-                Error(DiscountDiffErr, EDocOrderMatch."E-Document Line No.");
+            TempTotal := TempEDocImportedLine."Direct Unit Cost" - (TempEDocImportedLine."Direct Unit Cost" * TempEDocImportedLine."Line Discount %" / 100);
+            Total := EDocOrderMatch."E-Document Direct Unit Cost" - (EDocOrderMatch."E-Document Direct Unit Cost" * EDocOrderMatch."Line Discount %" / 100);
+            if TempTotal <> Total then
+                Error(AmountDiffErr, EDocOrderMatch."E-Document Line No.");
         end;
     end;
 

@@ -1690,6 +1690,7 @@ codeunit 20362 "Tax Json Serialization"
                 AddJsonProperty(FieldJObject, 'VariableName', ScriptSymbolMgmt.GetSymbolName(
                     "Symbol Type"::Variable,
                     ActionLoopThroughRecField."Variable ID"));
+                AddJsonProperty(FieldJObject, 'CalculateSum', ActionLoopThroughRecField."Calculate Sum");
                 JArray.Add(FieldJObject);
             until ActionLoopThroughRecField.Next() = 0;
 

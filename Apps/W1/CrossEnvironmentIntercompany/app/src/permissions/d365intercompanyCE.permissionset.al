@@ -11,6 +11,6 @@ permissionset 30400 "D365 Intercompany CE"
     Assignable = true;
     Caption = 'Dynamics 365 Business Central Intercompany Cross Environment';
     IncludedPermissionSets = "Execute All Objects",
-                             "Session - Edit",
+                             "D365 AUTOMATION",
                              "Data Access IC CE";
 }

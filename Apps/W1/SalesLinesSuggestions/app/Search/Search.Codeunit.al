@@ -7,6 +7,7 @@ namespace Microsoft.Sales.Document;
 using System;
 using System.Telemetry;
 using Microsoft.Inventory.Item;
+using System.AI;
 using System.Security.Encryption;
 
 codeunit 7282 "Search"
@@ -14,13 +15,14 @@ codeunit 7282 "Search"
     Access = Internal;
 
     [TryFunction]
-    internal procedure SearchMultiple(ItemResultsArray: JsonArray; SearchStyle: Enum "Search Style"; Intent: Text; SearchQuery: Text; Top: Integer; MaximumQueryResultsToRank: Integer; IncludeSynonyms: Boolean; UseContextAwareRanking: Boolean; var TempSalesLineAiSuggestion: Record "Sales Line AI Suggestions" temporary)
+    internal procedure SearchMultiple(ItemResultsArray: JsonArray; SearchStyle: Enum "Search Style"; Intent: Text; SearchQuery: Text; Top: Integer; MaximumQueryResultsToRank: Integer; IncludeSynonyms: Boolean; UseContextAwareRanking: Boolean; var TempSalesLineAiSuggestion: Record "Sales Line AI Suggestions" temporary; ItemNoFilter: Text)
     var
         Item: Record "Item";
         TempSearchResponse: Record "Search API Response" temporary;
         FeatureTelemetry: Codeunit "Feature Telemetry";
         SalesLineAISuggestionImpl: Codeunit "Sales Lines Suggestions Impl.";
         CryptographyManagement: Codeunit "Cryptography Management";
+        ALCopilotCapability: DotNet ALCopilotCapability;
         ALSearch: DotNet ALSearch;
         ALSearchOptions: DotNet ALSearchOptions;
         ALSearchQuery: DotNet ALSearchQuery;
@@ -42,9 +44,10 @@ codeunit 7282 "Search"
         HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512;
         SearchItemNames: Text;
         ItemTokentText: Text;
+        CapabilityName: Text;
+        CurrentModuleInfo: ModuleInfo;
         SearchSetupProgressLbl: Label 'Looking through item information';
         SearchingItemsLbl: Label 'Looking for items matching: %1', Comment = '%1= list of item names';
-
     begin
         if not ALSearch.IsItemSearchReady() then begin
             SearchProgress.Open(SearchSetupProgressLbl);
@@ -64,6 +67,12 @@ codeunit 7282 "Search"
         SearchFilter.Expression := Text.StrSubstNo('<> %1', true);
         ALSearchOptions.AddSearchFilter(SearchFilter);
 
+        if ItemNoFilter <> '' then begin
+            SearchFilter := SearchFilter.SearchFilter();
+            SearchFilter.FieldNo := Item.FieldNo("No.");
+            SearchFilter.Expression := Text.StrSubstNo('%1', ItemNoFilter);
+            ALSearchOptions.AddSearchFilter(SearchFilter);
+        end;
         SearchFilter := SearchFilter.SearchFilter();
         SearchFilter.FieldNo := Item.FieldNo("Sales Blocked");
         SearchFilter.Expression := Text.StrSubstNo('<> %1', true);
@@ -90,10 +99,15 @@ codeunit 7282 "Search"
             ALSearchOptions.AddSearchQuery(ALSearchQuery);
         end;
 
+        // Setup capability information
+        NavApp.GetCurrentModuleInfo(CurrentModuleInfo);
+        CapabilityName := Enum::"Copilot Capability".Names().Get(Enum::"Copilot Capability".Ordinals().IndexOf(Enum::"Copilot Capability"::"Sales Lines Suggestions".AsInteger()));
+        ALCopilotCapability := ALCopilotCapability.ALCopilotCapability(CurrentModuleInfo.Publisher(), CurrentModuleInfo.Id(), Format(CurrentModuleInfo.AppVersion()), CapabilityName);
+
         //Search Items
         SearchProgress.Open(StrSubstNo(SearchingItemsLbl, SearchItemNames.TrimEnd(', ')));
         StartDateTime := CurrentDateTime();
-        ALSearchResult := ALSearch.FindItems(ALSearchOptions);
+        ALSearchResult := ALSearch.FindItems(ALSearchOptions, ALCopilotCapability);
         SearchProgress.Close();
         DurationAsBigInt := (CurrentDateTime() - StartDateTime);
         TelemetryCD.Add('Response time', Format(DurationAsBigInt));
@@ -199,6 +213,8 @@ codeunit 7282 "Search"
                 foreach JsonToken in JsonArray do
                     SearchKeyword := SearchKeyword + '|' + JsonToken.AsValue().AsText();
             end;
+            if ItemObjectToken.AsObject().Get('origin_name', JsonToken) and (JsonToken.AsValue().AsText() <> '') then
+                SearchKeyword := SearchKeyword + '|' + JsonToken.AsValue().AsText();
             SearchKeywords.Add(SearchKeyword);
         end;
         exit(SearchKeywords);

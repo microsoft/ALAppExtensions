@@ -20,9 +20,7 @@ codeunit 148022 "Payment Export Negative"
         LibraryRandom: Codeunit "Library - Random";
         IsInitialized: Boolean;
         EmptyPaymentDetailsErr: Label '%1, %2 or %3 must be used for payments.', Locked = true;
-        LedgerEntryNotOpenErr: Label 'Open must be equal to ''%1''  in %2', Locked = true;
         RecipientBankAccMissingErr: Label '%1 for one or more %2 is not specified.', Locked = true;
-        ValueEqualErr: Label '%1 must be equal to ''%2''  in %3', Locked = true;
         ValueNotSetErr: Label '%1 must have a value in %2', Locked = true;
         WrongBalAccountErr: Label '%1 for the %2 is different from %3 on %4: %5.', Locked = true;
         ValueNotEqualErr: Label '%1 must not be %2 in %3', Locked = true;
@@ -176,10 +174,7 @@ codeunit 148022 "Payment Export Negative"
         ASSERTERROR CustLedgEntry.VALIDATE("Payment Method Code", PaymentMethod.Code);
 
         // Verify
-        Assert.ExpectedError(
-          STRSUBSTNO(ValueEqualErr,
-            PaymentMethod.FIELDCAPTION(PaymentTypeValidation), PaymentMethod.PaymentTypeValidation::International,
-            PaymentMethod.TABLECAPTION()));
+        Assert.ExpectedTestFieldError(PaymentMethod.FIELDCAPTION(PaymentTypeValidation), '');
     end;
 
     [Test]
@@ -242,11 +237,7 @@ codeunit 148022 "Payment Export Negative"
         ASSERTERROR GenJnlLine.VALIDATE("Payment Method Code", PaymentMethod.Code);
 
         // Verify
-
-        Assert.ExpectedError(
-          STRSUBSTNO(ValueEqualErr,
-            PaymentMethod.FIELDCAPTION(PaymentTypeValidation), PaymentMethod.PaymentTypeValidation::International,
-            PaymentMethod.TABLECAPTION()));
+        Assert.ExpectedTestFieldError(PaymentMethod.FIELDCAPTION(PaymentTypeValidation), '');
     end;
 
     [Test]
@@ -323,10 +314,7 @@ codeunit 148022 "Payment Export Negative"
         ASSERTERROR VendLedgEntry.VALIDATE("Payment Method Code", PaymentMethod.Code);
 
         // Verify
-        Assert.ExpectedError(
-          STRSUBSTNO(ValueEqualErr,
-            PaymentMethod.FIELDCAPTION(PaymentTypeValidation), PaymentMethod.PaymentTypeValidation::International,
-            PaymentMethod.TABLECAPTION()));
+        Assert.ExpectedTestFieldError(PaymentMethod.FIELDCAPTION(PaymentTypeValidation), Format(PaymentMethod.PaymentTypeValidation::International));
     end;
 
     [Test]
@@ -641,7 +629,7 @@ codeunit 148022 "Payment Export Negative"
         ASSERTERROR CustLedgerEntry.VALIDATE("Message to Recipient");
 
         // Verify
-        Assert.ExpectedError(STRSUBSTNO(LedgerEntryNotOpenErr, TRUE, CustLedgerEntry.TABLECAPTION()));
+        Assert.ExpectedTestFieldError(CustLedgerEntry.FieldCaption(Open), Format(true));
     end;
 
     [Test]
@@ -667,7 +655,7 @@ codeunit 148022 "Payment Export Negative"
         ASSERTERROR VendorLedgerEntry.VALIDATE("Message to Recipient");
 
         // Verify
-        Assert.ExpectedError(STRSUBSTNO(LedgerEntryNotOpenErr, TRUE, VendorLedgerEntry.TABLECAPTION()));
+        Assert.ExpectedTestFieldError(VendorLedgerEntry.FieldCaption(Open), Format(true));
     end;
 
     local procedure Initialize();

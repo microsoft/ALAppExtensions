@@ -1,10 +1,6 @@
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Inventory.Item;
-#if not CLEAN22
-using System.IO;
-using Microsoft.Finance.Dimension;
-#endif
 using Microsoft.Foundation.UOM;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Inventory.Item.Catalog;
@@ -16,11 +12,6 @@ codeunit 30171 "Shpfy Create Item"
 {
     Access = Internal;
     Permissions =
-#if not CLEAN22
-        tabledata "Config. Template Header" = r,
-        tabledata "Config. Template Line" = r,
-        tabledata "Dimensions Template" = r,
-#endif
         tabledata Item = rim,
         tabledata "Item Category" = rim,
         tabledata "Item Reference" = rim,
@@ -231,18 +222,9 @@ codeunit 30171 "Shpfy Create Item"
     /// <param name="ForVariant">Parameter of type Boolean.</param>
     local procedure DoCreateItem(var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var Item: Record Item; ForVariant: Boolean)
     var
-#if not CLEAN22
-        ConfigTemplateHeader: Record "Config. Template Header";
-        DimensionsTemplate: Record "Dimensions Template";
-#endif
         ItemCategory: Record "Item Category";
         ItemVariant: Record "Item Variant";
         Vendor: Record Vendor;
-#if not CLEAN22
-        ConfigTemplateManagement: Codeunit "Config. Template Management";
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-        RecordRef: RecordRef;
-#endif
         CurrentTemplateCode: Code[20];
         ItemNo: Code[20];
         Code: Text;
@@ -262,22 +244,7 @@ codeunit 30171 "Shpfy Create Item"
                         ItemNo := CopyStr(Code, 1, MaxStrLen(ItemNo));
                     end;
             end;
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then begin
-            if ConfigTemplateHeader.Get(CurrentTemplateCode) then begin
-                Clear(Item);
-                Item."No." := ItemNo;
-                Item.Insert(true);
-                RecordRef.GetTable(Item);
-                ConfigTemplateManagement.UpdateRecord(ConfigTemplateHeader, RecordRef);
-                DimensionsTemplate.InsertDimensionsFromTemplates(ConfigTemplateHeader, Item."No.", Database::Item);
-                RecordRef.SetTable(Item);
-            end;
-        end else
-            CreateItemFromTemplate(Item, CurrentTemplateCode, ItemNo);
-#else
         CreateItemFromTemplate(Item, CurrentTemplateCode, ItemNo);
-#endif
         Item.Description := ShopifyProduct.Title;
 
         CreateItemUnitOfMeasure(ShopifyVariant, Item);
@@ -413,27 +380,14 @@ codeunit 30171 "Shpfy Create Item"
     /// <returns>Return variable "Result" of type Code[20].</returns>
     local procedure FindItemTemplate(ShopifyProduct: Record "Shpfy Product"; ShopifyVariant: Record "Shpfy Variant") Result: Code[20]
     var
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         IsHandled: Boolean;
     begin
         ProductEvents.OnBeforeFindItemTemplate(Shop, ShopifyProduct, ShopifyVariant, Result, IsHandled);
         if not IsHandled then
-#if not CLEAN22
-            if not ShpfyTemplates.NewTemplatesEnabled() then begin
-                Shop.TestField("Item Template Code");
-                Result := Shop."Item Template Code";
-            end else begin
-                Shop.TestField("Item Templ. Code");
-                Result := Shop."Item Templ. Code";
-            end;
-#else
         if not IsHandled then begin
             Shop.TestField("Item Templ. Code");
             Result := Shop."Item Templ. Code";
         end;
-#endif
         ProductEvents.OnAfterFindItemTemplate(Shop, ShopifyProduct, ShopifyVariant, Result);
         exit(Result);
     end;
@@ -495,20 +449,9 @@ codeunit 30171 "Shpfy Create Item"
     /// </summary>
     /// <param name="ShopifyShop">Parameter of type Record "Shopify Shop".</param>
     internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
-#if not CLEAN22
-    var
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
     begin
         Shop := ShopifyShop;
-#if not CLEAN22
-        if not ShpfyTemplates.NewTemplatesEnabled() then
-            TemplateCode := Shop."Item Template Code"
-        else
-            TemplateCode := Shop."Item Templ. Code";
-#else
         TemplateCode := Shop."Item Templ. Code";
-#endif
     end;
 
     /// <summary> 

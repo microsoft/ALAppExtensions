@@ -1,3 +1,4 @@
+#if not CLEAN25
 namespace Microsoft.Utility.ImageAnalysis;
 
 using Microsoft.CRM.Contact;
@@ -10,6 +11,10 @@ using Microsoft.CRM.Profiling;
 
 codeunit 2028 "Contact Picture Analyze"
 {
+    ObsoleteReason = 'Image analyzer for contacts is being removed.';
+    ObsoleteState = Pending;
+    ObsoleteTag = '25.0';
+
     var
         ImageAnalyzerExtMgt: Codeunit "Image Analyzer Ext. Mgt.";
         ImageAnalyzerContactQuestionnaireDescriptionTxt: Label 'Attributes detected by Image Analyzer.', Comment = 'Should be less than or equal to 50 characters.', MaxLength = 50;
@@ -210,3 +215,4 @@ codeunit 2028 "Contact Picture Analyze"
         LineNumber += 10000;
     end;
 }
+#endif

@@ -23,16 +23,8 @@ codeunit 4019 "GP Item Migrator"
         CurrentBatchNumber: Integer;
         CurrentBatchLineNo: Integer;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItem', '', true, true)]
-    procedure OnMigrateItem(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItem', '', true, true)]
     local procedure OnMigrateItem(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId)
-#endif
     begin
         MigrateItem(Sender, RecordIdToMigrate);
     end;
@@ -41,6 +33,7 @@ codeunit 4019 "GP Item Migrator"
     var
         GPItem: Record "GP Item";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
+        HelperFunctions: Codeunit "Helper Functions";
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Item" then
             exit;
@@ -49,29 +42,12 @@ codeunit 4019 "GP Item Migrator"
         if not GPItem.Get(RecordIdToMigrate) then
             exit;
 
-        if not ShouldMigrateItem(GPItem) then begin
+        if not HelperFunctions.ShouldMigrateItem(GPItem.No) then begin
             DecrementMigratedCount();
             exit;
         end;
 
         MigrateItemDetails(GPItem, Sender);
-    end;
-
-    local procedure ShouldMigrateItem(var GPItem: Record "GP Item"): Boolean
-    var
-        GPIV00101: Record "GP IV00101";
-    begin
-        if GPIV00101.Get(GPItem.No) then begin
-            if GPIV00101.INACTIVE then
-                if not GPCompanyAdditionalSettings.GetMigrateInactiveItems() then
-                    exit(false);
-
-            if GPIV00101.IsDiscontinued() then
-                if not GPCompanyAdditionalSettings.GetMigrateDiscontinuedItems() then
-                    exit(false);
-        end;
-
-        exit(true);
     end;
 
     local procedure DecrementMigratedCount()
@@ -108,16 +84,8 @@ codeunit 4019 "GP Item Migrator"
         ItemDataMigrationFacade.ModifyItem(true);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemPostingGroups', '', true, true)]
-    procedure OnMigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateItemPostingGroups', '', true, true)]
     local procedure OnMigrateItemPostingGroups(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#endif
     begin
         MigrateItemPostingGroups(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
     end;
@@ -139,16 +107,8 @@ codeunit 4019 "GP Item Migrator"
             MigrateItemInventoryPostingGroup(GPItem, Sender);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateInventoryTransactions', '', true, true)]
-    procedure OnMigrateInventoryTransactions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Data Migration Facade", 'OnMigrateInventoryTransactions', '', true, true)]
     local procedure OnMigrateInventoryTransactions(var Sender: Codeunit "Item Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#endif
     begin
         MigrateInventoryTransactions(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
     end;

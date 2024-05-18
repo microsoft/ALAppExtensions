@@ -762,39 +762,53 @@ codeunit 40125 "GP Populate Combined Tables"
 
     internal procedure PopulateGPItemTransactions()
     var
-        GPItemTransactions: Record "GP Item Transactions";
         GPPopulateItemTransactions: Query "GP Populate Item Transactions";
     begin
         GPPopulateItemTransactions.SetRange(RCPTSOLD, false);
         GPPopulateItemTransactions.SetRange(QTYTYPE, 1);
         GPPopulateItemTransactions.Open();
-        while GPPopulateItemTransactions.Read() do begin
-            Clear(GPItemTransactions);
-            GPItemTransactions.No := CopyStr(GPPopulateItemTransactions.ITEMNMBR.Trim(), 1, MaxStrLen(GPItemTransactions.No));
-            GPItemTransactions.Location := CopyStr(GPPopulateItemTransactions.TRXLOCTN.Trim(), 1, MaxStrLen(GPItemTransactions.Location));
-            GPItemTransactions.DateReceived := GPPopulateItemTransactions.DATERECD;
-            GPItemTransactions.UnitCost := GPPopulateItemTransactions.UNITCOST;
-            GPItemTransactions.ReceiptSEQNumber := GPPopulateItemTransactions.RCTSEQNM;
+        while GPPopulateItemTransactions.Read() do
+            InsertGPItemTransactionIfNeeded(GPPopulateItemTransactions);
+    end;
 
-            case GPPopulateItemTransactions.ITMTRKOP of
-                2:
-                    GPItemTransactions.Quantity := 1;
-                3:
-                    GPItemTransactions.Quantity := GPPopulateItemTransactions.QTYRECVDGPIV00300 - GPPopulateItemTransactions.QTYSOLDGPIV00300;
-                else
-                    GPItemTransactions.Quantity := GPPopulateItemTransactions.QTYRECVD - GPPopulateItemTransactions.QTYSOLD;
-            end;
+    local procedure InsertGPItemTransactionIfNeeded(var GPPopulateItemTransactions: Query "GP Populate Item Transactions")
+    var
+        GPItemTransactions: Record "GP Item Transactions";
+        GPIV00101: Record "GP IV00101";
+        Item: Record Item;
+    begin
+        if not GPIV00101.Get(GPPopulateItemTransactions.ITEMNMBR) then
+            exit;
 
-            GPItemTransactions.CurrentCost := GPPopulateItemTransactions.CURRCOST;
-            GPItemTransactions.StandardCost := GPPopulateItemTransactions.STNDCOST;
+        if not ShouldAddItemToStagingTable(GPIV00101) then
+            exit;
 
-            GPItemTransactions.ReceiptNumber := CopyStr(GPPopulateItemTransactions.RCPTNMBR.Trim(), 1, MaxStrLen(GPItemTransactions.ReceiptNumber));
-            GPItemTransactions.SerialNumber := CopyStr(GPPopulateItemTransactions.SERLNMBR.Trim(), 1, MaxStrLen(GPItemTransactions.SerialNumber));
+        GPItemTransactions.Init();
+        GPItemTransactions.No := CopyStr(GPPopulateItemTransactions.ITEMNMBR.Trim(), 1, MaxStrLen(Item."No."));
+        GPItemTransactions.Location := CopyStr(GPPopulateItemTransactions.TRXLOCTN.Trim(), 1, MaxStrLen(GPItemTransactions.Location));
+        GPItemTransactions.DateReceived := GPPopulateItemTransactions.DATERECD;
+        GPItemTransactions.UnitCost := GPPopulateItemTransactions.UNITCOST;
+        GPItemTransactions.ReceiptSEQNumber := GPPopulateItemTransactions.RCTSEQNM;
 
-            GPItemTransactions.LotNumber := CopyStr(GPPopulateItemTransactions.LOTNUMBR.Trim(), 1, MaxStrLen(GPItemTransactions.LotNumber));
-            GPItemTransactions.ExpirationDate := GPPopulateItemTransactions.EXPNDATE;
-            GPItemTransactions.Insert();
+        // Set the quantity based on the item tracking type
+        case GPPopulateItemTransactions.ITMTRKOP of
+            2: // Serial
+                GPItemTransactions.Quantity := 1;
+            3: // Lot
+                GPItemTransactions.Quantity := GPPopulateItemTransactions.QTYRECVDGPIV00300 - GPPopulateItemTransactions.QTYSOLDGPIV00300;
+            else // None
+                GPItemTransactions.Quantity := GPPopulateItemTransactions.QTYRECVD - GPPopulateItemTransactions.QTYSOLD;
         end;
+
+        GPItemTransactions.CurrentCost := GPPopulateItemTransactions.CURRCOST;
+        GPItemTransactions.StandardCost := GPPopulateItemTransactions.STNDCOST;
+
+        GPItemTransactions.ReceiptNumber := CopyStr(GPPopulateItemTransactions.RCPTNMBR.Trim(), 1, MaxStrLen(GPItemTransactions.ReceiptNumber));
+        GPItemTransactions.SerialNumber := CopyStr(GPPopulateItemTransactions.SERLNMBR.Trim(), 1, MaxStrLen(GPItemTransactions.SerialNumber));
+
+        GPItemTransactions.LotNumber := CopyStr(GPPopulateItemTransactions.LOTNUMBR.Trim(), 1, MaxStrLen(GPItemTransactions.LotNumber));
+        GPItemTransactions.ExpirationDate := GPPopulateItemTransactions.EXPNDATE;
+        GPItemTransactions.Insert();
     end;
 
     internal procedure PopulateCodes()

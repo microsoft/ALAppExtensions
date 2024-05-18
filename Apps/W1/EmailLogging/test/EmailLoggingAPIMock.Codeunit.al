@@ -62,7 +62,7 @@ codeunit 139766 "Email Logging API Mock" implements "Email Logging API Client"
             (not ArchiveDictionary.ContainsKey('-' + MessageId)));
     end;
 
-    internal procedure GetMessages(AccessToken: Text; UserEmail: Text; MaxCount: Integer; var MessagesJsonObject: JsonObject)
+    internal procedure GetMessages(AccessToken: SecretText; UserEmail: Text; MaxCount: Integer; var MessagesJsonObject: JsonObject)
     var
         JsonText: Text;
         Message: Text;
@@ -90,7 +90,7 @@ codeunit 139766 "Email Logging API Mock" implements "Email Logging API Client"
         MessagesJsonObject.ReadFrom(JsonText);
     end;
 
-    internal procedure DeleteMessage(AccessToken: Text; UserEmail: Text; MessageId: Text)
+    internal procedure DeleteMessage(AccessToken: SecretText; UserEmail: Text; MessageId: Text)
     var
         SourceMessage: Text;
         TargetMessage: Text;
@@ -105,7 +105,7 @@ codeunit 139766 "Email Logging API Mock" implements "Email Logging API Client"
         DeletedItemsDictionary.Add(TargetMessageId, TargetMessage);
     end;
 
-    internal procedure ArchiveMessage(AccessToken: Text; UserEmail: Text; MessageId: Text; var TargetMessageJsonObject: JsonObject)
+    internal procedure ArchiveMessage(AccessToken: SecretText; UserEmail: Text; MessageId: Text; var TargetMessageJsonObject: JsonObject)
     var
         SourceMessage: Text;
         TargetMessage: Text;

@@ -25,10 +25,9 @@ using System.Utilities;
 
 report 31186 "Sales Quote CZL"
 {
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/SalesQuote.rdl';
     Caption = 'Sales Quote';
     PreviewMode = PrintLayout;
+    DefaultRenderingLayout = "SalesQuote.rdl";
     WordMergeDataItem = "Sales Header";
 
     dataset
@@ -491,6 +490,25 @@ report 31186 "Sales Quote CZL"
             LogInteractionEnable := LogInteraction;
         end;
     }
+
+    rendering
+    {
+        layout("SalesQuote.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/SalesQuote.rdl';
+            Caption = 'Sales Quote (RDL)';
+            Summary = 'The Sales Quote (RDL) provides a detailed layout.';
+        }
+        layout("SalesQuoteEmail.docx")
+        {
+            Type = Word;
+            LayoutFile = './Src/Reports/SalesQuoteEmail.docx';
+            Caption = 'Sales Quote Email (Word)';
+            Summary = 'The Sales Quote Email (Word) provides an email body layout.';
+        }
+    }
+
     trigger OnInitReport()
     begin
         "Sales & Receivables Setup".Get();

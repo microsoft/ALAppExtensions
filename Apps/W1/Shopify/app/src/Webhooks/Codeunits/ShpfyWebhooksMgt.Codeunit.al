@@ -75,9 +75,15 @@ codeunit 30269 "Shpfy Webhooks Mgt."
 
     internal procedure EnableWebhook(var Shop: Record "Shpfy Shop"; Topic: Text[250]; UserId: Guid): Text
     var
+        WebhookSubscription: Record "Webhook Subscription";
         ShpfyWebhooksAPI: Codeunit "Shpfy Webhooks API";
         SubscriptionId: Text;
     begin
+        WebhookSubscription.SetRange("Subscription ID", GetShopDomain(Shop."Shopify URL"));
+        WebhookSubscription.SetRange("Company Name", CopyStr(CompanyName, 1, MaxStrLen(WebhookSubscription."Company Name")));
+        WebhookSubscription.SetRange(Endpoint, Topic);
+        if WebhookSubscription.FindFirst() then
+            WebhookSubscription.Delete();
         if ShpfyWebhooksAPI.GetWebhookSubscription(Shop, Topic, SubscriptionId) then
             ShpfyWebhooksAPI.DeleteWebhookSubscription(Shop, SubscriptionId);
         SubscriptionId := ShpfyWebhooksAPI.RegisterWebhookSubscription(Shop, Topic);

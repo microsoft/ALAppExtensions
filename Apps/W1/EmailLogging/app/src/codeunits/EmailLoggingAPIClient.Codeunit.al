@@ -26,8 +26,7 @@ codeunit 1682 "Email Logging API Client" implements "Email Logging API Client"
         RestAPINotSupportedErr: Label 'REST API is not yet supported for this mailbox', Locked = true;
         TheMailboxIsNotValidErr: Label 'We cannot connect to the shared mailbox in Office 365.\\This might be because the Exchange user does not have a valid license for Office 365.';
 
-    [NonDebuggable]
-    internal procedure GetMessages(AccessToken: Text; EmailAddress: Text; MaxCount: Integer; var JsonObject: JsonObject)
+    internal procedure GetMessages(AccessToken: SecretText; EmailAddress: Text; MaxCount: Integer; var JsonObject: JsonObject)
     var
         RequestUri: Text;
         ErrorMessage: Text;
@@ -42,8 +41,7 @@ codeunit 1682 "Email Logging API Client" implements "Email Logging API Client"
         end;
     end;
 
-    [NonDebuggable]
-    internal procedure DeleteMessage(AccessToken: Text; EmailAddress: Text; MessageId: Text)
+    internal procedure DeleteMessage(AccessToken: SecretText; EmailAddress: Text; MessageId: Text)
     var
         RequestUri: Text;
         ErrorMessage: Text;
@@ -59,8 +57,7 @@ codeunit 1682 "Email Logging API Client" implements "Email Logging API Client"
         Session.LogMessage('0000FXZ', MessageDeletedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
     end;
 
-    [NonDebuggable]
-    internal procedure ArchiveMessage(AccessToken: Text; EmailAddress: Text; SourceMessageId: Text; var TargetMessageJsonObject: JsonObject)
+    internal procedure ArchiveMessage(AccessToken: SecretText; EmailAddress: Text; SourceMessageId: Text; var TargetMessageJsonObject: JsonObject)
     var
         RequestJsonObject: JsonObject;
         ResponseJsonObject: JsonObject;
@@ -81,15 +78,13 @@ codeunit 1682 "Email Logging API Client" implements "Email Logging API Client"
     end;
 
     [TryFunction]
-    [NonDebuggable]
-    local procedure TryGet(AccessToken: Text; RequestUri: Text; var JsonObject: JsonObject; var StatusCode: Integer; var ErrorMessage: Text)
+    local procedure TryGet(AccessToken: SecretText; RequestUri: Text; var JsonObject: JsonObject; var StatusCode: Integer; var ErrorMessage: Text)
     begin
         if not Get(AccessToken, RequestUri, JsonObject, StatusCode, ErrorMessage) then
             Error('');
     end;
 
-    [NonDebuggable]
-    local procedure Get(AccessToken: Text; RequestUri: Text; var ResponseJsonObject: JsonObject; var StatusCode: Integer; var ErrorMessage: Text): Boolean
+    local procedure Get(AccessToken: SecretText; RequestUri: Text; var ResponseJsonObject: JsonObject; var StatusCode: Integer; var ErrorMessage: Text): Boolean
     var
         HttpClient: HttpClient;
         HttpHeaders: HttpHeaders;
@@ -98,7 +93,7 @@ codeunit 1682 "Email Logging API Client" implements "Email Logging API Client"
     begin
         HttpHeaders := HttpClient.DefaultRequestHeaders();
         HttpHeaders.Add('Accept', 'application/json');
-        HttpHeaders.Add('Authorization', 'Bearer ' + AccessToken);
+        HttpHeaders.Add('Authorization', SecretStrSubstNo('Bearer %1', AccessToken));
 
         if not HttpClient.Get(RequestUri, HttpResponseMessage) then begin
             Session.LogMessage('0000FY2', StrSubstNo(FailedGetRequestTxt, '-'), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
@@ -127,15 +122,13 @@ codeunit 1682 "Email Logging API Client" implements "Email Logging API Client"
     end;
 
     [TryFunction]
-    [NonDebuggable]
-    local procedure TryDelete(AccessToken: Text; RequestUri: Text; var StatusCode: Integer; var ErrorMessage: Text)
+    local procedure TryDelete(AccessToken: SecretText; RequestUri: Text; var StatusCode: Integer; var ErrorMessage: Text)
     begin
         if not Delete(AccessToken, RequestUri, StatusCode, ErrorMessage) then
             Error('');
     end;
 
-    [NonDebuggable]
-    local procedure Delete(AccessToken: Text; RequestUri: Text; var StatusCode: Integer; var ErrorMessage: Text): Boolean
+    local procedure Delete(AccessToken: SecretText; RequestUri: Text; var StatusCode: Integer; var ErrorMessage: Text): Boolean
     var
         HttpRequestMessage: HttpRequestMessage;
         HttpResponseMessage: HttpResponseMessage;
@@ -145,7 +138,7 @@ codeunit 1682 "Email Logging API Client" implements "Email Logging API Client"
         HttpRequestMessage.Method('DELETE');
         HttpRequestMessage.SetRequestUri(RequestUri);
         HttpRequestMessage.GetHeaders(HttpHeaders);
-        HttpHeaders.Add('Authorization', 'Bearer ' + AccessToken);
+        HttpHeaders.Add('Authorization', SecretStrSubstNo('Bearer %1', AccessToken));
 
         if not HttpClient.Send(HttpRequestMessage, HttpResponseMessage) then begin
             Session.LogMessage('0000FY7', StrSubstNo(FailedDeleteRequestTxt, '-'), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
@@ -164,15 +157,13 @@ codeunit 1682 "Email Logging API Client" implements "Email Logging API Client"
     end;
 
     [TryFunction]
-    [NonDebuggable]
-    local procedure TryPost(AccessToken: Text; RequestUri: Text; var RequestJsonObject: JsonObject; var ResponseJsonObject: JsonObject; var StatusCode: Integer; var ErrorMessage: Text)
+    local procedure TryPost(AccessToken: SecretText; RequestUri: Text; var RequestJsonObject: JsonObject; var ResponseJsonObject: JsonObject; var StatusCode: Integer; var ErrorMessage: Text)
     begin
         if not Post(AccessToken, RequestUri, RequestJsonObject, ResponseJsonObject, StatusCode, ErrorMessage) then
             Error('');
     end;
 
-    [NonDebuggable]
-    local procedure Post(AccessToken: Text; RequestUri: Text; var RequestJsonObject: JsonObject; var ResponseJsonObject: JsonObject; var StatusCode: Integer; var ErrorMessage: Text): Boolean
+    local procedure Post(AccessToken: SecretText; RequestUri: Text; var RequestJsonObject: JsonObject; var ResponseJsonObject: JsonObject; var StatusCode: Integer; var ErrorMessage: Text): Boolean
     var
         HttpContent: HttpContent;
         HttpRequestMessage: HttpRequestMessage;
@@ -186,7 +177,7 @@ codeunit 1682 "Email Logging API Client" implements "Email Logging API Client"
         HttpRequestMessage.Method('POST');
         HttpRequestMessage.SetRequestUri(RequestUri);
         HttpRequestMessage.GetHeaders(RequestHttpHeaders);
-        RequestHttpHeaders.Add('Authorization', 'Bearer ' + AccessToken);
+        RequestHttpHeaders.Add('Authorization', SecretStrSubstNo('Bearer %1', AccessToken));
 
         HttpContent.WriteFrom(JsonContent);
         HttpContent.GetHeaders(ContentHttpHeaders);
@@ -218,7 +209,6 @@ codeunit 1682 "Email Logging API Client" implements "Email Logging API Client"
         exit(true);
     end;
 
-    [NonDebuggable]
     local procedure GetHttpErrorMessageAsText(var HttpResponseMessage: HttpResponseMessage): Text
     var
         ErrorMessage: Text;
@@ -230,7 +220,6 @@ codeunit 1682 "Email Logging API Client" implements "Email Logging API Client"
         exit(ErrorMessage);
     end;
 
-    [NonDebuggable]
     local procedure ProcessErrorMessage(var ErrorMessage: Text)
     begin
         if ErrorMessage.Contains(RestAPINotSupportedErr) then
@@ -238,7 +227,6 @@ codeunit 1682 "Email Logging API Client" implements "Email Logging API Client"
     end;
 
     [TryFunction]
-    [NonDebuggable]
     local procedure TryGetErrorMessage(var MailHttpResponseMessage: HttpResponseMessage; var ErrorMessage: Text);
     var
         ResponseJsonText: Text;

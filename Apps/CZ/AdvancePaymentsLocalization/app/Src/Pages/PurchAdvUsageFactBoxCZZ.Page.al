@@ -1,4 +1,5 @@
-﻿// ------------------------------------------------------------------------------------------------
+﻿#if not CLEAN25
+// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -13,6 +14,9 @@ page 31189 "Purch. Adv. Usage FactBox CZZ"
     Caption = 'Purchase Advance Usage';
     PageType = CardPart;
     SourceTable = "Purchase Line";
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This page will be removed in a future release. Use the "Advance Usage FactBox CZZ" page instead.';
+    ObsoleteTag = '25.0';
 
     layout
     {
@@ -155,3 +159,4 @@ page 31189 "Purch. Adv. Usage FactBox CZZ"
     begin
     end;
 }
+#endif

@@ -47,19 +47,6 @@ codeunit 148055 "OIOUBL-Elec. Service Document"
     end;
 
     [Test]
-    procedure TestGetCompanyVATRegNoOldAndGetCompanyVATRegNoActTheSame();
-    var
-        OIOUBLDocumentEncode: Codeunit "OIOUBL-Document Encode";
-        vatno: Text[20];
-        OldError: Text;
-    begin
-        asserterror vatno := OIOUBLDocumentEncode.GetCompanyVATRegNoOld('12345678901234567890');
-        OldError := GetLastErrorText();
-        asserterror vatno := FORMAT(OIOUBLDocumentEncode.GetCompanyVATRegNo('12345678901234567890'));
-        Assert.AreEqual(OldError, GetLastErrorText(), 'Error should not change');
-    end;
-
-    [Test]
     [HandlerFunctions('MessageHandler')]
     procedure ElectronicServiceCrMemoSingleLineWithVATWithoutAccCode();
     begin
