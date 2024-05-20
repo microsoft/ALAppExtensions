@@ -17,48 +17,63 @@ codeunit 139661 "GP Account Tests"
         InvalidAccountCategoryMsg: Label 'Account Category was expected to be %1 but it was %2 instead', Comment = '%1 - expected value; %2 - actual value', Locked = true;
 
     [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
+    [HandlerFunctions('PreventStatisticalPostingMessageFromBreakingTestMessageHandler')]
     procedure TestGPAccountMigration()
     var
         GPGLTransactions: Record "GP GLTransactions";
         DimensionSetEntry: Record "Dimension Set Entry";
         GPAccount: Record "GP Account";
         GLAccount: Record "G/L Account";
-        GPSegements: Record "GP Segments";
+        GLEntry: Record "G/L Entry";
+        GPSegments: Record "GP Segments";
         GPCodes: Record "GP Codes";
         GPFiscalPeriods: Record "GP Fiscal Periods";
+        GenJournalLine: Record "Gen. Journal Line";
+        StatisticalAccount: Record "Statistical Account";
+        StatisticalAccJournalLine: Record "Statistical Acc. Journal Line";
+        StatisticalLedgerEntry: Record "Statistical Ledger Entry";
         HelperFunctions: Codeunit "Helper Functions";
         StartTime: DateTime;
     begin
-        // [SCENARIO] G/L Accounts are migrated from GP
-        // [GIVEN] There are no records in G/L Account, G/L Entry, and staging tables
+        // [SCENARIO] G/L and Statistical accounts are migrated from GP
         if not BindSubscription(MSGPAccountMigrationTests) then
             exit;
+
         StartTime := CurrentDateTime;
         ClearTables();
 
+        // [GIVEN] Some records are created in the staging tables
         GPTestHelperFunctions.CreateConfigurationSettings();
-
-        // [GIVEN] Some records are created in the staging table
         CreateAccountData(GPAccount);
-        CreateDimensionData(GPSegements, GPCodes);
+        CreateDimensionData(GPSegments, GPCodes);
         HelperFunctions.CreateDimensions();
         CreateFiscalPeriods(GPFiscalPeriods);
         CreateTrxData(GPGLTransactions);
 
-        // [WHEN] MigrationAccounts is called
+        // [WHEN] accounts are migrated
         GPAccount.FindSet();
         repeat
             Migrate(GPAccount);
         until GPAccount.Next() = 0;
 
-        // [THEN] G/L Account's, transactions, and dimension sets are created for all staging table entries
+        // [THEN] G/L and Statistical lines are generated
+        Assert.RecordCount(StatisticalAccount, 1);
+        Assert.RecordCount(StatisticalAccJournalLine, 1);
         Assert.RecordCount(GLAccount, 7);
-        Assert.RecordCount(GPGLTransactions, 3);
+        Assert.RecordCount(GenJournalLine, 3);
+
+        // [WHEN] Posting all transactions
+        HelperFunctions.PostGLTransactions();
+
+        // [THEN] G/L entries and Dimension Set entries are created
+        Assert.RecordCount(GLEntry, 3);
         DimensionSetEntry.SetFilter(SystemCreatedAt, '> %1', StartTime);
         Assert.RecordCount(DimensionSetEntry, 6);
 
         // [THEN] Accounts are created with correct settings
+#pragma warning disable AA0210
+        GPAccount.SetRange(AccountType, 1);
+#pragma warning restore AA0210
         GPAccount.FindSet();
         GLAccount.FindSet();
         repeat
@@ -77,10 +92,18 @@ codeunit 139661 "GP Account Tests"
                 'Debit/Credit not set correctly.');
             GPAccount.Next();
         until GLAccount.Next() = 0;
+
+        // [THEN] Statistical account and ledger entry is created correctly
+        Assert.RecordCount(StatisticalLedgerEntry, 1);
+
+        StatisticalAccount.FindFirst();
+        Assert.AreEqual('Square Footage', StatisticalAccount.Name, 'Statistical Account name is incorrect');
+
+        StatisticalLedgerEntry.FindFirst();
+        Assert.AreEqual(10, StatisticalLedgerEntry.Amount, 'Statistical Account Ledger Entry amount is incorrect');
     end;
 
     [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestGLModuleDisabled()
     var
         GPGLTransactions: Record "GP GLTransactions";
@@ -119,7 +142,6 @@ codeunit 139661 "GP Account Tests"
     end;
 
     [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestGLMasterDataOnly()
     var
         GPGLTransactions: Record "GP GLTransactions";
@@ -166,7 +188,6 @@ codeunit 139661 "GP Account Tests"
     end;
 
     [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestSkipAccountPosting()
     var
         GPGLTransactions: Record "GP GLTransactions";
@@ -215,7 +236,6 @@ codeunit 139661 "GP Account Tests"
     end;
 
     [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestGPDimensionsCreation()
     var
         GPSegements: Record "GP Segments";
@@ -254,7 +274,6 @@ codeunit 139661 "GP Account Tests"
     end;
 
     [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestLimitingGPHistYear()
     var
         GPGLTransactions: Record "GP GLTransactions";
@@ -309,7 +328,6 @@ codeunit 139661 "GP Account Tests"
     end;
 
     [Test]
-    [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestLimitingGPHistYearNotUsed()
     var
         GPGLTransactions: Record "GP GLTransactions";
@@ -364,11 +382,18 @@ codeunit 139661 "GP Account Tests"
         GPCodes: Record "GP Codes";
         GPSegements: Record "GP Segments";
         GLAccount: Record "G/L Account";
+        GLEntry: Record "G/L Entry";
         GenJournalLine: Record "Gen. Journal Line";
         Dimensions: Record Dimension;
         DimensionValues: Record "Dimension Value";
         GPFiscalPeriods: Record "GP Fiscal Periods";
+        ItemJournalLine: Record "Item Journal Line";
+        StatisticalLedgerEntry: Record "Statistical Ledger Entry";
+        StatisticalAccJournalLine: Record "Statistical Acc. Journal Line";
+        StatisticalAccJournalBatch: Record "Statistical Acc. Journal Batch";
+        StatisticalAccount: Record "Statistical Account";
     begin
+        GPTestHelperFunctions.DeleteAllSettings();
         GPAccount.DeleteAll();
         GPCodes.DeleteAll();
         GPSegements.DeleteAll();
@@ -378,12 +403,20 @@ codeunit 139661 "GP Account Tests"
         DimensionValues.DeleteAll();
         GPFiscalPeriods.DeleteAll();
         GPGLTransactions.DeleteAll();
+        GLEntry.DeleteAll();
+        ItemJournalLine.DeleteAll();
+        StatisticalLedgerEntry.DeleteAll();
+        StatisticalAccJournalLine.DeleteAll();
+        StatisticalAccJournalBatch.DeleteAll();
+        StatisticalAccount.DeleteAll();
     end;
 
-    local procedure Migrate(GPAccount: Record "GP Account")
+    local procedure Migrate(var GPAccount: Record "GP Account")
     var
         GPAccountMigrator: Codeunit "GP Account Migrator";
     begin
+        Clear(GLAccDataMigrationFacade);
+
         GPAccountMigrator.MigrateAccountDetails(GPAccount, GLAccDataMigrationFacade);
         GPAccountMigrator.CreateBeginningBalance(GPAccount);
         GPAccountMigrator.GenerateGLTransactionBatches(GPAccount);
@@ -391,7 +424,7 @@ codeunit 139661 "GP Account Tests"
 
     local procedure CreateAccountData(var GPAccount: Record "GP Account")
     begin
-        GPAccount.Init();
+        Clear(GPAccount);
         GPAccount.AcctNum := '0000';
         GPAccount.AcctIndex := 0;
         GPAccount.Name := 'Furniture & Fixtures';
@@ -402,10 +435,10 @@ codeunit 139661 "GP Account Tests"
         GPAccount.Active := false;
         GPAccount.DirectPosting := false;
         GPAccount.AccountSubcategoryEntryNo := 9;
+        GPAccount.AccountType := 1;
         GPAccount.Insert(true);
 
-        GPAccount.Reset();
-        GPAccount.Init();
+        Clear(GPAccount);
         GPAccount.AcctNum := '1100';
         GPAccount.AcctIndex := 1;
         GPAccount.Name := 'Cash in banks-First Bank';
@@ -416,10 +449,10 @@ codeunit 139661 "GP Account Tests"
         GPAccount.Active := false;
         GPAccount.DirectPosting := true;
         GPAccount.AccountSubcategoryEntryNo := 1;
+        GPAccount.AccountType := 1;
         GPAccount.Insert(true);
 
-        GPAccount.Reset();
-        GPAccount.Init();
+        Clear(GPAccount);
         GPAccount.AcctNum := '1200';
         GPAccount.AcctIndex := 2;
         GPAccount.Name := 'Accounts Receivable';
@@ -429,10 +462,10 @@ codeunit 139661 "GP Account Tests"
         GPAccount.Active := false;
         GPAccount.DirectPosting := false;
         GPAccount.AccountSubcategoryEntryNo := 3;
+        GPAccount.AccountType := 1;
         GPAccount.Insert(true);
 
-        GPAccount.Reset();
-        GPAccount.Init();
+        Clear(GPAccount);
         GPAccount.AcctNum := '1550';
         GPAccount.AcctIndex := 3;
         GPAccount.Name := 'TRUCKS';
@@ -442,10 +475,10 @@ codeunit 139661 "GP Account Tests"
         GPAccount.Active := false;
         GPAccount.DirectPosting := true;
         GPAccount.AccountSubcategoryEntryNo := 9;
+        GPAccount.AccountType := 1;
         GPAccount.Insert(true);
 
-        GPAccount.Reset();
-        GPAccount.Init();
+        Clear(GPAccount);
         GPAccount.AcctNum := '1555';
         GPAccount.AcctIndex := 4;
         GPAccount.Name := 'ACCUM. DEPR.-TRUCKS';
@@ -455,10 +488,10 @@ codeunit 139661 "GP Account Tests"
         GPAccount.Active := false;
         GPAccount.DirectPosting := true;
         GPAccount.AccountSubcategoryEntryNo := 10;
+        GPAccount.AccountType := 1;
         GPAccount.Insert(true);
 
-        GPAccount.Reset();
-        GPAccount.Init();
+        Clear(GPAccount);
         GPAccount.AcctNum := '2106';
         GPAccount.AcctIndex := 5;
         GPAccount.Name := 'MISC. PAYABLE';
@@ -472,8 +505,7 @@ codeunit 139661 "GP Account Tests"
         GPAccount.AccountType := 1;
         GPAccount.Insert(true);
 
-        GPAccount.Reset();
-        GPAccount.Init();
+        Clear(GPAccount);
         GPAccount.AcctNum := '4125';
         GPAccount.AcctIndex := 6;
         GPAccount.Name := 'Markdown';
@@ -485,6 +517,15 @@ codeunit 139661 "GP Account Tests"
         GPAccount.DirectPosting := false;
         GPAccount.AccountSubcategoryEntryNo := 5;
         GPAccount.AccountType := 1;
+        GPAccount.Insert(true);
+
+        Clear(GPAccount);
+        GPAccount.AcctNum := '9010';
+        GPAccount.AcctIndex := 99;
+        GPAccount.Name := 'Square Footage';
+        GPAccount.SearchName := 'Square Footage';
+        GPAccount.Active := true;
+        GPAccount.AccountType := 2;
         GPAccount.Insert(true);
     end;
 
@@ -547,199 +588,175 @@ codeunit 139661 "GP Account Tests"
 
     local procedure CreateFiscalPeriods(GPFiscalPeriods: Record "GP Fiscal Periods")
     begin
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 0;
         GPFiscalPeriods.YEAR1 := 1999;
         GPFiscalPeriods.PERIODDT := 19980401D;
         GPFiscalPeriods.PERDENDT := 19980401D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 1;
         GPFiscalPeriods.YEAR1 := 1999;
         GPFiscalPeriods.PERIODDT := 19980401D;
         GPFiscalPeriods.PERDENDT := 19980430D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 2;
         GPFiscalPeriods.YEAR1 := 1999;
         GPFiscalPeriods.PERIODDT := 19980501D;
         GPFiscalPeriods.PERDENDT := 19980531D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 3;
         GPFiscalPeriods.YEAR1 := 1999;
         GPFiscalPeriods.PERIODDT := 19980601D;
         GPFiscalPeriods.PERDENDT := 19980630D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 4;
         GPFiscalPeriods.YEAR1 := 1999;
         GPFiscalPeriods.PERIODDT := 19980701D;
         GPFiscalPeriods.PERDENDT := 19980731D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 5;
         GPFiscalPeriods.YEAR1 := 1999;
         GPFiscalPeriods.PERIODDT := 19980801D;
         GPFiscalPeriods.PERDENDT := 19980831D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 6;
         GPFiscalPeriods.YEAR1 := 1999;
         GPFiscalPeriods.PERIODDT := 19980901D;
         GPFiscalPeriods.PERDENDT := 19980930D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 7;
         GPFiscalPeriods.YEAR1 := 1999;
         GPFiscalPeriods.PERIODDT := 19981001D;
         GPFiscalPeriods.PERDENDT := 19981031D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 8;
         GPFiscalPeriods.YEAR1 := 1999;
         GPFiscalPeriods.PERIODDT := 19981101D;
         GPFiscalPeriods.PERDENDT := 19981130D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 9;
         GPFiscalPeriods.YEAR1 := 1999;
         GPFiscalPeriods.PERIODDT := 19981201D;
         GPFiscalPeriods.PERDENDT := 19981231D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 10;
         GPFiscalPeriods.YEAR1 := 1999;
         GPFiscalPeriods.PERIODDT := 19990101D;
         GPFiscalPeriods.PERDENDT := 19990131D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 11;
         GPFiscalPeriods.YEAR1 := 1999;
         GPFiscalPeriods.PERIODDT := 19990201D;
         GPFiscalPeriods.PERDENDT := 19990228D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 12;
         GPFiscalPeriods.YEAR1 := 1999;
         GPFiscalPeriods.PERIODDT := 19990301D;
         GPFiscalPeriods.PERDENDT := 19990331D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 1;
         GPFiscalPeriods.YEAR1 := 2000;
         GPFiscalPeriods.PERIODDT := 19990401D;
         GPFiscalPeriods.PERDENDT := 19990430D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 2;
         GPFiscalPeriods.YEAR1 := 2000;
         GPFiscalPeriods.PERIODDT := 19990501D;
         GPFiscalPeriods.PERDENDT := 19990531D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 3;
         GPFiscalPeriods.YEAR1 := 2000;
         GPFiscalPeriods.PERIODDT := 19990601D;
         GPFiscalPeriods.PERDENDT := 19990630D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 4;
         GPFiscalPeriods.YEAR1 := 2000;
         GPFiscalPeriods.PERIODDT := 19990701D;
         GPFiscalPeriods.PERDENDT := 19990731D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 5;
         GPFiscalPeriods.YEAR1 := 2000;
         GPFiscalPeriods.PERIODDT := 19990801D;
         GPFiscalPeriods.PERDENDT := 19990831D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 6;
         GPFiscalPeriods.YEAR1 := 2000;
         GPFiscalPeriods.PERIODDT := 19990901D;
         GPFiscalPeriods.PERDENDT := 19990930D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 7;
         GPFiscalPeriods.YEAR1 := 2000;
         GPFiscalPeriods.PERIODDT := 19991001D;
         GPFiscalPeriods.PERDENDT := 19991031D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 8;
         GPFiscalPeriods.YEAR1 := 2000;
         GPFiscalPeriods.PERIODDT := 19991101D;
         GPFiscalPeriods.PERDENDT := 19991130D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 9;
         GPFiscalPeriods.YEAR1 := 2000;
         GPFiscalPeriods.PERIODDT := 19991201D;
         GPFiscalPeriods.PERDENDT := 19991231D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 10;
         GPFiscalPeriods.YEAR1 := 2000;
         GPFiscalPeriods.PERIODDT := 20000101D;
         GPFiscalPeriods.PERDENDT := 20000131D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 11;
         GPFiscalPeriods.YEAR1 := 2000;
         GPFiscalPeriods.PERIODDT := 20000201D;
         GPFiscalPeriods.PERDENDT := 20000228D;
         GPFiscalPeriods.Insert(true);
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 12;
         GPFiscalPeriods.YEAR1 := 2000;
         GPFiscalPeriods.PERIODDT := 20000301D;
@@ -749,8 +766,8 @@ codeunit 139661 "GP Account Tests"
 
     local procedure CreateTrxData(GPGLTransactions: Record "GP GLTransactions")
     begin
-        GPGLTransactions.Init();
-        GPGLTransactions.Id := '1';
+        Clear(GPGLTransactions);
+        GPGLTransactions.Id := 1;
         GPGLTransactions.MNACSGMT := 2;
         GPGLTransactions.ACTINDX := 2;
         GPGLTransactions.YEAR1 := 1999;
@@ -764,9 +781,8 @@ codeunit 139661 "GP Account Tests"
         GPGLTransactions.CRDTAMNT := 0.00;
         GPGLTransactions.Insert();
 
-        GPGLTransactions.Reset();
-        GPGLTransactions.Init();
-        GPGLTransactions.Id := '2';
+        Clear(GPGLTransactions);
+        GPGLTransactions.Id := 2;
         GPGLTransactions.MNACSGMT := 2;
         GPGLTransactions.ACTINDX := 1;
         GPGLTransactions.YEAR1 := 1999;
@@ -780,9 +796,8 @@ codeunit 139661 "GP Account Tests"
         GPGLTransactions.CRDTAMNT := 0.00;
         GPGLTransactions.Insert();
 
-        GPGLTransactions.Reset();
-        GPGLTransactions.Init();
-        GPGLTransactions.Id := '3';
+        Clear(GPGLTransactions);
+        GPGLTransactions.Id := 3;
         GPGLTransactions.MNACSGMT := 2;
         GPGLTransactions.ACTINDX := 3;
         GPGLTransactions.YEAR1 := 1999;
@@ -791,9 +806,22 @@ codeunit 139661 "GP Account Tests"
         GPGLTransactions.ACTNUMBR_2 := '1550';
         GPGLTransactions.ACTNUMBR_3 := '2000';
         GPGLTransactions.ACTNUMBR_4 := '2000';
-        GPGLTransactions.PERDBLNC := 406.99;
-        GPGLTransactions.DEBITAMT := 406.99;
-        GPGLTransactions.CRDTAMNT := 0.00;
+        GPGLTransactions.PERDBLNC := -513.98;
+        GPGLTransactions.DEBITAMT := 513.98;
+        GPGLTransactions.CRDTAMNT := 0;
+        GPGLTransactions.Insert();
+
+        Clear(GPGLTransactions);
+        GPGLTransactions.Id := 99;
+        GPGLTransactions.MNACSGMT := 2;
+        GPGLTransactions.ACTINDX := 99;
+        GPGLTransactions.YEAR1 := 2000;
+        GPGLTransactions.PERIODID := 1;
+        GPGLTransactions.ACTNUMBR_1 := '0000';
+        GPGLTransactions.ACTNUMBR_2 := '1550';
+        GPGLTransactions.ACTNUMBR_3 := '2000';
+        GPGLTransactions.ACTNUMBR_4 := '2000';
+        GPGLTransactions.PERDBLNC := 10;
         GPGLTransactions.Insert();
     end;
 
@@ -876,12 +904,16 @@ codeunit 139661 "GP Account Tests"
         GPGL10111.CRDTAMNT := 0.00;
         GPGL10111.Insert();
 
-        GPFiscalPeriods.Reset();
-        GPFiscalPeriods.Init();
+        Clear(GPFiscalPeriods);
         GPFiscalPeriods.PERIODID := 1;
         GPFiscalPeriods.YEAR1 := 2020;
         GPFiscalPeriods.PERIODDT := 20200101D;
         GPFiscalPeriods.PERDENDT := 20200101D;
         GPFiscalPeriods.Insert(true);
+    end;
+
+    [MessageHandler]
+    procedure PreventStatisticalPostingMessageFromBreakingTestMessageHandler(Message: Text)
+    begin
     end;
 }

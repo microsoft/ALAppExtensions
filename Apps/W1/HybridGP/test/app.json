@@ -34,8 +34,14 @@
                              "id":  "c526b3e9-b8ca-4683-81ba-fcd5f6b1472a",
                              "name":  "Sales and Inventory Forecast",
                              "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
+                            "version": "25.0.0.0"
+                        },
+                        {
+                            "id": "ea130081-c669-460f-a5f4-5dde14f03131",
+                            "name": "Statistical Accounts",
+                            "publisher": "Microsoft",
+                            "version": "24.0.0.0"
+                        },
                          {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
