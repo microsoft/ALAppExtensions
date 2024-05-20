@@ -5,6 +5,7 @@ using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.Analysis.StatisticalAccount;
+using Microsoft.Finance.GeneralLedger.Setup;
 
 codeunit 4017 "GP Account Migrator"
 {
@@ -338,6 +339,7 @@ codeunit 4017 "GP Account Migrator"
     local procedure MigrateStatisticalAccountDetailsImp(GPAccount: Record "GP Account")
     var
         StatisticalAccount: Record "Statistical Account";
+        GeneralLedgerSetup: Record "General Ledger Setup";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         AccountNum: Code[20];
     begin
@@ -348,9 +350,14 @@ codeunit 4017 "GP Account Migrator"
 
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPAccount.RecordId));
 
-        StatisticalAccount.Init();
         StatisticalAccount."No." := AccountNum;
         StatisticalAccount.Name := CopyStr(GPAccount.Name, 1, MaxStrLen(StatisticalAccount.Name));
+
+        if GeneralLedgerSetup.Get() then begin
+            StatisticalAccount."Global Dimension 1 Code" := GeneralLedgerSetup."Global Dimension 1 Code";
+            StatisticalAccount."Global Dimension 2 Code" := GeneralLedgerSetup."Global Dimension 2 Code";
+        end;
+
         StatisticalAccount.Insert(true);
     end;
 
