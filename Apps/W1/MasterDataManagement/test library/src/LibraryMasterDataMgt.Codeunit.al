@@ -32,6 +32,13 @@ codeunit 139757 "Library - Master Data Mgt."
         MasterDataMgtSubscribers.HandleOnAfterJobQueueEntryRun(JobQueueEntry);
     end;
 
+    procedure FindRelatedTables(var ExistingSynchTableNos: List of [Integer]; var RelatedTablesToAdd: List of [Integer]; var RelatedTablesToAddText: Text; TableId: Integer)
+    var
+        MasterDataSynchTables: Page "Master Data Synch. Tables";
+    begin
+        MasterDataSynchTables.FindRelatedTables(ExistingSynchTableNos, RelatedTablesToAdd, RelatedTablesToAddText, TableId);
+    end;
+
     var
         MasterDataMgtSubscribers: Codeunit "Master Data Mgt. Subscribers";
 }
