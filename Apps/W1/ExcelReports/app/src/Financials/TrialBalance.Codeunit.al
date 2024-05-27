@@ -46,8 +46,8 @@ codeunit 4410 "Trial Balance"
 
     local procedure SetGLAccountFilters(var GLAccount: Record "G/L Account"; Dimension1ValueCode: Code[20]; Dimension2ValueCode: Code[20])
     begin
-        GLAccount.SetFilter("Global Dimension 1 Code", Dimension1ValueCode);
-        GLAccount.SetFilter("Global Dimension 2 Code", Dimension2ValueCode);
+        GLAccount.SetFilter("Global Dimension 1 Filter", Dimension1ValueCode);
+        GLAccount.SetFilter("Global Dimension 2 Filter", Dimension2ValueCode);
     end;
 
     local procedure SetGLAccountFilters(var GLAccount: Record "G/L Account"; Dimension1ValueCode: Code[20]; Dimension2ValueCode: Code[20]; BusinessUnitCode: Code[20])
@@ -58,15 +58,18 @@ codeunit 4410 "Trial Balance"
 
     local procedure InsertTrialBalanceDataForGLAccountWithFilters(var GLAccount: Record "G/L Account"; var EXRTrialBalanceBuffer: Record "EXR Trial Balance Buffer")
     begin
-        GlAccount.CalcFields("Net Change", "Balance at Date", "Additional-Currency Net Change", "Add.-Currency Balance at Date");
+        GlAccount.CalcFields("Net Change", "Balance at Date", "Additional-Currency Net Change", "Add.-Currency Balance at Date", "Budgeted Amount", "Budget at Date");
         EXRTrialBalanceBuffer."G/L Account No." := GlAccount."No.";
-        EXRTrialBalanceBuffer."Dimension 1 Code" := CopyStr(GLAccount.GetFilter("Global Dimension 1 Code"), 1, MaxStrLen(EXRTrialBalanceBuffer."Dimension 1 Code"));
-        EXRTrialBalanceBuffer."Dimension 2 Code" := CopyStr(GLAccount.GetFilter("Global Dimension 2 Code"), 1, MaxStrLen(EXRTrialBalanceBuffer."Dimension 2 Code"));
+        EXRTrialBalanceBuffer."Dimension 1 Code" := CopyStr(GLAccount.GetFilter("Global Dimension 1 Filter"), 1, MaxStrLen(EXRTrialBalanceBuffer."Dimension 1 Code"));
+        EXRTrialBalanceBuffer."Dimension 2 Code" := CopyStr(GLAccount.GetFilter("Global Dimension 2 Filter"), 1, MaxStrLen(EXRTrialBalanceBuffer."Dimension 2 Code"));
         EXRTrialBalanceBuffer."Business Unit Code" := CopyStr(GLAccount.GetFilter("Business Unit Filter"), 1, MaxStrLen(EXRTrialBalanceBuffer."Business Unit Code"));
         EXRTrialBalanceBuffer.Validate("Net Change", GLAccount."Net Change");
         EXRTrialBalanceBuffer.Validate(Balance, GLAccount."Balance at Date");
         EXRTrialBalanceBuffer.Validate("Net Change (ACY)", GLAccount."Additional-Currency Net Change");
         EXRTrialBalanceBuffer.Validate("Balance (ACY)", GLAccount."Add.-Currency Balance at Date");
+        EXRTrialBalanceBuffer.Validate("Budget (Net)", GLAccount."Budgeted Amount");
+        EXRTrialBalanceBuffer.Validate("Budget (Bal. at Date)", GLAccount."Budget at Date");
+        EXRTrialBalanceBuffer.CalculateBudgetComparisons();
         EXRTrialBalanceBuffer.Insert(true);
     end;
 }

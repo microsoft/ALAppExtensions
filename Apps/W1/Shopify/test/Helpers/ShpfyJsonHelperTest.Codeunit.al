@@ -10,7 +10,7 @@ codeunit 139574 "Shpfy Json Helper Test"
         Any: Codeunit Any;
         LibraryAssert: Codeunit "Library Assert";
         JsonHelper: Codeunit "Shpfy Json Helper";
-
+        LibraryERM: Codeunit "Library - ERM";
 
     [Test]
     procedure UnitTestContainsToken()
@@ -830,6 +830,36 @@ codeunit 139574 "Shpfy Json Helper Test"
     end;
 
     [Test]
+    procedure UnitTestGetValueAsDateTimezoneOffset()
+    var
+        CompanyInformation: Record "Company Information";
+        PostCode: Record "Post Code";
+        InputDateTime: Text;
+        Result: Date;
+        ExpectedResult: Date;
+        JToken: JsonToken;
+    begin
+        // Creating Test data and expected results.
+        InputDateTime := '"2024-03-31T23:00:00.0000000Z"'; // UTC 31/03/2024 23:00:00
+        ExpectedResult := DMY2Date(1, 4, 2024); // Romance time 01/04/2024
+        JToken.ReadFrom('{"data":{"someValue": ' + InputDateTime + '}}');
+
+        CreatePostCode(PostCode);
+        CompanyInformation.Get();
+        CompanyInformation."Post Code" := PostCode.Code;
+        CompanyInformation.City := PostCode.City;
+        CompanyInformation.Modify();
+
+        // [SCENARIO] Get a Date value out of a Json structure.
+
+        // [GIVEN] a JsonObject with a JsonValue that contains an Date value.
+        // [GIVEN] a path for finding the JsonValue in the JsonObject.
+        Result := JsonHelper.GetValueAsDate(JToken.AsObject(), 'data.someValue');
+        // [THEN] the result of the function = ExpectedResult
+        LibraryAssert.AreEqual(ExpectedResult, Result, '');
+    end;
+
+    [Test]
     procedure UnitTestValueIntoField()
     var
         TestFields: Record "Shpfy Test Fields";
@@ -1236,5 +1266,12 @@ codeunit 139574 "Shpfy Json Helper Test"
         ValidateMsg: Label 'Validate Triggger Executed', Locked = true;
     begin
         LibraryAssert.ExpectedMessage(ValidateMsg, Message);
+    end;
+
+    local procedure CreatePostCode(var PostCode: Record "Post Code")
+    begin
+        LibraryERM.CreatePostCode(PostCode);
+        PostCode."Time Zone" := 'Romance Standard Time';
+        PostCode.Modify();
     end;
 }

@@ -3,7 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 
-namespace System.Device;
+namespace System.Device.UniversalPrint;
 
 using System.Environment;
 using System.Telemetry;
@@ -22,9 +22,9 @@ page 2752 "Add Universal Printers Wizard"
             {
                 Editable = false;
                 ShowCaption = false;
-                Visible = TopBannerVisible and (CurrentStep <> CurrentStep::Done);
+                Visible = this.TopBannerVisible and (this.CurrentStep <> this.CurrentStep::Done);
 
-                field("<MediaRepositoryStandard>"; MediaResourcesStandard."Media Reference")
+                field("<MediaRepositoryStandard>"; this.MediaResourcesStandard."Media Reference")
                 {
                     ApplicationArea = All;
                     Caption = '';
@@ -36,9 +36,9 @@ page 2752 "Add Universal Printers Wizard"
             {
                 Editable = false;
                 ShowCaption = false;
-                Visible = TopBannerVisible and (CurrentStep = CurrentStep::Done);
+                Visible = this.TopBannerVisible and (this.CurrentStep = this.CurrentStep::Done);
 
-                field("<MediaRepositoryDone>"; MediaResourcesDone."Media Reference")
+                field("<MediaRepositoryDone>"; this.MediaResourcesDone."Media Reference")
                 {
                     ApplicationArea = All;
                     Caption = '';
@@ -49,7 +49,7 @@ page 2752 "Add Universal Printers Wizard"
             group(Intro)
             {
                 Caption = 'Intro';
-                Visible = CurrentStep = CurrentStep::Intro;
+                Visible = this.CurrentStep = this.CurrentStep::Intro;
 
                 group("Para0.1")
                 {
@@ -64,7 +64,7 @@ page 2752 "Add Universal Printers Wizard"
                         ApplicationArea = All;
                         Caption = 'Note that a Universal Print subscription is required and Universal Print needs to be available in your region.';
                     }
-                    field(LearMore; LearnMoreTxt)
+                    field(LearMore; this.LearnMoreTxt)
                     {
                         ApplicationArea = All;
                         Editable = false;
@@ -72,7 +72,7 @@ page 2752 "Add Universal Printers Wizard"
 
                         trigger OnDrillDown()
                         begin
-                            Hyperlink(UniversalPrintUrlTxt);
+                            Hyperlink(this.UniversalPrintUrlTxt);
                         end;
                     }
                 }
@@ -85,7 +85,7 @@ page 2752 "Add Universal Printers Wizard"
             group(PrivacyNoticeStep)
             {
                 ShowCaption = false;
-                Visible = CurrentStep = CurrentStep::PrivacyNotice;
+                Visible = this.CurrentStep = this.CurrentStep::PrivacyNotice;
                 group(PrivacyNoticeInner)
                 {
                     Caption = 'Your privacy is important to us';
@@ -95,7 +95,7 @@ page 2752 "Add Universal Printers Wizard"
                         ApplicationArea = All;
                         Caption = 'This feature utilizes Microsoft Universal Print. By continuing you are affirming that you understand that the data handling and compliance standards of Microsoft Universal Print may not be the same as those provided by Microsoft Dynamics 365 Business Central. Please consult the documentation for Universal Print to learn more.';
                     }
-                    field(PrivacyNoticeStatement; PrivacyStatementTxt)
+                    field(PrivacyNoticeStatement; this.PrivacyStatementTxt)
                     {
                         ApplicationArea = All;
                         Editable = false;
@@ -111,7 +111,7 @@ page 2752 "Add Universal Printers Wizard"
             group(OnPremAadSetup)
             {
                 Caption = 'Connect your Microsoft Entra application';
-                Visible = CurrentStep = CurrentStep::OnPremAadSetup;
+                Visible = this.CurrentStep = this.CurrentStep::OnPremAadSetup;
 
                 group("Para1.1")
                 {
@@ -122,7 +122,7 @@ page 2752 "Add Universal Printers Wizard"
                         ApplicationArea = All;
                         Caption = 'To add Universal Print printers to Business Central on-premises, you''ll first need a registered application for Business Central in Microsoft Entra ID.';
                     }
-                    field("Para1.1.3"; LearnMoreAzureAppTxt)
+                    field("Para1.1.3"; this.LearnMoreAzureAppTxt)
                     {
                         ApplicationArea = All;
                         Editable = false;
@@ -130,7 +130,7 @@ page 2752 "Add Universal Printers Wizard"
 
                         trigger OnDrillDown()
                         begin
-                            Hyperlink(AzureAppLinkTxt);
+                            Hyperlink(this.AzureAppLinkTxt);
                         end;
                     }
                     label("Para1.1.2")
@@ -143,19 +143,19 @@ page 2752 "Add Universal Printers Wizard"
             group(AutoAdd)
             {
                 Caption = 'Adding Universal Print Printers';
-                Visible = CurrentStep = CurrentStep::AutoAdd;
+                Visible = this.CurrentStep = this.CurrentStep::AutoAdd;
 
                 group("Para2.1")
                 {
                     Caption = '';
-                    Visible = not HasLicense;
+                    Visible = not this.HasLicense;
                     label("Para2.1.1")
                     {
                         ApplicationArea = All;
                         Caption = 'You don''t seem to have access to Universal Print. Make sure you have a Universal Print subscription, and that your account has been assigned a Universal Print license.';
                         Style = Attention;
                     }
-                    field("Para2.1.2"; LearnMoreSignupTxt)
+                    field("Para2.1.2"; this.LearnMoreSignupTxt)
                     {
                         ApplicationArea = All;
                         Editable = false;
@@ -164,7 +164,7 @@ page 2752 "Add Universal Printers Wizard"
 
                         trigger OnDrillDown()
                         begin
-                            Hyperlink(UniversalPrintUrlTxt);
+                            Hyperlink(this.UniversalPrintUrlTxt);
                         end;
                     }
                 }
@@ -182,7 +182,7 @@ page 2752 "Add Universal Printers Wizard"
                         ApplicationArea = All;
                         Caption = 'You''ll first need to manage and share printers in Universal Print portal.';
                     }
-                    field("Para2.2.3"; LearnMoreUniversalPrintPortalTxt)
+                    field("Para2.2.3"; this.LearnMoreUniversalPrintPortalTxt)
                     {
                         ApplicationArea = All;
                         Editable = false;
@@ -190,7 +190,7 @@ page 2752 "Add Universal Printers Wizard"
 
                         trigger OnDrillDown()
                         begin
-                            Hyperlink(UniversalPrintGraphHelper.GetUniversalPrintPortalUrl());
+                            Hyperlink(this.UniversalPrintGraphHelper.GetUniversalPrintPortalUrl());
                         end;
                     }
                     label(EmptySpace2)
@@ -209,19 +209,19 @@ page 2752 "Add Universal Printers Wizard"
             group(Done)
             {
                 Caption = 'Done';
-                Visible = CurrentStep = CurrentStep::Done;
+                Visible = this.CurrentStep = this.CurrentStep::Done;
 
                 group("Para3.1")
                 {
                     Caption = 'That''s it!';
-                    Visible = TotalAddedPrinters <> 0;
+                    Visible = this.TotalAddedPrinters <> 0;
 
                     label("Para3.1.1")
                     {
                         ApplicationArea = All;
                         Caption = 'Printers that are shared with you through Universal Print have been added to Business Central.';
                     }
-                    field(NumberOfPrintersAddedField; NumberOfPrintersAddedText)
+                    field(NumberOfPrintersAddedField; this.NumberOfPrintersAddedText)
                     {
                         ShowCaption = false;
                         ApplicationArea = All;
@@ -248,7 +248,7 @@ page 2752 "Add Universal Printers Wizard"
                 group("Para3.2")
                 {
                     Caption = 'That''s it!';
-                    Visible = TotalAddedPrinters = 0;
+                    Visible = this.TotalAddedPrinters = 0;
 
                     label("Para3.2.1")
                     {
@@ -278,33 +278,33 @@ page 2752 "Add Universal Printers Wizard"
             {
                 ApplicationArea = All;
                 Caption = 'Back';
-                Enabled = BackEnabled;
+                Enabled = this.BackEnabled;
                 Image = PreviousRecord;
                 InFooterBar = true;
 
                 trigger OnAction()
                 begin
-                    GoToNextStep(false);
+                    this.GoToNextStep(false);
                 end;
             }
             action(ActionNext)
             {
                 ApplicationArea = All;
                 Caption = 'Next';
-                Enabled = NextEnabled;
+                Enabled = this.NextEnabled;
                 Image = NextRecord;
                 InFooterBar = true;
 
                 trigger OnAction()
                 begin
-                    GoToNextStep(true);
+                    this.GoToNextStep(true);
                 end;
             }
             action(ActionFinish)
             {
                 ApplicationArea = All;
                 Caption = 'Finish';
-                Enabled = FinishEnabled;
+                Enabled = this.FinishEnabled;
                 Image = Approve;
                 InFooterBar = true;
 
@@ -320,32 +320,32 @@ page 2752 "Add Universal Printers Wizard"
     var
         EnvironmentInformation: Codeunit "Environment Information";
     begin
-        LoadTopBanners();
+        this.LoadTopBanners();
 
-        IsOnPrem := EnvironmentInformation.IsOnPrem();
+        this.IsOnPrem := EnvironmentInformation.IsOnPrem();
     end;
 
     trigger OnOpenPage()
     var
         UniversalPrinterSettings: Record "Universal Printer Settings";
     begin
-        FeatureTelemetry.LogUptake('0000GFV', UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
+        this.FeatureTelemetry.LogUptake('0000GFV', this.UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
         if not UniversalPrinterSettings.WritePermission() then
-            Error(NoTablePermissionsErr);
+            Error(this.NoTablePermissionsErr);
 
-        SetStep(CurrentStep::Intro);
+        this.SetStep(this.CurrentStep::Intro);
     end;
 
     local procedure SetStep(NewStep: Option)
     begin
-        if (NewStep < CurrentStep::Intro) or (NewStep > CurrentStep::Done) then
-            Error(StepOutOfRangeErr);
+        if (NewStep < this.CurrentStep::Intro) or (NewStep > this.CurrentStep::Done) then
+            Error(this.StepOutOfRangeErr);
 
-        CurrentStep := NewStep;
+        this.CurrentStep := NewStep;
 
-        FinishEnabled := CurrentStep = CurrentStep::Done;
-        BackEnabled := (CurrentStep > CurrentStep::Intro) and (CurrentStep <> CurrentStep::Done);
-        NextEnabled := CurrentStep < CurrentStep::Done;
+        this.FinishEnabled := this.CurrentStep = this.CurrentStep::Done;
+        this.BackEnabled := (this.CurrentStep > this.CurrentStep::Intro) and (this.CurrentStep <> this.CurrentStep::Done);
+        this.NextEnabled := this.CurrentStep < this.CurrentStep::Done;
 
         CurrPage.Update();
     end;
@@ -361,16 +361,16 @@ page 2752 "Add Universal Printers Wizard"
 
         // Go to next step, but if that step sould be hidden, jump again. Notice that this works because it's never
         // the case that two subsequent steps are hidden (in which case either forward or backwards will break).
-        NextStep := CurrentStep + StepValue;
+        NextStep := this.CurrentStep + StepValue;
 
-        if NextStep = CurrentStep::OnPremAadSetup then
-            if not ShowOnPremAadSetupStep() then
+        if NextStep = this.CurrentStep::OnPremAadSetup then
+            if not this.ShowOnPremAadSetupStep() then
                 NextStep += StepValue;
 
-        if (NextStep < CurrentStep::Intro) or (NextStep > CurrentStep::Done) then begin
-            NextStep := CurrentStep;
-            Session.LogMessage('0000EJW', StrSubstNo(StepOutOfRangeTelemetryTxt, CurrentStep, Forward), Verbosity::Warning, DataClassification::SystemMetadata,
-                TelemetryScope::ExtensionPublisher, 'Category', UniversalPrintGraphHelper.GetUniversalPrintTelemetryCategory());
+        if (NextStep < this.CurrentStep::Intro) or (NextStep > this.CurrentStep::Done) then begin
+            NextStep := this.CurrentStep;
+            Session.LogMessage('0000EJW', StrSubstNo(this.StepOutOfRangeTelemetryTxt, this.CurrentStep, Forward), Verbosity::Warning, DataClassification::SystemMetadata,
+                TelemetryScope::ExtensionPublisher, 'Category', this.UniversalPrintGraphHelper.GetUniversalPrintTelemetryCategory());
         end;
     end;
 
@@ -379,28 +379,28 @@ page 2752 "Add Universal Printers Wizard"
         NextStep: Option;
     begin
         if Forward then
-            PerformOperationAfterStep(CurrentStep);
+            this.PerformOperationAfterStep(this.CurrentStep);
 
-        NextStep := CalculateNextStep(Forward);
-        if NextStep = CurrentStep::AutoAdd then
-            CheckLicense();
+        NextStep := this.CalculateNextStep(Forward);
+        if NextStep = this.CurrentStep::AutoAdd then
+            this.CheckLicense();
 
-        SetStep(NextStep);
+        this.SetStep(NextStep);
     end;
 
     local procedure PerformOperationAfterStep(AfterStep: Option)
     begin
         case AfterStep of
-            CurrentStep::OnPremAadSetup:
-                AadOnpremSetup();
-            CurrentStep::AutoAdd:
-                StartAutoAdd();
+            this.CurrentStep::OnPremAadSetup:
+                this.AadOnpremSetup();
+            this.CurrentStep::AutoAdd:
+                this.StartAutoAdd();
         end;
     end;
 
     local procedure CheckLicense()
     begin
-        HasLicense := UniversalPrintGraphHelper.CheckLicense();
+        this.HasLicense := this.UniversalPrintGraphHelper.CheckLicense();
     end;
 
     local procedure AadOnpremSetup()
@@ -408,16 +408,16 @@ page 2752 "Add Universal Printers Wizard"
         [NonDebuggable]
         AccessToken: Text;
     begin
-        if not UniversalPrintGraphHelper.TryGetAccessToken(AccessToken, true) then
-            Error(NoTokenForOnPremErr);
+        if not this.UniversalPrintGraphHelper.TryGetAccessToken(AccessToken, true) then
+            Error(this.NoTokenForOnPremErr);
     end;
 
     local procedure StartAutoAdd()
     begin
-        TotalAddedPrinters := UniversalPrinterSetup.AddAllPrintShares();
-        if TotalAddedPrinters > 0 then
-            FeatureTelemetry.LogUptake('0000GFW', UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::"Set up");
-        NumberOfPrintersAddedText := StrSubstNo(NumberOfPrintersAddedTemplateTxt, TotalAddedPrinters);
+        this.TotalAddedPrinters := this.UniversalPrinterSetup.AddAllPrintShares();
+        if this.TotalAddedPrinters > 0 then
+            this.FeatureTelemetry.LogUptake('0000GFW', this.UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::"Set up");
+        this.NumberOfPrintersAddedText := StrSubstNo(this.NumberOfPrintersAddedTemplateTxt, this.TotalAddedPrinters);
     end;
 
     local procedure ShowOnPremAadSetupStep(): Boolean
@@ -426,8 +426,8 @@ page 2752 "Add Universal Printers Wizard"
         AccessToken: Text;
     begin
         // Show only if OnPrem and the setup is not done
-        if IsOnPrem then
-            if not UniversalPrintGraphHelper.TryGetAccessToken(AccessToken, false) then
+        if this.IsOnPrem then
+            if not this.UniversalPrintGraphHelper.TryGetAccessToken(AccessToken, false) then
                 exit(true);
         exit(false);
     end;
@@ -437,13 +437,13 @@ page 2752 "Add Universal Printers Wizard"
         MediaRepositoryStandard: Record "Media Repository";
         MediaRepositoryDone: Record "Media Repository";
     begin
-        if MediaRepositoryStandard.Get('AssistedSetup-NoText-400px.png', Format(ClientTypeManagement.GetCurrentClientType())) and
-           MediaRepositoryDone.Get('AssistedSetupDone-NoText-400px.png', Format(ClientTypeManagement.GetCurrentClientType()))
+        if MediaRepositoryStandard.Get('AssistedSetup-NoText-400px.png', Format(this.ClientTypeManagement.GetCurrentClientType())) and
+           MediaRepositoryDone.Get('AssistedSetupDone-NoText-400px.png', Format(this.ClientTypeManagement.GetCurrentClientType()))
         then
-            if MediaResourcesStandard.Get(MediaRepositoryStandard."Media Resources Ref") and
-               MediaResourcesDone.Get(MediaRepositoryDone."Media Resources Ref")
+            if this.MediaResourcesStandard.Get(MediaRepositoryStandard."Media Resources Ref") and
+               this.MediaResourcesDone.Get(MediaRepositoryDone."Media Resources Ref")
             then
-                TopBannerVisible := MediaResourcesDone."Media Reference".HasValue;
+                this.TopBannerVisible := this.MediaResourcesDone."Media Reference".HasValue;
     end;
 
     var

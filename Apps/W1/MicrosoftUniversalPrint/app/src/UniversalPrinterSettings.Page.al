@@ -2,9 +2,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace System.Device;
+namespace System.Device.UniversalPrint;
 
 using System.Telemetry;
+
+using System.Device;
+
 /// <summary>
 /// Exposes functionality to manage configuration settings of Universal Print printers.
 /// </summary>
@@ -23,7 +26,7 @@ page 2750 "Universal Printer Settings"
                 Caption = 'Name';
                 ApplicationArea = All;
                 ToolTip = 'Specifies the unique name of the printer settings.';
-                Editable = NewMode;
+                Editable = this.NewMode;
             }
             field(PrintShareName; Rec."Print Share Name")
             {
@@ -35,8 +38,8 @@ page 2750 "Universal Printer Settings"
                 ShowMandatory = true;
                 trigger OnAssistEdit()
                 begin
-                    UniversalPrinterSetup.LookupPrintShares(Rec);
-                    IsSizeCustom := UniversalPrinterSetup.IsPaperSizeCustom(Rec."Paper Size");
+                    this.UniversalPrinterSetup.LookupPrintShares(Rec);
+                    this.IsSizeCustom := this.UniversalPrinterSetup.IsPaperSizeCustom(Rec."Paper Size");
                 end;
             }
             field(Description; Rec.Description)
@@ -45,7 +48,6 @@ page 2750 "Universal Printer Settings"
                 ApplicationArea = All;
                 ToolTip = 'Specifies the description of the printer.';
             }
-
             field(PaperKind; Rec."Paper Size")
             {
                 Caption = 'Paper Size';
@@ -53,9 +55,9 @@ page 2750 "Universal Printer Settings"
                 ToolTip = 'Specifies the printer''s selected paper size.';
                 trigger OnValidate()
                 begin
-                    IsSizeCustom := UniversalPrinterSetup.IsPaperSizeCustom(Rec."Paper Size");
+                    this.IsSizeCustom := this.UniversalPrinterSetup.IsPaperSizeCustom(Rec."Paper Size");
 
-                    if IsSizeCustom and ((Rec."Paper Width" <= 0) or (Rec."Paper Height" <= 0)) then begin
+                    if this.IsSizeCustom and ((Rec."Paper Width" <= 0) or (Rec."Paper Height" <= 0)) then begin
                         // Set default to A4 inches
                         Rec."Paper Height" := 8.3;
                         Rec."Paper Width" := 11.7;
@@ -66,7 +68,7 @@ page 2750 "Universal Printer Settings"
             group(CustomProperties)
             {
                 ShowCaption = false;
-                Visible = IsSizeCustom;
+                Visible = this.IsSizeCustom;
                 group(Custom)
                 {
                     ShowCaption = false;
@@ -77,7 +79,7 @@ page 2750 "Universal Printer Settings"
                         ToolTip = 'Specifies the height of the paper.';
                         trigger OnValidate()
                         begin
-                            UniversalPrinterSetup.ValidatePaperHeight(Rec."Paper Height");
+                            this.UniversalPrinterSetup.ValidatePaperHeight(Rec."Paper Height");
                         end;
                     }
                     field(PaperWidth; Rec."Paper Width")
@@ -87,7 +89,7 @@ page 2750 "Universal Printer Settings"
                         ToolTip = 'Specifies the width of the paper.';
                         trigger OnValidate()
                         begin
-                            UniversalPrinterSetup.ValidatePaperWidth(Rec."Paper Width");
+                            this.UniversalPrinterSetup.ValidatePaperWidth(Rec."Paper Width");
                         end;
                     }
                     field(PaperUnit; Rec."Paper Unit")
@@ -106,7 +108,7 @@ page 2750 "Universal Printer Settings"
                 ToolTip = 'Specifies the printer''s output paper tray.';
                 trigger OnAssistEdit()
                 begin
-                    UniversalPrinterSetup.LookupPaperTrays(Rec);
+                    this.UniversalPrinterSetup.LookupPaperTrays(Rec);
                 end;
             }
             field(Landscape; Rec.Landscape)
@@ -125,7 +127,7 @@ page 2750 "Universal Printer Settings"
                         ApplicationArea = All;
                         Caption = 'This feature utilizes Microsoft Universal Print. By continuing you are affirming that you understand that the data handling and compliance standards of Microsoft Universal Print may not be the same as those provided by Microsoft Dynamics 365 Business Central. Please consult the documentation for Universal Print to learn more.';
                     }
-                    field(Privacy; PrivacyStatementTxt)
+                    field(Privacy; this.PrivacyStatementTxt)
                     {
                         ApplicationArea = All;
                         Editable = false;
@@ -134,7 +136,7 @@ page 2750 "Universal Printer Settings"
                         ToolTip = 'Opens a privacy help article.';
                         trigger OnDrillDown()
                         begin
-                            Hyperlink(PrivacyUrlTxt);
+                            Hyperlink(this.PrivacyUrlTxt);
                         end;
                     }
                 }
@@ -163,34 +165,34 @@ page 2750 "Universal Printer Settings"
 
     trigger OnNewRecord(BelowxRec: Boolean)
     begin
-        NewMode := true;
-        InsertDefaults(Rec);
+        this.NewMode := true;
+        this.InsertDefaults(Rec);
     end;
 
     trigger OnOpenPage()
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
-        FeatureTelemetry.LogUptake('0000GFZ', UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
+        FeatureTelemetry.LogUptake('0000GFZ', this.UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::Discovered);
     end;
 
     trigger OnDeleteRecord(): Boolean
     begin
-        UniversalPrinterSetup.DeletePrinterSettings(Rec.Name);
-        DeleteMode := true;
+        this.UniversalPrinterSetup.DeletePrinterSettings(Rec.Name);
+        this.DeleteMode := true;
     end;
 
     trigger OnAfterGetCurrRecord()
     begin
-        IsSizeCustom := UniversalPrinterSetup.IsPaperSizeCustom(Rec."Paper Size");
+        this.IsSizeCustom := this.UniversalPrinterSetup.IsPaperSizeCustom(Rec."Paper Size");
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     begin
-        if DeleteMode then
+        if this.DeleteMode then
             exit(true);
         if (CloseAction in [ACTION::OK, ACTION::LookupOK]) then
-            exit(UniversalPrinterSetup.OnQueryClosePrinterSettingsPage(Rec));
+            exit(this.UniversalPrinterSetup.OnQueryClosePrinterSettingsPage(Rec));
     end;
 
     internal procedure InsertDefaults(var UniversalPrinterSettings: Record "Universal Printer Settings")

@@ -2,9 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace System.Device;
+namespace System.Device.UniversalPrint;
 
 using System;
+using System.Device;
 using System.Azure.Identity;
 using System.Integration;
 using System.Utilities;
@@ -28,9 +29,9 @@ codeunit 2752 "Universal Print Graph Helper"
         RequestURL: Text;
         MorePrintSharesExist: Boolean;
     begin
-        RequestURL := GetGraphPrintSharesUrl();
+        RequestURL := this.GetGraphPrintSharesUrl();
         repeat
-            if not InvokeRequest(RequestURL, 'GET', '', ResponseContent, ErrorMessage) then
+            if not this.InvokeRequest(RequestURL, 'GET', '', ResponseContent, ErrorMessage) then
                 exit(false);
 
             if not PrintShareJsonObject.ReadFrom(ResponseContent) then
@@ -60,7 +61,7 @@ codeunit 2752 "Universal Print Graph Helper"
     var
         ResponseContent: Text;
     begin
-        if not InvokeRequest(GetGraphPrintShareSelectUrl(ID), 'GET', '', ResponseContent, ErrorMessage) then
+        if not this.InvokeRequest(this.GetGraphPrintShareSelectUrl(ID), 'GET', '', ResponseContent, ErrorMessage) then
             exit(false);
 
         if not PrintShare.ReadFrom(ResponseContent) then
@@ -79,7 +80,7 @@ codeunit 2752 "Universal Print Graph Helper"
         ErrorMessage: Text;
         StatusCode: DotNet HttpStatusCode;
     begin
-        if InvokeRequest(GetGraphPrintSharesUrl(), 'GET', '', ResponseContent, ErrorMessage, StatusCode) then
+        if this.InvokeRequest(this.GetGraphPrintSharesUrl(), 'GET', '', ResponseContent, ErrorMessage, StatusCode) then
             exit(true);
 
         if not IsNull(StatusCode) then
@@ -101,17 +102,18 @@ codeunit 2752 "Universal Print Graph Helper"
         ResponseContent: Text;
     begin
         BodyConfigJsonObject.Add('outputBin', UniversalPrinterSettings."Paper Tray");
+        BodyConfigJsonObject.Add('mediaSize', this.ConvertPaperSizeToUniversalPrintMediaSize(UniversalPrinterSettings."Paper Size"));
         if UniversalPrinterSettings.Landscape then
-            BodyConfigJsonObject.Add('orientation', GetOrientationName(Enum::"Universal Printer Orientation"::landscape));
+            BodyConfigJsonObject.Add('orientation', this.GetOrientationName(Enum::"Universal Printer Orientation"::landscape));
 
         BodyJsonObject.Add('configuration', BodyConfigJsonObject);
-        if not InvokeRequest(GetGraphPrintShareJobsUrl(UniversalPrinterSettings."Print Share ID"), 'POST', Format(BodyJsonObject), ResponseContent, ErrorMessage) then
+        if not this.InvokeRequest(this.GetGraphPrintShareJobsUrl(UniversalPrinterSettings."Print Share ID"), 'POST', Format(BodyJsonObject), ResponseContent, ErrorMessage) then
             exit(false);
 
         if not ResponseJsonObject.ReadFrom(ResponseContent) then
             exit(false);
 
-        if not GetJsonKeyValue(ResponseJsonObject, 'id', JobId) then
+        if not this.GetJsonKeyValue(ResponseJsonObject, 'id', JobId) then
             exit(false);
 
         if not ResponseJsonObject.SelectToken('documents', DocumentsJsonToken) then
@@ -122,7 +124,7 @@ codeunit 2752 "Universal Print Graph Helper"
             exit(false);
 
         FirstDocument := DocumentJsonToken.AsObject();
-        if not GetJsonKeyValue(FirstDocument, 'id', DocumentId) then
+        if not this.GetJsonKeyValue(FirstDocument, 'id', DocumentId) then
             exit(false);
 
         exit(true);
@@ -145,13 +147,13 @@ codeunit 2752 "Universal Print Graph Helper"
         BodyPropertiesJsonObject.Add('size', Size);
         BodyJsonObject.Add('properties', BodyPropertiesJsonObject);
 
-        if not InvokeRequest(GetGraphDocumentCreateUploadSessionUrl(PrintShareId, JobId, DocumentId), 'POST', Format(BodyJsonObject), ResponseContent, ErrorMessage) then
+        if not this.InvokeRequest(this.GetGraphDocumentCreateUploadSessionUrl(PrintShareId, JobId, DocumentId), 'POST', Format(BodyJsonObject), ResponseContent, ErrorMessage) then
             exit(false);
 
         if not ResponseJsonObject.ReadFrom(ResponseContent) then
             exit(false);
 
-        if not GetJsonKeyValue(ResponseJsonObject, 'uploadUrl', UploadUrl) then
+        if not this.GetJsonKeyValue(ResponseJsonObject, 'uploadUrl', UploadUrl) then
             exit(false);
 
         exit(true);
@@ -164,7 +166,7 @@ codeunit 2752 "Universal Print Graph Helper"
         ResponseContent: Text;
         StatusCode: DotNet HttpStatusCode;
     begin
-        if not AddHeaders(UploadUrl, 'PUT', HttpWebRequestMgt) then
+        if not this.AddHeaders(UploadUrl, 'PUT', HttpWebRequestMgt) then
             exit(false);
 
         // E.g. value for 'Content-Range' is 'bytes 0-72796/4533322'
@@ -173,7 +175,7 @@ codeunit 2752 "Universal Print Graph Helper"
         HttpWebRequestMgt.SetContentLength(TotalSize);
         HttpWebRequestMgt.AddBodyBlob(TempBlob);
 
-        exit(InvokeRequestAndReadResponse(HttpWebRequestMgt, ResponseContent, ErrorMessage, StatusCode));
+        exit(this.InvokeRequestAndReadResponse(HttpWebRequestMgt, ResponseContent, ErrorMessage, StatusCode));
     end;
 
     procedure StartPrintJobRequest(PrintShareId: Text; JobId: Text; var JobStateDescription: Text; var ErrorMessage: Text): Boolean
@@ -181,13 +183,13 @@ codeunit 2752 "Universal Print Graph Helper"
         ResponseJsonObject: JsonObject;
         ResponseContent: Text;
     begin
-        if not InvokeRequest(GetGraphStartPrintJobUrl(PrintShareId, JobId), 'POST', '', ResponseContent, ErrorMessage) then
+        if not this.InvokeRequest(this.GetGraphStartPrintJobUrl(PrintShareId, JobId), 'POST', '', ResponseContent, ErrorMessage) then
             exit(false);
 
         if not ResponseJsonObject.ReadFrom(ResponseContent) then
             exit(false);
 
-        if not GetJsonKeyValue(ResponseJsonObject, 'description', JobStateDescription) then
+        if not this.GetJsonKeyValue(ResponseJsonObject, 'description', JobStateDescription) then
             exit(false);
 
         exit(true);
@@ -210,10 +212,10 @@ codeunit 2752 "Universal Print Graph Helper"
     var
         AzureADMgt: Codeunit "Azure AD Mgt.";
     begin
-        AccessToken := AzureADMgt.GetAccessToken(GetGraphDomain(), '', ShowDialog);
+        AccessToken := AzureADMgt.GetAccessToken(this.GetGraphDomain(), '', ShowDialog);
         if AccessToken = '' then begin
-            Session.LogMessage('0000EFG', NoTokenTelemetryTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UniversalPrintTelemetryCategoryTxt);
-            Error(UserNotAuthenticatedTxt);
+            Session.LogMessage('0000EFG', this.NoTokenTelemetryTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', this.UniversalPrintTelemetryCategoryTxt);
+            Error(this.UserNotAuthenticatedTxt);
         end;
     end;
 
@@ -235,7 +237,7 @@ codeunit 2752 "Universal Print Graph Helper"
         if Verb <> 'GET' then
             HttpWebRequestMgt.AddBodyAsText(Body);
 
-        exit(InvokeRequestAndReadResponse(HttpWebRequestMgt, ResponseContent, ErrorMessage, StatusCode));
+        exit(this.InvokeRequestAndReadResponse(HttpWebRequestMgt, ResponseContent, ErrorMessage, StatusCode));
     end;
 
     local procedure InvokeRequestAndReadResponse(var HttpWebRequestMgt: Codeunit "Http Web Request Mgt."; var ResponseContent: Text; var ErrorMessage: Text; var StatusCode: DotNet HttpStatusCode): Boolean
@@ -248,21 +250,21 @@ codeunit 2752 "Universal Print Graph Helper"
         if HttpWebRequestMgt.SendRequestAndReadTextResponse(ResponseContent, ResponseErrorMessage, ResponseErrorDetails, StatusCode, ResponseHeaders) then
             exit(true);
 
-        if not TryGetRequestIdfromHeaders(ResponseHeaders, RequestId) then
-            RequestId := NotFoundTelemetryTxt;
+        if not this.TryGetRequestIdfromHeaders(ResponseHeaders, RequestId) then
+            RequestId := this.NotFoundTelemetryTxt;
 
-        Session.LogMessage('0000EG1', StrSubstNo(InvokeWebRequestFailedTelemetryTxt, StatusCode, ResponseErrorMessage, RequestId),
-        Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UniversalPrintTelemetryCategoryTxt);
+        Session.LogMessage('0000EG1', StrSubstNo(this.InvokeWebRequestFailedTelemetryTxt, StatusCode, ResponseErrorMessage, RequestId),
+        Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', this.UniversalPrintTelemetryCategoryTxt);
 
         Clear(ErrorMessage);
         if not IsNull(StatusCode) then
             if StatusCode in [401, 403, 404] then begin
-                ErrorMessage := NoAccessTxt;
+                ErrorMessage := this.NoAccessTxt;
                 exit(false);
             end;
 
         if ErrorMessage = '' then
-            ErrorMessage := GetMessageFromErrorJSON(ResponseErrorDetails);
+            ErrorMessage := this.GetMessageFromErrorJSON(ResponseErrorDetails);
 
         if ErrorMessage = '' then
             ErrorMessage := ResponseErrorMessage;
@@ -274,6 +276,72 @@ codeunit 2752 "Universal Print Graph Helper"
     local procedure TryGetRequestIdfromHeaders(ResponseHeaders: DotNet NameValueCollection; var RequestId: Text)
     begin
         RequestId := ResponseHeaders.Get('Request-Id');
+    end;
+
+    local procedure ConvertPaperSizeToUniversalPrintMediaSize(PaperSize: Enum "Printer Paper Kind"): Text
+    var
+        UniversalPrintMediaSize: Text;
+    begin
+        // For universal print supported media sizes, refer https://learn.microsoft.com/en-us/graph/api/resources/printercapabilities?view=graph-rest-1.0#mediasizes-values
+        case PaperSize of
+            PaperSize::A3:
+                UniversalPrintMediaSize := A3SizeTxt;
+            PaperSize::A4:
+                UniversalPrintMediaSize := A4SizeTxt;
+            PaperSize::A5:
+                UniversalPrintMediaSize := A5SizeTxt;
+            PaperSize::A6:
+                UniversalPrintMediaSize := A6SizeTxt;
+            PaperSize::JapanesePostcard:
+                UniversalPrintMediaSize := JPNHagakiSizeTxt;
+            PaperSize::Executive:
+                UniversalPrintMediaSize := NorthAmericaExecutiveSizeTxt;
+            PaperSize::Ledger:
+                UniversalPrintMediaSize := NorthAmericaLedgerSizeTxt;
+            PaperSize::Legal:
+                UniversalPrintMediaSize := NorthAmericaLegalSizeTxt;
+            PaperSize::Letter:
+                UniversalPrintMediaSize := NorthAmericaLetterSizeTxt;
+            PaperSize::Statement:
+                UniversalPrintMediaSize := NorthAmericaInvoiceSizeTxt
+            else
+                // Use the name value of the enum
+                UniversalPrintMediaSize := Format(PaperSize);
+        end;
+
+        exit(UniversalPrintMediaSize);
+    end;
+
+    internal procedure GetPaperSizeFromUniversalPrintMediaSize(textValue: Text): Enum "Printer Paper Kind"
+    var
+        PrinterPaperKind: Enum "Printer Paper Kind";
+        OrdinalValue: Integer;
+        Index: Integer;
+    begin
+        // For universal print supported media sizes, refer https://learn.microsoft.com/en-us/graph/api/resources/printercapabilities?view=graph-rest-1.0#mediasizes-values
+        case textValue of
+            JPNHagakiSizeTxt:
+                PrinterPaperKind := Enum::"Printer Paper Kind"::JapanesePostcard;
+            NorthAmericaExecutiveSizeTxt:
+                PrinterPaperKind := PrinterPaperKind::Executive;
+            NorthAmericaLedgerSizeTxt:
+                PrinterPaperKind := PrinterPaperKind::Ledger;
+            NorthAmericaLegalSizeTxt:
+                PrinterPaperKind := PrinterPaperKind::Legal;
+            NorthAmericaLetterSizeTxt:
+                PrinterPaperKind := PrinterPaperKind::Letter;
+            NorthAmericaInvoiceSizeTxt:
+                PrinterPaperKind := PrinterPaperKind::Statement;
+            else begin
+                Index := PrinterPaperKind.Names.IndexOf(textValue);
+                if Index = 0 then
+                    exit(Enum::"Printer Paper Kind"::A4);
+
+                OrdinalValue := PrinterPaperKind.Ordinals.Get(Index);
+                PrinterPaperKind := Enum::"Printer Paper Kind".FromInteger(OrdinalValue);
+            end;
+        end;
+        exit(PrinterPaperKind);
     end;
 
     local procedure GetMessageFromErrorJSON(ErrorResponseContent: Text): Text
@@ -293,7 +361,7 @@ codeunit 2752 "Universal Print Graph Helper"
             exit;
 
         ErrorJsonObject := PropertyBag.AsObject();
-        if GetJsonKeyValue(ErrorJsonObject, 'message', MessageValue) then
+        if this.GetJsonKeyValue(ErrorJsonObject, 'message', MessageValue) then
             exit(MessageValue);
     end;
 
@@ -302,7 +370,7 @@ codeunit 2752 "Universal Print Graph Helper"
         [NonDebuggable]
         AccessToken: Text;
     begin
-        if not TryGetAccessToken(AccessToken, false) then
+        if not this.TryGetAccessToken(AccessToken, false) then
             exit(false);
         HttpWebRequestMgt.Initialize(Url);
         HttpWebRequestMgt.DisableUI();
@@ -314,17 +382,17 @@ codeunit 2752 "Universal Print Graph Helper"
 
     procedure GetUniversalPrintTelemetryCategory(): Text
     begin
-        exit(UniversalPrintTelemetryCategoryTxt);
+        exit(this.UniversalPrintTelemetryCategoryTxt);
     end;
 
     procedure GetUniversalPrintFeatureTelemetryName(): Text
     begin
-        exit(UniversalPrintFeatureTelemetryNameTxt);
+        exit(this.UniversalPrintFeatureTelemetryNameTxt);
     end;
 
     procedure GetUniversalPrintPortalUrl(): Text
     begin
-        exit(UniversalPrintPortalUrlTxt);
+        exit(this.UniversalPrintPortalUrlTxt);
     end;
 
     local procedure GetGuidAsString(GuidValue: Guid): Text
@@ -355,37 +423,37 @@ codeunit 2752 "Universal Print Graph Helper"
     begin
         // https://graph.microsoft.com/v1.0/print/shares/?$top=1000
         // NOTE: by default universal print returns 10 records only, which is too low for some customers.
-        exit(GetGraphDomain() + GetGraphAPIVersion() + '/print/shares/?$top=1000');
+        exit(this.GetGraphDomain() + this.GetGraphAPIVersion() + '/print/shares/?$top=1000');
     end;
 
     local procedure GetGraphPrintShareSelectUrl(PrintShareID: Text): Text
     begin
         // https://graph.microsoft.com/v1.0/print/shares/{PrintShareID}?$select=id,displayName,defaults,capabilities
-        exit(GetGraphDomain() + GetGraphAPIVersion() + '/print/shares/' + GetGuidAsString(PrintShareID) + '?$select=id,displayName,defaults,capabilities');
+        exit(this.GetGraphDomain() + this.GetGraphAPIVersion() + '/print/shares/' + this.GetGuidAsString(PrintShareID) + '?$select=id,displayName,defaults,capabilities');
     end;
 
     local procedure GetGraphPrintShareUrl(PrintShareID: Text): Text
     begin
         // https://graph.microsoft.com/v1.0/print/shares/{PrintShareID}
-        exit(GetGraphDomain() + GetGraphAPIVersion() + '/print/shares/' + GetGuidAsString(PrintShareID));
+        exit(this.GetGraphDomain() + this.GetGraphAPIVersion() + '/print/shares/' + this.GetGuidAsString(PrintShareID));
     end;
 
     local procedure GetGraphPrintShareJobsUrl(PrintShareID: Text): Text
     begin
         // https://graph.microsoft.com/v1.0/print/shares/{PrintShareID}/jobs
-        exit(GetGraphPrintShareUrl(GetGuidAsString(PrintShareID)) + '/jobs');
+        exit(this.GetGraphPrintShareUrl(this.GetGuidAsString(PrintShareID)) + '/jobs');
     end;
 
     local procedure GetGraphDocumentCreateUploadSessionUrl(PrintShareID: Text; PrintJobID: Text; PrintDocumentID: Text): Text
     begin
         // https://graph.microsoft.com/v1.0/print/shares/{PrintShareID}/jobs/{PrintJobID}/documents/{PrintDocumentID}/createUploadSession'
-        exit(GetGraphPrintShareJobsUrl(GetGuidAsString(PrintShareID)) + '/' + PrintJobID + '/documents/' + PrintDocumentID + '/createUploadSession');
+        exit(this.GetGraphPrintShareJobsUrl(this.GetGuidAsString(PrintShareID)) + '/' + PrintJobID + '/documents/' + PrintDocumentID + '/createUploadSession');
     end;
 
     local procedure GetGraphStartPrintJobUrl(PrintShareID: Text; PrintJobID: Text): Text
     begin
         // https://graph.microsoft.com/v1.0/print/shares/{PrintShareID}/jobs/{PrintJobID}/start
-        exit(GetGraphPrintShareJobsUrl(GetGuidAsString(PrintShareID)) + '/' + PrintJobID + '/start');
+        exit(this.GetGraphPrintShareJobsUrl(this.GetGuidAsString(PrintShareID)) + '/' + PrintJobID + '/start');
     end;
 
     var
@@ -397,5 +465,15 @@ codeunit 2752 "Universal Print Graph Helper"
         InvokeWebRequestFailedTelemetryTxt: Label 'Invoking web request has failed. Status %1, Message %2, RequestId %3', Locked = true;
         NotFoundTelemetryTxt: Label 'Not Found.', Locked = true;
         UniversalPrintPortalUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2153618', Locked = true;
+        A3SizeTxt: Label 'A3', Locked = true;
+        A4SizeTxt: Label 'A4', Locked = true;
+        A5SizeTxt: Label 'A5', Locked = true;
+        A6SizeTxt: Label 'A6', Locked = true;
+        JPNHagakiSizeTxt: Label 'JPN Hagaki', Locked = true;
+        NorthAmericaExecutiveSizeTxt: Label 'North America Executive', Locked = true;
+        NorthAmericaInvoiceSizeTxt: Label 'North America Invoice', Locked = true;
+        NorthAmericaLedgerSizeTxt: Label 'North America Ledger', Locked = true;
+        NorthAmericaLegalSizeTxt: Label 'North America Legal', Locked = true;
+        NorthAmericaLetterSizeTxt: Label 'North America Letter', Locked = true;
 }
 

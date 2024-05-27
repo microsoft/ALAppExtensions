@@ -88,12 +88,23 @@ codeunit 139561 "Shpfy Initialize Test"
     end;
 
     local procedure CreateDummyCustomer(CurrentTemplateCode: Code[20])
+    var
+        Contact: Record Contact;
+        ContactBusinessRelation: Record "Contact Business Relation";
     begin
         CreateDummyCustomerFromCustomerTempl(CurrentTemplateCode);
         DummyCustomer.Name := 'Dummy Customer Name';
         DummyCustomer."E-Mail" := DummyCustomerEmailLbl;
         DummyCustomer.Modify();
         DummyCustomer.SetRecFilter();
+
+        ContactBusinessRelation.SetRange("Link to Table", ContactBusinessRelation."Link to Table"::Customer);
+        ContactBusinessRelation.SetRange("No.", DummyCustomer."No.");
+        if ContactBusinessRelation.FindFirst() then
+            if Contact.Get(ContactBusinessRelation."Contact No.") then begin
+                Contact."E-Mail" := DummyCustomer."E-Mail";
+                Contact.Modify();
+            end;
     end;
 
     local procedure CreateDummyCustomerFromCustomerTempl(CustomerTemplCode: Code[20])

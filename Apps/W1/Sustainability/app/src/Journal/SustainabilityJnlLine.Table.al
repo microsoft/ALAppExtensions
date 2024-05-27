@@ -332,6 +332,8 @@ table 6214 "Sustainability Jnl. Line"
         Validate("Reason Code", SustainabilityJnlBatch."Reason Code");
         Validate("Source Code", SustainabilityJnlBatch."Source Code");
         Validate("Document No.", SustainabilityJournalMgt.GetDocumentNo(IsPreviousLineValid, SustainabilityJnlBatch, PreviousLine."Document No.", "Posting Date"));
+
+        OnAfterSetupNewLine(Rec, SustainabilityJnlBatch, PreviousLine);
     end;
 
     procedure CreateDimFromDefaultDim(FieldNo: Integer)
@@ -371,4 +373,10 @@ table 6214 "Sustainability Jnl. Line"
     local procedure OnAfterInitDefaultDimensionSources(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; FieldNo: Integer)
     begin
     end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterSetupNewLine(var SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SustainabilityJnlBatch: Record "Sustainability Jnl. Batch"; PreviousSustainabilityJnlLine: Record "Sustainability Jnl. Line")
+    begin
+    end;
+
 }

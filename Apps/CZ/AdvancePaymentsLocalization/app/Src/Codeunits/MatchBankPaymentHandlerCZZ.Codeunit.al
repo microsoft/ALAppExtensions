@@ -41,6 +41,7 @@ codeunit 31390 "Match Bank Payment Handler CZZ"
         SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
         CustomerBankAccount: Record "Customer Bank Account";
     begin
+        OnBeforeFillMatchBankPaymentBufferSalesAdvance(SalesAdvLetterHeaderCZZ, SearchRuleLineCZB, TempMatchBankPaymentBufferCZB, GenJournalLine);
         SalesAdvLetterHeaderCZZ.SetRange(Status, SalesAdvLetterHeaderCZZ.Status::"To Pay");
         if (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Customer) and
             (GenJournalLine."Account No." <> '')
@@ -96,6 +97,7 @@ codeunit 31390 "Match Bank Payment Handler CZZ"
         PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
         VendorBankAccount: Record "Vendor Bank Account";
     begin
+        OnBeforeFillMatchBankPaymentBufferPurchaseAdvance(PurchAdvLetterHeaderCZZ, SearchRuleLineCZB, TempMatchBankPaymentBufferCZB, GenJournalLine);
         PurchAdvLetterHeaderCZZ.SetRange(Status, PurchAdvLetterHeaderCZZ.Status::"To Pay");
         if (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Vendor) and
             (GenJournalLine."Account No." <> '')
@@ -181,4 +183,15 @@ codeunit 31390 "Match Bank Payment Handler CZZ"
         AdvanceSearchRuleLineCZB.Validate("Search Scope", AdvanceSearchRuleLineCZB."Search Scope"::"Advance CZZ");
         AdvanceSearchRuleLineCZB.Insert(true);
     end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeFillMatchBankPaymentBufferPurchaseAdvance(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; SearchRuleLineCZB: Record "Search Rule Line CZB"; TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeFillMatchBankPaymentBufferSalesAdvance(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; SearchRuleLineCZB: Record "Search Rule Line CZB"; TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+
 }

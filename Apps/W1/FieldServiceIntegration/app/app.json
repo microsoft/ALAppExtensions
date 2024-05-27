@@ -1,0 +1,45 @@
+{
+    "id":  "1ba1031e-eae9-4f20-b9d2-d19b6d1e3f29",
+    "name":  "Field Service Integration",
+    "publisher":  "Microsoft",
+    "version":  "25.0.0.0",
+    "brief":  "Field Service Integration",
+    "description":  "Field Service Integration",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2206519",
+    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "ExtensionLogo.png",
+    "dependencies":  [
+
+                     ],
+    "internalsVisibleTo":  [
+                                {
+                                    "id": "41b3ab6e-3f20-47c7-a67f-feccc4d58a55",
+                                    "name": "Field Service Integration Test Library",
+                                    "publisher":  "Microsoft"
+                                }
+                            ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "25.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  6610,
+                         "to":  6640
+                     }
+                 ],
+    "target":  "OnPrem",
+    "resourceExposurePolicy":  {
+                                   "allowDebugging":  true,
+                                   "allowDownloadingSource":  true,
+                                   "includeSourceInSymbolFile":  true
+                               },
+    "application":  "25.0.0.0",
+    "features": [
+        "NoImplicitWith",
+        "TranslationFile"
+      ]
+}
