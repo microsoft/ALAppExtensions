@@ -231,6 +231,9 @@ codeunit 139769 "Bank Deposit Posting Tests"
     var
         Vendor: Record Vendor;
         BankDepositHeader: Record "Bank Deposit Header";
+        PostedBankDepositLine: Record "Posted Bank Deposit Line";
+        PostedBankDepositHeader: Record "Posted Bank Deposit Header";
+        BankAccCommentLine: Record "Bank Acc. Comment Line";
         GenJournalLine: Record "Gen. Journal Line";
     begin
         // Verify Error while posting Bank Deposit with different default Dimension on Vendor.
@@ -246,6 +249,14 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
         // Verify: Verify Error while posting Bank Deposit with different Dimension.
         Assert.ExpectedError(DimensionErr);
+        // Verify: No Posted Bank Deposit Header, Lines or Comments with the same Deposit "No." exist.
+        Assert.IsFalse(PostedBankDepositHeader.Get(BankDepositHeader."No."), 'The Posted Bank Deposit Header should not exist.');
+        PostedBankDepositLine.SetRange("Bank Deposit No.", BankDepositHeader."No.");
+        Assert.IsTrue(PostedBankDepositLine.IsEmpty(), 'The Posted Bank Deposit Line should be empty.');
+        BankAccCommentLine.SetRange("Bank Account No.", BankDepositHeader."Bank Account No.");
+        BankAccCommentLine.SetRange("Table Name", BankAccCommentLine."Table Name"::"Posted Bank Deposit Header");
+        BankAccCommentLine.SetRange("No.", BankDepositHeader."No.");
+        Assert.IsTrue(BankAccCommentLine.IsEmpty(), 'The Bank Account Comment Line should be empty.');
     end;
 
     [Test]
@@ -254,6 +265,9 @@ codeunit 139769 "Bank Deposit Posting Tests"
     var
         Customer: Record Customer;
         BankDepositHeader: Record "Bank Deposit Header";
+        PostedBankDepositLine: Record "Posted Bank Deposit Line";
+        PostedBankDepositHeader: Record "Posted Bank Deposit Header";
+        BankAccCommentLine: Record "Bank Acc. Comment Line";
         GenJournalLine: Record "Gen. Journal Line";
     begin
         // Verify Error while posting Bank Deposit with different default Dimension on Customer.
@@ -269,6 +283,15 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
         // Verify: Verify Error while posting Bank Deposit with different Dimension.
         Assert.ExpectedError(DimensionErr);
+        // Verify: No Posted Bank Deposit Header, Lines or Comments with the same Deposit "No." exist.
+        Assert.IsFalse(PostedBankDepositHeader.Get(BankDepositHeader."No."), 'The Posted Bank Deposit Header should not exist.');
+        PostedBankDepositLine.SetRange("Bank Deposit No.", BankDepositHeader."No.");
+        Assert.IsTrue(PostedBankDepositLine.IsEmpty(), 'The Posted Bank Deposit Line should be empty.');
+        BankAccCommentLine.SetRange("Bank Account No.", BankDepositHeader."Bank Account No.");
+        BankAccCommentLine.SetRange("Table Name", BankAccCommentLine."Table Name"::"Posted Bank Deposit Header");
+        BankAccCommentLine.SetRange("No.", BankDepositHeader."No.");
+        Assert.IsTrue(BankAccCommentLine.IsEmpty(), 'The Bank Account Comment Line should be empty.');
+
     end;
 
     [Test]
@@ -428,6 +451,45 @@ codeunit 139769 "Bank Deposit Posting Tests"
             GetBatchNameFromGenJournalTemplate(GenJournalTemplate),
             StrSubstNo(BatchNameErr, PreviousBatchName, GenJournalTemplate.FieldCaption(Name)));
     end;
+
+    [Test]
+    [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
+    procedure PostingNegativeAndPositiveLinesShouldBePossible()
+    var
+        GLAccount: Record "G/L Account";
+        BankDepositHeader: Record "Bank Deposit Header";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
+        GenJournalTemplate: Record "Gen. Journal Template";
+        PostedBankDepositHeader: Record "Posted Bank Deposit Header";
+        GenJournalDocumentType: Enum "Gen. Journal Document Type";
+        Amount: Decimal;
+    begin
+        // [SCENARIO 535786] A bank deposit can be posted even if it has negative "Credit Amount" lines that have been marked as "Correction"
+        Initialize();
+        LibraryERM.CreateGLAccount(GLAccount);
+        CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Type::"Bank Deposits");
+        CreateBankDepositHeaderWithBankAccount(BankDepositHeader, GenJournalBatch);
+        // [GIVEN] A deposit with positive and negative Credit Amount lines.
+        Amount := 100;
+        LibraryERM.CreateGeneralJnlLine(
+          GenJournalLine, BankDepositHeader."Journal Template Name", BankDepositHeader."Journal Batch Name", GenJournalDocumentType::" ",
+          GenJournalLine."Account Type"::"G/L Account", GLAccount."No.", -Amount);
+        LibraryERM.CreateGeneralJnlLine(
+          GenJournalLine, BankDepositHeader."Journal Template Name", BankDepositHeader."Journal Batch Name", GenJournalDocumentType::" ",
+          GenJournalLine."Account Type"::"G/L Account", GLAccount."No.", 0);
+        GenJournalLine.Validate("Credit Amount", -2 * Amount);
+        GenJournalLine.Modify();
+        UpdateBankDepositHeaderWithAmount(BankDepositHeader);
+        Commit();
+        // [THEN] It should be possible to post the deposit.
+        PostBankDeposit(BankDepositHeader);
+        // [THEN] The total amount of the deposit should be the sum of the lines.
+        PostedBankDepositHeader.SetAutoCalcFields("Total Deposit Lines");
+        PostedBankDepositHeader.Get(BankDepositHeader."No.");
+        Assert.AreEqual(-Amount, PostedBankDepositHeader."Total Deposit Lines", 'The total amount of the deposit should be the sum of the lines');
+    end;
+
 
     local procedure Initialize()
     var

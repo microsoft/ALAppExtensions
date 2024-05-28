@@ -17,6 +17,7 @@ page 6166 "E-Doc. PO Copilot Prop"
     Editable = true;
     InherentPermissions = X;
     InherentEntitlements = X;
+    ContextSensitiveHelpPage = 'map-edocuments-with-copilot';
 
     layout
     {

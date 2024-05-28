@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.GeneralLedger.Posting;
 
+using Microsoft.Sales.Customer;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Setup;
@@ -373,6 +374,29 @@ codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
             exit;
 
         IsHandled := PersistConfirmResponseCZL.GetPersistentResponse();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforePostDtldCVLedgEntry', '', false, false)]
+    local procedure OnBeforePostDtldCVLedgEntry(sender: Codeunit "Gen. Jnl.-Post Line"; var GenJournalLine: Record "Gen. Journal Line"; var DetailedCVLedgEntryBuffer: Record "Detailed CV Ledg. Entry Buffer"; var AccNo: Code[20]; var IsHandled: Boolean; AddCurrencyCode: Code[10]; MultiplePostingGroups: Boolean)
+    var
+        CustomerPostingGroup: Record "Customer Posting Group";
+        OldCorrection: Boolean;
+    begin
+        if IsHandled then
+            exit;
+
+        if MultiplePostingGroups and
+           (DetailedCVLedgEntryBuffer."Entry Type" = DetailedCVLedgEntryBuffer."Entry Type"::Application)
+        then begin
+            CustomerPostingGroup.Get(GenJournalLine."Posting Group");
+            if AccNo = CustomerPostingGroup.GetReceivablesAccount() then begin
+                OldCorrection := GenJournalLine.Correction;
+                GenJournalLine.Correction := true;
+                sender.CreateGLEntry(GenJournalLine, AccNo, DetailedCVLedgEntryBuffer."Amount (LCY)", 0, DetailedCVLedgEntryBuffer."Currency Code" = AddCurrencyCode);
+                GenJournalLine.Correction := OldCorrection;
+                IsHandled := true;
+            end;
+        end;
     end;
 
     [IntegrationEvent(false, false)]

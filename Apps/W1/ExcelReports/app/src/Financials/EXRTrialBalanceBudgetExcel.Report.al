@@ -48,12 +48,29 @@ report 4406 "EXR Trial BalanceBudgetExcel"
                 column(BudgetBalPct; "% of Budget Bal.") { IncludeCaption = true; }
             }
             trigger OnAfterGetRecord()
+            var
+                TrialBalance: Codeunit "Trial Balance";
             begin
-                Clear(EXRTrialBalanceBuffer);
-                EXRTrialBalanceBuffer.DeleteAll();
                 IndentedAccountName := PadStr('', TrialBalanceBudgetData.Indentation * 2, ' ') + TrialBalanceBudgetData.Name;
+                TrialBalance.InsertBreakdownForGLAccount(TrialBalanceBudgetData, Dimension1Values, Dimension2Values, EXRTrialBalanceBuffer);
+            end;
 
-                BuildDataset(TrialBalanceBudgetData);
+            trigger OnPreDataItem()
+            var
+                DimensionValue: Record "Dimension Value";
+            begin
+                DimensionValue.SetRange("Global Dimension No.", 1);
+                if DimensionValue.FindSet() then
+                    repeat
+                        Dimension1Values.Add(DimensionValue.Code);
+                    until DimensionValue.Next() = 0;
+                Dimension1Values.Add('');
+                DimensionValue.SetRange("Global Dimension No.", 2);
+                if DimensionValue.FindSet() then
+                    repeat
+                        Dimension2Values.Add(DimensionValue.Code);
+                    until DimensionValue.Next() = 0;
+                Dimension2Values.Add('');
             end;
         }
         dataitem(Dimension1; "Dimension Value")
@@ -101,59 +118,12 @@ report 4406 "EXR Trial BalanceBudgetExcel"
         CompanyInformation.Get();
     end;
 
+    var
+        Dimension1Values: List of [Code[20]];
+        Dimension2Values: List of [Code[20]];
+
     protected var
         CompanyInformation: Record "Company Information";
         IndentedAccountName: Text;
 
-    local procedure BuildDataset(var GLAccount: Record "G/L Account")
-    var
-        DimensionValue1: Record "Dimension Value";
-        DimensionValue2: Record "Dimension Value";
-    begin
-        DimensionValue1.SetRange("Global Dimension No.", 1);
-        DimensionValue2.SetRange("Global Dimension No.", 2);
-
-        InsertGLAccountData(GLAccount, DimensionValue1, DimensionValue2);
-    end;
-
-    local procedure InsertGLAccountData(var GLAccount: Record "G/L Account"; var DimensionValue1: Record "Dimension Value"; var DimensionValue2: Record "Dimension Value")
-    begin
-        AddGLToDataset(GLAccount, '', '');
-
-        if DimensionValue1.FindSet() then
-            repeat
-                AddGLToDataset(GLAccount, DimensionValue1."Code", '');
-                if DimensionValue2.FindSet() then
-                    repeat
-                        AddGLToDataset(GLAccount, DimensionValue1."Code", DimensionValue2."Code");
-                    until DimensionValue2.Next() = 0;
-            until DimensionValue1.Next() = 0;
-
-        if DimensionValue2.FindSet() then
-            repeat
-                AddGLToDataset(GLAccount, '', DimensionValue2."Code");
-            until DimensionValue2.Next() = 0;
-    end;
-
-    local procedure AddGLToDataset(var GLAccount: Record "G/L Account"; Dimension1Code: Code[20]; Dimension2Code: Code[20])
-    var
-        LocalGLAccount: Record "G/L Account";
-    begin
-        LocalGLAccount.Copy(GLAccount);
-        LocalGLAccount.SetFilter("Global Dimension 1 Code", Dimension1Code);
-        LocalGLAccount.SetFilter("Global Dimension 2 Code", Dimension2Code);
-
-        LocalGLAccount.CalcFields("Net Change", "Balance at Date", "Budgeted Amount", "Budget at Date");
-
-        Clear(EXRTrialBalanceBuffer);
-        EXRTrialBalanceBuffer."G/L Account No." := LocalGLAccount."No.";
-        EXRTrialBalanceBuffer."Dimension 1 Code" := Dimension1Code;
-        EXRTrialBalanceBuffer."Dimension 2 Code" := Dimension2Code;
-        EXRTrialBalanceBuffer.Validate("Net Change", LocalGLAccount."Net Change");
-        EXRTrialBalanceBuffer.Validate(Balance, LocalGLAccount."Balance at Date");
-        EXRTrialBalanceBuffer.Validate("Budget (Net)", LocalGLAccount."Budgeted Amount");
-        EXRTrialBalanceBuffer.Validate("Budget (Bal. at Date)", LocalGLAccount."Budget at Date");
-        EXRTrialBalanceBuffer.CalculateBudgetComparisons();
-        EXRTrialBalanceBuffer.Insert(true);
-    end;
 }

@@ -159,8 +159,7 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
         GenJnlLine.Validate("IRS 1099 Reporting Period", PeriodNo);
         GenJnlLine.Validate("IRS 1099 Form No.", IRS1099VendorFormBoxSetup."Form No.");
         GenJnlLine.Validate("IRS 1099 Form Box No.", IRS1099VendorFormBoxSetup."Form Box No.");
-        if GenJnlLine."Line No." <> 0 then
-            GenJnlLine.Modify(true);
+        SaveChangesInGenJnlLine(GenJnlLine);
     end;
 
     local procedure GetIRS1099VendorFormBoxSetupFromGenJnlLine(var IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup"; GenJnlLine: Record "Gen. Journal Line"; PeriodNo: Code[20])
@@ -180,8 +179,13 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
             exit;
 #endif
         GenJnlLine.Validate("IRS 1099 Reporting Amount", GenJnlLine.Amount);
+        SaveChangesInGenJnlLine(GenJnlLine);
+    end;
+
+    local procedure SaveChangesInGenJnlLine(var GenJnlLine: Record "Gen. Journal Line")
+    begin
         if GenJnlLine."Line No." <> 0 then
-            GenJnlLine.Modify(true);
+            if GenJnlLine.Modify(true) then;
     end;
 
 }
