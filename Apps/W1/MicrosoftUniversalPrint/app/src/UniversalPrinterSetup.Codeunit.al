@@ -2,11 +2,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace System.Device;
+namespace System.Device.UniversalPrint;
 
 using Microsoft.Utilities;
 using System.Environment;
 using System.Telemetry;
+using System.Device;
 
 /// <summary>
 ///  Handles the set up of Universal Printers and their configuration settings
@@ -32,15 +33,15 @@ codeunit 2750 "Universal Printer Setup"
                 Clear(PaperTrays);
                 Clear(Payload);
 
-                PaperTray.Add('papersourcekind', GetPaperTray(UniversalPrinterSettings."Paper Tray").AsInteger());
+                PaperTray.Add('papersourcekind', this.GetPaperTray(UniversalPrinterSettings."Paper Tray").AsInteger());
                 PaperTray.Add('paperkind', UniversalPrinterSettings."Paper Size".AsInteger());
                 // If paper size is custom and no height and width is specified then set the paper size to A4
-                if IsPaperSizeCustom(UniversalPrinterSettings."Paper Size") then begin
+                if this.IsPaperSizeCustom(UniversalPrinterSettings."Paper Size") then begin
                     if (UniversalPrinterSettings."Paper Height" <= 0) or (UniversalPrinterSettings."Paper Width" <= 0) then begin
                         PaperTray.Replace('paperkind', UniversalPrinterSettings."Paper Size"::A4.AsInteger());
-                        Session.LogMessage('0000EFY', CustomSizeErrorTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UniversalPrintGraphHelper.GetUniversalPrintTelemetryCategory());
+                        Session.LogMessage('0000EFY', this.CustomSizeErrorTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', this.UniversalPrintGraphHelper.GetUniversalPrintTelemetryCategory());
                     end;
-                    ConvertAndAddPrinterPaperDimensions(UniversalPrinterSettings, PaperTray);
+                    this.ConvertAndAddPrinterPaperDimensions(UniversalPrinterSettings, PaperTray);
                 end;
 
                 PaperTray.Add('landscape', UniversalPrinterSettings.Landscape);
@@ -50,7 +51,7 @@ codeunit 2750 "Universal Printer Setup"
                 Payload.Add('papertrays', PaperTrays);
                 Printers.Add(UniversalPrinterSettings.Name, Payload);
             end else
-                Session.LogMessage('0000EFH', PrinterIDMissingTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UniversalPrintGraphHelper.GetUniversalPrintTelemetryCategory());
+                Session.LogMessage('0000EFH', this.PrinterIDMissingTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', this.UniversalPrintGraphHelper.GetUniversalPrintTelemetryCategory());
         until UniversalPrinterSettings.Next() = 0;
     end;
 
@@ -70,13 +71,13 @@ codeunit 2750 "Universal Printer Setup"
     internal procedure ValidatePaperHeight(PaperHeight: Decimal)
     begin
         if PaperHeight <= 0 then
-            Error(HeightInputErr);
+            Error(this.HeightInputErr);
     end;
 
     internal procedure ValidatePaperWidth(PaperWidth: Decimal)
     begin
         if PaperWidth <= 0 then
-            Error(WidthInputErr);
+            Error(this.WidthInputErr);
     end;
 
     internal procedure ConvertAndAddPrinterPaperDimensions(UniversalPrinterSettings: Record "Universal Printer Settings"; var PaperTray: JsonObject)
@@ -104,14 +105,14 @@ codeunit 2750 "Universal Printer Setup"
         JArrayElement: JsonToken;
         ErrorMessage: Text;
     begin
-        if not UniversalPrintGraphHelper.GetPrintSharesList(PrintSharesArray, ErrorMessage) then
-            Error(GetPrintSharesErr, ErrorMessage);
+        if not this.UniversalPrintGraphHelper.GetPrintSharesList(PrintSharesArray, ErrorMessage) then
+            Error(this.GetPrintSharesErr, ErrorMessage);
 
         foreach JArrayElement in PrintSharesArray do
             if not JArrayElement.IsObject() then
-                Session.LogMessage('0000EG2', ParseWarningTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UniversalPrintGraphHelper.GetUniversalPrintTelemetryCategory())
+                Session.LogMessage('0000EG2', this.ParseWarningTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', this.UniversalPrintGraphHelper.GetUniversalPrintTelemetryCategory())
             else
-                if InsertPrinterSetting(UniversalPrinterSettings, JArrayElement.AsObject()) then
+                if this.InsertPrinterSetting(UniversalPrinterSettings, JArrayElement.AsObject()) then
                     TotalAddedPrinters += 1;
     end;
 
@@ -121,14 +122,14 @@ codeunit 2750 "Universal Printer Setup"
         JArrayElement: JsonToken;
         ErrorMessage: Text;
     begin
-        if not UniversalPrintGraphHelper.GetPrintSharesList(PrintSharesArray, ErrorMessage) then
-            Error(GetPrintSharesErr, ErrorMessage);
+        if not this.UniversalPrintGraphHelper.GetPrintSharesList(PrintSharesArray, ErrorMessage) then
+            Error(this.GetPrintSharesErr, ErrorMessage);
 
         foreach JArrayElement in PrintSharesArray do
             if JArrayElement.IsObject then
-                InsertPrintShare(TempUniversalPrintShareBuffer, JArrayElement.AsObject())
+                this.InsertPrintShare(TempUniversalPrintShareBuffer, JArrayElement.AsObject())
             else
-                Session.LogMessage('0000EG3', ParseWarningTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UniversalPrintGraphHelper.GetUniversalPrintTelemetryCategory());
+                Session.LogMessage('0000EG3', this.ParseWarningTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', this.UniversalPrintGraphHelper.GetUniversalPrintTelemetryCategory());
         exit;
     end;
 
@@ -137,7 +138,7 @@ codeunit 2750 "Universal Printer Setup"
         ErrorMessage: Text;
         PrintShareJsonObject: JsonObject;
     begin
-        exit(UniversalPrintGraphHelper.GetPrintShare(PrintShareID, PrintShareJsonObject, ErrorMessage));
+        exit(this.UniversalPrintGraphHelper.GetPrintShare(PrintShareID, PrintShareJsonObject, ErrorMessage));
     end;
 
     local procedure InsertPrinterSetting(var UniversalPrinterSettings: Record "Universal Printer Settings"; PrintShareJsonObject: JsonObject): Boolean
@@ -147,7 +148,7 @@ codeunit 2750 "Universal Printer Setup"
         PrintShareIDValue: Text;
         PrinterDefaultsJsonObject: JsonObject;
     begin
-        if not UniversalPrintGraphHelper.GetJsonKeyValue(PrintShareJsonObject, 'id', PrintShareIDValue) then
+        if not this.UniversalPrintGraphHelper.GetJsonKeyValue(PrintShareJsonObject, 'id', PrintShareIDValue) then
             exit(false);
 
         if PrintShareIDValue = '' then
@@ -158,7 +159,7 @@ codeunit 2750 "Universal Printer Setup"
         if UniversalPrinterSettings.FindFirst() then
             exit(false);
 
-        if not UniversalPrintGraphHelper.GetJsonKeyValue(PrintShareJsonObject, 'displayName', PrintShareNameValue) then
+        if not this.UniversalPrintGraphHelper.GetJsonKeyValue(PrintShareJsonObject, 'displayName', PrintShareNameValue) then
             exit(false);
 
         if PrintShareNameValue = '' then
@@ -168,21 +169,21 @@ codeunit 2750 "Universal Printer Setup"
         UniversalPrinterSettings.Validate("Print Share ID", PrintShareIDValue);
         UniversalPrinterSettings.Validate(Name, CopyStr(PrintShareNameValue, 1, MaxStrLen(UniversalPrinterSettings.Name)));
         UniversalPrinterSettings.Validate("Print Share Name", CopyStr(PrintShareNameValue, 1, MaxStrLen(UniversalPrinterSettings."Print Share Name")));
-        UniversalPrinterSettings.Validate(Description, StrSubstNo(DefaultDescriptionTxt, UniversalPrinterSettings.Name));
+        UniversalPrinterSettings.Validate(Description, StrSubstNo(this.DefaultDescriptionTxt, UniversalPrinterSettings.Name));
 
         if PrintShareJsonObject.Get('allowAllUsers', PropertyBag) then
             UniversalPrinterSettings.Validate(AllowAllUsers, PropertyBag.AsValue().AsBoolean());
 
         if PrintShareJsonObject.Get('defaults', PropertyBag) and PropertyBag.IsObject() then begin
             PrinterDefaultsJsonObject := PropertyBag.AsObject();
-            UpdateDefaults(UniversalPrinterSettings, PrinterDefaultsJsonObject);
+            this.UpdateDefaults(UniversalPrinterSettings, PrinterDefaultsJsonObject);
         end else begin
             // Bug 393946: Universal Print: Default settings for printers are not loaded
             // According to documentation, the Graph APIs for the print share list should return capabilities and defaults, but that is not the case
             // even if the fields are $select-ed explicitly. Getting the defaults for each single printer is slower but works.
             // Visit the docs: https://go.microsoft.com/fwlink/?linkid=2206184
-            Session.LogMessage('0000EUQ', NoDefaultsAvailableTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', UniversalPrintGraphHelper.GetUniversalPrintTelemetryCategory());
-            GetDefaults(UniversalPrinterSettings);
+            Session.LogMessage('0000EUQ', this.NoDefaultsAvailableTelemetryTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', this.UniversalPrintGraphHelper.GetUniversalPrintTelemetryCategory());
+            this.GetDefaults(UniversalPrinterSettings);
         end;
 
         exit(UniversalPrinterSettings.Insert(true));
@@ -198,12 +199,12 @@ codeunit 2750 "Universal Printer Setup"
         if IsNullGuid(UniversalPrinterSettings."Print Share ID") then
             exit;
 
-        if not UniversalPrintGraphHelper.GetPrintShare(UniversalPrinterSettings."Print Share ID", PrintShareJsonObject, ErrorMessage) then
-            Error(GetPrintShareDetailsErr, ErrorMessage);
+        if not this.UniversalPrintGraphHelper.GetPrintShare(UniversalPrinterSettings."Print Share ID", PrintShareJsonObject, ErrorMessage) then
+            Error(this.GetPrintShareDetailsErr, ErrorMessage);
 
         if PrintShareJsonObject.Get('defaults', PropertyBag) and PropertyBag.IsObject() then begin
             PrinterDefaultsJsonObject := PropertyBag.AsObject();
-            UpdateDefaults(UniversalPrinterSettings, PrinterDefaultsJsonObject);
+            this.UpdateDefaults(UniversalPrinterSettings, PrinterDefaultsJsonObject);
         end;
     end;
 
@@ -220,8 +221,8 @@ codeunit 2750 "Universal Printer Setup"
         if IsNullGuid(PrintShareID) then
             exit;
 
-        if not UniversalPrintGraphHelper.GetPrintShare(PrintShareID, PrintShareJsonObject, ErrorMessage) then
-            Error(GetPrintShareDetailsErr, ErrorMessage);
+        if not this.UniversalPrintGraphHelper.GetPrintShare(PrintShareID, PrintShareJsonObject, ErrorMessage) then
+            Error(this.GetPrintShareDetailsErr, ErrorMessage);
 
         if not PrintShareJsonObject.Get('capabilities', PropertyBag) then
             exit;
@@ -251,13 +252,13 @@ codeunit 2750 "Universal Printer Setup"
     var
         PrinterPropValue: Text;
     begin
-        if UniversalPrintGraphHelper.GetJsonKeyValue(PrinterDefaultsJsonObject, 'orientation', PrinterPropValue) then
-            UniversalPrinterSettings.Validate(Landscape, IsLandscape(GetOrientation(PrinterPropValue)));
+        if this.UniversalPrintGraphHelper.GetJsonKeyValue(PrinterDefaultsJsonObject, 'orientation', PrinterPropValue) then
+            UniversalPrinterSettings.Validate(Landscape, this.IsLandscape(this.GetOrientation(PrinterPropValue)));
 
-        if UniversalPrintGraphHelper.GetJsonKeyValue(PrinterDefaultsJsonObject, 'mediaSize', PrinterPropValue) then
-            UniversalPrinterSettings.Validate("Paper Size", GetPaperSize(PrinterPropValue));
+        if this.UniversalPrintGraphHelper.GetJsonKeyValue(PrinterDefaultsJsonObject, 'mediaSize', PrinterPropValue) then
+            UniversalPrinterSettings.Validate("Paper Size", this.UniversalPrintGraphHelper.GetPaperSizeFromUniversalPrintMediaSize(PrinterPropValue));
 
-        if UniversalPrintGraphHelper.GetJsonKeyValue(PrinterDefaultsJsonObject, 'outputBin', PrinterPropValue) then
+        if this.UniversalPrintGraphHelper.GetJsonKeyValue(PrinterDefaultsJsonObject, 'outputBin', PrinterPropValue) then
             UniversalPrinterSettings.Validate("Paper Tray", CopyStr(PrinterPropValue, 1, MaxStrLen(UniversalPrinterSettings."Paper Tray")));
     end;
 
@@ -265,10 +266,10 @@ codeunit 2750 "Universal Printer Setup"
     var
         PrintSharePropValue: Text;
     begin
-        if UniversalPrintGraphHelper.GetJsonKeyValue(PrintShareJsonObject, 'displayName', PrintSharePropValue) then
+        if this.UniversalPrintGraphHelper.GetJsonKeyValue(PrintShareJsonObject, 'displayName', PrintSharePropValue) then
             TempUniversalPrintShareBuffer.Validate(Name, CopyStr(PrintSharePropValue, 1, MaxStrLen(TempUniversalPrintShareBuffer.Name)));
 
-        if UniversalPrintGraphHelper.GetJsonKeyValue(PrintShareJsonObject, 'id', PrintSharePropValue) then
+        if this.UniversalPrintGraphHelper.GetJsonKeyValue(PrintShareJsonObject, 'id', PrintSharePropValue) then
             TempUniversalPrintShareBuffer.Validate(ID, PrintSharePropValue);
 
         if TempUniversalPrintShareBuffer.Insert(true) then;
@@ -289,20 +290,6 @@ codeunit 2750 "Universal Printer Setup"
         exit(UniversalPrinterOrientation);
     end;
 
-    local procedure GetPaperSize(textValue: Text): Enum "Printer Paper Kind"
-    var
-        PrinterPaperKind: Enum "Printer Paper Kind";
-        OrdinalValue: Integer;
-        Index: Integer;
-    begin
-        Index := PrinterPaperKind.Names.IndexOf(textValue);
-        if Index = 0 then
-            exit(Enum::"Printer Paper Kind"::A4);
-
-        OrdinalValue := PrinterPaperKind.Ordinals.Get(Index);
-        PrinterPaperKind := Enum::"Printer Paper Kind".FromInteger(OrdinalValue);
-        exit(PrinterPaperKind);
-    end;
 
     local procedure GetPaperTray(textValue: Text): Enum "Printer Paper Source Kind"
     var
@@ -335,17 +322,17 @@ codeunit 2750 "Universal Printer Setup"
             exit(true);
 
         if IsNullGuid(UniversalPrinterSettings."Print Share ID") then begin
-            if Confirm(InvalidPrintShareClosePageQst, true) then
+            if Confirm(this.InvalidPrintShareClosePageQst, true) then
                 exit(true);
             Error('');
         end;
 
-        if IsPaperSizeCustom(UniversalPrinterSettings."Paper Size") then begin
-            ValidatePaperHeight(UniversalPrinterSettings."Paper Height");
-            ValidatePaperWidth(UniversalPrinterSettings."Paper Width");
+        if this.IsPaperSizeCustom(UniversalPrinterSettings."Paper Size") then begin
+            this.ValidatePaperHeight(UniversalPrinterSettings."Paper Height");
+            this.ValidatePaperWidth(UniversalPrinterSettings."Paper Width");
         end;
 
-        FeatureTelemetry.LogUptake('0000GG0', UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::"Set up");
+        FeatureTelemetry.LogUptake('0000GG0', this.UniversalPrintGraphHelper.GetUniversalPrintFeatureTelemetryName(), Enum::"Feature Uptake Status"::"Set up");
         exit(true);
     end;
 
@@ -358,7 +345,7 @@ codeunit 2750 "Universal Printer Setup"
 
         PrinterSelection.SetRange("Printer Name", Name);
         if not PrinterSelection.IsEmpty() then
-            Error(UsedInPrinterSelectionErr, Name);
+            Error(this.UsedInPrinterSelectionErr, Name);
     end;
 
     internal procedure LookupPaperTrays(var UniversalPrinterSettings: Record "Universal Printer Settings")
@@ -366,7 +353,7 @@ codeunit 2750 "Universal Printer Setup"
         TempNameValueBuffer: Record "Name/Value Buffer" temporary;
         UniversalPrinterTrayList: Page "Universal Printer Tray List";
     begin
-        GetPaperTrayCapabilities(UniversalPrinterSettings."Print Share ID", TempNameValueBuffer);
+        this.GetPaperTrayCapabilities(UniversalPrinterSettings."Print Share ID", TempNameValueBuffer);
         UniversalPrinterTrayList.SetPaperTrayBuffer(TempNameValueBuffer);
         UniversalPrinterTrayList.LookupMode(true);
         if UniversalPrinterTrayList.RunModal() = ACTION::LookupOK then begin
@@ -385,7 +372,7 @@ codeunit 2750 "Universal Printer Setup"
             UniversalPrintSharesList.GetRecord(TempUniversalPrintShareBuffer);
             UniversalPrinterSettings.Validate("Print Share ID", TempUniversalPrintShareBuffer.ID);
             UniversalPrinterSettings.Validate("Print Share Name", TempUniversalPrintShareBuffer.Name);
-            GetDefaults(UniversalPrinterSettings);
+            this.GetDefaults(UniversalPrinterSettings);
         end;
     end;
 

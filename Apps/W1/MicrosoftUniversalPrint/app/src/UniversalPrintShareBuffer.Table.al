@@ -2,7 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
-namespace System.Device;
+namespace System.Device.UniversalPrint;
 
 /// <summary>
 /// Provides functionality to manage Print Shares.
@@ -51,10 +51,10 @@ table 2752 "Universal Print Share Buffer"
         UniversalPrinterSetup: Codeunit "Universal Printer Setup";
     begin
         UniversalPrintShareBuffer.CopyFilters(Rec);
-        Reset();
-        DeleteAll();
+        Rec.Reset();
+        Rec.DeleteAll();
         UniversalPrinterSetup.AddAllPrintSharesToBuffer(Rec);
-        CopyFilters(UniversalPrintShareBuffer);
+        Rec.CopyFilters(UniversalPrintShareBuffer);
         if Rec.FindFirst() then;
     end;
 }

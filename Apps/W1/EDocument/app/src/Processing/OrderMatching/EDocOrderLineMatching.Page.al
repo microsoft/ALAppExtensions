@@ -8,7 +8,7 @@ using System.Telemetry;
 page 6167 "E-Doc. Order Line Matching"
 {
     Caption = 'Purchase Order Matching';
-    DataCaptionExpression = 'Purchase Order ' + Rec."Order No.";
+    DataCaptionExpression = StrSubstNo(GlobalDataCaptionExpressionTxt, Rec."Order No.");
     PageType = Card;
     ApplicationArea = All;
     SourceTable = "E-Document";
@@ -225,6 +225,7 @@ page 6167 "E-Doc. Order Line Matching"
         LineDiscountVaryMatchMsg: Label 'Matched e-document lines (%1) has Line Discount % different from matched purchase order line. Please verify matches are correct.', Comment = '%1 - Line number';
         LineCostVaryMatchMsg: Label 'Matched e-document lines (%1) has Direct Unit Cost different from matched purchase order line. Please verify matches are correct.', Comment = '%1 - Line number';
         NoMatchesFoundMsg: Label 'Copilot could not find any line matches. Please review manually';
+        GlobalDataCaptionExpressionTxt: Label 'Purchase Order %1', Comment = '%1 - Purchase order number';
 
     trigger OnOpenPage()
     var

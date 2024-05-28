@@ -7,6 +7,7 @@ using Microsoft.Sustainability.Posting;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Reports;
 using Microsoft.Sustainability.Setup;
+using Microsoft.API.V1;
 
 permissionset 6210 "Sustainability - Objects"
 {
@@ -40,6 +41,11 @@ permissionset 6210 "Sustainability - Objects"
         page "Sustainability Ledger Entries" = X,
         page "Sustainability Setup" = X,
         page "Sustain. Jnl. Errors Factbox" = X,
+        page "Sustainability Accounts" = X,
+        page "Sust. Account Categories" = X,
+        page "Sust. Acc. Subcategory" = X,
+        page "Sustainability Journal Line" = X,
+        page "Sustainability Ledg. Entries" = X,
         codeunit "Sustainability Account Mgt." = X,
         codeunit "Sustainability Journal Mgt." = X,
         codeunit "Sustainability Jnl.-Post" = X,

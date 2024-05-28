@@ -46,6 +46,7 @@ codeunit 18390 "GST Transfer Order Receipt"
         FirstExecution: Boolean;
         GSTAmountLoaded: Decimal;
         TransferCost: Decimal;
+        TransferQuantity: Decimal;
         GSTAssessableErr: Label 'GST Assessable Value must be 0 if GST Group Type is Service while transferring from Bonded Warehouse location.';
         GSTCustomDutyErr: Label 'Custom Duty Amount must be 0 if GST Group Type is Service while transferring from Bonded Warehouse location.';
         GSTGroupServiceErr: Label 'You cannot select GST Group Type Service for transfer.';
@@ -99,8 +100,10 @@ codeunit 18390 "GST Transfer Order Receipt"
     local procedure GetTranfsrePrice(var ValueEntry: Record "Value Entry"; var ItemJournalLine: Record "Item Journal Line")
     begin
         if (ItemJournalLine."Entry Type" = ItemJournalLine."Entry Type"::Transfer) and
-            (ItemJournalLine."Value Entry Type" <> ItemJournalLine."Value Entry Type"::Revaluation) then
+            (ItemJournalLine."Value Entry Type" <> ItemJournalLine."Value Entry Type"::Revaluation) then begin
             TransferCost := ValueEntry."Cost Amount (Actual)";
+            TransferQuantity := Abs(ValueEntry."Invoiced Quantity");
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Receipt", 'OnBeforeTransRcptHeaderInsert', '', false, false)]
@@ -788,7 +791,7 @@ codeunit 18390 "GST Transfer Order Receipt"
         TempTransferBufferStage."Dimension Set ID" := TransferLine."Dimension Set ID";
         TempTransferBufferStage."Charges Amount" := TransferLine."Charges to Transfer";
         TempTransferBufferStage."Amount Loaded on Inventory" := TransferLine."Amount Added to Inventory";
-        TempTransferBufferStage.Amount := Round(TransferLine.Amount - (-TransferCost));
+        TempTransferBufferStage.Amount := Round(TransferLine."Qty. to Receive" * (TransferLine."Transfer Price" - (-(TransferCost / TransferQuantity))));
         if LocationBonded."Bonded warehouse" then
             TempTransferBufferStage."GST Amount" := -Round(
                 RoundTotalGSTAmountQtyFactor(

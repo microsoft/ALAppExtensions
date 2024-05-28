@@ -33,6 +33,7 @@ codeunit 18391 "GST Transfer Order Shipment"
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         GSTBaseValidation: Codeunit "GST Base Validation";
         TransferCost: Decimal;
+        TransferQuantity: Decimal;
         GSTGroupServiceErr: Label 'You canNot select GST Group Type Service for transfer.';
         LocGSTRegNoARNNoErr: Label 'Location must have either GST Registration No. or Location ARN No.';
         TransferShipmentNoLbl: Label 'Transfer - %1', Comment = '%1= Transfer Shipment No.';
@@ -466,7 +467,7 @@ codeunit 18391 "GST Transfer Order Shipment"
         TempTransferBufferStage.Quantity := TransferLine."Qty. to Ship";
         TempTransferBufferStage."Amount Loaded on Inventory" := Round(TransferLine."Amount Added to Inventory" * TransferLine."Qty. to Ship" / TransferLine.Quantity);
         TempTransferBufferStage."Charges Amount" := Round(TransferLine."Charges to Transfer" * TransferLine."Qty. to Ship" / TransferLine.Quantity);
-        TempTransferBufferStage."Excise Amount" := Round(TransferLine.Amount - -TransferCost);
+        TempTransferBufferStage."Excise Amount" := Round(TransferLine."Qty. to Ship" * (TransferLine."Transfer Price" - -(TransferCost / TransferQuantity)));
         TempTransferBufferStage.Amount := TempTransferBufferStage.Amount + TempTransferBufferStage."Excise Amount";
         UpdTransferBuffer(TransferLine, TransferLine."Line No.");
     end;
@@ -1150,7 +1151,8 @@ codeunit 18391 "GST Transfer Order Shipment"
     begin
         if GlobalItemLedgEntry."Entry Type" = GlobalItemLedgEntry."Entry Type"::Transfer then begin
             GlobalItemLedgEntry.CalcFields("Cost Amount (Actual)");
-            TransferCost := GlobalItemLedgEntry."Cost Amount (Actual)"
+            TransferCost := GlobalItemLedgEntry."Cost Amount (Actual)";
+            TransferQuantity := Abs(GlobalItemLedgEntry.Quantity);
         end;
     end;
 

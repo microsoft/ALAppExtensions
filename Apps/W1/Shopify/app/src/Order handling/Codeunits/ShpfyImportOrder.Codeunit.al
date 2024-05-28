@@ -112,7 +112,8 @@ codeunit 30161 "Shpfy Import Order"
         OrderFulfillments.GetFulfillments(Shop, OrderHeader."Shopify Order Id");
 
         ConsiderRefundsInQuantityAndAmounts(OrderHeader);
-        DeleteZeroQuantityLines(OrderHeader);
+        if not Shop."Keep Zero Quantity Lines" then
+            DeleteZeroQuantityLines(OrderHeader);
 
         if CheckToCloseOrder(OrderHeader) then
             CloseOrder(OrderHeader);

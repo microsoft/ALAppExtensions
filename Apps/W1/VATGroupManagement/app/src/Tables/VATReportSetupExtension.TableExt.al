@@ -102,6 +102,7 @@ tableextension 4701 "VAT Report Setup Extension" extends "VAT Report Setup"
         {
             DataClassification = SystemMetadata;
             Caption = 'Group Representative Uses Business Central Online';
+            InitValue = true;
         }
         field(4714; "Group Settlement Account"; Code[20])
         {

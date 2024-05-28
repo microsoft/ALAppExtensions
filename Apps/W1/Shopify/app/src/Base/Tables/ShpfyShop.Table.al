@@ -778,6 +778,12 @@ table 30102 "Shpfy Shop"
             end;
 #endif
         }
+        field(128; "Keep Zero Quantity Lines"; Boolean)
+        {
+            Caption = 'Keep Zero Quantity Lines';
+            DataClassification = SystemMetadata;
+            InitValue = false;
+        }
         field(200; "Shop Id"; Integer)
         {
             DataClassification = SystemMetadata;

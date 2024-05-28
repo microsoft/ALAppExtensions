@@ -39,13 +39,13 @@ codeunit 6205 "Transaction Storage ABS"
         TablesExportedTxt: Label 'Tables were exported.', Locked = true;
         CollectedTablesCountTxt: Label 'Collected tables count', Locked = true;
         ExportedTablesCountTxt: Label 'Exported tables count', Locked = true;
-        ExportedToABSTxt: Label 'Exported to Azure Blob Storage', Locked = true;
+        ExportedToABSTxt: Label 'Exported to Azure Blob Storage using certificate authorized Azure Function', Locked = true;
         BlobFolderNameTxt: Label '%1_%2/%3', Comment = '%1 - aad tenant id, %2 - environment name, %3 - date', Locked = true;
         JsonBlobNameTxt: Label '%1/%2.json', Comment = '%1 - blob folder name, %2 - table name', Locked = true;
         IncomingDocBlobNameTxt: Label '%1/%2-%3.%4', Comment = '%1 - blob folder name, %2 - incoming document entry no., %3 - incoming document name, %4 - incoming document extension', Locked = true;
         CannotGetAuthorityURLFromKeyVaultErr: Label 'Cannot get Authority URL from Azure Key Vault using key %1', Locked = true;
         CannotGetClientIdFromKeyVaultErr: Label 'Cannot get Client ID from Azure Key Vault using key %1', Locked = true;
-        CannotGetClientSecretFromKeyVaultErr: Label 'Cannot get Client Secret from Azure Key Vault using key %1', Locked = true;
+        CannotGetCertFromKeyVaultErr: Label 'Cannot get certificate from Azure Key Vault using key %1', Locked = true;
         CannotGetResourceURLFromKeyVaultErr: Label 'Cannot get Resource URL from Azure Key Vault using key %1', Locked = true;
         CannotGetEndpointTextFromKeyVaultErr: Label 'Cannot get Endpoint for text from Azure Key Vault using key %1 ', Locked = true;
         CannotGetEndpointBase64FromKeyVaultErr: Label 'Cannot get Endpoint for base64 from Azure Key Vault using key %1 ', Locked = true;
@@ -53,9 +53,9 @@ codeunit 6205 "Transaction Storage ABS"
         LargeFileFoundErr: Label '%1 file(s) with size more than 100 MB were not exported.', Locked = true;
         AzFunctionResponseErr: Label 'Azure Function response has error or http status code is not 200. HttpStatusCode: %1. ResponseError: %2. ReasonPhrase: %3.', Locked = true;
         AzFunctionClientIdKeyTok: Label 'TransactionStorage-AzFuncClientId', Locked = true;
-        AzFuncClientSecretKeyTok: Label 'TransactionStorage-AzFuncClientSecret', Locked = true;
+        AzFuncCertificateNameTok: Label 'TransactionStorage-AzFuncCertificateName', Locked = true;
         AzFuncAuthURLKeyTok: Label 'TransactionStorage-AzFuncAuthUrl', Locked = true;
-        AzFuncResourceURLKeyTok: Label 'TransactionStorage-AzFuncResourceUrl', Locked = true;
+        AzFuncResourceURLKeyTok: Label 'TransactionStorage-AzFuncScope', Locked = true;
         AzFuncEndpointTextKeyTok: Label 'TransactionStorage-AzFuncEndpointText', Locked = true;
         AzFuncEndpointBase64KeyTok: Label 'TransactionStorage-AzFuncEndpointBase64', Locked = true;
 
@@ -68,18 +68,13 @@ codeunit 6205 "Transaction Storage ABS"
         ExportLog: JsonObject;
         CurrentDate: Date;
         ClientID, ResourceURL, AuthURL, EndpointText, EndpointBase64 : Text;
-        ClientSecret: SecretText;
+        Cert: SecretText;
     begin
-        GetAzFunctionSecrets(ClientID, ClientSecret, AuthURL, ResourceURL, EndpointText, EndpointBase64);
-#if not CLEAN24
-#pragma warning disable AL0432
-        AzureFunctionsAuthForJson := AzureFunctionsAuthentication.CreateOAuth2(EndpointText, '', ClientID, ClientSecret.Unwrap(), AuthURL, '', ResourceURL);
-        AzureFunctionsAuthForDoc := AzureFunctionsAuthentication.CreateOAuth2(EndpointBase64, '', ClientID, ClientSecret.Unwrap(), AuthURL, '', ResourceURL);
-#pragma warning restore AL0432
-#else
-        AzureFunctionsAuthForJson := AzureFunctionsAuthentication.CreateOAuth2(EndpointText, '', ClientID, ClientSecret, AuthURL, '', ResourceURL);
-        AzureFunctionsAuthForDoc := AzureFunctionsAuthentication.CreateOAuth2(EndpointBase64, '', ClientID, ClientSecret, AuthURL, '', ResourceURL);
-#endif
+        GetAzFunctionSecrets(ClientID, Cert, AuthURL, ResourceURL, EndpointText, EndpointBase64);
+
+        AzureFunctionsAuthForJson := AzureFunctionsAuthentication.CreateOAuth2WithCert(EndpointText, '', ClientID, Cert, AuthURL, '', ResourceURL);
+        AzureFunctionsAuthForDoc := AzureFunctionsAuthentication.CreateOAuth2WithCert(EndpointBase64, '', ClientID, Cert, AuthURL, '', ResourceURL);
+
         CurrentDate := Today();
         WriteJsonBlobsToABS(DataJsonArrays, AzureFunctionsAuthForJson, CurrentDate, ExportLog);
         WriteIncomingDocumentsToABS(IncomingDocs, AzureFunctionsAuthForDoc, CurrentDate, ExportLog);
@@ -292,18 +287,23 @@ codeunit 6205 "Transaction Storage ABS"
     end;
 
     [NonDebuggable]
-    local procedure GetAzFunctionSecrets(var ClientID: Text; var ClientSecret: SecretText; var AuthURL: Text; var ResourceURL: Text; var EndpointForText: Text; var EndpointForBase64: Text)
+    local procedure GetAzFunctionSecrets(var ClientID: Text; var Certificate: SecretText; var AuthURL: Text; var ResourceURL: Text; var EndpointForText: Text; var EndpointForBase64: Text)
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
+        CertificateName: Text;
     begin
         if not AzureKeyVault.GetAzureKeyVaultSecret(AzFunctionClientIdKeyTok, ClientID) then begin
             FeatureTelemetry.LogError('0000LX9', TransactionStorageTok, '', StrSubstNo(CannotGetClientIdFromKeyVaultErr, AzFunctionClientIdKeyTok));
             Error(CannotGetClientIdFromKeyVaultErr, AzFunctionClientIdKeyTok);
         end;
 
-        if not AzureKeyVault.GetAzureKeyVaultSecret(AzFuncClientSecretKeyTok, ClientSecret) then begin
-            FeatureTelemetry.LogError('0000LXA', TransactionStorageTok, '', StrSubstNo(CannotGetClientSecretFromKeyVaultErr, AzFuncClientSecretKeyTok));
-            Error(CannotGetClientSecretFromKeyVaultErr, AzFuncClientSecretKeyTok);
+        if not AzureKeyVault.GetAzureKeyVaultSecret(AzFuncCertificateNameTok, CertificateName) then begin
+            FeatureTelemetry.LogError('0000LXA', TransactionStorageTok, '', StrSubstNo(CannotGetCertFromKeyVaultErr, AzFuncCertificateNameTok));
+            Error(CannotGetCertFromKeyVaultErr, AzFuncCertificateNameTok);
+        end;
+        if not AzureKeyVault.GetAzureKeyVaultCertificate(CertificateName, Certificate) then begin
+            FeatureTelemetry.LogError('0000MZM', TransactionStorageTok, '', StrSubstNo(CannotGetCertFromKeyVaultErr, AzFuncCertificateNameTok));
+            Error(CannotGetCertFromKeyVaultErr, AzFuncCertificateNameTok);
         end;
 
         if not AzureKeyVault.GetAzureKeyVaultSecret(AzFuncAuthURLKeyTok, AuthURL) then begin

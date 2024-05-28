@@ -9,6 +9,9 @@ enum 4705 "VAT Group Auth Type Saas"
     value(0; WebServiceAccessKey)
     {
         Caption = 'Web Service Access Key';
+        ObsoleteState = Pending;
+        ObsoleteReason = 'OAuth2 is the only authentication option for making a Business Central API call.';
+        ObsoleteTag = '25.0';
     }
     value(1; OAuth2)
     {

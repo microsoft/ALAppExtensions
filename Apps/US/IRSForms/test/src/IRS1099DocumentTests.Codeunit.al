@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Purchases.Document;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Purchases.Payables;
 
 codeunit 148010 "IRS 1099 Document Tests"
@@ -541,6 +542,72 @@ codeunit 148010 "IRS 1099 Document Tests"
         IRS1099FormDocLine.TestField("Calculated Amount", TempIRS1099VendFormBoxBuffer.Amount);
         // [THEN] There is only one form document line for MISC-01 and "X"
         Assert.RecordCount(IRS1099FormDocLine, 1);
+
+#if not CLEAN25
+        UnbindSubscription(IRSFormsEnableFeature);
+#endif
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure ValidateNotInsertedGenJnlLinePostingDateWithLineNo()
+    var
+        GenJnlLine: Record "Gen. Journal Line";
+#if not CLEAN25
+#pragma warning disable AL0432
+        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
+#pragma warning restore AL0432
+#endif
+        PeriodNo: Code[20];
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 536496] It is possible to validate the posting date in the not inserted general journal line with line no. already specified
+
+        Initialize();
+#if not CLEAN25
+        BindSubscription(IRSFormsEnableFeature);
+#endif
+
+        // [GIVEN] "IRS Reporting Period" = "X" with "Starting Date" = work date
+        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        // [GIVEN] "Gen. Journal Line" with "Document Type" = Invoice and "Line No." = 1
+        GenJnlLine."Document Type" := GenJnlLine."Document Type"::Invoice;
+        GenJnlLine."Line No." := 1;
+        // [WHEN] Validate posting date with work date
+        GenJnlLine.Validate("Posting Date", WorkDate());
+        // [THEN] The IRS 1099 Reporting Period is "X"
+        GenJnlLine.TestField("IRS 1099 Reporting Period", PeriodNo);
+
+#if not CLEAN25
+        UnbindSubscription(IRSFormsEnableFeature);
+#endif
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure ValidateNotInsertedGenJnlLineAmountWithLineNo()
+    var
+        GenJnlLine: Record "Gen. Journal Line";
+#if not CLEAN25
+#pragma warning disable AL0432
+        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
+#pragma warning restore AL0432
+#endif
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 536496] It is possible to validate the amount in the not inserted general journal line with line no. already specified
+
+        Initialize();
+#if not CLEAN25
+        BindSubscription(IRSFormsEnableFeature);
+#endif
+
+        // [GIVEN] "Gen. Journal Line" with "Line No." = 1
+        GenJnlLine."Line No." := 1;
+        // [WHEN] Validate Amount field with 100
+        GenJnlLine.Validate(Amount, 100);
+        // [THEN] The IRS 1099 Reporting Amount is 100
+        GenJnlLine.TestField("IRS 1099 Reporting Amount", 100);
 
 #if not CLEAN25
         UnbindSubscription(IRSFormsEnableFeature);

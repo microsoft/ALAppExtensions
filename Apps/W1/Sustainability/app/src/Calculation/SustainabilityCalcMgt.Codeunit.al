@@ -100,6 +100,12 @@ codeunit 6218 "Sustainability Calc. Mgt."
         GLEntry.SetFilter("Global Dimension 2 Code", SustainAccountCategory."Global Dimension 2 Filter");
         if (FromDate <> 0D) or (ToDate <> 0D) then
             GLEntry.SetFilter("Posting Date", StrSubstNo(FromToFilterLbl, FromDate, ToDate));
+        OnAfterFilterGLEntry(SustainAccountCategory, FromDate, ToDate, GLEntry);
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterFilterGLEntry(SustainAccountCategory: Record "Sustain. Account Category"; FromDate: Date; ToDate: Date; var GLEntry: Record "G/L Entry")
+    begin
     end;
 
     [IntegrationEvent(false, false)]

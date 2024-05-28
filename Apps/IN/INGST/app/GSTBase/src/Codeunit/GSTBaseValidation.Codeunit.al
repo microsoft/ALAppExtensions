@@ -196,6 +196,8 @@ codeunit 18001 "GST Base Validation"
             SignFactor := Getsign(DocTypeEnum, TransTypeEnum);
         end;
 
+        OnAfterUpdateGSTLedgerEntrySignFactor(Rec, SignFactor, DocTypeEnum, TransTypeEnum);
+
         if Rec."Transaction Type" = Rec."Transaction Type"::Sales then begin
             Rec."GST Base Amount" := (Rec."GST Base Amount") * SignFactor;
             Rec."GST Amount" := (Rec."GST Amount") * SignFactor;
@@ -294,6 +296,8 @@ codeunit 18001 "GST Base Validation"
             SignFactor := Getsign(DocTypeEnum, TransTypeEnum);
         end;
 
+        OnAfterUpdateDetailedGSTLedgerEntrySignFactor(Rec, SignFactor, DocTypeEnum, TransTypeEnum);
+
         if Rec."Transaction Type" = Rec."Transaction Type"::Sales then begin
             Rec."GST Base Amount" := (Rec."GST Base Amount") * SignFactor;
             Rec."GST Amount" := (Rec."GST Amount") * SignFactor;
@@ -320,6 +324,8 @@ codeunit 18001 "GST Base Validation"
         Rec."Amount Loaded on Item" := Abs(Rec."Amount Loaded on Item");
         if (Rec."Amount Loaded on Item" <> Rec."GST Amount") and (Rec."Amount Loaded on Item" <> 0) and (Rec."GST Credit" = Rec."GST Credit"::"Non-Availment") then
             Rec."Amount Loaded on Item" := Rec."GST Amount";
+
+        OnAfterUpdateDetailedGstLedgerEntryAmountsField(Rec, SignFactor);
 
         if (Rec."Transaction Type" = Rec."Transaction Type"::Sales) and (Rec."GST Place of Supply" = Rec."GST Place of Supply"::" ") then
             Rec."GST Place of Supply" := SalesReceivablesSetup."GST Dependency Type";
@@ -1421,4 +1427,20 @@ codeunit 18001 "GST Base Validation"
     local procedure OnAfterUpdateDetailedGstLedgerEntryOnafterInsertEventOnBeforeModify(var DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; GSTRegistrationNos: Record "GST Registration Nos."; var DetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info")
     begin
     end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateDetailedGstLedgerEntryAmountsField(var DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; SignFactor: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateDetailedGSTLedgerEntrySignFactor(var DetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; var SignFactor: Integer; DocTypeEnum: Enum Microsoft.Finance.GST.Base."Document Type Enum"; TransTypeEnum: Enum Microsoft.Finance.GST.Base."Transaction Type Enum")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateGSTLedgerEntrySignFactor(var GSTLedgerEntry: Record "GST Ledger Entry"; var SignFactor: Integer; DocTypeEnum: Enum Microsoft.Finance.GST.Base."Document Type Enum"; TransTypeEnum: Enum Microsoft.Finance.GST.Base."Transaction Type Enum")
+    begin
+    end;
+
 }

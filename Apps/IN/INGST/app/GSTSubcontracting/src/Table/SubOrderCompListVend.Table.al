@@ -470,7 +470,7 @@ table 18478 "Sub Order Comp. List Vend"
         SubOrderCompListVend.SetRange("Document Line No.", PurchLine."Line No.");
         SubOrderCompListVend.FindSet();
         repeat
-            SubOrderCompListVend.Validate("Qty. to Consume", (PurchLine."Qty. to Receive" * SubOrderCompListVend."Quantity per" * SubOrderCompListVend."Qty. per Unit of Measure"));
+            SubOrderCompListVend.Validate("Qty. to Consume", PurchLine.GetQtytoConsumeForSubOrderCompListVend(SubOrderCompListVend, PurchLine."Qty. to Receive"));
             SubOrderCompListVend.Validate("Qty. to Return (C.E.)", (PurchLine."Qty. to Reject (C.E.)" * SubOrderCompListVend."Quantity per"));
             SubOrderCompListVend.Validate("Qty. To Return (V.E.)", (SubOrderCompListVend."Quantity per" * PurchLine."Qty. to Reject (V.E.)"));
 
