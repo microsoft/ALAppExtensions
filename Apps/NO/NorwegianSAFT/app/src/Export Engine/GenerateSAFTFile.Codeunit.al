@@ -732,8 +732,8 @@ codeunit 10673 "Generate SAF-T File"
                     SAFTXMLHelper.FinalizeXMLNode();
                 ExportGLEntryTransactionInfo(GLEntry, CurrentTransactionID);
                 PrevTransactionID := GetSAFTTransactionIDFromGLEntry(GLEntry);
-                GetFCYData(CurrencyCode, ExchangeRate, EntryAmount, EntryAmountLCY, SAFTExportHeader, GLEntry);
             end;
+            GetFCYData(CurrencyCode, ExchangeRate, EntryAmount, EntryAmountLCY, SAFTExportHeader, GLEntry);
             SAFTXMLHelper.AddNewXMLNode('Line', '');
             SAFTXMLHelper.AppendXMLNode('RecordID', format(GLEntry."Entry No."));
             SAFTXMLHelper.AppendXMLNode('AccountID', GLEntry."G/L Account No.");
