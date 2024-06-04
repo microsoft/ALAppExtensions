@@ -56,8 +56,9 @@ codeunit 40125 "GP Populate Combined Tables"
         GPAccount: Record "GP Account";
         AccountDescription: Text;
     begin
-        GPGL00100.SetRange(ACCTTYPE, 1);
-        // Only want to bring in Posting Accounts, no unit accounts allowed
+        GPGL00100.SetFilter(ACCTTYPE, '1|2');
+        // Only Posting and Unit accounts
+
         if not GPGL00100.FindSet() then
             exit;
 
@@ -73,7 +74,7 @@ codeunit 40125 "GP Populate Combined Tables"
             if AccountDescription = '' then
                 AccountDescription := GPGL00100.ACTDESCR;
 
-            CLEAR(GPAccount);
+            Clear(GPAccount);
 #pragma warning disable AA0139
             GPAccount.AcctNum := GPGL00100.MNACSGMT.Trim();
 #pragma warning restore AA0139
@@ -138,7 +139,6 @@ codeunit 40125 "GP Populate Combined Tables"
         CurrentKey := 1;
         GPGL10110.SetFilter(PERDBLNC, '<>0');
         GPGL10110.SetFilter(PERIODID, '>0');
-        GPGL10110.SetRange(GL00100ACCTYPE1Exist, true);
         GPGL10110.SetCurrentKey(YEAR1, PERIODID, ACTNUMBR_1, ACTNUMBR_2, ACTNUMBR_3, ACTNUMBR_4, ACTNUMBR_5, ACTNUMBR_6, ACTNUMBR_7, ACTNUMBR_8);
         if GPGL10110.FindSet() then
             repeat
@@ -201,7 +201,6 @@ codeunit 40125 "GP Populate Combined Tables"
 
         GPGL10111.SetFilter(PERDBLNC, '<>0');
         GPGL10111.SetFilter(PERIODID, '>0');
-        GPGL10111.SetRange(GL00100ACCTYPE1Exist, true);
         GPGL10111.SetCurrentKey(YEAR1, PERIODID, ACTNUMBR_1, ACTNUMBR_2, ACTNUMBR_3, ACTNUMBR_4, ACTNUMBR_5, ACTNUMBR_6, ACTNUMBR_7, ACTNUMBR_8);
         if GPGL10111.FindSet() then
             repeat
