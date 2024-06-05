@@ -112,6 +112,7 @@ codeunit 4037 "Helper Functions"
         CloudMigrationTok: Label 'CloudMigration', Locked = true;
         GeneralTemplateNameTxt: Label 'GENERAL', Locked = true;
         NotAllJournalLinesPostedMsg: Label 'Not all journal lines were posted. Number of unposted lines - %1.', Comment = '%1 Number of unposted lines';
+        MigrationLogAreaBatchPostingTxt: Label 'Batch Posting', Locked = true;
 
     procedure GetTextFromJToken(JToken: JsonToken; Path: Text): Text
     var
@@ -1195,15 +1196,6 @@ codeunit 4037 "Helper Functions"
             TotalStatisticalBatchCount := GetStatisticalBatchCountWithUnpostedLinesForCompany(CompanyNameTxt);
         end;
 
-        if not GPCompanyAdditionalSettings."Skip Posting Customer Batches" then
-            TotalGLBatchCount += GetGLBatchCountWithUnpostedLinesForCompany(CompanyNameTxt, GeneralTemplateNameTxt, CustomerBatchNameTxt);
-
-        if not GPCompanyAdditionalSettings."Skip Posting Vendor Batches" then
-            TotalGLBatchCount += GetGLBatchCountWithUnpostedLinesForCompany(CompanyNameTxt, GeneralTemplateNameTxt, VendorBatchNameTxt);
-
-        if not GPCompanyAdditionalSettings."Skip Posting Bank Batches" then
-            TotalGLBatchCount += GetGLBatchCountWithUnpostedLinesForCompany(CompanyNameTxt, GeneralTemplateNameTxt, BankBatchNameTxt);
-
         if not GPCompanyAdditionalSettings."Skip Posting Item Batches" then
             TotalItemBatchCount := GetItemBatchCountWithUnpostedLinesForCompany(CompanyNameTxt);
     end;
@@ -1241,7 +1233,7 @@ codeunit 4037 "Helper Functions"
                     ItemJournalLine.SetRange("Journal Batch Name", ItemJournalBatch.Name);
                     ItemJournalLine.SetFilter("Item No.", '<>%1', '');
                     if not ItemJournalLine.IsEmpty() then
-                        PostItemBatch(ItemJournalBatch);
+                        SafePostItemBatch(ItemJournalBatch);
                 until ItemJournalBatch.Next() = 0;
 
         // Account batches
@@ -1260,7 +1252,7 @@ codeunit 4037 "Helper Functions"
                         GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
                         GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
                         if not GenJournalLine.IsEmpty() then
-                            PostGLBatch(CopyStr(JournalBatchName, 1, 10));
+                            SafePostGLBatch(CopyStr(JournalBatchName, 1, 10));
                     end;
                 until GenJournalBatch.Next() = 0;
 
@@ -1270,7 +1262,7 @@ codeunit 4037 "Helper Functions"
                 repeat
                     StatisticalAccJournalLine.SetRange("Journal Batch Name", StatisticalAccJournalBatch.Name);
                     if not StatisticalAccJournalLine.IsEmpty() then
-                        PostStatisticalAccBatch(StatisticalAccJournalBatch.Name);
+                        SafePostStatisticalAccBatch(StatisticalAccJournalBatch.Name);
                 until StatisticalAccJournalBatch.Next() = 0;
         end;
 
@@ -1283,7 +1275,7 @@ codeunit 4037 "Helper Functions"
             GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
             GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
             if not GenJournalLine.IsEmpty() then
-                PostGLBatch(CopyStr(JournalBatchName, 1, 10));
+                SafePostGLBatch(CopyStr(JournalBatchName, 1, 10));
         end;
 
         // Vendor batches
@@ -1295,7 +1287,7 @@ codeunit 4037 "Helper Functions"
             GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
             GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
             if not GenJournalLine.IsEmpty() then
-                PostGLBatch(CopyStr(JournalBatchName, 1, 10));
+                SafePostGLBatch(CopyStr(JournalBatchName, 1, 10));
         end;
 
         // Bank batches
@@ -1307,7 +1299,7 @@ codeunit 4037 "Helper Functions"
             GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
             GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
             if not GenJournalLine.IsEmpty() then
-                PostGLBatch(CopyStr(JournalBatchName, 1, 10));
+                SafePostGLBatch(CopyStr(JournalBatchName, 1, 10));
         end;
 
         // Remove posted batches
@@ -1316,6 +1308,7 @@ codeunit 4037 "Helper Functions"
         Session.LogMessage('00007GK', StrSubstNo(FinishedTelemetryTxt, DurationAsInt), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
     end;
 
+    [Obsolete('This procedure will be soon removed.', '26.0')]
     procedure PostGLBatch(JournalBatchName: Code[10])
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -1342,6 +1335,21 @@ codeunit 4037 "Helper Functions"
                 codeunit.Run(codeunit::"Gen. Jnl.-Post Batch", GenJournalLine);
     end;
 
+    local procedure SafePostGLBatch(JournalBatchName: Code[10])
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+    begin
+        GenJournalLine.SetRange("Journal Template Name", GeneralTemplateNameTxt);
+        GenJournalLine.SetRange("Journal Batch Name", JournalBatchName);
+        if GenJournalLine.FindFirst() then begin
+            // Commit is required to safely handle errors that may occur during posting.
+            Commit();
+            if not Codeunit.Run(Codeunit::"Gen. Jnl.-Post Batch", GenJournalLine) then
+                LogWarningAndClearLastError(JournalBatchName);
+        end;
+    end;
+
+    [Obsolete('This procedure will be soon removed.', '26.0')]
     procedure PostStatisticalAccBatch(JournalBatchName: Code[10])
     var
         StatisticalAccJournalLine: Record "Statistical Acc. Journal Line";
@@ -1351,14 +1359,41 @@ codeunit 4037 "Helper Functions"
             Codeunit.Run(Codeunit::"Stat. Acc. Post. Batch", StatisticalAccJournalLine);
     end;
 
-    local procedure PostItemBatch(ItemJournalBatch: Record "Item Journal Batch")
+    local procedure SafePostStatisticalAccBatch(JournalBatchName: Code[10])
+    var
+        StatisticalAccJournalLine: Record "Statistical Acc. Journal Line";
+    begin
+        StatisticalAccJournalLine.SetRange("Journal Batch Name", JournalBatchName);
+        if StatisticalAccJournalLine.FindFirst() then begin
+            // Commit is required to safely handle errors that may occur during posting.
+            Commit();
+            if not Codeunit.Run(Codeunit::"Stat. Acc. Post. Batch", StatisticalAccJournalLine) then
+                LogWarningAndClearLastError(JournalBatchName);
+        end;
+    end;
+
+    local procedure SafePostItemBatch(ItemJournalBatch: Record "Item Journal Batch")
     var
         ItemJournalLine: Record "Item Journal Line";
     begin
         ItemJournalLine.SetRange("Journal Template Name", ItemJournalBatch."Journal Template Name");
         ItemJournalLine.SetRange("Journal Batch Name", ItemJournalBatch.Name);
-        if ItemJournalLine.FindFirst() then
-            Codeunit.Run(Codeunit::"Item Jnl.-Post Batch", ItemJournalLine);
+        if ItemJournalLine.FindFirst() then begin
+            // Commit is required to safely handle errors that may occur during posting.
+            Commit();
+            if not Codeunit.Run(Codeunit::"Item Jnl.-Post Batch", ItemJournalLine) then
+                LogWarningAndClearLastError(ItemJournalBatch.Name);
+        end;
+    end;
+
+    internal procedure LogWarningAndClearLastError(ContextValue: Text[50])
+    var
+        GPMigrationWarnings: Record "GP Migration Warnings";
+        WarningText: Text[500];
+    begin
+        WarningText := CopyStr(GetLastErrorText(false), 1, MaxStrLen(WarningText));
+        GPMigrationWarnings.InsertWarning(MigrationLogAreaBatchPostingTxt, ContextValue, WarningText);
+        ClearLastError();
     end;
 
     local procedure GLBatchHasLines(TemplateName: Code[10]; BatchName: Code[10]; AccountType: Enum "Gen. Journal Account Type"): Boolean
