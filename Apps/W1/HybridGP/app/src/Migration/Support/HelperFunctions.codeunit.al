@@ -1196,6 +1196,15 @@ codeunit 4037 "Helper Functions"
             TotalStatisticalBatchCount := GetStatisticalBatchCountWithUnpostedLinesForCompany(CompanyNameTxt);
         end;
 
+        if not GPCompanyAdditionalSettings."Skip Posting Customer Batches" then
+            TotalGLBatchCount += GetGLBatchCountWithUnpostedLinesForCompany(CompanyNameTxt, GeneralTemplateNameTxt, CustomerBatchNameTxt);
+
+        if not GPCompanyAdditionalSettings."Skip Posting Vendor Batches" then
+            TotalGLBatchCount += GetGLBatchCountWithUnpostedLinesForCompany(CompanyNameTxt, GeneralTemplateNameTxt, VendorBatchNameTxt);
+
+        if not GPCompanyAdditionalSettings."Skip Posting Bank Batches" then
+            TotalGLBatchCount += GetGLBatchCountWithUnpostedLinesForCompany(CompanyNameTxt, GeneralTemplateNameTxt, BankBatchNameTxt);
+
         if not GPCompanyAdditionalSettings."Skip Posting Item Batches" then
             TotalItemBatchCount := GetItemBatchCountWithUnpostedLinesForCompany(CompanyNameTxt);
     end;
