@@ -180,8 +180,10 @@ codeunit 30166 "Shpfy Process Order"
         ShopifyOrderLine: Record "Shpfy Order Line";
         OrderShippingCharges: Record "Shpfy Order Shipping Charges";
         ShopLocation: Record "Shpfy Shop Location";
+        ShipmentMethodMapping: Record "Shpfy Shipment Method Mapping";
         SuppressAsmWarning: Codeunit "Shpfy Suppress Asm Warning";
         IsHandled: Boolean;
+        ShipmentChargeType: Boolean;
         ShopfyOrderNoLbl: Label 'Shopify Order No.: %1', Comment = '%1 = Order No.';
     begin
         BindSubscription(SuppressAsmWarning);
@@ -244,7 +246,16 @@ codeunit 30166 "Shpfy Process Order"
         OrderShippingCharges.SetRange("Shopify Order Id", ShopifyOrderHeader."Shopify Order Id");
         OrderShippingCharges.SetFilter(Amount, '>0');
         if OrderShippingCharges.FindSet() then begin
-            ShopifyShop.TestField("Shipping Charges Account");
+
+            if ShipmentMethodMapping.Get(ShopifyShop.Code, OrderShippingCharges.Title) then
+                if ShipmentMethodMapping."Shipping Charges Type" <> ShipmentMethodMapping."Shipping Charges Type"::" " then begin
+                    ShipmentMethodMapping.TestField("Shipping Charges No.");
+                    ShipmentChargeType := true;
+                end;
+
+            if not ShipmentChargeType then
+                ShopifyShop.TestField("Shipping Charges Account");
+
             repeat
                 IsHandled := false;
                 OrderEvents.OnBeforeCreateShippingCostSalesLine(ShopifyOrderHeader, OrderShippingCharges, SalesHeader, SalesLine, IsHandled);
@@ -256,8 +267,16 @@ codeunit 30166 "Shpfy Process Order"
                     SalesLine.Validate("Line No.", GetNextLineNo(SalesHeader));
                     SalesLine.Insert(true);
 
-                    SalesLine.Validate(Type, SalesLine.Type::"G/L Account");
-                    SalesLine.Validate("No.", ShopifyShop."Shipping Charges Account");
+                    if ShipmentChargeType then begin
+                        SalesLine.Validate(Type, ShipmentMethodMapping."Shipping Charges Type");
+                        SalesLine.Validate("No.", ShipmentMethodMapping."Shipping Charges No.");
+                    end else begin
+                        SalesLine.Validate(Type, SalesLine.Type::"G/L Account");
+                        SalesLine.Validate("No.", ShopifyShop."Shipping Charges Account");
+                    end;
+
+                    SalesLine.Validate("Shipping Agent Code", ShipmentMethodMapping."Shipping Agent Code");
+                    SalesLine.Validate("Shipping Agent Service Code", ShipmentMethodMapping."Shipping Agent Service Code");
                     SalesLine.Validate(Quantity, 1);
                     SalesLine.Validate(Description, OrderShippingCharges.Title);
                     SalesLine.Validate("Unit Price", OrderShippingCharges.Amount);
