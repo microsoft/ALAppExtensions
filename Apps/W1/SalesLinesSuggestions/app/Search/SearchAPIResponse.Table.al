@@ -10,6 +10,7 @@ table 7276 "Search API Response"
     TableType = Temporary;
     InherentEntitlements = X;
     InherentPermissions = X;
+    Caption = 'Search API Response';
 
     fields
     {

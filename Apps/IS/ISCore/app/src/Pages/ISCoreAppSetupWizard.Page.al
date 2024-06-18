@@ -293,6 +293,7 @@ page 14604 "IS Core App Setup Wizard"
         OnBeforeFinishAction();
         SetupFinished := true;
         EnableISCoreApp.TransferData();
+        EnableISCoreApp.UpdateDocumentRetentionPeriod();
 
         ISCoreAppSetup.Get();
         ISCoreAppSetup.Enabled := true;

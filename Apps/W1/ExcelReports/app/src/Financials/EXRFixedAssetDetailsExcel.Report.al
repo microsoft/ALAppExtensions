@@ -26,6 +26,7 @@ report 4411 "EXR Fixed Asset Details Excel"
             column(AssetDescription; Description) { IncludeCaption = true; }
             column(FixedAssetClassCode; "FA Class Code") { IncludeCaption = true; }
             column(FixedAssetSubclassCode; "FA Subclass Code") { IncludeCaption = true; }
+            column(FixedAssetLocation; "FA Location Code") { IncludeCaption = true; }
             column(BudgetedAsset; "Budgeted Asset") { IncludeCaption = true; }
             dataitem(FixedAssetLedgerEntry; "FA Ledger Entry")
             {

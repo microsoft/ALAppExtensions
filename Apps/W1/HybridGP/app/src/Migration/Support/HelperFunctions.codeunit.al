@@ -1317,7 +1317,7 @@ codeunit 4037 "Helper Functions"
         Session.LogMessage('00007GK', StrSubstNo(FinishedTelemetryTxt, DurationAsInt), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', GetTelemetryCategory());
     end;
 
-    [Obsolete('This procedure will be soon removed.', '26.0')]
+    [Obsolete('This procedure will be soon removed.', '25.0')]
     procedure PostGLBatch(JournalBatchName: Code[10])
     var
         GenJournalLine: Record "Gen. Journal Line";
@@ -1358,7 +1358,7 @@ codeunit 4037 "Helper Functions"
         end;
     end;
 
-    [Obsolete('This procedure will be soon removed.', '26.0')]
+    [Obsolete('This procedure will be soon removed.', '25.0')]
     procedure PostStatisticalAccBatch(JournalBatchName: Code[10])
     var
         StatisticalAccJournalLine: Record "Statistical Acc. Journal Line";

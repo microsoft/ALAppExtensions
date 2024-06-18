@@ -8,7 +8,6 @@ using Microsoft.eServices.EDocument.OrderMatch;
 using System.Environment;
 using System.Telemetry;
 using System.Upgrade;
-using System.Globalization;
 
 codeunit 6163 "E-Doc. PO Copilot Matching"
 {
@@ -163,9 +162,6 @@ codeunit 6163 "E-Doc. PO Copilot Matching"
         if not EnvironmentInformation.IsSaaSInfrastructure() then
             exit(false);
 
-        if not IsSupportedLanguage() then
-            exit(false);
-
         exit(true);
     end;
 
@@ -203,20 +199,6 @@ codeunit 6163 "E-Doc. PO Copilot Matching"
         NewLineChar := 10;
         Prompt := Prompt.Replace('\n', NewLineChar);
         exit(Prompt);
-    end;
-
-    local procedure IsSupportedLanguage(): Boolean
-    var
-        LanguageSelection: Record "Language Selection";
-        UserSessionSettings: SessionSettings;
-    begin
-        UserSessionSettings.Init();
-        LanguageSelection.SetLoadFields("Language Tag");
-        LanguageSelection.SetRange("Language ID", UserSessionSettings.LanguageId());
-        if LanguageSelection.FindFirst() then
-            if LanguageSelection."Language Tag".StartsWith('pt-') then
-                exit(false);
-        exit(true);
     end;
 
     local procedure GroundCopilotMatching(var TempEDocumentImportedLine: Record "E-Doc. Imported Line" temporary; var TempPurchaseLine: Record "Purchase Line" temporary; var TempAIProposalBuffer: Record "E-Doc. PO Match Prop. Buffer" temporary)

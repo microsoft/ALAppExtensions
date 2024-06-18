@@ -104,6 +104,7 @@ codeunit 7237 "Master Data Mgt. Subscribers"
     [EventSubscriber(ObjectType::Report, Report::"Copy Company", 'OnAfterCreatedNewCompanyByCopyCompany', '', false, false)]
     local procedure CleanupSetupAfterCreatedNewCompanyByCopyCompany(NewCompanyName: Text[30])
     var
+        MasterDataMgtSubscriber: Record "Master Data Mgt. Subscriber";
         MasterDataMgtCoupling: Record "Master Data Mgt. Coupling";
         MasterDataManagementSetup: Record "Master Data Management Setup";
     begin
@@ -111,6 +112,8 @@ codeunit 7237 "Master Data Mgt. Subscribers"
         MasterDataMgtCoupling.DeleteAll();
         MasterDataManagementSetup.ChangeCompany(NewCompanyName);
         MasterDataManagementSetup.DeleteAll();
+        MasterDataMgtSubscriber.ChangeCompany(NewCompanyName);
+        MasterDataMgtSubscriber.DeleteAll();
     end;
 
     internal procedure HandleOnFindingIfJobNeedsToBeRun(var Sender: Record "Job Queue Entry"; var Result: Boolean)

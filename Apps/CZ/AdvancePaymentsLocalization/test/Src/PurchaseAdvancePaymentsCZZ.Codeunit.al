@@ -675,6 +675,9 @@ codeunit 148108 "Purchase Advance Payments CZZ"
         // [SCENARIO] Link purchase advance letter with reverse charge to invoice
         Initialize();
 
+        // [GIVEN] Posting of VAT documents for reverse charge has been enabled
+        SetPostVATDocForReverseCharge(true);
+
         // [GIVEN] Purchase advance letter has been created
         // [GIVEN] Purchase advance letter line with reverse charge has been created
         CreatePurchAdvLetterWithReverseCharge(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ);
@@ -724,6 +727,8 @@ codeunit 148108 "Purchase Advance Payments CZZ"
         // [THEN] Purchase advance letter will be closed
         PurchAdvLetterHeaderCZZ.Get(PurchAdvLetterHeaderCZZ."No.");
         PurchAdvLetterHeaderCZZ.TestField(Status, PurchAdvLetterHeaderCZZ.Status::Closed);
+
+        SetPostVATDocForReverseCharge(false);
     end;
 
     [Test]
@@ -2320,6 +2325,9 @@ codeunit 148108 "Purchase Advance Payments CZZ"
         // [SCENARIO] Create purchase advance letter with two lines with different VAT rates and link to invoice with line which is the same as second line in advance letter and one VAT rate
         Initialize();
 
+        // [GIVEN] Posting of VAT documents for reverse charge has been enabled
+        SetPostVATDocForReverseCharge(true);
+
         // [GIVEN] Purchase advance letter has been created
         // [GIVEN] Purchase advance letter line with normal VAT has been created
         CreatePurchAdvLetter(PurchAdvLetterHeaderCZZ, PurchAdvLetterLineCZZ1);
@@ -2379,6 +2387,8 @@ codeunit 148108 "Purchase Advance Payments CZZ"
         VATEntry.SetRange("VAT Bus. Posting Group", VATEntry."VAT Bus. Posting Group");
         VATEntry.SetRange("VAT Prod. Posting Group", VATEntry."VAT Prod. Posting Group");
         Assert.RecordCount(VATEntry, VATEntryCount);
+
+        SetPostVATDocForReverseCharge(false);
     end;
 
     [Test]
@@ -2396,6 +2406,9 @@ codeunit 148108 "Purchase Advance Payments CZZ"
     begin
         // [SCENARIO] Create purchase advance letter with two lines with different VAT rates and link to invoice with line which has the higher amount as first line in advance letter and one VAT rate
         Initialize();
+
+        // [GIVEN] Posting of VAT documents for reverse charge has been enabled
+        SetPostVATDocForReverseCharge(true);
 
         // [GIVEN] Purchase advance letter has been created
         // [GIVEN] Purchase advance letter line with normal VAT has been created
@@ -2451,6 +2464,8 @@ codeunit 148108 "Purchase Advance Payments CZZ"
         purchAdvLetterEntryCZZ2.SetRange("VAT Prod. Posting Group", PurchAdvLetterLineCZZ2."VAT Prod. Posting Group");
         purchAdvLetterEntryCZZ2.SetRange("Entry Type", purchAdvLetterEntryCZZ2."Entry Type"::"VAT Usage");
         Assert.RecordIsNotEmpty(PurchAdvLetterEntryCZZ2);
+
+        SetPostVATDocForReverseCharge(false);
     end;
 
     [Test]
@@ -2468,6 +2483,9 @@ codeunit 148108 "Purchase Advance Payments CZZ"
     begin
         // [SCENARIO] Create purchase advance letter with two lines with different VAT rates and link to invoice with line which has the higher amount as second line in advance letter and one VAT rate
         Initialize();
+
+        // [GIVEN] Posting of VAT documents for reverse charge has been enabled
+        SetPostVATDocForReverseCharge(true);
 
         // [GIVEN] Purchase advance letter has been created
         // [GIVEN] Purchase advance letter line with normal VAT has been created
@@ -2523,6 +2541,8 @@ codeunit 148108 "Purchase Advance Payments CZZ"
         purchAdvLetterEntryCZZ2.SetRange("VAT Prod. Posting Group", PurchAdvLetterLineCZZ1."VAT Prod. Posting Group");
         purchAdvLetterEntryCZZ2.SetRange("Entry Type", purchAdvLetterEntryCZZ2."Entry Type"::"VAT Usage");
         Assert.RecordIsNotEmpty(PurchAdvLetterEntryCZZ2);
+
+        SetPostVATDocForReverseCharge(false);
     end;
 
     [Test]
@@ -2542,6 +2562,9 @@ codeunit 148108 "Purchase Advance Payments CZZ"
     begin
         // [SCENARIO] Create purchase advance letter with two lines with different VAT rates and link to invoice with two lines which have the lower amounts as lines in advance letter
         Initialize();
+
+        // [GIVEN] Posting of VAT documents for reverse charge has been enabled
+        SetPostVATDocForReverseCharge(true);
 
         // [GIVEN] Purchase advance letter has been created
         // [GIVEN] Purchase advance letter line with normal VAT has been created
@@ -2616,6 +2639,8 @@ codeunit 148108 "Purchase Advance Payments CZZ"
         VATEntry.CalcSums(Base, Amount);
         Assert.AreEqual(0, VATEntry.Base, 'The sum of base amount in VAT Entries must be zero.');
         Assert.AreEqual(0, VATEntry.Amount, 'The sum of VAT amount in VAT Entries must be zero.');
+
+        SetPostVATDocForReverseCharge(false);
     end;
 
     local procedure CreatePurchAdvLetterBase(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var PurchAdvLetterLineCZZ: Record "Purch. Adv. Letter Line CZZ"; VendorNo: Code[20]; CurrencyCode: Code[10]; VATPostingSetup: Record "VAT Posting Setup")
@@ -2842,6 +2867,12 @@ codeunit 148108 "Purchase Advance Payments CZZ"
     local procedure PostCashDocument(var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
     begin
         LibraryCashDocumentCZP.PostCashDocumentCZP(CashDocumentHeaderCZP);
+    end;
+
+    local procedure SetPostVATDocForReverseCharge(Value: Boolean)
+    begin
+        AdvanceLetterTemplateCZZ."Post VAT Doc. for Rev. Charge" := Value;
+        AdvanceLetterTemplateCZZ.Modify();
     end;
 
     local procedure FindNextVATPostingSetup(var VATPostingSetup: Record "VAT Posting Setup")

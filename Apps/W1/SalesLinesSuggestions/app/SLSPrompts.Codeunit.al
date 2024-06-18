@@ -47,6 +47,16 @@ codeunit 7276 "SLS Prompts"
     end;
 
     [NonDebuggable]
+    internal procedure GetSLSSearchItemsWithFiltersPrompt(): Text
+    var
+        BCSLSSearchItemsWithFiltersPrompt: Text;
+    begin
+        GetAzureKeyVaultSecret(BCSLSSearchItemsWithFiltersPrompt, 'BCSLSSearchItemsWithFiltersPrompt');
+
+        exit(BCSLSSearchItemsWithFiltersPrompt);
+    end;
+
+    [NonDebuggable]
     internal procedure GetSLSSearchItemPrompt(): Text
     var
         BCSLSSearchItemPrompt: Text;
@@ -69,5 +79,4 @@ codeunit 7276 "SLS Prompts"
     var
         ConstructingPromptFailedErr: label 'There was an error with sending the call to Copilot. Log a Business Central support request about this.', Comment = 'Copilot is a Microsoft service name and must not be translated';
         TelemetryConstructingPromptFailedErr: label 'There was an error with constructing the chat completion prompt from the Key Vault.', Locked = true;
-
 }

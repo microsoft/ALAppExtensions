@@ -245,16 +245,9 @@ page 31167 "Posted Cash Document List CZP"
     }
 
     trigger OnOpenPage()
-    var
-        CashDeskFilter: Text;
     begin
         CashDeskManagementCZP.CheckCashDesks();
-        CashDeskFilter := CashDeskManagementCZP.GetCashDesksFilter();
-
-        Rec.FilterGroup(2);
-        if CashDeskFilter <> '' then
-            Rec.SetFilter("Cash Desk No.", CashDeskFilter);
-        Rec.FilterGroup(0);
+        CashDeskManagementCZP.SetCashDeskFilter(Rec);
     end;
 
     var

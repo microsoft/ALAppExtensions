@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Calculation;
 
+using Microsoft.Finance.Deferral;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.Enums;
@@ -105,6 +106,18 @@ codeunit 31147 "Non-Deductible VAT CZL"
            (VATPostingSetup."Allow Non-Deductible VAT" <> VATPostingSetup."Allow Non-Deductible VAT"::"Do Not Allow")
         then
             Error(PurchaseSettlementOnlyErr);
+    end;
+
+    internal procedure GetGeneralPostingTypeFromDeferralDocType(DeferralDocType: Enum "Deferral Document Type") GeneralPostingType: Enum "General Posting Type"
+    begin
+        case DeferralDocType of
+            DeferralDocType::"G/L":
+                exit(GeneralPostingType::" ");
+            DeferralDocType::Purchase:
+                exit(GeneralPostingType::Purchase);
+            DeferralDocType::Sales:
+                exit(GeneralPostingType::Sale);
+        end;
     end;
 
     [IntegrationEvent(false, false)]

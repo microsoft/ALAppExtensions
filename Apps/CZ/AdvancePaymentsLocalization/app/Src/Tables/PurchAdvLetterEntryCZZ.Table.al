@@ -189,6 +189,12 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
             Caption = 'External Document No.';
             DataClassification = CustomerContent;
         }
+        field(80; "Auxiliary Entry"; Boolean)
+        {
+            Caption = 'Auxiliary Entry';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
         field(480; "Dimension Set ID"; Integer)
         {
             Caption = 'Dimension Set ID';
@@ -255,6 +261,7 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
     begin
         PurchAdvLetterEntryCZZ.SetRange("Document No.", PurchInvHeader."No.");
         PurchAdvLetterEntryCZZ.SetRange("Entry Type", PurchAdvLetterEntryCZZ."Entry Type"::"VAT Usage");
+        PurchAdvLetterEntryCZZ.SetRange("Auxiliary Entry", false);
         PurchAdvLetterEntryCZZ.SetRange(Cancelled, false);
         if PurchAdvLetterEntryCZZ.FindSet() then
             repeat

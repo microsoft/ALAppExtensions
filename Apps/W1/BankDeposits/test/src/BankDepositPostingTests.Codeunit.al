@@ -490,6 +490,62 @@ codeunit 139769 "Bank Deposit Posting Tests"
         Assert.AreEqual(-Amount, PostedBankDepositHeader."Total Deposit Lines", 'The total amount of the deposit should be the sum of the lines');
     end;
 
+    [Test]
+    [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
+    procedure NavigatePageOfAPostedBankDepositShowsRelatedEntries()
+    var
+        BankDepositHeader: Record "Bank Deposit Header";
+        GLAccount: Record "G/L Account";
+        Customer: Record Customer;
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalTemplate: Record "Gen. Journal Template";
+        GenJournalLine: Record "Gen. Journal Line";
+        BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+        BankDeposit: TestPage "Bank Deposit";
+        PostedBankDeposit: TestPage "Posted Bank Deposit";
+        Navigate: TestPage Navigate;
+        BankEntryFound, CustomerEntryFound : Boolean;
+        TableName: Text;
+    begin
+        // [SCENARIO 537831] Related entries are shown on the Navigate page of a posted bank deposit
+        Initialize();
+        // [GIVEN] A Posted Bank Deposit with a G/L Account and a Customer.
+        CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Type::"Bank Deposits");
+        CreateBankDepositHeaderWithBankAccount(BankDepositHeader, GenJournalBatch);
+        BankDepositHeader."Total Deposit Amount" := 1000;
+        BankDepositHeader.Modify();
+        BankDeposit.Trap();
+        BankDepositHeader.SetRecFilter();
+        Page.Run(Page::"Bank Deposit", BankDepositHeader);
+        LibraryERM.CreateGLAccount(GLAccount);
+        BankDeposit.Subform."Account Type".SetValue(GenJournalLine."Account Type"::"G/L Account");
+        BankDeposit.Subform."Account No.".SetValue(GLAccount."No.");
+        BankDeposit.Subform."Credit Amount".SetValue(-10);
+        BankDeposit.Subform.Next();
+        LibrarySales.CreateCustomer(Customer);
+        BankDeposit.Subform."Account Type".SetValue(GenJournalLine."Account Type"::Customer);
+        BankDeposit.Subform."Account No.".SetValue(Customer."No.");
+        BankDeposit.Subform."Credit Amount".SetValue(1010);
+        PostedBankDeposit.Trap();
+        BankDeposit.Post.Invoke();
+        // [WHEN] Navigate action is invoked from the posted bank deposit
+        Navigate.Trap();
+        PostedBankDeposit."&Navigate".Invoke();
+
+        repeat
+            TableName := Navigate."Table Name".Value();
+            case TableName of
+                BankAccountLedgerEntry.TableCaption():
+                    BankEntryFound := true;
+                CustLedgerEntry.TableCaption():
+                    CustomerEntryFound := true;
+            end;
+        until (not Navigate.Next());
+        // [THEN] The entries posted are found.
+        Assert.IsTrue(BankEntryFound, 'Bank Account Ledger Entry should be found');
+        Assert.IsTrue(CustomerEntryFound, 'Customer Ledger Entry should be found');
+    end;
 
     local procedure Initialize()
     var
