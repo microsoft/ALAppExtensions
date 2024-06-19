@@ -251,9 +251,6 @@ report 11757 "Documentation for VAT CZL"
                     }
                     trigger OnAfterGetRecord()
                     begin
-                        if "Original VAT Entry No. CZL" <> 0 then
-                            Base := CalcDeductibleVATBaseCZL();
-
                         VATEntrySubtotalAmt[1] += Base;
                         VATEntrySubtotalAmt[2] += Amount;
                         VATEntrySubtotalAmt[3] += "Original VAT Base CZL";
@@ -409,6 +406,9 @@ report 11757 "Documentation for VAT CZL"
                                 VATEntry.Base := VATEntry."Additional-Currency Base";
                                 VATEntry.Amount := VATEntry."Additional-Currency Amount";
                             end;
+
+                            if VATEntry."Original VAT Entry No. CZL" <> 0 then
+                                VATEntry.Base := VATEntry.CalcDeductibleVATBaseCZL();
 
                             if MergeByDocumentNo then begin
                                 "VAT Entry".SetRange("VAT Reporting Date", VATEntry."VAT Reporting Date");
@@ -567,11 +567,11 @@ report 11757 "Documentation for VAT CZL"
     begin
         if "VAT Posting Setup".GetFilters() <> '' then
             VATPostingSetupFilter := "VAT Posting Setup".TableCaption() + ': ' + "VAT Posting Setup".GetFilters();
-            if EndDateReq = 0D then
-                VATEntry.SetFilter("VAT Reporting Date", '%1..', StartDateReq)
-            else
-                VATEntry.SetRange("VAT Reporting Date", StartDateReq, EndDateReq);
-            VATDateFilter := VATEntry.GetFilter("VAT Reporting Date");
+        if EndDateReq = 0D then
+            VATEntry.SetFilter("VAT Reporting Date", '%1..', StartDateReq)
+        else
+            VATEntry.SetRange("VAT Reporting Date", StartDateReq, EndDateReq);
+        VATDateFilter := VATEntry.GetFilter("VAT Reporting Date");
     end;
 
     var

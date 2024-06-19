@@ -61,6 +61,10 @@ page 7276 "Sales Line AI Suggestions Sub"
                 {
                     ToolTip = 'Specifies the quantity of the suggested result.';
                 }
+                field("Unit of Measure Code"; Rec."Unit of Measure Code")
+                {
+                    ToolTip = 'Specifies the unit of measure code of the suggested result.';
+                }
                 field(Confidence; Rec.Confidence)
                 {
                     StyleExpr = StyleExprText;

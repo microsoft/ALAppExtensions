@@ -97,8 +97,7 @@ codeunit 7275 "Sales Lines Suggestions Impl."
         AOAIFunctionResponse: Codeunit "AOAI Function Response";
         AOAIChatCompletionParams: Codeunit "AOAI Chat Completion Params";
         AOAIChatMessages: Codeunit "AOAI Chat Messages";
-        DocumentLookup: Codeunit "Document Lookup Function";
-        SearchItemsFunction: Codeunit "Search Items Function";
+        SearchItemsWithFiltersFunc: Codeunit "Search Items With Filters Func";
         MagicFunction: Codeunit "Magic Function";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         NotificationManager: Codeunit "Notification Manager";
@@ -119,15 +118,12 @@ codeunit 7275 "Sales Lines Suggestions Impl."
         AOAIChatCompletionParams.SetMaxTokens(MaxTokens());
         AOAIChatCompletionParams.SetTemperature(0);
 
-        SearchItemsFunction.SetSearchQuery(SearchQuery);
-        SearchItemsFunction.SetSearchStyle(SearchStyle);
-        DocumentLookup.SetSearchQuery(SearchQuery);
-        DocumentLookup.SetSourceDocumentRecordId(SourceSalesHeader.RecordId);
-        DocumentLookup.SetSearchStyle(SearchStyle);
+        SearchItemsWithFiltersFunc.SetSearchQuery(SearchQuery);
+        SearchItemsWithFiltersFunc.SetSourceDocumentRecordId(SourceSalesHeader.RecordId);
+        SearchItemsWithFiltersFunc.SetSearchStyle(SearchStyle);
 
         AOAIChatMessages.AddTool(MagicFunction);
-        AOAIChatMessages.AddTool(SearchItemsFunction);
-        AOAIChatMessages.AddTool(DocumentLookup);
+        AOAIChatMessages.AddTool(SearchItemsWithFiltersFunc);
         AOAIChatMessages.SetToolChoice('auto');
 
         AOAIChatMessages.SetPrimarySystemMessage(SystemPromptTxt);

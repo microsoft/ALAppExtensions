@@ -462,7 +462,15 @@ report 31018 "Sales - Invoice with Adv. CZZ"
                         }
 
                         trigger OnAfterGetRecord()
+                        var
+                            SalesAdvLetterEntryCZZVATUsage: Record "Sales Adv. Letter Entry CZZ";
                         begin
+                            SalesAdvLetterEntryCZZVATUsage.SetRange("Entry Type", SalesAdvLetterEntryCZZVATUsage."Entry Type"::"VAT Usage");
+                            SalesAdvLetterEntryCZZVATUsage.SetRange("Related Entry", SalesAdvanceUsage."Entry No.");
+                            SalesAdvLetterEntryCZZVATUsage.Setrange("Auxiliary Entry", false);
+                            if SalesAdvLetterEntryCZZVATUsage.IsEmpty() then
+                                CurrReport.Break();
+
                             SetRange("Sales Adv. Letter No.", "Sales Adv. Letter No.");
                             SetRange("Document No.", "Document No.");
                             FindLast();

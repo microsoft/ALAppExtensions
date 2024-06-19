@@ -8,15 +8,22 @@ codeunit 139515 "Digital Vouchers Tests"
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryERM: Codeunit "Library - ERM";
+        LibraryJournals: Codeunit "Library - Journals";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        LibraryInventory: Codeunit "Library - Inventory";
+        LibrarySales: Codeunit "Library - Sales";
+        LibraryRandom: Codeunit "Library - Random";
         Assert: Codeunit Assert;
+        LibraryWorkflow: Codeunit "Library - Workflow";
+        ActiveDirectoryMockEvents: Codeunit "Active Directory Mock Events";
         IsInitialized: Boolean;
         NotPossibleToPostWithoutVoucherErr: Label 'Not possible to post without attaching the digital voucher.';
         DialogErrorCodeTok: Label 'Dialog', Locked = true;
         CannotRemoveReferenceRecordFromIncDocErr: Label 'Cannot remove the reference record from the incoming document because it is used for the enforced digital voucher functionality';
         DetachQst: Label 'Do you want to remove the reference from this incoming document to posted document';
         RemovePostedRecordManuallyMsg: Label 'The reference to the posted record has been removed.\\Remember to correct the posted record if needed.';
+        DoYouWantToPostQst: Label 'Do you want to post the journal lines?';
 
     trigger OnRun()
     begin
@@ -242,6 +249,185 @@ codeunit 139515 "Digital Vouchers Tests"
         Assert.ExpectedError(CannotRemoveReferenceRecordFromIncDocErr);
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandler,ErrorMessagePageHandler')]
+    procedure PostGeneralJournalLineWithRequiredAttachmentAndNoDigitalVoucher()
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
+    begin
+        // [SCENARIO 537136] Stan cannot post a general journal line with required attachment and no digital voucher
+
+        Initialize();
+        BindSubscription(DigVouchersDisableEnforce);
+        // [GIVEN] Digital voucher entry setup for general journal is "Attachment"
+        InitSetupCheckOnly("Digital Voucher Entry Type"::"General Journal", "Digital Voucher Check Type"::Attachment);
+        // [GIVEN] General journal line is created
+        LibraryJournals.CreateGenJournalLineWithBatch(
+            GenJournalLine, GenJournalLine."Document Type"::" ", GenJournalLine."Account Type"::"G/L Account",
+            LibraryERm.CreateGLAccountNo(), LibraryRandom.RandDec(100, 2));
+        LibraryVariableStorage.Enqueue(DoYouWantToPostQst);
+        LibraryVariableStorage.Enqueue(true);
+        LibraryVariableStorage.Enqueue(NotPossibleToPostWithoutVoucherErr);
+        // [WHEN] Post general journal
+        asserterror BatchProcessingMgt.BatchProcessGenJournalLine(GenJournalLine, Codeunit::"Gen. Jnl.-Post");
+
+        // [THEN] Error "Not possible to post without the voucher" is shown in the error message page
+        // Verified in the ErrorMessagePageHandler
+
+        LibraryVariableStorage.AssertEmpty();
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler,ErrorMessagePageHandler')]
+    procedure PostSalesJournalLineWithRequiredAttachmentAndNoDigitalVoucher()
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
+    begin
+        // [SCENARIO 537136] Stan cannot post a sales journal line with required attachment and no digital voucher
+
+        Initialize();
+        BindSubscription(DigVouchersDisableEnforce);
+        // [GIVEN] Digital voucher entry setup for sales journal is "Attachment"
+        InitSetupCheckOnly("Digital Voucher Entry Type"::"Sales Journal", "Digital Voucher Check Type"::Attachment);
+        // [GIVEN] Sales journal line is created
+        LibraryJournals.CreateGenJournalLineWithBatch(
+            GenJournalLine, GenJournalLine."Document Type"::Invoice, GenJournalLine."Account Type"::Customer,
+            LibrarySales.CreateCustomerNo(), LibraryRandom.RandDec(100, 2));
+        LibraryVariableStorage.Enqueue(DoYouWantToPostQst);
+        LibraryVariableStorage.Enqueue(true);
+        LibraryVariableStorage.Enqueue(NotPossibleToPostWithoutVoucherErr);
+        // [WHEN] Post sales journal
+        asserterror BatchProcessingMgt.BatchProcessGenJournalLine(GenJournalLine, Codeunit::"Gen. Jnl.-Post");
+
+        // [THEN] Error "Not possible to post without the voucher" is shown in the error message page
+        // Verified in the ErrorMessagePageHandler
+
+        LibraryVariableStorage.AssertEmpty();
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    [HandlerFunctions('ConfirmHandler,ErrorMessagePageHandler')]
+    procedure PostPurchaseJournalLineWithRequiredAttachmentAndNoDigitalVoucher()
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        BatchProcessingMgt: Codeunit "Batch Processing Mgt.";
+    begin
+        // [SCENARIO 537136] Stan cannot post a purchase journal line with required attachment and no digital voucher
+
+        Initialize();
+        BindSubscription(DigVouchersDisableEnforce);
+        // [GIVEN] Digital voucher entry setup for purchase journal is "Attachment"
+        InitSetupCheckOnly("Digital Voucher Entry Type"::"Purchase Journal", "Digital Voucher Check Type"::Attachment);
+        // [GIVEN] Purchase journal line is created
+        LibraryJournals.CreateGenJournalLineWithBatch(
+            GenJournalLine, GenJournalLine."Document Type"::Invoice, GenJournalLine."Account Type"::Vendor,
+            LibraryPurchase.CreateVendorNo(), LibraryRandom.RandDec(100, 2));
+        LibraryVariableStorage.Enqueue(DoYouWantToPostQst);
+        LibraryVariableStorage.Enqueue(true);
+        LibraryVariableStorage.Enqueue(NotPossibleToPostWithoutVoucherErr);
+        // [WHEN] Post purchase journal
+        asserterror BatchProcessingMgt.BatchProcessGenJournalLine(GenJournalLine, Codeunit::"Gen. Jnl.-Post");
+
+        // [THEN] Error "Not possible to post without the voucher" is shown in the error message page
+        // Verified in the ErrorMessagePageHandler
+
+        LibraryVariableStorage.AssertEmpty();
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    [HandlerFunctions('StrMenuHandler,VerifyNoAttachmentsInEmailEditorModalPageHandler')]
+    procedure PostSalesDocAndSendEmailWithDigitalVoucherAutomaticallyGenerated()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+    begin
+        // [SCENARIO 537262] The automatically generated digital voucher is not suggested as an attachment during emailing
+
+        BindSubscription(DigVouchersDisableEnforce);
+        // [GIVEN] Email account is set up
+        LibraryWorkflow.SetUpEmailAccount();
+        BindActiveDirectoryMockEvents();
+        // [GIVEN] Sales shipment report selections without attachment
+        PrepareSalesShipmentReportSelectionsForEmailBodyWithoutAttachment();
+        // [GIVEN] Digital voucher feature is enabled
+        EnableDigitalVoucherFeature();
+        // [GIVEN] Digital voucher entry setup for sales document is "Attachment" and "Generate Automatically" option is enabled
+        InitSetupGenerateAutomatically("Digital Voucher Entry Type"::"Sales Document", "Digital Voucher Check Type"::Attachment);
+
+        // [GIVEN] Sales Order
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, '');
+        LibrarySales.CreateSalesLineWithUnitPrice(
+            SalesLine, SalesHeader, LibraryInventory.CreateItemNo(),
+            LibraryRandom.RandDec(100, 2), LibraryRandom.RandInt(100));
+
+        // [GIVEN] Custom report selection for the customer for email body
+        CreateCustomReportSelectionForCustomer(SalesHeader."Sell-to Customer No.", "Report Selection Usage"::"S.Shipment", Report::"Sales - Shipment");
+
+        LibraryVariableStorage.Enqueue(1); // option for posting only shipment
+        LibraryVariableStorage.Enqueue(3); // option for emailing to discard and not send any email
+        // [WHEN] Post sales order and send email
+        LibrarySales.PostSalesDocumentAndEmail(SalesHeader, true, true);
+
+        // [THEN] No attachments are suggested in the E-mail editor
+        // Verified in the VerifyNoAttachmentsInEmailEditorModalPageHandler
+
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    procedure PostMultipleGeneralJournalLinesWithGenerateAutomaticallyOption()
+    var
+        GenJournalLine: array[2] of Record "Gen. Journal Line";
+        GenJournalLineToPost: Record "Gen. Journal Line";
+        GenJournalTemplate: Record "Gen. Journal Template";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        IncomingDocument: Record "Incoming Document";
+        DigVouchersEnableEnforce: Codeunit "Dig. Vouchers Enable Enforce";
+        i: Integer;
+    begin
+        // [SCENARIO 537486] Stan can post multiple general journals lines with different documents and digital voucher set to by automatically generated
+
+        Initialize();
+        BindSubscription(DigVouchersEnableEnforce);
+        // [GIVEN] Digital voucher entry setup for general journal is "Attachment" and "Generate Automatically" option is enabled
+        InitSetupGenerateAutomatically("Digital Voucher Entry Type"::"General Journal", "Digital Voucher Check Type"::Attachment);
+        // [GIVEN] General journal lines with the same template and batch are created
+        // [GIVEN] General journal line "X" with "Posting Date" = 01.01.2024 and "Document No." = "X"
+        // [GIVEN] General journal line "Y" with "Posting Date" = 01.01.2024 and "Document No." = "Y"
+        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+        GenJournalTemplate.Validate("Force Doc. Balance", false);
+        GenJournalTemplate.Modify(true);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+        for i := 1 to ArrayLen(GenJournalLine) do
+            LibraryJournals.CreateGenJournalLine(
+                GenJournalLine[i], GenJournalTemplate.Name, GenJournalBatch.Name,
+                GenJournalLine[i]."Document Type"::" ", GenJournalLine[i]."Account Type"::"G/L Account",
+                LibraryERM.CreateGLAccountNo(), GenJournalLine[i]."Bal. Account Type"::"G/L Account",
+                LibraryERM.CreateGLAccountNo(), LibraryRandom.RandDec(100, 2));
+        GenJournalLineToPost.SetRange("Journal Template Name", GenJournalTemplate.Name);
+        GenJournalLineToPost.SetRange("Journal Batch Name", GenJournalBatch.Name);
+        GenJournalLineToPost.FindSet();
+        // [WHEN] Post both general journal lines
+        Codeunit.Run(Codeunit::"Gen. Jnl.-Post Batch", GenJournalLineToPost);
+
+        // [THEN] Two digital vouchers generated for each combination of "Document No." and "Posting Date"
+        for i := 1 to ArrayLen(GenJournalLine) do
+            Assert.IsTrue(
+                IncomingDocument.FindByDocumentNoAndPostingDate(
+                    IncomingDocument, GenJournalLine[i]."Document No.", Format(GenJournalLine[i]."Posting Date")),
+                'Digital voucher has not been generated');
+        UnbindSubscription(DigVouchersEnableEnforce);
+    end;
+
     local procedure Initialize()
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"Digital Vouchers Tests");
@@ -364,6 +550,41 @@ codeunit 139515 "Digital Vouchers Tests"
         LibraryERM.FindVendorLedgerEntry(VendorLedgerEntry, VendorLedgerEntry."Document Type"::Invoice, DocNo);
     end;
 
+    local procedure PrepareSalesShipmentReportSelectionsForEmailBodyWithoutAttachment()
+    var
+        ReportSelections: Record "Report Selections";
+    begin
+        ReportSelections.SetRange(Usage, ReportSelections.Usage::"S.Shipment");
+        ReportSelections.ModifyAll("Use for Email Body", false);
+        ReportSelections.ModifyAll("Use for Email Attachment", false);
+    end;
+
+    local procedure CreateCustomReportSelectionForCustomer(CustomerNo: Code[20]; ReportSelectionUsage: Enum "Report Selection Usage"; ReportID: Integer)
+    var
+        CustomReportSelection: Record "Custom Report Selection";
+        CustomReportLayout: Record "Custom Report Layout";
+    begin
+        CustomReportSelection.Init();
+        CustomReportSelection.Validate("Source Type", Database::Customer);
+        CustomReportSelection.Validate("Source No.", CustomerNo);
+        CustomReportSelection.Validate(Usage, ReportSelectionUsage);
+        CustomReportSelection.Validate(Sequence, 1);
+        CustomReportSelection.Validate("Report ID", ReportID);
+        CustomReportSelection.Validate("Use for Email Body", true);
+        CustomReportSelection.Validate("Use for Email Attachment", false);
+        CustomReportSelection.Validate(
+            "Email Body Layout Code", CustomReportLayout.InitBuiltInLayout(CustomReportSelection."Report ID", CustomReportLayout.Type::Word.AsInteger()));
+        CustomReportSelection.Insert(true);
+    end;
+
+    local procedure BindActiveDirectoryMockEvents()
+    begin
+        if ActiveDirectoryMockEvents.Enabled() then
+            exit;
+        BindSubscription(ActiveDirectoryMockEvents);
+        ActiveDirectoryMockEvents.Enable();
+    end;
+
     local procedure VerifyIncomingDocumentWithAttachmentsExists(PostingDate: Date; DocNo: Code[20]; AttachmentsCount: Integer)
     var
         IncomingDocument: Record "Incoming Document";
@@ -388,5 +609,25 @@ codeunit 139515 "Digital Vouchers Tests"
     procedure MessageHandler(Message: Text)
     begin
         Assert.ExpectedMessage(LibraryVariableStorage.DequeueText(), Message);
+    end;
+
+    [PageHandler]
+    procedure ErrorMessagePageHandler(var ErrorMessagesPage: TestPage "Error Messages")
+    begin
+        Assert.AreEqual(LibraryVariableStorage.DequeueText(), ErrorMessagesPage.Description, 'Error message description is not correct');
+    end;
+
+    [StrMenuHandler]
+    [Scope('OnPrem')]
+    procedure StrMenuHandler(Options: Text[1024]; var Choice: Integer; Instruction: Text[1024])
+    begin
+        Choice := LibraryVariableStorage.DequeueInteger();
+    end;
+
+    [ModalPageHandler]
+    [Scope('OnPrem')]
+    procedure VerifyNoAttachmentsInEmailEditorModalPageHandler(var TestEmailEditor: TestPage "Email Editor")
+    begin
+        TestEmailEditor.Attachments.FileName.AssertEquals('');
     end;
 }

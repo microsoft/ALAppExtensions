@@ -11,14 +11,18 @@ enum 7276 "Search Confidence"
 
     value(0; "None")
     {
+        Caption = 'None';
     }
     value(1; "Low")
     {
+        Caption = 'Low';
     }
     value(2; "Medium")
     {
+        Caption = 'Medium';
     }
     value(3; "High")
     {
+        Caption = 'High';
     }
 }

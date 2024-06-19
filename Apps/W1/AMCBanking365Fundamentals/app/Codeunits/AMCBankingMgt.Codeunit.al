@@ -229,6 +229,9 @@ codeunit 20105 "AMC Banking Mgt."
     var
         AMCBankingSetup: Record "AMC Banking Setup";
     begin
+        if CompanyName() <> CompanyName then
+            AMCBankingSetup.ChangeCompany(CompanyName);
+
         if (AMCBankingSetup.Get()) then
             if (IsSolutionSandbox(AMCBankingSetup)) then
                 SetURLsToDefault(AMCBankingSetup);

@@ -113,7 +113,7 @@ codeunit 30165 "Shpfy Orders API"
     /// <param name="ShopifyShop">Parameter of type Record "Shpfy Shop".</param>
     internal procedure AddOrderAttribute(OrderHeader: Record "Shpfy Order Header"; KeyName: Text; Value: Text; ShopifyShop: Record "Shpfy Shop")
 #else
-    internal procedure AddOrderAttribute(OrderHeader: Record "Shpfy Order Header"; KeyName: Text; Value: Text)
+    internal procedure AddOrderAttribute(OrderHeader: Record "Shpfy Order Header"; KeyName: Text; Value: Text; ShopifyShop: Record "Shpfy Shop")
 #endif
     var
         OrderAttribute: Record "Shpfy Order Attribute";
@@ -121,6 +121,7 @@ codeunit 30165 "Shpfy Orders API"
         JAttributes: JsonArray;
         JAttrib: JsonObject;
     begin
+        CommunicationMgt.SetShop(ShopifyShop);
         if CommunicationMgt.GetTestInProgress() then
             exit;
         Clear(OrderAttribute);

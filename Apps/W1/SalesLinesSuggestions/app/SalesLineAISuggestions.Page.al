@@ -141,11 +141,11 @@ page 7275 "Sales Line AI Suggestions"
 #pragma warning restore AW0005
 
                     Caption = 'Copy from order [No.]';
-                    ToolTip = 'Sample prompt for copying line items from another sales document. Text in brackets specifies the document no.';
+                    ToolTip = 'Sample prompt for copying line items from another sales order. Text in brackets refers to the order.';
 
                     trigger OnAction()
                     var
-                        CopyFromLbl: Label 'Copy from order ';
+                        CopyFromLbl: Label 'Copy from sales order ';
                     begin
                         SearchQueryTxt := CopyFromLbl;
                         CurrPage.Update(false);
@@ -156,12 +156,12 @@ page 7275 "Sales Line AI Suggestions"
                 {
 #pragma warning restore AW0005
 
-                    Caption = 'Copy from invoice [No.]';
-                    ToolTip = 'Sample prompt for copying line items from another sales document. Text in brackets specifies the document no.';
+                    Caption = 'Copy from posted invoice [No.]';
+                    ToolTip = 'Sample prompt for copying line items from a posted sales invoice. Text in brackets refers to the invoice.';
 
                     trigger OnAction()
                     var
-                        CopyFromLbl: Label 'Copy from invoice ';
+                        CopyFromLbl: Label 'Copy from sales invoice ';
                     begin
                         SearchQueryTxt := CopyFromLbl;
                         CurrPage.Update(false);
@@ -171,12 +171,27 @@ page 7275 "Sales Line AI Suggestions"
                 action(DocumentSearchCopyFromLastInvoicePrompt)
                 {
 #pragma warning restore AW0005
-                    Caption = 'Copy from the last invoice';
+                    Caption = 'Copy from the last posted invoice';
                     ToolTip = 'Sample prompt for copying line items from the customer''s latest posted sales invoice.';
 
                     trigger OnAction()
                     var
-                        CopyFromLbl: Label 'Copy from the last invoice';
+                        CopyFromLbl: Label 'Copy from the last sales invoice';
+                    begin
+                        SearchQueryTxt := CopyFromLbl;
+                        CurrPage.Update(false);
+                    end;
+                }
+#pragma warning disable AW0005
+                action(CopyItemsFromDocumentPrompt)
+#pragma warning restore AW0005
+                {
+                    Caption = 'Copy items [description] from posted invoice [No.]';
+                    ToolTip = 'Sample prompt for copying specific items from another posted sales invoice. Texts in brackets specify item description and invoice number.';
+
+                    trigger OnAction()
+                    var
+                        CopyFromLbl: Label 'Copy specific items from sales invoice ';
                     begin
                         SearchQueryTxt := CopyFromLbl;
                         CurrPage.Update(false);

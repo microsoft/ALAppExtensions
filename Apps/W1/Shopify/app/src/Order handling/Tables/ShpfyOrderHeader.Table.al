@@ -443,6 +443,14 @@ table 30118 "Shpfy Order Header"
             Caption = 'Location Id';
             DataClassification = CustomerContent;
             Editable = false;
+            ObsoleteReason = 'Location Id on Order Header is not used. Instead use Location Id on Order Lines.';
+#if not CLEAN25
+            ObsoleteState = Pending;
+            ObsoleteTag = '25.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '28.0';
+#endif
         }
         field(102; "Channel Name"; Text[100])
         {

@@ -8,7 +8,7 @@ pageextension 11790 "Sales Order Subform CZL" extends "Sales Order Subform"
 {
     layout
     {
-        addafter("Invoice Discount Amount")
+        addafter("Inv. Discount Amount")
         {
             field("Tariff No. CZL"; Rec."Tariff No. CZL")
             {

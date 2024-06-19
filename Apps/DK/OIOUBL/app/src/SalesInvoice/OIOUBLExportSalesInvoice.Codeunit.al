@@ -59,7 +59,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         OIOUBLManagement: Codeunit "OIOUBL-Management";
         TempBlob: Codeunit "Temp Blob";
         FileOutStream: OutStream;
-        FileName: Text[250];
+        FileName: Text;
     begin
         TempBlob.CreateOutStream(FileOutStream);
         CreateXML(SalesInvoiceHeader, FileOutStream);
@@ -70,6 +70,7 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
         OIOUBLManagement.UpdateRecordExportBuffer(SalesInvoiceHeader.RecordId(), TempBlob, FileName);
 
         OIOUBLManagement.ExportXMLFile(SalesInvoiceHeader."No.", TempBlob, SalesSetup."OIOUBL-Invoice Path", FileName);
+        OnExportXMLOnAfterExportXMLFile(SalesInvoiceHeader, TempBlob, FileName);
 
         SalesInvHeader2.Get(SalesInvoiceHeader."No.");
         SalesInvHeader2."OIOUBL-Electronic Invoice Created" := true;
@@ -489,6 +490,11 @@ codeunit 13636 "OIOUBL-Export Sales Invoice"
 
     [IntegrationEvent(false, false)]
     local procedure OnCreateXMLOnAfterSalesInvLineSetFilters(var SalesInvoiceLine: Record "Sales Invoice Line"; SalesInvoiceHeader: Record "Sales Invoice Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnExportXMLOnAfterExportXMLFile(var SalesInvoiceHeader: Record "Sales Invoice Header"; var TempBlob: Codeunit "Temp Blob"; FileName: Text)
     begin
     end;
 }

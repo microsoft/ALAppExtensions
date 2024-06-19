@@ -3,6 +3,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 using Microsoft.Foundation.Company;
 using System.Environment;
 using System.Privacy;
+using System.Upgrade;
 
 codeunit 13611 "Elec. VAT Decl. Install"
 {
@@ -35,6 +36,8 @@ codeunit 13611 "Elec. VAT Decl. Install"
         InsertVATReportsConfiguration();
         UpdateVATReportSetup();
         InsertEmptySetup();
+
+        SetAllUpgradeTags();
     end;
 
     local procedure ApplyEvaluationClassificationsForPrivacy()
@@ -90,5 +93,14 @@ codeunit 13611 "Elec. VAT Decl. Install"
 
         ElecVATDeclSetup."Use Azure Key Vault" := true;
         if ElecVATDeclSetup.Modify(true) then;
+    end;
+
+    local procedure SetAllUpgradeTags()
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
+        ElecVATDeclUpgrade: Codeunit "Elec. VAT Decl. Upgrade";
+    begin
+        if not UpgradeTag.HasUpgradeTag(ElecVATDeclUpgrade.GetElecVATDeclAKVSetupUpgradeTag()) then
+            UpgradeTag.SetUpgradeTag(ElecVATDeclUpgrade.GetElecVATDeclAKVSetupUpgradeTag());
     end;
 }
