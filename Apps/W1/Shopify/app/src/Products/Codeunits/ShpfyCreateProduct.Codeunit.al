@@ -127,6 +127,7 @@ codeunit 30174 "Shpfy Create Product"
                 ItemUnitofMeasure.SetRange("Item No.", Item."No.");
                 if ItemUnitofMeasure.FindSet(false) then
                     repeat
+                        TempShopifyProduct."Has Variants" := true;
                         Id += 1;
                         Clear(TempShopifyVariant);
                         TempShopifyVariant.Id := Id;
@@ -214,7 +215,7 @@ codeunit 30174 "Shpfy Create Product"
         TempShopifyVariant."Available For Sales" := true;
         TempShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", '', Item."Sales Unit of Measure"), 1, MaxStrLen(TempShopifyVariant.Barcode));
         ProductPriceCalc.CalcPrice(Item, '', Item."Sales Unit of Measure", TempShopifyVariant."Unit Cost", TempShopifyVariant.Price, TempShopifyVariant."Compare at Price");
-        TempShopifyVariant.Title := '';
+        TempShopifyVariant.Title := ''; // Title will be assigned to "Default Title" in Shopify as no Options are set.
         TempShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
         TempShopifyVariant.SKU := GetVariantSKU(TempShopifyVariant.Barcode, Item."No.", '', Item."Vendor Item No.");
         TempShopifyVariant."Tax Code" := Item."Tax Group Code";

@@ -608,4 +608,41 @@ codeunit 30176 "Shpfy Product API"
     begin
         exit(Value.Names.Get(Value.Ordinals.IndexOf(Value.AsInteger())).ToUpper());
     end;
+
+    /// <summary>
+    /// Gets all the Product Options for a product.
+    /// </summary>
+    /// <param name="ShopifyProductId">Shopify product ID for which the options are to be retrieved.</param>
+    /// <returns>Dictionary of option IDs and option names.</returns>
+    internal procedure GetProductOptions(ShopifyProductId: BigInteger) Options: Dictionary of [text, Text]
+    var
+        Parameters: Dictionary of [Text, Text];
+        JResponse: JsonToken;
+        JOptions: JsonArray;
+        JOption: JsonToken;
+    begin
+        Parameters.Add('ProductId', Format(ShopifyProductId));
+        JResponse := CommunicationMgt.ExecuteGraphQL(Enum::"Shpfy GraphQL Type"::GetProductOptions, Parameters);
+
+        JsonHelper.GetJsonArray(JResponse, JOptions, 'data.product.options');
+        foreach JOption in JOptions do
+            Options.Add(JsonHelper.GetValueAsText(JOption, 'id'), JsonHelper.GetValueAsText(JOption, 'name'));
+    end;
+
+    /// <summary>
+    /// Updates the name of a Product Option.
+    /// </summary>
+    /// <param name="ShopifyProductId">Shopify product ID for which the option is to be updated.</param>
+    /// <param name="OptionId">Option ID to be updated.</param>
+    /// <param name="NewOptionName">New name for the option.</param>
+    internal procedure UpdateProductOption(ShopifyProductId: BigInteger; OptionId: Text; NewOptionName: Text)
+    var
+        Parameters: Dictionary of [Text, Text];
+    begin
+        Parameters.Add('ProductId', Format(ShopifyProductId));
+        Parameters.Add('OptionId', OptionId);
+        Parameters.Add('OptionName', NewOptionName);
+
+        CommunicationMgt.ExecuteGraphQL(Enum::"Shpfy GraphQL Type"::ProductOptionUpdate, Parameters);
+    end;
 }
