@@ -146,24 +146,11 @@ codeunit 30174 "Shpfy Create Product"
                         TempShopifyVariant."UoM Option Id" := 1;
                         TempShopifyVariant.Insert(false);
                     until ItemUnitofMeasure.Next() = 0;
-            end else begin
-                Clear(TempShopifyVariant);
-                TempShopifyVariant."Available For Sales" := true;
-                TempShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", '', Item."Sales Unit of Measure"), 1, MaxStrLen(TempShopifyVariant.Barcode));
-                ProductPriceCalc.CalcPrice(Item, '', Item."Sales Unit of Measure", TempShopifyVariant."Unit Cost", TempShopifyVariant.Price, TempShopifyVariant."Compare at Price");
-                TempShopifyVariant.Title := ItemVariant.Description;
-                TempShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
-                TempShopifyVariant.SKU := GetVariantSKU(TempShopifyVariant.Barcode, Item."No.", ItemVariant.Code, Item."Vendor Item No.");
-                TempShopifyVariant."Tax Code" := Item."Tax Group Code";
-                TempShopifyVariant.Taxable := true;
-                TempShopifyVariant.Weight := Item."Gross Weight";
-                TempShopifyVariant."Shop Code" := Shop.Code;
-                TempShopifyVariant."Item SystemId" := Item.SystemId;
-                TempShopifyVariant.Insert(false);
-            end;
+            end else
+                CreateTempShopifyVariantFromItem(Item, TempShopifyVariant);
+
         TempShopifyProduct.Insert(false);
         Events.OnAfterCreateTempShopifyProduct(Item, TempShopifyProduct, TempShopifyVariant, TempShopifyTag);
-
     end;
 
     /// <summary> 
@@ -214,6 +201,28 @@ codeunit 30174 "Shpfy Create Product"
             Shop."SKU Mapping"::"Vendor Item No.":
                 exit(VendorItemNo);
         end;
+    end;
+
+    /// <summary>
+    /// Creates a temporary Shopify variant with information from an item.
+    /// </summary>
+    /// <param name="Item">The item to create the variant from.</param>
+    /// <param name="TempShopifyVariant">The temporary Shopify variant record set where the variant will be inserted.</param>
+    internal procedure CreateTempShopifyVariantFromItem(Item: Record Item; var TempShopifyVariant: Record "Shpfy Variant" temporary)
+    begin
+        Clear(TempShopifyVariant);
+        TempShopifyVariant."Available For Sales" := true;
+        TempShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", '', Item."Sales Unit of Measure"), 1, MaxStrLen(TempShopifyVariant.Barcode));
+        ProductPriceCalc.CalcPrice(Item, '', Item."Sales Unit of Measure", TempShopifyVariant."Unit Cost", TempShopifyVariant.Price, TempShopifyVariant."Compare at Price");
+        TempShopifyVariant.Title := '';
+        TempShopifyVariant."Inventory Policy" := Shop."Default Inventory Policy";
+        TempShopifyVariant.SKU := GetVariantSKU(TempShopifyVariant.Barcode, Item."No.", '', Item."Vendor Item No.");
+        TempShopifyVariant."Tax Code" := Item."Tax Group Code";
+        TempShopifyVariant.Taxable := true;
+        TempShopifyVariant.Weight := Item."Gross Weight";
+        TempShopifyVariant."Shop Code" := Shop.Code;
+        TempShopifyVariant."Item SystemId" := Item.SystemId;
+        TempShopifyVariant.Insert(false);
     end;
 
     /// <summary> 
