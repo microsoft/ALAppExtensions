@@ -233,8 +233,8 @@ table 30102 "Shpfy Shop"
             ObsoleteState = Pending;
             ObsoleteTag = '24.0';
 #else
-                    ObsoleteState = Removed;
-                    ObsoleteTag = '27.0';
+            ObsoleteState = Removed;
+            ObsoleteTag = '27.0';
 #endif
         }
         field(30; "Shopify Can Update Customer"; Boolean)
@@ -787,6 +787,10 @@ table 30102 "Shpfy Shop"
         field(200; "Shop Id"; Integer)
         {
             DataClassification = SystemMetadata;
+        }
+        field(210; "Items Mapped to Products"; Boolean)
+        {
+            Caption = 'Items Must be Mapped to Products';
         }
     }
 

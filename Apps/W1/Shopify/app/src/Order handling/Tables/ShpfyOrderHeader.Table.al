@@ -727,6 +727,16 @@ table 30118 "Shpfy Order Header"
             Caption = 'Has Order State Error';
             DataClassification = SystemMetadata;
         }
+        field(1030; "Payment Terms Type"; Code[20])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Payment Terms Type';
+        }
+        field(1040; "Payment Terms Name"; Text[50])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Payment Terms Name';
+        }
     }
     keys
     {

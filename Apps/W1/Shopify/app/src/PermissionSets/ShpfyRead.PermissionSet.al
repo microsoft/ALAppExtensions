@@ -64,6 +64,8 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Tag" = R,
         tabledata "Shpfy Tax Area" = R,
         tabledata "Shpfy Transaction Gateway" = R,
-        tabledata "Shpfy Variant" = R;
+        tabledata "Shpfy Variant" = R,
+        tabledata "Shpfy Payment Terms" = R,
+        tabledata "Shpfy Invoice Header" = R;
 }
 #pragma warning restore AS0090, AS0049

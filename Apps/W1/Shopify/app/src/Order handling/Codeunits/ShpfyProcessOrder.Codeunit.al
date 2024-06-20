@@ -123,6 +123,8 @@ codeunit 30166 "Shpfy Process Order"
                 SalesHeader.Validate("Shipment Method Code", ShopifyOrderHeader."Shipping Method Code");
             if ShopifyOrderHeader."Payment Method Code" <> '' then
                 SalesHeader.Validate("Payment Method Code", ShopifyOrderHeader."Payment Method Code");
+            if ShopifyOrderHeader."Payment Terms Type" <> '' then
+                UpdatePaymentTerms(SalesHeader, ShopifyOrderHeader."Payment Terms Type", ShopifyOrderHeader."Payment Terms Name");
 
             SalesHeader.Modify(true);
 
@@ -148,6 +150,16 @@ codeunit 30166 "Shpfy Process Order"
         DocLinkToBCDoc."Document No." := SalesHeader."No.";
         DocLinkToBCDoc.Insert();
         OrderEvents.OnAfterCreateSalesHeader(ShopifyOrderHeader, SalesHeader);
+    end;
+
+    local procedure UpdatePaymentTerms(var SalesHeader: Record "Sales Header"; PaymentTermsType: Code[20]; PaymentTermsName: Text[50])
+    var
+        ShpfyPaymentTerms: Record "Shpfy Payment Terms";
+    begin
+        ShpfyPaymentTerms.SetRange(Type, PaymentTermsType);
+        ShpfyPaymentTerms.SetRange(Name, PaymentTermsName);
+        if ShpfyPaymentTerms.FindFirst() then
+            SalesHeader.Validate("Payment Terms Code", ShpfyPaymentTerms."Payment Terms Code");
     end;
 
     local procedure ApplyGlobalDiscounts(OrderHeader: Record "Shpfy Order Header"; var SalesHeader: Record "Sales Header")
