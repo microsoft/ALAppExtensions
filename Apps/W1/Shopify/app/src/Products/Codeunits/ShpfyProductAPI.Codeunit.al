@@ -628,21 +628,4 @@ codeunit 30176 "Shpfy Product API"
         foreach JOption in JOptions do
             Options.Add(JsonHelper.GetValueAsText(JOption, 'id'), JsonHelper.GetValueAsText(JOption, 'name'));
     end;
-
-    /// <summary>
-    /// Updates the name of a Product Option.
-    /// </summary>
-    /// <param name="ShopifyProductId">Shopify product ID for which the option is to be updated.</param>
-    /// <param name="OptionId">Option ID to be updated.</param>
-    /// <param name="NewOptionName">New name for the option.</param>
-    internal procedure UpdateProductOption(ShopifyProductId: BigInteger; OptionId: Text; NewOptionName: Text)
-    var
-        Parameters: Dictionary of [Text, Text];
-    begin
-        Parameters.Add('ProductId', Format(ShopifyProductId));
-        Parameters.Add('OptionId', OptionId);
-        Parameters.Add('OptionName', NewOptionName);
-
-        CommunicationMgt.ExecuteGraphQL(Enum::"Shpfy GraphQL Type"::ProductOptionUpdate, Parameters);
-    end;
 }
