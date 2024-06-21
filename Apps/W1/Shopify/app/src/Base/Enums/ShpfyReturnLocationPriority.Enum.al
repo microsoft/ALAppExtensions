@@ -2,7 +2,8 @@ namespace Microsoft.Integration.Shopify;
 
 enum 30156 "Shpfy Return Location Priority"
 {
-    Extensible = true;
+    Access = Internal;
+    Extensible = false;
 
     value(0; "Default Return Location")
     {

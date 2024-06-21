@@ -105,12 +105,14 @@ codeunit 30250 "Shpfy Returns API"
         GraphQLType := "Shpfy GraphQL Type"::GetReverseFulfillmentOrders;
         repeat
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, LineParameters);
+
             GraphQLType := "Shpfy GraphQL Type"::GetNextReverseFulfillmentOrders;
             JOrders := JsonHelper.GetJsonArray(JResponse, 'data.return.reverseFulfillmentOrders.nodes');
             if Parameters.ContainsKey('After') then
                 Parameters.Set('After', JsonHelper.GetValueAsText(JResponse, 'data.return.reverseFulfillmentOrders.pageInfo.endCursor'))
             else
                 Parameters.Add('After', JsonHelper.GetValueAsText(JResponse, 'data.return.reverseFulfillmentOrders.pageInfo.endCursor'));
+
             foreach JOrder in JOrders do
                 GetReturnLocationsFromReturnFulfillOrder(JsonHelper.GetValueAsText(JOrder, 'id'), ReturnLocations);
         until not JsonHelper.GetValueAsBoolean(JResponse, 'data.return.reverseFulfillmentOrders.pageInfo.hasNextPage');
@@ -128,12 +130,14 @@ codeunit 30250 "Shpfy Returns API"
         GraphQLType := "Shpfy GraphQL Type"::GetReverseFulfillmentOrderLines;
         repeat
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, LineParameters);
+
             GraphQLType := "Shpfy GraphQL Type"::GetNextReverseFulfillmentOrders;
             JLines := JsonHelper.GetJsonArray(JResponse, 'data.reverseFulfillmentOrder.lineItems.nodes');
             if Parameters.ContainsKey('After') then
                 Parameters.Set('After', JsonHelper.GetValueAsText(JResponse, 'data.reverseFulfillmentOrder.lineItems.pageInfo.endCursor'))
             else
                 Parameters.Add('After', JsonHelper.GetValueAsText(JResponse, 'data.reverseFulfillmentOrder.lineItems.pageInfo.endCursor'));
+
             foreach JLine in JLines do
                 CollectLocationsFromLineDispositions(JLine, ReturnLocations);
         until not JsonHelper.GetValueAsBoolean(JResponse, 'data.reverseFulfillmentOrder.lineItems.pageInfo.hasNextPage');
