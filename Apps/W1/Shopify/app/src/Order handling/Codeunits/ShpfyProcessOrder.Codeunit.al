@@ -299,8 +299,6 @@ codeunit 30166 "Shpfy Process Order"
 
     local procedure AssignItemCharges(SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")
     var
-        ItemChargeAssgntSales: Record "Item Charge Assignment (Sales)";
-        Currency: Record Currency;
         AssignItemChargeSales: Codeunit "Item Charge Assgnt. (Sales)";
         ItemChargeAssgntLineAmt: Decimal;
         AssignableQty: Decimal;
@@ -308,16 +306,42 @@ codeunit 30166 "Shpfy Process Order"
         SalesLine.TestField("No.");
         SalesLine.TestField(Quantity);
 
+        PrepareAssignItemChargesLines(SalesHeader, SalesLine, AssignableQty, ItemChargeAssgntLineAmt);
+        AssignItemChargeSales.AssignItemCharges(SalesLine, AssignableQty, ItemChargeAssgntLineAmt, AssignableQty, ItemChargeAssgntLineAmt, AssignItemChargeSales.AssignEquallyMenuText());
+    end;
+
+    local procedure PrepareAssignItemChargesLines(
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        var AssignableQty: Decimal;
+        var ItemChargeAssgntLineAmt: Decimal
+    )
+    var
+        ItemChargeAssgntSales: Record "Item Charge Assignment (Sales)";
+    begin
+        GetItemChargeAssgntLineAmt(SalesHeader, SalesLine, ItemChargeAssgntSales, ItemChargeAssgntLineAmt);
+        GetAssignableQty(SalesLine, ItemChargeAssgntSales, AssignableQty);
+    end;
+
+    local procedure GetItemChargeAssgntLineAmt(
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        var ItemChargeAssgntSales: Record "Item Charge Assignment (Sales)";
+        var ItemChargeAssgntLineAmt: Decimal
+    )
+    var
+        Currency: Record Currency;
+    begin
         SalesLine.GetSalesHeader();
         Currency.Initialize(SalesHeader."Currency Code");
         if (SalesLine."Inv. Discount Amount" = 0) and (SalesLine."Line Discount Amount" = 0) and
-           (not SalesHeader."Prices Including VAT")
+            (not SalesHeader."Prices Including VAT")
         then
             ItemChargeAssgntLineAmt := SalesLine."Line Amount"
         else
             if SalesHeader."Prices Including VAT" then
                 ItemChargeAssgntLineAmt :=
-                  Round(SalesLine.CalcLineAmount() / (1 + SalesLine."VAT %" / 100), Currency."Amount Rounding Precision")
+                    Round(SalesLine.CalcLineAmount() / (1 + SalesLine."VAT %" / 100), Currency."Amount Rounding Precision")
             else
                 ItemChargeAssgntLineAmt := SalesLine.CalcLineAmount();
 
@@ -332,24 +356,28 @@ codeunit 30166 "Shpfy Process Order"
             ItemChargeAssgntSales."Document Line No." := SalesLine."Line No.";
             ItemChargeAssgntSales."Item Charge No." := SalesLine."No.";
             ItemChargeAssgntSales."Unit Cost" :=
-              Round(ItemChargeAssgntLineAmt / SalesLine.Quantity, Currency."Unit-Amount Rounding Precision");
+                Round(ItemChargeAssgntLineAmt / SalesLine.Quantity, Currency."Unit-Amount Rounding Precision");
         end;
 
         ItemChargeAssgntLineAmt :=
           Round(ItemChargeAssgntLineAmt * (SalesLine."Qty. to Invoice" / SalesLine.Quantity), Currency."Amount Rounding Precision");
+    end;
 
+    local procedure GetAssignableQty(
+        SalesLine: Record "Sales Line";
+        ItemChargeAssgntSales: Record "Item Charge Assignment (Sales)";
+        var AssignableQty: Decimal
+    )
+    var
+        AssignItemChargeSales: Codeunit "Item Charge Assgnt. (Sales)";
+    begin
         if SalesLine.IsCreditDocType() then
             AssignItemChargeSales.CreateDocChargeAssgn(ItemChargeAssgntSales, SalesLine."Return Receipt No.")
         else
             AssignItemChargeSales.CreateDocChargeAssgn(ItemChargeAssgntSales, SalesLine."Shipment No.");
 
-        Clear(AssignItemChargeSales);
-        Commit();
-
         SalesLine.CalcFields("Qty. to Assign", "Item Charge Qty. to Handle", "Qty. Assigned");
         AssignableQty := SalesLine."Qty. to Invoice" + SalesLine."Quantity Invoiced" - SalesLine."Qty. Assigned";
-
-        AssignItemChargeSales.AssignItemCharges(SalesLine, AssignableQty, ItemChargeAssgntLineAmt, AssignableQty, ItemChargeAssgntLineAmt, AssignItemChargeSales.AssignEquallyMenuText());
     end;
 
     /// <summary> 
