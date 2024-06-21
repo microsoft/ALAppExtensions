@@ -5,6 +5,7 @@ using Microsoft.Inventory.Item;
 codeunit 30213 "Shpfy Create Item As Variant"
 {
     TableNo = Item;
+    Access = Internal;
 
     var
         Shop: Record "Shpfy Shop";
