@@ -727,6 +727,22 @@ table 30118 "Shpfy Order Header"
             Caption = 'Has Order State Error';
             DataClassification = SystemMetadata;
         }
+        field(1021; "Shipping Agent Code"; Code[10])
+        {
+            Caption = 'Shipping Agent Code';
+            TableRelation = "Shipping Agent";
+
+            trigger OnValidate()
+            begin
+                if "Shipping Agent Code" <> xRec."Shipping Agent Code" then
+                    Clear("Shipping Agent Service Code");
+            end;
+        }
+        field(1022; "Shipping Agent Service Code"; Code[10])
+        {
+            Caption = 'Shipping Agent Service Code';
+            TableRelation = "Shipping Agent Services".Code where("Shipping Agent Code" = field("Shipping Agent Code"));
+        }
     }
     keys
     {

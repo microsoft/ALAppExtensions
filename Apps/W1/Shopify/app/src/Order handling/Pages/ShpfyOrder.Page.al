@@ -62,6 +62,16 @@ page 30113 "Shpfy Order"
                     ApplicationArea = All;
                     ToolTip = 'Specifies how items on the Shopify Order are shipped to the customer.';
                 }
+                field(ShippingAgentCode; Rec."Shipping Agent Code")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies which shipping agent is used to transport the items on the Shopify Order to the customer.';
+                }
+                field(ShippingAgentServiceCode; Rec."Shipping Agent Service Code")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the code that represents the default shipping agent service you are using for this Shopify Order.';
+                }
                 field("Payment Method"; Rec."Payment Method Code")
                 {
                     ApplicationArea = All;

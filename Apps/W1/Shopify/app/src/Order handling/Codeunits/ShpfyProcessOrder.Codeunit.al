@@ -1,10 +1,12 @@
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Inventory.Item;
+using Microsoft.Finance.Currency;
 using Microsoft.Sales.Document;
 using Microsoft.Foundation.Address;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Posting;
+using Microsoft.Foundation.UOM;
 
 /// <summary>
 /// Codeunit Shpfy Process Order (ID 30166).
@@ -121,6 +123,10 @@ codeunit 30166 "Shpfy Process Order"
                 SalesHeader.Validate("Tax Area Code", ShopifyTaxArea."Tax Area Code");
             if ShopifyOrderHeader."Shipping Method Code" <> '' then
                 SalesHeader.Validate("Shipment Method Code", ShopifyOrderHeader."Shipping Method Code");
+            if ShopifyOrderHeader."Shipping Agent Code" <> '' then begin
+                SalesHeader.Validate("Shipping Agent Code", ShopifyOrderHeader."Shipping Agent Code");
+                SalesHeader.Validate("Shipping Agent Service Code", ShopifyOrderHeader."Shipping Agent Service Code");
+            end;
             if ShopifyOrderHeader."Payment Method Code" <> '' then
                 SalesHeader.Validate("Payment Method Code", ShopifyOrderHeader."Payment Method Code");
 
@@ -245,21 +251,21 @@ codeunit 30166 "Shpfy Process Order"
         OrderShippingCharges.Reset();
         OrderShippingCharges.SetRange("Shopify Order Id", ShopifyOrderHeader."Shopify Order Id");
         OrderShippingCharges.SetFilter(Amount, '>0');
-        if OrderShippingCharges.FindSet() then begin
-
-            if ShipmentMethodMapping.Get(ShopifyShop.Code, OrderShippingCharges.Title) then
-                if ShipmentMethodMapping."Shipping Charges Type" <> ShipmentMethodMapping."Shipping Charges Type"::" " then begin
-                    ShipmentMethodMapping.TestField("Shipping Charges No.");
-                    ShipmentChargeType := true;
-                end;
-
-            if not ShipmentChargeType then
-                ShopifyShop.TestField("Shipping Charges Account");
-
+        if OrderShippingCharges.FindSet() then
             repeat
                 IsHandled := false;
                 OrderEvents.OnBeforeCreateShippingCostSalesLine(ShopifyOrderHeader, OrderShippingCharges, SalesHeader, SalesLine, IsHandled);
                 if not IsHandled then begin
+
+                    if ShipmentMethodMapping.Get(ShopifyShop.Code, OrderShippingCharges.Title) then
+                        if ShipmentMethodMapping."Shipping Charges Type" <> ShipmentMethodMapping."Shipping Charges Type"::" " then begin
+                            ShipmentMethodMapping.TestField("Shipping Charges No.");
+                            ShipmentChargeType := true;
+                        end;
+
+                    if not ShipmentChargeType then
+                        ShopifyShop.TestField("Shipping Charges Account");
+
                     SalesLine.Init();
                     SalesLine.SetHideValidationDialog(true);
                     SalesLine.Validate("Document Type", SalesHeader."Document Type");
@@ -283,10 +289,67 @@ codeunit 30166 "Shpfy Process Order"
                     SalesLine.Validate("Line Discount Amount", OrderShippingCharges."Discount Amount");
                     SalesLine."Shpfy Order No." := ShopifyOrderHeader."Shopify Order No.";
                     SalesLine.Modify(true);
+
+                    if SalesLine.Type = SalesLine.Type::"Charge (Item)" then
+                        AssignItemCharges(SalesHeader, SalesLine);
                 end;
                 OrderEvents.OnAfterCreateShippingCostSalesLine(ShopifyOrderHeader, OrderShippingCharges, SalesHeader, SalesLine);
             until OrderShippingCharges.Next() = 0;
+    end;
+
+    local procedure AssignItemCharges(SalesHeader: Record "Sales Header"; SalesLine: Record "Sales Line")
+    var
+        ItemChargeAssgntSales: Record "Item Charge Assignment (Sales)";
+        Currency: Record Currency;
+        AssignItemChargeSales: Codeunit "Item Charge Assgnt. (Sales)";
+        ItemChargeAssgntLineAmt: Decimal;
+        AssignableQty: Decimal;
+    begin
+        SalesLine.TestField("No.");
+        SalesLine.TestField(Quantity);
+
+        SalesLine.GetSalesHeader();
+        Currency.Initialize(SalesHeader."Currency Code");
+        if (SalesLine."Inv. Discount Amount" = 0) and (SalesLine."Line Discount Amount" = 0) and
+           (not SalesHeader."Prices Including VAT")
+        then
+            ItemChargeAssgntLineAmt := SalesLine."Line Amount"
+        else
+            if SalesHeader."Prices Including VAT" then
+                ItemChargeAssgntLineAmt :=
+                  Round(SalesLine.CalcLineAmount() / (1 + SalesLine."VAT %" / 100), Currency."Amount Rounding Precision")
+            else
+                ItemChargeAssgntLineAmt := SalesLine.CalcLineAmount();
+
+        ItemChargeAssgntSales.Reset();
+        ItemChargeAssgntSales.SetRange("Document Type", SalesLine."Document Type");
+        ItemChargeAssgntSales.SetRange("Document No.", SalesLine."Document No.");
+        ItemChargeAssgntSales.SetRange("Document Line No.", SalesLine."Line No.");
+        ItemChargeAssgntSales.SetRange("Item Charge No.", SalesLine."No.");
+        if not ItemChargeAssgntSales.FindLast() then begin
+            ItemChargeAssgntSales."Document Type" := SalesLine."Document Type";
+            ItemChargeAssgntSales."Document No." := SalesLine."Document No.";
+            ItemChargeAssgntSales."Document Line No." := SalesLine."Line No.";
+            ItemChargeAssgntSales."Item Charge No." := SalesLine."No.";
+            ItemChargeAssgntSales."Unit Cost" :=
+              Round(ItemChargeAssgntLineAmt / SalesLine.Quantity, Currency."Unit-Amount Rounding Precision");
         end;
+
+        ItemChargeAssgntLineAmt :=
+          Round(ItemChargeAssgntLineAmt * (SalesLine."Qty. to Invoice" / SalesLine.Quantity), Currency."Amount Rounding Precision");
+
+        if SalesLine.IsCreditDocType() then
+            AssignItemChargeSales.CreateDocChargeAssgn(ItemChargeAssgntSales, SalesLine."Return Receipt No.")
+        else
+            AssignItemChargeSales.CreateDocChargeAssgn(ItemChargeAssgntSales, SalesLine."Shipment No.");
+
+        Clear(AssignItemChargeSales);
+        Commit();
+
+        SalesLine.CalcFields("Qty. to Assign", "Item Charge Qty. to Handle", "Qty. Assigned");
+        AssignableQty := SalesLine."Qty. to Invoice" + SalesLine."Quantity Invoiced" - SalesLine."Qty. Assigned";
+
+        AssignItemChargeSales.AssignItemCharges(SalesLine, AssignableQty, ItemChargeAssgntLineAmt, AssignableQty, ItemChargeAssgntLineAmt, AssignItemChargeSales.AssignEquallyMenuText());
     end;
 
     /// <summary> 
