@@ -32,6 +32,7 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Gift Card" = R,
         tabledata "Shpfy Initial Import Line" = r,
         tabledata "Shpfy Inventory Item" = R,
+        tabledata "Shpfy Invoice Header" = R,
         tabledata "Shpfy Log Entry" = R,
         tabledata "Shpfy Metafield" = R,
         tabledata "Shpfy Order Attribute" = R,
@@ -47,6 +48,7 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Order Tax Line" = R,
         tabledata "Shpfy Order Transaction" = R,
         tabledata "Shpfy Payment Method Mapping" = R,
+        tabledata "Shpfy Payment Terms" = R,
         tabledata "Shpfy Payment Transaction" = R,
         tabledata "Shpfy Payout" = R,
         tabledata "Shpfy Product" = R,
@@ -64,8 +66,6 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Tag" = R,
         tabledata "Shpfy Tax Area" = R,
         tabledata "Shpfy Transaction Gateway" = R,
-        tabledata "Shpfy Variant" = R,
-        tabledata "Shpfy Payment Terms" = R,
-        tabledata "Shpfy Invoice Header" = R;
+        tabledata "Shpfy Variant" = R;
 }
 #pragma warning restore AS0090, AS0049

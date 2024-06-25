@@ -19,7 +19,7 @@ pageextension 30125 "Shpfy Sales Invoice Update" extends "Posted Sales Inv. - Up
                     ApplicationArea = Basic, Suite;
                     Caption = 'Shopify Order Id';
                     Editable = (Rec."Shpfy Order Id" = 0) or (Rec."Shpfy Order Id" = -1) or (Rec."Shpfy Order Id" = -2);
-                    ToolTip = 'Specifies the Shopify Fulfillment ID. Helps track the status of shipments within Shopify, with 0 indicating readiness to synchronize, -1 indicating an error, and -2 indicating that the shipment is skipped.';
+                    ToolTip = 'Specifies the Shopify Order ID. Helps track the status of invoices within Shopify, with 0 indicating readiness to synchronize, -1 indicating an error, and -2 indicating that the shipment is skipped.';
 
                     trigger OnValidate()
                     begin

@@ -32,6 +32,7 @@ permissionset 30102 "Shpfy - Edit"
         tabledata "Shpfy Gift Card" = IMD,
         tabledata "Shpfy Initial Import Line" = imd,
         tabledata "Shpfy Inventory Item" = IMD,
+        tabledata "Shpfy Invoice Header" = IMD,
         tabledata "Shpfy Log Entry" = IMD,
         tabledata "Shpfy Metafield" = IMD,
         tabledata "Shpfy Refund Header" = IMD,
@@ -51,6 +52,7 @@ permissionset 30102 "Shpfy - Edit"
         tabledata "Shpfy Order Tax Line" = IMD,
         tabledata "Shpfy Order Transaction" = IMD,
         tabledata "Shpfy Payment Method Mapping" = IMD,
+        tabledata "Shpfy Payment Terms" = IMD,
         tabledata "Shpfy Payment Transaction" = IMD,
         tabledata "Shpfy Payout" = IMD,
         tabledata "Shpfy Product" = IMD,
@@ -64,7 +66,5 @@ permissionset 30102 "Shpfy - Edit"
         tabledata "Shpfy Tag" = IMD,
         tabledata "Shpfy Tax Area" = IMD,
         tabledata "Shpfy Transaction Gateway" = IMD,
-        tabledata "Shpfy Variant" = IMD,
-        tabledata "Shpfy Payment Terms" = IMD,
-        tabledata "Shpfy Invoice Header" = IMD;
+        tabledata "Shpfy Variant" = IMD;
 }

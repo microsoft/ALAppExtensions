@@ -792,6 +792,10 @@ table 30102 "Shpfy Shop"
         {
             Caption = 'Items Must be Mapped to Products';
         }
+        field(220; "Posted Invoice Sync"; Boolean)
+        {
+            Caption = 'Posted Invoice Sync';
+        }
     }
 
     keys

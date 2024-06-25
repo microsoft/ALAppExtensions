@@ -18,7 +18,13 @@ report 30117 "Shpfy Export Invoice to Shpfy"
         {
             RequestFilterFields = "No.", "Posting Date";
             trigger OnPreDataItem()
+            var
+                ShopCodeNotSetErr: Label 'Shopify Shop Code is empty.';
             begin
+                if ShopCode = '' then
+                    Error(ShopCodeNotSetErr);
+
+                ShpfyPostedInvoiceExport.SetShop(ShopCode);
                 SetRange("Shpfy Order Id", 0);
 
                 if GuiAllowed then begin
@@ -35,14 +41,17 @@ report 30117 "Shpfy Export Invoice to Shpfy"
                     ProcessDialog.Update();
                 end;
 
-                ShpfyPostedInvoiceExport.SetShop(ShopCode);
                 ShpfyPostedInvoiceExport.Run(SalesInvoiceHeader);
             end;
 
             trigger OnPostDataItem()
+            var
+                ShpfyBackgroundSyncs: Codeunit "Shpfy Background Syncs";
             begin
                 if GuiAllowed then
                     ProcessDialog.Close();
+
+                ShpfyBackgroundSyncs.InventorySync(ShopCode);
             end;
         }
     }
@@ -79,9 +88,9 @@ report 30117 "Shpfy Export Invoice to Shpfy"
         ProcessMsg: Label 'Synchronizing Posted Sales Invoice #1####################', Comment = '#1 = Posted Sales Invoice No.';
 
     /// <summary> 
-    /// Set Shop.
+    /// Sets a global shopify shop code to be used.
     /// </summary>
-    /// <param name="NewShopCode">Parameter of type Code[20].</param>
+    /// <param name="NewShopCode">Shopify shop code to be set.</param>
     internal procedure SetShop(NewShopCode: Code[20])
     begin
         ShopCode := NewShopCode;

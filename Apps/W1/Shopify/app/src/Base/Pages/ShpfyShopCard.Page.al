@@ -139,6 +139,12 @@ page 30101 "Shpfy Shop Card"
                     ToolTip = 'Specifies the date on which Business Central will no longer support Shopify Admin API version. To continue to use your integration, upgrade to the latest version of Business Central before this date.';
                     Editable = false;
                 }
+                field("Posted Invoice Sync"; Rec."Posted Invoice Sync")
+                {
+                    ApplicationArea = All;
+                    Importance = Additional;
+                    ToolTip = 'Specifies whether the posted sales invoices can be synchronized to Shopify.';
+                }
             }
             group(ItemSync)
             {
@@ -996,11 +1002,12 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     Caption = 'Sync Posted Sales Invoices';
                     Image = Export;
+                    Enabled = Rec."Posted Invoice Sync";
                     Promoted = true;
                     PromotedCategory = Category5;
                     PromotedIsBig = true;
                     PromotedOnly = true;
-                    ToolTip = 'Synchronize invoices to Shopify.';
+                    ToolTip = 'Synchronize posted sales invoices to Shopify. The action can be used only if the Posted Invoice Sync field is enabled in the Shopify shop.';
 
                     trigger OnAction();
                     var

@@ -13,7 +13,7 @@ codeunit 30312 "Shpfy GQL DraftOrderComplete" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query": "mutation {draftOrderComplete(id: \"gid://shopify/DraftOrder/{{DraftOrderId}}\") { draftOrder { order { id, name, fulfillmentOrders(first: {{NumberOfOrders}}) {nodes{ id, status}} } id, status} userErrors { field, message }}}"}');
+        exit('{"query": "mutation {draftOrderComplete(id: \"gid://shopify/DraftOrder/{{DraftOrderId}}\") { draftOrder { order { legacyResourceId, name, fulfillmentOrders(first: {{NumberOfOrders}}) {nodes{ id, status}} } id, status} userErrors { field, message }}}"}');
     end;
 
     /// <summary>
@@ -22,6 +22,6 @@ codeunit 30312 "Shpfy GQL DraftOrderComplete" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Integer.</returns>
     internal procedure GetExpectedCost(): Integer
     begin
-        exit(10);
+        exit(15);
     end;
 }

@@ -2,6 +2,7 @@ namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.Comment;
 using Microsoft.Sales.History;
+using Microsoft.Finance.Currency;
 
 /// <summary>
 /// Codeunit Draft Orders API (ID 30159).
@@ -15,31 +16,64 @@ codeunit 30159 "Shpfy Draft Orders API"
         ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         ShpfyJsonHelper: Codeunit "Shpfy Json Helper";
 
-    internal procedure ExportOrderToShopify(
+    /// <summary>
+    /// Creates a draft order in shopify by constructing and sending a graphQL request.
+    /// </summary>
+    /// <param name="TempShpfyOrderHeader">Header information for a shopify order.</param>
+    /// <param name="TempShpfyOrderLine">Line items for a shopify order.</param>
+    /// <param name="ShpfyOrderTaxLines">Tax lines for a shopify order.</param>
+    /// <returns>Unique id of the created draft order in shopify.</returns>
+    internal procedure CreateDraftOrder(
         var TempShpfyOrderHeader: Record "Shpfy Order Header" temporary;
         var TempShpfyOrderLine: Record "Shpfy Order Line" temporary;
         var ShpfyOrderTaxLines: Dictionary of [Text, Decimal]
-    ) ResponseJsonToken: JsonToken
+    ): BigInteger
     var
-        ShpfyBackgroundSyncs: Codeunit "Shpfy Background Syncs";
-        DraftOrderId: BigInteger;
-        NumberOfLines: Integer;
         GraphQuery: TextBuilder;
+        DraftOrderId: BigInteger;
     begin
-        CreateDraftOrderGraphQL(TempShpfyOrderHeader, TempShpfyOrderLine, ShpfyOrderTaxLines, GraphQuery, NumberOfLines);
+        GraphQuery := CreateDraftOrderGQLRequest(TempShpfyOrderHeader, TempShpfyOrderLine, ShpfyOrderTaxLines);
         DraftOrderId := SendDraftOrderGraphQLRequest(GraphQuery);
-        ResponseJsonToken := CompleteDraftOrder(DraftOrderId, NumberOfLines);
-        FulfillShopifyOrder(ResponseJsonToken);
-        ShpfyBackgroundSyncs.InventorySync(ShpfyShop.Code);
+        exit(DraftOrderId);
     end;
 
-    local procedure CreateDraftOrderGraphQL(
+    /// <summary>
+    /// Completes a draft order in shopify by converting it to an order.
+    /// </summary>
+    /// <param name="DraftOrderId">Draft order id that needs to be completed.</param>
+    /// <param name="NumberOfLines">Maximum amount of possible fulfillment orders.</param>
+    /// <returns>Json response of a created order in shopify.</returns>
+    internal procedure CompleteDraftOrder(DraftOrderId: BigInteger; NumberOfLines: Integer): JsonToken
+    var
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        Parameters: Dictionary of [Text, Text];
+        JResponse: JsonToken;
+    begin
+        GraphQLType := "Shpfy GraphQL Type"::DraftOrderComplete;
+        Parameters.Add('DraftOrderId', Format(DraftOrderId));
+        Parameters.Add('NumberOfOrders', Format(NumberOfLines));
+        JResponse := ShpfyCommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+        exit(JResponse);
+    end;
+
+    /// <summary>
+    /// Sets a global shopify shop variable to be used.
+    /// </summary>
+    /// <param name="ShopCode">Shopify shop code to be set.</param>
+    internal procedure SetShop(ShopCode: Code[20])
+    begin
+        Clear(ShpfyShop);
+        ShpfyShop.Get(ShopCode);
+        ShpfyCommunicationMgt.SetShop(ShpfyShop);
+    end;
+
+    local procedure CreateDraftOrderGQLRequest(
         var TempShpfyOrderHeader: Record "Shpfy Order Header" temporary;
         var TempShpfyOrderLine: Record "Shpfy Order Line" temporary;
-        var ShpfyOrderTaxLines: Dictionary of [Text, Decimal];
-        var GraphQuery: TextBuilder;
-        var NumberOfLines: Integer
-    )
+        var ShpfyOrderTaxLines: Dictionary of [Text, Decimal]
+    ): TextBuilder
+    var
+        GraphQuery: TextBuilder;
     begin
         GraphQuery.Append('{"query":"mutation {draftOrderCreate(input: {');
         if TempShpfyOrderHeader.Email <> '' then begin
@@ -52,92 +86,40 @@ codeunit 30159 "Shpfy Draft Orders API"
             GraphQuery.Append(ShpfyCommunicationMgt.EscapeGrapQLData(TempShpfyOrderHeader."Phone No."));
             GraphQuery.Append('\"');
         end;
+        if TempShpfyOrderHeader."Currency Code" <> '' then begin
+            GraphQuery.Append('presentmentCurrencyCode: ');
+            GraphQuery.Append(Format(GetISOCode(TempShpfyOrderHeader."Currency Code")));
+        end;
         if TempShpfyOrderHeader."Discount Amount" <> 0 then
             AddDiscountAmountToGraphQuery(GraphQuery, TempShpfyOrderHeader."Discount Amount", 'Invoice Discount Amount');
 
         GraphQuery.Append(', taxExempt: true');
 
-        AddShippingAddressTOGraphQuery(GraphQuery, TempShpfyOrderHeader);
-        AddBillingAddressTOGraphQuery(GraphQuery, TempShpfyOrderHeader);
-        AddLineItemsToGraphQuery(GraphQuery, TempShpfyOrderHeader, TempShpfyOrderLine, ShpfyOrderTaxLines, NumberOfLines);
+        AddShippingAddressToGraphQuery(GraphQuery, TempShpfyOrderHeader);
+        AddBillingAddressToGraphQuery(GraphQuery, TempShpfyOrderHeader);
+        AddLineItemsToGraphQuery(GraphQuery, TempShpfyOrderHeader, TempShpfyOrderLine, ShpfyOrderTaxLines);
         AddNote(GraphQuery, TempShpfyOrderHeader);
         if TempShpfyOrderHeader.Unpaid then
             AddPaymentTerms(GraphQuery, TempShpfyOrderHeader);
 
-        GraphQuery.Append('}) {draftOrder {id } userErrors {field, message}}');
+        GraphQuery.Append('}) {draftOrder { legacyResourceId } userErrors {field, message}}');
         GraphQuery.Append('}"}');
+
+        exit(GraphQuery);
     end;
 
     local procedure SendDraftOrderGraphQLRequest(GraphQuery: TextBuilder): BigInteger
     var
         ShpfyPaymentTermAPI: Codeunit "Shpfy Payment Terms API";
-        ResponseJsonToken: JsonToken;
+        JResponse: JsonToken;
+        DraftOrderId: BigInteger;
     begin
-        ResponseJsonToken := ShpfyCommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
-        exit(ParseShopifyResponse(ResponseJsonToken, 'data.draftOrderCreate.draftOrder.id'));
+        JResponse := ShpfyCommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
+        DraftOrderId := ShpfyJsonHelper.GetValueAsBigInteger(JResponse, 'data.draftOrderCreate.draftOrder.legacyResourceId');
+        exit(DraftOrderId);
     end;
 
-    local procedure CompleteDraftOrder(DraftOrderId: BigInteger; NumberOfLines: Integer): JsonToken
-    var
-        GraphQLType: Enum "Shpfy GraphQL Type";
-        Parameters: Dictionary of [Text, Text];
-    begin
-        GraphQLType := "Shpfy GraphQL Type"::DraftOrderComplete;
-        Parameters.Add('DraftOrderId', Format(DraftOrderId));
-        Parameters.Add('NumberOfOrders', Format(NumberOfLines));
-        exit(ShpfyCommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters));
-    end;
-
-    local procedure FulfillShopifyOrder(ResponseJsonToken: JsonToken)
-    var
-        FulfillmentOrderList: List of [Text];
-        FulfillmentOrderId: Text;
-        ResponseToken: JsonToken;
-        GraphQLType: Enum "Shpfy GraphQL Type";
-        Parameters: Dictionary of [Text, Text];
-    begin
-        FulfillmentOrderList := ParseFulfillmentOrders(ResponseJsonToken);
-
-        GraphQLType := "Shpfy GraphQL Type"::FulfillOrder;
-
-        foreach FulfillmentOrderId in FulfillmentOrderList do begin
-            Parameters.Add('FulfillmentOrderId', FulfillmentOrderId);
-            ResponseToken := ShpfyCommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
-            Clear(Parameters);
-        end;
-    end;
-
-    local procedure ParseFulfillmentOrders(ResponseJsonToken: JsonToken) FulfillmentOrderList: List of [Text]
-    var
-
-        Counter: Integer;
-        FulfillmentOrderArray: JsonArray;
-        FulfillmentObject: JsonObject;
-        FulfillmentOrderToken: JsonToken;
-        JToken: JsonToken;
-    begin
-        FulfillmentObject := ResponseJsonToken.AsObject();
-        FulfillmentObject.SelectToken('data.draftOrderComplete.draftOrder.order.fulfillmentOrders.nodes', JToken);
-        FulfillmentOrderArray := ShpfyJsonHelper.GetJsonArray(JToken, '');
-
-        for Counter := 0 to FulfillmentOrderArray.Count() - 1 do begin
-            FulfillmentOrderArray.Get(Counter, FulfillmentOrderToken);
-            FulfillmentOrderList.Add(Format(ParseShopifyResponse(FulfillmentOrderToken, 'id')));
-        end;
-    end;
-
-    internal procedure ParseShopifyResponse(JsonTokenResponse: JsonToken; TokenPath: Text): BigInteger
-    var
-        ShopifyParsedResponse: BigInteger;
-        ShopifyParsedText: Text;
-    begin
-        ShopifyParsedText := ShpfyJsonHelper.GetValueAsText(JsonTokenResponse, TokenPath);
-        ShopifyParsedText := CopyStr(ShopifyParsedText, ShopifyParsedText.LastIndexOf('/') + 1, StrLen(ShopifyParsedText));
-        Evaluate(ShopifyParsedResponse, ShopifyParsedText);
-        exit(ShopifyParsedResponse);
-    end;
-
-    local procedure AddShippingAddressTOGraphQuery(var GraphQuery: TextBuilder; var TempShpfyOrderHeader: Record "Shpfy Order Header" temporary)
+    local procedure AddShippingAddressToGraphQuery(var GraphQuery: TextBuilder; var TempShpfyOrderHeader: Record "Shpfy Order Header" temporary)
     var
         myInt: Integer;
     begin
@@ -179,7 +161,7 @@ codeunit 30159 "Shpfy Draft Orders API"
         GraphQuery.Append('}');
     end;
 
-    local procedure AddBillingAddressTOGraphQuery(var GraphQuery: TextBuilder; var TempShpfyOrderHeader: Record "Shpfy Order Header" temporary)
+    local procedure AddBillingAddressToGraphQuery(var GraphQuery: TextBuilder; var TempShpfyOrderHeader: Record "Shpfy Order Header" temporary)
     begin
         GraphQuery.Append(', billingAddress: {');
         if TempShpfyOrderHeader."Bill-to Address" <> '' then begin
@@ -223,8 +205,8 @@ codeunit 30159 "Shpfy Draft Orders API"
         var GraphQuery: TextBuilder;
         var TempShpfyOrderHeader: Record "Shpfy Order Header" temporary;
         var TempShpfyOrderLine: Record "Shpfy Order Line" temporary;
-        var ShpfyOrderTaxLines: Dictionary of [Text, Decimal];
-        var NumberOfLines: Integer)
+        var ShpfyOrderTaxLines: Dictionary of [Text, Decimal]
+    )
     var
         TaxTitle: Text;
     begin
@@ -249,12 +231,7 @@ codeunit 30159 "Shpfy Draft Orders API"
                 GraphQuery.Append(', originalUnitPrice :');
                 GraphQuery.Append(Format(TempShpfyOrderLine."Unit Price", 0, 9));
 
-                // if TempShpfyOrderLine."Discount Amount" <> 0 then
-                //     AddDiscountAmountToGraphQuery(GraphQuery, TempShpfyOrderLine."Discount Amount", 'Line Discount Amount');
-
                 GraphQuery.Append('},');
-
-                NumberOfLines += 1;
             until TempShpfyOrderLine.Next() = 0;
 
             foreach TaxTitle in ShpfyOrderTaxLines.Keys() do begin
@@ -267,11 +244,9 @@ codeunit 30159 "Shpfy Draft Orders API"
                 GraphQuery.Append(Format(1, 0, 9));
 
                 GraphQuery.Append(', originalUnitPrice: ');
-                //GraphQuery.Append(Format(ShpfyOrderTaxLines.Get(TaxTitle))); //TODO: If the invoice discount amount is filled, not sure how to add that if the vat calculation types are different
-                GraphQuery.Append(Format(TempShpfyOrderHeader."VAT Amount"));
+                GraphQuery.Append(Format(ShpfyOrderTaxLines.Get(TaxTitle), 0, 9));
 
                 GraphQuery.Append('},');
-                NumberOfLines += 1;
             end;
             GraphQuery.Remove(GraphQuery.Length(), 1);
         end;
@@ -288,7 +263,7 @@ codeunit 30159 "Shpfy Draft Orders API"
         GraphQuery.Append('\"');
 
         GraphQuery.Append(', value: ');
-        GraphQuery.Append(Format(DiscountAmount));
+        GraphQuery.Append(Format(DiscountAmount, 0, 9));
 
         GraphQuery.Append(', valueType: ');
         GraphQuery.Append('FIXED_AMOUNT');
@@ -337,12 +312,12 @@ codeunit 30159 "Shpfy Draft Orders API"
         Evaluate(DueAtDateTime, Format(SalesInvoiceHeader."Due Date"));
 
         GraphQuery.Append(', paymentSchedules: {');
-        if ShpfyPaymentTerm.Type = 'FIXED' then begin //TODO: Maybe an Enum?
+        if ShpfyPaymentTerm.Type = 'FIXED' then begin
             GraphQuery.Append('dueAt: \"');
             GraphQuery.Append(ShpfyCommunicationMgt.EscapeGrapQLData(Format(DueAtDateTime, 0, 9)));
             GraphQuery.Append('\"');
         end else
-            if ShpfyPaymentTerm.Type = 'NET' then begin //TODO: Maybe an Enum?
+            if ShpfyPaymentTerm.Type = 'NET' then begin
                 GraphQuery.Append(', issuedAt: \"');
                 GraphQuery.Append(ShpfyCommunicationMgt.EscapeGrapQLData(Format(IssuedAtDateTime, 0, 9)));
                 GraphQuery.Append('\"');
@@ -372,10 +347,11 @@ codeunit 30159 "Shpfy Draft Orders API"
         exit(true);
     end;
 
-    internal procedure SetShop(ShopCode: Code[20])
+    local procedure GetISOCode(CurrencyCode: Code[10]): Code[3]
+    var
+        Currency: Record Currency;
     begin
-        Clear(ShpfyShop);
-        ShpfyShop.Get(ShopCode);
-        ShpfyCommunicationMgt.SetShop(ShpfyShop);
+        Currency.Get(CurrencyCode);
+        exit(Currency."ISO Code");
     end;
 }
