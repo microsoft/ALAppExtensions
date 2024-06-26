@@ -6,48 +6,47 @@ namespace Microsoft.Integration.Shopify;
 codeunit 30315 "Shpfy Fulfillment API"
 {
     var
-        ShpfyJsonHelper: Codeunit "Shpfy Json Helper";
         ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
 
     /// <summary>
-    /// Fulfills shopify orders for each fulfillment id parsed from a completed draft order.
+    /// Creates a fulfillment for a provided fulfillment order id.
     /// </summary>
-    /// <param name="JResponse">Json response from a completed draft order</param>
-    /// <param name="ShopCode">Shopify shop code to be used.</param>
-    internal procedure FulfillShopifyOrder(JResponse: JsonToken; ShopCode: Code[20])
+    /// <param name="FulfillmentOrderId">Fulfillment order id.</param>
+    internal procedure CreateFulfillment(FulfillmentOrderId: Text)
     var
-        FulfillmentOrderList: List of [Text];
-        FulfillmentOrderId: Text;
-        ResponseJsonToken: JsonToken;
+        JResponse: JsonToken;
         GraphQLType: Enum "Shpfy GraphQL Type";
         Parameters: Dictionary of [Text, Text];
     begin
-        ShpfyCommunicationMgt.SetShop(ShopCode);
-        FulfillmentOrderList := ParseFulfillmentOrders(JResponse);
         GraphQLType := "Shpfy GraphQL Type"::FulfillOrder;
-
-        foreach FulfillmentOrderId in FulfillmentOrderList do begin
-            Parameters.Add('FulfillmentOrderId', FulfillmentOrderId);
-            ResponseJsonToken := ShpfyCommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
-            Clear(Parameters);
-        end;
+        Parameters.Add('FulfillmentOrderId', FulfillmentOrderId);
+        JResponse := ShpfyCommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
     end;
 
-    local procedure ParseFulfillmentOrders(ResponseJsonToken: JsonToken) FulfillmentOrderList: List of [Text]
+    /// <summary>
+    /// Gets fulfillment orders for a provided shopify order id.
+    /// </summary>
+    /// <param name="OrderId">Shopify order id to get fulfillments from.</param>
+    /// <param name="NumberOfLines">Number of fulfillment orders to get.</param>
+    /// <returns>Fulfillment orders.</returns>
+    internal procedure GetFulfillmentOrders(OrderId: Text; NumberOfLines: Integer) JFulfillments: JsonToken
     var
-        Counter: Integer;
-        FulfillmentOrderArray: JsonArray;
-        FulfillmentObject: JsonObject;
-        FulfillmentOrderToken: JsonToken;
-        JToken: JsonToken;
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        Parameters: Dictionary of [Text, Text];
     begin
-        FulfillmentObject := ResponseJsonToken.AsObject();
-        FulfillmentObject.SelectToken('data.draftOrderComplete.draftOrder.order.fulfillmentOrders.nodes', JToken);
-        FulfillmentOrderArray := ShpfyJsonHelper.GetJsonArray(JToken, '');
+        GraphQLType := "Shpfy GraphQL Type"::GetFulfillments;
+        Parameters.Add('OrderId', OrderId);
+        Parameters.Add('NumberOfOrders', Format(NumberOfLines));
+        JFulfillments := ShpfyCommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+        exit(JFulfillments);
+    end;
 
-        for Counter := 0 to FulfillmentOrderArray.Count() - 1 do begin
-            FulfillmentOrderArray.Get(Counter, FulfillmentOrderToken);
-            FulfillmentOrderList.Add(Format(ShpfyCommunicationMgt.GetIdOfGId(ShpfyJsonHelper.GetValueAsText(FulfillmentOrderToken, 'id'))));
-        end;
+    /// <summary>
+    /// Sets a global shopify shop to be used for fulfillment api functionality.
+    /// </summary>
+    /// <param name="ShopCode">Shopify shop code to be set.</param>
+    internal procedure SetShop(ShopCode: Code[20])
+    begin
+        ShpfyCommunicationMgt.SetShop(ShopCode);
     end;
 }

@@ -62,7 +62,8 @@ page 30162 "Shpfy Payment Terms Mapping"
                 var
                     ShpfyPaymentTermAPI: Codeunit "Shpfy Payment Terms API";
                 begin
-                    ShpfyPaymentTermAPI.PullPaymentTermsCodes(CopyStr(Rec.GetFilter("Shop Code"), 1, 20));
+                    ShpfyPaymentTermAPI.SetShop(CopyStr(Rec.GetFilter("Shop Code"), 1, 20));
+                    ShpfyPaymentTermAPI.PullPaymentTermsCodes();
                 end;
             }
         }

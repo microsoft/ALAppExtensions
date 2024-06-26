@@ -72,7 +72,7 @@ report 30117 "Shpfy Export Invoice to Shpfy"
                         Lookup = true;
                         LookupPageId = "Shpfy Shops";
                         TableRelation = "Shpfy Shop";
-                        ToolTip = 'Specifies the Shopify Shop.';
+                        ToolTip = 'Specifies the Shopify Shop to which the invoice will be exported.';
                         ShowMandatory = true;
                     }
                 }

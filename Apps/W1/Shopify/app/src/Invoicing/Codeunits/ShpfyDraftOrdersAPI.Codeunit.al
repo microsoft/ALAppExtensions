@@ -3,6 +3,8 @@ namespace Microsoft.Integration.Shopify;
 using Microsoft.Sales.Comment;
 using Microsoft.Sales.History;
 using Microsoft.Finance.Currency;
+using Microsoft.Inventory.Item.Attribute;
+using Microsoft.Inventory.Item;
 
 /// <summary>
 /// Codeunit Draft Orders API (ID 30159).
@@ -29,8 +31,8 @@ codeunit 30159 "Shpfy Draft Orders API"
         var ShpfyOrderTaxLines: Dictionary of [Text, Decimal]
     ): BigInteger
     var
-        GraphQuery: TextBuilder;
         DraftOrderId: BigInteger;
+        GraphQuery: TextBuilder;
     begin
         GraphQuery := CreateDraftOrderGQLRequest(TempShpfyOrderHeader, TempShpfyOrderLine, ShpfyOrderTaxLines);
         DraftOrderId := SendDraftOrderGraphQLRequest(GraphQuery);
@@ -41,9 +43,8 @@ codeunit 30159 "Shpfy Draft Orders API"
     /// Completes a draft order in shopify by converting it to an order.
     /// </summary>
     /// <param name="DraftOrderId">Draft order id that needs to be completed.</param>
-    /// <param name="NumberOfLines">Maximum amount of possible fulfillment orders.</param>
     /// <returns>Json response of a created order in shopify.</returns>
-    internal procedure CompleteDraftOrder(DraftOrderId: BigInteger; NumberOfLines: Integer): JsonToken
+    internal procedure CompleteDraftOrder(DraftOrderId: BigInteger): JsonToken
     var
         GraphQLType: Enum "Shpfy GraphQL Type";
         Parameters: Dictionary of [Text, Text];
@@ -51,13 +52,12 @@ codeunit 30159 "Shpfy Draft Orders API"
     begin
         GraphQLType := "Shpfy GraphQL Type"::DraftOrderComplete;
         Parameters.Add('DraftOrderId', Format(DraftOrderId));
-        Parameters.Add('NumberOfOrders', Format(NumberOfLines));
         JResponse := ShpfyCommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
         exit(JResponse);
     end;
 
     /// <summary>
-    /// Sets a global shopify shop variable to be used.
+    /// Sets a global shopify shop to be used for draft orders api functionality.
     /// </summary>
     /// <param name="ShopCode">Shopify shop code to be set.</param>
     internal procedure SetShop(ShopCode: Code[20])
@@ -110,9 +110,8 @@ codeunit 30159 "Shpfy Draft Orders API"
 
     local procedure SendDraftOrderGraphQLRequest(GraphQuery: TextBuilder): BigInteger
     var
-        ShpfyPaymentTermAPI: Codeunit "Shpfy Payment Terms API";
-        JResponse: JsonToken;
         DraftOrderId: BigInteger;
+        JResponse: JsonToken;
     begin
         JResponse := ShpfyCommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
         DraftOrderId := ShpfyJsonHelper.GetValueAsBigInteger(JResponse, 'data.draftOrderCreate.draftOrder.legacyResourceId');
@@ -120,8 +119,6 @@ codeunit 30159 "Shpfy Draft Orders API"
     end;
 
     local procedure AddShippingAddressToGraphQuery(var GraphQuery: TextBuilder; var TempShpfyOrderHeader: Record "Shpfy Order Header" temporary)
-    var
-        myInt: Integer;
     begin
         GraphQuery.Append(', shippingAddress: {');
         if TempShpfyOrderHeader."Ship-to Address" <> '' then begin
@@ -223,6 +220,8 @@ codeunit 30159 "Shpfy Draft Orders API"
                     GraphQuery.Append(', variantId: \"gid://shopify/ProductVariant/');
                     GraphQuery.Append(Format(TempShpfyOrderLine."Shopify Variant Id"));
                     GraphQuery.Append('\"');
+
+                    AddItemAttributes(GraphQuery, TempShpfyOrderLine."Item No.");
                 end;
 
                 GraphQuery.Append(', quantity: ');
@@ -254,8 +253,6 @@ codeunit 30159 "Shpfy Draft Orders API"
     end;
 
     local procedure AddDiscountAmountToGraphQuery(var GraphQuery: TextBuilder; DiscountAmount: Decimal; DiscountTitle: Text)
-    var
-        myInt: Integer;
     begin
         GraphQuery.Append(', appliedDiscount: {');
         GraphQuery.Append('description: \"');
@@ -327,20 +324,20 @@ codeunit 30159 "Shpfy Draft Orders API"
     end;
 
     local procedure ShopifyPaymentTermsExists(
-        var ShpfyPaymentTerm: Record "Shpfy Payment Terms";
+        var ShpfyPaymentTerms: Record "Shpfy Payment Terms";
         var TempShpfyOrderHeader: Record "Shpfy Order Header" temporary;
         var SalesInvoiceHeader: Record "Sales Invoice Header"
     ): Boolean
     begin
         SalesInvoiceHeader.Get(TempShpfyOrderHeader."Sales Invoice No.");
-        ShpfyPaymentTerm.SetRange("Payment Terms Code", SalesInvoiceHeader."Payment Terms Code");
-        ShpfyPaymentTerm.SetRange("Shop Code", ShpfyShop.Code);
+        ShpfyPaymentTerms.SetRange("Payment Terms Code", SalesInvoiceHeader."Payment Terms Code");
+        ShpfyPaymentTerms.SetRange("Shop Code", ShpfyShop.Code);
 
-        if not ShpfyPaymentTerm.FindFirst() then begin
-            ShpfyPaymentTerm.SetRange("Payment Terms Code");
-            ShpfyPaymentTerm.SetRange("Is Primary", true);
+        if not ShpfyPaymentTerms.FindFirst() then begin
+            ShpfyPaymentTerms.SetRange("Payment Terms Code");
+            ShpfyPaymentTerms.SetRange("Is Primary", true);
 
-            if not ShpfyPaymentTerm.FindFirst() then
+            if not ShpfyPaymentTerms.FindFirst() then
                 exit(false);
         end;
 
@@ -353,5 +350,43 @@ codeunit 30159 "Shpfy Draft Orders API"
     begin
         Currency.Get(CurrencyCode);
         exit(Currency."ISO Code");
+    end;
+
+    local procedure IsItem(ItemNo: Code[20]): Boolean
+    var
+        Item: Record Item;
+    begin
+        exit(Item.Get(ItemNo));
+    end;
+
+    local procedure AddItemAttributes(var GraphQuery: TextBuilder; ItemNo: Code[20])
+    var
+        Item: Record Item;
+        ItemAttribute: Record "Item Attribute";
+        ItemAttributeValue: Record "Item Attribute Value";
+        ItemAttributeValueMapping: Record "Item Attribute Value Mapping";
+    begin
+        Item.Get(ItemNo);
+        ItemAttributeValueMapping.SetRange("Table ID", Database::Item);
+        ItemAttributeValueMapping.SetRange("No.", ItemNo);
+        if ItemAttributeValueMapping.FindSet() then begin
+            GraphQuery.Append(', customAttributes: [');
+            repeat
+                ItemAttribute.Get(ItemAttributeValueMapping."Item Attribute ID");
+                ItemAttributeValue.Get(ItemAttribute.ID, ItemAttributeValueMapping."Item Attribute Value ID");
+
+                GraphQuery.Append('{');
+                GraphQuery.Append('key: \"');
+                GraphQuery.Append(ShpfyCommunicationMgt.EscapeGrapQLData(Format(ItemAttribute.Name)));
+                GraphQuery.Append('\"');
+
+                GraphQuery.Append(', value: \"');
+                GraphQuery.Append(ShpfyCommunicationMgt.EscapeGrapQLData(Format(ItemAttributeValue.Value)));
+                GraphQuery.Append('\"');
+                GraphQuery.Append('},')
+            until ItemAttributeValueMapping.Next() = 0;
+            GraphQuery.Append(']');
+        end;
+
     end;
 }

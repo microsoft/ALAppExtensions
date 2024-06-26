@@ -1,9 +1,7 @@
-namespace Microsoft.Integration.Shopify;
-
 /// <summary>
-/// Codeunit Shpfy GQL DraftOrderComplete (ID 30312) implements Interface Shpfy IGraphQL.
+/// Codeunit Shpfy GQL Get Fulfillments (ID 30317) implements Interface Shpfy IGraphQL.
 /// </summary>
-codeunit 30312 "Shpfy GQL DraftOrderComplete" implements "Shpfy IGraphQL"
+codeunit 30317 "Shpfy GQL Get Fulfillments" implements "Shpfy IGraphQL"
 {
     Access = Internal;
 
@@ -13,7 +11,7 @@ codeunit 30312 "Shpfy GQL DraftOrderComplete" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query": "mutation {draftOrderComplete(id: \"gid://shopify/DraftOrder/{{DraftOrderId}}\") { draftOrder { order { legacyResourceId, name }} userErrors { field, message }}}"}');
+        exit('{"query": "{order (id: \"gid://shopify/Order/{{OrderId}}\") { fulfillmentOrders ( first: {{NumberOfOrders}}) { nodes { id }}}}"}');
     end;
 
     /// <summary>
@@ -22,6 +20,7 @@ codeunit 30312 "Shpfy GQL DraftOrderComplete" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Integer.</returns>
     internal procedure GetExpectedCost(): Integer
     begin
-        exit(11);
+        exit(6);
     end;
 }
+

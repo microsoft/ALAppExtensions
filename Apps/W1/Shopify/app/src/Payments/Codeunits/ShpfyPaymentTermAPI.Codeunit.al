@@ -6,54 +6,65 @@ namespace Microsoft.Integration.Shopify;
 codeunit 30168 "Shpfy Payment Terms API"
 {
     var
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
+        ShopCode: Code[20];
 
     /// <summary>
     /// Synchronizes payment terms from shopify, ensuring that the payment terms are up-to-date with those defined in the shopify store.
     /// </summary>
     /// <param name="ShopCode">Shopify shop code to be used.</param>
-    internal procedure PullPaymentTermsCodes(ShopCode: Code[20])
+    internal procedure PullPaymentTermsCodes()
     var
-        Shop: Record "Shpfy Shop";
-        PaymentTerms: Record "Shpfy Payment Terms";
-        PaymentTermRecordRef: RecordRef;
-        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         GraphQLType: Enum "Shpfy GraphQL Type";
         JTemplates: JsonArray;
         JTemplate: JsonToken;
         JResponse: JsonToken;
-        IsNew: Boolean;
-        Id: BigInteger;
     begin
-        Shop.Get(ShopCode);
-
-        CommunicationMgt.SetShop(Shop.Code);
-
         GraphQLType := GraphQLType::GetPaymentTerms;
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType);
 
         JsonHelper.GetJsonArray(JResponse, JTemplates, 'data.paymentTermsTemplates');
-        foreach JTemplate in JTemplates do begin
-            Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JTemplate, 'id'));
-            IsNew := not PaymentTerms.Get(ShopCode, Id);
+        foreach JTemplate in JTemplates do
+            UpdatePaymentTerms(JTemplate);
+    end;
 
-            if IsNew then begin
-                Clear(PaymentTerms);
-                PaymentTerms."Id" := Id;
-                PaymentTerms."Shop Code" := ShopCode;
-            end;
+    /// <summary>
+    /// Sets a global shopify shop to be used form payment terms api functionality.
+    /// </summary>
+    /// <param name="ShopCode">Shopify shop code to be set.</param>
+    internal procedure SetShop(NewShopCode: Code[20])
+    begin
+        ShopCode := NewShopCode;
+        CommunicationMgt.SetShop(NewShopCode);
+    end;
 
-            PaymentTermRecordRef.GetTable(PaymentTerms);
-            JsonHelper.GetValueIntoField(JTemplate, 'name', PaymentTermRecordRef, PaymentTerms.FieldNo(Name));
-            JsonHelper.GetValueIntoField(JTemplate, 'paymentTermsType', PaymentTermRecordRef, PaymentTerms.FieldNo(Type));
-            JsonHelper.GetValueIntoField(JTemplate, 'dueInDays', PaymentTermRecordRef, PaymentTerms.FieldNo("Due In Days"));
-            JsonHelper.GetValueIntoField(JTemplate, 'description', PaymentTermRecordRef, PaymentTerms.FieldNo(Description));
-            PaymentTermRecordRef.SetTable(PaymentTerms);
+    local procedure UpdatePaymentTerms(JTemplate: JsonToken)
+    var
+        ShpfyPaymentTerms: Record "Shpfy Payment Terms";
+        PaymentTermRecordRef: RecordRef;
+        Id: BigInteger;
+        IsNew: Boolean;
+    begin
+        Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JTemplate, 'id'));
+        IsNew := not ShpfyPaymentTerms.Get(ShopCode, Id);
 
-            if IsNew then
-                PaymentTerms.Insert()
-            else
-                PaymentTerms.Modify();
+        if IsNew then begin
+            Clear(ShpfyPaymentTerms);
+            ShpfyPaymentTerms."Id" := Id;
+            ShpfyPaymentTerms."Shop Code" := ShopCode;
         end;
+
+        PaymentTermRecordRef.GetTable(ShpfyPaymentTerms);
+        JsonHelper.GetValueIntoField(JTemplate, 'name', PaymentTermRecordRef, ShpfyPaymentTerms.FieldNo(Name));
+        JsonHelper.GetValueIntoField(JTemplate, 'paymentTermsType', PaymentTermRecordRef, ShpfyPaymentTerms.FieldNo(Type));
+        JsonHelper.GetValueIntoField(JTemplate, 'dueInDays', PaymentTermRecordRef, ShpfyPaymentTerms.FieldNo("Due In Days"));
+        JsonHelper.GetValueIntoField(JTemplate, 'description', PaymentTermRecordRef, ShpfyPaymentTerms.FieldNo(Description));
+        PaymentTermRecordRef.SetTable(ShpfyPaymentTerms);
+
+        if IsNew then
+            ShpfyPaymentTerms.Insert()
+        else
+            ShpfyPaymentTerms.Modify();
     end;
 }

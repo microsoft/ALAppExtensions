@@ -16,6 +16,7 @@ codeunit 30316 "Shpfy Posted Invoice Export"
     var
         ShpfyShop: Record "Shpfy Shop";
         ShpfyDraftOrdersAPI: Codeunit "Shpfy Draft Orders API";
+        ShpfyFulfillmentAPI: Codeunit "Shpfy Fulfillment API";
         ShpfyJsonHelper: Codeunit "Shpfy Json Helper";
 
     trigger OnRun()
@@ -24,12 +25,14 @@ codeunit 30316 "Shpfy Posted Invoice Export"
     end;
 
     /// <summary> 
-    /// Sets a global shopify shop variable to be used.
+    /// Sets a global shopify shop to be used for posted invoice export.
     /// </summary>
     /// <param name="NewShopCode">Shopify shop code to be set.</param>
     internal procedure SetShop(NewShopCode: Code[20])
     begin
         ShpfyShop.Get(NewShopCode);
+        ShpfyDraftOrdersAPI.SetShop(ShpfyShop.Code);
+        ShpfyFulfillmentAPI.SetShop(ShpfyShop.Code);
     end;
 
     /// <summary>
@@ -45,9 +48,10 @@ codeunit 30316 "Shpfy Posted Invoice Export"
         TempShpfyOrderHeader: Record "Shpfy Order Header" temporary;
         TempShpfyOrderLine: Record "Shpfy Order Line" temporary;
         ShpfyFulfillmentAPI: Codeunit "Shpfy Fulfillment API";
-        ShpfyOrderTaxLines: Dictionary of [Text, Decimal];
-        JResponse: JsonToken;
         DraftOrderId: BigInteger;
+        ShpfyOrderTaxLines: Dictionary of [Text, Decimal];
+        JFulfillments: JsonToken;
+        JResponse: JsonToken;
     begin
         if not IsInvoiceExportable(SalesInvoiceHeader) then begin
             SetSalesInvoiceShopifyOrderInformation(SalesInvoiceHeader, -2, '');
@@ -56,10 +60,13 @@ codeunit 30316 "Shpfy Posted Invoice Export"
 
         MapPostedSalesInvoiceData(SalesInvoiceHeader, TempShpfyOrderHeader, TempShpfyOrderLine, ShpfyOrderTaxLines);
 
-        ShpfyDraftOrdersAPI.SetShop(ShpfyShop.Code);
         DraftOrderId := ShpfyDraftOrdersAPI.CreateDraftOrder(TempShpfyOrderHeader, TempShpfyOrderLine, ShpfyOrderTaxLines);
-        JResponse := ShpfyDraftOrdersAPI.CompleteDraftOrder(DraftOrderId, GetNumberOfLines(TempShpfyOrderLine, ShpfyOrderTaxLines));
-        ShpfyFulfillmentAPI.FulfillShopifyOrder(JResponse, ShpfyShop.Code);
+        JResponse := ShpfyDraftOrdersAPI.CompleteDraftOrder(DraftOrderId);
+        JFulfillments := ShpfyFulfillmentAPI.GetFulfillmentOrders(
+            Format(ShpfyJsonHelper.GetValueAsBigInteger(JResponse, 'data.draftOrderComplete.draftOrder.order.legacyResourceId')),
+            GetNumberOfLines(TempShpfyOrderLine, ShpfyOrderTaxLines)
+        );
+        CreateFulfillmentsForShopifyOrder(JFulfillments);
 
         if IsSuccess(JResponse) then begin
             CreateShpfyInvoiceHeader(JResponse, SalesInvoiceHeader."No.");
@@ -71,6 +78,30 @@ codeunit 30316 "Shpfy Posted Invoice Export"
             AddDocumentLinkToBCDocument(SalesInvoiceHeader);
         end else
             SetSalesInvoiceShopifyOrderInformation(SalesInvoiceHeader, -1, '');
+    end;
+
+    local procedure CreateFulfillmentsForShopifyOrder(JFulfillments: JsonToken)
+    var
+        FulfillmentOrderList: List of [Text];
+        FulfillmentOrderId: Text;
+    begin
+        FulfillmentOrderList := ParseFulfillmentOrders(JFulfillments);
+
+        foreach FulfillmentOrderId in FulfillmentOrderList do begin
+            ShpfyFulfillmentAPI.CreateFulfillment(FulfillmentOrderId);
+        end;
+    end;
+
+    local procedure ParseFulfillmentOrders(JFulfillments: JsonToken) FulfillmentOrderList: List of [Text]
+    var
+        ShpfyCommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        JArray: JsonArray;
+        JToken: JsonToken;
+    begin
+        JArray := ShpfyJsonHelper.GetJsonArray(JFulfillments, 'data.order.fulfillmentOrders.nodes');
+
+        foreach JToken in JArray do
+            FulfillmentOrderList.Add(Format(ShpfyCommunicationMgt.GetIdOfGId(ShpfyJsonHelper.GetValueAsText(JToken, 'id'))));
     end;
 
     local procedure IsInvoiceExportable(SalesInvoiceHeader: Record "Sales Invoice Header"): Boolean
@@ -192,11 +223,9 @@ codeunit 30316 "Shpfy Posted Invoice Export"
     end;
 
     local procedure MapSalesInvoiceHeader(
-    SalesInvoiceHeader: Record "Sales Invoice Header";
-    var TempShpfyOrderHeader: Record "Shpfy Order Header" temporary
-)
-    var
-        DocumentTotals: Codeunit "Document Totals";
+        SalesInvoiceHeader: Record "Sales Invoice Header";
+        var TempShpfyOrderHeader: Record "Shpfy Order Header" temporary
+    )
     begin
         TempShpfyOrderHeader.Init();
         TempShpfyOrderHeader."Sales Invoice No." := SalesInvoiceHeader."No.";
@@ -299,6 +328,7 @@ codeunit 30316 "Shpfy Posted Invoice Export"
         TempShpfyOrderLine.Description := SalesInvoiceLine.Description;
         TempShpfyOrderLine.Quantity := SalesInvoiceLine.Quantity;
         TempShpfyOrderLine."Item No." := SalesInvoiceLine."No.";
+        TempShpfyOrderLine."Variant Code" := SalesInvoiceLine."Variant Code";
         TempShpfyOrderLine."Gift Card" := false;
         TempShpfyOrderLine.Taxable := false;
         TempShpfyOrderLine."Unit Price" := SalesInvoiceLine."Unit Price";
@@ -354,9 +384,9 @@ codeunit 30316 "Shpfy Posted Invoice Export"
 
     local procedure MapTaxLine(var SalesInvoiceLine: Record "Sales Invoice Line" temporary; var ShpfyOrderTaxLines: Dictionary of [Text, Decimal])
     var
-        TaxTitle: Text;
         VATAmount: Decimal;
         TaxLineTok: Label '%1 - %2%', Comment = '%1 = VAT Calculation Type, %2 = VAT %', Locked = true;
+        TaxTitle: Text;
     begin
         VATAmount := SalesInvoiceLine."Amount Including VAT" - SalesInvoiceLine."VAT Base Amount";
 
