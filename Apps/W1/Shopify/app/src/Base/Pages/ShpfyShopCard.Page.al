@@ -1011,7 +1011,7 @@ page 30101 "Shpfy Shop Card"
 
                     trigger OnAction();
                     var
-                        ExportInvoicetoShpfy: Report "Shpfy Export Invoice to Shpfy";
+                        ExportInvoicetoShpfy: Report "Shpfy Sync Invoices to Shpfy";
                     begin
                         ExportInvoicetoShpfy.SetShop(Rec.Code);
                         ExportInvoicetoShpfy.Run();

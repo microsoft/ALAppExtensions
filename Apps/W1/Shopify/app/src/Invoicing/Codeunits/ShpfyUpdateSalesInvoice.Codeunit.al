@@ -4,6 +4,8 @@ using Microsoft.Sales.History;
 
 codeunit 30314 "Shpfy Update Sales Invoice"
 {
+    Access = Internal;
+
     [EventSubscriber(ObjectType::Page, Page::"Posted Sales Inv. - Update", 'OnAfterRecordChanged', '', false, false)]
     local procedure OnAfterRecordChanged(var SalesInvoiceHeader: Record "Sales Invoice Header"; xSalesInvoiceHeader: Record "Sales Invoice Header"; var IsChanged: Boolean)
     begin

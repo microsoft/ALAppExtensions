@@ -13,7 +13,9 @@ pageextension 30125 "Shpfy Sales Invoice Update" extends "Posted Sales Inv. - Up
         {
             group(Shopify)
             {
+                Caption = 'Shopify';
                 Visible = ShopifyTabVisible;
+
                 field("Shpfy Order Id"; Rec."Shpfy Order Id")
                 {
                     ApplicationArea = Basic, Suite;

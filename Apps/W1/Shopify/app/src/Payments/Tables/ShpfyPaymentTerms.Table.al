@@ -9,6 +9,7 @@ table 30157 "Shpfy Payment Terms"
 {
     Caption = 'Payment Terms';
     DataClassification = CustomerContent;
+    Access = Internal;
 
     fields
     {

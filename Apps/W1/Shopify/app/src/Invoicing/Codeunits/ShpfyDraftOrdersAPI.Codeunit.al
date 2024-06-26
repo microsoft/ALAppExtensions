@@ -352,13 +352,6 @@ codeunit 30159 "Shpfy Draft Orders API"
         exit(Currency."ISO Code");
     end;
 
-    local procedure IsItem(ItemNo: Code[20]): Boolean
-    var
-        Item: Record Item;
-    begin
-        exit(Item.Get(ItemNo));
-    end;
-
     local procedure AddItemAttributes(var GraphQuery: TextBuilder; ItemNo: Code[20])
     var
         Item: Record Item;

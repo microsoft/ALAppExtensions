@@ -5,6 +5,8 @@ namespace Microsoft.Integration.Shopify;
 /// </summary>
 codeunit 30168 "Shpfy Payment Terms API"
 {
+    Access = Internal;
+
     var
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
@@ -63,8 +65,8 @@ codeunit 30168 "Shpfy Payment Terms API"
         PaymentTermRecordRef.SetTable(ShpfyPaymentTerms);
 
         if IsNew then
-            ShpfyPaymentTerms.Insert()
+            ShpfyPaymentTerms.Insert(true)
         else
-            ShpfyPaymentTerms.Modify();
+            ShpfyPaymentTerms.Modify(true);
     end;
 }

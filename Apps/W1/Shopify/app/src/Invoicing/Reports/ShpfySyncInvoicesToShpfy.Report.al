@@ -3,14 +3,14 @@ namespace Microsoft.Integration.Shopify;
 using Microsoft.Sales.History;
 
 /// <summary>
-/// Report Shpfy Export Invoice to Shpfy (ID 30117).
+/// Report Shpfy Sync Invoices to Shpfy (ID 30117).
 /// </summary>
-report 30117 "Shpfy Export Invoice to Shpfy"
+report 30117 "Shpfy Sync Invoices to Shpfy"
 {
     ApplicationArea = All;
-    Caption = 'Export Invoice to Shopify';
+    Caption = 'Sync Invoices to Shopify';
     ProcessingOnly = true;
-    UsageCategory = Administration;
+    UsageCategory = Tasks;
 
     dataset
     {

@@ -7,6 +7,7 @@ table 30156 "Shpfy Invoice Header"
 {
     Caption = 'Shopify Invoice Header';
     DataClassification = CustomerContent;
+    Access = Internal;
 
     fields
     {
