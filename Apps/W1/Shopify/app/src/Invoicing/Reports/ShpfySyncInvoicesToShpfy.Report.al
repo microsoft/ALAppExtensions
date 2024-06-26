@@ -20,9 +20,13 @@ report 30117 "Shpfy Sync Invoices to Shpfy"
             trigger OnPreDataItem()
             var
                 ShopCodeNotSetErr: Label 'Shopify Shop Code is empty.';
+                PostedInvoiceSyncNotSetErr: Label 'Posted Invoice Sync is not enabled for this shop.';
             begin
                 if ShopCode = '' then
                     Error(ShopCodeNotSetErr);
+
+                if not ShpfyShop."Posted Invoice Sync" then
+                    Error(PostedInvoiceSyncNotSetErr);
 
                 ShpfyPostedInvoiceExport.SetShop(ShopCode);
                 SetRange("Shpfy Order Id", 0);
@@ -81,6 +85,7 @@ report 30117 "Shpfy Sync Invoices to Shpfy"
     }
 
     var
+        ShpfyShop: Record "Shpfy Shop";
         ShpfyPostedInvoiceExport: Codeunit "Shpfy Posted Invoice Export";
         ShopCode: Code[20];
         CurrSalesInvoiceHeaderNo: Code[20];
@@ -94,5 +99,6 @@ report 30117 "Shpfy Sync Invoices to Shpfy"
     internal procedure SetShop(NewShopCode: Code[20])
     begin
         ShopCode := NewShopCode;
+        ShpfyShop.Get(ShopCode);
     end;
 }

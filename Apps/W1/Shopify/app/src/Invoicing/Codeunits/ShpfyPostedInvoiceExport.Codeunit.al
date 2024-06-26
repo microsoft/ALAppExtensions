@@ -99,10 +99,22 @@ codeunit 30316 "Shpfy Posted Invoice Export"
         if ShpfyShop."Default Customer No." = SalesInvoiceHeader."Bill-to Customer No." then
             exit(false);
 
+        if CheckCustomerTemplates(SalesInvoiceHeader."Bill-to Customer No.") then
+            exit(false);
+
         if not CheckSalesInvoiceHeaderLines(SalesInvoiceHeader) then
             exit(false);
 
         exit(true);
+    end;
+
+    local procedure CheckCustomerTemplates(CustomerNo: Code[20]): Boolean
+    var
+        ShpfyCustomerTemplate: Record "Shpfy Customer Template";
+    begin
+        ShpfyCustomerTemplate.SetRange("Default Customer No.", CustomerNo);
+        ShpfyCustomerTemplate.SetRange("Shop Code", ShpfyShop.Code);
+        exit(not ShpfyCustomerTemplate.IsEmpty());
     end;
 
     local procedure CheckSalesInvoiceHeaderLines(SalesInvoiceHeader: Record "Sales Invoice Header"): Boolean
@@ -247,7 +259,7 @@ codeunit 30316 "Shpfy Posted Invoice Export"
     var
         ShpfyCustomer: Record "Shpfy Customer";
     begin
-        TempShpfyOrderHeader."Bill-to Name" := Format(SalesInvoiceHeader."Bill-to Name");
+        TempShpfyOrderHeader."Bill-to Name" := CopyStr(SalesInvoiceHeader."Bill-to Name", 1, MaxStrLen(TempShpfyOrderHeader."Bill-to Name"));
         TempShpfyOrderHeader."Bill-to Name 2" := SalesInvoiceHeader."Bill-to Name 2";
         TempShpfyOrderHeader."Bill-to Address" := SalesInvoiceHeader."Bill-to Address";
         TempShpfyOrderHeader."Bill-to Address 2" := SalesInvoiceHeader."Bill-to Address 2";
@@ -259,7 +271,7 @@ codeunit 30316 "Shpfy Posted Invoice Export"
 
         ShpfyCustomer.SetRange("Customer No.", SalesInvoiceHeader."Bill-to Customer No.");
         if ShpfyCustomer.FindFirst() then begin
-            TempShpfyOrderHeader.Email := Format(ShpfyCustomer.Email);
+            TempShpfyOrderHeader.Email := CopyStr(ShpfyCustomer.Email, 1, MaxStrLen(TempShpfyOrderHeader.Email));
             TempShpfyOrderHeader."Phone No." := ShpfyCustomer."Phone No.";
         end;
     end;
@@ -269,7 +281,7 @@ codeunit 30316 "Shpfy Posted Invoice Export"
         SalesInvoiceHeader: Record "Sales Invoice Header"
     )
     begin
-        TempShpfyOrderHeader."Ship-to Name" := Format(SalesInvoiceHeader."Ship-to Name");
+        TempShpfyOrderHeader."Ship-to Name" := CopyStr(SalesInvoiceHeader."Ship-to Name", 1, MaxStrLen(TempShpfyOrderHeader."Ship-to Name"));
         TempShpfyOrderHeader."Ship-to Name 2" := SalesInvoiceHeader."Ship-to Name 2";
         TempShpfyOrderHeader."Ship-to Address" := SalesInvoiceHeader."Ship-to Address";
         TempShpfyOrderHeader."Ship-to Address 2" := SalesInvoiceHeader."Ship-to Address 2";

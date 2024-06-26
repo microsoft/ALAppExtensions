@@ -139,12 +139,6 @@ page 30101 "Shpfy Shop Card"
                     ToolTip = 'Specifies the date on which Business Central will no longer support Shopify Admin API version. To continue to use your integration, upgrade to the latest version of Business Central before this date.';
                     Editable = false;
                 }
-                field("Posted Invoice Sync"; Rec."Posted Invoice Sync")
-                {
-                    ApplicationArea = All;
-                    Importance = Additional;
-                    ToolTip = 'Specifies whether the posted sales invoices can be synchronized to Shopify.';
-                }
             }
             group(ItemSync)
             {
@@ -253,6 +247,7 @@ page 30101 "Shpfy Shop Card"
                 }
                 field("Items Mapped to Products"; Rec."Items Mapped to Products")
                 {
+                    ApplicationArea = All;
                     ToolTip = 'Specifies if only the items that are mapped to Shopify products/Shopify variants are synchronized from Posted Sales Invoices to Shopify.';
                 }
             }
@@ -533,6 +528,12 @@ page 30101 "Shpfy Shop Card"
                     Caption = 'Keep Zero Quantity Lines';
                     ToolTip = 'Specifies whether to keep zero quantity lines in the Shopify order. If you do not select this option, zero quantity lines are removed from the Shopify order.';
                     Visible = false;
+                }
+                field("Posted Invoice Sync"; Rec."Posted Invoice Sync")
+                {
+                    ApplicationArea = All;
+                    Importance = Additional;
+                    ToolTip = 'Specifies whether the posted sales invoices can be synchronized to Shopify.';
                 }
             }
             group(ReturnsAndRefunds)
@@ -1002,7 +1003,6 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     Caption = 'Sync Posted Sales Invoices';
                     Image = Export;
-                    Enabled = Rec."Posted Invoice Sync";
                     Promoted = true;
                     PromotedCategory = Category5;
                     PromotedIsBig = true;
