@@ -34,6 +34,7 @@ page 30129 "Shpfy Shipment Methods Mapping"
                 field("Shipping Charges No."; Rec."Shipping Charges No.")
                 {
                     ApplicationArea = All;
+                    ShowMandatory = Rec."Shipping Charges Type" <> Rec."Shipping Charges Type"::" ";
                     ToolTip = 'Specifies the value of the Shipping Charges No. field.';
                 }
                 field("Shipping Agent Code"; Rec."Shipping Agent Code")

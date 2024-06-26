@@ -332,7 +332,7 @@ codeunit 30166 "Shpfy Process Order"
     var
         Currency: Record Currency;
     begin
-        SalesLine.GetSalesHeader();
+        SalesHeader := SalesLine.GetSalesHeader();
         Currency.Initialize(SalesHeader."Currency Code");
         if (SalesLine."Inv. Discount Amount" = 0) and (SalesLine."Line Discount Amount" = 0) and
             (not SalesHeader."Prices Including VAT")
