@@ -96,6 +96,9 @@ codeunit 30316 "Shpfy Posted Invoice Export"
                 exit(false);
         end;
 
+        if not ShopifyPaymentTermsExists(SalesInvoiceHeader."Payment Terms Code") then
+            exit(false);
+
         if ShpfyShop."Default Customer No." = SalesInvoiceHeader."Bill-to Customer No." then
             exit(false);
 
@@ -104,6 +107,24 @@ codeunit 30316 "Shpfy Posted Invoice Export"
 
         if not CheckSalesInvoiceHeaderLines(SalesInvoiceHeader) then
             exit(false);
+
+        exit(true);
+    end;
+
+    local procedure ShopifyPaymentTermsExists(PaymentTermsCode: Code[10]): Boolean
+    var
+        ShpfyPaymentTerms: Record "Shpfy Payment Terms";
+    begin
+        ShpfyPaymentTerms.SetRange("Payment Terms Code", PaymentTermsCode);
+        ShpfyPaymentTerms.SetRange("Shop Code", ShpfyShop.Code);
+
+        if not ShpfyPaymentTerms.FindFirst() then begin
+            ShpfyPaymentTerms.SetRange("Payment Terms Code");
+            ShpfyPaymentTerms.SetRange("Is Primary", true);
+
+            if not ShpfyPaymentTerms.FindFirst() then
+                exit(false);
+        end;
 
         exit(true);
     end;
@@ -229,15 +250,14 @@ codeunit 30316 "Shpfy Posted Invoice Export"
         TempShpfyOrderHeader."Document Date" := SalesInvoiceHeader."Document Date";
         SalesInvoiceHeader.CalcFields(Amount, "Amount Including VAT", "Invoice Discount Amount");
         TempShpfyOrderHeader."VAT Amount" := SalesInvoiceHeader."Amount Including VAT" - SalesInvoiceHeader.Amount;
-
-        MapBillInformation(TempShpfyOrderHeader, SalesInvoiceHeader);
-        MapShipToInformation(TempShpfyOrderHeader, SalesInvoiceHeader);
-        MapCustomerLedgerEntryInformation(SalesInvoiceHeader, TempShpfyOrderHeader);
-
-        TempShpfyOrderHeader."Fulfillment Status" := Enum::"Shpfy Order Fulfill. Status"::Fulfilled;
-        SalesInvoiceHeader.CalcFields("Invoice Discount Amount");
         TempShpfyOrderHeader."Discount Amount" := SalesInvoiceHeader."Invoice Discount Amount";
+        TempShpfyOrderHeader."Fulfillment Status" := Enum::"Shpfy Order Fulfill. Status"::Fulfilled;
         TempShpfyOrderHeader."Shop Code" := ShpfyShop.Code;
+        TempShpfyOrderHeader.Unpaid := IsInvoiceUnpaid(SalesInvoiceHeader);
+
+        MapBillToInformation(TempShpfyOrderHeader, SalesInvoiceHeader);
+        MapShipToInformation(TempShpfyOrderHeader, SalesInvoiceHeader);
+
         TempShpfyOrderHeader.Insert(false);
     end;
 
@@ -252,7 +272,7 @@ codeunit 30316 "Shpfy Posted Invoice Export"
         exit(GeneralLedgerSetup."LCY Code");
     end;
 
-    local procedure MapBillInformation(
+    local procedure MapBillToInformation(
         var TempShpfyOrderHeader: Record "Shpfy Order Header" temporary;
         SalesInvoiceHeader: Record "Sales Invoice Header"
     )
@@ -291,19 +311,10 @@ codeunit 30316 "Shpfy Posted Invoice Export"
         TempShpfyOrderHeader."Ship-to Country/Region Code" := SalesInvoiceHeader."Ship-to Country/Region Code";
     end;
 
-    local procedure MapCustomerLedgerEntryInformation(
-        SalesInvoiceHeader: Record "Sales Invoice Header";
-        var TempShpfyOrderHeader: Record "Shpfy Order Header" temporary)
-    var
-        CustLedgerEntry: Record "Cust. Ledger Entry";
+    local procedure IsInvoiceUnpaid(SalesInvoiceHeader: Record "Sales Invoice Header"): Boolean
     begin
-        CustLedgerEntry.Get(SalesInvoiceHeader."Cust. Ledger Entry No.");
-        CustLedgerEntry.CalcFields("Remaining Amount");
-
-        if CustLedgerEntry."Remaining Amount" = 0 then
-            TempShpfyOrderHeader.Unpaid := false
-        else
-            TempShpfyOrderHeader.Unpaid := true;
+        SalesInvoiceHeader.CalcFields("Remaining Amount");
+        exit(SalesInvoiceHeader."Remaining Amount" <> 0);
     end;
 
     local procedure MapSalesInvoiceLine(

@@ -97,10 +97,11 @@ codeunit 30159 "Shpfy Draft Orders API"
 
         AddShippingAddressToGraphQuery(GraphQuery, TempShpfyOrderHeader);
         AddBillingAddressToGraphQuery(GraphQuery, TempShpfyOrderHeader);
-        AddLineItemsToGraphQuery(GraphQuery, TempShpfyOrderHeader, TempShpfyOrderLine, ShpfyOrderTaxLines);
         AddNote(GraphQuery, TempShpfyOrderHeader);
         if TempShpfyOrderHeader.Unpaid then
             AddPaymentTerms(GraphQuery, TempShpfyOrderHeader);
+
+        AddLineItemsToGraphQuery(GraphQuery, TempShpfyOrderHeader, TempShpfyOrderLine, ShpfyOrderTaxLines);
 
         GraphQuery.Append('}) {draftOrder { legacyResourceId } userErrors {field, message}}');
         GraphQuery.Append('}"}');
@@ -293,28 +294,28 @@ codeunit 30159 "Shpfy Draft Orders API"
     local procedure AddPaymentTerms(var GraphQuery: TextBuilder; var TempShpfyOrderHeader: Record "Shpfy Order Header" temporary)
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
-        ShpfyPaymentTerm: Record "Shpfy Payment Terms";
+        ShpfyPaymentTerms: Record "Shpfy Payment Terms";
         DueAtDateTime: DateTime;
         IssuedAtDateTime: DateTime;
     begin
-        if not ShopifyPaymentTermsExists(ShpfyPaymentTerm, TempShpfyOrderHeader, SalesInvoiceHeader) then
+        if not ShopifyPaymentTermsExists(ShpfyPaymentTerms, TempShpfyOrderHeader, SalesInvoiceHeader) then
             exit;
 
         GraphQuery.Append(', paymentTerms: {');
         GraphQuery.Append('paymentTermsTemplateId: \"gid://shopify/PaymentTermsTemplate/');
-        GraphQuery.Append(Format(ShpfyPaymentTerm."Id"));
+        GraphQuery.Append(Format(ShpfyPaymentTerms."Id"));
         GraphQuery.Append('\"');
 
         Evaluate(IssuedAtDateTime, Format(SalesInvoiceHeader."Document Date"));
         Evaluate(DueAtDateTime, Format(SalesInvoiceHeader."Due Date"));
 
         GraphQuery.Append(', paymentSchedules: {');
-        if ShpfyPaymentTerm.Type = 'FIXED' then begin
+        if ShpfyPaymentTerms.Type = 'FIXED' then begin
             GraphQuery.Append('dueAt: \"');
             GraphQuery.Append(ShpfyCommunicationMgt.EscapeGrapQLData(Format(DueAtDateTime, 0, 9)));
             GraphQuery.Append('\"');
         end else
-            if ShpfyPaymentTerm.Type = 'NET' then begin
+            if ShpfyPaymentTerms.Type = 'NET' then begin
                 GraphQuery.Append(', issuedAt: \"');
                 GraphQuery.Append(ShpfyCommunicationMgt.EscapeGrapQLData(Format(IssuedAtDateTime, 0, 9)));
                 GraphQuery.Append('\"');

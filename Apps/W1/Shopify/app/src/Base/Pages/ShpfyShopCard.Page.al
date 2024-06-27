@@ -532,7 +532,6 @@ page 30101 "Shpfy Shop Card"
                 field("Posted Invoice Sync"; Rec."Posted Invoice Sync")
                 {
                     ApplicationArea = All;
-                    Importance = Additional;
                     ToolTip = 'Specifies whether the posted sales invoices can be synchronized to Shopify.';
                 }
             }
@@ -1007,7 +1006,7 @@ page 30101 "Shpfy Shop Card"
                     PromotedCategory = Category5;
                     PromotedIsBig = true;
                     PromotedOnly = true;
-                    ToolTip = 'Synchronize posted sales invoices to Shopify. The action can be used only if the Posted Invoice Sync field is enabled in the Shopify shop.';
+                    ToolTip = 'Synchronize posted sales invoices to Shopify. Synchronization will be performed only if the Posted Invoice Sync field is enabled in the Shopify shop.';
 
                     trigger OnAction();
                     var

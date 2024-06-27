@@ -25,6 +25,8 @@ report 30117 "Shpfy Sync Invoices to Shpfy"
                 if ShopCode = '' then
                     Error(ShopCodeNotSetErr);
 
+                ShpfyShop.Get(ShopCode);
+
                 if not ShpfyShop."Posted Invoice Sync" then
                     Error(PostedInvoiceSyncNotSetErr);
 
@@ -78,6 +80,12 @@ report 30117 "Shpfy Sync Invoices to Shpfy"
                         TableRelation = "Shpfy Shop";
                         ToolTip = 'Specifies the Shopify Shop to which the invoice will be exported.';
                         ShowMandatory = true;
+
+                        trigger OnValidate()
+                        begin
+                            if ShopCode <> '' then
+                                ShpfyShop.Get(ShopCode);
+                        end;
                     }
                 }
             }
@@ -99,6 +107,5 @@ report 30117 "Shpfy Sync Invoices to Shpfy"
     internal procedure SetShop(NewShopCode: Code[20])
     begin
         ShopCode := NewShopCode;
-        ShpfyShop.Get(ShopCode);
     end;
 }

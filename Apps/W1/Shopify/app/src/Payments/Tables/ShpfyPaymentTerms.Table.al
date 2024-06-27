@@ -47,6 +47,19 @@ table 30157 "Shpfy Payment Terms"
         field(60; "Is Primary"; Boolean)
         {
             Caption = 'Is Primary';
+
+            trigger OnValidate()
+            var
+                ShpfyPaymentTerms: Record "Shpfy Payment Terms";
+                PrimaryPaymentTermsExistsErr: Label 'Primary payment terms already exist for this shop.';
+            begin
+                ShpfyPaymentTerms.SetRange("Shop Code", Rec."Shop Code");
+                ShpfyPaymentTerms.SetRange("Is Primary", true);
+                ShpfyPaymentTerms.SetFilter("Id", '<>%1', Rec."Id");
+
+                if not ShpfyPaymentTerms.IsEmpty() then
+                    Error(PrimaryPaymentTermsExistsErr);
+            end;
         }
         field(70; "Payment Terms Code"; Code[10])
         {
