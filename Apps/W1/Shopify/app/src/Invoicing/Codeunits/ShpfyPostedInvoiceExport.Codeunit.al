@@ -96,6 +96,9 @@ codeunit 30316 "Shpfy Posted Invoice Export"
                 exit(false);
         end;
 
+        if not CurrencyCodeMatch(SalesInvoiceHeader) then
+            exit(false);
+
         if not ShopifyPaymentTermsExists(SalesInvoiceHeader."Payment Terms Code") then
             exit(false);
 
@@ -109,6 +112,24 @@ codeunit 30316 "Shpfy Posted Invoice Export"
             exit(false);
 
         exit(true);
+    end;
+
+    local procedure CurrencyCodeMatch(SalesInvoiceHeader: Record "Sales Invoice Header"): Boolean
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        ShopifyLocalCurrencyCode: Code[10];
+    begin
+        GeneralLedgerSetup.Get();
+
+        if ShpfyShop."Currency Code" = '' then
+            ShopifyLocalCurrencyCode := GeneralLedgerSetup."LCY Code"
+        else
+            ShopifyLocalCurrencyCode := ShpfyShop."Currency Code";
+
+        if SalesInvoiceHeader."Currency Code" = '' then
+            exit(ShopifyLocalCurrencyCode = GeneralLedgerSetup."LCY Code")
+        else
+            exit(ShopifyLocalCurrencyCode = SalesInvoiceHeader."Currency Code");
     end;
 
     local procedure ShopifyPaymentTermsExists(PaymentTermsCode: Code[10]): Boolean

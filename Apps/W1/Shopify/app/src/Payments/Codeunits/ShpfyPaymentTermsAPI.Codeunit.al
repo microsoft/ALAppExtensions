@@ -64,9 +64,22 @@ codeunit 30168 "Shpfy Payment Terms API"
         JsonHelper.GetValueIntoField(JTemplate, 'description', PaymentTermRecordRef, ShpfyPaymentTerms.FieldNo(Description));
         PaymentTermRecordRef.SetTable(ShpfyPaymentTerms);
 
+        if ShpfyPaymentTerms.Type = 'FIXED' then
+            if ShouldBeMarkedAsPrimary() then
+                ShpfyPaymentTerms.Validate("Is Primary", true);
+
         if IsNew then
             ShpfyPaymentTerms.Insert(true)
         else
             ShpfyPaymentTerms.Modify(true);
+    end;
+
+    local procedure ShouldBeMarkedAsPrimary(): Boolean
+    var
+        ShpfyPaymentTerms: Record "Shpfy Payment Terms";
+    begin
+        ShpfyPaymentTerms.SetRange("Shop Code", ShopCode);
+        ShpfyPaymentTerms.SetRange("Is Primary", true);
+        exit(ShpfyPaymentTerms.IsEmpty());
     end;
 }
