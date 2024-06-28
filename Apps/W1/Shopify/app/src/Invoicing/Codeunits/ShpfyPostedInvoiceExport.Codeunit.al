@@ -209,6 +209,7 @@ codeunit 30316 "Shpfy Posted Invoice Export"
         end else begin
             ShpfyVariant.SetRange("Item No.", SalesInvoiceLine."No.");
             ShpfyVariant.SetRange("Variant Code", SalesInvoiceLine."Variant Code");
+            ShpfyVariant.SetRange("Shop Code", ShpfyShop.Code);
             if ShpfyVariant.IsEmpty() then
                 exit(false);
         end;
@@ -221,6 +222,7 @@ codeunit 30316 "Shpfy Posted Invoice Export"
         ShpfyVariant: Record "Shpfy Variant";
     begin
         ShpfyVariant.SetRange("Item No.", SalesInvoiceLine."No.");
+        ShpfyVariant.SetRange("Shop Code", ShpfyShop.Code);
         ShpfyVariant.SetRange("Variant Code", SalesInvoiceLine."Variant Code");
         if ShpfyVariant.FindSet() then
             repeat
@@ -362,6 +364,7 @@ codeunit 30316 "Shpfy Posted Invoice Export"
         if ShpfyShop."UoM as Variant" then
             MapUOMProductVariants(SalesInvoiceLine, TempShpfyOrderLine)
         else begin
+            ShpfyVariant.SetRange("Shop Code", ShpfyShop.Code);
             ShpfyVariant.SetRange("Item No.", SalesInvoiceLine."No.");
             ShpfyVariant.SetRange("Variant Code", SalesInvoiceLine."Variant Code");
             if ShpfyVariant.FindFirst() then begin
@@ -379,6 +382,7 @@ codeunit 30316 "Shpfy Posted Invoice Export"
     var
         ShpfyVariant: Record "Shpfy Variant";
     begin
+        ShpfyVariant.SetRange("Shop Code", ShpfyShop.Code);
         ShpfyVariant.SetRange("Item No.", SalesInvoiceLine."No.");
         ShpfyVariant.SetRange("Variant Code", SalesInvoiceLine."Variant Code");
         if ShpfyVariant.FindSet() then
