@@ -1000,6 +1000,7 @@ page 30101 "Shpfy Shop Card"
                 action(SyncPostedSalesInvoices)
                 {
                     ApplicationArea = All;
+                    Ellipsis = true;
                     Caption = 'Sync Posted Sales Invoices';
                     Image = Export;
                     Promoted = true;

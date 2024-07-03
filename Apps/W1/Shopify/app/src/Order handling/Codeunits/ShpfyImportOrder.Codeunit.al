@@ -130,8 +130,6 @@ codeunit 30161 "Shpfy Import Order"
     end;
 
     local procedure MarkAsProcessed(OrderHeader: Record "Shpfy Order Header")
-    var
-        myInt: Integer;
     begin
         OrderHeader.Validate(Processed, true);
         OrderHeader.Modify()
@@ -650,7 +648,7 @@ codeunit 30161 "Shpfy Import Order"
     begin
         OrderLineAttribute.SetRange("Order Id", ShopifyOrderId);
         OrderLineAttribute.SetRange("Order Line Id", OrderLineId);
-        if not OrderLineAttribute.IsEmpty then
+        if not OrderLineAttribute.IsEmpty() then
             OrderLineAttribute.DeleteAll();
         foreach JToken in JCustomAttributtes do begin
             Clear(OrderLineAttribute);
@@ -741,7 +739,7 @@ codeunit 30161 "Shpfy Import Order"
         JToken: JsonToken;
     begin
         OrderTaxLine.SetRange("Parent Id", ParentId);
-        if not OrderTaxLine.IsEmpty then
+        if not OrderTaxLine.IsEmpty() then
             OrderTaxLine.DeleteAll();
         foreach JToken in JTaxLines do begin
             RecordRef.Open(Database::"Shpfy Order Tax Line");

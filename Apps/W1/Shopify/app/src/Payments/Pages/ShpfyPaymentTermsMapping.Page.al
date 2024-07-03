@@ -15,22 +15,19 @@ page 30162 "Shpfy Payment Terms Mapping"
     {
         area(Content)
         {
-            repeater(GroupName)
+            repeater(General)
             {
                 field(Type; Rec.Type)
                 {
                     ToolTip = 'Specifies the value of the Type field.';
-
                 }
                 field(Name; Rec.Name)
                 {
                     ToolTip = 'Specifies the value of the Name field.';
-
                 }
                 field(Description; Rec.Description)
                 {
                     ToolTip = 'Specifies the value of the Description field.';
-
                 }
                 field("Payment Terms Code"; Rec."Payment Terms Code")
                 {
@@ -46,15 +43,22 @@ page 30162 "Shpfy Payment Terms Mapping"
 
     actions
     {
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process';
+                ShowAs = Standard;
+
+                actionref(PromotedRefresh; Refresh) { }
+            }
+        }
         area(Processing)
         {
             action(Refresh)
             {
                 ApplicationArea = All;
                 Caption = 'Refresh';
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 Image = Refresh;
                 ToolTip = 'Refreshes the list of Shopify Payment Terms.';
 

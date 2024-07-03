@@ -303,7 +303,7 @@ codeunit 30159 "Shpfy Draft Orders API"
 
         GraphQuery.Append(', paymentTerms: {');
         GraphQuery.Append('paymentTermsTemplateId: \"gid://shopify/PaymentTermsTemplate/');
-        GraphQuery.Append(Format(ShpfyPaymentTerms."Id"));
+        GraphQuery.Append(Format(ShpfyPaymentTerms.Id));
         GraphQuery.Append('\"');
 
         Evaluate(IssuedAtDateTime, Format(SalesInvoiceHeader."Document Date"));

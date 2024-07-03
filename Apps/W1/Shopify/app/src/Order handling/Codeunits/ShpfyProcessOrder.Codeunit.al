@@ -157,6 +157,7 @@ codeunit 30166 "Shpfy Process Order"
         ShpfyPaymentTerms: Record "Shpfy Payment Terms";
     begin
         ShpfyPaymentTerms.SetRange(Type, PaymentTermsType);
+        ShpfyPaymentTerms.SetRange("Shop Code", ShopifyShop.Code);
         ShpfyPaymentTerms.SetRange(Name, PaymentTermsName);
         if ShpfyPaymentTerms.FindFirst() then
             SalesHeader.Validate("Payment Terms Code", ShpfyPaymentTerms."Payment Terms Code");

@@ -53,7 +53,7 @@ codeunit 30168 "Shpfy Payment Terms API"
 
         if IsNew then begin
             Clear(ShpfyPaymentTerms);
-            ShpfyPaymentTerms."Id" := Id;
+            ShpfyPaymentTerms.Id := Id;
             ShpfyPaymentTerms."Shop Code" := ShopCode;
         end;
 

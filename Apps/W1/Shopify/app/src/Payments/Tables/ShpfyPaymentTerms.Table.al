@@ -19,7 +19,7 @@ table 30157 "Shpfy Payment Terms"
             TableRelation = "Shpfy Shop";
             Editable = false;
         }
-        field(2; "Id"; BigInteger)
+        field(2; Id; BigInteger)
         {
             Caption = 'ID';
             Editable = false;
@@ -34,12 +34,12 @@ table 30157 "Shpfy Payment Terms"
             Caption = 'Due In Days';
             Editable = false;
         }
-        field(40; "Description"; Text[50])
+        field(40; Description; Text[50])
         {
             Caption = 'Description';
             Editable = false;
         }
-        field(50; "Type"; Code[20])
+        field(50; Type; Code[20])
         {
             Caption = 'Type';
             Editable = false;
@@ -55,7 +55,7 @@ table 30157 "Shpfy Payment Terms"
             begin
                 ShpfyPaymentTerms.SetRange("Shop Code", Rec."Shop Code");
                 ShpfyPaymentTerms.SetRange("Is Primary", true);
-                ShpfyPaymentTerms.SetFilter("Id", '<>%1', Rec."Id");
+                ShpfyPaymentTerms.SetFilter(Id, '<>%1', Rec.Id);
 
                 if not ShpfyPaymentTerms.IsEmpty() then
                     Error(PrimaryPaymentTermsExistsErr);
@@ -70,7 +70,7 @@ table 30157 "Shpfy Payment Terms"
 
     keys
     {
-        key(PK; "Shop Code", "Id")
+        key(PK; "Shop Code", Id)
         {
             Clustered = true;
         }

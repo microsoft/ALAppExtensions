@@ -11,6 +11,7 @@ codeunit 30316 "Shpfy Posted Invoice Export"
 {
     Access = Internal;
     TableNo = "Sales Invoice Header";
+    Permissions = tabledata "Sales Invoice Header" = m;
 
     var
         ShpfyShop: Record "Shpfy Shop";
