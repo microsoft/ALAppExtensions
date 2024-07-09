@@ -373,6 +373,12 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
         OnAfterCopyFromVATPostingSetup(VATPostingSetup, Rec);
     end;
 
+    procedure CopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    begin
+        "Purch. Adv. Letter No." := PurchAdvLetterHeaderCZZ."No.";
+        OnAfterCopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ, Rec);
+    end;
+
     procedure InsertNewEntry(WriteToDatabase: Boolean) EntryNo: Integer
     var
         PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
@@ -448,6 +454,11 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCopyFromVATPostingSetup(VATPostingSetup: Record "VAT Posting Setup"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
     begin
     end;
 

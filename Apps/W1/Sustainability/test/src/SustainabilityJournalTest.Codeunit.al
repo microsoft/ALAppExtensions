@@ -5,9 +5,13 @@ codeunit 148181 "Sustainability Journal Test"
 
     var
         Assert: Codeunit Assert;
+        LibraryERM: Codeunit "Library - ERM";
+        LibraryRandom: Codeunit "Library - Random";
         LibrarySustainability: Codeunit "Library - Sustainability";
+        LibraryUtility: Codeunit "Library - Utility";
         OneDefaultTemplateShouldBeCreatedLbl: Label 'One default template should be created after page is opened', Locked = true;
         OneDefaultBatchShouldBeCreatedLbl: Label 'One default batch should be created after page is opened', Locked = true;
+        CustomAmountMustBePositiveLbl: Label 'The custom amount must be positive', Locked = true;
 
     [Test]
     procedure TestDefaultTemplateAndBatchSuccessfullyInserted()
@@ -99,5 +103,47 @@ codeunit 148181 "Sustainability Journal Test"
 
         // [THEN] The Check should fail
         asserterror SustainabilityJournalMgt.CheckScopeMatchWithBatch(SustainabilityJournalLine);
+    end;
+
+    [Test]
+    procedure TestCustomAmountIsPositiveForNegativeTotalOfGL()
+    var
+        SustainAccountCategory: Record "Sustain. Account Category";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJouralLine: Record "Gen. Journal Line";
+        SustainabilityCalcMgt: Codeunit "Sustainability Calc. Mgt.";
+        GenJournalTemplateCode: Code[10];
+        GLAccountNo: Code[20];
+        GLAmount, CustomAmount : Decimal;
+    begin
+        // [SCENARIO 540221] Test that the custom amount is positive when the total of the GL is negative
+
+        // [GIVEN] G/L Account exists
+        GLAccountNo := LibraryERM.CreateGLAccountNoWithDirectPosting();
+
+        // [GIVEN] G/L Batch and Template exist
+        GenJournalTemplateCode := LibraryERM.SelectGenJnlTemplate();
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplateCode);
+
+        // [GIVEN] G/L Entry with Amount = -1000 for the G/L Account
+        GLAmount := -LibraryRandom.RandDec(1000, 2);
+        LibraryERM.CreateGeneralJnlLine2WithBalAcc(GenJouralLine, GenJournalTemplateCode, GenJournalBatch.Name, GenJouralLine."Document Type"::Payment, GenJouralLine."Account Type"::"G/L Account", GLAccountNo, GenJouralLine."Account Type"::"G/L Account", LibraryERM.CreateGLAccountNoWithDirectPosting(), GLAmount);
+        LibraryERM.PostGeneralJnlLine(GenJouralLine);
+
+        // [GIVEN] Sustain Account Category with the G/L Account calculation foundation
+        SustainAccountCategory := CreateSustAccountCategoryWithGLAccountNo(GLAccountNo);
+
+        // [WHEN] Getting the collectable amount for sustanability account category
+        CustomAmount := SustainabilityCalcMgt.GetCollectableGLAmount(SustainAccountCategory, 0D, 0D);
+
+        // [THEN] The custom amount = 1000
+        Assert.AreEqual(Abs(GLAmount), CustomAmount, CustomAmountMustBePositiveLbl);
+    end;
+
+    local procedure CreateSustAccountCategoryWithGLAccountNo(GLAccountNo: Code[20]) SustainAccountCategory: Record "Sustain. Account Category"
+    begin
+        SustainAccountCategory := LibrarySustainability.InsertAccountCategory(LibraryUtility.GenerateGUID(), LibraryUtility.GenerateGUID(), Enum::"Emission Scope"::"Scope 2", Enum::"Calculation Foundation"::Custom, true, true, true, 'GL', true);
+        SustainAccountCategory."G/L Account Filter" := GLAccountNo;
+        SustainAccountCategory.Modify(true);
     end;
 }

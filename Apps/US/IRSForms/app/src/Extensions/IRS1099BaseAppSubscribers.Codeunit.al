@@ -148,14 +148,10 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
         IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
         PeriodNo: Code[20];
     begin
-#if not CLEAN25
-        if not IRSFormsFeature.IsEnabled() then
+        if not SyncIRSDataInGenJnlLine(GenJnlLine) then
             exit;
-#endif
-        if GenJnlLine."Document Type" in [GenJnlLine."Document Type"::Invoice, GenJnlLine."Document Type"::"Credit Memo"] then begin
-            PeriodNo := IRSReportingPeriod.GetReportingPeriod(GenJnlLine."Posting Date");
-            GetIRS1099VendorFormBoxSetupFromGenJnlLine(IRS1099VendorFormBoxSetup, GenJnlLine, PeriodNo);
-        end;
+        PeriodNo := IRSReportingPeriod.GetReportingPeriod(GenJnlLine."Posting Date");
+        GetIRS1099VendorFormBoxSetupFromGenJnlLine(IRS1099VendorFormBoxSetup, GenJnlLine, PeriodNo);
         GenJnlLine.Validate("IRS 1099 Reporting Period", PeriodNo);
         GenJnlLine.Validate("IRS 1099 Form No.", IRS1099VendorFormBoxSetup."Form No.");
         GenJnlLine.Validate("IRS 1099 Form Box No.", IRS1099VendorFormBoxSetup."Form Box No.");
@@ -174,12 +170,21 @@ codeunit 10032 "IRS 1099 BaseApp Subscribers"
 
     procedure UpdateIRSReportingAmountInGenJnlLine(var GenJnlLine: Record "Gen. Journal Line")
     begin
-#if not CLEAN25
-        if not IRSFormsFeature.IsEnabled() then
+        if not SyncIRSDataInGenJnlLine(GenJnlLine) then
             exit;
-#endif
         GenJnlLine.Validate("IRS 1099 Reporting Amount", GenJnlLine.Amount);
         SaveChangesInGenJnlLine(GenJnlLine);
+    end;
+
+    local procedure SyncIRSDataInGenJnlLine(var GenJnlLine: Record "Gen. Journal Line"): Boolean
+    begin
+#if not CLEAN25
+        if not IRSFormsFeature.IsEnabled() then
+            exit(false);
+#endif
+        if GenJnlLine.IsTemporary() then
+            exit(false);
+        exit(GenJnlLine."Document Type" in [GenJnlLine."Document Type"::Invoice, GenJnlLine."Document Type"::"Credit Memo"]);
     end;
 
     local procedure SaveChangesInGenJnlLine(var GenJnlLine: Record "Gen. Journal Line")

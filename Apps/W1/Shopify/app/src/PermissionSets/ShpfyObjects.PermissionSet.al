@@ -193,6 +193,7 @@ permissionset 30104 "Shpfy - Objects"
         codeunit "Shpfy GQL OrderHeader" = X,
         codeunit "Shpfy GQL OrderLines" = X,
         codeunit "Shpfy GQL OrderRisks" = X,
+        codeunit "Shpfy GQL OrderTransactions" = X,
         codeunit "Shpfy GQL OrdersToImport" = X,
         codeunit "Shpfy GQL ProductById" = X,
         codeunit "Shpfy GQL ProductIds" = X,

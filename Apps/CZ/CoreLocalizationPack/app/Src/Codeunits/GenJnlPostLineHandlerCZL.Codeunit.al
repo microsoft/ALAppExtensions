@@ -420,14 +420,24 @@ codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPostDeferralPostBufferOnAfterFindDeferalPostingBuffer', '', false, false)]
     local procedure GetNonDeductibleVATPctOnPostDeferralPostBufferOnAfterFindDeferalPostingBuffer(GenJournalLine: Record "Gen. Journal Line"; var DeferralPostingBuffer: Record "Deferral Posting Buffer"; var NonDeductibleVATPct: Decimal)
+    begin
+        NonDeductibleVATPct := GetNonDeductibleVATPct(GenJournalLine, DeferralPostingBuffer."Deferral Doc. Type");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPostDeferralOnAfterGetNonDeductibleVATPct', '', false, false)]
+    local procedure GetNonDeductibleVATPctOnPostDeferralOnAfterGetNonDeductibleVATPct(GenJournalLine: Record "Gen. Journal Line"; DeferralDocType: Enum "Deferral Document Type"; var NonDeductibleVATPct: Decimal)
+    begin
+        NonDeductibleVATPct := GetNonDeductibleVATPct(GenJournalLine, DeferralDocType);
+    end;
+
+    local procedure GetNonDeductibleVATPct(GenJournalLine: Record "Gen. Journal Line"; DeferralDocType: Enum "Deferral Document Type"): Decimal
     var
         NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
     begin
-        NonDeductibleVATPct :=
-            NonDeductibleVATCZL.GetNonDeductibleVATPct(
-                GenJournalLine."VAT Bus. Posting Group", GenJournalLine."VAT Prod. Posting Group",
-                NonDeductibleVATCZL.GetGeneralPostingTypeFromDeferralDocType(DeferralPostingBuffer."Deferral Doc. Type"),
-                GenJournalLine."VAT Reporting Date");
+        exit(NonDeductibleVATCZL.GetNonDeductibleVATPct(
+            GenJournalLine."VAT Bus. Posting Group", GenJournalLine."VAT Prod. Posting Group",
+            NonDeductibleVATCZL.GetGeneralPostingTypeFromDeferralDocType(DeferralDocType),
+            GenJournalLine."VAT Reporting Date"));
     end;
 
     [IntegrationEvent(false, false)]

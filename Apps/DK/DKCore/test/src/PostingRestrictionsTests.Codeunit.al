@@ -13,6 +13,7 @@ codeunit 148017 "Posting Restrictions Tests"
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryJournals: Codeunit "Library - Journals";
         LibraryRandom: Codeunit "Library - Random";
+        LibraryUtility: Codeunit "Library - Utility";
         Assert: Codeunit "Assert";
         isInitialized: Boolean;
         CannotPostWithoutCVRNumberErr: Label 'You cannot post without a valid CVR number filled in. Open the Company Information page and enter a CVR number in the Registration No. field.';
@@ -507,6 +508,8 @@ codeunit 148017 "Posting Restrictions Tests"
     local procedure PostSalesInvoice(var SalesHeader: Record "Sales Header"): Code[20]
     begin
         LibrarySales.CreateSalesInvoice(SalesHeader);
+        SalesHeader.Validate("Incoming Document Entry No.", MockIncomingDocument(SalesHeader."Posting Date", SalesHeader."No."));
+        SalesHeader.Modify(true);
         exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
     end;
 
@@ -520,7 +523,24 @@ codeunit 148017 "Posting Restrictions Tests"
     local procedure PostPurchaseInvoice(var PurchaseHeader: Record "Purchase Header"): Code[20]
     begin
         LibraryPurchase.CreatePurchaseInvoice(PurchaseHeader);
+        PurchaseHeader.Validate("Incoming Document Entry No.", MockIncomingDocument(PurchaseHeader."Posting Date", PurchaseHeader."No."));
+        PurchaseHeader.Modify(true);
         exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
+    end;
+
+    local procedure MockIncomingDocument(PostingDate: Date; DocNo: Code[20]): Integer
+    var
+        IncomingDocument: Record "Incoming Document";
+        IncomingDocumentAttachment: Record "Incoming Document Attachment";
+    begin
+        IncomingDocument."Entry No." :=
+            LibraryUtility.GetNewRecNo(IncomingDocument, IncomingDocument.FieldNo("Entry No."));
+        IncomingDocument."Posting Date" := PostingDate;
+        IncomingDocument."Document No." := DocNo;
+        IncomingDocument.Insert();
+        IncomingDocumentAttachment."Incoming Document Entry No." := IncomingDocument."Entry No.";
+        IncomingDocumentAttachment.Insert();
+        exit(IncomingDocument."Entry No.");
     end;
 
     local procedure VerifyGLEntry(PostingDate: Date; DocNo: Code[20])

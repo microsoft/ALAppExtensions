@@ -7,6 +7,7 @@ using Microsoft.FixedAssets.Ledger;
 report 4411 "EXR Fixed Asset Details Excel"
 {
     ApplicationArea = All;
+    AdditionalSearchTerms = 'FA Details Excel,FA Details';
     Caption = 'Fixed Asset Details Excel (Preview)';
     DataAccessIntent = ReadOnly;
     DefaultRenderingLayout = FixedAssetDetailsExcel;
@@ -28,6 +29,8 @@ report 4411 "EXR Fixed Asset Details Excel"
             column(FixedAssetSubclassCode; "FA Subclass Code") { IncludeCaption = true; }
             column(FixedAssetLocation; "FA Location Code") { IncludeCaption = true; }
             column(BudgetedAsset; "Budgeted Asset") { IncludeCaption = true; }
+            column(GlobalDimension1Code; "Global Dimension 1 Code") { IncludeCaption = true; }
+            column(GlobalDimension2Code; "Global Dimension 2 Code") { IncludeCaption = true; }
             dataitem(FixedAssetLedgerEntry; "FA Ledger Entry")
             {
                 DataItemTableView = sorting("FA No.", "Depreciation Book Code", "FA Posting Date");

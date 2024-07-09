@@ -103,6 +103,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
                 Validate("Payment Terms Code");
                 Validate("Payment Method Code");
+                Validate("VAT Bus. Posting Group");
                 Validate("Currency Code");
 
                 if not SkipBillToContact then
@@ -1386,6 +1387,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
                 SalesAdvLetterLineCZZ.Init();
                 SalesAdvLetterLineCZZ."Document No." := "No.";
                 SalesAdvLetterLineCZZ."Line No." += 10000;
+                SalesAdvLetterLineCZZ."VAT Bus. Posting Group" := "VAT Bus. Posting Group";
                 SalesAdvLetterLineCZZ.Validate("VAT Prod. Posting Group", TempSalesAdvLetterLineCZZ."VAT Prod. Posting Group");
                 SalesAdvLetterLineCZZ.Description := TempSalesAdvLetterLineCZZ.Description;
                 SalesAdvLetterLineCZZ.Validate("Amount Including VAT", TempSalesAdvLetterLineCZZ."Amount Including VAT");

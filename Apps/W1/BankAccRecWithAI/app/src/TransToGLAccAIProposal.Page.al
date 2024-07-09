@@ -8,7 +8,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
     Caption = 'Copilot Proposals for Posting Differences to G/L Accounts';
     DataCaptionExpression = PageCaptionLbl;
     PageType = PromptDialog;
-    IsPreview = true;
+    IsPreview = false;
     Extensible = false;
     PromptMode = Generate;
     ApplicationArea = All;

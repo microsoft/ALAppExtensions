@@ -47,11 +47,17 @@ page 30134 "Shpfy Transactions"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the gateway the transaction was issued through.';
                 }
+#if not CLEAN25
                 field(SourceName; Rec."Source Name")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the origin of the transaction. This is set by Shopify. Example values: web, pos, iphone, android.';
+                    Visible = false;
+                    ObsoleteReason = 'Source name is no longer used.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '25.0';
                 }
+#endif
                 field(Amount; Rec.Amount)
                 {
                     ApplicationArea = All;

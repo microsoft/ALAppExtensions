@@ -274,6 +274,7 @@ codeunit 31017 "Upgrade Application CZL"
         UpgradeSubstCustVendPostingGroup();
         UpgradeVATStatementTemplate();
         UpgradeAllowVATPosting();
+        UpgradeOriginalVATAmountsInVATEntries();
     end;
 
     local procedure UpgradeGeneralLedgerSetup();
@@ -2656,6 +2657,22 @@ codeunit 31017 "Upgrade Application CZL"
         UserSetupDataTransfer.CopyFields();
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetAllowVATPostingUpgradeTag());
+    end;
+
+    local procedure UpgradeOriginalVATAmountsInVATEntries()
+    var
+        VATEntry: Record "VAT Entry";
+        VATEntryDataTransfer: DataTransfer;
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetOriginalVATAmountsInVATEntriesUpgradeTag()) then
+            exit;
+
+        VATEntryDataTransfer.SetTables(Database::"VAT Entry", Database::"VAT Entry");
+        VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo(Base), VATEntry.FieldNo("Original VAT Base CZL"));
+        VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo(Amount), VATEntry.FieldNo("Original VAT Amount CZL"));
+        VATEntryDataTransfer.CopyFields();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetOriginalVATAmountsInVATEntriesUpgradeTag());
     end;
 
     local procedure InsertRepSelection(ReportUsage: Enum "Report Selection Usage"; Sequence: Code[10]; ReportID: Integer)

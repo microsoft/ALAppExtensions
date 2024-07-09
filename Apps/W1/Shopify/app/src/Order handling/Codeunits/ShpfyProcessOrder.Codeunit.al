@@ -65,7 +65,7 @@ codeunit 30166 "Shpfy Process Order"
         BCDocumentTypeConvert: Codeunit "Shpfy BC Document Type Convert";
         IsHandled: Boolean;
     begin
-        OrderEvents.OnBeforeCreateSalesHeader(ShopifyOrderHeader, SalesHeader, IsHandled);
+        OrderEvents.OnBeforeCreateSalesHeader(ShopifyOrderHeader, SalesHeader, LastCreatedDocumentId, IsHandled);
         if not IsHandled then begin
             ShopifyOrderHeader.TestField("Sell-to Customer No.");
             SalesHeader.Init();

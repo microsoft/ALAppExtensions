@@ -13,7 +13,9 @@ using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.ReceivablesPayables;
 using Microsoft.Purchases.Document;
+using Microsoft.Purchases.Posting;
 using Microsoft.Sales.Document;
+using Microsoft.Sales.Posting;
 
 codeunit 4850 "AA Codes Posting Helper"
 {
@@ -187,13 +189,13 @@ codeunit 4850 "AA Codes Posting Helper"
                 GenJournalLine."Automatic Account Group" := '';
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterPrepareSales', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnAfterPrepareInvoicePostingBuffer', '', false, false)]
     local procedure OnAfterInvPostBufferPrepareSales(var SalesLine: Record "Sales Line"; var InvoicePostingBuffer: Record "Invoice Posting Buffer")
     begin
         InvoicePostingBuffer."Automatic Account Group" := SalesLine."Automatic Account Group";
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterPreparePurchase', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice Events", 'OnAfterPrepareInvoicePostingBuffer', '', false, false)]
     local procedure OnAfterInvPostBufferPreparePurchase(var PurchaseLine: Record "Purchase Line"; var InvoicePostingBuffer: Record "Invoice Posting Buffer")
     begin
         InvoicePostingBuffer."Automatic Account Group" := PurchaseLine."Automatic Account Group";

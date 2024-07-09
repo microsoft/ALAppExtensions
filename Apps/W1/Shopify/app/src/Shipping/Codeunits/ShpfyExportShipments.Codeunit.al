@@ -181,6 +181,7 @@ codeunit 30190 "Shpfy Export Shipments"
             FulfillmentOrderLine.SetRange("Shopify Location Id", OrderLine."Location Id");
             FulfillmentOrderLine.SetRange("Delivery Method Type", OrderLine."Delivery Method Type");
             FulfillmentOrderLine.SetFilter("Remaining Quantity", '>=%1', Round(SalesShipmentLine.Quantity, 1, '='));
+            FulfillmentOrderLine.SetFilter("Fulfillment Status", '<>%1', 'CLOSED');
             if FulfillmentOrderLine.FindFirst() then
                 exit(true);
         end;

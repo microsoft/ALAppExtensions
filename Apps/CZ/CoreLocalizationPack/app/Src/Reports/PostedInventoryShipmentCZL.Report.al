@@ -151,7 +151,8 @@ report 11750 "Posted Inventory Shipment CZL"
             begin
                 CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
                 CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
-                SalespersonPurchaser.Get("Salesperson Code");
+                if not SalespersonPurchaser.Get("Salesperson Code") then
+                    SalespersonPurchaser.Init();
 
                 if not IsReportInPreviewMode() then
                     Codeunit.Run(Codeunit::"Posted Invt. Shpt.-Printed CZL", "Invt. Shipment Header");

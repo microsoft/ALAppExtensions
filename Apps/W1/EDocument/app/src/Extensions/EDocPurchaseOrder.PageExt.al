@@ -36,7 +36,6 @@ pageextension 6132 "E-Doc. Purchase Order" extends "Purchase Order"
                     ApplicationArea = All;
                     Image = SparkleFilled;
                     Visible = ShowMapToEDocument and CopilotVisible;
-                    Enabled = CopilotEnabled;
 
                     trigger OnAction()
                     var
@@ -94,14 +93,13 @@ pageextension 6132 "E-Doc. Purchase Order" extends "Purchase Order"
 
 
     var
-        ShowMapToEDocument, CopilotEnabled, CopilotVisible : Boolean;
+        ShowMapToEDocument, CopilotVisible : Boolean;
 
 
     trigger OnOpenPage()
     var
         EDocPOMatching: Codeunit "E-Doc. PO Copilot Matching";
     begin
-        CopilotEnabled := EDocPOMatching.IsCopilotEnabled();
         CopilotVisible := EDocPOMatching.IsCopilotVisible();
     end;
 

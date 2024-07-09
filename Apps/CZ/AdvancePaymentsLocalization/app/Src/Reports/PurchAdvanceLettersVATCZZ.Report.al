@@ -59,7 +59,7 @@ report 31025 "Purch. Advance Letters VAT CZZ"
 
             dataitem("Purch. Adv. Letter Entry CZZ"; "Purch. Adv. Letter Entry CZZ")
             {
-                DataItemTableView = where("Entry Type" = filter("VAT Payment" | "VAT Usage" | "VAT Close" | "VAT Rate" | "VAT Adjustment"), Cancelled = const(false));
+                DataItemTableView = where("Entry Type" = filter("VAT Payment" | "VAT Usage" | "VAT Close" | "VAT Rate" | "VAT Adjustment"));
                 DataItemLink = "Purch. Adv. Letter No." = field("No.");
 
                 column(Document_No_; "Document No.")
@@ -112,7 +112,6 @@ report 31025 "Purch. Advance Letters VAT CZZ"
                 PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
             begin
                 PurchAdvLetterEntryCZZ.SetRange("Purch. Adv. Letter No.", "Purch. Adv. Letter Header CZZ"."No.");
-                PurchAdvLetterEntryCZZ.SetRange(Cancelled, false);
                 PurchAdvLetterEntryCZZ.SetFilter("Posting Date", '..%1', ToDate);
                 PurchAdvLetterEntryCZZ.SetFilter("Entry Type", '%1|%2|%3|%4|%5', PurchAdvLetterEntryCZZ."Entry Type"::"VAT Payment",
                   PurchAdvLetterEntryCZZ."Entry Type"::"VAT Usage", PurchAdvLetterEntryCZZ."Entry Type"::"VAT Close",
