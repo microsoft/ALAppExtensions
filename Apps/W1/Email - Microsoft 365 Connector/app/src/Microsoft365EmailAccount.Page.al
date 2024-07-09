@@ -25,7 +25,7 @@ page 4503 "Microsoft 365 Email Account"
             {
                 ApplicationArea = All;
                 Caption = 'Account Name';
-                ToolTip = 'The name of the account.';
+                ToolTip = 'Specifies the name of the account.';
                 ShowMandatory = true;
                 NotBlank = true;
             }

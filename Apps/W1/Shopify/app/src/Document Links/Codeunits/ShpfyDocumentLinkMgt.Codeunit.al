@@ -6,6 +6,8 @@ using Microsoft.Sales.Posting;
 
 codeunit 30262 "Shpfy Document Link Mgt."
 {
+    Permissions = TableData "Shpfy Doc. Link To Doc." = imd;
+
     var
         DocLinkToBCDoc: Record "Shpfy Doc. Link To Doc.";
         ShpfyBCDocumentTypeConvert: Codeunit "Shpfy BC Document Type Convert";

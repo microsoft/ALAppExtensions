@@ -451,15 +451,4 @@ codeunit 6164 "E-Doc. Line Matching"
         TempPurchaseLine.MarkedOnly(true);
     end;
 
-    procedure SumUnitCostForMatches(EDocument: Record "E-Document") Sum: Decimal
-    var
-        EDocOrderMatch: Record "E-Doc. Order Match";
-    begin
-        EDocOrderMatch.SetRange("E-Document Entry No.", EDocument."Entry No");
-        EDocOrderMatch.SetRange("Document Order No.", EDocument."Order No.");
-        if EDocOrderMatch.FindSet() then
-            repeat
-                Sum += EDocOrderMatch.Quantity * EDocOrderMatch."E-Document Direct Unit Cost";
-            until EDocOrderMatch.Next() = 0;
-    end;
 }

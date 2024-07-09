@@ -526,6 +526,8 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
                     AdvanceLetterApplicationCZZ."Posting Date" := TempAdvanceLetterApplicationCZZ."Posting Date";
                     AdvanceLetterApplicationCZZ."Document Type" := AdvLetterUsageDocTypeCZZ;
                     AdvanceLetterApplicationCZZ."Document No." := DocumentNo;
+                    AdvanceLetterApplicationCZZ."Job No." := TempAdvanceLetterApplicationCZZ."Job No.";
+                    AdvanceLetterApplicationCZZ."Job Task No." := TempAdvanceLetterApplicationCZZ."Job Task No.";
                     AdvanceLetterApplicationCZZ.Amount := TempAdvanceLetterApplicationCZZ.Amount;
                     AdvanceLetterApplicationCZZ."Amount (LCY)" := TempAdvanceLetterApplicationCZZ."Amount (LCY)";
                     OnLinkAdvanceLetterOnBeforeInsertAdvanceLetterApplication(AdvanceLetterApplicationCZZ, TempAdvanceLetterApplicationCZZ);
@@ -579,9 +581,14 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
         AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         UsedOnDocument: Text;
+        IsHandled: Boolean;
         UnlinkIsNotPossibleErr: Label 'Unlink is not possible, because %1 entry exists.', Comment = '%1 = Entry type';
         UsedOnDocumentQst: Label 'Advance is used on document(s) %1.\Continue?', Comment = '%1 = Advance No. list';
     begin
+        IsHandled := false;
+        OnBeforeUnlinkAdvancePayment(SalesAdvLetterEntryCZZ, PostingDate, IsHandled);
+        if IsHandled then
+            exit;
         SalesAdvLetterEntryCZZ.TestField("Entry Type", SalesAdvLetterEntryCZZ."Entry Type"::Payment);
         SalesAdvLetterEntryCZZ.TestField(Cancelled, false);
         SalesAdvLetterEntryCZZ2.SetRange("Sales Adv. Letter No.", SalesAdvLetterEntryCZZ."Sales Adv. Letter No.");
@@ -1594,6 +1601,11 @@ codeunit 31002 "SalesAdvLetterManagement CZZ"
 
     [IntegrationEvent(true, false)]
     local procedure OnBeforeCheckAdvancePayment(AdvLetterUsageDocTypeCZZ: Enum "Adv. Letter Usage Doc.Type CZZ"; DocumentHeader: Variant; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUnlinkAdvancePayment(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; PostingDate: Date; var IsHandled: Boolean)
     begin
     end;
 }

@@ -16,6 +16,7 @@ codeunit 10036 "IRS 1099 Form Docs Impl." implements "IRS 1099 Create Form Docs"
 
     procedure CreateFormDocs(var TempVendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; IRS1099CalcParameters: Record "IRS 1099 Calc. Params");
     var
+        IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
         TempIRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header" temporary;
         TempIRS1099FormDocLine: Record "IRS 1099 Form Doc. Line" temporary;
         TempIRS1099FormDocLineDetail: Record "IRS 1099 Form Doc. Line Detail" temporary;
@@ -29,6 +30,8 @@ codeunit 10036 "IRS 1099 Form Docs Impl." implements "IRS 1099 Create Form Docs"
             error(NoVendorFormBoxAmountsFoundErr);
 
         IRSFormsSetup.Get();
+        if IRS1099FormDocHeader.FindLast() then
+            DocID := IRS1099FormDocHeader.ID;
         repeat
             if not SkipFormDocumentCreation(TempVendFormBoxBuffer, IRS1099CalcParameters) then begin
                 LineNo := 0;

@@ -20,13 +20,13 @@ codeunit 7289 SalesShipmentLookup implements DocumentLookupSubType
     var
         SourceSalesHeader: Record "Sales Header";
         SalesShipmentHeader: Record "Sales Shipment Header";
-        DocumentLookup: Codeunit "Document Lookup Function";
+        SearchItemsWithFiltersFunc: Codeunit "Search Items With Filters Func";
         DocumentNo: Text;
         StartDateStr: Text;
         EndDateStr: Text;
         FoundDocNo: Code[20];
     begin
-        DocumentLookup.GetParametersFromCustomDimension(CustomDimension, SourceSalesHeader, DocumentNo, StartDateStr, EndDateStr);
+        SearchItemsWithFiltersFunc.GetParametersFromCustomDimension(CustomDimension, SourceSalesHeader, DocumentNo, StartDateStr, EndDateStr);
         SalesShipmentHeader.SetLoadFields("No.");
         // setup SecurityFilter
         SalesShipmentHeader.SetSecurityFilterOnRespCenter();

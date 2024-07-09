@@ -258,13 +258,13 @@ report 11749 "VAT Coeff. Correction CZL"
     end;
 
     protected var
+        TempVATEntry: Record "VAT Entry" temporary;
         FromVATDate, ToVATDate, UsePostingDate, UseVATDate : Date;
         Post: Boolean;
         UseDimensions: Option "From G/L Account","None";
         UseDocumentNo: Code[20];
 
     var
-        TempVATEntry: Record "VAT Entry" temporary;
         TempVATPostingSetup: Record "VAT Posting Setup" temporary;
         VATEntry: Record "VAT Entry";
         ModifyVATEntry: Record "VAT Entry";
@@ -280,15 +280,19 @@ report 11749 "VAT Coeff. Correction CZL"
     local procedure PostVAT()
     var
         GenJournalLine: Record "Gen. Journal Line";
+        GLAccount: Record "G/L Account";
         EntryNo: Integer;
     begin
         // Only G/L Account without VAT
         GetVATPostingSetup(TempVATEntry."VAT Bus. Posting Group", TempVATEntry."VAT Prod. Posting Group");
+        GLAccount.Get(TempVATPostingSetup."VAT Coeff. Corr. Account CZL");
         GenJournalLine.Init();
         GenJournalLine."Account Type" := GenJournalLine."Account Type"::"G/L Account";
-        GenJournalLine."Account No." := TempVATPostingSetup."VAT Coeff. Corr. Account CZL";
-        GenJournalLine."System-Created Entry" := true;
+        GenJournalLine."Account No." := GLAccount."No.";
+        GenJournalLine."Bal. Account Type" := GenJournalLine."Account Type"::"G/L Account";
         GenJournalLine."Bal. Account No." := TempVATPostingSetup."Purchase VAT Account";
+        GenJournalLine.Description := GLAccount.Name;
+        GenJournalLine."System-Created Entry" := true;
         GenJournalLine."Source Code" := SourceCodeSetup."VAT Coeff. Correction CZL";
         GenJournalLine."Posting Date" := TempVATEntry."Posting Date";
         GenJournalLine."Document No." := TempVATEntry."Document No.";

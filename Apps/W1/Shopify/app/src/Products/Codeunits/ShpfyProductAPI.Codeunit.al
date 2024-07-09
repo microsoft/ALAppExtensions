@@ -564,7 +564,9 @@ codeunit 30176 "Shpfy Product API"
     /// <returns>Return variable "Result" of type Boolean.</returns>
     internal procedure UpdateShopifyProductFields(var ShopifyProduct: record "Shpfy Product"; JProduct: JsonObject) Result: Boolean
     var
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
         UpdatedAt: DateTime;
+        JMetafields: JsonArray;
     begin
         UpdatedAt := JsonHelper.GetValueAsDateTime(JProduct, 'updatedAt');
         if UpdatedAt < ShopifyProduct."Updated At" then
@@ -584,7 +586,7 @@ codeunit 30176 "Shpfy Product API"
         ShopifyProduct."Product Type" := JsonHelper.GetValueAsText(JProduct, 'productType', MaxStrLen(ShopifyProduct."Product Type"));
 #pragma warning restore AA0139
         ShopifyProduct.UpdateTags(JsonHelper.GetArrayAsText(JProduct, 'tags'));
-#pragma warning disable AA0139
+#pragma warning disable AA0139        
         ShopifyProduct.Title := JsonHelper.GetValueAsText(JProduct, 'title', MaxStrLen(ShopifyProduct.Title));
         ShopifyProduct.Vendor := JsonHelper.GetValueAsText(JProduct, 'vendor', MaxStrLen(ShopifyProduct.Vendor));
         ShopifyProduct."SEO Description" := JsonHelper.GetValueAsText(JProduct, 'seo.description', MaxStrLen(ShopifyProduct."SEO Description"));
@@ -592,8 +594,10 @@ codeunit 30176 "Shpfy Product API"
 #pragma warning restore AA0139
         ShopifyProduct.Status := ConvertToProductStatus(JsonHelper.GetValueAsText(JProduct, 'status'));
         ShopifyProduct.Modify(false);
-    end;
 
+        if JsonHelper.GetJsonArray(JProduct, JMetafields, 'metafields.edges') then
+            MetafieldAPI.UpdateMetafieldsFromShopify(JMetafields, Database::"Shpfy Product", ShopifyProduct.Id);
+    end;
 
     local procedure ConvertToProductStatus(Value: Text): Enum "Shpfy Product Status"
     begin
@@ -607,5 +611,25 @@ codeunit 30176 "Shpfy Product API"
     local procedure ConvertToProductStatus(Value: Enum "Shpfy Product Status"): Text
     begin
         exit(Value.Names.Get(Value.Ordinals.IndexOf(Value.AsInteger())).ToUpper());
+    end;
+
+    /// <summary>
+    /// Gets all the Product Options for a product.
+    /// </summary>
+    /// <param name="ShopifyProductId">Shopify product ID for which the options are to be retrieved.</param>
+    /// <returns>Dictionary of option IDs and option names.</returns>
+    internal procedure GetProductOptions(ShopifyProductId: BigInteger) Options: Dictionary of [text, Text]
+    var
+        Parameters: Dictionary of [Text, Text];
+        JResponse: JsonToken;
+        JOptions: JsonArray;
+        JOption: JsonToken;
+    begin
+        Parameters.Add('ProductId', Format(ShopifyProductId));
+        JResponse := CommunicationMgt.ExecuteGraphQL(Enum::"Shpfy GraphQL Type"::GetProductOptions, Parameters);
+
+        JsonHelper.GetJsonArray(JResponse, JOptions, 'data.product.options');
+        foreach JOption in JOptions do
+            Options.Add(JsonHelper.GetValueAsText(JOption, 'id'), JsonHelper.GetValueAsText(JOption, 'name'));
     end;
 }

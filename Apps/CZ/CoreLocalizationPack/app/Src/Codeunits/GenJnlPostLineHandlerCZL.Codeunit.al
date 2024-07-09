@@ -420,18 +420,55 @@ codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPostDeferralPostBufferOnAfterFindDeferalPostingBuffer', '', false, false)]
     local procedure GetNonDeductibleVATPctOnPostDeferralPostBufferOnAfterFindDeferalPostingBuffer(GenJournalLine: Record "Gen. Journal Line"; var DeferralPostingBuffer: Record "Deferral Posting Buffer"; var NonDeductibleVATPct: Decimal)
+    begin
+        NonDeductibleVATPct := GetNonDeductibleVATPct(GenJournalLine, DeferralPostingBuffer."Deferral Doc. Type");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPostDeferralOnAfterGetNonDeductibleVATPct', '', false, false)]
+    local procedure GetNonDeductibleVATPctOnPostDeferralOnAfterGetNonDeductibleVATPct(GenJournalLine: Record "Gen. Journal Line"; DeferralDocType: Enum "Deferral Document Type"; var NonDeductibleVATPct: Decimal)
+    begin
+        NonDeductibleVATPct := GetNonDeductibleVATPct(GenJournalLine, DeferralDocType);
+    end;
+
+    local procedure GetNonDeductibleVATPct(GenJournalLine: Record "Gen. Journal Line"; DeferralDocType: Enum "Deferral Document Type"): Decimal
     var
         NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
     begin
-        NonDeductibleVATPct :=
-            NonDeductibleVATCZL.GetNonDeductibleVATPct(
-                GenJournalLine."VAT Bus. Posting Group", GenJournalLine."VAT Prod. Posting Group",
-                NonDeductibleVATCZL.GetGeneralPostingTypeFromDeferralDocType(DeferralPostingBuffer."Deferral Doc. Type"),
-                GenJournalLine."VAT Reporting Date");
+        exit(NonDeductibleVATCZL.GetNonDeductibleVATPct(
+            GenJournalLine."VAT Bus. Posting Group", GenJournalLine."VAT Prod. Posting Group",
+            NonDeductibleVATCZL.GetGeneralPostingTypeFromDeferralDocType(DeferralDocType),
+            GenJournalLine."VAT Reporting Date"));
     end;
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeUpdateVATAmountOnAfterInitVAT(var GenJournalLine: Record "Gen. Journal Line"; var GLEntry: Record "G/L Entry"; var IsHandled: Boolean)
     begin
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterGetCurrencyExchRate', '', false, false)]
+    local procedure OnAfterGetCurrencyExchRate(var GenJnlLine: Record "Gen. Journal Line"; var CurrencyFactor: Decimal)
+    begin
+        if GenJnlLine."Additional Currency Factor CZL" <> 0 then
+            CurrencyFactor := GenJnlLine."Additional Currency Factor CZL";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPostDeferralPostBufferOnBeforeInsertGLEntryForDeferralAccount', '', false, false)]
+    local procedure OnPostDeferralPostBufferOnBeforeInsertGLEntryForDeferralAccount(GenJournalLine: Record "Gen. Journal Line"; var GLEntry: Record "G/L Entry")
+    var
+        GLEntryasCorrectionCZL: Codeunit "G/L Entry as Correction CZL";
+    begin
+        if (GLEntry.Amount < 0) and
+           (GLEntry."Posting Date" = GenJournalLine."Posting Date") and
+           (GLEntry."G/L Account No." = GenJournalLine."Account No.")
+        then
+            GLEntryasCorrectionCZL.Enable();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPostDeferralPostBufferOnAfterInsertGLEntry', '', false, false)]
+    local procedure OnPostDeferralPostBufferOnAfterInsertGLEntry()
+    var
+        GLEntryasCorrectionCZL: Codeunit "G/L Entry as Correction CZL";
+    begin
+        GLEntryasCorrectionCZL.Disable();
     end;
 }

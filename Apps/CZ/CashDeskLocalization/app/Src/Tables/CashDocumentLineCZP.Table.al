@@ -770,9 +770,14 @@ table 11733 "Cash Document Line CZP"
         {
             Caption = 'VAT Difference (LCY)';
             DataClassification = CustomerContent;
-            ObsoleteState = Pending;
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
+#if CLEAN25
+            ObsoleteState = Removed;
+            ObsoleteTag = '28.0';
+#else
+            ObsoleteState = Pending;
             ObsoleteTag = '18.0';
+#endif
         }
         field(63; "System-Created Entry"; Boolean)
         {

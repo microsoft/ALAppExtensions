@@ -290,7 +290,7 @@ table 6623 "FS Connection Setup"
         UserHasNoRolesErr: Label 'User %1 has no user roles assigned on server %2.', Comment = '%1 user name, %2 - server address';
         BCIntegrationUserFSRoleIdTxt: Label '{c11b4fa8-956b-439d-8b3c-021e8736a78b}', Locked = true;
         CDSConnectionMustBeEnabledErr: Label 'You must enable the connection to Dataverse before you can set up the connection to %1.\\Choose ''Set up Dataverse connection'' in %2 page.', Comment = '%1 = CRM product name, %2 = Assisted Setup page caption.';
-        CRMConnectionMustBeEnabledErr: Label 'You must enable the connection to Dynamics 365 Field Service before you can set up the connection to %1.\\Choose ''Set up a connection to Dynamics 365 Field Service'' in %2 page.', Comment = '%1 = CRM product name, %2 = Assisted Setup page caption.';
+        CRMConnectionMustBeEnabledErr: Label 'You must enable the connection to Dynamics 365 Sales before you can set up the connection to %1.\\Choose ''Set up a connection to Dynamics 365 Sales'' in %2 page.', Comment = '%1 = FS product name, %2 = Assisted Setup page caption.';
         ShowDataverseConnectionSetupLbl: Label 'Show Dataverse Connection Setup';
         ShowCRMConnectionSetupLbl: Label 'Show Microsoft Dynamics 365 Connection Setup';
         DeploySucceedMsg: Label 'The solution, user roles, and entities have been deployed.';

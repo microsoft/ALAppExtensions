@@ -47,6 +47,8 @@ codeunit 11295 "Install SE Core"
             exit;
 
         RecRef.Open(Database::"Company Information", false);
+        RecRef.GetBySystemId(CompanyInformation.SystemId);
+        
         if RecRef.FieldExist(11200) then begin // field 11290 - CompanyInformation."Plus Giro No."
             SourceFieldRef := RecRef.Field(11200);
             TargetFieldRef := RecRef.Field(11290);

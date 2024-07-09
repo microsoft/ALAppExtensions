@@ -7,6 +7,8 @@ namespace Microsoft.Integration.DynamicsFieldService;
 using Microsoft.Integration.Dataverse;
 using Microsoft.Integration.D365Sales;
 using Microsoft.Integration.SyncEngine;
+using Microsoft.Inventory.Location;
+using Microsoft.Inventory.Setup;
 using Microsoft.Utilities;
 using System.Threading;
 using Microsoft.Projects.Project.Job;
@@ -14,7 +16,6 @@ using Microsoft.Service.Item;
 using Microsoft.Projects.Resources.Resource;
 using Microsoft.Projects.Project.Journal;
 using System.Environment.Configuration;
-using Microsoft.Inventory.Location;
 
 codeunit 6611 "FS Setup Defaults"
 {
@@ -401,11 +402,15 @@ codeunit 6611 "FS Setup Defaults"
 
     internal procedure ResetLocationMapping(var FSConnectionSetup: Record "FS Connection Setup"; IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean)
     var
+        InventorySetup: Record "Inventory Setup";
         IntegrationTableMapping: Record "Integration Table Mapping";
         IntegrationFieldMapping: Record "Integration Field Mapping";
         Location: Record Location;
         FSWarehouse: Record "FS Warehouse";
     begin
+        if InventorySetup.Get() and (not InventorySetup."Location Mandatory") then
+            exit;
+
         Location.SetRange("Use As In-Transit", false);
         Location.SetFilter("Job Consump. Whse. Handling", '''' + Format(Location."Job Consump. Whse. Handling"::"No Warehouse Handling") + '''|''' +
                                     Format(Location."Job Consump. Whse. Handling"::"Warehouse Pick (optional)") + '''|''' +
@@ -422,6 +427,8 @@ codeunit 6611 "FS Setup Defaults"
 
         IntegrationTableMapping.SetTableFilter(
           GetTableFilterFromView(Database::Location, Location.TableCaption(), Location.GetView()));
+        IntegrationTableMapping."Synch. After Bulk Coupling" := true;
+        IntegrationTableMapping."Create New in Case of No Match" := true;
         IntegrationTableMapping.Modify();
 
         InsertIntegrationFieldMapping(
@@ -437,6 +444,11 @@ codeunit 6611 "FS Setup Defaults"
           FSWarehouse.FieldNo(Description),
           IntegrationFieldMapping.Direction::ToIntegrationTable,
           '', true, false);
+
+        IntegrationFieldMapping.SetRange("Integration Table Mapping Name", IntegrationTableMappingName);
+        IntegrationFieldMapping.FindFirst();
+        IntegrationFieldMapping."Use For Match-Based Coupling" := true;
+        IntegrationFieldMapping.Modify();
 
         RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 5);
     end;
@@ -601,6 +613,7 @@ codeunit 6611 "FS Setup Defaults"
         TempNameValueBuffer.SetRange(Value, Format(Database::Resource));
         if TempNameValueBuffer.FindFirst() then
             TempNameValueBuffer.Delete();
+        TempNameValueBuffer.Reset();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Setup Defaults", 'OnBeforeGetNameFieldNo', '', false, false)]

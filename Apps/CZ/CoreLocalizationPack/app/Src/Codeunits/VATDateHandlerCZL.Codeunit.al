@@ -19,6 +19,7 @@ using Microsoft.Sales.History;
 using Microsoft.Sales.Receivables;
 using Microsoft.Service.Document;
 using Microsoft.Service.History;
+using Microsoft.Service.Posting;
 using System.Reflection;
 using System.Security.User;
 
@@ -82,7 +83,7 @@ codeunit 11742 "VAT Date Handler CZL"
 
 #pragma warning restore AL0432
 #endif
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterPrepareSales', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::Microsoft.Sales.Posting."Sales Post Invoice Events", 'OnAfterPrepareInvoicePostingBuffer', '', false, false)]
     local procedure UpdateInvoicePostingBufferOnAfterPrepareSales(var InvoicePostingBuffer: Record "Invoice Posting Buffer"; var SalesLine: Record "Sales Line")
     var
         SalesHeader: Record "Sales Header";
@@ -93,7 +94,7 @@ codeunit 11742 "VAT Date Handler CZL"
         InvoicePostingBuffer."Correction CZL" := SalesHeader.Correction xor SalesLine."Negative CZL";
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterPreparePurchase', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::Microsoft.Purchases.Posting."Purch. Post Invoice Events", 'OnAfterPrepareInvoicePostingBuffer', '', false, false)]
     local procedure UpdateInvoicePostingBufferOnAfterPreparePurchase(var InvoicePostingBuffer: Record "Invoice Posting Buffer"; var PurchaseLine: Record "Purchase Line")
     var
         PurchaseHeader: Record "Purchase Header";
@@ -104,7 +105,7 @@ codeunit 11742 "VAT Date Handler CZL"
         InvoicePostingBuffer."Correction CZL" := PurchaseHeader.Correction xor PurchaseLine."Negative CZL";
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterPrepareService', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service Post Invoice Events", 'OnAfterPrepareInvoicePostingBuffer', '', false, false)]
     local procedure UpdateInvoicePostingBufferOnAfterPrepareService(var InvoicePostingBuffer: Record "Invoice Posting Buffer"; var ServiceLine: Record "Service Line")
     var
         ServiceHeader: Record "Service Header";

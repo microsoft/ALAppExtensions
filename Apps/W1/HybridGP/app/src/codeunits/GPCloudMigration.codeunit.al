@@ -256,6 +256,7 @@ codeunit 4025 "GP Cloud Migration"
 
         UpdateOrInsertRecord(Database::"GP IV00101", 'IV00101');
         UpdateOrInsertRecord(Database::"GP IV00102", 'IV00102');
+        UpdateOrInsertRecord(Database::"GP IV00104", 'IV00104');
         UpdateOrInsertRecord(Database::"GP IV00105", 'IV00105');
         UpdateOrInsertRecord(Database::"GP IV00200", 'IV00200');
         UpdateOrInsertRecord(Database::"GP IV00300", 'IV00300');

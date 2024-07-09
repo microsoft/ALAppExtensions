@@ -14,26 +14,26 @@ codeunit 31044 "Navigate Handler CZL"
         EETEntryCZL: Record "EET Entry CZL";
 
     [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnAfterNavigateFindRecords', '', false, false)]
-    local procedure OnAfterNavigateFindRecords(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; Sender: Page Navigate)
+    local procedure OnAfterNavigateFindRecords(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text)
     begin
-        FindEETEntries(DocumentEntry, DocNoFilter, Sender);
+        FindEETEntries(DocumentEntry, DocNoFilter);
     end;
 
-    local procedure FindEETEntries(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; Navigate: Page Navigate)
+    local procedure FindEETEntries(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text)
     begin
         if EETEntryCZL.ReadPermission() then begin
             EETEntryCZL.Reset();
             EETEntryCZL.SetCurrentKey("Document No.");
             EETEntryCZL.SetFilter("Document No.", DocNoFilter);
-            Navigate.InsertIntoDocEntry(DocumentEntry, Database::"EET Entry CZL", Enum::"Document Entry Document Type"::Quote,
+            DocumentEntry.InsertIntoDocEntry(Database::"EET Entry CZL", Enum::"Document Entry Document Type"::Quote,
                 EETEntryCZL.TableCaption(), EETEntryCZL.Count());
         end;
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnBeforeNavigateShowRecords', '', false, false)]
-    local procedure OnBeforeNavigateShowRecords(TableID: Integer; DocNoFilter: Text; PostingDateFilter: Text; var TempDocumentEntry: Record "Document Entry"; var IsHandled: Boolean)
+    [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnBeforeShowRecords', '', false, false)]
+    local procedure OnBeforeShowRecords(var TempDocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text; var IsHandled: Boolean)
     begin
-        case TableID of
+        case TempDocumentEntry."Table ID" of
             Database::"EET Entry CZL":
                 begin
                     EETEntryCZL.Reset();

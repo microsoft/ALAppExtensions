@@ -13,7 +13,6 @@ page 11702 "Acc. Schedule File Mapping CZL"
     DeleteAllowed = false;
     InsertAllowed = false;
     PageType = Worksheet;
-    SaveValues = true;
     SourceTable = "Acc. Schedule Line";
 
     layout

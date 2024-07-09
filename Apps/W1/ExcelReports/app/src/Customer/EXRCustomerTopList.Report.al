@@ -139,7 +139,7 @@ report 4409 "EXR Customer Top List"
         if EXTTopCustomerSale.Read() then
             repeat
                 InsertAggregatedSales(EXTTopCustomerSale.Customer_No, EXTTopCustomerSale.Sum_Purch_LCY);
-                CustomerFilter += EXTTopCustomerSale.Customer_No + '|';
+                CustomerFilter += EscapeCustomerNoFilter(EXTTopCustomerSale.Customer_No) + '|';
             until (not EXTTopCustomerSale.Read());
 
         exit(CustomerFilter.TrimEnd('|'));
@@ -156,10 +156,15 @@ report 4409 "EXR Customer Top List"
         if EXTTopCustomerBalance.Read() then
             repeat
                 InsertAggregatedSales(EXTTopCustomerBalance.Customer_No, EXTTopCustomerBalance.Balance_LCY);
-                CustomerFilter += EXTTopCustomerBalance.Customer_No + '|';
+                CustomerFilter += EscapeCustomerNoFilter(EXTTopCustomerBalance.Customer_No) + '|';
             until (not EXTTopCustomerBalance.Read());
 
         exit(CustomerFilter.TrimEnd('|'));
+    end;
+
+    local procedure EscapeCustomerNoFilter(CustomerNo: Code[20]): Text
+    begin
+        exit('''' + CustomerNo + '''');
     end;
 
     local procedure ChangeShowType(NewShowType: Option)
@@ -198,7 +203,7 @@ report 4409 "EXR Customer Top List"
         EXTTopCustomerBalance.Open();
         if EXTTopCustomerBalance.Read() then
             repeat
-                TopCustomerData.SetFilter(TopCustomerData."Customer No.", EXTTopCustomerBalance.Customer_No);
+                TopCustomerData.SetFilter(TopCustomerData."Customer No.", EscapeCustomerNoFilter(EXTTopCustomerBalance.Customer_No));
                 if TopCustomerData.FindFirst() then begin
                     TopCustomerData."Amount 2 (LCY)" := EXTTopCustomerBalance.Balance_LCY;
                     if Customer.Get(TopCustomerData."Customer No.") then

@@ -239,27 +239,28 @@ codeunit 18768 "Provisional Entry Handler"
     local procedure FindTCSEntries(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text)
     var
         ProvisionalEntry: Record "Provisional Entry";
-        Navigate: page Navigate;
     begin
         if ProvisionalEntry.ReadPermission() then begin
             ProvisionalEntry.Reset();
             ProvisionalEntry.SetCurrentKey("Posted Document No.", "Posting Date");
             ProvisionalEntry.SetFilter("Posted Document No.", DocNoFilter);
             ProvisionalEntry.SetFilter("Posting Date", PostingDateFilter);
-            Navigate.InsertIntoDocEntry(DocumentEntry, Database::"Provisional Entry", 0, Copystr(ProvisionalEntry.TableCaption(), 1, 1024), ProvisionalEntry.Count());
+            DocumentEntry.InsertIntoDocEntry(Database::"Provisional Entry", 0, Copystr(ProvisionalEntry.TableCaption(), 1, 1024), ProvisionalEntry.Count());
         end;
     end;
 
-    [EventSubscriber(ObjectType::Page, page::Navigate, 'OnAfterNavigateShowRecords', '', false, false)]
-    local procedure ShowEntries(TableID: Integer; DocNoFilter: Text; PostingDateFilter: Text; var TempDocumentEntry: Record "Document Entry")
+    [EventSubscriber(ObjectType::Page, page::Navigate, 'OnBeforeShowRecords', '', false, false)]
+    local procedure ShowEntries(DocNoFilter: Text; PostingDateFilter: Text; var TempDocumentEntry: Record "Document Entry"; var IsHandled: Boolean)
     var
         ProvisionalEntry: Record "Provisional Entry";
     begin
-        ProvisionalEntry.Reset();
-        ProvisionalEntry.SetFilter("Posted Document No.", DocNoFilter);
-        ProvisionalEntry.SetFilter("Posting Date", PostingDateFilter);
-        if TableID = Database::"Provisional Entry" then
+        if TempDocumentEntry."Table ID" = Database::"Provisional Entry" then begin
+            ProvisionalEntry.Reset();
+            ProvisionalEntry.SetFilter("Posted Document No.", DocNoFilter);
+            ProvisionalEntry.SetFilter("Posting Date", PostingDateFilter);
             Page.Run(Page::"Provisional Entries Preview", ProvisionalEntry);
+            IsHandled := true;
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterRunWithoutCheck', '', false, false)]

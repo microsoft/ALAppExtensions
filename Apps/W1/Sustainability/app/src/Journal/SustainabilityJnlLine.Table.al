@@ -67,6 +67,7 @@ table 6214 "Sustainability Jnl. Line"
                     SustainabilityAccount.Get("Account No.");
                     SustainabilityAccount.CheckAccountReadyForPosting();
                     SustainabilityAccount.TestField("Direct Posting", true);
+
                     Validate("Account Category", SustainabilityAccount.Category);
                     Validate("Account Subcategory", SustainabilityAccount.Subcategory);
 
@@ -83,8 +84,7 @@ table 6214 "Sustainability Jnl. Line"
         field(8; "Account Name"; Text[100])
         {
             Caption = 'Account Name';
-            FieldClass = FlowField;
-            CalcFormula = lookup("Sustainability Account".Name where("No." = field("Account No.")));
+            DataClassification = CustomerContent;
         }
         field(9; "Account Category"; Code[20])
         {
@@ -101,7 +101,6 @@ table 6214 "Sustainability Jnl. Line"
         field(10; "Account Subcategory"; Code[20])
         {
             Caption = 'Account Subcategory';
-            Editable = false;
             TableRelation = "Sustain. Account Subcategory".Code where("Category Code" = field("Account Category"));
         }
         field(11; Description; Text[100])

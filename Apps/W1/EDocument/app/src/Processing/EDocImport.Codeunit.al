@@ -15,7 +15,6 @@ codeunit 6140 "E-Doc. Import"
     Permissions =
         tabledata "E-Document" = im,
         tabledata "E-Doc. Imported Line" = imd;
-
     internal procedure UploadDocument(var EDocument: Record "E-Document")
     var
         EDocumentService: Record "E-Document Service";
@@ -92,7 +91,7 @@ codeunit 6140 "E-Doc. Import"
         end else
             EDocErrorHelper.LogSimpleErrorMessage(EDocument, GetLastErrorText());
 
-        EDocument.Modify();
+        EDocument.Modify(true);
     end;
 
     internal procedure ReceiveDocument(EDocService: Record "E-Document Service")
@@ -338,8 +337,7 @@ codeunit 6140 "E-Doc. Import"
         UpdateEDocumentRecordId(EDocument, EDocument."Document Type", DocNo, RecordId);
     end;
 
-    local procedure UpdateEDocumentRecordId(var EDocument: Record "E-Document"; EDocType: enum "E-Document Type"; DocNo: Code[20];
-                                                                                              RecordId: RecordId)
+    local procedure UpdateEDocumentRecordId(var EDocument: Record "E-Document"; EDocType: enum "E-Document Type"; DocNo: Code[20]; RecordId: RecordId)
     begin
         EDocument."Document Type" := EDocType;
         EDocument."Document No." := DocNo;

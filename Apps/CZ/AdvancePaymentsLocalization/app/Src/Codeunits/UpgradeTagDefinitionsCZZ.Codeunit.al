@@ -25,6 +25,7 @@ codeunit 31089 "Upgrade Tag Definitions CZZ"
         PerCompanyUpgradeTags.Add(GetSalesAdvLetterEntryCustomerNoUpgradeTag());
         PerCompanyUpgradeTags.Add(GetAdvanceLetterApplicationAmountLCYUpgradeTag());
         PerCompanyUpgradeTags.Add(GetPostVATDocForReverseChargeUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetSalesAdvLetterEntryCustomerNo2UpgradeTag());
     end;
 
     procedure GetDataVersion190PerDatabaseUpgradeTag(): Code[250]
@@ -70,5 +71,10 @@ codeunit 31089 "Upgrade Tag Definitions CZZ"
     procedure GetPostVATDocForReverseChargeUpgradeTag(): Code[250]
     begin
         exit('CZZ-494279-PostVATDocForReverseChargeUpgradeTag-20240426');
+    end;
+
+    procedure GetSalesAdvLetterEntryCustomerNo2UpgradeTag(): Code[250]
+    begin
+        exit('CZZ-537960-SalesAdvLetterEntryCustomerNo2UpgradeTag-20240612');
     end;
 }

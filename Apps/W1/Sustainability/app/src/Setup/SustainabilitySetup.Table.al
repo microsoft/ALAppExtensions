@@ -101,6 +101,10 @@ table 6217 "Sustainability Setup"
             Caption = 'Enable Background Error Check';
             InitValue = true;
         }
+        field(16; "Use Emissions In Purch. Doc."; Boolean)
+        {
+            Caption = 'Use Emissions In Purchase Documents';
+        }
     }
 
     keys

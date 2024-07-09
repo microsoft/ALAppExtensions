@@ -100,6 +100,8 @@ codeunit 4810 IntrastatReportManagement
                         IntrastatReportSetup."Shipments Based On"::"Bill-to Country":
                             CountryCode := ReturnShptHeader."Pay-to Country/Region Code";
                     end;
+            else
+                OnGetIntrastatBaseCountryCodeFromItemLedgerElseCase(ItemLedgEntry, IntrastatReportSetup, CountryCode);
         end;
     end;
 
@@ -107,8 +109,14 @@ codeunit 4810 IntrastatReportManagement
     var
         IntrastatReportSetup: Record "Intrastat Report Setup";
         Job: Record Job;
+        IsHandled: Boolean;
     begin
         IntrastatReportSetup.Get();
+
+        IsHandled := false;
+        OnBeforeGetIntrastatBaseCountryCodeFromJLE(JobLedgerEntry, IntrastatReportSetup, CountryCode, IsHandled);
+        if IsHandled then
+            exit(CountryCode);
 
         CountryCode := JobLedgerEntry."Country/Region Code";
 
@@ -130,8 +138,14 @@ codeunit 4810 IntrastatReportManagement
         PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
         SalesInvHeader: Record "Sales Invoice Header";
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        IsHandled: Boolean;
     begin
         IntrastatReportSetup.Get();
+
+        IsHandled := false;
+        OnBeforeGetIntrastatBaseCountryCodeFromFALE(FALedgerEntry, IntrastatReportSetup, CountryCode, IsHandled);
+        if IsHandled then
+            exit(CountryCode);
 
         CountryCode := '';
 
@@ -251,7 +265,7 @@ codeunit 4810 IntrastatReportManagement
                 if ServiceCrMemoHeader.Get(ItemLedgerEntry."Document No.") then
                     CurrencyCode := ServiceCrMemoHeader."Currency Code";
             else
-                CurrencyCode := '';
+                OnGetOriginalCurrencyFromItemLedgerElseCase(ItemLedgerEntry, CurrencyCode);
         end;
     end;
 
@@ -383,6 +397,7 @@ codeunit 4810 IntrastatReportManagement
         CompanyInformation.Get();
         if not IntrastatReportSetup.Get() then
             exit(CompanyInformation."VAT Registration No.");
+        OnGetCompanyVATRegNoOnAfterGetIntrastatReportSetup(CompanyInformation, IntrastatReportSetup);
         exit(
           GetVATRegNo(
             CompanyInformation."Country/Region Code", CompanyInformation."VAT Registration No.",
@@ -539,6 +554,7 @@ codeunit 4810 IntrastatReportManagement
         end;
 
         IntrastatReportSetup.Get();
+        OnExportWithDataExchOnAfterGetIntrastatReportSetup(IntrastatReportSetup, IntrastatReportHeader);
         if IntrastatReportSetup."Split Files" then begin
             IntrastatReportSetup.TestField("Data Exch. Def. Code - Receipt");
             IntrastatReportSetup.TestField("Data Exch. Def. Code - Shpt.");
@@ -1117,6 +1133,36 @@ codeunit 4810 IntrastatReportManagement
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeGetIntrastatBaseCountryCode(var ItemLedgerEntry: Record "Item Ledger Entry"; var IntrastatReportSetup: Record "Intrastat Report Setup"; var CountryCode: Code[10]; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetIntrastatBaseCountryCodeFromJLE(var JobLedgerEntry: Record "Job Ledger Entry"; var IntrastatReportSetup: Record "Intrastat Report Setup"; var CountryCode: Code[10]; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetIntrastatBaseCountryCodeFromFALE(var FALedgerEntry: Record "FA Ledger Entry"; var IntrastatReportSetup: Record "Intrastat Report Setup"; var CountryCode: Code[10]; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetCompanyVATRegNoOnAfterGetIntrastatReportSetup(var CompanyInformation: Record "Company Information"; var IntrastatReportSetup: Record "Intrastat Report Setup")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnExportWithDataExchOnAfterGetIntrastatReportSetup(var IntrastatReportSetup: Record "Intrastat Report Setup"; var IntrastatReportHeader: Record "Intrastat Report Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetIntrastatBaseCountryCodeFromItemLedgerElseCase(ItemLedgerEntry: Record "Item Ledger Entry"; IntrastatReportSetup: Record "Intrastat Report Setup"; var CountryCode: Code[10])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetOriginalCurrencyFromItemLedgerElseCase(ItemLedgerEntry: Record "Item Ledger Entry"; var CurrencyCode: Code[10])
     begin
     end;
 }

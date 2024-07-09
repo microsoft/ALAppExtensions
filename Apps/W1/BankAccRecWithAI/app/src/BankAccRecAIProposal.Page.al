@@ -11,7 +11,7 @@ page 7250 "Bank Acc. Rec. AI Proposal"
     Caption = 'Reconcile with Copilot';
     DataCaptionExpression = PageCaptionLbl;
     PageType = PromptDialog;
-    IsPreview = true;
+    IsPreview = false;
     Extensible = false;
     ApplicationArea = All;
     Editable = true;

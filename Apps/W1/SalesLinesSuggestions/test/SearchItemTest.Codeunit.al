@@ -28,7 +28,9 @@ codeunit 139780 "Search Item Test"
         DescriptionIsIncorrectErr: Label 'Description is incorrect!';
         QuantityIsIncorrectErr: Label 'Quantity is incorrect!';
         NeedThreeItemButOneNotExistingLbl: Label 'I need one bike, one table and one Model Took Kit';
+        NeedThreeItemButOneIsItemNoLbl: Label 'I need 3 red chairs and one 1928-W, 5 red bikes';
         NeedItemInNonEnglishLbl: Label 'I need one bicikl.';
+        InvalidPrecisionErr: Label 'The value %1 in field %2 is of lower precision than expected. \\Note: Default rounding precision of %3 is used if a rounding precision is not defined.', Comment = '%1 - decimal value, %2 - field name, %3 - default rounding precision.';
 
 
     [Test]
@@ -52,6 +54,36 @@ codeunit 139780 "Search Item Test"
         // [WHEN] User input is given to the AI suggestions
         // [THEN] AI suggestions should generate two sales lines, it is handled in the handler function 'InvokeGenerateAndCheckItemsFound'
         CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions);
+        // [THEN] One line is inserted in the sales line
+        CheckSalesLineContent(SalesHeader."No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('InvokeGenerateAndCheckItemsFound')]
+    procedure TestSearchThreeItemsWithOneItemNo()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLineAISuggestions: Page "Sales Line AI Suggestions";
+    begin
+        // [FEATURE] [Sales with AI]:[Search Item End to End]
+        // [Scenario] User wants to search for 3 items, which 1 one of them Item No.
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
+        Initialize();
+
+        // [GIVEN] User specifies 3 items, but one of them is Item No.
+        LibraryVariableStorage.Enqueue(NeedThreeItemButOneIsItemNoLbl);
+        LibraryVariableStorage.Enqueue(3);
+        EnqueueOneItemAndQty('SEOUL Guest Chair, red', 3);
+        EnqueueOneItemAndQty('ST.MORITZ Storage Unit/Drawers', 1);
+        EnqueueOneItemAndQty('Bicycle', 5);
+        EnqueueOneItemAndQty('SEOUL Guest Chair, red', 3);
+        EnqueueOneItemAndQty('ST.MORITZ Storage Unit/Drawers', 1);
+        EnqueueOneItemAndQty('Bicycle', 5);
+
+        // [WHEN] User input is given to the AI suggestions
+        // [THEN] AI suggestions should generate two sales lines, it is handled in the handler function 'InvokeGenerateAndCheckItemsFound'
+        CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions);
+
         // [THEN] One line is inserted in the sales line
         CheckSalesLineContent(SalesHeader."No.");
     end;
@@ -703,6 +735,42 @@ codeunit 139780 "Search Item Test"
         CheckSalesLineContent(SalesHeader."No.");
     end;
 
+    [Test]
+    [HandlerFunctions('InvokeGenerateAndCheckItemsFound,SendNotificationHandler')]
+    procedure SalesLineIsNotInsertedIfErrorOccursOnInsertSuggestedLine()
+    var
+        SalesHeader: Record "Sales Header";
+        Item: Record Item;
+        SalesLineAISuggestions: Page "Sales Line AI Suggestions";
+        UserInput: Text;
+        Quantity: Text;
+    begin
+        // [SCENARIO 507779] If error occurs on insert suggested lines, notification is thrown and lines are not inserted
+        Initialize();
+
+        // [GIVEN] Find first Item
+        Item.FindFirst();
+        UpdateRoundingPrecisonForItem(Item);
+
+        // [GIVEN] Create user input
+        Quantity := '2.5';
+        UserInput := GlobalUserInput;
+        UserInput += Quantity + ' quantity of ' + Item."No." + '; ';
+
+        LibraryVariableStorage.Enqueue(UserInput);
+        LibraryVariableStorage.Enqueue(1);
+        EnqueueOneItemAndQty(Item.Description, 2.5);
+
+        LibraryVariableStorage.Enqueue(StrSubstNo(InvalidPrecisionErr, Quantity, 'Quantity', '0.00001'));
+
+        // [WHEN] AI suggestions should generate sales line
+        // [HANDLER] Show a notification, it is handled in the handler function 'SendNotificationHandler'
+        CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions);
+
+        // [THEN] No line is inserted in the sales line
+        CheckSalesLineContent(SalesHeader."No.");
+    end;
+
     local procedure CreateSalesOrderWithSalesLine(var SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line")
     var
         Customer: Record Customer;
@@ -767,6 +835,8 @@ codeunit 139780 "Search Item Test"
     local procedure Initialize()
     begin
         GlobalUserInput := 'I need the following items: ';
+
+        LibraryVariableStorage.Clear();
     end;
 
     local procedure CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(var SalesHeader: Record "Sales Header"; var SalesLineAISuggestions: Page "Sales Line AI Suggestions")
@@ -796,7 +866,7 @@ codeunit 139780 "Search Item Test"
         LibraryVariableStorage.AssertEmpty();
     end;
 
-    local procedure EnqueueOneItemAndQty(ItemDesc: Text; Qty: Integer)
+    local procedure EnqueueOneItemAndQty(ItemDesc: Text; Qty: Decimal)
     begin
         LibraryVariableStorage.Enqueue(ItemDesc);
         LibraryVariableStorage.Enqueue(Qty);
@@ -814,6 +884,19 @@ codeunit 139780 "Search Item Test"
         ExtText := ExtendedTextLine.Text;
     end;
 
+    local procedure UpdateRoundingPrecisonForItem(var Item: Record Item)
+    var
+        ItemUnitOfMeasure: Record "Item Unit of Measure";
+    begin
+        ItemUnitOfMeasure.SetRange("Item No.", Item."No.");
+        ItemUnitOfMeasure.SetRange(Code, Item."Base Unit of Measure");
+        if ItemUnitOfMeasure.FindSet() then
+            repeat
+                ItemUnitOfMeasure."Qty. Rounding Precision" := 1;
+                ItemUnitOfMeasure.Modify();
+            until ItemUnitOfMeasure.Next() = 0;
+    end;
+
     [ModalPageHandler]
     procedure InvokeGenerateAndNoItemFound(var SalesLineAISuggestions: TestPage "Sales Line AI Suggestions")
     begin
@@ -827,7 +910,7 @@ codeunit 139780 "Search Item Test"
     procedure InvokeGenerateAndCheckItemsFound(var SalesLineAISuggestions: TestPage "Sales Line AI Suggestions")
     var
         ItemCount: Integer;
-        quantityInSalesLineSub: Integer;
+        quantityInSalesLineSub: Decimal;
         i: Integer;
     begin
         // Description for this queue:
@@ -842,7 +925,7 @@ codeunit 139780 "Search Item Test"
         for i := 1 to ItemCount do begin
             Assert.AreEqual(LibraryVariableStorage.DequeueText(), SalesLineAISuggestions.SalesLinesSub.Description.Value(), DescriptionIsIncorrectErr);
             Evaluate(quantityInSalesLineSub, SalesLineAISuggestions.SalesLinesSub.Quantity.Value());
-            Assert.AreEqual(LibraryVariableStorage.DequeueInteger(), quantityInSalesLineSub, QuantityIsIncorrectErr);
+            Assert.AreEqual(LibraryVariableStorage.DequeueDecimal(), quantityInSalesLineSub, QuantityIsIncorrectErr);
             SalesLineAISuggestions.SalesLinesSub.Next();
         end;
         SalesLineAISuggestions.OK.Invoke();

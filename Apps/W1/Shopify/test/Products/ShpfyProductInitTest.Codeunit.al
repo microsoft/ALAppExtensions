@@ -183,10 +183,12 @@ codeunit 139603 "Shpfy Product Init Test"
         CustomerPriceGroup: Record "Customer Price Group";
         SalesPrice: Record "Sales Price";
     begin
-        CustomerPriceGroup.Init();
-        CustomerPriceGroup.Code := Code;
-        CustomerPriceGroup."Allow Line Disc." := true;
-        CustomerPriceGroup.Insert();
+        if not CustomerPriceGroup.Get(Code) then begin
+            CustomerPriceGroup.Init();
+            CustomerPriceGroup.Code := Code;
+            CustomerPriceGroup."Allow Line Disc." := true;
+            CustomerPriceGroup.Insert();
+        end;
 
         SalesPrice.Init();
         SalesPrice."Sales Type" := Enum::"Sales Price Type"::"All Customers";
@@ -199,9 +201,11 @@ codeunit 139603 "Shpfy Product Init Test"
     var
         SalesLineDiscount: Record "Sales Line Discount";
     begin
-        CustDiscGrp.Init();
-        CustDiscGrp.Code := Code;
-        CustDiscGrp.Insert();
+        if not CustDiscGrp.get(Code) then begin
+            CustDiscGrp.Init();
+            CustDiscGrp.Code := Code;
+            CustDiscGrp.Insert();
+        end;
 
         SalesLineDiscount.Init();
         SalesLineDiscount.Type := Enum::"Sales Line Discount Type"::Item;
@@ -214,25 +218,65 @@ codeunit 139603 "Shpfy Product Init Test"
 #else
     internal procedure CreatePriceList(Code: Code[10]; ItemNo: Code[20]; Price: Decimal; DiscountPerc: Decimal) CustDiscGrp: Record "Customer Discount Group"
     var
-        CustomerPriceGroup: Record "Customer Price Group";
         PriceListLine: Record "Price List Line";
+        CustomerPriceGroup: Record "Customer Price Group";
     begin
-        CustomerPriceGroup.Init();
-        CustomerPriceGroup.Code := Code;
-        CustomerPriceGroup."Allow Line Disc." := true;
-        CustomerPriceGroup.Insert();
+        if not CustomerPriceGroup.Get(Code) then begin
+            CustomerPriceGroup.Init();
+            CustomerPriceGroup.Code := Code;
+            CustomerPriceGroup."Allow Line Disc." := true;
+            CustomerPriceGroup.Insert();
+        end;
 
-        CustDiscGrp.Init();
-        CustDiscGrp.Code := Code;
-        CustDiscGrp.Insert();
+        if not CustDiscGrp.Get(Code) then begin
+            CustDiscGrp.Init();
+            CustDiscGrp.Code := Code;
+            CustDiscGrp.Insert();
+        end;
 
         PriceListLine.Init();
         PriceListLine."Asset Type" := PriceListLine."Asset Type"::Item;
+        PriceListLine."Asset No." := ItemNo;
         PriceListLine."Product No." := ItemNo;
-        PriceListLine."Unit Price" := Price;
+        PriceListLine."Price Type" := PriceListLine."Price Type"::Sale;
+        PriceListLine."Amount Type" := PriceListLine."Amount Type"::Discount;
         PriceListLine."Source Type" := PriceListLine."Source Type"::"Customer Disc. Group";
         PriceListLine."Source No." := CustDiscGrp.Code;
         PriceListLine.Validate("Line Discount %", DiscountPerc);
+        PriceListLine.Status := PriceListLine.Status::Active;
+        PriceListLine.Insert();
+    end;
+
+    internal procedure CreateAllCustomerPriceList(Code: Code[10]; ItemNo: Code[20]; Price: Decimal; DiscountPerc: Decimal)
+    var
+        PriceListLine: Record "Price List Line";
+    begin
+        PriceListLine.Init();
+        PriceListLine."Asset Type" := PriceListLine."Asset Type"::Item;
+        PriceListLine."Asset No." := ItemNo;
+        PriceListLine."Product No." := ItemNo;
+        PriceListLine."Price Type" := PriceListLine."Price Type"::Sale;
+        PriceListLine."Amount Type" := PriceListLine."Amount Type"::Discount;
+        PriceListLine."Source Type" := PriceListLine."Source Type"::"All Customers";
+        PriceListLine.Validate("Line Discount %", DiscountPerc);
+        PriceListLine.Status := PriceListLine.Status::Active;
+        PriceListLine.Insert();
+    end;
+
+    internal procedure CreateCustomerPriceList(Code: Code[10]; ItemNo: Code[20]; Price: Decimal; DiscountPerc: Decimal; Cust: Record "Customer")
+    var
+        PriceListLine: Record "Price List Line";
+    begin
+        PriceListLine.Init();
+        PriceListLine."Asset Type" := PriceListLine."Asset Type"::Item;
+        PriceListLine."Asset No." := ItemNo;
+        PriceListLine."Product No." := ItemNo;
+        PriceListLine."Price Type" := PriceListLine."Price Type"::Sale;
+        PriceListLine."Amount Type" := PriceListLine."Amount Type"::Discount;
+        PriceListLine."Source Type" := PriceListLine."Source Type"::Customer;
+        PriceListLine."Source No." := Cust."No.";
+        PriceListLine.Validate("Line Discount %", DiscountPerc);
+        PriceListLine.Status := PriceListLine.Status::Active;
         PriceListLine.Insert();
     end;
 #endif

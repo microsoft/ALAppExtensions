@@ -116,6 +116,25 @@ codeunit 6211 "Sustainability Journal Mgt."
         end;
     end;
 
+    /// <summary>
+    /// Open the Sustainability Journal for the active Sustainability Batch. 
+    /// <param name="SustainabilityJnlBatch"> Specifies the Sustainability Journal Batch.</param>
+    /// <param name="SustainabilityJnlTemplate"> Specifies the "Sustainability Jnl. Template"</param>
+    /// </summary>  
+    procedure OpenJournalPageFromBatch(SustainabilityJnlBatch: Record "Sustainability Jnl. Batch"; SustainabilityJnlTemplate: Record "Sustainability Jnl. Template")
+    var
+        SustainabilityJnlLine: Record "Sustainability Jnl. Line";
+    begin
+        SustainabilityJnlLine.FilterGroup := 2;
+        SustainabilityJnlLine.SetRange("Journal Template Name", SustainabilityJnlTemplate.Name);
+        SustainabilityJnlLine.FilterGroup := 0;
+
+        SustainabilityJnlLine."Journal Template Name" := '';
+        SustainabilityJnlLine."Journal Batch Name" := SustainabilityJnlBatch.Name;
+        PAGE.Run(Page::"Sustainability Journal", SustainabilityJnlLine);
+    end;
+
+
     internal procedure SelectBatch(SustainabilityJnlTemplate: Record "Sustainability Jnl. Template"; PreviousBatchName: Code[10]) SustainabilityJnlBatch: Record "Sustainability Jnl. Batch"
     begin
         SustainabilityJnlBatch.SetRange("Journal Template Name", SustainabilityJnlTemplate.Name);
@@ -137,9 +156,9 @@ codeunit 6211 "Sustainability Journal Mgt."
         SustainAccountCategory.Get(SustainabilityJnlLine."Account Category");
         SustainAccountCategory.TestField("Emission Scope");
 
-        SustainabilityJnlBatch.Get(SustainabilityJnlLine."Journal Template Name", SustainabilityJnlLine."Journal Batch Name");
-        if SustainabilityJnlBatch."Emission Scope" <> Enum::"Emission Scope"::" " then
-            SustainAccountCategory.TestField("Emission Scope", SustainabilityJnlBatch."Emission Scope", ErrorInfo.Create());
+        if SustainabilityJnlBatch.Get(SustainabilityJnlLine."Journal Template Name", SustainabilityJnlLine."Journal Batch Name") then
+            if SustainabilityJnlBatch."Emission Scope" <> Enum::"Emission Scope"::" " then
+                SustainAccountCategory.TestField("Emission Scope", SustainabilityJnlBatch."Emission Scope", ErrorInfo.Create());
     end;
 
     var

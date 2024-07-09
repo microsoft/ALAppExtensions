@@ -15,7 +15,10 @@ codeunit 4018 "GP Customer Migrator"
         SourceCodeTxt: Label 'GENJNL', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
         CustomerEmailTypeCodeLbl: Label 'CUS', Locked = true;
+        MigrationLogAreaTxt: Label 'Customer', Locked = true;
+        PhoneNumberContainsLettersMsg: Label 'Phone/Fax number skipped because it contains letters. Value=%1', Comment = '%1 is the phone/fax number.';
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", 'OnMigrateCustomer', '', true, true)]
     internal procedure OnMigrateCustomer(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -268,7 +271,6 @@ codeunit 4018 "GP Customer Migrator"
         GPSY01200: Record "GP SY01200";
         Customer: Record Customer;
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
-        HelperFunctions: Codeunit "Helper Functions";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         PaymentTermsFormula: DateFormula;
         Country: Code[10];
@@ -306,10 +308,7 @@ codeunit 4018 "GP Customer Migrator"
             CopyStr(MigrationGPCustomer.CITY, 1, 30));
 
         CustomerDataMigrationFacade.SetContact(CopyStr(MigrationGPCustomer.CNTCPRSN, 1, 50));
-        MigrationGPCustomer.PHONE1 := HelperFunctions.CleanGPPhoneOrFaxNumber(MigrationGPCustomer.PHONE1);
-        MigrationGPCustomer.FAX := HelperFunctions.CleanGPPhoneOrFaxNumber(MigrationGPCustomer.FAX);
-        CustomerDataMigrationFacade.SetPhoneNo(MigrationGPCustomer.PHONE1);
-        CustomerDataMigrationFacade.SetFaxNo(MigrationGPCustomer.FAX);
+        SetPhoneAndFaxNumberIfValid(MigrationGPCustomer, CustomerDataMigrationFacade);
 
         if GPCompanyAdditionalSettings.GetGLModuleEnabled() then begin
             CustomerDataMigrationFacade.SetCustomerPostingGroup(CopyStr(PostingGroupCodeTxt, 1, 5));
@@ -358,6 +357,29 @@ codeunit 4018 "GP Customer Migrator"
         end;
 
         CustomerDataMigrationFacade.ModifyCustomer(true);
+    end;
+
+    local procedure SetPhoneAndFaxNumberIfValid(var MigrationGPCustomer: Record "GP Customer"; var CustomerDataMigrationFacade: Codeunit "Customer Data Migration Facade")
+    var
+        GPMigrationWarnings: Record "GP Migration Warnings";
+        HelperFunctions: Codeunit "Helper Functions";
+        WarningContext: Text[50];
+    begin
+        WarningContext := CopyStr(MigrationGPCustomer.CUSTNMBR.Trim(), 1, MaxStrLen(GPMigrationWarnings.Context));
+        MigrationGPCustomer.PHONE1 := HelperFunctions.CleanGPPhoneOrFaxNumber(MigrationGPCustomer.PHONE1);
+        MigrationGPCustomer.FAX := HelperFunctions.CleanGPPhoneOrFaxNumber(MigrationGPCustomer.FAX);
+
+        if MigrationGPCustomer.PHONE1 <> '' then
+            if not HelperFunctions.ContainsAlphaChars(MigrationGPCustomer.PHONE1) then
+                CustomerDataMigrationFacade.SetPhoneNo(MigrationGPCustomer.PHONE1)
+            else
+                GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, WarningContext, StrSubstNo(PhoneNumberContainsLettersMsg, MigrationGPCustomer.PHONE1));
+
+        if MigrationGPCustomer.FAX <> '' then
+            if not HelperFunctions.ContainsAlphaChars(MigrationGPCustomer.FAX) then
+                CustomerDataMigrationFacade.SetFaxNo(MigrationGPCustomer.FAX)
+            else
+                GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, WarningContext, StrSubstNo(PhoneNumberContainsLettersMsg, MigrationGPCustomer.FAX));
     end;
 
     local procedure MigrateCustomerAddresses(MigrationGPCustomer: Record "GP Customer")

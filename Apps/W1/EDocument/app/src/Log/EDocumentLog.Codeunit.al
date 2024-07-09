@@ -108,7 +108,10 @@ codeunit 6132 "E-Document Log"
         EDocumentIntegrationLog.Validate("E-Doc. Entry No", EDocument."Entry No");
         EDocumentIntegrationLog.Validate("Service Code", EDocumentService.Code);
         EDocumentIntegrationLog.Validate("Response Status", HttpResponse.HttpStatusCode());
-        EDocumentIntegrationLog.Validate(URL, HttpRequest.GetRequestUri());
+#if not CLEAN25
+        EDocumentIntegrationLog.Validate("Url", CopyStr(HttpRequest.GetRequestUri(), 1, 250));
+#endif
+        EDocumentIntegrationLog.Validate("Request URL", HttpRequest.GetRequestUri());
         EDocumentIntegrationLog.Validate(Method, HttpRequest.Method());
         EDocumentIntegrationLog.Insert();
 
@@ -245,7 +248,7 @@ codeunit 6132 "E-Document Log"
         else
             EDocument.Status := EDocument.Status::"In Progress";
 
-        EDocument.Modify();
+        EDocument.Modify(true);
     end;
 
     local procedure EDocumentHasErrors(var EDocument: Record "E-Document"): Boolean
@@ -264,7 +267,7 @@ codeunit 6132 "E-Document Log"
             exit(false);
 
         EDocument.Validate(Status, EDocument.Status::Error);
-        EDocument.Modify();
+        EDocument.Modify(true);
         exit(true);
     end;
 

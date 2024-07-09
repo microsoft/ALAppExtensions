@@ -23,7 +23,13 @@
                              "name":  "Dynamics GP Intelligent Cloud",
                              "publisher":  "Microsoft",
                              "version":  "25.0.0.0"
-                         }
+                        },
+                        {
+                            "id": "b696b4c9-637c-49d1-a806-763ff8f0a20e",
+                            "name": "IRS Forms",
+                            "publisher": "Microsoft",
+                            "version": "25.0.0.0"
+                        }
                      ],
     "screenshots":  [
 

@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.AdvancePayments;
 
+using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.GeneralLedger.Setup;
 using System.Utilities;
 
@@ -59,7 +60,7 @@ report 31025 "Purch. Advance Letters VAT CZZ"
 
             dataitem("Purch. Adv. Letter Entry CZZ"; "Purch. Adv. Letter Entry CZZ")
             {
-                DataItemTableView = where("Entry Type" = filter("VAT Payment" | "VAT Usage" | "VAT Close" | "VAT Rate" | "VAT Adjustment"), Cancelled = const(false));
+                DataItemTableView = where("Entry Type" = filter("VAT Payment" | "VAT Usage" | "VAT Close" | "VAT Rate" | "VAT Adjustment"));
                 DataItemLink = "Purch. Adv. Letter No." = field("No.");
 
                 column(Document_No_; "Document No.")
@@ -100,10 +101,25 @@ report 31025 "Purch. Advance Letters VAT CZZ"
                 {
                     IncludeCaption = true;
                 }
+                column(NonDeductVATAmountLCY; NonDeductVATAmountLCY)
+                {
+                }
 
                 trigger OnPreDataItem()
                 begin
                     SetFilter("Posting Date", '..%1', ToDate);
+                end;
+
+                trigger OnAfterGetRecord()
+                var
+                    VATEntry: Record "VAT Entry";
+                begin
+                    VATEntry.SetRange("Advance Letter No. CZZ", "Purch. Adv. Letter Entry CZZ"."Purch. Adv. Letter No.");
+                    VATEntry.SetRange("Document No.", "Purch. Adv. Letter Entry CZZ"."Document No.");
+                    VATEntry.SetFilter("Posting Date", '..%1', ToDate);
+                    VATEntry.SetFilter("Non-Deductible VAT %", '<>0');
+                    VATEntry.CalcSums(Amount);
+                    NonDeductVATAmountLCY := VATEntry.Amount;
                 end;
             }
 
@@ -112,7 +128,6 @@ report 31025 "Purch. Advance Letters VAT CZZ"
                 PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
             begin
                 PurchAdvLetterEntryCZZ.SetRange("Purch. Adv. Letter No.", "Purch. Adv. Letter Header CZZ"."No.");
-                PurchAdvLetterEntryCZZ.SetRange(Cancelled, false);
                 PurchAdvLetterEntryCZZ.SetFilter("Posting Date", '..%1', ToDate);
                 PurchAdvLetterEntryCZZ.SetFilter("Entry Type", '%1|%2|%3|%4|%5', PurchAdvLetterEntryCZZ."Entry Type"::"VAT Payment",
                   PurchAdvLetterEntryCZZ."Entry Type"::"VAT Usage", PurchAdvLetterEntryCZZ."Entry Type"::"VAT Close",
@@ -176,6 +191,7 @@ report 31025 "Purch. Advance Letters VAT CZZ"
         TotalLbl = 'Total';
         TotalForLbl = 'Total for';
         StateToDateLbl = 'State to date';
+        NonDeductVATAmountLCYLbl = 'Non-deductible VAT Amount (LCY)';
     }
 
     trigger OnPreReport()
@@ -195,6 +211,7 @@ report 31025 "Purch. Advance Letters VAT CZZ"
         ReportFilters, AmountsInLCY : Text;
         ToDate: Date;
         OnlyOpen, PrintEntries : Boolean;
+        NonDeductVATAmountLCY: Decimal;
         FiltersTxt: Label 'Filters: %1: %2', Comment = '%1 = Table Caption, %2 = Table Filter';
         AmountsInLCYTxt: Label 'All Amounts are in %1.', Comment = '%1 = Currency Code';
 }

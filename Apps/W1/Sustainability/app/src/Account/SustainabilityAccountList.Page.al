@@ -131,4 +131,9 @@ page 6212 "Sustainability Account List"
         RecRef.GetTable(SustainAccount);
         exit(SelectionFilterManagement.GetSelectionFilter(RecRef, SustainAccount.FieldNo("No.")));
     end;
+
+    procedure SetSelection(var SustainAccount: Record "Sustainability Account")
+    begin
+        CurrPage.SetSelectionFilter(SustainAccount);
+    end;
 }

@@ -41,4 +41,29 @@ page 6216 "Sustainability Jnl. Batches"
             }
         }
     }
+    actions
+    {
+        area(processing)
+        {
+            action(EditJournal)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Edit Journal';
+                Image = OpenJournal;
+                ShortCutKey = 'Return';
+                ToolTip = 'Open a journal based on the journal batch.';
+
+                trigger OnAction()
+                var
+                    SustainabilityJnlTemplate: Record "Sustainability Jnl. Template";
+                    SustainabilityJournalMgt: Codeunit "Sustainability Journal Mgt.";
+
+                begin
+                    SustainabilityJnlTemplate.Get(Rec."Journal Template Name");
+                    SustainabilityJournalMgt.OpenJournalPageFromBatch(Rec, SustainabilityJnlTemplate);
+                end;
+            }
+        }
+    }
+
 }

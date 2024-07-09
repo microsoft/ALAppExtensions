@@ -80,6 +80,25 @@ codeunit 30162 "Shpfy Order Events"
 
     [IntegrationEvent(false, false)]
     /// <summary> 
+    /// Description for OnBeforeMapShipmentAgent.
+    /// </summary>
+    /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
+    /// <param name="Handled">Parameter of type Boolean.</param>
+    internal procedure OnBeforeMapShipmentAgent(var ShopifyOrderHeader: Record "Shpfy Order Header"; var Handled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    /// <summary> 
+    /// Description for OnAfterMapShipmentAgent.
+    /// </summary>
+    /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
+    internal procedure OnAfterMapShipmentAgent(var ShopifyOrderHeader: Record "Shpfy Order Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    /// <summary> 
     /// Description for OnBeforeMapPaymentMethod.
     /// </summary>
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
@@ -161,7 +180,7 @@ codeunit 30162 "Shpfy Order Events"
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
     /// <param name="SalesHeader">Parameter of type Record "Sales Header".</param>
     /// <param name="Handled">Parameter of type Boolean.</param>
-    internal procedure OnBeforeCreateSalesHeader(ShopifyOrderHeader: Record "Shpfy Order Header"; var SalesHeader: Record "Sales Header"; var Handled: Boolean)
+    internal procedure OnBeforeCreateSalesHeader(ShopifyOrderHeader: Record "Shpfy Order Header"; var SalesHeader: Record "Sales Header"; var LastCreatedDocumentId: Guid; var Handled: Boolean)
     begin
     end;
 

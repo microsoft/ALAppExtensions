@@ -2,11 +2,13 @@ namespace Microsoft.Finance.ExcelReports;
 
 using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.Setup;
 using Microsoft.FixedAssets.Ledger;
 
 report 4411 "EXR Fixed Asset Details Excel"
 {
     ApplicationArea = All;
+    AdditionalSearchTerms = 'FA Details Excel,FA Details';
     Caption = 'Fixed Asset Details Excel (Preview)';
     DataAccessIntent = ReadOnly;
     DefaultRenderingLayout = FixedAssetDetailsExcel;
@@ -23,11 +25,13 @@ report 4411 "EXR Fixed Asset Details Excel"
             PrintOnlyIfDetail = true;
             RequestFilterFields = "No.", "FA Class Code", "FA Subclass Code", "Budgeted Asset", "FA Posting Date Filter";
             column(AssetNumber; "No.") { IncludeCaption = true; }
-            column(AssetDescription; Description) { IncludeCaption = true; }
+            column(AssetDescription; Description) { }
             column(FixedAssetClassCode; "FA Class Code") { IncludeCaption = true; }
             column(FixedAssetSubclassCode; "FA Subclass Code") { IncludeCaption = true; }
             column(FixedAssetLocation; "FA Location Code") { IncludeCaption = true; }
             column(BudgetedAsset; "Budgeted Asset") { IncludeCaption = true; }
+            column(GlobalDimension1Code; "Global Dimension 1 Code") { IncludeCaption = true; }
+            column(GlobalDimension2Code; "Global Dimension 2 Code") { IncludeCaption = true; }
             dataitem(FixedAssetLedgerEntry; "FA Ledger Entry")
             {
                 DataItemTableView = sorting("FA No.", "Depreciation Book Code", "FA Posting Date");
@@ -94,6 +98,16 @@ report 4411 "EXR Fixed Asset Details Excel"
                 }
             }
         }
+
+        trigger OnOpenPage()
+        var
+            FASetup: Record "FA Setup";
+        begin
+            if not FASetup.Get() then
+                exit;
+            DepreciationBookCode := FASetup."Default Depr. Book";
+        end;
+
     }
     rendering
     {
@@ -108,7 +122,8 @@ report 4411 "EXR Fixed Asset Details Excel"
     labels
     {
         DataRetrieved = 'Data retrieved:';
-        FixedAssetDetails = 'Fixed Asset Details';
+        FixedAssetDetails = 'Fixed Asset Details', Comment = 'Max length: 31. Excel worksheet name.';
+        AssetDescriptionLabel = 'Asset Description';
     }
 
     var

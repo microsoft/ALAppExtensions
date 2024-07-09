@@ -165,10 +165,9 @@ codeunit 31390 "Match Bank Payment Handler CZZ"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Search Rule CZB", 'OnAfterInsertRuleLine', '', false, false)]
-    local procedure AddAdvanceRuleLineOnAfterInsertRuleLine(SearchRuleLineCZB: Record "Search Rule Line CZB"; var LineNo: Integer; Description: Text)
+    local procedure AddAdvanceRuleLineOnAfterInsertRuleLine(SearchRuleLineCZB: Record "Search Rule Line CZB"; var LineNo: Integer)
     var
         AdvanceSearchRuleLineCZB: Record "Search Rule Line CZB";
-        DescriptionTxt: Label 'Both, Advance, %1', Comment = '%1 = Line Description';
     begin
         if SearchRuleLineCZB."Banking Transaction Type" <> SearchRuleLineCZB."Banking Transaction Type"::Both then
             exit;
@@ -178,8 +177,7 @@ codeunit 31390 "Match Bank Payment Handler CZZ"
         LineNo += 10000;
         AdvanceSearchRuleLineCZB := SearchRuleLineCZB;
         AdvanceSearchRuleLineCZB."Line No." := LineNo;
-        AdvanceSearchRuleLineCZB.Validate(Description, CopyStr(StrSubstNo(DescriptionTxt, Description), 1, MaxStrLen(SearchRuleLineCZB.Description)));
-        AdvanceSearchRuleLineCZB.Validate("Banking Transaction Type", AdvanceSearchRuleLineCZB."Banking Transaction Type"::Both);
+        AdvanceSearchRuleLineCZB.Description := '';
         AdvanceSearchRuleLineCZB.Validate("Search Scope", AdvanceSearchRuleLineCZB."Search Scope"::"Advance CZZ");
         AdvanceSearchRuleLineCZB.Insert(true);
     end;

@@ -42,6 +42,10 @@ codeunit 31022 "Purch.-Post Handler CZZ"
         if (not PurchHeader.Invoice) or (not PurchHeader.IsAdvanceLetterDocTypeCZZ()) then
             exit;
 
+        PurchInvHeader.CalcFields("Remaining Amount");
+        if PurchInvHeader."Remaining Amount" = 0 then
+            exit;
+
         AdvLetterUsageDocTypeCZZ := PurchHeader.GetAdvLetterUsageDocTypeCZZ();
 
         VendorLedgerEntry.Get(PurchInvHeader."Vendor Ledger Entry No.");
@@ -55,6 +59,8 @@ codeunit 31022 "Purch.-Post Handler CZZ"
             AdvanceLetterApplicationCZZ.SetRange("Document No.", PurchHeader."No.");
             AdvanceLetterApplicationCZZ.DeleteAll(true);
         end;
+
+        OnAfterPurchPostOnAfterFinalizePostingOnBeforeCommit(PurchHeader, PurchInvHeader, GenJnlPostLine);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforeCreatePrepmtLines', '', false, false)]
@@ -67,5 +73,10 @@ codeunit 31022 "Purch.-Post Handler CZZ"
     local procedure DisableCheckOnBeforeTestStatusRelease(var IsHandled: Boolean)
     begin
         IsHandled := true;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterPurchPostOnAfterFinalizePostingOnBeforeCommit(var PurchHeader: Record "Purchase Header"; var PurchInvHeader: Record "Purch. Inv. Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    begin
     end;
 }

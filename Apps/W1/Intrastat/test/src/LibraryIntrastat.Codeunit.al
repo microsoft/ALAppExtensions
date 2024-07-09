@@ -16,13 +16,14 @@ codeunit 139554 "Library - Intrastat"
         LibrarySales: Codeunit "Library - Sales";
         LibraryRandom: Codeunit "Library - Random";
         LibraryWarehouse: Codeunit "Library - Warehouse";
+        LibraryItemTracking: Codeunit "Library - Item Tracking";
 
     procedure CreateIntrastatReportSetup()
     var
         IntrastatReportSetup: Record "Intrastat Report Setup";
         NoSeriesCode: Code[20];
     begin
-        If IntrastatReportSetup.Get() then
+        if IntrastatReportSetup.Get() then
             exit;
         NoSeriesCode := LibraryERM.CreateNoSeriesCode();
         IntrastatReportSetup.Init();
@@ -407,6 +408,63 @@ codeunit 139554 "Library - Intrastat"
         Item: Record Item;
     begin
         LibraryInventory.CreateItemWithTariffNo(Item, CopyStr(LibraryUtility.CreateCodeRecord(DATABASE::"Tariff Number"), 3, 10));
+        exit(Item."No.");
+    end;
+
+    procedure CreateTrackedItem(Tracking: Integer; CreateInfo: Boolean; CreateInfoOnPosting: Boolean;
+        var SerialNoInformation: Record "Serial No. Information";
+        var LotNoInformation: Record "Lot No. Information";
+        var PackageNoInformation: Record "Package No. Information"): Code[20]
+    var
+        CountryRegion: Record "Country/Region";
+        Item: Record Item;
+        ItemTrackingCode: Record "Item Tracking Code";
+    begin
+        CreateCountryRegion(CountryRegion, false);
+        LibraryInventory.CreateItem(Item);
+        case Tracking of
+            1:
+                begin
+                    LibraryItemTracking.CreateItemTrackingCode(ItemTrackingCode, true, false, false); // Serial No.
+                    if CreateInfo then begin
+                        LibraryItemTracking.CreateSerialNoInformation(SerialNoInformation, Item."No.", '', LibraryUtility.GenerateGUID());
+                        SerialNoInformation.Validate("Country/Region Code", CountryRegion.Code);
+                        SerialNoInformation.Modify(true);
+                    end;
+                    if CreateInfoOnPosting then begin
+                        ItemTrackingCode.Validate("Create SN Info on Posting", true);
+                        ItemTrackingCode.Modify(true);
+                    end;
+                end;
+            2:
+                begin
+                    LibraryItemTracking.CreateItemTrackingCode(ItemTrackingCode, false, true, false); // Lot No.
+                    if CreateInfo then begin
+                        LibraryItemTracking.CreateLotNoInformation(LotNoInformation, Item."No.", '', LibraryUtility.GenerateGUID());
+                        LotNoInformation.Validate("Country/Region Code", CountryRegion.Code);
+                        LotNoInformation.Modify(true);
+                    end;
+                    if CreateInfoOnPosting then begin
+                        ItemTrackingCode.Validate("Create Lot No. Info on posting", true);
+                        ItemTrackingCode.Modify(true);
+                    end;
+                end;
+            3:
+                begin
+                    LibraryItemTracking.CreateItemTrackingCode(ItemTrackingCode, false, false, true); // Package No.
+                    if CreateInfo then begin
+                        LibraryItemTracking.CreatePackageNoInformation(PackageNoInformation, Item."No.", LibraryUtility.GenerateGUID());
+                        PackageNoInformation.Validate("Country/Region Code", CountryRegion.Code);
+                        PackageNoInformation.Modify(true);
+                    end;
+                end;
+        end;
+
+        Item.Validate("Item Tracking Code", ItemTrackingCode.Code);
+        CreateCountryRegion(CountryRegion, true);
+        Item.Validate("Country/Region of Origin Code", CountryRegion.Code);
+        Item.Modify(true);
+
         exit(Item."No.");
     end;
 

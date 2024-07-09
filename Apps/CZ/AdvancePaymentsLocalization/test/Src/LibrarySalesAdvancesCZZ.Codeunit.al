@@ -283,6 +283,22 @@ codeunit 148009 "Library - Sales Advances CZZ"
         CreateSalesAdvLetterCZZ.Run();
     end;
 
+    procedure CreateSalesAdvanceLetterFromJob(var Job: Record Job)
+    var
+        CreateSalesAdvLetterCZZ: Report "Create Sales Adv. Letter CZZ";
+    begin
+        CreateSalesAdvLetterCZZ.SetJob(Job);
+        CreateSalesAdvLetterCZZ.Run();
+    end;
+
+    procedure CreateSalesAdvanceLetterFromJobTask(var JobTask: Record "Job Task")
+    var
+        CreateSalesAdvLetterCZZ: Report "Create Sales Adv. Letter CZZ";
+    begin
+        CreateSalesAdvLetterCZZ.SetJobTask(JobTask);
+        CreateSalesAdvLetterCZZ.Run();
+    end;
+
     procedure CreateSalesAdvancePayment(var GenJournalLine: Record "Gen. Journal Line"; CustomerNo: Code[20]; Amount: Decimal; CurrencyCode: Code[10]; AdvanceLetterNo: Code[20]; ExchangeRate: Decimal; PostingDate: Date)
     begin
         LibraryJournals.CreateGenJournalLineWithBatch(

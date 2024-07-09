@@ -50,6 +50,10 @@ page 30004 "APIV2 - Aut. Users"
                 {
                     Caption = 'Expiry Date';
                 }
+                field(contactEmail; Rec."Contact Email")
+                {
+                    Caption = 'Contact Email';
+                }
                 part(securityGroupMember; "APIV2 - Aut. Sec. Gr. Members")
                 {
                     Caption = 'User Group Member';

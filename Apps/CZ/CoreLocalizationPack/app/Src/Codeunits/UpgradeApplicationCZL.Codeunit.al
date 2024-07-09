@@ -274,6 +274,9 @@ codeunit 31017 "Upgrade Application CZL"
         UpgradeSubstCustVendPostingGroup();
         UpgradeVATStatementTemplate();
         UpgradeAllowVATPosting();
+        UpgradeOriginalVATAmountsInVATEntries();
+        UpgradeFunctionalCurrency();
+        UpgradeEnableNonDeductibleVATCZ();
     end;
 
     local procedure UpgradeGeneralLedgerSetup();
@@ -2656,6 +2659,76 @@ codeunit 31017 "Upgrade Application CZL"
         UserSetupDataTransfer.CopyFields();
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetAllowVATPostingUpgradeTag());
+    end;
+
+    local procedure UpgradeOriginalVATAmountsInVATEntries()
+    var
+        VATEntry: Record "VAT Entry";
+        VATEntryDataTransfer: DataTransfer;
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetOriginalVATAmountsInVATEntriesUpgradeTag()) then
+            exit;
+
+        VATEntryDataTransfer.SetTables(Database::"VAT Entry", Database::"VAT Entry");
+        VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo(Base), VATEntry.FieldNo("Original VAT Base CZL"));
+        VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo(Amount), VATEntry.FieldNo("Original VAT Amount CZL"));
+        VATEntryDataTransfer.CopyFields();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetOriginalVATAmountsInVATEntriesUpgradeTag());
+    end;
+
+    local procedure UpgradeFunctionalCurrency()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        PurchaseHeader: Record "Purchase Header";
+        SalesHeader: Record "Sales Header";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetFunctionalCurrencyUpgradeTag()) then
+            exit;
+
+        if GeneralLedgerSetup.IsAdditionalCurrencyEnabled() then begin
+            SalesHeader.SetLoadFields("Additional Currency Factor CZL", "Posting Date");
+            SalesHeader.SetRange("Additional Currency Factor CZL", 0);
+            if SalesHeader.FindSet(true) then
+                repeat
+                    SalesHeader.UpdateAddCurrencyFactorCZL();
+#pragma warning disable AA0214
+                    if SalesHeader.Modify() then;
+#pragma warning restore AA0214
+                until SalesHeader.Next() = 0;
+
+            PurchaseHeader.SetLoadFields("Additional Currency Factor CZL", "Posting Date");
+            PurchaseHeader.SetRange("Additional Currency Factor CZL", 0);
+            if PurchaseHeader.FindSet(true) then
+                repeat
+                    PurchaseHeader.UpdateAddCurrencyFactorCZL();
+#pragma warning disable AA0214
+                    if PurchaseHeader.Modify() then;
+#pragma warning restore AA0214
+                until PurchaseHeader.Next() = 0;
+        end;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetFunctionalCurrencyUpgradeTag());
+    end;
+
+    local procedure UpgradeEnableNonDeductibleVATCZ()
+    var
+        VATEntry: Record "VAT Entry";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetEnableNonDeductibleVATCZUpgradeTag()) then
+            exit;
+
+        VATEntry.SetFilter("Non-Deductible VAT %", '<>%1', 0);
+        VATEntry.SetLoadFields("Entry No.", Base, Amount, "Non-Deductible VAT Base", "Non-Deductible VAT Amount");
+        if VATEntry.FindSet() then
+            repeat
+                VATEntry."Original VAT Base CZL" := VATEntry.CalcOriginalVATBaseCZL();
+                VATEntry."Original VAT Amount CZL" := VATEntry.CalcOriginalVATAmountCZL();
+                VATEntry."Original VAT Entry No. CZL" := VATEntry."Entry No.";
+                if VATEntry.Modify() then;
+            until VATEntry.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetEnableNonDeductibleVATCZUpgradeTag());
     end;
 
     local procedure InsertRepSelection(ReportUsage: Enum "Report Selection Usage"; Sequence: Code[10]; ReportID: Integer)

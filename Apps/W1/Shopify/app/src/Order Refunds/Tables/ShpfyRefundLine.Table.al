@@ -115,6 +115,12 @@ table 30145 "Shpfy Refund Line"
             CalcFormula = lookup("Shpfy Order Line"."Gift Card" where("Line Id" = field("Order Line Id")));
             Editable = false;
         }
+        field(105; "Location Id"; BigInteger)
+        {
+            Caption = 'Location Id';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
     }
     keys
     {

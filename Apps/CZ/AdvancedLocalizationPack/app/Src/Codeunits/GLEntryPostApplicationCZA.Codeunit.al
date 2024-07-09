@@ -41,7 +41,7 @@ codeunit 31370 "G/L Entry Post Application CZA"
         PostingDate: Date;
         ApplicationDate: Date;
         TransactionNo: Integer;
-        IsZero: Boolean;
+        IsZero, IsHandled : Boolean;
     begin
         Clear(PostingDate);
         GLEntry.SetCurrentKey("Applies-to ID CZA", "Applying Entry CZA");
@@ -52,11 +52,15 @@ codeunit 31370 "G/L Entry Post Application CZA"
             GLEntry.SetFilter(Amount, '<0')
         else
             GLEntry.SetFilter(Amount, '>0');
+        OnPostApplyGLEntryOnAfterSetFilters(GLEntry, ApplyingGLEntry);
         if GLEntry.FindSet(false) then
             repeat
-                if GLEntry."Amount to Apply CZA" <> 0 then
-                    if (GLEntry.Amount * ApplyingGLEntry.Amount) > 0 then
-                        Error(SignAmtMustBediffErr);
+                IsHandled := false;
+                OnPostApplyGLEntryOnBeforeSignAmtCheck(GLEntry, ApplyingGLEntry, IsHandled);
+                if not IsHandled then
+                    if GLEntry."Amount to Apply CZA" <> 0 then
+                        if (GLEntry.Amount * ApplyingGLEntry.Amount) > 0 then
+                            Error(SignAmtMustBediffErr);
                 if GLEntry."Posting Date" > PostingDate then
                     PostingDate := GLEntry."Posting Date"
             until GLEntry.Next() = 0;
@@ -429,6 +433,16 @@ codeunit 31370 "G/L Entry Post Application CZA"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeAtomatedGLEntryApplication(var GenJournalLine: Record "Gen. Journal Line"; var GLEntry: Record "G/L Entry"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnPostApplyGLEntryOnAfterSetFilters(var GLEntry: Record "G/L Entry"; var ApplyingGLEntry: Record "G/L Entry")
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnPostApplyGLEntryOnBeforeSignAmtCheck(GLEntry: Record "G/L Entry"; ApplyingGLEntry: Record "G/L Entry"; var IsHandled: Boolean)
     begin
     end;
 }

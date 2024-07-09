@@ -86,7 +86,7 @@ codeunit 31088 "Upgrade Application CZZ"
     var
         SalesAdvLetterEntry: Record "Sales Adv. Letter Entry CZZ";
     begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZZ.GetSalesAdvLetterEntryCustomerNoUpgradeTag()) then
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZZ.GetSalesAdvLetterEntryCustomerNo2UpgradeTag()) then
             exit;
 
         SalesAdvLetterEntry.SetLoadFields("Sales Adv. Letter No.");
@@ -97,7 +97,7 @@ codeunit 31088 "Upgrade Application CZZ"
                 SalesAdvLetterEntry.Modify();
             until SalesAdvLetterEntry.Next() = 0;
 
-        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZZ.GetSalesAdvLetterEntryCustomerNoUpgradeTag());
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZZ.GetSalesAdvLetterEntryCustomerNo2UpgradeTag());
     end;
 
     local procedure UpgradeAdvanceLetterApplicationAmountLCY()

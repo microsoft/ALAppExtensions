@@ -1,7 +1,6 @@
 namespace Microsoft.Bank.Reconciliation;
 
 using Microsoft.Bank.Ledger;
-using Microsoft.Upgrade;
 using System.AI;
 using System.Azure.KeyVault;
 using System.Environment;
@@ -150,19 +149,6 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
             end else
                 InputWithReservedWordsFound := true;
         until (BankAccReconciliationLine.Next() = 0);
-    end;
-
-    [NonDebuggable]
-    procedure ApproximateTokenCount(TextInput: SecretText): Decimal
-    var
-        AverageWordsPerToken: Decimal;
-        TokenCount: Integer;
-        WordsInInput: Integer;
-    begin
-        AverageWordsPerToken := 0.6; // Based on OpenAI estimate
-        WordsInInput := TextInput.Unwrap().Split(' ', ',', '.', '!', '?', ';', ':', '/n').Count;
-        TokenCount := Round(WordsInInput / AverageWordsPerToken, 1);
-        exit(TokenCount);
     end;
 
     procedure RemoveShortWords(Text: Text[250]): Text[250];
@@ -400,10 +386,11 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
             FeatureTelemetry.LogUsage('0000LF6', FeatureName(), 'Match proposals');
             // Initialize the counts
             CompletionTaskTxt := BuildBankRecCompletionTask(true);
-            TaskPromptTokenCount := ApproximateTokenCount(CompletionTaskTxt);
+            TaskPromptTokenCount := AOAIToken.GetGPT4TokenCount(CompletionTaskTxt);
 
             // Iterate through each statement line
             BankAccReconciliationLine.FindSet();
+            InputWithReservedWordsFound := false;
             repeat
                 // Find the top 5 ledger entries closest to the statement line
                 TempBankAccLedgerEntryMatchingBuffer.RESET();
@@ -452,8 +439,6 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
 
                 until (TempBankAccLedgerEntryMatchingBuffer.Next() = 0);
 
-                InputWithReservedWordsFound := false;
-
                 // Generate Prompt using the Statement Line and the Top 5 Ledger Entries
                 BankAccReconciliationLineCopy.Copy(BankAccReconciliationLine);
                 BankAccReconciliationLineCopy.SetFilter("Statement Line No.", '=%1', BankAccReconciliationLine."Statement Line No.");
@@ -466,7 +451,7 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
                 TempBankAccLedgerEntryMatchingBuffer.FindSet();
                 BuildBankRecLedgerEntries(BankRecLedgerEntriesTxt, TempBankAccLedgerEntryMatchingBuffer, CandidateLedgerEntryNos);
 
-                CompletePromptTokenCount := TaskPromptTokenCount + ApproximateTokenCount(BankRecStatementLinesTxt) + ApproximateTokenCount(BankRecLedgerEntriesTxt);
+                CompletePromptTokenCount := TaskPromptTokenCount + AOAIToken.GetGPT4TokenCount(BankRecStatementLinesTxt) + AOAIToken.GetGPT4TokenCount(BankRecLedgerEntriesTxt);
                 if (CompletePromptTokenCount >= PromptSizeThreshold()) then begin
                     Session.LogMessage('0000LFK', TelemetryApproximateTokenCountExceedsLimitTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
                     CompletionPromptTxt := BuildBankRecCompletionPrompt(CompletionTaskTxt, BankRecStatementLinesTxt, BankRecLedgerEntriesTxt);
@@ -518,6 +503,42 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
         if StrPos(LowerCase(Input), '<|end|>') > 0 then
             exit(true);
 
+        if StrPos(LowerCase(Input), 'match ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'correlate ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'associate ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'reconcile ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'fix ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'assign ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'apply ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'merge ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'attach ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'append ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'couple ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'pair ') > 0 then
+            exit(true);
+
         exit(false)
     end;
 
@@ -565,18 +586,19 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
         CopilotCapability: Codeunit "Copilot Capability";
         EnvironmentInformation: Codeunit "Environment Information";
         UpgradeTag: Codeunit "Upgrade Tag";
-        UpgradeTagDefinitions: Codeunit "Upgrade Tag Definitions";
     begin
         if not EnvironmentInformation.IsSaaSInfrastructure() then
             exit;
 
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitions.GetRegisterBankAccRecCopilotCapabilityUpgradeTag()) then
+        if UpgradeTag.HasUpgradeTag(GetRegisterBankAccRecCopilotGACapabilityUpgradeTag()) then
             exit;
 
         if not CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"Bank Account Reconciliation") then
-            CopilotCapability.RegisterCapability(Enum::"Copilot Capability"::"Bank Account Reconciliation", LearnMoreUrlTxt);
+            CopilotCapability.RegisterCapability(Enum::"Copilot Capability"::"Bank Account Reconciliation", Enum::"Copilot Availability"::"Generally Available", LearnMoreUrlTxt)
+        else
+            CopilotCapability.ModifyCapability(Enum::"Copilot Capability"::"Bank Account Reconciliation", Enum::"Copilot Availability"::"Generally Available", LearnMoreUrlTxt);
 
-        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitions.GetRegisterBankAccRecCopilotCapabilityUpgradeTag());
+        UpgradeTag.SetUpgradeTag(GetRegisterBankAccRecCopilotGACapabilityUpgradeTag());
     end;
 
     local procedure MatchIsAcceptable(var BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line"; var TempLedgerEntryMatchingBuffer: Record "Ledger Entry Matching Buffer" temporary; MatchedLineNoTxt: Text; MatchedEntryNoTxt: Text): Boolean
@@ -617,7 +639,19 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
         exit(InputWithReservedWordsFound)
     end;
 
+    local procedure GetRegisterBankAccRecCopilotGACapabilityUpgradeTag(): Code[250]
+    begin
+        exit('MS-521413-RegisterBankAccRecCopilotGACapability-20240624');
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
+    local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
+    begin
+        PerCompanyUpgradeTags.Add(GetRegisterBankAccRecCopilotGACapabilityUpgradeTag());
+    end;
+
     var
+        AOAIToken: Codeunit "AOAI Token";
         MatchedByCopilotTxt: label 'Matched by Copilot based on semantic similarity.', Comment = 'Copilot is a Microsoft service name and must not be translated';
         ConstructingPromptFailedErr: label 'There was an error with sending the call to Copilot. Log a Business Central support request about this.', Comment = 'Copilot is a Microsoft service name and must not be translated';
         TelemetryConstructingPromptFailedErr: label 'There was an error with constructing the chat completion prompt from the Key Vault.', Locked = true;

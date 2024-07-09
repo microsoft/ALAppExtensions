@@ -1,8 +1,8 @@
 namespace Microsoft.Finance.ExcelReports;
 
 using Microsoft.Finance.GeneralLedger.Account;
-using Microsoft.Finance.Consolidation;
 using Microsoft.Finance.Dimension;
+using Microsoft.Finance.Consolidation;
 
 report 4410 "EXR Consolidated Trial Balance"
 {
@@ -17,9 +17,10 @@ report 4410 "EXR Consolidated Trial Balance"
 
     dataset
     {
-        dataitem(TrialBalanceData; "G/L Account")
+        dataitem(GLAccounts; "G/L Account")
         {
             DataItemTableView = sorting("No.");
+            RequestFilterFields = "No.";
             column(AccountNumber; "No.") { IncludeCaption = true; }
             column(AccountName; Name) { IncludeCaption = true; }
             column(IncomeBalance; "Income/Balance") { IncludeCaption = true; }
@@ -28,52 +29,45 @@ report 4410 "EXR Consolidated Trial Balance"
             column(AccountType; "Account Type") { IncludeCaption = true; }
             column(Indentation; Indentation) { IncludeCaption = true; }
             column(IndentedAccountName; IndentedAccountName) { }
-            dataitem(EXRTrialBalanceBuffer; "EXR Trial Balance Buffer")
-            {
-                DataItemLink = "G/L Account No." = field("No.");
-                column(Dimension1Code; "Dimension 1 Code") { IncludeCaption = true; }
-                column(Dimension2Code; "Dimension 2 Code") { IncludeCaption = true; }
-                column(NetChange; "Net Change") { IncludeCaption = true; }
-                column(Balance; Balance) { IncludeCaption = true; }
-                column(NetChangeACY; "Net Change (ACY)") { IncludeCaption = true; }
-                column(BalanceACY; "Balance (ACY)") { IncludeCaption = true; }
-                column(BusinessUnitCode; "Business Unit Code") { IncludeCaption = true; }
-            }
+
             trigger OnAfterGetRecord()
-            var
-                TrialBalance: Codeunit "Trial Balance";
             begin
-                IndentedAccountName := PadStr('', TrialBalanceData.Indentation * 2, ' ') + TrialBalanceData.Name;
-                TrialBalance.InsertBreakdownForGLAccount(TrialBalanceData, Dimension1Values, Dimension2Values, BusinessUnitCodes, EXRTrialBalanceBuffer);
+                IndentedAccountName := PadStr('', GLAccounts.Indentation * 2, ' ') + GLAccounts.Name;
             end;
+        }
+        dataitem(Dimension1; "Dimension Value")
+        {
+            DataItemTableView = sorting("Code");
+            UseTemporary = true;
 
-            trigger OnPreDataItem()
-            var
-                BusinessUnit: Record "Business Unit";
-                DimensionValue: Record "Dimension Value";
-            begin
-                if EndingDate = 0D then
-                    Error(EnterAnEndingDateErr);
-                TrialBalanceData.SetRange("Date Filter", StartingDate, EndingDate);
+            column(Dim1Code; Dimension1."Code") { IncludeCaption = true; }
+            column(Dim1Name; Dimension1.Name) { IncludeCaption = true; }
+        }
+        dataitem(Dimension2; "Dimension Value")
+        {
+            DataItemTableView = sorting("Code");
+            UseTemporary = true;
 
-                DimensionValue.SetRange("Global Dimension No.", 1);
-                if DimensionValue.FindSet() then
-                    repeat
-                        Dimension1Values.Add(DimensionValue.Code);
-                    until DimensionValue.Next() = 0;
-                Dimension1Values.Add('');
-                DimensionValue.SetRange("Global Dimension No.", 2);
-                if DimensionValue.FindSet() then
-                    repeat
-                        Dimension2Values.Add(DimensionValue.Code);
-                    until DimensionValue.Next() = 0;
-                Dimension2Values.Add('');
-                if BusinessUnit.FindSet() then
-                    repeat
-                        BusinessUnitCodes.Add(BusinessUnit.Code);
-                    until BusinessUnit.Next() = 0;
-                BusinessUnitCodes.Add('');
-            end;
+            column(Dim2Code; Dimension2."Code") { IncludeCaption = true; }
+            column(Dim2Name; Dimension2.Name) { IncludeCaption = true; }
+        }
+        dataitem(BusinessUnits; "Business Unit")
+        {
+            DataItemTableView = sorting("Code");
+            column(Code; Code) { IncludeCaption = true; }
+            column(Name; Name) { IncludeCaption = true; }
+        }
+        dataitem(TrialBalanceData; "EXR Trial Balance Buffer")
+        {
+            RequestFilterFields = "Business Unit Code", "Net Change", Balance;
+            column(Account; "G/L Account No.") { IncludeCaption = true; }
+            column(Dimension1Code; "Dimension 1 Code") { IncludeCaption = true; }
+            column(Dimension2Code; "Dimension 2 Code") { IncludeCaption = true; }
+            column(NetChange; "Net Change") { IncludeCaption = true; }
+            column(Balance; Balance) { IncludeCaption = true; }
+            column(NetChangeACY; "Net Change (ACY)") { IncludeCaption = true; }
+            column(BalanceACY; "Balance (ACY)") { IncludeCaption = true; }
+            column(BusinessUnitCode; "Business Unit Code") { IncludeCaption = true; }
         }
     }
     requestpage
@@ -126,11 +120,25 @@ report 4410 "EXR Consolidated Trial Balance"
         ByBusinessUnitLCY = 'By Business Unit (LCY)', Comment = 'Worksheet name, shouldn''t exceed 31 characters';
         ByBusinessUnitACY = 'By Business Unit (ACY)', Comment = 'Worksheet name, shouldn''t exceed 31 characters';
     }
+
+    trigger OnPreReport()
     var
-        Dimension1Values: List of [Code[20]];
-        Dimension2Values: List of [Code[20]];
-        BusinessUnitCodes: List of [Code[20]];
+        BusinessUnit: Record "Business Unit";
+        TrialBalance: Codeunit "Trial Balance";
+    begin
+        if EndingDate = 0D then
+            Error(EnterAnEndingDateErr);
+        if BusinessUnit.IsEmpty() then
+            Error(NoBusinessUnitsErr);
+        GLAccounts.SetRange("Date Filter", StartingDate, EndingDate);
+
+        TrialBalance.ConfigureTrialBalance(true, true);
+        TrialBalance.InsertTrialBalanceReportData(GLAccounts, Dimension1, Dimension2, TrialBalanceData);
+    end;
+
+    var
         IndentedAccountName: Text;
         StartingDate, EndingDate : Date;
         EnterAnEndingDateErr: Label 'Please enter an ending date.';
+        NoBusinessUnitsErr: Label 'There are no business units configured for the current company. Please run this report from the consolidation company.';
 }

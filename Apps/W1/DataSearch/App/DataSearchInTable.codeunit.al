@@ -130,6 +130,7 @@ codeunit 2680 "Data Search in Table"
         FldRef: FieldRef;
         FieldNo: Integer;
         LoadFieldsSet: Boolean;
+        UseWildCharSearch: Boolean;
     begin
         if RecRef.Number = 0 then
             exit;
@@ -139,18 +140,25 @@ codeunit 2680 "Data Search in Table"
         if FieldNo > 0 then
             DataSearchObjectMapping.SetTypeFilterOnRecRef(RecRef, TableType, FieldNo);
 
+        if SearchString[1] = '*' then begin
+            UseWildCharSearch := true;
+            SearchString := DelChr(SearchString, '<', '*');
+        end;
         RecRef.FilterGroup(-1); // 'OR' group
         foreach FieldNo in FieldList do
             if RecRef.FieldExist(FieldNo) then begin
-                FldRef := RecRef.Field(FieldNo);
+                FldRef := RecRef.Field(FieldNo); 
                 if FldRef.Length >= strlen(SearchString) then begin
-                    if UseTextSearch then
-                        if FldRef.Type = FieldType::Code then
-                            FldRef.SetFilter('*' + UpperCase(SearchString) + '*')
-                        else
-                            FldRef.SetFilter('@*' + SearchString + '*')
+                    if not UseWildCharSearch and FldRef.IsOptimizedForTextSearch then
+                        FldRef.SetFilter('&&' + SearchString + '*')
                     else
-                        FldRef.SetFilter('*' + SearchString + '*');
+                        if UseTextSearch then
+                            if FldRef.Type = FieldType::Code then
+                                FldRef.SetFilter('*' + UpperCase(SearchString) + '*')
+                            else
+                                FldRef.SetFilter('@*' + SearchString + '*')
+                        else
+                            FldRef.SetFilter('*' + SearchString + '*');
                     if LoadFieldsSet then
                         RecRef.AddLoadFields(FieldNo)
                     else

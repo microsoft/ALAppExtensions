@@ -325,10 +325,20 @@ page 4050 "GP Migration Configuration"
                 }
             }
 
+#if not CLEAN25
             group(Inactives)
             {
-                Caption = 'Inactive Records';
-                InstructionalText = 'Select the inactive records to be migrated.';
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteTag = '25.0';
+                ObsoleteReason = 'Group replaced by IncludeTheseRecords';
+            }
+#endif
+
+            group(IncludeTheseRecords)
+            {
+                Caption = 'Include These Records';
+                InstructionalText = 'Select which additional records to include in the migration.';
 
                 field("Migrate Inactive Customers"; Rec."Migrate Inactive Customers")
                 {
@@ -421,6 +431,21 @@ page 4050 "GP Migration Configuration"
                         if PrepSettingsForFieldUpdate() then
                             repeat
                                 GPCompanyAdditionalSettings.Validate("Migrate Discontinued Items", Rec."Migrate Discontinued Items");
+                                GPCompanyAdditionalSettings.Modify();
+                            until GPCompanyAdditionalSettings.Next() = 0;
+                    end;
+                }
+                field("Migrate Kit Items"; Rec."Migrate Kit Items")
+                {
+                    Caption = 'Kit Items';
+                    ToolTip = 'Specifies whether to migrate kit items.';
+                    ApplicationArea = All;
+
+                    trigger OnValidate()
+                    begin
+                        if PrepSettingsForFieldUpdate() then
+                            repeat
+                                GPCompanyAdditionalSettings.Validate("Migrate Kit Items", Rec."Migrate Kit Items");
                                 GPCompanyAdditionalSettings.Modify();
                             until GPCompanyAdditionalSettings.Next() = 0;
                     end;
@@ -674,8 +699,8 @@ page 4050 "GP Migration Configuration"
             action(GP)
             {
                 ApplicationArea = All;
-                Caption = 'Upgrade settings';
-                ToolTip = 'Change the settings for the GP upgrade.';
+                Caption = 'Migration settings';
+                ToolTip = 'Change the settings for the GP migration.';
                 RunObject = page "GP Upgrade Settings";
                 Image = Setup;
             }
@@ -721,6 +746,8 @@ page 4050 "GP Migration Configuration"
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Vendors", Rec."Migrate Inactive Vendors");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Temporary Vendors", Rec."Migrate Temporary Vendors");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Checkbooks", Rec."Migrate Inactive Checkbooks");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Inactive Items", Rec."Migrate Inactive Items");
+                    GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Kit Items", Rec."Migrate Kit Items");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Vendor Classes", Rec."Migrate Vendor Classes");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Customer Classes", Rec."Migrate Customer Classes");
                     GPCompanyAdditionalSettingsEachCompany.Validate("Migrate Item Classes", Rec."Migrate Item Classes");
@@ -787,6 +814,8 @@ page 4050 "GP Migration Configuration"
         Rec.Validate("Migrate Inactive Vendors", GPCompanyAdditionalSettingsInit."Migrate Inactive Vendors");
         Rec.Validate("Migrate Temporary Vendors", GPCompanyAdditionalSettingsInit."Migrate Temporary Vendors");
         Rec.Validate("Migrate Inactive Checkbooks", GPCompanyAdditionalSettingsInit."Migrate Inactive Checkbooks");
+        Rec.Validate("Migrate Inactive Items", GPCompanyAdditionalSettingsInit."Migrate Inactive Items");
+        Rec.Validate("Migrate Kit Items", GPCompanyAdditionalSettingsInit."Migrate Kit Items");
         Rec.Validate("Migrate Vendor Classes", GPCompanyAdditionalSettingsInit."Migrate Vendor Classes");
         Rec.Validate("Migrate Customer Classes", GPCompanyAdditionalSettingsInit."Migrate Customer Classes");
         Rec.Validate("Migrate Item Classes", GPCompanyAdditionalSettingsInit."Migrate Item Classes");

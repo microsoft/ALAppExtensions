@@ -189,6 +189,11 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
             Caption = 'External Document No.';
             DataClassification = CustomerContent;
         }
+        field(70; "Non-Deductible VAT %"; Decimal)
+        {
+            Caption = 'Non-Deductible VAT %"';
+            DecimalPlaces = 0 : 5;
+        }
         field(80; "Auxiliary Entry"; Boolean)
         {
             Caption = 'Auxiliary Entry';
@@ -373,6 +378,12 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
         OnAfterCopyFromVATPostingSetup(VATPostingSetup, Rec);
     end;
 
+    procedure CopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    begin
+        "Purch. Adv. Letter No." := PurchAdvLetterHeaderCZZ."No.";
+        OnAfterCopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ, Rec);
+    end;
+
     procedure InsertNewEntry(WriteToDatabase: Boolean) EntryNo: Integer
     var
         PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
@@ -416,6 +427,22 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
         OnAfterRemainingAmountLCY(Rec, BalanceAtDate, RemainingAmountLCY);
     end;
 
+    internal procedure IsNonDeductibleVATAllowed(): Boolean
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        exit(VATPostingSetup.IsNonDeductibleVATAllowed(
+            "VAT Bus. Posting Group", "VAT Prod. Posting Group"));
+    end;
+
+    internal procedure CheckNonDeductibleVATAllowed()
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        VATPostingSetup.CheckNonDeductibleVATAllowed(
+            "VAT Bus. Posting Group", "VAT Prod. Posting Group");
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforePrintRecords(var ReportSelections: Record "Report Selections"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ"; ShowRequestPage: Boolean; var IsHandled: Boolean)
     begin
@@ -448,6 +475,11 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCopyFromVATPostingSetup(VATPostingSetup: Record "VAT Posting Setup"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
     begin
     end;
 

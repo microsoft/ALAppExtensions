@@ -384,6 +384,7 @@ page 2029 "Image Analyzer Wizard"
         ContactPictureAnalyze: Codeunit "Contact Picture Analyze";
 #endif
         ItemAttrPopManagement: Codeunit "Image Analyzer Ext. Mgt.";
+        ImageAnalyzerConsentProvidedLbl: Label 'Image Analyzer - consent provided by UserSecurityId %1.', Locked = true;
     begin
         ItemAttrPopManagement.HandleSetupAndEnable();
 
@@ -400,7 +401,7 @@ page 2029 "Image Analyzer Wizard"
             if ContactPictureAnalyze.AnalyzePicture(ContactToFill) then
                 CurrPage.Close();
 #endif
-
+        Session.LogAuditMessage(StrSubstNo(ImageAnalyzerConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
     end;
 
     local procedure ShowStartStep()

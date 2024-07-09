@@ -116,6 +116,22 @@ codeunit 30161 "Shpfy Import Order"
 
         if CheckToCloseOrder(OrderHeader) then
             CloseOrder(OrderHeader);
+
+        if ShopifyInvoiceExists(OrderHeader) then
+            MarkAsProcessed(OrderHeader);
+    end;
+
+    local procedure ShopifyInvoiceExists(OrderHeader: Record "Shpfy Order Header"): Boolean
+    var
+        ShpfyInvoiceHeader: Record "Shpfy Invoice Header";
+    begin
+        exit(ShpfyInvoiceHeader.Get(OrderHeader."Shopify Order Id"));
+    end;
+
+    local procedure MarkAsProcessed(OrderHeader: Record "Shpfy Order Header")
+    begin
+        OrderHeader.Validate(Processed, true);
+        OrderHeader.Modify()
     end;
 
     local procedure InsertOrderLinesAndRelatedRecords(var TempOrderLine: Record "Shpfy Order Line" temporary; var DataCaptureDict: Dictionary of [BigInteger, JsonToken]; var Redundancy: Integer)
@@ -231,8 +247,10 @@ codeunit 30161 "Shpfy Import Order"
             Redundancy := Hash.CalcHash(LineIds);
             if Redundancy <> OrderHeader."Line Items Redundancy Code" then
                 exit(true);
-            exit(false);
         end;
+
+        if OrderHeader."Shipping Charges Amount" <> JsonHelper.GetValueAsDecimal(JOrder, 'totalShippingPriceSet.shopMoney.amount') then
+            exit(true);
     end;
 
     local procedure SetAndCreateRelatedRecords(JOrder: JsonObject; var OrderHeader: Record "Shpfy Order Header")
@@ -493,13 +511,15 @@ codeunit 30161 "Shpfy Import Order"
         JsonHelper.GetValueIntoField(JOrder, 'totalTipReceivedSet.presentmentMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Presentment Total Tip Received"));
         JsonHelper.GetValueIntoField(JOrder, 'totalTaxSet.shopMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("VAT Amount"));
         JsonHelper.GetValueIntoField(JOrder, 'totalTaxSet.presentmentMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Presentment VAT Amount"));
-        JsonHelper.GetValueIntoField(JOrder, 'totalDiscountsSet.shopMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Discount Amount"));
-        JsonHelper.GetValueIntoField(JOrder, 'totalDiscountsSet.presentmentMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Presentment Discount Amount"));
+        JsonHelper.GetValueIntoField(JOrder, 'currentTotalDiscountsSet.shopMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Discount Amount"));
+        JsonHelper.GetValueIntoField(JOrder, 'currentTotalDiscountsSet.presentmentMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Presentment Discount Amount"));
         JsonHelper.GetValueIntoField(JOrder, 'totalShippingPriceSet.shopMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Shipping Charges Amount"));
         JsonHelper.GetValueIntoField(JOrder, 'totalShippingPriceSet.presentmentMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Pres. Shipping Charges Amount"));
         JsonHelper.GetValueIntoField(JOrder, 'currentTotalPriceSet.shopMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Current Total Amount"));
         JsonHelper.GetValueIntoField(JOrder, 'currentSubtotalLineItemsQuantity', OrderHeaderRecordRef, OrderHeader.FieldNo("Current Total Items Quantity"));
         JsonHelper.GetValueIntoField(Jorder, 'poNumber', OrderHeaderRecordRef, OrderHeader.FieldNo("PO Number"));
+        JsonHelper.GetValueIntoField(JOrder, 'paymentTerms.paymentTermsType', OrderHeaderRecordRef, OrderHeader.FieldNo("Payment Terms Type"));
+        JsonHelper.GetValueIntoField(JOrder, 'paymentTerms.paymentTermsName', OrderHeaderRecordRef, OrderHeader.FieldNo("Payment Terms Name"));
         OrderHeaderRecordRef.SetTable(OrderHeader);
         if JsonHelper.GetJsonObject(JOrder, JObject, 'purchasingEntity') then
             if JsonHelper.GetJsonObject(JOrder, JObject, 'purchasingEntity.company') then
@@ -618,7 +638,7 @@ codeunit 30161 "Shpfy Import Order"
                 OrderAttribute.Value := CopyStr(JsonHelper.GetValueAsText(JToken, 'value', MaxStrLen(OrderAttribute.Value)), 1, MaxStrLen(OrderAttribute.Value))
             else
 #endif
-                OrderAttribute."Attribute Value" := CopyStr(JsonHelper.GetValueAsText(JToken, 'value', MaxStrLen(OrderAttribute."Attribute Value")), 1, MaxStrLen(OrderAttribute."Attribute Value"));
+            OrderAttribute."Attribute Value" := CopyStr(JsonHelper.GetValueAsText(JToken, 'value', MaxStrLen(OrderAttribute."Attribute Value")), 1, MaxStrLen(OrderAttribute."Attribute Value"));
             OrderAttribute.Insert();
         end;
     end;
@@ -630,7 +650,7 @@ codeunit 30161 "Shpfy Import Order"
     begin
         OrderLineAttribute.SetRange("Order Id", ShopifyOrderId);
         OrderLineAttribute.SetRange("Order Line Id", OrderLineId);
-        if not OrderLineAttribute.IsEmpty then
+        if not OrderLineAttribute.IsEmpty() then
             OrderLineAttribute.DeleteAll();
         foreach JToken in JCustomAttributtes do begin
             Clear(OrderLineAttribute);
@@ -721,7 +741,7 @@ codeunit 30161 "Shpfy Import Order"
         JToken: JsonToken;
     begin
         OrderTaxLine.SetRange("Parent Id", ParentId);
-        if not OrderTaxLine.IsEmpty then
+        if not OrderTaxLine.IsEmpty() then
             OrderTaxLine.DeleteAll();
         foreach JToken in JTaxLines do begin
             RecordRef.Open(Database::"Shpfy Order Tax Line");
@@ -833,11 +853,23 @@ codeunit 30161 "Shpfy Import Order"
     local procedure UpdateLocationIdAndDeliveryMethodOnOrderLine(var OrderLine: Record "Shpfy Order Line")
     var
         FulfillmentOrderLine: Record "Shpfy FulFillment Order Line";
-        TotalQuantity: Integer;
     begin
         FulfillmentOrderLine.Reset();
         FulfillmentOrderLine.SetRange("Shopify Order Id", OrderLine."Shopify Order Id");
         FulfillmentOrderLine.SetRange("Shopify Variant Id", OrderLine."Shopify Variant Id");
+        FulfillmentOrderLine.SetFilter("Fulfillment Status", '<>%1', 'CLOSED');
+        if FulfillmentOrderLine.FindSet() then
+            UpdateLocationIdAndDeliveryMethodOnOrderLines(OrderLine, FulfillmentOrderLine)
+        else begin
+            FulfillmentOrderLine.SetRange("Fulfillment Status");
+            UpdateLocationIdAndDeliveryMethodOnOrderLines(OrderLine, FulfillmentOrderLine);
+        end;
+    end;
+
+    local procedure UpdateLocationIdAndDeliveryMethodOnOrderLines(var OrderLine: Record "Shpfy Order Line"; var FulfillmentOrderLine: Record "Shpfy FulFillment Order Line")
+    var
+        TotalQuantity: Integer;
+    begin
         if FulfillmentOrderLine.FindSet() then begin
             repeat
                 TotalQuantity += FulfillmentOrderLine."Total Quantity";

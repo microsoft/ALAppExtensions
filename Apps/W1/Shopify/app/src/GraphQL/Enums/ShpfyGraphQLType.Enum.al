@@ -400,4 +400,89 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
         Caption = 'Get Next Catalog Products';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextCatalogProducts";
     }
+    value(78; GetOrderTransactions)
+    {
+        Caption = 'Get Order Transactions';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL OrderTransactions";
+    }
+    value(80; DraftOrderComplete)
+    {
+        Caption = 'Draft Order Complete';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL DraftOrderComplete";
+    }
+    value(81; FulfillOrder)
+    {
+        Caption = 'Fulfill Order';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL Fulfill Order";
+    }
+    value(82; GetPaymentTerms)
+    {
+        Caption = 'Get Payment Terms';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL Payment Terms";
+    }
+    value(83; GetFulfillmentOrderIds)
+    {
+        Caption = 'Get Fulfillments';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL Get Fulfillments";
+    }
+    value(85; ProductVariantDelete)
+    {
+        Caption = 'Product Variant Delete';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL ProductVariantDelete";
+    }
+    value(86; GetProductOptions)
+    {
+        Caption = 'Get Product Options';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL GetProductOptions";
+    }
+    value(87; GetReverseFulfillmentOrders)
+    {
+        Caption = 'Get Reverse Fulfillment Orders';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL RevFulfillOrders";
+    }
+    value(88; GetNextReverseFulfillmentOrders)
+    {
+        Caption = 'Get Next Reverse Fulfillment Orders';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextRevFulfillOrders";
+    }
+    value(89; GetReverseFulfillmentOrderLines)
+    {
+        Caption = 'Get Reverse Fulfillment Order Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL RevFulfillOrderLines";
+    }
+    value(90; GetNextReverseFulfillmentOrderLines)
+    {
+        Caption = 'Get Next Reverse Fulfillment Order Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextRevFulfillOrdLns";
+    }
+    value(91; TranslationsRegister)
+    {
+        Caption = 'Translations Register';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL TranslationsRegister";
+    }
+    value(92; ShopLocales)
+    {
+        Caption = 'Shop Locales';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL ShopLocales";
+    }
+    value(93; GetTranslResource)
+    {
+        Caption = 'Get Transl Resource';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL TranslResource";
+    }
+    value(94; MetafieldSet)
+    {
+        Caption = 'MetfieldSet';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL MetafieldsSet";
+    }
+    value(95; ProductMetafieldIds)
+    {
+        Caption = 'Product Metafield Ids';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL ProductMetafieldIds";
+    }
+    value(96; VariantMetafieldIds)
+    {
+        Caption = 'Variant Metafield Ids';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL VariantMetafieldIds";
+    }
 }

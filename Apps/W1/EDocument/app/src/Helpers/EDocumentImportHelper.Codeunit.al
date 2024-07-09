@@ -5,7 +5,9 @@
 namespace Microsoft.eServices.EDocument;
 
 using Microsoft.Bank.Reconciliation;
+using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Journal;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.UOM;
@@ -639,6 +641,21 @@ codeunit 6109 "E-Document Import Helper"
         SetFieldValue(EDocument, FieldRef, Value);
     end;
 
+    internal procedure GetCurrencyRoundingPrecision(CurrencyCode: Code[10]): Decimal
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        Currency: Record Currency;
+        AmountRoundingPrecision: Decimal;
+    begin
+        GeneralLedgerSetup.Get();
+        AmountRoundingPrecision := GeneralLedgerSetup."Amount Rounding Precision";
+        if CurrencyCode <> '' then
+            if Currency.Get(CurrencyCode) then
+                AmountRoundingPrecision := Currency."Amount Rounding Precision";
+
+        exit(AmountRoundingPrecision);
+    end;
+
     local procedure FindAppropriateGLAccount(var EDocument: Record "E-Document"; var SourceRecRef: RecordRef; LineDescription: Text[250]; LineDirectUnitCost: Decimal): Code[20]
     var
         PurchasesPayablesSetup: Record "Purchases & Payables Setup";
@@ -756,6 +773,7 @@ codeunit 6109 "E-Document Import Helper"
         InsertOrUpdateUnitOfMeasureCode(TempDocumentLine, ResolvedUnitCode);
         exit(true);
     end;
+
 
     local procedure ResolveUnitOfMeasureFromItem(var Item: Record Item; var EDocument: Record "E-Document"; var TempDocumentLine: RecordRef): Boolean
     var
