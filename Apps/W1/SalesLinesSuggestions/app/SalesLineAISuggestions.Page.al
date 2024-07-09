@@ -5,6 +5,7 @@
 namespace Microsoft.Sales.Document;
 
 using System.Telemetry;
+using Microsoft.Sales.Document.Attachment;
 
 page 7275 "Sales Line AI Suggestions"
 {
@@ -115,7 +116,6 @@ page 7275 "Sales Line AI Suggestions"
 
                     GenerateSalesLineSuggestions(SearchQueryTxt, SearchStyle);
                 end;
-
             }
             systemaction(OK)
             {
@@ -127,6 +127,19 @@ page 7275 "Sales Line AI Suggestions"
             {
                 Caption = 'Discard';
                 ToolTip = 'Discard sales line suggestions proposed by Copilot.';
+            }
+            systemaction(Attach)
+            {
+                Caption = 'Attach';
+                ToolTip = 'Attach a file to get sales line suggestions from Copilot.';
+
+                trigger OnAction()
+                var
+                    SalesLineFromAttachment: Codeunit "Sales Line From Attachment";
+                begin
+                    CurrPage.Close();
+                    SalesLineFromAttachment.AttachAndSuggest(GlobalSalesHeader, PromptMode::Prompt);
+                end;
             }
         }
         area(PromptGuide)
@@ -275,6 +288,10 @@ page 7275 "Sales Line AI Suggestions"
             TotalCopiedLines := TempSalesLineAISuggestion.Count();
             if TotalCopiedLines > 0 then begin
                 SalesLineUtility.CopySalesLineToDoc(GlobalSalesHeader, TempSalesLineAISuggestion);
+                if CheckIfSuggestedLinesContainErrors() then begin
+                    CurrPage.Update(false);
+                    exit(false);
+                end;
                 FeatureTelemetry.LogUptake('0000ME4', SalesLineAISuggestionImpl.GetFeatureName(), Enum::"Feature Uptake Status"::Used);
             end;
         end;
@@ -378,6 +395,17 @@ page 7275 "Sales Line AI Suggestions"
         foreach Int in ListOfInteger do
             Result += Format(Int) + ', ';
         Result := Result.TrimEnd(', ');
+    end;
+
+    local procedure CheckIfSuggestedLinesContainErrors(): Boolean
+    var
+        TempSalesLineSuggestion: Record "Sales Line AI Suggestions" temporary;
+    begin
+        TempSalesLineSuggestion.Copy(TempSalesLineAISuggestion, true);
+        TempSalesLineSuggestion.Reset();
+        TempSalesLineSuggestion.SetRange("Line Style", 'Unfavorable');
+        if not TempSalesLineSuggestion.IsEmpty() then
+            exit(true);
     end;
 
     var

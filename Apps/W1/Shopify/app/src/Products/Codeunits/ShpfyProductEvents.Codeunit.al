@@ -382,4 +382,14 @@ codeunit 30177 "Shpfy Product Events"
     internal procedure OnAfterUpdateItemPicture(var Item: Record Item; ImageUrl: Text; InStream: InStream)
     begin
     end;
+
+    [IntegrationEvent(false, false)]
+    /// <summary> 
+    /// Raised After Shopify Product fields are filled from Business Central Item. These fields are sent to Shopify when creating or updating a product.
+    /// </summary>
+    /// <param name="Item">Parameter of type Record Item.</param>
+    /// <param name="ShopifyProduct">Parameter of Record "Shopify Product".</param>
+    internal procedure OnAfterFillInShopifyProductFields(Item: Record Item; var ShopifyProduct: Record "Shpfy Product")
+    begin
+    end;
 }

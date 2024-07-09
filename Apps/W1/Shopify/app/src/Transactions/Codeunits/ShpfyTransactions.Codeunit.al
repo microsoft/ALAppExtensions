@@ -11,7 +11,7 @@ codeunit 30194 "Shpfy Transactions"
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
 
-    local procedure ConvertToTranscationStatus(Value: Text): Enum "Shpfy Transaction Status"
+    local procedure ConvertToTransactionStatus(Value: Text): Enum "Shpfy Transaction Status"
     begin
         Value := CommunicationMgt.ConvertToCleanOptionValue(Value);
         if Enum::"Shpfy Transaction Status".Names().Contains(Value) then
@@ -20,7 +20,7 @@ codeunit 30194 "Shpfy Transactions"
             exit(Enum::"Shpfy Transaction Status"::" ");
     end;
 
-    local procedure ConvertToTranscationType(Value: Text): Enum "Shpfy Transaction Type"
+    local procedure ConvertToTransactionType(Value: Text): Enum "Shpfy Transaction Type"
     begin
         Value := CommunicationMgt.ConvertToCleanOptionValue(Value);
         if Enum::"Shpfy Transaction Type".Names().Contains(Value) then
@@ -29,10 +29,6 @@ codeunit 30194 "Shpfy Transactions"
             exit(Enum::"Shpfy Transaction Type"::" ");
     end;
 
-    /// <summary> 
-    /// Description for UpdateTransactionInfos.
-    /// </summary>
-    /// <param name="OrderId">Parameter of type BigInteger.</param>
     internal procedure UpdateTransactionInfos(OrderId: BigInteger)
     var
         OrderHeader: Record "Shpfy Order Header";
@@ -41,11 +37,24 @@ codeunit 30194 "Shpfy Transactions"
             UpdateTransactionInfos(OrderHeader);
     end;
 
-    /// <summary> 
-    /// Description for UpdateTransactionInfos.
-    /// </summary>
-    /// <param name="OrderHeader">Parameter of type Record "Shopify Order Header".</param>
     internal procedure UpdateTransactionInfos(OrderHeader: Record "Shpfy Order Header")
+    var
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        JResponse: JsonToken;
+        JOrderTransaction: JsonToken;
+        JOrderTransactions: JsonArray;
+        Parameters: Dictionary of [Text, Text];
+    begin
+        CommunicationMgt.SetShop(OrderHeader."Shop Code");
+        GraphQLType := "Shpfy GraphQL Type"::GetOrderTransactions;
+        Parameters.Add('OrderId', Format(OrderHeader."Shopify Order Id"));
+        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+        if JsonHelper.GetJsonArray(JResponse, JOrderTransactions, 'data.order.transactions') then
+            foreach JOrderTransaction in JOrderTransactions do
+                ExtractShopifyOrderTransaction(JOrderTransaction, OrderHeader);
+    end;
+
+    local procedure ExtractShopifyOrderTransaction(JOrderTransaction: JsonToken; OrderHeader: Record "Shpfy Order Header")
     var
         CreditCardCompany: Record "Shpfy Credit Card Company";
         DataCapture: Record "Shpfy Data Capture";
@@ -55,74 +64,70 @@ codeunit 30194 "Shpfy Transactions"
         RecordRef: RecordRef;
         Id: BigInteger;
         IsNew: Boolean;
-        JTransactions: JsonArray;
-        JResponse: JsonToken;
-        JToken: JsonToken;
-        Url: Text;
-        OrderTransactionsUrlTxt: Label 'orders/%1/transactions.json', Comment = '%1 = Shopify order id', Locked = true;
+        JObject: JsonObject;
+        ReceiptJson: Text;
     begin
-        CommunicationMgt.SetShop(OrderHeader."Shop Code");
-        Url := CommunicationMgt.CreateWebRequestURL(StrSubstNo(OrderTransactionsUrlTxt, OrderHeader."Shopify Order Id"));
-        JResponse := CommunicationMgt.ExecuteWebRequest(Url, 'GET', JToken);
-        if JsonHelper.GetJsonArray(JResponse, JTransactions, 'transactions') then
-            foreach JToken in JTransactions do begin
-                Id := JsonHelper.GetValueAsBigInteger(JToken, 'id');
-                IsNew := not OrderTransaction.Get(Id);
-                if IsNew then begin
-                    Clear(OrderTransaction);
-                    OrderTransaction."Shopify Transaction Id" := Id;
-                end;
-                OrderTransaction.Status := ConvertToTranscationStatus(JsonHelper.GetValueAsText(JToken, 'status'));
-                OrderTransaction.Type := ConvertToTranscationType(JsonHelper.GetValueAsText(JToken, 'kind'));
-                RecordRef.GetTable(OrderTransaction);
-                JsonHelper.GetValueIntoField(JToken, 'order_id', RecordRef, OrderTransaction.FieldNo("Shopify Order Id"));
-                JsonHelper.GetValueIntoField(JToken, 'gateway', RecordRef, OrderTransaction.FieldNo(Gateway));
-                JsonHelper.GetValueIntoField(JToken, 'message', RecordRef, OrderTransaction.FieldNo(Message));
-                JsonHelper.GetValueIntoField(JToken, 'created_at', RecordRef, OrderTransaction.FieldNo("Created At"));
-                JsonHelper.GetValueIntoField(JToken, 'test', RecordRef, OrderTransaction.FieldNo(Test));
-                JsonHelper.GetValueIntoField(JToken, 'authorization', RecordRef, OrderTransaction.FieldNo(Authorization));
-                JsonHelper.GetValueIntoField(JToken, 'receipt.gift_card_id', RecordRef, OrderTransaction.FieldNo("Gift Card Id"));
-                JsonHelper.GetValueIntoField(JToken, 'error_code', RecordRef, OrderTransaction.FieldNo("Error Code"));
-                JsonHelper.GetValueIntoField(JToken, 'source_name', RecordRef, OrderTransaction.FieldNo("Source Name"));
-                JsonHelper.GetValueIntoField(JToken, 'amount', RecordRef, OrderTransaction.FieldNo(Amount));
-                JsonHelper.GetValueIntoField(JToken, 'currency', RecordRef, OrderTransaction.FieldNo(Currency));
-                JsonHelper.GetValueIntoField(JToken, 'payment_id', RecordRef, OrderTransaction.FieldNo("Payment Id"));
-                JsonHelper.GetValueIntoField(JToken, 'payment_details.credit_card_bin', RecordRef, OrderTransaction.FieldNo("Credit Card Bin"));
-                JsonHelper.GetValueIntoField(JToken, 'payment_details.avs_result_code', RecordRef, OrderTransaction.FieldNo("AVS Result Code"));
-                JsonHelper.GetValueIntoField(JToken, 'payment_details.cvv_result_code', RecordRef, OrderTransaction.FieldNo("CVV Result Code"));
-                JsonHelper.GetValueIntoField(JToken, 'payment_details.credit_card_number', RecordRef, OrderTransaction.FieldNo("Credit Card Number"));
-                JsonHelper.GetValueIntoField(JToken, 'payment_details.credit_card_company', RecordRef, OrderTransaction.FieldNo("Credit Card Company"));
-                if IsNew then
-                    RecordRef.Insert()
-                else
-                    RecordRef.Modify();
-                RecordRef.SetTable(OrderTransaction);
-                RecordRef.Close();
-                if OrderTransaction.Gateway <> '' then begin
-                    Clear(TransactionGateway);
-                    TransactionGateway.SetRange(Name, OrderTransaction.Gateway);
-                    if TransactionGateway.IsEmpty then begin
-                        TransactionGateway.Name := OrderTransaction.Gateway;
-                        TransactionGateway.Insert();
-                    end;
-                    Clear(CreditCardCompany);
-                end;
-                if OrderTransaction."Credit Card Company" <> '' then begin
-                    CreditCardCompany.SetRange(Name, OrderTransaction."Credit Card Company");
-                    if CreditCardCompany.IsEmpty then begin
-                        CreditCardCompany.Name := OrderTransaction."Credit Card Company";
-                        CreditCardCompany.Insert();
-                    end;
-                end;
-                if not PaymentMethodMapping.Get(OrderHeader."Shop Code", OrderTransaction.Gateway, OrderTransaction."Credit Card Company") then begin
-                    Clear(PaymentMethodMapping);
-                    PaymentMethodMapping."Shop Code" := OrderHeader."Shop Code";
-                    PaymentMethodMapping.Gateway := OrderTransaction.Gateway;
-                    PaymentMethodMapping."Credit Card Company" := CopyStr(OrderTransaction."Credit Card Company", 1, MaxStrLen(PaymentMethodMapping."Credit Card Company"));
-                    PaymentMethodMapping.Insert();
-                end;
+        Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JOrderTransaction, 'id'));
+        IsNew := not OrderTransaction.Get(Id);
+        if IsNew then begin
+            Clear(OrderTransaction);
+            OrderTransaction."Shopify Transaction Id" := Id;
+        end;
+        OrderTransaction.Status := ConvertToTransactionStatus(JsonHelper.GetValueAsText(JOrderTransaction, 'status'));
+        OrderTransaction.Type := ConvertToTransactionType(JsonHelper.GetValueAsText(JOrderTransaction, 'kind'));
+        OrderTransaction."Shopify Order Id" := OrderHeader."Shopify Order Id";
+        RecordRef.GetTable(OrderTransaction);
+        JsonHelper.GetValueIntoField(JOrderTransaction, 'gateway', RecordRef, OrderTransaction.FieldNo(Gateway));
+        JsonHelper.GetValueIntoField(JOrderTransaction, 'formattedGateway', RecordRef, OrderTransaction.FieldNo(Message));
+        JsonHelper.GetValueIntoField(JOrderTransaction, 'createdAt', RecordRef, OrderTransaction.FieldNo("Created At"));
+        JsonHelper.GetValueIntoField(JOrderTransaction, 'test', RecordRef, OrderTransaction.FieldNo(Test));
+        JsonHelper.GetValueIntoField(JOrderTransaction, 'authorizationCode', RecordRef, OrderTransaction.FieldNo(Authorization));
+        JsonHelper.GetValueIntoField(JOrderTransaction, 'errorCode', RecordRef, OrderTransaction.FieldNo("Error Code"));
+        JsonHelper.GetValueIntoField(JOrderTransaction, 'paymentId', RecordRef, OrderTransaction.FieldNo("Payment Id"));
+        JsonHelper.GetValueIntoField(JOrderTransaction, 'amountSet.shopMoney.amount', RecordRef, OrderTransaction.FieldNo(Amount));
+        JsonHelper.GetValueIntoField(JOrderTransaction, 'amountSet.shopMoney.currencyCode', RecordRef, OrderTransaction.FieldNo(Currency));
 
-                DataCapture.Add(Database::"Shpfy Order Transaction", OrderTransaction.SystemId, JToken);
+        ReceiptJson := JsonHelper.GetValueAsText(JOrderTransaction, 'receiptJson');
+        if JObject.ReadFrom(ReceiptJson) then
+            JsonHelper.GetValueIntoField(JObject, 'gift_card_id', RecordRef, OrderTransaction.FieldNo("Gift Card Id"));
+
+        if JsonHelper.GetJsonObject(JOrderTransaction, JObject, 'paymentDetails') then begin
+            JsonHelper.GetValueIntoField(JOrderTransaction, 'paymentDetails.bin', RecordRef, OrderTransaction.FieldNo("Credit Card Bin"));
+            JsonHelper.GetValueIntoField(JOrderTransaction, 'paymentDetails.avsResultCode', RecordRef, OrderTransaction.FieldNo("AVS Result Code"));
+            JsonHelper.GetValueIntoField(JOrderTransaction, 'paymentDetails.cvvResultCode', RecordRef, OrderTransaction.FieldNo("CVV Result Code"));
+            JsonHelper.GetValueIntoField(JOrderTransaction, 'paymentDetails.number', RecordRef, OrderTransaction.FieldNo("Credit Card Number"));
+            JsonHelper.GetValueIntoField(JOrderTransaction, 'paymentDetails.company', RecordRef, OrderTransaction.FieldNo("Credit Card Company"));
+        end;
+        if IsNew then
+            RecordRef.Insert()
+        else
+            RecordRef.Modify();
+        RecordRef.SetTable(OrderTransaction);
+        RecordRef.Close();
+        if OrderTransaction.Gateway <> '' then begin
+            Clear(TransactionGateway);
+            TransactionGateway.SetRange(Name, OrderTransaction.Gateway);
+            if TransactionGateway.IsEmpty then begin
+                TransactionGateway.Name := OrderTransaction.Gateway;
+                TransactionGateway.Insert();
             end;
+            Clear(CreditCardCompany);
+        end;
+        if OrderTransaction."Credit Card Company" <> '' then begin
+            CreditCardCompany.SetRange(Name, OrderTransaction."Credit Card Company");
+            if CreditCardCompany.IsEmpty then begin
+                CreditCardCompany.Name := OrderTransaction."Credit Card Company";
+                CreditCardCompany.Insert();
+            end;
+        end;
+        if not PaymentMethodMapping.Get(OrderHeader."Shop Code", OrderTransaction.Gateway, OrderTransaction."Credit Card Company") then begin
+            Clear(PaymentMethodMapping);
+            PaymentMethodMapping."Shop Code" := OrderHeader."Shop Code";
+            PaymentMethodMapping.Gateway := OrderTransaction.Gateway;
+            PaymentMethodMapping."Credit Card Company" := CopyStr(OrderTransaction."Credit Card Company", 1, MaxStrLen(PaymentMethodMapping."Credit Card Company"));
+            PaymentMethodMapping.Insert();
+        end;
+
+        DataCapture.Add(Database::"Shpfy Order Transaction", OrderTransaction.SystemId, JOrderTransaction);
     end;
 }

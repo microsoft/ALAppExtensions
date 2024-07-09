@@ -32,6 +32,7 @@ codeunit 6205 "Transaction Storage ABS"
         TransactionStorageTok: Label 'Transaction Storage', Locked = true;
         JsonContentTypeHeaderTok: Label 'application/json', Locked = true;
         ExportLogFileNameTxt: Label 'ExportLog', Locked = true;
+        MetadataFileNameTxt: Label 'metadata', Locked = true;
         SendBlobBlockForTableTok: Label 'Send blob block for table %1 with name %2 to Azure Function', Comment = '%1 - table id, %2 - blob name', Locked = true;
         ExportOfIncomingDocTok: Label 'Export of incoming document %1 with name %2', Comment = '%1 - incoming document file name, %2 - blob name', Locked = true;
         IncomingDocsExportedTxt: Label 'Incoming documents were exported.', Locked = true;
@@ -80,6 +81,7 @@ codeunit 6205 "Transaction Storage ABS"
         WriteJsonBlobsToABS(AzureFunctionsAuthForJson, CurrentDate, ExportLog);
         WriteIncomingDocumentsToABS(IncomingDocs, AzureFunctionsAuthForDoc, CurrentDate, ExportLog);
         WriteExportLog(ExportLog, AzureFunctionsAuthForJson, CurrentDate);
+        WriteMetadata(AzureFunctionsAuthForJson, CurrentDate);
         FeatureTelemetry.LogUsage('0000LQ4', TransactionStorageTok, ExportedToABSTxt);
     end;
 
@@ -153,6 +155,7 @@ codeunit 6205 "Transaction Storage ABS"
         IncomingDocKey: Text;
         BlobFolder: Text;
         BlobName: Text;
+        BlobNameToLog: Text;
         AttachmentName: Text;
         FileExtension: Text;
         ContainerName: Text;
@@ -184,8 +187,10 @@ codeunit 6205 "Transaction Storage ABS"
                             AttachmentName := RemoveProhibitedChars(IncomingDocAttachment.Name);
                             FileExtension := RemoveProhibitedChars(IncomingDocAttachment."File Extension");
                             BlobName := StrSubstNo(IncomingDocBlobNameTxt, BlobFolder, IncomingDocKey, AttachmentName, FileExtension);
+                            BlobNameToLog := StrSubstNo(IncomingDocBlobNameTxt, BlobFolder, IncomingDocKey, EncodeDocName(AttachmentName), FileExtension);
                             AzureFunctionsResponse := SendDocumentToAzureFunction(AzureFunctionsAuth, ContainerName, BlobName, TempBlob, BlobExpirationDate);
-                            HandleAzureFunctionResponse(AzureFunctionsResponse, StrSubstNo(ExportOfIncomingDocTok, IncomingDocAttachment.Name, BlobName), 0);
+                            HandleAzureFunctionResponse(
+                                AzureFunctionsResponse, StrSubstNo(ExportOfIncomingDocTok, EncodeDocName(IncomingDocAttachment.Name), BlobNameToLog), 0);
                             ExportedDocCount += 1;
                         end;
                 until IncomingDocAttachment.Next() = 0;
@@ -212,6 +217,34 @@ codeunit 6205 "Transaction Storage ABS"
         BlobExpirationDate := GetBlobExpirationDate(CurrentDate);
         BlobName := StrSubstNo(JsonBlobNameTxt, BlobFolder, ExportLogFileNameTxt);
         ExportLog.WriteTo(JsonData);
+        SendJsonTextToAzureFunction(AzureFunctionsAuth, ContainerName, BlobName, JsonData, BlobExpirationDate);
+    end;
+
+    [NonDebuggable]
+    local procedure WriteMetadata(AzureFunctionsAuth: Interface "Azure Functions Authentication"; CurrentDate: Date)
+    var
+        Metadata: JsonObject;
+        AppInfo: ModuleInfo;
+        BlobExpirationDate: Date;
+        ContainerName: Text;
+        BlobFolder: Text;
+        BlobName: Text;
+        JsonData: Text;
+    begin
+        NavApp.GetCurrentModuleInfo(AppInfo);
+        ContainerName := GetCompanyCVRNumber();
+        BlobFolder := GetBlobFolder(CurrentDate);
+        BlobExpirationDate := GetBlobExpirationDate(CurrentDate);
+        BlobName := StrSubstNo(JsonBlobNameTxt, BlobFolder, MetadataFileNameTxt);
+        Metadata.Add('aadTenantId', GetAadTenantId());
+        Metadata.Add('environmentName', GetEnvironmentName());
+        Metadata.Add('companyName', CompanyName());
+        Metadata.Add('vatRegistrationNo', GetCompanyVATRegistrationNo());
+        Metadata.Add('cvrNo', GetCompanyCVRNumber());
+        Metadata.Add('bcVersion', Format(AppInfo.DataVersion()));
+        Metadata.Add('exportDate', CurrentDate);
+        Metadata.Add('expirationDate', BlobExpirationDate);
+        Metadata.WriteTo(JsonData);
         SendJsonTextToAzureFunction(AzureFunctionsAuth, ContainerName, BlobName, JsonData, BlobExpirationDate);
     end;
 
@@ -420,5 +453,23 @@ codeunit 6205 "Transaction Storage ABS"
 
         // remove consecutive hypens
         OutputValue := Regex.Replace(OutputValue, '-+', '-');
+    end;
+
+    [NonDebuggable]
+    local procedure EncodeDocName(InputValue: Text) OutputValue: Text
+    var
+        Ch: Char;
+    begin
+        foreach Ch in InputValue do
+            case true of
+                (Ch >= 'a') and (Ch <= 'z'):
+                    OutputValue += 'a';
+                (Ch >= 'A') and (Ch <= 'Z'):
+                    OutputValue += 'A';
+                (Ch >= '0') and (Ch <= '9'):
+                    OutputValue += '0';
+                else
+                    OutputValue += Ch;
+            end;
     end;
 }

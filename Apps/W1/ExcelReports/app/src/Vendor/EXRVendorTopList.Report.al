@@ -140,7 +140,7 @@ report 4404 "EXR Vendor Top List"
         if EXTTopVendorPurchase.Read() then
             repeat
                 InsertAggregatedPurchases(EXTTopVendorPurchase.Vendor_No, EXTTopVendorPurchase.Sum_Purch_LCY);
-                VendorFilter += EXTTopVendorPurchase.Vendor_No + '|';
+                VendorFilter += EscapeVendorNoFilter(EXTTopVendorPurchase.Vendor_No) + '|';
             until (not EXTTopVendorPurchase.Read());
 
         exit(VendorFilter.TrimEnd('|'));
@@ -157,10 +157,15 @@ report 4404 "EXR Vendor Top List"
         if EXTTopVendorBalance.Read() then
             repeat
                 InsertAggregatedPurchases(EXTTopVendorBalance.Vendor_No, EXTTopVendorBalance.Balance_LCY);
-                VendorFilter += EXTTopVendorBalance.Vendor_No + '|';
+                VendorFilter += EscapeVendorNoFilter(EXTTopVendorBalance.Vendor_No) + '|';
             until (not EXTTopVendorBalance.Read());
 
         exit(VendorFilter.TrimEnd('|'));
+    end;
+
+    local procedure EscapeVendorNoFilter(VendorNo: Code[20]): Text
+    begin
+        exit('''' + VendorNo + '''');
     end;
 
     local procedure ChangeShowType(NewShowType: Option)
@@ -179,7 +184,7 @@ report 4404 "EXR Vendor Top List"
         EXTTopVendorPurchase.Open();
         if EXTTopVendorPurchase.Read() then
             repeat
-                TopVendorData.SetFilter(TopVendorData."Vendor No.", EXTTopVendorPurchase.Vendor_No);
+                TopVendorData.SetFilter(TopVendorData."Vendor No.", EscapeVendorNoFilter(EXTTopVendorPurchase.Vendor_No));
                 if TopVendorData.FindFirst() then begin
                     TopVendorData."Amount 2 (LCY)" := EXTTopVendorPurchase.Sum_Purch_LCY;
                     if Vendor.Get(TopVendorData."Vendor No.") then

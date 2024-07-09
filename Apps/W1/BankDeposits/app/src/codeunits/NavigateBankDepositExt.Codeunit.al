@@ -1,14 +1,6 @@
 namespace Microsoft.Bank.Deposit;
 
 using Microsoft.Foundation.Navigate;
-using Microsoft.Sales.History;
-using Microsoft.Purchases.History;
-using Microsoft.Service.History;
-using Microsoft.Sales.Document;
-using Microsoft.Finance.GeneralLedger.Ledger;
-using Microsoft.Finance.VAT.Ledger;
-using Microsoft.Purchases.Payables;
-using Microsoft.Service.Ledger;
 
 codeunit 1699 "Navigate Bank Deposit Ext."
 {
@@ -46,14 +38,14 @@ codeunit 1699 "Navigate Bank Deposit Ext."
         PostedBankDepositLine: Record "Posted Bank Deposit Line";
     begin
         if SetPostedBankDepositHeaderFilters(PostedBankDepositHeader, DocNoFilter) then
-            Sender.InsertIntoDocEntry(DocumentEntry, Database::"Posted Bank Deposit Header", PostedBankDepositHeader.TableCaption(), PostedBankDepositHeader.Count());
+            DocumentEntry.InsertIntoDocEntry(Database::"Posted Bank Deposit Header", PostedBankDepositHeader.TableCaption(), PostedBankDepositHeader.Count());
 
         if SetPostedBankDepositLineFilters(PostedBankDepositLine, DocNoFilter, PostingDateFilter, not Sender.GetNavigationFromPostedBankDeposit()) then
-            Sender.InsertIntoDocEntry(DocumentEntry, Database::"Posted Bank Deposit Line", PostedBankDepositLine.TableCaption(), PostedBankDepositLine.Count());
+            DocumentEntry.InsertIntoDocEntry(Database::"Posted Bank Deposit Line", PostedBankDepositLine.TableCaption(), PostedBankDepositLine.Count());
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnBeforeNavigateShowRecords', '', false, false)]
-    local procedure OnBeforeNavigateShowRecords(Sender: Page Navigate; TableID: Integer; DocNoFilter: Text; PostingDateFilter: Text; ItemTrackingSearch: Boolean; var TempDocumentEntry: Record "Document Entry" temporary; var IsHandled: Boolean; var SalesInvoiceHeader: Record "Sales Invoice Header"; var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var PurchInvHeader: Record "Purch. Inv. Header"; var PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; var ServiceInvoiceHeader: Record "Service Invoice Header"; var ServiceCrMemoHeader: Record "Service Cr.Memo Header"; var SOSalesHeader: Record "Sales Header"; var SISalesHeader: Record "Sales Header"; var SCMSalesHeader: Record "Sales Header"; var SROSalesHeader: Record "Sales Header"; var GLEntry: Record "G/L Entry"; var VATEntry: Record "VAT Entry"; var VendLedgEntry: Record "Vendor Ledger Entry"; var WarrantyLedgerEntry: Record "Warranty Ledger Entry"; var NewSourceRecVar: Variant; var SalesShipmentHeader: Record "Sales Shipment Header"; var ReturnReceiptHeader: Record "Return Receipt Header"; var ReturnShipmentHeader: Record "Return Shipment Header"; var PurchRcptHeader: Record "Purch. Rcpt. Header")
+    [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnBeforeShowRecords', '', false, false)]
+    local procedure OnBeforeShowRecords(Sender: Page Navigate; DocNoFilter: Text; PostingDateFilter: Text; ItemTrackingSearch: Boolean; var TempDocumentEntry: Record "Document Entry" temporary; var IsHandled: Boolean)
     var
         PostedBankDepositHeader: Record "Posted Bank Deposit Header";
         PostedBankDepositLine: Record "Posted Bank Deposit Line";
@@ -61,13 +53,13 @@ codeunit 1699 "Navigate Bank Deposit Ext."
         if ItemTrackingSearch or IsHandled then
             exit;
 
-        if TableID = Database::"Posted Bank Deposit Header" then begin
+        if TempDocumentEntry."Table ID" = Database::"Posted Bank Deposit Header" then begin
             IsHandled := true;
             SetPostedBankDepositHeaderFilters(PostedBankDepositHeader, DocNoFilter);
             Page.Run(0, PostedBankDepositHeader);
             exit;
         end;
-        if TableID = Database::"Posted Bank Deposit Line" then begin
+        if TempDocumentEntry."Table ID" = Database::"Posted Bank Deposit Line" then begin
             IsHandled := true;
             SetPostedBankDepositLineFilters(PostedBankDepositLine, DocNoFilter, PostingDateFilter, not Sender.GetNavigationFromPostedBankDeposit());
             Page.Run(0, PostedBankDepositLine);

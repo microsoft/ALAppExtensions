@@ -184,8 +184,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client v2"
         OAuth2: Codeunit OAuth2;
         [NonDebuggable]
         ClientId: Text;
-        [NonDebuggable]
-        ClientSecret: Text;
+        ClientSecret: SecretText;
         RedirectURL: Text;
         IsInitialized: Boolean;
         Scopes: List of [Text];

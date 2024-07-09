@@ -101,8 +101,6 @@ codeunit 1690 "Bank Deposit-Post"
 
         if GenJournalLine.Count() = 0 then
             Error(EmptyDepositErr);
-        if Rec."Post as Lump Sum" and (GenJournalLine.Count() = 1) then
-            Rec."Post as Lump Sum" := false;
 
         TotalAmountLCY := ModifyGenJournalLinesForBankDepositPosting(Rec, GenJournalTemplate."Force Doc. Balance");
         if Rec."Post as Lump Sum" then
@@ -434,7 +432,7 @@ codeunit 1690 "Bank Deposit-Post"
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
     begin
-        if (CurrentBankDepositHeader."Post as Lump Sum") and (GenJournalLine.Amount = CurrentBankDepositHeader."Total Deposit Amount") then begin
+        if (CurrentBankDepositHeader."Post as Lump Sum") and (GenJournalLine."Account Type" = GenJournalLine."Account Type"::"Bank Account") and (GenJournalLine.Amount = CurrentBankDepositHeader."Total Deposit Amount") then begin
             OnAfterPostBalancingEntry(PostingGenJournalLine);
             OnRunOnAfterPostBalancingEntry(PostingGenJournalLine);
             SetLumpSumBalanceEntry(PostingGenJournalLine);

@@ -58,6 +58,10 @@ table 30144 "Shpfy FulFillment Order Line"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+        field(11; "Fulfillment Status"; Text[50])
+        {
+            DataClassification = CustomerContent;
+        }
     }
     keys
     {

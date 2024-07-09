@@ -128,8 +128,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         TempPurchAdvLetterEntryCZZGlob.InitNewEntry();
         TempPurchAdvLetterEntryCZZGlob.InitVendorLedgerEntry(VendorLedgerEntryPayment);
         TempPurchAdvLetterEntryCZZGlob.CopyFromGenJnlLine(GenJournalLine);
+        TempPurchAdvLetterEntryCZZGlob.CopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ);
         TempPurchAdvLetterEntryCZZGlob."Entry Type" := "Advance Letter Entry Type CZZ"::Payment;
-        TempPurchAdvLetterEntryCZZGlob."Purch. Adv. Letter No." := PurchAdvLetterHeaderCZZ."No.";
         EntryNo := TempPurchAdvLetterEntryCZZGlob.InsertNewEntry(not AdvancePostingParametersCZZ."Temporary Entries Only");
 
         if not AdvancePostingParametersCZZ."Temporary Entries Only" then
@@ -218,8 +218,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         TempPurchAdvLetterEntryCZZGlob.InitVendorLedgerEntry(VendorLedgerEntry);
         TempPurchAdvLetterEntryCZZGlob.InitRelatedEntry(PurchAdvLetterEntryCZZ);
         TempPurchAdvLetterEntryCZZGlob.CopyFromGenJnlLine(GenJournalLine);
+        TempPurchAdvLetterEntryCZZGlob.CopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ);
         TempPurchAdvLetterEntryCZZGlob."Entry Type" := PurchAdvLetterEntryCZZ."Entry Type";
-        TempPurchAdvLetterEntryCZZGlob."Purch. Adv. Letter No." := PurchAdvLetterHeaderCZZ."No.";
         TempPurchAdvLetterEntryCZZGlob.Cancelled := true;
         TempPurchAdvLetterEntryCZZGlob.InsertNewEntry(not AdvancePostingParametersCZZ."Temporary Entries Only");
 
@@ -335,8 +335,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
                 TempPurchAdvLetterEntryCZZGlob.InitNewEntry();
                 TempPurchAdvLetterEntryCZZGlob.InitRelatedEntry(PurchAdvLetterEntryCZZ);
                 TempPurchAdvLetterEntryCZZGlob.CopyFromGenJnlLine(GenJournalLine);
+                TempPurchAdvLetterEntryCZZGlob.CopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ);
                 TempPurchAdvLetterEntryCZZGlob."Entry Type" := "Advance Letter Entry Type CZZ"::"VAT Payment";
-                TempPurchAdvLetterEntryCZZGlob."Purch. Adv. Letter No." := PurchAdvLetterHeaderCZZ."No.";
                 TempPurchAdvLetterEntryCZZGlob."VAT Entry No." := VATEntryNo;
                 TempPurchAdvLetterEntryCZZGlob."VAT Identifier" := VATPostingSetup."VAT Identifier";
                 TempPurchAdvLetterEntryCZZGlob."Auxiliary Entry" := AdvancePostingBufferCZZ."Auxiliary Entry";
@@ -413,8 +413,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         TempPurchAdvLetterEntryCZZGlob.InitNewEntry();
         TempPurchAdvLetterEntryCZZGlob.InitRelatedEntry(PurchAdvLetterEntryCZZ."Related Entry");
         TempPurchAdvLetterEntryCZZGlob.CopyFromGenJnlLine(GenJournalLine);
+        TempPurchAdvLetterEntryCZZGlob.CopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ);
         TempPurchAdvLetterEntryCZZGlob."Entry Type" := "Advance Letter Entry Type CZZ"::"VAT Payment";
-        TempPurchAdvLetterEntryCZZGlob."Purch. Adv. Letter No." := PurchAdvLetterHeaderCZZ."No.";
         TempPurchAdvLetterEntryCZZGlob."VAT Entry No." := VATEntryNo;
         TempPurchAdvLetterEntryCZZGlob."VAT Identifier" := VATPostingSetup."VAT Identifier";
         TempPurchAdvLetterEntryCZZGlob."Auxiliary Entry" := AdvancePostingBufferCZZ."Auxiliary Entry";
@@ -638,6 +638,7 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         PurchAdvLetterHeaderCZZ.Get(PurchAdvLetterEntryCZZ."Purch. Adv. Letter No.");
 
         PurchAdvLetterEntryCZZ2.Reset();
+        PurchAdvLetterEntryCZZ2.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
         PurchAdvLetterEntryCZZ2.SetRange("Document No.", PurchAdvLetterEntryCZZ."Document No.");
         PurchAdvLetterEntryCZZ2.SetFilter("Entry Type", '%1|%2|%3',
             PurchAdvLetterEntryCZZ2."Entry Type"::"VAT Adjustment",
@@ -788,8 +789,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
             TempPurchAdvLetterEntryCZZGlob.InitNewEntry();
             TempPurchAdvLetterEntryCZZGlob.InitRelatedEntry(PurchAdvLetterEntryCZZ."Related Entry");
             TempPurchAdvLetterEntryCZZGlob.CopyFromGenJnlLine(GenJournalLine);
+            TempPurchAdvLetterEntryCZZGlob.CopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ);
             TempPurchAdvLetterEntryCZZGlob."Entry Type" := "Advance Letter Entry Type CZZ"::"VAT Payment";
-            TempPurchAdvLetterEntryCZZGlob."Purch. Adv. Letter No." := PurchAdvLetterHeaderCZZ."No.";
             TempPurchAdvLetterEntryCZZGlob."VAT Entry No." := VATEntryNo;
             TempPurchAdvLetterEntryCZZGlob."VAT Identifier" := VATPostingSetup."VAT Identifier";
             TempPurchAdvLetterEntryCZZGlob."Auxiliary Entry" := AdvancePostingBufferCZZ."Auxiliary Entry";
@@ -1025,8 +1026,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         TempPurchAdvLetterEntryCZZGlob.InitNewEntry();
         TempPurchAdvLetterEntryCZZGlob.InitRelatedEntry(PurchAdvLetterEntryCZZ."Related Entry");
         TempPurchAdvLetterEntryCZZGlob.CopyFromGenJnlLine(GenJournalLine);
+        TempPurchAdvLetterEntryCZZGlob.CopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ);
         TempPurchAdvLetterEntryCZZGlob."Entry Type" := PurchAdvLetterEntryCZZ."Entry Type";
-        TempPurchAdvLetterEntryCZZGlob."Purch. Adv. Letter No." := PurchAdvLetterHeaderCZZ."No.";
         TempPurchAdvLetterEntryCZZGlob."VAT Entry No." := VATEntryNo;
         TempPurchAdvLetterEntryCZZGlob."VAT Identifier" := VATPostingSetup."VAT Identifier";
         TempPurchAdvLetterEntryCZZGlob."Auxiliary Entry" := AdvancePostingBufferCZZ."Auxiliary Entry";
@@ -1109,8 +1110,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         TempPurchAdvLetterEntryCZZGlob.InitVendorLedgerEntry(VendorLedgerEntry);
         TempPurchAdvLetterEntryCZZGlob.InitRelatedEntry(PurchAdvLetterEntryCZZ);
         TempPurchAdvLetterEntryCZZGlob.CopyFromGenJnlLine(GenJournalLine);
+        TempPurchAdvLetterEntryCZZGlob.CopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ);
         TempPurchAdvLetterEntryCZZGlob."Entry Type" := PurchAdvLetterEntryCZZ."Entry Type";
-        TempPurchAdvLetterEntryCZZGlob."Purch. Adv. Letter No." := PurchAdvLetterHeaderCZZ."No.";
         TempPurchAdvLetterEntryCZZGlob.Cancelled := true;
         EntryNo := TempPurchAdvLetterEntryCZZGlob.InsertNewEntry(not AdvancePostingParametersCZZ."Temporary Entries Only");
 
@@ -1269,8 +1270,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
             TempPurchAdvLetterEntryCZZGlob.InitVendorLedgerEntry(VendorLedgerEntry2);
             TempPurchAdvLetterEntryCZZGlob.InitRelatedEntry(PurchAdvLetterEntryCZZ);
             TempPurchAdvLetterEntryCZZGlob.CopyFromGenJnlLine(GenJournalLine);
+            TempPurchAdvLetterEntryCZZGlob.CopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ);
             TempPurchAdvLetterEntryCZZGlob."Entry Type" := "Advance Letter Entry Type CZZ"::Close;
-            TempPurchAdvLetterEntryCZZGlob."Purch. Adv. Letter No." := PurchAdvLetterHeaderCZZ."No.";
             TempPurchAdvLetterEntryCZZGlob."Amount (LCY)" := -RemainingAmountLCY;
             EntryNo := TempPurchAdvLetterEntryCZZGlob.InsertNewEntry(not AdvancePostingParametersCZZ."Temporary Entries Only");
         end;
@@ -1416,8 +1417,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         TempPurchAdvLetterEntryCZZGlob.InitVendorLedgerEntry(VendorLedgerEntry2);
         TempPurchAdvLetterEntryCZZGlob.InitRelatedEntry(PurchAdvLetterEntryCZZ);
         TempPurchAdvLetterEntryCZZGlob.CopyFromGenJnlLine(GenJournalLine);
+        TempPurchAdvLetterEntryCZZGlob.CopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ);
         TempPurchAdvLetterEntryCZZGlob."Entry Type" := "Advance Letter Entry Type CZZ"::Usage;
-        TempPurchAdvLetterEntryCZZGlob."Purch. Adv. Letter No." := PurchAdvLetterHeaderCZZ."No.";
         EntryNo := TempPurchAdvLetterEntryCZZGlob.InsertNewEntry(not AdvancePostingParametersCZZ."Temporary Entries Only");
 
         if PurchAdvLetterHeaderCZZ."Automatic Post VAT Usage" then begin
@@ -1540,8 +1541,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
             TempPurchAdvLetterEntryCZZGlob.InitNewEntry();
             TempPurchAdvLetterEntryCZZGlob.InitRelatedEntry(RelatedEntryNo);
             TempPurchAdvLetterEntryCZZGlob.CopyFromGenJnlLine(GenJournalLine);
+            TempPurchAdvLetterEntryCZZGlob.CopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ);
             TempPurchAdvLetterEntryCZZGlob."Entry Type" := EntryType;
-            TempPurchAdvLetterEntryCZZGlob."Purch. Adv. Letter No." := PurchAdvLetterHeaderCZZ."No.";
             TempPurchAdvLetterEntryCZZGlob."VAT Entry No." := VATEntryNo;
             TempPurchAdvLetterEntryCZZGlob."VAT Identifier" := VATPostingSetup."VAT Identifier";
             TempPurchAdvLetterEntryCZZGlob."Auxiliary Entry" := AdvancePostingBufferCZZ."Auxiliary Entry";
@@ -1719,8 +1720,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         TempPurchAdvLetterEntryCZZGlob.InitNewEntry();
         TempPurchAdvLetterEntryCZZGlob.InitRelatedEntry(RelatedEntryNo);
         TempPurchAdvLetterEntryCZZGlob.CopyFromVATPostingSetup(VATPostingSetup);
+        TempPurchAdvLetterEntryCZZGlob.CopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ);
         TempPurchAdvLetterEntryCZZGlob."Entry Type" := "Advance Letter Entry Type CZZ"::"VAT Rate";
-        TempPurchAdvLetterEntryCZZGlob."Purch. Adv. Letter No." := PurchAdvLetterHeaderCZZ."No.";
         TempPurchAdvLetterEntryCZZGlob."Document No." := AdvancePostingParametersCZZ."Document No.";
         TempPurchAdvLetterEntryCZZGlob."External Document No." := AdvancePostingParametersCZZ."External Document No.";
         TempPurchAdvLetterEntryCZZGlob."Posting Date" := AdvancePostingParametersCZZ."Posting Date";
@@ -1816,8 +1817,8 @@ codeunit 31142 "Purch. Adv. Letter-Post CZZ"
         TempPurchAdvLetterEntryCZZGlob.InitRelatedEntry(RelatedEntryNo);
         TempPurchAdvLetterEntryCZZGlob.InitDetailedVendorLedgerEntry(RelatedDetEntryNo);
         TempPurchAdvLetterEntryCZZGlob.CopyFromVATPostingSetup(VATPostingSetup);
+        TempPurchAdvLetterEntryCZZGlob.CopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ);
         TempPurchAdvLetterEntryCZZGlob."Entry Type" := "Advance Letter Entry Type CZZ"::"VAT Adjustment";
-        TempPurchAdvLetterEntryCZZGlob."Purch. Adv. Letter No." := PurchAdvLetterHeaderCZZ."No.";
         TempPurchAdvLetterEntryCZZGlob."Document No." := AdvancePostingParametersCZZ."Document No.";
         TempPurchAdvLetterEntryCZZGlob."External Document No." := AdvancePostingParametersCZZ."External Document No.";
         TempPurchAdvLetterEntryCZZGlob."Posting Date" := AdvancePostingParametersCZZ."Posting Date";

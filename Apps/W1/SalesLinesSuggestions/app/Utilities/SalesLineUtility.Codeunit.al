@@ -17,7 +17,6 @@ codeunit 7280 "Sales Line Utility"
         PreparingSalesLineLbl: Label 'Preparing %1 of %2', Comment = '%1 = Counter, %2 = Total Lines';
         InsertingSalesLineLbl: Label 'Inserting %1 of %2', Comment = '%1 = Counter, %2 = Total Lines';
         CopyingFromBlanketOrderLbl: Label 'Copying from Blanket Order...';
-        SalesLineValidationErr: Label 'There was an error while validating the line with No. %1, Description %2.\Error: %3', Comment = '%1 = No., %2 = Description, %3 = Error Message';
         SalesLineCopyErr: Label 'There was an error while copying the line with No. %1, Description %2, Quantity %3.', Comment = '%1 = No., %2 = Description, %3 = Quantity';
 
     procedure CopySalesLineToDoc(SalesHeader: Record "Sales Header"; var TempSalesLineAiSuggestion: Record "Sales Line AI Suggestions" temporary)
@@ -39,7 +38,8 @@ codeunit 7280 "Sales Line Utility"
         if IsBlanketOrder(TempSalesLineAiSuggestion) then
             CreateFromBlanketOrder(SalesHeader, TempSalesLineAiSuggestion, NextLineNo)
         else begin
-            PrepareSalesLine(SalesHeader, TempFromSalesLine, TempSalesLineAiSuggestion, NextLineNo);
+            if PrepareSalesLine(SalesHeader, TempFromSalesLine, TempSalesLineAiSuggestion, NextLineNo) then
+                exit;
             CopySalesLineToDoc(SalesHeader, TempFromSalesLine, LinesNotCopied, NextLineNo);
         end;
     end;
@@ -124,12 +124,13 @@ codeunit 7280 "Sales Line Utility"
         end;
     end;
 
-    local procedure PrepareSalesLine(SalesHeader: Record "Sales Header"; var TempSalesLine: Record "Sales Line" temporary; var TempSalesLineAiSuggestion: Record "Sales Line AI Suggestions" temporary; LineNo: Integer)
+    local procedure PrepareSalesLine(SalesHeader: Record "Sales Header"; var TempSalesLine: Record "Sales Line" temporary; var TempSalesLineAiSuggestion: Record "Sales Line AI Suggestions" temporary; LineNo: Integer) HasErrors: Boolean
     var
         TempPreparedSalesLine: Record "Sales Line" temporary;
         PrepareSalesLineForCopying: Codeunit "Prepare Sales Line For Copying";
         SalesLineAISuggestionImpl: Codeunit "Sales Lines Suggestions Impl.";
         FeatureTelemetry: Codeunit "Feature Telemetry";
+        NotificationManager: Codeunit "Notification Manager";
         ProgressDialog: Dialog;
         TotalLines: Integer;
         Counter: Integer;
@@ -151,7 +152,10 @@ codeunit 7280 "Sales Line Utility"
                 end
                 else begin
                     FeatureTelemetry.LogError('0000MMM', SalesLineAISuggestionImpl.GetFeatureName(), 'Prepare Sales Lines before inserting', '', GetLastErrorCallStack());
-                    Error(SalesLineValidationErr, TempSalesLineAiSuggestion."No.", TempSalesLineAiSuggestion.Description, GetLastErrorText());
+                    NotificationManager.SendNotification(GetLastErrorText());
+                    TempSalesLineAiSuggestion."Line Style" := 'Unfavorable';
+                    TempSalesLineAiSuggestion.Modify();
+                    HasErrors := true;
                 end;
             until TempSalesLineAiSuggestion.Next() = 0;
             ProgressDialog.Close();
@@ -163,5 +167,4 @@ codeunit 7280 "Sales Line Utility"
         ProgressDialog.Open(ProcessingLinesLbl);
         ProgressDialog.Update(1, '');
     end;
-
 }

@@ -31,6 +31,7 @@ page 7276 "Sales Line AI Suggestions Sub"
                 {
                     Editable = false;
                     ToolTip = 'Specifies the item number of the suggested result.';
+                    StyleExpr = Rec."Line Style";
                 }
                 field("Variant Code"; Rec."Variant Code")
                 {
@@ -38,6 +39,7 @@ page 7276 "Sales Line AI Suggestions Sub"
                     ShowMandatory = IsVariantCodeMandatory;
                     Visible = IsVariantCodeVisible;
                     ToolTip = 'Specifies the variant code of the suggested result.';
+                    StyleExpr = Rec."Line Style";
 
                     trigger OnValidate()
                     var
@@ -52,18 +54,22 @@ page 7276 "Sales Line AI Suggestions Sub"
                     Editable = false;
                     Visible = false;
                     ToolTip = 'Specifies the line number of the suggested result.';
+                    StyleExpr = Rec."Line Style";
                 }
                 field("Description"; Rec."Description")
                 {
                     ToolTip = 'Specifies the description of the suggested result.';
+                    StyleExpr = Rec."Line Style";
                 }
                 field("Quantity"; Rec.Quantity)
                 {
                     ToolTip = 'Specifies the quantity of the suggested result.';
+                    StyleExpr = Rec."Line Style";
                 }
                 field("Unit of Measure Code"; Rec."Unit of Measure Code")
                 {
                     ToolTip = 'Specifies the unit of measure code of the suggested result.';
+                    StyleExpr = Rec."Line Style";
                 }
                 field(Confidence; Rec.Confidence)
                 {
@@ -78,6 +84,7 @@ page 7276 "Sales Line AI Suggestions Sub"
                     Caption = 'Search Terms';
                     ToolTip = 'Specifies the search terms that were used to find the suggested results.';
                     Visible = AdditionalInformationVisible;
+                    StyleExpr = Rec."Line Style";
                 }
             }
         }

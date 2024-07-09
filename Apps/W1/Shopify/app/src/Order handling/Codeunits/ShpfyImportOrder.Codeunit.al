@@ -833,11 +833,23 @@ codeunit 30161 "Shpfy Import Order"
     local procedure UpdateLocationIdAndDeliveryMethodOnOrderLine(var OrderLine: Record "Shpfy Order Line")
     var
         FulfillmentOrderLine: Record "Shpfy FulFillment Order Line";
-        TotalQuantity: Integer;
     begin
         FulfillmentOrderLine.Reset();
         FulfillmentOrderLine.SetRange("Shopify Order Id", OrderLine."Shopify Order Id");
         FulfillmentOrderLine.SetRange("Shopify Variant Id", OrderLine."Shopify Variant Id");
+        FulfillmentOrderLine.SetFilter("Fulfillment Status", '<>%1', 'CLOSED');
+        if FulfillmentOrderLine.FindSet() then
+            UpdateLocationIdAndDeliveryMethodOnOrderLines(OrderLine, FulfillmentOrderLine)
+        else begin
+            FulfillmentOrderLine.SetRange("Fulfillment Status");
+            UpdateLocationIdAndDeliveryMethodOnOrderLines(OrderLine, FulfillmentOrderLine);
+        end;
+    end;
+
+    local procedure UpdateLocationIdAndDeliveryMethodOnOrderLines(var OrderLine: Record "Shpfy Order Line"; var FulfillmentOrderLine: Record "Shpfy FulFillment Order Line")
+    var
+        TotalQuantity: Integer;
+    begin
         if FulfillmentOrderLine.FindSet() then begin
             repeat
                 TotalQuantity += FulfillmentOrderLine."Total Quantity";

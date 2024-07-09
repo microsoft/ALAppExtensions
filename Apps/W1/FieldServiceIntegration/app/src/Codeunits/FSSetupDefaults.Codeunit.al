@@ -601,6 +601,7 @@ codeunit 6611 "FS Setup Defaults"
         TempNameValueBuffer.SetRange(Value, Format(Database::Resource));
         if TempNameValueBuffer.FindFirst() then
             TempNameValueBuffer.Delete();
+        TempNameValueBuffer.Reset();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Setup Defaults", 'OnBeforeGetNameFieldNo', '', false, false)]

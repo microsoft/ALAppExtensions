@@ -836,6 +836,8 @@ codeunit 6610 "FS Int. Table Subscriber"
         if not FSConnectionSetup.IsEnabled() then
             exit;
 
+        Codeunit.Run(Codeunit::"CRM Integration Management");
+
         JobUsageLink.SetRange("Entry No.", JobLedgerEntry."Entry No.");
         if not JobUsageLink.FindFirst() then begin
             Session.LogMessage('0000MN8', NoProjectUsageLinkTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
@@ -868,7 +870,6 @@ codeunit 6610 "FS Int. Table Subscriber"
             exit;
         if not FSWorkOrderService.WritePermission() then
             exit;
-        Codeunit.Run(Codeunit::"CRM Integration Management");
         if FSWorkOrderProduct.Get(CRMIntegrationRecord."CRM ID") then begin
             FSWorkOrderProduct.QuantityConsumed += JobPlanningLine.Quantity;
             if not TryModifyWorkOrderProduct(FSWorkOrderProduct) then begin

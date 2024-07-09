@@ -22,7 +22,7 @@ report 4405 "EXR Trial Balance Excel"
 
     dataset
     {
-        dataitem(TrialBalanceData; "G/L Account")
+        dataitem(GLAccounts; "G/L Account")
         {
             DataItemTableView = sorting("No.");
             RequestFilterFields = "No.", "Account Type", "Date Filter", "Budget Filter";
@@ -35,66 +35,44 @@ report 4405 "EXR Trial Balance Excel"
             column(Indentation; Indentation) { IncludeCaption = true; }
             column(IndentedAccountName; IndentedAccountName) { }
 
-            dataitem(EXRTrialBalanceBuffer; "EXR Trial Balance Buffer")
-            {
-                DataItemLink = "G/L Account No." = field("No.");
-                column(Account; "G/L Account No.") { IncludeCaption = true; }
-                column(Dimension1Code; "Dimension 1 Code") { IncludeCaption = true; }
-                column(Dimension2Code; "Dimension 2 Code") { IncludeCaption = true; }
-                column(NetChange; "Net Change") { IncludeCaption = true; }
-                column(NetChangeDebit; "Net Change (Debit)") { IncludeCaption = true; }
-                column(NetChangeCredit; "Net Change (Credit)") { IncludeCaption = true; }
-                column(Balance; Balance) { IncludeCaption = true; }
-                column(BalanceDebit; "Balance (Debit)") { IncludeCaption = true; }
-                column(BalanceCredit; "Balance (Credit)") { IncludeCaption = true; }
-                column(NetChangeACY; "Net Change (ACY)") { IncludeCaption = true; }
-                column(NetChangeDebitACY; "Net Change (Debit) (ACY)") { IncludeCaption = true; }
-                column(NetChangeCreditACY; "Net Change (Credit) (ACY)") { IncludeCaption = true; }
-                column(BalanceACY; "Balance (ACY)") { IncludeCaption = true; }
-                column(BalanceDebitACY; "Balance (Debit) (ACY)") { IncludeCaption = true; }
-                column(BalanceCreditACY; "Balance (Credit) (ACY)") { IncludeCaption = true; }
-            }
-
             trigger OnAfterGetRecord()
-            var
-                TrialBalance: Codeunit "Trial Balance";
             begin
-                IndentedAccountName := PadStr('', TrialBalanceData.Indentation * 2, ' ') + TrialBalanceData.Name;
-                TrialBalance.InsertBreakdownForGLAccount(TrialBalanceData, Dimension1Values, Dimension2Values, EXRTrialBalanceBuffer);
+                IndentedAccountName := PadStr('', GLAccounts.Indentation * 2, ' ') + GLAccounts.Name;
             end;
-
-            trigger OnPreDataItem()
-            var
-                DimensionValue: Record "Dimension Value";
-            begin
-                DimensionValue.SetRange("Global Dimension No.", 1);
-                if DimensionValue.FindSet() then
-                    repeat
-                        Dimension1Values.Add(DimensionValue.Code);
-                    until DimensionValue.Next() = 0;
-                Dimension1Values.Add('');
-                DimensionValue.SetRange("Global Dimension No.", 2);
-                if DimensionValue.FindSet() then
-                    repeat
-                        Dimension2Values.Add(DimensionValue.Code);
-                    until DimensionValue.Next() = 0;
-                Dimension2Values.Add('');
-            end;
-
         }
         dataitem(Dimension1; "Dimension Value")
         {
-            DataItemTableView = sorting("Code") where("Global Dimension No." = const(1));
+            DataItemTableView = sorting("Code");
+            UseTemporary = true;
 
             column(Dim1Code; Dimension1."Code") { IncludeCaption = true; }
             column(Dim1Name; Dimension1.Name) { IncludeCaption = true; }
         }
         dataitem(Dimension2; "Dimension Value")
         {
-            DataItemTableView = sorting("Code") where("Global Dimension No." = const(2));
+            DataItemTableView = sorting("Code");
+            UseTemporary = true;
 
             column(Dim2Code; Dimension2."Code") { IncludeCaption = true; }
             column(Dim2Name; Dimension2.Name) { IncludeCaption = true; }
+        }
+        dataitem(TrialBalanceData; "EXR Trial Balance Buffer")
+        {
+            column(Account; "G/L Account No.") { IncludeCaption = true; }
+            column(Dimension1Code; "Dimension 1 Code") { IncludeCaption = true; }
+            column(Dimension2Code; "Dimension 2 Code") { IncludeCaption = true; }
+            column(NetChange; "Net Change") { IncludeCaption = true; }
+            column(NetChangeDebit; "Net Change (Debit)") { IncludeCaption = true; }
+            column(NetChangeCredit; "Net Change (Credit)") { IncludeCaption = true; }
+            column(Balance; Balance) { IncludeCaption = true; }
+            column(BalanceDebit; "Balance (Debit)") { IncludeCaption = true; }
+            column(BalanceCredit; "Balance (Credit)") { IncludeCaption = true; }
+            column(NetChangeACY; "Net Change (ACY)") { IncludeCaption = true; }
+            column(NetChangeDebitACY; "Net Change (Debit) (ACY)") { IncludeCaption = true; }
+            column(NetChangeCreditACY; "Net Change (Credit) (ACY)") { IncludeCaption = true; }
+            column(BalanceACY; "Balance (ACY)") { IncludeCaption = true; }
+            column(BalanceDebitACY; "Balance (Debit) (ACY)") { IncludeCaption = true; }
+            column(BalanceCreditACY; "Balance (Credit) (ACY)") { IncludeCaption = true; }
         }
     }
     requestpage
@@ -122,14 +100,15 @@ report 4405 "EXR Trial Balance Excel"
     }
 
     trigger OnPreReport()
+    var
+        TrialBalance: Codeunit "Trial Balance";
     begin
         TrialBalanceData.SecurityFiltering(SecurityFilter::Filtered);
         CompanyInformation.Get();
+        TrialBalance.ConfigureTrialBalance(true, false);
+        TrialBalance.InsertTrialBalanceReportData(GLAccounts, Dimension1, Dimension2, TrialBalanceData);
     end;
 
-    var
-        Dimension1Values: List of [Code[20]];
-        Dimension2Values: List of [Code[20]];
 
     protected var
         CompanyInformation: Record "Company Information";

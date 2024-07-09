@@ -513,6 +513,9 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         PurchaseLine: Record "Purchase Line";
         NonDeductibleVAT: Codeunit "Non-Deductible VAT";
     begin
+        if not NonDeductibleVAT.IsNonDeductibleVATEnabled() then
+            exit;
+
         if not PurchLinesExist() then
             exit;
 

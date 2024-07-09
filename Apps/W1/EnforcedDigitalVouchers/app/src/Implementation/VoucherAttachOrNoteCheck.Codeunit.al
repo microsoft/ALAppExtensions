@@ -28,7 +28,7 @@ codeunit 5581 "Voucher Attach Or Note Check" implements "Digital Voucher Check"
         IncomingDocument: Record "Incoming Document";
         VoucherAttached: Boolean;
     begin
-        DigitalVoucherEntrySetup.Get(DigitalVoucherEntryType);
+        DigitalVoucherImpl.GetDigitalVoucherEntrySetup(DigitalVoucherEntrySetup, DigitalVoucherEntryType);
         VoucherAttached := DigitalVoucherImpl.GetIncomingDocumentRecordFromRecordRef(IncomingDocument, RecRef);
         if VoucherAttached and DigitalVoucherEntrySetup."Skip If Manually Added" then
             exit;

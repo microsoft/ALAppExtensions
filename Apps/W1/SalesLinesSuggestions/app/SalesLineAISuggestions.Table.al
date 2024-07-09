@@ -64,6 +64,10 @@ table 7275 "Sales Line AI Suggestions"
         {
             Caption = 'Source Line Record ID';
         }
+        field(35; "Line Style"; Text[30])
+        {
+            Caption = 'Line Style';
+        }
         field(5407; "Unit of Measure Code"; Code[10])
         {
             Caption = 'Unit of Measure Code';
