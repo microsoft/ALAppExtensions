@@ -112,8 +112,7 @@ codeunit 30161 "Shpfy Import Order"
         OrderFulfillments.GetFulfillments(Shop, OrderHeader."Shopify Order Id");
 
         ConsiderRefundsInQuantityAndAmounts(OrderHeader);
-        if not Shop."Keep Zero Quantity Lines" then
-            DeleteZeroQuantityLines(OrderHeader);
+        DeleteZeroQuantityLines(OrderHeader);
 
         if CheckToCloseOrder(OrderHeader) then
             CloseOrder(OrderHeader);
@@ -223,6 +222,7 @@ codeunit 30161 "Shpfy Import Order"
             OrderHeader."Presentment Subtotal Amount" -= RefundLine."Presentment Subtotal Amount";
             OrderHeader."VAT Amount" -= RefundLine."Total Tax Amount";
             OrderHeader."Presentment VAT Amount" -= RefundLine."Presentment Total Tax Amount";
+            OrderEvents.OnAfterConsiderRefundsInQuantityAndAmounts(OrderHeader, OrderLine, RefundLine);
         until OrderLine.Next() = 0;
         OrderHeader.Modify();
     end;

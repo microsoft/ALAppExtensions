@@ -56,7 +56,7 @@ report 30118 "Shpfy Suggest Payments"
                     ToolTip = 'Specifies the name of the journal template that is used for the posting.';
                     Visible = not IsGenJournalLineSet;
                     Editable = not IsJournalTemplateFound;
-
+                    ShowMandatory = true;
                     trigger OnValidate()
                     begin
                         ValidatePostingDate();
@@ -69,7 +69,7 @@ report 30118 "Shpfy Suggest Payments"
                     Lookup = true;
                     ToolTip = 'Specifies the name of the journal batch that is used for the posting.';
                     Visible = not IsGenJournalLineSet;
-
+                    ShowMandatory = true;
                     trigger OnLookup(var Text: Text): Boolean
                     var
                         GenJnlManagement: Codeunit GenJnlManagement;
@@ -91,6 +91,7 @@ report 30118 "Shpfy Suggest Payments"
                     Caption = 'Posting Date';
                     Importance = Promoted;
                     ToolTip = 'Specifies the date for the posting of this batch job. By default, the working date is entered, but you can change it.';
+                    ShowMandatory = true;
 
                     trigger OnValidate()
                     begin

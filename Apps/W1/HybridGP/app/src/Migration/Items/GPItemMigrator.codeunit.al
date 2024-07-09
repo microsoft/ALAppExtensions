@@ -346,15 +346,20 @@ codeunit 4019 "GP Item Migrator"
         TempTrackingSpecification: Record "Tracking Specification" temporary;
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
         CreateReserveEntry: Codeunit "Create Reserv. Entry";
+#if CLEAN25
+        ItemJnlLineReserve: Codeunit "Item Jnl. Line-Reserve";
+#endif
         ExpirationDate: Date;
     begin
         if GPItem.ItemTrackingCode = '' then
             exit;
 
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPItemTransactions.RecordId));
-
+#if not CLEAN25
         TempTrackingSpecification.InitFromItemJnlLine(ItemJnlLine);
-
+#else
+        ItemJnlLineReserve.InitFromItemJnlLine(TempTrackingSpecification, ItemJnlLine);
+#endif
         if GPItemTransactions.ExpirationDate = DMY2Date(1, 1, 1900) then
             ExpirationDate := 0D
         else

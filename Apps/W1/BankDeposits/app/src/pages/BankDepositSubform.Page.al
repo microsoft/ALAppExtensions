@@ -431,7 +431,8 @@ page 1693 "Bank Deposit Subform"
         Rec."Currency Factor" := BankDepositHeader."Currency Factor";
         Rec."Document Date" := BankDepositHeader."Document Date";
         Rec."Posting Date" := BankDepositHeader."Posting Date";
-        Rec."External Document No." := BankDepositHeader."No.";
+        Rec."Document No." := BankDepositHeader."No.";
+        Rec."External Document No." := '';
         Rec."Reason Code" := BankDepositHeader."Reason Code";
     end;
 

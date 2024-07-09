@@ -1,3 +1,7 @@
+// ------------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+// ------------------------------------------------------------------------------------------------
 namespace Microsoft.API.V2;
 
 using Microsoft.CRM.Contact;
@@ -17,6 +21,7 @@ page 30089 "APIV2 - CustContacts"
     PageType = API;
     SourceTable = Contact;
     Extensible = false;
+    InsertAllowed = false;
 
     layout
     {
@@ -57,9 +62,8 @@ page 30089 "APIV2 - CustContacts"
                         RegisterFieldSet(Rec.FieldNo("Job Title"));
                     end;
                 }
-                field(customerId; Customer.SystemId)
+                field(customerId; CustomerId)
                 {
-                    Editable = false;
                 }
                 field(customerName; Customer.Name)
                 {
@@ -78,9 +82,8 @@ page 30089 "APIV2 - CustContacts"
                     Multiplicity = ZeroOrOne;
                     EntityName = 'pdfDocument';
                     EntitySetName = 'pdfDocument';
-                    SubPageLink = "Document Id" = field(Systemid), "Document Type" = const("Customer Statemet");
+                    SubPageLink = "Document Id" = field(SystemId), "Document Type" = const("Customer Statement");
                 }
-
             }
         }
     }
@@ -91,6 +94,7 @@ page 30089 "APIV2 - CustContacts"
     var
         Customer: Record Customer;
         TempFieldSet: Record System.Reflection.Field temporary;
+        CustomerId: Guid;
 
     trigger OnAfterGetRecord()
     begin
@@ -98,7 +102,22 @@ page 30089 "APIV2 - CustContacts"
     end;
 
     trigger OnModifyRecord(): Boolean
+    var
+        ChangedCustomer: Record Customer;
+        ContactBusinessRelation: Record "Contact Business Relation";
+        CustomerWithProvidedIdDoesNotExistErr: Label 'Customer with provided id - does not exist';
     begin
+        if CustomerId <> Customer.SystemId then begin
+            if not ChangedCustomer.GetBySystemId(CustomerId) then
+                Error(CustomerWithProvidedIdDoesNotExistErr);
+            ContactBusinessRelation.SetRange("Contact No.", Rec."Company No.");
+            ContactBusinessRelation.SetRange("Link to Table", ContactBusinessRelation."Link to Table"::Customer);
+            ContactBusinessRelation.SetRange("No.", Customer."No.");
+            if ContactBusinessRelation.FindFirst() then begin
+                ContactBusinessRelation.Validate("No.", ChangedCustomer."No.");
+                ContactBusinessRelation.Modify(true);
+            end;
+        end;
         SetCalculatedFields();
     end;
 
@@ -114,8 +133,10 @@ page 30089 "APIV2 - CustContacts"
         Clear(Customer);
         ContactBusinessRelation.SetRange("Contact No.", Rec."Company No.");
         ContactBusinessRelation.SetRange("Link to Table", ContactBusinessRelation."Link to Table"::Customer);
-        if ContactBusinessRelation.FindFirst() then
+        if ContactBusinessRelation.FindFirst() then begin
             Customer.Get(ContactBusinessRelation."No.");
+            CustomerId := Customer.SystemId;
+        end;
     end;
 
     local procedure RegisterFieldSet(FieldNo: Integer)
@@ -132,6 +153,7 @@ page 30089 "APIV2 - CustContacts"
     local procedure ClearCalculatedFields()
     begin
         Clear(Customer);
+        Clear(CustomerId);
     end;
 
     trigger OnOpenPage()

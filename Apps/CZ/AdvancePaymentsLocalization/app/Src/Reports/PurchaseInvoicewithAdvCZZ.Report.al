@@ -634,7 +634,15 @@ report 31028 "Purchase-Invoice with Adv. CZZ"
                             }
 
                             trigger OnAfterGetRecord()
+                            var
+                                PurchAdvLetterEntryCZZVATUsage: Record "Purch. Adv. Letter Entry CZZ";
                             begin
+                                PurchAdvLetterEntryCZZVATUsage.SetRange("Entry Type", PurchAdvLetterEntryCZZVATUsage."Entry Type"::"VAT Usage");
+                                PurchAdvLetterEntryCZZVATUsage.SetRange("Related Entry", PurchAdvanceUsage."Entry No.");
+                                PurchAdvLetterEntryCZZVATUsage.Setrange("Auxiliary Entry", false);
+                                if PurchAdvLetterEntryCZZVATUsage.IsEmpty() then
+                                    CurrReport.Break();
+
                                 SetRange("Purch. Adv. Letter No.", "Purch. Adv. Letter No.");
                                 SetRange("Document No.", "Document No.");
                                 FindLast();

@@ -17,7 +17,7 @@ codeunit 5580 "Voucher Attachment Check" implements "Digital Voucher Check"
     procedure CheckVoucherIsAttachedToDocument(var ErrorMessageMgt: Codeunit "Error Message Management"; DigitalVoucherEntryType: Enum "Digital Voucher Entry Type"; RecRef: RecordRef)
     begin
         if not DigitalVoucherImpl.CheckDigitalVoucherForDocument(DigitalVoucherEntryType, RecRef) then
-            if DigitalVoucherEntryType = DigitalVoucherEntryType::"General Journal" then
+            if DigitalVoucherEntryType in [DigitalVoucherEntryType::"General Journal", DigitalVoucherEntryType::"Purchase Journal", DigitalVoucherEntryType::"Sales Journal"] then
                 error(NotPossibleToPostWithoutVoucherErr)
             else
                 ErrorMessageMgt.LogSimpleErrorMessage(NotPossibleToPostWithoutVoucherErr);

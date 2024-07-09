@@ -70,5 +70,15 @@ table 30130 "Shpfy Order Shipping Charges"
             Clustered = true;
         }
     }
+
+    trigger OnDelete()
+    var
+        DataCapture: Record "Shpfy Data Capture";
+    begin
+        DataCapture.SetRange("Linked To Table", Database::"Shpfy Order Shipping Charges");
+        DataCapture.SetRange("Linked To Id", Rec.SystemId);
+        if not DataCapture.IsEmpty then
+            DataCapture.DeleteAll(false);
+    end;
 }
 

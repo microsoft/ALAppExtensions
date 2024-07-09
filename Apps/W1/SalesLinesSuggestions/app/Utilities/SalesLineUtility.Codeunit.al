@@ -16,6 +16,7 @@ codeunit 7280 "Sales Line Utility"
         ProcessingLinesLbl: Label 'Processing lines... \#1#########################################################################################', Comment = '#1 = PreparingSalesLineLbl or InsertingSalesLineLbl ';
         PreparingSalesLineLbl: Label 'Preparing %1 of %2', Comment = '%1 = Counter, %2 = Total Lines';
         InsertingSalesLineLbl: Label 'Inserting %1 of %2', Comment = '%1 = Counter, %2 = Total Lines';
+        CopyingFromBlanketOrderLbl: Label 'Copying from Blanket Order...';
         SalesLineValidationErr: Label 'There was an error while validating the line with No. %1, Description %2.\Error: %3', Comment = '%1 = No., %2 = Description, %3 = Error Message';
         SalesLineCopyErr: Label 'There was an error while copying the line with No. %1, Description %2, Quantity %3.', Comment = '%1 = No., %2 = Description, %3 = Quantity';
 
@@ -35,8 +36,12 @@ codeunit 7280 "Sales Line Utility"
             NextLineNo := 0;
         LinesNotCopied := 0;
 
-        PrepareSalesLine(SalesHeader, TempFromSalesLine, TempSalesLineAiSuggestion, NextLineNo);
-        CopySalesLineToDoc(SalesHeader, TempFromSalesLine, LinesNotCopied, NextLineNo);
+        if IsBlanketOrder(TempSalesLineAiSuggestion) then
+            CreateFromBlanketOrder(SalesHeader, TempSalesLineAiSuggestion, NextLineNo)
+        else begin
+            PrepareSalesLine(SalesHeader, TempFromSalesLine, TempSalesLineAiSuggestion, NextLineNo);
+            CopySalesLineToDoc(SalesHeader, TempFromSalesLine, LinesNotCopied, NextLineNo);
+        end;
     end;
 
     local procedure CopySalesLineToDoc(var ToSalesHeader: Record "Sales Header"; var FromSalesLine: Record "Sales Line" temporary; var LinesNotCopied: Integer; NextLineNo: Integer)
@@ -69,6 +74,52 @@ codeunit 7280 "Sales Line Utility"
                 ProgressDialog.Update(1, StrSubstNo(InsertingSalesLineLbl, Counter, TotalLines));
             until FromSalesLine.Next() = 0;
             CopyDocMgt.SetCopyExtendedText(false);
+            ProgressDialog.Close();
+        end;
+    end;
+
+    local procedure IsBlanketOrder(var TempSalesLineAiSuggestion: Record "Sales Line AI Suggestions" temporary): Boolean
+    var
+        SalesLine: Record "Sales Line";
+    begin
+        if not TempSalesLineAiSuggestion.FindFirst() then
+            exit(false);
+
+        if TempSalesLineAiSuggestion."Source Line Record ID".TableNo = Database::"Sales Line" then
+            TempSalesLineAiSuggestion."Source Line Record ID".GetRecord().SetTable(SalesLine);
+
+        exit(SalesLine."Document Type" = SalesLine."Document Type"::"Blanket Order");
+    end;
+
+    local procedure CreateFromBlanketOrder(var ToSalesHeader: Record "Sales Header"; var TempSalesLineAiSuggestion: Record "Sales Line AI Suggestions" temporary; NextLineNo: Integer)
+    var
+        BlanketSalesHeader: Record "Sales Header";
+        BlanketSalesLine: Record "Sales Line";
+        FromSalesLine: Record "Sales Line";
+        ToSalesLine: Record "Sales Line";
+        BlanketSalesOrderToOrder: Codeunit "Blanket Sales Order to Order";
+        ProgressDialog: Dialog;
+    begin
+        if TempSalesLineAiSuggestion.FindSet() then begin
+            OpenProgressWindow(ProgressDialog);
+            ProgressDialog.Update(1, CopyingFromBlanketOrderLbl);
+
+            TempSalesLineAiSuggestion."Source Line Record ID".GetRecord().SetTable(BlanketSalesLine);
+            BlanketSalesHeader.Get(BlanketSalesLine."Document Type", BlanketSalesLine."Document No.");
+
+            repeat
+                FromSalesLine.Get(TempSalesLineAiSuggestion."Source Line Record ID");
+                FromSalesLine.Validate("Qty. to Ship", TempSalesLineAiSuggestion.Quantity);
+                FromSalesLine.Modify(true);
+                FromSalesLine.Mark(true);
+            until TempSalesLineAiSuggestion.Next() = 0;
+
+            FromSalesLine.MarkedOnly(true);
+
+            BlanketSalesOrderToOrder.SetHideValidationDialog(true);
+            BlanketSalesOrderToOrder.SetSalesOrderHeader(ToSalesHeader);
+            BlanketSalesOrderToOrder.CreateSalesOrderLines(BlanketSalesHeader, FromSalesLine, ToSalesHeader, ToSalesLine, NextLineNo);
+
             ProgressDialog.Close();
         end;
     end;

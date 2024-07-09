@@ -82,6 +82,16 @@ page 30419 "API Buf IC Inbox Purchase Line"
                     Caption = 'Amount Including VAT';
                     Editable = true;
                 }
+                field(amount; Rec.Amount)
+                {
+                    Caption = 'Amount';
+                    Editable = true;
+                }
+                field(invoiceDiscountAmount; Rec."Inv. Discount Amount")
+                {
+                    Caption = 'Inv. Discount Amount';
+                    Editable = true;
+                }
                 field(jobNumber; Rec."Job No.")
                 {
                     Caption = 'Job Number';

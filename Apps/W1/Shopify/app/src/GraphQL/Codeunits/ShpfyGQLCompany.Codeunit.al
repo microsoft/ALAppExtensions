@@ -13,7 +13,7 @@ codeunit 30302 "Shpfy GQL Company" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{company(id: \"gid://shopify/Company/{{CompanyId}}\") {name id note createdAt updatedAt mainContact { id customer { id firstName lastName email phone}} locations(first:1, sortKey: CREATED_AT ) {edges { node { id name billingAddress {address1 address2 city countryCode phone province zip zoneCode}}}}}}"}');
+        exit('{"query":"{company(id: \"gid://shopify/Company/{{CompanyId}}\") {name id note createdAt updatedAt mainContact { id customer { id firstName lastName email phone}} locations(first:1, sortKey: CREATED_AT ) {edges { node { id name billingAddress {address1 address2 city countryCode phone province zip zoneCode} taxRegistrationId}}}}}"}');
     end;
 
     /// <summary>

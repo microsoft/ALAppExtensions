@@ -167,7 +167,12 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
         "Registration No. CZL" := SalesAdvLetterHeaderCZZ."Registration No.";
         "Tax Registration No. CZL" := SalesAdvLetterHeaderCZZ."Tax Registration No.";
         "System-Created Entry" := true;
+#if not CLEAN25
+#pragma warning disable AL0432
         OnAfterCopyGenJnlLineFromSalesAdvLetterHeaderCZZ(SalesAdvLetterHeaderCZZ, Rec);
+#pragma warning restore AL0432
+#endif
+        OnAfterCopyGenJournalLineFromSalesAdvLetterHeaderCZZ(SalesAdvLetterHeaderCZZ, Rec);
     end;
 
     procedure CopyFromSalesAdvLetterEntryCZZ(SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
@@ -176,7 +181,12 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
         "Shortcut Dimension 2 Code" := SalesAdvLetterEntryCZZ."Global Dimension 2 Code";
         "Dimension Set ID" := SalesAdvLetterEntryCZZ."Dimension Set ID";
         "Adv. Letter No. (Entry) CZZ" := SalesAdvLetterEntryCZZ."Sales Adv. Letter No.";
+#if not CLEAN25
+#pragma warning disable AL0432
         OnAfterCopyGenJnlLineFromSalesAdvLetterEntryCZZ(SalesAdvLetterEntryCZZ, Rec);
+#pragma warning restore AL0432
+#endif
+        OnAfterCopyGenJournalLineFromSalesAdvLetterEntryCZZ(SalesAdvLetterEntryCZZ, Rec);
     end;
 
     procedure CopyFromPurchAdvLetterHeaderCZZ(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
@@ -262,18 +272,56 @@ tableextension 31004 "Gen. Journal Line CZZ" extends "Gen. Journal Line"
         OnAfterCopyFromVendorLedgerEntryCZZ(VendorLedgerEntry, Rec);
     end;
 
+    procedure GetAdvanceGLAccountNoCZZ(): Code[20]
+    var
+        AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
+        PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+    begin
+        case "Account Type" of
+            "Account Type"::Customer:
+                begin
+                    SalesAdvLetterHeaderCZZ.Get("Adv. Letter No. (Entry) CZZ");
+                    SalesAdvLetterHeaderCZZ.TestField("Advance Letter Code");
+                    AdvanceLetterTemplateCZZ.Get(SalesAdvLetterHeaderCZZ."Advance Letter Code");
+                end;
+            "Account Type"::Vendor:
+                begin
+                    PurchAdvLetterHeaderCZZ.Get("Adv. Letter No. (Entry) CZZ");
+                    PurchAdvLetterHeaderCZZ.TestField("Advance Letter Code");
+                    AdvanceLetterTemplateCZZ.Get(PurchAdvLetterHeaderCZZ."Advance Letter Code");
+                end;
+        end;
+
+        AdvanceLetterTemplateCZZ.TestField("Advance Letter G/L Account");
+        exit(AdvanceLetterTemplateCZZ."Advance Letter G/L Account");
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterInitNewLineCZZ(var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
-
+#if not CLEAN25
+    [Obsolete('Replaced by OnAfterCopyGenJournalLineFromSalesAdvLetterHeaderCZZ event.', '25.0')]
     [IntegrationEvent(false, false)]
     local procedure OnAfterCopyGenJnlLineFromSalesAdvLetterHeaderCZZ(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; Rec: Record "Gen. Journal Line")
     begin
     end;
 
+    [Obsolete('Replaced by OnAfterCopyGenJournalLineFromSalesAdvLetterEntryCZZ event.', '25.0')]
     [IntegrationEvent(false, false)]
     local procedure OnAfterCopyGenJnlLineFromSalesAdvLetterEntryCZZ(SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; Rec: Record "Gen. Journal Line")
+    begin
+    end;
+#endif
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyGenJournalLineFromSalesAdvLetterHeaderCZZ(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var GenJournalLine: Record "Gen. Journal Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyGenJournalLineFromSalesAdvLetterEntryCZZ(SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"; var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
 

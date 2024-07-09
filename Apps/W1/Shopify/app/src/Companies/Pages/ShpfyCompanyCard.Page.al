@@ -39,6 +39,13 @@ page 30157 "Shpfy Company Card"
                     Caption = 'Note';
                     ToolTip = 'Specifies a note about the customer in Shopify.';
                 }
+                field(TaxId; TaxRegistrationId)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Tax Id';
+                    ToolTip = 'Specifies the company''s tax ID.';
+                    Editable = false;
+                }
             }
 
             group(Mapping)
@@ -163,15 +170,14 @@ page 30157 "Shpfy Company Card"
     var
         Customer: Record Customer;
         CustomerNo: Code[20];
+        TaxRegistrationId: Text[150];
 
     trigger OnAfterGetCurrRecord()
     begin
         GetMappedCustomer();
+        GetTaxRegisrationId();
     end;
 
-    /// <summary> 
-    /// Get Mapped Customer.
-    /// </summary>
     local procedure GetMappedCustomer()
     begin
         if IsNullGuid(Rec."Customer SystemId") then begin
@@ -184,5 +190,13 @@ page 30157 "Shpfy Company Card"
                 Clear(Customer);
                 Clear(CustomerNo);
             end;
+    end;
+
+    local procedure GetTaxRegisrationId()
+    var
+        CompanyLocation: Record "Shpfy Company Location";
+    begin
+        if CompanyLocation.Get(Rec."Location Id") then
+            TaxRegistrationId := CompanyLocation."Tax Registration Id";
     end;
 }

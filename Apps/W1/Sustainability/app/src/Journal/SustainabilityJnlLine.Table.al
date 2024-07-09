@@ -310,7 +310,7 @@ table 6214 "Sustainability Jnl. Line"
         DimMgt: Codeunit DimensionManagement;
         JnlRecRefLbl: Label '%1 %2 %3', Locked = true;
 
-    internal procedure SetupNewLine(PreviousLine: Record "Sustainability Jnl. Line")
+    procedure SetupNewLine(PreviousLine: Record "Sustainability Jnl. Line")
     var
         SustainabilityJnlBatch: Record "Sustainability Jnl. Batch";
         SustainabilityJnlLine: Record "Sustainability Jnl. Line";

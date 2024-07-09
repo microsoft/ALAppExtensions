@@ -9,15 +9,10 @@ using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Purchases.Payables;
 using Microsoft.Service.Ledger;
-using Microsoft.Sales.Receivables;
-using Microsoft.Bank.Ledger;
 
 codeunit 1699 "Navigate Bank Deposit Ext."
 {
     Access = Internal;
-
-    var
-        RecordWithoutKeysMsg: Label 'Before you can navigate on a deposit, you must create and activate a key group called "NavDep". If you cannot do this yourself, ask your system administrator.';
 
     local procedure SetPostedBankDepositHeaderFilters(var PostedBankDepositHeader: Record "Posted Bank Deposit Header"; DocNoFilter: Text): Boolean
     begin
@@ -98,90 +93,5 @@ codeunit 1699 "Navigate Bank Deposit Ext."
         IsHandled := true;
         DocType := CopyStr(PostedBankDepositHeader.TableCaption(), 1, MaxStrLen(DocType));
         Sender.SetSource(PostedBankDepositHeader."Posting Date", DocType, PostedBankDepositHeader."No.", 4, PostedBankDepositHeader."Bank Account No.");
-    end;
-
-    // OVERRRIDING HOW TO GET RELATED ENTRIES FOR POSTED BANK DEPOSITS
-
-    // When searching from a Posted Bank Deposit as source, finding the related GL Entries, Customer Ledger Entries, etc.
-    // is done differently, as their ExtDocNo has the corresponding Bank Deposit No.
-
-    [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnBeforeFindCustLedgerEntry', '', false, false)]
-    local procedure OnBeforeFindCustLedgerEntry(Sender: Page Navigate; var CustLedgerEntry: Record "Cust. Ledger Entry"; DocNoFilter: Text; PostingDateFilter: Text; ExtDocNo: Text; var IsHandled: Boolean)
-    begin
-        if not Sender.GetNavigationFromPostedBankDeposit() then
-            exit;
-        if not CustLedgerEntry.ReadPermission() then
-            exit;
-        if IsHandled then
-            exit;
-
-        IsHandled := true;
-
-        CustLedgerEntry.Reset();
-        if not CustLedgerEntry.SetCurrentKey("External Document No.", "Posting Date") then
-            Error(RecordWithoutKeysMsg);
-        CustLedgerEntry.SetFilter("External Document No.", DocNoFilter);
-        CustLedgerEntry.SetFilter("Posting Date", PostingDateFilter);
-        Sender.InsertIntoDocEntry(DATABASE::"Cust. Ledger Entry", CustLedgerEntry.TableCaption(), CustLedgerEntry.Count());
-    end;
-
-    [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnBeforeFindVendorLedgerEntry', '', false, false)]
-    local procedure OnBeforeFindVendorLedgerEntry(Sender: Page Navigate; var VendorLedgerEntry: Record "Vendor Ledger Entry"; DocNoFilter: Text; PostingDateFilter: Text; ExtDocNo: Text; var IsHandled: Boolean)
-    begin
-        if not Sender.GetNavigationFromPostedBankDeposit() then
-            exit;
-        if not VendorLedgerEntry.ReadPermission() then
-            exit;
-        if IsHandled then
-            exit;
-
-        IsHandled := true;
-
-        VendorLedgerEntry.Reset();
-        if not VendorLedgerEntry.SetCurrentKey("External Document No.", "Posting Date") then
-            Error(RecordWithoutKeysMsg);
-        VendorLedgerEntry.SetFilter("External Document No.", DocNoFilter);
-        VendorLedgerEntry.SetFilter("Posting Date", PostingDateFilter);
-        Sender.InsertIntoDocEntry(DATABASE::"Vendor Ledger Entry", VendorLedgerEntry.TableCaption(), VendorLedgerEntry.Count());
-    end;
-
-    [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnBeforeFindBankAccountLedgerEntry', '', false, false)]
-    local procedure OnBeforeFindBankAccountLedgerEntry(Sender: Page Navigate; var BankAccountLedgerEntry: Record "Bank Account Ledger Entry"; DocNoFilter: Text; PostingDateFilter: Text; ExtDocNo: Text; var IsHandled: Boolean)
-    begin
-        if not Sender.GetNavigationFromPostedBankDeposit() then
-            exit;
-        if not BankAccountLedgerEntry.ReadPermission() then
-            exit;
-        if IsHandled then
-            exit;
-
-        IsHandled := true;
-
-        BankAccountLedgerEntry.Reset();
-        if not BankAccountLedgerEntry.SetCurrentKey("External Document No.", "Posting Date") then
-            Error(RecordWithoutKeysMsg);
-        BankAccountLedgerEntry.SetFilter("External Document No.", DocNoFilter);
-        BankAccountLedgerEntry.SetFilter("Posting Date", PostingDateFilter);
-        Sender.InsertIntoDocEntry(DATABASE::"Bank Account Ledger Entry", BankAccountLedgerEntry.TableCaption(), BankAccountLedgerEntry.Count());
-    end;
-
-    [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnBeforeFindGLEntry', '', false, false)]
-    local procedure OnBeforeFindGLEntry(Sender: Page Navigate; var GLEntry: Record "G/L Entry"; DocNoFilter: Text; PostingDateFilter: Text; ExtDocNo: Text; var IsHandled: Boolean)
-    begin
-        if not Sender.GetNavigationFromPostedBankDeposit() then
-            exit;
-        if not GLEntry.ReadPermission() then
-            exit;
-        if IsHandled then
-            exit;
-
-        IsHandled := true;
-
-        GLEntry.Reset();
-        if not GLEntry.SetCurrentKey("External Document No.", "Posting Date") then
-            Error(RecordWithoutKeysMsg);
-        GLEntry.SetFilter("External Document No.", DocNoFilter);
-        GLEntry.SetFilter("Posting Date", PostingDateFilter);
-        Sender.InsertIntoDocEntry(DATABASE::"G/L Entry", GLEntry.TableCaption(), GLEntry.Count());
     end;
 }

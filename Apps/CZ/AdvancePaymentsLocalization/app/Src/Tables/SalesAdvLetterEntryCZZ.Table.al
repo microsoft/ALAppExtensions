@@ -187,6 +187,12 @@ table 31006 "Sales Adv. Letter Entry CZZ"
             TableRelation = Customer;
             Editable = false;
         }
+        field(80; "Auxiliary Entry"; Boolean)
+        {
+            Caption = 'Auxiliary Entry';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
         field(480; "Dimension Set ID"; Integer)
         {
             Caption = 'Dimension Set ID';
@@ -270,6 +276,7 @@ table 31006 "Sales Adv. Letter Entry CZZ"
     begin
         SalesAdvLetterEntryCZZ.SetRange("Document No.", SalesInvoiceHeader."No.");
         SalesAdvLetterEntryCZZ.SetRange("Entry Type", SalesAdvLetterEntryCZZ."Entry Type"::"VAT Usage");
+        SalesAdvLetterEntryCZZ.SetRange("Auxiliary Entry", false);
         SalesAdvLetterEntryCZZ.SetRange(Cancelled, false);
         if SalesAdvLetterEntryCZZ.FindSet() then
             repeat

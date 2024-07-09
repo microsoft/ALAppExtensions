@@ -20,6 +20,9 @@ page 6231 "Sustainability Ledg. Entries"
     ODataKeyFields = SystemId;
     SourceTable = "Sustainability Ledger Entry";
     Extensible = false;
+    InsertAllowed = false;
+    ModifyAllowed = false;
+    DeleteAllowed = false;
 
     layout
     {

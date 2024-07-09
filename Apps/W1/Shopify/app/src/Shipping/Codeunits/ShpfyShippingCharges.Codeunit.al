@@ -14,33 +14,8 @@ codeunit 30191 "Shpfy Shipping Charges"
     /// <summary> 
     /// Description for UpdateShippingCostInfos.
     /// </summary>
-    /// <param name="OrderId">Parameter of type BigInteger.</param>
-    internal procedure UpdateShippingCostInfos(OrderId: BigInteger)
-    var
-        OrderHeader: Record "Shpfy Order Header";
-    begin
-        if OrderHeader.Get(OrderId) then
-            UpdateShippingCostInfos(OrderHeader);
-    end;
-
-    /// <summary> 
-    /// Description for UpdateShippingCostInfos.
-    /// </summary>
-    /// <param name="OrderId">Parameter of type BigInteger.</param>
-    /// <param name="JShippingLines">Parameter of type JsonArray.</param>
-    internal procedure UpdateShippingCostInfos(OrderId: BigInteger; JShippingLines: JsonArray)
-    var
-        OrderHeader: Record "Shpfy Order Header";
-    begin
-        if OrderHeader.Get(OrderId) then
-            UpdateShippingCostInfos(OrderHeader, JShippingLines);
-    end;
-
-    /// <summary> 
-    /// Description for UpdateShippingCostInfos.
-    /// </summary>
     /// <param name="OrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    internal procedure UpdateShippingCostInfos(OrderHeader: Record "Shpfy Order Header")
+    internal procedure UpdateShippingCostInfos(var OrderHeader: Record "Shpfy Order Header")
     var
         Parameters: Dictionary of [Text, Text];
         GraphQLType: Enum "Shpfy GraphQL Type";
@@ -70,7 +45,7 @@ codeunit 30191 "Shpfy Shipping Charges"
     /// </summary>
     /// <param name="OrderHeader">Parameter of type Record "Shopify Order Header".</param>
     /// <param name="JShippingLines">Parameter of type JsonArray.</param>
-    internal procedure UpdateShippingCostInfos(OrderHeader: Record "Shpfy Order Header"; JShippingLines: JsonArray)
+    internal procedure UpdateShippingCostInfos(var OrderHeader: Record "Shpfy Order Header"; JShippingLines: JsonArray)
     var
         OrderShippingCharges: Record "Shpfy Order Shipping Charges";
         ShipmentMethodMapping: Record "Shpfy Shipment Method Mapping";
@@ -79,9 +54,11 @@ codeunit 30191 "Shpfy Shipping Charges"
         Id: BigInteger;
         JToken: JsonToken;
         IsNew: Boolean;
+        ShippingLineIds: List of [BigInteger];
     begin
         foreach JToken in JShippingLines do begin
             Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JToken, 'id'));
+            ShippingLineIds.Add(Id);
             IsNew := not OrderShippingCharges.Get(Id);
             if IsNew then begin
                 Clear(OrderShippingCharges);
@@ -111,6 +88,24 @@ codeunit 30191 "Shpfy Shipping Charges"
                 ShipmentMethodMapping.Insert();
             end;
         end;
+
+        if ShippingLineIds.Count() > 0 then
+            DeleteRemovedShippingLines(OrderHeader, ShippingLineIds);
+    end;
+
+    local procedure DeleteRemovedShippingLines(var OrderHeader: Record "Shpfy Order Header"; ShippingLineIds: List of [BigInteger])
+    var
+        OrderShippingCharges: Record "Shpfy Order Shipping Charges";
+    begin
+        OrderShippingCharges.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
+        if OrderShippingCharges.FindSet() then
+            repeat
+                if not ShippingLineIds.Contains(OrderShippingCharges."Shopify Shipping Line Id") then begin
+                    OrderHeader."Shipping Charges Amount" -= OrderShippingCharges.Amount - OrderShippingCharges."Discount Amount";
+                    OrderHeader."Total Amount" -= OrderShippingCharges.Amount - OrderShippingCharges."Discount Amount";
+                    OrderShippingCharges.Delete(true);
+                end;
+            until OrderShippingCharges.Next() = 0;
     end;
 
     local procedure GetShippingDiscountAmount(JDiscountAllocations: JsonArray; MoneyType: Text) Result: Decimal

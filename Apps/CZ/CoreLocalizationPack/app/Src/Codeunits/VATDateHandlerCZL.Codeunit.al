@@ -218,14 +218,8 @@ codeunit 11742 "VAT Date Handler CZL"
         else begin
             PurchaseHeader.TestField("VAT Reporting Date");
             VATPeriodCZLCheck(PurchaseHeader."VAT Reporting Date");
-            if PurchaseHeader.Invoice then begin
-                // FIX
-                if PurchaseHeader."Original Doc. VAT Date CZL" = 0D then begin
-                    PurchaseHeader."Original Doc. VAT Date CZL" := PurchaseHeader."VAT Reporting Date";
-                    PurchaseHeader.Modify();
-                end;                    
+            if PurchaseHeader.Invoice then
                 PurchaseHeader.TestField("Original Doc. VAT Date CZL");
-            end;
             if PurchaseHeader."Original Doc. VAT Date CZL" > PurchaseHeader."VAT Reporting Date" then
                 PurchaseHeader.FieldError("Original Doc. VAT Date CZL", StrSubstNo(MustBeLessOrEqualErr, PurchaseHeader.FieldCaption("VAT Reporting Date")));
         end;
