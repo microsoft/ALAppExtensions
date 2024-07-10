@@ -1,9 +1,8 @@
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Inventory.Item;
-using Microsoft.Integration.Shopify;
 
-codeunit 30312 "Shpfy Create Transl. Product" implements "Shpfy ICreate Translation"
+codeunit 30342 "Shpfy Create Transl. Product" implements "Shpfy ICreate Translation"
 {
     Access = Internal;
 

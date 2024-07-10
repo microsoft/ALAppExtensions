@@ -1,6 +1,6 @@
 namespace Microsoft.Integration.Shopify;
 
-page 30161 "Shpfy Languages"
+page 30138 "Shpfy Languages"
 {
     ApplicationArea = All;
     Caption = 'Shpfy Languages';
