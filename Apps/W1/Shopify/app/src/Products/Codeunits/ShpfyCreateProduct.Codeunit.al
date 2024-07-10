@@ -174,7 +174,7 @@ codeunit 30174 "Shpfy Create Product"
     /// <param name="ItemNo">Parameter of type Code[20].</param>
     /// <param name="VariantCode">Parameter of type Code[10].</param>
     /// <param name="UoM">Parameter of type Code[10].</param>
-    /// <returns>Return value of type Text.</returns>
+    /// <returns>Return value of type Code[50].</returns>
     local procedure GetVendorItemNo(ItemNo: Code[20]; VariantCode: Code[10]; UoM: Code[10]): Code[50];
     var
         Item: Record Item;
