@@ -34,7 +34,7 @@ table 30101 "Shpfy Metafield"
             DataClassification = SystemMetadata;
             ObsoleteState = Pending;
             ObsoleteReason = 'Owner Resource is obsolete. Use Owner Type instead.';
-            ObsoleteTag = '24.0';
+            ObsoleteTag = '25.0';
 
             trigger OnValidate()
             begin
@@ -67,7 +67,7 @@ table 30101 "Shpfy Metafield"
             DataClassification = CustomerContent;
             ObsoleteState = Pending;
             ObsoleteReason = 'Value Type is obsolete in Shopify API. Use Type instead.';
-            ObsoleteTag = '24.0';
+            ObsoleteTag = '25.0';
         }
 
         field(7; Value; Text[2048])
