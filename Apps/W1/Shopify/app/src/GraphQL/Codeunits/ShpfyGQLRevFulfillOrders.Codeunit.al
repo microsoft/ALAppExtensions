@@ -1,9 +1,9 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Codeunit Shpfy GQL RevFulfillOrders (ID 30312) implements Interface Shpfy IGraphQL.
+/// Codeunit Shpfy GQL RevFulfillOrders (ID 30313) implements Interface Shpfy IGraphQL.
 /// </summary>
-codeunit 30312 "Shpfy GQL RevFulfillOrders" implements "Shpfy IGraphQL"
+codeunit 30313 "Shpfy GQL RevFulfillOrders" implements "Shpfy IGraphQL"
 {
     Access = Internal;
 
