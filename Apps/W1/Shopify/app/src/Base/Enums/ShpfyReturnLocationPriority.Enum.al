@@ -1,6 +1,6 @@
 namespace Microsoft.Integration.Shopify;
 
-enum 30156 "Shpfy Return Location Priority"
+enum 30162 "Shpfy Return Location Priority"
 {
     Access = Public;
     Extensible = false;
