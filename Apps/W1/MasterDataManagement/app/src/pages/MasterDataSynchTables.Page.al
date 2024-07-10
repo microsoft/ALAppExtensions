@@ -323,7 +323,7 @@ page 7233 "Master Data Synch. Tables"
             {
                 ApplicationArea = Suite;
                 Caption = 'Synchronize Modified Records';
-                Enabled = HasRecords and (Rec."Parent Name" = '');
+                Enabled = HasRecords and (Rec."Parent Name" = '') and DataSynchEnabled;
                 Image = Refresh;
                 ToolTip = 'Synchronize records that have been modified since the last time they were synchronized.';
 
@@ -352,7 +352,7 @@ page 7233 "Master Data Synch. Tables"
             {
                 ApplicationArea = Suite;
                 Caption = 'Run Full Synchronization';
-                Enabled = HasRecords and (Rec."Parent Name" = '');
+                Enabled = HasRecords and (Rec."Parent Name" = '') and DataSynchEnabled;
                 Image = RefreshLines;
                 ToolTip = 'Start a job for full synchronization from records in the chosen source company for each of the selected tables.';
 
@@ -377,8 +377,7 @@ page 7233 "Master Data Synch. Tables"
             {
                 ApplicationArea = Suite;
                 Caption = 'Integration Uncouple Job Log';
-                Enabled = HasRecords;
-                Visible = DataSynchEnabled;
+                Enabled = HasRecords and DataSynchEnabled;
                 Image = Log;
                 ToolTip = 'View the status of jobs for uncoupling records.';
 
@@ -394,8 +393,7 @@ page 7233 "Master Data Synch. Tables"
             {
                 ApplicationArea = Suite;
                 Caption = 'Integration Coupling Job Log';
-                Enabled = HasRecords;
-                Visible = DataSynchEnabled;
+                Enabled = HasRecords and DataSynchEnabled;
                 Image = Log;
                 ToolTip = 'View the status of jobs for match-based coupling of records.';
 
@@ -411,8 +409,7 @@ page 7233 "Master Data Synch. Tables"
             {
                 ApplicationArea = Suite;
                 Caption = 'Delete Couplings';
-                Enabled = HasRecords and (Rec."Parent Name" = '');
-                Visible = DataSynchEnabled;
+                Enabled = HasRecords and (Rec."Parent Name" = '') and DataSynchEnabled;
                 Image = UnLinkAccount;
                 ToolTip = 'Delete couplings for the selected tables.';
 
@@ -464,8 +461,7 @@ page 7233 "Master Data Synch. Tables"
             {
                 ApplicationArea = Suite;
                 Caption = 'Match-Based Coupling';
-                Enabled = HasRecords and (Rec."Parent Name" = '');
-                Visible = DataSynchEnabled;
+                Enabled = HasRecords and (Rec."Parent Name" = '') and DataSynchEnabled;
                 Image = LinkAccount;
                 ToolTip = 'Couple existing records in the selected tables based on matching criteria.';
 
@@ -506,6 +502,9 @@ page 7233 "Master Data Synch. Tables"
                 {
                 }
                 actionref(SynchronizeNow_Promoted; SynchronizeNow)
+                {
+                }
+                actionref(MatchBasedCoupling_Promoted; MatchBasedCoupling)
                 {
                 }
                 actionref(JobQueueEntry_Promoted; JobQueueEntry)

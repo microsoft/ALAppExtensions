@@ -153,7 +153,8 @@ report 11752 "Inventory Document CZL"
             begin
                 CurrReport.Language := LanguageMgt.GetLanguageIdOrDefault("Language Code");
                 CurrReport.FormatRegion := LanguageMgt.GetFormatRegionOrDefault("Format Region");
-                SalespersonPurchaser.Get("Salesperson/Purchaser Code");
+                if not SalespersonPurchaser.Get("Salesperson/Purchaser Code") then
+                    SalespersonPurchaser.Init();
 
                 if not IsReportInPreviewMode() then
                     Codeunit.Run(Codeunit::"Invt. Document-Printed CZL", "Invt. Document Header");

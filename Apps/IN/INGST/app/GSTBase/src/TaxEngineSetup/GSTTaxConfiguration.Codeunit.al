@@ -959,6 +959,8 @@ codeunit 18017 "GST Tax Configuration"
         UseCases.Add('{321e0f7b-a15d-4ce6-9c11-bf3fd3dee918}', 1);
         UseCases.Add('{631DEFA0-165E-4BDC-8F8A-AB2A88DF90AD}', 1);
         UseCases.Add('{9CF523A9-24DB-4928-A3CB-8DC5FCA4AF69}', 1);
+        UseCases.Add('{E8B90257-9F0D-42F4-A340-13A648D11829}', 1);
+        UseCases.Add('{874048A6-575B-456F-A2E7-26532DA3F1CA}', 1);
     end;
 
     var

@@ -73,7 +73,7 @@ page 6166 "E-Doc. PO Copilot Prop"
                 field("Matched Total Amount"; MatchedTotal)
                 {
                     ApplicationArea = All;
-                    Caption = 'Matched Total Amount Incl. VAT';
+                    Caption = 'Matched Total Amount Excl. VAT';
                     Editable = false;
                     ToolTip = 'Specifies the matched amount excluding VAT';
                 }
@@ -225,11 +225,19 @@ page 6166 "E-Doc. PO Copilot Prop"
     end;
 
     local procedure SumUnitCost(var EDocOrderMatches: Record "E-Doc. Order Match" temporary) Sum: Decimal
+    var
+        EDocument: Record "E-Document";
+        EDocumentImportHelper: Codeunit "E-Document Import Helper";
+        RoundPrecision, Discount, DiscountedUnitCost : Decimal;
     begin
         EDocOrderMatches.Reset();
         if EDocOrderMatches.FindSet() then
             repeat
-                Sum += EDocOrderMatches.Quantity * EDocOrderMatches."E-Document Direct Unit Cost";
+                EDocument.Get(EDocOrderMatches."E-Document Entry No.");
+                RoundPrecision := EDocumentImportHelper.GetCurrencyRoundingPrecision(EDocument."Currency Code");
+                Discount := Round((EDocOrderMatches."E-Document Direct Unit Cost" * EDocOrderMatches."Line Discount %") / 100, RoundPrecision);
+                DiscountedUnitCost := EDocOrderMatches."E-Document Direct Unit Cost" - Discount;
+                Sum += EDocOrderMatches.Quantity * DiscountedUnitCost;
             until EDocOrderMatches.Next() = 0;
     end;
 

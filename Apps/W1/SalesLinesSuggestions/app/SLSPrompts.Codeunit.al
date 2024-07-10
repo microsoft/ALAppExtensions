@@ -31,7 +31,7 @@ codeunit 7276 "SLS Prompts"
         BCSLSTaskPrompt: Text;
     begin
         GetAzureKeyVaultSecret(BCSLSMetaPrompt, 'BCSLSMetaPrompt');
-        GetAzureKeyVaultSecret(BCSLSTaskPrompt, 'BCSLSTaskPrompt');
+        GetAzureKeyVaultSecret(BCSLSTaskPrompt, 'BCSLSTaskPrompt-V250');
 
         exit(BCSLSMetaPrompt + StrSubstNo(BCSLSTaskPrompt, Format(Today, 0, 4)));
     end;
@@ -74,6 +74,48 @@ codeunit 7276 "SLS Prompts"
         GetAzureKeyVaultSecret(BCSLSMagicFunctionPrompt, 'BCSLSMagicFunctionPrompt');
 
         exit(BCSLSMagicFunctionPrompt);
+    end;
+
+    [NonDebuggable]
+    internal procedure GetAttachmentSystemPrompt(): Text
+    var
+        BCSLSMetaPrompt: Text;
+        BCSLSAttachmentTaskPrompt: Text;
+    begin
+        GetAzureKeyVaultSecret(BCSLSMetaPrompt, 'BCSLSMetaPrompt');
+        GetAzureKeyVaultSecret(BCSLSAttachmentTaskPrompt, 'BCSLSAttachmentTaskPrompt');
+
+        exit(BCSLSMetaPrompt + BCSLSAttachmentTaskPrompt);
+    end;
+
+    [NonDebuggable]
+    internal procedure GetParsingCsvPrompt(): Text
+    var
+        BCSLSParseCsvPrompt: Text;
+    begin
+        GetAzureKeyVaultSecret(BCSLSParseCsvPrompt, 'BCSLSParseCsvPrompt');
+
+        exit(BCSLSParseCsvPrompt);
+    end;
+
+    [NonDebuggable]
+    internal procedure GetParsingCsvTemplateUserInputPrompt(): Text
+    var
+        BCSLSParseCsvTemplateUserInputPrompt: Text;
+    begin
+        GetAzureKeyVaultSecret(BCSLSParseCsvTemplateUserInputPrompt, 'BCSLSParseCsvTemplateUserInputPrompt');
+
+        exit(BCSLSParseCsvTemplateUserInputPrompt);
+    end;
+
+    [NonDebuggable]
+    internal procedure GetProductFromCsvTemplateUserInputPrompt(): Text
+    var
+        BCSLSGetProductFromCsvTemplateUserInputPrompt: Text;
+    begin
+        GetAzureKeyVaultSecret(BCSLSGetProductFromCsvTemplateUserInputPrompt, 'BCSLSGetProductFromCsvTemplateUserInputPrompt');
+
+        exit(BCSLSGetProductFromCsvTemplateUserInputPrompt);
     end;
 
     var

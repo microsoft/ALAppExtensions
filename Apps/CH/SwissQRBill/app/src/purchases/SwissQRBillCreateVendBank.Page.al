@@ -69,14 +69,14 @@ page 11502 "Swiss QR-Bill Create Vend Bank"
             TestField(Code);
     end;
 
-    internal procedure SetDetails(VendorBankAccount: Record "Vendor Bank Account")
+    procedure SetDetails(VendorBankAccount: Record "Vendor Bank Account")
     begin
         if Delete() then;
         TransferFields(VendorBankAccount);
         Insert();
     end;
 
-    internal procedure GetDetails(var VendorBankAccount: Record "Vendor Bank Account")
+    procedure GetDetails(var VendorBankAccount: Record "Vendor Bank Account")
     begin
         VendorBankAccount := Rec;
     end;

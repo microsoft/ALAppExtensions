@@ -10,7 +10,7 @@
   "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
   "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
   "logo": "ExtensionLogo.png",
-  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2206603",
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/en-us/dynamics365/business-central/",
   "dependencies": [],
   "internalsVisibleTo": [
     {

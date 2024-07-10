@@ -51,7 +51,7 @@ codeunit 30228 "Shpfy Refunds API"
                 Parameters.Add('After', JsonHelper.GetValueAsText(JResponse, 'data.refund.refundLineItems.pageInfo.endCursor'));
 
             foreach JLine in JLines do
-                FillInRefundLine(RefundId, JLine.AsObject(), RefundHeader."Total Refunded Amount" > 0, ReturnLocations);
+                FillInRefundLine(RefundId, JLine.AsObject(), IsNonZeroOrReturnRefund(RefundHeader), ReturnLocations);
         until not JsonHelper.GetValueAsBoolean(JResponse, 'data.refund.refundLineItems.pageInfo.hasNextPage');
     end;
 
@@ -101,7 +101,7 @@ codeunit 30228 "Shpfy Refunds API"
             exit(ReturnsAPI.GetReturnLocations(ReturnId));
     end;
 
-    local procedure FillInRefundLine(RefundId: BigInteger; JLine: JsonObject; NonZeroRefund: Boolean; ReturnLocations: Dictionary of [BigInteger, BigInteger])
+    local procedure FillInRefundLine(RefundId: BigInteger; JLine: JsonObject; NonZeroOrReturnRefund: Boolean; ReturnLocations: Dictionary of [BigInteger, BigInteger])
     var
         DataCapture: Record "Shpfy Data Capture";
         RefundLine: Record "Shpfy Refund Line";
@@ -131,7 +131,7 @@ codeunit 30228 "Shpfy Refunds API"
         JsonHelper.GetValueIntoField(JLine, 'totalTaxSet.presentmentMoney.amount', RefundLineRecordRef, RefundLine.FieldNo("Presentment Total Tax Amount"));
         RefundLineRecordRef.SetTable(RefundLine);
 
-        RefundLine."Can Create Credit Memo" := NonZeroRefund;
+        RefundLine."Can Create Credit Memo" := NonZeroOrReturnRefund;
         RefundLine."Location Id" := JsonHelper.GetValueAsBigInteger(JLine, 'location.legacyResourceId');
 
         // If refund was created from a return, the location needs to come from the return
@@ -143,5 +143,10 @@ codeunit 30228 "Shpfy Refunds API"
 
         RefundLineRecordRef.Close();
         DataCapture.Add(Database::"Shpfy Refund Line", RefundLine.SystemId, JLine);
+    end;
+
+    internal procedure IsNonZeroOrReturnRefund(RefundHeader: Record "Shpfy Refund Header"): Boolean
+    begin
+        exit((RefundHeader."Return Id" > 0) or (RefundHeader."Total Refunded Amount" > 0));
     end;
 }

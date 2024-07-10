@@ -109,7 +109,7 @@ codeunit 18253 "GST Purch CustomDuty Availment"
         GenJnlLine."FA Custom Duty Amount" := InvoicePostBuffer."FA Custom Duty Amount";
     end;
 #else
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterPreparePurchase', '', false, false)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice Events", 'OnAfterPrepareInvoicePostingBuffer', '', false, false)]
     local procedure FillInvoicePostingBufferNonAvailmentFA(var InvoicePostingBuffer: Record "Invoice Posting Buffer"; var PurchaseLine: Record "Purchase Line")
     var
         QtyFactor: Decimal;

@@ -1028,6 +1028,7 @@ report 18049 "GSTR-1 File Format"
         GSTR1CDNRPerQuery.SetRange(Posting_Date, StartDate, EndDate);
         GSTR1CDNRPerQuery.SetRange(Document_No_, GSTR1CDNRQuery.Document_No_);
         GSTR1CDNRPerQuery.SetRange(Document_Type, GSTR1CDNRQuery.Document_Type);
+        GSTR1CDNRPerQuery.SetRange(Document_Line_No_, GSTR1CDNRQuery.Document_Line_No_);
         GSTR1CDNRPerQuery.Open();
         while GSTR1CDNRPerQuery.Read() do
             if GSTR1CDNRPerQuery.GST_Jurisdiction_Type = GSTR1CDNRPerQuery.GST_Jurisdiction_Type::Intrastate then
@@ -1042,9 +1043,9 @@ report 18049 "GSTR-1 File Format"
 
         GSTR1CDNRCess.SetRange(Location__Reg__No_, LocationGSTIN);
         GSTR1CDNRCess.SetRange(Posting_Date, StartDate, EndDate);
-        GSTR1CDNRCess.SetRange(GSTR1CDNRCess.Document_No_, GSTR1CDNRQuery.Document_No_);
         GSTR1CDNRCess.SetRange(Document_No_, GSTR1CDNRQuery.Document_No_);
         GSTR1CDNRCess.SetRange(Document_Type, GSTR1CDNRQuery.Document_Type);
+        GSTR1CDNRCess.SetRange(GSTR1CDNRCess.Document_Line_No_, GSTR1CDNRQuery.Document_Line_No_);
         GSTR1CDNRCess.Open();
         if GSTR1CDNRCess.Read() then
             AddNumberColumn(Abs(GSTR1CDNRCess.GST_Amount))

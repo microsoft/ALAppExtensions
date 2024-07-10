@@ -6,6 +6,7 @@ using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Setup;
 using Microsoft.eServices.EDocument.OrderMatch;
 using System.Environment;
+using Microsoft.eServices.EDocument;
 using System.Telemetry;
 using System.Upgrade;
 
@@ -108,7 +109,7 @@ codeunit 6163 "E-Doc. PO Copilot Matching"
         Session.LogMessage('0000MOT', AttempToUseCopilotMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
 
         // Generate OpenAI Completion
-        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4Latest());
+        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4Preview());
         AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"E-Document Matching Assistance");
 
         AOAIChatCompletionParams.SetMaxTokens(MaxTokens());
@@ -143,22 +144,12 @@ codeunit 6163 "E-Doc. PO Copilot Matching"
         end;
     end;
 
-    procedure IsCopilotEnabled(): Boolean
-    var
-        AIMatchingImpl: Codeunit "E-Doc. PO Copilot Matching";
-        AzureOpenAI: Codeunit "Azure OpenAI";
-    begin
-        AIMatchingImpl.RegisterAICapability();
-        if not AzureOpenAI.IsEnabled(Enum::"Copilot Capability"::"E-Document Matching Assistance", true) then
-            exit(false);
-
-        exit(true);
-    end;
-
     procedure IsCopilotVisible(): Boolean
     var
+        AIMatchingImpl: Codeunit "E-Doc. PO Copilot Matching";
         EnvironmentInformation: Codeunit "Environment Information";
     begin
+        AIMatchingImpl.RegisterAICapability();
         if not EnvironmentInformation.IsSaaSInfrastructure() then
             exit(false);
 
@@ -166,10 +157,18 @@ codeunit 6163 "E-Doc. PO Copilot Matching"
     end;
 
     procedure SumUnitCostForAIMatches(var TempAIProposalBuffer: Record "E-Doc. PO Match Prop. Buffer" temporary) Sum: Decimal
+    var
+        EDocument: Record "E-Document";
+        EDocumentImportHelper: Codeunit "E-Document Import Helper";
+        RoundPrecision, Discount, DiscountedUnitCost : Decimal;
     begin
         if TempAIProposalBuffer.FindSet() then
             repeat
-                Sum += TempAIProposalBuffer."Matched Quantity" * TempAIProposalBuffer."E-Document Direct Unit Cost";
+                EDocument.Get(TempAIProposalBuffer."E-Document Entry No.");
+                RoundPrecision := EDocumentImportHelper.GetCurrencyRoundingPrecision(EDocument."Currency Code");
+                Discount := Round((TempAIProposalBuffer."E-Document Direct Unit Cost" * TempAIProposalBuffer."E-Document Line Discount") / 100, RoundPrecision);
+                DiscountedUnitCost := TempAIProposalBuffer."E-Document Direct Unit Cost" - Discount;
+                Sum += TempAIProposalBuffer."Matched Quantity" * DiscountedUnitCost;
             until TempAIProposalBuffer.Next() = 0;
     end;
 
@@ -263,7 +262,7 @@ codeunit 6163 "E-Doc. PO Copilot Matching"
 
     local procedure PrepareEDocumentLineStatement(var TempEDocumentImportedLine: Record "E-Doc. Imported Line" temporary; var EDocumentImportLinesTxt: Text)
     begin
-        EDocumentImportLinesTxt += '- EID: ' + Format(TempEDocumentImportedLine."Line No.");
+        EDocumentImportLinesTxt += 'EID: ' + Format(TempEDocumentImportedLine."Line No.");
         EDocumentImportLinesTxt += ', Description: ' + TempEDocumentImportedLine.Description;
         EDocumentImportLinesTxt += ', Unit of Measure: ' + TempEDocumentImportedLine."Unit of Measure Code";
         if TempEDocumentImportedLine."Line Discount %" <> 0 then
@@ -278,7 +277,7 @@ codeunit 6163 "E-Doc. PO Copilot Matching"
         if PurchaseOrderLines.FindSet() then
             repeat
                 if not PurchaseLineTxt.Contains('PID: ' + Format(PurchaseOrderLines."Line No.")) then begin
-                    PurchaseLineTxt += '- PID: ' + Format(PurchaseOrderLines."Line No.");
+                    PurchaseLineTxt += 'PID: ' + Format(PurchaseOrderLines."Line No.");
                     PurchaseLineTxt += ', Description: ' + PurchaseOrderLines.Description;
                     PurchaseLineTxt += ', Unit of Measure: ' + PurchaseOrderLines."Unit of Measure Code";
                     if PurchaseOrderLines."Line Discount %" <> 0 then

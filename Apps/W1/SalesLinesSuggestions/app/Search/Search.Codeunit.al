@@ -62,7 +62,7 @@ codeunit 7282 "Search"
         //Add ALSearch Options
         ALSearchOptions := ALSearchOptions.SearchOptions();
         ALSearchOptions.IncludeSynonyms := IncludeSynonyms;
-        ALSearchOptions.UseContextAwareRanking := UseContextAwareRanking;
+        ALSearchOptions.UseContextAwareRanking := UseContextAwareRanking and (ItemResultsArray.Count() < 10);
 
         //Add Search Filters
         SearchFilter := SearchFilter.SearchFilter();
@@ -82,7 +82,7 @@ codeunit 7282 "Search"
         ALSearchOptions.AddSearchFilter(SearchFilter);
 
         //Add Search Ranking Context
-        if UseContextAwareRanking then begin
+        if UseContextAwareRanking and (ItemResultsArray.Count() < 10) then begin
             ALSearchRankingContext := ALSearchRankingContext.SearchRankingContext();
             ALSearchRankingContext.Intent := Intent;
             ALSearchRankingContext.UserMessage := SearchQuery;
@@ -155,15 +155,15 @@ codeunit 7282 "Search"
         ALSearchQuery := ALSearchQuery.SearchQuery(ItemNameHASH);
 
         foreach Keyword in SearchPrimaryKeyWords do
-            ALSearchQuery.AddRequiredTerm(Keyword);
+            ALSearchQuery.AddRequiredTerm(Keyword.ToLower());
 
         case SearchStyle of
             "Search Style"::Precise:
                 foreach Keyword in SearchAdditionalKeyWords do
-                    ALSearchQuery.AddRequiredTerm(Keyword);
+                    ALSearchQuery.AddRequiredTerm(Keyword.ToLower());
             else
                 foreach Keyword in SearchAdditionalKeyWords do
-                    ALSearchQuery.AddOptionalTerm(Keyword);
+                    ALSearchQuery.AddOptionalTerm(Keyword.ToLower());
         end;
 
         case SearchStyle of

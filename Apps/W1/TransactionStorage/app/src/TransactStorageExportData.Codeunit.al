@@ -1263,6 +1263,6 @@ codeunit 6202 "Transact. Storage Export Data"
 
     local procedure GetRecordChunkSize(): Integer
     begin
-        exit(200000);
+        exit(100000);
     end;
 }

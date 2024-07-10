@@ -400,22 +400,27 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
         Caption = 'Get Next Catalog Products';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextCatalogProducts";
     }
-    value(78; GetReverseFulfillmentOrders)
+    value(78; GetOrderTransactions)
+    {
+        Caption = 'Get Order Transactions';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL OrderTransactions";
+    }
+    value(79; GetReverseFulfillmentOrders)
     {
         Caption = 'Get Reverse Fulfillment Orders';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL RevFulfillOrders";
     }
-    value(79; GetNextReverseFulfillmentOrders)
+    value(80; GetNextReverseFulfillmentOrders)
     {
         Caption = 'Get Next Reverse Fulfillment Orders';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextRevFulfillOrders";
     }
-    value(80; GetReverseFulfillmentOrderLines)
+    value(81; GetReverseFulfillmentOrderLines)
     {
         Caption = 'Get Reverse Fulfillment Order Lines';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL RevFulfillOrderLines";
     }
-    value(81; GetNextReverseFulfillmentOrderLines)
+    value(82; GetNextReverseFulfillmentOrderLines)
     {
         Caption = 'Get Next Reverse Fulfillment Order Lines';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextRevFulfillOrdLns";

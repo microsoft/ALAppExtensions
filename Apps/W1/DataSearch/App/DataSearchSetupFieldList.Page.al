@@ -53,6 +53,13 @@ page 2684 "Data Search Setup (Field) List"
                     Visible = false;
                     ToolTip = 'Specifies the type of the field.';
                 }
+                field(OptimizeForTextSearch; Rec.OptimizeForTextSearch)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Optimized For Text Search';
+                    Editable = false;
+                    ToolTip = 'Specifies whether this field is optimized for text search. If this field is optimized for text search, the search can be faster.';
+                }
                 field("Enable Search"; SearchSetupField."Enable Search")
                 {
                     ApplicationArea = Basic, Suite;
@@ -126,6 +133,9 @@ page 2684 "Data Search Setup (Field) List"
         Rec.setrange(ObsoleteState, Rec.ObsoleteState::No);
         Rec.setfilter(Type, '%1|%2', Rec.Type::Code, Rec.Type::Text);
         Rec.FilterGroup(0);
+        Rec.SetRange(OptimizeForTextSearch, true);
+        TableHasFullTextIndex := not Rec.IsEmpty();
+        Rec.SetRange(OptimizeForTextSearch);
         if Rec.FindFirst() then;
         if SelectedPageCaption = '' then
             SelectedPageCaption := Format(Rec.TableNo) + ' ' + GetTableCaption(Rec.TableNo);
@@ -139,7 +149,9 @@ page 2684 "Data Search Setup (Field) List"
         PrevTableCaption: Text;
         PrevTableNo: Integer;
         ShowMultipleTables: Boolean;
+        TableHasFullTextIndex: Boolean;
         ResetQst: Label 'Do you want to remove the current setup and insert the default?';
+        NotFullTextMsg: Label 'Field %1 is not optimized for text search. The search will be slower.', Comment = '%1 is a field name';
 
     local procedure InitDefaultSetup()
     var
@@ -166,12 +178,21 @@ page 2684 "Data Search Setup (Field) List"
     end;
 
     local procedure UpdateRec()
+    var
+        Field: Record Field;
+        Notification: Notification;
     begin
         if not SearchSetupField."Enable Search" then begin
             if SearchSetupField.Delete() then;
         end else
             if not SearchSetupField.Modify() then
                 SearchSetupField.Insert();
+        if SearchSetupField."Enable Search" and TableHasFullTextIndex then
+            if Field.Get(SearchSetupField."Table No.", SearchSetupField."Field No.") then
+                if not Field.OptimizeForTextSearch then begin
+                    Notification.Message(StrSubstNo(NotFullTextMsg, Field."Field Caption"));
+                    Notification.Send();
+                end;
     end;
 
     local procedure GetRec()

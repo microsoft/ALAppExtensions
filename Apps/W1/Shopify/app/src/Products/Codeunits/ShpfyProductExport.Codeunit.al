@@ -278,6 +278,7 @@ codeunit 30178 "Shpfy Product Export"
                 Shop."Action for Removed Products"::StatusToDraft:
                     ShopifyProduct.Status := ShopifyProduct.Status::Draft;
             end;
+        ProductEvents.OnAfterFillInShopifyProductFields(Item, ShopifyProduct);
     end;
 
     /// <summary> 

@@ -16,7 +16,6 @@ pageextension 7277 "Sales Invoice Sub Form Ext" extends "Sales Invoice Subform"
                 Caption = 'Suggest sales lines';
                 Image = SparkleFilled;
                 ToolTip = 'Get sales lines suggestions from Copilot';
-                Visible = SLSActionVisibility;
 
                 trigger OnAction()
                 begin
@@ -32,7 +31,6 @@ pageextension 7277 "Sales Invoice Sub Form Ext" extends "Sales Invoice Subform"
                 Caption = 'Suggest sales lines';
                 Image = SparkleFilled;
                 ToolTip = 'Get sales lines suggestions from Copilot';
-                Visible = SLSActionVisibility;
 
                 trigger OnAction()
                 begin
@@ -42,12 +40,6 @@ pageextension 7277 "Sales Invoice Sub Form Ext" extends "Sales Invoice Subform"
         }
     }
 
-    trigger OnOpenPage()
-    begin
-        SLSActionVisibility := SalesLineAISuggestionImp.CheckSupportedLanguages()
-    end;
-
     var
         SalesLineAISuggestionImp: Codeunit "Sales Lines Suggestions Impl.";
-        SLSActionVisibility: Boolean;
 }

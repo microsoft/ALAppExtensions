@@ -10,7 +10,7 @@ codeunit 30267 "Shpfy GQL FFOrdersFromOrder" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{order(id: \"gid:\/\/shopify\/Order\/{{OrderId}}\") { legacyResourceId fulfillmentOrders(first: 25, query:\"-status:closed\") { pageInfo { hasNextPage } edges { cursor node { id updatedAt status assignedLocation {location {legacyResourceId}} order {legacyResourceId} deliveryMethod {methodType}}}}}}"}');
+        exit('{"query":"{order(id: \"gid:\/\/shopify\/Order\/{{OrderId}}\") { legacyResourceId fulfillmentOrders(first: 25) { pageInfo { hasNextPage } edges { cursor node { id updatedAt status assignedLocation {location {legacyResourceId}} order {legacyResourceId} deliveryMethod {methodType}}}}}}"}');
     end;
 
     /// <summary>

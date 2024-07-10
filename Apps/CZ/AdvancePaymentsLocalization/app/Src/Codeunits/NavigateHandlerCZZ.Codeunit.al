@@ -42,8 +42,8 @@ codeunit 31007 "Navigate Handler CZZ"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnAfterNavigateShowRecords', '', true, false)]
-    local procedure NavigateOnAfterNavigateShowRecords(var TempDocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text)
+    [EventSubscriber(ObjectType::Page, Page::Navigate, 'OnBeforeShowRecords', '', true, false)]
+    local procedure NavigateOnBeforeShowRecords(var TempDocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text; var IsHandled: Boolean)
     var
         SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ";
         PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
@@ -54,12 +54,14 @@ codeunit 31007 "Navigate Handler CZZ"
                     SalesAdvLetterEntryCZZ.SetFilter("Document No.", DocNoFilter);
                     SalesAdvLetterEntryCZZ.SetFilter("Posting Date", PostingDateFilter);
                     Page.Run(0, SalesAdvLetterEntryCZZ);
+                    IsHandled := true;
                 end;
             Database::"Purch. Adv. Letter Entry CZZ":
                 begin
                     PurchAdvLetterEntryCZZ.SetFilter("Document No.", DocNoFilter);
                     PurchAdvLetterEntryCZZ.SetFilter("Posting Date", PostingDateFilter);
                     Page.Run(0, PurchAdvLetterEntryCZZ);
+                    IsHandled := true;
                 end;
         end;
     end;

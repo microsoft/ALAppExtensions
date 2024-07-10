@@ -3,6 +3,7 @@ namespace Microsoft.API.V2;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.Period;
 using Microsoft.Finance.GeneralLedger.Setup;
+using System.Environment.Configuration;
 
 page 30011 "APIV2 - Company Information"
 {
@@ -109,6 +110,15 @@ page 30011 "APIV2 - Company Information"
                     Caption = 'Picture';
                     Editable = false;
                 }
+                field(experience; Experience)
+                {
+                    Caption = 'Experience';
+
+                    trigger OnValidate()
+                    begin
+                        ExperienceUpdated := true;
+                    end;
+                }
                 field(lastModifiedDateTime; Rec.SystemModifiedAt)
                 {
                     Caption = 'Last Modified Date';
@@ -129,8 +139,13 @@ page 30011 "APIV2 - Company Information"
     trigger OnModifyRecord(): Boolean
     var
         CompanyInformation: Record "Company Information";
+        ApplicationAreaMgmtFacade: Codeunit "Application Area Mgmt. Facade";
     begin
         CompanyInformation.GetBySystemId(Rec.SystemId);
+        if ExperienceUpdated then
+            if not ApplicationAreaMgmtFacade.SaveExperienceTierCurrentCompany(Experience) then
+                Error(SaveExperienceTierFailedErr);
+
         Rec.Modify(true);
 
         SetCalculatedFields();
@@ -140,11 +155,15 @@ page 30011 "APIV2 - Company Information"
         LCYCurrencyCode: Code[10];
         TaxRegistrationNumber: Text[50];
         FiscalYearStart: Date;
+        Experience: Text;
+        ExperienceUpdated: Boolean;
+        SaveExperienceTierFailedErr: Label 'Failed to save experience tier for the current company.';
 
     local procedure SetCalculatedFields()
     var
         AccountingPeriod: Record "Accounting Period";
         GeneralLedgerSetup: Record "General Ledger Setup";
+        ApplicationAreaMgmtFacade: Codeunit "Application Area Mgmt. Facade";
         EnterpriseNoFieldRef: FieldRef;
     begin
         GeneralLedgerSetup.Get();
@@ -158,6 +177,9 @@ page 30011 "APIV2 - Company Information"
             TaxRegistrationNumber := EnterpriseNoFieldRef.Value()
         else
             TaxRegistrationNumber := Rec."VAT Registration No.";
+
+        ApplicationAreaMgmtFacade.GetExperienceTierCurrentCompany(Experience);
+        ExperienceUpdated := false;
     end;
 
     procedure IsEnterpriseNumber(var EnterpriseNoFieldRef: FieldRef): Boolean
