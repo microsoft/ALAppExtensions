@@ -405,17 +405,17 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
         Caption = 'Get Order Transactions';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL OrderTransactions";
     }
-    value(79; TranslationsRegister)
+    value(82; TranslationsRegister)
     {
         Caption = 'Translations Register';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL TranslationsRegister";
     }
-    value(80; ShopLocales)
+    value(83; ShopLocales)
     {
         Caption = 'Shop Locales';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL ShopLocales";
     }
-    value(81; GetTranslResource)
+    value(84; GetTranslResource)
     {
         Caption = 'Get Transl Resource';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL TranslResource";
