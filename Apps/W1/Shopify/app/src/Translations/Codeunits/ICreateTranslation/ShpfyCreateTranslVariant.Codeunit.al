@@ -1,6 +1,5 @@
 namespace Microsoft.Integration.Shopify;
 
-using Microsoft.Integration.Shopify;
 using Microsoft.Inventory.Item;
 
 codeunit 30313 "Shpfy Create Transl. Variant" implements "Shpfy ICreate Translation"

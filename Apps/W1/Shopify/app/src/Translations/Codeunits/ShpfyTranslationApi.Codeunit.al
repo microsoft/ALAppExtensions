@@ -1,8 +1,5 @@
 namespace Microsoft.Integration.Shopify;
 
-using Microsoft.Bank.Setup;
-using Microsoft.Integration.Shopify;
-
 codeunit 30213 "Shpfy Translation API"
 {
 
