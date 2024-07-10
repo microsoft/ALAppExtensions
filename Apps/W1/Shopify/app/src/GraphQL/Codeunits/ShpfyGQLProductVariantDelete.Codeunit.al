@@ -1,9 +1,9 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Codeunit Shpfy GQL ProductVariantDelete (ID 30159) implements Interface Shpfy IGraphQL.
+/// Codeunit Shpfy GQL ProductVariantDelete (ID 30344) implements Interface Shpfy IGraphQL.
 /// </summary>
-codeunit 30159 "Shpfy GQL ProductVariantDelete" implements "Shpfy IGraphQL"
+codeunit 30344 "Shpfy GQL ProductVariantDelete" implements "Shpfy IGraphQL"
 {
     Access = Internal;
 
