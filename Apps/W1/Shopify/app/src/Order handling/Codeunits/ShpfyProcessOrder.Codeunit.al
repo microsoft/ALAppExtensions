@@ -6,7 +6,6 @@ using Microsoft.Sales.Document;
 using Microsoft.Foundation.Address;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Posting;
-using Microsoft.Foundation.UOM;
 
 /// <summary>
 /// Codeunit Shpfy Process Order (ID 30166).

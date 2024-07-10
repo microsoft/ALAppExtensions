@@ -1,7 +1,6 @@
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Inventory.Item;
-using Microsoft.Sales.Document;
 using Microsoft.CRM.Contact;
 using Microsoft.CRM.BusinessRelation;
 
