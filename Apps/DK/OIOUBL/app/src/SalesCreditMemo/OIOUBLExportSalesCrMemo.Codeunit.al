@@ -58,7 +58,7 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
         OIOUBLManagement: Codeunit "OIOUBL-Management";
         TempBlob: Codeunit "Temp Blob";
         FileOutStream: OutStream;
-        FileName: Text[250];
+        FileName: Text;
     begin
         TempBlob.CreateOutStream(FileOutStream);
         CreateXML(SalesCrMemoHeader, FileOutStream);
@@ -69,6 +69,7 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
         OIOUBLManagement.UpdateRecordExportBuffer(SalesCrMemoHeader.RecordId(), TempBlob, FileName);
 
         OIOUBLManagement.ExportXMLFile(SalesCrMemoHeader."No.", TempBlob, SalesSetup."OIOUBL-Cr. Memo Path", FileName);
+        OnExportXMLOnAfterExportXMLFile(SalesCrMemoHeader, TempBlob, FileName);
 
         SalesCrMemoHeader2.Get(SalesCrMemoHeader."No.");
         SalesCrMemoHeader2."OIOUBL-Electronic Credit Memo Created" := true;
@@ -220,6 +221,7 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
         SalesCrMemoLine.SETRANGE("Document No.", SalesCrMemoHeader."No.");
         SalesCrMemoLine.SETFILTER(Type, '>%1', 0);
         SalesCrMemoLine.SETFILTER("No.", '<>%1', ' ');
+        OnCreateXMLOnAfterSalesCrMemoLineSetFilters(SalesCrMemoLine, SalesCrMemoHeader);
         if NOT SalesCrMemoLine.FINDSET() then
             EXIT;
 
@@ -390,6 +392,16 @@ codeunit 13637 "OIOUBL-Export Sales Cr. Memo"
 
     [IntegrationEvent(false, false)]
     local procedure OnCreateXMLOnAfterInsertAccountingCustomerParty(var XMLCurrNode: XmlElement; SalesCrMemoHeader: Record "Sales Cr.Memo Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnCreateXMLOnAfterSalesCrMemoLineSetFilters(var SalesCrMemoLine: Record "Sales Cr.Memo Line"; SalesCrMemoHeader: Record "Sales Cr.Memo Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnExportXMLOnAfterExportXMLFile(var SalesCrMemoHeader: Record "Sales Cr.Memo Header"; var TempBlob: Codeunit "Temp Blob"; FileName: Text)
     begin
     end;
 }

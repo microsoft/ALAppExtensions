@@ -12,9 +12,6 @@ using Microsoft.Finance.GST.Base;
 using Microsoft.Finance.TaxBase;
 using Microsoft.Finance.TaxEngine.TaxTypeHandler;
 using Microsoft.Foundation.AuditCodes;
-#if not CLEAN22
-using Microsoft.Foundation.Enums;
-#endif
 using Microsoft.Foundation.NoSeries;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Journal;
@@ -38,10 +35,6 @@ codeunit 18390 "GST Transfer Order Receipt"
         TempItemJnlLine: Record "Item Journal Line" temporary;
         GSTTransferOrderShipment: Codeunit "GST Transfer order Shipment";
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
-#if not CLEAN22      
-        ItemJnlPostLine: Codeunit "Item Jnl.-Post Line";
-        ReserveTransLine: Codeunit "Transfer Line-Reserve";
-#endif        
         GSTBaseValidation: Codeunit "GST Base Validation";
         CustomDutyAmount: Decimal;
         ItemJournalCustom: Decimal;
@@ -53,6 +46,7 @@ codeunit 18390 "GST Transfer Order Receipt"
         FirstExecution: Boolean;
         GSTAmountLoaded: Decimal;
         TransferCost: Decimal;
+        TransferQuantity: Decimal;
         GSTAssessableErr: Label 'GST Assessable Value must be 0 if GST Group Type is Service while transferring from Bonded Warehouse location.';
         GSTCustomDutyErr: Label 'Custom Duty Amount must be 0 if GST Group Type is Service while transferring from Bonded Warehouse location.';
         GSTGroupServiceErr: Label 'You cannot select GST Group Type Service for transfer.';
@@ -106,8 +100,10 @@ codeunit 18390 "GST Transfer Order Receipt"
     local procedure GetTranfsrePrice(var ValueEntry: Record "Value Entry"; var ItemJournalLine: Record "Item Journal Line")
     begin
         if (ItemJournalLine."Entry Type" = ItemJournalLine."Entry Type"::Transfer) and
-            (ItemJournalLine."Value Entry Type" <> ItemJournalLine."Value Entry Type"::Revaluation) then
+            (ItemJournalLine."Value Entry Type" <> ItemJournalLine."Value Entry Type"::Revaluation) then begin
             TransferCost := ValueEntry."Cost Amount (Actual)";
+            TransferQuantity := Abs(ValueEntry."Invoiced Quantity");
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Receipt", 'OnBeforeTransRcptHeaderInsert', '', false, false)]
@@ -795,7 +791,7 @@ codeunit 18390 "GST Transfer Order Receipt"
         TempTransferBufferStage."Dimension Set ID" := TransferLine."Dimension Set ID";
         TempTransferBufferStage."Charges Amount" := TransferLine."Charges to Transfer";
         TempTransferBufferStage."Amount Loaded on Inventory" := TransferLine."Amount Added to Inventory";
-        TempTransferBufferStage.Amount := Round(TransferLine.Amount - (-TransferCost));
+        TempTransferBufferStage.Amount := Round(TransferLine."Qty. to Receive" * (TransferLine."Transfer Price" - (-(TransferCost / TransferQuantity))));
         if LocationBonded."Bonded warehouse" then
             TempTransferBufferStage."GST Amount" := -Round(
                 RoundTotalGSTAmountQtyFactor(
@@ -1049,108 +1045,6 @@ codeunit 18390 "GST Transfer Order Receipt"
         if (GenJournalLine.Amount <> 0) then
             RunGenJnlPostLine(GenJournalLine);
     end;
-
-#if not CLEAN22
-    [Obsolete('Replaced by InitRevaluationEntryUnrealizedProfit', '22.0')]
-    local procedure PostRevaluationEntryunrealizedProfit(
-            var TransferLine3: Record "Transfer Line";
-            TransferReceiptHeader2: Record "Transfer Receipt Header";
-            TransferReceiptLine2: Record "Transfer Receipt Line")
-    var
-        ValueEntry: Record "Value Entry";
-        SourceCodeSetup: Record "Source Code Setup";
-        ItemRegister: Record "Item Register";
-        ItemLedgerEntry: Record "Item Ledger Entry";
-        TransferHeader: Record "Transfer Header";
-        Location: Record Location;
-        ItemJournalLine: Record "Item Journal Line";
-        Ctr: Integer;
-        TransferPriceDiff: Decimal;
-        EntryNo: Integer;
-        TotalTransferPriceDiff: Decimal;
-        Amnt: Decimal;
-        AmntUnitCost: Decimal;
-    begin
-        if TransferLine3."Qty. to Receive" = 0 then
-            exit;
-
-        Location.Get(TransferReceiptHeader2."Transfer-from Code");
-        if Location."Bonded warehouse" then
-            exit;
-
-        TransferHeader.Get(TransferLine3."Document No.");
-        if not TransferHeader."Load Unreal Prof Amt on Invt." then
-            exit;
-
-        Amnt := -TransferCost;
-        RoundDiffAmt := TransferLine3.Amount - Amnt;
-        TotalTransferPriceDiff := 0;
-        SourceCodeSetup.Get();
-        ItemRegister.SetFilter("Source Code", '<>%1', SourceCodeSetup."Revaluation Journal");
-        ItemRegister.FindLast();
-
-        ItemLedgerEntry.Reset();
-        ItemLedgerEntry.SetCurrentKey("Location Code", "Posting Date", "Document No.", "Item No.");
-        ItemLedgerEntry.SetRange("Entry No.", ItemRegister."From Entry No.", ItemRegister."To Entry No.");
-        ItemLedgerEntry.SetRange("Location Code", TransferReceiptHeader2."Transfer-to Code");
-        ItemLedgerEntry.SetRange("Posting Date", TransferReceiptHeader2."Posting Date");
-        ItemLedgerEntry.SetRange("Document No.", TransferReceiptHeader2."No.");
-        ItemLedgerEntry.SetRange("Document Line No.", TransferLine3."Line No.");
-        ItemLedgerEntry.SetRange("Item No.", TransferLine3."Item No.");
-        if ItemLedgerEntry.FindLast() then
-            EntryNo := ItemLedgerEntry."Entry No.";
-
-        ItemLedgerEntry.Reset();
-        ItemLedgerEntry.SetCurrentKey("Location Code", "Posting Date", "Document No.", "Item No.");
-        ItemLedgerEntry.SetRange("Entry No.", ItemRegister."From Entry No.", ItemRegister."To Entry No.");
-        ItemLedgerEntry.SetRange("Location Code", TransferReceiptHeader2."Transfer-to Code");
-        ItemLedgerEntry.SetRange("Posting Date", TransferReceiptHeader2."Posting Date");
-        ItemLedgerEntry.SetRange("Document No.", TransferReceiptHeader2."No.");
-        ItemLedgerEntry.SetRange("Document Line No.", TransferLine3."Line No.");
-        ItemLedgerEntry.SetRange("Item No.", TransferLine3."Item No.");
-        if ItemLedgerEntry.Findset() then
-            repeat
-
-                ValueEntry.Reset();
-                ValueEntry.SetRange("Item Ledger Entry No.", ItemLedgerEntry."Entry No.");
-                ValueEntry.FindFirst();
-                AmntUnitCost := ValueEntry."Cost Amount (Actual)" / ValueEntry."Item Ledger Entry Quantity";
-                TransferPriceDiff := Round((TransferLine3."Transfer Price" / ItemLedgerEntry."Qty. per Unit of Measure") - AmntUnitCost);
-                if TransferPriceDiff <> 0 then begin
-                    TotalTransferPriceDiff += TransferPriceDiff * ItemLedgerEntry.Quantity;
-                    if (EntryNo = ItemLedgerEntry."Entry No.") and (TotalTransferPriceDiff <> RoundDiffAmt) and (ItemLedgerEntry."Lot No." = '') then
-                        TransferPriceDiff := TransferPriceDiff - (TotalTransferPriceDiff - RoundDiffAmt);
-
-                    ItemJournalLine.Init();
-                    ItemJournalLine.Validate("Posting Date", TransferReceiptHeader2."Posting Date");
-                    ItemJournalLine."Document Date" := TransferReceiptHeader2."Posting Date";
-                    ItemJournalLine.Validate("Document No.", TransferReceiptHeader2."No.");
-                    ItemJournalLine."External Document No." := TransferReceiptHeader2."External Document No.";
-                    ItemJournalLine.Validate("Entry Type", ItemJournalLine."Entry Type"::Transfer);
-                    ItemJournalLine."Value Entry Type" := ItemJournalLine."Value Entry Type"::Revaluation;
-                    ItemJournalLine.Validate("Item No.", TransferReceiptLine2."Item No.");
-                    ItemJournalLine.Description := TransferReceiptLine2.Description;
-                    ItemJournalLine."Inventory Posting Group" := TransferReceiptLine2."Inventory Posting Group";
-                    ItemJournalLine."Gen. Prod. Posting Group" := TransferLine3."Gen. Prod. Posting Group";
-                    ItemJournalLine."Source Code" := SourceCodeSetup."Revaluation Journal";
-                    ItemJournalLine.Validate("Applies-to Entry", ItemLedgerEntry."Entry No.");
-                    ItemJournalLine.Validate("Unit Cost (Revalued)", (ItemJournalLine."Unit Cost (Revalued)" + TransferPriceDiff));
-                    ItemJournalLine.Description := StrSubstNo(TransferReceiptNoLbl, TransferReceiptHeader2."No.");
-                    ItemJournalLine."New Location Code" := TransferReceiptHeader2."Transfer-to Code";
-
-                    Ctr := TempItemJnlLine."Line No." + 1;
-
-                    TempItemJnlLine.Init();
-                    TempItemJnlLine.TransferFields(ItemJournalLine);
-                    TempItemJnlLine."Line No." := Ctr;
-                    if ItemLedgerEntry."Lot No." <> '' then
-                        ReserveTransLine.TransferTransferToItemJnlLine(TransferLine3, TempItemJnlLine, TransferLine3."Qty. to Receive (Base)", "Transfer Direction"::Inbound);
-
-                    ItemJnlPostLine.Run(TempItemJnlLine);
-                end;
-            until ItemLedgerEntry.Next() = 0;
-    end;
-#endif
 
     local procedure GetTransferReceiptPostingNoSeries(var TransferHeader: Record "Transfer Header"): Code[20]
     var

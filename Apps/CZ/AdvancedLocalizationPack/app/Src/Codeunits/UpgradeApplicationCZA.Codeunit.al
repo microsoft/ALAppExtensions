@@ -8,9 +8,6 @@ using Microsoft;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Inventory.Item;
-#if not CLEAN22
-using Microsoft.Inventory.Item.Catalog;
-#endif
 using Microsoft.Inventory.Journal;
 using Microsoft.Inventory.Setup;
 using Microsoft.Inventory.Transfer;
@@ -26,9 +23,6 @@ codeunit 31251 "Upgrade Application CZA"
                   tabledata "Manufacturing Setup" = m,
                   tabledata "Transfer Shipment Line" = m,
                   tabledata "Item Entry Relation" = m,
-#if not CLEAN22
-                  tabledata "Nonstock Item Setup" = m,
-#endif
                   tabledata "Standard Item Journal Line" = m;
 
     var
@@ -83,9 +77,6 @@ codeunit 31251 "Upgrade Application CZA"
         UpgradeTransferShipmentLine();
         UpgradeItemEntryRelation();
         UpgradeStandardItemJournalLine();
-#if not CLEAN22
-        UpgradeNonStockItemSetup();
-#endif
     end;
 
     local procedure UpgradeDetailedGLEntry()
@@ -232,22 +223,7 @@ codeunit 31251 "Upgrade Application CZA"
         StandardItemJournalLineDataTransfer.AddFieldValue(StandardItemJournalLine.FieldNo("New Location Code"), StandardItemJournalLine.FieldNo("New Location Code CZA"));
         StandardItemJournalLineDataTransfer.CopyFields();
     end;
-#if not CLEAN22
-    local procedure UpgradeNonStockItemSetup();
-    var
-        NonstockItemSetup: Record "Nonstock Item Setup";
-    begin
-        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion220PerCompanyUpgradeTag()) then
-            exit;
 
-        if NonstockItemSetup.Get() then
-            if NonstockItemSetup."No. Format" = NonstockItemSetup."No. Format"::"Item No. Series CZA" then begin
-                NonstockItemSetup."No. Format" := NonstockItemSetup."No. Format"::"Item No. Series";
-                NonstockItemSetup."No. Format Separator" := '';
-                NonstockItemSetup.Modify(false);
-            end;
-    end;
-#endif
     local procedure SetDatabaseUpgradeTags();
     begin
         if not UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZA.GetDataVersion180PerDatabaseUpgradeTag()) then

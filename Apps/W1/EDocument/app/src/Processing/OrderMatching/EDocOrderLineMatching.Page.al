@@ -3,12 +3,13 @@ namespace Microsoft.eServices.EDocument.OrderMatch;
 using Microsoft.eServices.EDocument;
 using Microsoft.eServices.EDocument.OrderMatch.Copilot;
 using Microsoft.Purchases.Document;
+using System.AI;
 using System.Telemetry;
 #pragma warning disable AS0032
 page 6167 "E-Doc. Order Line Matching"
 {
     Caption = 'Purchase Order Matching';
-    DataCaptionExpression = 'Purchase Order ' + Rec."Order No.";
+    DataCaptionExpression = StrSubstNo(GlobalDataCaptionExpressionTxt, Rec."Order No.");
     PageType = Card;
     ApplicationArea = All;
     SourceTable = "E-Document";
@@ -224,17 +225,13 @@ page 6167 "E-Doc. Order Line Matching"
         LineDiscountVaryMatchMsg: Label 'Matched e-document lines (%1) has Line Discount % different from matched purchase order line. Please verify matches are correct.', Comment = '%1 - Line number';
         LineCostVaryMatchMsg: Label 'Matched e-document lines (%1) has Direct Unit Cost different from matched purchase order line. Please verify matches are correct.', Comment = '%1 - Line number';
         NoMatchesFoundMsg: Label 'Copilot could not find any line matches. Please review manually';
+        GlobalDataCaptionExpressionTxt: Label 'Purchase Order %1', Comment = '%1 - Purchase order number';
 
     trigger OnOpenPage()
     var
         EDocPOMatching: Codeunit "E-Doc. PO Copilot Matching";
     begin
-        CopilotActionVisible := EDocPOMatching.IsCopilotEnabled();
-    end;
-
-    trigger OnInit()
-    begin
-        AutoRunCopilot := true;
+        CopilotActionVisible := EDocPOMatching.IsCopilotVisible();
     end;
 
     trigger OnAfterGetRecord()
@@ -328,9 +325,13 @@ page 6167 "E-Doc. Order Line Matching"
     var
         TempEDocImportedLines: Record "E-Doc. Imported Line" temporary;
         TempPurchaseLines: Record "Purchase Line" temporary;
+        AzureOpenAI: Codeunit "Azure OpenAI";
         AIMatchingImpl: Codeunit "E-Doc. PO Copilot Matching";
         EDocOrderMatchAIProposal: Page "E-Doc. PO Copilot Prop";
     begin
+        if not AzureOpenAI.IsEnabled(Enum::"Copilot Capability"::"E-Document Matching Assistance") then
+            exit;
+
         FeatureTelemetry.LogUptake('0000MB0', AIMatchingImpl.FeatureName(), Enum::"Feature Uptake Status"::Discovered);
         FeatureTelemetry.LogUptake('0000MB1', AIMatchingImpl.FeatureName(), Enum::"Feature Uptake Status"::"Set up");
 
@@ -395,6 +396,11 @@ page 6167 "E-Doc. Order Line Matching"
         Rec.TransferFields(EDocument);
         Rec.SystemId := EDocument.SystemId;
         Rec.Insert(false);
+    end;
+
+    internal procedure SetAutoRunCopilot(CopilotToRun: Boolean)
+    begin
+        AutoRunCopilot := CopilotToRun;
     end;
 
 }

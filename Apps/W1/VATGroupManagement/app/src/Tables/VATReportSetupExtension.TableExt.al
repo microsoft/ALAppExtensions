@@ -43,13 +43,8 @@ tableextension 4701 "VAT Report Setup Extension" extends "VAT Report Setup"
             DataClassification = CustomerContent;
             Caption = 'Authentication Type';
             ObsoleteReason = 'Replaced by field "VAT Group Authentication Type" as the value Enum is being renamed.';
-#if not CLEAN22
-            ObsoleteTag = '22.0';
-            ObsoleteState = Pending;
-#else
             ObsoleteTag = '25.0';
             ObsoleteState = Removed;
-#endif
         }
         field(4719; "VAT Group Authentication Type"; Enum "VAT Group Auth Type OnPrem")
         {
@@ -107,6 +102,7 @@ tableextension 4701 "VAT Report Setup Extension" extends "VAT Report Setup"
         {
             DataClassification = SystemMetadata;
             Caption = 'Group Representative Uses Business Central Online';
+            InitValue = true;
         }
         field(4714; "Group Settlement Account"; Code[20])
         {

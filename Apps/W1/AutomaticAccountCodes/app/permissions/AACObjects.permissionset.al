@@ -18,12 +18,5 @@ permissionset 4850 "AAC - Objects"
         page "Automatic Account Header" = X,
         page "Automatic Account Line" = X,
         page "Automatic Account List" = X,
-#if not CLEAN22
-        codeunit "Auto. Acc. Codes Feature Mgt." = X,
-        tabledata "Auto. Acc. Page Setup" = RIMD,
-        table "Auto. Acc. Page Setup" = X,
-        codeunit "Auto. Acc. Codes Page Mgt." = X,
-        codeunit "Feature Auto. Acc. Codes" = X,
-#endif
         codeunit "AA Codes Posting Helper" = X;
 }

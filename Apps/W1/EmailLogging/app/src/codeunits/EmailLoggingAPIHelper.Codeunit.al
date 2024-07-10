@@ -18,7 +18,6 @@ codeunit 1684 "Email Logging API Helper"
         EmptyEmailAddressErr: Label 'You must provide an email address.';
         DisabledErr: Label 'Email logging is not enabled.';
 
-    [NonDebuggable]
     internal procedure Initialize()
     begin
         if Initialized then
@@ -28,7 +27,6 @@ codeunit 1684 "Email Logging API Helper"
         Initialized := true;
     end;
 
-    [NonDebuggable]
     internal procedure Initialize(var NewOAuthClient: Interface "Email Logging OAuth Client"; var NewAPIClient: Interface "Email Logging API Client")
     begin
         OAuthClient := NewOAuthClient;
@@ -46,23 +44,21 @@ codeunit 1684 "Email Logging API Helper"
     end;
 
     [TryFunction]
-    [NonDebuggable]
     local procedure CheckConnection(EmailAddress: Text)
     var
         MessagesJsonObject: JsonObject;
         ValueJsonToken: JsonToken;
-        AccessToken: Text;
+        AccessToken: SecretText;
     begin
         AccessToken := GetAccessToken();
         APIClient.GetMessages(AccessToken, EmailAddress, 1, MessagesJsonObject);
         MessagesJsonObject.Get('value', ValueJsonToken);
     end;
 
-    [NonDebuggable]
     internal procedure GetMessages(var MessageList: List of [JsonObject])
     var
         EmailLoggingSetup: Record "Email Logging Setup";
-        AccessToken: Text;
+        AccessToken: SecretText;
         ResponseJsonObject: JsonObject;
         ValueJsonToken: JsonToken;
         ValueJsonArray: JsonArray;
@@ -91,30 +87,27 @@ codeunit 1684 "Email Logging API Helper"
         end;
     end;
 
-    [NonDebuggable]
     internal procedure ArchiveMesage(SourceMessageId: Text; var TargetMessageJsonObject: JsonObject)
     var
         EmailLoggingSetup: Record "Email Logging Setup";
-        AccessToken: Text;
+        AccessToken: SecretText;
     begin
         GetEmailLoggingSetup(EmailLoggingSetup);
         AccessToken := GetAccessToken();
         APIClient.ArchiveMessage(AccessToken, EmailLoggingSetup."Email Address", SourceMessageId, TargetMessageJsonObject);
     end;
 
-    [NonDebuggable]
     internal procedure DeleteMesage(MessageId: Text)
     var
         EmailLoggingSetup: Record "Email Logging Setup";
-        AccessToken: Text;
+        AccessToken: SecretText;
     begin
         GetEmailLoggingSetup(EmailLoggingSetup);
         AccessToken := GetAccessToken();
         APIClient.DeleteMessage(AccessToken, EmailLoggingSetup."Email Address", MessageId);
     end;
 
-    [NonDebuggable]
-    local procedure GetAccessToken() AccessToken: Text
+    local procedure GetAccessToken() AccessToken: SecretText
     var
         ErrorMessage: Text;
     begin

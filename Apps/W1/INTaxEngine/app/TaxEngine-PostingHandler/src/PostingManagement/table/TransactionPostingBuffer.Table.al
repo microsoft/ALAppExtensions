@@ -13,7 +13,6 @@ table 20336 "Transaction Posting Buffer"
     Caption = 'Transaction Posting Buffer';
     DataClassification = EndUserIdentifiableInformation;
     TableType = Temporary;
-    Access = Internal;
     Extensible = false;
     fields
     {

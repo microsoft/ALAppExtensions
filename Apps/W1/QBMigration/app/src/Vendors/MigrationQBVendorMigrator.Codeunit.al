@@ -8,16 +8,8 @@ codeunit 1913 "MigrationQB Vendor Migrator"
         SourceCodeTxt: Label 'GENJNL', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from QB', Locked = true;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendor', '', true, true)]
-    procedure OnMigrateVendor(VAR Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendor', '', true, true)]
     local procedure OnMigrateVendor(VAR Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
-#endif
     var
         MigrationQBVendor: Record "MigrationQB Vendor";
     begin
@@ -27,16 +19,8 @@ codeunit 1913 "MigrationQB Vendor Migrator"
         MigrateVendorDetails(MigrationQBVendor, Sender);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorPostingGroups', '', true, true)]
-    procedure OnMigrateVendorPostingGroups(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorPostingGroups', '', true, true)]
     local procedure OnMigrateVendorPostingGroups(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#endif
     begin
         MigrateVendorPostingGroups(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
     end;
@@ -60,16 +44,8 @@ codeunit 1913 "MigrationQB Vendor Migrator"
         Sender.ModifyVendor(true);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorTransactions', '', true, true)]
-    procedure OnMigrateVendorTransactions(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorTransactions', '', true, true)]
     local procedure OnMigrateVendorTransactions(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#endif
     var
         MigrationQBVendor: Record "MigrationQB Vendor";
         MigrationQBVendTrans: Record "MigrationQB VendorTrans";

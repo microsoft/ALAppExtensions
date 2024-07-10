@@ -4,7 +4,7 @@
                                                             "Source":  "NuGet.org"
                                                         },
     "AppBaselines-BCArtifacts":  {
-                                     "Version":  "24.1.17263.0",
+                                     "Version":  "24.3.21374.21695",
                                      "Source":  "BCArtifacts",
                                      "_comment":  "Used to fetch app baselines from BC artifacts"
                                  }

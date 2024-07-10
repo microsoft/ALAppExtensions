@@ -107,8 +107,14 @@ codeunit 4810 IntrastatReportManagement
     var
         IntrastatReportSetup: Record "Intrastat Report Setup";
         Job: Record Job;
+        IsHandled: Boolean;
     begin
         IntrastatReportSetup.Get();
+
+        IsHandled := false;
+        OnBeforeGetIntrastatBaseCountryCodeFromJLE(JobLedgerEntry, IntrastatReportSetup, CountryCode, IsHandled);
+        if IsHandled then
+            exit(CountryCode);
 
         CountryCode := JobLedgerEntry."Country/Region Code";
 
@@ -130,8 +136,14 @@ codeunit 4810 IntrastatReportManagement
         PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
         SalesInvHeader: Record "Sales Invoice Header";
         SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        IsHandled: Boolean;
     begin
         IntrastatReportSetup.Get();
+
+        IsHandled := false;
+        OnBeforeGetIntrastatBaseCountryCodeFromFALE(FALedgerEntry, IntrastatReportSetup, CountryCode, IsHandled);
+        if IsHandled then
+            exit(CountryCode);
 
         CountryCode := '';
 
@@ -383,6 +395,7 @@ codeunit 4810 IntrastatReportManagement
         CompanyInformation.Get();
         if not IntrastatReportSetup.Get() then
             exit(CompanyInformation."VAT Registration No.");
+        OnGetCompanyVATRegNoOnAfterGetIntrastatReportSetup(CompanyInformation, IntrastatReportSetup);
         exit(
           GetVATRegNo(
             CompanyInformation."Country/Region Code", CompanyInformation."VAT Registration No.",
@@ -539,6 +552,7 @@ codeunit 4810 IntrastatReportManagement
         end;
 
         IntrastatReportSetup.Get();
+        OnExportWithDataExchOnAfterGetIntrastatReportSetup(IntrastatReportSetup, IntrastatReportHeader);
         if IntrastatReportSetup."Split Files" then begin
             IntrastatReportSetup.TestField("Data Exch. Def. Code - Receipt");
             IntrastatReportSetup.TestField("Data Exch. Def. Code - Shpt.");
@@ -753,9 +767,6 @@ codeunit 4810 IntrastatReportManagement
     procedure InitSetup(var IntrastatReportSetup: Record "Intrastat Report Setup")
     var
         IntrastatReportChecklist: Record "Intrastat Report Checklist";
-#if not CLEAN22
-        IntrastatSetup: Record "Intrastat Setup";
-#endif
         NoSeries: Record "No. Series";
         NoSeriesLine: Record "No. Series Line";
         IsHandled: Boolean;
@@ -782,52 +793,6 @@ codeunit 4810 IntrastatReportManagement
 
         IntrastatReportSetup.Init();
         IntrastatReportSetup.Validate("Intrastat Nos.", NoSeries.Code);
-#if not CLEAN22
-        if IntrastatSetup.Get() then begin
-            case IntrastatSetup."Company VAT No. on File" of
-                IntrastatSetup."Company VAT No. on File"::"EU Country Code + VAT Reg. No":
-                    IntrastatReportSetup."Company VAT No. on File" := IntrastatReportSetup."Company VAT No. on File"::"EU Country Code + VAT Reg. No";
-                IntrastatSetup."Company VAT No. on File"::"VAT Reg. No.":
-                    IntrastatReportSetup."Company VAT No. on File" := IntrastatReportSetup."Company VAT No. on File"::"VAT Reg. No.";
-                IntrastatSetup."Company VAT No. on File"::"VAT Reg. No. Without EU Country Code":
-                    IntrastatReportSetup."Company VAT No. on File" := IntrastatReportSetup."Company VAT No. on File"::"VAT Reg. No. Without EU Country Code";
-            end;
-
-            case IntrastatSetup."Cust. VAT No. on File" of
-                IntrastatSetup."Cust. VAT No. on File"::"EU Country Code + VAT Reg. No":
-                    IntrastatReportSetup."Cust. VAT No. on File" := IntrastatReportSetup."Cust. VAT No. on File"::"EU Country Code + VAT Reg. No";
-                IntrastatSetup."Cust. VAT No. on File"::"VAT Reg. No.":
-                    IntrastatReportSetup."Cust. VAT No. on File" := IntrastatReportSetup."Cust. VAT No. on File"::"VAT Reg. No.";
-                IntrastatSetup."Cust. VAT No. on File"::"VAT Reg. No. Without EU Country Code":
-                    IntrastatReportSetup."Cust. VAT No. on File" := IntrastatReportSetup."Cust. VAT No. on File"::"VAT Reg. No. Without EU Country Code";
-            end;
-
-            case IntrastatSetup."Vend. VAT No. on File" of
-                IntrastatSetup."Vend. VAT No. on File"::"EU Country Code + VAT Reg. No":
-                    IntrastatReportSetup."Vend. VAT No. on File" := IntrastatReportSetup."Vend. VAT No. on File"::"EU Country Code + VAT Reg. No";
-                IntrastatSetup."Vend. VAT No. on File"::"VAT Reg. No.":
-                    IntrastatReportSetup."Vend. VAT No. on File" := IntrastatReportSetup."Vend. VAT No. on File"::"VAT Reg. No.";
-                IntrastatSetup."Vend. VAT No. on File"::"VAT Reg. No. Without EU Country Code":
-                    IntrastatReportSetup."Vend. VAT No. on File" := IntrastatReportSetup."Vend. VAT No. on File"::"VAT Reg. No. Without EU Country Code";
-            end;
-
-            IntrastatReportSetup."Default Trans. - Purchase" := IntrastatSetup."Default Trans. - Purchase";
-            IntrastatReportSetup."Default Trans. - Return" := IntrastatSetup."Default Trans. - Return";
-            IntrastatReportSetup."Default Trans. Spec. Code" := IntrastatSetup."Default Trans. Spec. Code";
-            IntrastatReportSetup."Default Trans. Spec. Ret. Code" := IntrastatSetup."Default Trans. Spec. Ret. Code";
-            IntrastatReportSetup."Intrastat Contact No." := IntrastatSetup."Intrastat Contact No.";
-            case IntrastatSetup."Intrastat Contact Type" of
-                IntrastatSetup."Intrastat Contact Type"::" ":
-                    IntrastatReportSetup."Intrastat Contact Type" := IntrastatReportSetup."Intrastat Contact Type"::" ";
-                IntrastatSetup."Intrastat Contact Type"::Contact:
-                    IntrastatReportSetup."Intrastat Contact Type" := IntrastatReportSetup."Intrastat Contact Type"::Contact;
-                IntrastatSetup."Intrastat Contact Type"::Vendor:
-                    IntrastatReportSetup."Intrastat Contact Type" := IntrastatReportSetup."Intrastat Contact Type"::Vendor;
-            end;
-            IntrastatReportSetup."Report Receipts" := IntrastatSetup."Report Receipts";
-            IntrastatReportSetup."Report Shipments" := IntrastatSetup."Report Shipments";
-        end;
-#endif
         IntrastatReportSetup.Insert();
 
         IsHandled := false;
@@ -1166,6 +1131,26 @@ codeunit 4810 IntrastatReportManagement
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeGetIntrastatBaseCountryCode(var ItemLedgerEntry: Record "Item Ledger Entry"; var IntrastatReportSetup: Record "Intrastat Report Setup"; var CountryCode: Code[10]; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetIntrastatBaseCountryCodeFromJLE(var JobLedgerEntry: Record "Job Ledger Entry"; var IntrastatReportSetup: Record "Intrastat Report Setup"; var CountryCode: Code[10]; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetIntrastatBaseCountryCodeFromFALE(var FALedgerEntry: Record "FA Ledger Entry"; var IntrastatReportSetup: Record "Intrastat Report Setup"; var CountryCode: Code[10]; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnGetCompanyVATRegNoOnAfterGetIntrastatReportSetup(var CompanyInformation: Record "Company Information"; var IntrastatReportSetup: Record "Intrastat Report Setup")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnExportWithDataExchOnAfterGetIntrastatReportSetup(var IntrastatReportSetup: Record "Intrastat Report Setup"; var IntrastatReportHeader: Record "Intrastat Report Header")
     begin
     end;
 }

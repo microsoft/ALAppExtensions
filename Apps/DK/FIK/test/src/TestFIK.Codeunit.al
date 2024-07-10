@@ -32,10 +32,6 @@ Codeunit 148029 TestFIK
         PmtReferenceErr: Label '%1 should be blank for %2 %3.', Comment = '%1=Field;%2=Table;%3=Field', Locked = true;
         RecordNotFoundErr: Label '%1 was not found.', Comment = '%1=Table', Locked = true;
         PostingErr: Label 'Payment Reference should be blank for payment method %1.', Comment = '%1 table caption, %2 option value', Locked = true;
-        TestFieldLedgerErr: Label '%1 must have a value in %2: %3=%4. It cannot be zero or empty.', Locked = true;
-        TestFieldPurchInvErr: Label '%1 must have a value in %2: %3=%4, %5=%6. It cannot be zero or empty.', Locked = true;
-        TestFieldGenJnlLineErr: Label '%1 must have a value in %2: %3=%4, %5=%6, %7=%8. It cannot be zero or empty.', Locked = true;
-        TestFieldPaymentMethodErr: Label '%1 must not be %2 in %3: %4=%5', Locked = true;
         PaddingErr: Label 'Field value is not padded correctly.', Locked = true;
         LengthErr: Label 'Padded value does not have correct length.', Locked = true;
         BankCreditorNoLbl: Label '12345678';
@@ -706,11 +702,7 @@ Codeunit 148029 TestFIK
         ASSERTERROR GenJnlLine.VALIDATE("Payment Reference", CorrectFIK71);
 
         // Verify
-        Assert.ExpectedError(STRSUBSTNO(TestFieldGenJnlLineErr, GenJnlLine.FIELDCAPTION("Payment Method Code"), GenJnlLine.TABLECAPTION(),
-          GenJnlLine.FIELDCAPTION("Journal Template Name"), GenJnlLine."Journal Template Name",
-          GenJnlLine.FIELDCAPTION("Journal Batch Name"), GenJnlLine."Journal Batch Name",
-          GenJnlLine.FIELDCAPTION("Line No."), FORMAT(GenJnlLine."Line No.")));
-        //Assert.ExpectedError(TestFieldGenJnlLineErr);
+        Assert.ExpectedTestFieldError(GenJnlLine.FieldCaption("Payment Method Code"), '');
     END;
 
     [Test]
@@ -738,9 +730,7 @@ Codeunit 148029 TestFIK
         ASSERTERROR GenJnlLine.VALIDATE("Payment Reference", CorrectFIK71);
 
         // Verify
-        Assert.ExpectedError(STRSUBSTNO(TestFieldPaymentMethodErr, PaymentMethod.FIELDCAPTION(PaymentTypeValidation),
-          PaymentMethod.PaymentTypeValidation::" ", PaymentMethod.TABLECAPTION(), PaymentMethod.FIELDCAPTION(Code),
-          PaymentMethod.Code));
+        Assert.ExpectedTestFieldError(PaymentMethod.FieldCaption(PaymentTypeValidation), Format(PaymentMethod.PaymentTypeValidation::" "));
     END;
 
     [Test]
@@ -771,10 +761,7 @@ Codeunit 148029 TestFIK
         ASSERTERROR VendorLedgerEntry.VALIDATE("Payment Reference", CorrectFIK71);
 
         // Verify
-        Assert.ExpectedError(
-          STRSUBSTNO(TestFieldLedgerErr, VendorLedgerEntry.FIELDCAPTION("Payment Method Code"), VendorLedgerEntry.TABLECAPTION(),
-            VendorLedgerEntry.FIELDCAPTION("Entry No."), FORMAT(VendorLedgerEntry."Entry No.")));
-        //Assert.ExpectedError(TestFieldLedgerErr);
+        Assert.ExpectedTestFieldError(VendorLedgerEntry.FieldCaption("Payment Method Code"), '');
     END;
 
     [Test]
@@ -808,9 +795,7 @@ Codeunit 148029 TestFIK
         ASSERTERROR VendorLedgerEntry.VALIDATE("Payment Reference", CorrectFIK71);
 
         // Verify
-        Assert.ExpectedError(STRSUBSTNO(TestFieldPaymentMethodErr, PaymentMethod.FIELDCAPTION(PaymentTypeValidation),
-          PaymentMethod.PaymentTypeValidation::" ", PaymentMethod.TABLECAPTION(), PaymentMethod.FIELDCAPTION(Code),
-          PaymentMethod.Code));
+        Assert.ExpectedTestFieldError(PaymentMethod.FIELDCAPTION(PaymentTypeValidation), Format(PaymentMethod.PaymentTypeValidation::" "));
     END;
 
     [Test]
@@ -834,9 +819,7 @@ Codeunit 148029 TestFIK
         ASSERTERROR PurchHeader.VALIDATE("Payment Reference", CorrectFIK71);
 
         // Verify
-        Assert.ExpectedError(STRSUBSTNO(TestFieldPurchInvErr, PurchHeader.FIELDCAPTION("Payment Method Code"), PurchHeader.TABLECAPTION(),
-          PurchHeader.FIELDCAPTION("Document Type"), PurchHeader."Document Type"::Invoice,
-          PurchHeader.FIELDCAPTION("No."), FORMAT(PurchHeader."No.")));
+        Assert.ExpectedTestFieldError(PurchHeader.FieldCaption("Payment Method Code"), '');
     END;
 
     [Test]
@@ -864,9 +847,7 @@ Codeunit 148029 TestFIK
         ASSERTERROR PurchHeader.VALIDATE("Payment Reference", CorrectFIK71);
 
         // Verify
-        Assert.ExpectedError(STRSUBSTNO(TestFieldPaymentMethodErr, PaymentMethod.FIELDCAPTION(PaymentTypeValidation),
-          PaymentMethod.PaymentTypeValidation::" ", PaymentMethod.TABLECAPTION(), PaymentMethod.FIELDCAPTION(Code),
-          PaymentMethod.Code));
+        Assert.ExpectedTestFieldError(PaymentMethod.FieldCaption(PaymentTypeValidation), '');
     END;
 
     [Test]

@@ -60,6 +60,10 @@ table 31013 "Advance Posting Buffer CZZ"
             Caption = 'VAT %';
             DecimalPlaces = 1 : 1;
         }
+        field(35; "Auxiliary Entry"; Boolean)
+        {
+            Caption = 'Auxiliary Entry';
+        }
     }
 
     keys
@@ -83,6 +87,7 @@ table 31013 "Advance Posting Buffer CZZ"
         "Amount (ACY)" := PurchAdvLetterEntry."Amount (LCY)";
         "VAT Base Amount (ACY)" := PurchAdvLetterEntry."VAT Base Amount (LCY)";
         "VAT Amount (ACY)" := PurchAdvLetterEntry."VAT Amount (LCY)";
+        "Auxiliary Entry" := PurchAdvLetterEntry."Auxiliary Entry";
         OnAfterPrepareForPurchAdvLetterEntry(PurchAdvLetterEntry, Rec);
     end;
 
@@ -115,6 +120,7 @@ table 31013 "Advance Posting Buffer CZZ"
         "Amount (ACY)" := SalesAdvLetterEntry."Amount (LCY)";
         "VAT Base Amount (ACY)" := SalesAdvLetterEntry."VAT Base Amount (LCY)";
         "VAT Amount (ACY)" := SalesAdvLetterEntry."VAT Amount (LCY)";
+        "Auxiliary Entry" := SalesAdvLetterEntry."Auxiliary Entry";
         OnAfterPrepareForSalesAdvLetterEntry(SalesAdvLetterEntry, Rec);
     end;
 

@@ -3,6 +3,7 @@ namespace Microsoft.Bank.Reconciliation;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Ledger;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
 
 table 7250 "Bank Acc. Rec. AI Proposal"
 {
@@ -87,6 +88,16 @@ table 7250 "Bank Acc. Rec. AI Proposal"
         {
             DataClassification = SystemMetadata;
             Caption = 'Proposal';
+        }
+        field(50; "Journal Template Name"; Code[10])
+        {
+            Caption = 'Journal Template Name';
+            TableRelation = "Gen. Journal Template";
+        }
+        field(51; "Journal Batch Name"; Code[10])
+        {
+            Caption = 'Journal Batch Name';
+            TableRelation = "Gen. Journal Batch".Name where("Journal Template Name" = field("Journal Template Name"));
         }
     }
     keys

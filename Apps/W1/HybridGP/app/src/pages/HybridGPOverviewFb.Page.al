@@ -92,11 +92,14 @@ page 40125 "Hybrid GP Overview Fb"
         GPMigrationWarnings: Record "GP Migration Warnings";
         HelperFunctions: Codeunit "Helper Functions";
         TotalGLBatchCount: Integer;
+        TotalStatisticalBatchCount: Integer;
         TotalItemBatchCount: Integer;
         CompanyHasFailedBatches: Boolean;
+        FailedBatchMsgBuilder: TextBuilder;
+        AddComma: Boolean;
     begin
         FailedBatchCount := 0;
-        FailedBatchMsg := 'One or more batches failed to post.\';
+        FailedBatchMsgBuilder.Append('One or more batches failed to post.\');
 
         MigrationErrorCount := GPMigrationErrorOverview.Count();
         HybridCompanyStatus.SetRange("Upgrade Status", HybridCompanyStatus."Upgrade Status"::Failed);
@@ -108,24 +111,41 @@ page 40125 "Hybrid GP Overview Fb"
         if HybridCompanyStatus.FindSet() then
             repeat
                 TotalGLBatchCount := 0;
+                TotalStatisticalBatchCount := 0;
                 TotalItemBatchCount := 0;
 
-                HelperFunctions.GetUnpostedBatchCountForCompany(HybridCompanyStatus.Name, TotalGLBatchCount, TotalItemBatchCount);
-                FailedBatchCount := FailedBatchCount + TotalGLBatchCount + TotalItemBatchCount;
+                HelperFunctions.GetUnpostedBatchCountForCompany(HybridCompanyStatus.Name, TotalGLBatchCount, TotalStatisticalBatchCount, TotalItemBatchCount);
+                FailedBatchCount := FailedBatchCount + TotalGLBatchCount + TotalStatisticalBatchCount + TotalItemBatchCount;
                 CompanyHasFailedBatches := (TotalGLBatchCount > 0) or (TotalItemBatchCount > 0);
                 if CompanyHasFailedBatches then begin
-                    if (TotalGLBatchCount > 0) and (TotalItemBatchCount > 0) then
-                        FailedBatchMsg := FailedBatchMsg + HybridCompanyStatus.Name + ': GL batches: ' + Format(TotalGLBatchCount) + ', Item batches: ' + Format(TotalItemBatchCount) + '\';
+                    FailedBatchMsgBuilder.Append(HybridCompanyStatus.Name + ': ');
 
-                    if (TotalGLBatchCount > 0) and (TotalItemBatchCount = 0) then
-                        FailedBatchMsg := FailedBatchMsg + HybridCompanyStatus.Name + ': GL batches: ' + Format(TotalGLBatchCount) + '\';
+                    if TotalGLBatchCount > 0 then begin
+                        FailedBatchMsgBuilder.Append('GL batches: ' + Format(TotalGLBatchCount));
+                        AddComma := true;
+                    end;
 
-                    if (TotalGLBatchCount = 0) and (TotalItemBatchCount > 0) then
-                        FailedBatchMsg := FailedBatchMsg + HybridCompanyStatus.Name + ': Item batches: ' + Format(TotalItemBatchCount) + '\';
+                    if TotalStatisticalBatchCount > 0 then begin
+                        if AddComma then
+                            FailedBatchMsgBuilder.Append(', ');
+
+                        FailedBatchMsgBuilder.Append('Statistical batches: ' + Format(TotalStatisticalBatchCount));
+                    end;
+
+                    if TotalItemBatchCount > 0 then begin
+                        if AddComma then
+                            FailedBatchMsgBuilder.Append(', ');
+
+                        FailedBatchMsgBuilder.Append('Item batches: ' + Format(TotalItemBatchCount));
+                    end;
+
+                    FailedBatchMsgBuilder.Append('\');
                 end;
             until HybridCompanyStatus.Next() = 0;
 
-        if FailedBatchCount = 0 then
+        if FailedBatchCount > 0 then
+            FailedBatchMsg := FailedBatchMsgBuilder.ToText()
+        else
             FailedBatchMsg := 'No failed batches';
     end;
 

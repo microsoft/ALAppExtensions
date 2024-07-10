@@ -177,8 +177,8 @@ report 4408 "EXR Trial Bal by Period Excel"
         LocalGLAccount: Record "G/L Account";
     begin
         LocalGLAccount.Copy(GLAccount);
-        LocalGLAccount.SetFilter("Global Dimension 1 Code", Dimension1Code);
-        LocalGLAccount.SetFilter("Global Dimension 2 Code", Dimension2Code);
+        LocalGLAccount.SetFilter("Global Dimension 1 Filter", Dimension1Code);
+        LocalGLAccount.SetFilter("Global Dimension 2 Filter", Dimension2Code);
 
         LocalGLAccount.CalcFields("Net Change", "Balance at Date");
         Clear(EXRTrialBalanceBuffer);

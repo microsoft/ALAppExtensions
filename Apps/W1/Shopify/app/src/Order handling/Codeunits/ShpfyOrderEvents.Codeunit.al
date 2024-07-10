@@ -161,7 +161,7 @@ codeunit 30162 "Shpfy Order Events"
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
     /// <param name="SalesHeader">Parameter of type Record "Sales Header".</param>
     /// <param name="Handled">Parameter of type Boolean.</param>
-    internal procedure OnBeforeCreateSalesHeader(ShopifyOrderHeader: Record "Shpfy Order Header"; var SalesHeader: Record "Sales Header"; var Handled: Boolean)
+    internal procedure OnBeforeCreateSalesHeader(ShopifyOrderHeader: Record "Shpfy Order Header"; var SalesHeader: Record "Sales Header"; var LastCreatedDocumentId: Guid; var Handled: Boolean)
     begin
     end;
 
@@ -224,6 +224,17 @@ codeunit 30162 "Shpfy Order Events"
     /// </summary>
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
     internal procedure OnAfterMapCompany(var ShopifyOrderHeader: Record "Shpfy Order Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    /// <summary> 
+    /// Raised after refunds are deducted from the quantity and amounts of the orders.
+    /// </summary>
+    /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
+    /// <param name="OrderLine">Parameter of type Record "Shopify Order Line".</param>
+    /// <param name="RefundLine">Parameter of type Record "Shopify Refund Line".</param>
+    internal procedure OnAfterConsiderRefundsInQuantityAndAmounts(OrderHeader: Record "Shpfy Order Header"; var OrderLine: Record "Shpfy Order Line"; RefundLine: Record "Shpfy Refund Line")
     begin
     end;
 }

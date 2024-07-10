@@ -6,9 +6,6 @@
 namespace Microsoft.Utilities;
 
 using Microsoft.Finance.EU3PartyTrade;
-#if not CLEAN22
-using Microsoft.Finance.VAT.Calculation;
-#endif
 using Microsoft.Purchases.History;
 
 #pragma warning disable AL0432
@@ -38,12 +35,6 @@ codeunit 31467 "Sync.Dep.Fld-PurchInvHdr CZL"
         if SyncLoopingHelper.IsFieldSynchronizationSkipped(Database::"Purch. Inv. Header") then
             exit;
         SyncLoopingHelper.SkipFieldSynchronization(SyncLoopingHelper, Database::"Purch. Inv. Header");
-#if not CLEAN22
-        if not IsReplaceVATDateEnabled() then
-            Rec."VAT Reporting Date" := Rec."VAT Date CZL"
-        else
-            Rec."VAT Date CZL" := Rec."VAT Reporting Date";
-#endif
         if not IsEU3PartyTradeFeatureEnabled() then
             Rec."EU 3 Party Trade" := Rec."EU 3-Party Trade CZL"
         else
@@ -51,29 +42,6 @@ codeunit 31467 "Sync.Dep.Fld-PurchInvHdr CZL"
         Rec.Modify();
         SyncLoopingHelper.RestoreFieldSynchronization(Database::"Purch. Inv. Header");
     end;
-#if not CLEAN22
-
-    local procedure IsReplaceVATDateEnabled(): Boolean
-    var
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-    begin
-        exit(ReplaceVATDateMgtCZL.IsEnabled());
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Purch. Inv. Header", 'OnAfterValidateEvent', 'VAT Date CZL', false, false)]
-    local procedure SyncOnAfterValidateVatDate(var Rec: Record "Purch. Inv. Header")
-    begin
-        if not IsReplaceVATDateEnabled() then
-            Rec."VAT Reporting Date" := Rec."VAT Date CZL";
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Purch. Inv. Header", 'OnAfterValidateEvent', 'VAT Reporting Date', false, false)]
-    local procedure SyncOnAfterValidateVatReportingDate(var Rec: Record "Purch. Inv. Header")
-    begin
-        if IsReplaceVATDateEnabled() then
-            Rec."VAT Date CZL" := Rec."VAT Reporting Date";
-    end;
-#endif
 
     local procedure IsEU3PartyTradeFeatureEnabled(): Boolean
     var

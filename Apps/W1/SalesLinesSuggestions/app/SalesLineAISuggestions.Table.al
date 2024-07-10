@@ -12,6 +12,7 @@ table 7275 "Sales Line AI Suggestions"
     TableType = Temporary;
     InherentEntitlements = X;
     InherentPermissions = RIMDX;
+    Caption = 'Sales Line AI Suggestion';
     Access = Internal;
 
     fields
@@ -62,6 +63,17 @@ table 7275 "Sales Line AI Suggestions"
         field(30; "Source Line Record ID"; RecordId)
         {
             Caption = 'Source Line Record ID';
+        }
+        field(35; "Line Style"; Text[30])
+        {
+            Caption = 'Line Style';
+        }
+        field(5407; "Unit of Measure Code"; Code[10])
+        {
+            Caption = 'Unit of Measure Code';
+            ToolTip = 'Specifies the unit of measure code of the item on the line.';
+            TableRelation = "Item Unit of Measure".Code where("Item No." = field("No."));
+            ValidateTableRelation = false;
         }
     }
 

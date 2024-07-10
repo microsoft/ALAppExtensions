@@ -142,13 +142,8 @@ table 30102 "Shpfy Shop"
             TableRelation = "Config. Template Header".Code where("Table Id" = const(27));
             ValidateTableRelation = true;
             ObsoleteReason = 'Replaced by Item Templ. Code';
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
         }
         field(12; "Sync Item Images"; Option)
         {
@@ -207,13 +202,8 @@ table 30102 "Shpfy Shop"
             TableRelation = "Config. Template Header".Code where("Table Id" = const(18));
             ValidateTableRelation = true;
             ObsoleteReason = 'Replaced by  "Customer Templ. Code"';
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
         }
         field(25; "Product Collection"; Option)
         {
@@ -815,9 +805,8 @@ table 30102 "Shpfy Shop"
         CurrencyExchangeRateNotDefinedErr: Label 'The specified currency must have exchange rates configured. If your online shop uses the same currency as Business Central then leave the field empty.';
         AutoCreateErrorMsg: Label 'You cannot turn "%1" off if "%2" is set to the value of "%3".', Comment = '%1 = Field Caption of "Auto Create Orders", %2 = Field Caption of "Return and Refund Process", %3 = Field Value of "Return and Refund Process"';
 
-    [NonDebuggable]
     [Scope('OnPrem')]
-    internal procedure GetAccessToken() Result: Text
+    internal procedure GetAccessToken() Result: SecretText
     var
         AuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
         Store: Text;
@@ -828,7 +817,6 @@ table 30102 "Shpfy Shop"
             exit(AuthenticationMgt.GetAccessToken(Store));
     end;
 
-    [NonDebuggable]
     [Scope('OnPrem')]
     internal procedure RequestAccessToken()
     var
@@ -840,7 +828,6 @@ table 30102 "Shpfy Shop"
             AuthenticationMgt.InstallShopifyApp(Store);
     end;
 
-    [NonDebuggable]
     [Scope('OnPrem')]
     internal procedure HasAccessToken(): Boolean
     var
@@ -861,7 +848,7 @@ table 30102 "Shpfy Shop"
         exit(true);
     end;
 
-    local procedure GetStoreName() Store: Text
+    internal procedure GetStoreName() Store: Text
     begin
         Store := "Shopify URL".ToLower();
         if Store.Contains(':') then
@@ -951,7 +938,6 @@ table 30102 "Shpfy Shop"
         GLAccount.TestField(Blocked, false);
     end;
 
-#if CLEAN22
     internal procedure CopyPriceCalculationFieldsFromCustomerTempl(TemplateCode: Code[20])
     var
         CustomerTempl: Record "Customer Templ.";
@@ -970,39 +956,6 @@ table 30102 "Shpfy Shop"
         Rec."Allow Line Disc." := CustomerTempl."Allow Line Disc.";
         Rec.Modify();
     end;
-#endif
-
-#if not CLEAN22
-    internal procedure CopyPriceCalculationFieldsFromCustomerTemplate(TemplateCode: Code[10])
-    var
-        Customer: Record Customer;
-    begin
-        if TemplateCode <> '' then begin
-            Rec."Gen. Bus. Posting Group" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Gen. Bus. Posting Group"));
-            Rec."VAT Bus. Posting Group" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("VAT Bus. Posting Group"));
-            Rec."Tax Area Code" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Tax Area Code"));
-            if Evaluate(Rec."Tax Liable", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Tax Liable"))) then;
-            Rec."VAT Country/Region Code" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Country/Region Code"));
-            Rec."Customer Posting Group" := GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Customer Posting Group"));
-            if Evaluate(Rec."Prices Including VAT", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Prices Including VAT"))) then;
-            if Evaluate(Rec."Allow Line Disc.", GetValueFromConfigTemplateLine(TemplateCode, Database::Customer, Customer.FieldNo("Allow Line Disc."))) then;
-            Rec.Modify();
-        end;
-    end;
-
-    local procedure GetValueFromConfigTemplateLine(TemplateCode: Code[10]; TableID: Integer; FieldID: Integer): Text
-    var
-        ConfigTemplateLine: Record "Config. Template Line";
-    begin
-        ConfigTemplateLine.Reset();
-        ConfigTemplateLine.SetRange("Data Template Code", TemplateCode);
-        ConfigTemplateLine.SetRange(Type, ConfigTemplateLine.type::Field);
-        ConfigTemplateLine.SetRange("Table ID", TableID);
-        ConfigTemplateLine.SetRange("Field ID", FieldID);
-        if ConfigTemplateLine.FindFirst() then
-            exit(ConfigTemplateLine."Default Value");
-    end;
-#endif
 
     local procedure EnableShopifyLogRetentionPolicySetup()
     var
@@ -1061,4 +1014,9 @@ table 30102 "Shpfy Shop"
             until OrderHeader.Next() = 0;
     end;
 #endif
+
+    internal procedure SyncCountries()
+    begin
+        Codeunit.Run(Codeunit::"Shpfy Sync Countries", Rec);
+    end;
 }

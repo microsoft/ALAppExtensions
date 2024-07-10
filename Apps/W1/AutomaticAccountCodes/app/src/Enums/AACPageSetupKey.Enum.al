@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.AutomaticAccounts;
 
-// #if not CLEAN22 // Can't remove the enum until we remove table 4857 "Auto. Acc. Page Setup"
+// Can't remove the enum until we remove table 4857 "Auto. Acc. Page Setup"
 
 /// <summary>
 /// Automatic Acc. feature will be moved to a separate app.

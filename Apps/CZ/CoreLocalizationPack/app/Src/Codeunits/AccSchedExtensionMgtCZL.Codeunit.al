@@ -4,8 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.FinancialReports;
 
+using Microsoft.Finance.Analysis;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Ledger;
+using Microsoft.Foundation.Enums;
 using Microsoft.Foundation.NoSeries;
 using Microsoft.Foundation.Period;
 using Microsoft.Inventory.Ledger;
@@ -421,6 +423,7 @@ codeunit 31326 "Acc. Sched. Extension Mgt. CZL"
     var
         ColumnLayoutCreate: Record "Column Layout";
         AccScheduleResultValueCZL: Record "Acc. Schedule Result Value CZL";
+        MatrixManagement: Codeunit "Matrix Management";
         SaveAccScheduleResultCZL: Page "Save Acc. Schedule Result CZL";
         AccSchedName: Code[10];
         DimFilter: array[4] of Text[250];
@@ -460,7 +463,11 @@ codeunit 31326 "Acc. Sched. Extension Mgt. CZL"
                 repeat
                     if ColumnLayoutCreate.FindSet() then
                         repeat
-                            Result := AccSchedManagement.CalcCell(AccScheduleLine, ColumnLayoutCreate, UseAmtsInAddCurr);
+                            Result := RoundIfNotNone(
+                                MatrixManagement.RoundAmount(
+                                    AccSchedManagement.CalcCell(AccScheduleLine, ColumnLayoutCreate, UseAmtsInAddCurr),
+                                    ColumnLayoutCreate."Rounding Factor"),
+                                ColumnLayoutCreate."Rounding Factor");
                             AccScheduleResultValueCZL."Result Code" := AccScheduleResultHdrCZL."Result Code";
                             AccScheduleResultValueCZL."Row No." := AccScheduleLine."Line No.";
                             AccScheduleResultValueCZL."Column No." := ColumnLayoutCreate."Line No.";
@@ -520,6 +527,14 @@ codeunit 31326 "Acc. Sched. Extension Mgt. CZL"
         if not GLSetupRead then
             GeneralLedgerSetup.Get();
         GLSetupRead := true;
+    end;
+
+    local procedure RoundIfNotNone(Value: Decimal; RoundingFactor: Enum "Analysis Rounding Factor"): Decimal
+    begin
+        if RoundingFactor <> RoundingFactor::None then
+            exit(Value);
+
+        exit(Round(Value));
     end;
 
     [IntegrationEvent(false, false)]

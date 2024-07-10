@@ -111,6 +111,7 @@ page 6361 "EDoc Ext Connection Setup Card"
                     PageroAuth: Codeunit "Pagero Auth.";
                 begin
                     PageroAuth.OpenOAuthSetupPage();
+                    FeatureTelemetry.LogUptake('0000MSD', ExternalServiceTok, Enum::"Feature Uptake Status"::"Set up");
                 end;
             }
         }

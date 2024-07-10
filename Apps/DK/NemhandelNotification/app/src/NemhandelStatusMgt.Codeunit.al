@@ -7,6 +7,7 @@ using System.Privacy;
 using System.Environment;
 using System.DataAdministration;
 using System.Telemetry;
+using System.Utilities;
 
 codeunit 13628 "Nemhandel Status Mgt."
 {
@@ -16,8 +17,11 @@ codeunit 13628 "Nemhandel Status Mgt."
         HttpClientGlobal: Interface "Http Client Nemhandel Status";
         HttpClientDefined: Boolean;
         NotificationMsg: Label 'Your accounting software is not registered in Nemhandelsregisteret.';
+        RegisterInNemhandelTxt: Label 'Register in Nemhandelsregisteret', Comment = 'Nemhandelsregisteret word is already in Danish, no need to translate.';
+        OpenRegistrationGuideTxt: Label 'Open registration guide';
         EnableNemhandelNotRegisteredNotificationTxt: Label 'Enable Nemhandel Not Registered Notification';
         EnableNemhandelNotRegisteredNotificationDescrTxt: Label 'Notify me that the company with the given CVR number is not registered in Nemhandelsregisteret. The message is shown on the Company Information page.';
+        IncorrectCVRNumberFormatErr: Label 'The CVR number must be 8 digits or "A/S" followed by 3-6 digits.';
         NemhandelsregisteretCategoryTxt: Label 'Nemhandelsregisteret', Locked = true;
         CVRNumberChangedTxt: Label 'CVR number was changed from %1 to %2. Modify trigger: %3.', Locked = true;
         RegisteredStatusChangedTxt: Label 'Registered with Nemhandel was changed from %1 to %2. Modify trigger: %3.', Locked = true;
@@ -62,6 +66,7 @@ codeunit 13628 "Nemhandel Status Mgt."
 
     internal procedure IsSaaSProductionCompany(): Boolean
     var
+        Company: Record Company;
         EnvironmentInformation: Codeunit "Environment Information";
     begin
         if not EnvironmentInformation.IsProduction() then
@@ -72,6 +77,10 @@ codeunit 13628 "Nemhandel Status Mgt."
 
         if EnvironmentInformation.IsSandbox() then
             exit(false);
+
+        if Company.Get(CompanyName()) then
+            if Company."Evaluation Company" then
+                exit(false);
 
         exit(true);
     end;
@@ -100,8 +109,19 @@ codeunit 13628 "Nemhandel Status Mgt."
         CompanyInformation.Modify();
     end;
 
+    internal procedure ValidateCVRNumberFormat(CVRNumber: Text[20])
+    var
+        Regex: Codeunit Regex;
+    begin
+        if not Regex.IsMatch(CVRNumber, '^(\d{8}|A/S\d{3,6})$') then
+            Error(IncorrectCVRNumberFormatErr);
+    end;
+
     internal procedure ManageNotRegisteredNotification(RegisteredWithNemhandel: Enum "Nemhandel Company Status")
     begin
+        if not IsSaaSProductionCompany() then
+            exit;
+
         if RegisteredWithNemhandel = Enum::"Nemhandel Company Status"::Registered then
             RecallNemhandelNotRegisteredNotification()
         else
@@ -160,8 +180,8 @@ codeunit 13628 "Nemhandel Status Mgt."
 
         NemhandelNotRegisteredNotification.Message(NotificationMsg);
         NemhandelNotRegisteredNotification.Scope(NotificationScope::LocalScope);
-        NemhandelNotRegisteredNotification.AddAction('Register in Nemhandelsregisteret', Codeunit::"Nemhandel Status Mgt.", 'OpenNemhandelsregisteretLink');
-        NemhandelNotRegisteredNotification.AddAction('Open registration guide', Codeunit::"Nemhandel Status Mgt.", 'OpenNemhandelsregisteretGuideLink');
+        NemhandelNotRegisteredNotification.AddAction(RegisterInNemhandelTxt, Codeunit::"Nemhandel Status Mgt.", 'OpenNemhandelsregisteretLink');
+        NemhandelNotRegisteredNotification.AddAction(OpenRegistrationGuideTxt, Codeunit::"Nemhandel Status Mgt.", 'OpenNemhandelsregisteretGuideLink');
         NemhandelNotRegisteredNotification.Send();
     end;
 

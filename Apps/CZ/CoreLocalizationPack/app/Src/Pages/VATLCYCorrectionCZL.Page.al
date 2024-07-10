@@ -210,10 +210,6 @@ page 31025 "VAT LCY Correction CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'P&ost VAT correction in LCY';
                 Image = Post;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 ShortcutKey = 'F9';
                 ToolTip = 'Post value from field "VAT Correction Amount" to general and VAT ledger entries.';
 
@@ -230,10 +226,6 @@ page 31025 "VAT LCY Correction CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Preview Posting';
                 Image = ViewPostedOrder;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 ShortcutKey = 'Ctrl+Alt+F9';
                 ToolTip = 'Review the result of the posting lines before the actual posting.';
 
@@ -247,13 +239,24 @@ page 31025 "VAT LCY Correction CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'VAT Posting Setup Card';
                 Image = Setup;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 RunObject = page "VAT Posting Setup Card";
                 RunPageLink = "VAT Bus. Posting Group" = field("VAT Bus. Posting Group"), "VAT Prod. Posting Group" = field("VAT Prod. Posting Group");
                 ToolTip = 'Open the VAT posting setup card for the selected record.';
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(Post_Promoted; Post)
+                {
+                }
+                actionref(Preview_Promoted; Preview)
+                {
+                }
+                actionref("VAT Posting Setup Card_Promoted"; "VAT Posting Setup Card")
+                {
+                }
             }
         }
     }

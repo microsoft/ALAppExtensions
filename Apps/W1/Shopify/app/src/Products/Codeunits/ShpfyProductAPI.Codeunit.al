@@ -326,7 +326,7 @@ codeunit 30176 "Shpfy Product API"
     var
         Data: Dictionary of [BigInteger, Text];
     begin
-        Data.Add(CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JImageNode, 'node.id')), JsonHelper.GetValueAsText(JImageNode, 'node.transformedSrc'));
+        Data.Add(CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JImageNode, 'node.id')), JsonHelper.GetValueAsText(JImageNode, 'node.image.url'));
         ImageData := Data;
     end;
 
@@ -415,6 +415,7 @@ codeunit 30176 "Shpfy Product API"
         JItem: JsonToken;
         JResponse: JsonToken;
         Cursor: Text;
+        MediaContentType: Text;
     begin
         Clear(ProductImages);
         GraphQLType := GraphQLType::GetProductImages;
@@ -425,12 +426,16 @@ codeunit 30176 "Shpfy Product API"
                     Cursor := JsonHelper.GetValueAsText(JItem.AsObject(), 'cursor');
                     if JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
                         Id := JsonHelper.GetValueAsBigInteger(JNode, 'legacyResourceId');
-                        if JsonHelper.GetJsonArray(JNode, JImages, 'images.edges') and (JImages.Count = 1) then begin
-                            foreach JImage in JImages do
-                                GetImageData(JImage, ImageData);
-                            ProductImages.Add(Id, ImageData);
-                        end;
-                    end;
+                        if JsonHelper.GetJsonArray(JNode, JImages, 'media.edges') then
+                            if JImages.Count = 1 then begin
+                                JImages.Get(0, JImage);
+                                MediaContentType := JsonHelper.GetValueAsText(JImage, 'node.mediaContentType');
+                                if MediaContentType = 'IMAGE' then begin
+                                    GetImageData(JImage, ImageData);
+                                    ProductImages.Add(Id, ImageData);
+                                end;
+                            end;
+                    end
                 end;
                 if Parameters.ContainsKey('After') then
                     Parameters.Set('After', Cursor)

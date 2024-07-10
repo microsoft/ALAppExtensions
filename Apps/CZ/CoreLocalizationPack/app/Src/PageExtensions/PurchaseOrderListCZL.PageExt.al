@@ -43,18 +43,6 @@ pageextension 31082 "Purchase Order List CZL" extends "Purchase Order List"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the bank account''s international bank account number.';
             }
-#if not CLEAN22
-            field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Intrastat Exclude (Obsolete)';
-                ToolTip = 'Specifies that entry will be excluded from intrastat.';
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
-            }
-#endif
         }
     }
 }

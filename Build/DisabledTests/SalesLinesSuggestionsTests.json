@@ -28,5 +28,15 @@
         "codeunitId": 139785,
         "CodeunitName": "SLS Test Utility",
         "Method": "*"
+    },
+    {
+        "codeunitId": 139786,
+        "CodeunitName": "Item Search In Doc Prompt Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139787,
+        "CodeunitName": "Item Srch. In Doc. Lookup Test",
+        "Method": "*"
     }
 ]

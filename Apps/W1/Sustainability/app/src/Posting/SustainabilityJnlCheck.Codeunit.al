@@ -9,7 +9,6 @@ using System.Utilities;
 
 codeunit 6216 "Sustainability Jnl.-Check"
 {
-    Access = Internal;
     TableNo = "Sustainability Jnl. Line";
 
     procedure CheckCommonConditionsBeforePosting(var SustainabilityJnlLine: Record "Sustainability Jnl. Line")
@@ -65,6 +64,8 @@ codeunit 6216 "Sustainability Jnl.-Check"
         TestEmissionCalculationAndAmount(SustainabilityJnlLine);
 
         TestDimensionsForJnlLine(SustainabilityJnlLine);
+
+        OnAfterCheckSustainabilityJournalLine(SustainabilityJnlLine);
     end;
 
     [TryFunction]
@@ -127,4 +128,9 @@ codeunit 6216 "Sustainability Jnl.-Check"
         SustainabilityJournalBatchMismatchErr: Label 'The journal batch name must be the same for all lines.';
         AllEmissionsZeroErr: Label 'At least one emission must be specified.';
         EmissionCalculationErr: Label 'The emission calculation is not correct, use the `Recalculate` action on the Journal page to recalculate the emission before posting.';
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCheckSustainabilityJournalLine(SustainabilityJnlLine: Record "Sustainability Jnl. Line")
+    begin
+    end;
 }

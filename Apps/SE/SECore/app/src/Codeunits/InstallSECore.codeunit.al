@@ -39,13 +39,27 @@ codeunit 11295 "Install SE Core"
     local procedure UpgradeCompanyInformationTable()
     var
         CompanyInformation: Record "Company Information";
+        RecRef: RecordRef;
+        TargetFieldRef: FieldRef;
+        SourceFieldRef: FieldRef;
     begin
         if not CompanyInformation.Get() then
             exit;
 
-        CompanyInformation."Plus Giro Number" := CompanyInformation."Plus Giro No.";
-        CompanyInformation."Registered Office Info" := CompanyInformation."Registered Office";
-        CompanyInformation.Modify();
+        RecRef.Open(Database::"Company Information", false);
+        if RecRef.FieldExist(11200) then begin // field 11290 - CompanyInformation."Plus Giro No."
+            SourceFieldRef := RecRef.Field(11200);
+            TargetFieldRef := RecRef.Field(11290);
+            TargetFieldRef.VALUE := SourceFieldRef.VALUE;
+            RecRef.Modify(false);
+        end;
+
+        if RecRef.FieldExist(11201) then begin // field 11291 - CompanyInformation."Registered Office"
+            SourceFieldRef := RecRef.Field(11201);
+            TargetFieldRef := RecRef.Field(11291);
+            TargetFieldRef.VALUE := SourceFieldRef.VALUE;
+            RecRef.Modify(false);
+        end;
     end;
 #endif
 

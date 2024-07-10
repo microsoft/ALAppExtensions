@@ -43,6 +43,12 @@
                   <Width>2cm</Width>
                 </TablixColumn>
                 <TablixColumn>
+                  <Width>2cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>2cm</Width>
+                </TablixColumn>
+                <TablixColumn>
                   <Width>1.2cm</Width>
                 </TablixColumn>
                 <TablixColumn>
@@ -305,6 +311,74 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
+                        <Textbox Name="OriginalVATBase_VATEntryCaption">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Parameters!OriginalVATBase_VATEntryCaption.Value</Value>
+                                  <Style>
+                                    <FontSize>7pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>8pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="OriginalVATAmount_VATEntryCaption">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Parameters!OriginalVATAmount_VATEntryCaption.Value</Value>
+                                  <Style>
+                                    <FontSize>7pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Right</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>8pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
                         <Textbox Name="Textbox37">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
@@ -459,9 +533,11 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
-                        <ColSpan>12</ColSpan>
+                        <ColSpan>14</ColSpan>
                       </CellContents>
                     </TablixCell>
+                    <TablixCell />
+                    <TablixCell />
                     <TablixCell />
                     <TablixCell />
                     <TablixCell />
@@ -619,6 +695,64 @@
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Textbox12</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox9">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontSize>7pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox9</rd:DefaultName>
+                          <Style>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox49">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontSize>7pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox49</rd:DefaultName>
                           <Style>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
@@ -986,6 +1120,70 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
+                        <Textbox Name="OriginalVATBase_VATEntry">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!OriginalVATBase_VATEntry.Value</Value>
+                                  <Style>
+                                    <FontSize>7pt</FontSize>
+                                    <Format>=Fields!OriginalVATBase_VATEntryFormat.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="OriginalVATAmount_VATEntry">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!OriginalVATAmount_VATEntry.Value</Value>
+                                  <Style>
+                                    <FontSize>7pt</FontSize>
+                                    <Format>=Fields!OriginalVATAmount_VATEntryFormat.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
                         <Textbox Name="VATEntryVATCalculationType">
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -1208,6 +1406,68 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
+                        <Textbox Name="CountrySubOriginalBase">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!CountrySubOriginalBase.Value</Value>
+                                  <Style>
+                                    <FontStyle>Italic</FontStyle>
+                                    <FontSize>7pt</FontSize>
+                                    <Format>=Fields!CountrySubOriginalBaseFormat.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border />
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="CountrySubOriginalAmount">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!CountrySubOriginalAmount.Value</Value>
+                                  <Style>
+                                    <FontStyle>Italic</FontStyle>
+                                    <FontSize>7pt</FontSize>
+                                    <Format>=Fields!CountrySubOriginalAmountFormat.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border />
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
                         <Textbox Name="Textbox48">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
@@ -1337,6 +1597,68 @@
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Textbox26</rd:DefaultName>
+                          <Style>
+                            <Border />
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="VATEntrySumOriginalBase">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!VATEntrySumOriginalBase.Value</Value>
+                                  <Style>
+                                    <FontSize>7pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Format>=Fields!VATEntrySumOriginalBaseFormat.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border />
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="VATEntrySumOriginalAmount">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!VATEntrySumOriginalAmount.Value</Value>
+                                  <Style>
+                                    <FontSize>7pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Format>=Fields!VATEntrySumOriginalAmountFormat.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
                           <Style>
                             <Border />
                             <VerticalAlign>Middle</VerticalAlign>
@@ -1498,9 +1820,11 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
-                        <ColSpan>12</ColSpan>
+                        <ColSpan>14</ColSpan>
                       </CellContents>
                     </TablixCell>
+                    <TablixCell />
+                    <TablixCell />
                     <TablixCell />
                     <TablixCell />
                     <TablixCell />
@@ -1633,6 +1957,68 @@
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Textbox33</rd:DefaultName>
+                          <Style>
+                            <Border />
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="VATBasePurch2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Last(Fields!VATBasePurch2.Value)</Value>
+                                  <Style>
+                                    <FontSize>7pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Format>=Fields!VATBasePurch2Format.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border />
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="VATAmountPurch2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Last(Fields!VATAmountPurch2.Value)</Value>
+                                  <Style>
+                                    <FontSize>7pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Format>=Fields!VATAmountPurch2Format.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
                           <Style>
                             <Border />
                             <VerticalAlign>Middle</VerticalAlign>
@@ -1790,6 +2176,68 @@
                                     <FontSize>7pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
                                     <Format>=Fields!VATAmountReverseChargeVATFormat.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border />
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="VATBaseReverseChargeVAT2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Last(Fields!VATBaseReverseChargeVAT2.Value)</Value>
+                                  <Style>
+                                    <FontSize>7pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Format>=Fields!VATBaseReverseChargeVAT2Format.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border />
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="VATAmountReverseChargeVAT2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Last(Fields!VATAmountReverseChargeVAT2.Value)</Value>
+                                  <Style>
+                                    <FontSize>7pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Format>=Fields!VATAmountReverseChargeVAT2Format.Value</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -1972,6 +2420,68 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
+                        <Textbox Name="VATBaseSale2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Last(Fields!VATBaseSale2.Value)</Value>
+                                  <Style>
+                                    <FontSize>7pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Format>=Fields!VATBaseSale2Format.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border />
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="VATAmountSale2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Last(Fields!VATAmountSale2.Value)</Value>
+                                  <Style>
+                                    <FontSize>7pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Format>=Fields!VATAmountSale2Format.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border />
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
                         <Textbox Name="Textbox77">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
@@ -2134,6 +2644,68 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
+                        <Textbox Name="VATBase2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Last(Fields!VATBase2.Value)</Value>
+                                  <Style>
+                                    <FontSize>7pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Format>=Fields!VATBase2Format.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border />
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="VATAmount2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Last(Fields!VATAmount2.Value)</Value>
+                                  <Style>
+                                    <FontSize>7pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Format>=Fields!VATAmount2Format.Value</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <Style>
+                            <Border />
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>0.075cm</PaddingLeft>
+                            <PaddingRight>0.075cm</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
                         <Textbox Name="TextBox16">
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -2168,6 +2740,8 @@
             </TablixBody>
             <TablixColumnHierarchy>
               <TablixMembers>
+                <TablixMember />
+                <TablixMember />
                 <TablixMember />
                 <TablixMember />
                 <TablixMember />
@@ -2253,7 +2827,7 @@
             <DataSetName>DataSet_Result</DataSetName>
             <Top>1.73845cm</Top>
             <Height>4.64196cm</Height>
-            <Width>19cm</Width>
+            <Width>23cm</Width>
             <Style />
           </Tablix>
           <Textbox Name="HeaderText">
@@ -2273,7 +2847,7 @@
             </Paragraphs>
             <Top>0.46853cm</Top>
             <Height>0.423cm</Height>
-            <Width>19cm</Width>
+            <Width>23cm</Width>
             <ZIndex>1</ZIndex>
             <Style>
               <VerticalAlign>Middle</VerticalAlign>
@@ -2295,7 +2869,7 @@
               </Paragraph>
             </Paragraphs>
             <Height>0.423cm</Height>
-            <Width>19cm</Width>
+            <Width>23cm</Width>
             <ZIndex>2</ZIndex>
             <DataElementOutput>NoOutput</DataElementOutput>
             <Style>
@@ -2321,7 +2895,7 @@
             <Top>0.96209cm</Top>
             <Left>0.00433in</Left>
             <Height>0.423cm</Height>
-            <Width>18.989cm</Width>
+            <Width>22.989cm</Width>
             <ZIndex>3</ZIndex>
             <Visibility>
               <Hidden>=IIF(Fields!VATPostingSetupFilter.Value="",TRUE,FALSE)</Hidden>
@@ -2335,7 +2909,7 @@
         <Height>6.38041cm</Height>
         <Style />
       </Body>
-      <Width>19cm</Width>
+      <Width>23cm</Width>
       <Page>
         <PageHeader>
           <Height>1.79784cm</Height>
@@ -2428,7 +3002,7 @@
                   </Style>
                 </Paragraph>
               </Paragraphs>
-              <Left>13cm</Left>
+              <Left>17cm</Left>
               <Height>0.423cm</Height>
               <Width>6cm</Width>
               <ZIndex>3</ZIndex>
@@ -2456,7 +3030,7 @@
                 </Paragraph>
               </Paragraphs>
               <Top>0.91303cm</Top>
-              <Left>13cm</Left>
+              <Left>17cm</Left>
               <Height>0.423cm</Height>
               <Width>6cm</Width>
               <ZIndex>4</ZIndex>
@@ -2482,7 +3056,7 @@
                 </Paragraph>
               </Paragraphs>
               <Top>0.45828cm</Top>
-              <Left>13cm</Left>
+              <Left>17cm</Left>
               <Height>0.423cm</Height>
               <Width>6cm</Width>
               <ZIndex>5</ZIndex>
@@ -2493,14 +3067,14 @@
           </ReportItems>
           <Style />
         </PageHeader>
-        <PageHeight>29.7cm</PageHeight>
-        <PageWidth>21cm</PageWidth>
+        <PageHeight>21cm</PageHeight>
+        <PageWidth>29.7cm</PageWidth>
         <InteractiveHeight>11in</InteractiveHeight>
         <InteractiveWidth>8.5in</InteractiveWidth>
         <LeftMargin>1cm</LeftMargin>
         <RightMargin>1cm</RightMargin>
-        <TopMargin>1cm</TopMargin>
-        <BottomMargin>1cm</BottomMargin>
+        <TopMargin>0.5cm</TopMargin>
+        <BottomMargin>0cm</BottomMargin>
         <Style />
       </Page>
     </ReportSection>
@@ -2614,6 +3188,24 @@
       </DefaultValue>
       <Prompt>Type_VATEntryCaption</Prompt>
     </ReportParameter>
+    <ReportParameter Name="OriginalVATBase_VATEntryCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>OriginalVATBase_VATEntryCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>OriginalVATBase_VATEntryCaption</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="OriginalVATAmount_VATEntryCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>OriginalVATAmount_VATEntryCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>OriginalVATAmount_VATEntryCaption</Prompt>
+    </ReportParameter>
     <ReportParameter Name="VATCalcType_VATEntryCaption">
       <DataType>String</DataType>
       <DefaultValue>
@@ -2672,7 +3264,7 @@
   <ReportParametersLayout>
     <GridLayoutDefinition>
       <NumberOfColumns>1</NumberOfColumns>
-      <NumberOfRows>18</NumberOfRows>
+      <NumberOfRows>20</NumberOfRows>
       <CellDefinitions>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
@@ -2737,31 +3329,41 @@
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>12</RowIndex>
-          <ParameterName>VATCalcType_VATEntryCaption</ParameterName>
+          <ParameterName>OriginalVATBase_VATEntryCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>13</RowIndex>
-          <ParameterName>BilltoPaytoNo_VATEntryCaption</ParameterName>
+          <ParameterName>OriginalVATAmount_VATEntryCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>14</RowIndex>
-          <ParameterName>EntryNo_VATEntryCaption</ParameterName>
+          <ParameterName>VATCalcType_VATEntryCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>15</RowIndex>
-          <ParameterName>UserID_VATEntryCaption</ParameterName>
+          <ParameterName>BilltoPaytoNo_VATEntryCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>16</RowIndex>
-          <ParameterName>VATRegistrationNo_VATEntryCaption</ParameterName>
+          <ParameterName>EntryNo_VATEntryCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>17</RowIndex>
+          <ParameterName>UserID_VATEntryCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>18</RowIndex>
+          <ParameterName>VATRegistrationNo_VATEntryCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>19</RowIndex>
           <ParameterName>CountryRegionCode_VATEntryCaption</ParameterName>
         </CellDefinition>
       </CellDefinitions>
@@ -2881,6 +3483,54 @@ End Function
         <Field Name="VATAmountReverseChargeVATFormat">
           <DataField>VATAmountReverseChargeVATFormat</DataField>
         </Field>
+        <Field Name="VATBase2">
+          <DataField>VATBase2</DataField>
+        </Field>
+        <Field Name="VATBase2Format">
+          <DataField>VATBase2Format</DataField>
+        </Field>
+        <Field Name="VATAmount2">
+          <DataField>VATAmount2</DataField>
+        </Field>
+        <Field Name="VATAmount2Format">
+          <DataField>VATAmount2Format</DataField>
+        </Field>
+        <Field Name="VATBaseSale2">
+          <DataField>VATBaseSale2</DataField>
+        </Field>
+        <Field Name="VATBaseSale2Format">
+          <DataField>VATBaseSale2Format</DataField>
+        </Field>
+        <Field Name="VATAmountSale2">
+          <DataField>VATAmountSale2</DataField>
+        </Field>
+        <Field Name="VATAmountSale2Format">
+          <DataField>VATAmountSale2Format</DataField>
+        </Field>
+        <Field Name="VATBasePurch2">
+          <DataField>VATBasePurch2</DataField>
+        </Field>
+        <Field Name="VATBasePurch2Format">
+          <DataField>VATBasePurch2Format</DataField>
+        </Field>
+        <Field Name="VATAmountPurch2">
+          <DataField>VATAmountPurch2</DataField>
+        </Field>
+        <Field Name="VATAmountPurch2Format">
+          <DataField>VATAmountPurch2Format</DataField>
+        </Field>
+        <Field Name="VATBaseReverseChargeVAT2">
+          <DataField>VATBaseReverseChargeVAT2</DataField>
+        </Field>
+        <Field Name="VATBaseReverseChargeVAT2Format">
+          <DataField>VATBaseReverseChargeVAT2Format</DataField>
+        </Field>
+        <Field Name="VATAmountReverseChargeVAT2">
+          <DataField>VATAmountReverseChargeVAT2</DataField>
+        </Field>
+        <Field Name="VATAmountReverseChargeVAT2Format">
+          <DataField>VATAmountReverseChargeVAT2Format</DataField>
+        </Field>
         <Field Name="Selection">
           <DataField>Selection</DataField>
         </Field>
@@ -2916,6 +3566,18 @@ End Function
         </Field>
         <Field Name="CalculatedVATAmountFormat">
           <DataField>CalculatedVATAmountFormat</DataField>
+        </Field>
+        <Field Name="OriginalVATBase_VATEntry">
+          <DataField>OriginalVATBase_VATEntry</DataField>
+        </Field>
+        <Field Name="OriginalVATBase_VATEntryFormat">
+          <DataField>OriginalVATBase_VATEntryFormat</DataField>
+        </Field>
+        <Field Name="OriginalVATAmount_VATEntry">
+          <DataField>OriginalVATAmount_VATEntry</DataField>
+        </Field>
+        <Field Name="OriginalVATAmount_VATEntryFormat">
+          <DataField>OriginalVATAmount_VATEntryFormat</DataField>
         </Field>
         <Field Name="VATCalcType_VATEntry">
           <DataField>VATCalcType_VATEntry</DataField>
@@ -2974,6 +3636,18 @@ End Function
         <Field Name="CountrySubAmountFormat">
           <DataField>CountrySubAmountFormat</DataField>
         </Field>
+        <Field Name="CountrySubOriginalBase">
+          <DataField>CountrySubOriginalBase</DataField>
+        </Field>
+        <Field Name="CountrySubOriginalBaseFormat">
+          <DataField>CountrySubOriginalBaseFormat</DataField>
+        </Field>
+        <Field Name="CountrySubOriginalAmount">
+          <DataField>CountrySubOriginalAmount</DataField>
+        </Field>
+        <Field Name="CountrySubOriginalAmountFormat">
+          <DataField>CountrySubOriginalAmountFormat</DataField>
+        </Field>
         <Field Name="CountrySubTotalPrint">
           <DataField>CountrySubTotalPrint</DataField>
         </Field>
@@ -2994,6 +3668,18 @@ End Function
         </Field>
         <Field Name="VATEntrySumCalculatedAmountFormat">
           <DataField>VATEntrySumCalculatedAmountFormat</DataField>
+        </Field>
+        <Field Name="VATEntrySumOriginalBase">
+          <DataField>VATEntrySumOriginalBase</DataField>
+        </Field>
+        <Field Name="VATEntrySumOriginalBaseFormat">
+          <DataField>VATEntrySumOriginalBaseFormat</DataField>
+        </Field>
+        <Field Name="VATEntrySumOriginalAmount">
+          <DataField>VATEntrySumOriginalAmount</DataField>
+        </Field>
+        <Field Name="VATEntrySumOriginalAmountFormat">
+          <DataField>VATEntrySumOriginalAmountFormat</DataField>
         </Field>
         <Field Name="VATEntrySumAddCurrBase">
           <DataField>VATEntrySumAddCurrBase</DataField>

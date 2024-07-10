@@ -13,13 +13,18 @@ using System.Security.User;
 
 codeunit 31316 "Gen.Jnl.Check Line Handler CZL"
 {
+    var
+        MustBeLessOrEqualErr: Label 'must be less or equal to %1', Comment = '%1 = fieldcaption of VAT Date CZL';
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Check Line", 'OnAfterCheckGenJnlLine', '', false, false)]
     local procedure UserChecksAllowedOnAfterCheckGenJnlLine(var GenJournalLine: Record "Gen. Journal Line")
     var
-        UserSetupAdvManagementCZL: Codeunit "User Setup Adv. Management CZL";
+        NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
     begin
-        if UserSetupAdvManagementCZL.IsCheckAllowed() and (not GenJournalLine."From Adjustment CZL") then
-            UserSetupAdvManagementCZL.CheckGeneralJournalLine(GenJournalLine);
+        CheckUserSetup(GenJournalLine);
+        CheckVATDate(GenJournalLine);
+        CheckOriginalPartner(GenJournalLine);
+        NonDeductibleVATCZL.CheckGeneralPostingType(GenJournalLine);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Check Line", 'OnAfterCheckAccountNo', '', false, false)]
@@ -77,53 +82,46 @@ codeunit 31316 "Gen.Jnl.Check Line Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Check Line", 'OnBeforeRunCheck', '', false, false)]
     local procedure CheckVatDateOnBeforeRunCheck(var GenJournalLine: Record "Gen. Journal Line")
     begin
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not GenJournalLine.IsReplaceVATDateEnabled() then begin
-            if GenJournalLine."VAT Date CZL" = 0D then
-                GenJournalLine.Validate("VAT Date CZL", GenJournalLine."Posting Date");
-            exit;
-        end;
-#pragma warning restore AL0432
-#endif
         if GenJournalLine."VAT Reporting Date" = 0D then
             GenJournalLine.Validate("VAT Reporting Date", GenJournalLine."Posting Date");
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Check Line", 'OnAfterCheckGenJnlLine', '', false, false)]
-    local procedure CheckVatDateOnAfterCheckGenJnlLine(var GenJournalLine: Record "Gen. Journal Line")
+    local procedure CheckUserSetup(var GenJournalLine: Record "Gen. Journal Line")
+    var
+        UserSetupAdvManagementCZL: Codeunit "User Setup Adv. Management CZL";
+    begin
+        if UserSetupAdvManagementCZL.IsCheckAllowed() and (not GenJournalLine."From Adjustment CZL") then
+            UserSetupAdvManagementCZL.CheckGeneralJournalLine(GenJournalLine);
+    end;
+
+    local procedure CheckVATDate(var GenJournalLine: Record "Gen. Journal Line")
     var
         VATPostingSetup: Record "VAT Posting Setup";
         VATDateHandlerCZL: Codeunit "VAT Date Handler CZL";
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         VATDateNeeded: Boolean;
-        MustBeLessOrEqualErr: Label 'must be less or equal to %1', Comment = '%1 = fieldcaption of VAT Date CZL';
     begin
-        if VATReportingDateMgt.IsVATDateEnabled() then begin
-            VATDateNeeded := false;
-            if GenJournalLine."Gen. Posting Type" <> Enum::"General Posting Type"::" " then
-                if VATPostingSetup.Get(GenJournalLine."VAT Bus. Posting Group", GenJournalLine."VAT Prod. Posting Group") then
-                    VATDateNeeded := true;
-            if GenJournalLine."Bal. Gen. Posting Type" <> Enum::"General Posting Type"::" " then
-                if VATPostingSetup.Get(GenJournalLine."Bal. VAT Bus. Posting Group", GenJournalLine."Bal. VAT Prod. Posting Group") then
-                    VATDateNeeded := true;
-            if VATDateNeeded then
-                VATDateHandlerCZL.CheckVATDateCZL(GenJournalLine);
-            if (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Vendor) and
-               (GenJournalLine."Document Type" in [GenJournalLine."Document Type"::"Credit Memo", GenJournalLine."Document Type"::Invoice])
-            then
-                GenJournalLine.TestField("Original Doc. VAT Date CZL");
-#if not CLEAN22
-#pragma warning disable AL0432
-            if not GenJournalLine.IsReplaceVATDateEnabled() then
-                if GenJournalLine."Original Doc. VAT Date CZL" > GenJournalLine."VAT Date CZL" then
-                    GenJournalLine.FieldError("Original Doc. VAT Date CZL", StrSubstNo(MustBeLessOrEqualErr, GenJournalLine.FieldCaption(GenJournalLine."VAT Date CZL")));
-            if GenJournalLine.IsReplaceVATDateEnabled() then
-#pragma warning restore AL0432
-#endif
-                if GenJournalLine."Original Doc. VAT Date CZL" > GenJournalLine."VAT Reporting Date" then
-                    GenJournalLine.FieldError("Original Doc. VAT Date CZL", StrSubstNo(MustBeLessOrEqualErr, GenJournalLine.FieldCaption(GenJournalLine."VAT Reporting Date")));
-        end;
+        if not VATReportingDateMgt.IsVATDateEnabled() then
+            exit;
+        VATDateNeeded := false;
+        if GenJournalLine."Gen. Posting Type" <> Enum::"General Posting Type"::" " then
+            if VATPostingSetup.Get(GenJournalLine."VAT Bus. Posting Group", GenJournalLine."VAT Prod. Posting Group") then
+                VATDateNeeded := true;
+        if GenJournalLine."Bal. Gen. Posting Type" <> Enum::"General Posting Type"::" " then
+            if VATPostingSetup.Get(GenJournalLine."Bal. VAT Bus. Posting Group", GenJournalLine."Bal. VAT Prod. Posting Group") then
+                VATDateNeeded := true;
+        if VATDateNeeded then
+            VATDateHandlerCZL.CheckVATDateCZL(GenJournalLine);
+        if (GenJournalLine."Account Type" = GenJournalLine."Account Type"::Vendor) and
+           (GenJournalLine."Document Type" in [GenJournalLine."Document Type"::"Credit Memo", GenJournalLine."Document Type"::Invoice])
+        then
+            GenJournalLine.TestField("Original Doc. VAT Date CZL");
+            if GenJournalLine."Original Doc. VAT Date CZL" > GenJournalLine."VAT Reporting Date" then
+                GenJournalLine.FieldError("Original Doc. VAT Date CZL", StrSubstNo(MustBeLessOrEqualErr, GenJournalLine.FieldCaption(GenJournalLine."VAT Reporting Date")));
+    end;
+
+    local procedure CheckOriginalPartner(var GenJournalLine: Record "Gen. Journal Line")
+    begin
         if GenJournalLine."Original Doc. Partner Type CZL" <> GenJournalLine."Original Doc. Partner Type CZL"::" " then begin
             GenJournalLine.TestField("Account Type", GenJournalLine."Account Type"::"G/L Account".AsInteger());
             GenJournalLine.TestField("Bal. Account Type", GenJournalLine."Bal. Account Type"::"G/L Account".AsInteger());

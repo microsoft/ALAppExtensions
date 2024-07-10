@@ -33,6 +33,7 @@ codeunit 30195 "Shpfy Inventory API"
         ShopifyVariant: Record "Shpfy Variant";
         StockCalculation: Interface "Shpfy Stock Calculation";
         UOM: Code[10];
+        SalesUOM: Code[10];
     begin
         SetShop(ShopInventory."Shop Code");
         if ShopifyProduct.Get(ShopInventory."Product Id") and ShopifyVariant.Get(ShopInventory."Variant Id") then begin
@@ -48,6 +49,7 @@ codeunit 30195 "Shpfy Inventory API"
             end;
 
             StockCalculationFactory(StockCalculation, ShopLocation."Stock Calculation");
+            SalesUOM := Item."Sales Unit of Measure";
             Stock := StockCalculation.GetStock(Item);
 
             case ShopifyVariant."UoM Option Id" of
@@ -58,7 +60,7 @@ codeunit 30195 "Shpfy Inventory API"
                 3:
                     UOM := CopyStr(ShopifyVariant."Option 3 Value", 1, MaxStrLen(UOM));
                 else
-                    UOM := Item."Sales Unit of Measure";
+                    UOM := SalesUOM;
             end;
             if (UOM <> '') and (UOM <> Item."Base Unit of Measure") then
                 if ItemUnitofMeasure.Get(Item."No.", UOM) then
@@ -177,22 +179,23 @@ codeunit 30195 "Shpfy Inventory API"
         end;
 
         if ShopifyVariant.Get(ShopInventory."Variant Id") then
-            if Item.GetBySystemId(ShopifyVariant."Item SystemId") then begin
-                ShopInventory.Validate(Stock, Round(GetStock(ShopInventory), 1, '<'));
-                ShopInventory.Modify();
-                if ShopInventory.Stock <> ShopInventory."Shopify Stock" then
-                    if ShopLocation.Get(ShopInventory."Shop Code", ShopInventory."Location Id") then begin
-                        IStockAvailable := ShopLocation."Stock Calculation";
-                        if IStockAvailable.CanHaveStock() then begin
-                            JSetQuantity.Add('inventoryItemId', StrSubstNo(InventoryItemIdTxt, ShopInventory."Inventory Item Id"));
-                            JSetQuantity.Add('locationId', StrSubstNo(LocationIdTxt, ShopLocation.Id));
-                            if ShopInventory.Stock < 0 then
-                                JSetQuantity.Add('quantity', 0)
-                            else
-                                JSetQuantity.Add('quantity', ShopInventory.Stock);
+            if Item.GetBySystemId(ShopifyVariant."Item SystemId") then
+                if not (Item.Type in [Item.Type::"Non-Inventory", Item.Type::Service]) then begin
+                    ShopInventory.Validate(Stock, Round(GetStock(ShopInventory), 1, '<'));
+                    ShopInventory.Modify();
+                    if ShopInventory.Stock <> ShopInventory."Shopify Stock" then
+                        if ShopLocation.Get(ShopInventory."Shop Code", ShopInventory."Location Id") then begin
+                            IStockAvailable := ShopLocation."Stock Calculation";
+                            if IStockAvailable.CanHaveStock() then begin
+                                JSetQuantity.Add('inventoryItemId', StrSubstNo(InventoryItemIdTxt, ShopInventory."Inventory Item Id"));
+                                JSetQuantity.Add('locationId', StrSubstNo(LocationIdTxt, ShopLocation.Id));
+                                if ShopInventory.Stock < 0 then
+                                    JSetQuantity.Add('quantity', 0)
+                                else
+                                    JSetQuantity.Add('quantity', ShopInventory.Stock);
+                            end;
                         end;
-                    end;
-            end;
+                end;
     end;
 
     /// <summary> 

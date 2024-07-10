@@ -4,6 +4,8 @@ using System.Integration;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.Analysis.StatisticalAccount;
+using Microsoft.Finance.GeneralLedger.Setup;
 
 codeunit 4017 "GP Account Migrator"
 {
@@ -16,16 +18,8 @@ codeunit 4017 "GP Account Migrator"
         BeginningBalanceTrxTxt: Label 'Beginning Balance', Locked = true;
         MigrationLogAreaTxt: Label 'Account', Locked = true;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccount', '', true, true)]
-    procedure OnMigrateGlAccount(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateGlAccount', '', true, true)]
     local procedure OnMigrateGlAccount(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
-#endif
     var
         GPAccount: Record "GP Account";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
@@ -49,19 +43,10 @@ codeunit 4017 "GP Account Migrator"
         MigrateAccountDetails(GPAccount, Sender);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateAccountTransactions', '', true, true)]
-    procedure OnMigrateAccountTransactions(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigrateAccountTransactions', '', true, true)]
     local procedure OnMigrateAccountTransactions(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
-#endif
     var
         GPAccount: Record "GP Account";
-        GLAccount: Record "G/L Account";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Account" then
@@ -75,22 +60,11 @@ codeunit 4017 "GP Account Migrator"
 
         GPAccount.Get(RecordIdToMigrate);
 
-        if not GLAccount.Get(GPAccount.AcctNum) then
-            exit;
-
         GenerateGLTransactionBatches(GPAccount);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigratePostingGroups', '', true, true)]
-    procedure OnMigratePostingGroups(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnMigratePostingGroups', '', true, true)]
     local procedure OnMigratePostingGroups(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
-#endif
     var
         GPAccount: Record "GP Account";
         GLAccount: Record "G/L Account";
@@ -104,6 +78,9 @@ codeunit 4017 "GP Account Migrator"
             exit;
 
         GPAccount.Get(RecordIdToMigrate);
+
+        if GPAccount.AccountType <> 1 then
+            exit;
 
         if not GLAccount.Get(GPAccount.AcctNum) then
             exit;
@@ -140,19 +117,10 @@ codeunit 4017 "GP Account Migrator"
         Sender.ModifyGLAccount(true);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made local.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnCreateOpeningBalanceTrx', '', true, true)]
-    procedure OnCreateOpeningBalanceTrx(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", 'OnCreateOpeningBalanceTrx', '', true, true)]
     local procedure OnCreateOpeningBalanceTrx(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
-#endif
     var
         GPAccount: Record "GP Account";
-        GLAccount: Record "G/L Account";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         if RecordIdToMigrate.TableNo() <> Database::"GP Account" then
@@ -168,14 +136,22 @@ codeunit 4017 "GP Account Migrator"
         if GPAccount.IncomeBalance then
             exit;
 
-        if not GLAccount.Get(GPAccount.AcctNum) then
-            exit;
-
         CreateBeginningBalance(GPAccount);
     end;
 
     procedure CreateBeginningBalance(GPAccount: Record "GP Account")
+    begin
+        case GPAccount.AccountType of
+            1:
+                CreateGLAccountBeginningBalanceImp(GPAccount);
+            2:
+                CreateStatisticalAccountBeginningBalanceImp(GPAccount);
+        end;
+    end;
+
+    local procedure CreateGLAccountBeginningBalanceImp(GPAccount: Record "GP Account")
     var
+        GLAccount: Record "G/L Account";
         GPGL10111: Record "GP GL10111";
         GenJournalLine: Record "Gen. Journal Line";
         GPFiscalPeriods: Record "GP Fiscal Periods";
@@ -194,6 +170,9 @@ codeunit 4017 "GP Account Migrator"
         ACTNUMBR_8: Code[20];
         DimSetID: Integer;
     begin
+        if not GLAccount.Get(GPAccount.AcctNum) then
+            exit;
+
         InitialYear := GPCompanyAdditionalSettings.GetInitialYear();
         if InitialYear = 0 then
             exit;
@@ -208,7 +187,7 @@ codeunit 4017 "GP Account Migrator"
         if BeginningBalance = 0 then
             exit;
 
-        PostingGroupCode := PostingGroupCodeTxt + format(InitialYear) + 'BB';
+        PostingGroupCode := PostingGroupCodeTxt + Format(InitialYear) + 'BB';
         if GPFiscalPeriods.Get(0, InitialYear) then begin
             DataMigrationFacadeHelper.CreateGeneralJournalBatchIfNeeded(CopyStr(PostingGroupCode, 1, 10), '', '');
             DataMigrationFacadeHelper.CreateGeneralJournalLine(
@@ -244,7 +223,100 @@ codeunit 4017 "GP Account Migrator"
         end;
     end;
 
+    local procedure CreateStatisticalAccountBeginningBalanceImp(GPAccount: Record "GP Account")
+    var
+        GPGL00100: Record "GP GL00100";
+        GPGL10111: Record "GP GL10111";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPFiscalPeriods: Record "GP Fiscal Periods";
+        StatisticalAccJournalBatch: Record "Statistical Acc. Journal Batch";
+        StatisticalAccJournalLine: Record "Statistical Acc. Journal Line";
+        StatisticalAccJournalLineCurrent: Record "Statistical Acc. Journal Line";
+        InitialYear: Integer;
+        BeginningBalance: Decimal;
+        DocumentNo: Code[20];
+        LineNum: Integer;
+        ACTNUMBR_1: Code[20];
+        ACTNUMBR_2: Code[20];
+        ACTNUMBR_3: Code[20];
+        ACTNUMBR_4: Code[20];
+        ACTNUMBR_5: Code[20];
+        ACTNUMBR_6: Code[20];
+        ACTNUMBR_7: Code[20];
+        ACTNUMBR_8: Code[20];
+        DimSetID: Integer;
+    begin
+        InitialYear := GPCompanyAdditionalSettings.GetInitialYear();
+        if InitialYear = 0 then
+            exit;
+
+        if not GPGL00100.Get(GPAccount.AcctIndex) then
+            exit;
+
+        if GPGL00100.Clear_Balance then
+            exit;
+
+        GPGL10111.SetRange(ACTINDX, GPAccount.AcctIndex);
+        GPGL10111.SetRange(PERIODID, 0);
+        GPGL10111.SetRange(YEAR1, InitialYear);
+        if not GPGL10111.FindFirst() then
+            exit;
+
+        BeginningBalance := GPGL10111.PERDBLNC;
+        if BeginningBalance = 0 then
+            exit;
+
+        DocumentNo := PostingGroupCodeTxt + Format(InitialYear) + 'BB';
+        if GPFiscalPeriods.Get(0, InitialYear) then begin
+            if not StatisticalAccJournalBatch.Get('', DocumentNo) then begin
+                StatisticalAccJournalBatch.Validate(Name, DocumentNo);
+                StatisticalAccJournalBatch.Insert(true);
+            end;
+
+            StatisticalAccJournalLineCurrent.SetRange("Journal Batch Name", StatisticalAccJournalBatch.Name);
+            if StatisticalAccJournalLineCurrent.FindLast() then
+                LineNum := StatisticalAccJournalLineCurrent."Line No." + 10000
+            else
+                LineNum := 10000;
+
+            StatisticalAccJournalLine.Validate("Journal Batch Name", DocumentNo);
+            StatisticalAccJournalLine.Validate("Line No.", LineNum);
+            StatisticalAccJournalLine.Validate("Document No.", DocumentNo);
+            StatisticalAccJournalLine.Validate(Description, CopyStr(BeginningBalanceTrxTxt, 1, MaxStrLen(StatisticalAccJournalLine.Description)));
+            StatisticalAccJournalLine.Validate("Statistical Account No.", CopyStr(GPAccount.AcctNum, 1, MaxStrLen(StatisticalAccJournalLine."Statistical Account No.")));
+            StatisticalAccJournalLine.Validate("Posting Date", GPFiscalPeriods.PERIODDT);
+            StatisticalAccJournalLine.Validate(Amount, BeginningBalance);
+            StatisticalAccJournalLine.Insert();
+
+            ACTNUMBR_1 := GPGL10111.ACTNUMBR_1;
+            ACTNUMBR_2 := GPGL10111.ACTNUMBR_2;
+            ACTNUMBR_3 := GPGL10111.ACTNUMBR_3;
+            ACTNUMBR_4 := GPGL10111.ACTNUMBR_4;
+            ACTNUMBR_5 := GPGL10111.ACTNUMBR_5;
+            ACTNUMBR_6 := GPGL10111.ACTNUMBR_6;
+            ACTNUMBR_7 := GPGL10111.ACTNUMBR_7;
+            ACTNUMBR_8 := GPGL10111.ACTNUMBR_8;
+
+            if AreAllSegmentNumbersEmpty(ACTNUMBR_1, ACTNUMBR_2, ACTNUMBR_3, ACTNUMBR_4, ACTNUMBR_5, ACTNUMBR_6, ACTNUMBR_7, ACTNUMBR_8) then
+                GetSegmentNumbersFromGPAccountIndex(GPGL10111.ACTINDX, ACTNUMBR_1, ACTNUMBR_2, ACTNUMBR_3, ACTNUMBR_4, ACTNUMBR_5, ACTNUMBR_6, ACTNUMBR_7, ACTNUMBR_8);
+
+            DimSetID := CreateDimSet(ACTNUMBR_1, ACTNUMBR_2, ACTNUMBR_3, ACTNUMBR_4, ACTNUMBR_5, ACTNUMBR_6, ACTNUMBR_7, ACTNUMBR_8);
+            StatisticalAccJournalLine.Validate("Dimension Set ID", DimSetID);
+            StatisticalAccJournalLine.Modify(true);
+        end;
+    end;
+
     procedure MigrateAccountDetails(GPAccount: Record "GP Account"; var GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade")
+    begin
+        case GPAccount.AccountType of
+            1:
+                MigrateGLAccountDetailsImp(GPAccount, GLAccDataMigrationFacade);
+            2:
+                MigrateStatisticalAccountDetailsImp(GPAccount);
+        end;
+    end;
+    
+    local procedure MigrateGLAccountDetailsImp(GPAccount: Record "GP Account"; var GLAccDataMigrationFacade: Codeunit "GL Acc. Data Migration Facade")
     var
         HelperFunctions: Codeunit "Helper Functions";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
@@ -264,36 +336,74 @@ codeunit 4017 "GP Account Migrator"
         GLAccDataMigrationFacade.ModifyGLAccount(true);
     end;
 
-    procedure GenerateGLTransactionBatches(GPAccount: Record "GP Account");
+    local procedure MigrateStatisticalAccountDetailsImp(GPAccount: Record "GP Account")
+    var
+        StatisticalAccount: Record "Statistical Account";
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
+        AccountNum: Code[20];
+    begin
+        AccountNum := CopyStr(GPAccount.AcctNum.Trim(), 1, MaxStrLen(StatisticalAccount."No."));
+
+        if StatisticalAccount.Get(AccountNum) then
+            exit;
+
+        DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(GPAccount.RecordId));
+
+        StatisticalAccount."No." := AccountNum;
+        StatisticalAccount.Name := CopyStr(GPAccount.Name, 1, MaxStrLen(StatisticalAccount.Name));
+
+        if GeneralLedgerSetup.Get() then begin
+            StatisticalAccount."Global Dimension 1 Code" := GeneralLedgerSetup."Global Dimension 1 Code";
+            StatisticalAccount."Global Dimension 2 Code" := GeneralLedgerSetup."Global Dimension 2 Code";
+        end;
+
+        StatisticalAccount.Insert(true);
+    end;
+
+    procedure GenerateGLTransactionBatches(GPAccount: Record "GP Account")
+    begin
+        case GPAccount.AccountType of
+            1:
+                GenerateGLAccountTransactionsImp(GPAccount);
+            2:
+                GenerateStatisticalAccountTransactionsImp(GPAccount);
+        end;
+    end;
+
+    local procedure GenerateGLAccountTransactionsImp(GPAccount: Record "GP Account")
     var
         GPGLTransactions: Record "GP GLTransactions";
         GenJournalLine: Record "Gen. Journal Line";
         GPFiscalPeriods: Record "GP Fiscal Periods";
+        GLAccount: Record "G/L Account";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
-        PostingGroupCode: Code[10];
+        DocumentNo: Code[10];
         DimSetID: Integer;
         InitialYear: Integer;
     begin
+        if not GLAccount.Get(GPAccount.AcctNum) then
+            exit;
+
         InitialYear := GPCompanyAdditionalSettings.GetInitialYear();
 
-        GPGLTransactions.Reset();
         GPGLTransactions.SetCurrentKey(YEAR1, PERIODID, ACTINDX);
-        GPGLTransactions.SetFilter(ACTINDX, '= %1', GPAccount.AcctIndex);
+        GPGLTransactions.SetRange(ACTINDX, GPAccount.AcctIndex);
 
         if InitialYear > 0 then
             GPGLTransactions.SetFilter(YEAR1, '>= %1', InitialYear);
 
         if GPGLTransactions.FindSet() then
             repeat
-                PostingGroupCode := PostingGroupCodeTxt + format(GPGLTransactions.YEAR1) + '-' + format(GPGLTransactions.PERIODID);
+                DocumentNo := PostingGroupCodeTxt + Format(GPGLTransactions.YEAR1) + '-' + Format(GPGLTransactions.PERIODID);
 
                 if GPFiscalPeriods.Get(GPGLTransactions.PERIODID, GPGLTransactions.YEAR1) then begin
-                    DataMigrationFacadeHelper.CreateGeneralJournalBatchIfNeeded(CopyStr(PostingGroupCode, 1, 10), '', '');
+                    DataMigrationFacadeHelper.CreateGeneralJournalBatchIfNeeded(CopyStr(DocumentNo, 1, 10), '', '');
                     DataMigrationFacadeHelper.CreateGeneralJournalLine(
                         GenJournalLine,
-                        PostingGroupCode,
-                        PostingGroupCode,
+                        DocumentNo,
+                        DocumentNo,
                         CopyStr(DescriptionTrxTxt, 1, 50),
                         GenJournalLine."Account Type"::"G/L Account",
                         CopyStr(GPAccount.AcctNum, 1, 20),
@@ -307,6 +417,62 @@ codeunit 4017 "GP Account Migrator"
                     DimSetID := CreateDimSet(GPGLTransactions.ACTNUMBR_1, GPGLTransactions.ACTNUMBR_2, GPGLTransactions.ACTNUMBR_3, GPGLTransactions.ACTNUMBR_4, GPGLTransactions.ACTNUMBR_5, GPGLTransactions.ACTNUMBR_6, GPGLTransactions.ACTNUMBR_7, GPGLTransactions.ACTNUMBR_8);
                     GenJournalLine.Validate("Dimension Set ID", DimSetID);
                     GenJournalLine.Modify(true);
+                end;
+            until GPGLTransactions.Next() = 0;
+    end;
+
+    local procedure GenerateStatisticalAccountTransactionsImp(GPAccount: Record "GP Account")
+    var
+        GPGLTransactions: Record "GP GLTransactions";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPFiscalPeriods: Record "GP Fiscal Periods";
+        StatisticalAccount: Record "Statistical Account";
+        StatisticalAccJournalBatch: Record "Statistical Acc. Journal Batch";
+        StatisticalAccJournalLine: Record "Statistical Acc. Journal Line";
+        StatisticalAccJournalLineCurrent: Record "Statistical Acc. Journal Line";
+        InitialYear: Integer;
+        DocumentNo: Code[10];
+        LineNum: Integer;
+        DimSetID: Integer;
+    begin
+        if not StatisticalAccount.Get(GPAccount.AcctNum) then
+            exit;
+
+        InitialYear := GPCompanyAdditionalSettings.GetInitialYear();
+
+        GPGLTransactions.SetCurrentKey(YEAR1, PERIODID, ACTINDX);
+        GPGLTransactions.SetRange(ACTINDX, GPAccount.AcctIndex);
+
+        if InitialYear > 0 then
+            GPGLTransactions.SetFilter(YEAR1, '>= %1', InitialYear);
+
+        if GPGLTransactions.FindSet() then
+            repeat
+                DocumentNo := PostingGroupCodeTxt + Format(GPGLTransactions.YEAR1) + '-' + Format(GPGLTransactions.PERIODID);
+                if GPFiscalPeriods.Get(GPGLTransactions.PERIODID, GPGLTransactions.YEAR1) then begin
+                    if not StatisticalAccJournalBatch.Get('', DocumentNo) then begin
+                        StatisticalAccJournalBatch.Validate(Name, DocumentNo);
+                        StatisticalAccJournalBatch.Insert(true);
+                    end;
+
+                    StatisticalAccJournalLineCurrent.SetRange("Journal Batch Name", StatisticalAccJournalBatch.Name);
+                    if StatisticalAccJournalLineCurrent.FindLast() then
+                        LineNum := StatisticalAccJournalLineCurrent."Line No." + 10000
+                    else
+                        LineNum := 10000;
+
+                    StatisticalAccJournalLine.Validate("Journal Batch Name", DocumentNo);
+                    StatisticalAccJournalLine.Validate("Line No.", LineNum);
+                    StatisticalAccJournalLine.Validate("Document No.", DocumentNo);
+                    StatisticalAccJournalLine.Validate(Description, CopyStr(DescriptionTrxTxt, 1, MaxStrLen(StatisticalAccJournalLine.Description)));
+                    StatisticalAccJournalLine.Validate("Statistical Account No.", CopyStr(GPAccount.AcctNum, 1, MaxStrLen(StatisticalAccJournalLine."Statistical Account No.")));
+                    StatisticalAccJournalLine.Validate("Posting Date", GPFiscalPeriods.PERIODDT);
+                    StatisticalAccJournalLine.Validate(Amount, GPGLTransactions.PERDBLNC);
+                    StatisticalAccJournalLine.Insert();
+
+                    DimSetID := CreateDimSet(GPGLTransactions.ACTNUMBR_1, GPGLTransactions.ACTNUMBR_2, GPGLTransactions.ACTNUMBR_3, GPGLTransactions.ACTNUMBR_4, GPGLTransactions.ACTNUMBR_5, GPGLTransactions.ACTNUMBR_6, GPGLTransactions.ACTNUMBR_7, GPGLTransactions.ACTNUMBR_8);
+                    StatisticalAccJournalLine.Validate("Dimension Set ID", DimSetID);
+                    StatisticalAccJournalLine.Modify(true);
                 end;
             until GPGLTransactions.Next() = 0;
     end;

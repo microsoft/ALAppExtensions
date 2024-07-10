@@ -6,7 +6,9 @@ namespace Microsoft.Sales.Document;
 
 using System;
 using System.Telemetry;
+using Microsoft.Foundation.UOM;
 using Microsoft.Inventory.Item;
+using System.AI;
 using System.Security.Encryption;
 
 codeunit 7282 "Search"
@@ -14,13 +16,14 @@ codeunit 7282 "Search"
     Access = Internal;
 
     [TryFunction]
-    internal procedure SearchMultiple(ItemResultsArray: JsonArray; SearchStyle: Enum "Search Style"; Intent: Text; SearchQuery: Text; Top: Integer; MaximumQueryResultsToRank: Integer; IncludeSynonyms: Boolean; UseContextAwareRanking: Boolean; var TempSalesLineAiSuggestion: Record "Sales Line AI Suggestions" temporary)
+    internal procedure SearchMultiple(ItemResultsArray: JsonArray; SearchStyle: Enum "Search Style"; Intent: Text; SearchQuery: Text; Top: Integer; MaximumQueryResultsToRank: Integer; IncludeSynonyms: Boolean; UseContextAwareRanking: Boolean; var TempSalesLineAiSuggestion: Record "Sales Line AI Suggestions" temporary; ItemNoFilter: Text)
     var
         Item: Record "Item";
         TempSearchResponse: Record "Search API Response" temporary;
         FeatureTelemetry: Codeunit "Feature Telemetry";
         SalesLineAISuggestionImpl: Codeunit "Sales Lines Suggestions Impl.";
         CryptographyManagement: Codeunit "Cryptography Management";
+        ALCopilotCapability: DotNet ALCopilotCapability;
         ALSearch: DotNet ALSearch;
         ALSearchOptions: DotNet ALSearchOptions;
         ALSearchQuery: DotNet ALSearchQuery;
@@ -32,19 +35,22 @@ codeunit 7282 "Search"
         SearchProgress: Dialog;
         ItemToken: JsonToken;
         QuantityToken: JsonToken;
+        UOMToken: JsonToken;
         NameJsonToken: JsonToken;
         SearchPrimaryKeyWords: List of [Text];
         SearchAdditionalKeyWords: List of [Text];
         Quantity: Decimal;
+        UnitOfMeasure: Text;
         TelemetryCD: Dictionary of [Text, Text];
         StartDateTime: DateTime;
         DurationAsBigInt: BigInteger;
         HashAlgorithmType: Option MD5,SHA1,SHA256,SHA384,SHA512;
         SearchItemNames: Text;
         ItemTokentText: Text;
+        CapabilityName: Text;
+        CurrentModuleInfo: ModuleInfo;
         SearchSetupProgressLbl: Label 'Looking through item information';
         SearchingItemsLbl: Label 'Looking for items matching: %1', Comment = '%1= list of item names';
-
     begin
         if not ALSearch.IsItemSearchReady() then begin
             SearchProgress.Open(SearchSetupProgressLbl);
@@ -56,7 +62,7 @@ codeunit 7282 "Search"
         //Add ALSearch Options
         ALSearchOptions := ALSearchOptions.SearchOptions();
         ALSearchOptions.IncludeSynonyms := IncludeSynonyms;
-        ALSearchOptions.UseContextAwareRanking := UseContextAwareRanking;
+        ALSearchOptions.UseContextAwareRanking := UseContextAwareRanking and (ItemResultsArray.Count() < 10);
 
         //Add Search Filters
         SearchFilter := SearchFilter.SearchFilter();
@@ -64,13 +70,19 @@ codeunit 7282 "Search"
         SearchFilter.Expression := Text.StrSubstNo('<> %1', true);
         ALSearchOptions.AddSearchFilter(SearchFilter);
 
+        if ItemNoFilter <> '' then begin
+            SearchFilter := SearchFilter.SearchFilter();
+            SearchFilter.FieldNo := Item.FieldNo("No.");
+            SearchFilter.Expression := Text.StrSubstNo('%1', ItemNoFilter);
+            ALSearchOptions.AddSearchFilter(SearchFilter);
+        end;
         SearchFilter := SearchFilter.SearchFilter();
         SearchFilter.FieldNo := Item.FieldNo("Sales Blocked");
         SearchFilter.Expression := Text.StrSubstNo('<> %1', true);
         ALSearchOptions.AddSearchFilter(SearchFilter);
 
         //Add Search Ranking Context
-        if UseContextAwareRanking then begin
+        if UseContextAwareRanking and (ItemResultsArray.Count() < 10) then begin
             ALSearchRankingContext := ALSearchRankingContext.SearchRankingContext();
             ALSearchRankingContext.Intent := Intent;
             ALSearchRankingContext.UserMessage := SearchQuery;
@@ -90,10 +102,15 @@ codeunit 7282 "Search"
             ALSearchOptions.AddSearchQuery(ALSearchQuery);
         end;
 
+        // Setup capability information
+        NavApp.GetCurrentModuleInfo(CurrentModuleInfo);
+        CapabilityName := Enum::"Copilot Capability".Names().Get(Enum::"Copilot Capability".Ordinals().IndexOf(Enum::"Copilot Capability"::"Sales Lines Suggestions".AsInteger()));
+        ALCopilotCapability := ALCopilotCapability.ALCopilotCapability(CurrentModuleInfo.Publisher(), CurrentModuleInfo.Id(), Format(CurrentModuleInfo.AppVersion()), CapabilityName);
+
         //Search Items
         SearchProgress.Open(StrSubstNo(SearchingItemsLbl, SearchItemNames.TrimEnd(', ')));
         StartDateTime := CurrentDateTime();
-        ALSearchResult := ALSearch.FindItems(ALSearchOptions);
+        ALSearchResult := ALSearch.FindItems(ALSearchOptions, ALCopilotCapability);
         SearchProgress.Close();
         DurationAsBigInt := (CurrentDateTime() - StartDateTime);
         TelemetryCD.Add('Response time', Format(DurationAsBigInt));
@@ -101,10 +118,17 @@ codeunit 7282 "Search"
 
         //Process Search Results
         foreach ItemToken in ItemResultsArray do begin
+            Quantity := 0;
+            UnitOfMeasure := '';
+
             ItemToken.WriteTo(ItemTokentText);
             if ItemToken.AsObject().Get('quantity', QuantityToken) then
                 if (QuantityToken.IsValue() and (QuantityToken.AsValue().AsText() <> '')) then
-                    Quantity := QuantityToken.AsValue().AsDecimal();
+                    if not JsonValueAsDecimal(QuantityToken.AsValue(), Quantity) then
+                        Quantity := 0;
+            if ItemToken.AsObject().Get('unit_of_measure', UOMToken) then
+                if (UOMToken.IsValue() and (UOMToken.AsValue().AsText() <> '')) then
+                    UnitOfMeasure := UOMToken.AsValue().AsText();
 
             QueryResults := ALSearchResult.GetResultsForQuery(CryptographyManagement.GenerateHash(ItemTokentText, HashAlgorithmType::SHA256));
 
@@ -118,7 +142,7 @@ codeunit 7282 "Search"
                 SearchPrimaryKeyWords := GetItemNameKeywords(ItemToken);
                 SearchAdditionalKeyWords := GetItemFeaturesKeywords(ItemToken);
 
-                GetSalesLineFromItemSystemIds(TempSearchResponse, Quantity, TempSalesLineAiSuggestion, SearchPrimaryKeyWords, SearchAdditionalKeyWords);
+                GetSalesLineFromItemSystemIds(TempSearchResponse, Quantity, UnitOfMeasure, TempSalesLineAiSuggestion, SearchPrimaryKeyWords, SearchAdditionalKeyWords);
             end;
         end;
     end;
@@ -131,15 +155,15 @@ codeunit 7282 "Search"
         ALSearchQuery := ALSearchQuery.SearchQuery(ItemNameHASH);
 
         foreach Keyword in SearchPrimaryKeyWords do
-            ALSearchQuery.AddRequiredTerm(Keyword);
+            ALSearchQuery.AddRequiredTerm(Keyword.ToLower());
 
         case SearchStyle of
             "Search Style"::Precise:
                 foreach Keyword in SearchAdditionalKeyWords do
-                    ALSearchQuery.AddRequiredTerm(Keyword);
+                    ALSearchQuery.AddRequiredTerm(Keyword.ToLower());
             else
                 foreach Keyword in SearchAdditionalKeyWords do
-                    ALSearchQuery.AddOptionalTerm(Keyword);
+                    ALSearchQuery.AddOptionalTerm(Keyword.ToLower());
         end;
 
         case SearchStyle of
@@ -152,10 +176,13 @@ codeunit 7282 "Search"
         ALSearchQuery.Top := Top;
     end;
 
-    local procedure GetSalesLineFromItemSystemIds(var TempSearchResponse: Record "Search API Response" temporary; Quantity: Decimal; var TempSalesLineAiSuggestion: Record "Sales Line AI Suggestions" temporary; var SearchPrimaryKeyWords: List of [Text];
+    local procedure GetSalesLineFromItemSystemIds(var TempSearchResponse: Record "Search API Response" temporary; Quantity: Decimal; UnitOfMeasureText: Text; var TempSalesLineAiSuggestion: Record "Sales Line AI Suggestions" temporary; var SearchPrimaryKeyWords: List of [Text];
         var SearchAdditionalKeyWords: List of [Text])
     var
         Item: Record "Item";
+        UnitOfMeasure: Record "Unit of Measure";
+        ItemUnitOfMeasure: Record "Item Unit of Measure";
+        UnitOfMeasureCode: Code[10];
         LineNumber: Integer;
     begin
 
@@ -170,6 +197,17 @@ codeunit 7282 "Search"
                 if Item.GetBySystemId(TempSearchResponse.SysId) then begin
                     Item.SetRecFilter();
 
+                    UnitOfMeasureCode := Item."Sales Unit of Measure";
+                    if UnitOfMeasureCode = '' then
+                        UnitOfMeasureCode := Item."Base Unit of Measure";
+                    UnitOfMeasure.SetRange(Description, UnitOfMeasureText);
+                    if UnitOfMeasure.FindFirst() then begin
+                        ItemUnitOfMeasure.SetRange("Item No.", Item."No.");
+                        ItemUnitOfMeasure.SetRange(Code, UnitOfMeasure.Code);
+                        if ItemUnitOfMeasure.FindFirst() then
+                            UnitOfMeasureCode := ItemUnitOfMeasure.Code;
+                    end;
+
                     TempSalesLineAiSuggestion.Init();
                     LineNumber := LineNumber + 1;
                     TempSalesLineAiSuggestion."Line No." := LineNumber;
@@ -177,6 +215,7 @@ codeunit 7282 "Search"
                     TempSalesLineAiSuggestion.Description := Item.Description;
                     TempSalesLineAiSuggestion.Type := "Sales Line Type"::Item;
                     TempSalesLineAiSuggestion.Quantity := Quantity;
+                    TempSalesLineAiSuggestion."Unit of Measure Code" := UnitOfMeasureCode;
                     TempSalesLineAiSuggestion.Confidence := GetConfidence(TempSearchResponse.Score);
                     TempSalesLineAiSuggestion.SetPrimarySearchTerms(SearchPrimaryKeyWords);
                     TempSalesLineAiSuggestion.SetAdditionalSearchTerms(SearchAdditionalKeyWords);
@@ -192,13 +231,20 @@ codeunit 7282 "Search"
         SearchKeywords: List of [Text];
         SearchKeyword: Text;
     begin
-        if ItemObjectToken.AsObject().Get('name', JsonToken) then begin
-            SearchKeyword := JsonToken.AsValue().AsText();
-            if ItemObjectToken.AsObject().Get('synonyms', JsonToken) then begin
+        if ItemObjectToken.AsObject().Get('split_name_terms', JsonToken) then begin
+            JsonArray := JsonToken.AsArray();
+            foreach JsonToken in JsonArray do
+                if SearchKeyword = '' then
+                    SearchKeyword := JsonToken.AsValue().AsText()
+                else
+                    SearchKeyword := SearchKeyword + '|' + JsonToken.AsValue().AsText();
+            if ItemObjectToken.AsObject().Get('common_synonyms_of_name', JsonToken) then begin
                 JsonArray := JsonToken.AsArray();
                 foreach JsonToken in JsonArray do
                     SearchKeyword := SearchKeyword + '|' + JsonToken.AsValue().AsText();
             end;
+            if ItemObjectToken.AsObject().Get('origin_name', JsonToken) and (JsonToken.AsValue().AsText() <> '') then
+                SearchKeyword := SearchKeyword + '|' + JsonToken.AsValue().AsText();
             SearchKeywords.Add(SearchKeyword);
         end;
         exit(SearchKeywords);
@@ -228,5 +274,11 @@ codeunit 7282 "Search"
             exit("Search Confidence"::Low);
 
         exit("Search Confidence"::None);
+    end;
+
+    [TryFunction]
+    local procedure JsonValueAsDecimal(JsonValue: JsonValue; var Value: Decimal)
+    begin
+        Value := JsonValue.AsDecimal();
     end;
 }

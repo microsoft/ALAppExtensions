@@ -1,8 +1,5 @@
 namespace System.DataAdministration;
 
-using Microsoft.Finance.GeneralLedger.Journal;
-using Microsoft.Finance.GeneralLedger.Ledger;
-using Microsoft.Finance.GeneralLedger.Posting;
 using Microsoft.Foundation.Company;
 #if not CLEAN24
 using System.Azure.KeyVault;
@@ -54,6 +51,7 @@ codeunit 6207 "Trans. Storage Schedule Task"
             exit;
         end;
 
+        FeatureTelemetry.LogUptake('0000MVU', TransactionStorageTok, "Feature Uptake Status"::Used);
         TransactStorageExportState.ResetSetup();
         if not TransactionStorageSetup.Get() then
             TransactionStorageSetup.Insert(true);
@@ -164,11 +162,5 @@ codeunit 6207 "Trans. Storage Schedule Task"
         if Rec."Run Codeunit" <> Codeunit::"Transact. Storage Export" then
             exit;
         FeatureTelemetry.LogError('0000MLG', TransactionStorageTok, '', TaskDeletedErr);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterGLFinishPosting', '', false, false)]
-    local procedure ScheduleTaskToExportOnOnAfterGLFinishPosting(GLEntry: Record "G/L Entry"; var GenJnlLine: Record "Gen. Journal Line"; var IsTransactionConsistent: Boolean; FirstTransactionNo: Integer; var GLRegister: Record "G/L Register"; var TempGLEntryBuf: Record "G/L Entry" temporary; var NextEntryNo: Integer; var NextTransactionNo: Integer)
-    begin
-        ScheduleTaskToExport();
     end;
 }

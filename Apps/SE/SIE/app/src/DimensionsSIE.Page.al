@@ -56,27 +56,11 @@ page 5315 "Dimensions SIE"
         LookupModeActive := false;
     end;
 
-#if CLEAN22
     trigger OnOpenPage()
     begin
         if CurrPage.LookupMode then
             LookupModeActive := true;
     end;
-#else
-    trigger OnOpenPage()
-    var
-        SIEManagement: Codeunit "SIE Management";
-    begin
-        if not SIEManagement.IsFeatureEnabled() then
-            if not IsRunFromWizard then begin
-                Page.Run(Page::"SIE Dimensions");
-                Error('');
-            end;
-
-        if CurrPage.LookupMode then
-            LookupModeActive := true;
-    end;
-#endif
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     begin
@@ -91,19 +75,7 @@ page 5315 "Dimensions SIE"
     end;
 
     var
-#if not CLEAN22
-        IsRunFromWizard: Boolean;
-#endif
         [InDataSet]
         LookupModeActive: Boolean;
         CannotEditInLookupModeErr: label 'SIE dimension cannot be added or deleted when the page is opened in lookup mode. To add, remove or edit SIE dimensions, search for the page Dimensions SIE and open it.';
-#if not CLEAN22
-#pragma warning disable AS0072
-    [Obsolete('Feature will be enabled by default.', '22.0')]
-    procedure SetRunFromWizard(RunFromWizard: Boolean)
-    begin
-        IsRunFromWizard := RunFromWizard;
-    end;
-#pragma warning restore AS0072
-#endif
 }

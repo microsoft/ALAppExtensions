@@ -341,6 +341,7 @@ codeunit 30286 "Shpfy Company API"
                     PhoneNo := JsonHelper.GetValueAsText(JItem, 'node.billingAddress.phone');
                     PhoneNo := CopyStr(DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()')), 1, MaxStrLen(CompanyLocation."Phone No."));
                     CompanyLocation."Phone No." := CopyStr(PhoneNo, 1, MaxStrLen(CompanyLocation."Phone No."));
+                    CompanyLocation."Tax Registration Id" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.taxRegistrationId', MaxStrLen(CompanyLocation."Tax Registration Id")), 1, MaxStrLen(CompanyLocation."Tax Registration Id"));
                     CompanyLocation.Modify();
                 end;
     end;

@@ -18,10 +18,5 @@ permissionset 2148 "D365 Automation APIV1"
                   page "APIV1 - Aut. Extension Upload" = X,
                   page "APIV1 - Aut. Extensions" = X,
                   page "APIV1 - Aut. Permission Sets" = X,
-#if not CLEAN22
-#pragma warning disable AL0432
-                  page "APIV1 - Aut. User Groups" = X,
-#pragma warning restore AL0432
-#endif
                   page "APIV1 - Aut. Users" = X;
 }

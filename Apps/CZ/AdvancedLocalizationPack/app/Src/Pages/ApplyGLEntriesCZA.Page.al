@@ -319,8 +319,6 @@ page 31284 "Apply G/L Entries CZA"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Set Applies-to ID';
                     Image = SelectLineToApply;
-                    Promoted = true;
-                    PromotedCategory = Process;
                     ShortCutKey = 'F7';
                     ToolTip = 'Sets applies to id';
 
@@ -335,8 +333,6 @@ page 31284 "Apply G/L Entries CZA"
                     Caption = 'Post Application';
                     Ellipsis = true;
                     Image = PostApplication;
-                    Promoted = true;
-                    PromotedCategory = Process;
                     ShortCutKey = 'F9';
                     ToolTip = 'This batch job posts G/L entries application.';
 
@@ -388,9 +384,6 @@ page 31284 "Apply G/L Entries CZA"
                 Caption = 'Find Entries';
                 Image = Navigate;
                 Ellipsis = true;
-                Promoted = true;
-                PromotedOnly = true;
-                PromotedCategory = Process;
                 ShortCutKey = 'Ctrl+Alt+Q';
                 ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry or document.';
 
@@ -399,6 +392,21 @@ page 31284 "Apply G/L Entries CZA"
                     PageNavigate.SetDoc(Rec."Posting Date", Rec."Document No.");
                     PageNavigate.Run();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(Navigate_Promoted; Navigate)
+                {
+                }
+                actionref("Set Applies-to ID_Promoted"; "Set Applies-to ID")
+                {
+                }
+                actionref("Post Application_Promoted"; "Post Application")
+                {
+                }
             }
         }
     }

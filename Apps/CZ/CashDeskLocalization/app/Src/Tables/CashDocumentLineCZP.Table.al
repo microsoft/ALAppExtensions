@@ -7,6 +7,7 @@ namespace Microsoft.Finance.CashDesk;
 using Microsoft.Bank.BankAccount;
 using Microsoft.CRM.Team;
 using Microsoft.Finance;
+using Microsoft.Finance.AllocationAccount;
 using Microsoft.Finance.Currency;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
@@ -74,9 +75,11 @@ table 11733 "Cash Document Line CZP"
                 if CashDeskEventCZP."Account Type" <> CashDeskEventCZP."Account Type"::" " then
                     CashDeskEventCZP.TestField("Account Type", "Account Type");
 
+                GetCashDocumentHeaderCZP();
+
                 TempCashDocumentLineCZP := Rec;
                 Init();
-                "Document Type" := TempCashDocumentLineCZP."Document Type";
+                "Document Type" := CashDocumentHeaderCZP."Document Type";
                 "Account Type" := TempCashDocumentLineCZP."Account Type";
                 "Cash Desk Event" := TempCashDocumentLineCZP."Cash Desk Event";
                 UpdateAmounts();
@@ -92,7 +95,8 @@ table 11733 "Cash Document Line CZP"
             if ("Account Type" = const(Vendor)) Vendor else
             if ("Account Type" = const(Employee)) Employee else
             if ("Account Type" = const("Bank Account")) "Bank Account" where("Account Type CZP" = const("Bank Account")) else
-            if ("Account Type" = const("Fixed Asset")) "Fixed Asset";
+            if ("Account Type" = const("Fixed Asset")) "Fixed Asset" else
+            if ("Account Type" = const("Allocation Account")) "Allocation Account";
             DataClassification = CustomerContent;
 
             trigger OnValidate()
@@ -130,7 +134,7 @@ table 11733 "Cash Document Line CZP"
 
                 TempCashDocumentLineCZP := Rec;
                 Init();
-                "Document Type" := TempCashDocumentLineCZP."Document Type";
+                "Document Type" := CashDocumentHeaderCZP."Document Type";
                 "External Document No." := TempCashDocumentLineCZP."External Document No.";
                 "Cash Desk Event" := TempCashDocumentLineCZP."Cash Desk Event";
                 "Account Type" := TempCashDocumentLineCZP."Account Type";
@@ -244,16 +248,6 @@ table 11733 "Cash Document Line CZP"
             if ("Account Type" = const(Customer)) "Customer Posting Group" else
             if ("Account Type" = const(Vendor)) "Vendor Posting Group";
             DataClassification = CustomerContent;
-#if not CLEAN22
-
-            trigger OnValidate()
-            var
-                PostingGroupManagementCZL: Codeunit "Posting Group Management CZL";
-            begin
-                if CurrFieldNo = FieldNo("Posting Group") then
-                    PostingGroupManagementCZL.CheckPostingGroupChange("Posting Group", xRec."Posting Group", Rec);
-            end;
-#else
 
             trigger OnValidate()
             var
@@ -262,7 +256,6 @@ table 11733 "Cash Document Line CZP"
                 if CurrFieldNo = FieldNo("Posting Group") then
                     PostingGroupChange.ChangePostingGroup("Posting Group", xRec."Posting Group", Rec);
             end;
-#endif
         }
         field(14; "Applies-To Doc. Type"; Enum "Gen. Journal Document Type")
         {
@@ -777,9 +770,14 @@ table 11733 "Cash Document Line CZP"
         {
             Caption = 'VAT Difference (LCY)';
             DataClassification = CustomerContent;
-            ObsoleteState = Pending;
             ObsoleteReason = 'Moved to Core Localization Pack for Czech.';
+#if CLEAN25
+            ObsoleteState = Removed;
+            ObsoleteTag = '28.0';
+#else
+            ObsoleteState = Pending;
             ObsoleteTag = '18.0';
+#endif
         }
         field(63; "System-Created Entry"; Boolean)
         {
@@ -989,6 +987,24 @@ table 11733 "Cash Document Line CZP"
                 DimensionManagement.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
             end;
         }
+        field(2675; "Selected Alloc. Account No."; Code[20])
+        {
+            Caption = 'Allocation Account No.';
+            DataClassification = CustomerContent;
+            TableRelation = "Allocation Account";
+        }
+        field(2677; "Alloc. Acc. Modified by User"; Boolean)
+        {
+            Caption = 'Allocation Account Distributions Modified';
+            FieldClass = FlowField;
+            CalcFormula = exist("Alloc. Acc. Manual Override" where("Parent System Id" = field(SystemId), "Parent Table Id" = const(Database::"Cash Document Line CZP")));
+        }
+        field(2678; "Allocation Account No."; Code[20])
+        {
+            Caption = 'Posting Allocation Account No.';
+            DataClassification = CustomerContent;
+            TableRelation = "Allocation Account";
+        }
         field(31001; "Advance Letter Link Code"; Code[30])
         {
             Caption = 'Advance Letter Link Code';
@@ -1063,8 +1079,14 @@ table 11733 "Cash Document Line CZP"
 
     procedure ShowDimensions()
     var
+        IsHandled: Boolean;
         ThreePlacehodersTok: Label '%1 %2 %3', Locked = true;
     begin
+        IsHandled := false;
+        OnBeforeShowDimensions(Rec, xRec, IsHandled);
+        if IsHandled then
+            exit;
+
         "Dimension Set ID" := DimensionManagement.EditDimensionSet("Dimension Set ID", StrSubstNo(ThreePlacehodersTok, TableCaption, "Cash Document No.", "Line No."));
         DimensionManagement.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
     end;
@@ -1840,6 +1862,7 @@ table 11733 "Cash Document Line CZP"
         GenJournalLine."Currency Code" := CashDocumentHeaderCZP."Currency Code";
         GenJournalLine."Currency Factor" := CashDocumentHeaderCZP."Currency Factor";
         GenJournalLine."Posting Date" := CashDocumentHeaderCZP."Posting Date";
+        GenJournalLine."VAT Reporting Date" := CashDocumentHeaderCZP."VAT Date";
         GenJournalLine.Amount := "Amount Including VAT";
         GenJournalLine."VAT Amount" := "VAT Amount";
         GenJournalLine."VAT Base Amount" := "VAT Base Amount";
@@ -1858,6 +1881,17 @@ table 11733 "Cash Document Line CZP"
 
         TestField("Account Type");
         TestField("Account No.");
+    end;
+
+    procedure GetAllocationAccount(var AllocationAccount: Record "Allocation Account"): Boolean
+    begin
+        if "Selected Alloc. Account No." <> '' then
+            exit(AllocationAccount.Get("Selected Alloc. Account No."));
+
+        if "Account Type" = "Account Type"::"Allocation Account" then
+            exit(AllocationAccount.Get("Account No."));
+
+        exit(false);
     end;
 
     [IntegrationEvent(false, false)]
@@ -1969,6 +2003,11 @@ table 11733 "Cash Document Line CZP"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCheckEmptyAccount(CashDocumentLineCZP: Record "Cash Document Line CZP"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeShowDimensions(var CashDocumentLineCZP: Record "Cash Document Line CZP"; xCashDocumentLineCZP: Record "Cash Document Line CZP"; var IsHandled: Boolean)
     begin
     end;
 }

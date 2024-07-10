@@ -13,7 +13,6 @@ page 31110 "VAT Ctrl. Report Card CZL"
     Caption = 'VAT Control Report Card';
     PageType = Card;
     SourceTable = "VAT Ctrl. Report Header CZL";
-    PromotedActionCategories = 'New,Process,Report,Related';
 
     layout
     {
@@ -114,11 +113,22 @@ page 31110 "VAT Ctrl. Report Card CZL"
         }
         area(FactBoxes)
         {
+#if not CLEAN25
             part("Attached Documents"; "Document Attachment Factbox")
             {
+                ObsoleteTag = '25.0';
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The "Document Attachment FactBox" has been replaced by "Doc. Attachment List Factbox", which supports multiple files upload.';
                 ApplicationArea = All;
                 Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(31106), "No." = field("No.");
+                SubPageLink = "Table ID" = const(Database::"VAT Ctrl. Report Header CZL"), "No." = field("No.");
+            }
+#endif
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
+            {
+                ApplicationArea = All;
+                Caption = 'Documents';
+                SubPageLink = "Table ID" = const(Database::"VAT Ctrl. Report Header CZL"), "No." = field("No.");
             }
             systempart(Links; Links)
             {
@@ -144,9 +154,6 @@ page 31110 "VAT Ctrl. Report Card CZL"
                     ApplicationArea = VAT;
                     Caption = 'Statistics';
                     Image = Statistics;
-                    Promoted = true;
-                    PromotedCategory = Process;
-                    PromotedOnly = true;
                     ShortcutKey = 'F7';
                     ToolTip = 'View the statistics on the selected VAT Control Report.';
 
@@ -160,9 +167,6 @@ page 31110 "VAT Ctrl. Report Card CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Attach as PDF';
                     Image = PrintAttachment;
-                    Promoted = true;
-                    PromotedCategory = "Report";
-                    PromotedOnly = true;
                     ToolTip = 'Create a PDF file and attach it to the document.';
 
                     trigger OnAction()
@@ -180,10 +184,6 @@ page 31110 "VAT Ctrl. Report Card CZL"
                     ApplicationArea = VAT;
                     Caption = 'Re&lease';
                     Image = ReleaseDoc;
-                    Promoted = true;
-                    PromotedCategory = Process;
-                    PromotedOnly = true;
-                    PromotedIsBig = true;
                     ShortcutKey = 'Ctrl+F9';
                     ToolTip = 'Release VAT Control Report.';
 
@@ -197,10 +197,6 @@ page 31110 "VAT Ctrl. Report Card CZL"
                     ApplicationArea = VAT;
                     Caption = 'Re&open';
                     Image = ReOpen;
-                    Promoted = true;
-                    PromotedCategory = Process;
-                    PromotedOnly = true;
-                    PromotedIsBig = true;
                     ToolTip = 'Opens VAT Control Report.';
 
                     trigger OnAction()
@@ -254,8 +250,6 @@ page 31110 "VAT Ctrl. Report Card CZL"
                     Caption = '&Suggest Lines';
                     Ellipsis = true;
                     Image = SuggestLines;
-                    Promoted = true;
-                    PromotedCategory = Process;
                     ToolTip = 'This batch job suggests lines in VAT Control Report.';
 
                     trigger OnAction()
@@ -274,9 +268,6 @@ page 31110 "VAT Ctrl. Report Card CZL"
                     Caption = 'Test Report';
                     Ellipsis = true;
                     Image = TestReport;
-                    Promoted = true;
-                    PromotedCategory = "Report";
-                    PromotedOnly = true;
                     ToolTip = 'Specifies test report.';
 
                     trigger OnAction()
@@ -313,6 +304,41 @@ page 31110 "VAT Ctrl. Report Card CZL"
                     DocumentAttachmentDetails.OpenForRecRef(RecRef);
                     DocumentAttachmentDetails.RunModal();
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process', Comment = 'Generated from the PromotedActionCategories property index 1.';
+
+                actionref("Re&lease_Promoted"; "Re&lease")
+                {
+                }
+                actionref("Re&open_Promoted"; "Re&open")
+                {
+                }
+                actionref(Statistics_Promoted; Statistics)
+                {
+                }
+                actionref("&Suggest Lines_Promoted"; "&Suggest Lines")
+                {
+                }
+            }
+            group(Category_Report)
+            {
+                Caption = 'Report', Comment = 'Generated from the PromotedActionCategories property index 2.';
+
+                actionref(PrintToAttachment_Promoted; PrintToAttachment)
+                {
+                }
+                actionref("Test Report_Promoted"; "Test Report")
+                {
+                }
+            }
+            group(Category_Category4)
+            {
+                Caption = 'Related', Comment = 'Generated from the PromotedActionCategories property index 3.';
             }
         }
     }

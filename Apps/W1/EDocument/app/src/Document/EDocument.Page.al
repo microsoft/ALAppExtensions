@@ -1,4 +1,4 @@
-// ------------------------------------------------------------------------------------------------
+﻿// ------------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
@@ -329,16 +329,16 @@ page 6121 "E-Document"
 #endif
                 action(MatchToOrderCopilotEnabled)
                 {
-                    Caption = 'Match Purchase Order';
+                    Caption = 'Match Purchase Order With Copilot';
                     ToolTip = 'Match E-document lines to Purchase Order.';
                     Image = SparkleFilled;
-                    Visible = ShowMapToOrder and CopilotEnabled;
+                    Visible = ShowMapToOrder and CopilotVisible;
 
                     trigger OnAction()
                     var
                         EDocOrderMatch: Codeunit "E-Doc. Line Matching";
                     begin
-                        EDocOrderMatch.RunMatching(Rec);
+                        EDocOrderMatch.RunMatching(Rec, true);
                     end;
                 }
                 action(MatchToOrder)
@@ -346,7 +346,7 @@ page 6121 "E-Document"
                     Caption = 'Match Purchase Order';
                     ToolTip = 'Match E-document lines to Purchase Order.';
                     Image = Reconcile;
-                    Visible = ShowMapToOrder and (not CopilotEnabled);
+                    Visible = ShowMapToOrder;
 
                     trigger OnAction()
                     var
@@ -480,7 +480,7 @@ page 6121 "E-Document"
         HasErrorsOrWarnings := false;
         HasErrors := false;
         IsProcessed := false;
-        CopilotEnabled := EDocPOMatching.IsCopilotEnabled();
+        CopilotVisible := EDocPOMatching.IsCopilotVisible();
     end;
 
     trigger OnAfterGetRecord()
@@ -541,7 +541,7 @@ page 6121 "E-Document"
         if not EDocIntegrationManagement.Send(Rec, EDocService, IsAsync) then
             exit;
         if IsAsync then
-            EDocumentBackgroundjobs.GetEDocumentResponse();
+            EDocumentBackgroundjobs.ScheduleGetResponseJob();
     end;
 
     local procedure SetIncomingDocActions()
@@ -578,7 +578,7 @@ page 6121 "E-Document"
         EDocumentHelper: Codeunit "E-Document Processing";
         ErrorsAndWarningsNotification: Notification;
         RecordLinkTxt, StyleStatusTxt : Text;
-        ShowRelink, ShowMapToOrder, HasErrorsOrWarnings, HasErrors, IsIncomingDoc, IsProcessed, CopilotEnabled : Boolean;
+        ShowRelink, ShowMapToOrder, HasErrorsOrWarnings, HasErrors, IsIncomingDoc, IsProcessed, CopilotVisible : Boolean;
         EDocHasErrorOrWarningMsg: Label 'Errors or warnings found for E-Document. Please review below in "Error Messages" section.';
         DocNotCreatedMsg: Label 'Failed to create new %1 from E-Document. Please review errors below.', Comment = '%1 - E-Document Document Type';
 

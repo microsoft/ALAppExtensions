@@ -28,5 +28,12 @@ enum 30133 "Shpfy Transaction Status"
     {
         Caption = 'Error';
     }
-
+    value(5; "Awaiting Response")
+    {
+        Caption = 'Awaiting Response';
+    }
+    value(6; "Unknown")
+    {
+        Caption = 'Unknown';
+    }
 }

@@ -274,6 +274,7 @@ codeunit 31017 "Upgrade Application CZL"
         UpgradeSubstCustVendPostingGroup();
         UpgradeVATStatementTemplate();
         UpgradeAllowVATPosting();
+        UpgradeOriginalVATAmountsInVATEntries();
     end;
 
     local procedure UpgradeGeneralLedgerSetup();
@@ -2323,25 +2324,26 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceVATDateCZLSetupUpgradeTag()) then
             exit;
 
-        GeneralLedgerSetup.Get();
-        if GeneralLedgerSetup."Use VAT Date CZL" then
-            GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::"Enabled (Prevent modification)"
-        else
-            GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::Disabled;
+        if GeneralLedgerSetup.Get() then begin
+            if GeneralLedgerSetup."Use VAT Date CZL" then
+                GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::"Enabled (Prevent modification)"
+            else
+                GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::Disabled;
 
-        PurchasesPayablesSetup.Get();
-        case PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" of
-            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::Blank:
-                GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::Blank;
-            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Posting Date":
-                GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::"Posting Date";
-            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date":
-                GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::"VAT Date";
-            PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Document Date":
-                GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::"Document Date";
+            if PurchasesPayablesSetup.Get() then
+                case PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL" of
+                    PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::Blank:
+                        GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::Blank;
+                    PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Posting Date":
+                        GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::"Posting Date";
+                    PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date":
+                        GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::"VAT Date";
+                    PurchasesPayablesSetup."Def. Orig. Doc. VAT Date CZL"::"Document Date":
+                        GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := Enum::"Default Orig.Doc. VAT Date CZL"::"Document Date";
+                end;
+
+            GeneralLedgerSetup.Modify();
         end;
-
-        GeneralLedgerSetup.Modify();
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceVATDateCZLSetupUpgradeTag());
     end;
@@ -2363,17 +2365,20 @@ codeunit 31017 "Upgrade Application CZL"
         if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetReplaceAllowAlterPostingGroupsUpgradeTag()) then
             exit;
 
-        PurchasesPayablesSetup.Get();
-        PurchasesPayablesSetup."Allow Multiple Posting Groups" := PurchasesPayablesSetup."Allow Alter Posting Groups CZL";
-        PurchasesPayablesSetup.Modify();
+        if PurchasesPayablesSetup.Get() then begin
+            PurchasesPayablesSetup."Allow Multiple Posting Groups" := PurchasesPayablesSetup."Allow Alter Posting Groups CZL";
+            PurchasesPayablesSetup.Modify();
+        end;
 
-        SalesReceivablesSetup.Get();
-        SalesReceivablesSetup."Allow Multiple Posting Groups" := SalesReceivablesSetup."Allow Alter Posting Groups CZL";
-        SalesReceivablesSetup.Modify();
+        if SalesReceivablesSetup.Get() then begin
+            SalesReceivablesSetup."Allow Multiple Posting Groups" := SalesReceivablesSetup."Allow Alter Posting Groups CZL";
+            SalesReceivablesSetup.Modify();
+        end;
 
-        ServiceMgtSetup.Get();
-        ServiceMgtSetup."Allow Multiple Posting Groups" := ServiceMgtSetup."Allow Alter Posting Groups CZL";
-        ServiceMgtSetup.Modify();
+        if ServiceMgtSetup.Get() then begin
+            ServiceMgtSetup."Allow Multiple Posting Groups" := ServiceMgtSetup."Allow Alter Posting Groups CZL";
+            ServiceMgtSetup.Modify();
+        end;
 
         VendorDataTransfer.SetTables(Database::"Vendor", Database::"Vendor");
         VendorDataTransfer.AddConstantValue(true, Vendor.FieldNo("Allow Multiple Posting Groups"));
@@ -2652,6 +2657,22 @@ codeunit 31017 "Upgrade Application CZL"
         UserSetupDataTransfer.CopyFields();
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetAllowVATPostingUpgradeTag());
+    end;
+
+    local procedure UpgradeOriginalVATAmountsInVATEntries()
+    var
+        VATEntry: Record "VAT Entry";
+        VATEntryDataTransfer: DataTransfer;
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetOriginalVATAmountsInVATEntriesUpgradeTag()) then
+            exit;
+
+        VATEntryDataTransfer.SetTables(Database::"VAT Entry", Database::"VAT Entry");
+        VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo(Base), VATEntry.FieldNo("Original VAT Base CZL"));
+        VATEntryDataTransfer.AddFieldValue(VATEntry.FieldNo(Amount), VATEntry.FieldNo("Original VAT Amount CZL"));
+        VATEntryDataTransfer.CopyFields();
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetOriginalVATAmountsInVATEntriesUpgradeTag());
     end;
 
     local procedure InsertRepSelection(ReportUsage: Enum "Report Selection Usage"; Sequence: Code[10]; ReportID: Integer)

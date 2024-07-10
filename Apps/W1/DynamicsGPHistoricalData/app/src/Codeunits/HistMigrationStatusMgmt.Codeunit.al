@@ -86,8 +86,24 @@ codeunit 40902 "Hist. Migration Status Mgmt."
         HistInventoryTrxLine: Record "Hist. Inventory Trx. Line";
         HistPurchaseRecvHeader: Record "Hist. Purchase Recv. Header";
         HistPurchaseRecvLine: Record "Hist. Purchase Recv. Line";
+        HistPayablesApply: Record "Hist. Payables Apply";
+        HistReceivablesApply: Record "Hist. Receivables Apply";
+        HistInvtTrxSerialLot: Record "Hist. Invt. Trx. SerialLot";
+        HistRecvTrxSerialLot: Record "Hist. Recv. Trx. SerialLot";
     begin
         UpdateStepStatus("Hist. Migration Step Type"::"Resetting Data", false);
+
+        if not HistRecvTrxSerialLot.IsEmpty() then
+            BatchDeleteAll(Database::"Hist. Recv. Trx. SerialLot", HistRecvTrxSerialLot.FieldNo(HistRecvTrxSerialLot."Primary Key"));
+
+        if not HistInvtTrxSerialLot.IsEmpty() then
+            BatchDeleteAll(Database::"Hist. Invt. Trx. SerialLot", HistInvtTrxSerialLot.FieldNo(HistInvtTrxSerialLot."Primary Key"));
+
+        if not HistReceivablesApply.IsEmpty() then
+            BatchDeleteAll(Database::"Hist. Receivables Apply", HistReceivablesApply.FieldNo(HistReceivablesApply."Primary Key"));
+
+        if not HistPayablesApply.IsEmpty() then
+            BatchDeleteAll(Database::"Hist. Payables Apply", HistPayablesApply.FieldNo(HistPayablesApply."Primary Key"));
 
         if not HistPurchaseRecvLine.IsEmpty() then
             BatchDeleteAll(Database::"Hist. Purchase Recv. Line", HistPurchaseRecvLine.FieldNo(HistPurchaseRecvLine."Primary Key"));

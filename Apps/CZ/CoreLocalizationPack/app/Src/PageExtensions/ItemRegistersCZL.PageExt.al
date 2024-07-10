@@ -20,8 +20,6 @@ pageextension 31010 "Item Registers CZL" extends "Item Registers"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Item Register - Quantity';
                 Image = GLRegisters;
-                Promoted = true;
-                PromotedCategory = "Report";
                 ToolTip = 'Open the report for item register quantity.';
 
 
@@ -39,8 +37,6 @@ pageextension 31010 "Item Registers CZL" extends "Item Registers"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Item Movement Document';
                 Image = Report;
-                Promoted = true;
-                PromotedCategory = "Report";
                 ToolTip = 'Open the report for item movement documentation.';
 
 
@@ -52,6 +48,15 @@ pageextension 31010 "Item Registers CZL" extends "Item Registers"
                     ItemRegister.SetRecFilter();
                     Report.Run(Report::"Posted Inventory Document CZL", true, false, ItemRegister);
                 end;
+            }
+        }
+        addlast(Category_Report)
+        {
+            actionref(ItemRegisterQuantityCZL_Promoted; ItemRegisterQuantityCZL)
+            {
+            }
+            actionref(ItemMovementDocumentCZL_Promoted; ItemMovementDocumentCZL)
+            {
             }
         }
     }

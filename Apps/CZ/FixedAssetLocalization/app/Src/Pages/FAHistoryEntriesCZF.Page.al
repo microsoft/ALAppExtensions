@@ -93,9 +93,6 @@ page 31248 "FA History Entries CZF"
                 Caption = 'Print';
                 Image = Print;
                 Ellipsis = true;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 ToolTip = 'Prepare to print the document. A report request window for the document opens where you can specify what to include on the print-out.';
 
                 trigger OnAction()
@@ -106,6 +103,15 @@ page 31248 "FA History Entries CZF"
                     CurrPage.SetSelectionFilter(FAHistoryEntryCZF);
                     Report.Run(Report::"FA Assignment/Discard CZF", true, false, FAHistoryEntryCZF);
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(Print_Promoted; Print)
+                {
+                }
             }
         }
     }

@@ -7,7 +7,7 @@
     "version":  "25.0.0.0",
     "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://learn.microsoft.com/en-us/dynamics365/business-central/finance-how-setup-use-service-declaration",
+    "help":  "https://learn.microsoft.com/en-us/dynamics365/business-central/across-how-setup-digital-vouchers",
     "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
     "logo":  "ExtensionLogo.png",
     "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2204541",
@@ -22,6 +22,11 @@
                                {
                                    "id":  "928f7b70-0dbd-431a-beb5-f45c4adbd361",
                                    "name":  "Enforced Digital Vouchers Test Library",
+                                   "publisher":  "Microsoft"
+                               },
+                               {
+                                   "id":  "bb837764-d7cc-4b7b-898a-3ea5a1fab62f",
+                                   "name":  "Enforced Digital Vouchers (DK)",
                                    "publisher":  "Microsoft"
                                }
                            ],

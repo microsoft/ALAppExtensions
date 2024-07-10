@@ -4,9 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Projects.Project.Journal;
 
-#if not CLEAN22
-using Microsoft.Inventory.Item;
-#endif
 using System.Security.User;
 
 codeunit 31077 "Job Journal Line Handler CZL"
@@ -30,19 +27,6 @@ codeunit 31077 "Job Journal Line Handler CZL"
     begin
         JobJournalLine.Validate("Invt. Movement Template CZL", LastJobJournalLine."Invt. Movement Template CZL");
     end;
-#if not CLEAN22
-#pragma warning disable AL0432
-
-    [EventSubscriber(ObjectType::Table, Database::"Job Journal Line", 'OnAfterAssignItemValues', '', false, false)]
-    local procedure CopyFromItemOnAfterAssignItemValues(var JobJournalLine: Record "Job Journal Line"; Item: Record Item)
-    begin
-        JobJournalLine."Tariff No. CZL" := Item."Tariff No.";
-        JobJournalLine."Statistic Indication CZL" := Item."Statistic Indication CZL";
-        JobJournalLine."Net Weight CZL" := Item."Net Weight";
-        JobJournalLine."Country/Reg. of Orig. Code CZL" := Item."Country/Region of Origin Code";
-    end;
-#pragma warning restore AL0432
-#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::JobJnlManagement, 'OnBeforeOpenJnl', '', false, false)]
     local procedure JournalTemplateUserRestrictionsOnBeforeOpenJnl(var JobJournalLine: Record "Job Journal Line")

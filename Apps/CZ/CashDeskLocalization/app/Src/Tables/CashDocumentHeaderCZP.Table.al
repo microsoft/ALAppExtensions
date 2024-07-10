@@ -24,7 +24,6 @@ using Microsoft.Utilities;
 using System.Automation;
 using System.Reflection;
 using System.Security.AccessControl;
-using System.Security.User;
 using System.Utilities;
 
 #pragma warning disable AA0232
@@ -96,7 +95,7 @@ table 11732 "Cash Document Header CZP"
                 end;
 
                 "Document Date" := "Posting Date";
-                "VAT Date" := "Posting Date";
+                Validate("VAT Date", "Posting Date");
             end;
         }
         field(7; Amount; Decimal)
@@ -221,6 +220,11 @@ table 11732 "Cash Document Header CZP"
         {
             Caption = 'VAT Date';
             DataClassification = CustomerContent;
+
+            trigger OnValidate()
+            begin
+                UpdateCashDocumentLinesByFieldNo(FieldNo("VAT Date"), CurrFieldNo <> 0);
+            end;
         }
         field(38; "Created Date"; Date)
         {
@@ -318,7 +322,7 @@ table 11732 "Cash Document Header CZP"
 
             trigger OnValidate()
             begin
-                if not UserSetupManagement.CheckRespCenter(3, "Responsibility Center") then
+                if not CashDeskManagementCZP.CheckResponsibilityCenter("Responsibility Center") then
                     Error(RespCenterErr, FieldCaption("Responsibility Center"), CashDeskManagementCZP.GetUserCashResponsibilityFilter(CopyStr(UserId(), 1, 50)));
 
                 CreateDimFromDefaultDim(Rec.FieldNo("Responsibility Center"));
@@ -599,6 +603,7 @@ table 11732 "Cash Document Header CZP"
     var
         PaymentTxt: Label 'Payment %1', Comment = '%1 = Document No.';
         RefundTxt: Label 'Refund %1', Comment = '%1 = Document No.';
+        InvoiceTxt: Label 'Invoice %1', Comment = '%1 = Document No.';
 
     trigger OnDelete()
     var
@@ -612,7 +617,7 @@ table 11732 "Cash Document Header CZP"
         DeleteRecordInApprovalRequest();
 
         CashDeskManagementCZP.CheckCashDesks();
-        if not UserSetupManagement.CheckRespCenter(3, "Responsibility Center") then
+        if not CashDeskManagementCZP.CheckResponsibilityCenter("Responsibility Center") then
             Error(RespCenterDeleteErr, FieldCaption("Responsibility Center"), CashDeskManagementCZP.GetUserCashResponsibilityFilter(CopyStr(UserId(), 1, 50)));
 
         CashDocumentPostCZP.DeleteCashDocumentHeader(Rec);
@@ -704,7 +709,7 @@ table 11732 "Cash Document Header CZP"
 
     trigger OnModify()
     begin
-        if not UserSetupManagement.CheckRespCenter(3, "Responsibility Center") then
+        if not CashDeskManagementCZP.CheckResponsibilityCenter("Responsibility Center") then
             Error(RespCenterModifyErr, FieldCaption("Responsibility Center"), CashDeskManagementCZP.GetUserCashResponsibilityFilter(CopyStr(UserId(), 1, 50)));
     end;
 
@@ -725,7 +730,6 @@ table 11732 "Cash Document Header CZP"
         NoSeriesManagement: Codeunit NoSeriesManagement;
 #endif
         DimensionManagement: Codeunit DimensionManagement;
-        UserSetupManagement: Codeunit "User Setup Management";
         ConfirmManagement: Codeunit "Confirm Management";
         CashDeskManagementCZP: Codeunit "Cash Desk Management CZP";
         RenameErr: Label 'You cannot rename a %1.', Comment = '%1 = TableCaption';
@@ -962,6 +966,8 @@ table 11732 "Cash Document Header CZP"
                         CashDocumentLineCZP."Salespers./Purch. Code" := "Salespers./Purch. Code";
                     FieldNo("Responsibility Center"):
                         CashDocumentLineCZP."Responsibility Center" := "Responsibility Center";
+                    FieldNo("VAT Date"):
+                        CashDocumentLineCZP.UpdateAmounts();
                 end;
                 CashDocumentLineCZP.Modify(true);
             until CashDocumentLineCZP.Next() = 0;
@@ -1242,7 +1248,7 @@ table 11732 "Cash Document Header CZP"
         "Shortcut Dimension 1 Code" := PurchInvHeader."Shortcut Dimension 1 Code";
         "Shortcut Dimension 2 Code" := PurchInvHeader."Shortcut Dimension 2 Code";
         "Dimension Set ID" := PurchInvHeader."Dimension Set ID";
-        "Payment Purpose" := StrSubstNo(RefundTxt, PurchInvHeader."No.");
+        "Payment Purpose" := StrSubstNo(InvoiceTxt, PurchInvHeader."No.");
         "Partner Type" := "Partner Type"::Vendor;
         Validate("Partner No.", PurchInvHeader."Buy-from Vendor No.");
         OnAfterCopyCashDocumentHeaderFromPurchInvHeader(PurchInvHeader, Rec);
