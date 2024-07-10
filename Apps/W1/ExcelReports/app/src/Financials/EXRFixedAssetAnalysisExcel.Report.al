@@ -7,6 +7,7 @@ using Microsoft.FixedAssets.Posting;
 report 4412 "EXR Fixed Asset Analysis Excel"
 {
     ApplicationArea = All;
+    AdditionalSearchTerms = 'FA Analysis Excel,FA Analysis';
     Caption = 'Fixed Asset Analysis Excel (Preview)';
     DataAccessIntent = ReadOnly;
     DefaultRenderingLayout = FixedAssetAnalysisExcel;
@@ -19,7 +20,7 @@ report 4412 "EXR Fixed Asset Analysis Excel"
         dataitem(FixedAssetData; "Fixed Asset")
         {
             DataItemTableView = sorting("No.");
-            PrintOnlyIfDetail = true;
+            RequestFilterFields = "No.", "FA Class Code", "FA Subclass Code";
             column(AssetNumber; "No.") { IncludeCaption = true; }
             column(AssetDescription; Description) { IncludeCaption = true; }
             column(FixedAssetClassCode; "FA Class Code") { IncludeCaption = true; }
@@ -28,6 +29,8 @@ report 4412 "EXR Fixed Asset Analysis Excel"
             column(BudgetedAsset; "Budgeted Asset") { IncludeCaption = true; }
             column(AcquisitionDateField; AcquisitionDate) { }
             column(DisposalDateField; DisposalDate) { }
+            column(GlobalDimension1Code; "Global Dimension 1 Code") { IncludeCaption = true; }
+            column(GlobalDimension2Code; "Global Dimension 2 Code") { IncludeCaption = true; }
             dataitem(FAPostingType; "FA Posting Type")
             {
                 DataItemTableView = where("FA Entry" = const(true));

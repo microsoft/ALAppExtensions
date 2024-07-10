@@ -40,6 +40,7 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
         PerCompanyUpgradeTags.Add(GetSubstCustVendPostingGroupUpgradeTag());
         PerCompanyUpgradeTags.Add(GetVATStatementReportExtensionUpgradeTag());
         PerCompanyUpgradeTags.Add(GetAllowVATPostingUpgradeTag());
+        PerCompanyUpgradeTags.Add(GetOriginalVATAmountsInVATEntriesUpgradeTag());
     end;
 
     procedure GetDataVersion174PerDatabaseUpgradeTag(): Code[250]
@@ -170,5 +171,10 @@ codeunit 31016 "Upgrade Tag Definitions CZL"
     procedure GetAllowVATPostingUpgradeTag(): Code[250]
     begin
         exit('CZL-495916-AllowVATPostingUpgradeTag-20240109');
+    end;
+
+    procedure GetOriginalVATAmountsInVATEntriesUpgradeTag(): Code[250]
+    begin
+        exit('CZL-539623-OriginalVATAmountsInVATEntriesUpgradeTag-20240627');
     end;
 }

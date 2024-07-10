@@ -102,7 +102,6 @@ codeunit 2752 "Universal Print Graph Helper"
         ResponseContent: Text;
     begin
         BodyConfigJsonObject.Add('outputBin', UniversalPrinterSettings."Paper Tray");
-        BodyConfigJsonObject.Add('mediaSize', this.ConvertPaperSizeToUniversalPrintMediaSize(UniversalPrinterSettings."Paper Size"));
         if UniversalPrinterSettings.Landscape then
             BodyConfigJsonObject.Add('orientation', this.GetOrientationName(Enum::"Universal Printer Orientation"::landscape));
 
@@ -278,40 +277,6 @@ codeunit 2752 "Universal Print Graph Helper"
         RequestId := ResponseHeaders.Get('Request-Id');
     end;
 
-    local procedure ConvertPaperSizeToUniversalPrintMediaSize(PaperSize: Enum "Printer Paper Kind"): Text
-    var
-        UniversalPrintMediaSize: Text;
-    begin
-        // For universal print supported media sizes, refer https://learn.microsoft.com/en-us/graph/api/resources/printercapabilities?view=graph-rest-1.0#mediasizes-values
-        case PaperSize of
-            PaperSize::A3:
-                UniversalPrintMediaSize := A3SizeTxt;
-            PaperSize::A4:
-                UniversalPrintMediaSize := A4SizeTxt;
-            PaperSize::A5:
-                UniversalPrintMediaSize := A5SizeTxt;
-            PaperSize::A6:
-                UniversalPrintMediaSize := A6SizeTxt;
-            PaperSize::JapanesePostcard:
-                UniversalPrintMediaSize := JPNHagakiSizeTxt;
-            PaperSize::Executive:
-                UniversalPrintMediaSize := NorthAmericaExecutiveSizeTxt;
-            PaperSize::Ledger:
-                UniversalPrintMediaSize := NorthAmericaLedgerSizeTxt;
-            PaperSize::Legal:
-                UniversalPrintMediaSize := NorthAmericaLegalSizeTxt;
-            PaperSize::Letter:
-                UniversalPrintMediaSize := NorthAmericaLetterSizeTxt;
-            PaperSize::Statement:
-                UniversalPrintMediaSize := NorthAmericaInvoiceSizeTxt
-            else
-                // Use the name value of the enum
-                UniversalPrintMediaSize := Format(PaperSize);
-        end;
-
-        exit(UniversalPrintMediaSize);
-    end;
-
     internal procedure GetPaperSizeFromUniversalPrintMediaSize(textValue: Text): Enum "Printer Paper Kind"
     var
         PrinterPaperKind: Enum "Printer Paper Kind";
@@ -465,10 +430,6 @@ codeunit 2752 "Universal Print Graph Helper"
         InvokeWebRequestFailedTelemetryTxt: Label 'Invoking web request has failed. Status %1, Message %2, RequestId %3', Locked = true;
         NotFoundTelemetryTxt: Label 'Not Found.', Locked = true;
         UniversalPrintPortalUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2153618', Locked = true;
-        A3SizeTxt: Label 'A3', Locked = true;
-        A4SizeTxt: Label 'A4', Locked = true;
-        A5SizeTxt: Label 'A5', Locked = true;
-        A6SizeTxt: Label 'A6', Locked = true;
         JPNHagakiSizeTxt: Label 'JPN Hagaki', Locked = true;
         NorthAmericaExecutiveSizeTxt: Label 'North America Executive', Locked = true;
         NorthAmericaInvoiceSizeTxt: Label 'North America Invoice', Locked = true;

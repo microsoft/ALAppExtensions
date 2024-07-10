@@ -23,6 +23,11 @@
                                    "id":  "928f7b70-0dbd-431a-beb5-f45c4adbd361",
                                    "name":  "Enforced Digital Vouchers Test Library",
                                    "publisher":  "Microsoft"
+                               },
+                               {
+                                   "id":  "bb837764-d7cc-4b7b-898a-3ea5a1fab62f",
+                                   "name":  "Enforced Digital Vouchers (DK)",
+                                   "publisher":  "Microsoft"
                                }
                            ],
     "features":  [
