@@ -1,7 +1,6 @@
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Finance.Currency;
-using System.Text;
 
 codeunit 30317 "Shpfy Mtfld Type Money" implements "Shpfy IMetafield Type"
 {
