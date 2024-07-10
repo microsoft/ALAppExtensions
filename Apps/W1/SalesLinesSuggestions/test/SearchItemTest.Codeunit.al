@@ -29,6 +29,7 @@ codeunit 139780 "Search Item Test"
         QuantityIsIncorrectErr: Label 'Quantity is incorrect!';
         NeedThreeItemButOneNotExistingLbl: Label 'I need one bike, one table and one Model Took Kit';
         NeedItemInNonEnglishLbl: Label 'I need one bicikl.';
+        InvalidPrecisionErr: Label 'The value %1 in field %2 is of lesser precision than expected. \\Note: Default rounding precision of %3 is used if a rounding precision is not defined.', Comment = '%1 - decimal value, %2 - field name, %3 - default rounding precision.';
 
 
     [Test]
@@ -703,6 +704,42 @@ codeunit 139780 "Search Item Test"
         CheckSalesLineContent(SalesHeader."No.");
     end;
 
+    [Test]
+    [HandlerFunctions('InvokeGenerateAndCheckItemsFound,SendNotificationHandler')]
+    procedure SalesLineIsNotInsertedIfErrorOccursOnInsertSuggestedLine()
+    var
+        SalesHeader: Record "Sales Header";
+        Item: Record Item;
+        SalesLineAISuggestions: Page "Sales Line AI Suggestions";
+        UserInput: Text;
+        Quantity: Text;
+    begin
+        // [SCENARIO 507779] If error occurs on insert suggested lines, notification is thrown and lines are not inserted
+        Initialize();
+
+        // [GIVEN] Find first Item
+        Item.FindFirst();
+        UpdateRoundingPrecisonForItem(Item);
+
+        // [GIVEN] Create user input
+        Quantity := '2.5';
+        UserInput := GlobalUserInput;
+        UserInput += Quantity + ' quantity of ' + Item."No." + '; ';
+
+        LibraryVariableStorage.Enqueue(UserInput);
+        LibraryVariableStorage.Enqueue(1);
+        EnqueueOneItemAndQty(Item.Description, 2.5);
+
+        LibraryVariableStorage.Enqueue(StrSubstNo(InvalidPrecisionErr, Quantity, 'Quantity', '0.00001'));
+
+        // [WHEN] AI suggestions should generate sales line
+        // [HANDLER] Show a notification, it is handled in the handler function 'SendNotificationHandler'
+        CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions);
+
+        // [THEN] No line is inserted in the sales line
+        CheckSalesLineContent(SalesHeader."No.");
+    end;
+
     local procedure CreateSalesOrderWithSalesLine(var SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line")
     var
         Customer: Record Customer;
@@ -796,7 +833,7 @@ codeunit 139780 "Search Item Test"
         LibraryVariableStorage.AssertEmpty();
     end;
 
-    local procedure EnqueueOneItemAndQty(ItemDesc: Text; Qty: Integer)
+    local procedure EnqueueOneItemAndQty(ItemDesc: Text; Qty: Decimal)
     begin
         LibraryVariableStorage.Enqueue(ItemDesc);
         LibraryVariableStorage.Enqueue(Qty);
@@ -814,6 +851,19 @@ codeunit 139780 "Search Item Test"
         ExtText := ExtendedTextLine.Text;
     end;
 
+    local procedure UpdateRoundingPrecisonForItem(var Item: Record Item)
+    var
+        ItemUnitOfMeasure: Record "Item Unit of Measure";
+    begin
+        ItemUnitOfMeasure.SetRange("Item No.", Item."No.");
+        ItemUnitOfMeasure.SetRange(Code, Item."Base Unit of Measure");
+        if ItemUnitOfMeasure.FindSet() then
+            repeat
+                ItemUnitOfMeasure."Qty. Rounding Precision" := 1;
+                ItemUnitOfMeasure.Modify();
+            until ItemUnitOfMeasure.Next() = 0;
+    end;
+
     [ModalPageHandler]
     procedure InvokeGenerateAndNoItemFound(var SalesLineAISuggestions: TestPage "Sales Line AI Suggestions")
     begin
@@ -827,7 +877,7 @@ codeunit 139780 "Search Item Test"
     procedure InvokeGenerateAndCheckItemsFound(var SalesLineAISuggestions: TestPage "Sales Line AI Suggestions")
     var
         ItemCount: Integer;
-        quantityInSalesLineSub: Integer;
+        quantityInSalesLineSub: Decimal;
         i: Integer;
     begin
         // Description for this queue:
@@ -842,7 +892,7 @@ codeunit 139780 "Search Item Test"
         for i := 1 to ItemCount do begin
             Assert.AreEqual(LibraryVariableStorage.DequeueText(), SalesLineAISuggestions.SalesLinesSub.Description.Value(), DescriptionIsIncorrectErr);
             Evaluate(quantityInSalesLineSub, SalesLineAISuggestions.SalesLinesSub.Quantity.Value());
-            Assert.AreEqual(LibraryVariableStorage.DequeueInteger(), quantityInSalesLineSub, QuantityIsIncorrectErr);
+            Assert.AreEqual(LibraryVariableStorage.DequeueDecimal(), quantityInSalesLineSub, QuantityIsIncorrectErr);
             SalesLineAISuggestions.SalesLinesSub.Next();
         end;
         SalesLineAISuggestions.OK.Invoke();

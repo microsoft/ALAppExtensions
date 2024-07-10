@@ -333,7 +333,6 @@ page 6121 "E-Document"
                     ToolTip = 'Match E-document lines to Purchase Order.';
                     Image = SparkleFilled;
                     Visible = ShowMapToOrder and CopilotVisible;
-                    Enabled = CopilotEnabled;
 
                     trigger OnAction()
                     var
@@ -481,7 +480,6 @@ page 6121 "E-Document"
         HasErrorsOrWarnings := false;
         HasErrors := false;
         IsProcessed := false;
-        CopilotEnabled := EDocPOMatching.IsCopilotEnabled();
         CopilotVisible := EDocPOMatching.IsCopilotVisible();
     end;
 
@@ -580,7 +578,7 @@ page 6121 "E-Document"
         EDocumentHelper: Codeunit "E-Document Processing";
         ErrorsAndWarningsNotification: Notification;
         RecordLinkTxt, StyleStatusTxt : Text;
-        ShowRelink, ShowMapToOrder, HasErrorsOrWarnings, HasErrors, IsIncomingDoc, IsProcessed, CopilotEnabled, CopilotVisible : Boolean;
+        ShowRelink, ShowMapToOrder, HasErrorsOrWarnings, HasErrors, IsIncomingDoc, IsProcessed, CopilotVisible : Boolean;
         EDocHasErrorOrWarningMsg: Label 'Errors or warnings found for E-Document. Please review below in "Error Messages" section.';
         DocNotCreatedMsg: Label 'Failed to create new %1 from E-Document. Please review errors below.', Comment = '%1 - E-Document Document Type';
 

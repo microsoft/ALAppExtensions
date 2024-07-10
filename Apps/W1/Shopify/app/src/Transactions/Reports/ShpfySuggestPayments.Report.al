@@ -56,7 +56,7 @@ report 30118 "Shpfy Suggest Payments"
                     ToolTip = 'Specifies the name of the journal template that is used for the posting.';
                     Visible = not IsGenJournalLineSet;
                     Editable = not IsJournalTemplateFound;
-
+                    ShowMandatory = true;
                     trigger OnValidate()
                     begin
                         ValidatePostingDate();
@@ -69,7 +69,7 @@ report 30118 "Shpfy Suggest Payments"
                     Lookup = true;
                     ToolTip = 'Specifies the name of the journal batch that is used for the posting.';
                     Visible = not IsGenJournalLineSet;
-
+                    ShowMandatory = true;
                     trigger OnLookup(var Text: Text): Boolean
                     var
                         GenJnlManagement: Codeunit GenJnlManagement;
@@ -91,6 +91,7 @@ report 30118 "Shpfy Suggest Payments"
                     Caption = 'Posting Date';
                     Importance = Promoted;
                     ToolTip = 'Specifies the date for the posting of this batch job. By default, the working date is entered, but you can change it.';
+                    ShowMandatory = true;
 
                     trigger OnValidate()
                     begin
@@ -199,7 +200,7 @@ report 30118 "Shpfy Suggest Payments"
         CustLedgerEntry: Record "Cust. Ledger Entry";
         RefundHeader: Record "Shpfy Refund Header";
         AmountToApply: Decimal;
-        CreditMemoFound: Boolean;
+        Applied: Boolean;
     begin
         AmountToApply := OrderTransaction.Amount;
 
@@ -215,13 +216,15 @@ report 30118 "Shpfy Suggest Payments"
                             CustLedgerEntry.SetRange("Applies-to ID", '');
                             CustLedgerEntry.SetRange("Document Type", CustLedgerEntry."Document Type"::Invoice);
                             CustLedgerEntry.SetRange("Document No.", SalesInvoiceHeader."No.");
-                            if CustLedgerEntry.FindSet() then
+                            if CustLedgerEntry.FindSet() then begin
+                                Applied := true;
                                 repeat
                                     CreateSuggestPaymentDocument(CustLedgerEntry, AmountToApply, true);
                                 until CustLedgerEntry.Next() = 0;
+                            end;
                         until SalesInvoiceHeader.Next() = 0;
 
-                        if AmountToApply > 0 then
+                        if Applied and (AmountToApply > 0) then
                             CreateSuggestPaymentGLAccount(AmountToApply, true);
                     end;
                 end;
@@ -233,23 +236,23 @@ report 30118 "Shpfy Suggest Payments"
                         repeat
                             SalesCreditMemoHeader.SetLoadFields("Shpfy Refund Id", "No.");
                             SalesCreditMemoHeader.SetRange("Shpfy Refund Id", RefundHeader."Refund Id");
-                            if SalesCreditMemoHeader.FindSet() then begin
-                                CreditMemoFound := true;
+                            if SalesCreditMemoHeader.FindSet() then
                                 repeat
                                     CustLedgerEntry.SetAutoCalcFields("Remaining Amount");
                                     CustLedgerEntry.SetRange("Open", true);
                                     CustLedgerEntry.SetRange("Applies-to ID", '');
                                     CustLedgerEntry.SetRange("Document Type", CustLedgerEntry."Document Type"::"Credit Memo");
                                     CustLedgerEntry.SetRange("Document No.", SalesCreditMemoHeader."No.");
-                                    if CustLedgerEntry.FindSet() then
+                                    if CustLedgerEntry.FindSet() then begin
+                                        Applied := true;
                                         repeat
                                             CreateSuggestPaymentDocument(CustLedgerEntry, AmountToApply, false);
                                         until CustLedgerEntry.Next() = 0;
+                                    end;
                                 until SalesCreditMemoHeader.Next() = 0;
-                            end;
                         until RefundHeader.Next() = 0;
 
-                        if CreditMemoFound and (AmountToApply > 0) then
+                        if Applied and (AmountToApply > 0) then
                             CreateSuggestPaymentGLAccount(AmountToApply, false);
                     end;
                 end;
@@ -353,7 +356,7 @@ report 30118 "Shpfy Suggest Payments"
                     GenJournalLine.Validate("Applies-to Doc. No.", TempSuggestPayment."Invoice No.");
                 end;
                 if TempSuggestPayment."Credit Memo No." <> '' then begin
-                    GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::"Credit Memo");
+                    GenJournalLine.Validate("Document Type", GenJournalLine."Document Type"::Refund);
                     GenJournalLine."Applies-to Doc. Type" := GenJournalLine."Applies-to Doc. Type"::"Credit Memo";
                     GenJournalLine.Validate("Applies-to Doc. No.", TempSuggestPayment."Credit Memo No.");
                 end;

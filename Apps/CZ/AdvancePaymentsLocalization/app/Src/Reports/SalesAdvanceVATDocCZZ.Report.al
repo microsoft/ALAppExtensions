@@ -290,7 +290,7 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                     {
                         DataItemLink = "Sales Adv. Letter No." = field("Sales Adv. Letter No."), "Document No." = field("Document No.");
                         DataItemLinkReference = TempSalesAdvLetterEntry;
-                        DataItemTableView = sorting("Document No.") where("Entry Type" = filter("VAT Payment" | "VAT Usage" | "VAT Close"));
+                        DataItemTableView = sorting("Document No.") where("Entry Type" = filter("VAT Payment" | "VAT Usage" | "VAT Close"), "Auxiliary Entry" = const(false));
 
                         trigger OnAfterGetRecord()
                         begin
@@ -542,9 +542,12 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
         NoOfCop: Integer;
 
     local procedure IsCreditMemo(SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"): Boolean
+    var
+        DocumentAmount: Decimal;
     begin
-        exit(((SalesAdvLetterEntryCZZ.CalcDocumentAmount() > 0) and (SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Payment")) or
-             ((SalesAdvLetterEntryCZZ.CalcDocumentAmount() < 0) and (SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Usage")) or
+        DocumentAmount := SalesAdvLetterEntryCZZ.CalcDocumentAmount();
+        exit(((SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Payment") and (DocumentAmount > 0)) or
+             ((SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Usage") and (DocumentAmount < 0)) or
              (SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Close"));
     end;
 }

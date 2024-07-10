@@ -4,13 +4,17 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.GeneralLedger.Posting;
 
+using Microsoft.Finance.Deferral;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Ledger;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.ReceivablesPayables;
+using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.VAT.Setup;
 using Microsoft.Foundation.AuditCodes;
+using Microsoft.Purchases.Vendor;
+using Microsoft.Sales.Customer;
 using System.Utilities;
 using System.Security.User;
 
@@ -373,6 +377,67 @@ codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
             exit;
 
         IsHandled := PersistConfirmResponseCZL.GetPersistentResponse();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforePostDtldCVLedgEntry', '', false, false)]
+    local procedure OnBeforePostDtldCVLedgEntry(sender: Codeunit "Gen. Jnl.-Post Line"; var GenJournalLine: Record "Gen. Journal Line"; var DetailedCVLedgEntryBuffer: Record "Detailed CV Ledg. Entry Buffer"; var AccNo: Code[20]; var IsHandled: Boolean; AddCurrencyCode: Code[10]; MultiplePostingGroups: Boolean)
+    var
+        CustomerPostingGroup: Record "Customer Posting Group";
+        VendorPostingGroup: Record "Vendor Posting Group";
+        PostingGroupAccountNo: Code[20];
+        OldCorrection: Boolean;
+    begin
+        if IsHandled then
+            exit;
+
+        if MultiplePostingGroups and
+           (DetailedCVLedgEntryBuffer."Entry Type" = DetailedCVLedgEntryBuffer."Entry Type"::Application)
+        then begin
+            case GenJournalLine."Account Type" of
+                GenJournalLine."Account Type"::Customer:
+                    begin
+                        CustomerPostingGroup.Get(GenJournalLine."Posting Group");
+                        PostingGroupAccountNo := CustomerPostingGroup.GetReceivablesAccount();
+                    end;
+                GenJournalLine."Account Type"::Vendor:
+                    begin
+                        VendorPostingGroup.Get(GenJournalLine."Posting Group");
+                        PostingGroupAccountNo := VendorPostingGroup.GetPayablesAccount();
+                    end;
+                else
+                    exit;
+            end;
+
+            if AccNo = PostingGroupAccountNo then begin
+                OldCorrection := GenJournalLine.Correction;
+                GenJournalLine.Correction := true;
+                sender.CreateGLEntry(GenJournalLine, AccNo, DetailedCVLedgEntryBuffer."Amount (LCY)", 0, DetailedCVLedgEntryBuffer."Currency Code" = AddCurrencyCode);
+                GenJournalLine.Correction := OldCorrection;
+                IsHandled := true;
+            end;
+        end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPostDeferralPostBufferOnAfterFindDeferalPostingBuffer', '', false, false)]
+    local procedure GetNonDeductibleVATPctOnPostDeferralPostBufferOnAfterFindDeferalPostingBuffer(GenJournalLine: Record "Gen. Journal Line"; var DeferralPostingBuffer: Record "Deferral Posting Buffer"; var NonDeductibleVATPct: Decimal)
+    begin
+        NonDeductibleVATPct := GetNonDeductibleVATPct(GenJournalLine, DeferralPostingBuffer."Deferral Doc. Type");
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPostDeferralOnAfterGetNonDeductibleVATPct', '', false, false)]
+    local procedure GetNonDeductibleVATPctOnPostDeferralOnAfterGetNonDeductibleVATPct(GenJournalLine: Record "Gen. Journal Line"; DeferralDocType: Enum "Deferral Document Type"; var NonDeductibleVATPct: Decimal)
+    begin
+        NonDeductibleVATPct := GetNonDeductibleVATPct(GenJournalLine, DeferralDocType);
+    end;
+
+    local procedure GetNonDeductibleVATPct(GenJournalLine: Record "Gen. Journal Line"; DeferralDocType: Enum "Deferral Document Type"): Decimal
+    var
+        NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
+    begin
+        exit(NonDeductibleVATCZL.GetNonDeductibleVATPct(
+            GenJournalLine."VAT Bus. Posting Group", GenJournalLine."VAT Prod. Posting Group",
+            NonDeductibleVATCZL.GetGeneralPostingTypeFromDeferralDocType(DeferralDocType),
+            GenJournalLine."VAT Reporting Date"));
     end;
 
     [IntegrationEvent(false, false)]

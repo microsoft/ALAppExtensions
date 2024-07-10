@@ -593,7 +593,7 @@ codeunit 30157 "Shpfy Json Helper"
                         if PostCode.Get(CompanyInformation."Post Code", CompanyInformation.City) then
                             if PostCode."Time Zone" <> '' then
                                 if TryGetTimezoneOffset(UTC, PostCode."Time Zone", OffSet) then
-                                    exit(DT2Date(UTC - OffSet));
+                                    exit(DT2Date(UTC + OffSet));
                     exit(DT2Date(UTC));
                 end;
                 exit(DT2Date(JValue.AsDateTime()));

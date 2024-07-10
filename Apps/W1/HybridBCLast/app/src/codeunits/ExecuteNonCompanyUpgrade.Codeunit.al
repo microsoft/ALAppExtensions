@@ -7,9 +7,6 @@ codeunit 4055 "Execute Non-Company Upgrade"
 {
     Description = 'This codeunit executes Non-Company upgrade.';
     TableNo = "Hybrid Replication Summary";
-    ObsoleteState = Pending;
-    ObsoleteReason = 'This functionality will be replaced by invoking the actual upgrade from each of the apps';
-    ObsoleteTag = '17.0';
 
     trigger OnRun()
     begin

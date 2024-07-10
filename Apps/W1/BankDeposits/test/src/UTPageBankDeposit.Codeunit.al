@@ -663,11 +663,11 @@ codeunit 139768 "UT Page Bank Deposit"
         Page.Run(Page::"Bank Deposit", BankDepositHeader);
         BankDeposit.Subform."Account Type".SetValue(GenJnlLine."Account Type"::Vendor.AsInteger());
         BankDeposit.Subform."Account No.".SetValue(LibraryPurchase.CreateVendorNo());
-        BankDeposit.Subform."Document No.".SetValue(LibraryUtility.GenerateRandomNumericText(2));
+        BankDeposit.Subform."External Document No.".SetValue(LibraryUtility.GenerateRandomNumericText(2));
         BankDeposit.Subform."Credit Amount".SetValue(BankDepositHeader."Total Deposit Amount");
 
         // [GIVEN] Get the created General Jnl Line.
-        GenJnlLine.SetFilter("External Document No.", BankDepositHeader."No.");
+        GenJnlLine.SetFilter("Document No.", BankDepositHeader."No.");
         GenJnlLine.FindFirst();
         SourceCodeSetup.Get();
 
@@ -746,6 +746,22 @@ codeunit 139768 "UT Page Bank Deposit"
         // [VERIFY] Find the first record of Bank Deposit and verify Journal Template Name
         BankDepositHeader.FindFirst();
         Assert.AreEqual(GenJournalTemplate.Name, BAnkDepositHeader."Journal Template Name", '');
+    end;
+
+    [Test]
+    procedure DefaultValueOfDocumentNoForDepositLineIsTheBankDepositNo()
+    var
+        BankDepositHeader: Record "Bank Deposit Header";
+        BankDeposit: TestPage "Bank Deposit";
+    begin
+        // [SCENARIO 537832] Bank Deposit default values for lines should be the bank deposit number for the "Document No." and blank for the "External Document No."
+        // [GIVEN] A Bank Deposit Header without lines
+        CreateBankDepositHeader(BankDepositHeader, '');
+        // [WHEN] Opening the Bank Deposit page
+        OpenDepositPage(BankDeposit, BankDepositHeader);
+        // [THEN] The default values for the lines are as expected.
+        Assert.AreEqual(BankDepositHeader."No.", BankDeposit.Subform."Document No.".Value(), 'The default value of Document No. for the Deposit Line should be the Bank Deposit No.');
+        Assert.AreEqual('', BankDeposit.Subform."External Document No.".Value(), 'The default value of External Document No. for the Deposit Line should be empty.');
     end;
 
     local procedure GetBankDepositsFeature(var FeatureDataUpdateStatus: Record "Feature Data Update Status"; ID: Text[50])

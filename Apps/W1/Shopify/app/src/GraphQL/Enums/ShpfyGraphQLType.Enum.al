@@ -400,12 +400,17 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
         Caption = 'Get Next Catalog Products';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextCatalogProducts";
     }
-    value(78; ProductVariantDelete)
+    value(78; GetOrderTransactions)
+    {
+        Caption = 'Get Order Transactions';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL OrderTransactions";
+    }
+    value(79; ProductVariantDelete)
     {
         Caption = 'Product Variant Delete';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL ProductVariantDelete";
     }
-    value(79; GetProductOptions)
+    value(80; GetProductOptions)
     {
         Caption = 'Get Product Options';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL GetProductOptions";

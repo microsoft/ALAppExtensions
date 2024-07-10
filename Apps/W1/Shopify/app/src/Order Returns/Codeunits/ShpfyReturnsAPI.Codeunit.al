@@ -43,10 +43,10 @@ codeunit 30250 "Shpfy Returns API"
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, LineParameters);
             GraphQLType := "Shpfy GraphQL Type"::GetNextReturnLines;
             JLines := JsonHelper.GetJsonArray(JResponse, 'data.return.returnLineItems.nodes');
-            if Parameters.ContainsKey('After') then
-                Parameters.Set('After', JsonHelper.GetValueAsText(JResponse, 'data.return.returnLineItems.pageInfo.endCursor'))
+            if LineParameters.ContainsKey('After') then
+                LineParameters.Set('After', JsonHelper.GetValueAsText(JResponse, 'data.return.returnLineItems.pageInfo.endCursor'))
             else
-                Parameters.Add('After', JsonHelper.GetValueAsText(JResponse, 'data.return.returnLineItems.pageInfo.endCursor'));
+                LineParameters.Add('After', JsonHelper.GetValueAsText(JResponse, 'data.return.returnLineItems.pageInfo.endCursor'));
             foreach JLine in JLines do
                 FillInReturnLine(ReturnId, JLine.AsObject());
         until not JsonHelper.GetValueAsBoolean(JResponse, 'data.return.returnLineItems.pageInfo.hasNextPage');

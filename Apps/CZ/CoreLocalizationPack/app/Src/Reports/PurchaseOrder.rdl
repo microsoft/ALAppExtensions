@@ -4376,9 +4376,6 @@ End Function</Code>
         <Field Name="UoMLbl">
           <DataField>UoMLbl</DataField>
         </Field>
-        <Field Name="CreatorLbl">
-          <DataField>CreatorLbl</DataField>
-        </Field>
         <Field Name="SubtotalLbl">
           <DataField>SubtotalLbl</DataField>
         </Field>
@@ -4618,15 +4615,6 @@ End Function</Code>
         </Field>
         <Field Name="InvDiscountAmount_PurchaseLineFormat">
           <DataField>InvDiscountAmount_PurchaseLineFormat</DataField>
-        </Field>
-        <Field Name="FullName_Employee">
-          <DataField>FullName_Employee</DataField>
-        </Field>
-        <Field Name="PhoneNo_Employee">
-          <DataField>PhoneNo_Employee</DataField>
-        </Field>
-        <Field Name="CompanyEMail_Employee">
-          <DataField>CompanyEMail_Employee</DataField>
         </Field>
       </Fields>
       <Query>

@@ -902,6 +902,30 @@ codeunit 18479 "GST Subcontracting"
         Assert.Equal(OutstandingQtyBase, 0);
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure SubconOrderToRegVendInterStateWithCalcFormulaInProdBOM()
+    var
+        ProductionOrder: Record "Production Order";
+        PurchaseLine: Record "Purchase Line";
+        GSTGroupType: Enum "GST Group Type";
+        GSTVendorType: Enum "GST Vendor Type";
+    begin
+        // [SCENARIO] [535618] Check if the system on subcontracting order for Registered Vendor is calculating correct Qty. to send when Prod BOM Calculation Formula is Length * Width * Depth
+        // [GIVEN] Setups created
+        CreateGSTSubconSetups(GSTVendorType::Registered, GSTGroupType::Goods, false);
+
+        // [GIVEN] Update Production BOM with Calculation Formula as Length * Width * Depth
+        UpdateProductionBOM();
+
+        // [WHEN] Create Subcontracting Order from Released Purchase Order, Update Deliver Comp. For In Order Subcon. Details Delivery
+        CreateSubcontractingOrderFromReleasedProdOrder(ProductionOrder, PurchaseLine);
+        UpdateDeliverCompForFieldInPurchLine(PurchaseLine);
+
+        // [THEN] Verify Quantity To Send In Sub Order Component List
+        VerifyQuantityToSendInSubOrderComponentList(ProductionOrder);
+    end;
+
     local procedure CreateGSTSubconSetups(
         GSTVendorType: Enum "GST Vendor Type";
                            GSTGroupType: Enum "GST Group Type";
@@ -1296,6 +1320,47 @@ codeunit 18479 "GST Subcontracting"
         MainItemNo := (Storage.Get(XMainItemNoTok));
         MainItem.Get(MainItemNo);
         LibraryItemTracking.AddSerialNoTrackingInfo(MainItem);
+    end;
+
+    local procedure UpdateProductionBOM()
+    var
+        MainItem: Record Item;
+        ProductionBOMHeader: Record "Production BOM Header";
+        MainItemNo: Code[20];
+    begin
+        MainItemNo := (Storage.Get(XMainItemNoTok));
+        MainItem.Get(MainItemNo);
+        ProductionBOMHeader.Get(MainItem."Production BOM No.");
+        LibraryMfg.UpdateProductionBOMStatus(ProductionBOMHeader, ProductionBOMHeader.Status::"Under Development");
+        UpdateProductionBOMLineWithCalculationFormula(ProductionBOMHeader);
+        LibraryMfg.UpdateProductionBOMStatus(ProductionBOMHeader, ProductionBOMHeader.Status::Certified);
+    end;
+
+    local procedure UpdateProductionBOMLineWithCalculationFormula(ProductionBOMHeader: Record "Production BOM Header")
+    var
+        ProductionBOMLine: Record "Production BOM Line";
+        ComponentItemNo: Code[20];
+    begin
+        ComponentItemNo := (Storage.Get(XComponentItemNoTok));
+
+        ProductionBOMLine.SetRange("Production BOM No.", ProductionBOMHeader."No.");
+        ProductionBOMLine.SetRange(Type, ProductionBOMLine.Type::Item);
+        ProductionBOMLine.SetRange("No.", ComponentItemNo);
+        ProductionBOMLine.FindFirst();
+
+        ProductionBOMLine.Length := LibraryRandom.RandDec(10, 0);
+        ProductionBOMLine.Width := LibraryRandom.RandDec(10, 0);
+        ProductionBOMLine.Depth := LibraryRandom.RandDec(10, 0);
+        ProductionBOMLine."Calculation Formula" := ProductionBOMLine."Calculation Formula"::"Length * Width * Depth";
+        ProductionBOMLine.Modify();
+    end;
+
+    local procedure UpdateDeliverCompForFieldInPurchLine(var PurchaseLine: Record "Purchase Line")
+    begin
+        PurchaseLine.FindFirst();
+
+        PurchaseLine.Validate("Deliver Comp. For", PurchaseLine.Quantity);
+        PurchaseLine.Modify();
     end;
 
     local procedure CreateSubcontractingOrderFromReleasedProdOrder(var ProductionOrder: Record "Production Order"; var PurchaseLine: Record "Purchase Line")
@@ -1907,6 +1972,27 @@ codeunit 18479 "GST Subcontracting"
         PurchaseHeader.SetRange("Subcon. Order Line No.", PurchaseLine."Line No.");
         PurchaseHeader.FindFirst();
         PurchaseHeader.TestField("Buy-from Vendor No.", PurchaseLine."Buy-from Vendor No.");
+    end;
+
+    local procedure VerifyQuantityToSendInSubOrderComponentList(ProductionOrder: Record "Production Order")
+    var
+        ProdOrderComponent: Record "Prod. Order Component";
+        SubOrderComponentList: Record "Sub Order Component List";
+        ComponentItemNo: Code[20];
+    begin
+        ComponentItemNo := (Storage.Get(XComponentItemNoTok));
+
+        ProdOrderComponent.SetRange(Status, ProductionOrder.Status);
+        ProdOrderComponent.SetRange("Prod. Order No.", ProductionOrder."No.");
+        ProdOrderComponent.SetRange("Item No.", ComponentItemNo);
+        ProdOrderComponent.FindFirst();
+
+        SubOrderComponentList.SetRange("Production Order No.", ProductionOrder."No.");
+        SubOrderComponentList.SetRange("Parent Item No.", ProductionOrder."Source No.");
+        SubOrderComponentList.SetRange("Item No.", ComponentItemNo);
+        SubOrderComponentList.FindFirst();
+
+        Assert.Equal(SubOrderComponentList."Quantity To Send", ProdOrderComponent."Expected Quantity");
     end;
 
     local procedure CreateAndInsertPurchaseLineForSubContractingOrder(ProductionOrder: Record "Production Order"; var PurchaseLine: Record "Purchase Line"; MainItemNo: Code[20])

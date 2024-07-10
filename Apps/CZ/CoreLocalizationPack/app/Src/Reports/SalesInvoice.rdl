@@ -5714,15 +5714,6 @@ End Function</Code>
         <Field Name="VATLbl">
           <DataField>VATLbl</DataField>
         </Field>
-        <Field Name="PrepayedLbl">
-          <DataField>PrepayedLbl</DataField>
-        </Field>
-        <Field Name="TotalAfterPrepayedLbl">
-          <DataField>TotalAfterPrepayedLbl</DataField>
-        </Field>
-        <Field Name="PaymentsLbl">
-          <DataField>PaymentsLbl</DataField>
-        </Field>
         <Field Name="DisplayAdditionalFeeNote">
           <DataField>DisplayAdditionalFeeNote</DataField>
         </Field>

@@ -8,7 +8,8 @@ codeunit 6204 "Trans. Storage Error Handler"
     TableNo = "Transact. Storage Task Entry";
     InherentEntitlements = X;
     InherentPermissions = X;
-    Permissions = tabledata "Transact. Storage Export State" = RIM;
+    Permissions = tabledata "Transact. Storage Export State" = RIM,
+                  tabledata "Trans. Storage Export Data" = RD;
 
     var
         TransactionStorageTok: Label 'Transaction Storage', Locked = true;
@@ -19,6 +20,7 @@ codeunit 6204 "Trans. Storage Error Handler"
     trigger OnRun()
     var
         TransactStorageExportState: Record "Transact. Storage Export State";
+        TransStorageExportData: Record "Trans. Storage Export Data";
         TransStorageScheduleTask: Codeunit "Trans. Storage Schedule Task";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         ExportDateTime: DateTime;
@@ -38,6 +40,7 @@ codeunit 6204 "Trans. Storage Error Handler"
         TransStorageScheduleTask.CreateTaskToExport(ExportDateTime, false);
         TransactStorageExportState."Number Of Attempts" -= 1;
         TransactStorageExportState.Modify();
+        TransStorageExportData.DeleteAll(true);
     end;
 
     local procedure CheckMultipleTaskFailures()

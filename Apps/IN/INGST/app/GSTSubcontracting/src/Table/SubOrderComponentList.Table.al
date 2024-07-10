@@ -337,7 +337,7 @@ table 18479 "Sub Order Component List"
         SubOrderComponents.FindSet();
         repeat
             SubOrderComponents.Validate(
-              "Quantity To Send", ("Deliver Comp. For" * SubOrderComponents."Quantity per"));
+              "Quantity To Send", PurchLine.GetQuantityToSendForSubOrderCompList(SubOrderComponents, "Deliver Comp. For"));
             SubOrderComponents.Validate(
               "Qty. for Rework", (SubOrderComponents."Quantity per" * "Qty. to Reject (Rework)"));
             if SubOrderComponents."Scrap %" <> 0 then begin

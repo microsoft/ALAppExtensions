@@ -323,7 +323,7 @@ page 7233 "Master Data Synch. Tables"
             {
                 ApplicationArea = Suite;
                 Caption = 'Synchronize Modified Records';
-                Enabled = HasRecords and (Rec."Parent Name" = '');
+                Enabled = HasRecords and (Rec."Parent Name" = '') and DataSynchEnabled;
                 Image = Refresh;
                 ToolTip = 'Synchronize records that have been modified since the last time they were synchronized.';
 
@@ -352,7 +352,7 @@ page 7233 "Master Data Synch. Tables"
             {
                 ApplicationArea = Suite;
                 Caption = 'Run Full Synchronization';
-                Enabled = HasRecords and (Rec."Parent Name" = '');
+                Enabled = HasRecords and (Rec."Parent Name" = '') and DataSynchEnabled;
                 Image = RefreshLines;
                 ToolTip = 'Start a job for full synchronization from records in the chosen source company for each of the selected tables.';
 
@@ -377,8 +377,7 @@ page 7233 "Master Data Synch. Tables"
             {
                 ApplicationArea = Suite;
                 Caption = 'Integration Uncouple Job Log';
-                Enabled = HasRecords;
-                Visible = DataSynchEnabled;
+                Enabled = HasRecords and DataSynchEnabled;
                 Image = Log;
                 ToolTip = 'View the status of jobs for uncoupling records.';
 
@@ -394,8 +393,7 @@ page 7233 "Master Data Synch. Tables"
             {
                 ApplicationArea = Suite;
                 Caption = 'Integration Coupling Job Log';
-                Enabled = HasRecords;
-                Visible = DataSynchEnabled;
+                Enabled = HasRecords and DataSynchEnabled;
                 Image = Log;
                 ToolTip = 'View the status of jobs for match-based coupling of records.';
 
@@ -411,8 +409,7 @@ page 7233 "Master Data Synch. Tables"
             {
                 ApplicationArea = Suite;
                 Caption = 'Delete Couplings';
-                Enabled = HasRecords and (Rec."Parent Name" = '');
-                Visible = DataSynchEnabled;
+                Enabled = HasRecords and (Rec."Parent Name" = '') and DataSynchEnabled;
                 Image = UnLinkAccount;
                 ToolTip = 'Delete couplings for the selected tables.';
 
@@ -464,8 +461,7 @@ page 7233 "Master Data Synch. Tables"
             {
                 ApplicationArea = Suite;
                 Caption = 'Match-Based Coupling';
-                Enabled = HasRecords and (Rec."Parent Name" = '');
-                Visible = DataSynchEnabled;
+                Enabled = HasRecords and (Rec."Parent Name" = '') and DataSynchEnabled;
                 Image = LinkAccount;
                 ToolTip = 'Couple existing records in the selected tables based on matching criteria.';
 
@@ -508,6 +504,9 @@ page 7233 "Master Data Synch. Tables"
                 actionref(SynchronizeNow_Promoted; SynchronizeNow)
                 {
                 }
+                actionref(MatchBasedCoupling_Promoted; MatchBasedCoupling)
+                {
+                }
                 actionref(JobQueueEntry_Promoted; JobQueueEntry)
                 {
                 }
@@ -515,7 +514,12 @@ page 7233 "Master Data Synch. Tables"
         }
     }
 
-    local procedure FindRelatedTables(var ExistingSynchTableNos: List of [Integer]; var RelatedTablesToAdd: List of [Integer]; var RelatedTablesToAddText: Text; TableId: Integer)
+    internal procedure FindRelatedTables(var ExistingSynchTableNos: List of [Integer]; var RelatedTablesToAdd: List of [Integer]; var RelatedTablesToAddText: Text; TableId: Integer)
+    begin
+        FindRelatedTables(ExistingSynchTableNos, RelatedTablesToAdd, RelatedTablesToAddText, TableId, TableId);
+    end;
+
+    local procedure FindRelatedTables(var ExistingSynchTableNos: List of [Integer]; var RelatedTablesToAdd: List of [Integer]; var RelatedTablesToAddText: Text; TableId: Integer; TopLevelTableId: Integer)
     var
         Field: Record Field;
         TableMetadata: Record "Table Metadata";
@@ -531,7 +535,7 @@ page 7233 "Master Data Synch. Tables"
             exit;
 
         repeat
-            if not (ExistingSynchTableNos.Contains(Field.RelationTableNo) or RelatedTablesToAdd.Contains(Field.RelationTableNo)) then
+            if not ((Field.RelationTableNo = TopLevelTableId) or ExistingSynchTableNos.Contains(Field.RelationTableNo) or RelatedTablesToAdd.Contains(Field.RelationTableNo)) then
                 if TableMetadata.Get(Field.RelationTableNo) then
                     if (TableMetadata.TableType = TableMetadata.TableType::Normal) and TableMetadata.DataPerCompany then begin
                         RecRef.Open(Field.RelationTableNo);
@@ -541,7 +545,7 @@ page 7233 "Master Data Synch. Tables"
                                 RelatedTablesToAddText := TableMetadata.Name
                             else
                                 RelatedTablesToAddText += ', ' + TableMetadata.Name;
-                            FindRelatedTables(ExistingSynchTableNos, RelatedTablesToAdd, RelatedTablesToAddText, Field.RelationTableNo);
+                            FindRelatedTables(ExistingSynchTableNos, RelatedTablesToAdd, RelatedTablesToAddText, Field.RelationTableNo, TopLevelTableId);
                         end;
                         RecRef.Close();
                     end;

@@ -26,7 +26,7 @@ page 4705 "VAT Group Setup Guide"
             {
                 Editable = false;
                 ShowCaption = false;
-                Visible = TopBannerVisible AND NOT DoneVisible;
+                Visible = TopBannerVisible and not DoneVisible;
                 field(SetupBanner; MediaResourcesStandard."Media Reference")
                 {
                     ApplicationArea = Basic, Suite;
@@ -39,7 +39,7 @@ page 4705 "VAT Group Setup Guide"
             {
                 Editable = false;
                 ShowCaption = false;
-                Visible = TopBannerVisible AND DoneVisible;
+                Visible = TopBannerVisible and DoneVisible;
                 field(CompleteBanner; MediaResourcesDone."Media Reference")
                 {
                     ApplicationArea = Basic, Suite;
@@ -230,7 +230,7 @@ page 4705 "VAT Group Setup Guide"
                 group(OnPremAuth)
                 {
                     ShowCaption = false;
-                    Visible = not IsSaaS;
+                    Visible = false;
                     field(VATGroupAuthenticationType; VATGroupAuthenticationType)
                     {
                         ApplicationArea = Basic, Suite;
@@ -245,17 +245,23 @@ page 4705 "VAT Group Setup Guide"
                 group(SaasAuth)
                 {
                     ShowCaption = false;
-                    Visible = IsSaaS;
+                    Visible = false;
                     field(VATGroupAuthenticationTypeSaas; VATGroupAuthenticationTypeSaas)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Authentication Type';
                         ToolTip = 'Specifies the authentication types that you can use when connecting to a VAT group representative using Business Central.';
+                        ValuesAllowed = OAuth2;
+
                         trigger OnValidate()
                         begin
                             case VATGroupAuthenticationTypeSaas of
+#if not CLEAN25
+#pragma warning disable AL0432
                                 VATGroupAuthenticationTypeSaas::WebServiceAccessKey:
                                     VATGroupAuthenticationType := VATGroupAuthenticationType::WebServiceAccessKey;
+#pragma warning restore
+#endif
                                 VATGroupAuthenticationTypeSaas::OAuth2:
                                     VATGroupAuthenticationType := VATGroupAuthenticationType::OAuth2;
                             end;
@@ -263,13 +269,17 @@ page 4705 "VAT Group Setup Guide"
                             NextEnabled := (APIURL <> '') and (GroupRepresentativeCompany <> '');
                         end;
                     }
-
+                }
+                group(SaasOnSaaS)
+                {
+                    ShowCaption = false;
+                    Visible = IsSaaS;
                     field(GroupRepresentativeOnSaaS; GroupRepresentativeOnSaaS)
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Group Representative Uses Business Central Online';
                         ToolTip = 'Specifies whether the group representative is using Business Central online.';
-                        Editable = VATGroupAuthenticationType = VATGroupAuthenticationType::OAuth2;
+                        Editable = true;
                     }
                 }
             }
@@ -480,7 +490,7 @@ page 4705 "VAT Group Setup Guide"
                 var
                     VATGroupCommunication: Codeunit "VAT Group Communication";
                 begin
-                    if (Step = Step::"Setup Member OAuth2") and (VATGroupAuthenticationType = VATGroupAuthenticationType::OAuth2) then
+                    if (Step = Step::"Setup Member OAuth2") then
                         VATGroupCommunication.GetBearerToken(ClientId, ClientSecret, OAuthAuthorityUrl, RedirectURL, ResourceURL);
 
                     NextStep(false);
@@ -545,6 +555,10 @@ page 4705 "VAT Group Setup Guide"
         MemberIdentifier := CreateGuid();
 
         IsSaaS := EnvironmentInformation.IsSaaSInfrastructure();
+        VATGroupAuthenticationType := VATGroupAuthenticationType::OAuth2;
+        VATGroupAuthenticationTypeSaas := VATGroupAuthenticationTypeSaas::OAuth2;
+        if IsSaaS then
+            GroupRepresentativeOnSaaS := true;
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -594,8 +608,12 @@ page 4705 "VAT Group Setup Guide"
                 Step -= 1;
             if (Step = Step::"Setup Representative") and (VATGroupRole = VATGroupRole::Member) then
                 Step -= 1;
+#if not CLEAN25
+#pragma warning disable AL0432
             if (Step = Step::"Setup Member WSAK") and (VATGroupAuthenticationType <> VATGroupAuthenticationType::WebServiceAccessKey) then
                 Step -= 1;
+#pragma warning restore
+#endif
             if (Step = Step::"Setup Member OAuth2") and (VATGroupAuthenticationType <> VATGroupAuthenticationType::OAuth2) then
                 Step -= 2;
         end else begin
@@ -604,12 +622,20 @@ page 4705 "VAT Group Setup Guide"
                 Step += 1;
             if (Step = Step::"Setup Member") and (VATGroupRole = VATGroupRole::Representative) then
                 Step += 3;
+#if not CLEAN25
+#pragma warning disable AL0432
             if (Step = Step::"Setup Member WSAK") and (VATGroupAuthenticationType = VATGroupAuthenticationType::WindowsAuthentication) then
                 Step += 2;
+#pragma warning restore
+#endif
             if (Step = Step::"Setup Member WSAK") and (VATGroupAuthenticationType = VATGroupAuthenticationType::OAuth2) then
                 Step += 1;
+#if not CLEAN25
+#pragma warning disable AL0432
             if (Step = Step::"Setup Member OAuth2") and (VATGroupAuthenticationType = VATGroupAuthenticationType::WebServiceAccessKey) then
                 Step += 1;
+#pragma warning restore
+#endif
             if (Step = Step::"Setup VAT Report") and (VATGroupRole = VATGroupRole::Representative) then
                 Step += 1;
         end;
@@ -706,7 +732,6 @@ page 4705 "VAT Group Setup Guide"
     local procedure ShowSetupRepresentativeStep()
     begin
         NextEnabled := IsNextEnabledRepresentativeStep();
-        Clear(VATGroupAuthenticationType);
     end;
 
     local procedure ShowSetupMemberStep()
@@ -800,9 +825,12 @@ page 4705 "VAT Group Setup Guide"
 
     local procedure IsNextEnabled(): Boolean
     begin
+#if not CLEAN25
+#pragma warning disable AL0432
         if VATGroupAuthenticationType = VATGroupAuthenticationType::WebServiceAccessKey then
             exit((APIURL <> '') and (GroupRepresentativeCompany <> '') and (WebServiceAccessKey <> '') and (Username <> ''));
-
+#pragma warning restore
+#endif
         if VATGroupAuthenticationType = VATGroupAuthenticationType::OAuth2 then
             exit((APIURL <> '') and (GroupRepresentativeCompany <> '') and (ClientId <> '') and (ClientSecret <> '') and (RedirectURL <> '') and (ResourceURL <> '') and (OAuthAuthorityUrl <> ''));
     end;

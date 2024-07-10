@@ -117,6 +117,10 @@ table 1692 "Posted Bank Deposit Line"
             else
             if ("Account Type" = const("Bank Account")) "Bank Account Ledger Entry";
         }
+        field(17; "External Document No."; Code[35])
+        {
+            Caption = 'External Document No.';
+        }
         field(480; "Dimension Set ID"; Integer)
         {
             Caption = 'Dimension Set ID';

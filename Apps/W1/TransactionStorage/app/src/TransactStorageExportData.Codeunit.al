@@ -32,6 +32,7 @@ codeunit 6202 "Transact. Storage Export Data"
     InherentPermissions = X;
     Permissions = tabledata "Transact. Storage Table Entry" = RIMD,
                   tabledata "Transact. Storage Task Entry" = RIM,
+                  tabledata "Trans. Storage Export Data" = RIMD,
                   tabledata "G/L Entry" = r,
                   tabledata "VAT Entry" = r,
                   tabledata "Cust. Ledger Entry" = r,
@@ -56,34 +57,38 @@ codeunit 6202 "Transact. Storage Export Data"
         FeatureTelemetry: Codeunit "Feature Telemetry";
         TransactStorageExport: Codeunit "Transact. Storage Export";
         TransactionStorageTok: Label 'Transaction Storage', Locked = true;
-        NoOfCollectedRecordsTxt: Label 'Number of collected records.', Locked = true;
+        NoOfCollectedRecordTxt: Label 'Number of collected records', Locked = true;
+        NoOfCollectedPartsTxt: Label 'Parts', Locked = true;
         NoPermissionsForTableErr: Label 'User does not have permissions to read the table %1', Comment = '%1 = table name', Locked = true;
 
     procedure ExportData(TaskStartingDateTime: DateTime)
     var
+        TransStorageExportData: Record "Trans. Storage Export Data";
         TempFieldList: Record Field temporary;
         TransactionStorageABS: Codeunit "Transaction Storage ABS";
         HandledIncomingDocs: Dictionary of [Text, Integer];
         MasterData: Dictionary of [Integer, List of [Code[50]]];
-        DataJsonArrays: Dictionary of [Integer, JsonArray];
         TablesToExport: List of [Integer];
         TableID: Integer;
     begin
+        TransStorageExportData.DeleteAll(true);
         TablesToExport := GetTablesToExport();
         foreach TableID in TablesToExport do
-            CollectDataFromTable(DataJsonArrays, HandledIncomingDocs, TempFieldList, MasterData, TaskStartingDateTime, TableID);
-        LogNumberOfCollectedRecords(DataJsonArrays);
-        CollectMasterData(DataJsonArrays, MasterData);
-        if (DataJsonArrays.Count() <> 0) or (HandledIncomingDocs.Count() <> 0) then
-            TransactionStorageABS.ArchiveTransactionsToABS(DataJsonArrays, HandledIncomingDocs);
+            CollectDataFromTable(HandledIncomingDocs, TempFieldList, MasterData, TaskStartingDateTime, TableID);
+        LogNumberOfCollectedRecords(TablesToExport);
+        CollectMasterData(MasterData);
+        if (not TransStorageExportData.IsEmpty()) or (HandledIncomingDocs.Count() <> 0) then
+            TransactionStorageABS.ArchiveTransactionsToABS(HandledIncomingDocs);
     end;
 
-    local procedure CollectDataFromTable(var DataJsonArrays: Dictionary of [Integer, JsonArray]; var HandledIncomingDocs: Dictionary of [Text, Integer]; var TempFieldList: Record Field temporary; var MasterData: Dictionary of [Integer, List of [Code[50]]]; TaskStartingDateTime: DateTime; TableID: Integer)
+    local procedure CollectDataFromTable(var HandledIncomingDocs: Dictionary of [Text, Integer]; var TempFieldList: Record Field temporary; var MasterData: Dictionary of [Integer, List of [Code[50]]]; TaskStartingDateTime: DateTime; TableID: Integer)
     var
         TransactStorageTableEntry: Record "Transact. Storage Table Entry";
         RecRef: RecordRef;
         RecordJsonObject: JsonObject;
         TableJsonArray: JsonArray;
+        RecordsHandled: Integer;
+        Part: Integer;
     begin
         RecRef.Open(TableID);
         if not RecRef.ReadPermission() then begin
@@ -98,12 +103,14 @@ codeunit 6202 "Transact. Storage Export Data"
         if RecRef.FindSet() then begin
             Clear(TableJsonArray);
             repeat
+                RecordsHandled += 1;
                 TransactStorageTableEntry."No. Of Records Exported" += 1;
                 HandleTableFieldSet(RecordJsonObject, MasterData, TempFieldList, RecRef, true);
                 TableJsonArray.Add(RecordJsonObject);
+                AddJsonArrayToTransStorageExportData(Part, TableJsonArray, RecordsHandled, GetRecordChunkSize(), RecRef.Number());
                 TransactStorageExport.HandleIncomingDocuments(HandledIncomingDocs, RecRef);
             until RecRef.Next() = 0;
-            DataJsonArrays.Add(RecRef.Number, TableJsonArray);
+            AddJsonArrayToTransStorageExportData(Part, TableJsonArray, RecordsHandled, 0, RecRef.Number());
         end else
             TransactStorageExport.SetTableEntryProcessed(TransactStorageTableEntry, TransactStorageTableEntry."Filter Record To DT", false, '');
         TransactStorageExport.CheckTimeDeadline(TaskStartingDateTime);
@@ -112,7 +119,7 @@ codeunit 6202 "Transact. Storage Export Data"
         RecRef.Close();
     end;
 
-    local procedure CollectMasterData(var DataJsonArrays: Dictionary of [Integer, JsonArray]; var MasterData: Dictionary of [Integer, List of [Code[50]]])
+    local procedure CollectMasterData(var MasterData: Dictionary of [Integer, List of [Code[50]]])
     var
         TempFieldList: Record Field temporary;
         RecRef: RecordRef;
@@ -123,8 +130,12 @@ codeunit 6202 "Transact. Storage Export Data"
         MasterDataCode: Code[50];
         RecordJsonObject: JsonObject;
         TableJsonArray: JsonArray;
+        RecordsHandled: Integer;
+        Part: Integer;
     begin
         foreach MasterDataTableNo in MasterData.Keys() do begin
+            Part := 0;
+            RecordsHandled := 0;
             MasterDataCodes := MasterData.Get(MasterDataTableNo);
             RecRef.Open(MasterDataTableNo);
             if not RecRef.ReadPermission() then begin
@@ -140,15 +151,28 @@ codeunit 6202 "Transact. Storage Export Data"
                 foreach MasterDataCode in MasterDataCodes do begin
                     FieldRef.SetRange(MasterDataCode);
                     if RecRef.FindFirst() then begin
+                        RecordsHandled += 1;
                         HandleTableFieldSet(RecordJsonObject, MasterData, TempFieldList, RecRef, false);
                         TableJsonArray.Add(RecordJsonObject);
+                        AddJsonArrayToTransStorageExportData(Part, TableJsonArray, RecordsHandled, GetRecordChunkSize(), RecRef.Number());
                     end;
                 end;
-                DataJsonArrays.Add(RecRef.Number, TableJsonArray);
+                AddJsonArrayToTransStorageExportData(Part, TableJsonArray, RecordsHandled, 0, RecRef.Number());
             end;
             RecRef.Close();
             Commit();
         end;
+    end;
+
+    local procedure AddJsonArrayToTransStorageExportData(var Part: Integer; var TableJsonArray: JsonArray; var RecordsHandled: Integer; ChunkSize: Integer; TableID: Integer)
+    var
+        TransStorageExportData: Record "Trans. Storage Export Data";
+    begin
+        if RecordsHandled < ChunkSize then
+            exit;
+        TransStorageExportData.Add(Part, TableJsonArray, TableID, RecordsHandled);
+        RecordsHandled := 0;
+        Clear(TableJsonArray);
     end;
 
     local procedure SetRangeOnDataTable(var RecRef: RecordRef; var TransactStorageTableEntry: Record "Transact. Storage Table Entry"; TaskStartingDateTime: DateTime)
@@ -224,17 +248,23 @@ codeunit 6202 "Transact. Storage Export Data"
             UpdateTempFieldList(TempFieldList, TableID, FieldID);
     end;
 
-    local procedure LogNumberOfCollectedRecords(var DataJsonArrays: Dictionary of [Integer, JsonArray])
+    local procedure LogNumberOfCollectedRecords(TablesToExport: List of [Integer])
     var
+        TransStorageExportData: Record "Trans. Storage Export Data";
         TableMetadata: Record "Table Metadata";
-        CustomDimensions: Dictionary of [Text, Text];
+        RecordsCustomDimensions: Dictionary of [Text, Text];
+        PartsCustomDimensions: Dictionary of [Text, Text];
         TableID: Integer;
     begin
-        foreach TableID in DataJsonArrays.Keys() do begin
+        foreach TableID in TablesToExport do begin
             TableMetadata.Get(TableID);
-            CustomDimensions.Add(TableMetadata.Name, Format(DataJsonArrays.Get(TableID).Count()));
+            TransStorageExportData.SetRange("Table ID", TableID);
+            TransStorageExportData.CalcSums("Record Count");
+            RecordsCustomDimensions.Add(TableMetadata.Name, Format(TransStorageExportData."Record Count"));
+            PartsCustomDimensions.Add(TableMetadata.Name, Format(TransStorageExportData.Count()));
         end;
-        FeatureTelemetry.LogUsage('0000LK7', TransactionStorageTok, NoOfCollectedRecordsTxt, CustomDimensions);
+        FeatureTelemetry.LogUsage('0000LK7', TransactionStorageTok, NoOfCollectedRecordTxt, RecordsCustomDimensions);
+        FeatureTelemetry.LogUsage('0000N1I', TransactionStorageTok, NoOfCollectedPartsTxt, PartsCustomDimensions);
     end;
 
     local procedure GetTablesToExport() TablesToExport: List of [Integer]
@@ -1229,5 +1259,10 @@ codeunit 6202 "Transact. Storage Export Data"
             repeat
                 RecRef.SetLoadFields(TempFieldList."No.");
             until TempFieldList.Next() = 0;
+    end;
+
+    local procedure GetRecordChunkSize(): Integer
+    begin
+        exit(100000);
     end;
 }

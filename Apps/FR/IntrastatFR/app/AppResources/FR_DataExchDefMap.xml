@@ -14,8 +14,8 @@
     </DataExchLineDef>
     <DataExchLineDef LineType="1" Code="2-SENDER" ColumnCount="0" DataLineTag="/INSTAT/Envelope" ParentCode="1-HEADER">
       <DataExchColumnDef ColumnNo="1" Name="Party" Show="false" DataType="0" Path="/Party[@partyType=&quot;PSI&quot; and @partyRole=&quot;sender&quot;]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
-      <DataExchColumnDef ColumnNo="2" Name="partyType" Show="false" DataType="0" Path="/Party[@partyType]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
-      <DataExchColumnDef ColumnNo="3" Name="partyRole" Show="false" DataType="0" Path="/Party[@partyRole]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="2" Name="partyType" Show="false" DataType="0" Path="/Party[@partyType]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="3" Name="partyRole" Show="false" DataType="0" Path="/Party[@partyRole]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
       <DataExchColumnDef ColumnNo="4" Name="partyId" Show="false" DataType="0" Path="/Party/partyId" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
       <DataExchColumnDef ColumnNo="5" Name="partyName" Show="false" DataType="0" Path="/Party/partyName" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
       <DataExchMapping TableId="79" Name="" MappingCodeunit="1269">

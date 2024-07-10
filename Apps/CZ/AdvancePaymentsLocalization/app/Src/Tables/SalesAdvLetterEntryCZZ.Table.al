@@ -187,6 +187,12 @@ table 31006 "Sales Adv. Letter Entry CZZ"
             TableRelation = Customer;
             Editable = false;
         }
+        field(80; "Auxiliary Entry"; Boolean)
+        {
+            Caption = 'Auxiliary Entry';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
         field(480; "Dimension Set ID"; Integer)
         {
             Caption = 'Dimension Set ID';
@@ -270,6 +276,7 @@ table 31006 "Sales Adv. Letter Entry CZZ"
     begin
         SalesAdvLetterEntryCZZ.SetRange("Document No.", SalesInvoiceHeader."No.");
         SalesAdvLetterEntryCZZ.SetRange("Entry Type", SalesAdvLetterEntryCZZ."Entry Type"::"VAT Usage");
+        SalesAdvLetterEntryCZZ.SetRange("Auxiliary Entry", false);
         SalesAdvLetterEntryCZZ.SetRange(Cancelled, false);
         if SalesAdvLetterEntryCZZ.FindSet() then
             repeat
@@ -303,6 +310,7 @@ table 31006 "Sales Adv. Letter Entry CZZ"
     var
         SalesAdvLetterHeader: Record "Sales Adv. Letter Header CZZ";
     begin
+        SalesAdvLetterHeader.SetLoadFields("Bill-to Customer No.");
         SalesAdvLetterHeader.Get("Sales Adv. Letter No.");
         exit(SalesAdvLetterHeader."Bill-to Customer No.");
     end;
@@ -387,6 +395,13 @@ table 31006 "Sales Adv. Letter Entry CZZ"
         OnAfterCopyFromVATPostingSetup(VATPostingSetup, Rec);
     end;
 
+    procedure CopyFromSalesAdvLetterHeader(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
+    begin
+        "Sales Adv. Letter No." := SalesAdvLetterHeaderCZZ."No.";
+        "Customer No." := SalesAdvLetterHeaderCZZ."Bill-to Customer No.";
+        OnAfterCopyFromSalesAdvLetterHeader(SalesAdvLetterHeaderCZZ, Rec);
+    end;
+
     procedure InsertNewEntry(WriteToDatabase: Boolean) EntryNo: Integer
     var
         SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ";
@@ -468,6 +483,11 @@ table 31006 "Sales Adv. Letter Entry CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCopyFromVATPostingSetup(VATPostingSetup: Record "VAT Posting Setup"; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFromSalesAdvLetterHeader(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
     begin
     end;
 

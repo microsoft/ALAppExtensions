@@ -168,6 +168,7 @@ codeunit 30238 "Shpfy Fulfillment Orders API"
                         FulfillmentOrderLine."Shopify Variant Id" := JsonHelper.GetValueAsBigInteger(JNode, 'lineItem.variant.legacyResourceId');
                         FulfillmentOrderLine."Total Quantity" := JsonHelper.GetValueAsDecimal(JNode, 'totalQuantity');
                         FulfillmentOrderLine."Remaining Quantity" := JsonHelper.GetValueAsDecimal(JNode, 'remainingQuantity');
+                        FulfillmentOrderLine."Fulfillment Status" := FulfillmentOrderHeader.Status;
                         FulfillmentOrderLine.Insert();
                     end else begin
                         Modified := false;

@@ -376,15 +376,8 @@ page 31150 "Cash Desk List CZP"
     }
 
     trigger OnOpenPage()
-    var
-        CashDesksFilter: Text;
     begin
-        CashDesksFilter := CashDeskManagementCZP.GetCashDesksFilter();
-
-        Rec.FilterGroup(2);
-        if CashDesksFilter <> '' then
-            Rec.SetFilter("No.", CashDesksFilter);
-        Rec.FilterGroup(0);
+        CashDeskManagementCZP.SetCashDeskFilter(Rec);
     end;
 
     var

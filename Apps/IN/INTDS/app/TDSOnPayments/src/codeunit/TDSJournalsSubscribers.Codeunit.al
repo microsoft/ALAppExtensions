@@ -71,7 +71,15 @@ codeunit 18767 "TDS Journals Subscribers"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Tax Base Subscribers", 'OnBeforeCallingTaxEngineFromGenJnlLine', '', false, false)]
     local procedure OnBeforeCallingTaxEngineFromGenJnlLine(var GenJnlLine: Record "Gen. Journal Line")
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
     begin
+        VendorLedgerEntry.SetLoadFields("Applies-to ID", Prepayment);
+        VendorLedgerEntry.SetRange("Applies-to ID", GenJnlLine."Applies-to ID");
+        VendorLedgerEntry.SetRange(Prepayment, true);
+        if not VendorLedgerEntry.IsEmpty() then
+            exit;
+
         ValidateGenJnlLine(GenJnlLine);
     end;
 

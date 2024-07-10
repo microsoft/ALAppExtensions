@@ -120,6 +120,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 SetPurchaserCode(Vendor."Purchaser Code", "Purchaser Code");
                 Validate("Payment Terms Code");
                 Validate("Payment Method Code");
+                Validate("VAT Bus. Posting Group");
                 Validate("Currency Code");
 
                 Validate("Bank Account Code", Vendor."Preferred Bank Account Code");
@@ -407,8 +408,8 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 end;
 
                 GetSetup();
-                    GeneralLedgerSetup.UpdateVATDate("Posting Date", Enum::"VAT Reporting Date"::"Posting Date", "VAT Date");
-                    Validate("VAT Date");
+                GeneralLedgerSetup.UpdateVATDate("Posting Date", Enum::"VAT Reporting Date"::"Posting Date", "VAT Date");
+                Validate("VAT Date");
                 GeneralLedgerSetup.UpdateOriginalDocumentVATDateCZL("Posting Date", Enum::"Default Orig.Doc. VAT Date CZL"::"Posting Date", "Original Document VAT Date");
                 Validate("Original Document VAT Date");
 
@@ -434,8 +435,8 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 Validate("Payment Terms Code");
 
                 GetSetup();
-                    if GeneralLedgerSetup."VAT Reporting Date" = GeneralLedgerSetup."VAT Reporting Date"::"Document Date" then
-                        Validate("VAT Date", "Document Date");
+                if GeneralLedgerSetup."VAT Reporting Date" = GeneralLedgerSetup."VAT Reporting Date"::"Document Date" then
+                    Validate("VAT Date", "Document Date");
 
                 GeneralLedgerSetup.UpdateOriginalDocumentVATDateCZL("Document Date", Enum::"Default Orig.Doc. VAT Date CZL"::"Document Date", "Original Document VAT Date");
                 Validate("Original Document VAT Date");
@@ -855,6 +856,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         ConfirmChangeQst: Label 'Do you want to change %1?', Comment = '%1 = a Field Caption like Currency Code';
         DocumentResetErr: Label 'You cannot reset %1 because the document still has one or more lines.', Comment = '%1 = a Field Caption like Bill-to Contact No.';
         DocumentDeleteErr: Label 'You cannot delete this document. Your identification is set up to process from %1 %2 only.', Comment = '%1 = table caption of responsibility center, %2 = code of responsibility center';
+        PostedEntriesExistErr: Label 'You cannot delete this document because there are posted entries.';
 
     trigger OnInsert()
     begin
@@ -876,10 +878,16 @@ table 31008 "Purch. Adv. Letter Header CZZ"
               DocumentDeleteErr,
               ResponsibilityCenter.TableCaption(), UserSetupManagement.GetPurchasesFilter());
 
+        PurchAdvLetterEntryCZZ.SetRange("Purch. Adv. Letter No.", "No.");
+        PurchAdvLetterEntryCZZ.SetFilter("Entry Type", '<>%1', PurchAdvLetterEntryCZZ."Entry Type"::"Initial Entry");
+        if not PurchAdvLetterEntryCZZ.IsEmpty() then
+            Error(PostedEntriesExistErr);
+
         PurchAdvLetterLineCZZ.SetRange("Document No.", "No.");
         if not PurchAdvLetterLineCZZ.IsEmpty() then
             PurchAdvLetterLineCZZ.DeleteAll(true);
 
+        PurchAdvLetterEntryCZZ.Reset();
         PurchAdvLetterEntryCZZ.SetRange("Purch. Adv. Letter No.", "No.");
         if not PurchAdvLetterEntryCZZ.IsEmpty() then
             PurchAdvLetterEntryCZZ.DeleteAll();
@@ -1304,6 +1312,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
                 PurchAdvLetterLineCZZ.Init();
                 PurchAdvLetterLineCZZ."Document No." := "No.";
                 PurchAdvLetterLineCZZ."Line No." += 10000;
+                PurchAdvLetterLineCZZ."VAT Bus. Posting Group" := "VAT Bus. Posting Group";
                 PurchAdvLetterLineCZZ.Validate("VAT Prod. Posting Group", TempPurchAdvLetterLineCZZ."VAT Prod. Posting Group");
                 PurchAdvLetterLineCZZ.Description := TempPurchAdvLetterLineCZZ.Description;
                 PurchAdvLetterLineCZZ.Validate("Amount Including VAT", TempPurchAdvLetterLineCZZ."Amount Including VAT");
@@ -1474,6 +1483,7 @@ table 31008 "Purch. Adv. Letter Header CZZ"
     begin
         PurchAdvLetterEntryCZZ.SetRange("Purch. Adv. Letter No.", "No.");
         PurchAdvLetterEntryCZZ.SetRange(Cancelled, false);
+        PurchAdvLetterEntryCZZ.SetRange("Auxiliary Entry", false);
         PurchAdvLetterEntryCZZ.SetFilter("Entry Type", '<>%1', PurchAdvLetterEntryCZZ."Entry Type"::"Initial Entry");
         PurchAdvLetterEntryCZZ.CalcSums("VAT Base Amount", "VAT Amount", "VAT Base Amount (LCY)", "VAT Amount (LCY)");
         VATBaseAmount := PurchAdvLetterEntryCZZ."VAT Base Amount";

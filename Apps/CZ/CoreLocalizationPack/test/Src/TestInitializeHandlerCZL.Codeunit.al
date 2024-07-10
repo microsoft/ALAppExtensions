@@ -11,8 +11,6 @@ codeunit 148104 "Test Initialize Handler CZL"
         case CallerCodeunitID of
             137462: // "Phys. Invt. Order Subform UT":
                 UpdateInventorySetup();
-            135300: // "O365 Purch Item Charge Tests"
-                UpdateGeneralLedgerSetup();
         end;
     end;
 
@@ -39,11 +37,13 @@ codeunit 148104 "Test Initialize Handler CZL"
             134992: // ERM Financial Reports IV
                 begin
                     TryBindSuppConfVATEntUpdate();
-                    UpdateGeneralLedgerSetup();
                     UpdateUserSetup();
                 end;
+            137161: // SCM Warehouse Orders
+                DisableVATDateUsage();
         end;
-        if not (CallerCodeunitID = 134045) then
+
+        if not (CallerCodeunitID in [134008, 134045, 134088, 134992]) then
             TryUnbindSuppConfVATEntUpdate();
     end;
 
@@ -79,15 +79,6 @@ codeunit 148104 "Test Initialize Handler CZL"
         end;
     end;
 
-    local procedure UpdateGeneralLedgerSetup()
-    var
-        GeneralLedgerSetup: Record "General Ledger Setup";
-    begin
-        GeneralLedgerSetup.Get();
-        GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date";
-        GeneralLedgerSetup.Modify();
-    end;
-
     local procedure UpdateUserSetup()
     var
         UserSetup: Record "User Setup";
@@ -100,6 +91,15 @@ codeunit 148104 "Test Initialize Handler CZL"
         end;
         UserSetup."Allow VAT Date Changing CZL" := true;
         UserSetup.Modify();
+    end;
+
+    local procedure DisableVATDateUsage()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::Disabled;
+        GeneralLedgerSetup.Modify();
     end;
 
     local procedure TryBindSuppConfVATEntUpdate(): Boolean
