@@ -1,6 +1,6 @@
 namespace Microsoft.Integration.Shopify;
 
-enum 30155 "Shpfy Metafield Dimension Type"
+enum 30160 "Shpfy Metafield Dimension Type"
 {
     Access = Internal;
 

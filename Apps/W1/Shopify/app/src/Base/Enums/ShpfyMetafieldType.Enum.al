@@ -1,9 +1,9 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Enum Shpfy Metafield Type (ID 30152).
+/// Enum Shpfy Metafield Type (ID 30159).
 /// </summary>
-enum 30152 "Shpfy Metafield Type" implements "Shpfy IMetafield Type"
+enum 30159 "Shpfy Metafield Type" implements "Shpfy IMetafield Type"
 {
     Access = Internal;
     Caption = 'Shopify  Metafield Type';

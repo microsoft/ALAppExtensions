@@ -1,6 +1,6 @@
 namespace Microsoft.Integration.Shopify;
 
-enum 30153 "Shpfy Metafield Weight Type"
+enum 30157 "Shpfy Metafield Weight Type"
 {
     Access = Internal;
 
