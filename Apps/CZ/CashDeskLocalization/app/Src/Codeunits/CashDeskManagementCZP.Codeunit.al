@@ -6,9 +6,6 @@ namespace Microsoft.Finance.CashDesk;
 
 using Microsoft.Bank.BankAccount;
 using Microsoft.Finance.GeneralLedger.Account;
-#if not CLEAN22
-using Microsoft.Finance.ReceivablesPayables;
-#endif
 using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.Foundation.Company;
 using Microsoft.HumanResources.Employee;
@@ -77,7 +74,6 @@ codeunit 11724 "Cash Desk Management CZP"
     procedure CashDocumentSelection(var CashDocumentHeaderCZP: Record "Cash Document Header CZP"; var CashDeskSelected: Boolean)
     var
         CashDeskCZP: Record "Cash Desk CZP";
-        CashDeskFilter: Text;
         IsHandled: Boolean;
     begin
         IsHandled := false;
@@ -88,13 +84,8 @@ codeunit 11724 "Cash Desk Management CZP"
         CashDeskSelected := true;
 
         CheckCashDesks();
-        CashDeskFilter := GetCashDesksFilter();
+        SetCashDeskFilter(CashDeskCZP);
 
-        if CashDeskFilter <> '' then begin
-            CashDeskCZP.FilterGroup(2);
-            CashDeskCZP.SetFilter("No.", CashDeskFilter);
-            CashDeskCZP.FilterGroup(0);
-        end;
         case CashDeskCZP.Count() of
             0:
                 Error(CashDeskNotExistErr);
@@ -589,7 +580,7 @@ codeunit 11724 "Cash Desk Management CZP"
         if User.IsEmpty() then
             exit;
 
-        UserCode := CopyStr(UserId(), 1, 50);
+        UserCode := GetUserCode();
         GetCashDesksForCashDeskUser(UserCode, TempCashDeskCZP);
 
         if CashDeskNo <> '' then
@@ -610,11 +601,62 @@ codeunit 11724 "Cash Desk Management CZP"
         end;
     end;
 
+    procedure SetCashDeskFilter(var CashDeskCZP: Record "Cash Desk CZP")
+    var
+        CashDeskFilter: Text;
+    begin
+        if IsCashDeskUserEmpty() then
+            exit;
+
+        CashDeskFilter := GetCashDesksFilter();
+        CashDeskCZP.FilterGroup(2);
+        if CashDeskFilter <> '' then
+            CashDeskCZP.SetFilter("No.", CashDeskFilter)
+        else
+            CashDeskCZP.SetRange("No.", '');
+        CashDeskCZP.FilterGroup(0);
+    end;
+
+    procedure SetCashDeskFilter(var CashDeskCueCZP: Record "Cash Desk Cue CZP")
+    var
+        CashDeskCZP: Record "Cash Desk CZP";
+    begin
+        SetCashDeskFilter(CashDeskCZP);
+        CashDeskCZP.FilterGroup(2);
+        CashDeskCZP.CopyFilter("No.", CashDeskCueCZP."Cash Desk Filter");
+    end;
+
+    procedure SetCashDeskFilter(var CashDocumentHeaderCZP: Record "Cash Document Header CZP")
+    var
+        CashDeskCZP: Record "Cash Desk CZP";
+    begin
+        SetCashDeskFilter(CashDeskCZP);
+        CashDeskCZP.FilterGroup(2);
+        CashDeskCZP.CopyFilter("No.", CashDocumentHeaderCZP."Cash Desk No.");
+    end;
+
+    procedure SetCashDeskFilter(var PostedCashDocumentHdrCZP: Record "Posted Cash Document Hdr. CZP")
+    var
+        CashDeskCZP: Record "Cash Desk CZP";
+    begin
+        SetCashDeskFilter(CashDeskCZP);
+        CashDeskCZP.FilterGroup(2);
+        CashDeskCZP.CopyFilter("No.", PostedCashDocumentHdrCZP."Cash Desk No.");
+    end;
+
+    local procedure IsCashDeskUserEmpty(): Boolean
+    var
+        CashDeskUserCZP: Record "Cash Desk User CZP";
+    begin
+        CashDeskUserCZP.Reset();
+        exit(CashDeskUserCZP.IsEmpty());
+    end;
+
     procedure GetCashDesksFilter(): Text
     var
         TempCashDeskCZP: Record "Cash Desk CZP" temporary;
     begin
-        GetCashDesks(CopyStr(UserId(), 1, 50), TempCashDeskCZP);
+        GetCashDesks(GetUserCode(), TempCashDeskCZP);
         exit(GetCashDesksFilterFromBuffer(TempCashDeskCZP));
     end;
 
@@ -633,16 +675,12 @@ codeunit 11724 "Cash Desk Management CZP"
         CompanyInformation: Record "Company Information";
         UserSetup: Record "User Setup";
         CashUserRespCenter: Code[10];
-        HasGotCashUserSetup: Boolean;
     begin
-        if not HasGotCashUserSetup then begin
-            CompanyInformation.Get();
-            CashUserRespCenter := CompanyInformation."Responsibility Center";
-            if UserSetup.Get(UserCode) and (UserCode <> '') then
-                if UserSetup."Cash Resp. Ctr. Filter CZP" <> '' then
-                    CashUserRespCenter := UserSetup."Cash Resp. Ctr. Filter CZP";
-            HasGotCashUserSetup := true;
-        end;
+        CompanyInformation.Get();
+        CashUserRespCenter := CompanyInformation."Responsibility Center";
+        if UserSetup.Get(UserCode) and (UserCode <> '') then
+            if UserSetup."Cash Resp. Ctr. Filter CZP" <> '' then
+                CashUserRespCenter := UserSetup."Cash Resp. Ctr. Filter CZP";
         exit(CashUserRespCenter);
     end;
 
@@ -728,32 +766,35 @@ codeunit 11724 "Cash Desk Management CZP"
     begin
         PreviewMode := NewPreviewMode;
     end;
-#if not CLEAN22
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Posting Group Management CZL", 'OnCheckPostingGroupChange', '', false, false)]
-#pragma warning restore AL0432
-    local procedure OnCheckPostingGroupChange(NewPostingGroup: Code[20]; OldPostingGroup: Code[20]; SourceRecordRef: RecordRef; var CheckedPostingGroup: Option "None",Customer,CustomerInService,Vendor; var CustomerVendorNo: Code[20])
-    var
-        CashDocumentLineCZP: Record "Cash Document Line CZP";
-    begin
-        if not (SourceRecordRef.Number = Database::"Cash Document Line CZP") then
-            exit;
 
-        SourceRecordRef.SetTable(CashDocumentLineCZP);
-        case CashDocumentLineCZP."Account Type" of
-            CashDocumentLineCZP."Account Type"::Customer:
-                begin
-                    CheckedPostingGroup := CheckedPostingGroup::Customer;
-                    CustomerVendorNo := CashDocumentLineCZP."Account No.";
-                end;
-            CashDocumentLineCZP."Account Type"::Vendor:
-                begin
-                    CheckedPostingGroup := CheckedPostingGroup::Vendor;
-                    CustomerVendorNo := CashDocumentLineCZP."Account No.";
-                end;
-        end;
+    internal procedure CheckResponsibilityCenter(RespCenter: Code[10]): Boolean
+    begin
+        exit(CheckResponsibilityCenter(RespCenter, GetUserCode()));
     end;
-#endif
+
+    internal procedure CheckResponsibilityCenter(RespCenter: Code[10]; UserCode: Code[50]): Boolean
+    var
+        UserRespCenter: Code[10];
+        IsHandled: Boolean;
+        Result: Boolean;
+    begin
+        OnBeforeCheckResponsibilityCenter(RespCenter, UserCode, IsHandled, Result);
+        if IsHandled then
+            exit(Result);
+
+        UserRespCenter := GetUserCashResponsibilityFilter(UserCode);
+        if (UserRespCenter <> '') and
+           (RespCenter <> UserRespCenter)
+        then
+            exit(false);
+
+        exit(true);
+    end;
+
+    local procedure GetUserCode(): Code[50]
+    begin
+        exit(CopyStr(UserId(), 1, 50));
+    end;
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeCheckUserRights(CashDeskNo: Code[20]; ActionType: Enum "Cash Document Action CZP"; var IsHandled: Boolean)
@@ -772,6 +813,11 @@ codeunit 11724 "Cash Desk Management CZP"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeGetCashDesksForCashDeskUser(UserCode: Code[50]; var TempCashDeskCZP: Record "Cash Desk CZP" temporary; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeCheckResponsibilityCenter(RespCenter: Code[10]; UserCode: Code[50]; var IsHandled: Boolean; var Result: Boolean)
     begin
     end;
 }

@@ -75,13 +75,8 @@ table 30128 "Shpfy Shop Collection Map"
             ValidateTableRelation = true;
             DataClassification = CustomerContent;
             ObsoleteReason = 'Replaced by Item Templ. Code';
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
         }
 
         field(8; "Default for Export"; Boolean)

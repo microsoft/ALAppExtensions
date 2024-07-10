@@ -195,12 +195,12 @@ table 31005 "Sales Adv. Letter Line CZZ"
         CurrencyExchangeRate: Record "Currency Exchange Rate";
         IsHandled: Boolean;
     begin
-        TestField("VAT Prod. Posting Group");
-
         IsHandled := false;
         OnBeforeUpdateAmounts(Rec, xRec, CurrFieldNo, IsHandled);
         if IsHandled then
             exit;
+
+        TestField("VAT Prod. Posting Group");
 
         GetHeader();
         "Amount Including VAT" := Round("Amount Including VAT", Currency."Amount Rounding Precision");

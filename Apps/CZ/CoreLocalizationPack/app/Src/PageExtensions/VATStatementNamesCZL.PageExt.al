@@ -31,8 +31,6 @@ pageextension 11780 "VAT Statement Names CZL" extends "VAT Statement Names"
                 ApplicationArea = VAT;
                 Caption = 'Comments';
                 Image = ViewComments;
-                Promoted = true;
-                PromotedCategory = Process;
                 RunObject = page "VAT Stmt. Comment Sheet CZL";
                 RunPageLink = "VAT Statement Template Name" = field("Statement Template Name"),
                               "VAT Statement Name" = field(Name);
@@ -43,12 +41,19 @@ pageextension 11780 "VAT Statement Names CZL" extends "VAT Statement Names"
                 ApplicationArea = VAT;
                 Caption = 'Attachments';
                 Image = Attachments;
-                Promoted = true;
-                PromotedCategory = Process;
                 RunObject = page "VAT Stmt. Attachment Sheet CZL";
                 RunPageLink = "VAT Statement Template Name" = field("Statement Template Name"),
                               "VAT Statement Name" = field(Name);
                 ToolTip = 'Specifies VAT statement attachments.';
+            }
+        }
+        addlast(Category_Process)
+        {
+            actionref(CommentsCZL_Promoted; CommentsCZL)
+            {
+            }
+            actionref(AttachmentsCZL_Promoted; AttachmentsCZL)
+            {
             }
         }
     }

@@ -50,12 +50,21 @@ codeunit 11290 "Sync Company Information"
         xCompanyInformation: Record "Company Information";
         SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
         PreviousRecordRef: RecordRef;
+        CurrentRecordRef: RecordRef;
+        CurrentPlusGiroNo: Text[20];
+        PreviousPlusGiroNo: Text[20];
     begin
+        CurrentRecordRef.Open(Database::"Company Information", false);
+        if not CurrentRecordRef.FieldExist(11200) then // field - 11200 "Plus Giro No." 
+            exit;
+        CurrentPlusGiroNo := CurrentRecordRef.Field(11200).Value;
+
         if SyncDepFldUtilities.GetPreviousRecord(CompanyInformation, PreviousRecordRef) then begin
             PreviousRecordRef.SetTable(xCompanyInformation);
-            SyncFields(CompanyInformation."Plus Giro No.", CompanyInformation."Plus Giro Number", xCompanyInformation."Plus Giro No.", xCompanyInformation."Plus Giro Number");
+            PreviousPlusGiroNo := PreviousRecordRef.Field(11200).Value;
+            SyncFields(CurrentPlusGiroNo, CompanyInformation."Plus Giro Number", PreviousPlusGiroNo, xCompanyInformation."Plus Giro Number");
         end else
-            SyncFields(CompanyInformation."Plus Giro No.", CompanyInformation."Plus Giro Number");
+            SyncFields(CurrentPlusGiroNo, CompanyInformation."Plus Giro Number");
     end;
 
     local procedure SyncRegisteredOfficeOnCompanyInformationTable(var CompanyInformation: Record "Company Information")
@@ -63,12 +72,21 @@ codeunit 11290 "Sync Company Information"
         xCompanyInformation: Record "Company Information";
         SyncDepFldUtilities: Codeunit "Sync.Dep.Fld-Utilities";
         PreviousRecordRef: RecordRef;
+        CurrentRecordRef: RecordRef;
+        CurrentRegisteredOffice: Text[20];
+        PreviousRegisteredOffice: Text[20];
     begin
+        CurrentRecordRef.Open(Database::"Company Information", false);
+        if not CurrentRecordRef.FieldExist(11201) then //field 11201 - "Registered Office"
+            exit;
+        CurrentRegisteredOffice := CurrentRecordRef.Field(11201).Value;
+
         if SyncDepFldUtilities.GetPreviousRecord(CompanyInformation, PreviousRecordRef) then begin
             PreviousRecordRef.SetTable(xCompanyInformation);
-            SyncFields(CompanyInformation."Registered Office", CompanyInformation."Registered Office Info", xCompanyInformation."Registered Office", xCompanyInformation."Registered Office Info");
+            PreviousRegisteredOffice := PreviousRecordRef.Field(11201).Value; // field 11201 - "Registered Office"
+            SyncFields(CurrentRegisteredOffice, CompanyInformation."Registered Office Info", PreviousRegisteredOffice, xCompanyInformation."Registered Office Info");
         end else
-            SyncFields(CompanyInformation."Registered Office", CompanyInformation."Registered Office Info");
+            SyncFields(CurrentRegisteredOffice, CompanyInformation."Registered Office Info");
     end;
 
     procedure SyncFields(var ObsoleteFieldValue: Text[20]; var ValidFieldValue: Text[20]; PrevObsoleteFieldValue: Text[20]; PrevValidFieldValue: Text[20])

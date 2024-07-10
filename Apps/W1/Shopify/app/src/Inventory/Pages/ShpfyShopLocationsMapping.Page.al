@@ -63,17 +63,6 @@ page 30117 "Shpfy Shop Locations Mapping"
                     ApplicationArea = All;
                     ToolTip = 'The default product locations will be added to new products in Shopify.';
                 }
-#if not CLEAN22
-                field(Disabled; Rec.Disabled)
-                {
-                    ApplicationArea = All;
-                    Visible = false;
-                    ObsoleteReason = 'Replaced by Stock Calculation field.';
-                    ObsoleteTag = '22.0';
-                    ObsoleteState = Pending;
-                    ToolTip = 'Specifies if the location is enabled/disabled for send stock information to Shopify.';
-                }
-#endif
                 field("Stock Calculation"; Rec."Stock Calculation")
                 {
                     ApplicationArea = All;

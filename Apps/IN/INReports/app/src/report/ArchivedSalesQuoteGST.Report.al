@@ -909,8 +909,8 @@ report 18003 "Archived Sales Quote GST"
             var
                 "Sell-to Country": Text[50];
             begin
-                CurrReport.Language := Language.GetLanguageID("Language Code");
-                CurrReport.FormatRegion := Language.GetFormatRegionOrDefault("Format Region");
+                CurrReport.Language := GlobalLanguage.GetLanguageID("Language Code");
+                CurrReport.FormatRegion := GlobalLanguage.GetFormatRegionOrDefault("Format Region");
                 Customer.Get("Bill-to Customer No.");
                 if RespCenter.Get("Responsibility Center") then begin
                     FormatAddr.RespCenter(CompanyAddr, RespCenter);
@@ -1049,7 +1049,7 @@ report 18003 "Archived Sales Quote GST"
         RespCenter: Record "Responsibility Center";
         Country: Record "Country/Region";
         CurrExchRate: Record "Currency Exchange Rate";
-        Language: Codeunit "Language";
+        GlobalLanguage: Codeunit "Language";
         SalesCountPrintedArch: Codeunit "SalesCount-PrintedArch";
         FormatAddr: Codeunit "Format Address";
         CustAddr: array[8] of Text[50];

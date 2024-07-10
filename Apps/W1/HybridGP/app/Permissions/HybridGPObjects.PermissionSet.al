@@ -63,12 +63,6 @@ permissionset 4029 "HybridGP - Objects"
                     codeunit "GP Populate Hist. Tables" = X,
                     table "GPForecastTemp" = X,
                     codeunit "Install GP SmartLists" = X,
-#if not CLEAN22
-#pragma warning disable AL0432
-                    table "GP POPPOHeader" = X,
-                    table "GP POPPOLine" = X,
-#pragma warning restore AL0432
-#endif
                     page "GP Item" = X,
                     table "GP Item" = X,
                     table "GP Item Location" = X,

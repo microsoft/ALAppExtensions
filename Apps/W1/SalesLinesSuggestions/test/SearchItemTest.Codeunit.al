@@ -3,6 +3,7 @@ namespace Microsoft.Sales.Document.Test;
 using Microsoft.Inventory.Item;
 using Microsoft.Sales.Customer;
 using Microsoft.Warehouse.ADCS;
+using Microsoft.Service.Test;
 using Microsoft.Foundation.ExtendedText;
 using Microsoft.Inventory.Item.Catalog;
 using Microsoft.Sales.Document;
@@ -21,9 +22,40 @@ codeunit 139780 "Search Item Test"
         Assert: Codeunit Assert;
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibrarySales: Codeunit "Library - Sales";
+        LibraryUtility: Codeunit "Library - Utility";
+        LibraryService: Codeunit "Library - Service";
         NoSuggestionGeneratedErr: Label 'There are no suggestions for this description. Please rephrase it.';
         DescriptionIsIncorrectErr: Label 'Description is incorrect!';
         QuantityIsIncorrectErr: Label 'Quantity is incorrect!';
+        NeedThreeItemButOneNotExistingLbl: Label 'I need one bike, one table and one Model Took Kit';
+        NeedItemInNonEnglishLbl: Label 'I need one bicikl.';
+        InvalidPrecisionErr: Label 'The value %1 in field %2 is of lesser precision than expected. \\Note: Default rounding precision of %3 is used if a rounding precision is not defined.', Comment = '%1 - decimal value, %2 - field name, %3 - default rounding precision.';
+
+
+    [Test]
+    [HandlerFunctions('InvokeGenerateAndCheckItemsFound')]
+    procedure TestSearchThreeItemsWithOneNotExistingItem()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLineAISuggestions: Page "Sales Line AI Suggestions";
+    begin
+        // [FEATURE] [Sales with AI]:[Search Item End to End]
+        // [Scenario] User wants to search for 3 items, but 1 one of them is not existing in the system, two lines will be generated.
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
+        Initialize();
+        // [GIVEN] User specifies 3 items, but one of them is not existing in the system
+        LibraryVariableStorage.Enqueue(NeedThreeItemButOneNotExistingLbl);
+        LibraryVariableStorage.Enqueue(2);
+        EnqueueOneItemAndQty('Bicycle', 1);
+        EnqueueOneItemAndQty('ANTWERP Conference Table', 1);
+        EnqueueOneItemAndQty('Bicycle', 1);
+        EnqueueOneItemAndQty('ANTWERP Conference Table', 1);
+        // [WHEN] User input is given to the AI suggestions
+        // [THEN] AI suggestions should generate two sales lines, it is handled in the handler function 'InvokeGenerateAndCheckItemsFound'
+        CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions);
+        // [THEN] One line is inserted in the sales line
+        CheckSalesLineContent(SalesHeader."No.");
+    end;
 
     [Test]
     [HandlerFunctions('InvokeGenerateAndCheckItemsFound')]
@@ -36,6 +68,7 @@ codeunit 139780 "Search Item Test"
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
         // [Scenario] User wants to search for an item using item no. and AI should suggest the item 
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
         Initialize();
         // [GIVEN] Pick one item
         Item.FindFirst();
@@ -62,7 +95,8 @@ codeunit 139780 "Search Item Test"
         UserInput: Text;
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
-        // [Scenario] User wants to search for an item using item description and AI should suggest the item 
+        // [Scenario] User wants to search for an item using item description and AI should suggest the item
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
         Initialize();
         Item.FindFirst();
         UserInput := GlobalUserInput;
@@ -89,6 +123,7 @@ codeunit 139780 "Search Item Test"
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
         // [Scenario] User wants to search for an item with VendorItemNo. and AI should suggest the item 
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
         Initialize();
         // [GIVEN] Find an item with Vendor Item No.
         Item.SetFilter("Vendor Item No.", '<>%1', '');
@@ -119,6 +154,7 @@ codeunit 139780 "Search Item Test"
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
         // [Scenario] User wants to search for an item with Variant Code. and AI should suggest the item 
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
         Initialize();
         // [GIVEN] Find an item with Variant Code.
         ItemVariant.SetFilter("Code", '<>%1', '');
@@ -150,6 +186,7 @@ codeunit 139780 "Search Item Test"
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
         // [Scenario] User wants to search for an item with Reference No. and AI should suggest the item 
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
         Initialize();
         // [GIVEN] Find an item with Reference No.
         ItemReference.SetFilter("Reference No.", '<>%1', '');
@@ -181,6 +218,7 @@ codeunit 139780 "Search Item Test"
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
         // [Scenario] User wants to search for an item with "Reference Description" and AI should suggest the item 
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
         Initialize();
         // [GIVEN] Find an item with Reference Description
 #pragma warning disable AA0210
@@ -213,6 +251,7 @@ codeunit 139780 "Search Item Test"
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
         // [Scenario] User wants to search for an item with Item Category and AI should suggest the item 
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
         Initialize();
         // [GIVEN] Find an item with Item Category Code
         Item.SetFilter("Item Category Code", '<>%1', '');
@@ -244,6 +283,7 @@ codeunit 139780 "Search Item Test"
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
         // [Scenario] User wants to search for an item with Item Category Description and AI should suggest the item 
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
         Initialize();
         // [GIVEN] Find an item with Item Category Description
         Item.SetFilter("Item Category Code", '<>%1', '');
@@ -275,6 +315,7 @@ codeunit 139780 "Search Item Test"
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
         // [Scenario] User wants to search for an item with Parent Category of the item category and AI should suggest the item 
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
         Initialize();
         // [GIVEN] Find an item with Parent Category of the Item Category
         Item.SetFilter("Item Category Code", '<>%1', '');
@@ -306,6 +347,7 @@ codeunit 139780 "Search Item Test"
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
         // [Scenario] User wants to search for an item with "Item Translate Code" and AI should suggest the item 
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
         Initialize();
         // [GIVEN] Find an item with Item Translate Code
         ItemTranslation.FindFirst();
@@ -336,6 +378,7 @@ codeunit 139780 "Search Item Test"
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
         // [Scenario] User wants to search for an item with "Item Translate Description" and AI should suggest the item 
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
         Initialize();
         // [GIVEN] Find an item with Item Translate Description
         ItemTranslation.FindFirst();
@@ -366,6 +409,7 @@ codeunit 139780 "Search Item Test"
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
         // [Scenario] User wants to search for an item with "Item Identifier Code" and AI should suggest the item 
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
         Initialize();
         // [GIVEN] Find an item with Item Identifier Code
         ItemIdentifier.FindFirst();
@@ -396,6 +440,7 @@ codeunit 139780 "Search Item Test"
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
         // [Scenario] User wants to search for an item with "Item Extended Text" and AI should suggest the item 
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
         Initialize();
         // [GIVEN] Find an item with "Item Extended Text"
         ItemExtendedTextLine.FindFirst();
@@ -423,6 +468,7 @@ codeunit 139780 "Search Item Test"
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
         // [Scenario] User wants to search for an item that does not exist in the system, AI should not suggest any item and show a notification
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
         Initialize();
         LibraryVariableStorage.Clear();
         // [GIVEN] Generate prompt with Document No.
@@ -448,6 +494,7 @@ codeunit 139780 "Search Item Test"
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
         // [Scenario] User wants to search for sales blocked item, AI should not suggest sales blocked items  
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
         Initialize();
         Qty := 5;
         // [GIVEN] Change one item to sales blocked
@@ -481,6 +528,7 @@ codeunit 139780 "Search Item Test"
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
         // [Scenario] Add up to 50 item no. in sales lines using AI suggestions in one user input  
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
         Initialize();
         Qty := 5;
         Item.SetLoadFields("No.");
@@ -522,6 +570,7 @@ codeunit 139780 "Search Item Test"
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
         // [Scenario] Add up to 50 item no. in sales lines using AI suggestions in one user input  
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
         Initialize();
         Qty := 5;
         Item.SetLoadFields("No.", Description);
@@ -563,6 +612,7 @@ codeunit 139780 "Search Item Test"
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
         // [Scenario] Add up to 50 item no. in sales lines using AI suggestions in one user input  
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
         Initialize();
         Qty := 5;
         Item.SetLoadFields("No.", Description);
@@ -587,6 +637,107 @@ codeunit 139780 "Search Item Test"
 
         // [THEN] AI suggestions should generate the expected sales lines
         // Handled in EvaluateSearchItemForMultipleItems
+    end;
+
+    [Test]
+    [HandlerFunctions('InvokeGenerateAndCheckItemsFound')]
+    procedure ExtendedTextIsInsertedOnSalesOrderLinesOnInsertSuggestedLines()
+    var
+        SalesHeader: Record "Sales Header";
+        Item: Record Item;
+        SalesLineAISuggestions: Page "Sales Line AI Suggestions";
+        UserInput: Text;
+        ItemExtText: Text[100];
+    begin
+        // [SCENARIO 525387] Verify Extended Text is added on Sales Order line on insert suggested lines
+        Initialize();
+
+        // [GIVEN] Find Item and set Automatic Ext. Text for Item
+        Item.FindFirst();
+        Item.Validate("Automatic Ext. Texts", true);
+        Item.Modify(true);
+
+        // [GIVEN] Create Item Extended Text
+        CreateItemExtendedText(Item."No.", ItemExtText);
+
+        // [GIVEN] Create user input
+        UserInput := GlobalUserInput;
+        UserInput += '5 quantity of ' + Item."No." + '; ';
+
+        LibraryVariableStorage.Enqueue(UserInput);
+        LibraryVariableStorage.Enqueue(1);
+
+        EnqueueOneItemAndQty(Item.Description, 5);
+        EnqueueOneItemAndQty(Item.Description, 5);
+        EnqueueOneItemAndQty(ItemExtText, 0);
+
+        // [WHEN] User input is given to the AI suggestions
+        // [THEN] AI suggestions should one sales lines, it is handled in the handler function 'InvokeGenerateAndCheckItemsFound'
+        CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions);
+
+        // [THEN] One line is inserted in the sales line
+        CheckSalesLineContent(SalesHeader."No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('InvokeGenerateAndCheckItemsFound')]
+    procedure TestSearchItemReturnedInOriginName()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLineAISuggestions: Page "Sales Line AI Suggestions";
+    begin
+        // [FEATURE] [Sales with AI]:[Search Item End to End]
+        // [Scenario] User wants to search for item, written in different language than english, returned in origin_name property
+        Initialize();
+
+        // [GIVEN] User specifies item in different language than english
+        LibraryVariableStorage.Enqueue(NeedItemInNonEnglishLbl);
+        LibraryVariableStorage.Enqueue(1);
+        EnqueueOneItemAndQty('Bicycle', 1);
+        EnqueueOneItemAndQty('Bicycle', 1);
+
+        // [WHEN] User input is given to the AI suggestions
+        // [THEN] AI suggestions should generate one sales line, it is handled in the handler function 'InvokeGenerateAndCheckItemsFound'
+        CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions);
+
+        // [THEN] One line is inserted in the sales line
+        CheckSalesLineContent(SalesHeader."No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('InvokeGenerateAndCheckItemsFound,SendNotificationHandler')]
+    procedure SalesLineIsNotInsertedIfErrorOccursOnInsertSuggestedLine()
+    var
+        SalesHeader: Record "Sales Header";
+        Item: Record Item;
+        SalesLineAISuggestions: Page "Sales Line AI Suggestions";
+        UserInput: Text;
+        Quantity: Text;
+    begin
+        // [SCENARIO 507779] If error occurs on insert suggested lines, notification is thrown and lines are not inserted
+        Initialize();
+
+        // [GIVEN] Find first Item
+        Item.FindFirst();
+        UpdateRoundingPrecisonForItem(Item);
+
+        // [GIVEN] Create user input
+        Quantity := '2.5';
+        UserInput := GlobalUserInput;
+        UserInput += Quantity + ' quantity of ' + Item."No." + '; ';
+
+        LibraryVariableStorage.Enqueue(UserInput);
+        LibraryVariableStorage.Enqueue(1);
+        EnqueueOneItemAndQty(Item.Description, 2.5);
+
+        LibraryVariableStorage.Enqueue(StrSubstNo(InvalidPrecisionErr, Quantity, 'Quantity', '0.00001'));
+
+        // [WHEN] AI suggestions should generate sales line
+        // [HANDLER] Show a notification, it is handled in the handler function 'SendNotificationHandler'
+        CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions);
+
+        // [THEN] No line is inserted in the sales line
+        CheckSalesLineContent(SalesHeader."No.");
     end;
 
     local procedure CreateSalesOrderWithSalesLine(var SalesHeader: Record "Sales Header"; var SalesLine: Record "Sales Line")
@@ -682,10 +833,35 @@ codeunit 139780 "Search Item Test"
         LibraryVariableStorage.AssertEmpty();
     end;
 
-    local procedure EnqueueOneItemAndQty(ItemDesc: Text; Qty: Integer)
+    local procedure EnqueueOneItemAndQty(ItemDesc: Text; Qty: Decimal)
     begin
         LibraryVariableStorage.Enqueue(ItemDesc);
         LibraryVariableStorage.Enqueue(Qty);
+    end;
+
+    local procedure CreateItemExtendedText(ItemNo: Code[20]; var ExtText: Text[100])
+    var
+        ExtendedTextHeader: Record "Extended Text Header";
+        ExtendedTextLine: Record "Extended Text Line";
+    begin
+        LibraryService.CreateExtendedTextHeaderItem(ExtendedTextHeader, ItemNo);
+        LibraryService.CreateExtendedTextLineItem(ExtendedTextLine, ExtendedTextHeader);
+        ExtendedTextLine.Validate(Text, LibraryUtility.GenerateGUID());
+        ExtendedTextLine.Modify(true);
+        ExtText := ExtendedTextLine.Text;
+    end;
+
+    local procedure UpdateRoundingPrecisonForItem(var Item: Record Item)
+    var
+        ItemUnitOfMeasure: Record "Item Unit of Measure";
+    begin
+        ItemUnitOfMeasure.SetRange("Item No.", Item."No.");
+        ItemUnitOfMeasure.SetRange(Code, Item."Base Unit of Measure");
+        if ItemUnitOfMeasure.FindSet() then
+            repeat
+                ItemUnitOfMeasure."Qty. Rounding Precision" := 1;
+                ItemUnitOfMeasure.Modify();
+            until ItemUnitOfMeasure.Next() = 0;
     end;
 
     [ModalPageHandler]
@@ -701,7 +877,7 @@ codeunit 139780 "Search Item Test"
     procedure InvokeGenerateAndCheckItemsFound(var SalesLineAISuggestions: TestPage "Sales Line AI Suggestions")
     var
         ItemCount: Integer;
-        quantityInSalesLineSub: Integer;
+        quantityInSalesLineSub: Decimal;
         i: Integer;
     begin
         // Description for this queue:
@@ -716,7 +892,7 @@ codeunit 139780 "Search Item Test"
         for i := 1 to ItemCount do begin
             Assert.AreEqual(LibraryVariableStorage.DequeueText(), SalesLineAISuggestions.SalesLinesSub.Description.Value(), DescriptionIsIncorrectErr);
             Evaluate(quantityInSalesLineSub, SalesLineAISuggestions.SalesLinesSub.Quantity.Value());
-            Assert.AreEqual(LibraryVariableStorage.DequeueInteger(), quantityInSalesLineSub, QuantityIsIncorrectErr);
+            Assert.AreEqual(LibraryVariableStorage.DequeueDecimal(), quantityInSalesLineSub, QuantityIsIncorrectErr);
             SalesLineAISuggestions.SalesLinesSub.Next();
         end;
         SalesLineAISuggestions.OK.Invoke();

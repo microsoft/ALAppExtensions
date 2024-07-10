@@ -14,10 +14,12 @@ codeunit 139806 "APIV2 - Company Info. E2E"
         LibraryUtility: Codeunit "Library - Utility";
         Assert: Codeunit "Assert";
         LibraryGraphMgt: Codeunit "Library - Graph Mgt";
+        ApplicationAreaMgmtFacade: Codeunit "Application Area Mgmt. Facade";
         IsInitialized: Boolean;
         ServiceNameTxt: Label 'companyInformation';
         EmptyJSONErr: Label 'The JSON should not be blank.';
         WrongPropertyValueErr: Label 'Incorrect property value for %1.', Comment = '%1=Property name';
+        SaveExperienceTierFailedErr: Label 'Failed to save experience tier for the current company.';
 
     local procedure Initialize()
     begin
@@ -79,12 +81,73 @@ codeunit 139806 "APIV2 - Company Info. E2E"
         CompanyInformation.TestField(Name, ModifiedName);
     end;
 
+    [Test]
+    procedure TestModifyValidExperinceTier()
+    var
+        CompanyInformation: Record "Company Information";
+        RequestBody: Text;
+        Response: Text;
+        TargetURL: Text;
+        CurrentExperience: Text;
+        ModifiedExperience: Text;
+    begin
+        // [SCENARIO 204030] User can modify the experince tier through a PATCH request.
+        Initialize();
+
+        // [Given] A company information exists.
+        CompanyInformation.Get();
+        ApplicationAreaMgmtFacade.GetExperienceTierCurrentCompany(CurrentExperience);
+        if CurrentExperience = 'Basic' then
+            ModifiedExperience := 'Premium'
+        else
+            ModifiedExperience := 'Basic';
+        RequestBody := GetExperienceTierJSON(ModifiedExperience);
+
+        // [WHEN] The user makes a patch request to the service.
+        TargetURL := LibraryGraphMgt.CreateTargetURL(CompanyInformation.SystemId, Page::"APIV2 - Company Information", ServiceNameTxt);
+        LibraryGraphMgt.PatchToWebService(TargetURL, RequestBody, Response);
+
+        // [THEN] The response text contains the new values.
+        VerifyPropertyInJSON(Response, 'experience', ModifiedExperience);
+
+        // [THEN] The record in the database contains the new values.
+        ApplicationAreaMgmtFacade.GetExperienceTierCurrentCompany(CurrentExperience);
+        Assert.AreEqual(ModifiedExperience, CurrentExperience, 'The experience tier should be updated.');
+    end;
+
+    [Test]
+    procedure TestModifyInvalidExperinceTier()
+    var
+        CompanyInformation: Record "Company Information";
+        RequestBody: Text;
+        Response: Text;
+        TargetURL: Text;
+        ModifiedExperience: Text;
+    begin
+        // [SCENARIO 204030] User can modify the experince tier through a PATCH request.
+        Initialize();
+
+        // [Given] A company information exists.
+        CompanyInformation.Get();
+        ModifiedExperience := LibraryUtility.GenerateRandomText(20);
+        RequestBody := GetExperienceTierJSON(ModifiedExperience);
+
+        // [WHEN] The user makes a patch request to the service.
+        TargetURL := LibraryGraphMgt.CreateTargetURL(CompanyInformation.SystemId, Page::"APIV2 - Company Information", ServiceNameTxt);
+        asserterror LibraryGraphMgt.PatchToWebService(TargetURL, RequestBody, Response);
+
+        // [THEN] Cannot assign invalid experience tier.
+        Assert.ExpectedError('400');
+        Assert.ExpectedError(SaveExperienceTierFailedErr);
+    end;
+
     local procedure VerifyCompanyInformationProperties(CompanyInformationJSON: Text; var CompanyInformation: Record "Company Information")
     var
         GeneralLedgerSetup: Record "General Ledger Setup";
         CompanyInformationRecordRef: RecordRef;
         EnterpriseNoFieldRef: FieldRef;
         TaxRegistrationNumber: Text;
+        Experience: Text;
     begin
         Assert.AreNotEqual('', CompanyInformationJSON, EmptyJSONErr);
         GeneralLedgerSetup.Get();
@@ -112,6 +175,9 @@ codeunit 139806 "APIV2 - Company Info. E2E"
         VerifyPropertyInJSON(CompanyInformationJSON, 'state', CompanyInformation.County);
         VerifyPropertyInJSON(CompanyInformationJSON, 'country', CompanyInformation."Country/Region Code");
         VerifyPropertyInJSON(CompanyInformationJSON, 'postalCode', CompanyInformation."Post Code");
+
+        ApplicationAreaMgmtFacade.GetExperienceTierCurrentCompany(Experience);
+        VerifyPropertyInJSON(CompanyInformationJSON, 'experience', Experience);
     end;
 
     local procedure VerifyPropertyInJSON(JSON: Text; PropertyName: Text; ExpectedValue: Text)
@@ -135,19 +201,9 @@ codeunit 139806 "APIV2 - Company Info. E2E"
         CompanyInformationJSON := LibraryGraphMgt.AddPropertytoJSON(CompanyInformationJSON, 'country', CompanyInformation."Country/Region Code");
         CompanyInformationJSON := LibraryGraphMgt.AddPropertytoJSON(CompanyInformationJSON, 'postalCode', CompanyInformation."Post Code");
     end;
+
+    local procedure GetExperienceTierJSON(Experience: Text) ExperinceTierJSON: Text
+    begin
+        ExperinceTierJSON := LibraryGraphMgt.AddPropertytoJSON('', 'experience', Experience);
+    end;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -4,12 +4,16 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.FinancialReports;
 
+using Microsoft.Finance.GeneralLedger.Account;
 using System.Utilities;
+using System.Text;
 
 codeunit 11700 "Acc. Schedule Management CZL"
 {
     var
         AccSChedExtensionMgtCZL: Codeunit "Acc. Sched. Extension Mgt. CZL";
+        IncomeStatementTxt: Label 'Income Statement';
+        TotalingTxt: Label 'Total %1', Comment = '%1 = Account category, e.g. Assets';
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::AccSchedManagement, 'OnAfterCalcCellValue', '', false, false)]
     local procedure CalcCZLOnAfterCalcCellValue(var AccSchedLine: Record "Acc. Schedule Line"; var Result: Decimal)
@@ -198,12 +202,121 @@ codeunit 11700 "Acc. Schedule Management CZL"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Categ. Generate Acc. Schedules", 'OnCreateIncomeStatementOnAfterCreateCOGSGroup', '', false, false)]
-    local procedure DeleteAccSchedLinesOnCreateIncomeStatementOnAfterCreateCOGSGroup(var AccScheduleLine: Record "Acc. Schedule Line"; var IsHandled: Boolean)
+    local procedure CreateIncomeStatementCZOnCreateIncomeStatementOnAfterCreateCOGSGroup(var AccScheduleLine: Record "Acc. Schedule Line"; var IsHandled: Boolean)
+    var
+        GLAccountCategory: Record "G/L Account Category";
+        RowNo: Integer;
     begin
         AccScheduleLine.Reset();
         AccScheduleLine.SetRange("Schedule Name", AccScheduleLine."Schedule Name");
         AccScheduleLine.DeleteAll();
+
+        AddAccShedLine(
+              AccScheduleLine, RowNo, AccScheduleLine."Totaling Type"::"Posting Accounts",
+              IncomeStatementTxt, '', true, false, true, 0);
+
+        GLAccountCategory.SetRange("Income/Balance", GLAccountCategory."Income/Balance"::"Income Statement");
+        GLAccountCategory.SetRange(Indentation, 1);
+        GLAccountCategory.SetAutoCalcFields("Has Children");
+        GLAccountCategory.SetCurrentKey("Presentation Order");
+        if GLAccountCategory.FindSet() then
+            repeat
+                AddAccSchedLinesDetail(AccScheduleLine, RowNo, GLAccountCategory, 1);
+            until GLAccountCategory.Next() = 0;
+
         IsHandled := true;
+    end;
+
+    local procedure AddAccSchedLinesDetail(var AccScheduleLine: Record "Acc. Schedule Line"; var RowNo: Integer; ParentGLAccountCategory: Record "G/L Account Category"; Indentation: Integer)
+    var
+        GLAccountCategory: Record "G/L Account Category";
+        GLAccount: Record "G/L Account";
+        AccScheduleTotType: Enum "Acc. Schedule Line Totaling Type";
+        FromRowNo: Integer;
+        TotalingFilter: Text;
+    begin
+        if ParentGLAccountCategory."Has Children" then begin
+            AddAccShedLine(
+              AccScheduleLine, RowNo, AccScheduleLine."Totaling Type"::"Posting Accounts",
+              ParentGLAccountCategory.Description, ParentGLAccountCategory.GetTotaling(), true, false,
+              not ParentGLAccountCategory.PositiveNormalBalance(), Indentation);
+            FromRowNo := RowNo;
+            GLAccountCategory.SetRange("Parent Entry No.", ParentGLAccountCategory."Entry No.");
+            GLAccountCategory.SetCurrentKey("Presentation Order");
+            GLAccountCategory.SetAutoCalcFields("Has Children");
+            if GLAccountCategory.FindSet() then
+                repeat
+                    AddAccSchedLinesDetail(AccScheduleLine, RowNo, GLAccountCategory, Indentation + 1);
+                until GLAccountCategory.Next() = 0;
+            AddAccShedLine(
+              AccScheduleLine, RowNo, AccScheduleLine."Totaling Type"::Formula,
+              CopyStr(StrSubstNo(TotalingTxt, ParentGLAccountCategory.Description), 1, 80),
+              StrSubstNo('%1..%2', FormatRowNo(FromRowNo, false), FormatRowNo(RowNo, false)), true, false,
+              not ParentGLAccountCategory.PositiveNormalBalance(), Indentation);
+        end else begin
+            // Retained Earnings element of Equity must include non-closed income statement.
+            TotalingFilter := ParentGLAccountCategory.GetTotaling();
+            if ParentGLAccountCategory."Additional Report Definition" =
+               ParentGLAccountCategory."Additional Report Definition"::"Retained Earnings"
+            then begin
+                if TotalingFilter <> '' then
+                    TotalingFilter += '|';
+                TotalingFilter += GetIncomeStmtAccFilter();
+            end;
+
+            AccScheduleTotType := AccScheduleLine."Totaling Type"::"Posting Accounts";
+            if (StrPos(TotalingFilter, '..') = 0) and (StrPos(TotalingFilter, '|') = 0) then begin
+                GLAccount.SetRange("No.", TotalingFilter);
+                GLAccount.SetRange("Account Type", GLAccount."Account Type"::Total);
+                if not GLAccount.IsEmpty() then
+                    AccScheduleTotType := AccScheduleLine."Totaling Type"::"Total Accounts";
+            end;
+
+            AddAccShedLine(
+              AccScheduleLine, RowNo, AccScheduleTotType,
+              ParentGLAccountCategory.Description, CopyStr(TotalingFilter, 1, 250),
+              Indentation = 0, false, not ParentGLAccountCategory.PositiveNormalBalance(), Indentation);
+            AccScheduleLine.Show := AccScheduleLine.Show::"If Any Column Not Zero";
+            AccScheduleLine.Modify();
+        end;
+    end;
+
+    local procedure GetIncomeStmtAccFilter(): Text[250]
+    var
+        GLAccount: Record "G/L Account";
+        SelectionFilterManagement: Codeunit SelectionFilterManagement;
+    begin
+        GLAccount.Reset();
+        GLAccount.SetRange("Income/Balance", GLAccount."Income/Balance"::"Income Statement");
+        exit(CopyStr(SelectionFilterManagement.GetSelectionFilterForGLAccount(GLAccount), 1, 250));
+    end;
+
+    local procedure AddAccShedLine(var AccScheduleLine: Record "Acc. Schedule Line"; var RowNo: Integer; TotalingType: Enum "Acc. Schedule Line Totaling Type"; Description: Text[80]; Totaling: Text[250]; Bold: Boolean; Underline: Boolean; ShowOppositeSign: Boolean; Indentation: Integer)
+    begin
+        if AccScheduleLine.FindLast() then;
+        AccScheduleLine.Init();
+        AccScheduleLine."Line No." += 10000;
+        RowNo += 1;
+        AccScheduleLine."Row No." := FormatRowNo(RowNo, TotalingType = AccScheduleLine."Totaling Type"::Formula);
+        AccScheduleLine."Totaling Type" := TotalingType;
+        AccScheduleLine.Description := Description;
+        AccScheduleLine.Totaling := Totaling;
+        AccScheduleLine."Show Opposite Sign" := ShowOppositeSign;
+        AccScheduleLine.Bold := Bold;
+        AccScheduleLine.Underline := Underline;
+        AccScheduleLine.Indentation := Indentation;
+        AccScheduleLine.Insert();
+    end;
+
+    local procedure FormatRowNo(RowNo: Integer; AddPrefix: Boolean): Text[5]
+    var
+        Prefix: Text[1];
+    begin
+        if AddPrefix then
+            Prefix := 'F'
+        else
+            Prefix := 'P';
+        exit(Prefix + CopyStr(Format(10000 + RowNo), 2, 4));
     end;
 
     procedure CalcCorrectionCell(var AccScheduleLine: Record "Acc. Schedule Line"; var ColumnLayout: Record "Column Layout"; CalcAddCurr: Boolean): Decimal
@@ -233,13 +346,6 @@ codeunit 11700 "Acc. Schedule Management CZL"
             until (ColumnLayout.Next() = 0) or NonZero;
         exit(not NonZero);
     end;
-#if not CLEAN22
-    [Obsolete('The event will be replaced by OnBeforePrintAccScheduleByType.', '22.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnBeforeAccScheduleNameOnBeforePrint(var AccScheduleName: Record "Acc. Schedule Name"; var IsHandled: Boolean)
-    begin
-    end;
-#endif
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforePrintAccScheduleByType(var FinancialReport: Record "Financial Report"; var IsHandled: Boolean)

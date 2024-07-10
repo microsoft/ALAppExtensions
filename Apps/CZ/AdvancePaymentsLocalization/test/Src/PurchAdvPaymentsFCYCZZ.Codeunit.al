@@ -29,9 +29,6 @@ codeunit 148123 "Purch. Adv. Payments FCY CZZ"
     local procedure Initialize()
     var
         LibraryTestInitialize: Codeunit "Library - Test Initialize";
-#if not CLEAN22
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#endif
     begin
         LibraryTestInitialize.OnTestInitialize(Codeunit::"Purch. Adv. Payments FCY CZZ");
         LibraryRandom.Init();
@@ -42,11 +39,6 @@ codeunit 148123 "Purch. Adv. Payments FCY CZZ"
         LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Purch. Adv. Payments FCY CZZ");
 
         GeneralLedgerSetup.Get();
-#if not CLEAN22
-        if not ReplaceVATDateMgtCZL.IsEnabled() then
-            GeneralLedgerSetup."Use VAT Date CZL" := true
-        else
-#endif
         GeneralLedgerSetup."VAT Reporting Date Usage" := GeneralLedgerSetup."VAT Reporting Date Usage"::Enabled;
         GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL" := GeneralLedgerSetup."Def. Orig. Doc. VAT Date CZL"::"VAT Date";
         GeneralLedgerSetup."Max. VAT Difference Allowed" := 0.5;

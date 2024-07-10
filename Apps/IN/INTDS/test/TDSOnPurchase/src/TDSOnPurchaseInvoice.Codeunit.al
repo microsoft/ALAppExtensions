@@ -1648,6 +1648,68 @@ codeunit 18791 "TDS On Purchase Invoice"
             StrSubstNo(VerifyErr, PurchaseLine.FieldCaption("TDS Section Code"), PurchaseLine.TableCaption));
     end;
 
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromPurchInvWithGLAccWithMultiplelineWithPaymentMethodCodeBank()
+    var
+        ConcessionalCode: Record "Concessional Code";
+        TDSPostingSetup: Record "TDS Posting Setup";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        Vendor: Record Vendor;
+        DocumentNo: Code[20];
+    begin
+        // [SCENARIO] [507014] TDS with Payment method issue in ledger entry posting
+        // [GIVEN] Created Setup for AssesseeCode,TDSPostingSetup,TDSSection,ConcessionalCode with Threshold and Surcharge Overlook.
+        LibraryTDS.CreateTDSSetup(Vendor, TDSPostingSetup, ConcessionalCode);
+        LibraryTDS.UpdateVendorWithPANWithoutConcessional(Vendor, true, true);
+        CreateTaxRateSetup(TDSPostingSetup."TDS Section", Vendor."Assessee Code", '', WorkDate());
+
+        // [WHEN] Created and Posted Purchase Invoice with Multple Line and Payment Method Code As Bank
+        CreatePurchaseDocumentWithPaymentMethodCodeBank(PurchaseHeader,
+             PurchaseHeader."Document Type"::Invoice,
+             Vendor."No.",
+             WorkDate(),
+             PurchaseLine.Type::"G/L Account",
+             false);
+        CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::"G/L Account", false);
+        DocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] G/L Entries and TDS Entries Verified
+        VerifyGLEntryCount(DocumentNo, 4);
+    end;
+
+    [Test]
+    [HandlerFunctions('TaxRatePageHandler')]
+    procedure PostFromPurchInvWithGLAccWithMultiplelineWithMultipleTDSSectionCode()
+    var
+        ConcessionalCode: Record "Concessional Code";
+        TDSPostingSetup: Record "TDS Posting Setup";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        Vendor: Record Vendor;
+        DocumentNo: Code[20];
+    begin
+        // [SCENARIO] TDS with Multiple Section having issue with threshold Overlook Issue
+        // [GIVEN] Created Setup for AssesseeCode,TDSPostingSetup,TDSSection,ConcessionalCode with Threshold.
+        LibraryTDS.CreateTDSSetupWithMultipleSection(Vendor, TDSPostingSetup, ConcessionalCode);
+        LibraryTDS.UpdateVendorWithPANWithoutConcessional(Vendor, true, true);
+        CreateTaxRateSetup(TDSPostingSetup."TDS Section", Vendor."Assessee Code", '', WorkDate());
+
+        // [WHEN] Created and Posted Purchase Invoice with Multple Line
+        CreatePurchaseDocumentWithPaymentMethodCodeBank(PurchaseHeader,
+             PurchaseHeader."Document Type"::Invoice,
+             Vendor."No.",
+             WorkDate(),
+             PurchaseLine.Type::"G/L Account",
+             false);
+        CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::"G/L Account", false);
+        DocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [THEN] G/L Entries and TDS Entries Verified
+        VerifyGLEntryCount(DocumentNo, 6);
+    end;
+
     local procedure UpdateTDSSection(PurchaseHeader: Record "Purchase Header")
     var
         PurchaseInvoice: TestPage "Purchase Invoice";
@@ -2010,6 +2072,27 @@ codeunit 18791 "TDS On Purchase Invoice"
         Assert.AreNearlyEqual(
             ExpectedSHEcessAmount, TDSEntry."SHE Cess Amount", LibraryTDS.GetTDSRoundingPrecision(),
             StrSubstNo(AmountErr, TDSEntry.FieldName("SHE Cess Amount"), TDSEntry.TableCaption()));
+    end;
+
+    local procedure CreatePurchaseDocumentWithPaymentMethodCodeBank(
+        var PurchaseHeader: Record "Purchase Header";
+        DocumentType: enum "Purchase Document Type";
+        VendorNo: Code[20];
+        PostingDate: Date;
+        LineType: enum "Purchase Line Type";
+        LineDiscount: Boolean)
+    var
+        PurchaseLine: Record "Purchase Line";
+        PaymentMethod: Record "Payment Method";
+    begin
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, DocumentType, VendorNo);
+        PaymentMethod.Get('Bank');
+        PaymentMethod.Validate("Bal. Account Type", PaymentMethod."Bal. Account Type"::"Bank Account");
+        PaymentMethod.Validate("Bal. Account No.", 'Giro');
+        PurchaseHeader.Validate("Posting Date", PostingDate);
+        PurchaseHeader.Validate("Payment Method Code", 'Bank');
+        PurchaseHeader.Modify(true);
+        CreatePurchaseLine(PurchaseHeader, PurchaseLine, LineType, LineDiscount);
     end;
 
     [ModalPageHandler]

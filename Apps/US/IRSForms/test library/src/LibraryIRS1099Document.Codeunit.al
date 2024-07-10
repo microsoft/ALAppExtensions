@@ -14,6 +14,7 @@ codeunit 148001 "Library IRS 1099 Document"
     var
         LibraryUtility: Codeunit "Library - Utility";
         LibraryIRSReportingPeriod: Codeunit "Library IRS Reporting Period";
+        LibraryIRS1099FormBox: Codeunit "Library IRS 1099 Form Box";
         Assert: Codeunit "Assert";
         LibraryJournals: Codeunit "Library - Journals";
         LibraryERM: Codeunit "Library - ERM";
@@ -112,6 +113,67 @@ codeunit 148001 "Library IRS 1099 Document"
         vendorLedgerEntry."IRS 1099 Reporting Amount" := Amount;
         VendorLedgerEntry.Insert();
         MockInitialDtldLedgEntry(VendorLedgerEntry."Entry No.", '', Amount);
+    end;
+
+    procedure MockFormDocumentForVendor(PeriodNo: Code[20]; VendNo: Code[20]; FormNo: Code[20]; Status: Enum "IRS 1099 Form Doc. Status"): Integer
+    var
+        IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+    begin
+        IRS1099FormDocHeader."Period No." := PeriodNo;
+        IRS1099FormDocHeader."Vendor No." := VendNo;
+        IRS1099FormDocHeader."Form No." := FormNo;
+        IRS1099FormDocHeader.Status := Status;
+        IRS1099FormDocHeader.Insert();
+        exit(IRS1099FormDocHeader.ID);
+    end;
+
+    procedure MockFormDocumentLineForVendor(DocId: Integer; PeriodNo: Code[20]; VendNo: Code[20]; FormNo: Code[20]; FormBoxNo: Code[20])
+    var
+        IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
+    begin
+        MockFormDocumentLineForVendor(IRS1099FormDocLine, DocId, PeriodNo, VendNo, FormNo, FormBoxNo);
+    end;
+
+    procedure MockFormDocumentLineForVendor(var IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line"; DocId: Integer; PeriodNo: Code[20]; VendNo: Code[20]; FormNo: Code[20]; FormBoxNo: Code[20])
+    begin
+        IRS1099FormDocLine."Document ID" := DocId;
+        IRS1099FormDocLine."Period No." := PeriodNo;
+        IRS1099FormDocLine."Vendor No." := VendNo;
+        IRS1099FormDocLine."Form No." := FormNo;
+        IRS1099FormDocLine."Form Box No." := FormBoxNo;
+        IRS1099FormDocLine."Calculated Amount" := LibraryRandom.RandDec(100, 2);
+        IRS1099FormDocLine.Amount := IRS1099FormDocLine."Calculated Amount";
+        IRS1099FormDocLine.Insert();
+    end;
+
+    procedure MockVendorFormBoxBuffer(var TempIRS1099VendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; var EntryNo: Integer; PeriodNo: Code[20]; VendNo: Code[20]; FormNo: Code[20]; FormBoxNo: Code[20])
+    begin
+        TempIRS1099VendFormBoxBuffer."Period No." := PeriodNo;
+        TempIRS1099VendFormBoxBuffer."Vendor No." := VendNo;
+        TempIRS1099VendFormBoxBuffer."Form No." := FormNo;
+        TempIRS1099VendFormBoxBuffer."Form Box No." := FormBoxNo;
+        TempIRS1099VendFormBoxBuffer.Amount := LibraryRandom.RandDec(100, 2);
+        TempIRS1099VendFormBoxBuffer."Reporting Amount" := LibraryRandom.RandDec(100, 2);
+        TempIRS1099VendFormBoxBuffer."Include In 1099" := true;
+        EntryNo := LibraryIRS1099FormBox.MockConnectedEntryForVendFormBoxBuffer(TempIRS1099VendFormBoxBuffer);
+        TempIRS1099VendFormBoxBuffer.Insert(true);
+    end;
+
+    procedure FindIRS1099FormDocHeader(var IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header"; PeriodNo: Code[20]; VendNo: Code[20]; FormNo: Code[20])
+    begin
+        IRS1099FormDocHeader.SetRange("Period No.", PeriodNo);
+        IRS1099FormDocHeader.SetRange("Vendor No.", VendNo);
+        IRS1099FormDocHeader.SetRange("Form No.", FormNo);
+        IRS1099FormDocHeader.FindFirst();
+    end;
+
+    procedure FindIRS1099FormDocLine(var IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line"; PeriodNo: Code[20]; VendNo: Code[20]; FormNo: Code[20]; FormBoxNo: Code[20])
+    begin
+        IRS1099FormDocLine.SetRange("Period No.", PeriodNo);
+        IRS1099FormDocLine.SetRange("Vendor No.", VendNo);
+        IRS1099FormDocLine.SetRange("Form No.", FormNo);
+        IRS1099FormDocLine.SetRange("Form Box No.", FormBoxNo);
+        IRS1099FormDocLine.FindFirst();
     end;
 
     local procedure MockInitialDtldLedgEntry(VendorLedgerEntryNo: Integer; VendorNo: Code[20]; Amount: Decimal)

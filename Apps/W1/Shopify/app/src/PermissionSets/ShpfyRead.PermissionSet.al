@@ -24,6 +24,7 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Customer Address" = R,
         tabledata "Shpfy Customer Template" = R,
         tabledata "Shpfy Data Capture" = R,
+        tabledata "Shpfy Dispute" = R,
         tabledata "Shpfy Doc. Link To Doc." = R,
         tabledata "Shpfy Fulfillment Line" = R,
         tabledata "Shpfy FulFillment Order Header" = R,
@@ -50,9 +51,6 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Payment Transaction" = R,
         tabledata "Shpfy Payout" = R,
         tabledata "Shpfy Product" = R,
-#if not CLEAN22
-        tabledata "Shpfy Province" = R,
-#endif
         tabledata "Shpfy Registered Store New" = R,
         tabledata "Shpfy Refund Header" = R,
         tabledata "Shpfy Refund Line" = R,
@@ -66,9 +64,6 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Synchronization Info" = R,
         tabledata "Shpfy Tag" = R,
         tabledata "Shpfy Tax Area" = R,
-#if not CLEAN22
-        tabledata "Shpfy Templates Warnings" = R,
-#endif
         tabledata "Shpfy Transaction Gateway" = R,
         tabledata "Shpfy Translation" = R,
         tabledata "Shpfy Variant" = R;

@@ -1,8 +1,5 @@
 namespace Microsoft.Integration.Shopify;
 
-#if not CLEAN22
-using System.IO;
-#endif
 using Microsoft.Inventory.Item;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.Customer;
@@ -16,9 +13,6 @@ codeunit 30182 "Shpfy Product Price Calc."
     Access = Internal;
     SingleInstance = true;
     Permissions =
-#if not CLEAN22
-        tabledata "Config. Template Header" = r,
-#endif
         tabledata Customer = rmid,
         tabledata Item = r,
         tabledata "Item Unit of Measure" = r,

@@ -44,7 +44,6 @@ page 31154 "Cash Desk Activities CZP"
     trigger OnOpenPage()
     var
         CashDeskManagementCZP: Codeunit "Cash Desk Management CZP";
-        CashDeskFilter: Text;
     begin
         Rec.Reset();
         if not Rec.Get() then begin
@@ -52,12 +51,9 @@ page 31154 "Cash Desk Activities CZP"
             Rec.Insert();
         end;
 
+        CashDeskManagementCZP.SetCashDeskFilter(Rec);
+
         Rec.FilterGroup(2);
-        CashDeskFilter := CashDeskManagementCZP.GetCashDesksFilter();
-        if CashDeskFilter <> '' then
-            Rec.SetFilter("Cash Desk Filter", CashDeskFilter)
-        else
-            Rec.SetRange("Cash Desk Filter", '');
         Rec.SetRange("Date Filter", CalcDate('<-30D>', WorkDate()), WorkDate());
         Rec.FilterGroup(0);
     end;

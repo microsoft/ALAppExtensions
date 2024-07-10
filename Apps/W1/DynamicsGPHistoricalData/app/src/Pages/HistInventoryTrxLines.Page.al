@@ -2,6 +2,8 @@ namespace Microsoft.DataMigration.GP.HistoricalData;
 
 page 41011 "Hist. Inventory Trx. Lines"
 {
+    ApplicationArea = All;
+    UsageCategory = None;
     Caption = 'Historical Inventory Trx. Lines';
     PageType = ListPart;
     Editable = false;
@@ -36,6 +38,14 @@ page 41011 "Hist. Inventory Trx. Lines"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the value of the Quantity field.';
+
+                    trigger OnDrillDown()
+                    var
+                        HistInvtTrxSerlLotList: Page "Hist. Invt. Trx. SerlLot. List";
+                    begin
+                        HistInvtTrxSerlLotList.SetFilterInventoryTrxLine(Rec);
+                        HistInvtTrxSerlLotList.Run();
+                    end;
                 }
                 field("Unit Cost"; Rec."Unit Cost")
                 {

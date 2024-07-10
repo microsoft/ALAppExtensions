@@ -189,6 +189,12 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
             Caption = 'External Document No.';
             DataClassification = CustomerContent;
         }
+        field(80; "Auxiliary Entry"; Boolean)
+        {
+            Caption = 'Auxiliary Entry';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
         field(480; "Dimension Set ID"; Integer)
         {
             Caption = 'Dimension Set ID';
@@ -255,6 +261,7 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
     begin
         PurchAdvLetterEntryCZZ.SetRange("Document No.", PurchInvHeader."No.");
         PurchAdvLetterEntryCZZ.SetRange("Entry Type", PurchAdvLetterEntryCZZ."Entry Type"::"VAT Usage");
+        PurchAdvLetterEntryCZZ.SetRange("Auxiliary Entry", false);
         PurchAdvLetterEntryCZZ.SetRange(Cancelled, false);
         if PurchAdvLetterEntryCZZ.FindSet() then
             repeat
@@ -366,6 +373,12 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
         OnAfterCopyFromVATPostingSetup(VATPostingSetup, Rec);
     end;
 
+    procedure CopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    begin
+        "Purch. Adv. Letter No." := PurchAdvLetterHeaderCZZ."No.";
+        OnAfterCopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ, Rec);
+    end;
+
     procedure InsertNewEntry(WriteToDatabase: Boolean) EntryNo: Integer
     var
         PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ";
@@ -441,6 +454,11 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterCopyFromVATPostingSetup(VATPostingSetup: Record "VAT Posting Setup"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterCopyFromPurchAdvLetterHeader(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; var PurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ")
     begin
     end;
 

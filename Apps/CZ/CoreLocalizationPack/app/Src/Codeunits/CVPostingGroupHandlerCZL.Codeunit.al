@@ -6,9 +6,6 @@ namespace Microsoft.Finance.ReceivablesPayables;
 
 using Microsoft.Finance.Deferral;
 using Microsoft.Finance.GeneralLedger.Journal;
-#if not CLEAN22
-using Microsoft.Finance.GeneralLedger.Posting;
-#endif
 using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
@@ -19,21 +16,6 @@ codeunit 31035 "C/V Posting Group Handler CZL"
 {
     var
         ConfirmManagement: Codeunit "Confirm Management";
-#if not CLEAN22
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Customer Posting Group", 'OnAfterDeleteEvent', '', false, false)]
-    local procedure DeleteCustSubstPostingGroupsCZLOnAfterDelete(var Rec: Record "Customer Posting Group")
-    var
-        SubstCustPostingGroupCZL: Record "Subst. Cust. Posting Group CZL";
-    begin
-        SubstCustPostingGroupCZL.SetRange("Parent Customer Posting Group", Rec.Code);
-        SubstCustPostingGroupCZL.DeleteAll();
-        SubstCustPostingGroupCZL.Reset();
-        SubstCustPostingGroupCZL.SetRange("Customer Posting Group", Rec.Code);
-        SubstCustPostingGroupCZL.DeleteAll();
-    end;
-#pragma warning restore AL0432
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Customer Posting Group", 'OnAfterValidateEvent', 'Receivables Account', false, false)]
     local procedure CheckOpenCustLedgEntriesOnAfterValidateReceivablesAccount(var Rec: Record "Customer Posting Group")
@@ -49,32 +31,6 @@ codeunit 31035 "C/V Posting Group Handler CZL"
             if not ConfirmManagement.GetResponseOrDefault(ChangeAccountQst, false) then
                 Error('');
     end;
-#if not CLEAN22
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeInsertDtldCustLedgEntry', '', false, false)]
-    local procedure OnBeforeInsertDtldCustLedgEntry(var DtldCustLedgEntry: Record "Detailed Cust. Ledg. Entry"; GenJournalLine: Record "Gen. Journal Line"; DtldCVLedgEntryBuffer: Record "Detailed CV Ledg. Entry Buffer")
-    var
-        CustLedgerEntry: Record "Cust. Ledger Entry";
-    begin
-        CustLedgerEntry.Get(DtldCVLedgEntryBuffer."CV Ledger Entry No.");
-#pragma warning disable AL0432
-        DtldCustLedgEntry."Customer Posting Group CZL" := CustLedgerEntry."Customer Posting Group";
-#pragma warning restore AL0432
-    end;
-
-    [EventSubscriber(ObjectType::Table, Database::"Vendor Posting Group", 'OnAfterDeleteEvent', '', false, false)]
-    local procedure DeletevendSubstPostingGroupsCZLOnAfterDelete(var Rec: Record "Vendor Posting Group")
-    var
-#pragma warning disable AL0432
-        SubstVendPostingGroupCZL: Record "Subst. Vend. Posting Group CZL";
-#pragma warning restore AL0432
-    begin
-        SubstVendPostingGroupCZL.SetRange("Parent Vendor Posting Group", Rec.Code);
-        SubstVendPostingGroupCZL.DeleteAll();
-        SubstVendPostingGroupCZL.Reset();
-        SubstVendPostingGroupCZL.SetRange("Vendor Posting Group", Rec.Code);
-        SubstVendPostingGroupCZL.DeleteAll();
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Table, Database::"Vendor Posting Group", 'OnAfterValidateEvent', 'Payables Account', false, false)]
     local procedure CheckOpenVendLedgEntriesOnAfterValidatePayablesAccount(var Rec: Record "Vendor Posting Group")
@@ -90,18 +46,6 @@ codeunit 31035 "C/V Posting Group Handler CZL"
             if not ConfirmManagement.GetResponseOrDefault(ChangeAccountQst, false) then
                 Error('');
     end;
-#if not CLEAN22
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeInsertDtldVendLedgEntry', '', false, false)]
-    local procedure UpdateVendorPostingGroupCZLOnBeforeInsertDtldVendLedgEntry(var DtldVendLedgEntry: Record "Detailed Vendor Ledg. Entry"; GenJournalLine: Record "Gen. Journal Line"; DtldCVLedgEntryBuffer: Record "Detailed CV Ledg. Entry Buffer")
-    var
-        VendorLedgerEntry: Record "Vendor Ledger Entry";
-    begin
-        VendorLedgerEntry.Get(DtldCVLedgEntryBuffer."CV Ledger Entry No.");
-#pragma warning disable AL0432
-        DtldVendLedgEntry."Vendor Posting Group CZL" := VendorLedgerEntry."Vendor Posting Group";
-#pragma warning restore AL0432
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Deferral Utilities", 'OnBeforePostedDeferralHeaderInsert', '', false, false)]
     local procedure OnBeforePostedDeferralHeaderInsert(var PostedDeferralHeader: Record "Posted Deferral Header"; GenJournalLine: Record "Gen. Journal Line")

@@ -90,11 +90,9 @@ table 1680 "Email Logging Setup"
         ClientSecretClearedTxt: Label 'Client secret is cleared.', Locked = true;
         ClientSecretSetTxt: Label 'Client secret is set.', Locked = true;
         ClientSecretNotSetTxt: Label 'Client secret is not set.', Locked = true;
-        [NonDebuggable]
-        TempClientSecret: Text;
+        TempClientSecret: SecretText;
 
-    [NonDebuggable]
-    internal procedure SetClientSecret(ClientSecret: Text)
+    internal procedure SetClientSecret(ClientSecret: SecretText)
     var
         DummyEmailLoggingSetup: Record "Email Logging Setup";
     begin
@@ -103,7 +101,7 @@ table 1680 "Email Logging Setup"
             exit;
         end;
 
-        if ClientSecret = '' then
+        if ClientSecret.IsEmpty() then
             if not IsNullGuid("Client Secret Key") then begin
                 IsolatedStorageManagement.Delete("Client Secret Key", DataScope::Company);
                 Session.LogMessage('0000G11', ClientSecretClearedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
@@ -122,22 +120,21 @@ table 1680 "Email Logging Setup"
         Session.LogMessage('0000G12', ClientSecretSetTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
     end;
 
-    [NonDebuggable]
-    internal procedure GetClientSecret(): Text
+    internal procedure GetClientSecret(): SecretText
     var
-        ClientSecret: Text;
+        ClientSecret: SecretText;
     begin
         if IsTemporary() then
             exit(TempClientSecret);
 
         if IsNullGuid("Client Secret Key") then begin
             Session.LogMessage('0000G13', ClientSecretNotSetTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
-            exit('');
+            exit;
         end;
 
         if not IsolatedStorageManagement.Get("Client Secret Key", DataScope::Company, ClientSecret) then begin
             Session.LogMessage('0000G14', ClientSecretNotSetTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
-            exit('');
+            exit;
         end;
 
         exit(ClientSecret);

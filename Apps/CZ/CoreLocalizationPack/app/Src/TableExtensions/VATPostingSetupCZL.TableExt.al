@@ -12,6 +12,13 @@ tableextension 11738 "VAT Posting Setup CZL" extends "VAT Posting Setup"
 {
     fields
     {
+        modify("Non-Deductible VAT %")
+        {
+            trigger OnAfterValidate()
+            begin
+                AssertThatNonDeductibleVATPctIsNotUsed();
+            end;
+        }
         field(11770; "Reverse Charge Check CZL"; Enum "Reverse Charge Check CZL")
         {
             Caption = 'Reverse Charge Check';
@@ -37,6 +44,17 @@ tableextension 11738 "VAT Posting Setup CZL" extends "VAT Posting Setup"
             trigger OnValidate()
             begin
                 CheckGLAcc("Sales VAT Curr. Exch. Acc CZL");
+            end;
+        }
+        field(11785; "VAT Coeff. Corr. Account CZL"; Code[20])
+        {
+            Caption = 'VAT Coefficient Correction Account';
+            DataClassification = CustomerContent;
+            TableRelation = "G/L Account";
+
+            trigger OnValidate()
+            begin
+                CheckGLAcc("VAT Coeff. Corr. Account CZL");
             end;
         }
         field(31050; "VIES Purchase CZL"; Boolean)
@@ -82,6 +100,19 @@ tableextension 11738 "VAT Posting Setup CZL" extends "VAT Posting Setup"
         }
     }
 
+    var
+        NotUsedNonDeductibleVATPctErr: Label 'The "Non-Deductible VAT %" field should not be used. Use the "Non-Deductible VAT Setup" page instead.';
+
+    trigger OnAfterInsert()
+    begin
+        AssertThatNonDeductibleVATPctIsNotUsed();
+    end;
+
+    trigger OnAfterModify()
+    begin
+        AssertThatNonDeductibleVATPctIsNotUsed();
+    end;
+
     procedure GetLCYCorrRoundingAccCZL(): Code[20]
     var
         PostingSetupManagement: Codeunit PostingSetupManagement;
@@ -98,8 +129,26 @@ tableextension 11738 "VAT Posting Setup CZL" extends "VAT Posting Setup"
         exit("VAT LCY Corr. Rounding Acc.CZL");
     end;
 
+    local procedure AssertThatNonDeductibleVATPctIsNotUsed()
+    var
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeAssertThatNonDeductibleVATPctIsNotUsedCZL(Rec, IsHandled);
+        if IsHandled then
+            exit;
+
+        if "Non-Deductible VAT %" <> 0 then
+            Error(NotUsedNonDeductibleVATPctErr);
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeGetLCYCorrRoundingAccCZL(var VATPostingSetup: Record "VAT Posting Setup"; var VATLCYCorrRoundingAccNo: Code[20]; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeAssertThatNonDeductibleVATPctIsNotUsedCZL(var VATPostingSetup: Record "VAT Posting Setup"; var IsHandled: Boolean)
     begin
     end;
 }

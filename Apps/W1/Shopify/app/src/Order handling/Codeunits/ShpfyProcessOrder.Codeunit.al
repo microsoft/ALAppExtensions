@@ -58,7 +58,6 @@ codeunit 30166 "Shpfy Process Order"
     /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
     local procedure CreateHeaderFromShopifyOrder(var SalesHeader: Record "Sales Header"; ShopifyOrderHeader: Record "Shpfy Order Header")
     var
-        ShopLocation: Record "Shpfy Shop Location";
         ShopifyTaxArea: Record "Shpfy Tax Area";
         DocLinkToBCDoc: Record "Shpfy Doc. Link To Doc.";
         OrdersAPI: Codeunit "Shpfy Orders API";
@@ -66,7 +65,7 @@ codeunit 30166 "Shpfy Process Order"
         BCDocumentTypeConvert: Codeunit "Shpfy BC Document Type Convert";
         IsHandled: Boolean;
     begin
-        OrderEvents.OnBeforeCreateSalesHeader(ShopifyOrderHeader, SalesHeader, IsHandled);
+        OrderEvents.OnBeforeCreateSalesHeader(ShopifyOrderHeader, SalesHeader, LastCreatedDocumentId, IsHandled);
         if not IsHandled then begin
             ShopifyOrderHeader.TestField("Sell-to Customer No.");
             SalesHeader.Init();
@@ -115,8 +114,6 @@ codeunit 30166 "Shpfy Process Order"
             SalesHeader."Shpfy Order No." := ShopifyOrderHeader."Shopify Order No.";
             SalesHeader.Validate("Document Date", ShopifyOrderHeader."Document Date");
             SalesHeader.Validate("External Document No.", ShopifyOrderHeader."PO Number");
-            if ShopLocation.Get(ShopifyOrderHeader."Shop Code", ShopifyOrderHeader."Location Id") and (ShopLocation."Default Location Code" <> '') then
-                SalesHeader.Validate("Location Code", ShopLocation."Default Location Code");
             if OrderMgt.FindTaxArea(ShopifyOrderHeader, ShopifyTaxArea) and (ShopifyTaxArea."Tax Area Code" <> '') then
                 SalesHeader.Validate("Tax Area Code", ShopifyTaxArea."Tax Area Code");
             if ShopifyOrderHeader."Shipping Method Code" <> '' then
@@ -136,11 +133,7 @@ codeunit 30166 "Shpfy Process Order"
             if ShopifyOrderHeader."Work Description".HasValue then
                 SalesHeader.SetWorkDescription(ShopifyOrderHeader.GetWorkDescription());
         end;
-#if not CLEAN24
         OrdersAPI.AddOrderAttribute(ShopifyOrderHeader, 'BC Doc. No.', SalesHeader."No.", ShopifyShop);
-#else
-        OrdersAPI.AddOrderAttribute(ShopifyOrderHeader, 'BC Doc. No.', SalesHeader."No.");
-#endif
         DocLinkToBCDoc.Init();
         DocLinkToBCDoc."Shopify Document Type" := "Shpfy Shop Document Type"::"Shopify Shop Order";
         DocLinkToBCDoc."Shopify Document Id" := ShopifyOrderHeader."Shopify Order Id";
@@ -217,16 +210,10 @@ codeunit 30166 "Shpfy Process Order"
                         end else begin
                             SalesLine.Validate(Type, SalesLine.Type::Item);
                             SalesLine.Validate("No.", ShopifyOrderLine."Item No.");
-                            if Item.Get(SalesLine."No.") then begin
+                            if Item.Get(SalesLine."No.") then
                                 if (ShopifyOrderLine."Location Id" <> 0) then
-                                    if ShopLocation.Get(ShopifyOrderHeader."Shop Code", ShopifyOrderLine."Location Id") then
+                                    if ShopLocation.Get(ShopifyOrderHeader."Shop Code", ShopifyOrderLine."Location Id") and (ShopLocation."Default Location Code" <> '') then
                                         SalesLine.Validate("Location Code", ShopLocation."Default Location Code");
-                                if (ShopifyOrderLine."Location Id" <> 0)
-                                    and ShopLocation.Get(ShopifyOrderHeader."Shop Code", ShopifyOrderLine."Location Id")
-                                    and (ShopLocation."Default Location Code" <> '')
-                                then
-                                    SalesLine.Validate("Location Code", ShopLocation."Default Location Code");
-                            end;
                         end;
                     SalesLine.Validate("Unit of Measure Code", ShopifyOrderLine."Unit of Measure Code");
                     SalesLine.Validate("Variant Code", ShopifyOrderLine."Variant Code");

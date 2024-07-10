@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using System.Utilities;
+using Microsoft.Finance.GeneralLedger.Setup;
 
 report 31103 "VAT Ctrl. Report - Test CZL"
 {
@@ -251,6 +252,14 @@ report 31103 "VAT Ctrl. Report - Test CZL"
                         if OnlyErrorLines and (ErrorCounter = 0) then
                             CurrReport.Skip();
                     end;
+                    if UseAmtsInAddCurr then begin
+                        "Base 1" := "Add.-Currency Base 1";
+                        "Base 2" := "Add.-Currency Base 2";
+                        "Base 3" := "Add.-Currency Base 3";
+                        "Amount 1" := "Add.-Currency Amount 1";
+                        "Amount 2" := "Add.-Currency Amount 2";
+                        "Amount 3" := "Add.-Currency Amount 3";
+                    end;
 
                     if (("Base 1" + "Amount 1") = 0) and
                        (("Base 2" + "Amount 2") = 0) and
@@ -314,16 +323,22 @@ report 31103 "VAT Ctrl. Report - Test CZL"
                                                         begin
                                                             VATControlReportBuffer."Base 1" += VATCtrlReportLineCZL.Base;
                                                             VATControlReportBuffer."Amount 1" += VATCtrlReportLineCZL.Amount;
+                                                            VATControlReportBuffer."Add.-Currency Base 1" += VATCtrlReportLineCZL."Additional-Currency Base";
+                                                            VATControlReportBuffer."Add.-Currency Amount 1" += VATCtrlReportLineCZL."Additional-Currency Amount";
                                                         end;
                                                     VATCtrlReportLineCZL."VAT Rate"::Reduced:
                                                         begin
                                                             VATControlReportBuffer."Base 2" += VATCtrlReportLineCZL.Base;
                                                             VATControlReportBuffer."Amount 2" += VATCtrlReportLineCZL.Amount;
+                                                            VATControlReportBuffer."Add.-Currency Base 2" += VATCtrlReportLineCZL."Additional-Currency Base";
+                                                            VATControlReportBuffer."Add.-Currency Amount 2" += VATCtrlReportLineCZL."Additional-Currency Amount";
                                                         end;
                                                     VATCtrlReportLineCZL."VAT Rate"::"Reduced 2":
                                                         begin
                                                             VATControlReportBuffer."Base 3" += VATCtrlReportLineCZL.Base;
                                                             VATControlReportBuffer."Amount 3" += VATCtrlReportLineCZL.Amount;
+                                                            VATControlReportBuffer."Add.-Currency Base 3" += VATCtrlReportLineCZL."Additional-Currency Base";
+                                                            VATControlReportBuffer."Add.-Currency Amount 3" += VATCtrlReportLineCZL."Additional-Currency Amount";
                                                         end;
                                                 end;
                                                 VATControlReportBuffer.Modify();
@@ -390,6 +405,13 @@ report 31103 "VAT Ctrl. Report - Test CZL"
                         Enabled = LinesDetailEnable;
                         ToolTip = 'Specifies if only lines with error has to be printed.';
                     }
+                    field(ShowAmtInAddCurrency; UseAmtsInAddCurr)
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Show Amounts in Add. Reporting Currency';
+                        MultiLine = true;
+                        ToolTip = 'Specifies if you want report amounts to be shown in the additional reporting currency.';
+                    }
                 }
             }
         }
@@ -398,6 +420,12 @@ report 31103 "VAT Ctrl. Report - Test CZL"
             LinesDetailEnable := (ReportPrintType = ReportPrintType::Detail);
         end;
     }
+
+    trigger OnInitReport()
+    begin
+        SetUseAmtsInAddCurr();
+    end;
+
     var
         VATCtrlReportLineCZL: Record "VAT Ctrl. Report Line CZL";
         VATCtrlReportMgtCZL: Codeunit "VAT Ctrl. Report Mgt. CZL";
@@ -410,8 +438,11 @@ report 31103 "VAT Ctrl. Report - Test CZL"
         ReportPrintType: Option Detail,Export,Summary;
         ReportPrintEntries: Option All,Export,"Not Export";
         OnlyErrorLines: Boolean;
-        LinesDetailEnable: Boolean;
+        LinesDetailEnable: Boolean; 
         VATStatementReportSelection: Enum "VAT Statement Report Selection";
+    
+    protected var
+        UseAmtsInAddCurr: Boolean;
 
     local procedure AddError(Text: Text)
     begin
@@ -427,16 +458,22 @@ report 31103 "VAT Ctrl. Report - Test CZL"
             VATCtrlReportLineCZL."VAT Rate" := TempVATCtrlReportBufferCZL."VAT Rate"::Base;
             VATCtrlReportLineCZL.Base := TempVATCtrlReportBufferCZL."Base 1";
             VATCtrlReportLineCZL.Amount := TempVATCtrlReportBufferCZL."Amount 1";
+            VATCtrlReportLineCZL."Additional-Currency Base" := TempVATCtrlReportBufferCZL."Add.-Currency Base 1";
+            VATCtrlReportLineCZL."Additional-Currency Amount" := TempVATCtrlReportBufferCZL."Add.-Currency Amount 1";
         end;
         if (TempVATCtrlReportBufferCZL."Base 2" <> 0) or (TempVATCtrlReportBufferCZL."Amount 2" <> 0) then begin
             VATCtrlReportLineCZL."VAT Rate" := TempVATCtrlReportBufferCZL."VAT Rate"::Reduced;
             VATCtrlReportLineCZL.Base := TempVATCtrlReportBufferCZL."Base 2";
             VATCtrlReportLineCZL.Amount := TempVATCtrlReportBufferCZL."Amount 2";
+            VATCtrlReportLineCZL."Additional-Currency Base" := TempVATCtrlReportBufferCZL."Add.-Currency Base 2";
+            VATCtrlReportLineCZL."Additional-Currency Amount" := TempVATCtrlReportBufferCZL."Add.-Currency Amount 2";
         end;
         if (TempVATCtrlReportBufferCZL."Base 3" <> 0) or (TempVATCtrlReportBufferCZL."Amount 3" <> 0) then begin
             VATCtrlReportLineCZL."VAT Rate" := TempVATCtrlReportBufferCZL."VAT Rate"::"Reduced 2";
             VATCtrlReportLineCZL.Base := TempVATCtrlReportBufferCZL."Base 3";
             VATCtrlReportLineCZL.Amount := TempVATCtrlReportBufferCZL."Amount 3";
+            VATCtrlReportLineCZL."Additional-Currency Base" := TempVATCtrlReportBufferCZL."Add.-Currency Base 3";
+            VATCtrlReportLineCZL."Additional-Currency Amount" := TempVATCtrlReportBufferCZL."Add.-Currency Amount 3";
         end;
         VATCtrlReportLineCZL.Name := TempVATCtrlReportBufferCZL.Name;
         VATCtrlReportLineCZL."Birth Date" := TempVATCtrlReportBufferCZL."Birth Date";
@@ -452,16 +489,22 @@ report 31103 "VAT Ctrl. Report - Test CZL"
                 begin
                     TempVATCtrlReportBufferCZL."Base 1" := VATCtrlReportLineCZL.Base;
                     TempVATCtrlReportBufferCZL."Amount 1" := VATCtrlReportLineCZL.Amount;
+                    TempVATCtrlReportBufferCZL."Add.-Currency Base 1" := VATCtrlReportLineCZL."Additional-Currency Base";
+                    TempVATCtrlReportBufferCZL."Add.-Currency Amount 1" := VATCtrlReportLineCZL."Additional-Currency Amount";
                 end;
             TempVATCtrlReportBufferCZL."VAT Rate"::Reduced:
                 begin
                     TempVATCtrlReportBufferCZL."Base 2" := VATCtrlReportLineCZL.Base;
                     TempVATCtrlReportBufferCZL."Amount 2" := VATCtrlReportLineCZL.Amount;
+                    TempVATCtrlReportBufferCZL."Add.-Currency Base 2" := VATCtrlReportLineCZL."Additional-Currency Base";
+                    TempVATCtrlReportBufferCZL."Add.-Currency Amount 2" := VATCtrlReportLineCZL."Additional-Currency Amount";
                 end;
             TempVATCtrlReportBufferCZL."VAT Rate"::"Reduced 2":
                 begin
                     TempVATCtrlReportBufferCZL."Base 3" := VATCtrlReportLineCZL.Base;
                     TempVATCtrlReportBufferCZL."Amount 3" := VATCtrlReportLineCZL.Amount;
+                    TempVATCtrlReportBufferCZL."Add.-Currency Base 3" := VATCtrlReportLineCZL."Additional-Currency Base";
+                    TempVATCtrlReportBufferCZL."Add.-Currency Amount 3" := VATCtrlReportLineCZL."Additional-Currency Amount";
                 end;
         end;
     end;
@@ -496,5 +539,13 @@ report 31103 "VAT Ctrl. Report - Test CZL"
 
         if not VATCtrlReportMgtCZL.CheckMandatoryField(FieldNo, VATCtrlReportLineCZL) then
             AddError(StrSubstNo(MustBeSpecifiedErr, FieldCaption));
+    end;
+
+    local procedure SetUseAmtsInAddCurr()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        UseAmtsInAddCurr := GeneralLedgerSetup."Additional Reporting Currency" <> '';
     end;
 }

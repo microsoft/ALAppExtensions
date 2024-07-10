@@ -106,15 +106,15 @@ codeunit 13646 "OIOUBL-Management"
     procedure GetExportCodeunitID(DocumentVariant: Variant): Integer;
     var
         ElectronicDocumentFormat: Record "Electronic Document Format";
-        DocumentUsage: Option;
+        DocumentUsage: Enum "Electronic Document Format Usage";
     begin
-        ElectronicDocumentFormat.GetDocumentUsage(DocumentUsage, DocumentVariant);
+        ElectronicDocumentFormat.GetDocumentFormatUsage(DocumentUsage, DocumentVariant);
         ElectronicDocumentFormat.SetFilter(Code, GetOIOUBLElectronicDocumentFormatCode());
         ElectronicDocumentFormat.SetRange(Usage, DocumentUsage);
         if ElectronicDocumentFormat.FindFirst() then
             exit(ElectronicDocumentFormat."Codeunit ID")
         else begin
-            ElectronicDocumentFormat.Usage := Enum::"Electronic Document Format Usage".FromInteger(DocumentUsage);
+            ElectronicDocumentFormat.Usage := DocumentUsage;
             Error(NonExistingDocumentFormatErr, OIOUBLFormatNameTxt, Format(ElectronicDocumentFormat.Usage));
         end;
     end;

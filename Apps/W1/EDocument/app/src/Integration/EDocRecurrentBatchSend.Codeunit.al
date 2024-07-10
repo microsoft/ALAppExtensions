@@ -86,7 +86,7 @@ codeunit 6142 "E-Doc. Recurrent Batch Send"
                     EDocIntMgt.SendBatch(EDocuments, EDocumentService, IsAsync);
 
                     if IsAsync then
-                        EDocumentBackgroundjobs.GetEDocumentResponse()
+                        EDocumentBackgroundjobs.ScheduleGetResponseJob()
                     else
                         EDocumentWorkFlowProcessing.HandleNextEvent(EDocuments);
                 end;

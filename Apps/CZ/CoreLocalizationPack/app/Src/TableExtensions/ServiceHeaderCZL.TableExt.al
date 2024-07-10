@@ -25,10 +25,6 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
             var
                 VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
             begin
-#if not CLEAN22
-                if not ReplaceVATDateMgtCZL.IsEnabled() then
-                    exit;
-#endif
                 if not VATReportingDateMgt.IsVATDateEnabled() then
                     TestField("VAT Reporting Date", "Posting Date");
                 CheckCurrencyExchangeRateCZL("VAT Reporting Date");
@@ -182,32 +178,9 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
         {
             Caption = 'VAT Date';
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Replaced by VAT Reporting Date.';
-#if not CLEAN22
-            trigger OnValidate()
-            var
-                VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
-            begin
-#if not CLEAN22
-                if CurrFieldNo = FieldNo("VAT Date CZL") then
-                    ReplaceVATDateMgtCZL.TestIsNotEnabled();
-                if ReplaceVATDateMgtCZL.IsEnabled() then
-                    exit;
-#endif
-                if not VATReportingDateMgt.IsVATDateEnabled() then
-                    TestField("VAT Date CZL", "Posting Date");
-                CheckCurrencyExchangeRateCZL("VAT Date CZL");
-                if "Currency Code" <> '' then
-                    VATDateUpdateVATCurrencyFactorCZL()
-            end;
-#endif
         }
         field(11781; "Registration No. CZL"; Text[20])
         {
@@ -236,36 +209,16 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
         {
             Caption = 'Physical Transfer';
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions.';
-#if not CLEAN22
-
-            trigger OnValidate()
-            begin
-                if "Physical Transfer CZL" then
-                    if "Document Type" <> "Document Type"::"Credit Memo" then
-                        FieldError("Document Type");
-                UpdateServLinesByFieldNo(FieldNo("Physical Transfer CZL"), false);
-            end;
-#endif
         }
         field(31069; "Intrastat Exclude CZL"; Boolean)
         {
             Caption = 'Intrastat Exclude';
             DataClassification = CustomerContent;
-#if not CLEAN22
-            ObsoleteState = Pending;
-            ObsoleteTag = '22.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '25.0';
-#endif
             ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
         }
         field(31072; "EU 3-Party Intermed. Role CZL"; Boolean)
@@ -283,11 +236,6 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
 
     var
         ConfirmManagement: Codeunit "Confirm Management";
-#if not CLEAN22
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-#endif
 
     local procedure CheckCurrencyExchangeRateCZL(CurrencyDate: Date)
     var
@@ -307,12 +255,6 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
         UpdateChangedFieldQst: Label 'You have changed %1. Do you want to update %2?', Comment = '%1 = field caption, %2 = field caption';
     begin
         if "VAT Currency Code CZL" <> '' then begin
-#if not CLEAN22
-#pragma warning disable AL0432
-            if not IsReplaceVATDateEnabled() then
-                "VAT Reporting Date" := "VAT Date CZL";
-#pragma warning restore AL0432
-#endif
             VATCurrencyFactor := CurrencyExchangeRate.ExchangeRate("VAT Reporting Date", "VAT Currency Code CZL");
             if "VAT Currency Factor CZL" <> VATCurrencyFactor then
                 if ConfirmManagement.GetResponseOrDefault(StrSubstNo(UpdateChangedFieldQst, FieldCaption("VAT Reporting Date"), FieldCaption("VAT Currency Factor CZL")), true) then
@@ -363,12 +305,6 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
 
         if "EU 3-Party Trade" then
             exit(false);
-#if not CLEAN22
-#pragma warning disable AL0432
-        if "Intrastat Exclude CZL" then
-            exit(false);
-#pragma warning restore AL0432
-#endif
         exit(CountryRegion.IsIntrastatCZL("VAT Country/Region Code", false));
     end;
 
@@ -382,13 +318,7 @@ tableextension 11734 "Service Header CZL" extends "Service Header"
             exit(BankAccountNo);
         exit(BankAccount.GetDefaultBankAccountNoCZL("Responsibility Center", "Currency Code"));
     end;
-#if not CLEAN22
 
-    internal procedure IsReplaceVATDateEnabled(): Boolean
-    begin
-        exit(ReplaceVATDateMgtCZL.IsEnabled());
-    end;
-#endif
     procedure CheckPaymentQRCodePrintIBANCZL()
     var
         SalesReceivablesSetup: Record "Sales & Receivables Setup";

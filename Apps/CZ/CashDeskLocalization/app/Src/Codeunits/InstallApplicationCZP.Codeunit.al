@@ -364,7 +364,6 @@ codeunit 31054 "Install Application CZP"
                 CashDocumentLineCZP."VAT Difference" := CashDocumentLine."VAT Difference";
                 CashDocumentLineCZP."VAT %" := CashDocumentLine."VAT %";
                 CashDocumentLineCZP."VAT Identifier" := CashDocumentLine."VAT Identifier";
-                CashDocumentLineCZP."VAT Difference (LCY)" := CashDocumentLine."VAT Difference (LCY)";
                 CashDocumentLineCZP."System-Created Entry" := CashDocumentLine."System-Created Entry";
                 CashDocumentLineCZP."Gen. Posting Type" := CashDocumentLine."Gen. Posting Type";
                 CashDocumentLineCZP."VAT Calculation Type" := CashDocumentLine."VAT Calculation Type";
@@ -475,7 +474,6 @@ codeunit 31054 "Install Application CZP"
                 PostedCashDocumentLineCZP."VAT Difference" := PostedCashDocumentLine."VAT Difference";
                 PostedCashDocumentLineCZP."VAT %" := PostedCashDocumentLine."VAT %";
                 PostedCashDocumentLineCZP."VAT Identifier" := PostedCashDocumentLine."VAT Identifier";
-                PostedCashDocumentLineCZP."VAT Difference (LCY)" := PostedCashDocumentLine."VAT Difference (LCY)";
                 PostedCashDocumentLineCZP."System-Created Entry" := PostedCashDocumentLine."System-Created Entry";
                 PostedCashDocumentLineCZP."Gen. Posting Type" := PostedCashDocumentLine."Gen. Posting Type";
                 PostedCashDocumentLineCZP."VAT Calculation Type" := PostedCashDocumentLine."VAT Calculation Type";

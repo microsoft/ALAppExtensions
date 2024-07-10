@@ -80,11 +80,22 @@ page 31167 "Posted Cash Document List CZP"
         }
         area(FactBoxes)
         {
+#if not CLEAN25
             part("Attached Documents"; "Document Attachment Factbox")
             {
+                ObsoleteTag = '25.0';
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The "Document Attachment FactBox" has been replaced by "Doc. Attachment List Factbox", which supports multiple files upload.';
                 ApplicationArea = All;
                 Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(11737), "No." = field("No.");
+                SubPageLink = "Table ID" = const(Database::"Posted Cash Document Hdr. CZP"), "No." = field("No.");
+            }
+#endif
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
+            {
+                ApplicationArea = All;
+                Caption = 'Documents';
+                SubPageLink = "Table ID" = const(Database::"Posted Cash Document Hdr. CZP"), "No." = field("No.");
             }
             systempart(Links; Links)
             {
@@ -234,16 +245,9 @@ page 31167 "Posted Cash Document List CZP"
     }
 
     trigger OnOpenPage()
-    var
-        CashDeskFilter: Text;
     begin
         CashDeskManagementCZP.CheckCashDesks();
-        CashDeskFilter := CashDeskManagementCZP.GetCashDesksFilter();
-
-        Rec.FilterGroup(2);
-        if CashDeskFilter <> '' then
-            Rec.SetFilter("Cash Desk No.", CashDeskFilter);
-        Rec.FilterGroup(0);
+        CashDeskManagementCZP.SetCashDeskFilter(Rec);
     end;
 
     var

@@ -102,7 +102,7 @@ codeunit 139769 "Bank Deposit Posting Tests"
         GLEntry: Record "G/L Entry";
         TransactionNo: Integer;
     begin
-        // Verify G/L Entry after post Deposit with Unchecked Force Doc. Balance.
+        // Verify that when bank deposit has multiple lines, and 'Post as Lump Sum' is checked - it posts it as lump sum
 
         // Setup: Create GL Account and Vendor, create Bank Deposit with Account Type GL, Vendor.
         Initialize();
@@ -111,6 +111,57 @@ codeunit 139769 "Bank Deposit Posting Tests"
         CreateMultilineDepositDocument(
           BankDepositHeader, GLAccount."No.", GenJournalLine."Account Type"::"G/L Account", Vendor."No.", GenJournalLine."Account Type"::Vendor,
           GenJournalLine."Document Type"::" ", true);
+
+        // Update Total Deposit Amount on header, set Post as Lump Sum to true and post Bank Deposit.
+        UpdateBankDepositHeaderWithAmount(BankDepositHeader);
+        BankDepositHeader."Post as Lump Sum" := true;
+        BankDepositHeader.Modify();
+        SourceCodeSetup.Get();
+        SourceCodeSetup."Bank Deposit" := 'BankDep';
+        SourceCodeSetup.Modify();
+
+        // Exercise.
+        PostBankDeposit(BankDepositHeader);
+
+        // Verify: Verify G/L Entry after post Deposit with Unchecked Force Doc. Balance.
+        GLEntry.SetRange("Document No.", BankDepositHeader."No.");
+        GLEntry.SetRange(Amount, BankDepositHeader."Total Deposit Amount");
+        GLEntry.FindFirst();
+        GLEntry.TestField("Document Type", GLEntry."Document Type"::" ");
+
+        // Verify all entries are in the same transaction
+        PostedBankDepositLine.SetRange("Bank Deposit No.", BankDepositHeader."No.");
+        TransactionNo := 0;
+        PostedBankDepositLine.FindSet();
+        repeat
+            GLEntry.Reset();
+            GLEntry.Get(PostedBankDepositLine."Entry No.");
+            if TransactionNo = 0 then
+                TransactionNo := GLEntry."Transaction No.";
+            Assert.AreEqual(GLEntry."Transaction No.", TransactionNo, 'All GLEntries should be in the same transaction');
+        until PostedBankDepositLine.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
+    procedure PostBankDepositAsLumpSumOneLine()
+    var
+        GLAccount: Record "G/L Account";
+        Vendor: Record Vendor;
+        BankDepositHeader: Record "Bank Deposit Header";
+        PostedBankDepositLine: Record "Posted Bank Deposit Line";
+        GenJournalLine: Record "Gen. Journal Line";
+        SourceCodeSetup: Record "Source Code Setup";
+        GLEntry: Record "G/L Entry";
+        TransactionNo: Integer;
+    begin
+        // Bug 539413: Verify that when bank deposit has one line, and 'Post as Lump Sum' is checked - it posts it as lump sum
+
+        // Setup: Create GL Account and Vendor, create Bank Deposit with Account Type GL, Vendor.
+        Initialize();
+        LibraryERM.CreateGLAccount(GLAccount);
+        LibraryPurchase.CreateVendor(Vendor);
+        CreateBankDeposit(BankDepositHeader, GLAccount."No.", GenJournalLine."Account Type"::"G/L Account", -1, GenJournalLine."Document Type"::" ");
 
         // Update Total Deposit Amount on header, set Post as Lump Sum to true and post Bank Deposit.
         UpdateBankDepositHeaderWithAmount(BankDepositHeader);
@@ -231,6 +282,9 @@ codeunit 139769 "Bank Deposit Posting Tests"
     var
         Vendor: Record Vendor;
         BankDepositHeader: Record "Bank Deposit Header";
+        PostedBankDepositLine: Record "Posted Bank Deposit Line";
+        PostedBankDepositHeader: Record "Posted Bank Deposit Header";
+        BankAccCommentLine: Record "Bank Acc. Comment Line";
         GenJournalLine: Record "Gen. Journal Line";
     begin
         // Verify Error while posting Bank Deposit with different default Dimension on Vendor.
@@ -246,6 +300,14 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
         // Verify: Verify Error while posting Bank Deposit with different Dimension.
         Assert.ExpectedError(DimensionErr);
+        // Verify: No Posted Bank Deposit Header, Lines or Comments with the same Deposit "No." exist.
+        Assert.IsFalse(PostedBankDepositHeader.Get(BankDepositHeader."No."), 'The Posted Bank Deposit Header should not exist.');
+        PostedBankDepositLine.SetRange("Bank Deposit No.", BankDepositHeader."No.");
+        Assert.IsTrue(PostedBankDepositLine.IsEmpty(), 'The Posted Bank Deposit Line should be empty.');
+        BankAccCommentLine.SetRange("Bank Account No.", BankDepositHeader."Bank Account No.");
+        BankAccCommentLine.SetRange("Table Name", BankAccCommentLine."Table Name"::"Posted Bank Deposit Header");
+        BankAccCommentLine.SetRange("No.", BankDepositHeader."No.");
+        Assert.IsTrue(BankAccCommentLine.IsEmpty(), 'The Bank Account Comment Line should be empty.');
     end;
 
     [Test]
@@ -254,6 +316,9 @@ codeunit 139769 "Bank Deposit Posting Tests"
     var
         Customer: Record Customer;
         BankDepositHeader: Record "Bank Deposit Header";
+        PostedBankDepositLine: Record "Posted Bank Deposit Line";
+        PostedBankDepositHeader: Record "Posted Bank Deposit Header";
+        BankAccCommentLine: Record "Bank Acc. Comment Line";
         GenJournalLine: Record "Gen. Journal Line";
     begin
         // Verify Error while posting Bank Deposit with different default Dimension on Customer.
@@ -269,6 +334,15 @@ codeunit 139769 "Bank Deposit Posting Tests"
 
         // Verify: Verify Error while posting Bank Deposit with different Dimension.
         Assert.ExpectedError(DimensionErr);
+        // Verify: No Posted Bank Deposit Header, Lines or Comments with the same Deposit "No." exist.
+        Assert.IsFalse(PostedBankDepositHeader.Get(BankDepositHeader."No."), 'The Posted Bank Deposit Header should not exist.');
+        PostedBankDepositLine.SetRange("Bank Deposit No.", BankDepositHeader."No.");
+        Assert.IsTrue(PostedBankDepositLine.IsEmpty(), 'The Posted Bank Deposit Line should be empty.');
+        BankAccCommentLine.SetRange("Bank Account No.", BankDepositHeader."Bank Account No.");
+        BankAccCommentLine.SetRange("Table Name", BankAccCommentLine."Table Name"::"Posted Bank Deposit Header");
+        BankAccCommentLine.SetRange("No.", BankDepositHeader."No.");
+        Assert.IsTrue(BankAccCommentLine.IsEmpty(), 'The Bank Account Comment Line should be empty.');
+
     end;
 
     [Test]
@@ -427,6 +501,146 @@ codeunit 139769 "Bank Deposit Posting Tests"
             PreviousBatchName,
             GetBatchNameFromGenJournalTemplate(GenJournalTemplate),
             StrSubstNo(BatchNameErr, PreviousBatchName, GenJournalTemplate.FieldCaption(Name)));
+    end;
+
+    [Test]
+    [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
+    procedure PostingNegativeAndPositiveLinesShouldBePossible()
+    var
+        GLAccount: Record "G/L Account";
+        BankDepositHeader: Record "Bank Deposit Header";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
+        GenJournalTemplate: Record "Gen. Journal Template";
+        PostedBankDepositHeader: Record "Posted Bank Deposit Header";
+        GenJournalDocumentType: Enum "Gen. Journal Document Type";
+        Amount: Decimal;
+    begin
+        // [SCENARIO 535786] A bank deposit can be posted even if it has negative "Credit Amount" lines that have been marked as "Correction"
+        Initialize();
+        LibraryERM.CreateGLAccount(GLAccount);
+        CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Type::"Bank Deposits");
+        CreateBankDepositHeaderWithBankAccount(BankDepositHeader, GenJournalBatch);
+        // [GIVEN] A deposit with positive and negative Credit Amount lines.
+        Amount := 100;
+        LibraryERM.CreateGeneralJnlLine(
+          GenJournalLine, BankDepositHeader."Journal Template Name", BankDepositHeader."Journal Batch Name", GenJournalDocumentType::" ",
+          GenJournalLine."Account Type"::"G/L Account", GLAccount."No.", -Amount);
+        LibraryERM.CreateGeneralJnlLine(
+          GenJournalLine, BankDepositHeader."Journal Template Name", BankDepositHeader."Journal Batch Name", GenJournalDocumentType::" ",
+          GenJournalLine."Account Type"::"G/L Account", GLAccount."No.", 0);
+        GenJournalLine.Validate("Credit Amount", -2 * Amount);
+        GenJournalLine.Modify();
+        UpdateBankDepositHeaderWithAmount(BankDepositHeader);
+        Commit();
+        // [THEN] It should be possible to post the deposit.
+        PostBankDeposit(BankDepositHeader);
+        // [THEN] The total amount of the deposit should be the sum of the lines.
+        PostedBankDepositHeader.SetAutoCalcFields("Total Deposit Lines");
+        PostedBankDepositHeader.Get(BankDepositHeader."No.");
+        Assert.AreEqual(-Amount, PostedBankDepositHeader."Total Deposit Lines", 'The total amount of the deposit should be the sum of the lines');
+    end;
+
+    [Test]
+    [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
+    procedure PostLumpSumNegativeLineWithSameAmountAsTotalDeposit()
+    var
+        GLAccount: Record "G/L Account";
+        BankDepositHeader: Record "Bank Deposit Header";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
+        GenJournalTemplate: Record "Gen. Journal Template";
+        PostedBankDepositLine: Record "Posted Bank Deposit Line";
+        GenJournalDocumentType: Enum "Gen. Journal Document Type";
+        TotalAmount: Decimal;
+    begin
+        // [SCENARIO 538420] A Bank deposit is posted with lump sum and a negative line that equals the total amount of the deposit. The lines should be transferred to the Posted Bank Deposit Lines.
+        // [GIVEN] A Bank deposit with lump sum and a negative line that equals the total amount.
+        Initialize();
+        LibraryERM.CreateGLAccount(GLAccount);
+        CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Type::"Bank Deposits");
+        CreateBankDepositHeaderWithBankAccount(BankDepositHeader, GenJournalBatch);
+        TotalAmount := 500;
+        BankDepositHeader."Post as Lump Sum" := true;
+        BankDepositHeader."Total Deposit Amount" := TotalAmount;
+        BankDepositHeader."Posting Date" := WorkDate();
+        BankDepositHeader."Document Date" := WorkDate();
+        BankDepositHeader.Modify();
+        LibraryERM.CreateGeneralJnlLine(
+          GenJournalLine, BankDepositHeader."Journal Template Name", BankDepositHeader."Journal Batch Name", GenJournalDocumentType::" ",
+          GenJournalLine."Account Type"::"G/L Account", GLAccount."No.", -2 * TotalAmount);
+        GenJournalLine."Posting Date" := WorkDate();
+        GenJournalLine."Document No." := BankDepositHeader."No.";
+        GenJournalLine.Modify();
+        LibraryERM.CreateGeneralJnlLine(
+          GenJournalLine, BankDepositHeader."Journal Template Name", BankDepositHeader."Journal Batch Name", GenJournalDocumentType::" ",
+          GenJournalLine."Account Type"::"G/L Account", GLAccount."No.", TotalAmount);
+        GenJournalLine."Posting Date" := WorkDate();
+        GenJournalLine."Document No." := BankDepositHeader."No.";
+        GenJournalLine.Modify();
+        Commit();
+        // [WHEN] Posting the bank deposit.
+        PostBankDeposit(BankDepositHeader);
+        // [THEN] Both lines should be transferred.
+        PostedBankDepositLine.SetRange("Bank Deposit No.", BankDepositHeader."No.");
+        Assert.AreEqual(2, PostedBankDepositLine.Count(), 'The same number of lines posted should be transferred as part of the bank deposit.');
+    end;
+
+    [Test]
+    [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
+    procedure NavigatePageOfAPostedBankDepositShowsRelatedEntries()
+    var
+        BankDepositHeader: Record "Bank Deposit Header";
+        GLAccount: Record "G/L Account";
+        Customer: Record Customer;
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalTemplate: Record "Gen. Journal Template";
+        GenJournalLine: Record "Gen. Journal Line";
+        BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+        BankDeposit: TestPage "Bank Deposit";
+        PostedBankDeposit: TestPage "Posted Bank Deposit";
+        Navigate: TestPage Navigate;
+        BankEntryFound, CustomerEntryFound : Boolean;
+        TableName: Text;
+    begin
+        // [SCENARIO 537831] Related entries are shown on the Navigate page of a posted bank deposit
+        Initialize();
+        // [GIVEN] A Posted Bank Deposit with a G/L Account and a Customer.
+        CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Type::"Bank Deposits");
+        CreateBankDepositHeaderWithBankAccount(BankDepositHeader, GenJournalBatch);
+        BankDepositHeader."Total Deposit Amount" := 1000;
+        BankDepositHeader.Modify();
+        BankDeposit.Trap();
+        BankDepositHeader.SetRecFilter();
+        Page.Run(Page::"Bank Deposit", BankDepositHeader);
+        LibraryERM.CreateGLAccount(GLAccount);
+        BankDeposit.Subform."Account Type".SetValue(GenJournalLine."Account Type"::"G/L Account");
+        BankDeposit.Subform."Account No.".SetValue(GLAccount."No.");
+        BankDeposit.Subform."Credit Amount".SetValue(-10);
+        BankDeposit.Subform.Next();
+        LibrarySales.CreateCustomer(Customer);
+        BankDeposit.Subform."Account Type".SetValue(GenJournalLine."Account Type"::Customer);
+        BankDeposit.Subform."Account No.".SetValue(Customer."No.");
+        BankDeposit.Subform."Credit Amount".SetValue(1010);
+        PostedBankDeposit.Trap();
+        BankDeposit.Post.Invoke();
+        // [WHEN] Navigate action is invoked from the posted bank deposit
+        Navigate.Trap();
+        PostedBankDeposit."&Navigate".Invoke();
+
+        repeat
+            TableName := Navigate."Table Name".Value();
+            case TableName of
+                BankAccountLedgerEntry.TableCaption():
+                    BankEntryFound := true;
+                CustLedgerEntry.TableCaption():
+                    CustomerEntryFound := true;
+            end;
+        until (not Navigate.Next());
+        // [THEN] The entries posted are found.
+        Assert.IsTrue(BankEntryFound, 'Bank Account Ledger Entry should be found');
+        Assert.IsTrue(CustomerEntryFound, 'Customer Ledger Entry should be found');
     end;
 
     local procedure Initialize()

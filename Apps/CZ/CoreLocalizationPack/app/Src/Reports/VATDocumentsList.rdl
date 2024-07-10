@@ -2626,6 +2626,24 @@
       </DefaultValue>
       <Prompt>VATEntry_BaseCaption</Prompt>
     </ReportParameter>
+    <ReportParameter Name="VATEntry_OriginalVATAmountCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>VATEntry_OriginalVATAmountCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>VATEntry_OriginalVATAmountCaption</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="VATEntry_OriginalVATBaseCaption">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>VATEntry_OriginalVATBaseCaption</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>VATEntry_OriginalVATBaseCaption</Prompt>
+    </ReportParameter>
     <ReportParameter Name="VATEntry_VAT_Prod_Posting_GroupCaption">
       <DataType>String</DataType>
       <DefaultValue>
@@ -2702,7 +2720,7 @@
   <ReportParametersLayout>
     <GridLayoutDefinition>
       <NumberOfColumns>1</NumberOfColumns>
-      <NumberOfRows>17</NumberOfRows>
+      <NumberOfRows>19</NumberOfRows>
       <CellDefinitions>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
@@ -2752,41 +2770,51 @@
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>9</RowIndex>
-          <ParameterName>VATEntry_VAT_Prod_Posting_GroupCaption</ParameterName>
+          <ParameterName>VATEntry_OriginalVATAmountCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>10</RowIndex>
-          <ParameterName>VATEntry_VAT_Bus_Posting_GroupCaption</ParameterName>
+          <ParameterName>VATEntry_OriginalVATBaseCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>11</RowIndex>
-          <ParameterName>VATEntry_External_Document_NoCaption</ParameterName>
+          <ParameterName>VATEntry_VAT_Prod_Posting_GroupCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>12</RowIndex>
-          <ParameterName>VATEntry_Document_NoCaption</ParameterName>
+          <ParameterName>VATEntry_VAT_Bus_Posting_GroupCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>13</RowIndex>
-          <ParameterName>VATEntry_Document_TypeCaption</ParameterName>
+          <ParameterName>VATEntry_External_Document_NoCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>14</RowIndex>
-          <ParameterName>VATEntry_VAT_DateCaption</ParameterName>
+          <ParameterName>VATEntry_Document_NoCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>15</RowIndex>
-          <ParameterName>VATEntry_VATRegistrationNoCaption</ParameterName>
+          <ParameterName>VATEntry_Document_TypeCaption</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>16</RowIndex>
+          <ParameterName>VATEntry_VAT_DateCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>17</RowIndex>
+          <ParameterName>VATEntry_VATRegistrationNoCaption</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>18</RowIndex>
           <ParameterName>VATEntry_CountryRegionCodeCaption</ParameterName>
         </CellDefinition>
       </CellDefinitions>
@@ -2870,6 +2898,18 @@ End Function
         <Field Name="VATEntry_BaseFormat">
           <DataField>VATEntry_BaseFormat</DataField>
         </Field>
+        <Field Name="VATEntry_OriginalVATAmount">
+          <DataField>VATEntry_OriginalVATAmount</DataField>
+        </Field>
+        <Field Name="VATEntry_OriginalVATAmountFormat">
+          <DataField>VATEntry_OriginalVATAmountFormat</DataField>
+        </Field>
+        <Field Name="VATEntry_OriginalVATBase">
+          <DataField>VATEntry_OriginalVATBase</DataField>
+        </Field>
+        <Field Name="VATEntry_OriginalVATBaseFormat">
+          <DataField>VATEntry_OriginalVATBaseFormat</DataField>
+        </Field>
         <Field Name="VATEntry_VAT_Prod_Posting_Group">
           <DataField>VATEntry_VAT_Prod_Posting_Group</DataField>
         </Field>
@@ -2921,6 +2961,18 @@ End Function
         <Field Name="DocSummary_VAT_AmountFormat">
           <DataField>DocSummary_VAT_AmountFormat</DataField>
         </Field>
+        <Field Name="DocSummary_OriginalVATBase">
+          <DataField>DocSummary_OriginalVATBase</DataField>
+        </Field>
+        <Field Name="DocSummary_OriginalVATBaseFormat">
+          <DataField>DocSummary_OriginalVATBaseFormat</DataField>
+        </Field>
+        <Field Name="DocSummary_OriginalVATAmount">
+          <DataField>DocSummary_OriginalVATAmount</DataField>
+        </Field>
+        <Field Name="DocSummary_OriginalVATAmountFormat">
+          <DataField>DocSummary_OriginalVATAmountFormat</DataField>
+        </Field>
         <Field Name="DocSummary_TaxRate">
           <DataField>DocSummary_TaxRate</DataField>
         </Field>
@@ -2947,6 +2999,18 @@ End Function
         </Field>
         <Field Name="Total_VAT_AmountFormat">
           <DataField>Total_VAT_AmountFormat</DataField>
+        </Field>
+        <Field Name="Total_OriginalVATBase">
+          <DataField>Total_OriginalVATBase</DataField>
+        </Field>
+        <Field Name="Total_OriginalVATBaseFormat">
+          <DataField>Total_OriginalVATBaseFormat</DataField>
+        </Field>
+        <Field Name="Total_OriginalVATAmount">
+          <DataField>Total_OriginalVATAmount</DataField>
+        </Field>
+        <Field Name="Total_OriginalVATAmountFormat">
+          <DataField>Total_OriginalVATAmountFormat</DataField>
         </Field>
         <Field Name="Total_Number">
           <DataField>Total_Number</DataField>

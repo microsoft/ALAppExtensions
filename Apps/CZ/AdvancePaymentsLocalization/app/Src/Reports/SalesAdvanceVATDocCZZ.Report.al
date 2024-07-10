@@ -21,11 +21,10 @@ using System.Utilities;
 
 report 31015 "Sales - Advance VAT Doc. CZZ"
 {
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/SalesAdvanceVATDoc.rdl';
     Caption = 'Sales - Advance VAT Document';
     PreviewMode = PrintLayout;
     UsageCategory = None;
+    DefaultRenderingLayout = "SalesAdvanceVATDoc.rdl";
     WordMergeDataItem = TempSalesAdvLetterEntry;
 
     dataset
@@ -291,7 +290,7 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                     {
                         DataItemLink = "Sales Adv. Letter No." = field("Sales Adv. Letter No."), "Document No." = field("Document No.");
                         DataItemLinkReference = TempSalesAdvLetterEntry;
-                        DataItemTableView = sorting("Document No.") where("Entry Type" = filter("VAT Payment" | "VAT Usage" | "VAT Close"));
+                        DataItemTableView = sorting("Document No.") where("Entry Type" = filter("VAT Payment" | "VAT Usage" | "VAT Close"), "Auxiliary Entry" = const(false));
 
                         trigger OnAfterGetRecord()
                         begin
@@ -449,6 +448,7 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                 if IsCreditMemo(TempSalesAdvLetterEntry) then begin
                     SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", TempSalesAdvLetterEntry."Sales Adv. Letter No.");
                     SalesAdvLetterEntryCZZ.SetRange("Related Entry", TempSalesAdvLetterEntry."Related Entry");
+                    SalesAdvLetterEntryCZZ.SetFilter("Document No.", '<>%1', TempSalesAdvLetterEntry."Document No.");
                     SalesAdvLetterEntryCZZ.SetFilter("Entry No.", '<%1', TempSalesAdvLetterEntry."Entry No.");
                     if SalesAdvLetterEntryCZZ.FindLast() then
                         OriginalAdvanceVATDocumentNo := SalesAdvLetterEntryCZZ."Document No.";
@@ -476,6 +476,24 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
                     }
                 }
             }
+        }
+    }
+
+    rendering
+    {
+        layout("SalesAdvanceVATDoc.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/SalesAdvanceVATDoc.rdl';
+            Caption = 'Sales Advance VAT Document (RDL)';
+            Summary = 'The Sales Advance VAT Document (RDL) provides a detailed layout.';
+        }
+        layout("SalesAdvanceVATDocEmail.docx")
+        {
+            Type = Word;
+            LayoutFile = './Src/Reports/SalesAdvanceVATDocEmail.docx';
+            Caption = 'Sales Advance VAT Document Email (Word)';
+            Summary = 'The Sales Advance VAT Document Email (Word) provides an email body layout.';
         }
     }
 
@@ -524,9 +542,12 @@ report 31015 "Sales - Advance VAT Doc. CZZ"
         NoOfCop: Integer;
 
     local procedure IsCreditMemo(SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ"): Boolean
+    var
+        DocumentAmount: Decimal;
     begin
-        exit(((SalesAdvLetterEntryCZZ.CalcDocumentAmount() > 0) and (SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Payment")) or
-             ((SalesAdvLetterEntryCZZ.CalcDocumentAmount() < 0) and (SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Usage")) or
+        DocumentAmount := SalesAdvLetterEntryCZZ.CalcDocumentAmount();
+        exit(((SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Payment") and (DocumentAmount > 0)) or
+             ((SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Usage") and (DocumentAmount < 0)) or
              (SalesAdvLetterEntryCZZ."Entry Type" = SalesAdvLetterEntryCZZ."Entry Type"::"VAT Close"));
     end;
 }

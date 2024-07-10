@@ -8,7 +8,8 @@ codeunit 6204 "Trans. Storage Error Handler"
     TableNo = "Transact. Storage Task Entry";
     InherentEntitlements = X;
     InherentPermissions = X;
-    Permissions = tabledata "Transact. Storage Export State" = RIM;
+    Permissions = tabledata "Transact. Storage Export State" = RIM,
+                  tabledata "Trans. Storage Export Data" = RD;
 
     var
         TransactionStorageTok: Label 'Transaction Storage', Locked = true;
@@ -19,6 +20,7 @@ codeunit 6204 "Trans. Storage Error Handler"
     trigger OnRun()
     var
         TransactStorageExportState: Record "Transact. Storage Export State";
+        TransStorageExportData: Record "Trans. Storage Export Data";
         TransStorageScheduleTask: Codeunit "Trans. Storage Schedule Task";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         ExportDateTime: DateTime;
@@ -30,7 +32,7 @@ codeunit 6204 "Trans. Storage Error Handler"
 
         TransactStorageExportState.Get();
         if TransactStorageExportState."Number Of Attempts" = 0 then begin
-            FeatureTelemetry.LogError('0000LNA', TransactionStorageTok, TaskFailedMultipleTimesErr, '');
+            FeatureTelemetry.LogError('0000LNA', TransactionStorageTok, '', TaskFailedMultipleTimesErr);
             CheckMultipleTaskFailures();
             exit;
         end;
@@ -38,6 +40,7 @@ codeunit 6204 "Trans. Storage Error Handler"
         TransStorageScheduleTask.CreateTaskToExport(ExportDateTime, false);
         TransactStorageExportState."Number Of Attempts" -= 1;
         TransactStorageExportState.Modify();
+        TransStorageExportData.DeleteAll(true);
     end;
 
     local procedure CheckMultipleTaskFailures()
@@ -59,7 +62,7 @@ codeunit 6204 "Trans. Storage Error Handler"
                 if TransactStorageTaskEntry.Status <> Enum::"Trans. Storage Export Status"::Failed then
                     exit;
             until TransactStorageTaskEntry.Next() = 0;
-            FeatureTelemetry.LogError('0000LQX', TransactionStorageTok, StrSubstNo(TaskFailedMultipleDaysErr, MaxNumberFailureDays), '');
+            FeatureTelemetry.LogError('0000LQX', TransactionStorageTok, '', StrSubstNo(TaskFailedMultipleDaysErr, MaxNumberFailureDays));
         end;
     end;
 }

@@ -92,8 +92,20 @@ codeunit 14611 "Enable IS Core App"
         SourceRecRef.Close();
     end;
 
+    procedure UpdateDocumentRetentionPeriod();
+    var
+        ISCoreInstall: codeunit "IS Core Install";
+    begin
+        ISCoreInstall.UpdateGeneralLedgserSetup();
+    end;
+
     procedure GetISCoreAppUpdateTag(): Code[250]
     begin
         exit('MS-460511-ISCoreApp-20231118');
+    end;
+
+    procedure GetISDocRetentionPeriodTag(): Code[250]
+    begin
+        exit('MS-534853-DocRetentionPeriod-20240514');
     end;
 }

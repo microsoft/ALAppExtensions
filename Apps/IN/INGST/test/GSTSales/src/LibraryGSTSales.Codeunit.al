@@ -587,7 +587,7 @@ codeunit 18195 "Library GST Sales"
         SalesInvoiceHeader.Get(SalesInvoiceLine."Document No.");
 
         case SalesInvoiceHeader."GST Customer Type" of
-            SalesInvoiceHeader."GST Customer Type"::Registered, SalesInvoiceHeader."GST Customer Type"::Unregistered:
+            SalesInvoiceHeader."GST Customer Type"::Registered, SalesInvoiceHeader."GST Customer Type"::Unregistered, SalesInvoiceHeader."GST Customer Type"::"SEZ Unit":
                 if SalesInvoiceLine."Unit Price Incl. of Tax" <> 0 then begin
                     if SalesInvoiceLine."GST Jurisdiction Type" = SalesInvoiceLine."GST Jurisdiction Type"::Interstate then
                         GSTBaseAmount := ((SalesInvoiceLine."Unit Price Incl. of Tax" * SalesInvoiceLine.Quantity) * ComponentPerArray[4]) / (100 + ComponentPerArray[4])

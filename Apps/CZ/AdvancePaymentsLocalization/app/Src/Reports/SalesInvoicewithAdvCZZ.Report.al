@@ -33,11 +33,10 @@ using System.Text;
 
 report 31018 "Sales - Invoice with Adv. CZZ"
 {
-    DefaultLayout = RDLC;
-    RDLCLayout = './Src/Reports/SalesInvoiceWithAdv.rdl';
     Caption = 'Sales - Invoice with Advance';
     PreviewMode = PrintLayout;
     UsageCategory = ReportsAndAnalysis;
+    DefaultRenderingLayout = "SalesInvoicewithAdv.rdl";
     ApplicationArea = Basic, Suite;
     WordMergeDataItem = "Sales Invoice Header";
 
@@ -463,7 +462,15 @@ report 31018 "Sales - Invoice with Adv. CZZ"
                         }
 
                         trigger OnAfterGetRecord()
+                        var
+                            SalesAdvLetterEntryCZZVATUsage: Record "Sales Adv. Letter Entry CZZ";
                         begin
+                            SalesAdvLetterEntryCZZVATUsage.SetRange("Entry Type", SalesAdvLetterEntryCZZVATUsage."Entry Type"::"VAT Usage");
+                            SalesAdvLetterEntryCZZVATUsage.SetRange("Related Entry", SalesAdvanceUsage."Entry No.");
+                            SalesAdvLetterEntryCZZVATUsage.Setrange("Auxiliary Entry", false);
+                            if SalesAdvLetterEntryCZZVATUsage.IsEmpty() then
+                                CurrReport.Break();
+
                             SetRange("Sales Adv. Letter No.", "Sales Adv. Letter No.");
                             SetRange("Document No.", "Document No.");
                             FindLast();
@@ -650,12 +657,6 @@ report 31018 "Sales - Invoice with Adv. CZZ"
                           4, "No.", 0, 0, DATABASE::Customer, "Bill-to Customer No.", "Salesperson Code",
                           "Campaign No.", "Posting Description", '');
 
-#if not CLEAN22
-#pragma warning disable AL0432
-                if not ReplaceVATDateMgtCZL.IsEnabled() then
-                    "VAT Reporting Date" := "VAT Date CZL";
-#pragma warning restore AL0432
-#endif
                 Clear(QRPaymentCode);
                 if "Sales & Receivables Setup"."Print QR Payment CZL" and PaymentMethod."Print QR Payment CZL" then begin
                     CalcFields("Remaining Amount");
@@ -716,6 +717,24 @@ report 31018 "Sales - Invoice with Adv. CZZ"
         end;
     }
 
+    rendering
+    {
+        layout("SalesInvoicewithAdv.rdl")
+        {
+            Type = RDLC;
+            LayoutFile = './Src/Reports/SalesInvoicewithAdv.rdl';
+            Caption = 'Sales Invoice with Advance (RDL)';
+            Summary = 'The Sales Invoice with Advance (RDL) provides a detailed layout.';
+        }
+        layout("SalesInvoicewithAdvEmail.docx")
+        {
+            Type = Word;
+            LayoutFile = './Src/Reports/SalesInvoicewithAdvEmail.docx';
+            Caption = 'Sales Invoice with Advance Email (Word)';
+            Summary = 'The Sales Invoice with Advance Email (Word) provides an email body layout.';
+        }
+    }
+
     trigger OnPreReport()
     begin
         if not CurrReport.UseRequestPage then
@@ -733,11 +752,6 @@ report 31018 "Sales - Invoice with Adv. CZZ"
         FormatDocument: Codeunit "Format Document";
         FormatDocumentMgtCZL: Codeunit "Format Document Mgt. CZL";
         SegManagement: Codeunit SegManagement;
-#if not CLEAN22
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-#endif
         LogInteractionEnable: Boolean;
         NoOfLoops: Integer;
         ExchRateLbl: Label 'Exchange Rate %1 %2 / %3 %4', Comment = '%1 = Calculated Exch. Rate, %2 = General Ledger Setup LCY Code, %3 = Exch. Rate Exchange Rate Amount, %4 = Currency Code';

@@ -33,6 +33,7 @@ codeunit 18391 "GST Transfer Order Shipment"
         GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line";
         GSTBaseValidation: Codeunit "GST Base Validation";
         TransferCost: Decimal;
+        TransferQuantity: Decimal;
         GSTGroupServiceErr: Label 'You canNot select GST Group Type Service for transfer.';
         LocGSTRegNoARNNoErr: Label 'Location must have either GST Registration No. or Location ARN No.';
         TransferShipmentNoLbl: Label 'Transfer - %1', Comment = '%1= Transfer Shipment No.';
@@ -466,7 +467,7 @@ codeunit 18391 "GST Transfer Order Shipment"
         TempTransferBufferStage.Quantity := TransferLine."Qty. to Ship";
         TempTransferBufferStage."Amount Loaded on Inventory" := Round(TransferLine."Amount Added to Inventory" * TransferLine."Qty. to Ship" / TransferLine.Quantity);
         TempTransferBufferStage."Charges Amount" := Round(TransferLine."Charges to Transfer" * TransferLine."Qty. to Ship" / TransferLine.Quantity);
-        TempTransferBufferStage."Excise Amount" := Round(TransferLine.Amount - -TransferCost);
+        TempTransferBufferStage."Excise Amount" := Round(TransferLine."Qty. to Ship" * (TransferLine."Transfer Price" - -(TransferCost / TransferQuantity)));
         TempTransferBufferStage.Amount := TempTransferBufferStage.Amount + TempTransferBufferStage."Excise Amount";
         UpdTransferBuffer(TransferLine, TransferLine."Line No.");
     end;
@@ -645,8 +646,12 @@ codeunit 18391 "GST Transfer Order Shipment"
     var
         SourceCodeSetup: Record "Source Code Setup";
         DocTransferType: Enum "Doc Transfer Type";
+        IsHandled: Boolean;
     begin
         SourceCodeSetup.Get();
+        OnBeforePostTransLineToGenJnlLine(GenJournalLine, TempGSTPostingBufferFinal, TempTransferBufferStage, TransferHeader, TransferShptNo, IsHandled);
+        if IsHandled then
+            exit;
 
         GenJournalLine.Init();
         GenJournalLine."Posting Date" := TransferHeader."Posting Date";
@@ -654,6 +659,7 @@ codeunit 18391 "GST Transfer Order Shipment"
         GenJournalLine."Document Type" := GenJournalLine."Document Type"::Invoice;
         GenJournalLine."Document No." := TransferShptNo;
         GenJournalLine."External Document No." := TransferHeader."No.";
+        GenJournalLine."Account Type" := GenJournalLine."Account Type"::"G/L Account";
         if TempGSTPostingBufferFinal."GST Amount" <> 0 then begin
             GenJournalLine.Validate(Amount, Round(TempGSTPostingBufferFinal."GST Amount"));
             GenJournalLine."Account No." := TempGSTPostingBufferFinal."Account No.";
@@ -670,8 +676,11 @@ codeunit 18391 "GST Transfer Order Shipment"
         GenJournalLine."Dimension Set ID" := TempGSTPostingBufferFinal."Dimension Set ID";
         GenJournalLine."Location Code" := TransferHeader."Transfer-from Code";
         GenJournalLine."Source Code" := SourceCodeSetup.Transfer;
-        GenJournalLine."Account Type" := GenJournalLine."Account Type"::"G/L Account";
+
+        OnBeforeRunGenJnlPostTransferLine(GenJournalLine, TempGSTPostingBufferFinal, TempTransferBufferStage, TransferHeader, TransferShptNo);
         RunGenJnlPostLine(GenJournalLine);
+        OnAfterRunGenJnlPostLineOnBeforeInsertGSTLedgerEntryTransfer(GenJournalLine, TempGSTPostingBufferFinal, TransferHeader, GenJnlPostLine);
+
         InsertGSTLedgerEntryTransfer(
           TempGSTPostingBufferFinal,
           TransferHeader,
@@ -1027,6 +1036,10 @@ codeunit 18391 "GST Transfer Order Shipment"
         TransferLine: Record "Transfer Line";
         IsHandled: Boolean;
     begin
+        OnBeforePostGLEntries(TempTransferBufferFinal, TempGSTPostingBufferFinal, TransferHeader, TransferShipmentHeader, TransferLine, InventoryPostingSetup, IsHandled);
+        if IsHandled then
+            exit;
+
         // Post GST to G/L entries from GST posting buffer.. GST Sales
         TempGSTPostingBufferFinal.Reset();
         TempGSTPostingBufferFinal.SetCurrentKey(
@@ -1044,6 +1057,7 @@ codeunit 18391 "GST Transfer Order Shipment"
             "Forex Fluctuation",
             "Document Line No.");
         TempGSTPostingBufferFinal.SetAscending("Document Line No.", false);
+        OnFindTempGSTPostingBufferFinalForTransfer(TempGSTPostingBufferFinal, TempTransferBufferFinal, TransferHeader, TransferShipmentHeader);
         if TempGSTPostingBufferFinal.FindSet() then
             repeat
                 PostTransLineToGenJnlLine(TransferHeader, TransferShipmentHeader."No.");
@@ -1056,21 +1070,36 @@ codeunit 18391 "GST Transfer Order Shipment"
         TempTransferBufferFinal.Reset();
         TempTransferBufferFinal.SetCurrentKey("sorting no.");
         TempTransferBufferFinal.SetAscending("Sorting No.", false);
+        OnFindTempTransferBufferFinal(TempTransferBufferFinal, TempGSTPostingBufferFinal, TransferHeader, TransferShipmentHeader);
         if TempTransferBufferFinal.Findset() then
             repeat
-                TransferLine.LoadFields("Document No.", "Item No.", "HSN/SAC Code");
-                TransferLine.SetRange("Document No.", TransferHeader."No.");
-                TransferLine.SetRange("Item No.", TempTransferBufferFinal."Item No.");
-                TransferLine.SetFilter("HSN/SAC Code", '<>%1', '');
-                if not TransferLine.IsEmpty() then begin
-                    OnBeforeGetInvPostingSetupOnAfterFindTempTransferBuffer(TempTransferBufferFinal, TempGSTPostingBufferFinal, TransferHeader, TransferShipmentHeader, TransferLine, InventoryPostingSetup);
-                    InventoryPostingSetup.Get(TransferHeader."In-Transit Code", TempTransferBufferFinal."Inventory Posting Group");
-                    InventoryPostingSetup.TestField("Unrealized Profit Account");
-                end;
+                ValidateTransferLineForAccountSetup(TransferHeader, TransferShipmentHeader, InventoryPostingSetup);
 
                 OnBeforePostGeneralEntries(TempTransferBufferFinal, TransferShipmentHeader, TransferHeader, InventoryPostingSetup);
                 PostGeneralEntries(TempTransferBufferFinal, TransferShipmentHeader, TransferHeader, InventoryPostingSetup);
             until TempTransferBufferFinal.Next() = 0;
+    end;
+
+    local procedure ValidateTransferLineForAccountSetup(var TransferHeader: Record "Transfer Header"; var TransferShipmentHeader: Record "Transfer Shipment Header"; var InventoryPostingSetup: Record "Inventory Posting Setup")
+    var
+        TransferLine: Record "Transfer Line";
+        IsHandled: Boolean;
+    begin
+        OnBeforeValidateTransferLineForAccountSetup(TransferHeader, TransferShipmentHeader, TempTransferBufferFinal, TempGSTPostingBufferFinal, IsHandled);
+        if IsHandled then
+            exit;
+
+        TransferLine.LoadFields("Document No.", "Item No.", "HSN/SAC Code");
+        TransferLine.SetRange("Document No.", TransferHeader."No.");
+        TransferLine.SetRange("Item No.", TempTransferBufferFinal."Item No.");
+        OnFindTransferLineInTempTransferBufferFinalLoop(TransferLine, TempTransferBufferFinal, TempGSTPostingBufferFinal, TransferHeader, TransferShipmentHeader);
+
+        TransferLine.SetFilter("HSN/SAC Code", '<>%1', '');
+        if not TransferLine.IsEmpty() then begin
+            OnBeforeGetInvPostingSetupOnAfterFindTempTransferBuffer(TempTransferBufferFinal, TempGSTPostingBufferFinal, TransferHeader, TransferShipmentHeader, TransferLine, InventoryPostingSetup);
+            InventoryPostingSetup.Get(TransferHeader."In-Transit Code", TempTransferBufferFinal."Inventory Posting Group");
+            InventoryPostingSetup.TestField("Unrealized Profit Account");
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"TransferOrder-Post Shipment", 'OnBeforeTransferOrderPostShipment', '', False, False)]
@@ -1122,7 +1151,8 @@ codeunit 18391 "GST Transfer Order Shipment"
     begin
         if GlobalItemLedgEntry."Entry Type" = GlobalItemLedgEntry."Entry Type"::Transfer then begin
             GlobalItemLedgEntry.CalcFields("Cost Amount (Actual)");
-            TransferCost := GlobalItemLedgEntry."Cost Amount (Actual)"
+            TransferCost := GlobalItemLedgEntry."Cost Amount (Actual)";
+            TransferQuantity := Abs(GlobalItemLedgEntry.Quantity);
         end;
     end;
 
@@ -1131,7 +1161,13 @@ codeunit 18391 "GST Transfer Order Shipment"
         var TransferShipmentHeader: Record "Transfer Shipment Header";
         var TransferHeader: Record "Transfer Header";
         var InventoryPostingSetup: Record "Inventory Posting Setup")
+    var
+        IsHandled: Boolean;
     begin
+        OnBeforePostGeneralJnlLineForUnrealizedGainOrLoss(GenJournalLine, TempTransferBufferFinal, TransferShipmentHeader, TransferHeader, InventoryPostingSetup, GenJnlPostLine, IsHandled);
+        if IsHandled then
+            exit;
+
         GenJournalLine.Init();
         GenJournalLine."Posting Date" := TransferHeader."Posting Date";
         GenJournalLine."Document Date" := TransferHeader."Posting Date";
@@ -1145,6 +1181,7 @@ codeunit 18391 "GST Transfer Order Shipment"
         GenJournalLine."Shortcut Dimension 2 Code" := TempTransferBufferFinal."Global Dimension 2 Code";
         GenJournalLine."Dimension Set ID" := TempTransferBufferFinal."Dimension Set ID";
         GenJournalLine.Description := StrSubstNo(TransferShipmentNoLbl, TransferShipmentHeader."No.");
+        OnBeforeRunGenJnlPostLineForCharges(GenJournalLine, TempTransferBufferFinal, TransferShipmentHeader, TransferHeader, InventoryPostingSetup);
         if GenJournalLine.Amount <> 0 then
             RunGenJnlPostLine(GenJournalLine);
 
@@ -1160,6 +1197,7 @@ codeunit 18391 "GST Transfer Order Shipment"
         GenJournalLine."Shortcut Dimension 2 Code" := TempTransferBufferFinal."Global Dimension 2 Code";
         GenJournalLine."Dimension Set ID" := TempTransferBufferFinal."Dimension Set ID";
         GenJournalLine.Description := STRSUBSTNO(TransferShipmentNoLbl, TransferShipmentHeader."No.");
+        OnBeforePostGeneralJnlLineForExcise(GenJournalLine, TempTransferBufferFinal, TransferShipmentHeader, TransferHeader, InventoryPostingSetup);
         if GenJournalLine."Amount" <> 0 then
             RunGenJnlPostLine(GenJournalLine);
     end;
@@ -1206,6 +1244,61 @@ codeunit 18391 "GST Transfer Order Shipment"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforePostGeneralEntries(var TempTransferBufferFinal: Record "Transfer Buffer" temporary; var TransferShipmentHeader: Record "Transfer Shipment Header"; var TransferHeader: Record "Transfer Header"; var InventoryPostingSetup: Record "Inventory Posting Setup")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostGeneralJnlLineForUnrealizedGainOrLoss(var GenJournalLine: Record "Gen. Journal Line"; TempTransferBufferFinal: Record "Transfer Buffer"; TransferShipmentHeader: Record "Transfer Shipment Header"; TransferHeader: Record "Transfer Header"; InventoryPostingSetup: Record "Inventory Posting Setup"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeRunGenJnlPostLineForCharges(var GenJournalLine: Record "Gen. Journal Line"; TempTransferBufferFinal: Record "Transfer Buffer" temporary; TransferShipmentHeader: Record "Transfer Shipment Header"; TransferHeader: Record "Transfer Header"; InventoryPostingSetup: Record "Inventory Posting Setup")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostGeneralJnlLineForExcise(var GenJournalLine: Record "Gen. Journal Line"; TempTransferBufferFinal: Record "Transfer Buffer" temporary; TransferShipmentHeader: Record "Transfer Shipment Header"; TransferHeader: Record "Transfer Header"; InventoryPostingSetup: Record "Inventory Posting Setup")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostGLEntries(var TempTransferBufferFinal: Record "Transfer Buffer" temporary; var TempGSTPostingBufferFinal: Record "GST Posting Buffer" temporary; var TransferHeader: Record "Transfer Header"; var TransferShipmentHeader: Record "Transfer Shipment Header"; var TransferLine: Record "Transfer Line"; var InventoryPostingSetup: Record "Inventory Posting Setup"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostTransLineToGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; var TempGSTPostingBufferFinal: Record "GST Posting Buffer" temporary; var TempTransferBufferStage: Record "Transfer Buffer" temporary; TransferHeader: Record "Transfer Header"; TransferShptNo: Code[20]; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeRunGenJnlPostTransferLine(var GenJournalLine: Record "Gen. Journal Line"; TempGSTPostingBufferFinal: Record "GST Posting Buffer" temporary; TempTransferBufferStage: Record "Transfer Buffer" temporary; TransferHeader: Record "Transfer Header"; TransferShptNo: Code[20])
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterRunGenJnlPostLineOnBeforeInsertGSTLedgerEntryTransfer(var GenJournalLine: Record "Gen. Journal Line"; TempGSTPostingBufferFinal: Record "GST Posting Buffer" temporary; TransferHeader: Record "Transfer Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnFindTempGSTPostingBufferFinalForTransfer(var TempGSTPostingBufferFinal: Record "GST Posting Buffer" temporary; TempTransferBufferFinal: Record "Transfer Buffer" temporary; TransferHeader: Record "Transfer Header"; TransferShipmentHeader: Record "Transfer Shipment Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnFindTempTransferBufferFinal(var TempTransferBufferFinal: Record "Transfer Buffer" temporary; TempGSTPostingBufferFinal: Record "GST Posting Buffer" temporary; TransferHeader: Record "Transfer Header"; TransferShipmentHeader: Record "Transfer Shipment Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnFindTransferLineInTempTransferBufferFinalLoop(var TransferLine: Record "Transfer Line"; TempTransferBufferFinal: Record "Transfer Buffer" temporary; TempGSTPostingBufferFinal: Record "GST Posting Buffer" temporary; TransferHeader: Record "Transfer Header"; TransferShipmentHeader: Record "Transfer Shipment Header")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeValidateTransferLineForAccountSetup(TransferHeader: Record "Transfer Header"; TransferShipmentHeader: Record "Transfer Shipment Header"; TempTransferBufferFinal: Record "Transfer Buffer" temporary; TempGSTPostingBufferFinal: Record "GST Posting Buffer" temporary; var IsHandled: Boolean)
     begin
     end;
 }

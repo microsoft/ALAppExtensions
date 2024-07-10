@@ -274,8 +274,6 @@ codeunit 31236 "FA Acquisition Handler CZF"
     local procedure FAPostingTypeCustom2OnAfterCopyToGenJnlLineFAObsolete(var GenJnlLine: Record "Gen. Journal Line"; InvoicePostBuffer: Record "Invoice Post. Buffer")
     begin
         case InvoicePostBuffer."FA Posting Type" of
-            InvoicePostBuffer."FA Posting Type"::"Custom 2":
-                GenJnlLine."FA Posting Type" := GenJnlLine."FA Posting Type"::"Custom 2";
             InvoicePostBuffer."FA Posting Type"::"Custom 2 CZF":
                 GenJnlLine."FA Posting Type" := GenJnlLine."FA Posting Type"::"Custom 2";
         end;

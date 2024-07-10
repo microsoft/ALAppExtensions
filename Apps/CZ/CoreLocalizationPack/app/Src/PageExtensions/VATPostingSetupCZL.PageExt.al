@@ -8,6 +8,15 @@ pageextension 11756 "VAT Posting Setup CZL" extends "VAT Posting Setup"
 {
     layout
     {
+        modify("Non-Deductible VAT% ")
+        {
+            Visible = false;
+            Enabled = false;
+        }
+        modify("Allow Non-Deductible VAT")
+        {
+            ToolTip = 'Specifies whether the Non-Deductible VAT is considered for this particular combination of VAT business posting group and VAT product posting group. If the ''Allow'' value is used then the input VAT is reduced by the coefficient from ''Non-Deductible VAT Setup''. If the ''Do not apply'' value is used then the input VAT is not applied.';
+        }
         addafter("EU Service")
         {
             field("Intrastat Service CZL"; Rec."Intrastat Service CZL")

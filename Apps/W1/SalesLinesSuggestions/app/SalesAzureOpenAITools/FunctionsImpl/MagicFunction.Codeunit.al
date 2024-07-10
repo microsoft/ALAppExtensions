@@ -4,14 +4,18 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sales.Document;
 
+using System.AI;
 using System.Telemetry;
 
-codeunit 7284 "Magic Function" implements SalesAzureOpenAITools
+codeunit 7284 "Magic Function" implements "AOAI Function"
 {
     Access = Internal;
 
+    var
+        FunctionNameLbl: Label 'magic_function', Locked = true;
+
     [NonDebuggable]
-    procedure GetToolPrompt(): JsonObject
+    procedure GetPrompt(): JsonObject
     var
         Prompt: Codeunit "SLS Prompts";
         PromptJson: JsonObject;
@@ -21,7 +25,7 @@ codeunit 7284 "Magic Function" implements SalesAzureOpenAITools
     end;
 
     [NonDebuggable]
-    procedure ToolCall(Arguments: JsonObject; CustomDimension: Dictionary of [Text, Text]): Variant
+    procedure Execute(Arguments: JsonObject): Variant
     var
         TempSalesLineAiSuggestion: Record "Sales Line AI Suggestions" temporary;
         FeatureTelemetry: Codeunit "Feature Telemetry";
@@ -33,4 +37,8 @@ codeunit 7284 "Magic Function" implements SalesAzureOpenAITools
         exit(TempSalesLineAiSuggestion);
     end;
 
+    procedure GetName(): Text
+    begin
+        exit(FunctionNameLbl);
+    end;
 }

@@ -255,13 +255,7 @@ codeunit 148064 "VAT Ctrl. Report CZL"
 
         // [GIVEN] The vat control report for the last open vat period has been created
         VATCtrlReportHeaderCZL := CreateVATControlReport(
-#if not CLEAN22
-#pragma warning disable AL0432
-            Date2DMY(SalesHeader."VAT Date CZL", 2), Date2DMY(SalesHeader."VAT Date CZL", 3),
-#pragma warning restore AL0432
-#else
             Date2DMY(SalesHeader."VAT Reporting Date", 2), Date2DMY(SalesHeader."VAT Reporting Date", 3),
-#endif
             VATStatementName."Statement Template Name", VATStatementName.Name);
 
         // [WHEN] Run suggest vat control report lines function
@@ -318,13 +312,7 @@ codeunit 148064 "VAT Ctrl. Report CZL"
 
         // [GIVEN] The vat control report for the last open vat period has been created
         VATCtrlReportHeaderCZL := CreateVATControlReport(
-#if not CLEAN22
-#pragma warning disable AL0432
-            Date2DMY(SalesHeader."VAT Date CZL", 2), Date2DMY(SalesHeader."VAT Date CZL", 3),
-#pragma warning restore AL0432
-#else
             Date2DMY(SalesHeader."VAT Reporting Date", 2), Date2DMY(SalesHeader."VAT Reporting Date", 3),
-#endif
             VATStatementName."Statement Template Name", VATStatementName.Name);
 
         // [WHEN] Run suggest vat control report lines function
@@ -416,15 +404,8 @@ codeunit 148064 "VAT Ctrl. Report CZL"
 
         // [GIVEN] The purchase invoice header with vat date before last open vat period has been created
         PurchaseHeader := CreatePurchaseHeader(Enum::"Purchase Document Type"::Invoice);
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchaseHeader.Validate("VAT Date CZL", CalcDate('<CM-1M>', PurchaseHeader."Posting Date"));
-        PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Date CZL");
-#pragma warning restore AL0432
-#else
         PurchaseHeader.Validate("VAT Reporting Date", CalcDate('<CM-1M>', PurchaseHeader."Posting Date"));
         PurchaseHeader.Validate("Original Doc. VAT Date CZL", PurchaseHeader."VAT Reporting Date");
-#endif
         PurchaseHeader.Modify();
 
         // [GIVEN] The two purchase invoice lines with amounts below limit has been created
@@ -475,15 +456,8 @@ codeunit 148064 "VAT Ctrl. Report CZL"
 
         // [GIVEN] The sales invoice header with vat date before last open vat period has been created
         SalesHeader := CreateSalesHeader(Enum::"Sales Document Type"::Invoice);
-#if not CLEAN22
-#pragma warning disable AL0432
-        SalesHeader.Validate("VAT Date CZL", CalcDate('<CM-1M>', SalesHeader."Posting Date"));
-        SalesHeader.Validate("Original Doc. VAT Date CZL", SalesHeader."VAT Date CZL");
-#pragma warning restore AL0432
-#else
         SalesHeader.Validate("VAT Reporting Date", CalcDate('<CM-1M>', SalesHeader."Posting Date"));
         SalesHeader.Validate("Original Doc. VAT Date CZL", SalesHeader."VAT Reporting Date");
-#endif
         SalesHeader.Modify();
 
         // [GIVEN] The two sales invoice lines with amounts above limit has been created
@@ -667,15 +641,8 @@ codeunit 148064 "VAT Ctrl. Report CZL"
           LibraryPurchase.CreateVendorWithVATBusPostingGroup(FindVATBusinessPostingGroup().Code));
         PurchaseHeader.Validate("Prices Including VAT", true);
         PurchaseHeader.Validate("Posting Date", LibraryTax.GetDateFromLastOpenVATPeriod());
-#if not CLEAN22
-#pragma warning disable AL0432
-        PurchaseHeader.Validate("VAT Date CZL", PurchaseHeader."Posting Date");
-        PurchaseHeader."Original Doc. VAT Date CZL" := PurchaseHeader."VAT Date CZL";
-#pragma warning restore AL0432
-#else
         PurchaseHeader.Validate("VAT Reporting Date", PurchaseHeader."Posting Date");
         PurchaseHeader."Original Doc. VAT Date CZL" := PurchaseHeader."VAT Reporting Date";
-#endif
         PurchaseHeader.Modify();
     end;
 
@@ -715,15 +682,8 @@ codeunit 148064 "VAT Ctrl. Report CZL"
           LibrarySales.CreateCustomerWithVATBusPostingGroup(FindVATBusinessPostingGroup().Code));
         SalesHeader.Validate("Prices Including VAT", true);
         SalesHeader.Validate("Posting Date", LibraryTax.GetDateFromLastOpenVATPeriod());
-#if not CLEAN22
-#pragma warning disable AL0432
-        SalesHeader.Validate("VAT Date CZL", SalesHeader."Posting Date");
-        SalesHeader."Original Doc. VAT Date CZL" := SalesHeader."VAT Date CZL";
-#pragma warning restore AL0432
-#else
         SalesHeader.Validate("VAT Reporting Date", SalesHeader."Posting Date");
         SalesHeader."Original Doc. VAT Date CZL" := SalesHeader."VAT Reporting Date";
-#endif
         SalesHeader.Modify();
     end;
 

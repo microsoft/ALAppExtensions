@@ -99,6 +99,8 @@ codeunit 4001 "Hybrid Cloud Management"
         CompanyManagementDocumentationHyperlinkTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2248704', Locked = true;
         WarnManageCompaniesNotificationsTxt: Label 'Cloud Migration - Manage Companies Warning';
         WarnManageCompaniesDescriptionTxt: Label 'Warning to the users to read the documentation before managing the companies during cloud migration.';
+        GrantedConsentToDelegatedAdminLbl: Label 'The delegated admin has been granted consent to setup and run the cloud migration.', Locked = true;
+        RevokedConsentToDelegatedAdminLbl: Label 'The consent granted to delegated admin for cloud migration has been revoked.', Locked = true;
 
     procedure CanHandleNotification(SubscriptionId: Text; ProductId: Text): Boolean
     var
@@ -1036,6 +1038,7 @@ codeunit 4001 "Hybrid Cloud Management"
     var
         ExistingHybridDAApproval: Record "Hybrid DA Approval";
         NewHybridDAApproval: Record "Hybrid DA Approval";
+        TelemetryDictionary: Dictionary of [Text, Text];
     begin
         if not CanGrantPermission() then
             Error(GrantApprovalPermissionErr);
@@ -1051,6 +1054,8 @@ codeunit 4001 "Hybrid Cloud Management"
             NewHybridDAApproval.Insert();
             NewHybridDAApproval.Get(NewHybridDAApproval.PrimaryKey);
             HybridDAApproval := NewHybridDAApproval;
+            TelemetryDictionary.Add('Category', GetTelemetryCategory());
+            Session.LogMessage('0000MRL', GrantedConsentToDelegatedAdminLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, TelemetryDictionary);
             exit;
         end;
 
@@ -1058,6 +1063,8 @@ codeunit 4001 "Hybrid Cloud Management"
             HybridDAApproval."Granted By User Security ID" := UserSecurityId();
             HybridDAApproval."Granted Date" := CurrentDateTime();
             HybridDAApproval.Status := NewHybridDAApproval.Status::Granted;
+            TelemetryDictionary.Add('Category', GetTelemetryCategory());
+            Session.LogMessage('0000MRM', GrantedConsentToDelegatedAdminLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, TelemetryDictionary);
             HybridDAApproval.Modify();
             exit;
         end;
@@ -1244,6 +1251,7 @@ codeunit 4001 "Hybrid Cloud Management"
     var
         GrantedHybridDAApproval: Record "Hybrid DA Approval";
         CopyGrantedHybridDAApproval: Record "Hybrid DA Approval";
+        TelemetryDictionary: Dictionary of [Text, Text];
     begin
         GrantedHybridDAApproval.SetRange(Status, GrantedHybridDAApproval.Status::Granted);
         if not GrantedHybridDAApproval.FindSet() then
@@ -1256,6 +1264,9 @@ codeunit 4001 "Hybrid Cloud Management"
             CopyGrantedHybridDAApproval.Status := CopyGrantedHybridDAApproval.Status::Revoked;
             CopyGrantedHybridDAApproval.Modify();
         until GrantedHybridDAApproval.Next() = 0;
+
+        TelemetryDictionary.Add('Category', GetTelemetryCategory());
+        Session.LogMessage('0000MRN', RevokedConsentToDelegatedAdminLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, TelemetryDictionary);
     end;
 
     internal procedure CanSkipIRSetup(SqlServerType: Option; RuntimeNameTxt: Text): Boolean

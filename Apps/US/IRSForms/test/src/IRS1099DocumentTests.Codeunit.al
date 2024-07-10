@@ -5,6 +5,7 @@
 namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Purchases.Document;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Purchases.Payables;
 
 codeunit 148010 "IRS 1099 Document Tests"
@@ -124,15 +125,9 @@ codeunit 148010 "IRS 1099 Document Tests"
         BindSubscription(IRSFormsEnableFeature);
 #endif
         // [GIVEN] Vendor form box buffer with "Period No." = "X", "Vendor No." = "Y", "Form No." = "MISC", "Form Box No." = "MISC-01"
-        TempIRS1099VendFormBoxBuffer."Period No." := LibraryUtility.GenerateGUID();
-        TempIRS1099VendFormBoxBuffer."Vendor No." := LibraryPurchase.CreateVendorNo();
-        TempIRS1099VendFormBoxBuffer."Form No." := LibraryUtility.GenerateGUID();
-        TempIRS1099VendFormBoxBuffer."Form Box No." := LibraryUtility.GenerateGUID();
-        TempIRS1099VendFormBoxBuffer.Amount := LibraryRandom.RandDec(100, 2);
-        TempIRS1099VendFormBoxBuffer."Reporting Amount" := LibraryRandom.RandDec(100, 2);
-        TempIRS1099VendFormBoxBuffer."Include In 1099" := true;
-        EntryNo := LibraryIRS1099FormBox.MockConnectedEntryForVendFormBoxBuffer(TempIRS1099VendFormBoxBuffer);
-        TempIRS1099VendFormBoxBuffer.Insert(true);
+        LibraryIRS1099Document.MockVendorFormBoxBuffer(
+                TempIRS1099VendFormBoxBuffer, EntryNo, LibraryUtility.GenerateGUID(), LibraryPurchase.CreateVendorNo(),
+                LibraryUtility.GenerateGUID(), LibraryUtility.GenerateGUID());
 
         // [WHEN] Create form documents from the vendor form box buffer
         LibraryIRS1099Document.CreateFormDocuments(TempIRS1099VendFormBoxBuffer);
@@ -148,6 +143,7 @@ codeunit 148010 "IRS 1099 Document Tests"
         IRS1099FormDocLine.SetRange("Document ID", IRS1099FormDocHeader.ID);
         IRS1099FormDocLine.FindFirst();
         IRS1099FormDocLine.TestField(Amount, TempIRS1099VendFormBoxBuffer."Reporting Amount");
+        IRS1099FormDocLine.TestField("Calculated Amount", TempIRS1099VendFormBoxBuffer.Amount);
         IRS1099FormDocLine.TestField("Include In 1099", TempIRS1099VendFormBoxBuffer."Include In 1099");
         IRS1099FormDocLineDetail.Get(IRS1099FormDocLine."Document ID", IRS1099FormDocLine."Line No.", EntryNo);
 
@@ -372,6 +368,410 @@ codeunit 148010 "IRS 1099 Document Tests"
 
         // Tear down
         IRS1099FormDocHeader.Delete(true);
+
+#if not CLEAN25
+        UnbindSubscription(IRSFormsEnableFeature);
+#endif
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure CreateFormDocumentForVendorWithExistingFormDocumentAndReplaceOption()
+    var
+        TempIRS1099VendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
+        IRS1099CalcParameters: Record "IRS 1099 Calc. Params";
+        IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+        IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
+#if not CLEAN25
+#pragma warning disable AL0432
+        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
+#pragma warning restore AL0432
+#endif
+        PeriodNo, FormNo, VendNo, FormBoxNo : Code[20];
+        DocId, EntryNo : Integer;
+    begin
+        // [SCENARIO 534640] Stan can replace an existing form document when running a form documents creation for a vendor that already has a form document
+
+        Initialize();
+#if not CLEAN25
+        BindSubscription(IRSFormsEnableFeature);
+#endif
+        // [GIVEN] Period = WorkDate(), Form No. = MISC, Form Box No. = MISC-01, Vendor No. = "X"
+        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        FormNo :=
+            LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
+        FormBoxNo :=
+            LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
+        VendNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(WorkDate(), FormNo, FormBoxNo);
+
+        // [GIVEN] Existing open form document for MISC and "X" with "Reporting Amount" = 500, "Amount" = 600
+        DocId := LibraryIRS1099Document.MockFormDocumentForVendor(PeriodNo, VendNo, FormNo, "IRS 1099 Form Doc. Status"::Open);
+        LibraryIRS1099Document.MockFormDocumentLineForVendor(DocId, PeriodNo, VendNo, FormNo, FormBoxNo);
+
+        // [GIVEN] Vendor form box buffer with "Reporting Amount" = 100, "Amount" = 200
+        LibraryIRS1099Document.MockVendorFormBoxBuffer(TempIRS1099VendFormBoxBuffer, EntryNo, PeriodNo, VendNo, FormNo, FormBoxNo);
+
+        // [WHEN] Run create form documents for MISC with Replace option
+        IRS1099CalcParameters."Form No." := FormNo;
+        IRS1099CalcParameters.Replace := true;
+        LibraryIRS1099Document.CreateFormDocuments(TempIRS1099VendFormBoxBuffer, IRS1099CalcParameters);
+
+        // [THEN] The form document for MISC and "X" exists after running create form documents function
+        LibraryIRS1099Document.FindIRS1099FormDocHeader(IRS1099FormDocHeader, PeriodNo, VendNo, FormNo);
+        // [THEN] There is only one form document for MISC and "X"
+        Assert.RecordCount(IRS1099FormDocHeader, 1);
+        // [THEN] Form document line has Amount = 100 and "Calculated Amount" = 200
+        LibraryIRS1099Document.FindIRS1099FormDocLine(IRS1099FormDocLine, PeriodNo, VendNo, FormNo, FormBoxNo);
+        IRS1099FormDocLine.TestField(Amount, TempIRS1099VendFormBoxBuffer."Reporting Amount");
+        IRS1099FormDocLine.TestField("Calculated Amount", TempIRS1099VendFormBoxBuffer.Amount);
+        // [THEN] There is only one form document line for MISC-01 and "X"
+        Assert.RecordCount(IRS1099FormDocLine, 1);
+
+#if not CLEAN25
+        UnbindSubscription(IRSFormsEnableFeature);
+#endif
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure CreateFormDocumentForVendorWithExistingSubmittedFormDocumentAndReplaceOption()
+    var
+        TempIRS1099VendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
+        IRS1099CalcParameters: Record "IRS 1099 Calc. Params";
+        IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+        OriginalIRS1099FormDocLine, IRS1099FormDocLine : Record "IRS 1099 Form Doc. Line";
+#if not CLEAN25
+#pragma warning disable AL0432
+        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
+#pragma warning restore AL0432
+#endif
+        PeriodNo, FormNo, VendNo, FormBoxNo : Code[20];
+        DocId, EntryNo : Integer;
+    begin
+        // [SCENARIO 534640] Stan cannot replace an existing form document when running a form documents creation for a vendor that already has a form document in submitted status
+
+        Initialize();
+#if not CLEAN25
+        BindSubscription(IRSFormsEnableFeature);
+#endif
+        // [GIVEN] Period = WorkDate(), Form No. = MISC, Form Box No. = MISC-01, Vendor No. = "X"
+        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        FormNo :=
+            LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
+        FormBoxNo :=
+            LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
+        VendNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(WorkDate(), FormNo, FormBoxNo);
+
+        // [GIVEN] Existing submitted form document for MISC and "X" with "Reporting Amount" = 500, "Amount" = 600
+        DocId := LibraryIRS1099Document.MockFormDocumentForVendor(PeriodNo, VendNo, FormNo, "IRS 1099 Form Doc. Status"::Submitted);
+        LibraryIRS1099Document.MockFormDocumentLineForVendor(OriginalIRS1099FormDocLine, DocId, PeriodNo, VendNo, FormNo, FormBoxNo);
+
+        // [GIVEN] Vendor form box buffer with "Reporting Amount" = 100, "Amount" = 200
+        LibraryIRS1099Document.MockVendorFormBoxBuffer(TempIRS1099VendFormBoxBuffer, EntryNo, PeriodNo, VendNo, FormNo, FormBoxNo);
+
+        // [WHEN] Run create form documents for MISC with Replace option
+        IRS1099CalcParameters."Form No." := FormNo;
+        IRS1099CalcParameters.Replace := true;
+        LibraryIRS1099Document.CreateFormDocuments(TempIRS1099VendFormBoxBuffer, IRS1099CalcParameters);
+
+        // [THEN] The form document for MISC and "X" exists after running create form documents function
+        LibraryIRS1099Document.FindIRS1099FormDocHeader(IRS1099FormDocHeader, PeriodNo, VendNo, FormNo);
+        // [THEN] There is only one form document for MISC and "X"
+        Assert.RecordCount(IRS1099FormDocHeader, 1);
+        // [THEN] Form document line has Amount = 500 and "Calculated Amount" = 600
+        LibraryIRS1099Document.FindIRS1099FormDocLine(IRS1099FormDocLine, PeriodNo, VendNo, FormNo, FormBoxNo);
+        IRS1099FormDocLine.TestField(Amount, OriginalIRS1099FormDocLine.Amount);
+        IRS1099FormDocLine.TestField("Calculated Amount", OriginalIRS1099FormDocLine."Calculated Amount");
+        // [THEN] There is only one form document line for MISC-01 and "X"
+        Assert.RecordCount(IRS1099FormDocLine, 1);
+
+#if not CLEAN25
+        UnbindSubscription(IRSFormsEnableFeature);
+#endif
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure CreateFormDocumentForVendorWithExistingReleasedFormDocumentAndReplaceOption()
+    var
+        TempIRS1099VendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary;
+        IRS1099CalcParameters: Record "IRS 1099 Calc. Params";
+        IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+        IRS1099FormDocLine: Record "IRS 1099 Form Doc. Line";
+#if not CLEAN25
+#pragma warning disable AL0432
+        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
+#pragma warning restore AL0432
+#endif
+        PeriodNo, FormNo, VendNo, FormBoxNo : Code[20];
+        DocId, EntryNo : Integer;
+    begin
+        // [SCENARIO 534640] Stan can replace an existing form document when running a form documents creation for a vendor that already has a form document in released status
+
+        Initialize();
+#if not CLEAN25
+        BindSubscription(IRSFormsEnableFeature);
+#endif
+        // [GIVEN] Period = WorkDate(), Form No. = MISC, Form Box No. = MISC-01, Vendor No. = "X"
+        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        FormNo :=
+            LibraryIRS1099FormBox.CreateSingleFormInReportingPeriod(WorkDate());
+        FormBoxNo :=
+            LibraryIRS1099FormBox.CreateSingleFormBoxInReportingPeriod(WorkDate(), FormNo);
+        VendNo := LibraryIRS1099FormBox.CreateVendorNoWithFormBox(WorkDate(), FormNo, FormBoxNo);
+
+        // [GIVEN] Existing submitted form document for MISC and "X" with "Reporting Amount" = 500, "Amount" = 600
+        DocId := LibraryIRS1099Document.MockFormDocumentForVendor(PeriodNo, VendNo, FormNo, "IRS 1099 Form Doc. Status"::Released);
+        LibraryIRS1099Document.MockFormDocumentLineForVendor(DocId, PeriodNo, VendNo, FormNo, FormBoxNo);
+
+        // [GIVEN] Vendor form box buffer with "Reporting Amount" = 100, "Amount" = 200
+        LibraryIRS1099Document.MockVendorFormBoxBuffer(TempIRS1099VendFormBoxBuffer, EntryNo, PeriodNo, VendNo, FormNo, FormBoxNo);
+
+        // [WHEN] Run create form documents for MISC with Replace option
+        IRS1099CalcParameters."Form No." := FormNo;
+        IRS1099CalcParameters.Replace := true;
+        LibraryIRS1099Document.CreateFormDocuments(TempIRS1099VendFormBoxBuffer, IRS1099CalcParameters);
+
+        // [THEN] The form document for MISC and "X" exists after running create form documents function
+        LibraryIRS1099Document.FindIRS1099FormDocHeader(IRS1099FormDocHeader, PeriodNo, VendNo, FormNo);
+        // [THEN] There is only one form document for MISC and "X"
+        Assert.RecordCount(IRS1099FormDocHeader, 1);
+        // [THEN] Form document line has Amount = 100 and "Calculated Amount" = 200
+        LibraryIRS1099Document.FindIRS1099FormDocLine(IRS1099FormDocLine, PeriodNo, VendNo, FormNo, FormBoxNo);
+        IRS1099FormDocLine.TestField(Amount, TempIRS1099VendFormBoxBuffer."Reporting Amount");
+        IRS1099FormDocLine.TestField("Calculated Amount", TempIRS1099VendFormBoxBuffer.Amount);
+        // [THEN] There is only one form document line for MISC-01 and "X"
+        Assert.RecordCount(IRS1099FormDocLine, 1);
+
+#if not CLEAN25
+        UnbindSubscription(IRSFormsEnableFeature);
+#endif
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure ValidateNotInsertedGenJnlLinePostingDateWithLineNo()
+    var
+        GenJnlLine: Record "Gen. Journal Line";
+#if not CLEAN25
+#pragma warning disable AL0432
+        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
+#pragma warning restore AL0432
+#endif
+        PeriodNo: Code[20];
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 536496] It is possible to validate the posting date in the not inserted general journal line with line no. already specified
+
+        Initialize();
+#if not CLEAN25
+        BindSubscription(IRSFormsEnableFeature);
+#endif
+
+        // [GIVEN] "IRS Reporting Period" = "X" with "Starting Date" = work date
+        PeriodNo := LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        // [GIVEN] "Gen. Journal Line" with "Document Type" = Invoice and "Line No." = 1
+        GenJnlLine."Document Type" := GenJnlLine."Document Type"::Invoice;
+        GenJnlLine."Line No." := 1;
+        // [WHEN] Validate posting date with work date
+        GenJnlLine.Validate("Posting Date", WorkDate());
+        // [THEN] The IRS 1099 Reporting Period is "X"
+        GenJnlLine.TestField("IRS 1099 Reporting Period", PeriodNo);
+
+#if not CLEAN25
+        UnbindSubscription(IRSFormsEnableFeature);
+#endif
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure ValidateNotInsertedInvGenJnlLineAmountWithLineNo()
+    var
+        GenJnlLine: Record "Gen. Journal Line";
+#if not CLEAN25
+#pragma warning disable AL0432
+        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
+#pragma warning restore AL0432
+#endif
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 536496] It is possible to validate the amount in the not inserted invoice general journal line with line no. already specified
+
+        Initialize();
+#if not CLEAN25
+        BindSubscription(IRSFormsEnableFeature);
+#endif
+
+        // [GIVEN] "Gen. Journal Line" with "Document Type" = "Invoice" "Line No." = 1
+        GenJnlLine."Line No." := 1;
+        GenJnlLine."Document Type" := GenJnlLine."Document Type"::Invoice;
+        // [WHEN] Validate Amount field with 100
+        GenJnlLine.Validate(Amount, 100);
+        // [THEN] The IRS 1099 Reporting Amount is 100
+        GenJnlLine.TestField("IRS 1099 Reporting Amount", 100);
+
+#if not CLEAN25
+        UnbindSubscription(IRSFormsEnableFeature);
+#endif
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure ValidateNotInsertedCrMemoGenJnlLineAmountWithLineNo()
+    var
+        GenJnlLine: Record "Gen. Journal Line";
+#if not CLEAN25
+#pragma warning disable AL0432
+        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
+#pragma warning restore AL0432
+#endif
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 536496] It is possible to validate the amount in the not inserted credit memo general journal line with line no. already specified
+
+        Initialize();
+#if not CLEAN25
+        BindSubscription(IRSFormsEnableFeature);
+#endif
+
+        // [GIVEN] "Gen. Journal Line" with "Document Type" = "Credit Memo" "Line No." = 1
+        GenJnlLine."Line No." := 1;
+        GenJnlLine."Document Type" := GenJnlLine."Document Type"::"Credit Memo";
+        // [WHEN] Validate Amount field with 100
+        GenJnlLine.Validate(Amount, 100);
+        // [THEN] The IRS 1099 Reporting Amount is 100
+        GenJnlLine.TestField("IRS 1099 Reporting Amount", 100);
+
+#if not CLEAN25
+        UnbindSubscription(IRSFormsEnableFeature);
+#endif
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure ValidateAmountInTempGenJnlLine()
+    var
+        TempGenJnlLine: Record "Gen. Journal Line" temporary;
+#if not CLEAN25
+#pragma warning disable AL0432
+        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
+#pragma warning restore AL0432
+#endif
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 539449] The amount validation of the temporary general journal line does not affect the IRS amount
+
+        Initialize();
+#if not CLEAN25
+        BindSubscription(IRSFormsEnableFeature);
+#endif
+
+        // [GIVEN] "Gen. Journal Line" with "Line No." = 1
+        TempGenJnlLine."Line No." := 1;
+        // [WHEN] Validate Amount field with 100
+        TempGenJnlLine.Validate(Amount, 100);
+        // [THEN] The IRS 1099 Reporting Amount is 0
+        TempGenJnlLine.TestField("IRS 1099 Reporting Amount", 0);
+
+#if not CLEAN25
+        UnbindSubscription(IRSFormsEnableFeature);
+#endif
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure ValidatePostingDateInTempGenJnlLine()
+    var
+        TempGenJnlLine: Record "Gen. Journal Line" temporary;
+#if not CLEAN25
+#pragma warning disable AL0432
+        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
+#pragma warning restore AL0432
+#endif
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 539449] The posting date validation of the temporary general journal line does not affect the IRS period
+
+        Initialize();
+#if not CLEAN25
+        BindSubscription(IRSFormsEnableFeature);
+#endif
+
+        // [GIVEN] "IRS Reporting Period" = "X" with "Starting Date" = work date
+        LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        // [GIVEN] "Gen. Journal Line" with "Document Type" = Invoice and "Line No." = 1
+        TempGenJnlLine."Document Type" := TempGenJnlLine."Document Type"::Invoice;
+        TempGenJnlLine."Line No." := 1;
+        // [WHEN] Validate posting date with work date
+        TempGenJnlLine.Validate("Posting Date", WorkDate());
+        // [THEN] The IRS 1099 Reporting Period is blank
+        TempGenJnlLine.TestField("IRS 1099 Reporting Period", '');
+
+#if not CLEAN25
+        UnbindSubscription(IRSFormsEnableFeature);
+#endif
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure ValidateAmountInPaymentGenJnlLine()
+    var
+        GenJnlLine: Record "Gen. Journal Line";
+#if not CLEAN25
+#pragma warning disable AL0432
+        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
+#pragma warning restore AL0432
+#endif
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 539449] The amount validation of the payment general journal line does not affect the IRS amount
+
+        Initialize();
+#if not CLEAN25
+        BindSubscription(IRSFormsEnableFeature);
+#endif
+
+        // [GIVEN] "Gen. Journal Line" with "Document Type" = Payment and "Line No." = 1
+        GenJnlLine."Line No." := 1;
+        GenJnlLine."Document Type" := GenJnlLine."Document Type"::Payment;
+        // [WHEN] Validate Amount field with 100
+        GenJnlLine.Validate(Amount, 100);
+        // [THEN] The IRS 1099 Reporting Amount is 0
+        GenJnlLine.TestField("IRS 1099 Reporting Amount", 0);
+
+#if not CLEAN25
+        UnbindSubscription(IRSFormsEnableFeature);
+#endif
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure ValidatePostingDateInPaymentGenJnlLine()
+    var
+        GenJnlLine: Record "Gen. Journal Line";
+#if not CLEAN25
+#pragma warning disable AL0432
+        IRSFormsEnableFeature: Codeunit "IRS Forms Enable Feature";
+#pragma warning restore AL0432
+#endif
+    begin
+        // [FEATURE] [UT]
+        // [SCENARIO 539449] The posting date validation of the payment general journal line does not affect the IRS period
+
+        Initialize();
+#if not CLEAN25
+        BindSubscription(IRSFormsEnableFeature);
+#endif
+
+        // [GIVEN] "IRS Reporting Period" = "X" with "Starting Date" = work date
+        LibraryIRSReportingPeriod.CreateOneDayReportingPeriod(WorkDate());
+        // [GIVEN] "Gen. Journal Line" with "Document Type" = Payment and "Line No." = 1
+        GenJnlLine."Document Type" := GenJnlLine."Document Type"::Payment;
+        GenJnlLine."Line No." := 1;
+        // [WHEN] Validate posting date with work date
+        GenJnlLine.Validate("Posting Date", WorkDate());
+        // [THEN] The IRS 1099 Reporting Period is blank
+        GenJnlLine.TestField("IRS 1099 Reporting Period", '');
 
 #if not CLEAN25
         UnbindSubscription(IRSFormsEnableFeature);

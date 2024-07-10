@@ -520,10 +520,8 @@ codeunit 31301 "Install Application CZ"
         IntrastatReportSetup: Record "Intrastat Report Setup";
     begin
         if StatutoryReportingSetupCZL.Get() then begin
-            if not IntrastatReportSetup.Get() then begin
-                IntrastatReportSetup.Init();
-                IntrastatReportSetup.Insert(false);
-            end;
+            if not IntrastatReportSetup.Get() then
+                exit;
 
             IntrastatReportSetup."No Item Charges in Int. CZ" := StatutoryReportingSetupCZL."No Item Charges in Intrastat";
             IntrastatReportSetup."Transaction Type Mandatory CZ" := StatutoryReportingSetupCZL."Transaction Type Mandatory";

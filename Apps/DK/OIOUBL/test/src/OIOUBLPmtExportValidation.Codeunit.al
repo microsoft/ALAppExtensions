@@ -12,7 +12,6 @@ codeunit 148056 "OIOUBL-Pmt. Export Validation"
     var
         Assert: Codeunit Assert;
         LibraryUtility: Codeunit "Library - Utility";
-        GetPaymentChannelCodeErr: Label 'Country/Region Code must have a value in Country/Region: Code=%1. It cannot be zero or empty.', Comment = '%1 - Country code';
 
     trigger OnRun();
     begin
@@ -56,6 +55,6 @@ codeunit 148056 "OIOUBL-Pmt. Export Validation"
         CompanyInformation.INIT();
         CompanyInformation.VALIDATE("Country/Region Code", CountryRegion.Code);
         asserterror CompanyInformation.GetOIOUBLPaymentChannelCode();
-        Assert.ExpectedError(STRSUBSTNO(GetPaymentChannelCodeErr, CountryRegion.Code));
+        Assert.ExpectedTestFieldError(CountryRegion.FieldCaption(Code), '');
     end;
 }

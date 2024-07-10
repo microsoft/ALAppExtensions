@@ -35,13 +35,19 @@ codeunit 7906 "Dim. Code Same But Missing Err" implements ErrorMessageFix
         RecRef: RecordRef;
         FieldRef: FieldRef;
         DimensionSetID: Integer;
+        ShortcutDimension1Code: Code[20];
+        ShortcutDimension2Code: Code[20];
+        DimensionSetIDLbl: Label 'Dimension Set ID', Locked = true;
+        GlobalDimension1CodeLbl: Label 'Global Dimension 1 Code', Locked = true;
+        GlobalDimension2CodeLbl: Label 'Global Dimension 2 Code', Locked = true;
     begin
         // Get the dimensions set entry which has the error.
-        if RecRef.Get(ErrorMessage."Context Record ID") then
-            if DataTypeManagement.FindFieldByName(RecRef, FieldRef, 'Dimension Set ID') then
-                DimensionSetID := FieldRef.Value()
-            else
-                exit(false);
+        if not RecRef.Get(ErrorMessage."Context Record ID") then
+            exit(false);
+
+        if DataTypeManagement.FindFieldByName(RecRef, FieldRef, DimensionSetIDLbl) then
+            DimensionSetID := FieldRef.Value();
+
         DimensionManagement.GetDimensionSet(TempDimSetEntryGbl, DimensionSetID);
 
         // Get the default dimensions set
@@ -61,16 +67,32 @@ codeunit 7906 "Dim. Code Same But Missing Err" implements ErrorMessageFix
         DimensionSetID := DimensionManagement.GetDimensionSetID(TempDimSetEntryGbl);
 
         // Update the source document with the new dimension set id.
-        if RecRef.Get(ErrorMessage."Context Record ID") then
-            if DataTypeManagement.FindFieldByName(RecRef, FieldRef, 'Dimension Set ID') then begin
-                FieldRef.Validate(DimensionSetID);
-                exit(RecRef.Modify());
-            end;
+        if not DataTypeManagement.FindFieldByName(RecRef, FieldRef, DimensionSetIDLbl) then
+            exit(false);
+
+        FieldRef.Validate(DimensionSetID);
+
+        DimensionManagement.UpdateGlobalDimFromDimSetID(DimensionSetID, ShortcutDimension1Code, ShortcutDimension2Code);
+        if ShortcutDimension1Code <> '' then
+            UpdateGlobalDimensionCode(RecRef, GlobalDimension1CodeLbl, ShortcutDimension1Code);
+        if ShortcutDimension2Code <> '' then
+            UpdateGlobalDimensionCode(RecRef, GlobalDimension2CodeLbl, ShortcutDimension2Code);
+
+        exit(RecRef.Modify());
     end;
 
     procedure OnSuccessMessage(): Text;
     begin
         exit(StrSubstNo(DimSetEntryFixUseSameCodeAckTok, TempDimSetEntryGbl.FieldCaption("Dimension Code"), TempDimSetEntryGbl."Dimension Code", TempDimSetEntryGbl.FieldCaption("Dimension Value Code"), TempDimSetEntryGbl."Dimension Value Code"));
+    end;
+
+    local procedure UpdateGlobalDimensionCode(var RecRef: RecordRef; GlobalDimensionCode: Text; DimensionValue: Code[20])
+    var
+        DataTypeManagement: Codeunit "Data Type Management";
+        FieldRef: FieldRef;
+    begin
+        if DataTypeManagement.FindFieldByName(RecRef, FieldRef, GlobalDimensionCode) then
+            FieldRef.Validate(DimensionValue);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Error Message Management", OnAddSubContextToLastErrorMessage, '', false, false)]
@@ -83,19 +105,20 @@ codeunit 7906 "Dim. Code Same But Missing Err" implements ErrorMessageFix
         if Tag <> Enum::"Error Msg. Fix Implementation".Names().Get(Enum::"Error Msg. Fix Implementation"::DimensionCodeSameMissingDimCodeError.AsInteger() + 1) then
             exit;
 
-        if VariantRec.IsInteger then begin
-            DimSetId := VariantRec;
-            if DimSetId > 0 then begin
-                DimSetEntry.SetRange("Dimension Set ID", DimSetId);
-                if DimSetEntry.FindFirst() then
-                    ErrorMessage.Validate("Sub-Context Record ID", DimSetEntry.RecordId);
-            end;
-            ErrorMessage.Validate("Error Msg. Fix Implementation", Enum::"Error Msg. Fix Implementation"::DimensionCodeSameMissingDimCodeError);
+        if not VariantRec.IsInteger then
+            exit;
 
-            // Use the interface to set title and recommended action caption
-            IErrorMessageFix := ErrorMessage."Error Msg. Fix Implementation";
-            IErrorMessageFix.OnSetErrorMessageProps(ErrorMessage);
-            ErrorMessage.Modify();
+        DimSetId := VariantRec;
+        if DimSetId > 0 then begin
+            DimSetEntry.SetRange("Dimension Set ID", DimSetId);
+            if DimSetEntry.FindFirst() then
+                ErrorMessage.Validate("Sub-Context Record ID", DimSetEntry.RecordId);
         end;
+        ErrorMessage.Validate("Error Msg. Fix Implementation", Enum::"Error Msg. Fix Implementation"::DimensionCodeSameMissingDimCodeError);
+
+        // Use the interface to set title and recommended action caption
+        IErrorMessageFix := ErrorMessage."Error Msg. Fix Implementation";
+        IErrorMessageFix.OnSetErrorMessageProps(ErrorMessage);
+        ErrorMessage.Modify();
     end;
 }

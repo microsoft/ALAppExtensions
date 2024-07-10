@@ -103,6 +103,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
 
                 Validate("Payment Terms Code");
                 Validate("Payment Method Code");
+                Validate("VAT Bus. Posting Group");
                 Validate("Currency Code");
 
                 if not SkipBillToContact then
@@ -379,19 +380,8 @@ table 31004 "Sales Adv. Letter Header CZZ"
                     ValidateDocumentDateWithPostingDate();
 
                 GetSetup();
-#if not CLEAN22
-#pragma warning disable AL0432
-                if not ReplaceVATDateMgtCZL.IsEnabled() then begin
-                    if SalesReceivablesSetup."Default VAT Date CZL" = SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date" then
-                        Validate("VAT Date", "Posting Date");
-                end else begin
-#pragma warning restore AL0432
-#endif
-                    GeneralLedgerSetup.UpdateVATDate("Posting Date", Enum::"VAT Reporting Date"::"Posting Date", "VAT Date");
-                    Validate("VAT Date");
-#if not CLEAN22
-                end;
-#endif
+                GeneralLedgerSetup.UpdateVATDate("Posting Date", Enum::"VAT Reporting Date"::"Posting Date", "VAT Date");
+                Validate("VAT Date");
 
                 if "Currency Code" <> '' then begin
                     UpdateCurrencyFactor();
@@ -415,16 +405,8 @@ table 31004 "Sales Adv. Letter Header CZZ"
                 Validate("Payment Terms Code");
 
                 GetSetup();
-#if not CLEAN22
-#pragma warning disable AL0432
-                if not ReplaceVATDateMgtCZL.IsEnabled() then begin
-                    if SalesReceivablesSetup."Default VAT Date CZL" = SalesReceivablesSetup."Default VAT Date CZL"::"Document Date" then
-                        Validate("VAT Date", "Document Date");
-                end else
-#pragma warning restore AL0432
-#endif
-                    if GeneralLedgerSetup."VAT Reporting Date" = GeneralLedgerSetup."VAT Reporting Date"::"Document Date" then
-                        Validate("VAT Date", "Document Date");
+                if GeneralLedgerSetup."VAT Reporting Date" = GeneralLedgerSetup."VAT Reporting Date"::"Document Date" then
+                    Validate("VAT Date", "Document Date");
             end;
         }
         field(36; "VAT Date"; Date)
@@ -840,10 +822,16 @@ table 31004 "Sales Adv. Letter Header CZZ"
               DocumentDeleteErr,
               ResponsibilityCenter.TableCaption(), UserSetupManagement.GetSalesFilter());
 
+        SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", "No.");
+        SalesAdvLetterEntryCZZ.SetFilter("Entry Type", '<>%1', SalesAdvLetterEntryCZZ."Entry Type"::"Initial Entry");
+        if not SalesAdvLetterEntryCZZ.IsEmpty() then
+            Error(PostedEntriesExistErr);
+
         SalesAdvLetterLineCZZ.SetRange("Document No.", "No.");
         if not SalesAdvLetterLineCZZ.IsEmpty() then
             SalesAdvLetterLineCZZ.DeleteAll(true);
 
+        SalesAdvLetterEntryCZZ.Reset();
         SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", "No.");
         if not SalesAdvLetterEntryCZZ.IsEmpty() then
             SalesAdvLetterEntryCZZ.DeleteAll();
@@ -875,11 +863,6 @@ table 31004 "Sales Adv. Letter Header CZZ"
 #endif
         DimensionManagement: Codeunit DimensionManagement;
         UserSetupManagement: Codeunit "User Setup Management";
-#if not CLEAN22
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-#endif
         VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
         HideValidationDialog: Boolean;
         SkipBillToContact: Boolean;
@@ -887,6 +870,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
         ConfirmChangeQst: Label 'Do you want to change %1?', Comment = '%1 = a Field Caption like Currency Code';
         DocumentResetErr: Label 'You cannot reset %1 because the document still has one or more lines.', Comment = '%1 = a Field Caption like Bill-to Contact No.';
         DocumentDeleteErr: Label 'You cannot delete this document. Your identification is set up to process from %1 %2 only.', Comment = '%1 = table caption of responsibility center, %2 = code of responsibility center';
+        PostedEntriesExistErr: Label 'You cannot delete this document because there are posted entries.';
 
     procedure AssistEdit(): Boolean
     var
@@ -945,20 +929,6 @@ table 31004 "Sales Adv. Letter Header CZZ"
             "Posting Date" := 0D;
 
         "Document Date" := WorkDate();
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not ReplaceVATDateMgtCZL.IsEnabled() then
-            case SalesReceivablesSetup."Default VAT Date CZL" of
-                SalesReceivablesSetup."Default VAT Date CZL"::"Posting Date":
-                    "VAT Date" := "Posting Date";
-                SalesReceivablesSetup."Default VAT Date CZL"::"Document Date":
-                    "VAT Date" := "Document Date";
-                SalesReceivablesSetup."Default VAT Date CZL"::Blank:
-                    "VAT Date" := 0D;
-            end
-        else
-#pragma warning restore AL0432
-#endif
         "VAT Date" := GeneralLedgerSetup.GetVATDate("Posting Date", "Document Date");
 
         "Posting Description" := AdvanceLbl + ' ' + "No.";
@@ -1417,6 +1387,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
                 SalesAdvLetterLineCZZ.Init();
                 SalesAdvLetterLineCZZ."Document No." := "No.";
                 SalesAdvLetterLineCZZ."Line No." += 10000;
+                SalesAdvLetterLineCZZ."VAT Bus. Posting Group" := "VAT Bus. Posting Group";
                 SalesAdvLetterLineCZZ.Validate("VAT Prod. Posting Group", TempSalesAdvLetterLineCZZ."VAT Prod. Posting Group");
                 SalesAdvLetterLineCZZ.Description := TempSalesAdvLetterLineCZZ.Description;
                 SalesAdvLetterLineCZZ.Validate("Amount Including VAT", TempSalesAdvLetterLineCZZ."Amount Including VAT");
@@ -1545,6 +1516,7 @@ table 31004 "Sales Adv. Letter Header CZZ"
     begin
         SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", "No.");
         SalesAdvLetterEntryCZZ.SetRange(Cancelled, false);
+        SalesAdvLetterEntryCZZ.SetRange("Auxiliary Entry", false);
         SalesAdvLetterEntryCZZ.SetFilter("Entry Type", '<>%1', SalesAdvLetterEntryCZZ."Entry Type"::"Initial Entry");
         SalesAdvLetterEntryCZZ.CalcSums("VAT Base Amount", "VAT Amount", "VAT Base Amount (LCY)", "VAT Amount (LCY)");
         VATBaseAmount := SalesAdvLetterEntryCZZ."VAT Base Amount";

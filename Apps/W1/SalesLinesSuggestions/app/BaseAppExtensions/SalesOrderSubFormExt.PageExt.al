@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Sales.Document;
 
+using Microsoft.Sales.Document.Attachment;
+
 pageextension 7278 "Sales Order Sub Form Ext" extends "Sales Order Subform"
 {
     actions
@@ -16,39 +18,63 @@ pageextension 7278 "Sales Order Sub Form Ext" extends "Sales Order Subform"
                 Caption = 'Suggest sales lines';
                 Image = SparkleFilled;
                 ToolTip = 'Get sales lines suggestions from Copilot';
-                Visible = SLSActionVisibility;
 
                 trigger OnAction()
                 begin
                     SalesLineAISuggestionImp.GetLinesSuggestions(Rec);
+                end;
+            }
+            action("Attach Prompting")
+            {
+                ApplicationArea = All;
+                Caption = 'Suggest sales lines from file';
+                Ellipsis = true;
+                Image = SparkleFilled;
+                ToolTip = 'Get sales lines from file with Copilot';
+
+                trigger OnAction()
+                begin
+                    SalesLineFromAttachment.AttachAndSuggest(Rec);
                 end;
             }
         }
         addlast(processing)
         {
-            action("Suggest Sales Lines")
+            group("Copilot")
             {
-                ApplicationArea = All;
-                Caption = 'Suggest sales lines';
                 Image = SparkleFilled;
-                ToolTip = 'Get sales lines suggestions from Copilot';
-                Visible = SLSActionVisibility;
+                ShowAs = SplitButton;
 
-                trigger OnAction()
-                begin
-                    SalesLineAISuggestionImp.GetLinesSuggestions(Rec);
-                end;
+                action("Suggest Sales Lines")
+                {
+                    ApplicationArea = All;
+                    Caption = 'Suggest sales lines';
+                    Image = SparkleFilled;
+                    ToolTip = 'Get sales lines suggestions from Copilot';
+
+                    trigger OnAction()
+                    begin
+                        SalesLineAISuggestionImp.GetLinesSuggestions(Rec);
+                    end;
+                }
+                action(Attach)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Suggest sales lines from file';
+                    Ellipsis = true;
+                    Image = SparkleFilled;
+                    ToolTip = 'Get sales lines from file with Copilot';
+
+                    trigger OnAction()
+                    begin
+                        SalesLineFromAttachment.AttachAndSuggest(Rec);
+                    end;
+                }
             }
         }
     }
 
-    trigger OnOpenPage()
-    begin
-        SLSActionVisibility := SalesLineAISuggestionImp.CheckSupportedApplicationFamily();
-    end;
-
     var
         SalesLineAISuggestionImp: Codeunit "Sales Lines Suggestions Impl.";
-
-        SLSActionVisibility: Boolean;
+        SalesLineFromAttachment: Codeunit "Sales Line From Attachment";
 }

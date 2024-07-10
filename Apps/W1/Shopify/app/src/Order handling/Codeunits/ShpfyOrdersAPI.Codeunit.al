@@ -113,7 +113,7 @@ codeunit 30165 "Shpfy Orders API"
     /// <param name="ShopifyShop">Parameter of type Record "Shpfy Shop".</param>
     internal procedure AddOrderAttribute(OrderHeader: Record "Shpfy Order Header"; KeyName: Text; Value: Text; ShopifyShop: Record "Shpfy Shop")
 #else
-    internal procedure AddOrderAttribute(OrderHeader: Record "Shpfy Order Header"; KeyName: Text; Value: Text)
+    internal procedure AddOrderAttribute(OrderHeader: Record "Shpfy Order Header"; KeyName: Text; Value: Text; ShopifyShop: Record "Shpfy Shop")
 #endif
     var
         OrderAttribute: Record "Shpfy Order Attribute";
@@ -121,6 +121,7 @@ codeunit 30165 "Shpfy Orders API"
         JAttributes: JsonArray;
         JAttrib: JsonObject;
     begin
+        CommunicationMgt.SetShop(ShopifyShop);
         if CommunicationMgt.GetTestInProgress() then
             exit;
         Clear(OrderAttribute);
@@ -308,12 +309,9 @@ codeunit 30165 "Shpfy Orders API"
         CommunicationMgt.SetShop(ShopifyShop);
         GraphQLType := "Shpfy GraphQL Type"::OrderCancel;
         Parameters.Add('OrderId', Format(OrderId));
-        case CancelReason of
-            CancelReason::" ", CancelReason::Unknown:
-                Parameters.Add('CancelReason', Format(CancelReason::Other).ToUpper());
-            else
-                Parameters.Add('CancelReason', Format(CancelReason).ToUpper());
-        end;
+        if CancelReason in [CancelReason::" ", CancelReason::Unknown] then
+            CancelReason := CancelReason::Other;
+        Parameters.Add('CancelReason', CancelReason.Names().Get(CancelReason.Ordinals().IndexOf(CancelReason.AsInteger())).ToUpper());
         Parameters.Add('NotifyCustomer', CommunicationMgt.ConvertBooleanToText(NotifyCustomer));
         Parameters.Add('Refund', CommunicationMgt.ConvertBooleanToText(Refund));
         Parameters.Add('Restock', CommunicationMgt.ConvertBooleanToText(Restock));

@@ -91,11 +91,22 @@ page 31162 "Cash Document List CZP"
         }
         area(FactBoxes)
         {
+#if not CLEAN25
             part("Attached Documents"; "Document Attachment Factbox")
             {
+                ObsoleteTag = '25.0';
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The "Document Attachment FactBox" has been replaced by "Doc. Attachment List Factbox", which supports multiple files upload.';
                 ApplicationArea = All;
                 Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(11732), "No." = field("No.");
+                SubPageLink = "Table ID" = const(database::"Cash Document Header CZP"), "No." = field("No.");
+            }
+#endif
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
+            {
+                ApplicationArea = All;
+                Caption = 'Documents';
+                SubPageLink = "Table ID" = const(database::"Cash Document Header CZP"), "No." = field("No.");
             }
             systempart(Links; Links)
             {
@@ -208,30 +219,6 @@ page 31162 "Cash Document List CZP"
                         Rec.PerformManualRelease(CashDocumentHeaderCZP);
                     end;
                 }
-#if not CLEAN22
-                action("Release and &Print")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Release and &Print';
-                    Image = ConfirmAndPrint;
-                    ToolTip = 'Release and prepare to print the cash document.';
-                    Visible = false;
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'The action will only be available on the card page of the cash document.';
-                    ObsoleteTag = '22.0';
-
-                    trigger OnAction()
-                    var
-                        CashDocumentHeaderCZP: Record "Cash Document Header CZP";
-                        CashDocumentReleasePrintCZP: Codeunit "Cash Document-ReleasePrint CZP";
-                    begin
-                        CashDocumentHeaderCZP := Rec;
-                        CashDocumentHeaderCZP.SetRecFilter();
-                        CashDocumentReleasePrintCZP.PerformManualRelease(CashDocumentHeaderCZP);
-                        CurrPage.Update(false);
-                    end;
-                }
-#endif
                 action("Re&open")
                 {
                     ApplicationArea = Basic, Suite;
@@ -381,16 +368,6 @@ page 31162 "Cash Document List CZP"
                 actionref(ReleasePromoted; "&Release")
                 {
                 }
-#if not CLEAN22
-#pragma warning disable AL0432
-                actionref(ReleaseAndPrintPromoted; "Release and &Print")
-                {
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'The action will only be available on the card page of the cash document.';
-                    ObsoleteTag = '22.0';
-                }
-#pragma warning restore AL0432
-#endif
                 actionref(ReopenPromoted; "Re&open")
                 {
                 }
@@ -421,31 +398,6 @@ page 31162 "Cash Document List CZP"
                 {
                 }
             }
-#if not CLEAN22
-#pragma warning disable AS0072
-            group(Category_Report)
-            {
-                Caption = 'Report';
-                ObsoleteTag = '22.0';
-                ObsoleteState = Pending;
-                ObsoleteReason = 'This group has been removed.';
-                Visible = false;
-
-                actionref(PrintToAttachmentPromoted; PrintToAttachment)
-                {
-                    ObsoleteTag = '22.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This group has been removed.';
-                }
-                actionref(PrintPromoted; "&Print")
-                {
-                    ObsoleteTag = '22.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This group has been removed.';
-                }
-            }
-#pragma warning restore AS0072
-#endif
             group(Category_Category8)
             {
                 Caption = 'Print';
@@ -477,16 +429,9 @@ page 31162 "Cash Document List CZP"
     end;
 
     trigger OnOpenPage()
-    var
-        CashDeskFilter: Text;
     begin
         CashDeskManagementCZP.CheckCashDesks();
-        CashDeskFilter := CashDeskManagementCZP.GetCashDesksFilter();
-
-        Rec.FilterGroup(2);
-        if CashDeskFilter <> '' then
-            Rec.SetFilter("Cash Desk No.", CashDeskFilter);
-        Rec.FilterGroup(0);
+        CashDeskManagementCZP.SetCashDeskFilter(Rec);
     end;
 
     var

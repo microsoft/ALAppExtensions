@@ -949,8 +949,8 @@ report 18005 "Arch. Sales Return Order GST"
 
             trigger OnAfterGetRecord()
             begin
-                CurrReport.LANGUAGE := Language.GetLanguageID("Language Code");
-                CurrReport.FormatRegion := Language.GetFormatRegionOrDefault("Format Region");
+                CurrReport.LANGUAGE := GlobalLanguage.GetLanguageID("Language Code");
+                CurrReport.FormatRegion := GlobalLanguage.GetFormatRegionOrDefault("Format Region");
                 Customer.Get("Bill-to Customer No.");
                 CompanyInfo.Get();
 
@@ -1096,7 +1096,7 @@ report 18005 "Arch. Sales Return Order GST"
         RespCenter: Record "Responsibility Center";
         CurrExchRate: Record "Currency Exchange Rate";
         SalesCountPrintedArch: Codeunit "SalesCount-PrintedArch";
-        Language: Codeunit "Language";
+        GlobalLanguage: Codeunit "Language";
         FormatAddr: Codeunit "Format Address";
         CustAddr: array[8] of Text[50];
         ShipToAddr: array[8] of Text[50];

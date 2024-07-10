@@ -391,14 +391,17 @@ codeunit 30103 "Shpfy Communication Mgt."
         HttpContent: HttpContent;
         ContentHttpHeaders: HttpHeaders;
         HttpHeaders: HttpHeaders;
-        AccessToken: Text;
+        ClearAccessToken: Text;
+        AccessToken: SecretText;
     begin
         HttpRequestMsg.SetRequestUri(url);
         HttpRequestMsg.GetHeaders(HttpHeaders);
 
 
-        if IsTestInProgress then
-            CommunicationEvents.OnGetAccessToken(AccessToken)
+        if IsTestInProgress then begin
+            CommunicationEvents.OnGetAccessToken(ClearAccessToken);
+            AccessToken := ClearAccessToken;
+        end
         else
             AccessToken := Shop.GetAccessToken();
 
@@ -453,7 +456,7 @@ codeunit 30103 "Shpfy Communication Mgt."
         ShopifyLogEntry."Retry Count" := RetryCount;
         ShopifyLogEntry."Query Cost" := GetQueryCost(Response);
         if HttpResponseMessage.Headers().GetValues('X-Request-ID', Values) then
-            if Evaluate(ShopifyLogEntry."Request Id", Values[1]) then;
+            ShopifyLogEntry."Shpfy Request Id" := Values[1];
         ShopifyLogEntry.Insert();
         if Request <> '' then
             ShopifyLogEntry.SetRequest(Request);
@@ -463,8 +466,8 @@ codeunit 30103 "Shpfy Communication Mgt."
 
     local procedure ResponseHasUserError(Response: Text): Boolean;
     begin
-        if Response.Contains('"userErrors":') or Response.Contains('"orderCancelUserErrors":') then
-            if not Response.Contains('"userErrors":[]') and not Response.Contains('"orderCancelUserErrors":[]') then
+        if Response.Contains('"userErrors":') or Response.Contains('"orderCancelUserErrors":') or Response.Contains('"mediaUserErrors":') then
+            if not Response.Contains('"userErrors":[]') and not Response.Contains('"orderCancelUserErrors":[]') and not Response.Contains('"mediaUserErrors":[]') then
                 exit(true);
     end;
 
@@ -568,19 +571,16 @@ codeunit 30103 "Shpfy Communication Mgt."
     /// SetTestInProgress.
     /// </summary>
     /// <param name="TestInProgress">Boolean.</param>
-    [NonDebuggable]
     internal procedure SetTestInProgress(TestInProgress: Boolean)
     begin
         IsTestInProgress := TestInProgress;
     end;
 
-    [NonDebuggable]
     internal procedure GetTestInProgress(): Boolean
     begin
         exit(IsTestInProgress);
     end;
 
-    [NonDebuggable]
     internal procedure GetShopRecord() ShopifyShop: Record "Shpfy Shop";
     begin
         if not ShopifyShop.Get(Shop.Code) then

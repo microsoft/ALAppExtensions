@@ -1,5 +1,7 @@
 namespace Microsoft.Integration.Shopify;
 
+using Microsoft.Sales.Receivables;
+
 /// <summary>
 /// Page Shpfy Transactions (ID 30134).
 /// </summary>
@@ -7,7 +9,6 @@ page 30134 "Shpfy Transactions"
 {
     ApplicationArea = All;
     Caption = 'Shopify Transactions';
-    PromotedActionCategories = 'New,Process,Report,Inspect';
     PageType = List;
     SourceTable = "Shpfy Order Transaction";
     UsageCategory = History;
@@ -46,11 +47,17 @@ page 30134 "Shpfy Transactions"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the name of the gateway the transaction was issued through.';
                 }
+#if not CLEAN25
                 field(SourceName; Rec."Source Name")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the origin of the transaction. This is set by Shopify. Example values: web, pos, iphone, android.';
+                    Visible = false;
+                    ObsoleteReason = 'Source name is no longer used.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '25.0';
                 }
+#endif
                 field(Amount; Rec.Amount)
                 {
                     ApplicationArea = All;
@@ -138,13 +145,9 @@ page 30134 "Shpfy Transactions"
                 ApplicationArea = All;
                 Caption = 'Retrieved Shopify Data';
                 Image = Entry;
-                Promoted = true;
-                PromotedCategory = Category4;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 ToolTip = 'View the data retrieved from Shopify.';
 
-                trigger OnAction();
+                trigger OnAction()
                 var
                     DataCapture: Record "Shpfy Data Capture";
                 begin
@@ -154,7 +157,59 @@ page 30134 "Shpfy Transactions"
                     Page.Run(Page::"Shpfy Data Capture List", DataCapture);
                 end;
             }
+            action(CustLedgerEntries)
+            {
+                ApplicationArea = All;
+                Caption = 'Customer Ledger Entries';
+                Image = LedgerEntries;
+                ToolTip = 'View the customer ledger entries for the transaction.';
+                RunObject = Page "Customer Ledger Entries";
+                RunPageLink = "Shpfy Transaction Id" = field("Shopify Transaction Id");
+            }
+            action(SuggestShopifyPayments)
+            {
+                ApplicationArea = All;
+                Caption = 'Suggest Shopify Payments';
+                Image = SuggestPayment;
+                ToolTip = 'Create payment suggestions from selected transactions as lines in the cash receipt journal.';
+
+                trigger OnAction()
+                var
+                    OrderTransaction: Record "Shpfy Order Transaction";
+                    SuggestPayments: Report "Shpfy Suggest Payments";
+                    IgnorePostedTransactions: Boolean;
+                begin
+                    CurrPage.SetSelectionFilter(OrderTransaction);
+                    OrderTransaction.SetRange(Used, true);
+                    if not OrderTransaction.IsEmpty() then
+                        if Confirm(IgnorePostedTransactionsLbl) then
+                            IgnorePostedTransactions := true;
+                    OrderTransaction.SetRange(Used);
+                    SuggestPayments.SetTableView(OrderTransaction);
+                    SuggestPayments.SetIgnorePostedTransactions(IgnorePostedTransactions);
+                    SuggestPayments.Run();
+                end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(SuggestShopifyPayments_Promoted; SuggestShopifyPayments) { }
+            }
+            group(Category_Inspect)
+            {
+                Caption = 'Inspect';
+                actionref(RetrievedShopifyData_Promoted; RetrievedShopifyData) { }
+            }
+            group(Category_Related)
+            {
+                Caption = 'Related';
+                actionref(CustLedgerEntries_Promoted; CustLedgerEntries) { }
+            }
         }
     }
 
+    var
+        IgnorePostedTransactionsLbl: Label 'You have selected posted Shopify transactions. Do you want to use posted transactions?';
 }

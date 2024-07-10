@@ -23,11 +23,6 @@
                   codeunit "Item Journal Line Handler CZA" = X,
                   codeunit "Item Tracking Line Handler CZA" = X,
                   codeunit "Job Journal Line Handler CZA" = X,
-#if not CLEAN22
-#pragma warning disable AL0432
-                  codeunit "Nonstock Item Handler CZA" = X,
-#pragma warning restore AL0432
-#endif
                   codeunit "Process Data Exch. Handler CZA" = X,
                   codeunit "Production Order Handler CZA" = X,
                   codeunit "Purchase Line Handler CZA" = X,
@@ -41,11 +36,6 @@
                   codeunit "Transfer Line Handler CZA" = X,
                   codeunit "TransferOrder-Post Handler CZA" = X,
                   codeunit "Undo Shipment Line Handler CZA" = X,
-#if not CLEAN22
-#pragma warning disable AL0432
-                  codeunit "Undo Transfer Ship. Line CZA" = X,
-#pragma warning restore AL0432
-#endif
                   codeunit "Upgrade Application CZA" = X,
                   codeunit "Upgrade Tag Definitions CZA" = X,
                   page "Applied G/L Entries CZA" = X,

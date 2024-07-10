@@ -4,9 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance;
 
-#if CLEAN24
 using System.Upgrade;
-#endif
 
 codeunit 14602 "IS Core Upgrade"
 {
@@ -17,6 +15,7 @@ codeunit 14602 "IS Core Upgrade"
     var
     begin
         TransferISCpecificData();
+        UpdateDocumentRetentionPeriod();
     end;
 
     local procedure TransferISCpecificData()
@@ -34,5 +33,26 @@ codeunit 14602 "IS Core Upgrade"
 
         UpgradeTag.SetUpgradeTag(EnableISCoreApp.GetISCoreAppUpdateTag());
 #endif
+    end;
+
+    local procedure UpdateDocumentRetentionPeriod()
+    var
+        UpgradeTag: Codeunit "Upgrade Tag";
+        ISCoreInstall: Codeunit "IS Core Install";
+        EnableISCoreApp: Codeunit "Enable IS Core App";
+    begin
+        if UpgradeTag.HasUpgradeTag(EnableISCoreApp.GetISDocRetentionPeriodTag()) then
+            exit;
+        ISCoreInstall.UpdateGeneralLedgserSetup();
+        UpgradeTag.SetUpgradeTag(EnableISCoreApp.GetISDocRetentionPeriodTag());
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Upgrade Tag", 'OnGetPerCompanyUpgradeTags', '', false, false)]
+    local procedure RegisterPerCompanyTags(var PerCompanyUpgradeTags: List of [Code[250]])
+    var
+        EnableISCoreApp: Codeunit "Enable IS Core App";
+    begin
+        PerCompanyUpgradeTags.Add(EnableISCoreApp.GetISCoreAppUpdateTag());
+        PerCompanyUpgradeTags.Add(EnableISCoreApp.GetISDocRetentionPeriodTag());
     end;
 }

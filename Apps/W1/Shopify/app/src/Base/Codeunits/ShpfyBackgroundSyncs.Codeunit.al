@@ -337,6 +337,37 @@ codeunit 30101 "Shpfy Background Syncs"
         end;
     end;
 
+    internal procedure DisputesSync(ShopCode: Code[20])
+    var
+        Shop: Record "Shpfy Shop";
+    begin
+        if Shop.Get(ShopCode) then begin
+            Shop.SetRecFilter();
+            DisputesSync(Shop);
+        end;
+    end;
+
+    /// <summary> 
+    /// Payment Dispute Sync.
+    /// </summary>
+    /// <param name="Shop">Parameter of type Record "Shopify Shop".</param>
+    internal procedure DisputesSync(var Shop: Record "Shpfy Shop")
+    var
+        Parameters: text;
+        PaymentParametersTxt: Label '<?xml version="1.0" standalone="yes"?><ReportParameters name="Shpfy Sync Disputes" id="30105"><DataItems><DataItem name="Shop">%1</DataItem></DataItems></ReportParameters>', Comment = '%1 = Shop Record View', Locked = true;
+    begin
+        Shop.SetRange("Allow Background Syncs", true);
+        if not Shop.IsEmpty then begin
+            Parameters := StrSubstNo(PaymentParametersTxt, Shop.GetView());
+            EnqueueJobEntry(Report::"Shpfy Sync Disputes", Parameters, StrSubstNo(SyncDescriptionTxt, PayoutsSyncTypeTxt, Shop.GetFilter(Code)), true, true);
+        end;
+        Shop.SetRange("Allow Background Syncs", false);
+        if not Shop.IsEmpty then begin
+            Parameters := StrSubstNo(PaymentParametersTxt, Shop.GetView());
+            EnqueueJobEntry(Report::"Shpfy Sync Disputes", Parameters, StrSubstNo(SyncDescriptionTxt, PayoutsSyncTypeTxt, Shop.GetFilter(Code)), false, true);
+        end;
+    end;
+
     /// <summary> 
     /// Product Images Sync.
     /// </summary>

@@ -324,37 +324,10 @@ page 31150 "Cash Desk List CZP"
         }
         area(Promoted)
         {
-#if not CLEAN22
-            group(Category_New)
-            {
-                Caption = 'New';
-                ObsoleteTag = '22.0';
-                ObsoleteState = Pending;
-                ObsoleteReason = 'This group has been removed.';
-                Visible = false;
-                actionref(CashDocumentPromoted; "Cash &Document")
-                {
-#pragma warning disable AS0072
-                    ObsoleteTag = '22.0';
-#pragma warning restore AS0072
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This group has been removed.';
-                }
-            }
-#endif
             group(Category_Process)
             {
                 Caption = 'Process';
 
-#if not CLEAN22
-                actionref(StatisticsPromoted; Statistics)
-                {
-                    ObsoleteTag = '22.0';
-                    ObsoleteState = Pending;
-                    ObsoleteReason = 'This actionref has been removed.';
-                    Visible = false;
-                }
-#endif
                 actionref(ResponsibilityHandOver_Promoted; "Responsibility Hand Over")
                 {
                 }
@@ -403,15 +376,8 @@ page 31150 "Cash Desk List CZP"
     }
 
     trigger OnOpenPage()
-    var
-        CashDesksFilter: Text;
     begin
-        CashDesksFilter := CashDeskManagementCZP.GetCashDesksFilter();
-
-        Rec.FilterGroup(2);
-        if CashDesksFilter <> '' then
-            Rec.SetFilter("No.", CashDesksFilter);
-        Rec.FilterGroup(0);
+        CashDeskManagementCZP.SetCashDeskFilter(Rec);
     end;
 
     var

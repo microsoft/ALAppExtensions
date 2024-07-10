@@ -1,6 +1,7 @@
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.Document;
+using Microsoft.Sales.Receivables;
 using Microsoft.Sales.History;
 
 /// <summary>
@@ -92,6 +93,14 @@ table 30133 "Shpfy Order Transaction"
             DataClassification = SystemMetadata;
             Editable = false;
             Access = Internal;
+            ObsoleteReason = 'Source name is no longer used.';
+#if not CLEAN25
+            ObsoleteState = Pending;
+            ObsoleteTag = '25.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '28.0';
+#endif
         }
         field(16; "Credit Card Bin"; Code[10])
         {
@@ -176,6 +185,20 @@ table 30133 "Shpfy Order Transaction"
             Caption = 'Payment Priority';
             FieldClass = FlowField;
             CalcFormula = lookup("Shpfy Payment Method Mapping".Priority where("Shop Code" = field("Shop Code"), Gateway = field(Gateway), "Credit Card Company" = field("Credit Card Company")));
+            ObsoleteReason = 'Priority is no longer used.';
+#if not CLEAN25
+            ObsoleteState = Pending;
+            ObsoleteTag = '25.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '28.0';
+#endif
+        }
+        field(106; Used; Boolean)
+        {
+            Caption = 'Used';
+            FieldClass = FlowField;
+            CalcFormula = exist("Cust. Ledger Entry" where("Shpfy Transaction Id" = field("Shopify Transaction Id")));
         }
     }
 
@@ -190,6 +213,9 @@ table 30133 "Shpfy Order Transaction"
             SumIndexFields = Amount;
         }
         key(Idx002; "Created At")
+        {
+        }
+        key(Idx003; Type)
         {
         }
     }

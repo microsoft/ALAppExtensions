@@ -26,19 +26,11 @@ codeunit 31003 "Gen.Jnl.-Post Line Handler CZZ"
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforeCreateGLEntriesForTotalAmountsV19', '', false, false)]
     local procedure GenJnlPostLineOnBeforeCreateGLEntriesForTotalAmounts(GenJournalLine: Record "Gen. Journal Line"; var GLAccNo: Code[20])
-    var
-        SalesAdvLetterManagement: Codeunit "SalesAdvLetterManagement CZZ";
-        PurchAdvLetterManagement: Codeunit "PurchAdvLetterManagement CZZ";
     begin
         if not GenJournalLine."Use Advance G/L Account CZZ" then
             exit;
 
-        case GenJournalLine."Account Type" of
-            GenJournalLine."Account Type"::Customer:
-                GLAccNo := SalesAdvLetterManagement.GetAdvanceGLAccount(GenJournalLine);
-            GenJournalLine."Account Type"::Vendor:
-                GLAccNo := PurchAdvLetterManagement.GetAdvanceGLAccount(GenJournalLine);
-        end;
+        GLAccNo := GenJournalLine.GetAdvanceGLAccountNoCZZ();
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnBeforePostApply', '', false, false)]

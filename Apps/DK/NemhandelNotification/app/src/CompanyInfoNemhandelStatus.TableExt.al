@@ -26,6 +26,8 @@ tableextension 13608 "Company Info. Nemhandel Status" extends "Company Informati
                 if not NemhandelStatusMgt.IsSaaSProductionCompany() then
                     exit;
 
+                NemhandelStatusMgt.ValidateCVRNumberFormat("Registration No.");
+
                 if "Registered with Nemhandel" = "Nemhandel Company Status"::Registered then begin
                     if Rec."Registration No." <> xRec."Registration No." then
                         Error(CannotChangeRegistrationNoErr);

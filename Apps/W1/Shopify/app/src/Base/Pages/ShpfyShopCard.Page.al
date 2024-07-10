@@ -68,6 +68,7 @@ page 30101 "Shpfy Shop Card"
 #endif
                         BulkOperationMgt.EnableBulkOperations(Rec);
                         Rec."B2B Enabled" := Rec.GetB2BEnabled();
+                        Rec.SyncCountries();
                         FeatureTelemetry.LogUptake('0000HUT', 'Shopify', Enum::"Feature Uptake Status"::"Set up");
                     end;
                 }
@@ -167,29 +168,12 @@ page 30101 "Shpfy Shop Card"
                     ToolTip = 'Specifies whether D365BC can update products when synchronizing to Shopify.';
                     Editable = Rec."Sync Item" = rec."Sync Item"::"To Shopify";
                 }
-#if not CLEAN22
-                field(ItemTemplateCode; Rec."Item Template Code")
-                {
-                    ApplicationArea = All;
-                    ShowMandatory = true;
-                    Caption = 'Item Template Code';
-                    ToolTip = 'Specifies which item template to use when creating unknown items.';
-                    Editable = Rec."Auto Create Unknown Items";
-                    Visible = not NewTemplatesEnabled;
-                    ObsoleteReason = 'Replaced by Item Templ. Code';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                }
-#endif
                 field(ItemTemplCode; Rec."Item Templ. Code")
                 {
                     ApplicationArea = All;
                     ShowMandatory = true;
                     ToolTip = 'Specifies which item template to use when creating unknown items.';
                     Editable = Rec."Auto Create Unknown Items";
-#if not CLEAN22
-                    Visible = NewTemplatesEnabled;
-#endif
                 }
                 field(SyncItemImages; Rec."Sync Item Images")
                 {
@@ -353,28 +337,12 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies if unknown customers are automatically created in D365BC when synchronizing from Shopify.';
                 }
-#if not CLEAN22
-                field(CustomerTemplateCode; Rec."Customer Template Code")
-                {
-                    ApplicationArea = All;
-                    ShowMandatory = true;
-                    Caption = 'Customer/Company Template Code';
-                    ToolTip = 'Specifies which customer template to use when creating unknown customers.';
-                    Visible = not NewTemplatesEnabled;
-                    ObsoleteReason = 'Generic Templates will be replaced with Customer Templates. Use Customer Templ. Code instead.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                }
-#endif
                 field(CustomerTemplCode; Rec."Customer Templ. Code")
                 {
                     Caption = 'Customer/Company Template Code';
                     ToolTip = 'Specifies which customer template to use when creating unknown customers.';
                     ShowMandatory = true;
                     ApplicationArea = All;
-#if not CLEAN22
-                    Visible = NewTemplatesEnabled;
-#endif
                 }
                 field(DefaultCustomer; Rec."Default Customer No.")
                 {
@@ -1012,6 +980,23 @@ page 30101 "Shpfy Shop Card"
                         Report.Run(Report::"Shpfy Sync Shipm. to Shopify");
                     end;
                 }
+                action(SyncDisputes)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Sync Disputes';
+                    Image = ErrorLog;
+                    Promoted = true;
+                    PromotedCategory = Category5;
+                    PromotedOnly = true;
+                    ToolTip = 'Synchronize dispute information with related payment transactions.';
+
+                    trigger OnAction()
+                    var
+                        BackgroundSyncs: Codeunit "Shpfy Background Syncs";
+                    begin
+                        BackgroundSyncs.DisputesSync(Rec.Code);
+                    end;
+                }
                 action(SyncAll)
                 {
                     ApplicationArea = All;
@@ -1031,6 +1016,10 @@ page 30101 "Shpfy Shop Card"
                         BackgroundSyncs.InventorySync(Rec);
                         BackgroundSyncs.ProductImagesSync(Rec, '');
                         BackgroundSyncs.ProductPricesSync(Rec);
+                        if Rec."B2B Enabled" then begin
+                            BackgroundSyncs.CompanySync(Rec);
+                            BackgroundSyncs.CatalogPricesSync(Rec, '');
+                        end;
                     end;
                 }
             }
@@ -1107,9 +1096,6 @@ page 30101 "Shpfy Shop Card"
     }
 
     var
-#if not CLEAN22
-        NewTemplatesEnabled: Boolean;
-#endif
         IsReturnRefundsVisible: Boolean;
         ApiVersion: Text;
         ApiVersionExpiryDate: Date;
@@ -1119,22 +1105,18 @@ page 30101 "Shpfy Shop Card"
 #if not CLEAN24
         ReplaceOrderAttributeValueDisabled: Boolean;
 #endif
+        ScopeChangeConfirmLbl: Label 'The access scope of shop %1 for the Shopify connector has changed. Do you want to request a new access token?', Comment = '%1 - Shop Code';
 
     trigger OnOpenPage()
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
-#if not CLEAN22
-        ShpfyTemplates: Codeunit "Shpfy Templates";
-#endif
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         ShopMgt: Codeunit "Shpfy Shop Mgt.";
+        AuthenticationMgt: Codeunit "Shpfy Authentication Mgt.";
 
         ApiVersionExpiryDateTime: DateTime;
     begin
         FeatureTelemetry.LogUptake('0000HUU', 'Shopify', Enum::"Feature Uptake Status"::Discovered);
-#if not CLEAN22
-        NewTemplatesEnabled := ShpfyTemplates.NewTemplatesEnabled();
-#endif
         if Rec.Enabled then begin
             ApiVersion := CommunicationMgt.GetApiVersion();
             ApiVersionExpiryDateTime := CommunicationMgt.GetApiVersionExpiryDate();
@@ -1146,6 +1128,16 @@ page 30101 "Shpfy Shop Card"
                 if Round((ApiVersionExpiryDateTime - CurrentDateTime()) / 1000 / 3600 / 24, 1) <= 30 then begin
                     ShopMgt.SendExpirationNotification(ApiVersionExpiryDate);
                     Session.LogMessage('0000KO0', ExpirationNotificationTxt, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
+                end;
+
+            if AuthenticationMgt.CheckScopeChange(Rec) then
+                if Confirm(StrSubstNo(ScopeChangeConfirmLbl, Rec.Code)) then begin
+                    Rec.RequestAccessToken();
+                    Rec."B2B Enabled" := Rec.GetB2BEnabled();
+                    Rec.Modify();
+                end else begin
+                    Rec.Enabled := false;
+                    Rec.Modify();
                 end;
         end;
     end;

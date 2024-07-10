@@ -195,7 +195,6 @@ codeunit 139530 "MigrationQBO Tests"
     end;
 
     [Test]
-    [HandlerFunctions('ConfirmHandlerNo')]
     procedure TestQBOCustomerImport()
     var
         Customer: Record "Customer";
@@ -791,13 +790,6 @@ codeunit 139530 "MigrationQBO Tests"
         MigrationQBAccountSetup.PayablesAccount := AccountNumber;
         MigrationQBAccountSetup.PurchServiceChargeAccount := AccountNumber;
         MigrationQBAccountSetup.Insert();
-    end;
-
-    [ConfirmHandler]
-    [Scope('OnPrem')]
-    procedure ConfirmHandlerNo(Question: Text[1024]; var Reply: Boolean)
-    begin
-        Reply := false;
     end;
 }
 

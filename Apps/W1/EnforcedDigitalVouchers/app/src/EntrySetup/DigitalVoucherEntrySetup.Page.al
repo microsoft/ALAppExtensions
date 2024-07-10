@@ -12,6 +12,7 @@ page 5579 "Digital Voucher Entry Setup"
     AboutText = 'Here you can select the line with a certain entry type and setup the type of the digital voucher''s check you want to perform.';
     ApplicationArea = Basic, Suite;
     UsageCategory = Administration;
+    DelayedInsert = true;
 
     layout
     {

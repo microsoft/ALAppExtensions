@@ -46,11 +46,21 @@ pageextension 31037 "Purchase Order CZZ" extends "Purchase Order"
         }
         addlast(factboxes)
         {
+#if not CLEAN25
             part("Purch. Adv. Usage FactBox CZZ"; "Purch. Adv. Usage FactBox CZZ")
             {
                 ApplicationArea = Basic, Suite;
                 Provider = PurchLines;
                 SubPageLink = "Document Type" = field("Document Type"), "Document No." = field("Document No."), "Line No." = field("Line No.");
+                Visible = false;
+                ObsoleteState = Pending;
+                ObsoleteReason = 'Replaced by "Advance Usage FactBox CZZ"';
+                ObsoleteTag = '25.0';
+            }
+#endif
+            part(AdvanceUsageFactBoxCZZ; "Advance Usage FactBox CZZ")
+            {
+                ApplicationArea = Basic, Suite;
             }
         }
     }
@@ -130,4 +140,10 @@ pageextension 31037 "Purchase Order CZZ" extends "Purchase Order"
             }
         }
     }
+
+    trigger OnAfterGetCurrRecord()
+    begin
+        if GuiAllowed() then
+            CurrPage.AdvanceUsageFactBoxCZZ.Page.SetDocument(Rec);
+    end;
 }

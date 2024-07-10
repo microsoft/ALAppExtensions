@@ -6,6 +6,7 @@ namespace Microsoft.Finance.VAT.Reporting;
 
 using Microsoft.Foundation.Attachment;
 using Microsoft.Foundation.Company;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Utilities;
 
 page 31138 "VIES Declaration CZL"
@@ -14,7 +15,6 @@ page 31138 "VIES Declaration CZL"
     PageType = Document;
     RefreshOnActivate = true;
     SourceTable = "VIES Declaration Header CZL";
-    PromotedActionCategories = 'New,Process,Report,Related';
 
     layout
     {
@@ -147,6 +147,13 @@ page 31138 "VIES Declaration CZL"
                     DrillDown = false;
                     ToolTip = 'Specifies total amounts of all reported trades for selected period.';
                 }
+                field("Additional-Currency Amount"; Rec."Additional-Currency Amount")
+                {
+                    ApplicationArea = Basic, Suite;
+                    DrillDown = false;
+                    ToolTip = 'Specifies total additional currency amounts of all reported trades for selected period.';
+                    Visible = UseAmtsInAddCurrVisible;
+                }
                 field("Number of Supplies"; Rec."Number of Supplies")
                 {
                     ApplicationArea = Basic, Suite;
@@ -170,6 +177,12 @@ page 31138 "VIES Declaration CZL"
                     begin
                         SetControlsEditable();
                     end;
+                }
+                field("Export Amt.inAdd.-CurrencyAmt."; Rec."Export Amt.inAdd.-CurrencyAmt.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies if you want export amounts to be shown in the additional reporting currency.';
+                    Visible = UseAmtsInAddCurrVisible;
                 }
             }
             part(Lines; "VIES Declaration Subform CZL")
@@ -246,11 +259,22 @@ page 31138 "VIES Declaration CZL"
         }
         area(FactBoxes)
         {
+#if not CLEAN25
             part("Attached Documents"; "Document Attachment Factbox")
             {
+                ObsoleteTag = '25.0';
+                ObsoleteState = Pending;
+                ObsoleteReason = 'The "Document Attachment FactBox" has been replaced by "Doc. Attachment List Factbox", which supports multiple files upload.';
                 ApplicationArea = All;
                 Caption = 'Attachments';
-                SubPageLink = "Table ID" = const(31075), "No." = field("No.");
+                SubPageLink = "Table ID" = const(Database::"VIES Declaration Header CZL"), "No." = field("No.");
+            }
+#endif
+            part("Attached Documents List"; "Doc. Attachment List Factbox")
+            {
+                ApplicationArea = All;
+                Caption = 'Documents';
+                SubPageLink = "Table ID" = const(Database::"VIES Declaration Header CZL"), "No." = field("No.");
             }
         }
     }
@@ -267,9 +291,6 @@ page 31138 "VIES Declaration CZL"
                     Caption = '&Suggest Lines';
                     Ellipsis = true;
                     Image = SuggestLines;
-                    Promoted = true;
-                    PromotedCategory = Process;
-                    PromotedOnly = true;
                     ToolTip = 'This batch job creates VIES declaration lines from declaration header information and data stored in VAT tables.';
 
                     trigger OnAction()
@@ -289,9 +310,6 @@ page 31138 "VIES Declaration CZL"
                     Caption = '&Get Lines for Correction';
                     Ellipsis = true;
                     Image = GetLines;
-                    Promoted = true;
-                    PromotedCategory = Process;
-                    PromotedOnly = true;
                     ToolTip = 'This batch job allows you get the lines for corrective VIES declaration.';
 
                     trigger OnAction()
@@ -315,9 +333,6 @@ page 31138 "VIES Declaration CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Re&lease';
                     Image = ReleaseDoc;
-                    Promoted = true;
-                    PromotedCategory = Process;
-                    PromotedOnly = true;
                     ShortcutKey = 'Ctrl+F9';
                     ToolTip = 'Release the document to the next stage of processing. When a document is released, it will be possible to print or export declaration. You must reopen the document before you can make changes to it.';
 
@@ -331,9 +346,6 @@ page 31138 "VIES Declaration CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = 'Re&open';
                     Image = Replan;
-                    Promoted = true;
-                    PromotedCategory = Process;
-                    PromotedOnly = true;
                     ToolTip = 'Reopen the document to change it after it has been approved. Approved documents have tha Released status and must be opened before they can be changed.';
 
                     trigger OnAction()
@@ -346,9 +358,6 @@ page 31138 "VIES Declaration CZL"
                     ApplicationArea = Basic, Suite;
                     Caption = '&Export';
                     Image = CreateXMLFile;
-                    Promoted = true;
-                    PromotedCategory = Process;
-                    PromotedOnly = true;
                     ToolTip = 'This batch job is used for VIES declaration results export in XML format.';
 
                     trigger OnAction()
@@ -366,9 +375,6 @@ page 31138 "VIES Declaration CZL"
                 Caption = 'Test Report';
                 Ellipsis = true;
                 Image = TestReport;
-                Promoted = true;
-                PromotedCategory = "Report";
-                PromotedOnly = true;
                 ToolTip = 'View a test report so that you can find and correct any errors before you issue or export document.';
 
                 trigger OnAction()
@@ -382,9 +388,6 @@ page 31138 "VIES Declaration CZL"
                 Caption = '&Declaration';
                 Image = Report;
                 Ellipsis = true;
-                Promoted = true;
-                PromotedCategory = "Report";
-                PromotedOnly = true;
                 ToolTip = 'View a VIES declaration report.';
 
                 trigger OnAction()
@@ -397,9 +400,6 @@ page 31138 "VIES Declaration CZL"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Attach as PDF';
                 Image = PrintAttachment;
-                Promoted = true;
-                PromotedCategory = "Report";
-                PromotedOnly = true;
                 ToolTip = 'Create a PDF file and attach it to the document.';
 
                 trigger OnAction()
@@ -428,6 +428,47 @@ page 31138 "VIES Declaration CZL"
                 end;
             }
         }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                Caption = 'Process', Comment = 'Generated from the PromotedActionCategories property index 1.';
+
+                actionref("&Suggest Lines_Promoted"; "&Suggest Lines")
+                {
+                }
+                actionref("&Get Lines for Correction_Promoted"; "&Get Lines for Correction")
+                {
+                }
+                actionref("Re&lease_Promoted"; "Re&lease")
+                {
+                }
+                actionref("Re&open_Promoted"; "Re&open")
+                {
+                }
+                actionref("&Export_Promoted"; "&Export")
+                {
+                }
+            }
+            group(Category_Report)
+            {
+                Caption = 'Report', Comment = 'Generated from the PromotedActionCategories property index 2.';
+
+                actionref("Test Report_Promoted"; "Test Report")
+                {
+                }
+                actionref("&Declaration_Promoted"; "&Declaration")
+                {
+                }
+                actionref(PrintToAttachment_Promoted; PrintToAttachment)
+                {
+                }
+            }
+            group(Category_Category4)
+            {
+                Caption = 'Related', Comment = 'Generated from the PromotedActionCategories property index 3.';
+            }
+        }
     }
 
     trigger OnAfterGetRecord()
@@ -449,6 +490,7 @@ page 31138 "VIES Declaration CZL"
     trigger OnOpenPage()
     begin
         SetNoFieldVisible();
+        SetUseAmtsInAddCurrVisible();
     end;
 
     var
@@ -462,6 +504,7 @@ page 31138 "VIES Declaration CZL"
         CompanyTradeNameAppendixEditable: Boolean;
         IndividualEmployeeNoEditable: Boolean;
         NoFieldVisible: Boolean;
+        UseAmtsInAddCurrVisible: Boolean;
 
     local procedure SetControlsEditable()
     var
@@ -493,6 +536,14 @@ page 31138 "VIES Declaration CZL"
             NoFieldVisible := false
         else
             NoFieldVisible := DocumentNoVisibility.ForceShowNoSeriesForDocNo(DetermineVIESDeclarationCZLSeriesNo());
+    end;
+
+    local procedure SetUseAmtsInAddCurrVisible()
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+    begin
+        GeneralLedgerSetup.Get();
+        UseAmtsInAddCurrVisible := GeneralLedgerSetup."Additional Reporting Currency" <> '';
     end;
 
     local procedure DetermineVIESDeclarationCZLSeriesNo(): Code[20]

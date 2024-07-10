@@ -19,17 +19,14 @@ codeunit 4022 "GP Vendor Migrator"
         SourceCodeTxt: Label 'GENJNL', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from GP', Locked = true;
         VendorEmailTypeCodeLbl: Label 'VEN', Locked = true;
+        MigrationLogAreaTxt: Label 'Vendor', Locked = true;
+        TemporaryVendorMigratedTxt: Label 'Temporary vendor was migrated because %1', Comment = '%1 is the reason the temporary Vendor was migrated.';
+        TemporaryVendorHasOpenPOsAndAPTrxTxt: Label 'it has open POs and open AP transactions.';
+        TemporaryVendorHasOpenPOsTxt: Label 'it has open POs.';
+        TemporaryVendorHasOpenAPTrxTxt: Label 'it has open AP transactions.';
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made internal.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendor', '', true, true)]
-    procedure OnMigrateVendor(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendor', '', true, true)]
     internal procedure OnMigrateVendor(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
-#endif
     var
         GPVendor: Record "GP Vendor";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
@@ -43,17 +40,11 @@ codeunit 4022 "GP Vendor Migrator"
         MigrateVendorAddresses(GPVendor);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made internal.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorPostingGroups', '', true, true)]
-    procedure OnMigrateVendorPostingGroups(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorPostingGroups', '', true, true)]
     internal procedure OnMigrateVendorPostingGroups(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#endif
     var
+        GPVendor: Record "GP Vendor";
+        Vendor: Record Vendor;
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         HelperFunctions: Codeunit "Helper Functions";
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
@@ -64,6 +55,10 @@ codeunit 4022 "GP Vendor Migrator"
 
         if RecordIdToMigrate.TableNo() <> Database::"GP Vendor" then
             exit;
+
+        if GPVendor.Get(RecordIdToMigrate) then
+            if not Sender.DoesVendorExist(CopyStr(GPVendor.VENDORID, 1, MaxStrLen(Vendor."No."))) then
+                exit;
 
         if not GPCompanyAdditionalSettings.GetGLModuleEnabled() then
             exit;
@@ -81,16 +76,8 @@ codeunit 4022 "GP Vendor Migrator"
         Sender.ModifyVendor(true);
     end;
 
-#if not CLEAN22
-#pragma warning disable AA0207
-    [Obsolete('The procedure will be made internal.', '22.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorTransactions', '', true, true)]
-    procedure OnMigrateVendorTransactions(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#pragma warning restore AA0207
-#else
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendorTransactions', '', true, true)]
     internal procedure OnMigrateVendorTransactions(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
-#endif
     begin
         MigrateVendorTransactions(Sender, RecordIdToMigrate, ChartOfAccountsMigrated);
     end;
@@ -98,6 +85,7 @@ codeunit 4022 "GP Vendor Migrator"
     procedure MigrateVendorTransactions(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId; ChartOfAccountsMigrated: Boolean)
     var
         GPVendor: Record "GP Vendor";
+        Vendor: Record Vendor;
         GPVendorTransactions: Record "GP Vendor Transactions";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
@@ -117,7 +105,10 @@ codeunit 4022 "GP Vendor Migrator"
         if GPCompanyAdditionalSettings.GetMigrateOnlyPayablesMaster() then
             exit;
 
-        GPVendor.Get(RecordIdToMigrate);
+        if GPVendor.Get(RecordIdToMigrate) then
+            if not Sender.DoesVendorExist(CopyStr(GPVendor.VENDORID, 1, MaxStrLen(Vendor."No."))) then
+                exit;
+
         GetVendorPayablesAccount(GPVendor, GPCompanyAdditionalSettings, PayablesAccountNo);
 
         Sender.CreateGeneralJournalBatchIfNeeded(CopyStr(VendorBatchNameTxt, 1, 7), '', '');
@@ -295,6 +286,7 @@ codeunit 4022 "GP Vendor Migrator"
         GPPM00200: Record "GP PM00200";
         GPSY01200: Record "GP SY01200";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        GPMigrationWarnings: Record "GP Migration Warnings";
         HelperFunctions: Codeunit "Helper Functions";
         PaymentTermsFormula: DateFormula;
         VendorNo: Code[20];
@@ -312,8 +304,26 @@ codeunit 4022 "GP Vendor Migrator"
         FoundKnownCountry: Boolean;
         CountryCodeISO2: Code[2];
         CountryName: Text[50];
+        IsTemporaryVendor: Boolean;
+        HasOpenPurchaseOrders: Boolean;
+        HasOpenTransactions: Boolean;
     begin
         VendorNo := CopyStr(GPVendor.VENDORID, 1, MaxStrLen(Vendor."No."));
+
+        if not ShouldMigrateVendor(VendorNo, IsTemporaryVendor, HasOpenPurchaseOrders, HasOpenTransactions) then
+            exit;
+
+        if IsTemporaryVendor then
+            if HasOpenPurchaseOrders and HasOpenTransactions then
+                GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, VendorNo, StrSubstNo(TemporaryVendorMigratedTxt, TemporaryVendorHasOpenPOsAndAPTrxTxt))
+            else begin
+                if HasOpenPurchaseOrders then
+                    GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, VendorNo, StrSubstNo(TemporaryVendorMigratedTxt, TemporaryVendorHasOpenPOsTxt));
+
+                if HasOpenTransactions then
+                    GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, VendorNo, StrSubstNo(TemporaryVendorMigratedTxt, TemporaryVendorHasOpenAPTrxTxt));
+            end;
+
         VendorName := CopyStr(GPVendor.VENDNAME.TrimEnd(), 1, MaxStrLen(VendorName));
 
         if not VendorDataMigrationFacade.CreateVendorIfNeeded(VendorNo, VendorName) then
@@ -487,6 +497,44 @@ codeunit 4022 "GP Vendor Migrator"
 #pragma warning restore AA0139
 
         RemitAddress.Modify();
+    end;
+
+    internal procedure ShouldMigrateVendor(VendorNo: Text[75]; var IsTemporaryVendor: Boolean; var HasOpenPurchaseOrders: Boolean; var HasOpenTransactions: Boolean): Boolean
+    var
+        GPPM00200: Record "GP PM00200";
+        GPPOP10100: Record "GP POP10100";
+        GPVendorTransactions: Record "GP Vendor Transactions";
+        GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+    begin
+        IsTemporaryVendor := false;
+        HasOpenPurchaseOrders := false;
+        HasOpenTransactions := false;
+
+        if GPCompanyAdditionalSettings.GetMigrateTemporaryVendors() then
+            exit(true);
+
+        GPPM00200.SetLoadFields(VENDSTTS);
+        if GPPM00200.Get(VendorNo) then
+            IsTemporaryVendor := GPPM00200.VENDSTTS = 3;
+
+        if not IsTemporaryVendor then
+            exit(true);
+
+        // Check for open POs
+        GPPOP10100.SetRange(POTYPE, GPPOP10100.POTYPE::Standard);
+        GPPOP10100.SetRange(POSTATUS, 1, 4);
+        GPPOP10100.SetRange(VENDORID, VendorNo);
+        HasOpenPurchaseOrders := GPPOP10100.Count() > 0;
+
+        // Check for open AP transactions
+        GPVendorTransactions.SetRange(VENDORID, VendorNo);
+        HasOpenTransactions := GPVendorTransactions.Count() > 0;
+
+        if not HasOpenPurchaseOrders then
+            if not HasOpenTransactions then
+                exit(false);
+
+        exit(true);
     end;
 
     procedure PopulateStagingTable(JArray: JsonArray)

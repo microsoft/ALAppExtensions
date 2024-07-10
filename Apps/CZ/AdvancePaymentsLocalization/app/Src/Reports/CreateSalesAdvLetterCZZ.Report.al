@@ -5,9 +5,6 @@
 namespace Microsoft.Finance.AdvancePayments;
 
 using Microsoft.Finance.Currency;
-#if not CLEAN22
-using Microsoft.Finance.VAT.Calculation;
-#endif
 using Microsoft.Sales.Document;
 using Microsoft.Sales.Posting;
 using System.Utilities;
@@ -161,12 +158,6 @@ report 31012 "Create Sales Adv. Letter CZZ"
     end;
 
     local procedure CreateAdvanceLetterHeader()
-#if not CLEAN22
-#pragma warning disable AL0432
-    var
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-#endif
     begin
         SalesAdvLetterHeaderCZZ.Init();
         SalesAdvLetterHeaderCZZ.Validate("Advance Letter Code", AdvanceLetterCode);
@@ -193,13 +184,6 @@ report 31012 "Create Sales Adv. Letter CZZ"
         SalesAdvLetterHeaderCZZ."Posting Date" := SalesHeader."Posting Date";
         SalesAdvLetterHeaderCZZ."Advance Due Date" := SalesHeader."Due Date";
         SalesAdvLetterHeaderCZZ."Document Date" := SalesHeader."Document Date";
-#if not CLEAN22
-#pragma warning disable AL0432
-        if not ReplaceVATDateMgtCZL.IsEnabled() then
-            SalesAdvLetterHeaderCZZ."VAT Date" := SalesHeader."VAT Date CZL"
-        else
-#pragma warning restore AL0432
-#endif
         SalesAdvLetterHeaderCZZ."VAT Date" := SalesHeader."VAT Reporting Date";
         SalesAdvLetterHeaderCZZ."Posting Description" := SalesHeader."Posting Description";
         SalesAdvLetterHeaderCZZ."Payment Method Code" := SalesHeader."Payment Method Code";

@@ -59,6 +59,29 @@ codeunit 4776 "Contoso Fixed Asset"
             DepreciationBook.Insert(true);
     end;
 
+    procedure InsertFADepreciationBook(FixedAssetNo: Code[20]; DepreciationBookCode: Code[20]; DepreciationStartingDate: Date; NoOfDepreciationYears: Decimal)
+    var
+        FADepreciationBook: Record "FA Depreciation Book";
+        Exists: Boolean;
+    begin
+        if FADepreciationBook.Get(FixedAssetNo, DepreciationBookCode) then begin
+            Exists := true;
+
+            if not OverwriteData then
+                exit;
+        end;
+
+        FADepreciationBook.Validate("FA No.", FixedAssetNo);
+        FADepreciationBook.Validate("Depreciation Book Code", DepreciationBookCode);
+        FADepreciationBook.Validate("Depreciation Starting Date", DepreciationStartingDate);
+        FADepreciationBook.Validate("No. of Depreciation Years", NoOfDepreciationYears);
+
+        if Exists then
+            FADepreciationBook.Modify(true)
+        else
+            FADepreciationBook.Insert(true);
+    end;
+
     procedure InsertFAClass(ClassCode: Code[10]; Name: Text[50])
     var
         FAClass: Record "FA Class";
@@ -153,7 +176,10 @@ codeunit 4776 "Contoso Fixed Asset"
             FAPostingGroup.Insert(true);
     end;
 
-    procedure InsertFixedAsset(FANo: Code[20]; Description: Text[100]; FAClassCode: Code[10]; FASubclassCode: Code[20]; FALocationCode: Code[10]; MainAssetComponent: Enum "FA Component Type"; SerialNo: Text[30]; NextServiceDate: Date; VendorNo: Code[20]; MaintenanceVendorNo: Code[20])
+    procedure InsertFixedAsset(FANo: Code[20]; Description: Text[100]; FAClassCode: Code[10]; FASubclassCode: Code[20]; FALocationCode: Code[10]; MainAssetComponent: Enum "FA Component Type"; SerialNo: Text[30];
+                                                                                                                                                                          NextServiceDate: Date;
+                                                                                                                                                                          VendorNo: Code[20];
+                                                                                                                                                                          MaintenanceVendorNo: Code[20])
     var
         FixedAsset: Record "Fixed Asset";
         Exists: Boolean;

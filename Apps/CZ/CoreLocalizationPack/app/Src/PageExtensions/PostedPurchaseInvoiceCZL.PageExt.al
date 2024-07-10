@@ -5,9 +5,6 @@
 namespace Microsoft.Purchases.History;
 
 using Microsoft.Finance.Currency;
-#if not CLEAN22
-using Microsoft.Finance.VAT.Calculation;
-#endif
 #if not CLEAN24
 using Microsoft.Finance.EU3PartyTrade;
 #endif
@@ -16,12 +13,6 @@ pageextension 11744 "Posted Purchase Invoice CZL" extends "Posted Purchase Invoi
 {
     layout
     {
-#if not CLEAN22
-        modify("VAT Reporting Date")
-        {
-            Visible = ReplaceVATDateEnabled and VATDateEnabled;
-        }
-#endif
         addlast(General)
         {
             field("Posting Description CZL"; Rec."Posting Description")
@@ -34,19 +25,6 @@ pageextension 11744 "Posted Purchase Invoice CZL" extends "Posted Purchase Invoi
         }
         addafter("Posting Date")
         {
-#if not CLEAN22
-            field("VAT Date CZL"; Rec."VAT Date CZL")
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'VAT Date (Obsolete)';
-                ToolTip = 'Specifies date by which the accounting transaction will enter VAT statement.';
-                Editable = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '22.0';
-                ObsoleteReason = 'Replaced by VAT Reporting Date.';
-                Visible = not ReplaceVATDateEnabled;
-            }
-#endif
             field("Original Doc. VAT Date CZL"; Rec."Original Doc. VAT Date CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -98,12 +76,6 @@ pageextension 11744 "Posted Purchase Invoice CZL" extends "Posted Purchase Invoi
                 var
                     ChangeExchangeRate: Page "Change Exchange Rate";
                 begin
-#if not CLEAN22
-#pragma warning disable AL0432
-                    if not ReplaceVATDateEnabled then
-                        Rec."VAT Reporting Date" := Rec."VAT Date CZL";
-#pragma warning restore AL0432
-#endif
                     ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Reporting Date");
                     ChangeExchangeRate.Editable(false);
                     ChangeExchangeRate.RunModal();
@@ -187,18 +159,6 @@ pageextension 11744 "Posted Purchase Invoice CZL" extends "Posted Purchase Invoi
                     Editable = false;
                     ToolTip = 'Specifies when the purchase header will use European Union third-party intermediate trade rules. This option complies with VAT accounting standards for EU third-party trade.';
                 }
-#if not CLEAN22
-                field("Intrastat Exclude CZL"; Rec."Intrastat Exclude CZL")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Intrastat Exclude (Obsolete)';
-                    Editable = false;
-                    ToolTip = 'Specifies that entry will be excluded from intrastat.';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '22.0';
-                    ObsoleteReason = 'Intrastat related functionalities are moved to Intrastat extensions. This field is not used any more.';
-                }
-#endif
             }
             group(PaymentsCZL)
             {
@@ -268,7 +228,7 @@ pageextension 11744 "Posted Purchase Invoice CZL" extends "Posted Purchase Invoi
                 }
             }
         }
-        movebefore("EU 3-Party Intermed. Role CZL"; "EU 3 Party Trade")
+        movebefore("EU 3-Party Intermed. Role CZL"; "EU 3rd Party Trade")
     }
 
     actions
@@ -294,10 +254,6 @@ pageextension 11744 "Posted Purchase Invoice CZL" extends "Posted Purchase Invoi
 
     trigger OnOpenPage()
     begin
-#if not CLEAN22
-        VATDateEnabled := VATReportingDateMgt.IsVATDateEnabled();
-        ReplaceVATDateEnabled := ReplaceVATDateMgtCZL.IsEnabled();
-#endif    
         EU3PartyTradeFeatureEnabled := EU3PartyTradeFeatMgt.IsEnabled();
     end;
 #endif    
@@ -312,14 +268,6 @@ pageextension 11744 "Posted Purchase Invoice CZL" extends "Posted Purchase Invoi
 #pragma warning disable AL0432
         EU3PartyTradeFeatMgt: Codeunit "EU3 Party Trade Feat Mgt. CZL";
 #pragma warning restore AL0432
-#endif
-#if not CLEAN22
-        VATReportingDateMgt: Codeunit "VAT Reporting Date Mgt";
-#pragma warning disable AL0432
-        ReplaceVATDateMgtCZL: Codeunit "Replace VAT Date Mgt. CZL";
-#pragma warning restore AL0432
-        ReplaceVATDateEnabled: Boolean;
-        VATDateEnabled: Boolean;
 #endif
 #if not CLEAN24
 #pragma warning disable AL0432
