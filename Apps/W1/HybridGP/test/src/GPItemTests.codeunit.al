@@ -30,6 +30,7 @@ codeunit 139662 "GP Item Tests"
         GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", true);
         GPCompanyAdditionalSettings.Validate("Migrate Inactive Items", true);
         GPCompanyAdditionalSettings.Validate("Migrate Discontinued Items", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Kit Items", false);
         GPCompanyAdditionalSettings.Modify();
 
         // [GIVEN] Some records are created in the staging table
@@ -46,26 +47,38 @@ codeunit 139662 "GP Item Tests"
             Migrate(GPItem);
         until GPItem.Next() = 0;
 
-        // [THEN] A Item is created for all staging table entries
-        Assert.RecordCount(Item, GPItem.Count());
-        Assert.AreEqual(GPItem.Count(), HelperFunctions.GetNumberOfItems(), 'Wrong number of Items calculated');
+        HelperFunctions.CreatePostMigrationData();
+
+        // [THEN] An Item is created for all configured staging table entries
+        Assert.RecordCount(Item, 7);
+        Assert.AreEqual(Item.Count(), HelperFunctions.GetNumberOfItems(), 'Wrong number of Items calculated');
 
         // [THEN] Items are created with correct settings
-        GPItem.FindSet();
-        Item.FindSet();
-        repeat
-            Assert.AreEqual(GPItem.No, Item."No.", 'Item No. not set');
-            Assert.AreEqual(0.00, Item."Unit Price", 'Unit Price set');
-            Assert.AreEqual(GPItem.CurrentCost, Item."Unit Cost", 'Unit Cost not set');
-            Assert.AreEqual(GPItem.StandardCost, Item."Standard Cost", 'Standard Cost not set');
-            Assert.AreEqual(GPItem.ShipWeight, Item."Net Weight", 'Net Weight not set');
-            Assert.AreEqual(GPItem.BaseUnitOfMeasure, Item."Base Unit of Measure", 'Base Unit of Measure not set');
-            Assert.AreEqual(GPItem.Description, Item.Description, 'Description not set.');
-            Assert.AreEqual(GPItem.ShortName, Item."Description 2", 'Description2 not set.');
-            Assert.AreEqual(GPItem.SearchDescription, Item."Search Description", 'Search Description not set.');
-            Assert.AreEqual(GPItem.PurchUnitOfMeasure, Item."Purch. Unit of Measure", 'Purch. Unit of Measure not set.');
-            GPItem.Next();
-        until Item.Next() = 0;
+        GPItem.Get('1 1/2\"SASH BRSH');
+        Item.Get(GPItem.No);
+        Assert.AreEqual(GPItem.No, Item."No.", 'Item No. not set');
+        Assert.AreEqual(0.00, Item."Unit Price", 'Unit Price set');
+        Assert.AreEqual(GPItem.CurrentCost, Item."Unit Cost", 'Unit Cost not set');
+        Assert.AreEqual(GPItem.StandardCost, Item."Standard Cost", 'Standard Cost not set');
+        Assert.AreEqual(GPItem.ShipWeight, Item."Net Weight", 'Net Weight not set');
+        Assert.AreEqual(GPItem.BaseUnitOfMeasure, Item."Base Unit of Measure", 'Base Unit of Measure not set');
+        Assert.AreEqual(GPItem.Description, Item.Description, 'Description not set.');
+        Assert.AreEqual(GPItem.ShortName, Item."Description 2", 'Description2 not set.');
+        Assert.AreEqual(GPItem.SearchDescription, Item."Search Description", 'Search Description not set.');
+        Assert.AreEqual(GPItem.PurchUnitOfMeasure, Item."Purch. Unit of Measure", 'Purch. Unit of Measure not set.');
+
+        GPItem.Get('4'' STEPLADDER');
+        Item.Get(GPItem.No);
+        Assert.AreEqual(GPItem.No, Item."No.", 'Item No. not set');
+        Assert.AreEqual(0.00, Item."Unit Price", 'Unit Price set');
+        Assert.AreEqual(GPItem.CurrentCost, Item."Unit Cost", 'Unit Cost not set');
+        Assert.AreEqual(GPItem.StandardCost, Item."Standard Cost", 'Standard Cost not set');
+        Assert.AreEqual(GPItem.ShipWeight, Item."Net Weight", 'Net Weight not set');
+        Assert.AreEqual(GPItem.BaseUnitOfMeasure, Item."Base Unit of Measure", 'Base Unit of Measure not set');
+        Assert.AreEqual(GPItem.Description, Item.Description, 'Description not set.');
+        Assert.AreEqual(GPItem.ShortName, Item."Description 2", 'Description2 not set.');
+        Assert.AreEqual(GPItem.SearchDescription, Item."Search Description", 'Search Description not set.');
+        Assert.AreEqual(GPItem.PurchUnitOfMeasure, Item."Purch. Unit of Measure", 'Purch. Unit of Measure not set.');
     end;
 
     [Test]
@@ -123,6 +136,7 @@ codeunit 139662 "GP Item Tests"
         GPTestHelperFunctions.CreateConfigurationSettings();
         GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Item Classes", false);
+        GPCompanyAdditionalSettings.Validate("Migrate Kit Items", false);
         GPCompanyAdditionalSettings.Modify();
 
         GPTestHelperFunctions.InitializeMigration();
@@ -158,11 +172,12 @@ codeunit 139662 "GP Item Tests"
         GPTestHelperFunctions.CreateConfigurationSettings();
         GPCompanyAdditionalSettings.GetSingleInstance();
         GPCompanyAdditionalSettings.Validate("Migrate Item Classes", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Kit Items", false);
         GPCompanyAdditionalSettings.Modify();
 
         GPTestHelperFunctions.InitializeMigration();
 
-        Assert.RecordCount(GPIV00101, 5);
+        Assert.RecordCount(GPIV00101, 8);
         Assert.RecordCount(GPIV40400, 2);
 
         Assert.IsTrue(GPIV00101.Get('1 1/2\"SASH BRSH'), 'Could not locate item.');
@@ -222,6 +237,7 @@ codeunit 139662 "GP Item Tests"
         GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", true);
         GPCompanyAdditionalSettings.Validate("Migrate Inactive Items", false);
         GPCompanyAdditionalSettings.Validate("Migrate Discontinued Items", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Kit Items", false);
         GPCompanyAdditionalSettings.Modify();
 
         // [THEN] 
@@ -233,7 +249,7 @@ codeunit 139662 "GP Item Tests"
         GPTestHelperFunctions.InitializeMigration();
 
         // [THEN] Calculated item count to migrate will be correct
-        Assert.AreEqual(4, HelperFunctions.GetNumberOfItems(), 'Wrong number of Items calculated');
+        Assert.AreEqual(6, HelperFunctions.GetNumberOfItems(), 'Wrong number of Items calculated');
 
         // [WHEN] Migrate is called
         GPItem.FindSet();
@@ -265,6 +281,7 @@ codeunit 139662 "GP Item Tests"
         GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", true);
         GPCompanyAdditionalSettings.Validate("Migrate Inactive Items", true);
         GPCompanyAdditionalSettings.Validate("Migrate Discontinued Items", false);
+        GPCompanyAdditionalSettings.Validate("Migrate Kit Items", false);
         GPCompanyAdditionalSettings.Modify();
 
         // [GIVEN] Some records are created in the staging table
@@ -276,7 +293,7 @@ codeunit 139662 "GP Item Tests"
         Assert.IsFalse(GPCompanyAdditionalSettings.GetMigrateDiscontinuedItems(), 'Should be configured to not migrate discontinued items.');
 
         // [THEN] Calculated item count to migrate will be correct
-        Assert.AreEqual(4, HelperFunctions.GetNumberOfItems(), 'Wrong number of Items calculated');
+        Assert.AreEqual(6, HelperFunctions.GetNumberOfItems(), 'Wrong number of Items calculated');
 
         // [WHEN] Migrate is called
         GPItem.FindSet();
@@ -291,6 +308,74 @@ codeunit 139662 "GP Item Tests"
 
         Item.SetRange("No.", 'ITEM DISCONTINUED');
         Assert.IsTrue(Item.IsEmpty(), 'Discontinued item should have been migrated.');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestGPKitItemMigration()
+    var
+        GPItem: Record "GP Item";
+        Item: Record "Item";
+        BOMComponent: Record "BOM Component";
+        HelperFunctions: Codeunit "Helper Functions";
+    begin
+        // [SCENARIO] Items are migrated from GP
+        // [GIVEN] There are no records in Item staging table
+        Initialize();
+
+        GPTestHelperFunctions.CreateConfigurationSettings();
+        GPCompanyAdditionalSettings.GetSingleInstance();
+        GPCompanyAdditionalSettings.Validate("Migrate Inventory Module", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Inactive Items", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Discontinued Items", true);
+        GPCompanyAdditionalSettings.Validate("Migrate Kit Items", true);
+        GPCompanyAdditionalSettings.Modify();
+
+        // [GIVEN] Some records are created in the staging table
+        CreateStagingTableEntries(GPItem);
+        CreateItemClassData();
+
+        Assert.IsTrue(GPCompanyAdditionalSettings.GetInventoryModuleEnabled(), 'Inventory module should be enabled.');
+
+        GPTestHelperFunctions.InitializeMigration();
+
+        // [WHEN] Migrate is called
+        GPItem.FindSet();
+        repeat
+            Migrate(GPItem);
+        until GPItem.Next() = 0;
+
+        HelperFunctions.CreatePostMigrationData();
+
+        // [THEN] A Item is created for all staging table entries
+        Assert.RecordCount(Item, 8);
+        Assert.AreEqual(Item.Count(), HelperFunctions.GetNumberOfItems(), 'Wrong number of Items calculated');
+
+        Item.Get('KIT COMPONENT INV');
+        Assert.AreEqual(Item.Type::Inventory, Item.Type, 'Type is incorrect (INV).');
+
+        Item.Get('KIT COMPONENT SVC');
+        Assert.AreEqual(Item.Type::"Non-Inventory", Item.Type, 'Type is incorrect (SVC).');
+
+        // [THEN] Kit item components are created with correct settings
+        BOMComponent.SetRange("Parent Item No.", 'KIT');
+        Assert.RecordCount(BOMComponent, 2);
+
+        BOMComponent.SetRange("No.", 'KIT COMPONENT INV');
+        BOMComponent.FindFirst();
+        Assert.AreEqual(10000, BOMComponent."Line No.", 'Line No. is incorrect');
+        Assert.AreEqual(BOMComponent.Type::Item, BOMComponent.Type, 'Type is incorrect.');
+        Assert.AreEqual('Kit Component Inventory', BOMComponent.Description, 'Description is incorrect.');
+        Assert.AreEqual('EACH', BOMComponent."Unit of Measure Code", 'Unit of Measure Code is incorrect.');
+        Assert.AreEqual(1, BOMComponent."Quantity per", 'Quantity per is incorrect.');
+
+        BOMComponent.SetRange("No.", 'KIT COMPONENT SVC');
+        BOMComponent.FindFirst();
+        Assert.AreEqual(20000, BOMComponent."Line No.", 'Line No. is incorrect');
+        Assert.AreEqual(BOMComponent.Type::Item, BOMComponent.Type, 'Type is incorrect.');
+        Assert.AreEqual('Kit Component Service', BOMComponent.Description, 'Description is incorrect.');
+        Assert.AreEqual('EACH', BOMComponent."Unit of Measure Code", 'Unit of Measure Code is incorrect.');
+        Assert.AreEqual(1, BOMComponent."Quantity per", 'Quantity per is incorrect.');
     end;
 
     local procedure Initialize()
@@ -329,8 +414,9 @@ codeunit 139662 "GP Item Tests"
     local procedure CreateStagingTableEntries(var GPItem: Record "GP Item")
     var
         GPIV00101: Record "GP IV00101";
+        GPIV00104: Record "GP IV00104";
     begin
-        GPItem.Init();
+        Clear(GPItem);
         GPItem.No := '1 1/2\"SASH BRSH';
         GPItem.Description := '1 1/2\"SASH BRSH';
         GPItem.SearchDescription := 'Craftsman Brush 1 1/2\" Sash';
@@ -348,7 +434,7 @@ codeunit 139662 "GP Item Tests"
         GPItem.PurchUnitOfMeasure := 'Each';
         GPItem.Insert();
 
-        GPItem.Init();
+        Clear(GPItem);
         GPItem.No := '12345ITEMNUMBER!@#$%';
         GPItem.Description := '12345ITEMNUMBER!@#$%1234567890';
         GPItem.SearchDescription := 'Item Description !@#123456789012345678901234567890';
@@ -366,7 +452,7 @@ codeunit 139662 "GP Item Tests"
         GPItem.PurchUnitOfMeasure := '';
         GPItem.Insert();
 
-        GPItem.Init();
+        Clear(GPItem);
         GPItem.No := '4'' STEPLADDER';
         GPItem.Description := '4'' STEPLADDER';
         GPItem.SearchDescription := '4'' Stepladder';
@@ -384,12 +470,13 @@ codeunit 139662 "GP Item Tests"
         GPItem.PurchUnitOfMeasure := 'Each';
         GPItem.Insert();
 
-        GPItem.Init();
+        Clear(GPItem);
         GPItem.No := 'ITEM INACTIVE';
         GPItem.Description := 'Inactive item';
         GPItem.SearchDescription := 'inactive';
         GPItem.ShortName := 'Inactive item';
         GPItem.BaseUnitOfMeasure := 'Each';
+        GPItem.ItemType := 0;
         GPItem.CostingMethod := '0';
         GPItem.CurrentCost := 1;
         GPItem.StandardCost := 1;
@@ -401,18 +488,19 @@ codeunit 139662 "GP Item Tests"
         GPItem.Insert();
 
 #pragma warning disable AA0139
-        GPIV00101.Init();
+        Clear(GPIV00101);
         GPIV00101.ITEMNMBR := GPItem.No;
         GPIV00101.INACTIVE := true;
         GPIV00101.Insert();
 #pragma warning restore AA0139
 
-        GPItem.Init();
+        Clear(GPItem);
         GPItem.No := 'ITEM DISCONTINUED';
         GPItem.Description := 'Discontinued item';
         GPItem.SearchDescription := 'discontinued';
         GPItem.ShortName := 'Discontinued item';
         GPItem.BaseUnitOfMeasure := 'Each';
+        GPItem.ItemType := 0;
         GPItem.CostingMethod := '0';
         GPItem.CurrentCost := 1;
         GPItem.StandardCost := 1;
@@ -424,11 +512,98 @@ codeunit 139662 "GP Item Tests"
         GPItem.Insert();
 
 #pragma warning disable AA0139
-        GPIV00101.Init();
+        Clear(GPIV00101);
         GPIV00101.ITEMNMBR := GPItem.No;
         GPIV00101.ITEMTYPE := 2;
         GPIV00101.Insert();
 #pragma warning restore AA0139
+
+        // Kit and its components
+        Clear(GPItem);
+        GPItem.No := 'KIT';
+        GPItem.Description := 'Kit';
+        GPItem.SearchDescription := 'Kit';
+        GPItem.ShortName := 'Kit';
+        GPItem.BaseUnitOfMeasure := 'Each';
+        GPItem.ItemType := 2;
+        GPItem.CostingMethod := '0';
+        GPItem.CurrentCost := 1;
+        GPItem.StandardCost := 1;
+        GPItem.UnitListPrice := 5;
+        GPItem.ShipWeight := 1;
+        GPItem.QuantityOnHand := 0;
+        GPItem.SalesUnitOfMeasure := 'Each';
+        GPItem.PurchUnitOfMeasure := 'Each';
+        GPItem.Insert();
+
+        Clear(GPIV00101);
+        GPIV00101.ITEMNMBR := 'KIT';
+        GPIV00101.ITEMTYPE := 3;
+        GPIV00101.Insert();
+
+        Clear(GPItem);
+        GPItem.No := 'KIT COMPONENT INV';
+        GPItem.Description := 'Kit Component Inventory';
+        GPItem.SearchDescription := 'Kit component inventory';
+        GPItem.ShortName := 'Kit Component Inventory';
+        GPItem.BaseUnitOfMeasure := 'Each';
+        GPItem.ItemType := 0;
+        GPItem.CostingMethod := '0';
+        GPItem.CurrentCost := 1;
+        GPItem.StandardCost := 1;
+        GPItem.UnitListPrice := 5;
+        GPItem.ShipWeight := 1;
+        GPItem.QuantityOnHand := 0;
+        GPItem.SalesUnitOfMeasure := 'Each';
+        GPItem.PurchUnitOfMeasure := 'Each';
+        GPItem.Insert();
+
+        Clear(GPIV00101);
+        GPIV00101.ITEMNMBR := 'KIT COMPONENT INV';
+        GPIV00101.ITEMTYPE := 1;
+        GPIV00101.Insert();
+
+        Clear(GPItem);
+        GPItem.No := 'KIT COMPONENT SVC';
+        GPItem.Description := 'Kit Component Service';
+        GPItem.SearchDescription := 'Kit component service';
+        GPItem.ShortName := 'Kit Component SVC';
+        GPItem.BaseUnitOfMeasure := 'Each';
+        GPItem.ItemType := 1;
+        GPItem.CostingMethod := '0';
+        GPItem.CurrentCost := 1;
+        GPItem.StandardCost := 1;
+        GPItem.UnitListPrice := 5;
+        GPItem.ShipWeight := 1;
+        GPItem.QuantityOnHand := 0;
+        GPItem.SalesUnitOfMeasure := 'Each';
+        GPItem.PurchUnitOfMeasure := 'Each';
+        GPItem.Insert();
+
+        Clear(GPIV00101);
+        GPIV00101.ITEMNMBR := 'KIT COMPONENT SVC';
+        GPIV00101.ITEMTYPE := 5;
+        GPIV00101.Insert();
+
+        Clear(GPIV00104);
+        GPIV00104.ITEMNMBR := 'KIT';
+        GPIV00104.SEQNUMBR := 1;
+        GPIV00104.CMPTITNM := 'KIT COMPONENT INV';
+        GPIV00104.CMPITUOM := 'Each';
+        GPIV00104.CMPITQTY := 1;
+        GPIV00104.CMPSERNM := false;
+        GPIV00104.DEX_ROW_ID := 1;
+        GPIV00104.Insert();
+
+        Clear(GPIV00104);
+        GPIV00104.ITEMNMBR := 'KIT';
+        GPIV00104.SEQNUMBR := 1;
+        GPIV00104.CMPTITNM := 'KIT COMPONENT SVC';
+        GPIV00104.CMPITUOM := 'Each';
+        GPIV00104.CMPITQTY := 1;
+        GPIV00104.CMPSERNM := false;
+        GPIV00104.DEX_ROW_ID := 2;
+        GPIV00104.Insert();
     end;
 
     local procedure CreateItemClassData()

@@ -182,6 +182,7 @@ table 40105 "GP Company Additional Settings"
                     Rec.Validate("Migrate Inactive Items", false);
                     Rec.Validate("Migrate Discontinued Items", false);
                     Rec.Validate("Migrate Hist. Inv. Trx.", false);
+                    Rec.Validate("Migrate Kit Items", false);
                 end;
             end;
         }
@@ -453,6 +454,17 @@ table 40105 "GP Company Additional Settings"
                     Rec.Validate("Migrate Payables Module", true);
             end;
         }
+        field(44; "Migrate Kit Items"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            InitValue = true;
+
+            trigger OnValidate()
+            begin
+                if Rec."Migrate Kit Items" then
+                    Rec.Validate("Migrate Inventory Module", true);
+            end;
+        }
     }
 
     keys
@@ -511,7 +523,7 @@ table 40105 "GP Company Additional Settings"
         exit(Rec."Migrate Inventory Module");
     end;
 
-    // Inactives
+    // Additional records to migrate
     procedure GetMigrateInactiveCheckbooks(): Boolean
     begin
         GetSingleInstance();
@@ -546,6 +558,12 @@ table 40105 "GP Company Additional Settings"
     begin
         GetSingleInstance();
         exit(Rec."Migrate Discontinued Items");
+    end;
+
+    procedure GetMigrateKitItems(): Boolean
+    begin
+        GetSingleInstance();
+        exit(Rec."Migrate Kit Items");
     end;
 
     // Classes

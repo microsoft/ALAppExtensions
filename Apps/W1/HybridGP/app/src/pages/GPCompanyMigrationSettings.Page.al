@@ -44,10 +44,6 @@ page 40056 "GP Company Migration Settings"
                 {
                     ToolTip = 'Specify whether to migrate customer classes.';
                 }
-                field("Migrate Discontinued Items"; Rec."Migrate Discontinued Items")
-                {
-                    ToolTip = 'Specify whether to migrate discontinued items.';
-                }
                 field("Migrate Hist. AP Trx."; Rec."Migrate Hist. AP Trx.")
                 {
                     ToolTip = 'Specify whether to migrate historical AP transactions.';
@@ -79,6 +75,14 @@ page 40056 "GP Company Migration Settings"
                 field("Migrate Inactive Items"; Rec."Migrate Inactive Items")
                 {
                     ToolTip = 'Specify whether to migrate inactive items.';
+                }
+                field("Migrate Discontinued Items"; Rec."Migrate Discontinued Items")
+                {
+                    ToolTip = 'Specify whether to migrate discontinued items.';
+                }
+                field("Migrate Kit Items"; Rec."Migrate Kit Items")
+                {
+                    ToolTip = 'Specifies the value of the Migrate Kit Items field.';
                 }
                 field("Migrate Inactive Vendors"; Rec."Migrate Inactive Vendors")
                 {
