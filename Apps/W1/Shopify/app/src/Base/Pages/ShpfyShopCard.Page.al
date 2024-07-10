@@ -522,13 +522,6 @@ page 30101 "Shpfy Shop Card"
                     end;
                 }
 #endif
-                field(KeepZeroQuantityLines; Rec."Keep Zero Quantity Lines")
-                {
-                    ApplicationArea = All;
-                    Caption = 'Keep Zero Quantity Lines';
-                    ToolTip = 'Specifies whether to keep zero quantity lines in the Shopify order. If you do not select this option, zero quantity lines are removed from the Shopify order.';
-                    Visible = false;
-                }
                 field("Posted Invoice Sync"; Rec."Posted Invoice Sync")
                 {
                     ApplicationArea = All;
