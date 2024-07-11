@@ -270,5 +270,8 @@ table 40142 "GP PM10200"
         {
             Clustered = true;
         }
+        key(Key2; VENDORID, DOCTYPE, VCHRNMBR, POSTED)
+        {
+        }
     }
 }
