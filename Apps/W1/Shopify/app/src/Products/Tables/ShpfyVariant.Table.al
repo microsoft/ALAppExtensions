@@ -192,9 +192,15 @@ table 30129 "Shpfy Variant"
     trigger OnDelete()
     var
         InventoryItem: Record "Shpfy Inventory Item";
+        Metafield: Record "Shpfy Metafield";
     begin
         InventoryItem.SetRange("Variant Id", Id);
         if not InventoryItem.IsEmpty then
             InventoryItem.DeleteAll();
+
+        Metafield.SetRange("Parent Table No.", Database::"Shpfy Variant");
+        Metafield.SetRange("Owner Id", Id);
+        if not Metafield.IsEmpty then
+            Metafield.DeleteAll();
     end;
 }

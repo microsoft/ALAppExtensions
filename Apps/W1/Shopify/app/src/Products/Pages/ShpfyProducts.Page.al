@@ -315,6 +315,24 @@ page 30126 "Shpfy Products"
                     Tags.RunModal();
                 end;
             }
+            action(Metafields)
+            {
+                ApplicationArea = All;
+                Caption = 'Metafields';
+                Image = PriceAdjustment;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
+                PromotedOnly = true;
+                ToolTip = 'Add metafields to a product. This can be used for adding custom data fields to products in Shopify.';
+
+                trigger OnAction()
+                var
+                    Metafields: Page "Shpfy Metafields";
+                begin
+                    Metafields.RunForResource(Database::"Shpfy Product", Rec.Id, Rec."Shop Code");
+                end;
+            }
             group(Sync)
             {
                 action(SyncProducts)
