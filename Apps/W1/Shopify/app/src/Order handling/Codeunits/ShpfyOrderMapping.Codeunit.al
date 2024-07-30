@@ -127,6 +127,7 @@ codeunit 30163 "Shpfy Order Mapping"
         end;
 
         MapShippingMethodCode(OrderHeader);
+        MapShippingAgent(OrderHeader);
         MapPaymentMethodCode(OrderHeader);
         OrderHeader.Modify();
         exit((OrderHeader."Bill-to Customer No." <> '') and (OrderHeader."Sell-to Customer No." <> ''));
@@ -163,6 +164,7 @@ codeunit 30163 "Shpfy Order Mapping"
         end;
 
         MapShippingMethodCode(OrderHeader);
+        MapShippingAgent(OrderHeader);
         MapPaymentMethodCode(OrderHeader);
         OrderHeader.Modify();
         exit((OrderHeader."Bill-to Customer No." <> '') and (OrderHeader."Sell-to Customer No." <> ''));
@@ -243,6 +245,26 @@ codeunit 30163 "Shpfy Order Mapping"
                     if ShipmentMethodMapping.Get(OrderHeader."Shop Code", OrderShippingCharges.Title) then
                         OrderHeader."Shipping Method Code" := ShipmentMethodMapping."Shipment Method Code";
                 OrderEvents.OnAfterMapShipmentMethod(OrderHeader);
+            end;
+        end;
+    end;
+
+    local procedure MapShippingAgent(var OrderHeader: Record "Shpfy Order Header")
+    var
+        OrderShippingCharges: Record "Shpfy Order Shipping Charges";
+        ShipmentMethodMapping: Record "Shpfy Shipment Method Mapping";
+        IsHandled: Boolean;
+    begin
+        if OrderHeader."Shipping Agent Code" = '' then begin
+            OrderEvents.OnBeforeMapShipmentAgent(OrderHeader, IsHandled);
+            if not IsHandled then begin
+                OrderShippingCharges.SetRange("Shopify Order Id", OrderHeader."Shopify Order Id");
+                if OrderShippingCharges.FindFirst() then
+                    if ShipmentMethodMapping.Get(OrderHeader."Shop Code", OrderShippingCharges.Title) then begin
+                        OrderHeader."Shipping Agent Code" := ShipmentMethodMapping."Shipping Agent Code";
+                        OrderHeader."Shipping Agent Service Code" := ShipmentMethodMapping."Shipping Agent Service Code";
+                    end;
+                OrderEvents.OnAfterMapShipmentAgent(OrderHeader);
             end;
         end;
     end;
