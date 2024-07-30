@@ -233,8 +233,8 @@ table 30102 "Shpfy Shop"
             ObsoleteState = Pending;
             ObsoleteTag = '24.0';
 #else
-                    ObsoleteState = Removed;
-                    ObsoleteTag = '27.0';
+            ObsoleteState = Removed;
+            ObsoleteTag = '27.0';
 #endif
         }
         field(30; "Shopify Can Update Customer"; Boolean)
@@ -511,7 +511,7 @@ table 30102 "Shpfy Shop"
         }
         field(73; "Return Location"; Code[10])
         {
-            Caption = 'Return Location';
+            Caption = 'Default Return Location';
             DataClassification = CustomerContent;
             TableRelation = Location where("Use As In-Transit" = const(false));
         }
@@ -777,6 +777,11 @@ table 30102 "Shpfy Shop"
                     UpdateOrderAttributes(Rec.Code);
             end;
 #endif
+        }
+        field(128; "Return Location Priority"; Enum "Shpfy Return Location Priority")
+        {
+            Caption = 'Return Location Priority';
+            DataClassification = CustomerContent;
         }
         field(200; "Shop Id"; Integer)
         {
