@@ -146,6 +146,12 @@ page 4051 "GP Company Add. Settings List"
                     ToolTip = 'Specify whether to migrate discontinued items.';
                     ApplicationArea = All;
                 }
+                field("Migrate Kit Items"; Rec."Migrate Kit Items")
+                {
+                    Caption = 'Kit Items';
+                    ToolTip = 'Specify whether to migrate kit items.';
+                    ApplicationArea = All;
+                }
                 field("Migrate Customer Classes"; Rec."Migrate Customer Classes")
                 {
                     Caption = 'Customer Classes';

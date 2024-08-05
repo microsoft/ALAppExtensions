@@ -631,6 +631,10 @@ codeunit 40125 "GP Populate Combined Tables"
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         InActive: Boolean;
     begin
+        if not GPCompanyAdditionalSettings.GetMigrateKitItems() then
+            if GPIV00101.ITEMTYPE = 3 then
+                exit(false);
+
         if GPIV00101.ITEMTYPE = 2 then
             InActive := true
         else
@@ -660,7 +664,6 @@ codeunit 40125 "GP Populate Combined Tables"
     begin
         UpdateGLSetupUnitRoundingPrecisionIfNeeded();
 
-        GPIV00101Inventory.SetFilter(ITEMTYPE, '<>3');
         if not GPIV00101Inventory.FindSet() then
             exit;
 
@@ -678,6 +681,8 @@ codeunit 40125 "GP Populate Combined Tables"
                         GPItem.ItemType := 0;
                     4, 5, 6:
                         GPItem.ItemType := 1;
+                    3:
+                        GPItem.ItemType := 2;
                 end;
 
                 case GPIV00101Inventory.VCTNMTHD of

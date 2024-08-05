@@ -144,7 +144,10 @@ page 41001 "Hist. Gen. Journal Lines"
     trigger OnOpenPage()
     begin
         if FilterAccountNo <> '' then
-            Rec.SetFilter("Account No.", FilterAccountNo);
+            Rec.SetRange("Account No.", FilterAccountNo);
+
+        if FilterOriginatingTrxSourceNo <> '' then
+            Rec.SetRange("Orig. Trx. Source No.", FilterOriginatingTrxSourceNo);
     end;
 
     procedure SetFilterAccountNo(AccountNo: Code[130])
@@ -152,6 +155,12 @@ page 41001 "Hist. Gen. Journal Lines"
         FilterAccountNo := AccountNo;
     end;
 
+    procedure SetFilterOriginatingTrxSourceNo(OriginatingTrxSourceNo: Code[35])
+    begin
+        FilterOriginatingTrxSourceNo := OriginatingTrxSourceNo;
+    end;
+
     var
         FilterAccountNo: Code[130];
+        FilterOriginatingTrxSourceNo: Code[35];
 }
