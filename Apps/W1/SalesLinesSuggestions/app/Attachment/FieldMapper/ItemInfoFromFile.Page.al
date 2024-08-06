@@ -220,6 +220,7 @@ page 7286 "Item Info. From  File"
 
     internal procedure LoadData(Data: List of [List of [Text]]; FileHandlerResult: Codeunit "File Handler Result"; SelectedColumns: List of [Integer]; CurrentColumn: Integer)
     var
+        SalesLineFromAttachment: Codeunit "Sales Line From Attachment";
         i: Integer;
         MaxDataRows: Integer;
     begin
@@ -248,6 +249,9 @@ page 7286 "Item Info. From  File"
             MaxDataRows := Data.Count() - 1
         else
             MaxDataRows := Data.Count();
+
+        if MaxDataRows > SalesLineFromAttachment.GetMaxRowsToShow() then
+            MaxDataRows := SalesLineFromAttachment.GetMaxRowsToShow();
         for i := 1 to MaxDataRows do begin
             Rec.Number := i;
             Rec.Insert();

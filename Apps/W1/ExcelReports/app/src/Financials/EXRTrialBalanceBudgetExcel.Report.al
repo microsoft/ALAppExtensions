@@ -57,6 +57,7 @@ report 4406 "EXR Trial BalanceBudgetExcel"
         }
         dataitem(TrialBalanceBudgetData; "EXR Trial Balance Buffer")
         {
+            RequestFilterFields = Balance, "Net Change";
             column(Account; "G/L Account No.") { IncludeCaption = true; }
             column(Dimension1Code; "Dimension 1 Code") { IncludeCaption = true; }
             column(Dimension2Code; "Dimension 2 Code") { IncludeCaption = true; }

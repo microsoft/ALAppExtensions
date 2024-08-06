@@ -1048,15 +1048,17 @@ codeunit 1450 "MS - Yodlee Service Mgt."
         ProviderId: Text;
         ProviderName: Text;
         OAuthMigrationStatus: Text;
+        ConsentId: Text;
     begin
         CheckServiceEnabled();
         GetLinkedBankAccount(OnlineBankAccountID, AccountNode);
         ProviderName := FindNodeText(AccountNode, '/root/root/account/providerName');
         ProviderId := FindNodeText(AccountNode, '/root/root/account/providerId');
         OAuthMigrationStatus := FindNodeText(AccountNode, '/root/root/account/oauthMigrationStatus');
+        ConsentId := FindNodeText(AccountNode, '/root/root/account/consentId');
         Session.LogMessage('0000A07', ProviderName, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
         Session.LogMessage('0000A08', ProviderId, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
-        Session.LogMessage('0000INC', OAuthMigrationStatus, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
+        Session.LogMessage('0000INC', OAuthMigrationStatus, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok, 'ConsentId', ConsentId);
         if MSYodleeBankServiceSetup.Get() then
             Session.LogMessage('0000F76', MSYodleeBankServiceSetup."Consumer Name", Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);
         Session.LogMessage('00006PN', OnlineBankID, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', YodleeTelemetryCategoryTok);

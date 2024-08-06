@@ -102,6 +102,7 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
         GenJournalLine."Tax Registration No. CZL" := SalesHeader."Tax Registration No. CZL";
         GenJournalLine."EU 3-Party Intermed. Role CZL" := SalesHeader."EU 3-Party Intermed. Role CZL";
         GenJournalLine."Original Doc. VAT Date CZL" := SalesHeader."Original Doc. VAT Date CZL";
+        GenJournalLine."Additional Currency Factor CZL" := SalesHeader."Additional Currency Factor CZL";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Gen. Journal Line", 'OnAfterCopyGenJnlLineFromPurchHeader', '', false, false)]
@@ -118,6 +119,7 @@ codeunit 11746 "Gen. Journal Line Handler CZL"
 #endif
         GenJournalLine."EU 3-Party Intermed. Role CZL" := PurchaseHeader."EU 3-Party Intermed. Role CZL";
         GenJournalLine."Original Doc. VAT Date CZL" := PurchaseHeader."Original Doc. VAT Date CZL";
+        GenJournalLine."Additional Currency Factor CZL" := PurchaseHeader."Additional Currency Factor CZL";
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterCopyToGenJnlLine', '', false, false)]

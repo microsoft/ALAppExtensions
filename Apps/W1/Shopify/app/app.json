@@ -29,11 +29,6 @@
                                    "id":  "32f586f0-69fd-41bb-8e97-98c869856360",
                                    "publisher":  "Microsoft",
                                    "name":  "Shopify Connector Test"
-                               },
-                               {
-                                   "id":  "96da1317-c2e8-42ec-aa19-216e33d0da19",
-                                   "name":  "Scaptify",
-                                   "publisher":  "Scapta"
                                }
                            ],
     "resourceExposurePolicy":  {

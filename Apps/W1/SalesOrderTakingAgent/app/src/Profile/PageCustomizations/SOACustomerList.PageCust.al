@@ -12,6 +12,8 @@ pagecustomization "SOA Customer List" customizes "Customer List"
     ClearActions = true;
     ClearLayout = true;
     ClearViews = true;
+    InsertAllowed = false;
+    DeleteAllowed = false;
 
     layout
     {

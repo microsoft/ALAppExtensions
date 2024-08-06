@@ -136,17 +136,19 @@ codeunit 7275 "Sales Lines Suggestions Impl."
 
         if AOAIOperationResponse.IsSuccess() then begin
             CompletionAnswer := AOAIOperationResponse.GetResult();
-            if AOAIOperationResponse.IsFunctionCall() then begin
-                AOAIFunctionResponse := AOAIOperationResponse.GetFunctionResponse();
-                FeatureTelemetry.LogUsage('0000MED', GetFeatureName(), 'Call Chat Completion API', TelemetryCD);
+            if AOAIOperationResponse.IsFunctionCall() then
+                foreach AOAIFunctionResponse in AOAIOperationResponse.GetFunctionResponses() do begin
+                    FeatureTelemetry.LogUsage('0000MED', GetFeatureName(), 'Call Chat Completion API', TelemetryCD);
 
-                if AOAIFunctionResponse.IsSuccess() then
-                    TempSalesLineAiSuggestion.Copy(AOAIFunctionResponse.GetResult(), true)
-                else begin
-                    MagicFunction.Execute(EmptyArguments);
-                    FeatureTelemetry.LogError('0000ME9', GetFeatureName(), 'Process function_call', 'Function not supported, defaulting to magic_function');
+                    if (not AOAIFunctionResponse.IsSuccess()) or (AOAIFunctionResponse.GetFunctionName() = MagicFunction.GetName()) then begin
+                        MagicFunction.Execute(EmptyArguments);
+                        FeatureTelemetry.LogError('0000ME9', GetFeatureName(), 'Process function_call', 'Function not supported, defaulting to magic_function');
+                        Clear(TempSalesLineAiSuggestion);
+                        exit(CompletionAnswer);
+                    end else
+                        TempSalesLineAiSuggestion.Copy(AOAIFunctionResponse.GetResult(), true);
                 end
-            end else begin
+            else begin
                 if AOAIOperationResponse.GetResult() = '' then
                     FeatureTelemetry.LogError('0000ME8', GetFeatureName(), 'Call Chat Completion API', 'Completion answer is empty', '', TelemetryCD)
                 else
@@ -205,23 +207,28 @@ codeunit 7275 "Sales Lines Suggestions Impl."
 
         if AOAIOperationResponse.IsSuccess() then begin
             CompletionAnswer := AOAIOperationResponse.GetResult();
-            if AOAIOperationResponse.IsFunctionCall() then begin
-                AOAIFunctionResponse := AOAIOperationResponse.GetFunctionResponse();
-                FeatureTelemetry.LogUsage('0000MZC', GetFeatureName(), 'Call Chat Completion API', TelemetryCD);
+            if AOAIOperationResponse.IsFunctionCall() then
+                foreach AOAIFunctionResponse in AOAIOperationResponse.GetFunctionResponses() do begin
+                    FeatureTelemetry.LogUsage('0000MZC', GetFeatureName(), 'Call Chat Completion API', TelemetryCD);
 
-                if AOAIFunctionResponse.IsSuccess() then begin
-                    FunctionResponseVariant := AOAIFunctionResponse.GetResult();
-                    if FunctionResponseVariant.IsCodeunit() then
-                        FileHandlerResult := AOAIFunctionResponse.GetResult()
-                    else begin
+                    if AOAIFunctionResponse.IsSuccess() then begin
+                        FunctionResponseVariant := AOAIFunctionResponse.GetResult();
+                        if FunctionResponseVariant.IsCodeunit() then
+                            FileHandlerResult := AOAIFunctionResponse.GetResult()
+                        else begin
+                            MagicFunction.Execute(EmptyArguments);
+                            FeatureTelemetry.LogError('0000N6J', GetFeatureName(), 'Process function_call', 'Function not supported, defaulting to magic_function');
+                            Clear(FileHandlerResult);
+                            exit(FileHandlerResult);
+                        end;
+                    end else begin
                         MagicFunction.Execute(EmptyArguments);
-                        FeatureTelemetry.LogError('0000N6J', GetFeatureName(), 'Process function_call', 'Function not supported, defaulting to magic_function');
-                    end;
-                end else begin
-                    MagicFunction.Execute(EmptyArguments);
-                    FeatureTelemetry.LogError('0000MZ8', GetFeatureName(), 'Process function_call', 'Function not supported, defaulting to magic_function');
+                        FeatureTelemetry.LogError('0000MZ8', GetFeatureName(), 'Process function_call', 'Function not supported, defaulting to magic_function');
+                        Clear(FileHandlerResult);
+                        exit(FileHandlerResult);
+                    end
                 end
-            end else begin
+            else begin
                 if AOAIOperationResponse.GetResult() = '' then
                     FeatureTelemetry.LogError('0000MZ9', GetFeatureName(), 'Call Chat Completion API', 'Completion answer is empty', '', TelemetryCD)
                 else

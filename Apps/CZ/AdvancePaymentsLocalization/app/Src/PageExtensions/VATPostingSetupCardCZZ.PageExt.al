@@ -35,6 +35,10 @@ pageextension 31026 "VAT Posting Setup Card CZZ" extends "VAT Posting Setup Card
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies purchase advance letter VAT account.';
                 }
+                field("P.Adv.Letter ND VAT Acc. CZZ"; Rec."P.Adv.Letter ND VAT Acc. CZZ")
+                {
+                    ApplicationArea = Basic, Suite;
+                }
             }
         }
     }

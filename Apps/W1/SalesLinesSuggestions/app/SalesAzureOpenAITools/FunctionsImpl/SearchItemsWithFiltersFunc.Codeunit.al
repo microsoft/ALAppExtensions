@@ -39,7 +39,7 @@ codeunit 7291 "Search Items With Filters Func" implements "AOAI Function"
             UnitsOfMeasureText := UnitsOfMeasureText.TrimEnd(',');
         end;
 
-        PromptJson.ReadFrom(StrSubstNo(Prompt.GetSLSSearchItemsWithFiltersPrompt(), UnitsOfMeasureText));
+        PromptJson.ReadFrom(StrSubstNo(Prompt.GetSLSSearchItemsWithFiltersPrompt().Unwrap(), UnitsOfMeasureText));
         exit(PromptJson);
     end;
 

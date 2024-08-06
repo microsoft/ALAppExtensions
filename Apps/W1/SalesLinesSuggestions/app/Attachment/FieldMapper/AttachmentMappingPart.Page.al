@@ -212,6 +212,9 @@ page 7289 "Attachment Mapping Part"
         if Rec."Entry No." > 0 then begin
             GlobalPreviewSampleDataTxt := '';
 
+            if Rec."Entry No." > GlobalFileContentAsTable.Get(1).Count() then // ignore columns if their index is more than the content
+                exit;
+
             if GlobalFileParserResult.GetContainsHeaderRow() then
                 SampleValue := CopyStr(GlobalFileContentAsTable.Get(2).Get(Rec."Entry No."), 1, MaxStrLen(SampleValue))
             else

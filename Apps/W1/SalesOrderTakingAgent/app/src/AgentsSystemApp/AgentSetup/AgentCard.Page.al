@@ -25,7 +25,14 @@ page 4315 "Agent Card"
             group(General)
             {
                 Caption = 'General';
-
+                field("Agent Metadata Provider"; Rec."Agent Metadata Provider")
+                {
+                    ShowMandatory = true;
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Type';
+                    Tooltip = 'Specifies the type of the agent.';
+                    Editable = ControlsEditable;
+                }
                 field(UserName; Rec."User Name")
                 {
                     ShowMandatory = true;
@@ -82,7 +89,7 @@ page 4315 "Agent Card"
             group(InstructionsGroup)
             {
                 Caption = 'Instructions';
-                Visible = Rec."Setup Page ID" = 0;
+                Visible = (Rec."Setup Page ID" = 0) or ShowInstructions;
                 Enabled = AgentRecordExists;
                 field(Instructions; InstructionsTxt)
                 {
@@ -102,6 +109,33 @@ page 4315 "Agent Card"
                     end;
                 }
             }
+            group(ConfigureGroup)
+            {
+                ShowCaption = false;
+                Visible = (Rec."Setup Page ID" <> 0);
+                Enabled = AgentRecordExists;
+
+                field(ConfigureAgent; ConfigureAgentTxt)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Instructions';
+                    ShowCaption = false;
+                    ToolTip = 'Specifies the instructions for the agent.';
+
+                    trigger OnDrillDown()
+                    var
+                        TempAgent: Record Agent temporary;
+                    begin
+                        if not ControlsEditable then
+                            Error(DisableAgentBeforeConfiguringErr);
+                        TempAgent.Copy(Rec);
+                        TempAgent.Insert();
+                        // TODO: this doesn't work because the "SOA Setup" doesn't use Agent as source table.
+                        Page.RunModal(Rec."Setup Page ID", TempAgent);
+                    end;
+                }
+            }
+
             part(Permissions; "User Subform")
             {
                 ApplicationArea = Basic, Suite;
@@ -155,6 +189,19 @@ page 4315 "Agent Card"
                     Page.Run(Page::"Agent Task List", AgentTask);
                 end;
             }
+            action(ShowInstructionsAction)
+            {
+                ApplicationArea = All;
+                Caption = 'Show Instructions';
+                ToolTip = 'Show the instructions for the agent.';
+                Image = ShowChart;
+
+                trigger OnAction()
+                begin
+                    ShowInstructions := true;
+                    CurrPage.Update(false);
+                end;
+            }
         }
         area(Promoted)
         {
@@ -204,10 +251,11 @@ page 4315 "Agent Card"
 
     trigger OnInsertRecord(BelowxRec: Boolean): Boolean
     var
+        AgentAccessControl: Record "Agent Access Control";
         AgentImpl: Codeunit "Agent Impl.";
     begin
         Rec.Insert(true);
-        AgentImpl.InsertCurrentOwnerIfNoOwnersDefined(Rec);
+        AgentImpl.InsertCurrentOwnerIfNoOwnersDefined(Rec, AgentAccessControl);
         CurrPage.Update(false);
         exit(false);
     end;
@@ -215,9 +263,13 @@ page 4315 "Agent Card"
     var
         UserSettingsRecord: Record "User Settings";
         EnabledWarningTok: Label 'You must set the State field to Disabled before you can make changes to this app.';
-        ControlsEditable: Boolean;
-        ShowEnableWarning: Text;
-        AgentRecordExists: Boolean;
+        ConfigureAgentTxt: Label 'Open configuration wizard';
+        DisableAgentBeforeConfiguringErr: Label 'You must set the State field to Disabled before you can configure the agent.';
         InstructionsTxt: Text;
         ProfileDisplayName: Text;
+        ShowEnableWarning: Text;
+        AgentRecordExists: Boolean;
+        ControlsEditable: Boolean;
+        // TODO: Remove before release
+        ShowInstructions: Boolean;
 }

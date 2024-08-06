@@ -20,7 +20,7 @@ codeunit 7284 "Magic Function" implements "AOAI Function"
         Prompt: Codeunit "SLS Prompts";
         PromptJson: JsonObject;
     begin
-        PromptJson.ReadFrom(Prompt.GetSLSMagicFunctionPrompt());
+        PromptJson.ReadFrom(Prompt.GetSLSMagicFunctionPrompt().Unwrap());
         exit(PromptJson);
     end;
 

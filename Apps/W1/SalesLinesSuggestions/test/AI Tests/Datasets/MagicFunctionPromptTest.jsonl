@@ -1,0 +1,13 @@
+{"question": "Need all the items from sales order on next week"}
+{"question": "Need all the items from sales order from last month to next week"}
+{"question": "Need all the items from sales invoice on next week"}
+{"question": "Need all the items from sales invoice from last month to next week"}
+{"question": "Need all the items from sales shipment on next week"}
+{"question": "Need all the items from sales shipment from last month to next week"}
+{"question": "Need all the items from sales Quote on next week"}
+{"question": "Need all the items from sales Quote from last month to next week"}
+{"question": "Hello! Could you do a quick review of items from recent sales orders? Just a general stock check. Thanks!"}
+{"question": "Hey! Can you assess the items receiving 5-star reviews from our previous sales order? I need them for customer satisfaction analysis. Thanks a lot!"}
+{"question": "Can you check for any damaged goods in sales invoice 55566? We need to process returns or replacements."}
+{"question": "Hello, a quick request: could you highlight items with delivery delays in shipment SHIP-987651? We need to proactively address any customer concerns. Thanks for your prompt action!"}
+{"question": "Dear Sir or Madam, I'm Bob, an interior designer. I'm interested in your range of sustainable home decor. Can you share more about it? I need to get one. Also, I've recently been involved in designing eco-friendly office spaces. Sincerely, Bob"}

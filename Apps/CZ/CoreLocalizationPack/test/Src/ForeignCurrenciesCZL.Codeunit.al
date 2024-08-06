@@ -7,6 +7,7 @@ codeunit 148088 "Foreign Currencies CZL"
         Assert: Codeunit Assert;
         LibraryERM: Codeunit "Library - ERM";
         LibraryPurchase: Codeunit "Library - Purchase";
+        LibraryHumanResource: Codeunit "Library - Human Resource";
         LibraryRandom: Codeunit "Library - Random";
         LibraryReportDataset: Codeunit "Library - Report Dataset";
         LibrarySales: Codeunit "Library - Sales";
@@ -69,7 +70,7 @@ codeunit 148088 "Foreign Currencies CZL"
         // [WHEN] Run adjust exchnage rates report
         DocumentNo[3] := GenerateDocumentNo(CurrExchRateDate[1]);
         RunAdjustExchangeRates(
-          CurrencyCode, CurrExchRateDate[1], CurrExchRateDate[2], DocumentNo[3], AdjCust, AdjVend, false, false);
+          CurrencyCode, CurrExchRateDate[1], CurrExchRateDate[2], DocumentNo[3], AdjCust, AdjVend, false, false, false);
 
         // [THEN] The document number in report will be filled from customer/vendor ledger entry
         if AdjCust then
@@ -89,6 +90,7 @@ codeunit 148088 "Foreign Currencies CZL"
     var
         DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
+        DetailedEmployeeLedgerEntry: Record "Detailed Employee Ledger Entry";
         CurrencyCode: Code[10];
         CurrExchRateDate: array[2] of Date;
         DocumentNo: Code[20];
@@ -106,10 +108,13 @@ codeunit 148088 "Foreign Currencies CZL"
         // [GIVEN] The Vendor Ledger Entries with created currency have been created
         CreateVendorLedgerEntries(CurrencyCode, CurrExchRateDate);
 
+        // [GIVEN] The Employee Ledger Entries with created currency have been created
+        CreateEmployeeLedgerEntries(CurrencyCode, CurrExchRateDate);
+
         // [WHEN] Run adjust exchange rates report
         DocumentNo := GenerateDocumentNo(CurrExchRateDate[1]);
         RunAdjustExchangeRates(
-          CurrencyCode, CurrExchRateDate[1], CurrExchRateDate[2], DocumentNo, true, true, false, false);
+          CurrencyCode, CurrExchRateDate[1], CurrExchRateDate[2], DocumentNo, true, true, false, true, false);
 
         // [THEN] The post parameter on request page will be false
         LibraryReportDataset.AssertElementWithValueExists('PostVar', Format(false));
@@ -125,6 +130,12 @@ codeunit 148088 "Foreign Currencies CZL"
         DetailedVendorLedgEntry.SetRange("Entry Type", DetailedVendorLedgEntry."Entry Type"::"Unrealized Gain");
         DetailedVendorLedgEntry.SetRange("Document No.", DocumentNo);
         Assert.RecordIsEmpty(DetailedVendorLedgEntry);
+
+        // [THEN] The Detail Employee Ledger Entries won't be exist
+        DetailedEmployeeLedgerEntry.Reset();
+        DetailedEmployeeLedgerEntry.SetRange("Entry Type", DetailedEmployeeLedgerEntry."Entry Type"::"Unrealized Gain");
+        DetailedEmployeeLedgerEntry.SetRange("Document No.", DocumentNo);
+        Assert.RecordIsEmpty(DetailedEmployeeLedgerEntry);
     end;
 
     [Test]
@@ -133,6 +144,7 @@ codeunit 148088 "Foreign Currencies CZL"
     var
         DetailedCustLedgEntry: Record "Detailed Cust. Ledg. Entry";
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
+        DetailedEmployeeLedgerEntry: Record "Detailed Employee Ledger Entry";
         CurrencyCode: Code[10];
         CurrExchRateDate: array[2] of Date;
         DocumentNo: Code[20];
@@ -150,10 +162,13 @@ codeunit 148088 "Foreign Currencies CZL"
         // [GIVEN] The Vendor Ledger Entries with created currency have been created
         CreateVendorLedgerEntries(CurrencyCode, CurrExchRateDate);
 
+        // [GIVEN] The Employee Ledger Entries with created currency have been created
+        CreateEmployeeLedgerEntries(CurrencyCode, CurrExchRateDate);
+
         // [WHEN] Run adjust exchange rates report
         DocumentNo := GenerateDocumentNo(CurrExchRateDate[1]);
         RunAdjustExchangeRates(
-          CurrencyCode, CurrExchRateDate[1], CurrExchRateDate[2], DocumentNo, true, true, false, true);
+          CurrencyCode, CurrExchRateDate[1], CurrExchRateDate[2], DocumentNo, true, true, false, true, true);
 
         // [THEN] The Detail Customer Ledger Entries will be exist
         DetailedCustLedgEntry.Reset();
@@ -166,6 +181,12 @@ codeunit 148088 "Foreign Currencies CZL"
         DetailedVendorLedgEntry.SetRange("Entry Type", DetailedVendorLedgEntry."Entry Type"::"Unrealized Gain");
         DetailedVendorLedgEntry.SetRange("Document No.", DocumentNo);
         Assert.RecordIsNotEmpty(DetailedVendorLedgEntry);
+
+        // [THEN] The Detail Employee Ledger Entries will be exist
+        DetailedEmployeeLedgerEntry.Reset();
+        DetailedEmployeeLedgerEntry.SetRange("Entry Type", DetailedEmployeeLedgerEntry."Entry Type"::"Unrealized Gain");
+        DetailedEmployeeLedgerEntry.SetRange("Document No.", DocumentNo);
+        Assert.RecordIsNotEmpty(DetailedEmployeeLedgerEntry);
     end;
 
     [Test]
@@ -211,7 +232,7 @@ codeunit 148088 "Foreign Currencies CZL"
 
         // [WHEN] Run adjust exchange rates report
         RunAdjustExchangeRates(
-          CurrencyCode, CurrExchRateDate[1], CurrExchRateDate[2], DocumentNo, true, false, false, true);
+          CurrencyCode, CurrExchRateDate[1], CurrExchRateDate[2], DocumentNo, true, false, false, false, true);
 
         // [THEN] The Detail Customer Ledger Entries will be exist
         DetailedCustLedgEntry.Reset();
@@ -258,6 +279,14 @@ codeunit 148088 "Foreign Currencies CZL"
             GenJournalLine."Account Type"::Vendor, LibraryPurchase.CreateVendorNo(), CurrencyCode, PostingDate));
     end;
 
+    local procedure CreateEmployeeLedgerEntries(CurrencyCode: Code[10]; PostingDate: array[2] of Date): Code[20]
+    var
+        GenJournalLine: Record "Gen. Journal Line";
+    begin
+        exit(CreateLedgerEntries(
+            GenJournalLine."Account Type"::Employee, LibraryHumanResource.CreateEmployeeNo(), CurrencyCode, PostingDate));
+    end;
+
     local procedure CreateLedgerEntries(AccountType: Enum "Gen. Journal Account Type"; AccountNo: Code[20]; CurrencyCode: Code[10]; PostingDate: array[2] of Date): Code[20]
     var
         GenJournalBatch: Record "Gen. Journal Batch";
@@ -267,22 +296,28 @@ codeunit 148088 "Foreign Currencies CZL"
     begin
         Amount := LibraryRandom.RandDec(1000, 2);
 
-        if AccountType = GenJournalLine."Account Type"::Vendor then
+        if (AccountType = GenJournalLine."Account Type"::Vendor) or (AccountType = GenJournalLine."Account Type"::Employee) then
             Amount := -Amount;
 
         LibraryERM.SelectGenJnlBatch(GenJournalBatch);
 
         // create and post invoice
-        DocumentNo := CreateJournalLine(
-            GenJournalLine, GenJournalBatch, GenJournalLine."Document Type"::Invoice,
-            AccountType, AccountNo, Amount, PostingDate[1], CurrencyCode);
+        if AccountType = GenJournalLine."Account Type"::Employee then
+            DocumentNo := CreateJournalLine(
+               GenJournalLine, GenJournalBatch, GenJournalLine."Document Type"::" ",
+               AccountType, AccountNo, Amount, PostingDate[1], CurrencyCode)
+        else
+            DocumentNo := CreateJournalLine(
+                GenJournalLine, GenJournalBatch, GenJournalLine."Document Type"::Invoice,
+                AccountType, AccountNo, Amount, PostingDate[1], CurrencyCode);
         LibraryERM.PostGeneralJnlLine(GenJournalLine);
 
         // create and post payment with first currency exchange rate
         CreateJournalLine(
           GenJournalLine, GenJournalBatch, GenJournalLine."Document Type"::Payment,
           AccountType, AccountNo, -Amount / 2, PostingDate[1], CurrencyCode);
-        GenJournalLine.Validate("Applies-to Doc. Type", GenJournalLine."Applies-to Doc. Type"::Invoice);
+        if AccountType <> GenJournalLine."Account Type"::Employee then
+            GenJournalLine.Validate("Applies-to Doc. Type", GenJournalLine."Applies-to Doc. Type"::Invoice);
         GenJournalLine.Validate("Applies-to Doc. No.", DocumentNo);
         GenJournalLine.Modify();
         LibraryERM.PostGeneralJnlLine(GenJournalLine);
@@ -291,7 +326,8 @@ codeunit 148088 "Foreign Currencies CZL"
         CreateJournalLine(
           GenJournalLine, GenJournalBatch, GenJournalLine."Document Type"::Payment,
           AccountType, AccountNo, -GenJournalLine.Amount - Amount, CalcDate('<+1D>', PostingDate[2]), CurrencyCode);
-        GenJournalLine.Validate("Applies-to Doc. Type", GenJournalLine."Applies-to Doc. Type"::Invoice);
+        if AccountType <> GenJournalLine."Account Type"::Employee then
+            GenJournalLine.Validate("Applies-to Doc. Type", GenJournalLine."Applies-to Doc. Type"::Invoice);
         GenJournalLine.Validate("Applies-to Doc. No.", DocumentNo);
         GenJournalLine.Modify();
         LibraryERM.PostGeneralJnlLine(GenJournalLine);
@@ -324,7 +360,7 @@ codeunit 148088 "Foreign Currencies CZL"
         exit(StrSubstNo('ADJSK%1%2', Date2DMY(PostingDate, 3), Date2DMY(PostingDate, 2)));
     end;
 
-    local procedure RunAdjustExchangeRates(CurrencyCode: Code[10]; StartDate: Date; EndDate: Date; DocumentNo: Code[20]; AdjCust: Boolean; AdjVend: Boolean; AdjBank: Boolean; Post: Boolean)
+    local procedure RunAdjustExchangeRates(CurrencyCode: Code[10]; StartDate: Date; EndDate: Date; DocumentNo: Code[20]; AdjCust: Boolean; AdjVend: Boolean; AdjBank: Boolean; AdjEmpl: Boolean; Post: Boolean)
     var
         Currency: Record Currency;
         XmlParameters: Text;
@@ -334,6 +370,7 @@ codeunit 148088 "Foreign Currencies CZL"
         LibraryVariableStorage.Enqueue(DocumentNo);
         LibraryVariableStorage.Enqueue(AdjCust);
         LibraryVariableStorage.Enqueue(AdjVend);
+        LibraryVariableStorage.Enqueue(AdjEmpl);
         LibraryVariableStorage.Enqueue(AdjBank);
         LibraryVariableStorage.Enqueue(Post);
 
@@ -357,6 +394,8 @@ codeunit 148088 "Foreign Currencies CZL"
         AdjustExchangeRatesCZL.AdjCustField.SetValue(FieldVariant);
         LibraryVariableStorage.Dequeue(FieldVariant);
         AdjustExchangeRatesCZL.AdjVendField.SetValue(FieldVariant);
+        LibraryVariableStorage.Dequeue(FieldVariant);
+        AdjustExchangeRatesCZL.AdjEmplAcc.SetValue(FieldVariant);
         LibraryVariableStorage.Dequeue(FieldVariant);
         AdjustExchangeRatesCZL.AdjBankField.SetValue(FieldVariant);
         LibraryVariableStorage.Dequeue(FieldVariant);
