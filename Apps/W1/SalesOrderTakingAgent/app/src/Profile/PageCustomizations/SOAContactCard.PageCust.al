@@ -11,6 +11,8 @@ pagecustomization "SOA Contact Card" customizes "Contact Card"
 {
     ClearActions = true;
     ClearLayout = true;
+    InsertAllowed = false;
+    DeleteAllowed = false;
 
     layout
     {
@@ -95,23 +97,11 @@ pagecustomization "SOA Contact Card" customizes "Contact Card"
 
     actions
     {
-        modify("Co&mments")
-        {
-            Visible = true;
-        }
         modify("Co&mments_Promoted")
         {
             Visible = true;
         }
-        modify(SalesQuotes)
-        {
-            Visible = true;
-        }
         modify(SalesQuotes_Promoted)
-        {
-            Visible = true;
-        }
-        modify(NewSalesQuote)
         {
             Visible = true;
         }

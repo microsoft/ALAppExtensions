@@ -8,6 +8,7 @@ using Microsoft.Finance.Currency;
 #if not CLEAN24
 using Microsoft.Finance.EU3PartyTrade;
 #endif
+using Microsoft.Finance.GeneralLedger.Setup;
 
 pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Credit Memo"
 {
@@ -83,6 +84,21 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
         }
         addafter("Currency Code")
         {
+            field(AdditionalCurrencyCodeCZL; GeneralLedgerSetup.GetAdditionalCurrencyCode())
+            {
+                ApplicationArea = Suite;
+                Editable = false;
+                Caption = 'Additional Currency Code';
+                ToolTip = 'Specifies the exchange rate to be used if you post in an additional currency.';
+                Visible = AddCurrencyVisible;
+
+                trigger OnAssistEdit()
+                begin
+                    ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCode(), Rec."Additional Currency Factor CZL", Rec."Posting Date");
+                    ChangeExchangeRate.Editable(false);
+                    ChangeExchangeRate.RunModal();
+                end;
+            }
             field("VAT Currency Code CZL"; Rec."VAT Currency Code CZL")
             {
                 ApplicationArea = Suite;
@@ -269,13 +285,14 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
             }
         }
     }
-#if not CLEAN24
 
     trigger OnOpenPage()
     begin
+#if not CLEAN24
         EU3PartyTradeFeatureEnabled := EU3PartyTradeFeatMgt.IsEnabled();
-    end;
 #endif
+        AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabled();
+    end;
 
     trigger OnAfterGetCurrRecord()
     begin
@@ -283,17 +300,20 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
     end;
 
     var
+        GeneralLedgerSetup: Record "General Ledger Setup";
 #if not CLEAN24
 #pragma warning disable AL0432
         EU3PartyTradeFeatMgt: Codeunit "EU3 Party Trade Feat Mgt. CZL";
 #pragma warning restore AL0432
 #endif
+        ChangeExchangeRate: Page "Change Exchange Rate";
 #if not CLEAN24
 #pragma warning disable AL0432
         EU3PartyTradeFeatureEnabled: Boolean;
 #pragma warning restore AL0432
 #endif
         VATLCYCorrectionCZLVisible: Boolean;
+        AddCurrencyVisible: Boolean;
 
     procedure SetRecPopUpVATLCYCorrectionCZL(NewPopUpVATLCYCorrection: Boolean)
     begin

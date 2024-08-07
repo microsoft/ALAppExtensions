@@ -53,7 +53,7 @@ codeunit 30182 "Shpfy Product Price Calc."
         ShpfyUpdatePriceSouce: codeunit "Shpfy Update Price Source";
         IsHandled: Boolean;
     begin
-        ProductEvents.OnBeforeCalculateUnitPrice(Item, ItemVariant, UnitOfMeasure, Shop, UnitCost, Price, ComparePrice, IsHandled);
+        ProductEvents.OnBeforeCalculateUnitPrice(Item, ItemVariant, UnitOfMeasure, Shop, Catalog, UnitCost, Price, ComparePrice, IsHandled);
         if not IsHandled then begin
             BindSubscription(ShpfyUpdatePriceSouce);
             if TempSalesHeader.FindFirst() then begin
@@ -84,7 +84,7 @@ codeunit 30182 "Shpfy Product Price Calc."
             if ComparePrice <= Price then
                 ComparePrice := 0;
         end;
-        ProductEvents.OnAfterCalculateUnitPrice(Item, ItemVariant, UnitOfMeasure, Shop, UnitCost, Price, ComparePrice);
+        ProductEvents.OnAfterCalculateUnitPrice(Item, ItemVariant, UnitOfMeasure, Shop, Catalog, UnitCost, Price, ComparePrice);
     end;
 
     /// <summary> 

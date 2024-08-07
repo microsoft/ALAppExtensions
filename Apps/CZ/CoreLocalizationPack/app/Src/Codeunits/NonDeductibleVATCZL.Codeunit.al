@@ -15,6 +15,47 @@ codeunit 31147 "Non-Deductible VAT CZL"
     var
         NonDeductibleVAT: Codeunit "Non-Deductible VAT";
         PurchaseSettlementOnlyErr: Label 'Non-deductible VAT is supported only for purchase and settlement transactions.';
+        UndefinedNonDeductibleVATSetupTitleLbl: Label 'Undefined Non-deductible VAT setup';
+        UndefinedNonDeductibleVATSetupErr: Label 'Non-deductible VAT setup is not defined for the specified date.';
+        ShowNonDeductibleVATSetupLbl: Label 'Show Non-deductible VAT setup';
+
+    procedure ExistNonDeductibleVATSetupToDate(ToDate: Date): Boolean
+    var
+        NonDeductibleVATSetupCZL: Record "Non-Deductible VAT Setup CZL";
+    begin
+        exit(NonDeductibleVATSetupCZL.FindToDate(ToDate))
+    end;
+
+    procedure CheckNonDeductibleVATSetupToDate(ToDate: Date)
+    begin
+        CheckNonDeductibleVATSetupToDate(ToDate, true);
+    end;
+
+    procedure CheckNonDeductibleVATSetupToDate(ToDate: Date; ThrowError: Boolean) Result: Boolean
+    begin
+        Result := ExistNonDeductibleVATSetupToDate(ToDate);
+        if Result then
+            exit;
+
+        if ThrowError then
+            Error(GetUndefinedNonDeductibleVATSetupErrorInfo());
+        Message(UndefinedNonDeductibleVATSetupErr);
+    end;
+
+    local procedure GetUndefinedNonDeductibleVATSetupErrorInfo(): ErrorInfo
+    var
+        UndefinedNonDeductibleVATSetupErrorInfo: ErrorInfo;
+    begin
+        UndefinedNonDeductibleVATSetupErrorInfo.ErrorType := ErrorType::Client;
+        UndefinedNonDeductibleVATSetupErrorInfo.Verbosity := Verbosity::Warning;
+        UndefinedNonDeductibleVATSetupErrorInfo.Collectible := true;
+        UndefinedNonDeductibleVATSetupErrorInfo.Title := UndefinedNonDeductibleVATSetupTitleLbl;
+        UndefinedNonDeductibleVATSetupErrorInfo.Message := UndefinedNonDeductibleVATSetupErr;
+        UndefinedNonDeductibleVATSetupErrorInfo.TableId := Database::"Non-Deductible VAT Setup CZL";
+        UndefinedNonDeductibleVATSetupErrorInfo.PageNo := Page::"Non-Deductible VAT Setup CZL";
+        UndefinedNonDeductibleVATSetupErrorInfo.AddNavigationAction(ShowNonDeductibleVATSetupLbl);
+        exit(UndefinedNonDeductibleVATSetupErrorInfo);
+    end;
 
     procedure GetNonDeductibleVATPct(PurchaseLine: Record "Purchase Line"): Decimal
     var

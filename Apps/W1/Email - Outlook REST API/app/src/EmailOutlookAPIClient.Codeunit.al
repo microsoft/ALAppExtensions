@@ -10,9 +10,9 @@ using System.Text;
 using System.Utilities;
 
 #if not CLEAN24
-codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Client", "Email - Outlook API Client v2"
+codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Client", "Email - Outlook API Client v2", "Email - Outlook API Client v3"
 #else
-codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Client v2"
+codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Client v2", "Email - Outlook API Client v3"
 #endif
 {
     var
@@ -37,6 +37,28 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         ExternalSecurityChallengeNotSatisfiedMsg: Label 'Multi-Factor Authentication is enabled on this account but the user did not complete the setup. Please sign in to the account and try again.';
         EnvironmentBlocksErr: Label 'The request to send email has been blocked. To resolve the problem, enable outgoing HTTP requests for the Email - Outlook REST API app on the Extension Management page.';
         ConnectionErr: Label 'Could not establish the connection to the remote service for sending email. Try again later.';
+        RetrieveEmailSelectedFieldsTxt: Label 'id,conversationId,sentDateTime,receivedDateTime,subject,webLink,sender,toRecipients,ccRecipients,body,hasAttachments', Locked = true;
+        RetrieveEmailsUriTxt: Label '/v1.0/users/%1/messages', Locked = true;
+        RetrieveEmailsFiltersTxt: Label '?$expand=attachments&$filter=isRead ne true&isDraft ne true&$count=true&$top=%1&$select=%2', Locked = true;
+        MarkAsReadUriTxt: Label '/v1.0/users/%1/messages/%2', Locked = true;
+        RetrieveEmailUriTxt: Label '/v1.0/users/%1/messages/%2', Locked = true;
+        UpdateDraftUriTxt: Label '/v1.0/users/%1/messages/%2', Locked = true;
+        CreateDraftReplyAllUriTxt: Label '/v1.0/users/%1/messages/%2/createReplyAll', Locked = true;
+        SendDraftUriTxt: Label '/v1.0/users/%1/messages/%2/send', Locked = true;
+        UploadAttachmentUriTxt: Label '/v1.0/users/%1/messages/%2/attachments/createUploadSession', Locked = true;
+        UploadAttachmentMeUriTxt: Label '/v1.0/me/messages/%1/attachments/createUploadSession', Locked = true;
+        PostAttachmentUriTxt: Label '/v1.0/users/%1/messages/%2/attachments', Locked = true;
+        PostAttachmentMeUriTxt: Label '/v1.0/me/messages/%1/attachments', Locked = true;
+        EmailsRetrievedTxt: Label 'Emails retrieved.';
+        FailedToReadResponseContentErr: Label 'Failed to read the response content.';
+        FailedToRetrieveEmailBodyErr: Label 'Failed to retrieve message body.';
+        FailedToUpdateDraftMessageErr: Label 'Failed to update draft message.';
+        FailedToRetrieveEmailsErr: Label 'Failed to retrieve emails.';
+        TelemetryRetrievedNoEmailsTxt: Label 'No emails retrieved.', Locked = true;
+        TelemetryRetrievingEmailsTxt: Label 'Retrieving emails.', Locked = true;
+        TelemetryRetrievingAnEmailTxt: Label 'Retrieving an email.', Locked = true;
+        TelemetryReplyingToEmailTxt: Label 'Replying to email.', Locked = true;
+        TelemetryMarkingEmailAsReadTxt: Label 'Marking email as read.', Locked = true;
 
 #if not CLEAN24
     [NonDebuggable]
@@ -154,17 +176,302 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
             MessageJson.Get('attachments', JToken);
             Attachments := JToken.AsArray();
             MessageJson.Remove('attachments');
-
             MessageId := CreateDraftMail(AccessToken, MessageJson);
 
             foreach Attachment in Attachments do
                 if Attachment.AsObject().Contains('AttachmentItem') then
-                    UploadAttachment(AccessToken, Attachment.AsObject(), MessageId)
+                    UploadAttachment(AccessToken, '', Attachment.AsObject(), MessageId)
                 else
-                    PostAttachment(AccessToken, Attachment.AsObject(), MessageId);
+                    PostAttachment(AccessToken, '', Attachment.AsObject(), MessageId);
 
             SendDraftMail(AccessToken, MessageId);
         end;
+    end;
+
+    procedure RetrieveEmails(AccessToken: SecretText; MarkAsRead: Boolean; OutlookAccount: Record "Email - Outlook Account"): JsonArray
+    var
+        EmailsObject: JsonObject;
+        EmailsArray: JsonArray;
+        JsonToken: JsonToken;
+        EmailsCount: Integer;
+    begin
+        Session.LogMessage('0000NCA', TelemetryRetrievingEmailsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+
+        SendRetrieveEmailsRequest(AccessToken, OutlookAccount."Email Address", EmailsObject);
+
+        if not EmailsObject.Get('@odata.count', JsonToken) then begin
+            Session.LogMessage('0000NCB', FailedToRetrieveEmailsErr, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+            exit;
+        end;
+        EmailsCount := JsonToken.AsValue().AsInteger();
+
+        if EmailsCount = 0 then begin
+            Session.LogMessage('0000NCC', TelemetryRetrievedNoEmailsTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+            exit;
+        end;
+
+        EmailsObject.Get('value', JsonToken);
+        EmailsArray := JsonToken.AsArray();
+
+        exit(EmailsArray);
+    end;
+
+    procedure ReplyEmail(AccessToken: SecretText; EmailAddress: Text[250]; ExternalMessageId: Text; MessageJsonText: Text)
+    begin
+        Session.LogMessage('0000NCD', TelemetryReplyingToEmailTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+        SendReplyEmailRequest(AccessToken, EmailAddress, ExternalMessageId, MessageJsonText);
+    end;
+
+    procedure RetrieveEmail(AccessToken: SecretText; EmailAddress: Text[250]; ExternalMessageId: Text; AsHtml: Boolean): JsonObject
+    var
+        MailHttpRequestMessage: HttpRequestMessage;
+        MailHttpResponseMessage: HttpResponseMessage;
+        MailRequestHeaders: HttpHeaders;
+        ResponseJson: JsonObject;
+        ResponseJsonText: Text;
+        RequestUri: Text;
+    begin
+        Session.LogMessage('0000NCE', TelemetryRetrievingAnEmailTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+
+        RequestUri := GraphURLTxt + StrSubstNo(RetrieveEmailUriTxt, EmailAddress, ExternalMessageId);
+        CreateRequest('GET', RequestUri, AccessToken, MailHttpRequestMessage);
+        MailHttpRequestMessage.GetHeaders(MailRequestHeaders);
+        if not AsHtml then
+            MailRequestHeaders.Add('Prefer', 'outlook.body-content-type="text"');
+        SendRequest(MailHttpRequestMessage, MailHttpResponseMessage);
+
+        if MailHttpResponseMessage.HttpStatusCode <> 200 then
+            Session.LogMessage('0000NBH', FailedToRetrieveEmailBodyErr, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+
+        if not MailHttpResponseMessage.Content.ReadAs(ResponseJsonText) then
+            Error(FailedToReadResponseContentErr);
+
+        if not ResponseJson.ReadFrom(ResponseJsonText) then
+            Error(FailedToReadResponseContentErr);
+
+        exit(ResponseJson);
+    end;
+
+    procedure MarkEmailAsRead(AccessToken: SecretText; EmailAddress: Text[250]; ExternalMessageId: Text)
+    begin
+        Session.LogMessage('0000NCF', TelemetryMarkingEmailAsReadTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+        SendMarkEmailAsReadRequest(AccessToken, EmailAddress, ExternalMessageId)
+    end;
+
+    local procedure CreateRequest(Method: Text; RequestUri: Text; AccessToken: SecretText; var MailHttpRequestMessage: HttpRequestMessage)
+    var
+        MailRequestHeaders: HttpHeaders;
+    begin
+        MailHttpRequestMessage.Method(Method);
+        MailHttpRequestMessage.SetRequestUri(RequestUri);
+        MailHttpRequestMessage.GetHeaders(MailRequestHeaders);
+        MailRequestHeaders.Add('Authorization', SecretStrSubstNo('Bearer %1', AccessToken));
+    end;
+
+    local procedure SendRequest(var MailHttpRequestMessage: HttpRequestMessage; var MailHttpResponseMessage: HttpResponseMessage)
+    var
+        MailHttpClient: HttpClient;
+    begin
+        if not MailHttpClient.Send(MailHttpRequestMessage, MailHttpResponseMessage) then
+            if MailHttpResponseMessage.IsBlockedByEnvironment() then
+                Error(EnvironmentBlocksErr)
+            else
+                Error(ConnectionErr);
+    end;
+
+    local procedure SendRetrieveEmailsRequest(AccessToken: SecretText; EmailAddress: Text; var ResponseJsonObject: JsonObject): Boolean
+    var
+        MailHttpRequestMessage: HttpRequestMessage;
+        MailHttpResponseMessage: HttpResponseMessage;
+        MailRequestHeaders: HttpHeaders;
+        HttpErrorMessage: Text;
+        RequestUri: Text;
+        JsonContent: Text;
+    begin
+        RequestUri := GraphURLTxt + StrSubstNo(RetrieveEmailsUriTxt, EmailAddress) + StrSubstNo(RetrieveEmailsFiltersTxt, Format(GetMaxNumberOfEmailsToRetrieve()), RetrieveEmailSelectedFieldsTxt);
+
+        CreateRequest('GET', RequestUri, AccessToken, MailHttpRequestMessage);
+        MailHttpRequestMessage.GetHeaders(MailRequestHeaders);
+        MailRequestHeaders.Add('Prefer', 'outlook.body-content-type="text"');
+        SendRequest(MailHttpRequestMessage, MailHttpResponseMessage);
+
+        if MailHttpResponseMessage.HttpStatusCode <> 200 then begin
+            HttpErrorMessage := GetHttpErrorMessageAsText(MailHttpResponseMessage);
+            Session.LogMessage('0000NBB', HttpErrorMessage, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+            ProcessErrorMessageResponse(HttpErrorMessage);
+        end else
+            Session.LogMessage('0000NBC', EmailsRetrievedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+
+        if not MailHttpResponseMessage.Content.ReadAs(JsonContent) then begin
+            Session.LogMessage('0000NBD', FailedToReadResponseContentErr, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+            exit(false);
+        end;
+
+        if not ResponseJsonObject.ReadFrom(JsonContent) then begin
+            Session.LogMessage('0000NBE', FailedToReadResponseContentErr, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+            exit(false);
+        end;
+
+        exit(true);
+    end;
+
+    local procedure GetMaxNumberOfEmailsToRetrieve(): Integer
+    begin
+        exit(50);
+    end;
+
+    local procedure SendReplyEmailRequest(AccessToken: SecretText; EmailAddress: Text[250]; ExternalMessageId: Text; MessageJsonText: Text): Boolean
+    var
+        MessageJson: JsonObject;
+        AttachmentsJsonArray: JsonArray;
+        JToken: JsonToken;
+    begin
+        MessageJson.ReadFrom(MessageJsonText);
+
+        if MessageJson.Contains('attachments') then begin
+            MessageJson.Get('attachments', JToken);
+            AttachmentsJsonArray := JToken.AsArray();
+            MessageJson.Remove('attachments');
+            AddAttachmentsToDraft(AccessToken, EmailAddress, ExternalMessageId, AttachmentsJsonArray);
+        end;
+
+        UpdateDraftMessage(AccessToken, EmailAddress, ExternalMessageId, MessageJsonText);
+        SendDraftMail(AccessToken, EmailAddress, ExternalMessageId);
+    end;
+
+    local procedure AddAttachmentsToDraft(AccessToken: SecretText; EmailAddress: Text[250]; ExternalMessageId: Text; Attachments: JsonArray)
+    var
+        Attachment: JsonToken;
+    begin
+        foreach Attachment in Attachments do
+            if Attachment.AsObject().Contains('AttachmentItem') then
+                UploadAttachment(AccessToken, EmailAddress, Attachment.AsObject(), ExternalMessageId)
+            else
+                PostAttachment(AccessToken, EmailAddress, Attachment.AsObject(), ExternalMessageId);
+    end;
+
+    procedure CreateDraftReply(AccessToken: SecretText; EmailAddress: Text[250]; MessageId: Text): Text
+    var
+        MailHttpContent: HttpContent;
+        MailHttpRequestMessage: HttpRequestMessage;
+        MailHttpResponseMessage: HttpResponseMessage;
+        MailContentHeaders: HttpHeaders;
+        JToken: JsonToken;
+        ResponseJson: JsonObject;
+        ResponseJsonText: Text;
+        HttpErrorMessage: Text;
+        RequestUri: Text;
+    begin
+        RequestUri := GraphURLTxt + StrSubstNo(CreateDraftReplyAllUriTxt, EmailAddress, MessageId);
+        CreateRequest('POST', RequestUri, AccessToken, MailHttpRequestMessage);
+
+        MailHttpContent.GetHeaders(MailContentHeaders);
+        MailContentHeaders.Clear();
+        MailContentHeaders.Add('Content-Type', 'application/json');
+        MailHttpRequestMessage.Content := MailHttpContent;
+
+        SendRequest(MailHttpRequestMessage, MailHttpResponseMessage);
+
+        if MailHttpResponseMessage.HttpStatusCode <> 201 then begin
+            HttpErrorMessage := GetHttpErrorMessageAsText(MailHttpResponseMessage);
+            Session.LogMessage('0000NBF', HttpErrorMessage, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+            Error(HttpErrorMessage);
+        end else begin
+            MailHttpResponseMessage.Content.ReadAs(ResponseJsonText);
+            ResponseJson.ReadFrom(ResponseJsonText);
+            ResponseJson.Get('id', JToken);
+            MessageId := JToken.AsValue().AsText();
+            Session.LogMessage('0000NBG', DraftEmailCreatedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+        end;
+
+        exit(MessageId);
+    end;
+
+    local procedure UpdateDraftMessage(AccessToken: SecretText; EmailAddress: Text[250]; MessageId: Text; MessageJsonText: Text): Boolean
+    var
+        MailHttpContent: HttpContent;
+        MailHttpRequestMessage: HttpRequestMessage;
+        MailHttpResponseMessage: HttpResponseMessage;
+        MailContentHeaders: HttpHeaders;
+        RequestUri: Text;
+    begin
+        RequestUri := GraphURLTxt + StrSubstNo(UpdateDraftUriTxt, EmailAddress, MessageId);
+        CreateRequest('PATCH', RequestUri, AccessToken, MailHttpRequestMessage);
+
+        MailHttpContent.WriteFrom(MessageJsonText);
+        MailHttpContent.GetHeaders(MailContentHeaders);
+        MailContentHeaders.Clear();
+        MailContentHeaders.Add('Content-Type', 'application/json');
+
+        MailHttpRequestMessage.Content := MailHttpContent;
+
+        SendRequest(MailHttpRequestMessage, MailHttpResponseMessage);
+
+        if MailHttpResponseMessage.HttpStatusCode <> 200 then begin
+            Session.LogMessage('0000NBI', FailedToUpdateDraftMessageErr, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+            Error(FailedToUpdateDraftMessageErr);
+        end;
+
+        exit(true);
+    end;
+
+    [NonDebuggable]
+    local procedure SendDraftMail(AccessToken: SecretText; EmailAddress: Text[250]; MessageId: Text): Text
+    var
+        MailHttpContent: HttpContent;
+        MailHttpRequestMessage: HttpRequestMessage;
+        MailHttpResponseMessage: HttpResponseMessage;
+        MailContentHeaders: HttpHeaders;
+        MailHttpClient: HttpClient;
+        HttpErrorMessage: Text;
+        RequestUri: Text;
+    begin
+        RequestUri := GraphURLTxt + StrSubstNo(SendDraftUriTxt, EmailAddress, MessageId);
+        CreateRequest('POST', RequestUri, AccessToken, MailHttpRequestMessage);
+
+        MailHttpContent.GetHeaders(MailContentHeaders);
+        MailContentHeaders.Clear();
+        MailContentHeaders.Add('Content-Length', '0');
+
+        if not MailHttpClient.Send(MailHttpRequestMessage, MailHttpResponseMessage) then begin
+            Session.LogMessage('0000EA1', SendEmailErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+            Error(SendEmailErr);
+        end;
+
+        if MailHttpResponseMessage.HttpStatusCode <> 202 then begin
+            HttpErrorMessage := GetHttpErrorMessageAsText(MailHttpResponseMessage);
+            Session.LogMessage('0000EA2', HttpErrorMessage, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+            Error(HttpErrorMessage);
+        end else
+            Session.LogMessage('0000EA3', EmailSentTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+    end;
+
+    [NonDebuggable]
+    local procedure SendMarkEmailAsReadRequest(AccessToken: SecretText; EmailAddress: Text[250]; ExternalMessageId: Text): Boolean
+    var
+        MailHttpContent: HttpContent;
+        MailHttpRequestMessage: HttpRequestMessage;
+        MailHttpResponseMessage: HttpResponseMessage;
+        MailContentHeaders: HttpHeaders;
+        RequestUri: Text;
+        MessageJsonContent: Text;
+        JsonContent: JsonObject;
+    begin
+        JsonContent.Add('isRead', true);
+        JsonContent.WriteTo(MessageJsonContent);
+
+        RequestUri := GraphURLTxt + StrSubstNo(MarkAsReadUriTxt, EmailAddress, ExternalMessageId);
+        CreateRequest('PATCH', RequestUri, AccessToken, MailHttpRequestMessage);
+
+        MailHttpContent.WriteFrom(MessageJsonContent);
+        MailHttpContent.GetHeaders(MailContentHeaders);
+        MailContentHeaders.Clear();
+        MailContentHeaders.Add('Content-Type', 'application/json');
+
+        MailHttpRequestMessage.Content := MailHttpContent;
+
+        SendRequest(MailHttpRequestMessage, MailHttpResponseMessage);
+        exit(true);
     end;
 
     [NonDebuggable]
@@ -312,7 +619,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
     end;
 
     [NonDebuggable]
-    local procedure PostAttachment(AccessToken: SecretText; AttachmentJson: JsonObject; MessageId: Text)
+    local procedure PostAttachment(AccessToken: SecretText; EmailAddress: Text[250]; AttachmentJson: JsonObject; MessageId: Text)
     var
         AttachmentHttpContent: HttpContent;
         AttachmentHttpRequestMessage: HttpRequestMessage;
@@ -324,7 +631,10 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         HttpErrorMessage: Text;
         RequestUri: Text;
     begin
-        RequestUri := GraphURLTxt + '/v1.0/me/messages/' + MessageId + '/attachments';
+        if EmailAddress = '' then
+            RequestUri := GraphURLTxt + StrSubstNo(PostAttachmentMeUriTxt, MessageId)
+        else
+            RequestUri := GraphURLTxt + StrSubstNo(PostAttachmentUriTxt, EmailAddress, MessageId);
 
         AttachmentHttpRequestMessage.Method('POST');
         AttachmentHttpRequestMessage.SetRequestUri(RequestUri);
@@ -353,7 +663,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
     end;
 
     [NonDebuggable]
-    local procedure UploadAttachment(AccessToken: SecretText; AttachmentJson: JsonObject; MessageId: Text)
+    local procedure UploadAttachment(AccessToken: SecretText; EmailAddress: Text[250]; AttachmentJson: JsonObject; MessageId: Text)
     var
         Base64Convert: Codeunit "Base64 Convert";
         AttachmentTempBlob: Codeunit "Temp Blob";
@@ -368,7 +678,10 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         FromByte, ToByte, TotalBytes, Range : Integer;
         RequestJsonText, AttachmentContentInBase64, HttpErrorMessage, UploadUrl, RequestUri : Text;
     begin
-        RequestUri := GraphURLTxt + '/v1.0/me/messages/' + MessageId + '/attachments/createUploadSession';
+        if EmailAddress = '' then
+            RequestUri := GraphURLTxt + StrSubstNo(UploadAttachmentMeUriTxt, MessageId)
+        else
+            RequestUri := GraphURLTxt + StrSubstNo(UploadAttachmentUriTxt, EmailAddress, MessageId);
 
         AttachmentContentInBase64 := GetAttachmentContent(AttachmentJson);
         AttachmentJson.WriteTo(RequestJsonText);

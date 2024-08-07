@@ -449,15 +449,9 @@ page 31284 "Apply G/L Entries CZA"
     end;
 
     var
-        TempGLEntry: Record "G/L Entry" temporary;
-        GLEntry: Record "G/L Entry";
         GenJournalLine: Record "Gen. Journal Line";
-        GLEntryPostApplicationCZA: Codeunit "G/L Entry Post Application CZA";
         PageNavigate: Page Navigate;
         ShowAppliedEntries: Boolean;
-        ApplyingRemainingAmount: Decimal;
-        ApplyingAmount: Decimal;
-        AvailableAmount: Decimal;
         GLApplID: Code[50];
         Remaining: Decimal;
         ApplEntryNo: Integer;
@@ -467,6 +461,14 @@ page 31284 "Apply G/L Entries CZA"
         CalcType: Option Direct,GenJnlLine;
         AppEntryNeedErr: Label 'You must select an applying entry before posting the application.';
         AppFromWindowErr: Label 'You must post the application from the window where you entered the applying entry.';
+
+    protected var
+        TempGLEntry: Record "G/L Entry" temporary;
+        GLEntry: Record "G/L Entry";
+        GLEntryPostApplicationCZA: Codeunit "G/L Entry Post Application CZA";
+        ApplyingRemainingAmount: Decimal;
+        ApplyingAmount: Decimal;
+        AvailableAmount: Decimal;
 
     local procedure FindApplyingGLEntry()
     begin
@@ -497,6 +499,7 @@ page 31284 "Apply G/L Entries CZA"
             Rec.SetFilter(Amount, '<0')
         else
             Rec.SetFilter(Amount, '>0');
+        OnSetApplyingGLEntryByEntryNoOnAfterSetFilters(Rec, GLEntryPostApplicationCZA);
         Rec."Applying Entry CZA" := true;
         Rec.Modify();
 
@@ -550,7 +553,7 @@ page 31284 "Apply G/L Entries CZA"
         GLEntryPostApplicationCZA.SetApplyingGLEntry(GLEntry2, false, GLApplID);
     end;
 
-    local procedure CalcApplnAmount()
+    procedure CalcApplnAmount()
     begin
         ApplyingAmount := 0;
         GLEntry.Reset();
@@ -629,6 +632,11 @@ page 31284 "Apply G/L Entries CZA"
 
     [IntegrationEvent(true, false)]
     local procedure OnBeforeSetApplyingGLEntry(var GLEntry: Record "G/L Entry"; IsApplyingEntry: Boolean; AppliesToID: Code[50]; var GLEntryPostApplicationCZA: Codeunit "G/L Entry Post Application CZA"; var IsHandled: Boolean);
+    begin
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnSetApplyingGLEntryByEntryNoOnAfterSetFilters(var GLEntry: Record "G/L Entry"; var GLEntryPostApplicationCZA: Codeunit Microsoft.Finance.GeneralLedger.Posting."G/L Entry Post Application CZA")
     begin
     end;
 }

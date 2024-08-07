@@ -23,7 +23,7 @@ codeunit 7285 "Search Items Function" implements "AOAI Function"
         Prompt: Codeunit "SLS Prompts";
         PromptJson: JsonObject;
     begin
-        PromptJson.ReadFrom(Prompt.GetSLSSearchItemPrompt());
+        PromptJson.ReadFrom(Prompt.GetSLSSearchItemPrompt().Unwrap());
         exit(PromptJson);
     end;
 

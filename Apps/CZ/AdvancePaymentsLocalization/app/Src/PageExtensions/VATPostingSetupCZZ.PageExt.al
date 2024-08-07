@@ -6,7 +6,7 @@ namespace Microsoft.Finance.AdvancePayments;
 
 using Microsoft.Finance.VAT.Setup;
 
-pageextension 31025 "VAT Posting Setup CZZ" extends "VAT POsting Setup"
+pageextension 31025 "VAT Posting Setup CZZ" extends "VAT Posting Setup"
 {
     layout
     {
@@ -34,6 +34,10 @@ pageextension 31025 "VAT Posting Setup CZZ" extends "VAT POsting Setup"
             {
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies purchase advance letter VAT account.';
+            }
+            field("P.Adv.Letter ND VAT Acc. CZZ"; Rec."P.Adv.Letter ND VAT Acc. CZZ")
+            {
+                ApplicationArea = Basic, Suite;
             }
         }
     }

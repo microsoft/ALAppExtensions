@@ -14,6 +14,7 @@ codeunit 139902 "Service Declaration UI Tests"
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         Assert: Codeunit Assert;
         LibraryUtility: Codeunit "Library - Utility";
+        LibraryNoSeries: Codeunit "Library - No. Series";
         IsInitialized: Boolean;
         FeatureNotEnabledMessageTxt: Label 'The %1 page is part of the new Service Declaration feature, which is not yet enabled in your Business Central. An administrator can enable the feature on the Feature Management page.', Comment = '%1 - page caption';
         ServDeclAlreadyExistErr: Label 'The service declaration %1 already exists.', Comment = '%1 = service declaration number.';
@@ -87,8 +88,8 @@ codeunit 139902 "Service Declaration UI Tests"
         // [GIVEN] No. Series "Y"
         LibraryUtility.CreateNoSeries(NoSeries, true, true, false);
         LibraryVariableStorage.Enqueue(NoSeries.Code);
-        // [GIVEN] No. Series Relationship "X" -> "Y" 
-        LibraryUtility.CreateNoSeriesRelationship(ServDeclSetup."Declaration No. Series", NoSeries.Code);
+        // [GIVEN] No. Series Relationship "X" -> "Y"
+        LibraryNoSeries.CreateNoSeriesRelationship(ServDeclSetup."Declaration No. Series", NoSeries.Code);
         // [GIVEN] Service Declaration page is opened for adding new record
         ServDeclPage.OpenNew();
         // [WHEN] Stan click "Assist Edit" on "No." field

@@ -162,6 +162,14 @@ tableextension 11723 "Gen. Journal Line CZL" extends "Gen. Journal Line"
             TableRelation = "SWIFT Code";
             DataClassification = CustomerContent;
         }
+        field(11750; "Additional Currency Factor CZL"; Decimal)
+        {
+            Caption = 'Additional Currency Factor';
+            DecimalPlaces = 0 : 15;
+            Editable = false;
+            MinValue = 0;
+            DataClassification = CustomerContent;
+        }
         field(11776; "VAT Currency Factor CZL"; Decimal)
         {
             Caption = 'VAT Currency Factor';

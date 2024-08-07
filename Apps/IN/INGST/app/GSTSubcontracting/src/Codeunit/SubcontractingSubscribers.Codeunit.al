@@ -24,6 +24,7 @@ codeunit 18469 "Subcontracting Subscribers"
     var
         DeliveryChallanExistsErr: Label 'You cannot delete this document. Delivery Challan exist for Subcontracting Order no. %1.', Comment = '%1 = Subcontracting Order No.';
         QutstandingQuantityErr: Label 'Cannot delete Subcontracting order No: %1 as there is remaining quantity pending to be received. Continue with next order?', Comment = '%1 = Document No.';
+        VendorTypeErr: Label 'The field "GST Vendor Type" of Vendor should have a value in Vendor Card, Vendor No: %1', Comment = '%1 = Vendor No.';
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeTestNoSeries', '', false, false)]
     local procedure TestSubcontractingNoSeries(var PurchaseHeader: Record "Purchase Header"; Var Ishandled: boolean)
@@ -306,6 +307,22 @@ codeunit 18469 "Subcontracting Subscribers"
             (PurchaseLine."Prod. Order Line No." <> 0) then
             if PurchaseLine."Outstanding Qty. (Base)" <> 0 then
                 PurchaseLine."Outstanding Qty. (Base)" := 0;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Requisition Line", 'OnAfterValidateEvent', 'Vendor No.', false, false)]
+    local procedure OnAfterValidateVendorNo(var Rec: Record "Requisition Line")
+    var
+        Vendor: Record Vendor;
+    begin
+        if (Rec."Vendor No." = '') and (Rec."Prod. Order No." = '') then
+            exit;
+
+        if not Vendor.Get(Rec."Vendor No.") then
+            exit;
+
+        if Vendor.Subcontractor then
+            if Vendor."GST Vendor Type" = Vendor."GST Vendor Type"::" " then
+                Error(VendorTypeErr, Vendor."No.");
     end;
 
     local procedure ValidateDeliveryChallanCreatedForOrder(PurchHeader: Record "Purchase Header")

@@ -11,8 +11,7 @@ codeunit 7276 "SLS Prompts"
 {
     Access = Internal;
 
-    [NonDebuggable]
-    internal procedure GetAzureKeyVaultSecret(var SecretValue: Text; SecretName: Text)
+    internal procedure GetAzureKeyVaultSecret(var SecretValue: SecretText; SecretName: Text)
     var
         AzureKeyVault: Codeunit "Azure Key Vault";
         FeatureTelemetry: Codeunit "Feature Telemetry";
@@ -24,74 +23,67 @@ codeunit 7276 "SLS Prompts"
         end;
     end;
 
-    [NonDebuggable]
     internal procedure GetSLSSystemPrompt(): SecretText
     var
-        BCSLSMetaPrompt: Text;
-        BCSLSTaskPrompt: Text;
+        BCSLSMetaPrompt: SecretText;
+        BCSLSTaskPrompt: SecretText;
     begin
         GetAzureKeyVaultSecret(BCSLSMetaPrompt, 'BCSLSMetaPrompt');
         GetAzureKeyVaultSecret(BCSLSTaskPrompt, 'BCSLSTaskPrompt-V250');
 
-        exit(BCSLSMetaPrompt + StrSubstNo(BCSLSTaskPrompt, Format(Today, 0, 4)));
+        exit(SecretStrSubstNo('%1%2', BCSLSMetaPrompt, AddDateToTaskPrompt(BCSLSTaskPrompt)));
     end;
 
-    [NonDebuggable]
-    internal procedure GetSLSDocumentLookupPrompt(): Text
+    internal procedure GetSLSDocumentLookupPrompt(): SecretText
     var
-        BCSLSDocumentLookupPrompt: Text;
+        BCSLSDocumentLookupPrompt: SecretText;
     begin
         GetAzureKeyVaultSecret(BCSLSDocumentLookupPrompt, 'BCSLSDocumentLookupPrompt');
 
         exit(BCSLSDocumentLookupPrompt);
     end;
 
-    [NonDebuggable]
-    internal procedure GetSLSSearchItemsWithFiltersPrompt(): Text
+    internal procedure GetSLSSearchItemsWithFiltersPrompt(): SecretText
     var
-        BCSLSSearchItemsWithFiltersPrompt: Text;
+        BCSLSSearchItemsWithFiltersPrompt: SecretText;
     begin
         GetAzureKeyVaultSecret(BCSLSSearchItemsWithFiltersPrompt, 'BCSLSSearchItemsWithFiltersPrompt');
 
         exit(BCSLSSearchItemsWithFiltersPrompt);
     end;
 
-    [NonDebuggable]
-    internal procedure GetSLSSearchItemPrompt(): Text
+    internal procedure GetSLSSearchItemPrompt(): SecretText
     var
-        BCSLSSearchItemPrompt: Text;
+        BCSLSSearchItemPrompt: SecretText;
     begin
         GetAzureKeyVaultSecret(BCSLSSearchItemPrompt, 'BCSLSSearchItemPrompt');
 
         exit(BCSLSSearchItemPrompt);
     end;
 
-    [NonDebuggable]
-    internal procedure GetSLSMagicFunctionPrompt(): Text
+    internal procedure GetSLSMagicFunctionPrompt(): SecretText
     var
-        BCSLSMagicFunctionPrompt: Text;
+        BCSLSMagicFunctionPrompt: SecretText;
     begin
         GetAzureKeyVaultSecret(BCSLSMagicFunctionPrompt, 'BCSLSMagicFunctionPrompt');
 
         exit(BCSLSMagicFunctionPrompt);
     end;
 
-    [NonDebuggable]
-    internal procedure GetAttachmentSystemPrompt(): Text
+    internal procedure GetAttachmentSystemPrompt(): SecretText
     var
-        BCSLSMetaPrompt: Text;
-        BCSLSAttachmentTaskPrompt: Text;
+        BCSLSAttachmentMetaPrompt: SecretText;
+        BCSLSAttachmentTaskPrompt: SecretText;
     begin
-        GetAzureKeyVaultSecret(BCSLSMetaPrompt, 'BCSLSMetaPrompt');
+        GetAzureKeyVaultSecret(BCSLSAttachmentMetaPrompt, 'BCSLSAttachmentMetaPrompt');
         GetAzureKeyVaultSecret(BCSLSAttachmentTaskPrompt, 'BCSLSAttachmentTaskPrompt');
 
-        exit(BCSLSMetaPrompt + BCSLSAttachmentTaskPrompt);
+        exit(SecretStrSubstNo('%1%2', BCSLSAttachmentMetaPrompt, BCSLSAttachmentTaskPrompt));
     end;
 
-    [NonDebuggable]
-    internal procedure GetParsingCsvPrompt(): Text
+    internal procedure GetParsingCsvPrompt(): SecretText
     var
-        BCSLSParseCsvPrompt: Text;
+        BCSLSParseCsvPrompt: SecretText;
     begin
         GetAzureKeyVaultSecret(BCSLSParseCsvPrompt, 'BCSLSParseCsvPrompt');
 
@@ -101,21 +93,27 @@ codeunit 7276 "SLS Prompts"
     [NonDebuggable]
     internal procedure GetParsingCsvTemplateUserInputPrompt(): Text
     var
-        BCSLSParseCsvTemplateUserInputPrompt: Text;
+        BCSLSParseCsvTemplateUserInputPrompt: SecretText;
     begin
         GetAzureKeyVaultSecret(BCSLSParseCsvTemplateUserInputPrompt, 'BCSLSParseCsvTemplateUserInputPrompt');
 
-        exit(BCSLSParseCsvTemplateUserInputPrompt);
+        exit(BCSLSParseCsvTemplateUserInputPrompt.Unwrap());
     end;
 
     [NonDebuggable]
     internal procedure GetProductFromCsvTemplateUserInputPrompt(): Text
     var
-        BCSLSGetProductFromCsvTemplateUserInputPrompt: Text;
+        BCSLSGetProductFromCsvTemplateUserInputPrompt: SecretText;
     begin
         GetAzureKeyVaultSecret(BCSLSGetProductFromCsvTemplateUserInputPrompt, 'BCSLSGetProductFromCsvTemplateUserInputPrompt');
 
-        exit(BCSLSGetProductFromCsvTemplateUserInputPrompt);
+        exit(BCSLSGetProductFromCsvTemplateUserInputPrompt.Unwrap());
+    end;
+
+    [NonDebuggable]
+    local procedure AddDateToTaskPrompt(BCSLSTaskPrompt: SecretText): SecretText
+    begin
+        exit(StrSubstNo(BCSLSTaskPrompt.Unwrap(), Format(Today, 0, 4)));
     end;
 
     var

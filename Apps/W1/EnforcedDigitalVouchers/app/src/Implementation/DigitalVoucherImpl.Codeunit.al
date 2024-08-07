@@ -30,6 +30,13 @@ using System.Utilities;
 
 codeunit 5579 "Digital Voucher Impl."
 {
+    Permissions = TableData "Sales Invoice Header" = m,
+                  Tabledata "Sales Cr.Memo Header" = m,
+                  Tabledata "Service Invoice Header" = m,
+                  Tabledata "Service Cr.Memo Header" = m,
+                  Tabledata "Purch. Inv. Header" = m,
+                  Tabledata "Purch. Cr. Memo Hdr." = m;
+
     var
         DigitalVoucherFeature: Codeunit "Digital Voucher Feature";
         DigitalVoucherEntry: Codeunit "Digital Voucher Entry";
@@ -112,6 +119,7 @@ codeunit 5579 "Digital Voucher Impl."
                         ReportSelections.Usage::"S.Invoice", RecRef, true,
                         SalesInvHeader."Posting Date", SalesInvHeader."No.", Database::Customer,
                         SalesInvHeader."Bill-to Customer No.", Report::"Standard Sales - Invoice");
+                    RestoreNoPrintedToOriginal(RecRef, SalesInvHeader.FieldNo("No. Printed"), SalesInvHeader."No. Printed");
                 end;
             Database::"Service Invoice Header":
                 begin
@@ -120,6 +128,7 @@ codeunit 5579 "Digital Voucher Impl."
                         ReportSelections.Usage::"SM.Invoice", RecRef, true,
                         ServInvHeader."Posting Date", ServInvHeader."No.", Database::Customer,
                         ServInvHeader."Bill-to Customer No.", Report::"Service - Invoice");
+                    RestoreNoPrintedToOriginal(RecRef, ServInvHeader.FieldNo("No. Printed"), ServInvHeader."No. Printed");
                 end;
             Database::"Service Cr.Memo Header":
                 begin
@@ -128,6 +137,7 @@ codeunit 5579 "Digital Voucher Impl."
                         ReportSelections.Usage::"SM.Credit Memo", RecRef, false,
                         ServCrMemoHeader."Posting Date", ServCrMemoHeader."No.", Database::Customer,
                         ServCrMemoHeader."Bill-to Customer No.", Report::"Service - Credit Memo");
+                    RestoreNoPrintedToOriginal(RecRef, ServCrMemoHeader.FieldNo("No. Printed"), ServCrMemoHeader."No. Printed");
                 end;
             Database::"Sales Cr.Memo Header":
                 begin
@@ -136,6 +146,7 @@ codeunit 5579 "Digital Voucher Impl."
                         ReportSelections.Usage::"S.Cr.Memo", RecRef, false,
                         SalesCrMemoHeader."Posting Date", SalesCrMemoHeader."No.", Database::Customer,
                         SalesCrMemoHeader."Bill-to Customer No.", Report::"Standard Sales - Credit Memo");
+                    RestoreNoPrintedToOriginal(RecRef, SalesCrMemoHeader.FieldNo("No. Printed"), SalesCrMemoHeader."No. Printed");
                 end;
             Database::"Purch. Inv. Header":
                 begin
@@ -144,6 +155,7 @@ codeunit 5579 "Digital Voucher Impl."
                         ReportSelections.Usage::"P.Invoice", RecRef, true,
                         PurchInvHeader."Posting Date", PurchInvHeader."No.", Database::Vendor,
                         PurchInvHeader."Pay-to Vendor No.", report::"Purchase - Invoice");
+                    RestoreNoPrintedToOriginal(RecRef, PurchInvHeader.FieldNo("No. Printed"), PurchInvHeader."No. Printed");
                 end;
             Database::"Purch. Cr. Memo Hdr.":
                 begin
@@ -152,12 +164,29 @@ codeunit 5579 "Digital Voucher Impl."
                         ReportSelections.Usage::"P.Cr.Memo", RecRef, false,
                         PurchCrMemoHeader."Posting Date", PurchCrMemoHeader."No.", Database::Vendor,
                         PurchCrMemoHeader."Pay-to Vendor No.", report::"Purchase - Credit Memo");
+                    RestoreNoPrintedToOriginal(RecRef, PurchCrMemoHeader.FieldNo("No. Printed"), PurchCrMemoHeader."No. Printed");
                 end;
             Database::"Gen. Journal Line":
                 AttachGenJnlLinePDFToIncomingDocument(RecRef);
             else
                 OnGenerateDigitalVoucherForDocumentOnCaseElse(RecRef);
         end;
+    end;
+
+    local procedure RestoreNoPrintedToOriginal(var RecRef: RecordRef; NoPrintedFieldNumber: Integer; OriginalNoPrinted: Integer)
+    var
+        FieldRef: FieldRef;
+        CurrentNoPrinted: Integer;
+    begin
+        if not RecRef.Find() then
+            exit;
+        FieldRef := RecRef.Field(NoPrintedFieldNumber);
+        if not Evaluate(CurrentNoPrinted, Format(FieldRef.Value())) then
+            exit;
+        if CurrentNoPrinted = OriginalNoPrinted then
+            exit;
+        FieldRef.Value := OriginalNoPrinted;
+        RecRef.Modify();
     end;
 
     procedure AttachBlobToIncomingDocument(var TempBlob: Codeunit "Temp Blob"; DocType: Text; PostingDate: Date; DocNo: Code[20])

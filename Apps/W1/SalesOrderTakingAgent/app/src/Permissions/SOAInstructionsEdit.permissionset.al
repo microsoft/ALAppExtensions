@@ -7,7 +7,7 @@ namespace Agent.SalesOrderTaker;
 
 using Agent.SalesOrderTaker.Instructions;
 
-permissionset 4335 "SOA Instructions - Edit"
+permissionset 4404 "SOA Instructions - Edit"
 {
     Caption = 'Sales Order Taker Agent Instructions - Edit';
     Assignable = false;

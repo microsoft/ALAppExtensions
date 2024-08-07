@@ -252,6 +252,14 @@ codeunit 18006 "GST Statistics"
         GSTAmount := GSTAmount - RCMAmount;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetPurchaseHeaderCessAmount', '', false, false)]
+    local procedure OnGetPurchaseHeaderCessAmount(PurchaseHeader: Record "Purchase Header"; var CessAmount: Decimal)
+    var
+        GSTStatsManagement: Codeunit "GST Stats Management";
+    begin
+        CessAmount := GSTStatsManagement.GetGstCessAmount();
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetPartialPurchaseHeaderGSTAmount', '', false, false)]
     procedure OnGetPartialPurchaseHeaderGSTAmount(PurchaseHeader: Record "Purchase Header"; var PartialGSTAmount: Decimal)
     var

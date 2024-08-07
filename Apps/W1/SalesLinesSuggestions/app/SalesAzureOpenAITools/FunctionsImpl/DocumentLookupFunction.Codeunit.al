@@ -27,7 +27,7 @@ codeunit 7283 "Document Lookup Function" implements "AOAI Function"
         Prompt: Codeunit "SLS Prompts";
         PromptJson: JsonObject;
     begin
-        PromptJson.ReadFrom(Prompt.GetSLSDocumentLookupPrompt());
+        PromptJson.ReadFrom(Prompt.GetSLSDocumentLookupPrompt().Unwrap());
         exit(PromptJson);
     end;
 

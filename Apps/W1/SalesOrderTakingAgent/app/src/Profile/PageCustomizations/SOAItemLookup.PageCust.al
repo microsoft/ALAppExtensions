@@ -12,6 +12,8 @@ pagecustomization "SOA Item Lookup" customizes "Item Lookup"
     ClearActions = true;
     ClearLayout = true;
     ClearViews = true;
+    InsertAllowed = false;
+    DeleteAllowed = false;
 
     layout
     {
@@ -56,10 +58,6 @@ pagecustomization "SOA Item Lookup" customizes "Item Lookup"
 
     actions
     {
-        modify(ItemList)
-        {
-            Visible = true;
-        }
         modify(ItemList_Promoted)
         {
             Visible = true;

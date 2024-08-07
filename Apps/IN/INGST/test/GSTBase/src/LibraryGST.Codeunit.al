@@ -212,6 +212,44 @@ codeunit 18077 "Library GST"
         exit(Customer."No.");
     end;
 
+    procedure CreateCustomerSetupWithPaymentMethodBank(): Code[20]
+    var
+        Customer: Record Customer;
+        PaymentMethod: Record "Payment Method";
+        VATPostingSetup: Record "VAT Posting Setup";
+        LibrarySales: Codeunit "Library - Sales";
+        CustomerNo: Code[20];
+    begin
+        LibraryERM.FindZeroVATPostingSetup(VATPostingSetup, VATPostingSetup."VAT Calculation Type"::"Normal VAT");
+        LibraryERM.CreateGenBusPostingGroup(GenBusinessPostingGroup);
+        LibraryERM.CreateGenProdPostingGroup(GenProductPostingGroup);
+        CreateGeneralPostingSetup(GenBusinessPostingGroup.Code, GenProductPostingGroup.Code);
+        CreatePaymentMethodWithBalAccount(PaymentMethod);
+
+        CustomerNo := LibrarySales.CreateCustomerNo();
+
+        Customer.Get(CustomerNo);
+        Customer.Validate(Address, CopyStr(LibraryUtility.GenerateGUID(), 1, MaxStrLen(Customer.Address)));
+        Customer.Validate("VAT Bus. Posting Group", VATPostingSetup."VAT Bus. Posting Group");
+        Customer.Validate("Gen. Bus. Posting Group", GenBusinessPostingGroup.Code);
+        Customer.Validate("Payment Method Code", PaymentMethod.Code);
+        Customer.Modify(true);
+
+        exit(Customer."No.");
+    end;
+
+    procedure CreatePaymentMethodWithBalAccount(var PaymentMethod: Record "Payment Method")
+    var
+        BankAccount: Record "Bank Account";
+        LibraryERM: Codeunit "Library - ERM";
+    begin
+        LibraryERM.FindBankAccount(BankAccount);
+        LibraryERM.CreatePaymentMethod(PaymentMethod);
+        PaymentMethod.Validate("Bal. Account Type", PaymentMethod."Bal. Account Type"::"Bank Account");
+        PaymentMethod.Validate("Bal. Account No.", BankAccount."No.");
+        PaymentMethod.Modify(true);
+    end;
+
     procedure CreatePANNos(): Code[20]
     var
         PANNo: Code[20];

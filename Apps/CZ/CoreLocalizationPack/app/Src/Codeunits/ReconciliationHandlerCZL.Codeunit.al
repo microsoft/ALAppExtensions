@@ -71,6 +71,7 @@ codeunit 31431 "Reconciliation Handler CZL"
                 GLAccountNetChange."Net Change in Jnl. Curr. CZL" += NetChange;
                 GLAccountNetChange."Balance after Posting Curr.CZL" += NetChange;
             end;
+            OnSetSaveNetChangeBeforeModifyGLAccountNetChange(GLAccountNetChange, GenJournalLine, NetChangeLCY, NetChange);
             GLAccountNetChange.Modify();
         end else begin
             GLAccountNetChange.Reset();
@@ -131,6 +132,7 @@ codeunit 31431 "Reconciliation Handler CZL"
                         GLAccountNetChange."Balance after Posting" := -Employee.Balance + NetChangeLCY;
                     end;
             end;
+            OnSetSaveNetChangeBeforeInsertGLAccountNetChange(GLAccountNetChange, GenJournalLine, NetChangeLCY, NetChange);
             GLAccountNetChange.Insert();
         end;
     end;
@@ -139,5 +141,15 @@ codeunit 31431 "Reconciliation Handler CZL"
     local procedure OnBeforeSaveNetChange(var IsHandled: Boolean)
     begin
         IsHandled := true;
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSetSaveNetChangeBeforeModifyGLAccountNetChange(var GLAccountNetChange: Record "G/L Account Net Change"; GenJournalLine: Record "Gen. Journal Line"; NetChangeLCY: Decimal; NetChange: Decimal)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnSetSaveNetChangeBeforeInsertGLAccountNetChange(var GLAccountNetChange: Record "G/L Account Net Change"; GenJournalLine: Record "Gen. Journal Line"; NetChangeLCY: Decimal; NetChange: Decimal)
+    begin
     end;
 }

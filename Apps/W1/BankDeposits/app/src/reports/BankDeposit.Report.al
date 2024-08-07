@@ -549,7 +549,6 @@ report 1690 "Bank Deposit"
             DepositCustLedgerEntry.Reset();
             DepositCustLedgerEntry.SetFilter("Entry No.", '>=%1', FromEntryNo);
             DepositCustLedgerEntry.SetRange("Transaction No.", DepositCustLedgerEntry."Transaction No.");
-            DepositCustLedgerEntry.SetRange("External Document No.", PostedBankDepositLine."Bank Deposit No.");
         end;
     end;
 
@@ -579,7 +578,6 @@ report 1690 "Bank Deposit"
             DepositVendorLedgerEntry.Reset();
             DepositVendorLedgerEntry.SetFilter("Entry No.", '>=%1', FromEntryNo);
             DepositVendorLedgerEntry.SetRange("Transaction No.", DepositVendorLedgerEntry."Transaction No.");
-            DepositVendorLedgerEntry.SetRange("External Document No.", PostedBankDepositLine."Bank Deposit No.");
         end;
     end;
 }

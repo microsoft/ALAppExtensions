@@ -29,7 +29,7 @@ codeunit 139780 "Search Item Test"
         QuantityIsIncorrectErr: Label 'Quantity is incorrect!';
         NeedThreeItemButOneNotExistingLbl: Label 'I need one bike, one table and one Model Took Kit';
         NeedItemInNonEnglishLbl: Label 'I need one bicikl.';
-        InvalidPrecisionErr: Label 'The value %1 in field %2 is of lesser precision than expected. \\Note: Default rounding precision of %3 is used if a rounding precision is not defined.', Comment = '%1 - decimal value, %2 - field name, %3 - default rounding precision.';
+        InvalidPrecisionErr: Label 'The value %1 in field %2 is of lower precision than expected. \\Note: Default rounding precision of %3 is used if a rounding precision is not defined.', Comment = '%1 - decimal value, %2 - field name, %3 - default rounding precision.';
 
 
     [Test]
