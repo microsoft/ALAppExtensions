@@ -22,8 +22,8 @@ codeunit 4584 "SOA Recovery"
     end;
 
     var
-        TelemetrySalesOrderAgentIsNotEnabledLbl: Label 'Sales order agent is not enabled', Locked = true;
-        TelemetryAgentCapabilityNotEnabledLbl: Label 'Sales order agent capability is not enabled', Locked = true;
+        TelemetrySalesOrderAgentIsNotEnabledLbl: Label 'Sales order taker agent is not enabled', Locked = true;
+        TelemetryAgentCapabilityNotEnabledLbl: Label 'Sales order taker agent capability is not enabled', Locked = true;
 
     procedure RunSOARecovery(Setup: Record "SOA Setup")
     var
@@ -38,7 +38,7 @@ codeunit 4584 "SOA Recovery"
         CustomDimensions.Add('SOASetupId', Format(Setup.ID));
 
         // Check if capability is enabled
-        if not AzureOpenAI.IsEnabled(Enum::"Copilot Capability"::"Sales Order Taker Agent", true) then begin
+        if not AzureOpenAI.IsEnabled(Enum::"Copilot Capability"::"Sales Order Taker", true) then begin
             Telemetry.LogMessage('0000NF6', TelemetryAgentCapabilityNotEnabledLbl, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
             exit;
         end;

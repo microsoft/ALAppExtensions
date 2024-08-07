@@ -2,7 +2,7 @@ namespace Microsoft.Bank.PayPal;
 
 using System.Security.AccessControl;
 
-permissionsetextension 6848 "D365 BASIC - PayPal Payments Standard" extends "D365 BASIC"
+permissionsetextension 6848 "D365 BASIC - PayPal Payments Standard" extends "D365 Basic - Read"
 {
     Permissions = tabledata "MS - PayPal Standard Account" = R,
                   tabledata "MS - PayPal Standard Template" = R,

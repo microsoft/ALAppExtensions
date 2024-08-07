@@ -280,7 +280,7 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
             exit;
 
         // Generate OpenAI Completion
-        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4Preview());
+        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4Latest());
         AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"Bank Account Reconciliation");
         AOAIChatCompletionParams.SetMaxTokens(MaxTokens());
         AOAIChatCompletionParams.SetTemperature(0);
@@ -390,6 +390,7 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
 
             // Iterate through each statement line
             BankAccReconciliationLine.FindSet();
+            InputWithReservedWordsFound := false;
             repeat
                 // Find the top 5 ledger entries closest to the statement line
                 TempBankAccLedgerEntryMatchingBuffer.RESET();
@@ -437,8 +438,6 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
                             end;
 
                 until (TempBankAccLedgerEntryMatchingBuffer.Next() = 0);
-
-                InputWithReservedWordsFound := false;
 
                 // Generate Prompt using the Statement Line and the Top 5 Ledger Entries
                 BankAccReconciliationLineCopy.Copy(BankAccReconciliationLine);
@@ -502,6 +501,42 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
             exit(true);
 
         if StrPos(LowerCase(Input), '<|end|>') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'match ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'correlate ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'associate ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'reconcile ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'fix ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'assign ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'apply ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'merge ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'attach ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'append ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'couple ') > 0 then
+            exit(true);
+
+        if StrPos(LowerCase(Input), 'pair ') > 0 then
             exit(true);
 
         exit(false)

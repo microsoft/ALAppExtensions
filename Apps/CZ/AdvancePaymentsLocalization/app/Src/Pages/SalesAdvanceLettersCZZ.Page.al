@@ -165,6 +165,16 @@ page 31170 "Sales Advance Letters CZZ"
                     ToolTip = 'Specifies the code for Shortcut Dimension 2, which is one of two global dimension codes that you set up in the General Ledger Setup window.';
                     Visible = false;
                 }
+                field("Job No."; Rec."Job No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Visible = false;
+                }
+                field("Job Task No."; Rec."Job Task No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Visible = false;
+                }
             }
         }
         area(FactBoxes)

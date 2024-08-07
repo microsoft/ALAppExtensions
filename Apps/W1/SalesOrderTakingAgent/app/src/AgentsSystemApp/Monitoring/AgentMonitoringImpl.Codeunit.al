@@ -105,7 +105,6 @@ codeunit 4300 "Agent Monitoring Impl."
         DetailsOutStream: OutStream;
         DetailsJson: JsonObject;
     begin
-
         AgentTask.Get(UserInterventionRequestStep."Task ID");
 
         AgentTaskStep."Task ID" := AgentTask.ID;

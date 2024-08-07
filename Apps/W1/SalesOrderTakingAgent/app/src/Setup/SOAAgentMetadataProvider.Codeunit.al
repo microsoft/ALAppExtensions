@@ -13,7 +13,7 @@ codeunit 4401 "SOA Agent Metadata Provider" implements IAgentMetadata, IAgentFac
 
     procedure GetInitials(): Text[4]
     begin
-        exit('SOT');
+        exit(SOASetup.GetInitials());
     end;
 
     procedure GetFirstTimeSetupPageId(): Integer
@@ -24,8 +24,8 @@ codeunit 4401 "SOA Agent Metadata Provider" implements IAgentMetadata, IAgentFac
 
     procedure GetSetupPageId(): Integer
     begin
-        // TODO(agents) the current setup page is not ready to be used that way.
-        exit(0);
+        // The first time setup page ID is the same as the setup page ID.
+        exit(Page::"SOA Setup");
     end;
 
     procedure GetSummaryPageId(): Integer
@@ -34,9 +34,12 @@ codeunit 4401 "SOA Agent Metadata Provider" implements IAgentMetadata, IAgentFac
         exit(Page::"SOA Setup");
     end;
 
-    procedure CanCreateNewAgent(): Boolean
+    procedure ShowCanCreateAgent(): Boolean
     begin
-        // TODO(agents) only allow if there is not already an active agent.
-        exit(true);
+        exit(SOASetup.AllowCreateNewSOAgent());
     end;
+
+    var
+        SOASetup: Codeunit "SOA Setup";
+
 }

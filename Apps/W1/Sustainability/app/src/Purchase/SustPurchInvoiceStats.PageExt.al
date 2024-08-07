@@ -11,6 +11,7 @@ pageextension 6220 "Sust. Purch. Invoice Stats." extends "Purchase Invoice Stati
             group(Sustainability)
             {
                 Visible = EnableSustainability;
+                Caption = 'Sustainability';
                 field("Emission C02"; Rec."Emission C02")
                 {
                     ApplicationArea = Basic, Suite;

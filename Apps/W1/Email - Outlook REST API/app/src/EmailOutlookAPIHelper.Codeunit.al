@@ -10,7 +10,8 @@ using System.DataAdministration;
 
 codeunit 4509 "Email - Outlook API Helper"
 {
-    Permissions = tabledata "Email - Outlook Account" = rimd;
+    Permissions = tabledata "Email Inbox" = ri,
+                    tabledata "Email - Outlook Account" = rimd;
 
     var
         CannotConnectToMailServerErr: Label 'Client ID or Client secret is not set up on the Email Microsoft Entra application registration page.';

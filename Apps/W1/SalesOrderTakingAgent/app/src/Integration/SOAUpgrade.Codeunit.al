@@ -27,16 +27,16 @@ codeunit 4589 "SOA Upgrade"
     var
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
-        if not UpgradeTag.HasUpgradeTag(GetRegisterMarketingTextCapabilityTag()) then begin
+        if not UpgradeTag.HasUpgradeTag(GetRegisterSalesOrderTakerCapabilityTag()) then begin
             SOAImpl.RegisterCapability();
 
-            UpgradeTag.SetUpgradeTag(GetRegisterMarketingTextCapabilityTag());
+            UpgradeTag.SetUpgradeTag(GetRegisterSalesOrderTakerCapabilityTag());
         end;
     end;
 
-    internal procedure GetRegisterMarketingTextCapabilityTag(): Code[250]
+    internal procedure GetRegisterSalesOrderTakerCapabilityTag(): Code[250]
     begin
-        exit('MS-539550-RegisterMarketingTextCapability-20240802');
+        exit('MS-539550-SalesOrderTakerCapability-20240802');
     end;
 
 }

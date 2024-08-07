@@ -155,6 +155,10 @@ table 6216 "Sustainability Ledger Entry"
                 ShowDimensions();
             end;
         }
+        field(27; "Emission Fee"; Decimal)
+        {
+            Caption = 'Emission Fee';
+        }
         field(28; "Global Dimension 1 Code"; Code[20])
         {
             CaptionClass = '1,2,1';

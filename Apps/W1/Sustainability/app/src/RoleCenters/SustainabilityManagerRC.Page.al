@@ -1,25 +1,26 @@
 namespace Microsoft.Sustainability.RoleCenters;
 
+using Microsoft.API.V1;
+using Microsoft.CostAccounting.Allocation;
+using Microsoft.Finance.Currency;
+using Microsoft.Finance.Dimension;
+using Microsoft.Finance.FinancialReports;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.Finance.GeneralLedger.Budget;
-using Microsoft.CostAccounting.Allocation;
-using Microsoft.Finance.FinancialReports;
-using Microsoft.Sustainability.Reports;
-using Microsoft.Sustainability.Journal;
-using Microsoft.Sustainability.Account;
-using Microsoft.Sustainability.Ledger;
-using Microsoft.Sustainability.Setup;
 using Microsoft.Foundation.Address;
+using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Location;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
-using Microsoft.Finance.Dimension;
-using Microsoft.Sustainability.Scorecard;
-using Microsoft.Finance.Currency;
 using Microsoft.Purchases.Vendor;
-using Microsoft.Inventory.Item;
-using Microsoft.API.V1;
+using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Certificate;
+using Microsoft.Sustainability.Journal;
+using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Reports;
+using Microsoft.Sustainability.Scorecard;
+using Microsoft.Sustainability.Setup;
 
 page 6235 "Sustainability Manager RC"
 {
@@ -99,6 +100,7 @@ page 6235 "Sustainability Manager RC"
         {
             group(Sustainability)
             {
+                Caption = 'Sustainability';
                 action("Sust. Chart of Accounts")
                 {
                     ApplicationArea = Basic, Suite;
@@ -158,7 +160,7 @@ page 6235 "Sustainability Manager RC"
                 action("Certificates")
                 {
                     ApplicationArea = Basic, Suite;
-                    RunObject = Page "Sustainability Goals";
+                    RunObject = Page "Sustainability Certificates";
                     Caption = 'Certificates';
                     ToolTip = 'Executes the Certificates action.';
                 }

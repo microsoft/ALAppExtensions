@@ -83,13 +83,14 @@ page 4306 Tasks
     {
         area(Processing)
         {
+#pragma warning disable AW0005
             action(StopTask)
+#pragma warning restore AW0005
             {
-                Caption = 'Stop Task';
+                Caption = 'Stop task';
                 ToolTip = 'Stops the task.';
                 Enabled = true;
                 Scope = Repeater;
-                Image = Stop;
                 trigger OnAction()
                 var
                     AgentMonitoringImpl: Codeunit "Agent Monitoring Impl.";

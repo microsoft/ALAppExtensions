@@ -11,6 +11,7 @@ pageextension 6219 "Sust. Purch. Cr. Memo. Stats." extends "Purch. Credit Memo S
             group(Sustainability)
             {
                 Visible = EnableSustainability;
+                Caption = 'Sustainability';
                 field("Emission C02"; Rec."Emission C02")
                 {
                     ApplicationArea = Basic, Suite;
