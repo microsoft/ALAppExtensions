@@ -17,8 +17,8 @@ codeunit 4586 "SOA Dispatcher"
 
     var
         SOAImpl: Codeunit "SOA Impl";
-        TelemetryAgentNotEnabledLbl: Label 'Sales order agent is not enabled', Locked = true;
-        TelemetryAgentCapabilityNotEnabledLbl: Label 'Sales order agent capability is not enabled', Locked = true;
+        TelemetryAgentNotEnabledLbl: Label 'Sales order taker agent is not enabled', Locked = true;
+        TelemetryAgentCapabilityNotEnabledLbl: Label 'Sales order taker agent capability is not enabled', Locked = true;
 
 
     trigger OnRun()
@@ -36,7 +36,7 @@ codeunit 4586 "SOA Dispatcher"
         CustomDimensions.Add('category', SOAImpl.GetCategory());
         CustomDimensions.Add('SOASetupId', Format(Setup.ID));
 
-        if not AzureOpenAI.IsEnabled(Enum::"Copilot Capability"::"Sales Order Taker Agent", true) then begin
+        if not AzureOpenAI.IsEnabled(Enum::"Copilot Capability"::"Sales Order Taker", true) then begin
             Telemetry.LogMessage('0000NF5', TelemetryAgentCapabilityNotEnabledLbl, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
             exit;
         end;

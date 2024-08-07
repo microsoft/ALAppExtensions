@@ -283,6 +283,10 @@ table 6214 "Sustainability Jnl. Line"
             Caption = 'Reason Code';
             TableRelation = "Reason Code";
         }
+        field(27; "Emission Fee"; Decimal)
+        {
+            Caption = 'Emission Fee';
+        }
     }
 
     keys

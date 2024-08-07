@@ -45,10 +45,11 @@ page 4307 "TaskTimeline"
                 field(Type; Rec.Type)
                 {
                 }
-                field(ConfirmationStatus; ConfirmationStatus)
+                field(ConfirmationStatus; ConfirmationStatusOption)
                 {
                     Caption = 'Confirmation Status';
                     ToolTip = 'Specifies the confirmation status of the timeline entry.';
+                    OptionCaption = ' ,Confirmed,ConfirmationRequired,ConfirmationNotRequired';
                 }
                 field(ConfirmedBy; ConfirmedBy)
                 {
@@ -74,8 +75,6 @@ page 4307 "TaskTimeline"
         TaskTimelineEntryStep: Record "Agent Task Timeline Entry Step";
         User: Record User;
         InStream: InStream;
-        PendingConfirmationLbl: Label 'Pending Confirmation';
-        ConfirmedLbl: Label 'Confirmed';
     begin
         if Rec.CalcFields("Primary Page Summary") then
             if Rec."Primary Page Summary".HasValue then begin
@@ -83,19 +82,25 @@ page 4307 "TaskTimeline"
                 PageSummary.Read(InStream);
             end;
 
-        if Rec."Last Step Type" = Rec."Last Step Type"::"User Intervention Request" then
-            ConfirmationStatus := PendingConfirmationLbl
-        else begin
-            TaskTimelineEntryStep.SetRange("Task ID", Rec."Task ID");
-            TaskTimelineEntryStep.SetRange("Timeline Entry ID", Rec.ID);
-            TaskTimelineEntryStep.SetRange(Type, TaskTimelineEntryStep.Type::"User Intervention");
-            if TaskTimelineEntryStep.FindLast() then begin
-                User.SetRange("User Security ID", TaskTimelineEntryStep."User Security ID");
-                if User.FindFirst() then
-                    ConfirmedBy := User."Full Name";
-                ConfirmedAt := TaskTimelineEntryStep.SystemModifiedAt;
-                ConfirmationStatus := ConfirmedLbl;
-            end;
+        case
+            Rec."Last Step Type" of
+            Rec."Last Step Type"::"User Intervention":
+                begin
+                    ConfirmationStatusOption := ConfirmationStatusOption::Confirmed;
+                    TaskTimelineEntryStep.SetRange("Task ID", Rec."Task ID");
+                    TaskTimelineEntryStep.SetRange("Timeline Entry ID", Rec.ID);
+                    TaskTimelineEntryStep.SetRange("Step Number", Rec."Last Step Number");
+                    if TaskTimelineEntryStep.FindLast() then begin
+                        User.SetRange("User Security ID", TaskTimelineEntryStep."User Security ID");
+                        if User.FindFirst() then
+                            ConfirmedBy := User."Full Name";
+                        ConfirmedAt := Rec.SystemModifiedAt;
+                    end;
+                end;
+            Rec."Last Step Type"::"User Intervention Request":
+                ConfirmationStatusOption := ConfirmationStatusOption::ConfirmationRequired;
+            else
+                ConfirmationStatusOption := ConfirmationStatusOption::ConfirmationNotRequired;
         end;
     end;
 
@@ -103,7 +108,7 @@ page 4307 "TaskTimeline"
         PageSummary: BigText;
         ConfirmedBy: Text[250];
         ConfirmedAt: DateTime;
-        ConfirmationStatus: Text[100];
+        ConfirmationStatusOption: Option " ",Confirmed,ConfirmationRequired,ConfirmationNotRequired;
 }
 
 

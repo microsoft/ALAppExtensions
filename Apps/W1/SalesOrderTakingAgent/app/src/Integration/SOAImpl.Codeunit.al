@@ -15,6 +15,7 @@ using Agent.SalesOrderTaker;
 codeunit 4587 "SOA Impl"
 {
     Access = Internal;
+    Permissions = tabledata "Email Inbox" = r;
 
     var
         Telemetry: Codeunit "Telemetry";
@@ -217,7 +218,7 @@ codeunit 4587 "SOA Impl"
     begin
         CustomDimensions.Add('category', GetCategory());
         AgentTaskMessageAttachment.SetRange("Task ID", AgentTaskMessage."Task ID");
-        // AgentTaskMessageAttachment.SetRange("Message ID", AgentTaskMessage.ID); // Temp until platform fix
+        AgentTaskMessageAttachment.SetRange("Message ID", AgentTaskMessage.ID);
         if not AgentTaskMessageAttachment.FindSet() then
             exit;
 
@@ -244,9 +245,9 @@ codeunit 4587 "SOA Impl"
         EnvironmentInformation: Codeunit "Environment Information";
         LearnMoreUrlTxt: Label 'https://go.microsoft.com/fwlink/?linkid=2281481', Locked = true;
     begin
-        if EnvironmentInformation.IsSaaSInfrastructure() then
-            if not CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"Sales Order Taker Agent") then
-                CopilotCapability.RegisterCapability(Enum::"Copilot Capability"::"Sales Order Taker Agent", Enum::"Copilot Availability"::Preview, LearnMoreUrlTxt);
+        if EnvironmentInformation.IsSaaSInfrastructure() then; //ToDo: Add this check back once the feature development is complete
+        if not CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"Sales Order Taker") then
+            CopilotCapability.RegisterCapability(Enum::"Copilot Capability"::"Sales Order Taker", Enum::"Copilot Availability"::Preview, LearnMoreUrlTxt);
     end;
 
     [EventSubscriber(ObjectType::Table, Database::Agent, 'OnAfterModifyEvent', '', false, false)]

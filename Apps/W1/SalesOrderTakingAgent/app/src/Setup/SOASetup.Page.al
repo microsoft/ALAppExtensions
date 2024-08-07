@@ -13,97 +13,107 @@ page 4400 "SOA Setup"
     PageType = ConfigurationDialog;
     Extensible = false;
     ApplicationArea = All;
+    IsPreview = true;
     UsageCategory = Administration;
     Caption = 'Set up sales order taker agent';
     InstructionalText = ' This wizard helps you to set up the order taking agent.';
     AdditionalSearchTerms = 'Sales Order Taker, Agent, Agent Setup, Order Taker, Setup';
+    SourceTable = Agent;
+    SourceTableTemporary = true;
 
     layout
     {
         area(Content)
         {
-            // The first group is always the "start card" 
             group(StartCard)
             {
-                Caption = 'Start Card';
-                InstructionalText = 'Choose how the custom copilot helps with inquiries, quotes and orders. You can add more skills as required.';
-
-                field(IsActive; IsActive)
-                {
-                    ShowCaption = false;
-                    ToolTip = 'Specifies the state of the Sales Order Taker, such as active or not active.';
-                }
-
                 group(Header)
                 {
-                    field(Name; AgentDisplayName)
+                    field(Badge; BadgeTxt)
                     {
                         ShowCaption = false;
-                        Caption = 'Name';
-                        ToolTip = 'Specifies the name of the Sales Order Taker.';
+                        Editable = false;
+                        ToolTip = 'The badge of the Sales Order Taker Agent.';
+                    }
+                    field(Type; AgentType)
+                    {
+                        ShowCaption = false;
+                        Editable = false;
+                        ToolTip = 'Specifies the type of the Sales Order Taker Agent.';
+                    }
+                    field(Name; Rec."Display Name")
+                    {
+                        ShowCaption = false;
+                        Editable = false;
+                        ToolTip = 'The name of the Sales Order Taker.';
+                    }
+                    field(State; Rec.State)
+                    {
+                        Caption = 'Active';
+                        ToolTip = 'Specifies the state of the Sales Order Taker Agent, such as enabled or disabled.';
+                    }
+                }
+
+                field(Summary; AgentSummary)
+                {
+                    Caption = 'Summary';
+                    MultiLine = true;
+                    Editable = false;
+                    ToolTip = 'Specifies a brief description of the Sales Order Taker Agent.';
+                }
+            }
+
+            group(MonitorIncomingCard)
+            {
+                Caption = 'Monitor incoming information';
+                InstructionalText = 'Copilot will read messages in these channels:';
+
+                field("Monitor incoming inquiries"; TempSOASetup."Incoming Monitoring")
+                {
+                    ShowCaption = false;
+                    ToolTip = 'Specifies if the agent should monitor incoming inquiries.';
+                    trigger OnValidate()
+                    begin
+                        IsConfigUpdated();
+                    end;
+                }
+
+                field(MailEnabled; TempSOASetup."Email Monitoring")
+                {
+                    ShowCaption = false;
+                    ToolTip = 'Specifies if the agent should monitor incoming mail.';
+
+                    trigger OnValidate()
+                    begin
+                        IsConfigUpdated();
+                    end;
+                }
+
+                group(MailboxGroup)
+                {
+                    Caption = 'Mailbox';
+                    field(Mailbox; MailboxName)
+                    {
+                        Caption = 'Mail box';
+                        ToolTip = 'Specifies the mail box that the agent should monitor.';
+
+                        trigger OnAssistEdit()
+                        var
+                            EmailAccounts: Page "Email Accounts";
+                            Action: Action;
+                        begin
+                            EmailAccounts.EnableLookupMode();
+                            EmailAccounts.FilterConnectorV2Accounts(true);
+                            if EmailAccounts.RunModal() = Action::LookupOK then
+                                EmailAccounts.GetAccount(TempEmailAccount);
+
+                            MailboxName := TempEmailAccount."Email Address";
+                        end;
 
                         trigger OnValidate()
                         begin
-                            AgentName := CopyStr(AgentDisplayName, 1, MaxStrLen(AgentName));
+                            IsConfigUpdated();
                         end;
-                    }
-                    field(StatusText; StatusText)
-                    {
-                        ShowCaption = false;
-                        Editable = false;
-                        ToolTip = 'Specifies the status of the Sales Order Taker.';
-                    }
-                    group(Access)
-                    {
-                        field(ManageAccess; ManageAccessLbl)
-                        {
-                            ShowCaption = false;
-                            ToolTip = 'Specifies the list of users who can configure or use the Sales Order Taker agent.';
-                            Editable = false;
-
-                            trigger OnDrillDown()
-                            begin
-                                Page.RunModal(Page::"Select Agent Access Control", TempAgentAccessControl);
-                            end;
-                        }
-                    }
-                }
-
-                group(Summary)
-                {
-                    field(SummaryField; SummaryLbl)
-                    {
-                        Caption = 'Summary';
-                        MultiLine = true;
-                        Editable = false;
-                        ToolTip = 'Specifies a brief description of the Sales Order Taker Agent.';
-                    }
-                }
-            }
-            group(SetupIncomingCommunication)
-            {
-                Caption = 'Monitor incoming communication';
-                InstructionalText = 'This skill allows the agent to monitor incoming communication and create sales quotes and draft replies to customers.';
-
-                field(MonitorIncomingCommunication; MonitorIncomingInquiries)
-                {
-                    ShowCaption = false;
-                    ToolTip = 'Specifies if the agent should monitor incoming communication.';
-                    ApplicationArea = All;
-                }
-
-                group(ChannelsToMonitor)
-                {
-                    ShowCaption = false;
-                    group(Email)
-                    {
-                        ShowCaption = false;
-                        field(MailBox; MailboxName)
-                        {
-                            Caption = 'Mail box';
-                            ToolTip = 'Specifies the mail box that the agent should monitor.';
-                            ApplicationArea = All;
-                        }
                     }
                 }
             }
@@ -117,7 +127,8 @@ page 4400 "SOA Setup"
             systemaction(OK)
 #pragma warning restore AA0218
             {
-                Caption = 'Activate';
+                Caption = 'Update';
+                Enabled = IsUpdated;
             }
 
 #pragma warning disable AA0218
@@ -139,61 +150,52 @@ page 4400 "SOA Setup"
         UpdateControls();
     end;
 
+    trigger OnModifyRecord(): Boolean
+    begin
+        IsConfigUpdated();
+    end;
+
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     var
-        EmailAccount: Codeunit "Email Account";
         SOASetup: Codeunit "SOA Setup";
     begin
         if CloseAction = CloseAction::Cancel then
             exit(true);
 
-        //TODO: This is temporary and it should take from the UI instead.
-        EmailAccount.GetAllAccounts(false, TempEmailAccount);
-        TempEmailAccount.FindFirst();
-
-        if IsNullGuid(AgentSecurityID) then
-#pragma warning disable AA0139
-            SOASetup.CreateAgent(AgentName, AgentDisplayName, TempAgentAccessControl, TempEmailAccount, IsActive)
-#pragma warning restore AA0139
-        else
-            SOASetup.UpdateExistingAgent(AgentSecurityID, AgentDisplayName, TempAgentAccessControl, IsActive);
-
+        SOASetup.UpdateAgent(Rec, TempAgentAccessControl, TempSOASetup, TempEmailAccount);
         exit(true);
     end;
 
     local procedure UpdateControls()
     var
-        Agent: Codeunit Agent;
         SOASetup: Codeunit "SOA Setup";
     begin
-        if IsNullGuid(AgentSecurityID) then begin
-            IsActive := true;
-            SOASetup.GetDefaultNames(AgentName, AgentDisplayName);
-        end else begin
-            IsActive := Agent.IsActive(AgentSecurityID);
-            AgentName := Agent.GetUserName(AgentSecurityID);
-            AgentDisplayName := Agent.GetDisplayName(AgentSecurityID);
-            Agent.GetUserAccess(AgentSecurityID, TempAgentAccessControl);
-        end;
+        IsUpdated := false;
+        BadgeTxt := SOASetup.GetInitials();
+        AgentType := SOASetup.GetAgentType();
+        AgentSummary := SOASetup.GetAgentSummary();
+        if Rec.IsEmpty() then
+            SOASetup.GetDefaultAgent(Rec);
+        if TempSOASetup.IsEmpty() then
+            SOASetup.GetDefaultSOASetup(TempSOASetup, Rec);
+        if TempEmailAccount.IsEmpty() and TempSOASetup."Email Monitoring" then
+            SOASetup.GetDefaultEmailAccount(TempEmailAccount); //TODO: This is temporary and it should take from the UI instead.
+        if TempAgentAccessControl.IsEmpty() then
+            SOASetup.GetDefaultAgentAccessControl(Rec."User Security ID", TempAgentAccessControl);
+    end;
 
-        if IsActive then
-            StatusText := ActiveStatusLbl
-        else
-            StatusText := DisabledStatusLbl;
+    local procedure IsConfigUpdated()
+    begin
+        IsUpdated := true;
     end;
 
     var
         TempAgentAccessControl: Record "Agent Access Control" temporary;
         TempEmailAccount: Record "Email Account" temporary;
-        AgentSecurityID: Guid;
-        MonitorIncomingInquiries: Boolean;
+        TempSOASetup: Record "SOA Setup" temporary;
         MailboxName: Text;
-        AgentDisplayName: Text[80];
-        AgentName: Code[50];
-        ManageAccessLbl: Label 'Manage access';
-        IsActive: Boolean;
-        StatusText: Text;
-        ActiveStatusLbl: Label 'Active';
-        DisabledStatusLbl: Label 'Disabled';
-        SummaryLbl: Label 'I''m monitoring incoming mail for requests for quotes. I create sales quotes and draft replies to customers.';
+        BadgeTxt: Text[4];
+        AgentType: Text;
+        AgentSummary: Text;
+        IsUpdated: Boolean;
 }

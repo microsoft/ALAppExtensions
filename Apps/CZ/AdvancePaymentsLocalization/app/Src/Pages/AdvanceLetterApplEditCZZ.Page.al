@@ -61,6 +61,16 @@ page 31175 "Advance Letter Appl. Edit CZZ"
                             Error(AmountExceededErr, TempAdvanceLetterApplication.Amount);
                     end;
                 }
+                field("Job No."; Rec."Job No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Visible = false;
+                }
+                field("Job Task No."; Rec."Job Task No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Visible = false;
+                }
             }
         }
         area(FactBoxes)

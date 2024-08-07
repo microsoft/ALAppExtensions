@@ -20,6 +20,8 @@ using Microsoft.Inventory.Availability;
 using Microsoft.Sales.Comment;
 using Microsoft.Sales.Document;
 using Microsoft.Sales.RoleCenters;
+using Microsoft.Finance.Dimension;
+using Microsoft.Sales.Customer;
 
 permissionset 4405 "SOA Agent - Edit"
 {
@@ -38,10 +40,13 @@ permissionset 4405 "SOA Agent - Edit"
                   tabledata "Assembly Line" = IMD,
                   tabledata "Aggregate Permission Set" = imd,
                   tabledata "All Profile Page Metadata" = imd,
+                  tabledata "Dimension Set Entry" = im,
+                  tabledata "Dimension Set Tree Node" = im,
                   tabledata "Error Buffer" = IMD,
                   tabledata "Error Handling Parameters" = IMD,
                   tabledata "Error Message" = IMD,
                   tabledata "Error Message Register" = IMD,
+                  tabledata "My Customer" = IMD,
                   tabledata "Item Amount" = IMD,
                   tabledata "Item Application Entry" = imd,
                   tabledata "Item Application Entry History" = imd,

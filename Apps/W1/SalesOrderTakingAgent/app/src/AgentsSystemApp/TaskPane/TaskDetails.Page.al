@@ -37,11 +37,13 @@ page 4313 "TaskDetails"
     {
         area(Processing)
         {
+
+#pragma warning disable AW0005
             action(Confirm)
+#pragma warning restore AW0005
             {
                 Caption = 'Confirm';
                 ToolTip = 'Confirms the timeline entry.';
-                Image = Confirm;
 
                 trigger OnAction()
                 begin
@@ -63,7 +65,7 @@ page 4313 "TaskDetails"
         if Rec.CalcFields("Client Context") then
             if Rec."Client Context".HasValue() then begin
                 Rec."Client Context".CreateInStream(InStream);
-                ClientContext.Read(InStream)
+                ClientContext.Read(InStream);
             end;
     end;
 
@@ -73,17 +75,20 @@ page 4313 "TaskDetails"
         TaskTimelineEntry: Record "Agent Task Timeline Entry";
         UserInput: Text;
     begin
-        if TaskTimelineEntry.FindFirst() then begin
-            UserInterventionRequestStep.SetRange("Task ID", Rec."Task ID");
-            UserInterventionRequestStep.SetRange("Step Number", Rec."Step Number");
+        TaskTimelineEntry.SetRange("Task ID", Rec."Task ID");
+        TaskTimelineEntry.SetRange(ID, Rec."Timeline Entry ID");
+        TaskTimelineEntry.SetRange("Last Step Type", TaskTimelineEntry."Last Step Type"::"User Intervention Request");
+        if TaskTimelineEntry.FindLast() then begin
             case TaskTimelineEntry."User Intervention Request Type" of
                 TaskTimelineEntry."User Intervention Request Type"::ReviewMessage:
                     UserInput := '';
                 else
-                    UserInput := UserMessage;
+                    UserInput := UserMessage; //ToDo: Will be implemented when we have a message field.
             end;
 
-            if UserInterventionRequestStep.FindFirst() then
+            UserInterventionRequestStep.SetRange("Task ID", Rec."Task ID");
+            UserInterventionRequestStep.SetRange(Type, UserInterventionRequestStep.Type::"User Intervention Request");
+            if UserInterventionRequestStep.FindLast() then
                 AgentMonitoringImpl.CreateUserInterventionTaskStep(UserInterventionRequestStep, UserInput);
         end;
     end;

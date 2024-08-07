@@ -126,11 +126,8 @@ page 4315 "Agent Card"
                     var
                         TempAgent: Record Agent temporary;
                     begin
-                        if not ControlsEditable then
-                            Error(DisableAgentBeforeConfiguringErr);
                         TempAgent.Copy(Rec);
                         TempAgent.Insert();
-                        // TODO: this doesn't work because the "SOA Setup" doesn't use Agent as source table.
                         Page.RunModal(Rec."Setup Page ID", TempAgent);
                     end;
                 }
@@ -264,7 +261,6 @@ page 4315 "Agent Card"
         UserSettingsRecord: Record "User Settings";
         EnabledWarningTok: Label 'You must set the State field to Disabled before you can make changes to this app.';
         ConfigureAgentTxt: Label 'Open configuration wizard';
-        DisableAgentBeforeConfiguringErr: Label 'You must set the State field to Disabled before you can configure the agent.';
         InstructionsTxt: Text;
         ProfileDisplayName: Text;
         ShowEnableWarning: Text;

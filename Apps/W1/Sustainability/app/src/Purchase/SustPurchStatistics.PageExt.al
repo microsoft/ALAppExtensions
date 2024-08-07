@@ -11,6 +11,7 @@ pageextension 6218 "Sust. Purch. Statistics" extends "Purchase Statistics"
             group(Sustainability)
             {
                 Visible = EnableSustainability;
+                Caption = 'Sustainability';
                 field("Emission C02"; Rec."Emission C02")
                 {
                     ApplicationArea = Basic, Suite;

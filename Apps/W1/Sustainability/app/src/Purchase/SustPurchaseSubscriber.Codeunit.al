@@ -1,11 +1,12 @@
 namespace Microsoft.Sustainability.Purchase;
 
 using Microsoft.Finance.GeneralLedger.Preview;
+using Microsoft.Inventory.Item;
+using Microsoft.Purchases.Document;
+using Microsoft.Purchases.History;
+using Microsoft.Purchases.Posting;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Posting;
-using Microsoft.Purchases.Document;
-using Microsoft.Purchases.Posting;
-using Microsoft.Purchases.History;
 
 codeunit 6225 "Sust. Purchase Subscriber"
 {
@@ -117,6 +118,48 @@ codeunit 6225 "Sust. Purchase Subscriber"
         SustainabilityJnlLine.Validate("Emission CO2", CO2ToPost);
         SustainabilityJnlLine.Validate("Emission CH4", CH4ToPost);
         SustainabilityJnlLine.Validate("Emission N2O", N2OToPost);
+        SustainabilityPostMgt.InsertLedgerEntry(SustainabilityJnlLine);
+
+        PostCarbonCreditSustainabilityLine(PurchaseLine, SustainabilityJnlLine);
+    end;
+
+    local procedure PostCarbonCreditSustainabilityLine(PurchaseLine: Record "Purchase Line"; FromSustainabilityJnlLine: Record "Sustainability Jnl. Line")
+    var
+        PurchaseLine1: Record "Purchase Line";
+        SustainabilityJnlLine: Record "Sustainability Jnl. Line";
+        Item: Record Item;
+        SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
+        CO2Emission: Decimal;
+        EmissionFee: Decimal;
+    begin
+        if PurchaseLine.Type <> PurchaseLine.Type::Item then
+            exit;
+
+        if not Item.Get(PurchaseLine."No.") then
+            exit;
+
+        if not Item."GHG Credit" then
+            exit;
+
+        // To ensure that Carbon Credit is posted with full Amount and Quantity.
+        if not PurchaseLine1.Get(PurchaseLine."Document Type", PurchaseLine."Document No.", PurchaseLine."Line No.") then
+            exit;
+
+        EmissionFee := PurchaseLine1."Line Amount";
+        CO2Emission := PurchaseLine1.Quantity * Item."Carbon Credit Per UOM";
+
+        if PurchaseLine."Document Type" in [PurchaseLine."Document Type"::Order, PurchaseLine."Document Type"::Invoice] then begin
+            CO2Emission := -CO2Emission;
+            EmissionFee := -EmissionFee;
+        end;
+
+        SustainabilityJnlLine.Init();
+        SustainabilityJnlLine := FromSustainabilityJnlLine;
+        SustainabilityJnlLine.Validate("Document Type", SustainabilityJnlLine."Document Type"::"GHG Credit");
+        SustainabilityJnlLine.Validate("Emission CO2", CO2Emission);
+        SustainabilityJnlLine.Validate("Emission CH4", 0);
+        SustainabilityJnlLine.Validate("Emission N2O", 0);
+        SustainabilityJnlLine.Validate("Emission Fee", EmissionFee);
         SustainabilityPostMgt.InsertLedgerEntry(SustainabilityJnlLine);
     end;
 

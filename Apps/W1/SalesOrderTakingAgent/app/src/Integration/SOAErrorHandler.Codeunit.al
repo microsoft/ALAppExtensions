@@ -19,7 +19,7 @@ codeunit 4585 "SOA Error Handler"
     end;
 
     var
-        TelemetryAgentTaskFailedLbl: Label 'Sales order agent task failed', Locked = true;
+        TelemetryAgentTaskFailedLbl: Label 'Sales order taker agent task failed', Locked = true;
 
     procedure RunSOAErrorHandler(Setup: Record "SOA Setup")
     var

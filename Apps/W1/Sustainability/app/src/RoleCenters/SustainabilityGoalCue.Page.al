@@ -15,35 +15,41 @@ page 6240 "Sustainability Goal Cue"
             {
                 CuegroupLayout = Wide;
                 ShowCaption = false;
-                field("Realized % for CO2"; "Realized % for CO2")
+                field("Realized % for CO2"; Rec."Realized % for CO2")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Realized % for CO2';
+                    ToolTip = 'Specifies the Realized % for CO2 for Sustainability Goal';
                 }
-                field("Realized % for CH4"; "Realized % for CH4")
+                field("Realized % for CH4"; Rec."Realized % for CH4")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Realized % for CH4';
+                    ToolTip = 'Specifies the Realized % for CH4 for Sustainability Goal';
                 }
-                field("Realized % for N2O"; "Realized % for N2O")
+                field("Realized % for N2O"; Rec."Realized % for N2O")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'Realized % for N2O';
+                    ToolTip = 'Specifies the Realized % for N2O for Sustainability Goal';
                 }
-                field("CO2 % vs Baseline"; "CO2 % vs Baseline")
+                field("CO2 % vs Baseline"; Rec."CO2 % vs Baseline")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'CO2 % vs Baseline';
+                    ToolTip = 'Specifies the CO2 % vs Baseline for Sustainability Goal';
                 }
-                field("CH4 % vs Baseline"; "CH4 % vs Baseline")
+                field("CH4 % vs Baseline"; Rec."CH4 % vs Baseline")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'CH4 % vs Baseline';
+                    ToolTip = 'Specifies the CH4 % vs Baseline for Sustainability Goal';
                 }
-                field("N2O % vs Baseline"; "N2O % vs Baseline")
+                field("N2O % vs Baseline"; Rec."N2O % vs Baseline")
                 {
                     ApplicationArea = Basic, Suite;
                     Caption = 'N2O % vs Baseline';
+                    ToolTip = 'Specifies the N2O % vs Baseline for Sustainability Goal';
                 }
             }
         }
