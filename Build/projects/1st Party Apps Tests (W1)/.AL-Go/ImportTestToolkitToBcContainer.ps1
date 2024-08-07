@@ -5,7 +5,7 @@ Param(
 
 Import-TestToolkitToBcContainer @parameters
 
-$installAdditionalApps = (Invoke-ScriptInBCContainer -containerName $containerName -scriptblock { Get-ChildItem -Path "C:\Applications\" -Include "Microsoft_Tests-CRM integration.app", "Microsoft_AI Test Toolkit.app" -Recurse })
+$installAdditionalApps = (Invoke-ScriptInBCContainer -containerName $containerName -scriptblock { Get-ChildItem -Path "C:\Applications\" -Include "Microsoft_Tests-CRM integration.app" -Recurse })
 
 foreach ($installApps in $installAdditionalApps) {
     Publish-BcContainerApp -containerName $containerName -appFile ":$($installApps.FullName)" -skipVerification
