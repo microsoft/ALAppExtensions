@@ -16,7 +16,7 @@
     },
     {
         "codeunitId": 139781,
-        "CodeunitName": "Search Item Prompt Test",
+        "CodeunitName": "SLS Prompt Test",
         "Method": "*"
     },
     {
@@ -37,6 +37,36 @@
     {
         "codeunitId": 139787,
         "CodeunitName": "Item Srch. In Doc. Lookup Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 149820,
+        "CodeunitName": "Extract Info. from csv Prompt",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 149821,
+        "CodeunitName": "Magic Function Attmt. Prompt",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 149822,
+        "CodeunitName": "Load Mappings from csv",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 149824,
+        "CodeunitName": "Red Teaming Tests",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 149825,
+        "CodeunitName": "RedT XPIA Tests",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 149826,
+        "CodeunitName": "Extract Info. Accuracy",
         "Method": "*"
     }
 ]
