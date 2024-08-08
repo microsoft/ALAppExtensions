@@ -734,7 +734,7 @@ codeunit 139616 "E-Doc Log Test"
         Assert.IsTrue(EDocumentIntegrationLog.FindFirst(), 'There should be an edocument integration log entry');
         Assert.AreEqual(EDocumentIntegrationLog."E-Doc. Entry No", EDocument."Entry No", 'EDocument integration log should be linked to edocument');
         Assert.AreEqual(HttpRequest.Method(), EDocumentIntegrationLog.Method, 'Integration log should contain method type from request message');
-        Assert.AreEqual(HttpRequest.GetRequestUri(), EDocumentIntegrationLog.URL, 'Integration log should contain url from request message');
+        Assert.AreEqual(HttpRequest.GetRequestUri(), EDocumentIntegrationLog."Request URL", 'Integration log should contain url from request message');
 
         EDocumentIntegrationLog.CalcFields("Request Blob");
         EDocumentIntegrationLog.CalcFields("Response Blob");

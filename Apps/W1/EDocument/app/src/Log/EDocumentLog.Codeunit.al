@@ -108,7 +108,10 @@ codeunit 6132 "E-Document Log"
         EDocumentIntegrationLog.Validate("E-Doc. Entry No", EDocument."Entry No");
         EDocumentIntegrationLog.Validate("Service Code", EDocumentService.Code);
         EDocumentIntegrationLog.Validate("Response Status", HttpResponse.HttpStatusCode());
-        EDocumentIntegrationLog.Validate(URL, HttpRequest.GetRequestUri());
+#if not CLEAN25
+        EDocumentIntegrationLog.Validate("Url", CopyStr(HttpRequest.GetRequestUri(), 1, 250));
+#endif
+        EDocumentIntegrationLog.Validate("Request URL", HttpRequest.GetRequestUri());
         EDocumentIntegrationLog.Validate(Method, HttpRequest.Method());
         EDocumentIntegrationLog.Insert();
 
