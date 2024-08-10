@@ -25,6 +25,11 @@ page 30159 "Shpfy Catalogs"
                     ToolTip = 'Specifies the unique identifier for the catalog in Shopify.';
                     Editable = false;
                 }
+                field("Customer No."; Rec."Customer No.")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the customer''s no.';
+                }
                 field(Name; Rec.Name)
                 {
                     ApplicationArea = All;

@@ -31,6 +31,7 @@ codeunit 30182 "Shpfy Product Price Calc."
         TaxLiable: Boolean;
         VATCountryRegionCode: Code[10];
         CustomerPriceGroup: Code[10];
+        CustomerNo: Code[20];
         CustomerDiscGroup: Code[20];
         CustomerPostingGroup: Code[20];
         PricesIncludingVAT: Boolean;
@@ -53,7 +54,7 @@ codeunit 30182 "Shpfy Product Price Calc."
         ShpfyUpdatePriceSouce: codeunit "Shpfy Update Price Source";
         IsHandled: Boolean;
     begin
-        ProductEvents.OnBeforeCalculateUnitPrice(Item, ItemVariant, UnitOfMeasure, Shop, Catalog, UnitCost, Price, ComparePrice, IsHandled);
+        ProductEvents.OnBeforeCalculateUnitPrice(Item, ItemVariant, UnitOfMeasure, Shop, UnitCost, Price, ComparePrice, IsHandled);
         if not IsHandled then begin
             BindSubscription(ShpfyUpdatePriceSouce);
             if TempSalesHeader.FindFirst() then begin
@@ -84,29 +85,44 @@ codeunit 30182 "Shpfy Product Price Calc."
             if ComparePrice <= Price then
                 ComparePrice := 0;
         end;
-        ProductEvents.OnAfterCalculateUnitPrice(Item, ItemVariant, UnitOfMeasure, Shop, Catalog, UnitCost, Price, ComparePrice);
+        ProductEvents.OnAfterCalculateUnitPrice(Item, ItemVariant, UnitOfMeasure, Shop, UnitCost, Price, ComparePrice);
     end;
 
     /// <summary> 
     /// Create Temp Sales Header.
     /// </summary>
     local procedure CreateTempSalesHeader()
+    var
+        CustomerRec: Record Customer;
     begin
         Clear(TempSalesHeader);
         TempSalesHeader."Document Type" := TempSalesHeader."Document Type"::Quote;
         TempSalesHeader."No." := Shop.Code;
-        TempSalesHeader."Sell-to Customer No." := Shop.Code;
-        TempSalesHeader."Bill-to Customer No." := Shop.Code;
+        if CustomerNo <> '' then begin
+            if CustomerRec.GET(CustomerNo) then begin
+                TempSalesHeader."Sell-to Customer No." := CustomerNo;
+                TempSalesHeader."Bill-to Customer No." := CustomerNo;
+                TempSalesHeader."Customer Price Group" := CustomerRec."Customer Price Group";
+                TempSalesHeader."Customer Disc. Group" := CustomerRec."Customer Disc. Group";
+                TempSalesHeader."Allow Line Disc." := CustomerRec."Allow Line Disc.";
+                TempSalesHeader."Invoice Disc. Code" := CustomerRec."Invoice Disc. Code";
+            end
+        end
+        else begin
+            TempSalesHeader."Sell-to Customer No." := Shop.Code;
+            TempSalesHeader."Bill-to Customer No." := Shop.Code;
+            TempSalesHeader."Customer Price Group" := CustomerPriceGroup;
+            TempSalesHeader."Customer Disc. Group" := CustomerDiscGroup;
+            TempSalesHeader."Allow Line Disc." := AllowLineDisc;
+        end;
+
         TempSalesHeader."Gen. Bus. Posting Group" := GenBusPostingGroup;
         TempSalesHeader."VAT Bus. Posting Group" := VATBusPostingGroup;
         TempSalesHeader."Tax Area Code" := TaxAreaCode;
         TempSalesHeader."Tax Liable" := TaxLiable;
         TempSalesHeader."VAT Country/Region Code" := VATCountryRegionCode;
-        TempSalesHeader."Customer Price Group" := CustomerPriceGroup;
-        TempSalesHeader."Customer Disc. Group" := CustomerDiscGroup;
         TempSalesHeader."Customer Posting Group" := CustomerPostingGroup;
         TempSalesHeader."Prices Including VAT" := PricesIncludingVAT;
-        TempSalesHeader."Allow Line Disc." := AllowLineDisc;
         TempSalesHeader.Validate("Document Date", WorkDate());
         TempSalesHeader.Validate("Order Date", WorkDate());
         TempSalesHeader.Validate("Currency Code", Shop."Currency Code");
@@ -206,6 +222,7 @@ codeunit 30182 "Shpfy Product Price Calc."
                     CustomerPostingGroup := ShopifyCatalog."Customer Posting Group";
                     PricesIncludingVAT := ShopifyCatalog."Prices Including VAT";
                     AllowLineDisc := ShopifyCatalog."Allow Line Disc.";
+                    CustomerNo := ShopifyCatalog."Customer No.";
                 end;
         end;
     end;
