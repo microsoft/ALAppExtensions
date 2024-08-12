@@ -2137,6 +2137,21 @@ codeunit 4037 "Helper Functions"
         exit(OutValue);
     end;
 
+    procedure ContainsAlphaChars(InValue: Text[30]): Boolean
+    var
+        NextChar: Char;
+        I: Integer;
+    begin
+        for I := 1 to StrLen(InValue) do begin
+            NextChar := InValue[I];
+            if ((NextChar >= 65) and (NextChar <= 90)) or       // A-Z
+                ((NextChar >= 97) and (NextChar <= 122)) then   // a-z
+                exit(true);
+        end;
+
+        exit(false);
+    end;
+
     procedure GetGPAccountNumberByIndex(GPAccountIndex: Integer): Code[20]
     var
         GPAccount: Record "GP Account";
