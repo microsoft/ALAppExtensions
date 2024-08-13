@@ -183,10 +183,12 @@ codeunit 139603 "Shpfy Product Init Test"
         CustomerPriceGroup: Record "Customer Price Group";
         SalesPrice: Record "Sales Price";
     begin
-        CustomerPriceGroup.Init();
-        CustomerPriceGroup.Code := Code;
-        CustomerPriceGroup."Allow Line Disc." := true;
-        CustomerPriceGroup.Insert();
+        if not CustomerPriceGroup.Get(Code) then begin
+            CustomerPriceGroup.Init();
+            CustomerPriceGroup.Code := Code;
+            CustomerPriceGroup."Allow Line Disc." := true;
+            CustomerPriceGroup.Insert();
+        end;
 
         SalesPrice.Init();
         SalesPrice."Sales Type" := Enum::"Sales Price Type"::"All Customers";
@@ -199,9 +201,11 @@ codeunit 139603 "Shpfy Product Init Test"
     var
         SalesLineDiscount: Record "Sales Line Discount";
     begin
-        CustDiscGrp.Init();
-        CustDiscGrp.Code := Code;
-        CustDiscGrp.Insert();
+        if not CustDiscGrp.get(Code) then begin
+            CustDiscGrp.Init();
+            CustDiscGrp.Code := Code;
+            CustDiscGrp.Insert();
+        end;
 
         SalesLineDiscount.Init();
         SalesLineDiscount.Type := Enum::"Sales Line Discount Type"::Item;

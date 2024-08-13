@@ -93,20 +93,18 @@ codeunit 30182 "Shpfy Product Price Calc."
     /// </summary>
     local procedure CreateTempSalesHeader()
     var
-        CustomerRec: Record Customer;
+        Customer: Record Customer;
     begin
         Clear(TempSalesHeader);
         TempSalesHeader."Document Type" := TempSalesHeader."Document Type"::Quote;
         TempSalesHeader."No." := Shop.Code;
         if CustomerNo <> '' then begin
-            if CustomerRec.GET(CustomerNo) then begin
-                TempSalesHeader."Sell-to Customer No." := CustomerNo;
-                TempSalesHeader."Bill-to Customer No." := CustomerNo;
-                TempSalesHeader."Customer Price Group" := CustomerRec."Customer Price Group";
-                TempSalesHeader."Customer Disc. Group" := CustomerRec."Customer Disc. Group";
-                TempSalesHeader."Allow Line Disc." := CustomerRec."Allow Line Disc.";
-                TempSalesHeader."Invoice Disc. Code" := CustomerRec."Invoice Disc. Code";
-            end
+            Customer.GET(CustomerNo);
+            TempSalesHeader."Sell-to Customer No." := CustomerNo;
+            TempSalesHeader."Bill-to Customer No." := CustomerNo;
+            TempSalesHeader."Customer Price Group" := Customer."Customer Price Group";
+            TempSalesHeader."Customer Disc. Group" := Customer."Customer Disc. Group";
+            TempSalesHeader."Allow Line Disc." := Customer."Allow Line Disc.";
         end
         else begin
             TempSalesHeader."Sell-to Customer No." := Shop.Code;
