@@ -203,7 +203,7 @@ page 41013 "Hist. Purchase Recv."
                     HistGenJournalLines: Page "Hist. Gen. Journal Lines";
                 begin
                     HistGenJournalLines.SetFilterOriginatingTrxSourceNo(Rec."Audit Code");
-                    HistGenJournalLines.RunModal();
+                    HistGenJournalLines.Run();
                 end;
             }
         }

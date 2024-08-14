@@ -12,6 +12,17 @@ codeunit 139662 "GP Item Tests"
         ItemDataMigrationFacade: Codeunit "Item Data Migration Facade";
         GPItemMigrator: Codeunit "GP Item Migrator";
         GPTestHelperFunctions: Codeunit "GP Test Helper Functions";
+        ItemNoSashBrshTok: Label '1 1/2\"SASH BRSH', Locked = true;
+        ItemNoStepLadderTok: Label '4'' STEPLADDER', Locked = true;
+        ItemNoKitComponentInvTok: Label 'KIT COMPONENT INV', Locked = true;
+        ItemNoKitComponentSvcTok: Label 'KIT COMPONENT SVC', Locked = true;
+        ItemNoKitTok: Label 'KIT', Locked = true;
+        ItemNo12345ITEMNUMBERTok: Label '12345ITEMNUMBER!@#$%', Locked = true;
+        ItemNumberItemInactiveTok: Label 'ITEM INACTIVE', Locked = true;
+        ItemNoItemDiscontinuedTok: Label 'ITEM DISCONTINUED', Locked = true;
+        ItemClassesIdTest1Tok: Label 'TEST-1', Locked = true;
+        ItemClassIdTest2Tok: Label 'TEST-2', Locked = true;
+        PostingGroupGPTok: Label 'GP', Locked = true;
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -50,11 +61,10 @@ codeunit 139662 "GP Item Tests"
         HelperFunctions.CreatePostMigrationData();
 
         // [THEN] An Item is created for all configured staging table entries
-        Assert.RecordCount(Item, 7);
         Assert.AreEqual(Item.Count(), HelperFunctions.GetNumberOfItems(), 'Wrong number of Items calculated');
 
         // [THEN] Items are created with correct settings
-        GPItem.Get('1 1/2\"SASH BRSH');
+        GPItem.Get(ItemNoSashBrshTok);
         Item.Get(GPItem.No);
         Assert.AreEqual(GPItem.No, Item."No.", 'Item No. not set');
         Assert.AreEqual(0.00, Item."Unit Price", 'Unit Price set');
@@ -67,7 +77,7 @@ codeunit 139662 "GP Item Tests"
         Assert.AreEqual(GPItem.SearchDescription, Item."Search Description", 'Search Description not set.');
         Assert.AreEqual(GPItem.PurchUnitOfMeasure, Item."Purch. Unit of Measure", 'Purch. Unit of Measure not set.');
 
-        GPItem.Get('4'' STEPLADDER');
+        GPItem.Get(ItemNoStepLadderTok);
         Item.Get(GPItem.No);
         Assert.AreEqual(GPItem.No, Item."No.", 'Item No. not set');
         Assert.AreEqual(0.00, Item."Unit Price", 'Unit Price set');
@@ -147,7 +157,7 @@ codeunit 139662 "GP Item Tests"
         until GPItem.Next() = 0;
 
         // [then] Then the Inventory Posting Groups will NOT be migrated
-        InventoryPostingGroup.SetFilter("Code", '%1|%2', 'TEST-1', 'TEST-2');
+        InventoryPostingGroup.SetFilter("Code", '%1|%2', ItemClassesIdTest1Tok, ItemClassIdTest2Tok);
         Assert.RecordCount(InventoryPostingGroup, 0);
     end;
 
@@ -180,9 +190,9 @@ codeunit 139662 "GP Item Tests"
         Assert.RecordCount(GPIV00101, 8);
         Assert.RecordCount(GPIV40400, 2);
 
-        Assert.IsTrue(GPIV00101.Get('1 1/2\"SASH BRSH'), 'Could not locate item.');
-        Assert.AreEqual('TEST-1', GPIV00101.ITMCLSCD, 'Incorrect class Id');
-        Assert.IsTrue(GPIV40400.Get('TEST-1'), 'Could not class Id.');
+        Assert.IsTrue(GPIV00101.Get(ItemNoSashBrshTok), 'Could not locate item.');
+        Assert.AreEqual(ItemClassesIdTest1Tok, GPIV00101.ITMCLSCD, 'Incorrect class Id');
+        Assert.IsTrue(GPIV40400.Get(ItemClassesIdTest1Tok), 'Could not class Id.');
 
         GPItem.FindSet();
         repeat
@@ -190,33 +200,33 @@ codeunit 139662 "GP Item Tests"
         until GPItem.Next() = 0;
 
         // [THEN] The Inventory Posting Groups will be migrated
-        Item.SetFilter("No.", '%1|%2|%3', '1 1/2\"SASH BRSH', '12345ITEMNUMBER!@#$%', '4'' STEPLADDER');
+        Item.SetFilter("No.", '%1|%2|%3', ItemNoSashBrshTok, ItemNo12345ITEMNUMBERTok, ItemNoStepLadderTok);
         Assert.IsFalse(Item.IsEmpty(), 'Could not find Items by code.');
 
-        InventoryPostingGroup.SetFilter("Code", '%1|%2|%3', 'TEST-1', 'TEST-2', 'GP');
+        InventoryPostingGroup.SetFilter("Code", '%1|%2|%3', ItemClassesIdTest1Tok, ItemClassIdTest2Tok, PostingGroupGPTok);
         Assert.IsFalse(InventoryPostingGroup.IsEmpty(), 'Could not find Inventory Posting Groups by code.');
         Assert.RecordCount(InventoryPostingGroup, 3);
 
         // [THEN] Fields for the first Inventory Posting Setup will be correct
-        InventoryPostingSetup.SetRange("Invt. Posting Group Code", 'TEST-1');
+        InventoryPostingSetup.SetRange("Invt. Posting Group Code", ItemClassesIdTest1Tok);
         Assert.IsTrue(InventoryPostingSetup.FindFirst(), 'Could not find Inventory Posting Setup by code.');
-        Assert.AreEqual('TEST-1', InventoryPostingSetup."Invt. Posting Group Code", 'Invt. Posting Group Code of InventoryPostingSetup is incorrect.');
+        Assert.AreEqual(ItemClassesIdTest1Tok, InventoryPostingSetup."Invt. Posting Group Code", 'Invt. Posting Group Code of InventoryPostingSetup is incorrect.');
         Assert.AreEqual('1', InventoryPostingSetup."Inventory Account", 'Inventory Account of InventoryPostingSetup is incorrect.');
 
-        InventoryPostingSetup.SetRange("Invt. Posting Group Code", 'TEST-2');
+        InventoryPostingSetup.SetRange("Invt. Posting Group Code", ItemClassIdTest2Tok);
         Assert.IsTrue(InventoryPostingSetup.FindFirst(), 'Could not find Inventory Posting Setup by code.');
-        Assert.AreEqual('TEST-2', InventoryPostingSetup."Invt. Posting Group Code", 'Invt. Posting Group Code of InventoryPostingSetup is incorrect.');
+        Assert.AreEqual(ItemClassIdTest2Tok, InventoryPostingSetup."Invt. Posting Group Code", 'Invt. Posting Group Code of InventoryPostingSetup is incorrect.');
         Assert.AreEqual('', InventoryPostingSetup."Inventory Account", 'Inventory Account of InventoryPostingSetup is incorrect.');
 
         // [THEN] The correct Inventory Posting Groups are set
-        Item.Get('1 1/2\"SASH BRSH');
-        Assert.AreEqual('TEST-1', Item."Inventory Posting Group", 'Inventory Posting Group of migrated Item is incorrect.');
+        Item.Get(ItemNoSashBrshTok);
+        Assert.AreEqual(ItemClassesIdTest1Tok, Item."Inventory Posting Group", 'Inventory Posting Group of migrated Item is incorrect.');
 
-        Item.Get('12345ITEMNUMBER!@#$%');
-        Assert.AreEqual('TEST-1', Item."Inventory Posting Group", 'Inventory Posting Group of migrated Item is incorrect.');
+        Item.Get(ItemNo12345ITEMNUMBERTok);
+        Assert.AreEqual(ItemClassesIdTest1Tok, Item."Inventory Posting Group", 'Inventory Posting Group of migrated Item is incorrect.');
 
-        Item.Get('4'' STEPLADDER');
-        Assert.AreEqual('TEST-2', Item."Inventory Posting Group", 'Inventory Posting Group of migrated Item is incorrect.');
+        Item.Get(ItemNoStepLadderTok);
+        Assert.AreEqual(ItemClassIdTest2Tok, Item."Inventory Posting Group", 'Inventory Posting Group of migrated Item is incorrect.');
     end;
 
     [Test]
@@ -259,7 +269,7 @@ codeunit 139662 "GP Item Tests"
 
         // [THEN] Inactive items will not be migrated
         Assert.IsTrue(Item.Count() > 0, 'Items were not migrated.');
-        Item.SetRange("No.", 'ITEM INACTIVE');
+        Item.SetRange("No.", ItemNumberItemInactiveTok);
         Assert.IsTrue(Item.IsEmpty(), 'Inactive item should not have been migrated.');
     end;
 
@@ -303,10 +313,10 @@ codeunit 139662 "GP Item Tests"
 
         // [THEN] Discontinued items will not be migrated
         Assert.IsTrue(Item.Count() > 0, 'Items were not migrated.');
-        Item.SetRange("No.", 'ITEM INACTIVE');
+        Item.SetRange("No.", ItemNumberItemInactiveTok);
         Assert.IsTrue(Item.FindFirst(), 'Inactive item should have been migrated.');
 
-        Item.SetRange("No.", 'ITEM DISCONTINUED');
+        Item.SetRange("No.", ItemNoItemDiscontinuedTok);
         Assert.IsTrue(Item.IsEmpty(), 'Discontinued item should have been migrated.');
     end;
 
@@ -351,17 +361,17 @@ codeunit 139662 "GP Item Tests"
         Assert.RecordCount(Item, 8);
         Assert.AreEqual(Item.Count(), HelperFunctions.GetNumberOfItems(), 'Wrong number of Items calculated');
 
-        Item.Get('KIT COMPONENT INV');
+        Item.Get(ItemNoKitComponentInvTok);
         Assert.AreEqual(Item.Type::Inventory, Item.Type, 'Type is incorrect (INV).');
 
-        Item.Get('KIT COMPONENT SVC');
+        Item.Get(ItemNoKitComponentSvcTok);
         Assert.AreEqual(Item.Type::"Non-Inventory", Item.Type, 'Type is incorrect (SVC).');
 
         // [THEN] Kit item components are created with correct settings
-        BOMComponent.SetRange("Parent Item No.", 'KIT');
+        BOMComponent.SetRange("Parent Item No.", ItemNoKitTok);
         Assert.RecordCount(BOMComponent, 2);
 
-        BOMComponent.SetRange("No.", 'KIT COMPONENT INV');
+        BOMComponent.SetRange("No.", ItemNoKitComponentInvTok);
         BOMComponent.FindFirst();
         Assert.AreEqual(10000, BOMComponent."Line No.", 'Line No. is incorrect');
         Assert.AreEqual(BOMComponent.Type::Item, BOMComponent.Type, 'Type is incorrect.');
@@ -369,7 +379,7 @@ codeunit 139662 "GP Item Tests"
         Assert.AreEqual('EACH', BOMComponent."Unit of Measure Code", 'Unit of Measure Code is incorrect.');
         Assert.AreEqual(1, BOMComponent."Quantity per", 'Quantity per is incorrect.');
 
-        BOMComponent.SetRange("No.", 'KIT COMPONENT SVC');
+        BOMComponent.SetRange("No.", ItemNoKitComponentSvcTok);
         BOMComponent.FindFirst();
         Assert.AreEqual(20000, BOMComponent."Line No.", 'Line No. is incorrect');
         Assert.AreEqual(BOMComponent.Type::Item, BOMComponent.Type, 'Type is incorrect.');
@@ -396,8 +406,8 @@ codeunit 139662 "GP Item Tests"
         GPIV40400.DeleteAll();
         DataMigrationEntity.DeleteAll();
 
-        if not GenBusPostingGroup.Get('GP') then begin
-            GenBusPostingGroup.Validate(GenBusPostingGroup.Code, 'GP');
+        if not GenBusPostingGroup.Get(PostingGroupGPTok) then begin
+            GenBusPostingGroup.Validate(GenBusPostingGroup.Code, PostingGroupGPTok);
             GenBusPostingGroup.Insert(true);
         end;
     end;
@@ -417,10 +427,10 @@ codeunit 139662 "GP Item Tests"
         GPIV00104: Record "GP IV00104";
     begin
         Clear(GPItem);
-        GPItem.No := '1 1/2\"SASH BRSH';
-        GPItem.Description := '1 1/2\"SASH BRSH';
+        GPItem.No := ItemNoSashBrshTok;
+        GPItem.Description := ItemNoSashBrshTok;
         GPItem.SearchDescription := 'Craftsman Brush 1 1/2\" Sash';
-        GPItem.ShortName := '1 1/2\"SASH BRSH';
+        GPItem.ShortName := ItemNoSashBrshTok;
         GPItem.BaseUnitOfMeasure := 'Each';
         GPItem.ItemType := 0;
         GPItem.CostingMethod := '0';
@@ -435,7 +445,7 @@ codeunit 139662 "GP Item Tests"
         GPItem.Insert();
 
         Clear(GPItem);
-        GPItem.No := '12345ITEMNUMBER!@#$%';
+        GPItem.No := ItemNo12345ITEMNUMBERTok;
         GPItem.Description := '12345ITEMNUMBER!@#$%1234567890';
         GPItem.SearchDescription := 'Item Description !@#123456789012345678901234567890';
         GPItem.ShortName := '12345ITEMNUMBER!@#$%1234567890';
@@ -453,10 +463,10 @@ codeunit 139662 "GP Item Tests"
         GPItem.Insert();
 
         Clear(GPItem);
-        GPItem.No := '4'' STEPLADDER';
-        GPItem.Description := '4'' STEPLADDER';
-        GPItem.SearchDescription := '4'' Stepladder';
-        GPItem.ShortName := '4'' STEPLADDER';
+        GPItem.No := ItemNoStepLadderTok;
+        GPItem.Description := ItemNoStepLadderTok;
+        GPItem.SearchDescription := ItemNoStepLadderTok;
+        GPItem.ShortName := ItemNoStepLadderTok;
         GPItem.BaseUnitOfMeasure := 'Each';
         GPItem.ItemType := 0;
         GPItem.CostingMethod := '0';
@@ -471,7 +481,7 @@ codeunit 139662 "GP Item Tests"
         GPItem.Insert();
 
         Clear(GPItem);
-        GPItem.No := 'ITEM INACTIVE';
+        GPItem.No := ItemNumberItemInactiveTok;
         GPItem.Description := 'Inactive item';
         GPItem.SearchDescription := 'inactive';
         GPItem.ShortName := 'Inactive item';
@@ -495,7 +505,7 @@ codeunit 139662 "GP Item Tests"
 #pragma warning restore AA0139
 
         Clear(GPItem);
-        GPItem.No := 'ITEM DISCONTINUED';
+        GPItem.No := ItemNoItemDiscontinuedTok;
         GPItem.Description := 'Discontinued item';
         GPItem.SearchDescription := 'discontinued';
         GPItem.ShortName := 'Discontinued item';
@@ -520,10 +530,10 @@ codeunit 139662 "GP Item Tests"
 
         // Kit and its components
         Clear(GPItem);
-        GPItem.No := 'KIT';
-        GPItem.Description := 'Kit';
-        GPItem.SearchDescription := 'Kit';
-        GPItem.ShortName := 'Kit';
+        GPItem.No := ItemNoKitTok;
+        GPItem.Description := ItemNoKitTok;
+        GPItem.SearchDescription := ItemNoKitTok;
+        GPItem.ShortName := ItemNoKitTok;
         GPItem.BaseUnitOfMeasure := 'Each';
         GPItem.ItemType := 2;
         GPItem.CostingMethod := '0';
@@ -537,12 +547,12 @@ codeunit 139662 "GP Item Tests"
         GPItem.Insert();
 
         Clear(GPIV00101);
-        GPIV00101.ITEMNMBR := 'KIT';
+        GPIV00101.ITEMNMBR := ItemNoKitTok;
         GPIV00101.ITEMTYPE := 3;
         GPIV00101.Insert();
 
         Clear(GPItem);
-        GPItem.No := 'KIT COMPONENT INV';
+        GPItem.No := ItemNoKitComponentInvTok;
         GPItem.Description := 'Kit Component Inventory';
         GPItem.SearchDescription := 'Kit component inventory';
         GPItem.ShortName := 'Kit Component Inventory';
@@ -559,12 +569,12 @@ codeunit 139662 "GP Item Tests"
         GPItem.Insert();
 
         Clear(GPIV00101);
-        GPIV00101.ITEMNMBR := 'KIT COMPONENT INV';
+        GPIV00101.ITEMNMBR := ItemNoKitComponentInvTok;
         GPIV00101.ITEMTYPE := 1;
         GPIV00101.Insert();
 
         Clear(GPItem);
-        GPItem.No := 'KIT COMPONENT SVC';
+        GPItem.No := ItemNoKitComponentSvcTok;
         GPItem.Description := 'Kit Component Service';
         GPItem.SearchDescription := 'Kit component service';
         GPItem.ShortName := 'Kit Component SVC';
@@ -581,14 +591,14 @@ codeunit 139662 "GP Item Tests"
         GPItem.Insert();
 
         Clear(GPIV00101);
-        GPIV00101.ITEMNMBR := 'KIT COMPONENT SVC';
+        GPIV00101.ITEMNMBR := ItemNoKitComponentSvcTok;
         GPIV00101.ITEMTYPE := 5;
         GPIV00101.Insert();
 
         Clear(GPIV00104);
-        GPIV00104.ITEMNMBR := 'KIT';
+        GPIV00104.ITEMNMBR := ItemNoKitTok;
         GPIV00104.SEQNUMBR := 1;
-        GPIV00104.CMPTITNM := 'KIT COMPONENT INV';
+        GPIV00104.CMPTITNM := ItemNoKitComponentInvTok;
         GPIV00104.CMPITUOM := 'Each';
         GPIV00104.CMPITQTY := 1;
         GPIV00104.CMPSERNM := false;
@@ -596,9 +606,9 @@ codeunit 139662 "GP Item Tests"
         GPIV00104.Insert();
 
         Clear(GPIV00104);
-        GPIV00104.ITEMNMBR := 'KIT';
+        GPIV00104.ITEMNMBR := ItemNoKitTok;
         GPIV00104.SEQNUMBR := 1;
-        GPIV00104.CMPTITNM := 'KIT COMPONENT SVC';
+        GPIV00104.CMPTITNM := ItemNoKitComponentSvcTok;
         GPIV00104.CMPITUOM := 'Each';
         GPIV00104.CMPITQTY := 1;
         GPIV00104.CMPSERNM := false;
@@ -640,30 +650,30 @@ codeunit 139662 "GP Item Tests"
         GLAccount.Insert();
 
         GPIV40400.Init();
-        GPIV40400.ITMCLSCD := 'TEST-1';
+        GPIV40400.ITMCLSCD := ItemClassesIdTest1Tok;
         GPIV40400.ITMCLSDC := 'Test class 1';
         GPIV40400.IVIVINDX := 1;
         GPIV40400.Insert();
 
         GPIV40400.Init();
-        GPIV40400.ITMCLSCD := 'TEST-2';
+        GPIV40400.ITMCLSCD := ItemClassIdTest2Tok;
         GPIV40400.ITMCLSDC := 'Test class 2';
         GPIV40400.IVIVINDX := 0;
         GPIV40400.Insert();
 
         GPIV00101.Init();
-        GPIV00101.ITEMNMBR := '1 1/2\"SASH BRSH';
-        GPIV00101.ITMCLSCD := 'TEST-1';
+        GPIV00101.ITEMNMBR := ItemNoSashBrshTok;
+        GPIV00101.ITMCLSCD := ItemClassesIdTest1Tok;
         GPIV00101.Insert();
 
         GPIV00101.Init();
-        GPIV00101.ITEMNMBR := '12345ITEMNUMBER!@#$%';
-        GPIV00101.ITMCLSCD := 'TEST-1';
+        GPIV00101.ITEMNMBR := ItemNo12345ITEMNUMBERTok;
+        GPIV00101.ITMCLSCD := ItemClassesIdTest1Tok;
         GPIV00101.Insert();
 
         GPIV00101.Init();
-        GPIV00101.ITEMNMBR := '4'' STEPLADDER';
-        GPIV00101.ITMCLSCD := 'TEST-2';
+        GPIV00101.ITEMNMBR := ItemNoStepLadderTok;
+        GPIV00101.ITMCLSCD := ItemClassIdTest2Tok;
         GPIV00101.Insert();
     end;
 }

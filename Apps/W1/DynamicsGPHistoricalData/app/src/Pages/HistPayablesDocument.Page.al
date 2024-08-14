@@ -217,7 +217,7 @@ page 41008 "Hist. Payables Document"
                     HistGenJournalLines: Page "Hist. Gen. Journal Lines";
                 begin
                     HistGenJournalLines.SetFilterOriginatingTrxSourceNo(Rec."Audit Code");
-                    HistGenJournalLines.RunModal();
+                    HistGenJournalLines.Run();
                 end;
             }
         }
