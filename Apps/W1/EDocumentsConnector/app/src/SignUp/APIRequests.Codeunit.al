@@ -177,8 +177,8 @@ codeunit 6370 SignUpAPIRequests
             exit('');
 
         Customer.Get(EDocument."Bill-to/Pay-to No.");
-        Customer.TestField("SignUpService Participant Id");
-        exit(Customer."SignUpService Participant Id");
+        Customer.TestField("Service Participant Id");
+        exit(Customer."Service Participant Id");
     end;
 
     local procedure GetSenderCountryCode(): Text
