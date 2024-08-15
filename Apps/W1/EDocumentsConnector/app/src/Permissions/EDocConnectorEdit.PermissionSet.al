@@ -10,5 +10,7 @@ permissionset 6361 "EDocConnector - Edit"
     Assignable = true;
     IncludedPermissionSets = "EDocConnector - Read";
 
-    Permissions = tabledata "E-Doc. Ext. Connection Setup" = IM;
+    Permissions = tabledata "E-Doc. Ext. Connection Setup" = IM,
+                tabledata SignUpConnectionSetup = IM,
+                tabledata SignUpConnectionAuth = IM;
 }
