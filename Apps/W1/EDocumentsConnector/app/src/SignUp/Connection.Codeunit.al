@@ -5,12 +5,9 @@
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using Microsoft.EServices.EDocument;
-using System.Utilities;
-using System.Text;
-using Microsoft.Purchases.Posting;
 using Microsoft.Purchases.Document;
-using Microsoft.Sales.Customer;
-using Microsoft.Foundation.Company;
+using Microsoft.Purchases.Posting;
+using System.Utilities;
 
 codeunit 6372 SignUpConnection
 {
@@ -64,54 +61,6 @@ codeunit 6372 SignUpConnection
             if Retry then
                 SignUpAPIRequests.PatchReceivedDocument(EDocument, HttpRequest, HttpResponse);
         exit(HttpResponse.IsSuccessStatusCode);
-    end;
-
-    procedure PrepareContentForSend(DocumentType: Text; SendingCompanyID: Text; RecieverCompanyID: Text; SenderCountryCode: Text; Payload: Text; SendMode: Enum SignUpSendMode): Text
-    var
-        Base64Convert: Codeunit "Base64 Convert";
-        SendJsonObject: JsonObject;
-        ContentText: Text;
-    begin
-        SendJsonObject.Add('documentType', DocumentType);
-        SendJsonObject.Add('receiver', GetSenderReceiverPrefix() + RecieverCompanyID);
-        SendJsonObject.Add('sender', GetSenderReceiverPrefix() + SendingCompanyID);
-        SendJsonObject.Add('senderCountryCode', SenderCountryCode);
-        SendJsonObject.Add('documentId', 'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1');
-        SendJsonObject.Add('documentIdScheme', 'busdox-docid-qns');
-        SendJsonObject.Add('processId', 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0');
-        SendJsonObject.Add('processIdScheme', 'cenbii-procid-ubl');
-        SendJsonObject.Add('sendMode', Format(SendMode));
-        SendJsonObject.Add('document', Base64Convert.ToBase64(Payload));
-        SendJsonObject.WriteTo(ContentText);
-        exit(ContentText);
-    end;
-
-    internal procedure GetCustomerID(EDocument: Record "E-Document"): Text[50]
-    var
-        Customer: Record Customer;
-    begin
-        if EDocument.Direction <> EDocument.Direction::Outgoing then
-            exit('');
-
-        Customer.Get(EDocument."Bill-to/Pay-to No.");
-        Customer.TestField("SignUpService Participant Id");
-        exit(Customer."SignUpService Participant Id");
-    end;
-
-    internal procedure GetSenderCountryCode(): Text
-    var
-        CompanyInformation: Record "Company Information";
-    begin
-        CompanyInformation.Get();
-        CompanyInformation.TestField("Country/Region Code");
-        exit(CompanyInformation."Country/Region Code");
-    end;
-
-    internal procedure GetSenderReceiverPrefix(): Text
-    var
-        SenderReceiverPrefixLbl: Label 'iso6523-actorid-upis::', Locked = true;
-    begin
-        exit(SenderReceiverPrefixLbl);
     end;
 
     local procedure CheckIfSuccessfulRequest(EDocument: Record "E-Document"; HttpResponse: HttpResponseMessage): Boolean

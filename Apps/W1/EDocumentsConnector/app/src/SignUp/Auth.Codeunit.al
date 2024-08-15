@@ -5,6 +5,7 @@
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using System.Azure.KeyVault;
+using Microsoft.Sales.Customer;
 using System.Environment;
 using System.Reflection;
 
@@ -20,7 +21,6 @@ codeunit 6371 SignUpAuth
             exit;
         lSignUpConnectionSetup."Authentication URL" := AuthURLTxt;
         lSignUpConnectionSetup.ServiceURL := ProdServiceAPITxt;
-        lSignUpConnectionSetup."Client Tenant" := GetClientTenantKey();
         StorageSet(lSignUpConnectionSetup."Client Tenant", ProdTenantIdTxt);
         lSignUpConnectionSetup.Insert();
     end;
@@ -32,7 +32,7 @@ codeunit 6371 SignUpAuth
         exit(StrSubstNo(UrlTxt, GetRootUrl(), GetBCInstanceIdentifier()));
     end;
 
-    // [NonDebuggable]
+    [NonDebuggable]
     procedure CreateClientCredentials()
     var
         HttpRequestMessage: HttpRequestMessage;
@@ -61,11 +61,6 @@ codeunit 6371 SignUpAuth
         if not HttpResponse.IsSuccessStatusCode then
             exit(false);
         exit(SignUpHelpers.ParseJsonString(HttpResponse.Content) <> '');
-    end;
-
-    procedure GetBearerText(): Text
-    begin
-        exit(BearerTxt);
     end;
 
     procedure GetBearerAuthText(): SecretText;
@@ -106,7 +101,6 @@ codeunit 6371 SignUpAuth
         SecretToken: SecretText;
         RefreshToken: SecretText;
     begin
-        SignUpConnectionSetup.GetRecordOnce();
         SignUpConnectionAuth.GetRecordOnce();
         if not GetClientAccessToken(SecretToken) then begin
             HttpError := GetLastErrorText();
@@ -179,6 +173,7 @@ codeunit 6371 SignUpAuth
 
     procedure SaveClientCredentials(ClientId: Text; ClientSecret: SecretText)
     begin
+        Clear(SignUpConnectionSetup);
         SignUpConnectionSetup.GetRecordOnce();
         StorageSet(SignUpConnectionSetup."Client ID", ClientId);
         StorageSet(SignUpConnectionSetup."Client Secret", ClientSecret);
@@ -186,7 +181,6 @@ codeunit 6371 SignUpAuth
         Clear(SignUpConnectionSetup);
     end;
 
-    // [NonDebuggable]
     local procedure StorageGet(TokenKey: Text; TokenDataScope: DataScope) TokenValueAsSecret: SecretText
     begin
         if not StorageContains(TokenKey, TokenDataScope) then
@@ -195,7 +189,7 @@ codeunit 6371 SignUpAuth
         IsolatedStorage.Get(TokenKey, TokenDataScope, TokenValueAsSecret);
     end;
 
-    // [NonDebuggable]
+    [NonDebuggable]
     local procedure StorageGetText(TokenKey: Text; TokenDataScope: DataScope) TokenValue: Text
     begin
         if not StorageContains(TokenKey, TokenDataScope) then
@@ -209,6 +203,7 @@ codeunit 6371 SignUpAuth
         exit(IsolatedStorage.Contains(TokenKey, TokenDataScope));
     end;
 
+    [NonDebuggable]
     procedure StorageSet(var TokenKey: Guid; Value: Text)
     begin
         ValidateValueKey(TokenKey);
@@ -299,41 +294,6 @@ codeunit 6371 SignUpAuth
             exit(AzureKeyVault.GetAzureKeyVaultSecret(KeyName, KeyValue));
     end;
 
-    procedure GetRootClientKey(): Text
-    begin
-        exit('ecb8cf7d-0295-4f98-bfe3-b7dd7513e776');
-    end;
-
-    procedure GetRootSecretKey(): Text
-    begin
-        exit('f65d20af-216c-43c9-bcfb-6ae71cb8c356');
-    end;
-
-    procedure GetRootTenantKey(): Text
-    begin
-        exit('b2d91497-5432-4839-9196-f3209025fd6d');
-    end;
-
-    procedure GetRootUrlKey(): Text
-    begin
-        exit('f3aee18f-2f7f-40d3-bc9b-e681b45b5d67');
-    end;
-
-    procedure GetClientKey(): Text
-    begin
-        exit('58f7ca14-7b63-471f-9665-a48de30e4625');
-    end;
-
-    procedure GetSecretKey(): Text
-    begin
-        exit('3a1e9f46-ed72-4e7a-b947-bb7ba9808d39');
-    end;
-
-    procedure GetClientTenantKey(): Text
-    begin
-        exit('c3189bee-2628-4d93-b6da-69b4792c914d');
-    end;
-
     procedure GetBCInstanceIdentifier() Identifier: Text
     var
         AADTenantID, AADDomainName : Text;
@@ -362,7 +322,6 @@ codeunit 6371 SignUpAuth
         SignUpHelpers: Codeunit SignUpHelpers;
         BearerTxt: Label 'Bearer %1', Comment = '%1 = text value', Locked = true;
         AuthURLTxt: Label 'https://login.microsoftonline.com/%1/oauth2/token', Comment = '%1 Entra Tenant Id', Locked = true;
-
         ProdTenantIdTxt: Label '0d725623-dc26-484f-a090-b09d2003d092', Locked = true; // TODO: Check production details before PR
         ProdServiceAPITxt: Label 'https://edoc.exflow.io/api/Peppol', Locked = true; // TODO: Check production details before PR
 }

@@ -30,7 +30,6 @@ page 6370 SignUpConnectionSetupCard
 
                     trigger OnValidate()
                     begin
-                        Rec."Client ID" := SignUpAuth.GetClientKey();
                         SignUpAuth.StorageSet(Rec."Client ID", ClientID);
                     end;
                 }
@@ -44,7 +43,6 @@ page 6370 SignUpConnectionSetupCard
 
                     trigger OnValidate()
                     begin
-                        Rec."Client Secret" := SignUpAuth.GetSecretKey();
                         SignUpAuth.StorageSet(Rec."Client Secret", ClientSecret);
                     end;
                 }
@@ -58,7 +56,6 @@ page 6370 SignUpConnectionSetupCard
 
                     trigger OnValidate()
                     begin
-                        Rec."Client Tenant" := SignUpAuth.GetClientTenantKey();
                         SignUpAuth.StorageSet(Rec."Client Tenant", ClientTenant);
                     end;
                 }
@@ -72,7 +69,6 @@ page 6370 SignUpConnectionSetupCard
 
                     trigger OnValidate()
                     begin
-                        Rec."Root App ID" := SignUpAuth.GetRootClientKey();
                         SignUpAuth.StorageSet(Rec."Root App ID", RootID);
                     end;
                 }
@@ -86,7 +82,6 @@ page 6370 SignUpConnectionSetupCard
 
                     trigger OnValidate()
                     begin
-                        Rec."Root Secret" := SignUpAuth.GetRootSecretKey();
                         SignUpAuth.StorageSet(Rec."Root Secret", RootSecret);
                     end;
                 }
@@ -100,7 +95,6 @@ page 6370 SignUpConnectionSetupCard
 
                     trigger OnValidate()
                     begin
-                        Rec."Root Tenant" := SignUpAuth.GetRootTenantKey();
                         SignUpAuth.StorageSet(Rec."Root Tenant", RootTenant);
                     end;
                 }
@@ -114,7 +108,6 @@ page 6370 SignUpConnectionSetupCard
 
                     trigger OnValidate()
                     begin
-                        Rec."Root Market URL" := SignUpAuth.GetRootUrlKey();
                         SignUpAuth.StorageSet(Rec."Root Market URL", RootUrl);
                     end;
                 }
