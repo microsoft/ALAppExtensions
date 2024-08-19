@@ -278,6 +278,16 @@ page 31171 "Sales Advance Letter CZZ"
                     ToolTip = 'Specifies the secondary VAT registration number for the customer.';
                     Importance = Additional;
                 }
+                field("Job No."; Rec."Job No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Importance = Additional;
+                }
+                field("Job Task No."; Rec."Job Task No.")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Importance = Additional;
+                }
             }
             group(Payments)
             {

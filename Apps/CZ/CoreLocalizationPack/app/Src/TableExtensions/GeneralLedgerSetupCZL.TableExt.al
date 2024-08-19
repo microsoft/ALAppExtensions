@@ -221,6 +221,17 @@ tableextension 11713 "General Ledger Setup CZL" extends "General Ledger Setup"
         exit(PostingDate);
     end;
 
+    internal procedure GetAdditionalCurrencyCode(): Code[10]
+    begin
+        GetRecordOnce();
+        exit("Additional Reporting Currency");
+    end;
+
+    internal procedure IsAdditionalCurrencyEnabled(): Boolean
+    begin
+        exit(GetAdditionalCurrencyCode() <> '');
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterInitVATDateCZL()
     begin

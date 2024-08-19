@@ -64,6 +64,32 @@ table 31013 "Advance Posting Buffer CZZ"
         {
             Caption = 'Auxiliary Entry';
         }
+        field(40; "Non-Deductible VAT %"; Decimal)
+        {
+            Caption = 'Non-Deductible VAT %"';
+            DecimalPlaces = 0 : 5;
+            Editable = false;
+        }
+        field(41; "Non-Deductible VAT Base"; Decimal)
+        {
+            AutoFormatType = 1;
+            Caption = 'Non-Deductible VAT Base';
+        }
+        field(42; "Non-Deductible VAT Amount"; Decimal)
+        {
+            AutoFormatType = 1;
+            Caption = 'Non-Deductible VAT Amount';
+        }
+        field(43; "Non-Deductible VAT Base ACY"; Decimal)
+        {
+            AutoFormatType = 1;
+            Caption = 'Non-Deductible VAT Base ACY';
+        }
+        field(44; "Non-Deductible VAT Amount ACY"; Decimal)
+        {
+            AutoFormatType = 1;
+            Caption = 'Non-Deductible VAT Amount ACY';
+        }
     }
 
     keys
@@ -88,6 +114,7 @@ table 31013 "Advance Posting Buffer CZZ"
         "VAT Base Amount (ACY)" := PurchAdvLetterEntry."VAT Base Amount (LCY)";
         "VAT Amount (ACY)" := PurchAdvLetterEntry."VAT Amount (LCY)";
         "Auxiliary Entry" := PurchAdvLetterEntry."Auxiliary Entry";
+        "Non-Deductible VAT %" := PurchAdvLetterEntry."Non-Deductible VAT %";
         OnAfterPrepareForPurchAdvLetterEntry(PurchAdvLetterEntry, Rec);
     end;
 
@@ -204,6 +231,26 @@ table 31013 "Advance Posting Buffer CZZ"
         "Amount (ACY)" := -"Amount (ACY)";
         "VAT Base Amount (ACY)" := -"VAT Base Amount (ACY)";
         "VAT Amount (ACY)" := -"VAT Amount (ACY)";
+    end;
+
+    internal procedure IsNonDeductibleVATAllowed(): Boolean
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        exit(VATPostingSetup.IsNonDeductibleVATAllowed(
+            "VAT Bus. Posting Group", "VAT Prod. Posting Group"));
+    end;
+
+    internal procedure IsNonDeductibleVATAllowedInBuffer(): Boolean
+    var
+        AdvancePostingBufferCZZ: Record "Advance Posting Buffer CZZ";
+    begin
+        AdvancePostingBufferCZZ.Copy(Rec, true);
+        if AdvancePostingBufferCZZ.FindSet() then
+            repeat
+                if AdvancePostingBufferCZZ.IsNonDeductibleVATAllowed() then
+                    exit(true);
+            until AdvancePostingBufferCZZ.Next() = 0;
     end;
 
     [IntegrationEvent(false, false)]

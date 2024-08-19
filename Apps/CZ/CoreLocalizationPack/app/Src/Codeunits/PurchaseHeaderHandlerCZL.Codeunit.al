@@ -18,6 +18,7 @@ codeunit 11744 "Purchase Header Handler CZL"
     begin
         PurchHeader."Original Doc. VAT Date CZL" :=
             GeneralLedgerSetup.GetOriginalDocumentVATDateCZL(PurchHeader."Posting Date", PurchHeader."VAT Reporting Date", PurchHeader."Document Date");
+        PurchHeader.UpdateAddCurrencyFactorCZL();
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeValidateEvent', 'Posting Date', false, false)]

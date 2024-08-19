@@ -53,7 +53,6 @@ page 4303 "Agent Task Step List"
                     Caption = 'User Full Name';
                     Tooltip = 'Specifies the full name of the user that was involved in performing the step..';
                 }
-
             }
         }
     }

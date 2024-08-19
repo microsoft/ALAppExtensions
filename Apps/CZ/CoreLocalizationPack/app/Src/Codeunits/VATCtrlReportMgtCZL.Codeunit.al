@@ -1131,6 +1131,7 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                     AddToExcelBuffer(TempExcelBuffer, i, 7, Format(Temp3VATCtrlReportBufferCZL."Add.-Currency Total Amount"));
                     AddToExcelBuffer(TempExcelBuffer, i, 8, Format(Temp3VATCtrlReportBufferCZL."Add.-Currency Total Base"));
                 end;
+                OnExportInternalDocCheckToExcelOnAfterFillExcelLine(TempExcelBuffer, Temp3VATCtrlReportBufferCZL);
             until Temp3VATCtrlReportBufferCZL.Next() = 0;
             TempExcelBuffer.CreateNewBook('KH1');
             TempExcelBuffer.WriteSheet(
@@ -1464,6 +1465,11 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
 
     [IntegrationEvent(false, false)]
     local procedure OnExportInternalDocCheckToExcelOnBeforeInsertTempVATCtrlReportBufferCZL(VATCtrlReportLineCZL: Record "VAT Ctrl. Report Line CZL"; var TempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnExportInternalDocCheckToExcelOnAfterFillExcelLine(var TempExcelBuffer: Record "Excel Buffer" temporary; TempVATCtrlReportBufferCZL: Record "VAT Ctrl. Report Buffer CZL" temporary)
     begin
     end;
 }

@@ -16,7 +16,6 @@ codeunit 6212 "Sustainability Post Mgt"
         // AutoIncrement requires the PK to be empty
         SustainabilityLedgerEntry."Entry No." := 0;
 
-        SustainabilityJnlLine.CalcFields("Account Name");
         SustainabilityLedgerEntry."Account Name" := SustainabilityJnlLine."Account Name";
 
         SustainabilityLedgerEntry.TransferFields(SustainabilityJnlLine);

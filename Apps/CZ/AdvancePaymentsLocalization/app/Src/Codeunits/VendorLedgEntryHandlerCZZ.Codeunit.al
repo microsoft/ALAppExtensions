@@ -43,6 +43,27 @@ codeunit 31021 "Vendor Ledg. Entry Handler CZZ"
         IsHandled := true;
     end;
 
+    [EventSubscriber(ObjectType::Report, Report::"Open Vend. Entries to Date CZL", 'OnBeforeGetPayablesAccNo', '', false, false)]
+    local procedure GetPayablesAccNoForOpenVendorEntriesToDate(VendorLedgerEntry: Record "Vendor Ledger Entry"; var GLAccountNo: Code[20]; var IsHandled: Boolean)
+    var
+        AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
+    begin
+        if IsHandled then
+            exit;
+
+        if VendorLedgerEntry."Advance Letter No. CZZ" = '' then
+            exit;
+
+        if VendorLedgerEntry."Adv. Letter Template Code CZZ" <> '' then begin
+            AdvanceLetterTemplateCZZ.Get(VendorLedgerEntry."Adv. Letter Template Code CZZ");
+            GLAccountNo := AdvanceLetterTemplateCZZ."Advance Letter G/L Account";
+            IsHandled := true;
+        end else begin
+            GLAccountNo := VendorLedgerEntry.GetPayablesAccNoCZL();
+            IsHandled := true;
+        end;
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"VendEntry-Apply Posted Entries", 'OnApplyVendEntryFormEntryOnAfterCheckEntryOpen', '', false, false)]
     local procedure CheckAdvanceOnApplyVendEntryFormEntryOnAfterCheckEntryOpen(ApplyingVendLedgEntry: Record "Vendor Ledger Entry")
     begin

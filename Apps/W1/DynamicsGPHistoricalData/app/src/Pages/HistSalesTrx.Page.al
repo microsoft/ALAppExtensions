@@ -195,6 +195,34 @@ page 41007 "Hist. Sales Trx."
         }
     }
 
+    actions
+    {
+        area(Promoted)
+        {
+            actionref(ViewDistributions_Promoted; ViewDistributions)
+            {
+            }
+        }
+        area(Processing)
+        {
+            action(ViewDistributions)
+            {
+                ApplicationArea = All;
+                Caption = 'View Distributions';
+                ToolTip = 'View the G/L account distributions related to this transaction.';
+                Image = RelatedInformation;
+
+                trigger OnAction()
+                var
+                    HistGenJournalLines: Page "Hist. Gen. Journal Lines";
+                begin
+                    HistGenJournalLines.SetFilterOriginatingTrxSourceNo(Rec."Audit Code");
+                    HistGenJournalLines.Run();
+                end;
+            }
+        }
+    }
+
     trigger OnAfterGetCurrRecord()
     begin
         DataCaptionExpressionTxt := Rec."No.";

@@ -16,7 +16,7 @@ report 30118 "Shpfy Suggest Payments"
     {
         dataitem(OrderTransaction; "Shpfy Order Transaction")
         {
-            RequestFilterFields = "Created At", Gateway;
+            RequestFilterFields = "Created At";
             DataItemTableView = sorting(Type) where(Type = filter(Capture | Sale | Refund));
 
             trigger OnAfterGetRecord()
@@ -33,6 +33,8 @@ report 30118 "Shpfy Suggest Payments"
                 SetAutoCalcFields("Payment Method", Used);
                 if PostingDate = 0D then
                     Error(NoPostingDateErr);
+                if this.Gateway <> '' then
+                    SetRange(Gateway, this.Gateway);
             end;
 
             trigger OnPostDataItem()
@@ -118,6 +120,13 @@ report 30118 "Shpfy Suggest Payments"
                     Importance = Additional;
                     ToolTip = 'Specifies if you want the batch job to fill in the cash receipt journal lines with consecutive document numbers, starting with the document number specified in the Starting Document No. field.';
                 }
+                field("Transaction Gateway"; Gateway)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Gateway';
+                    ToolTip = 'Specifies the gateway of the Shopify Order Transaction.';
+                    TableRelation = "Shpfy Transaction Gateway";
+                }
             }
         }
 
@@ -155,6 +164,7 @@ report 30118 "Shpfy Suggest Payments"
         IsGenJournalLineSet: Boolean;
         IgnorePostedTransactions: Boolean;
         IsJournalTemplateFound: Boolean;
+        Gateway: Text[30];
         ShopifyTransactionLbl: Label 'Shopify order %1 %2 %3', Comment = '%1=Shopify Order No., %2=Shopify Gateway, %3=Shopify Gift Card Id';
         NoPostingDateErr: Label 'In the Posting Date field, specify the date that will be used as the posting date for the journal entries.';
         StartingDocumentNoErr: Label 'The value in the Starting Document No. field must have a number.';

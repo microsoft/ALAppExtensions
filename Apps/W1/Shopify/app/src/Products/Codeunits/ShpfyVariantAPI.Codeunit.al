@@ -24,7 +24,6 @@ codeunit 30189 "Shpfy Variant API"
         Product: Record "Shpfy Product";
         Variant: Record "Shpfy Variant";
         ProductImport: Codeunit "Shpfy Product Import";
-
     begin
         Found := FindShopifyVariantBySKU(ShopifyVariant);
         if not Found then
@@ -41,25 +40,26 @@ codeunit 30189 "Shpfy Variant API"
                     Product.Modify();
                 end;
             end;
-            if Variant.Get(ShopifyVariant.Id) then
+            if Variant.Get(ShopifyVariant.Id) then begin
                 if IsNullGuid(Variant."Item Variant SystemId") then begin
                     Variant."Item Variant SystemId" := ShopifyVariant."Item Variant SystemId";
                     Variant."Item SystemId" := ShopifyVariant."Item SystemId";
                     Variant.Modify();
-                end
-                else begin
-                    Clear(Variant);
-                    Variant := ShopifyVariant;
-                    Variant.Insert();
                 end;
+            end else begin
+                Clear(Variant);
+                Variant := ShopifyVariant;
+                Variant.Insert();
+            end;
         end;
     end;
 
-    /// <summary> 
-    /// Add Product Variant.
+    /// <summary>
+    /// Adds a product variant to Shopify.
     /// </summary>
-    /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
-    internal procedure AddProductVariant(var ShopifyVariant: Record "Shpfy Variant")
+    /// <param name="ShopifyVariant">Shopify Variant record to add.</param>
+    /// <returns>True if the variant was added successfully; otherwise, false.</returns>
+    internal procedure AddProductVariant(var ShopifyVariant: Record "Shpfy Variant"): Boolean
     var
         ShopLocation: Record "Shpfy Shop Location";
         NewShopifyVariant: Record "Shpfy Variant";
@@ -140,8 +140,12 @@ codeunit 30189 "Shpfy Variant API"
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
         NewShopifyVariant := ShopifyVariant;
         NewShopifyVariant.Id := JsonHelper.GetValueAsBigInteger(JResponse, 'data.productVariantCreate.productVariant.legacyResourceId');
-        if NewShopifyVariant.Id > 0 then
+        if NewShopifyVariant.Id > 0 then begin
             NewShopifyVariant.Insert();
+            exit(true);
+        end;
+
+        exit(false);
     end;
 
     /// <summary> 
@@ -592,5 +596,17 @@ codeunit 30189 "Shpfy Variant API"
         if JsonHelper.GetJsonObject(JVariant, JNode, 'metafields') then
             if JsonHelper.GetJsonArray(JNode, JMetafields, 'edges') then
                 foreach JItem in JMetafields do;
+    end;
+
+    /// <summary>
+    /// Deletes a product variant from Shopify.
+    /// </summary>
+    /// <param name="ShopifyVariantId">Id of the Shopify variant to delete.</param>
+    internal procedure DeleteProductVariant(ShopifyVariantId: BigInteger)
+    var
+        Parameters: Dictionary of [Text, Text];
+    begin
+        Parameters.Add('VariantId', Format(ShopifyVariantId));
+        CommunicationMgt.ExecuteGraphQL(Enum::"Shpfy GraphQL Type"::ProductVariantDelete, Parameters);
     end;
 }

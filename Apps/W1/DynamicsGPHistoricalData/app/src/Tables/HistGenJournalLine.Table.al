@@ -138,5 +138,8 @@ table 40901 "Hist. Gen. Journal Line"
         {
             IncludedFields = "Source Type", "Journal Entry No.", "Audit Code";
         }
+        key(Key3; "Orig. Trx. Source No.")
+        {
+        }
     }
 }

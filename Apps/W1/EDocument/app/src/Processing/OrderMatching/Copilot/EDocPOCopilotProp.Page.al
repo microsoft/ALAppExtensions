@@ -302,6 +302,7 @@ page 6166 "E-Doc. PO Copilot Prop"
         AutoMatchedLinesTxt := StrSubstNo(AutoMatchedLinesLbl, NumberOfFullAutoMatchedLines, NumberOfEDocumentLines, Pct);
         EDocLineMatching.FilterOutFullyMatchedLines(TempEDocumentImportedLine, TempPurchaseOrderLine);
 
+        AIMatchingImpl.SetGrounding(true);
         IsCopilotReqSuccessful := AIMatchingImpl.MatchWithCopilot(TempEDocumentImportedLine, TempPurchaseOrderLine, TempAIProposalBuffer);
 
         CombineOneToManyInBuffer(TempAIProposalBuffer, TempLocalEDocOrderMatches);

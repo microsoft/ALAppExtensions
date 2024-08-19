@@ -59,7 +59,7 @@ report 4410 "EXR Consolidated Trial Balance"
         }
         dataitem(TrialBalanceData; "EXR Trial Balance Buffer")
         {
-            RequestFilterFields = "Business Unit Code";
+            RequestFilterFields = "Business Unit Code", "Net Change", Balance;
             column(Account; "G/L Account No.") { IncludeCaption = true; }
             column(Dimension1Code; "Dimension 1 Code") { IncludeCaption = true; }
             column(Dimension2Code; "Dimension 2 Code") { IncludeCaption = true; }

@@ -5,6 +5,8 @@
 namespace Microsoft.Finance.AdvancePayments;
 
 using Microsoft.Finance.VAT.Calculation;
+using Microsoft.Projects.Project.Job;
+using Microsoft.Projects.Project.Planning;
 using Microsoft.Purchases.Document;
 using Microsoft.Purchases.History;
 using Microsoft.Purchases.Posting;
@@ -39,26 +41,28 @@ page 31216 "Advance Usage FactBox CZZ"
                 ApplicationArea = Basic, Suite;
                 Caption = 'Amount to Use';
                 ToolTip = 'Specifies amount to use of assigned advances.';
+                Visible = AmountToUseVisible;
             }
             field(AmountToUseLCY; GetAmountToUseLCY())
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Amount to Use (LCY)';
                 ToolTip = 'Specifies amount to use (LCY) of assigned advances.';
-                Visible = false;
+                Visible = AmountToUseLCYVisible;
             }
             field(AmountUsed; GetAmountUsed())
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Amount Used';
                 ToolTip = 'Specifies amount used by the document.';
+                Visible = AmountUsedVisible;
             }
             field(AmountUsedLCY; GetAmountUsedLCY())
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Amount Used (LCY)';
                 ToolTip = 'Specifies amount (LCY) used by the document.';
-                Visible = false;
+                Visible = AmountUsedLCYVisible;
             }
             field(TotalAfterDeduction; GetTotalAfterDeduction())
             {
@@ -66,6 +70,15 @@ page 31216 "Advance Usage FactBox CZZ"
                 Caption = 'Total after Deduction';
                 ToolTip = 'Specifies total document amount after deduction of used advances.';
                 Style = Strong;
+                Visible = TotalAfterDeductionVisible;
+            }
+            field(TotalAfterDeductionLCY; GetTotalAfterDeductionLCY())
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Total after Deduction (LCY)';
+                ToolTip = 'Specifies total document amount (LCY) after deduction of used advances.';
+                Style = Strong;
+                Visible = TotalAfterDeductionLCYVisible;
             }
             field(AdvanceEntries; GetAdvanceEntriesCount())
             {
@@ -73,6 +86,7 @@ page 31216 "Advance Usage FactBox CZZ"
                 Caption = 'Advance Entries';
                 ToolTip = 'Specifies number of advance entries.';
                 DrillDown = true;
+                Visible = AdvanceEntriesVisible;
 
                 trigger OnDrillDown()
                 begin
@@ -85,11 +99,22 @@ page 31216 "Advance Usage FactBox CZZ"
         }
     }
 
+    trigger OnOpenPage()
+    begin
+        SetControlAppearance();
+    end;
+
     var
         TempAdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ" temporary;
         TempSalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ" temporary;
         TempPurchAdvLetterEntryCZZ: Record "Purch. Adv. Letter Entry CZZ" temporary;
         DocumentTotalAmount: Decimal;
+        AmountToUseVisible, AmountToUseLCYVisible : Boolean;
+        AmountUsedVisible, AmountUsedLCYVisible : Boolean;
+        TotalAfterDeductionVisible, TotalAfterDeductionLCYVisible : Boolean;
+        AdvanceEntriesVisible: Boolean;
+        JobInLCY: Boolean;
+        IsJob: Boolean;
 
     procedure SetDocument(PurchaseHeader: Record "Purchase Header")
     begin
@@ -127,9 +152,45 @@ page 31216 "Advance Usage FactBox CZZ"
         CurrPage.Update();
     end;
 
+    procedure SetDocument(Job: Record Job)
+    begin
+        ClearBuffers();
+        CollectAssignedAdvances(Job."No.");
+        DocumentTotalAmount := CalcDocumentTotalAmount(Job);
+        JobInLCY := Job."Currency Code" = '';
+        IsJob := true;
+        CurrPage.Update();
+    end;
+
+    local procedure SetControlAppearance()
+    begin
+        AmountToUseVisible := true;
+        AmountToUseLCYVisible := false;
+        AmountUsedVisible := true;
+        AmountUsedLCYVisible := false;
+        TotalAfterDeductionVisible := true;
+        TotalAfterDeductionLCYVisible := false;
+        AdvanceEntriesVisible := true;
+
+        if IsJob then begin
+            AmountToUseVisible := not JobInLCY;
+            AmountToUseLCYVisible := JobInLCY;
+            AmountUsedVisible := not JobInLCY;
+            AmountUsedLCYVisible := JobInLCY;
+            TotalAfterDeductionVisible := not JobInLCY;
+            TotalAfterDeductionLCYVisible := JobInLCY;
+            AdvanceEntriesVisible := false;
+        end;
+    end;
+
     local procedure CollectAssignedAdvances(DocumentType: Enum "Adv. Letter Usage Doc.Type CZZ"; DocumentNo: Code[20])
     begin
         TempAdvanceLetterApplicationCZZ.GetAssignedAdvance(DocumentType, DocumentNo, TempAdvanceLetterApplicationCZZ);
+    end;
+
+    local procedure CollectAssignedAdvances(JobNo: Code[20])
+    begin
+        TempAdvanceLetterApplicationCZZ.GetAssignedAdvance(JobNo, TempAdvanceLetterApplicationCZZ);
     end;
 
     local procedure CollectPurchAdvLetterEntries(PurchaseHeader: Record "Purchase Header")
@@ -232,6 +293,20 @@ page 31216 "Advance Usage FactBox CZZ"
         exit(SalesInvoiceHeader."Amount Including VAT");
     end;
 
+    local procedure CalcDocumentTotalAmount(Job: Record Job) TotalAmount: Decimal
+    var
+        JobPlanningLine: Record "Job Planning Line";
+    begin
+        JobPlanningLine.SetRange("Job No.", Job."No.");
+        JobPlanningLine.SetRange("Contract Line", true);
+        JobPlanningLine.SetFilter(Type, '<>%1', JobPlanningLine.Type::Text);
+        JobPlanningLine.SetFilter("Line Amount", '<>%1', 0);
+        if JobPlanningLine.FindSet() then
+            repeat
+                TotalAmount += JobPlanningLine.CalcLineAmountIncludingVAT();
+            until JobPlanningLine.Next() = 0;
+    end;
+
     local procedure ClearBuffers()
     begin
         TempAdvanceLetterApplicationCZZ.Reset();
@@ -280,5 +355,10 @@ page 31216 "Advance Usage FactBox CZZ"
     local procedure GetTotalAfterDeduction(): Decimal
     begin
         exit(DocumentTotalAmount - GetAmountUsed());
+    end;
+
+    local procedure GetTotalAfterDeductionLCY(): Decimal
+    begin
+        exit(DocumentTotalAmount - GetAmountUsedLCY());
     end;
 }

@@ -296,6 +296,32 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
                         PurchPostAdvanceLetterCZZ.PostCancelUsageVAT(Rec, true);
                     end;
                 }
+                action(PostNonDeductibleVAT)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Post Non-Deductible VAT';
+                    Enabled = ("Entry Type" = "Entry Type"::"VAT Payment") and ("Non-Deductible VAT %" = 0) and (not IsClosed) and (not Cancelled) and IsNonDeductVATEnabled;
+                    Image = Post;
+                    ToolTip = 'Post non-deductible VAT.';
+
+                    trigger OnAction()
+                    begin
+                        PurchPostAdvanceLetterCZZ.PostNonDeductibleVAT(Rec, false);
+                    end;
+                }
+                action(PostNonDeductibleVATPreview)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Post Non-Deductible VAT Preview';
+                    Enabled = ("Entry Type" = "Entry Type"::"VAT Payment") and ("Non-Deductible VAT %" = 0) and (not IsClosed) and (not Cancelled) and IsNonDeductVATEnabled;
+                    Image = ViewPostedOrder;
+                    ToolTip = 'Post non-deductible VAT.';
+
+                    trigger OnAction()
+                    begin
+                        PurchPostAdvanceLetterCZZ.PostNonDeductibleVAT(Rec, true);
+                    end;
+                }
             }
             group(Payment)
             {
@@ -376,13 +402,15 @@ page 31183 "Purch. Adv. Letter Entries CZZ"
 
     var
         PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ";
+        NonDeductibleVATCZZ: Codeunit "Non-Deductible VAT CZZ";
         PurchPostAdvanceLetterCZZ: Codeunit "Purch. Post Advance Letter CZZ";
-        IsClosed: Boolean;
+        IsClosed, IsNonDeductVATEnabled : Boolean;
 
     trigger OnAfterGetRecord()
     begin
         GetAdvanceLetter();
         IsClosed := PurchAdvLetterHeaderCZZ.Status = PurchAdvLetterHeaderCZZ.Status::Closed;
+        IsNonDeductVATEnabled := NonDeductibleVATCZZ.IsNonDeductibleVATEnabled() and Rec.IsNonDeductibleVATAllowed();
     end;
 
     local procedure GetAdvanceLetter()

@@ -216,7 +216,7 @@ codeunit 7282 "Search"
                     TempSalesLineAiSuggestion.Type := "Sales Line Type"::Item;
                     TempSalesLineAiSuggestion.Quantity := Quantity;
                     TempSalesLineAiSuggestion."Unit of Measure Code" := UnitOfMeasureCode;
-                    TempSalesLineAiSuggestion.Confidence := GetConfidence(TempSearchResponse.Score);
+                    TempSalesLineAiSuggestion.Confidence := GetConfidence(TempSearchResponse.Score * 100);
                     TempSalesLineAiSuggestion.SetPrimarySearchTerms(SearchPrimaryKeyWords);
                     TempSalesLineAiSuggestion.SetAdditionalSearchTerms(SearchAdditionalKeyWords);
                     TempSalesLineAiSuggestion.Insert();
@@ -238,7 +238,7 @@ codeunit 7282 "Search"
                     SearchKeyword := JsonToken.AsValue().AsText()
                 else
                     SearchKeyword := SearchKeyword + '|' + JsonToken.AsValue().AsText();
-            if ItemObjectToken.AsObject().Get('common_synonyms_of_name', JsonToken) then begin
+            if ItemObjectToken.AsObject().Get('common_synonyms_of_name_terms', JsonToken) then begin
                 JsonArray := JsonToken.AsArray();
                 foreach JsonToken in JsonArray do
                     SearchKeyword := SearchKeyword + '|' + JsonToken.AsValue().AsText();

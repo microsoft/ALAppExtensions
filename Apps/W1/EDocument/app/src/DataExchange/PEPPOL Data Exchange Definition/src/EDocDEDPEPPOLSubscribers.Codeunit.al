@@ -615,7 +615,7 @@ codeunit 6162 "E-Doc. DED PEPPOL Subscribers"
                     if ServiceInvoiceLine.FindSet() then
                         repeat
                             PEPPOLMgt.TransferLineToSalesLine(ServiceInvoiceLine, SalesLine);
-                            SalesLine.Type := PEPPOLMgt.MapServiceLineTypeToSalesLineTypeEnum(ServiceInvoiceLine.Type);
+                            SalesLine.Type := ServPEPPOLMgt.MapServiceLineTypeToSalesLineType(ServiceInvoiceLine.Type);
                             if IsRoundingLine(SalesLine) then begin
                                 TempSalesLineRounding.TransferFields(SalesLine);
                                 TempSalesLineRounding.Insert();
@@ -656,7 +656,7 @@ codeunit 6162 "E-Doc. DED PEPPOL Subscribers"
                     if ServiceCrMemoLine.FindSet() then
                         repeat
                             PEPPOLMgt.TransferLineToSalesLine(ServiceCrMemoLine, SalesLine);
-                            SalesLine.Type := PEPPOLMgt.MapServiceLineTypeToSalesLineTypeEnum(ServiceCrMemoLine.Type);
+                            SalesLine.Type := ServPEPPOLMgt.MapServiceLineTypeToSalesLineType(ServiceCrMemoLine.Type);
                             if IsRoundingLine(SalesLine) then begin
                                 TempSalesLineRounding.TransferFields(SalesLine);
                                 TempSalesLineRounding.Insert();
@@ -694,7 +694,7 @@ codeunit 6162 "E-Doc. DED PEPPOL Subscribers"
                     ServiceInvoiceLine.FindFirst();
 
                     PEPPOLMgt.TransferLineToSalesLine(ServiceInvoiceLine, SalesLine);
-                    SalesLine.Type := PEPPOLMgt.MapServiceLineTypeToSalesLineTypeEnum(ServiceInvoiceLine.Type);
+                    SalesLine.Type := ServPEPPOLMgt.MapServiceLineTypeToSalesLineType(ServiceInvoiceLine.Type);
                 end;
             ProcessedDocType::"Sales Credit Memo":
                 begin
@@ -710,7 +710,7 @@ codeunit 6162 "E-Doc. DED PEPPOL Subscribers"
                     ServiceCrMemoLine.FindFirst();
 
                     PEPPOLMgt.TransferLineToSalesLine(ServiceCrMemoLine, SalesLine);
-                    SalesLine.Type := PEPPOLMgt.MapServiceLineTypeToSalesLineTypeEnum(ServiceCrMemoLine.Type);
+                    SalesLine.Type := ServPEPPOLMgt.MapServiceLineTypeToSalesLineType(ServiceCrMemoLine.Type);
                 end;
         end;
     end;
@@ -755,6 +755,7 @@ codeunit 6162 "E-Doc. DED PEPPOL Subscribers"
         TempSalesLineRounding: Record "Sales Line" temporary;
         TempVATProductPostingGroup: Record "VAT Product Posting Group" temporary;
         PEPPOLMgt: Codeunit "PEPPOL Management";
+        ServPEPPOLMgt: Codeunit "Serv. PEPPOL Management";
         ProcessedDocType: Enum "E-Document Type";
         TaxAmountLCY, TaxCurrencyCodeLCY, TaxTotalCurrencyIDLCY : Text;
         SupplierEndpointID, SupplierSchemeID, SupplierName : Text;

@@ -444,4 +444,11 @@ codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
     local procedure OnBeforeUpdateVATAmountOnAfterInitVAT(var GenJournalLine: Record "Gen. Journal Line"; var GLEntry: Record "G/L Entry"; var IsHandled: Boolean)
     begin
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterGetCurrencyExchRate', '', false, false)]
+    local procedure OnAfterGetCurrencyExchRate(var GenJnlLine: Record "Gen. Journal Line"; var CurrencyFactor: Decimal)
+    begin
+        if GenJnlLine."Additional Currency Factor CZL" <> 0 then
+            CurrencyFactor := GenJnlLine."Additional Currency Factor CZL";
+    end;
 }

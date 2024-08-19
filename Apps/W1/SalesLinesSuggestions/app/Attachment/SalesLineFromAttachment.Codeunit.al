@@ -47,6 +47,26 @@ codeunit 7292 "Sales Line From Attachment"
         end;
     end;
 
+    internal procedure AttachAndSuggest(SalesHeader: Record "Sales Header"; NewMode: PromptMode; TempBlob: Codeunit "Temp Blob"; FileName: Text)
+    var
+        AzureOpenAI: Codeunit "Azure OpenAI";
+        FileHandlerFactory: Codeunit "File Handler Factory";
+        SalesLineFromAttachment: Page "Sales Line From Attachment";
+        FileHandler: interface "File Handler";
+    begin
+        SalesHeader.TestStatusOpen();
+        if not AzureOpenAI.IsEnabled(Enum::"Copilot Capability"::"Sales Lines Suggestions") then
+            exit;
+
+        if FileName = '' then
+            exit;
+        FileHandlerFactory.GetFileHandler(FileHandler, FileName);
+
+        SalesLineFromAttachment.LoadData(FileHandler, FileName, TempBlob, SalesHeader);
+        SalesLineFromAttachment.SetPromptMode(NewMode);
+        SalesLineFromAttachment.Run();
+    end;
+
     internal procedure AttachAndSuggest(SalesLine: Record "Sales Line")
     var
         SalesHeader: Record "Sales Header";
@@ -65,4 +85,13 @@ codeunit 7292 "Sales Line From Attachment"
         FileName := FileManagement.BLOBImportWithFilter(TempBlob, FileUploadCaptionLbl, FileName, SupportedFileFilterCaptionLbl, SupportedFileFilterLbl);
     end;
 
+    internal procedure GetMaxPromptSize(): Integer
+    begin
+        exit(10000);
+    end;
+
+    internal procedure GetMaxRowsToShow(): Integer
+    begin
+        exit(50);
+    end;
 }

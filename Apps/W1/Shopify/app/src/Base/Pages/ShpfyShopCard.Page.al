@@ -540,6 +540,12 @@ page 30101 "Shpfy Shop Card"
                     ShowCaption = false;
                     Visible = IsReturnRefundsVisible;
 
+                    field("Return Location Priority"; Rec."Return Location Priority")
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Return Location Priority';
+                        ToolTip = 'Specifies the priority of the return location.';
+                    }
                     field("Location Code of Returns"; Rec."Return Location")
                     {
                         ApplicationArea = All;

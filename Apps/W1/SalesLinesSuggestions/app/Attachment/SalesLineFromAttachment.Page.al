@@ -108,7 +108,7 @@ page 7290 "Sales Line From Attachment"
         ProgressDialog: Dialog;
     begin
         SearchStyle := Enum::"Search Style"::Balanced;
-        GlobalTempBlob.CreateInStream(GlobalFileInstream);
+        GlobalTempBlob.CreateInStream(GlobalFileInstream, TextEncoding::UTF8);
 
         ProgressDialog.Open(FetchingSearchTermsProgressLbl);
         // LLM call or loading from cache to fetch the FileHandlerResult
@@ -156,6 +156,9 @@ page 7290 "Sales Line From Attachment"
             NoOfDataLinesInFile := GlobalFileData.Count() - 1
         else
             NoOfDataLinesInFile := GlobalFileData.Count();
+
+        if GlobalFileHandlerResult.GetProductColumnIndex().Count = 0 then
+            Error(ProdInfoColumnNotFoundErr);
         ProgressDialog.Open(FetchingSearchTermsProgressLbl);
         SearchQuery := BuildSearchQuery(GlobalFileData, GlobalFileHandlerResult);
         ProgressDialog.Close();
@@ -212,6 +215,8 @@ page 7290 "Sales Line From Attachment"
                 ProductInfoAsText := StrSubstNo('%1%2%3', ProductInfoAsText, FileParserResult.GetColumnDelimiter(), FileData.Get(Index1).Get(FileParserResult.GetUoMColumnIndex()));
             ProductInfoAsText := StrSubstNo('%1%2', ProductInfoAsText, '\n');
             Rows += ProductInfoAsText;
+            if StrLen(Rows) > SalesLineFromAttachment.GetMaxPromptSize() then
+                Error(DataTooLargeErr);
         end;
 
         SearchQuery := StrSubstNo(SLSPrompts.GetProductFromCsvTemplateUserInputPrompt(), Rows);
@@ -259,13 +264,13 @@ page 7290 "Sales Line From Attachment"
             // ProductInfoColumnCaption will be of the format "Product Information: Product Name, Product No."        
             ProductInfoColumnCaption := StrSubstNo(MappedInfoLbl, ProductInfoTok, ProductInfoColumnCaption);
 
-            if GlobalFileHandlerResult.GetQuantityColumnIndex() <> 0 then begin
+            if not (GlobalFileHandlerResult.GetQuantityColumnIndex() in [0, -1]) then begin
                 QuantityColumnCaption := StrSubstNo(MappedInfoLbl, QuantityTok, GlobalFileHandlerResult.GetColumnNames().Get(GlobalFileHandlerResult.GetQuantityColumnIndex()));
                 // ProductInfoColumnCaption will be of the format "Product Information: Product Name, Product No. Quantity: Quantity"
                 ProductInfoColumnCaption := StrSubstNo('%1 %2', ProductInfoColumnCaption, QuantityColumnCaption);
             end;
 
-            if GlobalFileHandlerResult.GetUoMColumnIndex() <> 0 then begin
+            if not (GlobalFileHandlerResult.GetUoMColumnIndex() in [0, -1]) then begin
                 UoMColumnCaption := StrSubstNo(MappedInfoLbl, UoMTok, GlobalFileHandlerResult.GetColumnNames().Get(GlobalFileHandlerResult.GetUoMColumnIndex()));
                 ProductInfoColumnCaption := StrSubstNo('%1 %2', ProductInfoColumnCaption, UoMColumnCaption);
             end;
@@ -281,6 +286,7 @@ page 7290 "Sales Line From Attachment"
         GlobalSalesHeader: Record "Sales Header";
         GlobalFileHandlerResult: Codeunit "File Handler Result";
         GlobalTempBlob: Codeunit "Temp Blob";
+        SalesLineFromAttachment: Codeunit "Sales Line From Attachment";
         GlobalFileHandler: interface "File Handler";
         PageCaptionTxt: Text;
         GlobalFileName: Text;
@@ -298,6 +304,8 @@ page 7290 "Sales Line From Attachment"
         AttachmentMappingLbl: Label 'Mapped columns %1.', Comment = '%1 = all mapped column captions.';
         MappedInfoLbl: Label '%1: %2', Comment = '%1 = column caption, %2 = column value.';
         ProductInfoTok: Label 'Product Information';
+        ProdInfoColumnNotFoundErr: Label 'Column with Product information not found in the input data.';
+        DataTooLargeErr: Label 'Data is too large to process. Please reduce the number of rows in the file.';
         QuantityTok: Label 'Quantity';
         UoMTok: Label 'Unit of Measure';
 }

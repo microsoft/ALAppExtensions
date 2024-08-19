@@ -507,6 +507,9 @@ codeunit 31087 "Install Application CZZ"
         AmtToDeduct: Decimal;
         Continue: Boolean;
     begin
+        if PurchAdvLetterHeaderCZZ.Status = PurchAdvLetterHeaderCZZ.Status::Closed then
+            exit;
+
         AdvanceLetterLineRelation.SetRange(Type, AdvanceLetterLineRelation.Type::Purchase);
         AdvanceLetterLineRelation.SetRange("Letter No.", PurchAdvLetterHeaderCZZ."No.");
         if AdvanceLetterLineRelation.FindSet() then begin
@@ -857,6 +860,9 @@ codeunit 31087 "Install Application CZZ"
         AmtToDeduct: Decimal;
         Continue: Boolean;
     begin
+        if SalesAdvLetterHeaderCZZ.Status = SalesAdvLetterHeaderCZZ.Status::Closed then
+            exit;
+
         AdvanceLetterLineRelation.SetRange(Type, AdvanceLetterLineRelation.Type::Sale);
         AdvanceLetterLineRelation.SetRange("Letter No.", SalesAdvLetterHeaderCZZ."No.");
         if AdvanceLetterLineRelation.FindSet() then begin

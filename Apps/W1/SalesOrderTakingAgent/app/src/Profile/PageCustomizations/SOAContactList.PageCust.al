@@ -11,6 +11,8 @@ pagecustomization "SOA Contact List" customizes "Contact List"
 {
     ClearActions = true;
     ClearLayout = true;
+    InsertAllowed = false;
+    DeleteAllowed = false;
 
     layout
     {
@@ -63,15 +65,7 @@ pagecustomization "SOA Contact List" customizes "Contact List"
 
     actions
     {
-        modify("Co&mments")
-        {
-            Visible = true;
-        }
         modify("Co&mments_Promoted")
-        {
-            Visible = true;
-        }
-        modify(NewSalesQuote)
         {
             Visible = true;
         }

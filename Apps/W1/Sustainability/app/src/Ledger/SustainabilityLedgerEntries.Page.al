@@ -123,6 +123,10 @@ page 6220 "Sustainability Ledger Entries"
                 {
                     ToolTip = 'Specifies the emission N2O of the entry.';
                 }
+                field("Emission Fee"; Rec."Emission Fee")
+                {
+                    ToolTip = 'Specifies the emission Fee of the entry.';
+                }
                 field("Country/Region Code"; Rec."Country/Region Code")
                 {
                     ToolTip = 'Specifies the country/region code of the entry.';

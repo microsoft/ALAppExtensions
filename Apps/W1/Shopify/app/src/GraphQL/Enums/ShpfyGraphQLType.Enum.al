@@ -405,17 +405,47 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
         Caption = 'Get Order Transactions';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL OrderTransactions";
     }
-    value(82; TranslationsRegister)
+    value(85; ProductVariantDelete)
+    {
+        Caption = 'Product Variant Delete';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL ProductVariantDelete";
+    }
+    value(86; GetProductOptions)
+    {
+        Caption = 'Get Product Options';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL GetProductOptions";
+    }
+    value(87; GetReverseFulfillmentOrders)
+    {
+        Caption = 'Get Reverse Fulfillment Orders';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL RevFulfillOrders";
+    }
+    value(88; GetNextReverseFulfillmentOrders)
+    {
+        Caption = 'Get Next Reverse Fulfillment Orders';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextRevFulfillOrders";
+    }
+    value(89; GetReverseFulfillmentOrderLines)
+    {
+        Caption = 'Get Reverse Fulfillment Order Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL RevFulfillOrderLines";
+    }
+    value(90; GetNextReverseFulfillmentOrderLines)
+    {
+        Caption = 'Get Next Reverse Fulfillment Order Lines';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL NextRevFulfillOrdLns";
+    }
+    value(91; TranslationsRegister)
     {
         Caption = 'Translations Register';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL TranslationsRegister";
     }
-    value(83; ShopLocales)
+    value(92; ShopLocales)
     {
         Caption = 'Shop Locales';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL ShopLocales";
     }
-    value(84; GetTranslResource)
+    value(93; GetTranslResource)
     {
         Caption = 'Get Transl Resource';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL TranslResource";
