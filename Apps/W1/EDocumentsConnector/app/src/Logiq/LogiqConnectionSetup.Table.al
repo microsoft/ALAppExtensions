@@ -14,25 +14,30 @@ table 6380 "Logiq Connection Setup"
         {
             Caption = 'Authorization URL';
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies the Authorization URL.';
         }
         field(22; "Base URL"; Text[100])
         {
             Caption = 'Base URL';
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies the Base URL.';
         }
         field(25; "File List Endpoint"; Text[100])
         {
             Caption = 'File List Endpoint';
             DataClassification = CustomerContent;
+            ToolTip = 'Specifies the Endpoint to list available files.';
         }
         field(31; "Client ID"; Text[100])
         {
             Caption = 'Client ID';
+            ToolTip = 'Specifies the client ID token.';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(32; "Client Secret"; Guid)
         {
             Caption = 'Client Secret';
+            ToolTip = 'Specifies the Client Secret.';
             DataClassification = EndUserIdentifiableInformation;
         }
     }

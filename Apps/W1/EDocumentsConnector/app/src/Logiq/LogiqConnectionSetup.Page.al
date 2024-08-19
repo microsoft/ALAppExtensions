@@ -18,8 +18,6 @@ page 6380 "Logiq Connection Setup"
 
                 field(ClientID; Rec."Client ID")
                 {
-                    Caption = 'Client ID';
-                    ToolTip = 'Specifies the client ID token.';
                     ShowMandatory = true;
                 }
                 field(ClientSecret; ClientSecret)
@@ -36,15 +34,12 @@ page 6380 "Logiq Connection Setup"
                 }
                 field("Authentication URL"; Rec."Authentication URL")
                 {
-                    ToolTip = 'Specifies the Authorization URL.';
                 }
                 field("Base URL"; Rec."Base URL")
                 {
-                    ToolTip = 'Specifies the Base URL.';
                 }
                 field("File List Endpoint"; Rec."File List Endpoint")
                 {
-                    ToolTip = 'Specifies the Endpoint to list available files.';
                 }
             }
         }

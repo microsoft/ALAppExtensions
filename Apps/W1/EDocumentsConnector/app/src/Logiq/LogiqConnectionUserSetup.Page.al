@@ -58,15 +58,12 @@ page 6381 "Logiq Connection User Setup"
                 }
                 field("API Engine"; Rec."API Engine")
                 {
-                    ToolTip = 'Specifies the value of the API Engine field.';
                 }
                 field("Document Transfer Endpoint"; Rec."Document Transfer Endpoint")
                 {
-                    ToolTip = 'Specifies the value of the Document Transfer Endpoint field.';
                 }
                 field("Document Status Endpoint"; Rec."Document Status Endpoint")
                 {
-                    ToolTip = 'Specifies the value of the Document Status Endpoint field.';
                 }
             }
         }
