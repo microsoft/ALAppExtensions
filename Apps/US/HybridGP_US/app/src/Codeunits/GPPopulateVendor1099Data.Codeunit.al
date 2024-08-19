@@ -58,6 +58,7 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
     var
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
         DataMigrationFacadeHelper: Codeunit "Data Migration Facade Helper";
+        GPVendor1099MappingHelpers: Codeunit "GP Vendor 1099 Mapping Helpers";
         HelperFunctions: Codeunit "Helper Functions";
         CurrentYear: Integer;
     begin
@@ -65,6 +66,12 @@ codeunit 42003 "GP Populate Vendor 1099 Data"
 
         GPCompanyAdditionalSettings.GetSingleInstance();
         CurrentYear := System.Date2DMY(Today(), 3);
+
+        // If the configured tax year is less than the minimum supported year (example: 0), default it to the current year
+        if (GPCompanyAdditionalSettings."1099 Tax Year" < GPVendor1099MappingHelpers.GetMinimumSupportedTaxYear()) then begin
+            GPCompanyAdditionalSettings."1099 Tax Year" := CurrentYear;
+            GPCompanyAdditionalSettings.Modify();
+        end;
 
         if GPCompanyAdditionalSettings."1099 Tax Year" = CurrentYear then
             PostingDate := Today()
