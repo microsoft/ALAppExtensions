@@ -21,6 +21,7 @@ codeunit 6167 "E-Doc. PO AOAI Function" implements "AOAI Function"
     var
         Result, Results, PurchaseOrderLineId, EDocumentLineId : JsonToken;
     begin
+        Data := Arguments;
         Arguments.Get('results', Results);
 
         foreach result in results.AsArray() do begin
@@ -73,10 +74,16 @@ codeunit 6167 "E-Doc. PO AOAI Function" implements "AOAI Function"
             until TempPurchaseLineLocal.Next() = 0;
     end;
 
+    procedure GetArgumentsAsJson(): JsonObject
+    begin
+        exit(Data);
+    end;
+
     var
         TempEDocumentImportedLine: Record "E-Doc. Imported Line" temporary;
         TempPurchaseLine: Record "Purchase Line" temporary;
         TempAIProposalBuffer: Record "E-Doc. PO Match Prop. Buffer" temporary;
+        Data: JsonObject;
         FunctionNameLbl: Label 'match-lines', Locked = true;
         MatchLineTxt: Label 'Matched to Purchase Order Line %1', Comment = '%1 = Number of the order line that the E-Document line is matched to';
         FailedToGetPromptSecretErr: Label 'Failed to get the prompt secret from Azure Key Vault', Locked = true;

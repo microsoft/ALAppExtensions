@@ -156,9 +156,9 @@ codeunit 6211 "Sustainability Journal Mgt."
         SustainAccountCategory.Get(SustainabilityJnlLine."Account Category");
         SustainAccountCategory.TestField("Emission Scope");
 
-        SustainabilityJnlBatch.Get(SustainabilityJnlLine."Journal Template Name", SustainabilityJnlLine."Journal Batch Name");
-        if SustainabilityJnlBatch."Emission Scope" <> Enum::"Emission Scope"::" " then
-            SustainAccountCategory.TestField("Emission Scope", SustainabilityJnlBatch."Emission Scope", ErrorInfo.Create());
+        if SustainabilityJnlBatch.Get(SustainabilityJnlLine."Journal Template Name", SustainabilityJnlLine."Journal Batch Name") then
+            if SustainabilityJnlBatch."Emission Scope" <> Enum::"Emission Scope"::" " then
+                SustainAccountCategory.TestField("Emission Scope", SustainabilityJnlBatch."Emission Scope", ErrorInfo.Create());
     end;
 
     var

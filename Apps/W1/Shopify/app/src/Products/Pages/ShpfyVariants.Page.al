@@ -227,6 +227,26 @@ page 30127 "Shpfy Variants"
                     Metafields.RunForResource(Database::"Shpfy Variant", Rec.Id, Rec."Shop Code");
                 end;
             }
+            action(AddItemsAsVariants)
+            {
+                ApplicationArea = All;
+                Caption = 'Add Items as Shopify Variants';
+                Image = AddAction;
+                ToolTip = 'Add existing items as new Shopify variants for the selected parent product.';
+
+                trigger OnAction()
+                var
+                    AddItemAsVariant: Report "Shpfy Add Item As Variant";
+                    ParentProductId: BigInteger;
+                begin
+                    Rec.FilterGroup(4);
+                    Evaluate(ParentProductId, Rec.GetFilter("Product Id"));
+                    Rec.FilterGroup(0);
+
+                    AddItemAsVariant.SetParentProduct(ParentProductId);
+                    AddItemAsVariant.Run();
+                end;
+            }
         }
     }
 }

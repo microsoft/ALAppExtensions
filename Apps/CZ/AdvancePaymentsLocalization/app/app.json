@@ -41,5 +41,12 @@
                                    "allowDownloadingSource":  true,
                                    "includeSourceInSymbolFile":  true
                                },
+    "internalsVisibleTo":   [
+                                {
+                                    "id":  "6b7964d6-2baa-4566-813f-89dabe4b33e1",
+                                    "name":  "Advance Payments Localization for Czech Tests",
+                                    "publisher":  "Microsoft"
+                                }
+                            ],
     "target":  "Cloud"
 }

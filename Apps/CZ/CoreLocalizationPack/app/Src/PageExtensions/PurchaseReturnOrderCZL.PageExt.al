@@ -8,6 +8,7 @@ using Microsoft.Finance.Currency;
 #if not CLEAN24
 using Microsoft.Finance.EU3PartyTrade;
 #endif
+using Microsoft.Finance.GeneralLedger.Setup;
 
 pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
 {
@@ -64,6 +65,22 @@ pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
         }
         addafter("Currency Code")
         {
+            field(AdditionalCurrencyCodeCZL; GeneralLedgerSetup.GetAdditionalCurrencyCode())
+            {
+                ApplicationArea = Suite;
+                Caption = 'Additional Currency Code';
+                ToolTip = 'Specifies the exchange rate to be used if you post in an additional currency.';
+                Visible = AddCurrencyVisible;
+
+                trigger OnAssistEdit()
+                begin
+                    ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCode(), Rec."Additional Currency Factor CZL", Rec."Posting Date");
+                    if ChangeExchangeRate.RunModal() = Action::OK then
+                        Rec."Additional Currency Factor CZL" := ChangeExchangeRate.GetParameter();
+
+                    Clear(ChangeExchangeRate);
+                end;
+            }
             field("VAT Currency Code CZL"; Rec."VAT Currency Code CZL")
             {
                 ApplicationArea = Basic, Suite;
@@ -202,15 +219,17 @@ pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
             }
         }
     }
-#if not CLEAN24
 
     trigger OnOpenPage()
     begin
+#if not CLEAN24
         EU3PartyTradeFeatureEnabled := EU3PartyTradeFeatMgt.IsEnabled();
-    end;
 #endif    
+        AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabled();
+    end;
 
     var
+        GeneralLedgerSetup: Record "General Ledger Setup";
 #if not CLEAN24
 #pragma warning disable AL0432
         EU3PartyTradeFeatMgt: Codeunit "EU3 Party Trade Feat Mgt. CZL";
@@ -220,6 +239,7 @@ pageextension 11741 "Purchase Return Order CZL" extends "Purchase Return Order"
 #if not CLEAN24
         EU3PartyTradeFeatureEnabled: Boolean;
 #endif
+        AddCurrencyVisible: Boolean;
 
     local procedure CurrencyCodeOnAfterValidate()
     begin

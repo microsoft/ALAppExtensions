@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.AdvancePayments;
 
+using Microsoft.Finance.VAT.Ledger;
 using Microsoft.Finance.GeneralLedger.Setup;
 using System.Utilities;
 
@@ -100,10 +101,25 @@ report 31025 "Purch. Advance Letters VAT CZZ"
                 {
                     IncludeCaption = true;
                 }
+                column(NonDeductVATAmountLCY; NonDeductVATAmountLCY)
+                {
+                }
 
                 trigger OnPreDataItem()
                 begin
                     SetFilter("Posting Date", '..%1', ToDate);
+                end;
+
+                trigger OnAfterGetRecord()
+                var
+                    VATEntry: Record "VAT Entry";
+                begin
+                    VATEntry.SetRange("Advance Letter No. CZZ", "Purch. Adv. Letter Entry CZZ"."Purch. Adv. Letter No.");
+                    VATEntry.SetRange("Document No.", "Purch. Adv. Letter Entry CZZ"."Document No.");
+                    VATEntry.SetFilter("Posting Date", '..%1', ToDate);
+                    VATEntry.SetFilter("Non-Deductible VAT %", '<>0');
+                    VATEntry.CalcSums(Amount);
+                    NonDeductVATAmountLCY := VATEntry.Amount;
                 end;
             }
 
@@ -175,6 +191,7 @@ report 31025 "Purch. Advance Letters VAT CZZ"
         TotalLbl = 'Total';
         TotalForLbl = 'Total for';
         StateToDateLbl = 'State to date';
+        NonDeductVATAmountLCYLbl = 'Non-deductible VAT Amount (LCY)';
     }
 
     trigger OnPreReport()
@@ -194,6 +211,7 @@ report 31025 "Purch. Advance Letters VAT CZZ"
         ReportFilters, AmountsInLCY : Text;
         ToDate: Date;
         OnlyOpen, PrintEntries : Boolean;
+        NonDeductVATAmountLCY: Decimal;
         FiltersTxt: Label 'Filters: %1: %2', Comment = '%1 = Table Caption, %2 = Table Filter';
         AmountsInLCYTxt: Label 'All Amounts are in %1.', Comment = '%1 = Currency Code';
 }

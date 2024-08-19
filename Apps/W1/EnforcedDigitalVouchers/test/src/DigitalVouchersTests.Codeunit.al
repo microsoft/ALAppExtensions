@@ -14,6 +14,7 @@ codeunit 139515 "Digital Vouchers Tests"
         LibraryInventory: Codeunit "Library - Inventory";
         LibrarySales: Codeunit "Library - Sales";
         LibraryRandom: Codeunit "Library - Random";
+        LibraryLowerPermissions: Codeunit "Library - Lower Permissions";
         Assert: Codeunit Assert;
         LibraryWorkflow: Codeunit "Library - Workflow";
         ActiveDirectoryMockEvents: Codeunit "Active Directory Mock Events";
@@ -744,6 +745,173 @@ codeunit 139515 "Digital Vouchers Tests"
         UnbindSubscription(DigVouchersDisableEnforce);
     end;
 
+    [Test]
+    procedure PurchInvVoucherAutomaticGenerationDoesNoChangeNoPrinted()
+    var
+        PurchInvHeader: Record "Purch. Inv. Header";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        NotificationLifecycleMgt: Codeunit "Notification Lifecycle Mgt.";
+    begin
+        // [FEATURE] [Purchase]
+        // [SCENARIO 542580] An automatic generation of the digital voucher does not change the "No. Printed" of the posted purchase invoice
+        Initialize();
+        BindSubscription(DigVouchersDisableEnforce);
+        // [GIVEN] Digital voucher feature is enabled
+        EnableDigitalVoucherFeature();
+        InitializeReportSelectionPurchaseInvoice();
+        // [GIVEN] Digital voucher entry setup for purchase document is "Attachment", "Generate Automatically" is enabled
+        InitSetupGenerateAutomatically("Digital Voucher Entry Type"::"Purchase Document", "Digital Voucher Check Type"::Attachment);
+        LibraryLowerPermissions.SetO365Setup();
+        LibraryLowerPermissions.AddPurchDocsPost();
+        // [WHEN] Post purchase invoice
+        PurchInvHeader.Get(ReceiveAndInvoicePurchaseInvoice());
+        // [THEN] "No. Printed" is 0 for the posted purchase invoice
+        PurchInvHeader.TestField("No. Printed", 0);
+
+        NotificationLifecycleMgt.RecallAllNotifications();
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    procedure PurchCrMemoVoucherAutomaticGenerationDoesNoChangeNoPrinted()
+    var
+        PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr.";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        NotificationLifecycleMgt: Codeunit "Notification Lifecycle Mgt.";
+    begin
+        // [FEATURE] [Purchase]
+        // [SCENARIO 542580] An automatic generation of the digital voucher does not change the "No. Printed" of the posted purchase credit memo
+        Initialize();
+        BindSubscription(DigVouchersDisableEnforce);
+        // [GIVEN] Digital voucher feature is enabled
+        EnableDigitalVoucherFeature();
+        InitializeReportSelectionPurchaseCrMemo();
+        // [GIVEN] Digital voucher entry setup for purchase document is "Attachment", "Generate Automatically" is enabled
+        InitSetupGenerateAutomatically("Digital Voucher Entry Type"::"Purchase Document", "Digital Voucher Check Type"::Attachment);
+        LibraryLowerPermissions.SetO365Setup();
+        LibraryLowerPermissions.AddPurchDocsPost();
+        // [WHEN] Post purchase credit memo
+        PurchCrMemoHdr.Get(ShipAndInvoicePurchaseCrMemo());
+        // [THEN] "No. Printed" is 0 for the posted purchase credit memo
+        PurchCrMemoHdr.TestField("No. Printed", 0);
+
+        NotificationLifecycleMgt.RecallAllNotifications();
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    procedure SalesInvVoucherAutomaticGenerationDoesNoChangeNoPrinted()
+    var
+        SalesInvHeader: Record "Sales Invoice Header";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        NotificationLifecycleMgt: Codeunit "Notification Lifecycle Mgt.";
+    begin
+        // [FEATURE] [Sales]
+        // [SCENARIO 542580] An automatic generation of the digital voucher does not change the "No. Printed" of the posted sales invoice
+        Initialize();
+        BindSubscription(DigVouchersDisableEnforce);
+        // [GIVEN] Digital voucher feature is enabled
+        EnableDigitalVoucherFeature();
+        InitializeReportSelectionSalesInvoice();
+        // [GIVEN] Digital voucher entry setup for sales document is "Attachment", "Generate Automatically" is enabled
+        InitSetupGenerateAutomatically("Digital Voucher Entry Type"::"Sales Document", "Digital Voucher Check Type"::Attachment);
+        LibraryLowerPermissions.SetO365Setup();
+        LibraryLowerPermissions.AddSalesDocsPost();
+        // [WHEN] Post sales invoice
+        SalesInvHeader.Get(ShipAndInvoiceSalesInvoice());
+        // [THEN] "No. Printed" is 0 for the posted sales invoice
+        SalesInvHeader.TestField("No. Printed", 0);
+
+        NotificationLifecycleMgt.RecallAllNotifications();
+        UnbindSubscription(DigVouchersDisableEnforce);
+        LibraryLowerPermissions.SetOutsideO365Scope();
+    end;
+
+    [Test]
+    procedure SalesCrMemoVoucherAutomaticGenerationDoesNoChangeNoPrinted()
+    var
+        SalesCrMemoHeader: Record "Sales Cr.Memo Header";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        NotificationLifecycleMgt: Codeunit "Notification Lifecycle Mgt.";
+    begin
+        // [FEATURE] [Sales]
+        // [SCENARIO 542580] An automatic generation of the digital voucher does not change the "No. Printed" of the posted sales credit memo
+        Initialize();
+        BindSubscription(DigVouchersDisableEnforce);
+        // [GIVEN] Digital voucher feature is enabled
+        EnableDigitalVoucherFeature();
+        InitializeReportSelectionSalesCrMemo();
+        // [GIVEN] Digital voucher entry setup for sales document is "Attachment", "Generate Automatically" is enabled
+        InitSetupGenerateAutomatically("Digital Voucher Entry Type"::"Sales Document", "Digital Voucher Check Type"::Attachment);
+        LibraryLowerPermissions.SetO365Setup();
+        LibraryLowerPermissions.AddSalesDocsPost();
+        // [WHEN] Post sales credit memo
+        SalesCrMemoHeader.Get(ReceiveAndInvoiceSalesCrMemo());
+        // [THEN] "No. Printed" is 0 for the posted sales credit memo
+        SalesCrMemoHeader.TestField("No. Printed", 0);
+
+        NotificationLifecycleMgt.RecallAllNotifications();
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    procedure ServiceInvVoucherAutomaticGenerationDoesNoChangeNoPrinted()
+    var
+        ServInvHeader: Record "Service Invoice Header";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        NotificationLifecycleMgt: Codeunit "Notification Lifecycle Mgt.";
+    begin
+        // [FEATURE] [Service]
+        // [SCENARIO 542580] An automatic generation of the digital voucher does not change the "No. Printed" of the posted service invoice
+        Initialize();
+        BindSubscription(DigVouchersDisableEnforce);
+        // [GIVEN] Digital voucher feature is enabled
+        EnableDigitalVoucherFeature();
+        InitializeReportSelectionServiceInvoice();
+        // [GIVEN] Digital voucher entry setup for sales document is "Attachment", "Generate Automatically" is enabled
+        InitSetupGenerateAutomatically("Digital Voucher Entry Type"::"Sales Document", "Digital Voucher Check Type"::Attachment);
+        LibraryLowerPermissions.SetO365Setup();
+        LibraryLowerPermissions.AddO365WhseEdit();
+        LibraryLowerPermissions.AddAccountPayables();
+        LibraryLowerPermissions.AddO365ServiceMgtEdit();
+        // [WHEN] Post service invoice
+        ServInvHeader.Get(PostServiceInvoice());
+        // [THEN] "No. Printed" is 0 for the posted service invoice
+        ServInvHeader.TestField("No. Printed", 0);
+
+        NotificationLifecycleMgt.RecallAllNotifications();
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
+    [Test]
+    procedure ServiceCrMemoVoucherAutomaticGenerationDoesNoChangeNoPrinted()
+    var
+        ServCrMemoHeader: Record "Service Cr.Memo Header";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        NotificationLifecycleMgt: Codeunit "Notification Lifecycle Mgt.";
+    begin
+        // [FEATURE] [Service]
+        // [SCENARIO 542580] An automatic generation of the digital voucher does not change the "No. Printed" of the posted service credit memo
+        Initialize();
+        BindSubscription(DigVouchersDisableEnforce);
+        // [GIVEN] Digital voucher feature is enabled
+        EnableDigitalVoucherFeature();
+        InitializeReportSelectionServiceCrMemo();
+        // [GIVEN] Digital voucher entry setup for sales document is "Attachment", "Generate Automatically" is enabled
+        InitSetupGenerateAutomatically("Digital Voucher Entry Type"::"Sales Document", "Digital Voucher Check Type"::Attachment);
+        LibraryLowerPermissions.SetO365Setup();
+        LibraryLowerPermissions.AddO365WhseEdit();
+        LibraryLowerPermissions.AddAccountPayables();
+        LibraryLowerPermissions.AddO365ServiceMgtEdit();
+        // [WHEN] Post service credit memo
+        ServCrMemoHeader.Get(PostServiceCrMemo());
+        // [THEN] "No. Printed" is 0 for the posted service credit memo
+        ServCrMemoHeader.TestField("No. Printed", 0);
+
+        NotificationLifecycleMgt.RecallAllNotifications();
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
     local procedure Initialize()
     var
         CompanyInformation: Record "Company Information";
@@ -945,6 +1113,22 @@ codeunit 139515 "Digital Vouchers Tests"
     end;
 
     local procedure ReceiveAndInvoiceSalesCrMemo(): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        LibrarySales.CreateSalesCreditMemo(SalesHeader);
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
+    local procedure ShipAndInvoiceSalesInvoice(): Code[20]
+    var
+        SalesHeader: Record "Sales Header";
+    begin
+        LibrarySales.CreateSalesInvoice(SalesHeader);
+        exit(LibrarySales.PostSalesDocument(SalesHeader, true, true));
+    end;
+
+    local procedure ReceiveAndInvoiceSalesInvoice(): Code[20]
     var
         SalesHeader: Record "Sales Header";
     begin

@@ -12,6 +12,8 @@ pagecustomization "SOA Item List" customizes "Item List"
     ClearActions = true;
     ClearLayout = true;
     ClearViews = true;
+    InsertAllowed = false;
+    DeleteAllowed = false;
 
     layout
     {
@@ -88,10 +90,5 @@ pagecustomization "SOA Item List" customizes "Item List"
         {
             Visible = true;
         }
-    }
-
-    actions
-    {
-
     }
 }

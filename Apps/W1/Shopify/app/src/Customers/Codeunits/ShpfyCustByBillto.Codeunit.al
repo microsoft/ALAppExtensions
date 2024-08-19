@@ -90,14 +90,16 @@ codeunit 30111 "Shpfy Cust. By Bill-to" implements "Shpfy ICustomer Mapping"
                 Equal2 := xName2.ToUpper() = Name2.ToUpper();
                 if Equal1 and Equal2 then
                     if CustomerAddress."Customer No." = '' then begin
-                        if not FindCustomer(Name, Name2, CustomerAddress) then begin
-                            CreateCustomer.SetShop(ShopCode);
-                            CreateCustomer.SetTemplateCode(TemplateCode);
-                            CreateCustomer.Run(CustomerAddress);
-                        end;
+                        if not FindCustomer(Name, Name2, CustomerAddress) then
+                            if Shop."Auto Create Unknown Customers" or AllowCreate then begin
+                                CreateCustomer.SetShop(ShopCode);
+                                CreateCustomer.SetTemplateCode(TemplateCode);
+                                CreateCustomer.Run(CustomerAddress);
+                            end;
                         CustomerAddress2.SetAutoCalcFields("Customer No.");
                         CustomerAddress2.Get(CustomerAddress.Id);
-                        exit(CustomerAddress2."Customer No.");
+                        if CustomerAddress2."Customer No." <> '' then
+                            exit(CustomerAddress2."Customer No.");
                     end else
                         exit(CustomerAddress."Customer No.");
             until CustomerAddress.Next() = 0;

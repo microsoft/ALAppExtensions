@@ -231,8 +231,10 @@ codeunit 30161 "Shpfy Import Order"
             Redundancy := Hash.CalcHash(LineIds);
             if Redundancy <> OrderHeader."Line Items Redundancy Code" then
                 exit(true);
-            exit(false);
         end;
+
+        if OrderHeader."Shipping Charges Amount" <> JsonHelper.GetValueAsDecimal(JOrder, 'totalShippingPriceSet.shopMoney.amount') then
+            exit(true);
     end;
 
     local procedure SetAndCreateRelatedRecords(JOrder: JsonObject; var OrderHeader: Record "Shpfy Order Header")

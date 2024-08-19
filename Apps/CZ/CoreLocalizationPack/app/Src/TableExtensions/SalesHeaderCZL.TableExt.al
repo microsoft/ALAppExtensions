@@ -7,6 +7,7 @@ namespace Microsoft.Sales.Document;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Setup;
 using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.BatchProcessing;
@@ -19,6 +20,22 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
 {
     fields
     {
+        modify("Posting Date")
+        {
+            trigger OnAfterValidate()
+            var
+                NeedUpdateAddCurrencyFactor: Boolean;
+            begin
+                NeedUpdateAddCurrencyFactor := GeneralLedgerSetup.IsAdditionalCurrencyEnabled();
+                OnValidatePostingDateOnBeforeCheckNeedUpdateAddCurrencyFactor(Rec, xRec, IsConfirmedCZL, NeedUpdateAddCurrencyFactor);
+                if NeedUpdateAddCurrencyFactor then begin
+                    UpdateAddCurrencyFactorCZL();
+                    if ("Additional Currency Factor CZL" <> xRec."Additional Currency Factor CZL") and not GetCalledFromWhseDoc() then
+                        ConfirmAddCurrencyFactorUpdateCZL();
+                end;
+                OnValidatePostingDateOnAfterCheckNeedUpdateAddCurrencyFactor(Rec, xRec, NeedUpdateAddCurrencyFactor);
+            end;
+        }
         modify("VAT Reporting Date")
         {
             trigger OnAfterValidate()
@@ -159,12 +176,19 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
             TableRelation = "SWIFT Code";
             DataClassification = CustomerContent;
         }
+        field(11750; "Additional Currency Factor CZL"; Decimal)
+        {
+            Caption = 'Additional Currency Factor';
+            DecimalPlaces = 0 : 15;
+            MinValue = 0;
+            DataClassification = CustomerContent;
+        }
         field(11774; "VAT Currency Factor CZL"; Decimal)
         {
             Caption = 'VAT Currency Factor';
-            DataClassification = CustomerContent;
             DecimalPlaces = 0 : 15;
             MinValue = 0;
+            DataClassification = CustomerContent;
 
             trigger OnValidate()
             begin
@@ -249,12 +273,14 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
     }
 
     var
+        GeneralLedgerSetup: Record "General Ledger Setup";
         ConfirmManagement: Codeunit "Confirm Management";
         GlobalDocumentType: Enum "Sales Document Type";
         GlobalDocumentNo: Code[20];
         GlobalIsIntrastatTransaction: Boolean;
         IsConfirmedCZL: Boolean;
         UpdateExchRateQst: Label 'Do you want to update the exchange rate for VAT?';
+        UpdateExchRateForAddCurrencyQst: Label 'Do you want to update the exchange rate for additional currency?';
 
     local procedure CheckCurrencyExchangeRateCZL(CurrencyDate: Date)
     var
@@ -288,6 +314,29 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
         end
     end;
 
+    internal procedure UpdateAddCurrencyFactorCZL()
+    var
+        CurrencyExchangeRate: Record "Currency Exchange Rate";
+        CurrencyDate: Date;
+        IsUpdated: Boolean;
+    begin
+        OnBeforeUpdateAddCurrencyFactorCZL(Rec, IsUpdated, CurrencyExchangeRate);
+        if IsUpdated then
+            exit;
+
+        if GeneralLedgerSetup.IsAdditionalCurrencyEnabled() then begin
+            if "Posting Date" <> 0D then
+                CurrencyDate := "Posting Date"
+            else
+                CurrencyDate := WorkDate();
+
+            "Additional Currency Factor CZL" := CurrencyExchangeRate.ExchangeRate(CurrencyDate, GeneralLedgerSetup.GetAdditionalCurrencyCode());
+        end else
+            "Additional Currency Factor CZL" := 0;
+
+        OnAfterUpdateAddCurrencyFactorCZL(Rec, GetHideValidationDialog());
+    end;
+
     local procedure UpdateVATCurrencyFactorCZL()
     var
         CurrencyExchangeRate: Record "Currency Exchange Rate";
@@ -309,6 +358,28 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
             "VAT Currency Factor CZL" := 0;
 
         OnAfterUpdateVATCurrencyFactorCZL(Rec, GetHideValidationDialog());
+    end;
+
+    procedure ConfirmAddCurrencyFactorUpdateCZL(): Boolean
+    var
+        IsHandled: Boolean;
+        ForceConfirm: Boolean;
+    begin
+        IsHandled := false;
+        ForceConfirm := false;
+        OnBeforeConfirmUpdateAddCurrencyFactorCZL(Rec, xRec, HideValidationDialog, IsHandled, ForceConfirm);
+        if IsHandled then
+            exit;
+
+        if GetHideValidationDialog() or not GuiAllowed or ForceConfirm then
+            IsConfirmedCZL := true
+        else
+            IsConfirmedCZL := ConfirmManagement.GetResponseOrDefault(UpdateExchRateForAddCurrencyQst, true);
+        if IsConfirmedCZL then
+            Validate("Additional Currency Factor CZL")
+        else
+            "Additional Currency Factor CZL" := xRec."Additional Currency Factor CZL";
+        exit(IsConfirmedCZL);
     end;
 
     procedure ConfirmVATCurrencyFactorUpdateCZL(): Boolean
@@ -501,6 +572,31 @@ tableextension 11703 "Sales Header CZL" extends "Sales Header"
 
     [IntegrationEvent(false, false)]
     local procedure OnIsConfirmDialogAllowedCZL(var IsAllowed: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnValidatePostingDateOnBeforeCheckNeedUpdateAddCurrencyFactor(var SalesHeader: Record "Sales Header"; xSalesHeader: Record "Sales Header"; var IsConfirmedCZL: Boolean; var NeedUpdateAddCurrencyFactor: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnValidatePostingDateOnAfterCheckNeedUpdateAddCurrencyFactor(var SalesHeader: Record "Sales Header"; xSalesHeader: Record "Sales Header"; var NeedUpdateAddCurrencyFactor: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeUpdateAddCurrencyFactorCZL(var SalesHeader: Record "Sales Header"; var IsUpdated: Boolean; var CurrencyExchangeRate: Record "Currency Exchange Rate")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnAfterUpdateAddCurrencyFactorCZL(var SalesHeader: Record "Sales Header"; GetHideValidationDialog: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeConfirmUpdateAddCurrencyFactorCZL(var SalesHeader: Record "Sales Header"; xSalesHeader: Record "Sales Header"; var HideValidationDialog: Boolean; var IsHandled: Boolean; var ForceConfirm: Boolean)
     begin
     end;
 }

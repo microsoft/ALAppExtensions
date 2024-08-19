@@ -4,9 +4,10 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.AdvancePayments;
 
+using Microsoft.Finance.Currency;
+using Microsoft.Projects.Project.Job;
 using Microsoft.Purchases.Document;
 using Microsoft.Sales.Document;
-using Microsoft.Finance.Currency;
 
 table 31007 "Advance Letter Application CZZ"
 {
@@ -117,6 +118,22 @@ table 31007 "Advance Letter Application CZZ"
             DataClassification = CustomerContent;
             Editable = false;
         }
+        field(51; "Job No."; Code[20])
+        {
+            Caption = 'Project No.';
+            DataClassification = CustomerContent;
+            TableRelation = Job."No.";
+            Editable = false;
+            ToolTip = 'Specifies the project number for the sales advance document.';
+        }
+        field(52; "Job Task No."; Code[20])
+        {
+            Caption = 'Project Task No.';
+            DataClassification = CustomerContent;
+            TableRelation = "Job Task"."Job Task No." where("Job No." = field("Job No."));
+            Editable = false;
+            ToolTip = 'Specifies the project task number of the sales advance document.';
+        }
     }
     keys
     {
@@ -164,11 +181,7 @@ table 31007 "Advance Letter Application CZZ"
         if SalesAdvLetterHeaderCZZ.FindSet() then
             repeat
                 NewAdvanceLetterApplicationCZZ.Init();
-                NewAdvanceLetterApplicationCZZ."Advance Letter Type" := AdvanceLetterApplicationCZZ."Advance Letter Type"::Sales;
-                NewAdvanceLetterApplicationCZZ."Advance Letter No." := SalesAdvLetterHeaderCZZ."No.";
-                NewAdvanceLetterApplicationCZZ."Posting Date" := SalesAdvLetterHeaderCZZ."Posting Date";
-                NewAdvanceLetterApplicationCZZ."Currency Code" := SalesAdvLetterHeaderCZZ."Currency Code";
-                NewAdvanceLetterApplicationCZZ."Currency Factor" := SalesAdvLetterHeaderCZZ."Currency Factor";
+                NewAdvanceLetterApplicationCZZ.CopyFrom(SalesAdvLetterHeaderCZZ);
 
                 SalesAdvLetterEntryCZZ.Reset();
                 SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", SalesAdvLetterHeaderCZZ."No.");
@@ -218,11 +231,7 @@ table 31007 "Advance Letter Application CZZ"
         if PurchAdvLetterHeaderCZZ.FindSet() then
             repeat
                 NewAdvanceLetterApplicationCZZ.Init();
-                NewAdvanceLetterApplicationCZZ."Advance Letter Type" := AdvanceLetterApplicationCZZ."Advance Letter Type"::Purchase;
-                NewAdvanceLetterApplicationCZZ."Advance Letter No." := PurchAdvLetterHeaderCZZ."No.";
-                NewAdvanceLetterApplicationCZZ."Posting Date" := PurchAdvLetterHeaderCZZ."Posting Date";
-                NewAdvanceLetterApplicationCZZ."Currency Code" := PurchAdvLetterHeaderCZZ."Currency Code";
-                NewAdvanceLetterApplicationCZZ."Currency Factor" := PurchAdvLetterHeaderCZZ."Currency Factor";
+                NewAdvanceLetterApplicationCZZ.CopyFrom(PurchAdvLetterHeaderCZZ);
 
                 PurchAdvLetterEntryCZZ.Reset();
                 PurchAdvLetterEntryCZZ.SetRange("Purch. Adv. Letter No.", PurchAdvLetterHeaderCZZ."No.");
@@ -306,6 +315,42 @@ table 31007 "Advance Letter Application CZZ"
             NewFromAdvLetterUsageDocTypeCZZ::"Posted Sales Invoice":
                 GetAssignedAdvanceToPostedSalesInvoice(NewFromDocumentNo, NewAdvanceLetterApplicationCZZ);
         end;
+    end;
+
+    procedure GetAssignedAdvance(JobNo: Code[20]; var NewAdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")
+    begin
+        GetAssignedAdvance(JobNo, '', NewAdvanceLetterApplicationCZZ);
+    end;
+
+    procedure GetAssignedAdvance(JobNo: Code[20]; JobTaskNo: Code[20]; var NewAdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")
+    var
+        SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ";
+        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+    begin
+        NewAdvanceLetterApplicationCZZ.Reset();
+        NewAdvanceLetterApplicationCZZ.DeleteAll();
+
+        SalesAdvLetterHeaderCZZ.SetAutoCalcFields("Amount Including VAT", "Amount Including VAT (LCY)");
+        SalesAdvLetterHeaderCZZ.SetRange("Job No.", JobNo);
+        if JobTaskNo <> '' then
+            SalesAdvLetterHeaderCZZ.SetRange("Job Task No.", JobTaskNo);
+        if SalesAdvLetterHeaderCZZ.FindSet() then
+            repeat
+                SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", SalesAdvLetterHeaderCZZ."No.");
+                SalesAdvLetterEntryCZZ.SetFilter("Entry Type", '%1|%2|%3',
+                    SalesAdvLetterEntryCZZ."Entry Type"::Payment,
+                    SalesAdvLetterEntryCZZ."Entry Type"::Usage,
+                    SalesAdvLetterEntryCZZ."Entry Type"::Close);
+                SalesAdvLetterEntryCZZ.CalcSums(Amount, "Amount (LCY)");
+
+                NewAdvanceLetterApplicationCZZ.Init();
+                NewAdvanceLetterApplicationCZZ.CopyFrom(SalesAdvLetterHeaderCZZ);
+                NewAdvanceLetterApplicationCZZ.Amount := SalesAdvLetterHeaderCZZ."Amount Including VAT";
+                NewAdvanceLetterApplicationCZZ."Amount (LCY)" := SalesAdvLetterHeaderCZZ."Amount Including VAT (LCY)";
+                NewAdvanceLetterApplicationCZZ."Amount to Use" := -SalesAdvLetterEntryCZZ.Amount;
+                NewAdvanceLetterApplicationCZZ."Amount to Use (LCY)" := -SalesAdvLetterEntryCZZ."Amount (LCY)";
+                NewAdvanceLetterApplicationCZZ.Insert();
+            until SalesAdvLetterHeaderCZZ.Next() = 0;
     end;
 
     local procedure GetAssignedAdvanceToPostedPurchaseInvoice(DocumentNo: Code[20]; var AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")
@@ -398,6 +443,8 @@ table 31007 "Advance Letter Application CZZ"
         "Advance Letter No." := AdvanceLetterApplicationCZZ."Advance Letter No.";
         "Document Type" := AdvanceLetterApplicationCZZ."Document Type";
         "Document No." := AdvanceLetterApplicationCZZ."Document No.";
+        "Job No." := AdvanceLetterApplicationCZZ."Job No.";
+        "Job Task No." := AdvanceLetterApplicationCZZ."Job Task No.";
         "Posting Date" := AdvanceLetterApplicationCZZ."Posting Date";
         "Currency Code" := AdvanceLetterApplicationCZZ."Currency Code";
         "Currency Factor" := AdvanceLetterApplicationCZZ."Currency Factor";
@@ -405,6 +452,26 @@ table 31007 "Advance Letter Application CZZ"
         "Amount (LCY)" := AdvanceLetterApplicationCZZ."Amount (LCY)";
         "Amount to Use" := AdvanceLetterApplicationCZZ."Amount to Use";
         "Amount to Use (LCY)" := AdvanceLetterApplicationCZZ."Amount to Use (LCY)";
+    end;
+
+    internal procedure CopyFrom(SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
+    begin
+        "Advance Letter Type" := "Advance Letter Type"::Sales;
+        "Advance Letter No." := SalesAdvLetterHeaderCZZ."No.";
+        "Posting Date" := SalesAdvLetterHeaderCZZ."Posting Date";
+        "Currency Code" := SalesAdvLetterHeaderCZZ."Currency Code";
+        "Currency Factor" := SalesAdvLetterHeaderCZZ."Currency Factor";
+        "Job No." := SalesAdvLetterHeaderCZZ."Job No.";
+        "Job Task No." := SalesAdvLetterHeaderCZZ."Job Task No.";
+    end;
+
+    internal procedure CopyFrom(PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ")
+    begin
+        "Advance Letter Type" := "Advance Letter Type"::Purchase;
+        "Advance Letter No." := PurchAdvLetterHeaderCZZ."No.";
+        "Posting Date" := PurchAdvLetterHeaderCZZ."Posting Date";
+        "Currency Code" := PurchAdvLetterHeaderCZZ."Currency Code";
+        "Currency Factor" := PurchAdvLetterHeaderCZZ."Currency Factor";
     end;
 
     internal procedure Add(AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ")

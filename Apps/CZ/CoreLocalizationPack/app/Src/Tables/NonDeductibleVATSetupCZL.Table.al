@@ -45,7 +45,7 @@ table 11713 "Non-Deductible VAT Setup CZL"
         }
     }
 
-    internal procedure FindToDate(ToDate: Date): Boolean
+    procedure FindToDate(ToDate: Date): Boolean
     begin
         SetRange("From Date", 0D, ToDate);
         SetFilter("To Date", '%1..', ToDate);

@@ -18,6 +18,7 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
         ServiceInvoiceHeader: Record "Service Invoice Header";
         ServiceCrMemoHeader: Record "Service Cr.Memo Header";
         PEPPOLValidation: Codeunit "PEPPOL Validation";
+        PEPPOLServiceValidation: Codeunit "PEPPOL Service Validation";
     begin
         case SourceDocumentHeader.Number of
             Database::"Sales Header":
@@ -38,12 +39,12 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
             Database::"Service Invoice Header":
                 begin
                     SourceDocumentHeader.SetTable(ServiceInvoiceHeader);
-                    PEPPOLValidation.CheckServiceInvoice(ServiceInvoiceHeader);
+                    PEPPOLServiceValidation.CheckServiceInvoice(ServiceInvoiceHeader);
                 end;
             Database::"Service Cr.Memo Header":
                 begin
                     SourceDocumentHeader.SetTable(ServiceCrMemoHeader);
-                    PEPPOLValidation.CheckServiceCreditMemo(ServiceCrMemoHeader);
+                    PEPPOLServiceValidation.CheckServiceCreditMemo(ServiceCrMemoHeader);
                 end;
         end;
     end;

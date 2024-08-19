@@ -128,12 +128,13 @@ codeunit 18467 "Subcontracting Post Batch"
         ItemJnlLine."Order No." := SubOrderCompList."Production Order No.";
         ItemJnlLine."Order Line No." := SubOrderCompList."Production Order Line No.";
         ItemJnlLine."Prod. Order Comp. Line No." := SubOrderCompList."Line No.";
-        ItemJnlLine."Location Code" := SubOrderCompList."Company Location";
-        ItemJnlLine."New Location Code" := SubOrderCompList."Vendor Location";
         ItemJnlLine."Entry Type" := ItemJnlLine."Entry Type"::Transfer;
         ItemJnlLine."Item No." := SubOrderCompList."Item No.";
         ItemJnlLine.Description := SubOrderCompList.Description;
         ItemJnlLine."Gen. Prod. Posting Group" := SubOrderCompList."Gen. Prod. Posting Group";
+        ItemJnlLine.Validate("Location Code", SubOrderCompList."Company Location");
+        ItemJnlLine.Validate("New Location Code", SubOrderCompList."Vendor Location");
+        ItemJnlLine.Validate("Bin Code", SubOrderCompList."Bin Code");
         ItemJnlLine.Quantity := SubOrderCompList."Quantity To Send";
         ItemJnlLine."Unit of Measure Code" := SubOrderCompList."Unit of Measure Code";
         ItemJnlLine."Qty. per Unit of Measure" := SubOrderCompList."Quantity per";

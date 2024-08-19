@@ -1,0 +1,50 @@
+{
+    "name": "Ruleset for the Report Layouts. Code has been moved to BaseApp and the extension is an empty placeholder for mitigating thirdpart build pipeline  issues.",
+    "rules": [
+        {
+            "justification": "Disabled for ReportLayouts as it is not used in the project",
+            "id": "AS0029",
+            "action": "None"
+        },
+        {
+            "justification": "Disabled for ReportLayouts as it is not used in the project",
+            "id": "AS0088",
+            "action": "None"
+        },
+        {
+            "justification": "Disabled for ReportLayouts as it is not used in the project",
+            "id": "AS0084",
+            "action": "None"
+        },
+        {
+            "justification": "Disabled for ReportLayouts as it is not used in the project",
+            "id": "AS0015",
+            "action": "None"
+        },
+        {
+            "justification": "Disabled for ReportLayouts as it is not used in the project",
+            "id": "AS0053",
+            "action": "None"
+        },
+        {
+            "justification": "Disabled for ReportLayouts as it is not used in the project",
+            "id": "AS0104",
+            "action": "None"
+        },
+        {
+            "justification": "Disabled for ReportLayouts as it is not used in the project",
+            "id": "PTE0005",
+            "action": "None"
+        },
+        {
+            "justification": "Disabled for ReportLayouts as it is not used in the project",
+            "id": "PTE0015",
+            "action": "None"
+        },
+        {
+            "justification": "Disabled for ReportLayouts as it is not used in the project",
+            "id": "AS0054",
+            "action": "None"
+        }
+    ]
+}

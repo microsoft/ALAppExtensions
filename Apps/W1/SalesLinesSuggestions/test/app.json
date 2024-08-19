@@ -28,6 +28,12 @@
       "publisher": "Microsoft",
       "name": "Library Variable Storage",
       "version": "25.0.0.0"
+    },
+    {
+      "id": "2156302a-872f-4568-be0b-60968696f0d5",
+      "publisher": "Microsoft",
+      "name": "AI Test Toolkit",
+      "version": "25.0.0.0"
     }
   ],
   "screenshots": [],
@@ -36,7 +42,11 @@
   "idRanges": [
     {
       "from": 139780,
-      "to": 139788
+      "to": 139789
+    },
+    {
+      "from": 149800,
+      "to": 149999
     }
   ],
   "runtime": "13.0",

@@ -172,6 +172,12 @@ page 30115 "Shpfy Orders"
         }
         area(factboxes)
         {
+            part(LinkedBCDocuments; "Shpfy Linked To Documents")
+            {
+                ApplicationArea = All;
+                Caption = 'Linked Documents';
+                SubPageLink = "Shopify Document Type" = const("Shpfy Shop Document Type"::"Shopify Shop Order"), "Shopify Document Id" = field("Shopify Order Id");
+            }
             part(CustomerStatistics; "Customer Statistics FactBox")
             {
                 ApplicationArea = All;

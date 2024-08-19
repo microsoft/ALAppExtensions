@@ -5,6 +5,7 @@
 namespace Microsoft.Sales.History;
 
 using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
 
 pageextension 11733 "Posted Sales Invoice CZL" extends "Posted Sales Invoice"
 {
@@ -53,6 +54,21 @@ pageextension 11733 "Posted Sales Invoice CZL" extends "Posted Sales Invoice"
         }
         addafter("Currency Code")
         {
+            field(AdditionalCurrencyCodeCZL; GeneralLedgerSetup.GetAdditionalCurrencyCode())
+            {
+                ApplicationArea = Suite;
+                Editable = false;
+                Caption = 'Additional Currency Code';
+                ToolTip = 'Specifies the exchange rate to be used if you post in an additional currency.';
+                Visible = AddCurrencyVisible;
+
+                trigger OnAssistEdit()
+                begin
+                    ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCode(), Rec."Additional Currency Factor CZL", Rec."Posting Date");
+                    ChangeExchangeRate.Editable(false);
+                    ChangeExchangeRate.RunModal();
+                end;
+            }
             field("VAT Currency Code CZL"; Rec."VAT Currency Code CZL")
             {
                 ApplicationArea = Suite;
@@ -61,8 +77,6 @@ pageextension 11733 "Posted Sales Invoice CZL" extends "Posted Sales Invoice"
                 ToolTip = 'Specifies the VAT currency code of the sales invoice.';
 
                 trigger OnAssistEdit()
-                var
-                    ChangeExchangeRate: Page "Change Exchange Rate";
                 begin
                     ChangeExchangeRate.SetParameter(Rec."VAT Currency Code CZL", Rec."VAT Currency Factor CZL", Rec."VAT Reporting Date");
                     ChangeExchangeRate.Editable(false);
@@ -181,4 +195,14 @@ pageextension 11733 "Posted Sales Invoice CZL" extends "Posted Sales Invoice"
             }
         }
     }
+
+    trigger OnOpenPage()
+    begin
+        AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabled();
+    end;
+
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        ChangeExchangeRate: Page "Change Exchange Rate";
+        AddCurrencyVisible: Boolean;
 }

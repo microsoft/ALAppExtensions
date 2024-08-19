@@ -33,6 +33,7 @@ codeunit 6203 "Transact. Storage Export"
         Rec.SetStatusStarted();
         Commit();
 
+        VerifyContainerNameLength();
         TransactStorageExportData.ExportData(Rec."Starting Date/Time");
 
         Rec.SetStatusCompleted();
@@ -54,7 +55,7 @@ codeunit 6203 "Transact. Storage Export"
         end;
     end;
 
-    procedure GetExportDataTrack(var TransactStorageTableEntry: Record "Transact. Storage Table Entry"; var RecRef: RecordRef)
+    procedure GetRecordExportData(var TransactStorageTableEntry: Record "Transact. Storage Table Entry"; var RecRef: RecordRef)
     var
         TransactStorageExportState: Record "Transact. Storage Export State";
     begin
@@ -134,5 +135,14 @@ codeunit 6203 "Transact. Storage Export"
                 exit(false);
         end;
         exit(true);
+    end;
+
+    local procedure VerifyContainerNameLength()
+    var
+        TransactionStorageABS: Codeunit "Transaction Storage ABS";
+        ContainerName: Text;
+    begin
+        ContainerName := TransactionStorageABS.GetContainerName();
+        TransactionStorageABS.VerifyContainerNameLength(ContainerName);
     end;
 }

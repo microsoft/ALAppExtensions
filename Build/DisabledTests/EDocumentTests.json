@@ -1,0 +1,12 @@
+[
+    {
+        "codeunitId": 133501,
+        "CodeunitName": "EDocCopilotPORedTeaming",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 133502,
+        "CodeunitName": "EDocCopilotPOAccuacy",
+        "Method": "*"
+    }
+]

@@ -1,5 +1,8 @@
 codeunit 148182 "Library - Sustainability"
 {
+    var
+        LibraryUtility: Codeunit "Library - Utility";
+
     procedure InsertAccountCategory(Code: Code[20]; Description: Text[100]; Scope: Enum "Emission Scope"; CalcFoundation: Enum "Calculation Foundation"; CO2: Boolean; CH4: Boolean; N2O: Boolean; CustomValue: Text[100]; CalcFromGL: Boolean): Record "Sustain. Account Category"
     var
         SustainAccountCategory: Record "Sustain. Account Category";
@@ -76,6 +79,51 @@ codeunit 148182 "Library - Sustainability"
         SustainabilityJournalLine.Insert(true);
     end;
 
+    procedure InsertSustainabilityScorecard(var SustainabilityScorecard: Record "Sustainability Scorecard"; ScorecardCode: Code[20]; Name: Text[100])
+    begin
+        SustainabilityScorecard.Init();
+        SustainabilityScorecard.Validate("No.", ScorecardCode);
+        SustainabilityScorecard.Validate(Name, Name);
+        SustainabilityScorecard.Insert(true);
+    end;
+
+    procedure InsertSustainabilityGoal(var SustainabilityGoal: Record "Sustainability Goal"; GoalCode: Code[20]; ScorecardCode: Code[20]; LineNo: Integer; Name: Text[100])
+    begin
+        SustainabilityGoal.Init();
+        SustainabilityGoal.Validate("No.", GoalCode);
+        SustainabilityGoal.Validate("Scorecard No.", ScorecardCode);
+        SustainabilityGoal.Validate("Line No.", LineNo);
+        SustainabilityGoal.Validate(Name, Name);
+        SustainabilityGoal.Insert(true);
+    end;
+
+    procedure InsertSustainabilityCertificateArea(var SustCertificateArea: Record "Sust. Certificate Area")
+    begin
+        SustCertificateArea.Init();
+        SustCertificateArea.Validate("No.", LibraryUtility.GenerateRandomCode(SustCertificateArea.FieldNo("No."), DATABASE::"Sust. Certificate Area"));
+        SustCertificateArea.Validate(Name, LibraryUtility.GenerateGUID());
+        SustCertificateArea.Insert(true);
+    end;
+
+    procedure InsertSustainabilityCertificateStandard(var SustCertificateStandard: Record "Sust. Certificate Standard")
+    begin
+        SustCertificateStandard.Init();
+        SustCertificateStandard.Validate("No.", LibraryUtility.GenerateRandomCode(SustCertificateStandard.FieldNo("No."), DATABASE::"Sust. Certificate Standard"));
+        SustCertificateStandard.Validate(Name, LibraryUtility.GenerateGUID());
+        SustCertificateStandard.Insert(true);
+    end;
+
+    procedure InsertSustainabilityCertificate(var SustainabilityCertificate: Record "Sustainability Certificate"; SustCertAreaCode: Code[20]; SustCertStandardCode: Code[20]; SustCertType: Enum "Sust. Certificate Type")
+    begin
+        SustainabilityCertificate.Init();
+        SustainabilityCertificate.Validate("No.", LibraryUtility.GenerateRandomCode(SustainabilityCertificate.FieldNo("No."), DATABASE::"Sustainability Certificate"));
+        SustainabilityCertificate.Validate(Name, LibraryUtility.GenerateGUID());
+        SustainabilityCertificate.Validate("Area", SustCertAreaCode);
+        SustainabilityCertificate.Validate(Standard, SustCertStandardCode);
+        SustainabilityCertificate.Validate(Type, SustCertType);
+        SustainabilityCertificate.Insert(true);
+    end;
+
     procedure CleanUpBeforeTesting()
     var
         SustainabilityJnlTemplate: Record "Sustainability Jnl. Template";
@@ -85,6 +133,8 @@ codeunit 148182 "Library - Sustainability"
         SustainabilityAccount: Record "Sustainability Account";
         SustainabilityAccountCategory: Record "Sustain. Account Category";
         SustainabilityAccountSubcategory: Record "Sustain. Account Subcategory";
+        SustainabilityGoal: Record "Sustainability Goal";
+        SustainabilityScorecard: Record "Sustainability Scorecard";
     begin
         SustainabilityJnlTemplate.DeleteAll();
         SustainabilityJnlBatch.DeleteAll();
@@ -93,5 +143,7 @@ codeunit 148182 "Library - Sustainability"
         SustainabilityAccount.DeleteAll();
         SustainabilityAccountCategory.DeleteAll();
         SustainabilityAccountSubcategory.DeleteAll();
+        SustainabilityGoal.DeleteAll();
+        SustainabilityScorecard.DeleteAll();
     end;
 }

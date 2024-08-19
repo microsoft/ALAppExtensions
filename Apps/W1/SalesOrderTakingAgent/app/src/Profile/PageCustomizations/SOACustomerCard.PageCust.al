@@ -11,6 +11,8 @@ pagecustomization "SOA Customer Card" customizes "Customer Card"
 {
     ClearActions = true;
     ClearLayout = true;
+    InsertAllowed = false;
+    DeleteAllowed = false;
 
     layout
     {
@@ -108,23 +110,11 @@ pagecustomization "SOA Customer Card" customizes "Customer Card"
 
     actions
     {
-        modify(Contact)
-        {
-            Visible = true;
-        }
         modify(Contact_Promoted)
         {
             Visible = true;
         }
-        modify(ApplyTemplate)
-        {
-            Visible = true;
-        }
         modify(ApplyTemplate_Promoted)
-        {
-            Visible = true;
-        }
-        modify(NewSalesQuote)
         {
             Visible = true;
         }

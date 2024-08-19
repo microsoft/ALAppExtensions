@@ -111,6 +111,12 @@ table 30152 "Shpfy Catalog"
             Caption = 'Sync Prices';
             DataClassification = CustomerContent;
         }
+        field(17; "Customer No."; Code[20])
+        {
+            Caption = 'Customer No.';
+            DataClassification = CustomerContent;
+            TableRelation = "Customer";
+        }
     }
     keys
     {

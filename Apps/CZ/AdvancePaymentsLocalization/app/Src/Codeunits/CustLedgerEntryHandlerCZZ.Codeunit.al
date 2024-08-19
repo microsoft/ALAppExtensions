@@ -43,6 +43,27 @@ codeunit 31004 "Cust. Ledger Entry Handler CZZ"
         IsHandled := true;
     end;
 
+    [EventSubscriber(ObjectType::Report, Report::"Open Cust. Entries to Date CZL", 'OnBeforeGetReceivablesAccountNo', '', false, false)]
+    local procedure GetReceivablesAccountNoForOpenCustEntriesToDate(CustLedgerEntry: Record "Cust. Ledger Entry"; var GLAccountNo: Code[20]; var IsHandled: Boolean)
+    var
+        AdvanceLetterTemplateCZZ: Record "Advance Letter Template CZZ";
+    begin
+        if IsHandled then
+            exit;
+
+        if CustLedgerEntry."Advance Letter No. CZZ" = '' then
+            exit;
+
+        if CustLedgerEntry."Adv. Letter Template Code CZZ" <> '' then begin
+            AdvanceLetterTemplateCZZ.Get(CustLedgerEntry."Adv. Letter Template Code CZZ");
+            GLAccountNo := AdvanceLetterTemplateCZZ."Advance Letter G/L Account";
+            IsHandled := true;
+        end else begin
+            GLAccountNo := CustLedgerEntry.GetReceivablesAccNoCZL();
+            IsHandled := true;
+        end;
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"CustEntry-Apply Posted Entries", 'OnApplyCustEntryFormEntryOnAfterCheckEntryOpen', '', false, false)]
     local procedure CheckAdvanceOnApplyCustEntryFormEntryOnAfterCheckEntryOpen(ApplyingCustLedgEntry: Record "Cust. Ledger Entry")
     begin

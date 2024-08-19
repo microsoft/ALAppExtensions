@@ -13,6 +13,7 @@ using Microsoft.Finance.TaxBase;
 using Microsoft.Finance.TaxEngine.TaxTypeHandler;
 using Microsoft.Foundation.AuditCodes;
 using Microsoft.Foundation.NoSeries;
+using Microsoft.Finance.GST.Application;
 using Microsoft.Inventory.Item;
 using Microsoft.Inventory.Ledger;
 using Microsoft.Inventory.Location;
@@ -134,15 +135,17 @@ codeunit 18391 "GST Transfer Order Shipment"
         GSTLedgerEntry."Posting Date" := TransferHeader."Posting Date";
         GSTLedgerEntry."Document No." := DocumentNo;
         GSTLedgerEntry."Document Type" := GSTLedgerEntry."Document Type"::Invoice;
-        GSTLedgerEntry."GST Base Amount" := GSTPostingBuffer."GST Base Amount";
-        GSTLedgerEntry."GST Amount" := GSTPostingBuffer."GST Amount";
         GSTLedgerEntry."Source Type" := GSTLedgerEntry."Source Type"::Transfer;
         if DocTransferType = DocTransferType::"Transfer Shipment" then begin
             GSTLedgerEntry."Transaction Type" := GSTLedgerEntry."Transaction Type"::Sales;
             GSTLedgerEntry."External Document No." := TransferHeader."No.";
+            GSTLedgerEntry."GST Base Amount" := -GSTPostingBuffer."GST Base Amount";
+            GSTLedgerEntry."GST Amount" := -GSTPostingBuffer."GST Amount";
         end else begin
             GSTLedgerEntry."Transaction Type" := GSTLedgerEntry."Transaction Type"::Purchase;
             GSTLedgerEntry."External Document No." := TransferHeader."Last Shipment No.";
+            GSTLedgerEntry."GST Base Amount" := GSTPostingBuffer."GST Base Amount";
+            GSTLedgerEntry."GST Amount" := GSTPostingBuffer."GST Amount";
             if Location."Bonded warehouse" then begin
                 GSTLedgerEntry."Source Type" := GSTLedgerEntry."Source Type"::VEndor;
                 GSTLedgerEntry."Source No." := TransferHeader."VEndor No.";
@@ -150,7 +153,6 @@ codeunit 18391 "GST Transfer Order Shipment"
             end;
         end;
 
-        GSTLedgerEntry."GST Base Amount" := GSTPostingBuffer."GST Base Amount";
         GSTLedgerEntry."User ID" := CopyStr(UserId, 1, MaxStrLen(GSTLedgerEntry."User ID"));
         GSTLedgerEntry."Source Type" := GSTLedgerEntry."Source Type"::Transfer;
         GSTLedgerEntry."Source Code" := SourceCode;
@@ -1202,6 +1204,195 @@ codeunit 18391 "GST Transfer Order Shipment"
             RunGenJnlPostLine(GenJournalLine);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Undo Transfer Shipment", 'OnAfterInsertNewShipmentLine', '', false, false)]
+    local procedure FillDetailedGSTLedgerEntriesUndoTransferShipment(var TransShptLine: Record "Transfer Shipment Line"; DocLineNo: Integer)
+    var
+        OldDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
+        NewDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry";
+        TransferShipmentLineNew: Record "Transfer Shipment Line";
+        IsHandled: Boolean;
+    begin
+        OnBeforeFillDetailedGSTLedgerEntriesUndoTransferShipment(TransShptLine, DocLineNo, IsHandled);
+        if IsHandled then
+            exit;
+
+        TransferShipmentLineNew.Get(TransShptLine."Document No.", DocLineNo);
+
+        OldDetailedGSTLedgerEntry.SetRange("Document No.", TransShptLine."Document No.");
+        OldDetailedGSTLedgerEntry.SetRange("Document Line No.", TransShptLine."Line No.");
+        OnFindOldDetailedGSTLedgerEntry(OldDetailedGSTLedgerEntry, TransShptLine);
+        if OldDetailedGSTLedgerEntry.FindSet() then
+            repeat
+                NewDetailedGSTLedgerEntry.Init();
+                NewDetailedGSTLedgerEntry.Copy(OldDetailedGSTLedgerEntry);
+                NewDetailedGSTLedgerEntry."Entry No." := 0;
+                NewDetailedGSTLedgerEntry."Document Line No." := TransferShipmentLineNew."Line No.";
+                NewDetailedGSTLedgerEntry."GST Base Amount" := -1 * OldDetailedGSTLedgerEntry."GST Base Amount";
+                NewDetailedGSTLedgerEntry."GST Amount" := -1 * OldDetailedGSTLedgerEntry."GST Amount";
+                NewDetailedGSTLedgerEntry.Quantity := -1 * OldDetailedGSTLedgerEntry.Quantity;
+                NewDetailedGSTLedgerEntry."Amount Loaded on Item" := -1 * OldDetailedGSTLedgerEntry."Amount Loaded on Item";
+                NewDetailedGSTLedgerEntry."Remaining Base Amount" := -1 * OldDetailedGSTLedgerEntry."Remaining Base Amount";
+                NewDetailedGSTLedgerEntry."Remaining GST Amount" := -1 * OldDetailedGSTLedgerEntry."Remaining GST Amount";
+                NewDetailedGSTLedgerEntry."GST Assessable Value" := -1 * OldDetailedGSTLedgerEntry."GST Assessable Value";
+                NewDetailedGSTLedgerEntry."Custom Duty Amount" := -1 * OldDetailedGSTLedgerEntry."Custom Duty Amount";
+                OnBeforeInsertNewDetailedGSTLedgerEntry(NewDetailedGSTLedgerEntry, OldDetailedGSTLedgerEntry, TransferShipmentLineNew, TransShptLine);
+                NewDetailedGSTLedgerEntry.Insert(true);
+                PostUndoTransShipmentLineToGenJnlLine(NewDetailedGSTLedgerEntry, TransferShipmentLineNew);
+                PostGeneralEntriesUndoShipment(NewDetailedGSTLedgerEntry, TransferShipmentLineNew);
+                InsertGSTLedgerEntryTransferUndoShipment(NewDetailedGSTLedgerEntry, TransferShipmentLineNew);
+                InsertDetailedGSTEntryInfoUndoTransferShipment(OldDetailedGSTLedgerEntry, NewDetailedGSTLedgerEntry, TransShptLine, TransferShipmentLineNew);
+            until OldDetailedGSTLedgerEntry.Next() = 0;
+    end;
+
+    local procedure InsertGSTLedgerEntryTransferUndoShipment(NewDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; TransferShipmentLineNew: Record "Transfer Shipment Line")
+    var
+        GSTLedgerEntry: Record "GST Ledger Entry";
+        SourceCodeSetup: Record "Source Code Setup";
+        IsHandled: Boolean;
+    begin
+        OnBeforeInsertGSTLedgerEntryTransferUndoShipment(NewDetailedGSTLedgerEntry, TransferShipmentLineNew, IsHandled);
+        if IsHandled then
+            exit;
+
+        SourceCodeSetup.Get();
+
+        GSTLedgerEntry.Init();
+        GSTLedgerEntry."Entry No." := 0;
+        GSTLedgerEntry."Gen. Prod. Posting Group" := TransferShipmentLineNew."Gen. Prod. Posting Group";
+        GSTLedgerEntry."Posting Date" := NewDetailedGSTLedgerEntry."Posting Date";
+        GSTLedgerEntry."Document No." := NewDetailedGSTLedgerEntry."Document No.";
+        GSTLedgerEntry."Document Type" := GSTLedgerEntry."Document Type"::Invoice;
+        GSTLedgerEntry."GST Base Amount" := NewDetailedGSTLedgerEntry."GST Base Amount";
+        GSTLedgerEntry."GST Amount" := NewDetailedGSTLedgerEntry."GST Amount";
+        GSTLedgerEntry."Source Type" := GSTLedgerEntry."Source Type"::Transfer;
+        GSTLedgerEntry."Transaction Type" := GSTLedgerEntry."Transaction Type"::Sales;
+        GSTLedgerEntry."External Document No." := NewDetailedGSTLedgerEntry."External Document No.";
+        GSTLedgerEntry."User ID" := CopyStr(UserId, 1, MaxStrLen(GSTLedgerEntry."User ID"));
+        GSTLedgerEntry."Source Type" := GSTLedgerEntry."Source Type"::Transfer;
+        GSTLedgerEntry."Source Code" := SourceCodeSetup.Transfer;
+        GSTLedgerEntry."Transaction No." := NewDetailedGSTLedgerEntry."Transaction No.";
+        GSTLedgerEntry."GST Component Code" := NewDetailedGSTLedgerEntry."GST Component Code";
+        OnBeforeInsertNewGSTLedgerEntryTransferUndoShipment(GSTLedgerEntry, NewDetailedGSTLedgerEntry, TransferShipmentLineNew);
+        GSTLedgerEntry.Insert();
+    end;
+
+    local procedure InsertDetailedGSTEntryInfoUndoTransferShipment(OldDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; NewDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; TransferShipmentLineOld: Record "Transfer Shipment Line"; TransferShipmentLineNew: Record "Transfer Shipment Line");
+    var
+        OldDetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info";
+        NewDetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info";
+        GSTApplicationLibrary: Codeunit "GST Application Library";
+        IsHandled: Boolean;
+    begin
+        OnBeforeInsertDetailedGSTEntryInfoUndoTransferShipment(OldDetailedGSTLedgerEntry, NewDetailedGSTLedgerEntry, TransferShipmentLineOld, TransferShipmentLineNew, IsHandled);
+        if IsHandled then
+            exit;
+
+        GSTApplicationLibrary.GetDetailedGSTLedgerEntryInfo(OldDetailedGSTLedgerEntry, OldDetailedGSTLedgerEntryInfo);
+
+        NewDetailedGSTLedgerEntryInfo.Init();
+        NewDetailedGSTLedgerEntryInfo.Copy(OldDetailedGSTLedgerEntryInfo);
+        NewDetailedGSTLedgerEntryInfo."Entry No." := NewDetailedGSTLedgerEntry."Entry No.";
+        OnBeforeInsertNewDetailedGSTEntryInfoUndoTransferShipment(NewDetailedGSTLedgerEntryInfo, OldDetailedGSTLedgerEntryInfo, NewDetailedGSTLedgerEntry, OldDetailedGSTLedgerEntry, TransferShipmentLineNew, TransferShipmentLineOld);
+        NewDetailedGSTLedgerEntryInfo.Insert(true);
+    end;
+
+    local procedure PostUndoTransShipmentLineToGenJnlLine(NewDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; TransferShipmentLineNew: Record "Transfer Shipment Line")
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+        IsHandled: Boolean;
+    begin
+        OnBeforePostUndoTransShipmentLineToGenJnlLine(GenJournalLine, NewDetailedGSTLedgerEntry, TransferShipmentLineNew, IsHandled);
+        if IsHandled then
+            exit;
+
+        SourceCodeSetup.Get();
+        GenJournalLine.Init();
+        GenJournalLine."Posting Date" := NewDetailedGSTLedgerEntry."Posting Date";
+        GenJournalLine.Description := StrSubstNo(TransferShipmentNoLbl, TransferShipmentLineNew."Document No.");
+        GenJournalLine."Document Type" := GenJournalLine."Document Type"::Invoice;
+        GenJournalLine."Document No." := TransferShipmentLineNew."Document No.";
+        GenJournalLine."External Document No." := NewDetailedGSTLedgerEntry."External Document No.";
+        GenJournalLine."Account Type" := GenJournalLine."Account Type"::"G/L Account";
+        if NewDetailedGSTLedgerEntry."GST Amount" <> 0 then begin
+            GenJournalLine.Validate(Amount, Round(NewDetailedGSTLedgerEntry."GST Amount"));
+            GenJournalLine."Account No." := NewDetailedGSTLedgerEntry."G/L Account No.";
+        end;
+
+        GenJournalLine."VAT Posting" := GenJournalLine."VAT Posting"::"Manual VAT Entry";
+        GenJournalLine."GST Group Code" := NewDetailedGSTLedgerEntry."GST Group Code";
+        GenJournalLine."GST Component Code" := NewDetailedGSTLedgerEntry."GST Component Code";
+        GenJournalLine."System-Created Entry" := true;
+        GenJournalLine."Gen. Prod. Posting Group" := TransferShipmentLineNew."Gen. Prod. Posting Group";
+        GenJournalLine."Shortcut Dimension 1 Code" := TransferShipmentLineNew."Shortcut Dimension 1 Code";
+        GenJournalLine."Shortcut Dimension 2 Code" := TransferShipmentLineNew."Shortcut Dimension 2 Code";
+        GenJournalLine."Dimension Set ID" := TransferShipmentLineNew."Dimension Set ID";
+        GenJournalLine."Location Code" := TransferShipmentLineNew."Transfer-from Code";
+        GenJournalLine."Source Code" := SourceCodeSetup.Transfer;
+
+        OnBeforeRunGenJnlPostUndoTransShipmentLine(GenJournalLine, NewDetailedGSTLedgerEntry, TransferShipmentLineNew);
+        Clear(GenJnlPostLine);
+        RunGenJnlPostLine(GenJournalLine);
+    end;
+
+    local procedure PostGeneralEntriesUndoShipment(NewDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; TransferShipmentLineNew: Record "Transfer Shipment Line")
+    var
+        InventoryPostingSetup: Record "Inventory Posting Setup";
+        TransferLine: Record "Transfer Line";
+        TransCost: Decimal;
+        IsHandled: Boolean;
+    begin
+        OnBeforePostGeneralEntriesUndoShipment(GenJournalLine, NewDetailedGSTLedgerEntry, TransferShipmentLineNew, IsHandled);
+        if IsHandled then
+            exit;
+
+        TransferLine.Get(TransferShipmentLineNew."Transfer Order No.", TransferShipmentLineNew."Trans. Order Line No.");
+        GetTransferCost(TransferShipmentLineNew, TransCost);
+        InventoryPostingSetup.Get(TransferShipmentLineNew."In-Transit Code", TransferShipmentLineNew."Inventory Posting Group");
+        GenJournalLine.Init();
+        GenJournalLine."Posting Date" := NewDetailedGSTLedgerEntry."Posting Date";
+        GenJournalLine."Document Date" := NewDetailedGSTLedgerEntry."Posting Date";
+        GenJournalLine."Document No." := TransferShipmentLineNew."Document No.";
+        GenJournalLine."Document Type" := GenJournalLine."Document Type"::Invoice;
+        GenJournalLine."Account No." := InventoryPostingSetup."Unrealized Profit Account";
+        GenJournalLine."System-Created Entry" := true;
+        GenJournalLine.Amount := -1 * ((TransferLine.Amount - -TransCost) + NewDetailedGSTLedgerEntry."GST Amount");
+        GenJournalLine.Quantity := TransferShipmentLineNew.Quantity;
+        GenJournalLine."Shortcut Dimension 1 Code" := TransferShipmentLineNew."Shortcut Dimension 1 Code";
+        GenJournalLine."Shortcut Dimension 2 Code" := TransferShipmentLineNew."Shortcut Dimension 2 Code";
+        GenJournalLine."Dimension Set ID" := TransferShipmentLineNew."Dimension Set ID";
+        GenJournalLine.Description := StrSubstNo(TransferShipmentNoLbl, TransferShipmentLineNew."Document No.");
+        if GenJournalLine.Amount <> 0 then
+            RunGenJnlPostLine(GenJournalLine);
+
+        GenJournalLine.Init();
+        GenJournalLine."Posting Date" := NewDetailedGSTLedgerEntry."Posting Date";
+        GenJournalLine."Document Date" := NewDetailedGSTLedgerEntry."Posting Date";
+        GenJournalLine."Document No." := TransferShipmentLineNew."Document No.";
+        GenJournalLine."Document Type" := GenJournalLine."Document Type"::Invoice;
+        GenJournalLine."Account No." := InventoryPostingSetup."Unrealized Profit Account";
+        GenJournalLine."System-Created Entry" := true;
+        GenJournalLine.Amount := (TransferLine.Amount - -TransCost);
+        GenJournalLine."Shortcut Dimension 1 Code" := TransferShipmentLineNew."Shortcut Dimension 1 Code";
+        GenJournalLine."Shortcut Dimension 2 Code" := TransferShipmentLineNew."Shortcut Dimension 2 Code";
+        GenJournalLine."Dimension Set ID" := TransferShipmentLineNew."Dimension Set ID";
+        GenJournalLine.Description := STRSUBSTNO(TransferShipmentNoLbl, TransferShipmentLineNew."Document No.");
+        if GenJournalLine."Amount" <> 0 then
+            RunGenJnlPostLine(GenJournalLine);
+    end;
+
+    local procedure GetTransferCost(TransferShipmentLine: Record "Transfer Shipment Line"; var TransCost: Decimal)
+    var
+        ItemLedgerEntry: Record "Item Ledger Entry";
+    begin
+        ItemLedgerEntry.SetLoadFields("Document No.", "Document No.", "Location Code");
+        ItemLedgerEntry.SetRange("Document No.", TransferShipmentLine."Document No.");
+        ItemLedgerEntry.SetRange("Document Line No.", TransferShipmentLine."Line No.");
+        ItemLedgerEntry.SetRange("Location Code", TransferShipmentLine."Transfer-from Code");
+        ItemLedgerEntry.SetAutoCalcFields("Cost Amount (Actual)");
+        if ItemLedgerEntry.FindFirst() then
+            TransCost := -1 * ItemLedgerEntry."Cost Amount (Actual)";
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeUpdateGSTTrackingEntryFromTransferOrder(DocumentNo: Code[20]; ItemNo: Code[20]; DocumentLineNo: Integer; OrignalDocType: Enum "Original Doc Type"; var IsHandled: Boolean)
     begin
@@ -1299,6 +1490,56 @@ codeunit 18391 "GST Transfer Order Shipment"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeValidateTransferLineForAccountSetup(TransferHeader: Record "Transfer Header"; TransferShipmentHeader: Record "Transfer Shipment Header"; TempTransferBufferFinal: Record "Transfer Buffer" temporary; TempGSTPostingBufferFinal: Record "GST Posting Buffer" temporary; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertDetailedGSTEntryInfoUndoTransferShipment(OldDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; NewDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; TransferShipmentLineOld: Record "Transfer Shipment Line"; TransferShipmentLineNew: Record "Transfer Shipment Line"; IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertNewDetailedGSTEntryInfoUndoTransferShipment(var NewDetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info"; OldDetailedGSTLedgerEntryInfo: Record "Detailed GST Ledger Entry Info"; NewDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; OldDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; TransferShipmentLineNew: Record "Transfer Shipment Line"; TransferShipmentLineOld: Record "Transfer Shipment Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeFillDetailedGSTLedgerEntriesUndoTransferShipment(var TransferShipmentLineOld: Record "Transfer Shipment Line"; NewDocLineNo: Integer; IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnFindOldDetailedGSTLedgerEntry(var OldDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; TransferShipmentLineOld: Record "Transfer Shipment Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertNewDetailedGSTLedgerEntry(var NewDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; OldDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; TransferShipmentLineNew: Record "Transfer Shipment Line"; TransferShipmentLineOld: Record "Transfer Shipment Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertGSTLedgerEntryTransferUndoShipment(NewDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; TransferShipmentLineNew: Record "Transfer Shipment Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeInsertNewGSTLedgerEntryTransferUndoShipment(var GSTLedgerEntry: Record "GST Ledger Entry"; NewDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; TransferShipmentLineNew: Record "Transfer Shipment Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostUndoTransShipmentLineToGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; NewDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; TransferShipmentLineNew: Record "Transfer Shipment Line"; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeRunGenJnlPostUndoTransShipmentLine(var GenJournalLine: Record "Gen. Journal Line"; NewDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; TransferShipmentLineNew: Record "Transfer Shipment Line")
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforePostGeneralEntriesUndoShipment(var GenJournalLine: Record "Gen. Journal Line"; NewDetailedGSTLedgerEntry: Record "Detailed GST Ledger Entry"; TransferShipmentLineNew: Record "Transfer Shipment Line"; var IsHandled: Boolean)
     begin
     end;
 }

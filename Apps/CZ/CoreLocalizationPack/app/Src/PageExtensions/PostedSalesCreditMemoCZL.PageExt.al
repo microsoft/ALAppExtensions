@@ -5,6 +5,7 @@
 namespace Microsoft.Sales.History;
 
 using Microsoft.Finance.Currency;
+using Microsoft.Finance.GeneralLedger.Setup;
 
 pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit Memo"
 {
@@ -70,6 +71,21 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
         }
         addafter("Currency Code")
         {
+            field(AdditionalCurrencyCodeCZL; GeneralLedgerSetup.GetAdditionalCurrencyCode())
+            {
+                ApplicationArea = Suite;
+                Editable = false;
+                Caption = 'Additional Currency Code';
+                ToolTip = 'Specifies the exchange rate to be used if you post in an additional currency.';
+                Visible = AddCurrencyVisible;
+
+                trigger OnAssistEdit()
+                begin
+                    ChangeExchangeRate.SetParameter(GeneralLedgerSetup.GetAdditionalCurrencyCode(), Rec."Additional Currency Factor CZL", Rec."Posting Date");
+                    ChangeExchangeRate.Editable(false);
+                    ChangeExchangeRate.RunModal();
+                end;
+            }
             field("VAT Currency Code CZL"; Rec."VAT Currency Code CZL")
             {
                 ApplicationArea = Suite;
@@ -213,4 +229,14 @@ pageextension 11735 "Posted Sales Credit Memo CZL" extends "Posted Sales Credit 
             }
         }
     }
+
+    trigger OnOpenPage()
+    begin
+        AddCurrencyVisible := GeneralLedgerSetup.IsAdditionalCurrencyEnabled();
+    end;
+
+    var
+        GeneralLedgerSetup: Record "General Ledger Setup";
+        ChangeExchangeRate: Page "Change Exchange Rate";
+        AddCurrencyVisible: Boolean;
 }

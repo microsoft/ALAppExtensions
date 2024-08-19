@@ -349,7 +349,7 @@ codeunit 18243 "GST Journal Line Subscribers"
         PaymentMethod: Record "Payment Method";
         GLEntry: Record "G/L Entry";
     begin
-        if SalesHeader."GST Customer Type" <> SalesHeader."GST Customer Type"::" " then
+        if (SalesHeader."GST Customer Type" <> SalesHeader."GST Customer Type"::" ") and (SalesHeader."GST Customer Type" <> SalesHeader."GST Customer Type"::Export) then
             if SalesHeader."Payment Method Code" <> '' then
                 if PaymentMethod.Get(SalesHeader."Payment Method Code") then
                     if PaymentMethod."Bal. Account No." <> '' then begin
@@ -379,7 +379,7 @@ codeunit 18243 "GST Journal Line Subscribers"
         PaymentMethod: Record "Payment Method";
         GLEntry: Record "G/L Entry";
     begin
-        if SalesHeader."GST Customer Type" <> SalesHeader."GST Customer Type"::" " then
+        if (SalesHeader."GST Customer Type" <> SalesHeader."GST Customer Type"::" ") and (SalesHeader."GST Customer Type" <> SalesHeader."GST Customer Type"::Export) then
             if SalesHeader."Payment Method Code" <> '' then
                 if PaymentMethod.Get(SalesHeader."Payment Method Code") then
                     if PaymentMethod."Bal. Account No." <> '' then begin

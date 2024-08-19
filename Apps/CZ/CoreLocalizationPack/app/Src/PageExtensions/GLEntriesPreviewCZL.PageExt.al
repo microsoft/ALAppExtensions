@@ -19,14 +19,6 @@ pageextension 11760 "G/L Entries Preview CZL" extends "G/L Entries Preview"
                 Visible = VATDateEnabled;
             }
         }
-        modify("Debit Amount")
-        {
-            Visible = true;
-        }
-        modify("Credit Amount")
-        {
-            Visible = true;
-        }
         addafter("FA Entry No.")
         {
 

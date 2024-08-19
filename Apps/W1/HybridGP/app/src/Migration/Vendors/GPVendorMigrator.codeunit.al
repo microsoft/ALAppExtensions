@@ -24,7 +24,9 @@ codeunit 4022 "GP Vendor Migrator"
         TemporaryVendorHasOpenPOsAndAPTrxTxt: Label 'it has open POs and open AP transactions.';
         TemporaryVendorHasOpenPOsTxt: Label 'it has open POs.';
         TemporaryVendorHasOpenAPTrxTxt: Label 'it has open AP transactions.';
+        PhoneNumberContainsLettersMsg: Label 'Phone/Fax number skipped because it contains letters. Value=%1', Comment = '%1 is the phone/fax number.';
 
+#pragma warning disable AA0207
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Vendor Data Migration Facade", 'OnMigrateVendor', '', true, true)]
     internal procedure OnMigrateVendor(var Sender: Codeunit "Vendor Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
@@ -362,9 +364,8 @@ codeunit 4022 "GP Vendor Migrator"
             VendorDataMigrationFacade.CreatePostCodeIfNeeded(ZipCode, City, State, Country);
 
         VendorDataMigrationFacade.SetAddress(Address1, Address2, Country, ZipCode, City);
-        VendorDataMigrationFacade.SetPhoneNo(HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendor.PHNUMBR1));
-        VendorDataMigrationFacade.SetFaxNo(HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendor.FAXNUMBR));
         VendorDataMigrationFacade.SetContact(ContactName);
+        SetPhoneAndFaxNumberIfValid(GPVendor, VendorDataMigrationFacade);
 
         if GPCompanyAdditionalSettings.GetGLModuleEnabled() then begin
             VendorDataMigrationFacade.SetVendorPostingGroup(CopyStr(PostingGroupCodeTxt, 1, MaxStrLen(VendorPostingGroup."Code")));
@@ -396,6 +397,29 @@ codeunit 4022 "GP Vendor Migrator"
         end;
 
         VendorDataMigrationFacade.ModifyVendor(true);
+    end;
+
+    local procedure SetPhoneAndFaxNumberIfValid(var GPVendor: Record "GP Vendor"; var VendorDataMigrationFacade: Codeunit "Vendor Data Migration Facade")
+    var
+        GPMigrationWarnings: Record "GP Migration Warnings";
+        HelperFunctions: Codeunit "Helper Functions";
+        WarningContext: Text[50];
+    begin
+        WarningContext := CopyStr(GPVendor.VENDORID.Trim(), 1, MaxStrLen(GPMigrationWarnings.Context));
+        GPVendor.PHNUMBR1 := HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendor.PHNUMBR1);
+        GPVendor.FAXNUMBR := HelperFunctions.CleanGPPhoneOrFaxNumber(GPVendor.FAXNUMBR);
+
+        if GPVendor.PHNUMBR1 <> '' then
+            if not HelperFunctions.ContainsAlphaChars(GPVendor.PHNUMBR1) then
+                VendorDataMigrationFacade.SetPhoneNo(GPVendor.PHNUMBR1)
+            else
+                GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, WarningContext, StrSubstNo(PhoneNumberContainsLettersMsg, GPVendor.PHNUMBR1));
+
+        if GPVendor.FAXNUMBR <> '' then
+            if not HelperFunctions.ContainsAlphaChars(GPVendor.FAXNUMBR) then
+                VendorDataMigrationFacade.SetFaxNo(GPVendor.FAXNUMBR)
+            else
+                GPMigrationWarnings.InsertWarning(MigrationLogAreaTxt, WarningContext, StrSubstNo(PhoneNumberContainsLettersMsg, GPVendor.FAXNUMBR));
     end;
 
     local procedure MigrateVendorAddresses(GPVendor: Record "GP Vendor")

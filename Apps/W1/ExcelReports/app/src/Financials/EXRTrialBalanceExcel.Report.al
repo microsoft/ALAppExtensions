@@ -58,6 +58,7 @@ report 4405 "EXR Trial Balance Excel"
         }
         dataitem(TrialBalanceData; "EXR Trial Balance Buffer")
         {
+            RequestFilterFields = "Net Change", Balance;
             column(Account; "G/L Account No.") { IncludeCaption = true; }
             column(Dimension1Code; "Dimension 1 Code") { IncludeCaption = true; }
             column(Dimension2Code; "Dimension 2 Code") { IncludeCaption = true; }
@@ -109,10 +110,8 @@ report 4405 "EXR Trial Balance Excel"
         TrialBalance.InsertTrialBalanceReportData(GLAccounts, Dimension1, Dimension2, TrialBalanceData);
     end;
 
-
     protected var
         CompanyInformation: Record "Company Information";
         IndentedAccountName: Text;
 
 }
-
