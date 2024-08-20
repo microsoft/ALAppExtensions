@@ -9,36 +9,47 @@ table 6381 "Logiq Connection User Setup"
 
     fields
     {
-        field(1; "User ID"; Text[50])
+        field(1; "User ID"; Code[50])
         {
             Caption = 'User ID';
+            DataClassification = EndUserIdentifiableInformation;
             TableRelation = User."User Name";
+            ToolTip = 'Specifies the user ID field.';
         }
         field(21; Username; Text[100])
         {
             Caption = 'Username';
-            ToolTip = 'Specifies the user name.';
+            DataClassification = CustomerContent;
+            ToolTip = 'Specifies the user name field.';
         }
         field(22; Password; Guid)
         {
             Caption = 'Password';
+            DataClassification = CustomerContent;
+            ToolTip = 'Specifies the password field.';
         }
         field(23; "Access Token"; Guid)
         {
             Caption = 'Access Token';
+            DataClassification = SystemMetadata;
+            ToolTip = 'Specifies the access token field.';
         }
         field(24; "Access Token Expiration"; DateTime)
         {
             Caption = 'Access Token Expires At';
+            DataClassification = SystemMetadata;
             ToolTip = 'Specifies the access token expiration date.';
         }
         field(25; "Refresh Token"; Guid)
         {
             Caption = 'Refresh Token';
+            DataClassification = SystemMetadata;
+            ToolTip = 'Specifies the refresh token field.';
         }
         field(26; "Refresh Token Expiration"; DateTime)
         {
             Caption = 'Refresh Token Expires At';
+            DataClassification = SystemMetadata;
             ToolTip = 'Specifies the refresh token expiration date.';
         }
         field(31; "API Engine"; Enum "Logiq API Engine")
@@ -91,7 +102,7 @@ table 6381 "Logiq Connection User Setup"
     var
         LogiqAuth: Codeunit "Logiq Auth";
 
-    internal procedure FindUserSetup(UserID: Text[50])
+    internal procedure FindUserSetup(UserID: Code[50])
     begin
         if not Rec.Get(UserID) then begin
             Rec.Init();
