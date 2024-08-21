@@ -291,7 +291,12 @@
     },
     {
         "codeunitId": 139861 ,
-        "CodeunitName": "_Exclude_APIV2_ Tests",
+        "CodeunitName": "APIV2JobQueueLogEntriesE2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139862 ,
+        "CodeunitName": "APIV2JobQueueEntriesE2E",
         "Method": "*"
     },
     {
