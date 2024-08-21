@@ -290,6 +290,11 @@
         "Method": "*"
     },
     {
+        "codeunitId": 139861 ,
+        "CodeunitName": "_Exclude_APIV2_ Tests",
+        "Method": "*"
+    },
+    {
         "codeunitId": 139865,
         "CodeunitName": "APIV2 - Purch. Cr. Memos E2E",
         "Method": "*"
