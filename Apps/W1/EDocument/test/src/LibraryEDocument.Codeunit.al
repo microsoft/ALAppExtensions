@@ -261,10 +261,6 @@ codeunit 139629 "Library - E-Document"
         FilterPageBuilder.AddField(EDocumentDataItem, EDocService.Code, ServiceCode);
     end;
 
-
-
-
-
     local procedure CreateDynamicRequestPageEntity(TableID: Integer; RelatedTable: Integer): Code[20]
     var
         EntityName: Code[20];

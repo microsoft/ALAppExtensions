@@ -23,6 +23,7 @@ codeunit 7290 "Prepare Sales Line For Copying"
         if TempGlobalSalesLineAiSuggestion."Variant Code" <> '' then
             TempGlobalPreparedSalesLine.Validate("Variant Code", TempGlobalSalesLineAiSuggestion."Variant Code");
         TempGlobalPreparedSalesLine.Validate(Quantity, TempGlobalSalesLineAiSuggestion.Quantity);
+        TempGlobalPreparedSalesLine.Validate("Unit of Measure Code", TempGlobalSalesLineAiSuggestion."Unit of Measure Code");
         TempGlobalPreparedSalesLine.Insert();
     end;
 

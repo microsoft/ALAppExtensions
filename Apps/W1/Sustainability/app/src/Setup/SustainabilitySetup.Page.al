@@ -1,6 +1,7 @@
 namespace Microsoft.Sustainability.Setup;
 
 using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Journal;
 
 page 6221 "Sustainability Setup"
@@ -44,6 +45,14 @@ page 6221 "Sustainability Setup"
                 field("Enable Background Error Check"; Rec."Enable Background Error Check")
                 {
                     ToolTip = 'Specifies if the background error check of sustainability journal lines is enabled.';
+                }
+            }
+            group(Procurement)
+            {
+                Caption = 'Procurement';
+                field("Use Emissions In Purch. Doc."; Rec."Use Emissions In Purch. Doc.")
+                {
+                    ToolTip = 'Specifies the value of the Use Emissions In Purchase Documents field.';
                 }
             }
             group(Calculations)
@@ -122,11 +131,19 @@ page 6221 "Sustainability Setup"
                 RunObject = Page "Sustainability Jnl. Templates";
                 ToolTip = 'Set up templates for the journals that you use for sustainability reporting tasks. Templates allow you to work in a journal window that is designed for a specific purpose.';
             }
+            action(EmissionFees)
+            {
+                Caption = 'Emission Fees';
+                Image = CostBudget;
+                RunObject = Page "Emission Fees";
+                ToolTip = 'View or add Emission Fees.';
+            }
         }
         area(Promoted)
         {
             actionref(SustainAccountCategory_Promoted; SustainAccountCategory) { }
             actionref(SustainabilityJournalTemplate_Promoted; SustainabilityJournalTemplate) { }
+            actionref(EmissionFees_Promoted; EmissionFees) { }
         }
     }
     trigger OnOpenPage()

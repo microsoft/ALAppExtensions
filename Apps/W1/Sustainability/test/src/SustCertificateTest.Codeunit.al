@@ -15,8 +15,6 @@ codeunit 148187 "Sust. Certificate Test"
         CategoryCodeLbl: Label 'CategoryCode%1', Locked = true, Comment = '%1 = Number';
         SubcategoryCodeLbl: Label 'SubcategoryCode%1', Locked = true, Comment = '%1 = Number';
         ValueMustBeEqualErr: Label '%1 must be equal to %2 in the %3.', Comment = '%1 = Field Caption , %2 = Expected Value, %3 = Table Caption';
-        FieldShouldBeVisibleErr: Label '%1 should be visible in Page %2', Comment = '%1 = Field Caption , %2 = Page Caption';
-        FieldShouldNotBeVisibleErr: Label '%1 should not be visible in Page %2', Comment = '%1 = Field Caption , %2 = Page Caption';
         FieldShouldNotBeEnabledErr: Label '%1 should not be enabled in Page %2', Comment = '%1 = Field Caption , %2 = Page Caption';
         FieldShouldBeEnabledErr: Label '%1 should be enabled in Page %2', Comment = '%1 = Field Caption , %2 = Page Caption';
 
@@ -269,172 +267,6 @@ codeunit 148187 "Sust. Certificate Test"
             SustainabilityCertificate.Name,
             Vendor."Sust. Cert. Name",
             StrSubstNo(ValueMustBeEqualErr, Vendor.FieldCaption("Sust. Cert. Name"), SustainabilityCertificate.Name, Vendor.TableCaption()));
-    end;
-
-    [Test]
-    procedure VerifySustainabilityFieldsShouldBeVisibleInItemCard()
-    var
-        Item: Record Item;
-        SustCertificateArea: Record "Sust. Certificate Area";
-        SustCertificateStandard: Record "Sust. Certificate Standard";
-        SustainabilityCertificate: Record "Sustainability Certificate";
-        ItemCard: TestPage "Item Card";
-    begin
-        // [SCENARIO 496566] Verify Sustainability Fields should be visible in Item Card.
-        LibrarySustainability.CleanUpBeforeTesting();
-
-        // [GIVEN] Create Sustainability Certificate Area.
-        LibrarySustainability.InsertSustainabilityCertificateArea(SustCertificateArea);
-
-        // [GIVEN] Create Sustainability Certificate Standard.
-        LibrarySustainability.InsertSustainabilityCertificateStandard(SustCertificateStandard);
-
-        // [GIVEN] Create Sustainability Certificate.
-        LibrarySustainability.InsertSustainabilityCertificate(
-            SustainabilityCertificate,
-            SustCertificateArea."No.",
-            SustCertificateStandard."No.",
-            SustainabilityCertificate.Type::Item);
-
-        // [GIVEN] Create an Item.
-        LibraryInventory.CreateItem(Item);
-
-        // [GIVEN] Update "Type" and "Sust. Cert. No." in an Item.
-        Item.Validate(Type, Item.Type::Inventory);
-        Item.Validate("Sust. Cert. No.", SustainabilityCertificate."No.");
-        Item.Modify();
-
-        // [WHEN] Open Item Card.
-        ItemCard.OpenView();
-        ItemCard.GoToRecord(Item);
-
-        // [VERIFY] Verify Sustainability fields should be visible in an Item Card.
-        Assert.AreEqual(
-            true,
-            ItemCard."Sust. Cert. No.".Visible(),
-            StrSubstNo(FieldShouldBeVisibleErr, Item.FieldCaption("Sust. Cert. No."), Item.TableCaption()));
-        Assert.AreEqual(
-            true,
-            ItemCard."Sust. Cert. Name".Visible(),
-            StrSubstNo(FieldShouldBeVisibleErr, Item.FieldCaption("Sust. Cert. Name"), Item.TableCaption()));
-        Assert.AreEqual(
-            true,
-            ItemCard."GHG Credit".Visible(),
-            StrSubstNo(FieldShouldBeVisibleErr, Item.FieldCaption("GHG Credit"), Item.TableCaption()));
-        Assert.AreEqual(
-            true,
-            ItemCard."Carbon Credit Per UOM".Visible(),
-            StrSubstNo(FieldShouldBeVisibleErr, Item.FieldCaption("Carbon Credit Per UOM"), Item.TableCaption()));
-    end;
-
-    [Test]
-    procedure VerifySustainabilityFieldsShouldNotBeVisibleforTypeNonInventoryInItemCard()
-    var
-        Item: Record Item;
-        SustCertificateArea: Record "Sust. Certificate Area";
-        SustCertificateStandard: Record "Sust. Certificate Standard";
-        SustainabilityCertificate: Record "Sustainability Certificate";
-        ItemCard: TestPage "Item Card";
-    begin
-        // [SCENARIO 496566] Verify Sustainability Fields should not be visible for Type "Non-Inventory" in Item Card.
-        LibrarySustainability.CleanUpBeforeTesting();
-
-        // [GIVEN] Create Sustainability Certificate Area.
-        LibrarySustainability.InsertSustainabilityCertificateArea(SustCertificateArea);
-
-        // [GIVEN] Create Sustainability Certificate Standard.
-        LibrarySustainability.InsertSustainabilityCertificateStandard(SustCertificateStandard);
-
-        // [GIVEN] Create Sustainability Certificate.
-        LibrarySustainability.InsertSustainabilityCertificate(
-            SustainabilityCertificate,
-            SustCertificateArea."No.",
-            SustCertificateStandard."No.",
-            SustainabilityCertificate.Type::Item);
-
-        // [GIVEN] Create an Item.
-        LibraryInventory.CreateItem(Item);
-
-        // [GIVEN] Update "Type" and "Sust. Cert. No." in an Item.
-        Item.Validate(Type, Item.Type::"Non-Inventory");
-        Item.Modify();
-
-        // [WHEN] Open Item Card.
-        ItemCard.OpenView();
-        ItemCard.GoToRecord(Item);
-
-        // [VERIFY] Verify Sustainability fields should be not visible for Type "Non-Inventory" in an Item Card.
-        Assert.AreEqual(
-            false,
-            ItemCard."Sust. Cert. No.".Visible(),
-            StrSubstNo(FieldShouldNotBeVisibleErr, Item.FieldCaption("Sust. Cert. No."), Item.TableCaption()));
-        Assert.AreEqual(
-            false,
-            ItemCard."Sust. Cert. Name".Visible(),
-            StrSubstNo(FieldShouldNotBeVisibleErr, Item.FieldCaption("Sust. Cert. Name"), Item.TableCaption()));
-        Assert.AreEqual(
-            false,
-            ItemCard."GHG Credit".Visible(),
-            StrSubstNo(FieldShouldNotBeVisibleErr, Item.FieldCaption("GHG Credit"), Item.TableCaption()));
-        Assert.AreEqual(
-            false,
-            ItemCard."Carbon Credit Per UOM".Visible(),
-            StrSubstNo(FieldShouldNotBeVisibleErr, Item.FieldCaption("Carbon Credit Per UOM"), Item.TableCaption()));
-    end;
-
-    [Test]
-    procedure VerifySustainabilityFieldsShouldNotBeVisibleforTypeServiceInItemCard()
-    var
-        Item: Record Item;
-        SustCertificateArea: Record "Sust. Certificate Area";
-        SustCertificateStandard: Record "Sust. Certificate Standard";
-        SustainabilityCertificate: Record "Sustainability Certificate";
-        ItemCard: TestPage "Item Card";
-    begin
-        // [SCENARIO 496566] Verify Sustainability Fields should not be visible for Type "Service" in Item Card.
-        LibrarySustainability.CleanUpBeforeTesting();
-
-        // [GIVEN] Create Sustainability Certificate Area.
-        LibrarySustainability.InsertSustainabilityCertificateArea(SustCertificateArea);
-
-        // [GIVEN] Create Sustainability Certificate Standard.
-        LibrarySustainability.InsertSustainabilityCertificateStandard(SustCertificateStandard);
-
-        // [GIVEN] Create Sustainability Certificate.
-        LibrarySustainability.InsertSustainabilityCertificate(
-            SustainabilityCertificate,
-            SustCertificateArea."No.",
-            SustCertificateStandard."No.",
-            SustainabilityCertificate.Type::Item);
-
-        // [GIVEN] Create an Item.
-        LibraryInventory.CreateItem(Item);
-
-        // [GIVEN] Update "Type" and "Sust. Cert. No." in an Item.
-        Item.Validate(Type, Item.Type::Service);
-        Item.Modify();
-
-        // [WHEN] Open Item Card.
-        ItemCard.OpenView();
-        ItemCard.GoToRecord(Item);
-
-        // [VERIFY] Verify Sustainability fields should be not visible for Type "Service" in an Item Card.
-        Assert.AreEqual(
-            false,
-            ItemCard."Sust. Cert. No.".Visible(),
-            StrSubstNo(FieldShouldNotBeVisibleErr, Item.FieldCaption("Sust. Cert. No."), Item.TableCaption()));
-        Assert.AreEqual(
-            false,
-            ItemCard."Sust. Cert. Name".Visible(),
-            StrSubstNo(FieldShouldNotBeVisibleErr, Item.FieldCaption("Sust. Cert. Name"), Item.TableCaption()));
-        Assert.AreEqual(
-            false,
-            ItemCard."GHG Credit".Visible(),
-            StrSubstNo(FieldShouldNotBeVisibleErr, Item.FieldCaption("GHG Credit"), Item.TableCaption()));
-        Assert.AreEqual(
-            false,
-            ItemCard."Carbon Credit Per UOM".Visible(),
-            StrSubstNo(FieldShouldNotBeVisibleErr, Item.FieldCaption("Carbon Credit Per UOM"), Item.TableCaption()));
     end;
 
     [Test]
@@ -714,9 +546,6 @@ codeunit 148187 "Sust. Certificate Test"
         CategoryCode: Code[20];
         SubcategoryCode: Code[20];
         AccountCode: Code[20];
-        EmissionCO2PerUnit: Decimal;
-        EmissionCH4PerUnit: Decimal;
-        EmissionN2OPerUnit: Decimal;
         PostedInvNo: Code[20];
     begin
         // [SCENARIO 496566] Verify Sustainability Ledger Entry should be created When "GHG Credit" is enabled in Item.
@@ -746,11 +575,6 @@ codeunit 148187 "Sust. Certificate Test"
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode);
 
-        // [GIVEN] Generate Emission per Unit.
-        EmissionCO2PerUnit := LibraryRandom.RandInt(5);
-        EmissionCH4PerUnit := LibraryRandom.RandInt(5);
-        EmissionN2OPerUnit := LibraryRandom.RandInt(5);
-
         // [GIVEN] Create a Purchase Header.
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
         PurchaseHeader.SetHideValidationDialog(true);
@@ -767,9 +591,6 @@ codeunit 148187 "Sust. Certificate Test"
         // [GIVEN] Update Sustainability Account No.,Emission CO2 Per Unit,Emission CH4 Per Unit,Emission N2O Per Unit.
         PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
         PurchaseLine.Validate("Sust. Account No.", AccountCode);
-        PurchaseLine.Validate("Emission CO2 Per Unit", EmissionCO2PerUnit);
-        PurchaseLine.Validate("Emission CH4 Per Unit", EmissionCH4PerUnit);
-        PurchaseLine.Validate("Emission N2O Per Unit", EmissionN2OPerUnit);
         PurchaseLine.Modify();
 
         // [WHEN] Post a Purchase Document.
@@ -777,7 +598,7 @@ codeunit 148187 "Sust. Certificate Test"
 
         // [VERIFY] Verify Sustainability Ledger Entry should be created When "GHG Credit" is enabled in Item.
         SustainabilityLedgerEntry.SetRange("Document No.", PostedInvNo);
-        Assert.RecordCount(SustainabilityLedgerEntry, 2);
+        Assert.RecordCount(SustainabilityLedgerEntry, 1);
 
         SustainabilityLedgerEntry.SetRange("Document Type", SustainabilityLedgerEntry."Document Type"::"GHG Credit");
         SustainabilityLedgerEntry.FindFirst();
@@ -798,38 +619,13 @@ codeunit 148187 "Sust. Certificate Test"
                 0,
                 SustainabilityLedgerEntry.TableCaption()));
         Assert.AreEqual(
-            -(PurchaseLine.Quantity * Item."Carbon Credit Per UOM"),
+            -(PurchaseLine."Qty. per Unit of Measure" * Item."Carbon Credit Per UOM"),
             SustainabilityLedgerEntry."Emission CO2",
             StrSubstNo(
                 ValueMustBeEqualErr,
                 SustainabilityLedgerEntry.FieldCaption("Emission CO2"),
-                -(PurchaseLine.Quantity * Item."Carbon Credit Per UOM"),
+                -(PurchaseLine."Qty. per Unit of Measure" * Item."Carbon Credit Per UOM"),
                 SustainabilityLedgerEntry.TableCaption()));
-        Assert.AreEqual(
-            -PurchaseLine."Line Amount",
-            SustainabilityLedgerEntry."Emission Fee",
-            StrSubstNo(
-                ValueMustBeEqualErr,
-                SustainabilityLedgerEntry.FieldCaption("Emission Fee"),
-                -PurchaseLine."Line Amount",
-                SustainabilityLedgerEntry.TableCaption()));
-
-        SustainabilityLedgerEntry.Reset();
-        SustainabilityLedgerEntry.SetRange("Document No.", PostedInvNo);
-        SustainabilityLedgerEntry.SetRange("Document Type", SustainabilityLedgerEntry."Document Type"::Invoice);
-        SustainabilityLedgerEntry.FindFirst();
-        Assert.AreEqual(
-            EmissionCO2PerUnit,
-            SustainabilityLedgerEntry."Emission CO2",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CO2"), EmissionCO2PerUnit, SustainabilityLedgerEntry.TableCaption()));
-        Assert.AreEqual(
-            EmissionCH4PerUnit,
-            SustainabilityLedgerEntry."Emission CH4",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission CH4"), EmissionCO2PerUnit, SustainabilityLedgerEntry.TableCaption()));
-        Assert.AreEqual(
-            EmissionN2OPerUnit,
-            SustainabilityLedgerEntry."Emission N2O",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission N2O"), EmissionN2OPerUnit, SustainabilityLedgerEntry.TableCaption()));
     end;
 
     [Test]
@@ -849,8 +645,6 @@ codeunit 148187 "Sust. Certificate Test"
         SubcategoryCode: Code[20];
         AccountCode: Code[20];
         EmissionCO2PerUnit: Decimal;
-        EmissionCH4PerUnit: Decimal;
-        EmissionN2OPerUnit: Decimal;
     begin
         // [SCENARIO 496566] Verify Sustainability Ledger entry should be Kocked Off when the Cancel Credit Memo is posted If "GHG Credit" is enabled in Item.
         LibrarySustainability.CleanUpBeforeTesting();
@@ -887,8 +681,6 @@ codeunit 148187 "Sust. Certificate Test"
 
         // [GIVEN] Generate Emission per Unit.
         EmissionCO2PerUnit := LibraryRandom.RandInt(5);
-        EmissionCH4PerUnit := LibraryRandom.RandInt(5);
-        EmissionN2OPerUnit := LibraryRandom.RandInt(5);
 
         // [GIVEN] Create a Purchase Header.
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
@@ -905,8 +697,8 @@ codeunit 148187 "Sust. Certificate Test"
         PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
         PurchaseLine.Validate("Sust. Account No.", AccountCode);
         PurchaseLine.Validate("Emission CO2 Per Unit", EmissionCO2PerUnit);
-        PurchaseLine.Validate("Emission CH4 Per Unit", EmissionCH4PerUnit);
-        PurchaseLine.Validate("Emission N2O Per Unit", EmissionN2OPerUnit);
+        PurchaseLine.Validate("Emission CH4 Per Unit", 0);
+        PurchaseLine.Validate("Emission N2O Per Unit", 0);
         PurchaseLine.Modify();
 
         // [GIVEN] Update Reason Code in Purchase Header.
@@ -917,12 +709,9 @@ codeunit 148187 "Sust. Certificate Test"
 
         // [VERIFY] Verify Sustainability Ledger entry should be Kocked Off when the Cancel Credit Memo is posted If "GHG Credit" is enabled in Item.
         SustainabilityLedgerEntry.SetRange("Account No.", AccountCode);
-        SustainabilityLedgerEntry.CalcSums("Emission CO2", "Emission CH4", "Emission N2O", "Emission Fee");
-        Assert.RecordCount(SustainabilityLedgerEntry, 4);
-        Assert.AreEqual(
-            0,
-            SustainabilityLedgerEntry."Emission Fee",
-            StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Emission Fee"), 0, SustainabilityLedgerEntry.TableCaption()));
+        SustainabilityLedgerEntry.CalcSums("Emission CO2", "Emission CH4", "Emission N2O");
+        Assert.RecordCount(SustainabilityLedgerEntry, 2);
+
         Assert.AreEqual(
            0,
            SustainabilityLedgerEntry."Emission CO2",
@@ -960,37 +749,6 @@ codeunit 148187 "Sust. Certificate Test"
         LibrarySustainability.InsertAccountCategory(
             CategoryCode, CategoryCode, Enum::"Emission Scope"::"Scope 1", Enum::"Calculation Foundation"::"Fuel/Electricity",
             true, true, true, '', false);
-    end;
-
-    local procedure CreateAndPostPurchaseOrderWithSustAccount(AccountCode: Code[20]; PostingDate: Date; ItemNo: Code[20]; EmissionCO2PerUnit: Decimal; EmissionCH4PerUnit: Decimal; EmissionN2OPerUnit: Decimal): Code[2]
-    var
-        PurchaseHeader: Record "Purchase Header";
-        PurchaseLine: Record "Purchase Line";
-    begin
-        // Create a Purchase Header.
-        LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
-        PurchaseHeader.SetHideValidationDialog(true);
-        PurchaseHeader.Validate("Posting Date", PostingDate);
-        PurchaseHeader.Modify();
-
-        // Create a Purchase Line.
-        LibraryPurchase.CreatePurchaseLine(
-            PurchaseLine,
-            PurchaseHeader,
-            "Purchase Line Type"::Item,
-            ItemNo,
-            LibraryRandom.RandInt(10));
-
-        // Update Sustainability Account No.,Emission CO2 Per Unit,Emission CH4 Per Unit,Emission N2O Per Unit.
-        PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
-        PurchaseLine.Validate("Sust. Account No.", AccountCode);
-        PurchaseLine.Validate("Emission CO2 Per Unit", EmissionCO2PerUnit);
-        PurchaseLine.Validate("Emission CH4 Per Unit", EmissionCH4PerUnit);
-        PurchaseLine.Validate("Emission N2O Per Unit", EmissionN2OPerUnit);
-        PurchaseLine.Modify();
-
-        // Post a Purchase Document.
-        exit(LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true));
     end;
 
     local procedure UpdateReasonCodeinPurchaseHeader(var PurchaseHeader: Record "Purchase Header")

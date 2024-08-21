@@ -405,21 +405,6 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
         Caption = 'Get Order Transactions';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL OrderTransactions";
     }
-    value(79; MetafieldSet)
-    {
-        Caption = 'MetfieldSet';
-        Implementation = "Shpfy IGraphQL" = "Shpfy GQL MetafieldsSet";
-    }
-    value(80; ProductMetafieldIds)
-    {
-        Caption = 'Product Metafield Ids';
-        Implementation = "Shpfy IGraphQL" = "Shpfy GQL ProductMetafieldIds";
-    }
-    value(81; VariantMetafieldIds)
-    {
-        Caption = 'Variant Metafield Ids';
-        Implementation = "Shpfy IGraphQL" = "Shpfy GQL VariantMetafieldIds";
-    }
     value(85; ProductVariantDelete)
     {
         Caption = 'Product Variant Delete';
@@ -464,5 +449,20 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
     {
         Caption = 'Get Transl Resource';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL TranslResource";
+    }
+    value(94; MetafieldSet)
+    {
+        Caption = 'MetfieldSet';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL MetafieldsSet";
+    }
+    value(95; ProductMetafieldIds)
+    {
+        Caption = 'Product Metafield Ids';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL ProductMetafieldIds";
+    }
+    value(96; VariantMetafieldIds)
+    {
+        Caption = 'Variant Metafield Ids';
+        Implementation = "Shpfy IGraphQL" = "Shpfy GQL VariantMetafieldIds";
     }
 }

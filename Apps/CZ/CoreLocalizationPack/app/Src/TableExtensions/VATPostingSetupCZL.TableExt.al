@@ -142,6 +142,18 @@ tableextension 11738 "VAT Posting Setup CZL" extends "VAT Posting Setup"
             Error(NotUsedNonDeductibleVATPctErr);
     end;
 
+    internal procedure UpdateAllowNonDeductibleVAT()
+    begin
+        case true of
+            "Non-Deductible VAT %" = 0:
+                "Allow Non-Deductible VAT" := "Allow Non-Deductible VAT"::"Do Not Allow";
+            "Non-Deductible VAT %" = 100:
+                "Allow Non-Deductible VAT" := "Allow Non-Deductible VAT"::"Do not apply CZL";
+            else
+                "Allow Non-Deductible VAT" := "Allow Non-Deductible VAT"::"Allow";
+        end;
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnBeforeGetLCYCorrRoundingAccCZL(var VATPostingSetup: Record "VAT Posting Setup"; var VATLCYCorrRoundingAccNo: Code[20]; var IsHandled: Boolean)
     begin

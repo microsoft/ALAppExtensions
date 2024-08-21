@@ -7,6 +7,7 @@ page 6237 "Emission Scope Ratio Chart"
 {
     PageType = CardPart;
     SourceTable = "Business Chart Buffer";
+    Caption = 'CO2 Emission Ratio Chart';
 
     layout
     {
@@ -34,7 +35,7 @@ page 6237 "Emission Scope Ratio Chart"
 
     local procedure UpdateChartData()
     begin
-        SustainabilityChartMgmt.GenerateDate(Rec);
+        SustainabilityChartMgmt.GenerateChartByEmissionGas(Rec, 'CO2');
         Rec.UpdateChart(CurrPage.BusinessChart);
     end;
 }

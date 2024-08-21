@@ -1,0 +1,52 @@
+{
+  "id": "4807959b-777e-410d-9c90-e3c38e01730e",
+  "name": "Dynamics BC Excel Reports Tests",
+  "publisher": "Microsoft",
+  "brief": "Tests fot the Dynamics Business Central Excel Reports extension.",
+  "description": "Tests fot the Dynamics Business Central Excel Reports extension.",
+  "version": "25.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "dependencies": [
+    {
+      "id": "cc11c22e-5ca3-423f-8804-88cac6d91983",
+      "name": "Dynamics BC Excel Reports",
+      "publisher": "Microsoft",
+      "version": "25.0.0.0"
+    },
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "25.0.0.0"
+    },
+    {
+      "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+      "publisher": "Microsoft",
+      "name": "Library Variable Storage",
+      "version": "25.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "25.0.0.0",
+  "application": "25.0.0.0",
+  "idRanges": [
+    {
+      "from": 139543,
+      "to": 139547
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "Cloud",
+  "features": [
+    "TranslationFile"
+  ]
+}

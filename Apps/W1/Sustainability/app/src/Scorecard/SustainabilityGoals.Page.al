@@ -48,6 +48,18 @@ page 6234 "Sustainability Goals"
                     ShowMandatory = true;
                     ToolTip = 'Specifies the value of the Owner field.';
                 }
+                field("Country/Region Code"; Rec."Country/Region Code")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Country/Region Code';
+                    ToolTip = 'Specifies the value of the Country/Region Code field.';
+                }
+                field("Responsibility Center"; Rec."Responsibility Center")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Responsibility Center';
+                    ToolTip = 'Specifies the value of the Responsibility Center field.';
+                }
                 field("Start Date"; Rec."Start Date")
                 {
                     ApplicationArea = Basic, Suite;
@@ -65,6 +77,30 @@ page 6234 "Sustainability Goals"
                     ApplicationArea = Basic, Suite;
                     Caption = 'End Date';
                     ToolTip = 'Specifies the value of the End Date field.';
+
+                    trigger OnValidate()
+                    begin
+                        FormatLine();
+                        CurrPage.Update(true);
+                    end;
+                }
+                field("Baseline Start Date"; Rec."Baseline Start Date")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Baseline Start Date';
+                    ToolTip = 'Specifies the value of the Baseline Start Date field.';
+
+                    trigger OnValidate()
+                    begin
+                        FormatLine();
+                        CurrPage.Update(true);
+                    end;
+                }
+                field("Baseline End Date"; Rec."Baseline End Date")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Baseline End Date';
+                    ToolTip = 'Specifies the value of the Baseline End Date field.';
 
                     trigger OnValidate()
                     begin
@@ -176,7 +212,7 @@ page 6234 "Sustainability Goals"
 
                 trigger OnAction()
                 begin
-                    ApplyOwnerFilter(Rec);
+                    Rec.ApplyOwnerFilter(Rec);
                     CurrPage.Update(false);
                 end;
             }
@@ -192,7 +228,7 @@ page 6234 "Sustainability Goals"
 
                 trigger OnAction()
                 begin
-                    RemoveOwnerFilter(Rec);
+                    Rec.RemoveOwnerFilter(Rec);
                     CurrPage.Update(false);
                 end;
             }
@@ -223,16 +259,25 @@ page 6234 "Sustainability Goals"
 
     local procedure FormatLine()
     var
-        DateNotification: Notification;
+        CurrentPeriodDateNotification: Notification;
+        BaselinePeriodDateNotification: Notification;
     begin
         CanEditScorecard := not CalledFromScorecard;
 
         if Rec.GetFilter("Current Period Filter") <> '' then begin
             Rec.SetFilter("Current Period Filter", '');
-            DateNotification.Id := CreateGuid();
-            DateNotification.Message := StrSubstNo(CannotApplyCurrentPeriodFilterFromPageMsg, Rec.FieldCaption("Start Date"), Rec.FieldCaption("End Date"));
-            DateNotification.Scope := NotificationScope::LocalScope;
-            DateNotification.Send();
+            CurrentPeriodDateNotification.Id := CreateGuid();
+            CurrentPeriodDateNotification.Message := StrSubstNo(CannotApplyCurrentPeriodFilterFromPageMsg, Rec.FieldCaption("Start Date"), Rec.FieldCaption("End Date"));
+            CurrentPeriodDateNotification.Scope := NotificationScope::LocalScope;
+            CurrentPeriodDateNotification.Send();
+        end;
+
+        if Rec.GetFilter("Baseline Period") <> '' then begin
+            Rec.SetFilter("Baseline Period", '');
+            BaselinePeriodDateNotification.Id := CreateGuid();
+            BaselinePeriodDateNotification.Message := StrSubstNo(CannotApplyCurrentPeriodFilterFromPageMsg, Rec.FieldCaption("Baseline Start Date"), Rec.FieldCaption("Baseline End Date"));
+            BaselinePeriodDateNotification.Scope := NotificationScope::LocalScope;
+            BaselinePeriodDateNotification.Send();
         end;
 
         Rec.UpdateCurrentEmissionValues(Rec);

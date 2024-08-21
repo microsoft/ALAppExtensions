@@ -150,14 +150,11 @@ table 6216 "Sustainability Ledger Entry"
         {
             Caption = 'Dimension Set ID';
             TableRelation = "Dimension Set Entry";
+
             trigger OnLookup()
             begin
                 ShowDimensions();
             end;
-        }
-        field(27; "Emission Fee"; Decimal)
-        {
-            Caption = 'Emission Fee';
         }
         field(28; "Global Dimension 1 Code"; Code[20])
         {
@@ -180,6 +177,18 @@ table 6216 "Sustainability Ledger Entry"
         {
             Caption = 'Reason Code';
             TableRelation = "Reason Code";
+        }
+        field(32; "CO2e Emission"; Decimal)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'CO2e Emission';
+            DecimalPlaces = 2 : 5;
+        }
+        field(33; "Carbon Fee"; Decimal)
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Carbon Fee';
+            DecimalPlaces = 2 : 5;
         }
         field(5146; "Emission Scope"; Enum "Emission Scope")
         {

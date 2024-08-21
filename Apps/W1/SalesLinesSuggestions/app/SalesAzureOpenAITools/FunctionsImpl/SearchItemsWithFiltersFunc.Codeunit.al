@@ -49,6 +49,7 @@ codeunit 7291 "Search Items With Filters Func" implements "AOAI Function"
         TempSalesLineAiSuggestionFromDocLookup: Record "Sales Line AI Suggestions" temporary;
         TempSalesLineAiSuggestionFromItemSearch: Record "Sales Line AI Suggestions" temporary;
         TempSalesLineAiSuggestionFiltered: Record "Sales Line AI Suggestions" temporary;
+        TempSalesLineEmpty: Record "Sales Line AI Suggestions" temporary;
         Item: Record Item;
         SalesLineAISuggestionImpl: Codeunit "Sales Lines Suggestions Impl.";
         FeatureTelemetry: Codeunit "Feature Telemetry";
@@ -65,9 +66,17 @@ codeunit 7291 "Search Items With Filters Func" implements "AOAI Function"
         EndDateTxt: Text;
         ItemNoFilter: Text;
         SearchIntentLbl: Label 'Add products to a sales order.', Locked = true;
+        DocumentFound: Boolean;
     begin
+        // Document lookup
         if Arguments.Get('results', ItemsResults) then begin
             ItemResultsArray := ItemsResults.AsArray();
+
+            if ItemResultsArray.Count() > 1 then begin
+                FeatureTelemetry.LogError('0000NG7', SalesLineAISuggestionImpl.GetFeatureName(), SearchWithFiltersLbl, 'Multiple documents found', '', FeatureTelemetryCD);
+                NotificationManager.SendNotification(SalesLineAISuggestionImpl.GetCopyFromMultipleDocsMsg());
+                exit(TempSalesLineEmpty);
+            end;
 
             // Find document information from user input
             if GetDocumentFromUserInput(DocumentNo, StartDateTxt, EndDateTxt, DocLookupType, ItemResultsArray) then begin
@@ -77,67 +86,73 @@ codeunit 7291 "Search Items With Filters Func" implements "AOAI Function"
                 // Search for the sales document in the system
                 if SearchSalesDocument(TempSalesLineAiSuggestionFromDocLookup, DocumentLookupSubType, Format(SourceDocumentRecordId), DocumentNo, StartDateTxt, EndDateTxt) then begin
                     FeatureTelemetry.LogUsage('0000N3I', SalesLineAISuggestionImpl.GetFeatureName(), SearchWithFiltersLbl, FeatureTelemetryCD);
-                    if TempSalesLineAiSuggestionFromDocLookup.IsEmpty() then
-                        NotificationManager.SendNotification(SalesLineAISuggestionImpl.GetNoSalesLinesSuggestionsMsg());
-                end
-                else begin
-                    FeatureTelemetry.LogError('0000N3F', SalesLineAISuggestionImpl.GetFeatureName(), SearchWithFiltersLbl, 'Document lookup resulted in an error', GetLastErrorCallStack(), FeatureTelemetryCD);
-                    NotificationManager.SendNotification(GetLastErrorText());
-                    exit(TempSalesLineAiSuggestionFromDocLookup);
+                    if not TempSalesLineAiSuggestionFromDocLookup.IsEmpty() then
+                        DocumentFound := true;
                 end;
+            end;
+
+            if not DocumentFound then begin
+                FeatureTelemetry.LogError('0000N3F', SalesLineAISuggestionImpl.GetFeatureName(), SearchWithFiltersLbl, 'Document lookup failed', GetLastErrorCallStack(), FeatureTelemetryCD);
+                NotificationManager.SendNotification(GetLastErrorText());
+                exit(TempSalesLineEmpty);
             end;
         end;
 
         // Item search
         if Arguments.Get('search_items', ItemsResults) then begin
-            FeatureTelemetry.LogUsage('0000N3J', SalesLineAISuggestionImpl.GetFeatureName(), SearchWithFiltersLbl + ': Item Search');
-
             ItemResultsArray := ItemsResults.AsArray();
+            if ItemResultsArray.Count() > 0 then begin
+                FeatureTelemetry.LogUsage('0000N3J', SalesLineAISuggestionImpl.GetFeatureName(), SearchWithFiltersLbl + ': Item Search');
 
-            // If document lookup returned results, filter items based on the document
-            if TempSalesLineAiSuggestionFromDocLookup.FindSet() then begin
-                repeat
-                    if Item.Get(TempSalesLineAiSuggestionFromDocLookup."No.") then
-                        Item.Mark(true);
-                until TempSalesLineAiSuggestionFromDocLookup.Next() = 0;
-                Item.MarkedOnly(true);
-                ItemNoFilter := SelectionFilterManagement.GetSelectionFilterForItem(Item);
-            end;
-
-            if SearchUtility.SearchMultiple(ItemResultsArray, SearchStyle, SearchIntentLbl, SearchQuery, 1, 25, false, true, TempSalesLineAiSuggestionFromItemSearch, ItemNoFilter) then begin
-                if TempSalesLineAiSuggestionFromItemSearch.IsEmpty() then begin
-                    FeatureTelemetry.LogError('0000N3G', SalesLineAISuggestionImpl.GetFeatureName(), SearchWithFiltersLbl, 'Item search returned no items.');
-                    NotificationManager.SendNotification(SalesLineAISuggestionImpl.GetNoSalesLinesSuggestionsMsg());
-                    exit(TempSalesLineAiSuggestionFromDocLookup);
+                // If document found, filter items based on the document
+                if DocumentFound then begin
+                    TempSalesLineAiSuggestionFromDocLookup.FindSet();
+                    repeat
+                        if Item.Get(TempSalesLineAiSuggestionFromDocLookup."No.") then
+                            Item.Mark(true);
+                    until TempSalesLineAiSuggestionFromDocLookup.Next() = 0;
+                    Item.MarkedOnly(true);
+                    ItemNoFilter := SelectionFilterManagement.GetSelectionFilterForItem(Item);
                 end;
 
-                // If document lookup did not return any results, return the items from the item search
-                if TempSalesLineAiSuggestionFromDocLookup.IsEmpty() then
-                    exit(TempSalesLineAiSuggestionFromItemSearch);
+                if SearchUtility.SearchMultiple(ItemResultsArray, SearchStyle, SearchIntentLbl, SearchQuery, 1, 25, false, true, TempSalesLineAiSuggestionFromItemSearch, ItemNoFilter) then begin
+                    if TempSalesLineAiSuggestionFromItemSearch.IsEmpty() then begin
+                        FeatureTelemetry.LogError('0000N3G', SalesLineAISuggestionImpl.GetFeatureName(), SearchWithFiltersLbl, 'Item search returned no items.');
+                        NotificationManager.SendNotification(SalesLineAISuggestionImpl.GetItemNotFoundMsg());
+                        exit(TempSalesLineEmpty);
+                    end;
 
-                // If document lookup returned results, find intersection of items from document and item search
-                TempSalesLineAiSuggestionFromItemSearch.FindSet();
-                repeat
-                    TempSalesLineAiSuggestionFromDocLookup.SetRange("No.", TempSalesLineAiSuggestionFromItemSearch."No.");
-                    if TempSalesLineAiSuggestionFromDocLookup.FindSet() then
+                    // If document lookup returned results, find intersection of items from document and item search,
+                    // otherwise return items from item search
+                    if DocumentFound then begin
+                        TempSalesLineAiSuggestionFromItemSearch.FindSet();
                         repeat
-                            TempSalesLineAiSuggestionFiltered.Init();
-                            TempSalesLineAiSuggestionFiltered.Copy(TempSalesLineAiSuggestionFromDocLookup);
-                            TempSalesLineAiSuggestionFiltered.Quantity := TempSalesLineAiSuggestionFromDocLookup.Quantity;
-                            TempSalesLineAiSuggestionFiltered.Insert();
-                        until TempSalesLineAiSuggestionFromDocLookup.Next() = 0;
-                until TempSalesLineAiSuggestionFromItemSearch.Next() = 0;
-                TempSalesLineAiSuggestionFiltered.Reset();
-                FeatureTelemetry.LogUsage('0000N3K', SalesLineAISuggestionImpl.GetFeatureName(), SearchWithFiltersLbl + ': Item Search inside document returned items.');
-                exit(TempSalesLineAiSuggestionFiltered);
-            end
-            else begin
-                FeatureTelemetry.LogError('0000N3H', SalesLineAISuggestionImpl.GetFeatureName(), SearchWithFiltersLbl, 'Item search failed.');
-                NotificationManager.SendNotification(SalesLineAISuggestionImpl.GetChatCompletionResponseErr());
+                            TempSalesLineAiSuggestionFromDocLookup.SetRange("No.", TempSalesLineAiSuggestionFromItemSearch."No.");
+                            if TempSalesLineAiSuggestionFromDocLookup.FindSet() then
+                                repeat
+                                    TempSalesLineAiSuggestionFiltered.Init();
+                                    TempSalesLineAiSuggestionFiltered.Copy(TempSalesLineAiSuggestionFromDocLookup);
+                                    TempSalesLineAiSuggestionFiltered.Quantity := TempSalesLineAiSuggestionFromDocLookup.Quantity;
+                                    TempSalesLineAiSuggestionFiltered.Insert();
+                                until TempSalesLineAiSuggestionFromDocLookup.Next() = 0;
+                        until TempSalesLineAiSuggestionFromItemSearch.Next() = 0;
+                        TempSalesLineAiSuggestionFiltered.Reset();
+                        FeatureTelemetry.LogUsage('0000N3K', SalesLineAISuggestionImpl.GetFeatureName(), SearchWithFiltersLbl + ': Item Search inside document returned items.');
+                        exit(TempSalesLineAiSuggestionFiltered);
+                    end else
+                        exit(TempSalesLineAiSuggestionFromItemSearch);
+                end
+                else begin
+                    FeatureTelemetry.LogError('0000N3H', SalesLineAISuggestionImpl.GetFeatureName(), SearchWithFiltersLbl, 'Item search failed.');
+                    NotificationManager.SendNotification(SalesLineAISuggestionImpl.GetChatCompletionResponseErr());
+                end;
             end;
         end;
 
-        exit(TempSalesLineAiSuggestionFromDocLookup);
+        if DocumentFound then
+            exit(TempSalesLineAiSuggestionFromDocLookup)
+        else
+            exit(TempSalesLineEmpty);
     end;
 
     procedure GetName(): Text
@@ -199,11 +214,10 @@ codeunit 7291 "Search Items With Filters Func" implements "AOAI Function"
     [TryFunction]
     local procedure GetDocumentFromUserInput(var DocumentNo: Text; var StartDate: Text; var EndDate: Text; var DocLookupSubType: Enum "Document Lookup Types"; ItemResultsArray: JsonArray)
     var
+        SalesLineAISuggestionImpl: Codeunit "Sales Lines Suggestions Impl.";
         JsonItem: JsonToken;
         DocumentNoToken: JsonToken;
         DocumentTypeToken: JsonToken;
-        UnknownDocTypeErr: Label 'Copilot does not support the specified document type. Please rephrase the description';
-        NoDocumentFoundErr: Label 'Copilot could not find the document. Please rephrase the description';
     begin
         if ItemResultsArray.Get(0, JsonItem) then
             if JsonItem.AsObject().Get('document_type', DocumentTypeToken) then begin
@@ -219,7 +233,7 @@ codeunit 7291 "Search Items With Filters Func" implements "AOAI Function"
                     'sales_blanket_order':
                         DocLookupSubType := DocLookupSubType::"Blanket Sales Order";
                     else
-                        Error(UnknownDocTypeErr);
+                        Error(SalesLineAISuggestionImpl.GetUnknownDocTypeMsg());
                 end;
 
                 if JsonItem.AsObject().Get('document_number', DocumentNoToken) then
@@ -231,6 +245,6 @@ codeunit 7291 "Search Items With Filters Func" implements "AOAI Function"
                 if JsonItem.AsObject().Get('end_date', DocumentTypeToken) then
                     EndDate := DocumentTypeToken.AsValue().AsText();
             end else
-                Error(NoDocumentFoundErr);
+                Error(SalesLineAISuggestionImpl.GetDocumentNotFoundMsg());
     end;
 }

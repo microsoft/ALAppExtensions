@@ -19,5 +19,8 @@ permissionset 4300 "Agent - Objects"
                   page "Agent Task Message List" = X,
                   page "Agent Task Step List" = X,
                   page "Agent New Task Message" = X,
+                  page "API - Agent Task" = X,
+                  page "API - Agent Task Message" = X,
+                  page "API - Agent Task Step" = X,
                   codeunit "Agent Impl." = X;
 }

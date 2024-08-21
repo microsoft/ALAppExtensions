@@ -2,7 +2,7 @@ namespace Microsoft.Integration.Shopify;
 
 using System.Utilities;
 
-codeunit 30354 "Shpfy Mtfld Type Num Decimal" implements "Shpfy IMetafield Type"
+codeunit 30319 "Shpfy Mtfld Type Num Decimal" implements "Shpfy IMetafield Type"
 {
     procedure HasAssistEdit(): Boolean
     begin

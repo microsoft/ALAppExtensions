@@ -5,7 +5,10 @@ codeunit 148183 "Sustainability Check Test"
 
     var
         Assert: Codeunit "Assert";
+        LibraryRandom: Codeunit "Library - Random";
         LibrarySustainability: Codeunit "Library - Sustainability";
+        FieldShouldNotBeEditableErr: Label '%1 should not be editable for Emission Type %2 in Page %3', Comment = '%1 = Field Caption , %2 = Emission Type, %3 = Page Caption';
+        AmountMustBeEqualErr: Label '%1 must be equal to %2 in Page %3', Comment = '%1 = Field Caption ,%2 = Total Amount, %3 = Page Caption';
 
     [Test]
     procedure TestCommonConditionCheck()
@@ -130,5 +133,89 @@ codeunit 148183 "Sustainability Check Test"
 
         TempErrorMessage.SetRange("Context Record ID", JnlLine2);
         Assert.IsTrue(TempErrorMessage.Count() > 0, 'Expected at least one error for the second line');
+    end;
+
+    [Test]
+    procedure VerifyCarbonEquivalentFactorShouldNotBeEditableForEmissionTypeCO2()
+    var
+        EmissionFees: TestPage "Emission Fees";
+    begin
+        // [SCENARIO 538580] Verify "Carbon Equivalent Factor" field should not be editable for "Emission Type" = CO2 in Page Emission Fees.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a new Emission Fees.
+        EmissionFees.OpenNew();
+
+        // [WHEN] Update "Emission Type" = CO2 in Emission Fees. 
+        EmissionFees."Emission Type".SetValue("Emission Type"::CO2);
+
+        // [VERIFY] Verify "Carbon Equivalent Factor" field should not be editable for "Emission Type" = CO2 in Page Emission Fees.
+        Assert.AreEqual(
+            false,
+            EmissionFees."Carbon Equivalent Factor".Editable(),
+            StrSubstNo(FieldShouldNotBeEditableErr, EmissionFees."Carbon Equivalent Factor".Caption(), "Emission Type"::CO2, EmissionFees.Caption()));
+
+        EmissionFees.Close();
+    end;
+
+    [Test]
+    procedure VerifyCarbonEquivalentFactorShouldBeEditableForOtherThanEmissionTypeCO2()
+    var
+        EmissionFees: TestPage "Emission Fees";
+    begin
+        // [SCENARIO 538580] Verify "Carbon Equivalent Factor" field should be editable for other than "Emission Type" = CO2 in Page Emission Fees.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a new Emission Fees.
+        EmissionFees.OpenNew();
+
+        // [WHEN] Update "Emission Type" = CH4 in Emission Fees. 
+        EmissionFees."Emission Type".SetValue("Emission Type"::CH4);
+
+        // [VERIFY] Verify "Carbon Equivalent Factor" field should be editable for "Emission Type" = CH4 in Page Emission Fees.
+        Assert.AreEqual(
+            true,
+            EmissionFees."Carbon Equivalent Factor".Editable(),
+            StrSubstNo(FieldShouldNotBeEditableErr, EmissionFees."Carbon Equivalent Factor".Caption(), "Emission Type"::CH4, EmissionFees.Caption()));
+
+        // [GIVEN] Close Emission Fees.
+        EmissionFees.Close();
+
+        // [GIVEN] Create a new Emission Fees.
+        EmissionFees.OpenNew();
+
+        // [WHEN] Update "Emission Type" = N2O in Emission Fees. 
+        EmissionFees."Emission Type".SetValue("Emission Type"::N2O);
+
+        // [VERIFY] Verify "Carbon Equivalent Factor" field should be editable for "Emission Type" = N2O in Page Emission Fees.
+        Assert.AreEqual(
+            true,
+            EmissionFees."Carbon Equivalent Factor".Editable(),
+            StrSubstNo(FieldShouldNotBeEditableErr, EmissionFees."Carbon Equivalent Factor".Caption(), "Emission Type"::N2O, EmissionFees.Caption()));
+
+        EmissionFees.Close();
+    end;
+
+    [Test]
+    procedure VerifyCarbonEquivalentFactorShouldBeEqualtoOneForEmissionTypeCO2()
+    var
+        EmissionFees: TestPage "Emission Fees";
+    begin
+        // [SCENARIO 538580] Verify "Carbon Equivalent Factor" field should be equal to one for "Emission Type" = CO2 in Page Emission Fees.
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] Create a new Emission Fees.
+        EmissionFees.OpenNew();
+
+        // [WHEN] Update "Emission Type" = CO2 in Emission Fees. 
+        EmissionFees."Emission Type".SetValue("Emission Type"::CO2);
+
+        // [VERIFY] Verify "Carbon Equivalent Factor" field should be equal to one for "Emission Type" = CO2 in Page Emission Fees.
+        Assert.AreEqual(
+            LibraryRandom.RandIntInRange(1, 1),
+            EmissionFees."Carbon Equivalent Factor".AsDecimal(),
+            StrSubstNo(AmountMustBeEqualErr, EmissionFees."Carbon Equivalent Factor".Caption(), LibraryRandom.RandIntInRange(1, 1), EmissionFees.Caption()));
+
+        EmissionFees.Close();
     end;
 }

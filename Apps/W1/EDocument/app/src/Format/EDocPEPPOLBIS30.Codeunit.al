@@ -69,13 +69,11 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
     end;
 
     procedure CreateBatch(EDocService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeaders: RecordRef; var SourceDocumentsLines: RecordRef; var TempBlob: codeunit "Temp Blob");
-    var
     begin
 
     end;
 
     procedure GetBasicInfoFromReceivedDocument(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob")
-    var
     begin
         ImportPeppol.ParseBasicInfo(EDocument, TempBlob);
     end;
@@ -138,23 +136,6 @@ codeunit 6165 "EDoc PEPPOL BIS 3.0" implements "E-Document"
     local procedure OnAfterCreatePEPPOLXMLDocument(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
     begin
     end;
-
-    // Example -- move to docs
-    // [EventSubscriber(ObjectType::Codeunit, Codeunit::"PEPPOL Generic", 'OnAfterCreatePEPPOLXMLDocument', '', false, false)]
-    // local procedure ModifyPEPPOLXML(EDocumentService: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef; var TempBlob: Codeunit "Temp Blob")
-    // var
-    //     XmlDoc: XmlDocument;
-    //     DocInStream: InStream;
-    //     DocOutStream: OutStream;
-    // begin
-    //     TempBlob.CreateInStream(DocInStream);
-    //     XmlDocument.ReadFrom(DocInStream, XmlDoc);
-
-    //     // Your changes to the XML document
-
-    //     TempBlob.CreateOutStream(DocOutStream);
-    //     XmlDoc.WriteTo(DocOutStream);
-    // end;
 
     var
         ImportPeppol: Codeunit "EDoc Import PEPPOL BIS 3.0";

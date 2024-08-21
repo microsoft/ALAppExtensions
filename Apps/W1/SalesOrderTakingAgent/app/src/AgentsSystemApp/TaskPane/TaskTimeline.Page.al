@@ -76,6 +76,9 @@ page 4307 "TaskTimeline"
         User: Record User;
         InStream: InStream;
     begin
+        ConfirmedBy := '';
+        ConfirmedAt := 0DT;
+
         if Rec.CalcFields("Primary Page Summary") then
             if Rec."Primary Page Summary".HasValue then begin
                 Rec."Primary Page Summary".CreateInStream(InStream);
@@ -93,7 +96,11 @@ page 4307 "TaskTimeline"
                     if TaskTimelineEntryStep.FindLast() then begin
                         User.SetRange("User Security ID", TaskTimelineEntryStep."User Security ID");
                         if User.FindFirst() then
-                            ConfirmedBy := User."Full Name";
+                            if User."Full Name" <> '' then
+                                ConfirmedBy := User."Full Name"
+                            else
+                                ConfirmedBy := User."User Name";
+
                         ConfirmedAt := Rec.SystemModifiedAt;
                     end;
                 end;

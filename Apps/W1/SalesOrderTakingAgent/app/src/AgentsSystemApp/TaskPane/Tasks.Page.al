@@ -16,6 +16,7 @@ page 4306 Tasks
     ModifyAllowed = false;
     DeleteAllowed = false;
     Extensible = false;
+    SourceTableView = sorting("Last Step Timestamp") order(descending);
 
     layout
     {
@@ -95,8 +96,7 @@ page 4306 Tasks
                 var
                     AgentMonitoringImpl: Codeunit "Agent Monitoring Impl.";
                 begin
-                    AgentMonitoringImpl.StopTask(Rec, Rec."Status"::"Stopped by User");
-                    CurrPage.Update();
+                    AgentMonitoringImpl.StopTask(Rec, Rec."Status"::"Stopped by User", false);
                 end;
             }
         }
@@ -112,8 +112,6 @@ page 4306 Tasks
         TaskTimelineEntry: Record "Agent Task Timeline Entry";
         InStream: InStream;
     begin
-        Rec.CalcFields("Last Step Number", "Last Step Timestamp");
-
         TaskTimelineEntry.SetLoadFields("Primary Page Summary", Status, Title, Type, "Last Step Number");
         TaskTimelineEntry.SetRange("Task ID", Rec.ID);
         TaskTimelineEntry.SetFilter(Category, '%1|%2', TaskTimelineEntry.Category::Present, TaskTimelineEntry.Category::Past);

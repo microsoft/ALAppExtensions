@@ -28,6 +28,7 @@ codeunit 139780 "Search Item Test"
         DescriptionIsIncorrectErr: Label 'Description is incorrect!';
         QuantityIsIncorrectErr: Label 'Quantity is incorrect!';
         NeedThreeItemButOneNotExistingLbl: Label 'I need one bike, one table and one Model Took Kit';
+        NeedThreeItemButOneIsItemNoLbl: Label 'I need 3 red chairs and one 1928-W, 5 red bikes';
         NeedItemInNonEnglishLbl: Label 'I need one bicikl.';
         InvalidPrecisionErr: Label 'The value %1 in field %2 is of lower precision than expected. \\Note: Default rounding precision of %3 is used if a rounding precision is not defined.', Comment = '%1 - decimal value, %2 - field name, %3 - default rounding precision.';
 
@@ -53,6 +54,36 @@ codeunit 139780 "Search Item Test"
         // [WHEN] User input is given to the AI suggestions
         // [THEN] AI suggestions should generate two sales lines, it is handled in the handler function 'InvokeGenerateAndCheckItemsFound'
         CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions);
+        // [THEN] One line is inserted in the sales line
+        CheckSalesLineContent(SalesHeader."No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('InvokeGenerateAndCheckItemsFound')]
+    procedure TestSearchThreeItemsWithOneItemNo()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLineAISuggestions: Page "Sales Line AI Suggestions";
+    begin
+        // [FEATURE] [Sales with AI]:[Search Item End to End]
+        // [Scenario] User wants to search for 3 items, which 1 one of them Item No.
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
+        Initialize();
+
+        // [GIVEN] User specifies 3 items, but one of them is Item No.
+        LibraryVariableStorage.Enqueue(NeedThreeItemButOneIsItemNoLbl);
+        LibraryVariableStorage.Enqueue(3);
+        EnqueueOneItemAndQty('SEOUL Guest Chair, red', 3);
+        EnqueueOneItemAndQty('ST.MORITZ Storage Unit/Drawers', 1);
+        EnqueueOneItemAndQty('Bicycle', 5);
+        EnqueueOneItemAndQty('SEOUL Guest Chair, red', 3);
+        EnqueueOneItemAndQty('ST.MORITZ Storage Unit/Drawers', 1);
+        EnqueueOneItemAndQty('Bicycle', 5);
+
+        // [WHEN] User input is given to the AI suggestions
+        // [THEN] AI suggestions should generate two sales lines, it is handled in the handler function 'InvokeGenerateAndCheckItemsFound'
+        CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions);
+
         // [THEN] One line is inserted in the sales line
         CheckSalesLineContent(SalesHeader."No.");
     end;
@@ -804,6 +835,8 @@ codeunit 139780 "Search Item Test"
     local procedure Initialize()
     begin
         GlobalUserInput := 'I need the following items: ';
+
+        LibraryVariableStorage.Clear();
     end;
 
     local procedure CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(var SalesHeader: Record "Sales Header"; var SalesLineAISuggestions: Page "Sales Line AI Suggestions")

@@ -144,10 +144,10 @@ page 11769 "VAT Periods CZL"
 
     trigger OnOpenPage()
     begin
-        NonDeductibleVATVisible := NonDeductibleVAT.IsNonDeductibleVATEnabled();
+        NonDeductibleVATVisible := NonDeductibleVATCZL.IsNonDeductibleVATEnabled();
     end;
 
     var
-        NonDeductibleVAT: Codeunit "Non-Deductible VAT";
+        NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
         NonDeductibleVATVisible: Boolean;
 }

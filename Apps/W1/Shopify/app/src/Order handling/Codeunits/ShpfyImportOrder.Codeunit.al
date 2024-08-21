@@ -495,8 +495,8 @@ codeunit 30161 "Shpfy Import Order"
         JsonHelper.GetValueIntoField(JOrder, 'totalTipReceivedSet.presentmentMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Presentment Total Tip Received"));
         JsonHelper.GetValueIntoField(JOrder, 'totalTaxSet.shopMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("VAT Amount"));
         JsonHelper.GetValueIntoField(JOrder, 'totalTaxSet.presentmentMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Presentment VAT Amount"));
-        JsonHelper.GetValueIntoField(JOrder, 'totalDiscountsSet.shopMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Discount Amount"));
-        JsonHelper.GetValueIntoField(JOrder, 'totalDiscountsSet.presentmentMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Presentment Discount Amount"));
+        JsonHelper.GetValueIntoField(JOrder, 'currentTotalDiscountsSet.shopMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Discount Amount"));
+        JsonHelper.GetValueIntoField(JOrder, 'currentTotalDiscountsSet.presentmentMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Presentment Discount Amount"));
         JsonHelper.GetValueIntoField(JOrder, 'totalShippingPriceSet.shopMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Shipping Charges Amount"));
         JsonHelper.GetValueIntoField(JOrder, 'totalShippingPriceSet.presentmentMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Pres. Shipping Charges Amount"));
         JsonHelper.GetValueIntoField(JOrder, 'currentTotalPriceSet.shopMoney.amount', OrderHeaderRecordRef, OrderHeader.FieldNo("Current Total Amount"));

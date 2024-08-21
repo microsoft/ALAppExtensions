@@ -55,6 +55,14 @@ table 4325 "SOA Setup"
             FieldClass = FlowField;
             CalcFormula = lookup(Agent.State where("User Security ID" = field("Agent User Security Id")));
         }
+        field(9; "Agent Scheduled Task ID"; Guid)
+        {
+            DataClassification = SystemMetadata;
+        }
+        field(10; "Recovery Scheduled Task ID"; Guid)
+        {
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

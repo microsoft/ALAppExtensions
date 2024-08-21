@@ -62,7 +62,7 @@ codeunit 7282 "Search"
         //Add ALSearch Options
         ALSearchOptions := ALSearchOptions.SearchOptions();
         ALSearchOptions.IncludeSynonyms := IncludeSynonyms;
-        ALSearchOptions.UseContextAwareRanking := UseContextAwareRanking and (ItemResultsArray.Count() < 10);
+        ALSearchOptions.UseContextAwareRanking := UseContextAwareRanking;
 
         //Add Search Filters
         SearchFilter := SearchFilter.SearchFilter();
@@ -82,7 +82,7 @@ codeunit 7282 "Search"
         ALSearchOptions.AddSearchFilter(SearchFilter);
 
         //Add Search Ranking Context
-        if UseContextAwareRanking and (ItemResultsArray.Count() < 10) then begin
+        if UseContextAwareRanking then begin
             ALSearchRankingContext := ALSearchRankingContext.SearchRankingContext();
             ALSearchRankingContext.Intent := Intent;
             ALSearchRankingContext.UserMessage := SearchQuery;
@@ -235,19 +235,31 @@ codeunit 7282 "Search"
             JsonArray := JsonToken.AsArray();
             foreach JsonToken in JsonArray do
                 if SearchKeyword = '' then
-                    SearchKeyword := JsonToken.AsValue().AsText()
+                    SearchKeyword := '(' + JsonToken.AsValue().AsText() + AddSynonyms(ItemObjectToken)
                 else
-                    SearchKeyword := SearchKeyword + '|' + JsonToken.AsValue().AsText();
-            if ItemObjectToken.AsObject().Get('common_synonyms_of_name_terms', JsonToken) then begin
-                JsonArray := JsonToken.AsArray();
-                foreach JsonToken in JsonArray do
-                    SearchKeyword := SearchKeyword + '|' + JsonToken.AsValue().AsText();
-            end;
-            if ItemObjectToken.AsObject().Get('origin_name', JsonToken) and (JsonToken.AsValue().AsText() <> '') then
-                SearchKeyword := SearchKeyword + '|' + JsonToken.AsValue().AsText();
+                    SearchKeyword := SearchKeyword + '&(' + JsonToken.AsValue().AsText() + AddSynonyms(ItemObjectToken);
+            if JsonArray.Count() > 1 then
+                SearchKeyword := '(' + SearchKeyword + ')';
+            if ItemObjectToken.AsObject().Get('origin_name', JsonToken) then
+                if (JsonToken.AsValue().AsText() <> '') then
+                    SearchKeyword := SearchKeyword + '|(' + JsonToken.AsValue().AsText() + ')';
             SearchKeywords.Add(SearchKeyword);
         end;
         exit(SearchKeywords);
+    end;
+
+    local procedure AddSynonyms(ItemObjectToken: JsonToken): Text
+    var
+        JsonToken: JsonToken;
+        JsonArray: JsonArray;
+        Synonyms: Text;
+    begin
+        if ItemObjectToken.AsObject().Get('common_synonyms_of_name_terms', JsonToken) then begin
+            JsonArray := JsonToken.AsArray();
+            foreach JsonToken in JsonArray do
+                Synonyms += '|' + JsonToken.AsValue().AsText();
+        end;
+        exit(Synonyms + ')');
     end;
 
     local procedure GetItemFeaturesKeywords(ItemObjectToken: JsonToken): List of [Text]

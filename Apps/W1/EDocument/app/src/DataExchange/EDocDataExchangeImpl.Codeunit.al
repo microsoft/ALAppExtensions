@@ -10,6 +10,8 @@ using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Peppol;
 using Microsoft.Service.History;
+using System.Text;
+using Microsoft.Foundation.Attachment;
 using Microsoft.Purchases.Document;
 using System.IO;
 using System.Reflection;
@@ -64,9 +66,19 @@ codeunit 6152 "E-Doc. Data Exchange Impl." implements "E-Document"
         DataExchDef: Record "Data Exch. Def";
         DataExch: Record "Data Exch.";
         DataExchTableFilter: Record "Data Exch. Table Filter";
+        DocumentAttachment: Record "Document Attachment";
+        DocumentAttachmentMgt: Codeunit "Document Attachment Mgmt";
         OutStreamFilters: OutStream;
+        ErrorNoDataExchFound: ErrorInfo;
     begin
-        EDocumentDataExchDef.Get(EDocumentFormat.Code, EDocument."Document Type");
+        ErrorNoDataExchFound.Title := 'E-Doc Service Data Exchange not found';
+        ErrorNoDataExchFound.Message := StrSubstNo(EDocServDataExchErr, EDocumentFormat.Code, Format(EDocument."Document Type"));
+        ErrorNoDataExchFound.RecordId := EDocumentFormat.RecordId;
+        ErrorNoDataExchFound.PageNo := Page::"E-Document Service";
+        ErrorNoDataExchFound.AddNavigationAction('Show E-Document Service');
+
+        if not EDocumentDataExchDef.Get(EDocumentFormat.Code, EDocument."Document Type") then
+            Error(ErrorNoDataExchFound);
 
         DataExchMapping.SetRange("Data Exch. Def Code", EDocumentDataExchDef."Expt. Data Exchange Def. Code");
         DataExchMapping.SetRange("Table ID", SourceDocumentLines.Number);
@@ -89,6 +101,15 @@ codeunit 6152 "E-Doc. Data Exchange Impl." implements "E-Document"
             DataExchTableFilter."Table ID" := SourceDocumentHeader.Number;
             DataExchTableFilter."Table Filters".CreateOutStream(OutStreamFilters);
             OutStreamFilters.WriteText(SourceDocumentHeader.GetView());
+            DataExchTableFilter.Insert();
+
+            // Create DataExchTableFilter for Document Attachments
+            Clear(DataExchTableFilter);
+            DataExchTableFilter."Data Exch. No." := DataExch."Entry No.";
+            DataExchTableFilter."Table ID" := Database::"Document Attachment";
+            DataExchTableFilter."Table Filters".CreateOutStream(OutStreamFilters);
+            DocumentAttachmentMgt.SetDocumentAttachmentFiltersForRecRef(DocumentAttachment, SourceDocumentHeader);
+            OutStreamFilters.WriteText(DocumentAttachment.GetView());
             DataExchTableFilter.Insert();
 
             OnBeforeDataExchangeExport(DataExch, EDocumentFormat, EDocument, SourceDocumentHeader, SourceDocumentLines);
@@ -378,11 +399,18 @@ codeunit 6152 "E-Doc. Data Exchange Impl." implements "E-Document"
 
     local procedure ProcessHeaders(var EDocument: Record "E-Document"; DataExch: Record "Data Exch."; var CreatedDocumentHeader: RecordRef; var CreatedDocumentLines: RecordRef)
     var
+        DocumentAttachment: Record "Document Attachment";
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
         IntermediateDataImport: Record "Intermediate Data Import";
+        EDocAttachmentProcessor: Codeunit "E-Doc. Attachment Processor";
+        TempBlob: Codeunit "Temp Blob";
+        Base64Convert: Codeunit "Base64 Convert";
         FldRef: FieldRef;
         CurrRecordNo, LineNo : Integer;
+        InStream: InStream;
+        OutStream: OutStream;
+        FileName, Base64Data : Text;
     begin
         CurrRecordNo := -1;
 
@@ -429,6 +457,46 @@ codeunit 6152 "E-Doc. Data Exchange Impl." implements "E-Document"
                     SetFieldValue(FldRef, CopyStr(IntermediateDataImport.GetValue(), 1, 250));
             until IntermediateDataImport.Next() = 0;
             CreatedDocumentLines.Insert();
+
+            IntermediateDataImport.Reset();
+            IntermediateDataImport.SetRange("Data Exch. No.", DataExch."Entry No.");
+            IntermediateDataImport.SetRange("Table ID", Database::"Document Attachment");
+            IntermediateDataImport.SetCurrentKey("Record No.");
+
+            if not IntermediateDataImport.FindSet() then
+                exit;
+
+            CurrRecordNo := -1;
+            repeat
+                if CurrRecordNo <> IntermediateDataImport."Record No." then begin
+                    if CurrRecordNo <> -1 then begin
+                        TempBlob.CreateInStream(InStream);
+                        EDocAttachmentProcessor.Insert(EDocument, InStream, FileName);
+                        FileName := '';
+                    end;
+                    CurrRecordNo := IntermediateDataImport."Record No.";
+                end;
+
+                case IntermediateDataImport."Field ID" of
+                    DocumentAttachment.FieldNo("File Name"):
+                        FileName := IntermediateDataImport.Value;
+                    DocumentAttachment.FieldNo("Document Reference ID"):
+                        begin
+                            // Read data as Base 64 value, and convert it.
+                            IntermediateDataImport.CalcFields("Value BLOB");
+                            IntermediateDataImport."Value BLOB".CreateInStream(InStream);
+                            InStream.ReadText(Base64Data);
+                            TempBlob.CreateOutStream(OutStream);
+                            Base64Convert.FromBase64(Base64Data, OutStream);
+                        end;
+                end;
+            until IntermediateDataImport.Next() = 0;
+
+            // Process last attachment if any
+            if FileName <> '' then begin
+                TempBlob.CreateInStream(InStream);
+                EDocAttachmentProcessor.Insert(EDocument, InStream, FileName);
+            end;
         end;
     end;
 
@@ -460,6 +528,22 @@ codeunit 6152 "E-Doc. Data Exchange Impl." implements "E-Document"
             Value := CopyStr(Value, 1, FieldRef.Length);
     end;
 
+    /// <summary>
+    /// Allow for empty Data Exch filtering.
+    /// Example: Document Attachments might not exist for document, so dont throw error if no record exists.
+    /// </summary>
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Mapping", 'OnBeforeCheckRecRefCount', '', true, true)]
+    local procedure OnBeforeCheckRecRefCount(var IsHandled: Boolean; DataExchMapping: Record "Data Exch. Mapping")
+    var
+        EDocServiceDataExchDef: Record "E-Doc. Service Data Exch. Def.";
+    begin
+        if EDocServiceDataExchDef.FindSet() then
+            repeat
+                if EDocServiceDataExchDef."Expt. Data Exchange Def. Code" = DataExchMapping."Data Exch. Def Code" then
+                    IsHandled := true;
+            until EDocServiceDataExchDef.Next() = 0;
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnAfterDataExchangeInsert(var DataExch: Record "Data Exch."; EDocumentFormat: Record "E-Document Service"; var EDocument: Record "E-Document"; var SourceDocumentHeader: RecordRef; var SourceDocumentLines: RecordRef);
     begin
@@ -474,4 +558,5 @@ codeunit 6152 "E-Doc. Data Exchange Impl." implements "E-Document"
         NoDataExchMappingErr: Label '%1 for %2 %3 does not exist.', Comment = '%1 - Data Exchange Mapping caption, %2 - Data Exchange Definition caption, %3 - Data Exchange Definition code';
         ProcessFailedErr: Label 'Failed to process the file with data exchange.';
         BatchNotSupportedErr: Label 'Batch processing is not supported with.';
+        EDocServDataExchErr: Label 'Data Exchange not defined for E-Document Service %1 and Document Type %2.', Comment = '%1 - E-Document Service code, %2 - E-Document Document Type';
 }

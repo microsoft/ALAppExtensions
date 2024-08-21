@@ -90,24 +90,22 @@ codeunit 7276 "SLS Prompts"
         exit(BCSLSParseCsvPrompt);
     end;
 
-    [NonDebuggable]
-    internal procedure GetParsingCsvTemplateUserInputPrompt(): Text
+    internal procedure GetParsingCsvTemplateUserInputPrompt(): SecretText
     var
         BCSLSParseCsvTemplateUserInputPrompt: SecretText;
     begin
         GetAzureKeyVaultSecret(BCSLSParseCsvTemplateUserInputPrompt, 'BCSLSParseCsvTemplateUserInputPrompt');
 
-        exit(BCSLSParseCsvTemplateUserInputPrompt.Unwrap());
+        exit(BCSLSParseCsvTemplateUserInputPrompt);
     end;
 
-    [NonDebuggable]
-    internal procedure GetProductFromCsvTemplateUserInputPrompt(): Text
+    internal procedure GetProductFromCsvTemplateUserInputPrompt(): SecretText
     var
         BCSLSGetProductFromCsvTemplateUserInputPrompt: SecretText;
     begin
         GetAzureKeyVaultSecret(BCSLSGetProductFromCsvTemplateUserInputPrompt, 'BCSLSGetProductFromCsvTemplateUserInputPrompt');
 
-        exit(BCSLSGetProductFromCsvTemplateUserInputPrompt.Unwrap());
+        exit(BCSLSGetProductFromCsvTemplateUserInputPrompt);
     end;
 
     [NonDebuggable]

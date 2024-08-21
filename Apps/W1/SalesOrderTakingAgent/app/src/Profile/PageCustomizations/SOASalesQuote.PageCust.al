@@ -146,15 +146,11 @@ pagecustomization "SOA Sales Quote" customizes "Sales Quote"
         {
             Visible = true;
         }
-        modify(DocAttach_Promoted)
-        {
-            Visible = true;
-        }
         modify(MakeOrder_Promoted)
         {
             Visible = true;
         }
-        modify(SendApprovalRequest_Promoted)
+        modify(DownloadAsPDF_Promoted)
         {
             Visible = true;
         }

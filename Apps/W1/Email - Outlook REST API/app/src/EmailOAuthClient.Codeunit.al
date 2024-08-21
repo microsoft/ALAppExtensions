@@ -113,7 +113,7 @@ codeunit 4507 "Email - OAuth Client" implements "Email - OAuth Client v2"
 
         ClearLastError();
         if EnvironmentInformation.IsSaaSInfrastructure() then begin
-            AccessToken := AzureAdMgt.GetAccessToken(UrlHelper.GetGraphUrl(), '', false);
+            AccessToken := AzureAdMgt.GetAccessTokenAsSecretText(UrlHelper.GetGraphUrl(), '', false);
             if AccessToken.IsEmpty() then begin
                 Session.LogMessage('000040Z', CouldNotAcquireAccessTokenErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', EmailCategoryLbl);
                 if OAuth2.AcquireOnBehalfOfToken('', Scopes, AccessToken) then;

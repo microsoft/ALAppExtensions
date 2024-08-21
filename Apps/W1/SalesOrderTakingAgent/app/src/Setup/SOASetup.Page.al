@@ -74,17 +74,7 @@ page 4400 "SOA Setup"
                     ToolTip = 'Specifies if the agent should monitor incoming inquiries.';
                     trigger OnValidate()
                     begin
-                        IsConfigUpdated();
-                    end;
-                }
-
-                field(MailEnabled; TempSOASetup."Email Monitoring")
-                {
-                    ShowCaption = false;
-                    ToolTip = 'Specifies if the agent should monitor incoming mail.';
-
-                    trigger OnValidate()
-                    begin
+                        SetIsMailboxMandatory();
                         IsConfigUpdated();
                     end;
                 }
@@ -92,10 +82,22 @@ page 4400 "SOA Setup"
                 group(MailboxGroup)
                 {
                     Caption = 'Mailbox';
+                    field(MailEnabled; TempSOASetup."Email Monitoring")
+                    {
+                        ShowCaption = false;
+                        ToolTip = 'Specifies if the agent should monitor incoming mail.';
+
+                        trigger OnValidate()
+                        begin
+                            SetIsMailboxMandatory();
+                            IsConfigUpdated();
+                        end;
+                    }
                     field(Mailbox; MailboxName)
                     {
                         Caption = 'Mail box';
                         ToolTip = 'Specifies the mail box that the agent should monitor.';
+                        ShowMandatory = IsMailboxMandatory;
 
                         trigger OnAssistEdit()
                         var
@@ -107,7 +109,10 @@ page 4400 "SOA Setup"
                             if EmailAccounts.RunModal() = Action::LookupOK then
                                 EmailAccounts.GetAccount(TempEmailAccount);
 
-                            MailboxName := TempEmailAccount."Email Address";
+                            if MailboxName <> TempEmailAccount."Email Address" then begin
+                                IsConfigUpdated();
+                                MailboxName := TempEmailAccount."Email Address";
+                            end;
                         end;
 
                         trigger OnValidate()
@@ -142,6 +147,7 @@ page 4400 "SOA Setup"
 
     trigger OnOpenPage()
     begin
+        IsUpdated := false;
         UpdateControls();
     end;
 
@@ -170,16 +176,18 @@ page 4400 "SOA Setup"
     var
         SOASetup: Codeunit "SOA Setup";
     begin
-        IsUpdated := false;
         BadgeTxt := SOASetup.GetInitials();
         AgentType := SOASetup.GetAgentType();
         AgentSummary := SOASetup.GetAgentSummary();
+        IsMailboxMandatory := true;
+
         if Rec.IsEmpty() then
             SOASetup.GetDefaultAgent(Rec);
-        if TempSOASetup.IsEmpty() then
+        if TempSOASetup.IsEmpty() then begin
             SOASetup.GetDefaultSOASetup(TempSOASetup, Rec);
-        if TempEmailAccount.IsEmpty() and TempSOASetup."Email Monitoring" then
-            SOASetup.GetDefaultEmailAccount(TempEmailAccount); //TODO: This is temporary and it should take from the UI instead.
+            SOASetup.GetEmailAccount(TempSOASetup, TempEmailAccount);
+            MailboxName := TempEmailAccount."Email Address";
+        end;
         if TempAgentAccessControl.IsEmpty() then
             SOASetup.GetDefaultAgentAccessControl(Rec."User Security ID", TempAgentAccessControl);
     end;
@@ -187,6 +195,11 @@ page 4400 "SOA Setup"
     local procedure IsConfigUpdated()
     begin
         IsUpdated := true;
+    end;
+
+    local procedure SetIsMailboxMandatory()
+    begin
+        IsMailboxMandatory := TempSOASetup."Email Monitoring" and TempSOASetup."Incoming Monitoring";
     end;
 
     var
@@ -198,4 +211,5 @@ page 4400 "SOA Setup"
         AgentType: Text;
         AgentSummary: Text;
         IsUpdated: Boolean;
+        IsMailboxMandatory: Boolean;
 }

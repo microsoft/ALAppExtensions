@@ -5,8 +5,9 @@
 
 namespace System.Test.Agents.SalesOrderTakerAgent;
 
-using Microsoft.Sales.Document;
 using Microsoft.Inventory.Item;
+using Microsoft.Sales.Customer;
+using Microsoft.Sales.Document;
 using System.Agents;
 using System.TestLibraries.Utilities;
 using System.TestLibraries.Agents;
@@ -23,12 +24,17 @@ codeunit 133500 "SOA Create Quote E2E Test"
     begin
         SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::Quote);
         SalesHeader.DeleteAll(true);
+        SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::Order);
+        SalesHeader.DeleteAll(false);
         LibraryAgent.DeactivateTasks();
+
+        LibrarySOAAgent.UpdateInventorySetup(this.CurrentItemNo, false);
 
         if this.Initialized then
             exit;
 
         LibrarySOAAgent.CreateItems();
+        LibrarySOAAgent.CreateCustomers();
         LibrarySOAAgent.CreateContacts();
         LibrarySOAAgent.EnableOrderTakerAgent();
 
@@ -36,11 +42,19 @@ codeunit 133500 "SOA Create Quote E2E Test"
         this.Initialized := true;
     end;
 
+    local procedure Restore()
+    begin
+        LibrarySOAAgent.UpdateInventorySetup(CurrentItemNo, true);
+    end;
+
     [Test]
+    [HandlerFunctions('HandleAdjustInventoryDialog,SelectCustomerTemplateHandler')]
     procedure TestCreateSalesQuoteFromEmail()
     var
         AgentTask: Record "Agent Task";
         TaskSuccessful: Boolean;
+        AgentErr: Label '%1 Task ID: %2', Comment = '%1 = Agent error, %2 = Agent Task ID';
+        ErrorReason: Text;
     begin
         // Arrange
         this.Initialize();
@@ -59,20 +73,31 @@ codeunit 133500 "SOA Create Quote E2E Test"
         // Assert
         LibrarySOAAgent.WriteTestOutput(AgentTask);
         Commit();
-        Assert.AreEqual(true, TaskSuccessful, 'The agent task did not complete successfully. Task status: ' + Format(AgentTask.Status, 0, 9));
-        Assert.IsTrue(LibrarySOAAgent.VerifyDataCreated(), 'Agent did not create the data correctly. Compare expected to actual output.');
+        Restore();
+
+        Assert.AreEqual(true, TaskSuccessful, 'The agent task did not complete successfully. Task status: ' + Format(AgentTask.Status) + '. Task ID: ' + Format(AgentTask.ID));
+        Assert.IsTrue(LibrarySOAAgent.VerifyDataCreated(AgentTask, ErrorReason), StrSubstNo(AgentErr, ErrorReason, AgentTask.ID));
     end;
 
     [ModalPageHandler]
     procedure HandleAdjustInventoryDialog(var AdjustInventory: TestPage "Adjust Inventory")
     begin
-        AdjustInventory.NewInventory.SetValue(this.LibraryVariableStorage.DequeueDecimal());
+        AdjustInventory.NewInventory.SetValue(5);
+    end;
+
+    [ModalPageHandler]
+    procedure SelectCustomerTemplateHandler(var SelectCustomerTemplList: TestPage "Select Customer Templ. List")
+    var
+    begin
+        SelectCustomerTemplList.GoToKey('CUSTOMER COMPANY');
+        SelectCustomerTemplList.OK().Invoke();
     end;
 
     var
-        LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        //LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibrarySOAAgent: Codeunit "Library - SOA Agent";
         Assert: Codeunit "Library Assert";
         LibraryAgent: Codeunit "Library Agent";
+        CurrentItemNo: Code[20];
         Initialized: Boolean;
 }

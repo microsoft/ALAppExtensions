@@ -248,7 +248,7 @@ codeunit 6132 "E-Document Log"
         else
             EDocument.Status := EDocument.Status::"In Progress";
 
-        EDocument.Modify();
+        EDocument.Modify(true);
     end;
 
     local procedure EDocumentHasErrors(var EDocument: Record "E-Document"): Boolean
@@ -267,7 +267,7 @@ codeunit 6132 "E-Document Log"
             exit(false);
 
         EDocument.Validate(Status, EDocument.Status::Error);
-        EDocument.Modify();
+        EDocument.Modify(true);
         exit(true);
     end;
 

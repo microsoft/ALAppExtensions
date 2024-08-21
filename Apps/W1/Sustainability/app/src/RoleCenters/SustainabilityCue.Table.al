@@ -3,6 +3,7 @@ namespace Microsoft.Sustainability.RoleCenters;
 using Microsoft.Sustainability.Ledger;
 using Microsoft.Sustainability.Setup;
 using Microsoft.EServices.EDocument;
+using Microsoft.Sustainability.Account;
 using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Document;
 
@@ -23,7 +24,7 @@ table 6220 "Sustainability Cue"
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission CO2';
             FieldClass = FlowField;
-            CalcFormula = sum("Sustainability Ledger Entry"."Emission CO2" where("Posting Date" = field("Date Filter")));
+            CalcFormula = sum("Sustainability Ledger Entry"."Emission CO2" where("Posting Date" = field("Date Filter"), "Emission Scope" = field("Scope Filter")));
         }
         field(3; "Emission CH4"; Decimal)
         {
@@ -31,7 +32,7 @@ table 6220 "Sustainability Cue"
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission CH4';
             FieldClass = FlowField;
-            CalcFormula = sum("Sustainability Ledger Entry"."Emission CH4" where("Posting Date" = field("Date Filter")));
+            CalcFormula = sum("Sustainability Ledger Entry"."Emission CH4" where("Posting Date" = field("Date Filter"), "Emission Scope" = field("Scope Filter")));
         }
         field(4; "Emission N2O"; Decimal)
         {
@@ -39,7 +40,7 @@ table 6220 "Sustainability Cue"
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission N2O';
             FieldClass = FlowField;
-            CalcFormula = sum("Sustainability Ledger Entry"."Emission N2O" where("Posting Date" = field("Date Filter")));
+            CalcFormula = sum("Sustainability Ledger Entry"."Emission N2O" where("Posting Date" = field("Date Filter"), "Emission Scope" = field("Scope Filter")));
         }
         field(6; "Ongoing Purchase Orders"; Integer)
         {
@@ -84,6 +85,11 @@ table 6220 "Sustainability Cue"
         field(21; "Due Next Week Filter"; Date)
         {
             Caption = 'Due Next Week Filter';
+            FieldClass = FlowFilter;
+        }
+        field(22; "Scope Filter"; Enum "Emission Scope")
+        {
+            Caption = 'Scope Filter';
             FieldClass = FlowFilter;
         }
     }

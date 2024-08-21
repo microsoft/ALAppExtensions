@@ -695,7 +695,7 @@ codeunit 30178 "Shpfy Product Export"
             end;
 
             UpdateMetafields(ShopifyProduct.Id);
-            UpdateProductTranslations(ShopifyProduct.Id, Item);
+            UpdateProductTranslations(ShopifyProduct.Id, Item)
         end;
     end;
 

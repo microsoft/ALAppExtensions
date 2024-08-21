@@ -83,7 +83,7 @@ pageextension 4401 "EXR Accountant Role Center" extends "Accountant Role Center"
             action(EXRConsolidatedTrialBalance)
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Consolidated Trial Balance Excel (Preview)';
+                Caption = 'Consolidated Trial Balance (Preview)';
                 Image = "Report";
                 RunObject = report "EXR Consolidated Trial Balance";
                 ToolTip = 'Open an Excel workbook that shows the G/L entries totals in the different business units.';
@@ -91,7 +91,7 @@ pageextension 4401 "EXR Accountant Role Center" extends "Accountant Role Center"
             action(EXRFixedAssetAnalysisExcel)
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Fixed Asset Analysis Excel (Preview)';
+                Caption = 'Fixed Asset Analysis (Preview)';
                 Image = "Report";
                 RunObject = report "EXR Fixed Asset Analysis Excel";
                 ToolTip = 'Open an Excel workbook that shows a comparison of fixed asset values across a date range.';
@@ -99,7 +99,7 @@ pageextension 4401 "EXR Accountant Role Center" extends "Accountant Role Center"
             action(EXRFixedAssetDetailsExcel)
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Fixed Asset Details Excel (Preview)';
+                Caption = 'Fixed Asset Details (Preview)';
                 Image = "Report";
                 RunObject = report "EXR Fixed Asset Details Excel";
                 ToolTip = 'Open an Excel workbook that shows fixed asset ledger entries.';
@@ -107,7 +107,7 @@ pageextension 4401 "EXR Accountant Role Center" extends "Accountant Role Center"
             action(EXRFixedAssetProjected)
             {
                 ApplicationArea = Basic, Suite;
-                Caption = 'Fixed Asset Projected Value Excel (Preview)';
+                Caption = 'Fixed Asset Projected Value (Preview)';
                 Image = "Report";
                 RunObject = report "EXR Fixed Asset Projected";
                 ToolTip = 'Open an Excel workbook that shows posted fixed asset ledger entries and projected fixed asset ledger entries.';

@@ -7,15 +7,20 @@
     "version": "25.0.0.0",
     "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
     "EULA": "https://go.microsoft.com/fwlink/?LinkId=847985",
-    "help": "https://go.microsoft.com/fwlink/?LinkId=849257",
+    "help": "https://go.microsoft.com/fwlink/?linkid=868966",
     "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?LinkId=849257",
+    "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=868966",
     "logo": "ExtensionLogo.png",
     "application": "25.0.0.0",
-    "screenshots":  [],
-    "platform":  "25.0.0.0",
-    "target":  "OnPrem",
-    "idRanges": [{"from": 3000, "to": 5000}],
+    "screenshots": [],
+    "platform": "25.0.0.0",
+    "target": "OnPrem",
+    "idRanges": [
+        {
+            "from": 3000,
+            "to": 5000
+        }
+    ],
     "propagateDependencies": true,
     "features": [
         "TranslationFile",

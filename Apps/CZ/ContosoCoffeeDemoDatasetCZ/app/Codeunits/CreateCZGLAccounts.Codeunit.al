@@ -262,6 +262,11 @@ codeunit 31212 "Create CZ GL Accounts"
         ContosoGLAccount.AddAccountForLocalization(FixedAssetModuleCZ.AppreciationBalSoftwareName(), '041100');
         ContosoGLAccount.AddAccountForLocalization(FixedAssetModuleCZ.SalesBalSoftwareName(), '395100');
         ContosoGLAccount.AddAccountForLocalization(FixedAssetModuleCZ.BookValueBalonDisposalSoftwareName(), '073100');
+
+        ContosoGLAccount.AddAccountForLocalization(FixedAssetModuleCZ.SalesFixedAssetsName(), '641100');
+        ContosoGLAccount.InsertGLAccount(FixedAssetModuleCZ.SalesFixedAssets(), FixedAssetModuleCZ.SalesFixedAssetsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Income, Enum::"G/L Account Type"::Posting);
+        ContosoGLAccount.AddAccountForLocalization(FixedAssetModuleCZ.ConsumableMaterialsName(), '501100');
+        ContosoGLAccount.InsertGLAccount(FixedAssetModuleCZ.ConsumableMaterials(), FixedAssetModuleCZ.ConsumableMaterialsName(), Enum::"G/L Account Income/Balance"::"Income Statement", Enum::"G/L Account Category"::Expense, Enum::"G/L Account Type"::Posting);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Create HR GL Account", 'OnAfterAddGLAccountsForLocalization', '', false, false)]
