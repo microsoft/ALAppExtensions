@@ -1,4 +1,4 @@
-namespace JLogiqEDocumentsConnector.JLogiqEDocumentsConnector;
+namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
 table 6380 "Logiq Connection Setup"
 {

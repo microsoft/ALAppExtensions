@@ -1,4 +1,4 @@
-namespace JLogiqEDocumentsConnector.JLogiqEDocumentsConnector;
+namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
 page 6381 "Logiq Connection User Setup"
 {

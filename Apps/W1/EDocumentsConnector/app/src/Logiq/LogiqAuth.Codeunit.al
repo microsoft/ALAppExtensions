@@ -1,4 +1,4 @@
-namespace JLogiqEDocumentsConnector.JLogiqEDocumentsConnector;
+namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
 codeunit 6380 "Logiq Auth"
 {

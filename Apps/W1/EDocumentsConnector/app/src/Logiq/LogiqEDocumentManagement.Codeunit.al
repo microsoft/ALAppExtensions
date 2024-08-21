@@ -1,4 +1,4 @@
-namespace JLogiqEDocumentsConnector.JLogiqEDocumentsConnector;
+namespace Microsoft.EServices.EDocumentConnector.Logiq;
 
 using Microsoft.eServices.EDocument;
 using System.Utilities;
