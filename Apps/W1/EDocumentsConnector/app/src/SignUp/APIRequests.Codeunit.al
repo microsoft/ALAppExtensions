@@ -91,9 +91,10 @@ codeunit 6370 SignUpAPIRequests
     procedure PatchReceivedDocument(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
         SignUpConnectionSetup: Record SignUpConnectionSetup;
+        UriTemplateLbl: Label '%1/inbox?peppolInstanceId=%2', Comment = '%1 = Service Url, %2 = Peppol Gateway Instance', Locked = true;
     begin
         InitRequest(SignUpConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::PATCH, SignUpConnectionSetup.ServiceURL + '/inbox?peppolInstanceId=' + EDocument."Document Id");
+        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::PATCH, StrSubstNo(UriTemplateLbl, SignUpConnectionSetup.ServiceURL, EDocument."Document Id"));
         exit(SendRequest(HttpRequestMessage, HttpResponseMessage));
     end;
 
