@@ -424,6 +424,7 @@ enum 30111 "Shpfy GraphQL Type" implements "Shpfy IGraphQL"
     {
         Caption = 'Get Fulfillments';
         Implementation = "Shpfy IGraphQL" = "Shpfy GQL Get Fulfillments";
+    }
     value(85; ProductVariantDelete)
     {
         Caption = 'Product Variant Delete';
