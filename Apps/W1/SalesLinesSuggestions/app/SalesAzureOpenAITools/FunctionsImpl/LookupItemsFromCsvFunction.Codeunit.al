@@ -20,7 +20,7 @@ codeunit 7296 "Lookup Items From Csv Function" implements "AOAI Function"
         Prompt: Codeunit "SLS Prompts";
         PromptJson: JsonObject;
     begin
-        PromptJson.ReadFrom(Prompt.GetParsingCsvPrompt());
+        PromptJson.ReadFrom(Prompt.GetParsingCsvPrompt().Unwrap());
         exit(PromptJson);
     end;
 

@@ -5,7 +5,6 @@ codeunit 5103 "Create Svc Setup"
     Permissions = tabledata "Service Mgt. Setup" = rim;
 
     var
-        SvcDemoDataSetup: Record "Service Module Setup";
         ContosoService: Codeunit "Contoso Service";
         SkillElectricalTok: Label 'ELECTR', MaxLength = 10;
         SkillElectricalLbl: Label 'Electrical', MaxLength = 100;
@@ -28,11 +27,10 @@ codeunit 5103 "Create Svc Setup"
     var
         SvcGLAccount: Codeunit "Create Svc GL Account";
     begin
-        SvcDemoDataSetup.Get();
-
         ContosoService.InsertBaseCalendar(DefaultBaseCalendar(), DefaultBaseCalendar());
 
         CreateServiceSetup();
+        CreateInventoryPostingSetup();
 
         CreateSkillCodes();
         CreateServiceOrderTypes();
@@ -79,6 +77,18 @@ codeunit 5103 "Create Svc Setup"
         ServiceMgtSetup.Validate("Contract Serv. Ord.  Max. Days", 366);
         Evaluate(ServiceMgtSetup."Default Warranty Duration", '<2Y>');
         ServiceMgtSetup.Modify(true);
+    end;
+
+    local procedure CreateInventoryPostingSetup()
+    var
+        SvcDemoDataSetup: Record "Service Module Setup";
+        ContosoPostingSetup: Codeunit "Contoso Posting Setup";
+        CommonPostingGroup: Codeunit "Create Common Posting Group";
+        CommonGLAccount: Codeunit "Create Common GL Account";
+    begin
+        SvcDemoDataSetup.Get();
+
+        ContosoPostingSetup.InsertInventoryPostingSetup(SvcDemoDataSetup."Service Location", CommonPostingGroup.Resale(), CommonGLAccount.Resale(), CommonGLAccount.ResaleInterim());
     end;
 
     local procedure CreateSkillCodes()

@@ -31,11 +31,14 @@ codeunit 30228 "Shpfy Refunds API"
         RefundHeader: Record "Shpfy Refund Header";
         GraphQLType: Enum "Shpfy GraphQL Type";
         Parameters: Dictionary of [text, Text];
+        ReturnLocations: Dictionary of [BigInteger, BigInteger];
         JResponse: JsonToken;
         JLines: JsonArray;
         JLine: JsonToken;
     begin
         GetRefundHeader(RefundId, UpdatedAt, RefundHeader);
+        ReturnLocations := CollectReturnLocations(RefundHeader."Return Id");
+
         Parameters.Add('RefundId', Format(RefundId));
         GraphQLType := "Shpfy GraphQL Type"::GetRefundLines;
         repeat
@@ -46,8 +49,9 @@ codeunit 30228 "Shpfy Refunds API"
                 Parameters.Set('After', JsonHelper.GetValueAsText(JResponse, 'data.refund.refundLineItems.pageInfo.endCursor'))
             else
                 Parameters.Add('After', JsonHelper.GetValueAsText(JResponse, 'data.refund.refundLineItems.pageInfo.endCursor'));
+
             foreach JLine in JLines do
-                FillInRefundLine(RefundId, JLine.AsObject(), IsNonZeroOrReturnRefund(RefundHeader));
+                FillInRefundLine(RefundId, JLine.AsObject(), IsNonZeroOrReturnRefund(RefundHeader), ReturnLocations);
         until not JsonHelper.GetValueAsBoolean(JResponse, 'data.refund.refundLineItems.pageInfo.hasNextPage');
     end;
 
@@ -88,21 +92,34 @@ codeunit 30228 "Shpfy Refunds API"
         DataCapture.Add(Database::"Shpfy Refund Header", RefundHeader.SystemId, JResponse);
     end;
 
-    local procedure FillInRefundLine(RefundId: BigInteger; JLine: JsonObject; NonZeroOrReturnRefund: Boolean)
+
+    local procedure CollectReturnLocations(ReturnId: BigInteger): Dictionary of [BigInteger, BigInteger]
+    var
+        ReturnsAPI: Codeunit "Shpfy Returns API";
+    begin
+        if ReturnId <> 0 then
+            exit(ReturnsAPI.GetReturnLocations(ReturnId));
+    end;
+
+    local procedure FillInRefundLine(RefundId: BigInteger; JLine: JsonObject; NonZeroOrReturnRefund: Boolean; ReturnLocations: Dictionary of [BigInteger, BigInteger])
     var
         DataCapture: Record "Shpfy Data Capture";
         RefundLine: Record "Shpfy Refund Line";
         RefundLineRecordRef: RecordRef;
         Id: BigInteger;
+        ReturnLocation: BigInteger;
     begin
         Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JLine, 'lineItem.id'));
+
         if not RefundLine.Get(RefundId, Id) then begin
             RefundLine."Refund Line Id" := Id;
             RefundLine."Refund Id" := RefundId;
             RefundLine."Order Line Id" := Id;
             RefundLine.Insert();
         end;
+
         RefundLine."Restock Type" := RefundEnumConvertor.ConvertToReStockType(JsonHelper.GetValueAsText(JLine, 'restockType'));
+
         RefundLineRecordRef.GetTable(RefundLine);
         JsonHelper.GetValueIntoField(JLine, 'quantity', RefundLineRecordRef, RefundLine.FieldNo(Quantity));
         JsonHelper.GetValueIntoField(JLine, 'restocked', RefundLineRecordRef, RefundLine.FieldNo(Restocked));
@@ -113,8 +130,17 @@ codeunit 30228 "Shpfy Refunds API"
         JsonHelper.GetValueIntoField(JLine, 'totalTaxSet.shopMoney.amount', RefundLineRecordRef, RefundLine.FieldNo("Total Tax Amount"));
         JsonHelper.GetValueIntoField(JLine, 'totalTaxSet.presentmentMoney.amount', RefundLineRecordRef, RefundLine.FieldNo("Presentment Total Tax Amount"));
         RefundLineRecordRef.SetTable(RefundLine);
+
         RefundLine."Can Create Credit Memo" := NonZeroOrReturnRefund;
+        RefundLine."Location Id" := JsonHelper.GetValueAsBigInteger(JLine, 'location.legacyResourceId');
+
+        // If refund was created from a return, the location needs to come from the return
+        // If Item was restocked to multiple locations, the return location is not known
+        if (RefundLine."Location Id" = 0) and (ReturnLocations.Get(RefundLine."Order Line Id", ReturnLocation)) then
+            RefundLine."Location Id" := ReturnLocation;
+
         RefundLine.Modify();
+
         RefundLineRecordRef.Close();
         DataCapture.Add(Database::"Shpfy Refund Line", RefundLine.SystemId, JLine);
     end;

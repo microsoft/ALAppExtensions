@@ -78,7 +78,7 @@ codeunit 1686 "Email Logging OAuth Client" implements "Email Logging OAuth Clien
         Session.LogMessage('0000G06', AcquireAccessTokenTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
 
         if UseFirstPartyApp then begin
-            AccessToken := AzureAdMgt.GetAccessToken(UrlHelper.GetGraphUrl(), '', false);
+            AccessToken := AzureAdMgt.GetAccessTokenAsSecretText(UrlHelper.GetGraphUrl(), '', false);
             if AccessToken.IsEmpty() then begin
                 Session.LogMessage('0000G07', CouldNotAcquireAccessTokenErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', CategoryTok);
                 if OAuth2.AcquireOnBehalfOfToken('', Scopes, AccessToken) then;

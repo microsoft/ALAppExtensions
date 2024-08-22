@@ -7,10 +7,10 @@ page 2680 "Data Search"
 #pragma warning restore AS0040
 {
     PageType = ListPlus;
-    Caption = 'Search in company data [Preview]';
+    Caption = 'Search in company data';
     ApplicationArea = All;
     AboutTitle = 'About Search in company data';
-    AboutText = 'Enter one or more search words in the search field. To see which tables are being searched, select Results | Show tables to search.';
+    AboutText = 'Enter one or more search words in the search field. To see what data is being searched, select Set up where to search.';
     InherentEntitlements = X;
 
     layout

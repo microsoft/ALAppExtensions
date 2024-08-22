@@ -12,6 +12,7 @@ pagecustomization "SOA Sales Quotes" customizes "Sales Quotes"
     ClearActions = true;
     ClearLayout = true;
     ClearViews = true;
+    DeleteAllowed = false;
 
     layout
     {
@@ -71,15 +72,7 @@ pagecustomization "SOA Sales Quotes" customizes "Sales Quotes"
 
     actions
     {
-        modify(Customer)
-        {
-            Visible = true;
-        }
         modify(Customer_Promoted)
-        {
-            Visible = true;
-        }
-        modify("C&ontact")
         {
             Visible = true;
         }
@@ -87,23 +80,11 @@ pagecustomization "SOA Sales Quotes" customizes "Sales Quotes"
         {
             Visible = true;
         }
-        modify("Co&mments")
-        {
-            Visible = true;
-        }
         modify("Co&mments_Promoted")
         {
             Visible = true;
         }
-        modify(MakeOrder)
-        {
-            Visible = true;
-        }
         modify(MakeOrder_Promoted)
-        {
-            Visible = true;
-        }
-        modify(SendApprovalRequest)
         {
             Visible = true;
         }

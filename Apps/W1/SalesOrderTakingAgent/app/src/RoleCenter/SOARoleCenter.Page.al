@@ -10,7 +10,7 @@ using Microsoft.CRM.Contact;
 using Microsoft.Sales.Customer;
 using Microsoft.Inventory.Item;
 
-page 4313 "SOA Role Center"
+page 4401 "SOA Role Center"
 {
     PageType = RoleCenter;
     Caption = 'Sales Order Taker Agent';

@@ -102,8 +102,6 @@ page 7275 "Sales Line AI Suggestions"
                 var
                     NotificationManager: Codeunit "Notification Manager";
                     MaxSearchQueryLength: Decimal;
-                    SearchQueryLengthExceededErr: Label 'You''ve exceeded the maximum number of allowed characters by %1. Please rephrase and try again.', Comment = '%1 = Integer';
-                    SearchQueryNotProvidedErr: Label 'Please provide a query to generate sales line suggestions.';
                 begin
                     NotificationManager.RecallNotification();
 
@@ -276,6 +274,10 @@ page 7275 "Sales Line AI Suggestions"
             }
         }
     }
+
+    var
+        SearchQueryLengthExceededErr: Label 'You''ve exceeded the maximum number of allowed characters by %1. Please rephrase and try again.', Comment = '%1 = Integer';
+        SearchQueryNotProvidedErr: Label 'Please provide a query to generate sales lines suggestions.';
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
     var

@@ -11,6 +11,7 @@ codeunit 139683 "Statistical Account Test"
         LibraryERM: Codeunit "Library - ERM";
         LibraryDimension: Codeunit "Library - Dimension";
         LibraryRandom: Codeunit "Library - Random";
+        LibraryUtility: Codeunit "Library - Utility";
         Initialized: Boolean;
         EMPLOYEESLbl: Label 'EMPLOYEES';
         OFFICESPACELbl: Label 'OFFICESPACE';
@@ -458,6 +459,46 @@ codeunit 139683 "Statistical Account Test"
         StatisticalAccountsJournal.Close();
     end;
 
+    [Test]
+    [HandlerFunctions('StatAccJnlBatcheModalPageHandler')]
+    procedure SwitchBatchNameOnStatAccJnl()
+    var
+        StatisticalAccount: Record "Statistical Account";
+        StatAccJnlBatch: array[2] of Record "Statistical Acc. Journal Batch";
+        StatAccJnlLine: Record "Statistical Acc. Journal Line";
+        StatAccJnlPage: TestPage "Statistical Accounts Journal";
+        i: Integer;
+    begin
+        // [SCENARIO 544841] Switching the batch name on the Statistical Account Journal works correctly
+
+        Initialize();
+        CreateStatisticalAccount(StatisticalAccount);
+        // [GIVEN] Two statistical Account Journal Batches - "X" and "Y"
+        for i := 1 to ArrayLen(StatAccJnlBatch) do begin
+            StatAccJnlBatch[i].Validate(Name, LibraryUtility.GenerateGUID());
+            StatAccJnlBatch[i].Insert(true);
+        end;
+        // [GIVEN] Statistical Account Journal Line for batch "X"
+        StatAccJnlLine.Validate("Journal Batch Name", StatAccJnlBatch[1].Name);
+        StatAccJnlLine.Validate("Statistical Account No.", StatisticalAccount."No.");
+        StatAccJnlLine.Insert(true);
+
+        // [GIVEN] Statistical account opened for the batch "X"
+        StatAccJnlPage.OpenEdit();
+        StatAccJnlPage.CurrentJnlBatchName.SetValue(StatAccJnlBatch[1].Name);
+
+        LibraryVariableStorage.Enqueue(StatAccJnlBatch[2].Name); // for StatAccJnlBatcheModalPageHandler
+        // [WHEN] Stan switches the batch to "Y" via lookup
+        StatAccJnlPage.CurrentJnlBatchName.Lookup();
+
+        // [THEN] No statistical account journal lines shown for this batch
+        StatAccJnlPage.StatisticalAccountNo.AssertEquals('');
+        LibraryVariableStorage.AssertEmpty();
+
+        // Tear down
+        StatAccJnlPage.Close();
+    end;
+
     local procedure SetupFinancialReport()
     var
         AccScheduleLine: Record "Acc. Schedule Line";
@@ -756,6 +797,13 @@ codeunit 139683 "Statistical Account Test"
                 StatisticalAccountsJournal.ShortcutDimCode8.AssertEquals(DimensionValue[8].Code);
                 StatisticalAccountsJournal.Close();
             until StatisticalAccountJournalLine.Next() = 0;
+    end;
+
+    [ModalPageHandler]
+    procedure StatAccJnlBatcheModalPageHandler(var StatBatch: TestPage "Statistical Acc. Journal Batch")
+    begin
+        StatBatch.Filter.SetFilter(Name, LibraryVariableStorage.DequeueText());
+        StatBatch.OK().Invoke();
     end;
 
 }

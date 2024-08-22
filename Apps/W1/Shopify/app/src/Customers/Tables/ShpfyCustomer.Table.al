@@ -148,6 +148,7 @@ table 30105 "Shpfy Customer"
         if not Tag.IsEmpty() then
             Tag.DeleteAll();
 
+        Metafield.SetRange("Parent Table No.", Database::"Shpfy Customer");
         Metafield.SetRange("Owner Id", Id);
         if not Metafield.IsEmpty then
             Metafield.DeleteAll();

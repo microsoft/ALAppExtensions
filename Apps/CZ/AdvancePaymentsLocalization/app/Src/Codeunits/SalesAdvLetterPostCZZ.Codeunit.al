@@ -1055,6 +1055,7 @@ codeunit 31143 "Sales Adv. Letter-Post CZZ"
         SalesAdvLetterEntryCZZ.SetRange("Sales Adv. Letter No.", SalesAdvLetterHeaderCZZ."No.");
         SalesAdvLetterEntryCZZ.SetRange("Entry Type", SalesAdvLetterEntryCZZ."Entry Type"::Payment);
         SalesAdvLetterEntryCZZ.SetRange(Cancelled, false);
+        OnPostAdvanceLetterClosingOnAfterSetSalesAdvLetterEntryFilter(SalesAdvLetterEntryCZZ);
         if SalesAdvLetterEntryCZZ.FindSet() then
             repeat
                 PostAdvanceLetterEntryClosing(
@@ -2654,6 +2655,11 @@ codeunit 31143 "Sales Adv. Letter-Post CZZ"
 
     [IntegrationEvent(false, false)]
     local procedure OnAfterRunGenJnlPostLine(var GenJnlLine: Record "Gen. Journal Line"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; var GLEntryNo: Integer)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnPostAdvanceLetterClosingOnAfterSetSalesAdvLetterEntryFilter(var SalesAdvLetterEntryCZZ: Record "Sales Adv. Letter Entry CZZ")
     begin
     end;
 }

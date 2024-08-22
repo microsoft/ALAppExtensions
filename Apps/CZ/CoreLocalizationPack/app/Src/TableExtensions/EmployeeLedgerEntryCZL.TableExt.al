@@ -5,6 +5,7 @@
 namespace Microsoft.HumanResources.Payables;
 
 using Microsoft.Bank.Setup;
+using Microsoft.HumanResources.Employee;
 using Microsoft.Finance.ReceivablesPayables;
 
 tableextension 11790 "Employee Ledger Entry CZL" extends "Employee Ledger Entry"
@@ -58,5 +59,27 @@ tableextension 11790 "Employee Ledger Entry CZL" extends "Employee Ledger Entry"
         CrossApplicationMgtCZL: Codeunit "Cross Application Mgt. CZL";
     begin
         CrossApplicationMgtCZL.DrillDownSuggestedAmountToApply(Rec);
+    end;
+
+    procedure GetPayablesAccNoCZL(): Code[20]
+    var
+        EmployeePostingGroup: Record "Employee Posting Group";
+        GLAccountNo: Code[20];
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeGetPayablesAccountNoCZL(Rec, GLAccountNo, IsHandled);
+        if IsHandled then
+            exit(GLAccountNo);
+
+        TestField("Employee Posting Group");
+        EmployeePostingGroup.Get("Employee Posting Group");
+        EmployeePostingGroup.TestField("Payables Account");
+        exit(EmployeePostingGroup.GetPayablesAccount());
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeGetPayablesAccountNoCZL(EmployeeLedgerEntry: Record "Employee Ledger Entry"; var GLAccountNo: Code[20]; var IsHandled: Boolean)
+    begin
     end;
 }

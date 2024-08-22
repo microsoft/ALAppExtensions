@@ -16,7 +16,8 @@ codeunit 31146 "Non-Deductible VAT Handler CZL"
     begin
         if IsHandled then
             exit;
-
+        if not NonDeductibleVATCZL.IsNonDeductibleVATEnabled() then
+            exit;
         NonDeductibleVATPct := NonDeductibleVATCZL.GetNonDeductibleVATPct(PurchaseLine);
         IsHandled := true;
     end;
@@ -28,7 +29,8 @@ codeunit 31146 "Non-Deductible VAT Handler CZL"
     begin
         if IsHandled then
             exit;
-
+        if not NonDeductibleVATCZL.IsNonDeductibleVATEnabled() then
+            exit;
         NonDeductibleVATPct := NonDeductibleVATCZL.GetNonDeductibleVATPct(GenJournalLine);
         IsHandled := true;
     end;

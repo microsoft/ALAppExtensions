@@ -6,14 +6,12 @@
 
 namespace Agent.SalesOrderTaker;
 
-using System.Security.AccessControl;
-
-permissionset 4330 "SOA - Edit"
+permissionset 4409 "SOA - Edit"
 {
-    Caption = 'Sales Order Taker Agent - Edit';
-    Assignable = true;
-    IncludedPermissionSets = LOGIN,
-                             "Webhook - Edit",
-                             "D365 SALES",
-                             "SOA - Read";
+    Caption = 'Sales Order Taker Agent - Read';
+    Assignable = false;
+    IncludedPermissionSets = "SOA - Read";
+
+    Permissions = tabledata "SOA Setup" = IMD;
+
 }

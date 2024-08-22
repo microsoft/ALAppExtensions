@@ -49,7 +49,7 @@ page 4320 "Agent Access Control"
                         AgentImpl: Codeunit "Agent Impl.";
                     begin
                         if Rec.Access = Rec.Access::User then
-                            AgentImpl.EnsureOwnerExists(Rec);
+                            AgentImpl.VerifyOwnerExists(Rec);
                     end;
                 }
             }
@@ -70,7 +70,7 @@ page 4320 "Agent Access Control"
     var
         AgentImpl: Codeunit "Agent Impl.";
     begin
-        AgentImpl.EnsureOwnerExists(Rec);
+        AgentImpl.VerifyOwnerExists(Rec);
     end;
 
     local procedure ValidateUserName(NewUserName: Text)

@@ -67,6 +67,11 @@ codeunit 4300 "Agent Monitoring Impl."
     end;
 
     internal procedure CreateTaskMessage(MessageText: Text; var CurrentAgentTask: Record "Agent Task")
+    begin
+        CreateTaskMessage(MessageText, '', CurrentAgentTask);
+    end;
+
+    internal procedure CreateTaskMessage(MessageText: Text; ExternalMessageId: Text[2048]; var CurrentAgentTask: Record "Agent Task")
     var
         AgentTask: Record "Agent Task";
         AgentTaskMessage: Record "Agent Task Message";
@@ -77,12 +82,14 @@ codeunit 4300 "Agent Monitoring Impl."
         if not AgentTask.Get(CurrentAgentTask.RecordId) then begin
             AgentTask."Agent User Security ID" := CurrentAgentTask."Agent User Security ID";
             AgentTask."Created By" := UserSecurityId();
-            AgentTask.Status := AgentTask.Status::Stopped;
+            AgentTask.Status := AgentTask.Status::Paused;
+            AgentTask.Title := CurrentAgentTask.Title;
             AgentTask.Insert();
         end;
 
         AgentTaskMessage."Task ID" := AgentTask.ID;
         AgentTaskMessage."Type" := AgentTaskMessage."Type"::Input;
+        AgentTaskMessage."External ID" := ExternalMessageId;
         AgentTaskMessage.Insert();
 
         SetMessageText(AgentTaskMessage, MessageText);
@@ -91,45 +98,43 @@ codeunit 4300 "Agent Monitoring Impl."
         AgentTask.Modify(true);
     end;
 
-    internal procedure CreateUserInterventionTaskStep(TaskID: BigInteger; UserInput: Text)
+    internal procedure CreateUserInterventionTaskStep(UserInterventionRequestStep: Record "Agent Task Step"; UserInput: Text)
     var
         AgentTask: Record "Agent Task";
         AgentTaskStep: Record "Agent Task Step";
         DetailsOutStream: OutStream;
         DetailsJson: JsonObject;
     begin
-
-        AgentTask.Get(TaskID);
+        AgentTask.Get(UserInterventionRequestStep."Task ID");
 
         AgentTaskStep."Task ID" := AgentTask.ID;
         AgentTaskStep."Type" := AgentTaskStep."Type"::"User Intervention";
         AgentTaskStep.Description := 'User intervention';
-        if (UserInput <> '') then begin
+        DetailsJson.Add('interventionRequestStepNumber', UserInterventionRequestStep."Step Number");
+        if (UserInput <> '') then
             DetailsJson.Add('userInput', UserInput);
-            AgentTaskStep.CalcFields(Details);
-            Clear(AgentTaskStep.Details);
-            AgentTaskStep.Details.CreateOutStream(DetailsOutStream, GetDefaultEncoding());
-            DetailsJson.WriteTo(DetailsOutStream);
-        end;
+        AgentTaskStep.CalcFields(Details);
+        Clear(AgentTaskStep.Details);
+        AgentTaskStep.Details.CreateOutStream(DetailsOutStream, GetDefaultEncoding());
+        DetailsJson.WriteTo(DetailsOutStream);
         AgentTaskStep.Insert();
+    end;
 
-        AgentTask.Status := AgentTask.Status::Ready;
+    internal procedure StopTask(var AgentTask: Record "Agent Task"; AgentTaskStatus: enum "Agent Task Status"; UserConfirm: Boolean)
+    begin
+        if UserConfirm then
+            if not Confirm(AreYouSureThatYouWantToStopTheTaskQst) then
+                exit;
+
+        AgentTask.Status := AgentTaskStatus;
         AgentTask.Modify(true);
     end;
 
-    internal procedure StopTask(var AgentTask: Record "Agent Task")
+    internal procedure RestartTask(var AgentTask: Record "Agent Task"; UserConfirm: Boolean)
     begin
-        if not Confirm(AreYouSureThatYouWantToStopTheTaskQst) then
-            exit;
-
-        AgentTask.Status := AgentTask.Status::Stopped;
-        AgentTask.Modify(true);
-    end;
-
-    internal procedure RestartTask(var AgentTask: Record "Agent Task")
-    begin
-        if not Confirm(AreYouSureThatYouWantToRestartTheTaskQst) then
-            exit;
+        if UserConfirm then
+            if not Confirm(AreYouSureThatYouWantToRestartTheTaskQst) then
+                exit;
 
         AgentTask.Status := AgentTask.Status::Ready;
         AgentTask.Modify(true);
@@ -150,7 +155,26 @@ codeunit 4300 "Agent Monitoring Impl."
             Error('');
     end;
 
-    local procedure GetDefaultEncoding(): TextEncoding
+    procedure IsAgentEnabled(AgentSecurityId: Guid): Boolean
+    var
+        Agent: Record "Agent";
+    begin
+        Agent.SetRange("User Security ID", AgentSecurityId);
+        Agent.SetRange(State, Agent.State::Enabled);
+
+        if Agent.IsEmpty() then
+            exit(false);
+
+        exit(true);
+    end;
+
+    procedure UpdateAgentTaskMessageStatus(var AgentTaskMessage: Record "Agent Task Message"; Status: Option)
+    begin
+        AgentTaskMessage.Status := Status;
+        AgentTaskMessage.Modify(true);
+    end;
+
+    procedure GetDefaultEncoding(): TextEncoding
     begin
         exit(TextEncoding::UTF8);
     end;

@@ -33,6 +33,7 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Initial Import Line" = r,
         tabledata "Shpfy Inventory Item" = R,
         tabledata "Shpfy Invoice Header" = R,
+        tabledata "Shpfy Language" = R,
         tabledata "Shpfy Log Entry" = R,
         tabledata "Shpfy Metafield" = R,
         tabledata "Shpfy Order Attribute" = R,
@@ -66,6 +67,7 @@ permissionset 30100 "Shpfy - Read"
         tabledata "Shpfy Tag" = R,
         tabledata "Shpfy Tax Area" = R,
         tabledata "Shpfy Transaction Gateway" = R,
+        tabledata "Shpfy Translation" = R,
         tabledata "Shpfy Variant" = R;
 }
 #pragma warning restore AS0090, AS0049

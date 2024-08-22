@@ -146,11 +146,18 @@ table 31003 "Advance Letter Template CZZ"
             Caption = 'Automatic Post VAT Document';
             DataClassification = CustomerContent;
         }
-        field(26; "Post VAT Doc. for Rev. Charge"; Boolean)
+        field(26; "Automatic Post Non-Ded. VAT"; Boolean)
+        {
+            Caption = 'Automatic Post Non-Deductible VAT';
+            DataClassification = CustomerContent;
+            ToolTip = 'Specifies whether non-deductible VAT will be applied to the tax documents automatically. If you select NO, the system will ask you if you want to reduce input tax every time you post a tax document for non-deductible VAT. If you select YES, the reduction will be done automatically after the tax document is posted to the prepayment, if a combination of VAT posting groups with non-deductible VAT is set up in it.';
+        }
+        field(30; "Post VAT Doc. for Rev. Charge"; Boolean)
         {
             Caption = 'Post VAT Document for Reverse Charge';
             DataClassification = CustomerContent;
             InitValue = true;
+            ToolTip = 'Specifies whether the VAT document will be posting for reverse charge.';
         }
     }
     keys

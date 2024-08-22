@@ -114,18 +114,26 @@ codeunit 5376 "Create E-Document Transactions"
     var
         SalesHeader: Record "Sales Header";
         SalesInvHeader: Record "Sales Invoice Header";
+        SalesSetup: Record "Sales & Receivables Setup";
         ContosoCustomer: Codeunit "Create Common Customer/Vendor";
         CreateEDocTransactions: Codeunit "Create E-Document Transactions";
         ExportSalesInv: Codeunit "Exp. Sales Inv. PEPPOL BIS3.0";
         TempBlob: Codeunit "Temp Blob";
         TempBlobList: Codeunit "Temp Blob List";
         OutStr: OutStream;
+        TempDate: Date;
     begin
         BindSubscription(CreateEDocTransactions);
+
+        SalesSetup.Get();
+        TempDate := SalesSetup."Allow Document Deletion Before";
+        SalesSetup."Allow Document Deletion Before" := WorkDate() + 1;
+        SalesSetup.Modify();
 
         SalesHeader := CreateSalesInvoice(ContosoCustomer.DomesticCustomer1());
         SalesHeader."Your Reference" := '1';
         SalesHeader."External Document No." := '1';
+        SalesHeader."No. Printed" := 1;
         SalesHeader.Modify();
         SalesInvHeader.TransferFields(SalesHeader);
         SalesInvHeader.Insert();
@@ -139,12 +147,13 @@ codeunit 5376 "Create E-Document Transactions"
         TempBlob.CreateOutStream(OutStr);
         ExportSalesInv.GenerateXMLFile(SalesInvHeader, OutStr);
         TempBlobList.Add(TempBlob);
-        SalesInvHeader.Delete();
+        SalesInvHeader.Delete(true);
         SalesHeader.Delete();
 
         SalesHeader := CreateSalesInvoice(ContosoCustomer.DomesticCustomer1());
         SalesHeader."Your Reference" := '1';
         SalesHeader."External Document No." := '1';
+        SalesHeader."No. Printed" := 1;
         SalesHeader.Modify();
         SalesInvHeader.TransferFields(SalesHeader);
         SalesInvHeader.Insert();
@@ -168,12 +177,13 @@ codeunit 5376 "Create E-Document Transactions"
         TempBlob.CreateOutStream(OutStr);
         ExportSalesInv.GenerateXMLFile(SalesInvHeader, OutStr);
         TempBlobList.Add(TempBlob);
-        SalesInvHeader.Delete();
+        SalesInvHeader.Delete(true);
         SalesHeader.Delete();
 
         SalesHeader := CreateSalesInvoice(ContosoCustomer.DomesticCustomer1());
         SalesHeader."Your Reference" := '1';
         SalesHeader."External Document No." := '1';
+        SalesHeader."No. Printed" := 1;
         SalesHeader.Modify();
         SalesInvHeader.TransferFields(SalesHeader);
         SalesInvHeader.Insert();
@@ -187,12 +197,13 @@ codeunit 5376 "Create E-Document Transactions"
         TempBlob.CreateOutStream(OutStr);
         ExportSalesInv.GenerateXMLFile(SalesInvHeader, OutStr);
         TempBlobList.Add(TempBlob);
-        SalesInvHeader.Delete();
+        SalesInvHeader.Delete(true);
         SalesHeader.Delete();
 
         SalesHeader := CreateSalesInvoice(ContosoCustomer.DomesticCustomer1());
         SalesHeader."Your Reference" := '1';
         SalesHeader."External Document No." := '1';
+        SalesHeader."No. Printed" := 1;
         SalesHeader.Modify();
         SalesInvHeader.TransferFields(SalesHeader);
         SalesInvHeader.Insert();
@@ -211,12 +222,13 @@ codeunit 5376 "Create E-Document Transactions"
         TempBlob.CreateOutStream(OutStr);
         ExportSalesInv.GenerateXMLFile(SalesInvHeader, OutStr);
         TempBlobList.Add(TempBlob);
-        SalesInvHeader.Delete();
+        SalesInvHeader.Delete(true);
         SalesHeader.Delete();
 
         SalesHeader := CreateSalesInvoice(ContosoCustomer.DomesticCustomer1());
         SalesHeader."Your Reference" := '1';
         SalesHeader."External Document No." := '1';
+        SalesHeader."No. Printed" := 1;
         SalesHeader.Modify();
         SalesInvHeader.TransferFields(SalesHeader);
         SalesInvHeader.Insert();
@@ -233,12 +245,13 @@ codeunit 5376 "Create E-Document Transactions"
         TempBlob.CreateOutStream(OutStr);
         ExportSalesInv.GenerateXMLFile(SalesInvHeader, OutStr);
         TempBlobList.Add(TempBlob);
-        SalesInvHeader.Delete();
+        SalesInvHeader.Delete(true);
         SalesHeader.Delete();
 
         SalesHeader := CreateSalesInvoice(ContosoCustomer.DomesticCustomer1());
         SalesHeader."Your Reference" := '1';
         SalesHeader."External Document No." := '1';
+        SalesHeader."No. Printed" := 1;
         SalesHeader.Modify();
         SalesInvHeader.TransferFields(SalesHeader);
         SalesInvHeader.Insert();
@@ -252,8 +265,12 @@ codeunit 5376 "Create E-Document Transactions"
         TempBlob.CreateOutStream(OutStr);
         ExportSalesInv.GenerateXMLFile(SalesInvHeader, OutStr);
         TempBlobList.Add(TempBlob);
-        SalesInvHeader.Delete();
+        SalesInvHeader.Delete(true);
         SalesHeader.Delete();
+
+        SalesSetup.Get();
+        SalesSetup."Allow Document Deletion Before" := TempDate;
+        SalesSetup.Modify();
 
         UnbindSubscription(CreateEDocTransactions);
         exit(TempBlobList);

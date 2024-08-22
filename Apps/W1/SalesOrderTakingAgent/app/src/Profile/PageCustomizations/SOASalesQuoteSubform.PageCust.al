@@ -11,6 +11,7 @@ pagecustomization "SOA Sales Quote Subform" customizes "Sales Quote Subform"
 {
     ClearActions = true;
     ClearLayout = true;
+    DeleteAllowed = false;
 
     layout
     {
@@ -76,10 +77,5 @@ pagecustomization "SOA Sales Quote Subform" customizes "Sales Quote Subform"
         {
             Visible = true;
         }
-    }
-
-    actions
-    {
-
     }
 }

@@ -24,6 +24,10 @@ page 4300 "Agent Task List"
         {
             repeater(AgentConversations)
             {
+                field(Title; Rec.Title)
+                {
+                    Caption = 'Title';
+                }
                 field(LastStepTimestamp; Rec."Last Step Timestamp")
                 {
                     Caption = 'Last Updated';
@@ -149,7 +153,7 @@ page 4300 "Agent Task List"
                 var
                     AgentMonitoringImpl: Codeunit "Agent Monitoring Impl.";
                 begin
-                    AgentMonitoringImpl.StopTask(Rec);
+                    AgentMonitoringImpl.StopTask(Rec, Rec."Status"::"Stopped by User", true);
                     CurrPage.Update(false);
                 end;
             }
@@ -164,7 +168,7 @@ page 4300 "Agent Task List"
                 var
                     AgentMonitoringImpl: Codeunit "Agent Monitoring Impl.";
                 begin
-                    AgentMonitoringImpl.RestartTask(Rec);
+                    AgentMonitoringImpl.RestartTask(Rec, true);
                     CurrPage.Update(false);
                 end;
             }
@@ -181,7 +185,6 @@ page 4300 "Agent Task List"
                     UserInterventionRequestStep: Record "Agent Task Step";
                     AgentUserIntervention: Page "Agent User Intervention";
                 begin
-                    Rec.CalcFields("Last Step Number");
                     UserInterventionRequestStep.Get(Rec.ID, Rec."Last Step Number");
                     AgentUserIntervention.SetUserInterventionRequestStep(UserInterventionRequestStep);
                     AgentUserIntervention.RunModal();
@@ -200,6 +203,9 @@ page 4300 "Agent Task List"
                 {
                 }
                 actionref(CreateTask_Promoted; CreateTask)
+                {
+                }
+                actionref(UserIntervention_Promoted; UserIntervention)
                 {
                 }
             }

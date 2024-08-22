@@ -2770,6 +2770,25 @@ codeunit 139664 "GP Data Migration Tests"
         Assert.IsTrue(PurchaseHeader.IsEmpty(), 'POs should not have been created.');
     end;
 
+    [Test]
+    procedure TestPhoneFaxContainsAlphaCharsCheck()
+    begin
+        Assert.IsTrue(HelperFunctions.ContainsAlphaChars('2985550101000x'), 'Phone/Fax number does have an alpha character.');
+        Assert.IsFalse(HelperFunctions.ContainsAlphaChars('29855501010000'), 'Phone/Fax number does not have an alpha character.');
+        Assert.IsTrue(HelperFunctions.ContainsAlphaChars('a'), 'Phone/Fax number does have an alpha character.');
+        Assert.IsTrue(HelperFunctions.ContainsAlphaChars('b'), 'Phone/Fax number does have an alpha character.');
+        Assert.IsTrue(HelperFunctions.ContainsAlphaChars('c'), 'Phone/Fax number does have an alpha character.');
+        Assert.IsTrue(HelperFunctions.ContainsAlphaChars('x'), 'Phone/Fax number does have an alpha character.');
+        Assert.IsTrue(HelperFunctions.ContainsAlphaChars('y'), 'Phone/Fax number does have an alpha character.');
+        Assert.IsTrue(HelperFunctions.ContainsAlphaChars('z'), 'Phone/Fax number does have an alpha character.');
+        Assert.IsTrue(HelperFunctions.ContainsAlphaChars('A'), 'Phone/Fax number does have an alpha character.');
+        Assert.IsTrue(HelperFunctions.ContainsAlphaChars('B'), 'Phone/Fax number does have an alpha character.');
+        Assert.IsTrue(HelperFunctions.ContainsAlphaChars('C'), 'Phone/Fax number does have an alpha character.');
+        Assert.IsTrue(HelperFunctions.ContainsAlphaChars('X'), 'Phone/Fax number does have an alpha character.');
+        Assert.IsTrue(HelperFunctions.ContainsAlphaChars('Y'), 'Phone/Fax number does have an alpha character.');
+        Assert.IsTrue(HelperFunctions.ContainsAlphaChars('Z'), 'Phone/Fax number does have an alpha character.');
+    end;
+
     [Normal]
     local procedure Initialize()
     var

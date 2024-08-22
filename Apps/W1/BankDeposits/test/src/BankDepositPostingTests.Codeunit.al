@@ -643,6 +643,100 @@ codeunit 139769 "Bank Deposit Posting Tests"
         Assert.IsTrue(CustomerEntryFound, 'Customer Ledger Entry should be found');
     end;
 
+    [Test]
+    [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
+    procedure PostedBankDepositReportShowsCustomerApplications()
+    var
+        Item: Record Item;
+        TaxGroup: Record "Tax Group";
+        Customer: Record Customer;
+        BankDepositHeader: Record "Bank Deposit Header";
+        PostedBankDepositLine: Record "Posted Bank Deposit Line";
+        SalesLine: Record "Sales Line";
+        GenJournalLine: Record "Gen. Journal Line";
+        CustLedgerEntry: Record "Cust. Ledger Entry";
+        PaymentCustLedgerEntry: Record "Cust. Ledger Entry";
+        AppliedCustLedgerEntry: Record "Cust. Ledger Entry" temporary;
+        BankDeposit: Report "Bank Deposit";
+        EntryApplicationMgt: Codeunit "Entry Application Mgt";
+        InvoiceEntryNo: Integer;
+    begin
+        // [SCENARIO 542679] Applications on Customer Ledger Entries are correctly retrieved for posted bank deposits
+        // [GIVEN] A posted bank deposit fully applied to an open sales document.
+        Initialize();
+        LibraryERM.CreateTaxGroup(TaxGroup);
+        LibrarySales.CreateCustomer(Customer);
+        LibraryInventory.CreateItem(Item);
+        CreateAndPostSalesDocument(
+          SalesLine, Customer."No.", SalesLine."Document Type"::Order, SalesLine.Type::Item, Item."No.",
+          LibraryRandom.RandInt(10), LibraryRandom.RandDec(100, 2));
+        CreateBankDeposit(
+          BankDepositHeader, SalesLine."Sell-to Customer No.", GenJournalLine."Account Type"::Customer, -1);
+        CustLedgerEntry.SetRange("Customer No.", Customer."No.");
+        CustLedgerEntry.FindLast();
+        InvoiceEntryNo := CustLedgerEntry."Entry No.";
+        UpdateGenJournalLine(BankDepositHeader, SalesLine);
+        UpdateBankDepositHeaderWithAmount(BankDepositHeader);
+
+        PostBankDeposit(BankDepositHeader);
+
+        // [WHEN] Getting the applied customer ledger entries as the report does
+        PostedBankDepositLine.SetRange("Bank Deposit No.", BankDepositHeader."No.");
+        PostedBankDepositLine.FindFirst();
+        BankDeposit.FilterDepositCustLedgerEntry(PostedBankDepositLine, PaymentCustLedgerEntry);
+        // [THEN] Only one entry is attached to the deposit line
+        Assert.RecordCount(PaymentCustLedgerEntry, 1);
+        PaymentCustLedgerEntry.FindFirst();
+        // [THEN] Only one invoice entry is found as applied
+        EntryApplicationMgt.GetAppliedCustEntries(AppliedCustLedgerEntry, PaymentCustLedgerEntry, false);
+        Assert.RecordCount(AppliedCustLedgerEntry, 1);
+        Assert.AreEqual(AppliedCustLedgerEntry."Entry No.", InvoiceEntryNo, 'The found entry should be the invoice.');
+    end;
+
+    [Test]
+    [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
+    procedure PostedBankDepositReportShowsVendorApplications()
+    var
+        BankDepositHeader: Record "Bank Deposit Header";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        GenJournalLine: Record "Gen. Journal Line";
+        PaymentVendorLedgerEntry: Record "Vendor Ledger Entry";
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+        PostedBankDepositLine: Record "Posted Bank Deposit Line";
+        AppliedVendorLedgerEntry: Record "Vendor Ledger Entry" temporary;
+        BankDeposit: Report "Bank Deposit";
+        EntryApplicationMgt: Codeunit "Entry Application Mgt";
+        InvoiceEntryNo: Integer;
+    begin
+        // [SCENARIO 542679] Applications on Vendor Ledger Entries are correctly retrieved for posted bank deposits
+        // [GIVEN] A posted bank deposit fully applied to an open purchase document.
+        Initialize();
+        LibraryPurchase.CreatePurchaseInvoice(PurchaseHeader);
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        LibraryERM.FindVendorLedgerEntry(VendorLedgerEntry, VendorLedgerEntry."Document Type"::Invoice, PurchaseHeader."Last Posting No.");
+        InvoiceEntryNo := VendorLedgerEntry."Entry No.";
+        CreateBankDeposit(BankDepositHeader, PurchaseLine."Buy-from Vendor No.", GenJournalLine."Account Type"::Vendor, 1);
+        BankDepositHeader."Total Deposit Amount" := -550;
+        GenJournalLine.SetRange("Journal Batch Name", BankDepositHeader."Journal Batch Name");
+        GenJournalLine.SetRange("Journal Template Name", BankDepositHeader."Journal Template Name");
+        GenJournalLine.FindLast();
+        GenJournalLine.Validate(Amount, 550);
+        GenJournalLine.Modify();
+        UpdateApplicationOnGenJournalLine(GenJournalLine, BankDepositHeader."Journal Template Name", BankDepositHeader."Journal Batch Name", VendorLedgerEntry."Document No.", 0D, 550);
+        PostBankDeposit(BankDepositHeader);
+        // [WHEN] Getting the applied vendor ledger entries as the report does
+        PostedBankDepositLine.SetRange("Bank Deposit No.", BankDepositHeader."No.");
+        PostedBankDepositLine.FindFirst();
+        BankDeposit.FilterDepositVendorLedgerEntry(PostedBankDepositLine, PaymentVendorLedgerEntry);
+        // [THEN] Only one entry is attached to the deposit line
+        Assert.RecordCount(PaymentVendorLedgerEntry, 1);
+        // [THEN] Only one invoice entry is found as applied
+        EntryApplicationMgt.GetAppliedVendEntries(AppliedVendorLedgerEntry, PaymentVendorLedgerEntry, false);
+        Assert.RecordCount(AppliedVendorLedgerEntry, 1);
+        Assert.AreEqual(AppliedVendorLedgerEntry."Entry No.", InvoiceEntryNo, 'The found entry should be the invoice.');
+    end;
+
     local procedure Initialize()
     var
         InventorySetup: Record "Inventory Setup";

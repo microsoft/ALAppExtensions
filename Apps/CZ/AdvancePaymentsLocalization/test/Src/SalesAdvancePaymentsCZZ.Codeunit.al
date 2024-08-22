@@ -16,6 +16,7 @@ codeunit 148109 "Sales Advance Payments CZZ"
         LibraryCashDeskCZP: Codeunit "Library - Cash Desk CZP";
         LibraryCashDocumentCZP: Codeunit "Library - Cash Document CZP";
         LibraryDialogHandler: Codeunit "Library - Dialog Handler";
+        LibraryJob: Codeunit "Library - Job";
         LibraryJournals: Codeunit "Library - Journals";
         LibraryERM: Codeunit "Library - ERM";
         LibraryRandom: Codeunit "Library - Random";
@@ -2602,6 +2603,134 @@ codeunit 148109 "Sales Advance Payments CZZ"
         SetPostVATDocForReverseCharge(false);
     end;
 
+    [Test]
+    [HandlerFunctions('CreateSalesAdvLetterHandler,ConfirmHandler')]
+    procedure CreateSalesAdvanceLetterFromJobFor100Per()
+    begin
+        // [SCENARIO] Create sales advance letter from project for 100% of amount
+        // [GIVEN] Project has been created
+        // [GIVEN] Project task has been created
+        // [GIVEN] Project planning line has been created
+        // [GIVEN] Sales advance letter for 100% has been created from project
+        // [WHEN] Release sales advance letter
+        // [THEN] Sales advance letter will be created for 100% of project amount
+        // [THEN] Sales advance letter will be linked with project
+        CreateSalesAdvanceLetterFromJobForAdvancePer(100);
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateSalesAdvLetterHandler,ConfirmHandler')]
+    procedure CreateSalesAdvanceLetterFromJobFor80Per()
+    begin
+        // [SCENARIO] Create sales advance letter from project for 80% of amount
+        // [GIVEN] Project has been created
+        // [GIVEN] Project task has been created
+        // [GIVEN] Project planning line has been created
+        // [GIVEN] Sales advance letter for 80% has been created from project
+        // [WHEN] Release sales advance letter
+        // [THEN] Sales advance letter will be created for 80% of project amount
+        // [THEN] Sales advance letter will be linked with project
+        CreateSalesAdvanceLetterFromJobForAdvancePer(80);
+    end;
+
+    procedure CreateSalesAdvanceLetterFromJobForAdvancePer(AdvancePer: Decimal)
+    var
+        Currency: Record Currency;
+        Job: Record Job;
+        JobTask: Record "Job Task";
+        JobPlanningLine: Record "Job Planning Line";
+        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+        AdvanceAmount: Decimal;
+    begin
+        Initialize();
+
+        LibraryJob.CreateJob(Job);
+        LibraryJob.CreateJobTask(Job, JobTask);
+        LibraryJob.CreateJobPlanningLine(
+            "Job Planning Line Line Type"::Billable, "Job Planning Line Type"::"G/L Account", JobTask, JobPlanningLine);
+
+        SetExpectedConfirm(OpenAdvanceLetterQst, false);
+        CreateSalesAdvLetterFrom(Job, AdvanceLetterTemplateCZZ.Code, AdvancePer, 0, false, SalesAdvLetterHeaderCZZ);
+        Currency.InitRoundingPrecision();
+        AdvanceAmount := Round(JobPlanningLine.CalcLineAmountIncludingVAT() * (AdvancePer / 100), Currency."Amount Rounding Precision");
+
+        LibrarySalesAdvancesCZZ.ReleaseSalesAdvLetter(SalesAdvLetterHeaderCZZ);
+
+        SalesAdvLetterHeaderCZZ.CalcFields("Amount Including VAT");
+        SalesAdvLetterHeaderCZZ.TestField("Amount Including VAT", AdvanceAmount);
+        SalesAdvLetterHeaderCZZ.TestField(Status, SalesAdvLetterHeaderCZZ.Status::"To Pay");
+        SalesAdvLetterHeaderCZZ.TestField("Job No.", Job."No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateSalesAdvLetterHandler,ConfirmHandler')]
+    procedure CreateSalesAdvanceLetterFromJobTaskFor100Per()
+    begin
+        // [SCENARIO] Create sales advance letter from project task for 100% of amount
+        // [GIVEN] Project has been created
+        // [GIVEN] First project task has been created
+        // [GIVEN] First project planning line has been created
+        // [GIVEN] Second project task has been created
+        // [GIVEN] Second project planning line has been created
+        // [GIVEN] Sales advance letter for 100% has been created from first project task
+        // [WHEN] Release sales advance letter
+        // [THEN] Sales advance letter will be created for 100% of first project task amount
+        // [THEN] Sales advance letter will be linked with first project task
+        CreateSalesAdvanceLetterFromJobTaskForAdvancePer(100);
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateSalesAdvLetterHandler,ConfirmHandler')]
+    procedure CreateSalesAdvanceLetterFromJobTaskFor80Per()
+    begin
+        // [SCENARIO] Create sales advance letter from project task for 80% of amount
+        // [GIVEN] Project has been created
+        // [GIVEN] First project task has been created
+        // [GIVEN] First project planning line has been created
+        // [GIVEN] Second project task has been created
+        // [GIVEN] Second project planning line has been created
+        // [GIVEN] Sales advance letter for 80% has been created from first project task
+        // [WHEN] Release sales advance letter
+        // [THEN] Sales advance letter will be created for 80% of first project task amount
+        // [THEN] Sales advance letter will be linked with first project task
+        CreateSalesAdvanceLetterFromJobTaskForAdvancePer(80);
+    end;
+
+    procedure CreateSalesAdvanceLetterFromJobTaskForAdvancePer(AdvancePer: Decimal)
+    var
+        Currency: Record Currency;
+        Job: Record Job;
+        JobTask1: Record "Job Task";
+        JobTask2: Record "Job Task";
+        JobPlanningLine1: Record "Job Planning Line";
+        JobPlanningLine2: Record "Job Planning Line";
+        SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ";
+        AdvanceAmount: Decimal;
+    begin
+        Initialize();
+
+        LibraryJob.CreateJob(Job);
+        LibraryJob.CreateJobTask(Job, JobTask1);
+        LibraryJob.CreateJobPlanningLine(
+            "Job Planning Line Line Type"::Billable, "Job Planning Line Type"::"G/L Account", JobTask1, JobPlanningLine1);
+        LibraryJob.CreateJobTask(Job, JobTask2);
+        LibraryJob.CreateJobPlanningLine(
+            "Job Planning Line Line Type"::Billable, "Job Planning Line Type"::"G/L Account", JobTask2, JobPlanningLine2);
+
+        SetExpectedConfirm(OpenAdvanceLetterQst, false);
+        CreateSalesAdvLetterFrom(JobTask1, AdvanceLetterTemplateCZZ.Code, AdvancePer, 0, false, SalesAdvLetterHeaderCZZ);
+        Currency.InitRoundingPrecision();
+        AdvanceAmount := Round(JobPlanningLine1.CalcLineAmountIncludingVAT() * (AdvancePer / 100), Currency."Amount Rounding Precision");
+
+        LibrarySalesAdvancesCZZ.ReleaseSalesAdvLetter(SalesAdvLetterHeaderCZZ);
+
+        SalesAdvLetterHeaderCZZ.CalcFields("Amount Including VAT");
+        SalesAdvLetterHeaderCZZ.TestField("Amount Including VAT", AdvanceAmount);
+        SalesAdvLetterHeaderCZZ.TestField(Status, SalesAdvLetterHeaderCZZ.Status::"To Pay");
+        SalesAdvLetterHeaderCZZ.TestField("Job No.", JobTask1."Job No.");
+        SalesAdvLetterHeaderCZZ.TestField("Job Task No.", JobTask1."Job Task No.");
+    end;
+
     local procedure CreateSalesAdvLetterBase(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; var SalesAdvLetterLineCZZ: Record "Sales Adv. Letter Line CZZ"; CustomerNo: Code[20]; CurrencyCode: Code[10]; VATPostingSetup: Record "VAT Posting Setup")
     var
         Customer: Record Customer;
@@ -2648,23 +2777,20 @@ codeunit 148109 "Sales Advance Payments CZZ"
 
     local procedure CreateSalesAdvLetterFromOrderWithAdvanceAmount(var SalesHeader: Record "Sales Header"; AdvanceLetterCode: Code[20]; AdvanceAmount: Decimal; SuggestByLine: Boolean; var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
     begin
-        CreateSalesAdvLetterFromOrder(SalesHeader, AdvanceLetterCode, 0, AdvanceAmount, SuggestByLine, SalesAdvLetterHeaderCZZ);
+        CreateSalesAdvLetterFrom(SalesHeader, AdvanceLetterCode, 0, AdvanceAmount, SuggestByLine, SalesAdvLetterHeaderCZZ);
     end;
 
     local procedure CreateSalesAdvLetterFromOrderWithAdvancePer(var SalesHeader: Record "Sales Header"; AdvanceLetterCode: Code[20]; AdvancePer: Decimal; SuggestByLine: Boolean; var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
     begin
-        CreateSalesAdvLetterFromOrder(SalesHeader, AdvanceLetterCode, AdvancePer, 0, SuggestByLine, SalesAdvLetterHeaderCZZ);
+        CreateSalesAdvLetterFrom(SalesHeader, AdvanceLetterCode, AdvancePer, 0, SuggestByLine, SalesAdvLetterHeaderCZZ);
     end;
 
-    local procedure CreateSalesAdvLetterFromOrder(var SalesHeader: Record "Sales Header"; AdvanceLetterCode: Code[20]; AdvancePer: Decimal; AdvanceAmount: Decimal; SuggestByLine: Boolean; var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
+    local procedure CreateSalesAdvLetterFrom(var SalesHeader: Record "Sales Header"; AdvanceLetterCode: Code[20]; AdvancePer: Decimal; AdvanceAmount: Decimal; SuggestByLine: Boolean; var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
     var
         AdvanceLetterApplicationCZZ: Record "Advance Letter Application CZZ";
     begin
         Commit();
-        LibraryVariableStorage.Enqueue(AdvanceLetterCode);
-        LibraryVariableStorage.Enqueue(AdvancePer);
-        LibraryVariableStorage.Enqueue(AdvanceAmount);
-        LibraryVariableStorage.Enqueue(SuggestByLine);
+        InitCreateSalesAdvLetter(AdvanceLetterCode, AdvancePer, AdvanceAmount, SuggestByLine);
         LibrarySalesAdvancesCZZ.CreateSalesAdvanceLetterFromOrder(SalesHeader);
 
         AdvanceLetterApplicationCZZ.SetRange("Advance Letter Type", AdvanceLetterApplicationCZZ."Advance Letter Type"::Sales);
@@ -2672,6 +2798,35 @@ codeunit 148109 "Sales Advance Payments CZZ"
         AdvanceLetterApplicationCZZ.SetRange("Document No.", SalesHeader."No.");
         AdvanceLetterApplicationCZZ.FindFirst();
         SalesAdvLetterHeaderCZZ.Get(AdvanceLetterApplicationCZZ."Advance Letter No.");
+    end;
+
+    local procedure CreateSalesAdvLetterFrom(var Job: Record Job; AdvanceLetterCode: Code[20]; AdvancePer: Decimal; AdvanceAmount: Decimal; SuggestByLine: Boolean; var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
+    begin
+        Commit();
+        InitCreateSalesAdvLetter(AdvanceLetterCode, AdvancePer, AdvanceAmount, SuggestByLine);
+        LibrarySalesAdvancesCZZ.CreateSalesAdvanceLetterFromJob(Job);
+
+        SalesAdvLetterHeaderCZZ.SetRange("Job No.", Job."No.");
+        SalesAdvLetterHeaderCZZ.FindFirst();
+    end;
+
+    local procedure CreateSalesAdvLetterFrom(var JobTask: Record "Job Task"; AdvanceLetterCode: Code[20]; AdvancePer: Decimal; AdvanceAmount: Decimal; SuggestByLine: Boolean; var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ")
+    begin
+        Commit();
+        InitCreateSalesAdvLetter(AdvanceLetterCode, AdvancePer, AdvanceAmount, SuggestByLine);
+        LibrarySalesAdvancesCZZ.CreateSalesAdvanceLetterFromJobTask(JobTask);
+
+        SalesAdvLetterHeaderCZZ.SetRange("Job No.", JobTask."Job No.");
+        SalesAdvLetterHeaderCZZ.SetRange("Job Task No.", JobTask."Job Task No.");
+        SalesAdvLetterHeaderCZZ.FindFirst();
+    end;
+
+    local procedure InitCreateSalesAdvLetter(AdvanceLetterCode: Code[20]; AdvancePer: Decimal; AdvanceAmount: Decimal; SuggestByLine: Boolean)
+    begin
+        LibraryVariableStorage.Enqueue(AdvanceLetterCode);
+        LibraryVariableStorage.Enqueue(AdvancePer);
+        LibraryVariableStorage.Enqueue(AdvanceAmount);
+        LibraryVariableStorage.Enqueue(SuggestByLine);
     end;
 
     local procedure CreateAndPostPaymentSalesAdvLetter(var SalesAdvLetterHeaderCZZ: Record "Sales Adv. Letter Header CZZ"; Amount: Decimal; ExchangeRate: Decimal; PostingDate: Date): Decimal

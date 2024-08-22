@@ -75,9 +75,20 @@ table 1917 "MigrationQB Config"
             Insert();
         end;
     end;
+#if not CLEAN25
 
     [NonDebuggable]
+    [Obsolete('Replaced by InitializeOnlineConfig(AccessToken: SecretText; RealmId: Text)', '25.0')]
     procedure InitializeOnlineConfig(AccessToken: Text; RealmId: Text)
+    var
+        AccessTokenAsSecretText: SecretText;
+    begin
+        AccessTokenAsSecretText := AccessToken;
+        InitializeOnlineConfig(AccessTokenAsSecretText, RealmId);
+    end;
+#endif
+
+    procedure InitializeOnlineConfig(AccessToken: SecretText; RealmId: Text)
     begin
         if not Get() then begin
             Init();

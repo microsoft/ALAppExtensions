@@ -6,14 +6,11 @@
 
 namespace Agent.SalesOrderTaker;
 
-using Microsoft.Warehouse.Activity;
-
-permissionset 4332 "SOA - Read"
+permissionset 4408 "SOA - Read"
 {
     Caption = 'Sales Order Taker Agent - Read';
-    Assignable = true;
-    IncludedPermissionSets = "SOA - Objects";
+    Assignable = false;
 
-    Permissions =
-        tabledata "Warehouse Activity Line" = R;
+    Permissions = tabledata "SOA Setup" = R;
+
 }

@@ -189,6 +189,11 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
             Caption = 'External Document No.';
             DataClassification = CustomerContent;
         }
+        field(70; "Non-Deductible VAT %"; Decimal)
+        {
+            Caption = 'Non-Deductible VAT %"';
+            DecimalPlaces = 0 : 5;
+        }
         field(80; "Auxiliary Entry"; Boolean)
         {
             Caption = 'Auxiliary Entry';
@@ -420,6 +425,22 @@ table 31009 "Purch. Adv. Letter Entry CZZ"
     begin
         RemainingAmountLCY := PurchAdvLetterManagementCZZ.GetRemAmtLCYPurchAdvPayment(Rec, BalanceAtDate);
         OnAfterRemainingAmountLCY(Rec, BalanceAtDate, RemainingAmountLCY);
+    end;
+
+    internal procedure IsNonDeductibleVATAllowed(): Boolean
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        exit(VATPostingSetup.IsNonDeductibleVATAllowed(
+            "VAT Bus. Posting Group", "VAT Prod. Posting Group"));
+    end;
+
+    internal procedure CheckNonDeductibleVATAllowed()
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        VATPostingSetup.CheckNonDeductibleVATAllowed(
+            "VAT Bus. Posting Group", "VAT Prod. Posting Group");
     end;
 
     [IntegrationEvent(false, false)]

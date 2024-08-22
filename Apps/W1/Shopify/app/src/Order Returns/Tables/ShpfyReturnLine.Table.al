@@ -112,6 +112,12 @@ table 30141 "Shpfy Return Line"
             FieldClass = FlowField;
             CalcFormula = lookup("Shpfy Order Line"."Variant Code" where("Line Id" = field("Order Line Id")));
         }
+        field(104; "Location Id"; BigInteger)
+        {
+            Caption = 'Location Id';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
     }
     keys
     {

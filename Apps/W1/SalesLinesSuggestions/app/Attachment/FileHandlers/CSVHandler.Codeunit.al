@@ -16,7 +16,7 @@ codeunit 7293 "Csv Handler" implements "File Handler"
         isIntialized: Boolean;
         FirstLineAsHash: Text;
         ConcatTwoLinesLbl: Label '%1\n%2', Comment = '%1 = first line, %2 = second line.';
-        InvalidCsvDataErr: Label 'Cannot process input data. Either the data is not in a valid CSV format or data is missing.';
+        InvalidCsvDataErr: Label 'Cannot process input data. Either the data is not in a valid CSV format or data exceeds the maximum length supported.';
         HandlerNotInitializedErr: Label 'Handler not initialized';
         InvalidFileConfigurationErr: Label 'Invalid File Configuration';
 
@@ -32,7 +32,10 @@ codeunit 7293 "Csv Handler" implements "File Handler"
         CsvFileStream := FileInputStream;
 
         // Load mappings from csv if available
-        FirstLine := ReadLines(CsvFileStream, 1, true);
+        FirstLine := ReadLines(CsvFileStream, 1, true, GetMaxLengthToRead() + 1);
+        if StrLen(FirstLine) > GetMaxLengthToRead() then //if there is only one line in the file or header line more than 10000 characters, then consider it as invalid
+            Error(InvalidCsvDataErr);
+
         FirstLineAsHash := MappingCacheManagement.GenerateFileHashInHex(FirstLine);
 
         if MappingCacheManagement.GetMapping(FirstLineAsHash, SavedMappingAsText) then begin
@@ -43,7 +46,7 @@ codeunit 7293 "Csv Handler" implements "File Handler"
         end;
 
         // Else get LLM to generate mapping
-        CsvInput := ReadLines(CsvFileStream, 11, true); // Read first 11 lines assuming first line is header line
+        CsvInput := ReadLines(CsvFileStream, 11, true, GetMaxLengthToRead()); // Read first 11 lines assuming first line is header line
         FileHandlerResult := GenerateCsvMappingSuggestionFromAttachment(CsvInput);
         isIntialized := true;
         exit(FileHandlerResult);
@@ -113,22 +116,29 @@ codeunit 7293 "Csv Handler" implements "File Handler"
         MappingCacheManagement.SaveMapping(FirstLineAsHash, JsonAsText);
     end;
 
-    local procedure ReadLines(var FileInStream: InStream; NoOfLinesToRead: Integer; FromBeginning: Boolean): Text
+    local procedure ReadLines(var FileInStream: InStream; NoOfLinesToRead: Integer; FromBeginning: Boolean; MaxLengthToRead: Integer): Text
     begin
         if FromBeginning then
             FileInStream.ResetPosition();
-        exit(ReadLines(FileInStream, NoOfLinesToRead));
+        exit(ReadLines(FileInStream, NoOfLinesToRead, MaxLengthToRead));
     end;
 
-    local procedure ReadLines(var FileInStream: InStream; NoOfLinesToRead: Integer): Text
+    internal procedure ReadLines(var FileInStream: InStream; NoOfLinesToRead: Integer; MaxLengthToRead: Integer): Text
     var
         Line: Text;
         LineCounter: Integer;
         Lines: Text;
+        ConcatedLines: Text;
     begin
         while not FileInStream.EOS() do begin
-            FileInStream.ReadText(Line);
-            Lines := StrSubstNo(ConcatTwoLinesLbl, Lines, Line);
+            FileInStream.ReadText(Line, MaxLengthToRead);
+            if Lines = '' then
+                ConcatedLines := Line
+            else
+                ConcatedLines := StrSubstNo(ConcatTwoLinesLbl, Lines, Line);
+            if StrLen(ConcatedLines) > MaxLengthToRead then // If the total length of the lines read so far exceeds the maximum length, then return the lines read so far
+                exit(Lines);
+            Lines := ConcatedLines;
             LineCounter += 1;
             if LineCounter >= NoOfLinesToRead then
                 exit(Lines);
@@ -136,6 +146,7 @@ codeunit 7293 "Csv Handler" implements "File Handler"
         exit(Lines);
     end;
 
+    [NonDebuggable]
     local procedure GenerateCsvMappingSuggestionFromAttachment(CsvData: Text): Codeunit "File Handler Result"
     var
         Prompt: Codeunit "SLS Prompts";
@@ -145,8 +156,15 @@ codeunit 7293 "Csv Handler" implements "File Handler"
         UserInput: Text;
         CompletionText: Text;
     begin
-        UserInput := StrSubstNo(Prompt.GetParsingCsvTemplateUserInputPrompt(), CsvData);
+        UserInput := StrSubstNo(Prompt.GetParsingCsvTemplateUserInputPrompt().Unwrap(), CsvData);
         FileHandlerResult := SalesLineAISuggestionImpl.AICall(Prompt.GetAttachmentSystemPrompt(), UserInput, LookupItemsFromCsvFunction, CompletionText);
         exit(FileHandlerResult);
+    end;
+
+    local procedure GetMaxLengthToRead(): Integer
+    var
+        SalesLineFromAttachment: Codeunit "Sales Line From Attachment";
+    begin
+        exit(SalesLineFromAttachment.GetMaxPromptSize());
     end;
 }

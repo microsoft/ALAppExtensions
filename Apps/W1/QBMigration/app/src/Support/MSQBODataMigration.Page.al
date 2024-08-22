@@ -370,11 +370,10 @@ page 1830 "MS - QBO Data Migration"
         StateErr: Label 'Unexpected State value passed back from remote call. Expected: %1; Actual: %2', Locked = true;
         StatusLbl: Label '%1: %2', Locked = true;
         CallBackUrlLbl: Label '%1/%2', Locked = true;
-        ConsumerKey: Text;
-        ConsumerSecret: Text;
+        ConsumerKey: SecretText;
+        ConsumerSecret: SecretText;
         AuthRequestUrl: Text;
-        [NonDebuggable]
-        AccessTokenKey: Text;
+        AccessTokenKey: SecretText;
         ExpectedState: Text;
 
     local procedure ShowAuthorization()
@@ -497,13 +496,13 @@ page 1830 "MS - QBO Data Migration"
             exit(false);
         end;
 
-        if ConsumerKey = '' then
+        if ConsumerKey.IsEmpty() then
             if not AzureKeyVault.GetAzureKeyVaultSecret(ConsumerKeyTxt, ConsumerKey) then;
 
-        if ConsumerSecret = '' then
+        if ConsumerSecret.IsEmpty() then
             if not AzureKeyVault.GetAzureKeyVaultSecret(ConsumerSecretTxt, ConsumerSecret) then;
 
-        if (ConsumerKey = '') OR (ConsumerSecret = '') then begin
+        if ConsumerKey.IsEmpty() or ConsumerSecret.IsEmpty() then begin
             StatusTxt := GetStatusText(false);
             Session.LogMessage('00007EQ', KeyInfoUnavailableErr, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', HelperFunctions.GetMigrationTypeTxt());
             exit(false);
@@ -521,14 +520,13 @@ page 1830 "MS - QBO Data Migration"
         StatusTxt := AuthInProgressTxt;
     end;
 
-    [NonDebuggable]
-    local procedure CompleteAuthorizationProcess(AuthorizationCode: Text)
+    local procedure CompleteAuthorizationProcess(AuthorizationCode: SecretText)
     var
         MigrationQBConfig: Record "MigrationQB Config";
         AccountMigrator: Codeunit "MigrationQB Account Migrator";
         RealmId: Text;
         State: Text;
-        AuthCode: Text;
+        AuthCode: SecretText;
     begin
         if not GetOAuthProperties(AuthorizationCode, AuthCode, State, RealmId) then begin
             StatusTxt := GetStatusText(false);
@@ -604,21 +602,24 @@ page 1830 "MS - QBO Data Migration"
         ClearConfigTable();
     end;
 
-    local procedure GetOAuthProperties(AuthorizationCode: Text; var CodeOut: Text; var StateOut: Text; var RealmIDOut: Text): Boolean
+    [NonDebuggable]
+    local procedure GetOAuthProperties(AuthorizationCode: SecretText; var CodeOut: SecretText; var StateOut: Text; var RealmIDOut: Text): Boolean
     var
         JObject: JsonObject;
         JToken: JsonToken;
+        AuthorizationCodeAsText: Text;
     begin
-        if JObject.ReadFrom(AuthorizationCode) then
+        AuthorizationCodeAsText := AuthorizationCode.Unwrap();
+        if JObject.ReadFrom(AuthorizationCodeAsText) then
             if JObject.Get('code', JToken) then
                 if JToken.IsValue() then
-                    if JToken.WriteTo(AuthorizationCode) then
-                        AuthorizationCode := HelperFunctions.TrimStringQuotes(AuthorizationCode);
-        CodeOut := HelperFunctions.GetPropertyFromCode(AuthorizationCode, 'code');
-        StateOut := HelperFunctions.GetPropertyFromCode(AuthorizationCode, 'state');
-        RealmIDOut := HelperFunctions.GetPropertyFromCode(AuthorizationCode, 'realmId');
+                    if JToken.WriteTo(AuthorizationCodeAsText) then
+                        AuthorizationCodeAsText := HelperFunctions.TrimStringQuotes(AuthorizationCodeAsText);
+        CodeOut := HelperFunctions.GetPropertyFromCode(AuthorizationCodeAsText, 'code');
+        StateOut := HelperFunctions.GetPropertyFromCode(AuthorizationCodeAsText, 'state');
+        RealmIDOut := HelperFunctions.GetPropertyFromCode(AuthorizationCodeAsText, 'realmId');
 
-        if ((StateOut = '') or (RealmIDOut = '')) then
+        if (StateOut = '') or (RealmIDOut = '') then
             exit(false);
 
         exit(true);

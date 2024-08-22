@@ -7,11 +7,11 @@ namespace Agent.SalesOrderTaker;
 
 using Agent.SalesOrderTaker.Instructions;
 
-permissionset 4333 "SOA Instructions - Read"
+permissionset 4403 "SOA Instructions - Read"
 {
     Caption = 'Sales Order Taker Agent Instructions - Read';
     Assignable = false;
-    IncludedPermissionSets = "SOA - Objects";
+    IncludedPermissionSets = "SOA Agent - Objects";
 
     Permissions =
         tabledata "SOA Instruction Phase" = R,

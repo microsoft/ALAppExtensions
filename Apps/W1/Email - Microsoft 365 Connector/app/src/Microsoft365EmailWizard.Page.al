@@ -46,7 +46,7 @@ page 4504 "Microsoft 365 Email Wizard"
             {
                 ApplicationArea = All;
                 Caption = 'Account Name';
-                ToolTip = 'The name of the account.';
+                ToolTip = 'Specifies the name of the account.';
                 ShowMandatory = true;
                 NotBlank = true;
 

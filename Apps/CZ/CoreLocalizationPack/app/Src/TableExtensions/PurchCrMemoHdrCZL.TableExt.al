@@ -79,6 +79,13 @@ tableextension 11731 "Purch. Cr. Memo Hdr. CZL" extends "Purch. Cr. Memo Hdr."
             TableRelation = "SWIFT Code";
             DataClassification = CustomerContent;
         }
+        field(11750; "Additional Currency Factor CZL"; Decimal)
+        {
+            Caption = 'Additional Currency Factor';
+            DecimalPlaces = 0 : 15;
+            MinValue = 0;
+            DataClassification = CustomerContent;
+        }
         field(11774; "VAT Currency Factor CZL"; Decimal)
         {
             Caption = 'VAT Currency Factor';

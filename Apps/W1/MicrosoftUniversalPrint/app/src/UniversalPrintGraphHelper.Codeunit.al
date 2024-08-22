@@ -206,13 +206,12 @@ codeunit 2752 "Universal Print Graph Helper"
     end;
 
     [TryFunction]
-    [NonDebuggable]
-    internal procedure TryGetAccessToken(var AccessToken: Text; ShowDialog: Boolean)
+    internal procedure TryGetAccessToken(var AccessToken: SecretText; ShowDialog: Boolean)
     var
         AzureADMgt: Codeunit "Azure AD Mgt.";
     begin
-        AccessToken := AzureADMgt.GetAccessToken(this.GetGraphDomain(), '', ShowDialog);
-        if AccessToken = '' then begin
+        AccessToken := AzureADMgt.GetAccessTokenAsSecretText(this.GetGraphDomain(), '', ShowDialog);
+        if AccessToken.IsEmpty() then begin
             Session.LogMessage('0000EFG', this.NoTokenTelemetryTxt, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', this.UniversalPrintTelemetryCategoryTxt);
             Error(this.UserNotAuthenticatedTxt);
         end;
@@ -332,8 +331,7 @@ codeunit 2752 "Universal Print Graph Helper"
 
     local procedure AddHeaders(Url: Text; Verb: Text; var HttpWebRequestMgt: Codeunit "Http Web Request Mgt."): Boolean
     var
-        [NonDebuggable]
-        AccessToken: Text;
+        AccessToken: SecretText;
     begin
         if not this.TryGetAccessToken(AccessToken, false) then
             exit(false);
@@ -341,7 +339,7 @@ codeunit 2752 "Universal Print Graph Helper"
         HttpWebRequestMgt.DisableUI();
         HttpWebRequestMgt.SetReturnType('application/json');
         HttpWebRequestMgt.SetMethod(Verb);
-        HttpWebRequestMgt.AddHeader('Authorization', 'Bearer ' + AccessToken);
+        HttpWebRequestMgt.AddHeader('Authorization', SecretStrSubstNo('Bearer %1', AccessToken));
         exit(true);
     end;
 

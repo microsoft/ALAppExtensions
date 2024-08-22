@@ -1491,7 +1491,7 @@ codeunit 7233 "Master Data Management"
             IntegrationTableMapping.ReadIsolation := IsolationLevel::ReadUncommitted;
             IntegrationTableMapping.SetRange(Type, IntegrationTableMapping.Type::"Master Data Management");
             IntegrationTableMapping.SetRange(Status, IntegrationTableMapping.Status::Enabled);
-            isIntegrationRecord := IntegrationTableMapping.FindMappingForTable(TableID);
+            isIntegrationRecord := IntegrationTableMapping.DoesExistForTable(TableID);
         end;
 
         CachedIsSynchronizationRecord.Add(DictionaryKey, isIntegrationRecord);
@@ -1589,6 +1589,8 @@ codeunit 7233 "Master Data Management"
                                 JobQueueEntry.Reset();
                                 JobQueueEntry.ReadIsolation := IsolationLevel::ReadUncommitted;
                                 JobQueueEntry.SetFilter(Status, Format(JobQueueEntry.Status::Ready) + '|' + Format(JobQueueEntry.Status::"On Hold with Inactivity Timeout"));
+                                JobQueueEntry.SetRange("Object Type to Run", JobQueueEntry."Object Type to Run"::Codeunit);
+                                JobQueueEntry.SetFilter("Object ID to Run", '%1|%2|%3', Codeunit::"Integration Synch. Job Runner", Codeunit::"Int. Coupling Job Runner", Codeunit::"Int. Uncouple Job Runner");
                                 JobQueueEntry.SetRange("Recurring Job", true);
                                 if UserCanRescheduleJob() then
                                     if JobQueueEntry.FindSet() then

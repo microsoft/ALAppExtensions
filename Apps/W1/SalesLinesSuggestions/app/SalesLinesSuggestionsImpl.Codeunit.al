@@ -16,6 +16,13 @@ codeunit 7275 "Sales Lines Suggestions Impl."
 
     var
         ChatCompletionResponseErr: Label 'Sorry, something went wrong. Please rephrase and try again.';
+        NoSalesLinesSuggestionsMsg: Label 'There are no suggestions for this description. Please rephrase it.';
+        UnknownDocTypeMsg: Label 'Copilot does not support the specified document type. Please rephrase the description.';
+        DocumentNotFoundMsg: Label 'Copilot could not find the document. Please rephrase the description.';
+        ItemNotFoundMsg: Label 'Copilot could not find the requsted items. Please rephrase the description.';
+        CopyFromMultipleDocsMsg: Label 'You cannot copy lines from more than one document. Please rephrase the description.';
+        SalesHeaderNotInitializedErr: Label '%1 header is not initialized', Comment = '%1 = Document Type';
+
 
     internal procedure GetFeatureName(): Text
     begin
@@ -28,10 +35,28 @@ codeunit 7275 "Sales Lines Suggestions Impl."
     end;
 
     internal procedure GetNoSalesLinesSuggestionsMsg(): Text
-    var
-        NoSalesLinesSuggestionsMsg: Label 'There are no suggestions for this description. Please rephrase it.';
     begin
         exit(NoSalesLinesSuggestionsMsg);
+    end;
+
+    internal procedure GetUnknownDocTypeMsg(): Text
+    begin
+        exit(UnknownDocTypeMsg);
+    end;
+
+    internal procedure GetDocumentNotFoundMsg(): Text
+    begin
+        exit(DocumentNotFoundMsg);
+    end;
+
+    internal procedure GetItemNotFoundMsg(): Text
+    begin
+        exit(ItemNotFoundMsg);
+    end;
+
+    internal procedure GetCopyFromMultipleDocsMsg(): Text
+    begin
+        exit(CopyFromMultipleDocsMsg);
     end;
 
     local procedure MaxTokens(): Integer
@@ -48,7 +73,6 @@ codeunit 7275 "Sales Lines Suggestions Impl."
         SalesLineAISuggestions: Page "Sales Line AI Suggestions";
         ALSearch: DotNet ALSearch;
         FeatureTelemetryCustomDimension: Dictionary of [Text, Text];
-        SalesHeaderNotInitializedErr: Label '%1 header is not initialized', Comment = '%1 = Document Type';
         ErrorTxt: Text;
     begin
         SalesLine.TestStatusOpen();
@@ -112,7 +136,7 @@ codeunit 7275 "Sales Lines Suggestions Impl."
             exit;
 
         // Generate OpenAI Completion
-        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4Preview());
+        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4Latest());
         AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"Sales Lines Suggestions");
 
         AOAIChatCompletionParams.SetMaxTokens(MaxTokens());
@@ -136,17 +160,19 @@ codeunit 7275 "Sales Lines Suggestions Impl."
 
         if AOAIOperationResponse.IsSuccess() then begin
             CompletionAnswer := AOAIOperationResponse.GetResult();
-            if AOAIOperationResponse.IsFunctionCall() then begin
-                AOAIFunctionResponse := AOAIOperationResponse.GetFunctionResponse();
-                FeatureTelemetry.LogUsage('0000MED', GetFeatureName(), 'Call Chat Completion API', TelemetryCD);
+            if AOAIOperationResponse.IsFunctionCall() then
+                foreach AOAIFunctionResponse in AOAIOperationResponse.GetFunctionResponses() do begin
+                    FeatureTelemetry.LogUsage('0000MED', GetFeatureName(), 'Call Chat Completion API', TelemetryCD);
 
-                if AOAIFunctionResponse.IsSuccess() then
-                    TempSalesLineAiSuggestion.Copy(AOAIFunctionResponse.GetResult(), true)
-                else begin
-                    MagicFunction.Execute(EmptyArguments);
-                    FeatureTelemetry.LogError('0000ME9', GetFeatureName(), 'Process function_call', 'Function not supported, defaulting to magic_function');
+                    if (not AOAIFunctionResponse.IsSuccess()) or (AOAIFunctionResponse.GetFunctionName() = MagicFunction.GetName()) then begin
+                        MagicFunction.Execute(EmptyArguments);
+                        FeatureTelemetry.LogError('0000ME9', GetFeatureName(), 'Process function_call', 'Function not supported, defaulting to magic_function');
+                        Clear(TempSalesLineAiSuggestion);
+                        exit(CompletionAnswer);
+                    end else
+                        TempSalesLineAiSuggestion.Copy(AOAIFunctionResponse.GetResult(), true);
                 end
-            end else begin
+            else begin
                 if AOAIOperationResponse.GetResult() = '' then
                     FeatureTelemetry.LogError('0000ME8', GetFeatureName(), 'Call Chat Completion API', 'Completion answer is empty', '', TelemetryCD)
                 else
@@ -205,23 +231,28 @@ codeunit 7275 "Sales Lines Suggestions Impl."
 
         if AOAIOperationResponse.IsSuccess() then begin
             CompletionAnswer := AOAIOperationResponse.GetResult();
-            if AOAIOperationResponse.IsFunctionCall() then begin
-                AOAIFunctionResponse := AOAIOperationResponse.GetFunctionResponse();
-                FeatureTelemetry.LogUsage('0000MZC', GetFeatureName(), 'Call Chat Completion API', TelemetryCD);
+            if AOAIOperationResponse.IsFunctionCall() then
+                foreach AOAIFunctionResponse in AOAIOperationResponse.GetFunctionResponses() do begin
+                    FeatureTelemetry.LogUsage('0000MZC', GetFeatureName(), 'Call Chat Completion API', TelemetryCD);
 
-                if AOAIFunctionResponse.IsSuccess() then begin
-                    FunctionResponseVariant := AOAIFunctionResponse.GetResult();
-                    if FunctionResponseVariant.IsCodeunit() then
-                        FileHandlerResult := AOAIFunctionResponse.GetResult()
-                    else begin
+                    if AOAIFunctionResponse.IsSuccess() then begin
+                        FunctionResponseVariant := AOAIFunctionResponse.GetResult();
+                        if FunctionResponseVariant.IsCodeunit() then
+                            FileHandlerResult := AOAIFunctionResponse.GetResult()
+                        else begin
+                            MagicFunction.Execute(EmptyArguments);
+                            FeatureTelemetry.LogError('0000N6J', GetFeatureName(), 'Process function_call', 'Function not supported, defaulting to magic_function');
+                            Clear(FileHandlerResult);
+                            exit(FileHandlerResult);
+                        end;
+                    end else begin
                         MagicFunction.Execute(EmptyArguments);
-                        FeatureTelemetry.LogError('0000N6J', GetFeatureName(), 'Process function_call', 'Function not supported, defaulting to magic_function');
-                    end;
-                end else begin
-                    MagicFunction.Execute(EmptyArguments);
-                    FeatureTelemetry.LogError('0000MZ8', GetFeatureName(), 'Process function_call', 'Function not supported, defaulting to magic_function');
+                        FeatureTelemetry.LogError('0000MZ8', GetFeatureName(), 'Process function_call', 'Function not supported, defaulting to magic_function');
+                        Clear(FileHandlerResult);
+                        exit(FileHandlerResult);
+                    end
                 end
-            end else begin
+            else begin
                 if AOAIOperationResponse.GetResult() = '' then
                     FeatureTelemetry.LogError('0000MZ9', GetFeatureName(), 'Call Chat Completion API', 'Completion answer is empty', '', TelemetryCD)
                 else

@@ -143,8 +143,12 @@ codeunit 31239 "FA Deprec. Book Handler CZF"
     local procedure CheckFALedgerEntriesExistOnBeforeFAPostingGroup(var Rec: Record "FA Depreciation Book"; var xRec: Record "FA Depreciation Book")
     var
         FALedgerEntry: Record "FA Ledger Entry";
+        IsHandled: Boolean;
         FAPostingGroupCanNotBeChangedErr: Label 'FA Posting Group can not be changed if there is at least one FA Entry for Fixed Asset and Deprecation Book.';
     begin
+        OnBeforeValidateFAPostingGroup(Rec, xRec, IsHandled);
+        if IsHandled then
+            exit;
         if Rec."FA Posting Group" = xRec."FA Posting Group" then
             exit;
         if Rec."FA No." = '' then
@@ -210,5 +214,10 @@ codeunit 31239 "FA Deprec. Book Handler CZF"
         GenJnlTemplate.Get(GenJnlLine."Journal Template Name");
         GenJnlLine."Source Code" := GenJnlTemplate."Source Code";
         IsHandled := true;
+    end;
+
+    [IntegrationEvent(true, false)]
+    local procedure OnBeforeValidateFAPostingGroup(FADepreciationBook: Record "FA Depreciation Book"; xFADepreciationBook: Record "FA Depreciation Book"; var IsHandled: Boolean)
+    begin
     end;
 }

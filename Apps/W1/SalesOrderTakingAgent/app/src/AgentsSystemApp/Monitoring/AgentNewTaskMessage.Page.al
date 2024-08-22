@@ -17,6 +17,16 @@ page 4302 "Agent New Task Message"
     {
         area(Content)
         {
+            group(Title)
+            {
+                ShowCaption = false;
+                field(TitleText; TitleText)
+                {
+                    Caption = 'Title';
+                    ToolTip = 'Specifies the title of the task.';
+                    Editable = TitleEditable;
+                }
+            }
             group(Message)
             {
                 ShowCaption = false;
@@ -38,6 +48,7 @@ page 4302 "Agent New Task Message"
         if not (CloseAction in [Action::Ok, Action::LookupOK, Action::Yes]) then
             exit(true);
 
+        AgentTask.Title := TitleText;
         AgentMonitoringImpl.CreateTaskMessage(MessageText, AgentTask);
         exit(true);
     end;
@@ -45,9 +56,13 @@ page 4302 "Agent New Task Message"
     procedure SetAgentTask(var NewAgentTask: Record "Agent Task")
     begin
         AgentTask.Copy(NewAgentTask);
+        TitleEditable := AgentTask.Title = '';
+        TitleText := AgentTask.Title;
     end;
 
     var
         AgentTask: Record "Agent Task";
         MessageText: Text;
+        TitleText: Text[150];
+        TitleEditable: Boolean;
 }

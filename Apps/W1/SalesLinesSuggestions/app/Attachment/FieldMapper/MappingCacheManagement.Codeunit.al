@@ -7,6 +7,10 @@ namespace Microsoft.Sales.Document.Attachment;
 using System.Security.Encryption;
 codeunit 7297 "Mapping Cache Management"
 {
+    Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
     internal procedure MappingExists(FileIdentityHash: Text): Boolean
     var
         MappingCache: Record "Mapping Cache";
@@ -48,6 +52,8 @@ codeunit 7297 "Mapping Cache Management"
             OutStream.WriteText(MappingAsText);
             MappingCache.Modify();
         end else begin
+            if not MappingCache.WritePermission then
+                exit;
             MappingCache.Init();
             MappingCache."File Identity Hash" := CopyStr(FileIdentityHash, 1, MaxStrLen(MappingCache."File Identity Hash"));
             MappingCache.Mapping.CreateOutStream(OutStream);

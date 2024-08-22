@@ -42,6 +42,10 @@ codeunit 31008 "Sales-Post Handler CZZ"
         if (not SalesHeader.Invoice) or (not SalesHeader.IsAdvanceLetterDocTypeCZZ()) then
             exit;
 
+        SalesInvoiceHeader.CalcFields("Remaining Amount");
+        if SalesInvoiceHeader."Remaining Amount" = 0 then
+            exit;
+
         AdvLetterUsageDocTypeCZZ := SalesHeader.GetAdvLetterUsageDocTypeCZZ();
 
         CustLedgerEntry.Get(SalesInvoiceHeader."Cust. Ledger Entry No.");

@@ -1,10 +1,11 @@
 namespace Microsoft.Sustainability.Account;
 
 using Microsoft.Finance.Dimension;
-using Microsoft.Sustainability.Journal;
+using Microsoft.Finance.FinancialReports;
 using Microsoft.Foundation.Comment;
-using Microsoft.Sustainability.Reports;
+using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Ledger;
+using Microsoft.Sustainability.Reports;
 
 page 6210 "Chart of Sustain. Accounts"
 {
@@ -230,6 +231,13 @@ page 6210 "Chart of Sustain. Accounts"
                         SustainabilityAccountMgt.IndentChartOfSustainabilityAccounts(false);
                     end;
                 }
+                action(FinancialReporting)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Financial Reporting';
+                    RunObject = page "Financial Reports";
+                    Tooltip = 'Open the Financial Reporting page.';
+                }
             }
             group("Periodic Activities")
             {
@@ -274,6 +282,7 @@ page 6210 "Chart of Sustain. Accounts"
             {
                 Caption = 'Process';
                 actionref(IndentChartOfSustainAccounts_Promoted; IndentChartOfSustainAccounts) { }
+                actionref(FinancialReporting_Promoted; FinancialReporting) { }
             }
             group(Category_Category5)
             {

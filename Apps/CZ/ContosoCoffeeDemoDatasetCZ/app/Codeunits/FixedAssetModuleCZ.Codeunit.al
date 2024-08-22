@@ -11,8 +11,12 @@ codeunit 31213 "Fixed Asset Module CZ"
         ContosoFixedAsset: Codeunit "Contoso Fixed Asset";
         CreateFAPostingGroup: Codeunit "Create FA Posting Group";
         FAGLAccount: Codeunit "Create FA GL Account";
+        CreateFixedAsset: Codeunit "Create Fixed Asset";
+        ContosoUtilities: Codeunit "Contoso Utilities";
+        CreateFADepreciationBook: Codeunit "Create FA Depreciation Book";
+        FAExtendedPostigType: Enum "FA Extended Posting Type CZF";
     begin
-        if Module = Enum::"Contoso Demo Data Module"::"Fixed Asset Module" then
+        if Module = Enum::"Contoso Demo Data Module"::"Fixed Asset Module" then begin
             if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Setup Data" then begin
                 ContosoFixedAsset.SetOverwriteData(true);
 
@@ -28,6 +32,9 @@ codeunit 31213 "Fixed Asset Module CZ"
                 InsertFAPostingGroup(CreateFAPostingGroup.Equipment(), AcquisitionCostEquipment(), AccumDepreciationEquipment(), WriteDownEquipment(), Custom2Equipment(), AcqCostonDisposalEquipment(), AccumDepronDisposalEquipment(), WriteDownonDisposalEquipment(), Custom2onDisposalEquipment(), GainsonDisposalEquipment(), LossesonDisposalEquipment(), BookValonDispGainEquipment(), BookValonDispLossEquipment(), SalesonDispGainEquipment(), SalesonDispLossEquipment(), MaintenanceExpenseEquipment(),
                                      DepreciationExpenseEquipment(), AcquisitionCostBalEquipment(), AcqusitionCostBalonDisposalEquipment(), ApprecBalonDispEquipment(), AppreciationonDisposalEquipment(), AppreciationEquipment(), AppreciationBalEquipment(), SalesBalEquipment(), BookValueBalonDisposalEquipment());
 
+                InsertFAPostingGroup(CreateFAPostingGroup.Plant(), AcquisitionCostBuildings(), FAGLAccount.AccumDepreciationBuildings(), WriteDownBuildings(), Custom2Buildings(), AcqCostonDisposalBuildings(), AccumDepronDisposalBuildings(), WriteDownonDisposalBuildings(), Custom2onDisposalBuildings(), GainsonDisposalBuildings(), LossesonDisposalBuildings(), BookValonDispGainBuildings(), BookValonDispLossBuildings(), SalesonDispGainBuildings(), SalesonDispLossBuildings(), MaintenanceExpenseBuildings(),
+                                    DepreciationExpenseBuildings(), AcquisitionCostBalBuildings(), AcqusitionCostBalonDisposalBuildings(), ApprecBalonDispBuildings(), AppreciationonDisposalBuildings(), AppreciationBuildings(), AppreciationBalBuildings(), SalesBalBuildings(), BookValueBalonDisposalBuildings());
+
                 InsertFAPostingGroup(Furniture(), AcquisitionCostEquipment(), AccumDepreciationEquipment(), WriteDownEquipment(), Custom2Equipment(), AcqCostonDisposalEquipment(), AccumDepronDisposalEquipment(), WriteDownonDisposalEquipment(), Custom2onDisposalEquipment(), GainsonDisposalEquipment(), LossesonDisposalEquipment(), BookValonDispGainEquipment(), BookValonDispLossEquipment(), SalesonDispGainEquipment(), SalesonDispLossEquipment(), MaintenanceExpenseEquipment(),
                                      DepreciationExpenseEquipment(), AcquisitionCostBalEquipment(), AcqusitionCostBalonDisposalEquipment(), ApprecBalonDispEquipment(), AppreciationonDisposalEquipment(), AppreciationEquipment(), AppreciationBalEquipment(), SalesBalEquipment(), BookValueBalonDisposalEquipment());
 
@@ -37,8 +44,108 @@ codeunit 31213 "Fixed Asset Module CZ"
                 InsertFAPostingGroup(Software(), AcquisitionCostSoftware(), AccumDepreciationSoftware(), WriteDownSoftware(), Custom2Software(), AcqCostonDisposalSoftware(), AccumDepronDisposalSoftware(), WriteDownonDisposalSoftware(), Custom2onDisposalSoftware(), GainsonDisposalSoftware(), LossesonDisposalSoftware(), BookValonDispGainSoftware(), BookValonDispLossSoftware(), SalesonDispGainSoftware(), SalesonDispLossSoftware(), MaintenanceExpenseSoftware(),
                                      DepreciationExpenseSoftware(), AcquisitionCostBalSoftware(), AcqusitionCostBalonDisposalSoftware(), ApprecBalonDispSoftware(), AppreciationonDisposalSoftware(), AppreciationSoftware(), AppreciationBalSoftware(), SalesBalSoftware(), BookValueBalonDisposalSoftware());
 
+                InsertReasonCode(LIQUID(), LIQUIDDescriptionLbl);
+                InsertReasonCode(SALE(), SALEDescriptionLbl);
+                ContosoFixedAsset.InsertMaintenance(SERVICE(), SERVICEDescriptionLbl);
+                ContosoFixedAsset.InsertMaintenance(SPAREPARTS(), SPAREPARTSDescriptionLbl);
+
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Property(), FAExtendedPostigType::Disposal, Liquid(), GainsonDisposalBuildings(), LossesonDisposalBuildings(), '', '', '');
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Property(), FAExtendedPostigType::Disposal, Sale(), BookValonDispGainBuildings(), BookValonDispLossBuildings(), SalesFixedAssets(), SalesFixedAssets(), '');
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Property(), FAExtendedPostigType::Maintenance, Service(), '', '', '', '', MaintenanceExpenseBuildings());
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Property(), FAExtendedPostigType::Maintenance, SpareParts(), '', '', '', '', ConsumableMaterials());
+
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Goodwill(), FAExtendedPostigType::Disposal, Liquid(), GainsonDisposalGoodwill(), LossesonDisposalGoodwill(), '', '', '');
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Goodwill(), FAExtendedPostigType::Disposal, Sale(), BookValonDispGainGoodwill(), BookValonDispLossGoodwill(), SalesFixedAssets(), SalesFixedAssets(), '');
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Goodwill(), FAExtendedPostigType::Maintenance, Service(), '', '', '', '', MaintenanceExpenseGoodwill());
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Goodwill(), FAExtendedPostigType::Maintenance, SpareParts(), '', '', '', '', ConsumableMaterials());
+
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Vehicles(), FAExtendedPostigType::Disposal, Liquid(), GainsonDisposalVehicles(), LossesonDisposalVehicles(), '', '', '');
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Vehicles(), FAExtendedPostigType::Disposal, Sale(), BookValonDispGainVehicles(), BookValonDispLossVehicles(), SalesFixedAssets(), SalesFixedAssets(), '');
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Vehicles(), FAExtendedPostigType::Maintenance, Service(), '', '', '', '', MaintenanceExpenseVehicles());
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Vehicles(), FAExtendedPostigType::Maintenance, SpareParts(), '', '', '', '', ConsumableMaterials());
+
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Equipment(), FAExtendedPostigType::Disposal, Liquid(), GainsonDisposalEquipment(), LossesonDisposalEquipment(), '', '', '');
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Equipment(), FAExtendedPostigType::Disposal, Sale(), BookValonDispGainEquipment(), BookValonDispLossEquipment(), SalesFixedAssets(), SalesFixedAssets(), '');
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Equipment(), FAExtendedPostigType::Maintenance, Service(), '', '', '', '', MaintenanceExpenseEquipment());
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Equipment(), FAExtendedPostigType::Maintenance, SpareParts(), '', '', '', '', ConsumableMaterials());
+
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Plant(), FAExtendedPostigType::Disposal, Liquid(), GainsonDisposalBuildings(), LossesonDisposalBuildings(), '', '', '');
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Plant(), FAExtendedPostigType::Disposal, Sale(), BookValonDispGainBuildings(), BookValonDispLossBuildings(), SalesFixedAssets(), SalesFixedAssets(), '');
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Plant(), FAExtendedPostigType::Maintenance, Service(), '', '', '', '', MaintenanceExpenseBuildings());
+                InsertFAExtendedPostingGroup(CreateFAPostingGroup.Plant(), FAExtendedPostigType::Maintenance, SpareParts(), '', '', '', '', ConsumableMaterials());
+
+                InsertFAExtendedPostingGroup(Furniture(), FAExtendedPostigType::Disposal, Liquid(), GainsonDisposalEquipment(), LossesonDisposalEquipment(), '', '', '');
+                InsertFAExtendedPostingGroup(Furniture(), FAExtendedPostigType::Disposal, Sale(), BookValonDispGainEquipment(), BookValonDispLossEquipment(), SalesFixedAssets(), SalesFixedAssets(), '');
+                InsertFAExtendedPostingGroup(Furniture(), FAExtendedPostigType::Maintenance, Service(), '', '', '', '', MaintenanceExpenseEquipment());
+                InsertFAExtendedPostingGroup(Furniture(), FAExtendedPostigType::Maintenance, SpareParts(), '', '', '', '', ConsumableMaterials());
+
+                InsertFAExtendedPostingGroup(Patents(), FAExtendedPostigType::Disposal, Liquid(), GainsonDisposalPatents(), LossesonDisposalPatents(), '', '', '');
+                InsertFAExtendedPostingGroup(Patents(), FAExtendedPostigType::Disposal, Sale(), BookValonDispGainPatents(), BookValonDispLossPatents(), SalesFixedAssets(), SalesFixedAssets(), '');
+                InsertFAExtendedPostingGroup(Patents(), FAExtendedPostigType::Maintenance, Service(), '', '', '', '', MaintenanceExpensePatents());
+                InsertFAExtendedPostingGroup(Patents(), FAExtendedPostigType::Maintenance, SpareParts(), '', '', '', '', ConsumableMaterials());
+
+                InsertFAExtendedPostingGroup(Software(), FAExtendedPostigType::Disposal, Liquid(), GainsonDisposalSoftware(), LossesonDisposalSoftware(), '', '', '');
+                InsertFAExtendedPostingGroup(Software(), FAExtendedPostigType::Disposal, Sale(), BookValonDispGainSoftware(), BookValonDispLossSoftware(), SalesFixedAssets(), SalesFixedAssets(), '');
+                InsertFAExtendedPostingGroup(Software(), FAExtendedPostigType::Maintenance, Service(), '', '', '', '', MaintenanceExpenseSoftware());
+                InsertFAExtendedPostingGroup(Software(), FAExtendedPostigType::Maintenance, SpareParts(), '', '', '', '', ConsumableMaterials());
+
                 ContosoFixedAsset.SetOverwriteData(false);
             end;
+
+            if ContosoDemoDataLevel = Enum::"Contoso Demo Data Level"::"Master Data" then begin
+                ContosoFixedAsset.SetOverwriteData(true);
+
+                ContosoFixedAsset.InsertDepreciationBook("1Account"(), AccountBookLbl, true, true, true, true, true, true, true, true, true, 10);
+                ContosoFixedAsset.InsertDepreciationBook("2Tax"(), TaxBookLbl, true, true, true, true, true, true, true, true, true, 10);
+
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000010(), "1Account"(), ContosoUtilities.AdjustDate(19020101D), 5);
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000010(), "2Tax"(), ContosoUtilities.AdjustDate(19020101D), 5);
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000010(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19020101D), 0);
+                ClearFADepreciationBook(CreateFixedAsset.FA000010(), CreateFADepreciationBook.Company());
+
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000020(), "1Account"(), ContosoUtilities.AdjustDate(19020501D), 5);
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000020(), "2Tax"(), ContosoUtilities.AdjustDate(19020501D), 5);
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000020(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19020501D), 0);
+                ClearFADepreciationBook(CreateFixedAsset.FA000020(), CreateFADepreciationBook.Company());
+
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000030(), "1Account"(), ContosoUtilities.AdjustDate(19020601D), 5);
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000030(), "2Tax"(), ContosoUtilities.AdjustDate(19020601D), 5);
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000030(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19020601D), 0);
+                ClearFADepreciationBook(CreateFixedAsset.FA000030(), CreateFADepreciationBook.Company());
+
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000040(), "1Account"(), ContosoUtilities.AdjustDate(19020101D), 0);
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000040(), "2Tax"(), ContosoUtilities.AdjustDate(19020101D), 0);
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000040(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19020101D), 0);
+                ClearFADepreciationBook(CreateFixedAsset.FA000040(), CreateFADepreciationBook.Company());
+
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000050(), "1Account"(), ContosoUtilities.AdjustDate(19020101D), 10);
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000050(), "2Tax"(), ContosoUtilities.AdjustDate(19020101D), 10);
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000050(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19020101D), 0);
+                ClearFADepreciationBook(CreateFixedAsset.FA000050(), CreateFADepreciationBook.Company());
+
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000060(), "1Account"(), ContosoUtilities.AdjustDate(19020201D), 8);
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000060(), "2Tax"(), ContosoUtilities.AdjustDate(19020201D), 8);
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000060(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19020201D), 0);
+                ClearFADepreciationBook(CreateFixedAsset.FA000060(), CreateFADepreciationBook.Company());
+
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000070(), "1Account"(), ContosoUtilities.AdjustDate(19020301D), 4);
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000070(), "2Tax"(), ContosoUtilities.AdjustDate(19020301D), 4);
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000070(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19020301D), 0);
+                ClearFADepreciationBook(CreateFixedAsset.FA000070(), CreateFADepreciationBook.Company());
+
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000080(), "1Account"(), ContosoUtilities.AdjustDate(19020401D), 8);
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000080(), "2Tax"(), ContosoUtilities.AdjustDate(19020401D), 8);
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000080(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19020401D), 0);
+                ClearFADepreciationBook(CreateFixedAsset.FA000080(), CreateFADepreciationBook.Company());
+
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000090(), "1Account"(), ContosoUtilities.AdjustDate(19020201D), 7);
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000090(), "2Tax"(), ContosoUtilities.AdjustDate(19020201D), 7);
+                ContosoFixedAsset.InsertFADepreciationBook(CreateFixedAsset.FA000090(), CreateFADepreciationBook.Company(), ContosoUtilities.AdjustDate(19020201D), 0);
+                ClearFADepreciationBook(CreateFixedAsset.FA000090(), CreateFADepreciationBook.Company());
+
+                ContosoFixedAsset.SetOverwriteData(false);
+            end;
+        end;
     end;
 
     procedure InsertFAPostingGroup(GroupCode: Code[20]; AcquisitionCostAccount: Code[20]; AccumDepreciationAccount: Code[20]; WriteDownAccount: Code[20]; Custom2Account: Code[20]; AcqCostAccOnDisposal: Code[20]; AccumDeprAccOnDisposal: Code[20]; WriteDownAccOnDisposal: Code[20]; Custom2AccountOnDisposal: Code[20]; GainsAccOnDisposal: Code[20]; LossesAccOnDisposal: Code[20]; BookValAccOnDispGain: Code[20]; BookValAccOnDispLoss: Code[20];
@@ -80,6 +187,56 @@ codeunit 31213 "Fixed Asset Module CZ"
             FAPostingGroup.Modify(true)
         else
             FAPostingGroup.Insert(true);
+    end;
+
+    local procedure InsertReasonCode(Code: Code[20]; Description: Text[100])
+    var
+        ReasonCode: Record "Reason Code";
+        Exists: Boolean;
+    begin
+        if ReasonCode.Get(Code) then
+            Exists := true;
+
+        ReasonCode.Validate(Code, Code);
+        ReasonCode.Validate("Description", Description);
+
+        if Exists then
+            ReasonCode.Modify(true)
+        else
+            ReasonCode.Insert(true);
+    end;
+
+
+    local procedure InsertFAExtendedPostingGroup(GroupCode: Code[20]; FAExtendedPostigType: Enum "FA Extended Posting Type CZF"; Code: Code[20]; BookValAccOnDispGain: Code[20]; BookValAccOnDispLoss: Code[20]; SalesAccOnDispGain: Code[20]; SalesAccOnDispLoss: Code[20]; MaintenanceExpenseAccount: Code[20])
+    var
+        FAExtendedPosingGroupCZF: Record "FA Extended Posting Group CZF";
+        Exists: Boolean;
+    begin
+        if FAExtendedPosingGroupCZF.Get(Code, FAExtendedPostigType, GroupCode) then
+            Exists := true;
+
+        FAExtendedPosingGroupCZF.Validate("FA Posting Group Code", GroupCode);
+        FAExtendedPosingGroupCZF.Validate("FA Posting Type", FAExtendedPostigType);
+        FAExtendedPosingGroupCZF.Validate(Code, Code);
+        FAExtendedPosingGroupCZF.Validate("Book Val. Acc. on Disp. (Gain)", BookValAccOnDispGain);
+        FAExtendedPosingGroupCZF.Validate("Book Val. Acc. on Disp. (Loss)", BookValAccOnDispLoss);
+        FAExtendedPosingGroupCZF.Validate("Sales Acc. on Disp. (Gain)", SalesAccOnDispGain);
+        FAExtendedPosingGroupCZF.Validate("Sales Acc. on Disp. (Loss)", SalesAccOnDispLoss);
+        FAExtendedPosingGroupCZF.Validate("Maintenance Expense Account", MaintenanceExpenseAccount);
+
+        if Exists then
+            FAExtendedPosingGroupCZF.Modify(true)
+        else
+            FAExtendedPosingGroupCZF.Insert(true);
+    end;
+
+    local procedure ClearFADepreciationBook(FixedAssetNo: Code[20]; DepreciationBookCode: Code[10])
+    var
+        FADepreciationBook: Record "FA Depreciation Book";
+    begin
+        FADepreciationBook.Get(FixedAssetNo, DepreciationBookCode);
+        FADepreciationBook.Validate("Depreciation Starting Date", 0D);
+        FADepreciationBook.Modify(true);
     end;
 
     procedure Furniture(): Code[20]
@@ -1528,6 +1685,61 @@ codeunit 31213 "Fixed Asset Module CZ"
         exit(ContosoGLAccount.GetAccountNo(BookValueBalonDisposalSoftwareName()));
     end;
 
+    procedure SalesFixedAssetsName(): Text[100]
+    begin
+        exit(SalesFixedAssetsLbl);
+    end;
+
+    procedure SalesFixedAssets(): Code[20]
+    begin
+        exit(ContosoGLAccount.GetAccountNo(SalesFixedAssetsName()));
+    end;
+
+    procedure ConsumableMaterialsName(): Text[100]
+    begin
+        exit(ConsumableMaterialsLbl);
+    end;
+
+    procedure ConsumableMaterials(): Code[20]
+    begin
+        exit(ContosoGLAccount.GetAccountNo(ConsumableMaterialsName()));
+    end;
+
+    procedure "1Account"(): Code[10]
+    begin
+        exit("1AccountLbl");
+    end;
+
+    procedure "2Tax"(): Code[10]
+    begin
+        exit("2TaxLbl");
+    end;
+
+    procedure Liquid(): Code[10]
+    begin
+        exit(LIQUIDLbl);
+    end;
+
+    procedure Sale(): Code[10]
+    begin
+        exit(SALELbl);
+    end;
+
+    procedure SpareParts(): Code[10]
+    begin
+        exit(SPAREPARTSLbl);
+    end;
+
+    procedure Service(): Code[10]
+    begin
+        exit(SERVICELbl);
+    end;
+
+    procedure Car(): Code[10]
+    begin
+        exit(CARLbl);
+    end;
+
     var
         ContosoGLAccount: Codeunit "Contoso GL Account";
         BuildingsLbl: Label 'Buildings', MaxLength = 100;
@@ -1555,7 +1767,22 @@ codeunit 31213 "Fixed Asset Module CZ"
         CorrectionstosoftwareLbl: Label 'Corrections to software', MaxLength = 100;
         DeprecationofsoftwareLbl: Label 'Deprecation of software', MaxLength = 100;
         SoftwareAccountLbl: Label 'Software', MaxLength = 100;
+        SalesFixedAssetsLbl: Label 'Sales of fixed assets', MaxLength = 100;
+        ConsumableMaterialsLbl: Label 'Consumable materials', MaxLength = 100;
         FurnitureLbl: Label 'FURNITURE', MaxLength = 20;
         PatentsLbl: Label 'PATENTS', MaxLength = 20;
         SoftwareLbl: Label 'SOFTWARE', MaxLength = 20;
+        "1AccountLbl": Label '1-ACCOUNT', MaxLength = 10;
+        "2TaxLbl": Label '2-TAX', MaxLength = 10;
+        AccountBookLbl: Label 'Account book', MaxLength = 100;
+        TaxBookLbl: Label 'Tax book', MaxLength = 100;
+        LIQUIDLbl: Label 'LIQUID', MaxLength = 10;
+        SALELbl: Label 'SALE', MaxLength = 10;
+        SPAREPARTSLbl: Label 'SPAREPARTS', MaxLength = 10;
+        SERVICELbl: Label 'SERVICE', MaxLength = 10;
+        LiquidDescriptionLbl: Label 'Liquidation', MaxLength = 100;
+        SaleDescriptionLbl: Label 'Sale', MaxLength = 100;
+        SparePartsDescriptionLbl: Label 'Spare Parts', MaxLength = 100;
+        ServiceDescriptionLbl: Label 'Service', MaxLength = 100;
+        CARLbl: Label 'CAR', MaxLength = 10;
 }

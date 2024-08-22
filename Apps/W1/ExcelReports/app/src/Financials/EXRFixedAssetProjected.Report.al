@@ -2,6 +2,7 @@ namespace Microsoft.Finance.ExcelReports;
 
 using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.Setup;
 using Microsoft.Foundation.Period;
 using Microsoft.FixedAssets.Ledger;
 
@@ -154,6 +155,16 @@ report 4413 "EXR Fixed Asset Projected"
                 }
             }
         }
+
+        trigger OnOpenPage()
+        var
+            FASetup: Record "FA Setup";
+        begin
+            if not FASetup.Get() then
+                exit;
+            SelectedDepreciationBookCode := FASetup."Default Depr. Book";
+        end;
+
     }
     rendering
     {
@@ -221,6 +232,8 @@ report 4413 "EXR Fixed Asset Projected"
     local procedure InsertPostedAndProjectedEntries(FixedAssetNo: Code[20]; var TempFixedAssetLedgerEntry: Record "FA Ledger Entry" temporary)
     var
         ProjectionsStart, ProjectionsEnd : Date;
+        LastPostingDateOfPostedEntries: Date;
+        EndCurrentFiscalYear: Date;
         DaysInFiscalYear, PeriodLength : Integer;
         BiggestPostedEntryNo: Integer;
         ProjectDisposal: Boolean;
@@ -244,6 +257,11 @@ report 4413 "EXR Fixed Asset Projected"
         TempFixedAssetLedgerEntry.DeleteAll();
         BiggestPostedEntryNo := InsertPostedEntries(FixedAssetNo, IncludePostedFrom, SelectedDepreciationBookCode, TempFixedAssetLedgerEntry);
         TempFixedAssetLedgerEntry."Entry No." := BiggestPostedEntryNo;
+        LastPostingDateOfPostedEntries := TempFixedAssetLedgerEntry."Posting Date";
+        if ProjectionsStart < LastPostingDateOfPostedEntries then begin
+            InitializeFiscalYearEndDate(GlobalDepreciationBook, ProjectionsStart, EndCurrentFiscalYear);
+            ProjectionsStart := GetNextProjectionDate(LastPostingDateOfPostedEntries, GlobalUseAccountingPeriod, PeriodLength, EndCurrentFiscalYear, ProjectionsEnd, GlobalDepreciationBook, GlobalFADepreciationBook);
+        end;
         InsertProjectedEntries(ProjectionsStart, ProjectionsEnd, GlobalDaysInFirstPeriod, PeriodLength, GlobalUseAccountingPeriod, ProjectDisposal, GlobalDepreciationBook, GlobalFADepreciationBook, TempFixedAssetLedgerEntry);
     end;
 
