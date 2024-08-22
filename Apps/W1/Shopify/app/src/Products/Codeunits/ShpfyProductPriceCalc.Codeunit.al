@@ -99,7 +99,7 @@ codeunit 30182 "Shpfy Product Price Calc."
         TempSalesHeader."Document Type" := TempSalesHeader."Document Type"::Quote;
         TempSalesHeader."No." := Shop.Code;
         if CustomerNo <> '' then begin
-            Customer.GET(CustomerNo);
+            Customer.Get(CustomerNo);
             TempSalesHeader."Sell-to Customer No." := CustomerNo;
             TempSalesHeader."Bill-to Customer No." := CustomerNo;
             TempSalesHeader."Customer Price Group" := Customer."Customer Price Group";

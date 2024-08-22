@@ -59,7 +59,9 @@ codeunit 4019 "GP Item Migrator"
         DataMigrationStatusFacade.IncrementMigratedRecordCount(HelperFunctions.GetMigrationTypeTxt(), Database::Item, -1);
     end;
 
+#pragma warning disable AS0078
     procedure MigrateItemDetails(var GPItem: Record "GP Item"; ItemDataMigrationFacade: Codeunit "Item Data Migration Facade")
+#pragma warning restore AS0078
     var
         DataMigrationErrorLogging: Codeunit "Data Migration Error Logging";
     begin

@@ -88,9 +88,5 @@ pagecustomization "SOA Sales Quotes" customizes "Sales Quotes"
         {
             Visible = true;
         }
-        modify(SendApprovalRequest)
-        {
-            Visible = true;
-        }
     }
 }

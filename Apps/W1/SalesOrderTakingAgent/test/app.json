@@ -1,50 +1,61 @@
 {
-    "id":  "23b1772f-b823-4e87-2339-9ff7cbb2364b",
-    "name":  "Order Taker Agent Test",
-    "publisher":  "Microsoft",
-    "brief":  "Order Taker Agent Tests",
-    "description":  "Agent automation for taking and processing Sales Orders.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=847985",
-    "help":  "https://go.microsoft.com/fwlink/?LinkId=849257",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "id": "23b1772f-b823-4e87-2339-9ff7cbb2364b",
+    "name": "Order Taker Agent Test",
+    "publisher": "Microsoft",
+    "brief": "Order Taker Agent Tests",
+    "description": "Agent automation for taking and processing Sales Orders.",
+    "version": "25.0.0.0",
+    "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA": "https://go.microsoft.com/fwlink/?LinkId=847985",
+    "help": "https://go.microsoft.com/fwlink/?LinkId=849257",
+    "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
     "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?LinkId=849257",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                        {
-                            "id":  "23b1772f-b8b8-4e87-9339-9ff7cbb2364b",
-                            "name":  "Sales Order Taker Agent",
-                            "publisher":  "Microsoft",
-                            "version":  "25.0.0.0"
-                        },
-                        {   
-                            "id":  "2156302a-872f-4568-be0b-60968696f0d5",
-                            "name":  "AI Test Toolkit",
-                            "publisher":  "Microsoft",
-                            "version":  "25.0.0.0"
-                        },
-                        {
-                            "id":  "5095f467-0a01-4b99-99d1-9ff1237d286f",
-                            "name":  "Library Variable Storage",
-                            "publisher":  "Microsoft",
-                            "version":  "25.0.0.0"
-                        },
-                        {
-                            "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
-                            "name":  "Library Assert",
-                            "publisher":  "Microsoft",
-                            "version":  "25.0.0.0"
-                        }
-                     ],
-    "screenshots":  [
-
-                    ],
+    "logo": "ExtensionLogo.png",
+    "dependencies": [
+        {
+            "id": "23b1772f-b8b8-4e87-9339-9ff7cbb2364b",
+            "name": "Sales Order Taker Agent",
+            "publisher": "Microsoft",
+            "version": "25.0.0.0"
+        },
+        {
+            "id": "2156302a-872f-4568-be0b-60968696f0d5",
+            "name": "AI Test Toolkit",
+            "publisher": "Microsoft",
+            "version": "25.0.0.0"
+        },
+        {
+            "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+            "name": "Library Variable Storage",
+            "publisher": "Microsoft",
+            "version": "25.0.0.0"
+        },
+        {
+            "id": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+            "name": "Library Assert",
+            "publisher": "Microsoft",
+            "version": "25.0.0.0"
+        }
+    ],
+    "screenshots": [],
     "application": "25.0.0.0",
-    "platform":  "25.0.0.0",
-    "target":  "OnPrem",
-    "features":  [
-                     "TranslationFile"
-                 ],
-    "idRanges": [{"from": 135390, "to": 135394}, {"from": 133500, "to": 133500}]
+    "platform": "25.0.0.0",
+    "target": "OnPrem",
+    "features": [
+        "TranslationFile"
+    ],
+    "idRanges": [
+        {
+            "from": 135390,
+            "to": 135394
+        },
+        {
+            "from": 133500,
+            "to": 133500
+        },
+        {
+            "from": 133503,
+            "to": 133503
+        }
+    ]
 }

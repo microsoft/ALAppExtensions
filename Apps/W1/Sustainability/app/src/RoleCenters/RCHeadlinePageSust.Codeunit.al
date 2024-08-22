@@ -35,6 +35,7 @@ codeunit 6222 "RC Headline Page Sust."
         SustainabilityCue.SetFilter("Date Filter", '%1', WorkDate());
         SustainabilityCue.CalcFields("Emission CO2", "Emission CH4", "Emission N2O");
         TodaysTotalEmission := SustainabilityCue."Emission CO2" + SustainabilityCue."Emission CH4" + SustainabilityCue."Emission N2O";
+        TodaysTotalEmission := Round(TodaysTotalEmission, 0.001, '=');
 
         ShowFootPrintText := (TodaysTotalEmission <> 0) or (YesterdaysTotalEmission <> 0);
         if ShowFootPrintText then
@@ -56,6 +57,6 @@ codeunit 6222 "RC Headline Page Sust."
         ShowFootPrintText: Boolean;
         MoreTxt: Label 'more';
         LessTxt: Label 'less';
-        CarbonFootprintLbl: Label 'Your carbon footprint is %1 and this is %2 % %3 than yesterday.', Comment = '%1 - Todays Emission, %2 - yesterdays comparison, %3 - More or less';
+        CarbonFootprintLbl: Label 'Your today''s carbon footprint is %1 and this is %2 % %3 than yesterday.', Comment = '%1 - Todays Emission, %2 - yesterdays comparison, %3 - More or less';
         CarbonFootprintTxt: Text;
 }

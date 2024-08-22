@@ -4,6 +4,8 @@ using Microsoft.eServices.EDocument;
 using System.Utilities;
 using Microsoft.Purchases.Document;
 using System.IO;
+using System.Text;
+using Microsoft.Foundation.Attachment;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Finance.GeneralLedger.Setup;
 
@@ -17,14 +19,13 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
         DocStream: InStream;
     begin
         TempXMLBuffer.DeleteAll();
-        TempBlob.CreateInStream(DocStream);
+        TempBlob.CreateInStream(DocStream, TextEncoding::UTF8);
         TempXMLBuffer.LoadFromStream(DocStream);
 
         GLSetup.Get();
         LCYCode := GLSetup."LCY Code";
 
         EDocument.Direction := EDocument.Direction::Incoming;
-
 
         case UpperCase(GetDocumentType(TempXMLBuffer)) of
             'INVOICE':
@@ -40,7 +41,7 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
         DocStream: InStream;
     begin
         TempXMLBuffer.DeleteAll();
-        TempBlob.CreateInStream(DocStream);
+        TempBlob.CreateInStream(DocStream, TextEncoding::UTF8);
         TempXMLBuffer.LoadFromStream(DocStream);
 
         PurchaseHeader."Buy-from Vendor No." := EDocument."Bill-to/Pay-to No.";
@@ -140,6 +141,9 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
 
     local procedure CreateInvoice(var EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: record "Purchase Line" temporary; var TempXMLBuffer: Record "XML Buffer" temporary)
     var
+        DocumentAttachment: Record "Document Attachment";
+        DocumentAttachmentData: Codeunit "Temp Blob";
+        InStream: InStream;
     begin
         PurchaseHeader."Document Type" := PurchaseHeader."Document Type"::Invoice;
         PurchaseHeader."No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/Invoice/cbc:ID'), 1, MaxStrLen(PurchaseHeader."No."));
@@ -150,8 +154,15 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
         TempXMLBuffer.Reset();
         if TempXMLBuffer.FindSet() then
             repeat
-                ParseInvoice(PurchaseHeader, PurchaseLine, TempXMLBuffer.Path, TempXMLBuffer.Value);
+                ParseInvoice(EDocument, PurchaseHeader, PurchaseLine, DocumentAttachment, DocumentAttachmentData, TempXMLBuffer);
             until TempXMLBuffer.Next() = 0;
+
+        // Insert last document attachment
+        if DocumentAttachment."No." <> '' then begin
+            DocumentAttachmentData.CreateInStream(InStream, TextEncoding::UTF8);
+            EDocumentAttachmentGen.Insert(EDocument, InStream, DocumentAttachment.FindUniqueFileName(DocumentAttachment."File Name", DocumentAttachment."File Extension"));
+            Clear(DocumentAttachment);
+        end;
 
         // Insert last line
         PurchaseLine.Insert();
@@ -163,6 +174,9 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
 
     local procedure CreateCreditMemo(var EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: record "Purchase Line" temporary; var TempXMLBuffer: Record "XML Buffer" temporary)
     var
+        DocumentAttachment: Record "Document Attachment";
+        DocumentAttachmentData: Codeunit "Temp Blob";
+        InStream: InStream;
     begin
         PurchaseHeader."Document Type" := PurchaseHeader."Document Type"::"Credit Memo";
         PurchaseHeader."No." := CopyStr(GetNodeByPath(TempXMLBuffer, '/CreditNote/cbc:ID'), 1, MaxStrLen(PurchaseHeader."No."));
@@ -171,8 +185,15 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
         TempXMLBuffer.Reset();
         if TempXMLBuffer.FindSet() then
             repeat
-                ParseCreditMemo(PurchaseHeader, PurchaseLine, TempXMLBuffer.Path, TempXMLBuffer.Value);
+                ParseCreditMemo(EDocument, PurchaseHeader, PurchaseLine, DocumentAttachment, DocumentAttachmentData, TempXMLBuffer);
             until TempXMLBuffer.Next() = 0;
+
+        // Insert last document attachment
+        if DocumentAttachment."No." <> '' then begin
+            DocumentAttachmentData.CreateInStream(InStream, TextEncoding::UTF8);
+            EDocumentAttachmentGen.Insert(EDocument, InStream, DocumentAttachment.FindUniqueFileName(DocumentAttachment."File Name", DocumentAttachment."File Extension"));
+            Clear(DocumentAttachment);
+        end;
 
         // Insert last line
         PurchaseLine.Insert();
@@ -241,9 +262,19 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
         end;
     end;
 
-    local procedure ParseCreditMemo(var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: record "Purchase Line" temporary; Path: Text; Value: Text)
+    /// <summary>
+    /// Parses credit memo information line by line from TempXMLBuffer.
+    /// We handle the insert of Purchase Order Line and Document Attachment after the call to this function.
+    /// </summary>
+    local procedure ParseCreditMemo(EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: record "Purchase Line" temporary; var DocumentAttachment: Record "Document Attachment"; DocumentAttachmentData: Codeunit "Temp Blob"; var TempXMLBuffer: Record "XML Buffer" temporary)
     var
+        Base64Convert: Codeunit "Base64 Convert";
+        OutStream: OutStream;
+        InStream: InStream;
+        Path, Value : Text;
     begin
+        Path := TempXMLBuffer.Path;
+        Value := TempXMLBuffer.Value;
         case Path of
             '/CreditNote/cbc:ID':
                 PurchaseHeader."Vendor Invoice No." := CopyStr(Value, 1, MaxStrLen(PurchaseHeader."Vendor Invoice No."));
@@ -274,6 +305,29 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
             '/CreditNote/cac:LegalMonetaryTotal/cbc:TaxExclusiveAmount':
                 if Value <> '' then
                     Evaluate(PurchaseHeader.Amount, Value, 9);
+            '/CreditNote/cac:AdditionalDocumentReference/cbc:ID':
+                begin
+                    if DocumentAttachment."No." <> '' then begin
+                        DocumentAttachmentData.CreateInStream(InStream, TextEncoding::UTF8);
+                        EDocumentAttachmentGen.Insert(EDocument, InStream, DocumentAttachment.FindUniqueFileName(DocumentAttachment."File Name", DocumentAttachment."File Extension"));
+                        Clear(DocumentAttachment);
+                    end;
+
+                    DocumentAttachment.Init();
+                    DocumentAttachment."No." := CopyStr(PurchaseHeader."Vendor Invoice No.", 1, MaxStrLen(DocumentAttachment."No."));
+                end;
+            '/CreditNote/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject':
+                begin
+                    DocumentAttachmentData.CreateOutStream(OutStream, TextEncoding::UTF8);
+                    TempXMLBuffer.CalcFields("Value BLOB");
+                    TempXMLBuffer."Value BLOB".CreateInStream(InStream);
+                    InStream.Read(Value, InStream.Length);
+                    Base64Convert.FromBase64(Value, OutStream);
+                end;
+            '/CreditNote/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@mimeCode':
+                DocumentAttachment.Validate("File Extension", DetermineFileType(Value));
+            '/CreditNote/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@filename':
+                DocumentAttachment."File Name" := CopyStr(Value.Split('.').Get(1), 1, MaxStrLen(DocumentAttachment."File Name"));
             '/CreditNote/cac:CreditNoteLine':
                 begin
                     if PurchaseLine."Document No." <> '' then
@@ -321,13 +375,22 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
         end
     end;
 
-    local procedure ParseInvoice(var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: record "Purchase Line" temporary; Path: Text; Value: Text)
+    /// <summary>
+    /// Parses invoice information line by line from TempXMLBuffer.
+    /// We handle the insert of Purchase Order Line and Document Attachment after the call to this function.
+    /// </summary>
+    local procedure ParseInvoice(EDocument: Record "E-Document"; var PurchaseHeader: Record "Purchase Header" temporary; var PurchaseLine: Record "Purchase Line" temporary; var DocumentAttachment: Record "Document Attachment"; DocumentAttachmentData: Codeunit "Temp Blob"; var TempXMLBuffer: Record "XML Buffer" temporary)
     var
+        Base64Convert: Codeunit "Base64 Convert";
+        OutStream: OutStream;
+        InStream: InStream;
+        Path, Value : Text;
     begin
+        Path := TempXMLBuffer.Path;
+        Value := TempXMLBuffer.Value;
         case Path of
             '/Invoice/cbc:ID':
                 PurchaseHeader."Vendor Invoice No." := CopyStr(Value, 1, MaxStrLen(PurchaseHeader."Vendor Invoice No."));
-
             '/Invoice/cac:OrderReference/cbc:ID':
                 PurchaseHeader."Vendor Order No." := CopyStr(Value, 1, MaxStrLen(PurchaseHeader."Vendor Order No."));
             '/Invoice/cac:PayeeParty/cac:PartyName/cbc:Name':
@@ -353,6 +416,29 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
             '/Invoice/cbc:IssueDate':
                 if Value <> '' then
                     Evaluate(PurchaseHeader."Document Date", Value, 9);
+            '/Invoice/cac:AdditionalDocumentReference/cbc:ID':
+                begin
+                    if DocumentAttachment."No." <> '' then begin
+                        DocumentAttachmentData.CreateInStream(InStream, TextEncoding::UTF8);
+                        EDocumentAttachmentGen.Insert(EDocument, InStream, DocumentAttachment.FindUniqueFileName(DocumentAttachment."File Name", DocumentAttachment."File Extension"));
+                        Clear(DocumentAttachment);
+                    end;
+
+                    DocumentAttachment.Init();
+                    DocumentAttachment."No." := CopyStr(Value, 1, MaxStrLen(DocumentAttachment."No."));
+                end;
+            '/Invoice/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject':
+                begin
+                    DocumentAttachmentData.CreateOutStream(OutStream, TextEncoding::UTF8);
+                    TempXMLBuffer.CalcFields("Value BLOB");
+                    TempXMLBuffer."Value BLOB".CreateInStream(InStream);
+                    InStream.Read(Value, InStream.Length);
+                    Base64Convert.FromBase64(Value, OutStream);
+                end;
+            '/Invoice/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@mimeCode':
+                DocumentAttachment.Validate("File Extension", DetermineFileType(Value));
+            '/Invoice/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@filename':
+                DocumentAttachment."File Name" := CopyStr(Value.Split('.').Get(1), 1, MaxStrLen(DocumentAttachment."File Name"));
             '/Invoice/cac:InvoiceLine':
                 begin
                     if PurchaseLine."Document No." <> '' then
@@ -398,6 +484,23 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
                     Evaluate(PurchaseLine."Quantity (Base)", Value, 9);
             '/Invoice/cac:InvoiceLine/cbc:Note':
                 setlineType(PurchaseLine, Value);
+        end;
+    end;
+
+    procedure DetermineFileType(MimeType: Text) FileExension: Text
+    begin
+        case MimeType of
+            'image/jpeg':
+                exit('jpeg');
+            'image/png':
+                exit('png');
+            'application/pdf':
+                exit('pdf');
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.oasis.opendocument.spreadsheet':
+                exit('xlsx');
+            else
+                exit('');
         end;
     end;
 
@@ -447,6 +550,7 @@ codeunit 6166 "EDoc Import PEPPOL BIS 3.0"
     end;
 
     var
-        EDocumentImportHelper: codeunit "E-Document Import Helper";
+        EDocumentAttachmentGen: Codeunit "E-Doc. Attachment Processor";
+        EDocumentImportHelper: Codeunit "E-Document Import Helper";
         LCYCode: Code[10];
 }

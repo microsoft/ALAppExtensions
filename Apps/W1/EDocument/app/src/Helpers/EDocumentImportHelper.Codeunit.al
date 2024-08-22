@@ -774,6 +774,7 @@ codeunit 6109 "E-Document Import Helper"
         exit(true);
     end;
 
+
     local procedure ResolveUnitOfMeasureFromItem(var Item: Record Item; var EDocument: Record "E-Document"; var TempDocumentLine: RecordRef): Boolean
     var
         PurchaseLine: Record "Purchase Line";

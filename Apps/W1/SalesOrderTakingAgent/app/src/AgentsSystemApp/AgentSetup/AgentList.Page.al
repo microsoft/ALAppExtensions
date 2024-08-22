@@ -15,6 +15,7 @@ page 4316 "Agent List"
     CardPageId = "Agent Card";
     AdditionalSearchTerms = 'Agent, Agents, Copilot, Automation, AI';
     Extensible = false;
+    Editable = false;
 
     layout
     {
@@ -22,8 +23,6 @@ page 4316 "Agent List"
         {
             repeater(Main)
             {
-                Editable = false;
-
                 field(UserName; Rec."User Name")
                 {
                     Caption = 'User Name';
@@ -43,6 +42,22 @@ page 4316 "Agent List"
     {
         area(Processing)
         {
+            action(AgentSetup)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Setup';
+                ToolTip = 'Set up agent';
+                Image = SetupLines;
+
+                trigger OnAction()
+                var
+                    TempAgent: Record Agent temporary;
+                begin
+                    TempAgent.Copy(Rec);
+                    TempAgent.Insert();
+                    Page.RunModal(Rec."Setup Page ID", TempAgent);
+                end;
+            }
             action(AgentTasks)
             {
                 ApplicationArea = All;
@@ -63,6 +78,9 @@ page 4316 "Agent List"
         {
             group(Category_Process)
             {
+                actionref(AgentSetup_Promoted; AgentSetup)
+                {
+                }
                 actionref(AgentTasks_Promoted; AgentTasks)
                 {
                 }

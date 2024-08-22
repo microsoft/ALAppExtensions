@@ -72,4 +72,12 @@ codeunit 5142 "Contoso Utilities"
     begin
         exit(10000000 - 1 + Random(99999999 - 10000000 + 1));
     end;
+
+    var
+        DefaultBatchNameLbl: Label 'DEFAULT', MaxLength = 10;
+
+    procedure GetDefaultBatchNameLbl(): Code[10]
+    begin
+        exit(DefaultBatchNameLbl);
+    end;
 }

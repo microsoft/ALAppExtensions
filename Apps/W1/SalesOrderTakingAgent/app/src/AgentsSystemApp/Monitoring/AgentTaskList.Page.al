@@ -153,7 +153,7 @@ page 4300 "Agent Task List"
                 var
                     AgentMonitoringImpl: Codeunit "Agent Monitoring Impl.";
                 begin
-                    AgentMonitoringImpl.StopTask(Rec, Rec."Status"::"Stopped by User");
+                    AgentMonitoringImpl.StopTask(Rec, Rec."Status"::"Stopped by User", true);
                     CurrPage.Update(false);
                 end;
             }
@@ -168,7 +168,7 @@ page 4300 "Agent Task List"
                 var
                     AgentMonitoringImpl: Codeunit "Agent Monitoring Impl.";
                 begin
-                    AgentMonitoringImpl.RestartTask(Rec);
+                    AgentMonitoringImpl.RestartTask(Rec, true);
                     CurrPage.Update(false);
                 end;
             }
@@ -185,7 +185,6 @@ page 4300 "Agent Task List"
                     UserInterventionRequestStep: Record "Agent Task Step";
                     AgentUserIntervention: Page "Agent User Intervention";
                 begin
-                    Rec.CalcFields("Last Step Number");
                     UserInterventionRequestStep.Get(Rec.ID, Rec."Last Step Number");
                     AgentUserIntervention.SetUserInterventionRequestStep(UserInterventionRequestStep);
                     AgentUserIntervention.RunModal();

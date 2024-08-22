@@ -276,6 +276,7 @@ codeunit 31017 "Upgrade Application CZL"
         UpgradeAllowVATPosting();
         UpgradeOriginalVATAmountsInVATEntries();
         UpgradeFunctionalCurrency();
+        UpgradeEnableNonDeductibleVATCZ();
     end;
 
     local procedure UpgradeGeneralLedgerSetup();
@@ -2708,6 +2709,26 @@ codeunit 31017 "Upgrade Application CZL"
         end;
 
         UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetFunctionalCurrencyUpgradeTag());
+    end;
+
+    local procedure UpgradeEnableNonDeductibleVATCZ()
+    var
+        VATEntry: Record "VAT Entry";
+    begin
+        if UpgradeTag.HasUpgradeTag(UpgradeTagDefinitionsCZL.GetEnableNonDeductibleVATCZUpgradeTag()) then
+            exit;
+
+        VATEntry.SetFilter("Non-Deductible VAT %", '<>%1', 0);
+        VATEntry.SetLoadFields("Entry No.", Base, Amount, "Non-Deductible VAT Base", "Non-Deductible VAT Amount");
+        if VATEntry.FindSet() then
+            repeat
+                VATEntry."Original VAT Base CZL" := VATEntry.CalcOriginalVATBaseCZL();
+                VATEntry."Original VAT Amount CZL" := VATEntry.CalcOriginalVATAmountCZL();
+                VATEntry."Original VAT Entry No. CZL" := VATEntry."Entry No.";
+                if VATEntry.Modify() then;
+            until VATEntry.Next() = 0;
+
+        UpgradeTag.SetUpgradeTag(UpgradeTagDefinitionsCZL.GetEnableNonDeductibleVATCZUpgradeTag());
     end;
 
     local procedure InsertRepSelection(ReportUsage: Enum "Report Selection Usage"; Sequence: Code[10]; ReportID: Integer)

@@ -23,6 +23,7 @@ codeunit 139550 "Intrastat Report Test"
         LibraryRandom: Codeunit "Library - Random";
         LibraryMarketing: Codeunit "Library - Marketing";
         LibraryWarehouse: Codeunit "Library - Warehouse";
+        LibraryItemTracking: Codeunit "Library - Item Tracking";
         IsInitialized: Boolean;
         ValidationErr: Label '%1 must be %2 in %3.', Comment = '%1 = FieldCaption(Quantity),%2 = SalesLine.Quantity,%3 = TableCaption(SalesShipmentLine).';
         LineNotExistErr: Label 'Intrastat Report Lines incorrectly created.';
@@ -2806,6 +2807,254 @@ codeunit 139550 "Intrastat Report Test"
         IntrastatReportSetup.Modify();
     end;
 
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    procedure CheckCountryOfOriginFromItemCard()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        SerialNoInformation: Record "Serial No. Information";
+        LotNoInformation: Record "Lot No. Information";
+        PackageNoInformation: Record "Package No. Information";
+        Item: Record Item;
+        VendorNo: Code[20];
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Purchase] [Receipt]
+        // [SCENARIO 466675] Country of origin is taken from item card
+        Initialize();
+
+        // [GIVEN] Posted purchase order with no item tracking
+        VendorNo := LibraryIntrastat.CreateVendorWithVATRegNo(true);
+        Item.Get(LibraryIntrastat.CreateTrackedItem(0, false, false, SerialNoInformation, LotNoInformation, PackageNoInformation));
+        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, WorkDate(), VendorNo);
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, Item."No.");
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Intrastat Report Line is created
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+
+        // [THEN] Country of Origin  = country of origin in Intrastat Report Line is taken from item
+        VerifyCountryOfOrigin(IntrastatReportHeader, PurchaseLine."No.", Item."Country/Region of Origin Code");
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    procedure CheckCountryOfOriginFromSerialInfoManual()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        SerialNoInformation: Record "Serial No. Information";
+        LotNoInformation: Record "Lot No. Information";
+        PackageNoInformation: Record "Package No. Information";
+        ResEntry: Record "Reservation Entry";
+        Item: Record Item;
+        VendorNo: Code[20];
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Purchase] [Receipt]
+        // [SCENARIO 466675] Country of origin is taken from serial info
+        Initialize();
+
+        // [GIVEN] Posted purchase order with serial no info
+        VendorNo := LibraryIntrastat.CreateVendorWithVATRegNo(true);
+        Item.Get(LibraryIntrastat.CreateTrackedItem(1, true, false, SerialNoInformation, LotNoInformation, PackageNoInformation));
+        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, WorkDate(), VendorNo);
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, Item."No.");
+        PurchaseLine.Validate(Quantity, 1);
+        PurchaseLine.Modify(true);
+        LibraryItemTracking.CreatePurchOrderItemTracking(ResEntry, PurchaseLine, SerialNoInformation."Serial No.", '', '', PurchaseLine.Quantity);
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Intrastat Report Line is created
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+
+        // [THEN] Country of Origin  = country of origin in Intrastat Report Line is taken from serial no info 
+        VerifyCountryOfOrigin(IntrastatReportHeader, PurchaseLine."No.", SerialNoInformation."Country/Region Code");
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    procedure CheckCountryOfOriginFromLotInfoManual()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        SerialNoInformation: Record "Serial No. Information";
+        LotNoInformation: Record "Lot No. Information";
+        PackageNoInformation: Record "Package No. Information";
+        ResEntry: Record "Reservation Entry";
+        Item: Record Item;
+        VendorNo: Code[20];
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Purchase] [Receipt]
+        // [SCENARIO 466675] Country of origin is taken from lot info
+        Initialize();
+
+        // [GIVEN] Posted purchase order with Lot No Information
+        VendorNo := LibraryIntrastat.CreateVendorWithVATRegNo(true);
+        Item.Get(LibraryIntrastat.CreateTrackedItem(2, true, false, SerialNoInformation, LotNoInformation, PackageNoInformation));
+        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, WorkDate(), VendorNo);
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, Item."No.");
+        LibraryItemTracking.CreatePurchOrderItemTracking(ResEntry, PurchaseLine, '', LotNoInformation."Lot No.", '', PurchaseLine.Quantity);
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Intrastat Report Line is created
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+
+        // [THEN] Country of Origin  = country of origin in Intrastat Report Line is taken from Lot No Info
+        VerifyCountryOfOrigin(IntrastatReportHeader, PurchaseLine."No.", LotNoInformation."Country/Region Code");
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    procedure CheckCountryOfOriginFromPackInfoManual()
+    var
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        SerialNoInformation: Record "Serial No. Information";
+        LotNoInformation: Record "Lot No. Information";
+        PackageNoInformation: Record "Package No. Information";
+        ResEntry: Record "Reservation Entry";
+        Item: Record Item;
+        VendorNo: Code[20];
+        IntrastatReportNo: Code[20];
+    begin
+        // [FEATURE] [Purchase] [Receipt]
+        // [SCENARIO 466675] Country of origin is taken from Package info
+        Initialize();
+
+        // [GIVEN] Posted purchase order with package no info
+        VendorNo := LibraryIntrastat.CreateVendorWithVATRegNo(true);
+        Item.Get(LibraryIntrastat.CreateTrackedItem(3, true, false, SerialNoInformation, LotNoInformation, PackageNoInformation));
+        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, WorkDate(), VendorNo);
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, Item."No.");
+        LibraryItemTracking.CreatePurchOrderItemTracking(ResEntry, PurchaseLine, '', '', PackageNoInformation."Package No.", PurchaseLine.Quantity);
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Intrastat Report Line is created
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+
+        // [THEN] Country of Origin  = country of origin in Intrastat Report Line is taken from package no info
+        VerifyCountryOfOrigin(IntrastatReportHeader, PurchaseLine."No.", PackageNoInformation."Country/Region Code");
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    procedure CheckCountryOfOriginFromSerialInfoAuto()
+    var
+        CountryRegion: Record "Country/Region";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        SerialNoInformation: Record "Serial No. Information";
+        LotNoInformation: Record "Lot No. Information";
+        PackageNoInformation: Record "Package No. Information";
+        ResEntry: Record "Reservation Entry";
+        Item: Record Item;
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        VendorNo: Code[20];
+        IntrastatReportNo: Code[20];
+        SerialNo: Code[50];
+    begin
+        // [FEATURE] [Purchase] [Receipt]
+        // [SCENARIO 466675] Country of origin is taken from purchase header into serial info, and intrastat line
+        Initialize();
+
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup.Validate("Def. Country Code for Item Tr.", IntrastatReportSetup."Def. Country Code for Item Tr."::"Purchase Header");
+        IntrastatReportSetup.Modify(true);
+
+        // [GIVEN] Posted purchase order with auto create serial no info, and add country from purchase header
+        VendorNo := LibraryIntrastat.CreateVendorWithVATRegNo(true);
+        Item.Get(LibraryIntrastat.CreateTrackedItem(1, false, true, SerialNoInformation, LotNoInformation, PackageNoInformation));
+        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, WorkDate(), VendorNo);
+        LibraryIntrastat.CreateCountryRegion(CountryRegion, false);
+        PurchaseHeader.Validate("Buy-from Country/Region Code", CountryRegion.Code);
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, Item."No.");
+        PurchaseLine.Validate(Quantity, 1);
+        PurchaseLine.Modify(true);
+
+        SerialNo := LibraryUtility.GenerateRandomCodeWithLength(ResEntry.FieldNo("Serial No."), Database::"Reservation Entry", 50);
+        LibraryItemTracking.CreatePurchOrderItemTracking(ResEntry, PurchaseLine, SerialNo, '', '', PurchaseLine.Quantity);
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        SerialNoInformation.Get(PurchaseLine."No.", PurchaseLine."Variant Code", SerialNo);
+
+        // [WHEN] Intrastat Report Line is created
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+
+        // [THEN] Country of Origin  = country of origin in Intrastat Report Line is taken from purchase header (and serial no info)
+        VerifyCountryOfOrigin(IntrastatReportHeader, PurchaseLine."No.", SerialNoInformation."Country/Region Code");
+
+        IntrastatReportSetup.Validate("Def. Country Code for Item Tr.", IntrastatReportSetup."Def. Country Code for Item Tr."::" ");
+        IntrastatReportSetup.Modify(true);
+    end;
+
+    [Test]
+    [Scope('OnPrem')]
+    [HandlerFunctions('IntrastatReportGetLinesPageHandler')]
+    procedure CheckCountryOfOriginFromLotInfoAuto()
+    var
+        CountryRegion: Record "Country/Region";
+        PurchaseHeader: Record "Purchase Header";
+        PurchaseLine: Record "Purchase Line";
+        IntrastatReportHeader: Record "Intrastat Report Header";
+        SerialNoInformation: Record "Serial No. Information";
+        LotNoInformation: Record "Lot No. Information";
+        PackageNoInformation: Record "Package No. Information";
+        ResEntry: Record "Reservation Entry";
+        IntrastatReportSetup: Record "Intrastat Report Setup";
+        Item: Record Item;
+        VendorNo: Code[20];
+        IntrastatReportNo: Code[20];
+        LotNo: Code[50];
+    begin
+        // [FEATURE] [Purchase] [Receipt]
+        // [SCENARIO 466675] Country of origin is taken from purchase header into lot info, and intrastat line
+        Initialize();
+        IntrastatReportSetup.Get();
+        IntrastatReportSetup.Validate("Def. Country Code for Item Tr.", IntrastatReportSetup."Def. Country Code for Item Tr."::"Purchase Header");
+        IntrastatReportSetup.Modify(true);
+
+        // [GIVEN] Posted purchase order with auto create lot no info, and add country from purchase header
+        VendorNo := LibraryIntrastat.CreateVendorWithVATRegNo(true);
+        Item.Get(LibraryIntrastat.CreateTrackedItem(2, false, true, SerialNoInformation, LotNoInformation, PackageNoInformation));
+        LibraryIntrastat.CreatePurchaseHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, WorkDate(), VendorNo);
+        LibraryIntrastat.CreateCountryRegion(CountryRegion, false);
+        PurchaseHeader.Validate("Buy-from Country/Region Code", CountryRegion.Code);
+        LibraryIntrastat.CreatePurchaseLine(PurchaseHeader, PurchaseLine, PurchaseLine.Type::Item, Item."No.");
+        LotNo := LibraryUtility.GenerateRandomCodeWithLength(ResEntry.FieldNo("Lot No."), Database::"Reservation Entry", 50);
+        LibraryItemTracking.CreatePurchOrderItemTracking(ResEntry, PurchaseLine, '', LotNo, '', PurchaseLine.Quantity);
+        LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+
+        // [WHEN] Intrastat Report Line is created
+        CreateIntrastatReportAndSuggestLines(WorkDate(), IntrastatReportNo);
+        IntrastatReportHeader.Get(IntrastatReportNo);
+
+        LotNoInformation.Get(PurchaseLine."No.", PurchaseLine."Variant Code", LotNo);
+
+        // [THEN] Country of Origin  = country of origin in Intrastat Report Line is taken from purchase header (and lot no info)
+        VerifyCountryOfOrigin(IntrastatReportHeader, PurchaseLine."No.", LotNoInformation."Country/Region Code");
+
+        IntrastatReportSetup.Validate("Def. Country Code for Item Tr.", IntrastatReportSetup."Def. Country Code for Item Tr."::" ");
+        IntrastatReportSetup.Modify(true);
+    end;
+
     local procedure Initialize()
     var
         LibraryERMCountryData: Codeunit "Library - ERM Country Data";
@@ -3038,6 +3287,16 @@ codeunit 139550 "Intrastat Report Test"
         IntrastatReportLine.SetRange("Item No.", ItemNo);
         IntrastatReportLine.FindFirst();
         IntrastatReportLine.TestField("Partner VAT ID", PartnerID);
+    end;
+
+    local procedure VerifyCountryOfOrigin(IntrastatReportHeader: Record "Intrastat Report Header"; ItemNo: Code[20]; CountryOfOrigin: Code[10])
+    var
+        IntrastatReportLine: Record "Intrastat Report Line";
+    begin
+        IntrastatReportLine.SetRange("Intrastat No.", IntrastatReportHeader."No.");
+        IntrastatReportLine.SetRange("Item No.", ItemNo);
+        IntrastatReportLine.FindFirst();
+        IntrastatReportLine.TestField("Country/Region of Origin Code", CountryOfOrigin);
     end;
 
     [ModalPageHandler]

@@ -1,62 +1,62 @@
 {
-    "type":  "PTE",
-    "templateUrl":  "https://github.com/microsoft/AL-Go-PTE@preview",
-    "bcContainerHelperVersion":  "preview",
-    "runs-on":  "windows-latest",
-    "cacheImageName":  "",
-    "UsePsSession":  false,
-    "artifact":  "https://bcinsider-fvh2ekdjecfjd6gk.b02.azurefd.net/sandbox/25.0.22684.0/base",
-    "country":  "base",
-    "useProjectDependencies":  true,
-    "repoVersion":  "25.0",
-    "cleanModePreprocessorSymbols":  [
-                                         "CLEAN17",
-                                         "CLEAN18",
-                                         "CLEAN19",
-                                         "CLEAN20",
-                                         "CLEAN21",
-                                         "CLEAN22",
-                                         "CLEAN23",
-                                         "CLEAN24"
-                                     ],
-    "unusedALGoSystemFiles":  [
-                                  "AddExistingAppOrTestApp.yaml",
-                                  "CreateApp.yaml",
-                                  "CreateOnlineDevelopmentEnvironment.yaml",
-                                  "CreatePerformanceTestApp.yaml",
-                                  "CreateRelease.yaml",
-                                  "CreateTestApp.yaml",
-                                  "Current.yaml",
-                                  "IncrementVersionNumber.yaml",
-                                  "NextMajor.yaml",
-                                  "NextMinor.yaml",
-                                  "PublishToEnvironment.yaml",
-                                  "Test Current.settings.json"
-                              ],
-    "excludeEnvironments":  [
-                                "Official-Build"
-                            ],
-    "buildModes":  [
-                       "Translated"
-                   ],
-    "CICDPushBranches":  [
-                             "main"
-                         ],
-    "CICDPullRequestBranches":  [
-                                    "main"
-                                ],
-    "enableCodeCop":  true,
-    "enableAppSourceCop":  true,
-    "enablePerTenantExtensionCop":  true,
-    "enableUICop":  true,
-    "rulesetFile":  "..\\..\\..\\Build\\rulesets\\app.ruleset.json",
-    "skipUpgrade":  true,
-    "fullBuildPatterns":  [
-                              "Build/*",
-                              ".github/workflows/PullRequestHandler.yaml",
-                              ".github/workflows/_BuildALGoProject.yaml"
-                          ],
-    "UpdateALGoSystemFilesEnvironment":  "Official-Build",
-    "PullRequestTrigger":  "pull_request",
-    "templateSha":  "0476547896ebcd3ba5455b3e0e59b48c0d4a26ca"
+  "type": "PTE",
+  "templateUrl": "https://github.com/microsoft/AL-Go-PTE@preview",
+  "bcContainerHelperVersion": "preview",
+  "runs-on": "windows-latest",
+  "cacheImageName": "",
+  "UsePsSession": false,
+  "artifact": "https://bcinsider-fvh2ekdjecfjd6gk.b02.azurefd.net/sandbox/25.0.23141.0/base",
+  "country": "base",
+  "useProjectDependencies": true,
+  "repoVersion": "25.0",
+  "cleanModePreprocessorSymbols": [
+    "CLEAN17",
+    "CLEAN18",
+    "CLEAN19",
+    "CLEAN20",
+    "CLEAN21",
+    "CLEAN22",
+    "CLEAN23",
+    "CLEAN24"
+  ],
+  "unusedALGoSystemFiles": [
+    "AddExistingAppOrTestApp.yaml",
+    "CreateApp.yaml",
+    "CreateOnlineDevelopmentEnvironment.yaml",
+    "CreatePerformanceTestApp.yaml",
+    "CreateRelease.yaml",
+    "CreateTestApp.yaml",
+    "Current.yaml",
+    "IncrementVersionNumber.yaml",
+    "NextMajor.yaml",
+    "NextMinor.yaml",
+    "PublishToEnvironment.yaml",
+    "Test Current.settings.json"
+  ],
+  "excludeEnvironments": [
+    "Official-Build"
+  ],
+  "buildModes": [
+    "Translated"
+  ],
+  "CICDPushBranches": [
+    "main"
+  ],
+  "CICDPullRequestBranches": [
+    "main"
+  ],
+  "enableCodeCop": true,
+  "enableAppSourceCop": true,
+  "enablePerTenantExtensionCop": true,
+  "enableUICop": true,
+  "rulesetFile": "..\\..\\..\\Build\\rulesets\\app.ruleset.json",
+  "skipUpgrade": true,
+  "fullBuildPatterns": [
+    "Build/*",
+    ".github/workflows/PullRequestHandler.yaml",
+    ".github/workflows/_BuildALGoProject.yaml"
+  ],
+  "UpdateALGoSystemFilesEnvironment": "Official-Build",
+  "PullRequestTrigger": "pull_request",
+  "templateSha": "0476547896ebcd3ba5455b3e0e59b48c0d4a26ca"
 }

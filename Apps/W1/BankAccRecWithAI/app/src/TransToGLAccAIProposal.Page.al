@@ -106,6 +106,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
                 {
                     ApplicationArea = All;
                     Editable = true;
+                    ShowMandatory = true;
                     ToolTip = 'Specifies the template for the journal batch in which the proposed payments will be created.';
 
                     trigger OnValidate()
@@ -130,6 +131,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
                 {
                     ApplicationArea = All;
                     Editable = true;
+                    ShowMandatory = true;
                     ToolTip = 'Specifies the journal batch in which the proposed payments will be created.';
 
                     trigger OnValidate()
@@ -200,6 +202,7 @@ page 7252 "Trans. To GL Acc. AI Proposal"
             {
                 Caption = 'Keep it';
                 ToolTip = 'Post the difference amounts to G/L Accounts as proposed by Copilot.';
+                Enabled = (JournalTemplateName <> '') and (JournalBatchName <> '');
             }
             systemaction(Cancel)
             {

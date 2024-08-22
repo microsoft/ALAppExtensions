@@ -33,6 +33,10 @@ codeunit 4587 "SOA Impl"
         TelemetryAgentTaskNotFoundLbl: Label 'Agent task not found.', Locked = true;
         TelemetryFailedToGetAgentTaskMessageAttachmentLbl: Label 'Failed to get agent task message attachment.', Locked = true;
         TelemetryAttachmentAddedToEmailLbl: Label 'Attachment added to email.', Locked = true;
+        TelemetryAgentScheduledTaskCancelledTxt: Label 'Agent scheduled task cancelled.', Locked = true;
+        TelemetryRecoveryScheduledTaskCancelledTxt: Label 'Recovery scheduled task cancelled.', Locked = true;
+        TelemetryEmailAddedToExistingTaskLbl: Label 'Email added to existing task.', Locked = true;
+        TelemetryAgentScheduledTxt: Label 'Agent scheduled.', Locked = true;
         MessageTemplateLbl: Label 'Subject: %1%2Body: %3', Locked = true;
 
     procedure ScheduleSOA(var SOASetup: Record "SOA Setup")
@@ -49,28 +53,43 @@ codeunit 4587 "SOA Impl"
         if not TaskScheduler.CanCreateTask() then
             Error(CantCreateTaskErr);
 
+        RemoveScheduledTask(SOASetup);
+
         ScheduledTaskId := TaskScheduler.CreateTask(Codeunit::"SOA Dispatcher", Codeunit::"SOA Error Handler", true, CompanyName(), CurrentDateTime() + ScheduleDelay(), SOASetup.RecordId);
+        SOASetup."Agent Scheduled Task ID" := ScheduledTaskId;
         ScheduleSOARecovery(SOASetup);
+
+        SOASetup.Modify();
+        Telemetry.LogMessage('0000NGM', TelemetryAgentScheduledTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
     end;
 
-    procedure ScheduleSOARecovery(var SOASetup: Record "SOA Setup")
+    local procedure ScheduleSOARecovery(var SOASetup: Record "SOA Setup")
     var
-        ScheduledTask: Record "Scheduled Task";
+        ScheduledTaskId: Guid;
+    begin
+        ScheduledTaskId := TaskScheduler.CreateTask(Codeunit::"SOA Recovery", Codeunit::"SOA Recovery", true, CompanyName(), CurrentDateTime() + ScheduleRecoveryDelay(), SOASetup.RecordId);
+        SOASetup."Recovery Scheduled Task ID" := ScheduledTaskId;
+    end;
+
+    local procedure RemoveScheduledTask(var SOASetup: Record "SOA Setup")
+    var
+        NullGuid: Guid;
         CustomDimensions: Dictionary of [Text, Text];
     begin
-        if IsNullGuid(SOASetup.SystemId) then begin
-            CustomDimensions.Add('category', GetCategory());
-            Telemetry.LogMessage('0000NDV', TelemetrySOASetupRecordNotValidLbl, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
-            exit;
+        CustomDimensions.Add('category', GetCategory());
+
+        if TaskScheduler.TaskExists(SOASetup."Agent Scheduled Task ID") then begin
+            TaskScheduler.CancelTask(SOASetup."Agent Scheduled Task ID");
+            Telemetry.LogMessage('0000NGN', TelemetryAgentScheduledTaskCancelledTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
         end;
 
-        // Check if recovery task exists
-        ScheduledTask.SetRange("Run Codeunit", Codeunit::"SOA Recovery");
-        ScheduledTask.SetRange(Company, CompanyName());
-        if not ScheduledTask.IsEmpty() then
-            exit; // Task already exists
+        if TaskScheduler.TaskExists(SOASetup."Recovery Scheduled Task ID") then begin
+            TaskScheduler.CancelTask(SOASetup."Recovery Scheduled Task ID");
+            Telemetry.LogMessage('0000NGO', TelemetryRecoveryScheduledTaskCancelledTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+        end;
 
-        TaskScheduler.CreateTask(Codeunit::"SOA Recovery", Codeunit::"SOA Recovery", true, CompanyName(), CurrentDateTime() + ScheduleRecoveryDelay(), SOASetup.RecordId);
+        SOASetup."Agent Scheduled Task ID" := NullGuid;
+        SOASetup."Recovery Scheduled Task ID" := NullGuid;
     end;
 
     local procedure ScheduleDelay(): Integer
@@ -164,6 +183,8 @@ codeunit 4587 "SOA Impl"
         NewLine := 10;
         MessageText := StrSubstNo(MessageTemplateLbl, EmailMessage.GetSubject(), NewLine, EmailMessage.GetBody());
         AgentMonitoringImpl.CreateTaskMessage(MessageText, EmailInbox."External Message Id", AgentTask);
+
+        Telemetry.LogMessage('0000NGP', TelemetryEmailAddedToExistingTaskLbl, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
     end;
 
     procedure SendEmailReplies(SOASetup: Record "SOA Setup")

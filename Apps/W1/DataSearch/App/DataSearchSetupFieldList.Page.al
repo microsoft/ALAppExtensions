@@ -99,7 +99,7 @@ page 2684 "Data Search Setup (Field) List"
                 trigger OnAction()
                 begin
                     if Confirm(ResetQst, false) then
-                        InitDefaultSetup();
+                        InitDefaultSetup(true);
                 end;
             }
         }
@@ -140,7 +140,7 @@ page 2684 "Data Search Setup (Field) List"
         if SelectedPageCaption = '' then
             SelectedPageCaption := Format(Rec.TableNo) + ' ' + GetTableCaption(Rec.TableNo);
         if DataSearchSetupTable.Get(Rec.TableNo) then
-            InitDefaultSetup();
+            InitDefaultSetup(false);
     end;
 
     var
@@ -153,7 +153,7 @@ page 2684 "Data Search Setup (Field) List"
         ResetQst: Label 'Do you want to remove the current setup and insert the default?';
         NotFullTextMsg: Label 'Field %1 is not optimized for text search. The search will be slower.', Comment = '%1 is a field name';
 
-    local procedure InitDefaultSetup()
+    local procedure InitDefaultSetup(ResetData: Boolean)
     var
         IntegerRec: Record Integer;
         DataSearchDefaults: codeunit "Data Search Defaults";
@@ -166,10 +166,23 @@ page 2684 "Data Search Setup (Field) List"
                 exit; // emergency brake to avoid 'infinite' loop
             if IntegerRec.FindSet() then
                 repeat
+                    if ResetData then
+                        RemoveFieldSetup(Rec.TableNo);
                     DataSearchDefaults.AddDefaultFields(IntegerRec.Number);
                 until IntegerRec.Next() = 0;
-        end else
+        end else begin
+            if ResetData then
+                RemoveFieldSetup(Rec.TableNo);
             DataSearchDefaults.AddDefaultFields(Rec.TableNo);
+        end;
+    end;
+
+    local procedure RemoveFieldSetup(TableNo: Integer)
+    var
+        DataSearchSetupField: Record "Data Search Setup (Field)";
+    begin
+        DataSearchSetupField.SetRange("Table No.", TableNo);
+        DataSearchSetupField.DeleteAll();
     end;
 
     internal procedure SetPageCaption(NewCaption: Text)

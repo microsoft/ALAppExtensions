@@ -120,19 +120,21 @@ codeunit 4300 "Agent Monitoring Impl."
         AgentTaskStep.Insert();
     end;
 
-    internal procedure StopTask(var AgentTask: Record "Agent Task"; AgentTaskStatus: enum "Agent Task Status")
+    internal procedure StopTask(var AgentTask: Record "Agent Task"; AgentTaskStatus: enum "Agent Task Status"; UserConfirm: Boolean)
     begin
-        if not Confirm(AreYouSureThatYouWantToStopTheTaskQst) then
-            exit;
+        if UserConfirm then
+            if not Confirm(AreYouSureThatYouWantToStopTheTaskQst) then
+                exit;
 
         AgentTask.Status := AgentTaskStatus;
         AgentTask.Modify(true);
     end;
 
-    internal procedure RestartTask(var AgentTask: Record "Agent Task")
+    internal procedure RestartTask(var AgentTask: Record "Agent Task"; UserConfirm: Boolean)
     begin
-        if not Confirm(AreYouSureThatYouWantToRestartTheTaskQst) then
-            exit;
+        if UserConfirm then
+            if not Confirm(AreYouSureThatYouWantToRestartTheTaskQst) then
+                exit;
 
         AgentTask.Status := AgentTask.Status::Ready;
         AgentTask.Modify(true);

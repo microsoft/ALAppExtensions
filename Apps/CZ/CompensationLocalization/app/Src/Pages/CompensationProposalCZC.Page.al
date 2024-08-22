@@ -237,6 +237,7 @@ page 31276 "Compensation Proposal CZC"
                             end;
                         CompensationsSetupCZC."Compensation Proposal Method"::"Bussiness Relation":
                             begin
+                                Customer."No." := SourceNo;
                                 ContactBusinessRelation.SetCurrentKey("Link to Table", "No.");
                                 ContactBusinessRelation.SetRange("Link to Table", ContactBusinessRelation."Link to Table"::Customer);
                                 ContactBusinessRelation.SetRange("No.", SourceNo);
@@ -274,6 +275,7 @@ page 31276 "Compensation Proposal CZC"
                             end;
                         CompensationsSetupCZC."Compensation Proposal Method"::"Bussiness Relation":
                             begin
+                                Vendor."No." := SourceNo;
                                 ContactBusinessRelation.SetCurrentKey("Link to Table", "No.");
                                 ContactBusinessRelation.SetRange("Link to Table", ContactBusinessRelation."Link to Table"::Vendor);
                                 ContactBusinessRelation.SetRange("No.", SourceNo);

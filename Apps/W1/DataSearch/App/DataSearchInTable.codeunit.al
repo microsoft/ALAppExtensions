@@ -126,7 +126,6 @@ codeunit 2680 "Data Search in Table"
 
     local procedure SetListedFieldFiltersOnRecRef(var RecRef: RecordRef; TableType: Integer; SearchString: Text; UseTextSearch: Boolean; var FieldList: List of [Integer])
     var
-        Field: Record Field;
         DataSearchObjectMapping: Codeunit "Data Search Object Mapping";
         FldRef: FieldRef;
         FieldNo: Integer;
@@ -150,9 +149,7 @@ codeunit 2680 "Data Search in Table"
             if RecRef.FieldExist(FieldNo) then begin
                 FldRef := RecRef.Field(FieldNo); 
                 if FldRef.Length >= strlen(SearchString) then begin
-                    if not Field.Get(RecRef.Number, FldRef.Number) then
-                        Clear(Field);
-                    if not UseWildCharSearch and Field.OptimizeForTextSearch then
+                    if not UseWildCharSearch and FldRef.IsOptimizedForTextSearch then
                         FldRef.SetFilter('&&' + SearchString + '*')
                     else
                         if UseTextSearch then

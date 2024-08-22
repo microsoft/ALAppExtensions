@@ -325,12 +325,12 @@ page 4050 "GP Migration Configuration"
                 }
             }
 
-#if not CLEAN26
+#if not CLEAN25
             group(Inactives)
             {
                 Visible = false;
                 ObsoleteState = Pending;
-                ObsoleteTag = '26.0';
+                ObsoleteTag = '25.0';
                 ObsoleteReason = 'Group replaced by IncludeTheseRecords';
             }
 #endif

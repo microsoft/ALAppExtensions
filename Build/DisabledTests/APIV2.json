@@ -290,6 +290,16 @@
         "Method": "*"
     },
     {
+        "codeunitId": 139861 ,
+        "CodeunitName": "APIV2JobQueueLogEntriesE2E",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139862 ,
+        "CodeunitName": "APIV2JobQueueEntriesE2E",
+        "Method": "*"
+    },
+    {
         "codeunitId": 139865,
         "CodeunitName": "APIV2 - Purch. Cr. Memos E2E",
         "Method": "*"

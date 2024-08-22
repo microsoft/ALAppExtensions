@@ -2,6 +2,7 @@ namespace Microsoft.Finance.ExcelReports;
 
 using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.Setup;
 using Microsoft.FixedAssets.Posting;
 
 report 4412 "EXR Fixed Asset Analysis Excel"
@@ -123,11 +124,19 @@ report 4412 "EXR Fixed Asset Analysis Excel"
         trigger OnOpenPage()
         var
             DepreciationBook: Record "Depreciation Book";
+            FixedAssetPostingType: Record "FA Posting Type";
+            FASetup: Record "FA Setup";
         begin
             EndingDate := WorkDate();
             StartingDate := CalcDate('<-1M>', EndingDate);
-            if DepreciationBook.FindFirst() then
-                DepreciationBookCode := DepreciationBook.Code;
+            if DepreciationBookCode = '' then begin
+                if DepreciationBook.FindFirst() then
+                    DepreciationBookCode := DepreciationBook.Code;
+                if FASetup.Get() then
+                    if FASetup."Default Depr. Book" <> '' then
+                        DepreciationBookCode := FASetup."Default Depr. Book";
+            end;
+            FixedAssetPostingType.CreateTypes();
         end;
     }
     rendering

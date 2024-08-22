@@ -19,6 +19,7 @@ codeunit 4586 "SOA Dispatcher"
         SOAImpl: Codeunit "SOA Impl";
         TelemetryAgentNotEnabledLbl: Label 'Sales order taker agent is not enabled', Locked = true;
         TelemetryAgentCapabilityNotEnabledLbl: Label 'Sales order taker agent capability is not enabled', Locked = true;
+        TelemetryAgentEmailMonitoringNotEnabledLbl: Label 'Sales order taker agent email monitoring is not enabled', Locked = true;
 
 
     trigger OnRun()
@@ -44,6 +45,11 @@ codeunit 4586 "SOA Dispatcher"
         // Check if the agent is enabled
         if not AgentMonitoringImpl.IsAgentEnabled(Setup."Agent User Security ID") then begin
             Telemetry.LogMessage('0000NDL', TelemetryAgentNotEnabledLbl, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
+            exit;
+        end;
+
+        if not Setup."Email Monitoring" then begin
+            Telemetry.LogMessage('0000NGL', TelemetryAgentEmailMonitoringNotEnabledLbl, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
             exit;
         end;
 
