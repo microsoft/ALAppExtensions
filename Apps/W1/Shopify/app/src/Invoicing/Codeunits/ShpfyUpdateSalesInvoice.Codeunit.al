@@ -2,7 +2,7 @@ namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.History;
 
-codeunit 30314 "Shpfy Update Sales Invoice"
+codeunit 30364 "Shpfy Update Sales Invoice"
 {
     Access = Internal;
 

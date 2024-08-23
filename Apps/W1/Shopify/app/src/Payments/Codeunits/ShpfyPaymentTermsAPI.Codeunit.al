@@ -1,9 +1,9 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Codeunit Shpfy Payment Terms API (ID 30168).
+/// Codeunit Shpfy Payment Terms API (ID 30360).
 /// </summary>
-codeunit 30168 "Shpfy Payment Terms API"
+codeunit 30360 "Shpfy Payment Terms API"
 {
     Access = Internal;
 

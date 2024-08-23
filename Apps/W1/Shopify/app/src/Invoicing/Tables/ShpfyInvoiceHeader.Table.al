@@ -1,9 +1,9 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Table Shpfy Invoice Header (ID 30156).
+/// Table Shpfy Invoice Header (ID 30161).
 /// </summary>
-table 30156 "Shpfy Invoice Header"
+table 30161 "Shpfy Invoice Header"
 {
     Caption = 'Shopify Invoice Header';
     DataClassification = CustomerContent;

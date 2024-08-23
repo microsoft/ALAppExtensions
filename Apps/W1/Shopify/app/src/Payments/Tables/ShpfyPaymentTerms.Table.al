@@ -3,9 +3,9 @@ namespace Microsoft.Integration.Shopify;
 using Microsoft.Foundation.PaymentTerms;
 
 /// <summary>
-/// Table Shpfy Payment Terms (ID 30157).
+/// Table Shpfy Payment Terms (ID 30158).
 /// </summary>
-table 30157 "Shpfy Payment Terms"
+table 30158 "Shpfy Payment Terms"
 {
     Caption = 'Payment Terms';
     DataClassification = CustomerContent;

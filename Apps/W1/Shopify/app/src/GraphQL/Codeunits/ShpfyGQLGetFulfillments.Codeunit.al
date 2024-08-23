@@ -1,7 +1,7 @@
 /// <summary>
-/// Codeunit Shpfy GQL Get Fulfillments (ID 30317) implements Interface Shpfy IGraphQL.
+/// Codeunit Shpfy GQL Get Fulfillments (ID 30356) implements Interface Shpfy IGraphQL.
 /// </summary>
-codeunit 30317 "Shpfy GQL Get Fulfillments" implements "Shpfy IGraphQL"
+codeunit 30356 "Shpfy GQL Get Fulfillments" implements "Shpfy IGraphQL"
 {
     Access = Internal;
 
