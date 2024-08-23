@@ -11,6 +11,7 @@ using Microsoft.EServices.EDocument;
 codeunit 6374 SignUpGetReadyStatus
 {
     TableNo = "Job Queue Entry";
+    Access = Internal;
 
     trigger OnRun()
     var

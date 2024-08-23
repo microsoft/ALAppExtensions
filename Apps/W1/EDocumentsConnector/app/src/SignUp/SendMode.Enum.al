@@ -6,7 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 enum 6370 SignUpSendMode
 {
-    Extensible = true;
+    Access = Internal;
 
     value(0; Production)
     {

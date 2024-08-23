@@ -6,6 +6,8 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 table 6370 SignUpConnectionAuth
 {
+    Access = Internal;
+
     fields
     {
         field(1; PK; Code[10])

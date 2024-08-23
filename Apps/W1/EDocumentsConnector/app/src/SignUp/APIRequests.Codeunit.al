@@ -24,9 +24,10 @@ codeunit 6370 SignUpAPIRequests
         ContentHttpHeaders: HttpHeaders;
         HttpContent: HttpContent;
         ContentText: Text;
+        UriTemplateLbl: Label '%1/api/Peppol', Comment = '%1 = Service Url', Locked = true;
     begin
         InitRequest(SignUpConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::POST, SignUpConnectionSetup.ServiceURL);
+        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::POST, StrSubstNo(UriTemplateLbl, SignUpConnectionSetup.ServiceURL));
 
         Payload := XmlToTxt(TempBlob);
         if Payload = '' then
@@ -47,7 +48,7 @@ codeunit 6370 SignUpAPIRequests
     procedure GetSentDocumentStatus(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
         SignUpConnectionSetup: Record SignUpConnectionSetup;
-        UriTemplateLbl: Label '%1/status?peppolInstanceId=%2', Comment = '%1 = Service Url, %2 = Document ID', Locked = true;
+        UriTemplateLbl: Label '%1/api/Peppol/status?peppolInstanceId=%2', Comment = '%1 = Service Url, %2 = Document ID', Locked = true;
     begin
         InitRequest(SignUpConnectionSetup, HttpRequestMessage, HttpResponseMessage);
         HttpRequestMessage := PrepareRequestMsg("Http Request Type"::GET, StrSubstNo(UriTemplateLbl, SignUpConnectionSetup.ServiceURL, EDocument."Document Id"));
@@ -58,7 +59,7 @@ codeunit 6370 SignUpAPIRequests
     procedure PatchADocument(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
         SignUpConnectionSetup: Record SignUpConnectionSetup;
-        UriTemplateLbl: Label '%1/outbox?peppolInstanceId=%2', Comment = '%1 = Service Url, %2 = Document ID', Locked = true;
+        UriTemplateLbl: Label '%1/api/Peppol/outbox?peppolInstanceId=%2', Comment = '%1 = Service Url, %2 = Document ID', Locked = true;
     begin
         InitRequest(SignUpConnectionSetup, HttpRequestMessage, HttpResponseMessage);
         HttpRequestMessage := PrepareRequestMsg("Http Request Type"::PATCH, StrSubstNo(UriTemplateLbl, SignUpConnectionSetup.ServiceURL, EDocument."Document Id"));
@@ -69,7 +70,7 @@ codeunit 6370 SignUpAPIRequests
     procedure GetReceivedDocumentsRequest(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage; Parameters: Dictionary of [Text, Text]): Boolean
     var
         SignUpConnectionSetup: Record SignUpConnectionSetup;
-        UriTemplateLbl: Label '%1/Inbox?peppolId=%2', Comment = '%1 = Service Url, %2 = Peppol Identifier', Locked = true;
+        UriTemplateLbl: Label '%1/api/Peppol/Inbox?peppolId=%2', Comment = '%1 = Service Url, %2 = Peppol Identifier', Locked = true;
     begin
         InitRequest(SignUpConnectionSetup, HttpRequestMessage, HttpResponseMessage);
         HttpRequestMessage := PrepareRequestMsg("Http Request Type"::GET, StrSubstNo(UriTemplateLbl, SignUpConnectionSetup.ServiceURL, GetSenderReceiverPrefix() + SignUpConnectionSetup."Company Id"));
@@ -80,7 +81,7 @@ codeunit 6370 SignUpAPIRequests
     procedure GetTargetDocumentRequest(DocumentId: Text; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
         SignUpConnectionSetup: Record SignUpConnectionSetup;
-        UriTemplateLbl: Label '%1/inbox-document?peppolId=%2&peppolInstanceId=%3', Comment = '%1 = Service Url, %2 = Peppol Identifier, %3 = Peppol Gateway Instance', Locked = true;
+        UriTemplateLbl: Label '%1/api/Peppol/inbox-document?peppolId=%2&peppolInstanceId=%3', Comment = '%1 = Service Url, %2 = Peppol Identifier, %3 = Peppol Gateway Instance', Locked = true;
     begin
         InitRequest(SignUpConnectionSetup, HttpRequestMessage, HttpResponseMessage);
         HttpRequestMessage := PrepareRequestMsg("Http Request Type"::GET, StrSubstNo(UriTemplateLbl, SignUpConnectionSetup.ServiceURL, GetSenderReceiverPrefix() + SignUpConnectionSetup."Company Id", DocumentId));
@@ -91,7 +92,7 @@ codeunit 6370 SignUpAPIRequests
     procedure PatchReceivedDocument(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
         SignUpConnectionSetup: Record SignUpConnectionSetup;
-        UriTemplateLbl: Label '%1/inbox?peppolInstanceId=%2', Comment = '%1 = Service Url, %2 = Peppol Gateway Instance', Locked = true;
+        UriTemplateLbl: Label '%1/api/Peppol/inbox?peppolInstanceId=%2', Comment = '%1 = Service Url, %2 = Peppol Gateway Instance', Locked = true;
     begin
         InitRequest(SignUpConnectionSetup, HttpRequestMessage, HttpResponseMessage);
         HttpRequestMessage := PrepareRequestMsg("Http Request Type"::PATCH, StrSubstNo(UriTemplateLbl, SignUpConnectionSetup.ServiceURL, EDocument."Document Id"));

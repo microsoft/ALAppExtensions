@@ -10,6 +10,7 @@ using Microsoft.EServices.EDocument;
 codeunit 6377 SignUpPatchSent
 {
     TableNo = "Job Queue Entry";
+    Access = Internal;
 
     trigger OnRun()
     var

@@ -13,6 +13,7 @@ page 6370 SignUpConnectionSetupCard
     ApplicationArea = Basic, Suite;
     UsageCategory = None;
     Caption = 'E-Document External Connection Setup';
+    Extensible = false;
 
     layout
     {

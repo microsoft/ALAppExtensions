@@ -6,6 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 table 6371 SignUpConnectionSetup
 {
+    Access = Internal;
     DataPerCompany = false;
 
     fields

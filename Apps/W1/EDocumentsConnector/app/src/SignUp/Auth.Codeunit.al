@@ -322,6 +322,6 @@ codeunit 6371 SignUpAuth
         SignUpHelpers: Codeunit SignUpHelpers;
         BearerTxt: Label 'Bearer %1', Comment = '%1 = text value', Locked = true;
         AuthURLTxt: Label 'https://login.microsoftonline.com/%1/oauth2/token', Comment = '%1 Entra Tenant Id', Locked = true;
-        ProdTenantIdTxt: Label '0d725623-dc26-484f-a090-b09d2003d092', Locked = true; // TODO: Check production details before PR
-        ProdServiceAPITxt: Label 'https://edoc.exflow.io/api/Peppol', Locked = true; // TODO: Check production details before PR
+        ProdTenantIdTxt: Label '0d725623-dc26-484f-a090-b09d2003d092', Locked = true;
+        ProdServiceAPITxt: Label 'https://edoc.exflow.io', Locked = true;
 }
