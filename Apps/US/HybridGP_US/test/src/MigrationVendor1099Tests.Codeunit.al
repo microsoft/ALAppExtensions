@@ -11,6 +11,7 @@ codeunit 139684 "Migration Vendor 1099 Tests"
         TestVendorNoLbl: Label 'TESTVENDOR01', Locked = true;
         PayablesAccountNoLbl: Label '2100', Locked = true;
         PostingGroupCodeTxt: Label 'GP', Locked = true;
+        IRSFormFeatureKeyIdTok: Label 'IRSForm', Locked = true;
 
     [Test]
     procedure TestMappingsCreated()
@@ -179,6 +180,7 @@ codeunit 139684 "Migration Vendor 1099 Tests"
         VendorLedgerEntry: Record "Vendor Ledger Entry";
         DetailedVendorLedgEntry: Record "Detailed Vendor Ledg. Entry";
         GP1099MigrationLog: Record "GP 1099 Migration Log";
+        IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
         GPCloudMigrationUS: Codeunit "GP Cloud Migration US";
         DocumentNo: Code[20];
     begin
@@ -198,9 +200,8 @@ codeunit 139684 "Migration Vendor 1099 Tests"
 
         // [THEN] The Vendor record will have correct 1099 data
         Assert.IsTrue(Vendor.Get(TestVendorNoLbl), 'Vendor not found.');
-#if not CLEAN25
-        Assert.AreEqual('NEC-01', Vendor."IRS 1099 Code", 'Incorrect IRS 1099 Code.');
-#endif
+        IRS1099VendorFormBoxSetup.Get('2022', Vendor."No.");
+        Assert.AreEqual('NEC-01', IRS1099VendorFormBoxSetup."Form Box No.", 'Incorrect IRS 1099 Code.');
         Assert.AreEqual('123456789', Vendor."Federal ID No.", 'Incorrect Federal ID No.');
         Assert.AreEqual(Vendor."Tax Identification Type"::"Legal Entity", Vendor."Tax Identification Type", 'Incorrect Tax Identification Type.');
 
@@ -208,18 +209,19 @@ codeunit 139684 "Migration Vendor 1099 Tests"
         VendorLedgerEntry.SetRange("Vendor No.", TestVendorNoLbl);
         Assert.IsTrue(VendorLedgerEntry.Count() > 0, 'No VLE created!');
 
+        VendorLedgerEntry.FindFirst();
+
         // NEC-01, total is $120
         VendorLedgerEntry.SetRange("Vendor No.", TestVendorNoLbl);
         VendorLedgerEntry.SetRange("Document Type", VendorLedgerEntry."Document Type"::Invoice);
+        VendorLedgerEntry.SetRange("IRS 1099 Reporting Period", Format(GPCompanyAdditionalSettings."1099 Tax Year"));
         VendorLedgerEntry.SetRange(Description, 'NEC-01');
         Assert.IsTrue(VendorLedgerEntry.FindFirst(), 'NEC-01 Invoice Vendor ledger entry not found.');
 
         DocumentNo := VendorLedgerEntry."Document No.";
         Assert.AreEqual('NEC-01', VendorLedgerEntry.Description, 'Invoice Vendor ledger entry description is incorrect.');
-#if not CLEAN25
-        Assert.AreEqual('NEC-01', VendorLedgerEntry."IRS 1099 Code", 'Invoice Vendor ledger entry IRS 1099 Code is incorrect.');
-        Assert.AreEqual(-120, VendorLedgerEntry."IRS 1099 Amount", 'Invoice Vendor ledger entry IRS 1099 Amount is incorrect.');
-#endif
+        Assert.AreEqual('NEC-01', VendorLedgerEntry."IRS 1099 Form Box No.", 'Invoice Vendor ledger entry IRS 1099 Code is incorrect.');
+        Assert.AreEqual(-120, VendorLedgerEntry."IRS 1099 Reporting Amount", 'Invoice Vendor ledger entry IRS 1099 Amount is incorrect.');
         Assert.AreEqual(0, VendorLedgerEntry."Remaining Amount", 'Invoice Vendor ledger entry Remaining Amount should be zero.');
 
         VendorLedgerEntry.SetRange("Vendor No.", TestVendorNoLbl);
@@ -227,9 +229,7 @@ codeunit 139684 "Migration Vendor 1099 Tests"
         VendorLedgerEntry.SetRange(Description, 'NEC-01');
         Assert.IsTrue(VendorLedgerEntry.FindFirst(), 'NEC-01 Payment Vendor ledger entry not found.');
         Assert.AreEqual('NEC-01', VendorLedgerEntry.Description, 'Payment Vendor ledger entry description is incorrect.');
-#if not CLEAN25
-        Assert.AreEqual('NEC-01', VendorLedgerEntry."IRS 1099 Code", 'Payment Vendor ledger entry IRS 1099 Code is incorrect.');
-#endif
+        Assert.AreEqual('NEC-01', VendorLedgerEntry."IRS 1099 Form Box No.", 'Payment Vendor ledger entry IRS 1099 Code is incorrect.');
 
         DetailedVendorLedgEntry.SetRange("Vendor No.", TestVendorNoLbl);
         DetailedVendorLedgEntry.SetRange("Initial Document Type", DetailedVendorLedgEntry."Initial Document Type"::Payment);
@@ -305,7 +305,10 @@ codeunit 139684 "Migration Vendor 1099 Tests"
         GP1099MigrationLog: Record "GP 1099 Migration Log";
         GPCompanyMigrationSettings: Record "GP Company Migration Settings";
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
+        IRS1099VendorFormBoxSetup: Record "IRS 1099 Vendor Form Box Setup";
     begin
+        ManuallyEnabledIRSFormFeatureIfRequired();
+
         Vendor.SetRange("No.", TestVendorNoLbl);
         if not Vendor.IsEmpty() then
             Vendor.DeleteAll();
@@ -343,6 +346,9 @@ codeunit 139684 "Migration Vendor 1099 Tests"
 
         if not GPCompanyAdditionalSettings.IsEmpty() then
             GPCompanyAdditionalSettings.DeleteAll();
+
+        if not IRS1099VendorFormBoxSetup.IsEmpty() then
+            IRS1099VendorFormBoxSetup.DeleteAll();
 
         CreateConfigurationSettings();
     end;
@@ -494,5 +500,26 @@ codeunit 139684 "Migration Vendor 1099 Tests"
             VendorPostingGroup."Payables Account" := PayablesAccountNoLbl;
             VendorPostingGroup.Insert(true);
         end;
+    end;
+
+    local procedure ManuallyEnabledIRSFormFeatureIfRequired()
+    var
+        FeatureKey: Record "Feature Key";
+        FeatureDataUpdateStatus: Record "Feature Data Update Status";
+    begin
+#if CLEAN25
+        exit;
+#endif
+        if FeatureKey.Get(IRSFormFeatureKeyIdTok) then
+            if FeatureKey.Enabled <> FeatureKey.Enabled::"All Users" then begin
+                FeatureKey.Enabled := FeatureKey.Enabled::"All Users";
+                FeatureKey.Modify();
+            end;
+
+        if FeatureDataUpdateStatus.Get(IRSFormFeatureKeyIdTok, CompanyName()) then
+            if FeatureDataUpdateStatus."Feature Status" <> FeatureDataUpdateStatus."Feature Status"::Enabled then begin
+                FeatureDataUpdateStatus."Feature Status" := FeatureDataUpdateStatus."Feature Status"::Enabled;
+                FeatureDataUpdateStatus.Modify();
+            end;
     end;
 }

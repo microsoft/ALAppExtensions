@@ -24,7 +24,13 @@
                              "publisher":  "Microsoft",
                              "version":  "25.0.0.0"
                          },
-                         {
+                        {
+                            "id": "b696b4c9-637c-49d1-a806-763ff8f0a20e",
+                            "name": "IRS Forms",
+                            "publisher": "Microsoft",
+                            "version": "25.0.0.0"
+                        },
+                        {
                              "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
                              "name":  "Tests-TestLibraries",
                              "publisher":  "Microsoft",
