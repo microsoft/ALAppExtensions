@@ -292,6 +292,14 @@ table 6618 "FS Work Order Incident"
             ExternalType = 'String';
             ExternalAccess = Read;
         }
+        field(60; IncidentType; Guid)
+        {
+            ExternalName = 'msdyn_incidenttype';
+            ExternalType = 'Lookup';
+            Caption = 'Incident Type';
+            TableRelation = "FS Incident Type".IncidentTypeId;
+            DataClassification = SystemMetadata;
+        }
     }
     keys
     {

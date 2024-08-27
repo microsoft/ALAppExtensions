@@ -156,6 +156,12 @@ page 6613 "FS Connection Setup Wizard"
                         ApplicationArea = Suite;
                         ToolTip = 'Specifies when to post project journal lines that are coupled to work order products and work order services.';
                     }
+                    field("Integration Type"; Rec."Integration Type")
+                    {
+                        ApplicationArea = Service;
+                        ToolTip = 'Specifies the type of integration between Business Central and Dynamics 365 Field Service.';
+                        Editable = EnableFSIntegrationType;
+                    }
                 }
                 group("Advanced Settings")
                 {
@@ -359,6 +365,7 @@ page 6613 "FS Connection Setup Wizard"
         CredentialsStepVisible: Boolean;
         EnableFSConnection: Boolean;
         ImportSolution: Boolean;
+        EnableFSIntegrationType: Boolean;
         EnableFSConnectionEnabled: Boolean;
         ImportFSSolutionEnabled: Boolean;
         ShowAdvancedSettings: Boolean;
@@ -454,12 +461,18 @@ page 6613 "FS Connection Setup Wizard"
 
         EnableFSConnectionEnabled := Rec."Server Address" <> '';
         Rec."Authentication Type" := Rec."Authentication Type"::Office365;
+        EnableFSIntegrationType := true;
+
         if FSConnectionSetup.Get() then begin
             EnableFSConnection := true;
             EnableFSConnectionEnabled := not FSConnectionSetup."Is Enabled";
             ImportSolution := true;
             if FSConnectionSetup."Is FS Solution Installed" then
                 ImportFSSolutionEnabled := false;
+            if FSConnectionSetup."Is Enabled" then begin
+                Rec."Integration Type" := FSConnectionSetup."Integration Type";
+                EnableFSIntegrationType := false;
+            end;
         end else begin
             if ImportFSSolutionEnabled then
                 ImportSolution := true;

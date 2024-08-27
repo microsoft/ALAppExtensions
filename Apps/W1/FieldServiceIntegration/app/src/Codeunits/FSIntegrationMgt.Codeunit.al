@@ -6,8 +6,10 @@ namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.Dataverse;
 using Microsoft.Integration.D365Sales;
+using Microsoft.Service.Setup;
 using System;
 using Microsoft.Utilities;
+using Microsoft.Foundation.NoSeries;
 
 codeunit 6615 "FS Integration Mgt."
 {
@@ -186,6 +188,72 @@ codeunit 6615 "FS Integration Mgt."
         if not Evaluate(GuidVar, TextVar) then;
         exit(GuidVar);
     end;
+
+    internal procedure TestManualNoSeriesFlag(IntegrationType: Enum "FS Integration Type")
+    var
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+        NoSeries: Codeunit "No. Series";
+        NoManualNoSeriesErr: Label 'Manual No. Series is not supported for Service Order Nos. Please make sure that the No. Series setup is correct.';
+    begin
+        if not (IntegrationType in [IntegrationType::Service, IntegrationType::Both]) then
+            exit;
+
+        ServiceMgtSetup.Get();
+        if not NoSeries.IsManual(ServiceMgtSetup."Service Order Nos.") then
+            Error(NoManualNoSeriesErr);
+    end;
+
+    internal procedure TestOneServiceItemLinePerOrder(IntegrationType: Enum "FS Integration Type")
+    var
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+    begin
+        if not (IntegrationType in [IntegrationType::Service, IntegrationType::Both]) then
+            exit;
+
+        ServiceMgtSetup.Get();
+        ServiceMgtSetup.TestField("One Service Item Line/Order", false);
+    end;
+
+    internal procedure TestOneServiceItemLinePerOrderModificationIsAllowed(ServiceMgtSetup: Record "Service Mgt. Setup")
+    var
+        ConnectionSetup: Record "FS Connection Setup";
+    begin
+        if not ServiceMgtSetup."One Service Item Line/Order" then
+            exit;
+
+        ConnectionSetup.Get();
+        if not (ConnectionSetup."Integration Type" in [ConnectionSetup."Integration Type"::Service, ConnectionSetup."Integration Type"::Both]) then
+            exit;
+
+        ConnectionSetup.TestField("Is Enabled", false);
+    end;
+
+    internal procedure GetDefaultWorkOrderIncident(): Guid
+    var
+        ConnectionSetup: Record "FS Connection Setup";
+    begin
+        ConnectionSetup.Get();
+
+        if IsNullGuid(ConnectionSetup."Default Work Order Incident ID") then begin
+            ConnectionSetup."Default Work Order Incident ID" := GenerateDefaultWorkOrderIncident();
+            ConnectionSetup.Modify();
+        end;
+
+        exit(ConnectionSetup."Default Work Order Incident ID");
+    end;
+
+    internal procedure GenerateDefaultWorkOrderIncident(): Guid
+    var
+        IncidentType: Record "FS Incident Type";
+        IncidentTypeNameLbl: Label 'Business Central - Default Incident Type';
+    begin
+        IncidentType.IncidentTypeId := CreateGuid();
+        IncidentType.Name := IncidentTypeNameLbl;
+        IncidentType.Insert();
+
+        exit(IncidentType.IncidentTypeId);
+    end;
+
 
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]
     local procedure RegisterFSConnectionOnRegisterServiceConnection(var ServiceConnection: Record "Service Connection")

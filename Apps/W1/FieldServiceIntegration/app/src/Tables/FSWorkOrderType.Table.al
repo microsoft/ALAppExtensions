@@ -219,6 +219,14 @@ table 6622 "FS Work Order Type"
             Caption = 'Taxable';
             DataClassification = SystemMetadata;
         }
+        field(40; Code; Text[10])
+        {
+            ExternalName = 'bcbi_code';
+            ExternalType = 'String';
+            Description = 'Type the code of the work order type.';
+            Caption = 'Code';
+            DataClassification = SystemMetadata;
+        }
     }
     keys
     {

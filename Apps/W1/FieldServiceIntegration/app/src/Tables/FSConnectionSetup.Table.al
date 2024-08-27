@@ -228,6 +228,24 @@ table 6623 "FS Connection Setup"
             DataClassification = SystemMetadata;
             Caption = 'Automatically post project journal lines';
         }
+        field(300; "Integration Type"; Enum "FS Integration Type")
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'Integration Type';
+
+            trigger OnValidate()
+            var
+                IntegrationMgt: Codeunit "FS Integration Mgt.";
+            begin
+                IntegrationMgt.TestManualNoSeriesFlag(Rec."Integration Type");
+                IntegrationMgt.TestOneServiceItemLinePerOrder(Rec."Integration Type");
+            end;
+        }
+        field(301; "Default Work Order Incident ID"; Guid)
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'Default Work Order Incident ID';
+        }
     }
 
     keys

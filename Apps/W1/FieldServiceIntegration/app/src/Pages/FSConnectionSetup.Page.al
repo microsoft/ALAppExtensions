@@ -127,6 +127,17 @@ page 6612 "FS Connection Setup"
                     ShowMandatory = true;
                     ToolTip = 'Specifies the unit of measure that corresponds to the ''hour'' unit that is used on Dynamics 365 Field Service bookable resources.';
                 }
+                group(IntegrationTypeService)
+                {
+                    ShowCaption = false;
+
+                    field("Integration Type"; Rec."Integration Type")
+                    {
+                        ApplicationArea = Service;
+                        Editable = not Rec."Is Enabled";
+                        ToolTip = 'Specifies the type of integration between Business Central and Dynamics 365 Field Service.';
+                    }
+                }
             }
             group(SynchSettings)
             {

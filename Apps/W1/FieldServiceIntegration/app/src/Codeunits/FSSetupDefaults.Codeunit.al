@@ -6,10 +6,13 @@ namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.Dataverse;
 using Microsoft.Integration.D365Sales;
+using Microsoft.Service.Setup;
 using Microsoft.Integration.SyncEngine;
 using Microsoft.Inventory.Location;
+using Microsoft.Service.Document;
 using Microsoft.Inventory.Setup;
 using Microsoft.Utilities;
+using Microsoft.Inventory.Item;
 using System.Threading;
 using Microsoft.Projects.Project.Job;
 using Microsoft.Service.Item;
@@ -30,6 +33,7 @@ codeunit 6611 "FS Setup Defaults"
     internal procedure ResetConfiguration(var FSConnectionSetup: Record "FS Connection Setup")
     var
         CDSIntegrationMgt: Codeunit "CDS Integration Mgt.";
+        FSIntegrationMgt: Codeunit "FS Integration Mgt.";
         IsHandled: Boolean;
     begin
         IsHandled := false;
@@ -40,12 +44,30 @@ codeunit 6611 "FS Setup Defaults"
         CDSIntegrationMgt.RegisterConnection();
         CDSIntegrationMgt.ActivateConnection();
 
-        ResetProjectTaskMapping(FSConnectionSetup, 'PROJECTTASK', true);
-        ResetProjectJournalLineWOProductMapping(FSConnectionSetup, 'PJLINE-WORDERPRODUCT', true);
-        ResetProjectJournalLineWOServiceMapping(FSConnectionSetup, 'PJLINE-WORDERSERVICE', true);
+        if FSConnectionSetup."Integration Type" in [FSConnectionSetup."Integration Type"::Project,
+                                                    FSConnectionSetup."Integration Type"::Both] then begin
+            ResetProjectTaskMapping(FSConnectionSetup, 'PROJECTTASK', true);
+            ResetProjectJournalLineWOProductMapping(FSConnectionSetup, 'PJLINE-WORDERPRODUCT', true);
+            ResetProjectJournalLineWOServiceMapping(FSConnectionSetup, 'PJLINE-WORDERSERVICE', true);
+        end;
+
         ResetServiceItemCustomerAssetMapping(FSConnectionSetup, 'SVCITEM-CUSTASSET', true);
         ResetResourceBookableResourceMapping(FSConnectionSetup, 'RESOURCE-BOOKABLERSC', true);
         ResetLocationMapping(FSConnectionSetup, 'LOCATION', true);
+
+        if FSConnectionSetup."Integration Type" in [FSConnectionSetup."Integration Type"::Service,
+                                                    FSConnectionSetup."Integration Type"::Both] then begin
+            ResetServiceOrderTypeMapping(FSConnectionSetup, 'SRVORDERTYPE', true);
+            ResetServiceOrderMapping(FSConnectionSetup, 'SRVORDER', true);
+            ResetServiceOrderItemLineMapping(FSConnectionSetup, 'SRVORDERITEMLINE', true);
+            ResetServiceOrderLineItemMapping(FSConnectionSetup, 'SRVORDERLINE-ITEM', true);
+            ResetServiceOrderLineServiceItemMapping(FSConnectionSetup, 'SRVORDERLINE-SERVICE', true);
+            ResetServiceOrderLineResourceMapping(FSConnectionSetup, 'SRVORDERLINE-RESOURC', true);
+
+            if IsNullGuid(FSConnectionSetup."Default Work Order Incident ID") then
+                FSConnectionSetup."Default Work Order Incident ID" := FSIntegrationMgt.GenerateDefaultWorkOrderIncident();
+        end;
+
         SetCustomIntegrationsTableMappings(FSConnectionSetup);
     end;
 
@@ -360,6 +382,7 @@ codeunit 6611 "FS Setup Defaults"
 
         ServiceItem.Reset();
         ServiceItem.SetRange(Blocked, ServiceItem.Blocked::" ");
+        ServiceItem.SetRange("Service Item Components", false);
 
         InsertIntegrationTableMapping(
           IntegrationTableMapping, IntegrationTableMappingName,
@@ -451,6 +474,448 @@ codeunit 6611 "FS Setup Defaults"
         IntegrationFieldMapping.Modify();
 
         RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 5);
+    end;
+
+    local procedure ResetServiceOrderTypeMapping(var FSConnectionSetup: Record "FS Connection Setup"; IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean)
+    var
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        ServiceOrderType: Record "Service Order Type";
+        FSWorkOrderType: Record "FS Work Order Type";
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeResetServiceOrderTypeMapping(IntegrationTableMappingName, ShouldRecreateJobQueueEntry, IsHandled);
+        if IsHandled then
+            exit;
+
+        if not (FSConnectionSetup."Integration Type" in [FSConnectionSetup."Integration Type"::Service,
+                                                         FSConnectionSetup."Integration Type"::Both]) then
+            exit;
+
+        FSWorkOrderType.Reset();
+        FSWorkOrderType.SetRange(StateCode, FSWorkOrderType.StateCode::Active);
+        InsertIntegrationTableMapping(
+          IntegrationTableMapping, IntegrationTableMappingName,
+          Database::"Service Order Type", Database::"FS Work Order Type",
+          FSWorkOrderType.FieldNo(WorkOrderTypeId), FSWorkOrderType.FieldNo(ModifiedOn),
+          '', '', false);
+
+        IntegrationTableMapping.SetIntegrationTableFilter(
+          GetTableFilterFromView(Database::"FS Work Order Type", FSWorkOrderType.TableCaption(), FSWorkOrderType.GetView()));
+        IntegrationTableMapping.Modify();
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceOrderType.FieldNo(Code),
+          FSWorkOrderType.FieldNo(Code),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceOrderType.FieldNo(Description),
+          FSWorkOrderType.FieldNo(Name),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 30);
+    end;
+
+    local procedure ResetServiceOrderMapping(var FSConnectionSetup: Record "FS Connection Setup"; IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean)
+    var
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        ServiceOrder: Record "Service Header";
+        FSWorkOrder: Record "FS Work Order";
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeResetServiceOrderMapping(IntegrationTableMappingName, ShouldRecreateJobQueueEntry, IsHandled);
+        if IsHandled then
+            exit;
+
+        if not (FSConnectionSetup."Integration Type" in [FSConnectionSetup."Integration Type"::Service,
+                                                         FSConnectionSetup."Integration Type"::Both]) then
+            exit;
+
+        ServiceOrder.Reset();
+        ServiceOrder.SetRange("Document Type", ServiceOrder."Document Type"::Order);
+        FSWorkOrder.Reset();
+        FSWorkOrder.SetRange("Integrate to Service", true);
+
+        InsertIntegrationTableMapping(
+          IntegrationTableMapping, IntegrationTableMappingName,
+          Database::"Service Header", Database::"FS Work Order",
+          FSWorkOrder.FieldNo(WorkOrderId), FSWorkOrder.FieldNo(ModifiedOn),
+          '', '', false);
+
+        IntegrationTableMapping.SetTableFilter(
+          GetTableFilterFromView(Database::"Service Header", ServiceOrder.TableCaption(), ServiceOrder.GetView()));
+        IntegrationTableMapping.SetIntegrationTableFilter(
+          GetTableFilterFromView(Database::"FS Work Order", FSWorkOrder.TableCaption(), FSWorkOrder.GetView()));
+        IntegrationTableMapping."Dependency Filter" := 'CUSTOMER|SRVORDERTYPE';
+        IntegrationTableMapping.Modify();
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceOrder.FieldNo("Document Type"),
+          0, IntegrationFieldMapping.Direction::FromIntegrationTable,
+          'Order', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceOrder.FieldNo("No."),
+          FSWorkOrder.FieldNo(Name),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceOrder.FieldNo("Customer No."),
+          FSWorkOrder.FieldNo(ServiceAccount),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceOrder.FieldNo("Order Date"),
+          FSWorkOrder.FieldNo(CreatedOn),
+          IntegrationFieldMapping.Direction::FromIntegrationTable,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceOrder.FieldNo("Service Order Type"),
+          FSWorkOrder.FieldNo(WorkOrderType),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceOrder.FieldNo("Work Description"),
+          FSWorkOrder.FieldNo(WorkOrderSummary),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 30);
+    end;
+
+    local procedure ResetServiceOrderItemLineMapping(var FSConnectionSetup: Record "FS Connection Setup"; IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean)
+    var
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        ServiceItemLine: Record "Service Item Line";
+        FSWorkOrderIncident: Record "FS Work Order Incident";
+        EmptyGuid: Guid;
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeResetServiceOrderItemLineMapping(IntegrationTableMappingName, ShouldRecreateJobQueueEntry, IsHandled);
+        if IsHandled then
+            exit;
+
+        if not (FSConnectionSetup."Integration Type" in [FSConnectionSetup."Integration Type"::Service,
+                                                         FSConnectionSetup."Integration Type"::Both]) then
+            exit;
+
+        ServiceItemLine.Reset();
+        ServiceItemLine.SetRange("Document Type", ServiceItemLine."Document Type"::Order);
+        FSWorkOrderIncident.Reset();
+        FSWorkOrderIncident.SetFilter(CustomerAsset, '<>%1', EmptyGuid);
+
+        InsertIntegrationTableMapping(
+          IntegrationTableMapping, IntegrationTableMappingName,
+          Database::"Service Item Line", Database::"FS Work Order Incident",
+          FSWorkOrderIncident.FieldNo(WorkOrderIncidentId), FSWorkOrderIncident.FieldNo(ModifiedOn),
+          '', '', false);
+
+        IntegrationTableMapping.SetTableFilter(
+          GetTableFilterFromView(Database::"Service Item Line", ServiceItemLine.TableCaption(), ServiceItemLine.GetView()));
+        IntegrationTableMapping.SetIntegrationTableFilter(
+          GetTableFilterFromView(Database::"FS Work Order Incident", FSWorkOrderIncident.TableCaption(), FSWorkOrderIncident.GetView()));
+        IntegrationTableMapping."Dependency Filter" := 'SRVORDER|SVCITEM-CUSTASSET';
+        IntegrationTableMapping.Modify();
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceItemLine.FieldNo("Document Type"),
+          0, IntegrationFieldMapping.Direction::FromIntegrationTable,
+          'Order', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceItemLine.FieldNo("Service Item No."),
+          FSWorkOrderIncident.FieldNo(CustomerAsset),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+    end;
+
+    local procedure ResetServiceOrderLineItemMapping(var FSConnectionSetup: Record "FS Connection Setup"; IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean)
+    var
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        ServiceLine: Record "Service Line";
+        FSWorkOrderProduct: Record "FS Work Order Product";
+        EmptyGuid: Guid;
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeResetServiceOrderLineItemMapping(IntegrationTableMappingName, ShouldRecreateJobQueueEntry, IsHandled);
+        if IsHandled then
+            exit;
+
+        if not (FSConnectionSetup."Integration Type" in [FSConnectionSetup."Integration Type"::Service,
+                                                         FSConnectionSetup."Integration Type"::Both]) then
+            exit;
+
+        ServiceLine.Reset();
+        ServiceLine.SetRange("Document Type", ServiceLine."Document Type"::Order);
+        ServiceLine.SetRange(Type, ServiceLine.Type::Item);
+        ServiceLine.SetFilter("Item Type", '%1|%2', ServiceLine."Item Type"::Inventory, ServiceLine."Item Type"::"Non-Inventory");
+        FSWorkOrderProduct.Reset();
+        FSWorkOrderProduct.SetFilter(WorkOrderIncident, '<>%1', EmptyGuid);
+
+        InsertIntegrationTableMapping(
+          IntegrationTableMapping, IntegrationTableMappingName,
+          Database::"Service Line", Database::"FS Work Order Product",
+          FSWorkOrderProduct.FieldNo(WorkOrderProductId), FSWorkOrderProduct.FieldNo(ModifiedOn),
+          '', '', false);
+
+        IntegrationTableMapping.SetTableFilter(
+          GetTableFilterFromView(Database::"Service Line", ServiceLine.TableCaption(), ServiceLine.GetView()));
+        IntegrationTableMapping.SetIntegrationTableFilter(
+          GetTableFilterFromView(Database::"FS Work Order Product", FSWorkOrderProduct.TableCaption(), FSWorkOrderProduct.GetView()));
+        IntegrationTableMapping."Dependency Filter" := 'SRVORDER|SRVORDERITEMLINE';
+        IntegrationTableMapping.Modify();
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Document Type"),
+          0, IntegrationFieldMapping.Direction::FromIntegrationTable,
+          'Order', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("No."),
+          FSWorkOrderProduct.FieldNo(Product),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo(Description),
+          FSWorkOrderProduct.FieldNo(Name),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Location Code"),
+          FSWorkOrderProduct.FieldNo(WarehouseId),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Unit of Measure Code"),
+          FSWorkOrderProduct.FieldNo(Unit),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo(Quantity),
+          FSWorkOrderProduct.FieldNo(EstimateQuantity),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Qty. to Ship"),
+          FSWorkOrderProduct.FieldNo(Quantity),
+          IntegrationFieldMapping.Direction::FromIntegrationTable,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Qty. to Consume"),
+          FSWorkOrderProduct.FieldNo(QtyToBill),
+          IntegrationFieldMapping.Direction::FromIntegrationTable,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Qty. to Invoice"),
+          FSWorkOrderProduct.FieldNo(QtyToBill),
+          IntegrationFieldMapping.Direction::FromIntegrationTable,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Qty. to Invoice"),
+          FSWorkOrderProduct.FieldNo(QtyToBill),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+    end;
+
+    local procedure ResetServiceOrderLineServiceItemMapping(var FSConnectionSetup: Record "FS Connection Setup"; IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean)
+    var
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        ServiceLine: Record "Service Line";
+        FSWorkOrderService: Record "FS Work Order Service";
+        EmptyGuid: Guid;
+        IsHandled: Boolean;
+    begin
+        IsHandled := false;
+        OnBeforeResetServiceOrderLineItemMapping(IntegrationTableMappingName, ShouldRecreateJobQueueEntry, IsHandled);
+        if IsHandled then
+            exit;
+
+        if not (FSConnectionSetup."Integration Type" in [FSConnectionSetup."Integration Type"::Service,
+                                                         FSConnectionSetup."Integration Type"::Both]) then
+            exit;
+
+        ServiceLine.Reset();
+        ServiceLine.SetRange("Document Type", ServiceLine."Document Type"::Order);
+        ServiceLine.SetRange(Type, ServiceLine.Type::Item);
+        ServiceLine.SetRange("Item Type", ServiceLine."Item Type"::Service);
+        FSWorkOrderService.Reset();
+        FSWorkOrderService.SetFilter(WorkOrderIncident, '<>%1', EmptyGuid);
+
+        InsertIntegrationTableMapping(
+          IntegrationTableMapping, IntegrationTableMappingName,
+          Database::"Service Line", Database::"FS Work Order Service",
+          FSWorkOrderService.FieldNo(WorkOrderServiceId), FSWorkOrderService.FieldNo(ModifiedOn),
+          '', '', false);
+
+        IntegrationTableMapping.SetTableFilter(
+          GetTableFilterFromView(Database::"Service Line", ServiceLine.TableCaption(), ServiceLine.GetView()));
+        IntegrationTableMapping.SetIntegrationTableFilter(
+          GetTableFilterFromView(Database::"FS Work Order Service", FSWorkOrderService.TableCaption(), FSWorkOrderService.GetView()));
+        IntegrationTableMapping."Dependency Filter" := 'SRVORDER|SRVORDERITEMLINE';
+        IntegrationTableMapping.Modify();
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Document Type"),
+          0, IntegrationFieldMapping.Direction::FromIntegrationTable,
+          'Order', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("No."),
+          FSWorkOrderService.FieldNo(Service),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo(Description),
+          FSWorkOrderService.FieldNo(Name),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Unit of Measure Code"),
+          FSWorkOrderService.FieldNo(Unit),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo(Quantity),
+          FSWorkOrderService.FieldNo(EstimateDuration),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Qty. to Ship"),
+          FSWorkOrderService.FieldNo(Duration),
+          IntegrationFieldMapping.Direction::FromIntegrationTable,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Qty. to Consume"),
+          FSWorkOrderService.FieldNo(DurationToBill),
+          IntegrationFieldMapping.Direction::FromIntegrationTable,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Qty. to Invoice"),
+          FSWorkOrderService.FieldNo(DurationToBill),
+          IntegrationFieldMapping.Direction::FromIntegrationTable,
+          '', true, false);
+    end;
+
+    local procedure ResetServiceOrderLineResourceMapping(var FSConnectionSetup: Record "FS Connection Setup"; IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean)
+    var
+        IntegrationTableMapping: Record "Integration Table Mapping";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        ServiceLine: Record "Service Line";
+        FSBookableResourceBooking: Record "FS Bookable Resource Booking";
+        IsHandled: Boolean;
+        EmptyGuid: Guid;
+    begin
+        IsHandled := false;
+        OnBeforeResetServiceOrderLineResourceMapping(IntegrationTableMappingName, ShouldRecreateJobQueueEntry, IsHandled);
+        if IsHandled then
+            exit;
+
+        if not (FSConnectionSetup."Integration Type" in [FSConnectionSetup."Integration Type"::Service,
+                                                         FSConnectionSetup."Integration Type"::Both]) then
+            exit;
+
+        ServiceLine.Reset();
+        ServiceLine.SetRange("Document Type", ServiceLine."Document Type"::Order);
+        ServiceLine.SetRange(Type, ServiceLine.Type::Resource);
+        FSBookableResourceBooking.Reset();
+        FSBookableResourceBooking.SetFilter(WorkOrder, '<>%1', EmptyGuid);
+
+        InsertIntegrationTableMapping(
+          IntegrationTableMapping, IntegrationTableMappingName,
+          Database::"Service Line", Database::"FS Bookable Resource Booking",
+          FSBookableResourceBooking.FieldNo(BookableResourceBookingId), FSBookableResourceBooking.FieldNo(ModifiedOn),
+          '', '', false);
+
+        IntegrationTableMapping.SetTableFilter(
+          GetTableFilterFromView(Database::"Service Line", ServiceLine.TableCaption(), ServiceLine.GetView()));
+        IntegrationTableMapping.SetIntegrationTableFilter(
+          GetTableFilterFromView(Database::"FS Bookable Resource Booking", FSBookableResourceBooking.TableCaption(), FSBookableResourceBooking.GetView()));
+        IntegrationTableMapping."Dependency Filter" := 'SRVORDER|SRVORDERITEMLINE|RESOURCE-BOOKABLERSC';
+        IntegrationTableMapping.Modify();
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Document Type"),
+          0, IntegrationFieldMapping.Direction::FromIntegrationTable,
+          'Order', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("No."),
+          FSBookableResourceBooking.FieldNo(Resource),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo(Description),
+          FSBookableResourceBooking.FieldNo(Name),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo(Quantity),
+          FSBookableResourceBooking.FieldNo(Duration),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
     end;
 
     local procedure ShouldResetServiceItemMapping(): Boolean
@@ -570,6 +1035,10 @@ codeunit 6611 "FS Setup Defaults"
         case BCTableNo of
             Database::Resource:
                 CDSTableNo := Database::"FS Bookable Resource";
+            Database::"Service Order Type":
+                CDSTableNo := Database::"FS Work Order Type";
+            Database::"Service Header":
+                CDSTableNo := Database::"FS Work Order";
             Database::"Service Item":
                 CDSTableNo := Database::"FS Customer Asset";
             Database::"Job Task":
@@ -609,6 +1078,12 @@ codeunit 6611 "FS Setup Defaults"
         CRMSetupDefaults.AddEntityTableMapping('msdyn_warehouse', Database::Location, TempNameValueBuffer);
         CRMSetupDefaults.AddEntityTableMapping('msdyn_warehouse', Database::"FS Warehouse", TempNameValueBuffer);
 
+        CRMSetupDefaults.AddEntityTableMapping('msdyn_workordertype', Database::"Service Order Type", TempNameValueBuffer);
+        CRMSetupDefaults.AddEntityTableMapping('msdyn_workordertype', Database::"FS Work Order Type", TempNameValueBuffer);
+
+        CRMSetupDefaults.AddEntityTableMapping('msdyn_workorder', Database::"Service Header", TempNameValueBuffer);
+        CRMSetupDefaults.AddEntityTableMapping('msdyn_workorder', Database::"FS Work Order", TempNameValueBuffer);
+
         TempNameValueBuffer.SetRange(Name, 'product');
         TempNameValueBuffer.SetRange(Value, Format(Database::Resource));
         if TempNameValueBuffer.FindFirst() then
@@ -620,9 +1095,13 @@ codeunit 6611 "FS Setup Defaults"
     local procedure ReturnNameFieldNoOnBeforeGetNameFieldNo(TableId: Integer; var FieldNo: Integer)
     var
         FSConnectionSetup: Record "FS Connection Setup";
+        ServiceOrderType: Record "Service Order Type";
+        ServiceOrder: Record "Service Header";
         ServiceItem: Record "Service Item";
         FSCustomerAsset: Record "FS Customer Asset";
         FSBookableResource: Record "FS Bookable Resource";
+        FSWorkOrderType: Record "FS Work Order Type";
+        FSWorkOrder: Record "FS Work Order";
         FSWorkOrderProduct: Record "FS Work Order Product";
         FSWorkOrderService: Record "FS Work Order Service";
         FSProjectTask: Record "FS Project Task";
@@ -635,12 +1114,20 @@ codeunit 6611 "FS Setup Defaults"
             exit;
 
         case TableId of
+            Database::"Service Order Type":
+                FieldNo := ServiceOrderType.FieldNo(Code);
+            Database::"Service Header":
+                FieldNo := ServiceOrder.FieldNo("No.");
             Database::"Service Item":
                 FieldNo := ServiceItem.FieldNo("No.");
             Database::"FS Customer Asset":
                 FieldNo := FSCustomerAsset.FieldNo(Name);
             Database::"FS Bookable Resource":
                 FieldNo := FSBookableResource.FieldNo(Name);
+            Database::"FS Work Order Type":
+                FieldNo := FSWorkOrderType.FieldNo(Code);
+            Database::"FS Work Order":
+                FieldNo := FSWorkOrder.FieldNo(Name);
             Database::"FS Work Order Product":
                 FieldNo := FSWorkOrderProduct.FieldNo(Name);
             Database::"FS Work Order Service":
@@ -663,6 +1150,8 @@ codeunit 6611 "FS Setup Defaults"
         IntegrationTableMapping: Record "Integration Table Mapping";
     begin
         case NAVTableID of
+            Database::"Service Order Type",
+            Database::"Service Header",
             Database::"Service Item",
             Database::"Work Type",
             Database::"Resource":
@@ -776,6 +1265,31 @@ codeunit 6611 "FS Setup Defaults"
 
     [IntegrationEvent(false, false)]
     local procedure OnBeforeResetResourceBookableResourceMapping(var IntegrationTableMappingName: Code[20]; var ShouldRecreateJobQueueEntry: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeResetServiceOrderTypeMapping(IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeResetServiceOrderMapping(IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeResetServiceOrderItemLineMapping(IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeResetServiceOrderLineItemMapping(IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean; var IsHandled: Boolean)
+    begin
+    end;
+
+    [IntegrationEvent(false, false)]
+    local procedure OnBeforeResetServiceOrderLineResourceMapping(IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean; var IsHandled: Boolean)
     begin
     end;
 

@@ -17,7 +17,7 @@ table 6617 "FS Work Order"
     {
         field(1; WorkOrderId; GUID)
         {
-            ExternalName = 'msdyn_workorderId';
+            ExternalName = 'msdyn_workorderid';
             ExternalType = 'Uniqueidentifier';
             ExternalAccess = Insert;
             Description = 'Shows the entity instances.';
@@ -884,6 +884,13 @@ table 6617 "FS Work Order"
             Description = 'Business Central Company';
             Caption = 'Company Id';
             TableRelation = "CDS Company".CompanyId;
+            DataClassification = SystemMetadata;
+        }
+        field(165; "Integrate to Service"; Boolean)
+        {
+            ExternalName = 'bcbi_integratetoervice';
+            ExternalType = 'Boolean';
+            Caption = 'Integrate to Service';
             DataClassification = SystemMetadata;
         }
     }
