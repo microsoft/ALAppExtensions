@@ -237,7 +237,7 @@ table 6623 "FS Connection Setup"
             var
                 IntegrationMgt: Codeunit "FS Integration Mgt.";
             begin
-                IntegrationMgt.TestManualNoSeriesFlag(Rec."Integration Type");
+                IntegrationMgt.TestManualServiceOrderNoSeriesFlag(Rec."Integration Type");
                 IntegrationMgt.TestOneServiceItemLinePerOrder(Rec."Integration Type");
             end;
         }

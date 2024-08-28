@@ -189,18 +189,46 @@ codeunit 6615 "FS Integration Mgt."
         exit(GuidVar);
     end;
 
-    internal procedure TestManualNoSeriesFlag(IntegrationType: Enum "FS Integration Type")
+    internal procedure TestManualServiceOrderNoSeriesFlag(IntegrationType: Enum "FS Integration Type")
     var
         ServiceMgtSetup: Record "Service Mgt. Setup";
         NoSeries: Codeunit "No. Series";
-        NoManualNoSeriesErr: Label 'Manual No. Series is not supported for Service Order Nos. Please make sure that the No. Series setup is correct.';
+        CannotInvoiceErrorInfo: ErrorInfo;
+        NoManualNoSeriesTitleErr: Label 'Service Order No. Series must be set to manual.';
+        NoManualNoSeriesErr: Label 'Please make sure that the No. Series setup is correct.';
+        SetToManualLbl: Label 'Set to Manual';
+        OpenNoSeriesListLbl: Label 'Open No. Series. list';
     begin
         if not (IntegrationType in [IntegrationType::Service, IntegrationType::Both]) then
             exit;
 
         ServiceMgtSetup.Get();
-        if not NoSeries.IsManual(ServiceMgtSetup."Service Order Nos.") then
-            Error(NoManualNoSeriesErr);
+        if not NoSeries.IsManual(ServiceMgtSetup."Service Order Nos.") then begin
+            CannotInvoiceErrorInfo.Title := NoManualNoSeriesTitleErr;
+            CannotInvoiceErrorInfo.Message := NoManualNoSeriesErr;
+
+            if ServiceMgtSetup."Service Order Nos." <> '' then
+                CannotInvoiceErrorInfo.AddAction(
+                    SetToManualLbl,
+                    Codeunit::"FS Integration Mgt.",
+                    'SetServiceOrderNoSeriesToManual'
+                );
+
+            CannotInvoiceErrorInfo.PageNo := Page::"No. Series";
+            CannotInvoiceErrorInfo.AddNavigationAction(OpenNoSeriesListLbl);
+            Error(CannotInvoiceErrorInfo);
+        end;
+    end;
+
+    procedure SetServiceOrderNoSeriesToManual(ErrorInfo: ErrorInfo)
+    var
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+        NoSeries: Record "No. Series";
+    begin
+        ServiceMgtSetup.Get();
+        NoSeries.Get(ServiceMgtSetup."Service Order Nos.");
+        NoSeries.Validate("Manual Nos.", true);
+        NoSeries.Modify(true);
     end;
 
     internal procedure TestOneServiceItemLinePerOrder(IntegrationType: Enum "FS Integration Type")
