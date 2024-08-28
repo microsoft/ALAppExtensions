@@ -11,6 +11,10 @@ pageextension 6614 "FS Service Order" extends "Service Order"
 {
     layout
     {
+        modify("Service Order Type")
+        {
+            ShowMandatory = FSIntegrationTypeServiceEnabled;
+        }
         addafter(Status)
         {
             group("Work Description")
@@ -196,6 +200,7 @@ pageextension 6614 "FS Service Order" extends "Service Order"
     var
         WorkDescription: Text;
         FSIntegrationEnabled: Boolean;
+        FSIntegrationTypeServiceEnabled: Boolean;
         CRMIsCoupledToRecord: Boolean;
         CRMIntegrationEnabled: Boolean;
 
@@ -218,7 +223,9 @@ pageextension 6614 "FS Service Order" extends "Service Order"
         CRMIntegrationManagement: Codeunit "CRM Integration Management";
     begin
         CRMIntegrationEnabled := CRMIntegrationManagement.IsCRMIntegrationEnabled();
-        if CRMIntegrationEnabled then
+        if CRMIntegrationEnabled then begin
             FSIntegrationEnabled := FSConnectionSetup.IsEnabled();
+            FSIntegrationTypeServiceEnabled := FSConnectionSetup.IsIntegrationTypeServiceEnabled();
+        end;
     end;
 }
