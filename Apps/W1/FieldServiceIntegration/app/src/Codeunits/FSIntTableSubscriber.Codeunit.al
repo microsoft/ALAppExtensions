@@ -124,9 +124,12 @@ codeunit 6610 "FS Int. Table Subscriber"
     [EventSubscriber(ObjectType::Table, Database::"Integration Table Mapping", 'OnBeforeModifyEvent', '', false, false)]
     local procedure IntegrationTableMappingOnBeforeModifyEvent(var Rec: Record "Integration Table Mapping"; RunTrigger: Boolean)
     var
+        FSConnectionSetup: Record "FS Connection Setup";
         ServiceItem: Record "Service Item";
         MandatoryFilterErr: Label '"%1" must be included in the filter. If you need this behavior, please contact your partner for assistance.', Comment = '%1 = a field caption';
     begin
+        if not FSConnectionSetup.IsEnabled() then
+            exit;
         if not RunTrigger then
             exit;
         if Rec.IsTemporary() then
@@ -416,6 +419,7 @@ codeunit 6610 "FS Int. Table Subscriber"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Int. Table. Subscriber", 'OnFindNewValueForCoupledRecordPK', '', false, false)]
     local procedure OnFindNewValueForCoupledRecordPK(IntegrationTableMapping: Record "Integration Table Mapping"; SourceFieldRef: FieldRef; DestinationFieldRef: FieldRef; var NewValue: Variant; var IsValueFound: Boolean)
     var
+        FSConnectionSetup: Record "FS Connection Setup";
         CRMIntegrationRecord: Record "CRM Integration Record";
         FSWorkOrderService: Record "FS Work Order Service";
         FSWorkOrderProduct: Record "FS Work Order Product";
@@ -427,6 +431,9 @@ codeunit 6610 "FS Int. Table Subscriber"
         NAVItemUomId: Guid;
         NotCoupledCRMUomErr: Label 'The unit is not coupled to a unit of measure.';
     begin
+        if not FSConnectionSetup.IsEnabled() then
+            exit;
+
         if (SourceFieldRef.Record().Number = Database::"FS Work Order Product") then
             case SourceFieldRef.Name() of
                 FSWorkOrderProduct.FieldName(Unit):
