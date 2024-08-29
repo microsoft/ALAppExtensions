@@ -151,11 +151,13 @@ codeunit 6610 "FS Int. Table Subscriber"
         FSWorkOrderService: Record "FS Work Order Service";
         CRMIntegrationRecord: Record "CRM Integration Record";
         FSWorkOrderIncident: Record "FS Work Order Incident";
+        FSIncident: Record "FS Incident Type";
         JobJournalLine: Record "Job Journal Line";
         JobTask: Record "Job Task";
         ServiceHeader: Record "Service Header";
         ServiceItemLine: Record "Service Item Line";
         ServiceLine: Record "Service Line";
+        DefaultIncidentLbl: Label 'Service Order Incident';
         SourceDestCode: Text;
     begin
         if not FSConnectionSetup.IsEnabled() then
@@ -201,6 +203,12 @@ codeunit 6610 "FS Int. Table Subscriber"
                     ServiceItemLine."Document Type" := ServiceItemLine."Document Type"::Order;
                     ServiceItemLine."Document No." := ServiceHeader."No.";
                     ServiceItemLine."Line No." := GetNextLineNo(ServiceItemLine);
+
+                    if IsNullGuid(FSWorkOrderIncident.CustomerAsset) then
+                        if FSIncident.Get(FSWorkOrderIncident.IncidentType) then
+                            ServiceItemLine.Description := FSIncident.Name
+                        else
+                            ServiceItemLine.Description := DefaultIncidentLbl;
 
                     DestinationRecordRef.GetTable(ServiceItemLine);
                 end;

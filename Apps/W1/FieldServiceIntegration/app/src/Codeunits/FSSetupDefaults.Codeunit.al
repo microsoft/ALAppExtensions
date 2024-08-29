@@ -622,7 +622,6 @@ codeunit 6611 "FS Setup Defaults"
         ServiceItemLine.Reset();
         ServiceItemLine.SetRange("Document Type", ServiceItemLine."Document Type"::Order);
         FSWorkOrderIncident.Reset();
-        FSWorkOrderIncident.SetFilter(CustomerAsset, '<>%1', EmptyGuid);
 
         InsertIntegrationTableMapping(
           IntegrationTableMapping, IntegrationTableMappingName,
