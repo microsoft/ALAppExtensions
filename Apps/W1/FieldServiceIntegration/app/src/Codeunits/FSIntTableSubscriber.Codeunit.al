@@ -12,17 +12,16 @@ using Microsoft.Service.Item;
 using Microsoft.Integration.SyncEngine;
 using Microsoft.Sales.Customer;
 using System.Telemetry;
-using Microsoft.Integration.FieldService;
 using Microsoft.Projects.Project.Posting;
 using Microsoft.Projects.Project.Journal;
 using Microsoft.Projects.Resources.Resource;
 using Microsoft.Integration.D365Sales;
 using Microsoft.Inventory.Item;
+using Microsoft.Service.Archive;
 using Microsoft.Service.Document;
 using Microsoft.Projects.Project.Planning;
 using Microsoft.Projects.Project.Ledger;
 using Microsoft.Sales.History;
-using Microsoft.Sales.Document;
 using Microsoft.Service.Setup;
 
 codeunit 6610 "FS Int. Table Subscriber"
@@ -505,6 +504,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         SalesInvoiceHeader: Record "Sales Invoice Header";
         JobPlanningLineInvoice: Record "Job Planning Line Invoice";
         JobUsageLink: Record "Job Usage Link";
+        ArchivedServiceOrders: List of [Code[20]];
         SourceDestCode: Text;
     begin
         if not FSConnectionSetup.IsEnabled() then
@@ -567,9 +567,9 @@ codeunit 6610 "FS Int. Table Subscriber"
                 end;
             'FS Work Order-Service Header':
                 begin
-                    ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef, DestinationRecordRef);
-                    ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef, DestinationRecordRef);
-                    ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef, DestinationRecordRef);
+                    ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
                 end;
             'Service Header-FS Work Order':
                 begin
@@ -595,6 +595,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         JobJournalLine: Record "Job Journal Line";
         FSWorkOrderProduct: Record "FS Work Order Product";
         FSWorkOrderService: Record "FS Work Order Service";
+        ArchivedServiceOrders: List of [Code[20]];
         SourceDestCode: Text;
     begin
         if not FSConnectionSetup.IsEnabled() then
@@ -618,9 +619,9 @@ codeunit 6610 "FS Int. Table Subscriber"
                 end;
             'FS Work Order-Service Header':
                 begin
-                    ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef, DestinationRecordRef);
-                    ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef, DestinationRecordRef);
-                    ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef, DestinationRecordRef);
+                    ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
                 end;
             'Service Header-FS Work Order':
                 begin
@@ -635,6 +636,7 @@ codeunit 6610 "FS Int. Table Subscriber"
     local procedure HandleOnAfterUnchangedRecordHandled(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef)
     var
         FSConnectionSetup: Record "FS Connection Setup";
+        ArchivedServiceOrders: List of [Code[20]];
         SourceDestCode: Text;
     begin
         if not FSConnectionSetup.IsEnabled() then
@@ -645,9 +647,9 @@ codeunit 6610 "FS Int. Table Subscriber"
         case SourceDestCode of
             'FS Work Order-Service Header':
                 begin
-                    ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef, DestinationRecordRef);
-                    ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef, DestinationRecordRef);
-                    ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef, DestinationRecordRef);
+                    ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
                 end;
             'Service Header-FS Work Order':
                 begin
@@ -658,7 +660,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         end;
     end;
 
-    local procedure ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef)
+    local procedure ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef; var ArchivedServiceOrders: List of [Code[20]])
     var
         ServiceHeader: Record "Service Header";
         ServiceItemLine: Record "Service Item Line";
@@ -686,6 +688,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                     FSWorkOrderIncident.SetRange(WorkOrderIncidentId, CRMIntegrationRecord."CRM ID");
                     if FSWorkOrderIncident.IsEmpty() then begin
                         CRMIntegrationRecord.Delete();
+                        ArchiveServiceOrder(ServiceHeader, ArchivedServiceOrders);
                         if ServiceItemLineToDelete.GetBySystemId(ServiceItemLine.SystemId) then begin
                             DeleteServiceLines(ServiceItemLine);
                             ServiceItemLineToDelete.Delete(true);
@@ -722,7 +725,7 @@ codeunit 6610 "FS Int. Table Subscriber"
             ServiceLine.DeleteAll(true);
     end;
 
-    local procedure ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef)
+    local procedure ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef; var ArchivedServiceOrders: List of [Code[20]])
     var
         ServiceHeader: Record "Service Header";
         ServiceLine: Record "Service Line";
@@ -750,6 +753,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                     FSWorkOrderProduct.SetRange(WorkOrderProductId, CRMIntegrationRecord."CRM ID");
                     if FSWorkOrderProduct.IsEmpty() then begin
                         CRMIntegrationRecord.Delete();
+                        ArchiveServiceOrder(ServiceHeader, ArchivedServiceOrders);
                         if ServiceLineToDelete.GetBySystemId(ServiceLine.SystemId) then
                             ServiceLineToDelete.Delete(true);
                     end;
@@ -773,7 +777,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         end;
     end;
 
-    local procedure ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef)
+    local procedure ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef; var ArchivedServiceOrders: List of [Code[20]])
     var
         ServiceHeader: Record "Service Header";
         ServiceLine: Record "Service Item Line";
@@ -801,6 +805,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                     FSWorkOrderService.SetRange(WorkOrderServiceId, CRMIntegrationRecord."CRM ID");
                     if FSWorkOrderService.IsEmpty() then begin
                         CRMIntegrationRecord.Delete();
+                        ArchiveServiceOrder(ServiceHeader, ArchivedServiceOrders);
                         if ServiceItemLineToDelete.GetBySystemId(ServiceLine.SystemId) then
                             ServiceItemLineToDelete.Delete(true);
                     end;
@@ -913,6 +918,17 @@ codeunit 6610 "FS Int. Table Subscriber"
         end;
     end;
 
+    local procedure ArchiveServiceOrder(ServiceHeader: Record "Service Header"; ArchivedServiceOrders: List of [Code[20]])
+    var
+        ServiceDocumentArchiveMgmt: Codeunit "Service Document Archive Mgmt.";
+    begin
+        if ArchivedServiceOrders.Contains(ServiceHeader."No.") then
+            exit;
+
+        ArchivedServiceOrders.Add(ServiceHeader."No.");
+        ServiceDocumentArchiveMgmt.ArchServiceDocumentNoConfirm(ServiceHeader);
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnBeforeModifyRecord', '', false, false)]
     local procedure HandleOnBeforeModifyRecord(IntegrationTableMapping: Record "Integration Table Mapping"; SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
     var
@@ -997,6 +1013,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         JobJournalLine: Record "Job Journal Line";
         FSWorkOrderProduct: Record "FS Work Order Product";
         FSWorkOrderService: Record "FS Work Order Service";
+        ArchivedServiceOrders: List of [Code[20]];
         SourceDestCode: Text;
     begin
         if not FSConnectionSetup.IsEnabled() then
@@ -1019,9 +1036,9 @@ codeunit 6610 "FS Int. Table Subscriber"
                 end;
             'FS Work Order-Service Header':
                 begin
-                    ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef, DestinationRecordRef);
-                    ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef, DestinationRecordRef);
-                    ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef, DestinationRecordRef);
+                    ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
                 end;
             'Service Header-FS Work Order':
                 begin
