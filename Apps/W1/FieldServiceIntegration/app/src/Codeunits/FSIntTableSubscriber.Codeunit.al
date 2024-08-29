@@ -1309,6 +1309,61 @@ codeunit 6610 "FS Int. Table Subscriber"
             exit(ServiceItemLine.RecordId);
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Integration Table Synch.", 'OnSynchNAVTableToCRMOnBeforeCheckLatestModifiedOn', '', true, false)]
+    local procedure OnSynchNAVTableToCRMOnBeforeCheckLatestModifiedOn(var SourceRecordRef: RecordRef; IntegrationTableMapping: Record "Integration Table Mapping")
+    var
+        ServiceHeader: Record "Service Header";
+        ServiceHeaderToSync: Record "Service Header";
+        ServiceItemLine: Record "Service Item Line";
+        ServiceLine: Record "Service Line";
+        CRMIntegrationTableSynch: Codeunit "CRM Integration Table Synch.";
+        ServiceOrderRecordRef: RecordRef;
+        ServiceOrdersToIgnore: List of [Code[20]];
+        ServiceOrdersToSync: List of [Code[20]];
+        ServiceOrderNo: Code[20];
+    begin
+        if SourceRecordRef.Number() <> Database::"Service Header" then
+            exit;
+
+        // sync of service header should triggered by changes in service item lines and service lines:
+        // search for modified service orders and start sync -> only if not already synced (via service header).
+
+        // already synced service orders should not be triggered again
+        SourceRecordRef.SetTable(ServiceHeader);
+        if ServiceHeader.FindSet() then
+            repeat
+                ServiceOrdersToIgnore.Add(ServiceHeader."No.");
+            until ServiceHeader.Next() = 0;
+
+        // search for modified service (item) lines and start sync
+        ServiceItemLine.SetRange("Document Type", ServiceItemLine."Document Type"::Order);
+        ServiceItemLine.SetFilter(SystemModifiedAt, ServiceHeader.GetFilter(SystemModifiedAt));
+        if ServiceItemLine.FindSet() then
+            repeat
+                if not ServiceOrdersToIgnore.Contains(ServiceItemLine."Document No.") then
+                    if not ServiceOrdersToSync.Contains(ServiceItemLine."Document No.") then
+                        ServiceOrdersToSync.Add(ServiceItemLine."Document No.");
+            until ServiceItemLine.Next() = 0;
+
+        ServiceLine.SetRange("Document Type", ServiceItemLine."Document Type"::Order);
+        ServiceLine.SetFilter(SystemModifiedAt, ServiceHeader.GetFilter(SystemModifiedAt));
+        if ServiceLine.FindSet() then
+            repeat
+                if not ServiceOrdersToIgnore.Contains(ServiceLine."Document No.") then
+                    if not ServiceOrdersToSync.Contains(ServiceLine."Document No.") then
+                        ServiceOrdersToSync.Add(ServiceLine."Document No.");
+            until ServiceLine.Next() = 0;
+
+        // start sync for found service orders
+        foreach ServiceOrderNo in ServiceOrdersToSync do begin
+            ServiceHeaderToSync.Reset();
+            ServiceHeaderToSync.SetRange("Document Type", ServiceHeaderToSync."Document Type"::Order);
+            ServiceHeaderToSync.SetRange("No.", ServiceOrderNo);
+            ServiceOrderRecordRef.GetTable(ServiceHeaderToSync);
+            CRMIntegrationTableSynch.SynchRecordsToIntegrationTable(ServiceOrderRecordRef, false, false);
+        end;
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnDeletionConflictDetectedSetRecordStateAndSynchAction', '', false, false)]
     local procedure HandleOnDeletionConflictDetectedSetRecordStateAndSynchAction(var IntegrationTableMapping: Record "Integration Table Mapping"; var SourceRecordRef: RecordRef; var CoupledRecordRef: RecordRef; var RecordState: Option NotFound,Coupled,Decoupled; var SynchAction: Option "None",Insert,Modify,ForceModify,IgnoreUnchanged,Fail,Skip,Delete,Uncouple,Couple; var DeletionConflictHandled: Boolean)
     var
