@@ -304,6 +304,26 @@ codeunit 6610 "FS Int. Table Subscriber"
                         IsValueFound := true;
                         NeedsConversion := false;
                     end;
+                FSWorkOrderService.FieldName(DurationInvoiced):
+                    begin
+                        SourceRecordRef := SourceFieldRef.Record();
+                        SourceRecordRef.SetTable(ServiceLine);
+                        DurationInHours := ServiceLine."Quantity Invoiced";
+                        DurationInMinutes := DurationInHours * 60;
+                        NewValue := DurationInMinutes;
+                        IsValueFound := true;
+                        NeedsConversion := false;
+                    end;
+                FSWorkOrderService.FieldName(DurationConsumed):
+                    begin
+                        SourceRecordRef := SourceFieldRef.Record();
+                        SourceRecordRef.SetTable(ServiceLine);
+                        DurationInHours := ServiceLine."Quantity Consumed";
+                        DurationInMinutes := DurationInHours * 60;
+                        NewValue := DurationInMinutes;
+                        IsValueFound := true;
+                        NeedsConversion := false;
+                    end;
             end;
 
         if (SourceFieldRef.Record().Number = Database::"FS Work Order Service") then
@@ -928,9 +948,14 @@ codeunit 6610 "FS Int. Table Subscriber"
 
     local procedure ArchiveServiceOrder(ServiceHeader: Record "Service Header"; ArchivedServiceOrders: List of [Code[20]])
     var
+        ServiceMgtSetup: Record "Service Mgt. Setup";
         ServiceDocumentArchiveMgmt: Codeunit "Service Document Archive Mgmt.";
     begin
         if ArchivedServiceOrders.Contains(ServiceHeader."No.") then
+            exit;
+
+        ServiceMgtSetup.Get();
+        if not ServiceMgtSetup."Archive Orders" then
             exit;
 
         ArchivedServiceOrders.Add(ServiceHeader."No.");
@@ -1793,6 +1818,13 @@ codeunit 6610 "FS Int. Table Subscriber"
         if IgnoreRecord then
             exit;
 
+        case SourceRecordRef.Number() of
+            Database::"Service Header":
+                IgnoreArchievedServiceOrdersOnQueryPostFilterIgnoreRecord(SourceRecordRef, IgnoreRecord);
+            Database::"FS Work Order":
+                IgnoreArchievedCRMWorkOrdersOnQueryPostFilterIgnoreRecord(SourceRecordRef, IgnoreRecord);
+        end;
+
         if FSConnectionSetup.IsEnabled() then
             exit;
 
@@ -1823,6 +1855,46 @@ codeunit 6610 "FS Int. Table Subscriber"
                     IgnoreRecord := (not Job."Apply Usage Link");
                 end;
         end;
+    end;
+
+    local procedure IgnoreArchievedServiceOrdersOnQueryPostFilterIgnoreRecord(SourceRecordRef: RecordRef; var IgnoreRecord: Boolean)
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        ServiceHeader: Record "Service Header";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+    begin
+        if not FSConnectionSetup.IsEnabled() then
+            exit;
+
+        if IgnoreRecord then
+            exit;
+
+        SourceRecordRef.SetTable(ServiceHeader);
+        if not CRMIntegrationRecord.FindByRecordID(ServiceHeader.RecordId) then
+            exit;
+
+        if CRMIntegrationRecord."Archived Service Order" then
+            IgnoreRecord := true;
+    end;
+
+    local procedure IgnoreArchievedCRMWorkOrdersOnQueryPostFilterIgnoreRecord(SourceRecordRef: RecordRef; var IgnoreRecord: Boolean)
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        FSWorkOrder: Record "FS Work Order";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+    begin
+        if not FSConnectionSetup.IsEnabled() then
+            exit;
+
+        if IgnoreRecord then
+            exit;
+
+        SourceRecordRef.SetTable(FSWorkOrder);
+        if not CRMIntegrationRecord.FindByCRMID(FSWorkOrder.WorkOrderId) then
+            exit;
+
+        if CRMIntegrationRecord."Archived Service Order" then
+            IgnoreRecord := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Table Synch.", 'OnAfterInitSynchJob', '', true, true)]
@@ -1906,6 +1978,60 @@ codeunit 6610 "FS Int. Table Subscriber"
         IntegrationMgt: Codeunit "FS Integration Mgt.";
     begin
         IntegrationMgt.TestOneServiceItemLinePerOrderModificationIsAllowed(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Integration Management", 'OnIsCRMIntegrationRecord', '', false, false)]
+    local procedure HandleOnIsCRMIntegrationRecord(TableID: Integer; var isIntegrationRecord: Boolean)
+    begin
+        if TableID = Database::"Service Header Archive" then
+            isIntegrationRecord := true;
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterDeleteEvent', '', false, false)]
+    local procedure HandleOnAfterDeleteAfterPosting(var Rec: Record "Service Header")
+    begin
+        if Rec.IsTemporary() then
+            exit;
+
+        MarkArchivedServiceOrder(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service Document Archive Mgmt.", 'OnAfterStoreServiceLineArchive', '', false, false)]
+    local procedure OnAfterStoreServiceLineArchive(var ServiceLine: Record "Service Line"; var ServiceLineArchive: Record "Service Line Archive")
+    begin
+        MarkArchivedServiceOrderLine(ServiceLine, ServiceLineArchive);
+    end;
+
+    procedure MarkArchivedServiceOrder(ServiceHeader: Record "Service Header")
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+    begin
+        if not FSConnectionSetup.IsEnabled() then
+            exit;
+
+        CRMIntegrationRecord.SetRange("Table ID", Database::"Service Header");
+        CRMIntegrationRecord.SetRange("Integration ID", ServiceHeader.SystemId);
+        if CRMIntegrationRecord.FindFirst() then begin
+            CRMIntegrationRecord."Archived Service Order" := true;
+            CRMIntegrationRecord.Modify();
+        end;
+    end;
+
+    local procedure MarkArchivedServiceOrderLine(var ServiceLine: Record "Service Line"; var ServiceLineArchive: Record "Service Line Archive")
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+    begin
+        if not FSConnectionSetup.IsEnabled() then
+            exit;
+
+        CRMIntegrationRecord.SetRange("Table ID", Database::"Service Line");
+        CRMIntegrationRecord.SetRange("Integration ID", ServiceLine.SystemId);
+        if CRMIntegrationRecord.FindFirst() then begin
+            CRMIntegrationRecord."Archived Service Line Id" := ServiceLineArchive.SystemId;
+            CRMIntegrationRecord.Modify();
+        end;
     end;
 
     [IntegrationEvent(false, false)]

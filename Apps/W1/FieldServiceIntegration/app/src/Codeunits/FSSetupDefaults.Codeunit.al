@@ -528,6 +528,8 @@ codeunit 6611 "FS Setup Defaults"
         IntegrationFieldMapping: Record "Integration Field Mapping";
         ServiceOrder: Record "Service Header";
         FSWorkOrder: Record "FS Work Order";
+        CRMSetupDefaults: Codeunit "CRM Setup Defaults";
+        ArchivedServiceOrdersSynchJobDescTxt: Label 'Archived Service Orders - %1 synchronization job', Comment = '%1 = CRM product name';
         IsHandled: Boolean;
     begin
         IsHandled := false;
@@ -599,6 +601,7 @@ codeunit 6611 "FS Setup Defaults"
           '', true, false);
 
         RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 30);
+        CRMSetupDefaults.RecreateJobQueueEntry(ShouldRecreateJobQueueEntry, Codeunit::"FS Archived Service Orders Job", 30, StrSubstNo(ArchivedServiceOrdersSynchJobDescTxt, CRMProductName.SHORT()), false)
     end;
 
     local procedure ResetServiceOrderItemLineMapping(var FSConnectionSetup: Record "FS Connection Setup"; IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean)
@@ -607,7 +610,6 @@ codeunit 6611 "FS Setup Defaults"
         IntegrationFieldMapping: Record "Integration Field Mapping";
         ServiceItemLine: Record "Service Item Line";
         FSWorkOrderIncident: Record "FS Work Order Incident";
-        EmptyGuid: Guid;
         IsHandled: Boolean;
     begin
         IsHandled := false;
@@ -750,11 +752,25 @@ codeunit 6611 "FS Setup Defaults"
           IntegrationFieldMapping.Direction::FromIntegrationTable,
           '', true, false);
 
+        // InsertIntegrationFieldMapping(
+        //   IntegrationTableMappingName,
+        //   ServiceLine.FieldNo("Quantity Shipped"),
+        //   FSWorkOrderProduct.FieldNo(QuantityInvoiced), // TODO! QuantityShipped
+        //   IntegrationFieldMapping.Direction::ToIntegrationTable,
+        //   '', true, false);
+
         InsertIntegrationFieldMapping(
           IntegrationTableMappingName,
-          ServiceLine.FieldNo("Qty. to Invoice"),
-          FSWorkOrderProduct.FieldNo(QtyToBill),
-          IntegrationFieldMapping.Direction::Bidirectional,
+          ServiceLine.FieldNo("Quantity Invoiced"),
+          FSWorkOrderProduct.FieldNo(QuantityInvoiced),
+          IntegrationFieldMapping.Direction::ToIntegrationTable,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Quantity Consumed"),
+          FSWorkOrderProduct.FieldNo(QuantityConsumed),
+          IntegrationFieldMapping.Direction::ToIntegrationTable,
           '', true, false);
     end;
 
@@ -849,6 +865,27 @@ codeunit 6611 "FS Setup Defaults"
           ServiceLine.FieldNo("Qty. to Invoice"),
           FSWorkOrderService.FieldNo(DurationToBill),
           IntegrationFieldMapping.Direction::FromIntegrationTable,
+          '', true, false);
+
+        // InsertIntegrationFieldMapping(
+        //   IntegrationTableMappingName,
+        //   ServiceLine.FieldNo("Quantity Shipped"),
+        //   FSWorkOrderProduct.FieldNo(QuantityInvoiced), // TODO! QuantityShipped
+        //   IntegrationFieldMapping.Direction::ToIntegrationTable,
+        //   '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Quantity Invoiced"),
+          FSWorkOrderService.FieldNo(DurationInvoiced),
+          IntegrationFieldMapping.Direction::ToIntegrationTable,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Quantity Consumed"),
+          FSWorkOrderService.FieldNo(DurationConsumed),
+          IntegrationFieldMapping.Direction::ToIntegrationTable,
           '', true, false);
     end;
 
