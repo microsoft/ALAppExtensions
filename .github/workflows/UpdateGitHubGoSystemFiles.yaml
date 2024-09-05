@@ -17,7 +17,9 @@ on:
         default: false
 
 permissions:
+  actions: read
   contents: read
+  id-token: write
 
 defaults:
   run:
@@ -29,34 +31,34 @@ env:
 
 jobs:
   UpdateALGoSystemFiles:
-    needs: [ ]
+    name: 'Update AL-Go System Files'
     environment: Official-Build
+    needs: [ ]
     runs-on: [ windows-latest ]
     steps:
       - name: Dump Workflow Information
-        uses: microsoft/AL-Go/Actions/DumpWorkflowInfo@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        uses: microsoft/AL-Go/Actions/DumpWorkflowInfo@564c339085ae0ffa74c5bde71c15fea7fe54bbf1
         with:
           shell: powershell
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: Initialize the workflow
         id: init
-        uses: microsoft/AL-Go/Actions/WorkflowInitialize@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        uses: microsoft/AL-Go/Actions/WorkflowInitialize@564c339085ae0ffa74c5bde71c15fea7fe54bbf1
         with:
           shell: powershell
-          eventId: "DO0098"
 
       - name: Read settings
-        uses: microsoft/AL-Go/Actions/ReadSettings@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        uses: microsoft/AL-Go/Actions/ReadSettings@564c339085ae0ffa74c5bde71c15fea7fe54bbf1
         with:
           shell: powershell
           get: templateUrl
 
       - name: Read secrets
         id: ReadSecrets
-        uses: microsoft/AL-Go/Actions/ReadSecrets@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        uses: microsoft/AL-Go/Actions/ReadSecrets@564c339085ae0ffa74c5bde71c15fea7fe54bbf1
         with:
           shell: powershell
           gitHubSecrets: ${{ toJson(secrets) }}
@@ -92,7 +94,7 @@ jobs:
           Add-Content -Encoding UTF8 -Path $env:GITHUB_ENV -Value "downloadLatest=$downloadLatest"
 
       - name: Update AL-Go system files
-        uses: microsoft/AL-Go/Actions/CheckForUpdates@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        uses: microsoft/AL-Go/Actions/CheckForUpdates@564c339085ae0ffa74c5bde71c15fea7fe54bbf1
         with:
           shell: powershell
           token: ${{ fromJson(steps.ReadSecrets.outputs.Secrets).ghTokenWorkflow }}
@@ -103,8 +105,10 @@ jobs:
 
       - name: Finalize the workflow
         if: always()
-        uses: microsoft/AL-Go/Actions/WorkflowPostProcess@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        uses: microsoft/AL-Go/Actions/WorkflowPostProcess@564c339085ae0ffa74c5bde71c15fea7fe54bbf1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         with:
           shell: powershell
-          eventId: "DO0098"
           telemetryScopeJson: ${{ steps.init.outputs.telemetryScopeJson }}
+          currentJobContext: ${{ toJson(job) }}

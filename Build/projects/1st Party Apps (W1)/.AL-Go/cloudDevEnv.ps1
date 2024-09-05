@@ -6,10 +6,26 @@
 Param(
     [string] $environmentName = "",
     [bool] $reuseExistingEnvironment,
-    [switch] $fromVSCode
+    [switch] $fromVSCode,
+    [switch] $clean
 )
 
 $errorActionPreference = "Stop"; $ProgressPreference = "SilentlyContinue"; Set-StrictMode -Version 2.0
+
+function DownloadHelperFile {
+    param(
+        [string] $url,
+        [string] $folder
+    )
+
+    $prevProgressPreference = $ProgressPreference; $ProgressPreference = 'SilentlyContinue'
+    $name = [System.IO.Path]::GetFileName($url)
+    Write-Host "Downloading $name from $url"
+    $path = Join-Path $folder $name
+    Invoke-WebRequest -UseBasicParsing -uri $url -OutFile $path
+    $ProgressPreference = $prevProgressPreference
+    return $path
+}
 
 try {
 Clear-Host
@@ -24,17 +40,11 @@ Write-Host -ForegroundColor Yellow @'
 
 '@
 
-$webClient = New-Object System.Net.WebClient
-$webClient.CachePolicy = New-Object System.Net.Cache.RequestCachePolicy -argumentList ([System.Net.Cache.RequestCacheLevel]::NoCacheNoStore)
-$webClient.Encoding = [System.Text.Encoding]::UTF8
-$GitHubHelperUrl = 'https://raw.githubusercontent.com/microsoft/AL-Go/4c5bfbca1adebbf997f63882df4b9074a19aac1d/Actions/Github-Helper.psm1'
-Write-Host "Downloading GitHub Helper module from $GitHubHelperUrl"
-$GitHubHelperPath = "$([System.IO.Path]::GetTempFileName()).psm1"
-$webClient.DownloadFile($GitHubHelperUrl, $GitHubHelperPath)
-$ALGoHelperUrl = 'https://raw.githubusercontent.com/microsoft/AL-Go/4c5bfbca1adebbf997f63882df4b9074a19aac1d/Actions/AL-Go-Helper.ps1'
-Write-Host "Downloading AL-Go Helper script from $ALGoHelperUrl"
-$ALGoHelperPath = "$([System.IO.Path]::GetTempFileName()).ps1"
-$webClient.DownloadFile($ALGoHelperUrl, $ALGoHelperPath)
+$tmpFolder = Join-Path ([System.IO.Path]::GetTempPath()) "$([Guid]::NewGuid().ToString())"
+New-Item -Path $tmpFolder -ItemType Directory -Force | Out-Null
+$GitHubHelperPath = DownloadHelperFile -url 'https://raw.githubusercontent.com/microsoft/AL-Go/564c339085ae0ffa74c5bde71c15fea7fe54bbf1/Actions/Github-Helper.psm1' -folder $tmpFolder
+$ALGoHelperPath = DownloadHelperFile -url 'https://raw.githubusercontent.com/microsoft/AL-Go/564c339085ae0ffa74c5bde71c15fea7fe54bbf1/Actions/AL-Go-Helper.ps1' -folder $tmpFolder
+DownloadHelperFile -url 'https://raw.githubusercontent.com/microsoft/AL-Go/564c339085ae0ffa74c5bde71c15fea7fe54bbf1/Actions/Packages.json' -folder $tmpFolder | Out-Null
 
 Import-Module $GitHubHelperPath
 . $ALGoHelperPath -local
@@ -78,7 +88,8 @@ CreateDevEnv `
     -environmentName $environmentName `
     -reuseExistingEnvironment:$reuseExistingEnvironment `
     -baseFolder $baseFolder `
-    -project $project
+    -project $project `
+    -clean:$clean
 }
 catch {
     Write-Host -ForegroundColor Red "Error: $($_.Exception.Message)`nStacktrace: $($_.scriptStackTrace)"
