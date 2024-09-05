@@ -1,6 +1,6 @@
-name: '_Build AL-GO project'
+name: '_Build AL-Go project'
 
-run-name: 'Build project ${{ inputs.project }}'
+run-name: 'Build ${{ inputs.project }}'
 
 on:
   workflow_call:
@@ -11,13 +11,13 @@ on:
         default: powershell
         type: string
       runsOn:
-        description: JSON-formatted string og the types of machine to run the build job on
+        description: JSON-formatted string of the types of machine to run the build job on
         required: true
         type: string
       checkoutRef:
         description: Ref to checkout
         required: false
-        default: ${{ github.ref }}
+        default: ${{ github.sha }}
         type: string
       project:
         description: Name of the built project
@@ -67,10 +67,11 @@ on:
         description: Flag determining whether to use the Artifacts Cache
         type: boolean
         default: false
-      parentTelemetryScopeJson:
-        description: Specifies the telemetry scope for the telemetry signal
-        required: false
-        type: string
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
 
 env:
   ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
@@ -86,13 +87,13 @@ jobs:
     name: ${{ inputs.projectName }} (${{ inputs.buildMode }})
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           ref: ${{ inputs.checkoutRef }}
           lfs: true
 
       - name: Read settings
-        uses: microsoft/AL-Go/Actions/ReadSettings@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        uses: microsoft/AL-Go/Actions/ReadSettings@564c339085ae0ffa74c5bde71c15fea7fe54bbf1
         with:
           shell: ${{ inputs.shell }}
           project: ${{ inputs.project }}
@@ -101,30 +102,29 @@ jobs:
       - name: Read secrets
         id: ReadSecrets
         if: github.event_name != 'pull_request'
-        uses: microsoft/AL-Go/Actions/ReadSecrets@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        uses: microsoft/AL-Go/Actions/ReadSecrets@564c339085ae0ffa74c5bde71c15fea7fe54bbf1
         with:
           shell: ${{ inputs.shell }}
           gitHubSecrets: ${{ toJson(secrets) }}
-          getSecrets: '${{ inputs.secrets }},appDependencyProbingPathsSecrets'
+          getSecrets: '${{ inputs.secrets }},appDependencyProbingPathsSecrets,AZURE_CREDENTIALS'
 
       - name: Determine ArtifactUrl
-        uses: microsoft/AL-Go/Actions/DetermineArtifactUrl@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        uses: microsoft/AL-Go/Actions/DetermineArtifactUrl@564c339085ae0ffa74c5bde71c15fea7fe54bbf1
         id: determineArtifactUrl
         with:
           shell: ${{ inputs.shell }}
-          parentTelemetryScopeJson: ${{ inputs.parentTelemetryScopeJson }}
           project: ${{ inputs.project }}
 
       - name: Cache Business Central Artifacts
         if: env.useCompilerFolder == 'True' && inputs.useArtifactCache && env.artifactCacheKey
-        uses: actions/cache@v4
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: .artifactcache
           key: ${{ env.artifactCacheKey }}
 
       - name: Download Project Dependencies
         id: DownloadProjectDependencies
-        uses: microsoft/AL-Go/Actions/DownloadProjectDependencies@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        uses: microsoft/AL-Go/Actions/DownloadProjectDependencies@564c339085ae0ffa74c5bde71c15fea7fe54bbf1
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
         with:
@@ -135,13 +135,12 @@ jobs:
           baselineWorkflowRunId: ${{ inputs.baselineWorkflowRunId }}
 
       - name: Build
-        uses: microsoft/AL-Go/Actions/RunPipeline@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        uses: microsoft/AL-Go/Actions/RunPipeline@564c339085ae0ffa74c5bde71c15fea7fe54bbf1
         env:
           Secrets: '${{ steps.ReadSecrets.outputs.Secrets }}'
           BuildMode: ${{ inputs.buildMode }}
         with:
           shell: ${{ inputs.shell }}
-          parentTelemetryScopeJson: ${{ inputs.parentTelemetryScopeJson }}
           artifact: ${{ env.artifact }}
           project: ${{ inputs.project }}
           buildMode: ${{ inputs.buildMode }}
@@ -151,16 +150,15 @@ jobs:
       - name: Sign
         if: inputs.signArtifacts && env.doNotSignApps == 'False' && env.keyVaultCodesignCertificateName != ''
         id: sign
-        uses: microsoft/AL-Go/Actions/Sign@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        uses: microsoft/AL-Go/Actions/Sign@564c339085ae0ffa74c5bde71c15fea7fe54bbf1
         with:
           shell: ${{ needs.Initialization.outputs.githubRunnerShell }}
-          azureCredentialsJson: ${{ secrets.AZURE_CREDENTIALS }}
+          azureCredentialsJson: '${{ fromJson(steps.ReadSecrets.outputs.Secrets).AZURE_CREDENTIALS }}'
           pathToFiles: '${{ inputs.project }}/.buildartifacts/Apps/*.app'
-          parentTelemetryScopeJson: ${{ needs.Initialization.outputs.telemetryScopeJson }}
 
       - name: Calculate Artifact names
         id: calculateArtifactsNames
-        uses: microsoft/AL-Go/Actions/CalculateArtifactNames@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        uses: microsoft/AL-Go/Actions/CalculateArtifactNames@564c339085ae0ffa74c5bde71c15fea7fe54bbf1
         if: success() || failure()
         with:
           shell: ${{ inputs.shell }}
@@ -170,7 +168,7 @@ jobs:
 
       - name: Upload thisbuild artifacts - apps
         if: inputs.publishThisBuildArtifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildAppsArtifactsName }}
           path: '${{ inputs.project }}/.buildartifacts/Apps/'
@@ -179,7 +177,7 @@ jobs:
 
       - name: Upload thisbuild artifacts - dependencies
         if: inputs.publishThisBuildArtifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildDependenciesArtifactsName }}
           path: '${{ inputs.project }}/.buildartifacts/Dependencies/'
@@ -188,7 +186,7 @@ jobs:
 
       - name: Upload thisbuild artifacts - test apps
         if: inputs.publishThisBuildArtifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.ThisBuildTestAppsArtifactsName }}
           path: '${{ inputs.project }}/.buildartifacts/TestApps/'
@@ -196,7 +194,7 @@ jobs:
           retention-days: 1
 
       - name: Publish artifacts - apps
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
         if: inputs.publishArtifacts
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.AppsArtifactsName }}
@@ -204,7 +202,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Publish artifacts - dependencies
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
         if: inputs.publishArtifacts && env.generateDependencyArtifact == 'True'
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.DependenciesArtifactsName }}
@@ -212,7 +210,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Publish artifacts - test apps
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
         if: inputs.publishArtifacts
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.TestAppsArtifactsName }}
@@ -220,7 +218,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Publish artifacts - build output
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
         if: (success() || failure()) && (hashFiles(format('{0}/BuildOutput.txt',inputs.project)) != '')
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.BuildOutputArtifactsName }}
@@ -228,7 +226,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Publish artifacts - container event log
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
         if: (failure()) && (hashFiles(format('{0}/ContainerEventLog.evtx',inputs.project)) != '')
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.ContainerEventLogArtifactsName }}
@@ -236,7 +234,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Publish artifacts - test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
         if: (success() || failure()) && (hashFiles(format('{0}/TestResults.xml',inputs.project)) != '')
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.TestResultsArtifactsName }}
@@ -244,7 +242,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Publish artifacts - bcpt test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
         if: (success() || failure()) && (hashFiles(format('{0}/bcptTestResults.json',inputs.project)) != '')
         with:
           name: ${{ steps.calculateArtifactsNames.outputs.BcptTestResultsArtifactsName }}
@@ -254,16 +252,14 @@ jobs:
       - name: Analyze Test Results
         id: analyzeTestResults
         if: (success() || failure()) && env.doNotRunTests == 'False'
-        uses: microsoft/AL-Go/Actions/AnalyzeTests@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        uses: microsoft/AL-Go/Actions/AnalyzeTests@564c339085ae0ffa74c5bde71c15fea7fe54bbf1
         with:
           shell: ${{ inputs.shell }}
-          parentTelemetryScopeJson: ${{ inputs.parentTelemetryScopeJson }}
           project: ${{ inputs.project }}
 
       - name: Cleanup
         if: always()
-        uses: microsoft/AL-Go/Actions/PipelineCleanup@4c5bfbca1adebbf997f63882df4b9074a19aac1d
+        uses: microsoft/AL-Go/Actions/PipelineCleanup@564c339085ae0ffa74c5bde71c15fea7fe54bbf1
         with:
           shell: ${{ inputs.shell }}
-          parentTelemetryScopeJson: ${{ inputs.parentTelemetryScopeJson }}
           project: ${{ inputs.project }}

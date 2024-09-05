@@ -1,0 +1,96 @@
+name: '_Build PowerPlatform Solution'
+
+run-name: 'Build PowerPlatform Solution'
+
+on:
+  workflow_call:
+    inputs:
+      shell:
+        description: Shell in which you want to run the action (powershell or pwsh)
+        required: false
+        default: powershell
+        type: string
+      runsOn:
+        description: JSON-formatted string of the types of machine to run the build job on
+        required: true
+        type: string
+      checkoutRef:
+        description: Ref to checkout
+        required: false
+        default: ${{ github.sha }}
+        type: string
+      project:
+        description: Name of the built project
+        required: true
+        type: string
+      projectName:
+        description: Friendly name of the built project
+        required: true
+        type: string
+      publishArtifacts:
+        description: Flag indicating whether the artifacts should be published
+        type: boolean
+        default: false
+      artifactsNameSuffix:
+        description: Suffix to add to the artifacts names
+        required: false
+        default: ''
+        type: string
+      parentTelemetryScopeJson:
+        description: Specifies the telemetry scope for the telemetry signal
+        required: false
+        type: string
+
+env:
+  ALGoOrgSettings: ${{ vars.ALGoOrgSettings }}
+  ALGoRepoSettings: ${{ vars.ALGoRepoSettings }}
+
+jobs:
+  Build:
+    needs: [ ]
+    runs-on: ${{ fromJson(inputs.runsOn) }}
+    defaults:
+      run:
+        shell: ${{ inputs.shell }}
+    name: '${{ inputs.projectName }}'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          ref: ${{ inputs.checkoutRef }}
+          lfs: true
+
+      - name: Read settings
+        uses: microsoft/AL-Go/Actions/ReadSettings@564c339085ae0ffa74c5bde71c15fea7fe54bbf1
+        with:
+          shell: ${{ inputs.shell }}
+          project: ${{ inputs.project }}
+          get: type,powerPlatformSolutionFolder,appRevision,appBuild
+
+      - name: Build
+        uses: microsoft/AL-Go/Actions/BuildPowerPlatform@564c339085ae0ffa74c5bde71c15fea7fe54bbf1
+        with:
+          shell: ${{ inputs.shell }}
+          solutionFolder: ${{ inputs.project }}
+          outputFolder: ${{ inputs.project }}/.buildartifacts/_PowerPlatformSolution/
+          outputFileName: ${{ inputs.project }}
+          appRevision: ${{ env.appRevision }}
+          appBuild: ${{ env.appBuild }}
+
+      - name: Calculate Artifact names
+        id: calculateArtifactsNames
+        uses: microsoft/AL-Go/Actions/CalculateArtifactNames@564c339085ae0ffa74c5bde71c15fea7fe54bbf1
+        if: success() || failure()
+        with:
+          shell: ${{ inputs.shell }}
+          project: ${{ inputs.project }}
+          buildMode: 'default'
+          suffix: ${{ inputs.artifactsNameSuffix }}
+
+      - name: Publish artifacts - Power Platform Solution
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
+        if: inputs.publishArtifacts
+        with:
+          name: ${{ steps.calculateArtifactsNames.outputs.PowerPlatformSolutionArtifactsName }}
+          path: '${{ inputs.project }}/.buildartifacts/_PowerPlatformSolution/'
+          if-no-files-found: ignore
