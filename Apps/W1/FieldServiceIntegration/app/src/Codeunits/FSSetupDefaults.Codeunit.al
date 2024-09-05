@@ -912,6 +912,7 @@ codeunit 6611 "FS Setup Defaults"
         IntegrationFieldMapping: Record "Integration Field Mapping";
         ServiceLine: Record "Service Line";
         FSBookableResourceBooking: Record "FS Bookable Resource Booking";
+        FSIntegrationMgt: Codeunit "FS Integration Mgt.";
         IsHandled: Boolean;
         EmptyGuid: Guid;
     begin
@@ -927,8 +928,10 @@ codeunit 6611 "FS Setup Defaults"
         ServiceLine.Reset();
         ServiceLine.SetRange("Document Type", ServiceLine."Document Type"::Order);
         ServiceLine.SetRange(Type, ServiceLine.Type::Resource);
+
         FSBookableResourceBooking.Reset();
         FSBookableResourceBooking.SetFilter(WorkOrder, '<>%1', EmptyGuid);
+        FSBookableResourceBooking.SetRange(BookingStatus, FSIntegrationMgt.GetBookingStatusCompleted());
 
         InsertIntegrationTableMapping(
           IntegrationTableMapping, IntegrationTableMappingName,
@@ -953,21 +956,28 @@ codeunit 6611 "FS Setup Defaults"
           IntegrationTableMappingName,
           ServiceLine.FieldNo("No."),
           FSBookableResourceBooking.FieldNo(Resource),
-          IntegrationFieldMapping.Direction::Bidirectional,
+          IntegrationFieldMapping.Direction::FromIntegrationTable,
           '', true, false);
 
         InsertIntegrationFieldMapping(
           IntegrationTableMappingName,
           ServiceLine.FieldNo(Description),
           FSBookableResourceBooking.FieldNo(Name),
-          IntegrationFieldMapping.Direction::Bidirectional,
+          IntegrationFieldMapping.Direction::FromIntegrationTable,
           '', true, false);
 
         InsertIntegrationFieldMapping(
           IntegrationTableMappingName,
           ServiceLine.FieldNo(Quantity),
           FSBookableResourceBooking.FieldNo(Duration),
-          IntegrationFieldMapping.Direction::Bidirectional,
+          IntegrationFieldMapping.Direction::FromIntegrationTable,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Qty. to Consume"),
+          FSBookableResourceBooking.FieldNo(Duration),
+          IntegrationFieldMapping.Direction::FromIntegrationTable,
           '', true, false);
     end;
 

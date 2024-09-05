@@ -149,6 +149,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         FSProjectTask: Record "FS Project Task";
         FSWorkOrderProduct: Record "FS Work Order Product";
         FSWorkOrderService: Record "FS Work Order Service";
+        FSBookableResourceBooking: Record "FS Bookable Resource Booking";
         CRMIntegrationRecord: Record "CRM Integration Record";
         FSWorkOrderIncident: Record "FS Work Order Incident";
         FSIncident: Record "FS Incident Type";
@@ -253,6 +254,24 @@ codeunit 6610 "FS Int. Table Subscriber"
                     ServiceLine."Service Item Line No." := ServiceItemLine."Line No.";
                     ServiceLine."Service Item No." := ServiceItemLine."Service Item No.";
                     ServiceLine.Type := ServiceLine.Type::Item;
+
+                    DestinationRecordRef.GetTable(ServiceLine);
+                end;
+            'FS Bookable Resource Booking-Service Line':
+                begin
+                    SourceRecordRef.SetTable(FSBookableResourceBooking);
+                    DestinationRecordRef.SetTable(ServiceLine);
+
+                    if ServiceLine."Document No." <> '' then
+                        exit;
+
+                    if CRMIntegrationRecord.FindByCRMID(FSBookableResourceBooking.WorkOrder) then
+                        ServiceHeader.GetBySystemId(CRMIntegrationRecord."Integration ID");
+
+                    ServiceLine."Document Type" := ServiceLine."Document Type"::Order;
+                    ServiceLine."Document No." := ServiceHeader."No.";
+                    ServiceLine."Line No." := GetNextLineNo(ServiceLine);
+                    ServiceLine.Type := ServiceLine.Type::Resource;
 
                     DestinationRecordRef.GetTable(ServiceLine);
                 end;
@@ -443,6 +462,19 @@ codeunit 6610 "FS Int. Table Subscriber"
                         exit;
                     end;
             end;
+        if (SourceFieldRef.Record().Number = Database::"FS Bookable Resource Booking") then
+            case SourceFieldRef.Name() of
+                FSBookableResourceBooking.FieldName(Duration):
+                    begin
+                        SourceRecordRef := SourceFieldRef.Record();
+                        SourceRecordRef.SetTable(FSBookableResourceBooking);
+                        DurationInMinutes := FSBookableResourceBooking.Duration;
+                        DurationInHours := (DurationInMinutes / 60);
+                        NewValue := DurationInHours;
+                        IsValueFound := true;
+                        NeedsConversion := false;
+                    end;
+            end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Int. Table. Subscriber", 'OnFindNewValueForCoupledRecordPK', '', false, false)]
@@ -600,6 +632,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                     ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
                     ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
                     ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSBookableResourceBooking(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
                 end;
             'Service Header-FS Work Order':
                 begin
@@ -652,6 +685,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                     ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
                     ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
                     ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSBookableResourceBooking(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
                 end;
             'Service Header-FS Work Order':
                 begin
@@ -680,6 +714,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                     ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
                     ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
                     ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSBookableResourceBooking(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
                 end;
             'Service Header-FS Work Order':
                 begin
@@ -766,15 +801,17 @@ codeunit 6610 "FS Int. Table Subscriber"
         FSWorkOrderProduct2: Record "FS Work Order Product";
         CRMIntegrationTableSynch: Codeunit "CRM Integration Table Synch.";
         FSWorkOrderProductRecordRef: RecordRef;
-        CRMSalesorderdetailId: Guid;
-        CRMSalesorderdetailIdList: List of [Guid];
-        CRMSalesorderdetailIdFilter: Text;
+        FSWorkOrderProductId: Guid;
+        FSWorkOrderProductIdList: List of [Guid];
+        FSWorkOrderProductIdFilter: Text;
     begin
         SourceRecordRef.SetTable(FSWorkOrder);
         DestinationRecordRef.SetTable(ServiceHeader);
 
         ServiceLine.SetRange("Document Type", ServiceLine."Document Type"::Order);
         ServiceLine.SetRange("Document No.", ServiceHeader."No.");
+        ServiceLine.SetRange(Type, ServiceLine.Type::Item);
+        ServiceLine.SetRange("Item Type", ServiceLine."Item Type"::Inventory);
         if ServiceLine.FindSet() then
             repeat
                 CRMIntegrationRecord.SetRange("Integration ID", ServiceLine.SystemId);
@@ -794,14 +831,14 @@ codeunit 6610 "FS Int. Table Subscriber"
         FSWorkOrderProduct.SetRange(WorkOrder, FSWorkOrder.WorkOrderId);
         if FSWorkOrderProduct.FindSet() then begin
             repeat
-                CRMSalesorderdetailIdList.Add(FSWorkOrderProduct.WorkOrderProductId)
+                FSWorkOrderProductIdList.Add(FSWorkOrderProduct.WorkOrderProductId)
             until FSWorkOrderProduct.Next() = 0;
 
-            foreach CRMSalesorderdetailId in CRMSalesorderdetailIdList do
-                CRMSalesorderdetailIdFilter += CRMSalesorderdetailId + '|';
-            CRMSalesorderdetailIdFilter := CRMSalesorderdetailIdFilter.TrimEnd('|');
+            foreach FSWorkOrderProductId in FSWorkOrderProductIdList do
+                FSWorkOrderProductIdFilter += FSWorkOrderProductId + '|';
+            FSWorkOrderProductIdFilter := FSWorkOrderProductIdFilter.TrimEnd('|');
 
-            FSWorkOrderProduct2.SetFilter(WorkOrderProductId, CRMSalesorderdetailIdFilter);
+            FSWorkOrderProduct2.SetFilter(WorkOrderProductId, FSWorkOrderProductIdFilter);
             FSWorkOrderProductRecordRef.GetTable(FSWorkOrderProduct2);
             CRMIntegrationTableSynch.SynchRecordsFromIntegrationTable(FSWorkOrderProductRecordRef, Database::"Service Line", false, false);
         end;
@@ -810,23 +847,25 @@ codeunit 6610 "FS Int. Table Subscriber"
     local procedure ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef; var ArchivedServiceOrders: List of [Code[20]])
     var
         ServiceHeader: Record "Service Header";
-        ServiceLine: Record "Service Item Line";
-        ServiceItemLineToDelete: Record "Service Item Line";
+        ServiceLine: Record "Service Line";
+        ServiceLineToDelete: Record "Service Line";
         CRMIntegrationRecord: Record "CRM Integration Record";
         FSWorkOrder: Record "FS Work Order";
         FSWorkOrderService: Record "FS Work Order Service";
         FSWorkOrderService2: Record "FS Work Order Service";
         CRMIntegrationTableSynch: Codeunit "CRM Integration Table Synch.";
         FSWorkOrderServiceRecordRef: RecordRef;
-        CRMSalesorderdetailId: Guid;
-        CRMSalesorderdetailIdList: List of [Guid];
-        CRMSalesorderdetailIdFilter: Text;
+        FSWorkOrderServiceId: Guid;
+        FSWorkOrderServiceIdList: List of [Guid];
+        FSWorkOrderServiceIdFilter: Text;
     begin
         SourceRecordRef.SetTable(FSWorkOrder);
         DestinationRecordRef.SetTable(ServiceHeader);
 
         ServiceLine.SetRange("Document Type", ServiceLine."Document Type"::Order);
         ServiceLine.SetRange("Document No.", ServiceHeader."No.");
+        ServiceLine.SetRange(Type, ServiceLine.Type::Item);
+        ServiceLine.SetFilter("Item Type", '%1|%2', ServiceLine."Item Type"::Service, ServiceLine."Item Type"::"Non-Inventory");
         if ServiceLine.FindSet() then
             repeat
                 CRMIntegrationRecord.SetRange("Integration ID", ServiceLine.SystemId);
@@ -836,8 +875,8 @@ codeunit 6610 "FS Int. Table Subscriber"
                     if FSWorkOrderService.IsEmpty() then begin
                         CRMIntegrationRecord.Delete();
                         ArchiveServiceOrder(ServiceHeader, ArchivedServiceOrders);
-                        if ServiceItemLineToDelete.GetBySystemId(ServiceLine.SystemId) then
-                            ServiceItemLineToDelete.Delete(true);
+                        if ServiceLineToDelete.GetBySystemId(ServiceLine.SystemId) then
+                            ServiceLineToDelete.Delete(true);
                     end;
                 end;
             until ServiceLine.Next() = 0;
@@ -846,16 +885,69 @@ codeunit 6610 "FS Int. Table Subscriber"
         FSWorkOrderService.SetRange(WorkOrder, FSWorkOrder.WorkOrderId);
         if FSWorkOrderService.FindSet() then begin
             repeat
-                CRMSalesorderdetailIdList.Add(FSWorkOrderService.WorkOrderServiceId)
+                FSWorkOrderServiceIdList.Add(FSWorkOrderService.WorkOrderServiceId)
             until FSWorkOrderService.Next() = 0;
 
-            foreach CRMSalesorderdetailId in CRMSalesorderdetailIdList do
-                CRMSalesorderdetailIdFilter += CRMSalesorderdetailId + '|';
-            CRMSalesorderdetailIdFilter := CRMSalesorderdetailIdFilter.TrimEnd('|');
+            foreach FSWorkOrderServiceId in FSWorkOrderServiceIdList do
+                FSWorkOrderServiceIdFilter += FSWorkOrderServiceId + '|';
+            FSWorkOrderServiceIdFilter := FSWorkOrderServiceIdFilter.TrimEnd('|');
 
-            FSWorkOrderService2.SetFilter(WorkOrderServiceId, CRMSalesorderdetailIdFilter);
+            FSWorkOrderService2.SetFilter(WorkOrderServiceId, FSWorkOrderServiceIdFilter);
             FSWorkOrderServiceRecordRef.GetTable(FSWorkOrderService2);
             CRMIntegrationTableSynch.SynchRecordsFromIntegrationTable(FSWorkOrderServiceRecordRef, Database::"Service Line", false, false);
+        end;
+    end;
+
+    local procedure ResetServiceOrderLineFromFSBookableResourceBooking(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef; var ArchivedServiceOrders: List of [Code[20]])
+    var
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+        ServiceLineToDelete: Record "Service Line";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+        FSWorkOrder: Record "FS Work Order";
+        FSBookableResourceBooking: Record "FS Bookable Resource Booking";
+        FSBookableResourceBooking2: Record "FS Bookable Resource Booking";
+        CRMIntegrationTableSynch: Codeunit "CRM Integration Table Synch.";
+        FSBookableResourceBookingRecordRef: RecordRef;
+        FSBookableResourceBookingId: Guid;
+        FSBookableResourceBookingIdList: List of [Guid];
+        FSBookableResourceBookingIdFilter: Text;
+    begin
+        SourceRecordRef.SetTable(FSWorkOrder);
+        DestinationRecordRef.SetTable(ServiceHeader);
+
+        ServiceLine.SetRange("Document Type", ServiceLine."Document Type"::Order);
+        ServiceLine.SetRange("Document No.", ServiceHeader."No.");
+        ServiceLine.SetRange(Type, ServiceLine.Type::Resource);
+        if ServiceLine.FindSet() then
+            repeat
+                CRMIntegrationRecord.SetRange("Integration ID", ServiceLine.SystemId);
+                CRMIntegrationRecord.SetRange("Table ID", Database::"Service Line");
+                if CRMIntegrationRecord.FindFirst() then begin
+                    FSBookableResourceBooking.SetRange(BookableResourceBookingId, CRMIntegrationRecord."CRM ID");
+                    if FSBookableResourceBooking.IsEmpty() then begin
+                        CRMIntegrationRecord.Delete();
+                        ArchiveServiceOrder(ServiceHeader, ArchivedServiceOrders);
+                        if ServiceLineToDelete.GetBySystemId(ServiceLine.SystemId) then
+                            ServiceLineToDelete.Delete(true);
+                    end;
+                end;
+            until ServiceLine.Next() = 0;
+
+        FSBookableResourceBooking.Reset();
+        FSBookableResourceBooking.SetRange(WorkOrder, FSWorkOrder.WorkOrderId);
+        if FSBookableResourceBooking.FindSet() then begin
+            repeat
+                FSBookableResourceBookingIdList.Add(FSBookableResourceBooking.BookableResourceBookingId)
+            until FSBookableResourceBooking.Next() = 0;
+
+            foreach FSBookableResourceBookingId in FSBookableResourceBookingIdList do
+                FSBookableResourceBookingIdFilter += FSBookableResourceBookingId + '|';
+            FSBookableResourceBookingIdFilter := FSBookableResourceBookingIdFilter.TrimEnd('|');
+
+            FSBookableResourceBooking2.SetFilter(BookableResourceBookingId, FSBookableResourceBookingIdFilter);
+            FSBookableResourceBookingRecordRef.GetTable(FSBookableResourceBooking2);
+            CRMIntegrationTableSynch.SynchRecordsFromIntegrationTable(FSBookableResourceBookingRecordRef, Database::"Service Line", false, false);
         end;
     end;
 
@@ -1074,6 +1166,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                     ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
                     ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
                     ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
+                    ResetServiceOrderLineFromFSBookableResourceBooking(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
                 end;
             'Service Header-FS Work Order':
                 begin
@@ -1311,14 +1404,6 @@ codeunit 6610 "FS Int. Table Subscriber"
                     if CRMIntegrationRecord.FindIDFromRecordID(GetServiceOrderItemLineRecordId(ServiceLine."Document No.", ServiceLine."Service Item Line No."), WorkOrderIncidentId) then
                         FSWorkOrderService.WorkOrderIncident := WorkOrderIncidentId;
                     DestinationRecordRef.GetTable(FSWorkOrderService);
-                end;
-            'Service Line-FS Bookable Resource Booking':
-                begin
-                    SourceRecordRef.SetTable(ServiceLine);
-                    DestinationRecordRef.SetTable(FSBookableResourceBooking);
-                    if CRMIntegrationRecord.FindIDFromRecordID(GetServiceOrderRecordId(ServiceItemLine."Document No."), WorkOrderId) then
-                        FSBookableResourceBooking.WorkOrder := WorkOrderId;
-                    DestinationRecordRef.GetTable(ServiceLine);
                 end;
         end;
     end;

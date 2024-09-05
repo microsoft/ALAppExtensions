@@ -281,6 +281,18 @@ codeunit 6615 "FS Integration Mgt."
         exit(IncidentType.IncidentTypeId);
     end;
 
+    internal procedure GetBookingStatusCompleted(): Guid
+    var
+        FSBookingStatus: Record "FS Booking Status";
+        EmptyGuid: Guid;
+    begin
+        FSBookingStatus.SetRange(FieldServiceStatus, FSBookingStatus.FieldServiceStatus::Completed);
+        if not FSBookingStatus.FindFirst() then
+            exit(EmptyGuid);
+
+        exit(FSBookingStatus.BookingStatusId);
+    end;
+
 
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]
     local procedure RegisterFSConnectionOnRegisterServiceConnection(var ServiceConnection: Record "Service Connection")

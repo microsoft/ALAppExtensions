@@ -616,6 +616,16 @@ table 6611 "FS Bookable Resource Booking"
             ExternalType = 'String';
             ExternalAccess = Read;
         }
+        field(110; BookingStatus; Guid)
+        {
+            ExternalName = 'bookingstatus';
+            ExternalType = 'Lookup';
+            ExternalAccess = Read;
+            Description = 'Unique identifier of the booking status.';
+            Caption = 'Booking Status';
+            TableRelation = "FS Booking Status".BookingStatusId;
+            DataClassification = SystemMetadata;
+        }
     }
     keys
     {
