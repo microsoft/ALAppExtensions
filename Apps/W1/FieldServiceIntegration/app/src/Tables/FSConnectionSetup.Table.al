@@ -1032,6 +1032,11 @@ table 6623 "FS Connection Setup"
         exit(IsEnabled() and ("Integration Type" in ["Integration Type"::Service, "Integration Type"::Both]));
     end;
 
+    internal procedure IsIntegrationTypeProjectEnabled(): Boolean
+    begin
+        exit(IsEnabled() and ("Integration Type" in ["Integration Type"::Project, "Integration Type"::Both]));
+    end;
+
     internal procedure GetProxyVersion(): Integer
     var
         EnvironmentInformation: Codeunit "Environment Information";

@@ -343,7 +343,8 @@ codeunit 6610 "FS Int. Table Subscriber"
                     begin
                         SourceRecordRef := SourceFieldRef.Record();
                         SourceRecordRef.SetTable(FSWorkOrderService);
-                        SetCurrentProjectPlanningQuantities(SourceRecordRef, QuantityCurrentlyConsumed, QuantityCurrentlyInvoiced);
+                        if DestinationFieldRef.Record().Number = Database::"Job Journal Line" then
+                            SetCurrentProjectPlanningQuantities(SourceRecordRef, QuantityCurrentlyConsumed, QuantityCurrentlyInvoiced);
                         if SourceFieldRef.Name() in [FSWorkOrderService.FieldName(Duration)] then begin
                             DurationInMinutes := FSWorkOrderService.Duration;
                             DurationInHours := (DurationInMinutes / 60);
@@ -401,7 +402,8 @@ codeunit 6610 "FS Int. Table Subscriber"
                     begin
                         SourceRecordRef := SourceFieldRef.Record();
                         SourceRecordRef.SetTable(FSWorkOrderProduct);
-                        SetCurrentProjectPlanningQuantities(SourceRecordRef, QuantityCurrentlyConsumed, QuantityCurrentlyInvoiced);
+                        if DestinationFieldRef.Record().Number = Database::"Job Journal Line" then
+                            SetCurrentProjectPlanningQuantities(SourceRecordRef, QuantityCurrentlyConsumed, QuantityCurrentlyInvoiced);
                         if SourceFieldRef.Name() = FSWorkOrderProduct.FieldName(Quantity) then begin
                             Quantity := FSWorkOrderProduct.Quantity - QuantityCurrentlyConsumed;
                             NewValue := Quantity;
@@ -1493,6 +1495,7 @@ codeunit 6610 "FS Int. Table Subscriber"
 
     local procedure SetCurrentProjectPlanningQuantities(var SourceRecordRef: RecordRef; var QuantityCurrentlyConsumed: Decimal; var QuantityCurrentlyInvoiced: Decimal)
     var
+        FSConnectionSetup: Record "FS Connection Setup";
         FSWorkOrderProduct: Record "FS Work Order Product";
         FSWorkOrderService: Record "FS Work Order Service";
         FSBookableResourceBooking: Record "FS Bookable Resource Booking";
@@ -1504,6 +1507,10 @@ codeunit 6610 "FS Int. Table Subscriber"
     begin
         QuantityCurrentlyConsumed := 0;
         QuantityCurrentlyInvoiced := 0;
+
+        if not FSConnectionSetup.IsIntegrationTypeProjectEnabled() then
+            exit;
+
         case SourceRecordRef.Number() of
             Database::"FS Work Order Product":
                 begin
@@ -1819,6 +1826,9 @@ codeunit 6610 "FS Int. Table Subscriber"
             exit;
 
         case SourceRecordRef.Number() of
+            Database::"FS Work Order Product",
+            Database::"FS Work Order Service":
+                IgnorePostedJobJournalLinesOnQueryPostFilterIgnoreRecord(SourceRecordRef, IgnoreRecord);
             Database::"Service Header":
                 IgnoreArchievedServiceOrdersOnQueryPostFilterIgnoreRecord(SourceRecordRef, IgnoreRecord);
             Database::"FS Work Order":
@@ -1855,6 +1865,51 @@ codeunit 6610 "FS Int. Table Subscriber"
                     IgnoreRecord := (not Job."Apply Usage Link");
                 end;
         end;
+    end;
+
+    local procedure IgnorePostedJobJournalLinesOnQueryPostFilterIgnoreRecord(SourceRecordRef: RecordRef; var IgnoreRecord: Boolean)
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        FSWorkOrderProduct: Record "FS Work Order Product";
+        FSWorkOrderService: Record "FS Work Order Service";
+        FieldServiceId: Guid;
+        QuantityCurrentlyConsumed: Decimal;
+        QuantityCurrentlyInvoiced: Decimal;
+        FSQuantityToConsume: Decimal;
+        FSQuantityToInvoice: Decimal;
+    begin
+        if not FSConnectionSetup.IsIntegrationTypeProjectEnabled() then
+            exit;
+        if IgnoreRecord then
+            exit;
+        if FSConnectionSetup."Line Synch. Rule" <> "FS Work Order Line Synch. Rule"::LineUsed then
+            exit;
+
+        case SourceRecordRef.Number() of
+            Database::"FS Work Order Product":
+                begin
+                    SourceRecordRef.SetTable(FSWorkOrderProduct);
+                    FieldServiceId := FSWorkOrderProduct.WorkOrderProductId;
+                    if FSWorkOrderProduct.LineStatus = FSWorkOrderProduct.LineStatus::Used then begin
+                        FSQuantityToConsume := FSWorkOrderProduct.Quantity;
+                        FSQuantityToInvoice := FSWorkOrderProduct.QtyToBill;
+                    end;
+                end;
+            Database::"FS Work Order Service":
+                begin
+                    SourceRecordRef.SetTable(FSWorkOrderService);
+                    FieldServiceId := FSWorkOrderService.WorkOrderServiceId;
+                    if FSWorkOrderService.LineStatus = FSWorkOrderService.LineStatus::Used then begin
+                        FSQuantityToConsume := FSWorkOrderService.Duration / 60;
+                        FSQuantityToInvoice := FSWorkOrderService.DurationToBill / 60;
+                    end;
+                end;
+        end;
+
+        SetCurrentProjectPlanningQuantities(SourceRecordRef, QuantityCurrentlyConsumed, QuantityCurrentlyInvoiced);
+
+        if (QuantityCurrentlyConsumed = FSQuantityToConsume) and (QuantityCurrentlyInvoiced = FSQuantityToInvoice) then
+            IgnoreRecord := true;
     end;
 
     local procedure IgnoreArchievedServiceOrdersOnQueryPostFilterIgnoreRecord(SourceRecordRef: RecordRef; var IgnoreRecord: Boolean)

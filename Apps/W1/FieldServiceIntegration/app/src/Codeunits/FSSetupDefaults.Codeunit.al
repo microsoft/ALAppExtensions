@@ -145,7 +145,7 @@ codeunit 6611 "FS Setup Defaults"
         FSWorkOrderProduct.SetFilter(ProjectTask, '<>' + Format(EmptyGuid));
         case FSConnectionSetup."Line Synch. Rule" of
             "FS Work Order Line Synch. Rule"::LineUsed:
-                FSWorkOrderProduct.SetRange(LineStatus, FSWorkOrderProduct.LineStatus::Used);
+                FSWorkOrderProduct.SetFilter(LineStatus, Format(FSWorkOrderProduct.LineStatus::Estimated) + '|' + Format(FSWorkOrderProduct.LineStatus::Used));
             "FS Work Order Line Synch. Rule"::WorkOrderCompleted:
                 FSWorkOrderProduct.SetFilter(WorkOrderStatus, Format(FSWorkOrderProduct.WorkOrderStatus::Completed) + '|' + Format(FSWorkOrderProduct.WorkOrderStatus::Posted));
         end;
@@ -162,6 +162,7 @@ codeunit 6611 "FS Setup Defaults"
         IntegrationTableMapping.SetIntegrationTableFilter(
           GetTableFilterFromView(Database::"FS Work Order Product", FSWorkOrderProduct.TableCaption(), FSWorkOrderProduct.GetView()));
         IntegrationTableMapping."Dependency Filter" := 'CUSTOMER|ITEM-PRODUCT';
+        IntegrationTableMapping."Deletion-Conflict Resolution" := IntegrationTableMapping."Deletion-Conflict Resolution"::"Restore Records";
         IntegrationTableMapping.Modify();
 
         InsertIntegrationFieldMapping(
@@ -200,11 +201,11 @@ codeunit 6611 "FS Setup Defaults"
           '', true, false);
 
         InsertIntegrationFieldMapping(
-                 IntegrationTableMappingName,
-                 JobJournalLine.FieldNo("Location Code"),
-                 FSWorkOrderProduct.FieldNo(WarehouseId),
-                 IntegrationFieldMapping.Direction::FromIntegrationTable,
-                 '', true, false);
+          IntegrationTableMappingName,
+          JobJournalLine.FieldNo("Location Code"),
+          FSWorkOrderProduct.FieldNo(WarehouseId),
+          IntegrationFieldMapping.Direction::FromIntegrationTable,
+          '', true, false);
 
         OnAfterResetProjectJournalLineWOProductMapping(IntegrationTableMappingName);
 
@@ -232,7 +233,7 @@ codeunit 6611 "FS Setup Defaults"
         FSWorkOrderService.SetFilter(ProjectTask, '<>' + Format(EmptyGuid));
         case FSConnectionSetup."Line Synch. Rule" of
             "FS Work Order Line Synch. Rule"::LineUsed:
-                FSWorkOrderService.SetRange(LineStatus, FSWorkOrderService.LineStatus::Used);
+                FSWorkOrderService.SetFilter(LineStatus, Format(FSWorkOrderService.LineStatus::Estimated) + '|' + Format(FSWorkOrderService.LineStatus::Used));
             "FS Work Order Line Synch. Rule"::WorkOrderCompleted:
                 FSWorkOrderService.SetFilter(WorkOrderStatus, Format(FSWorkOrderService.WorkOrderStatus::Completed) + '|' + Format(FSWorkOrderService.WorkOrderStatus::Posted));
         end;
@@ -248,6 +249,7 @@ codeunit 6611 "FS Setup Defaults"
           GetTableFilterFromView(Database::"FS Work Order Service", FSWorkOrderService.TableCaption(), FSWorkOrderService.GetView()));
 
         IntegrationTableMapping."Dependency Filter" := 'CUSTOMER|ITEM-PRODUCT|RESOURCE-BOOKABLERSC';
+        IntegrationTableMapping."Deletion-Conflict Resolution" := IntegrationTableMapping."Deletion-Conflict Resolution"::"Restore Records";
         IntegrationTableMapping.Modify();
 
         InsertIntegrationFieldMapping(

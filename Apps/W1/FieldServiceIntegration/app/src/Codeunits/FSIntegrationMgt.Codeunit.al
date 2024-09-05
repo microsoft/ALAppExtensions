@@ -249,8 +249,7 @@ codeunit 6615 "FS Integration Mgt."
         if not ServiceMgtSetup."One Service Item Line/Order" then
             exit;
 
-        ConnectionSetup.Get();
-        if not (ConnectionSetup."Integration Type" in [ConnectionSetup."Integration Type"::Service, ConnectionSetup."Integration Type"::Both]) then
+        if not ConnectionSetup.IsIntegrationTypeServiceEnabled() then
             exit;
 
         ConnectionSetup.TestField("Is Enabled", false);
