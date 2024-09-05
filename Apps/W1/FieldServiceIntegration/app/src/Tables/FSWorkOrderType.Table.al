@@ -227,6 +227,14 @@ table 6622 "FS Work Order Type"
             Caption = 'Code';
             DataClassification = SystemMetadata;
         }
+        field(41; IntegrateToService; Boolean)
+        {
+            ExternalName = 'bcbi_integratetoservice';
+            ExternalType = 'Boolean';
+            Description = 'Select whether work orders of this type are integrated to service.';
+            Caption = 'Integrate To Service';
+            DataClassification = SystemMetadata;
+        }
     }
     keys
     {

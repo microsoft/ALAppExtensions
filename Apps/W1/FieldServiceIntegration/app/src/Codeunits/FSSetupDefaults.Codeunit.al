@@ -497,6 +497,7 @@ codeunit 6611 "FS Setup Defaults"
 
         FSWorkOrderType.Reset();
         FSWorkOrderType.SetRange(StateCode, FSWorkOrderType.StateCode::Active);
+        FSWorkOrderType.SetRange(IntegrateToService, true);
         InsertIntegrationTableMapping(
           IntegrationTableMapping, IntegrationTableMappingName,
           Database::"Service Order Type", Database::"FS Work Order Type",
@@ -520,6 +521,13 @@ codeunit 6611 "FS Setup Defaults"
           FSWorkOrderType.FieldNo(Name),
           IntegrationFieldMapping.Direction::Bidirectional,
           '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          0,
+          FSWorkOrderType.FieldNo(IntegrateToService),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          'true', true, false);
 
         RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 30);
     end;
@@ -546,7 +554,7 @@ codeunit 6611 "FS Setup Defaults"
         ServiceOrder.Reset();
         ServiceOrder.SetRange("Document Type", ServiceOrder."Document Type"::Order);
         FSWorkOrder.Reset();
-        FSWorkOrder.SetRange("Integrate to Service", true);
+        FSWorkOrder.SetRange(IntegrateToService, true);
 
         InsertIntegrationTableMapping(
           IntegrationTableMapping, IntegrationTableMappingName,
@@ -601,6 +609,13 @@ codeunit 6611 "FS Setup Defaults"
           FSWorkOrder.FieldNo(WorkOrderSummary),
           IntegrationFieldMapping.Direction::Bidirectional,
           '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          0,
+          FSWorkOrder.FieldNo(IntegrateToService),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          'true', true, false);
 
         RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 30);
         CRMSetupDefaults.RecreateJobQueueEntry(ShouldRecreateJobQueueEntry, Codeunit::"FS Archived Service Orders Job", 30, StrSubstNo(ArchivedServiceOrdersSynchJobDescTxt, CRMProductName.SHORT()), false)
