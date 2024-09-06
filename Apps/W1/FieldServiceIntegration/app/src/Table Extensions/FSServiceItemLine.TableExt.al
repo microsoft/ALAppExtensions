@@ -5,25 +5,18 @@
 namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Service.Document;
-using Microsoft.Inventory.Item;
 using Microsoft.Integration.Dataverse;
 
-tableextension 6616 "FS Service Line" extends "Service Line"
+tableextension 6619 "FS Service Item Line" extends "Service Item Line"
 {
     fields
     {
-        field(12000; "Item Type"; Enum "Item Type")
-        {
-            Caption = 'Item Type';
-            FieldClass = FlowField;
-            CalcFormula = lookup(Item.Type where("No." = field("No.")));
-        }
-        field(12001; "Coupled to FS"; Boolean)
+        field(12000; "Coupled to FS"; Boolean)
         {
             FieldClass = FlowField;
             Caption = 'Coupled to Field Service';
             Editable = false;
-            CalcFormula = exist("CRM Integration Record" where("Integration ID" = field(SystemId), "Table ID" = const(Database::"Service Line")));
+            CalcFormula = exist("CRM Integration Record" where("Integration ID" = field(SystemId), "Table ID" = const(Database::"Service Item Line")));
         }
     }
 }

@@ -10,6 +10,19 @@ using Microsoft.Integration.Dataverse;
 
 pageextension 6625 "FS Service Order Types" extends "Service Order Types"
 {
+    layout
+    {
+        addlast(Control1)
+        {
+            field("Coupled to FS"; Rec."Coupled to FS")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Specifies if the entity is coupled to an entity in Field Service.';
+                Visible = FSIntegrationEnabled;
+            }
+        }
+    }
+
     actions
     {
         addlast(navigation)

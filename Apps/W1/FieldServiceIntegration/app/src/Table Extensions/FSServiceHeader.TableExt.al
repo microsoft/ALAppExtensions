@@ -17,10 +17,10 @@ tableextension 6615 "FS Service Header" extends "Service Header"
             Caption = 'Work Description';
         }
 
-        field(12001; "Coupled to Dataverse"; Boolean)
+        field(12001; "Coupled to FS"; Boolean)
         {
             FieldClass = FlowField;
-            Caption = 'Coupled to Dynamics 365 Sales';
+            Caption = 'Coupled to Field Service';
             Editable = false;
             CalcFormula = exist("CRM Integration Record" where("Integration ID" = field(SystemId), "Table ID" = const(Database::"Service Header")));
         }

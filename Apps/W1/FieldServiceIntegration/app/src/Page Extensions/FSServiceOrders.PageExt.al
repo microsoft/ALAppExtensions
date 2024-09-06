@@ -13,10 +13,10 @@ pageextension 6624 "FS Service Orders" extends "Service Orders"
     {
         addlast(Control1)
         {
-            field("Coupled to Dataverse"; Rec."Coupled to Dataverse")
+            field("Coupled to FS"; Rec."Coupled to FS")
             {
                 ApplicationArea = All;
-                ToolTip = 'Specifies that the sales order is coupled to an order in Dynamics 365 Sales.';
+                ToolTip = 'Specifies if the entity is coupled to an entity in Field Service.';
                 Visible = FSIntegrationEnabled;
             }
         }
