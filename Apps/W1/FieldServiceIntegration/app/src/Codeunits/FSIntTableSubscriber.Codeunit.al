@@ -278,6 +278,43 @@ codeunit 6610 "FS Int. Table Subscriber"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnAfterTransferRecordFields', '', false, false)]
+    local procedure OnAfterTransferRecordFields(SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        FSWorkOrderProduct: Record "FS Work Order Product";
+        FSWorkOrderService: Record "FS Work Order Service";
+        ServiceLine: Record "Service Line";
+        SourceDestCode: Text;
+    begin
+        if not FSConnectionSetup.IsEnabled() then
+            exit;
+
+        SourceDestCode := GetSourceDestCode(SourceRecordRef, DestinationRecordRef);
+
+        case SourceDestCode of
+            'FS Work Order Product-Service Line':
+                begin
+                    SourceRecordRef.SetTable(FSWorkOrderProduct);
+                    DestinationRecordRef.SetTable(ServiceLine);
+
+                    UpdateQuantities(FSWorkOrderProduct, ServiceLine);
+
+                    DestinationRecordRef.GetTable(ServiceLine);
+                end;
+
+            'FS Work Order Service-Service Line':
+                begin
+                    SourceRecordRef.SetTable(FSWorkOrderService);
+                    DestinationRecordRef.SetTable(ServiceLine);
+
+                    UpdateQuantities(FSWorkOrderService, ServiceLine);
+
+                    DestinationRecordRef.GetTable(ServiceLine);
+                end;
+        end;
+    end;
+
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Record Synch.", 'OnTransferFieldData', '', false, false)]
     local procedure OnTransferFieldData(SourceFieldRef: FieldRef; DestinationFieldRef: FieldRef; var NewValue: Variant; var IsValueFound: Boolean; var NeedsConversion: Boolean)
     var
@@ -309,12 +346,35 @@ codeunit 6610 "FS Int. Table Subscriber"
         if SourceFieldRef.Number() = DestinationFieldRef.Number() then
             if SourceFieldRef.Record().Number() = DestinationFieldRef.Record().Number() then
                 exit;
+        if (SourceFieldRef.Record().Number = Database::"Service Line") and
+            (DestinationFieldRef.Record().Number = Database::"FS Work Order Product") then
+            case DestinationFieldRef.Name() of
+                FSWorkOrderProduct.FieldName(EstimateQuantity):
+                    begin
+                        DestinationRecordRef := DestinationFieldRef.Record();
+                        DestinationRecordRef.SetTable(FSWorkOrderProduct);
+                        // only update estimated quantity if the line status is estimated
+                        if FSWorkOrderProduct.LineStatus <> FSWorkOrderProduct.LineStatus::Estimated then begin
+                            IsValueFound := true;
+                            NeedsConversion := false;
+                        end;
+                    end;
+            end;
 
         if (SourceFieldRef.Record().Number = Database::"Service Line") and
             (DestinationFieldRef.Record().Number = Database::"FS Work Order Service") then
             case DestinationFieldRef.Name() of
                 FSWorkOrderService.FieldName(EstimateDuration):
                     begin
+                        DestinationRecordRef := DestinationFieldRef.Record();
+                        DestinationRecordRef.SetTable(FSWorkOrderService);
+                        // only update estimated quantity if the line status is estimated
+                        if FSWorkOrderService.LineStatus <> FSWorkOrderService.LineStatus::Estimated then begin
+                            IsValueFound := true;
+                            NeedsConversion := false;
+                            exit;
+                        end;
+
                         SourceRecordRef := SourceFieldRef.Record();
                         SourceRecordRef.SetTable(ServiceLine);
                         DurationInHours := ServiceLine.Quantity;
@@ -475,6 +535,47 @@ codeunit 6610 "FS Int. Table Subscriber"
                         NeedsConversion := false;
                     end;
             end;
+    end;
+
+    local procedure UpdateQuantities(FSWorkOrderProduct: Record "FS Work Order Product"; var ServiceLine: Record "Service Line")
+    begin
+        ServiceLine.Validate(Quantity, GetMaxQuantity(FSWorkOrderProduct.EstimateQuantity, FSWorkOrderProduct.Quantity, FSWorkOrderProduct.QtyToBill));
+        ServiceLine.Validate("Qty. to Ship", GetMaxQuantity(FSWorkOrderProduct.Quantity, FSWorkOrderProduct.QtyToBill));
+        ServiceLine.Validate("Qty. to Invoice", FSWorkOrderProduct.QtyToBill);
+    end;
+
+    local procedure UpdateQuantities(FSWorkOrderProduct: Record "FS Work Order Service"; var ServiceLine: Record "Service Line")
+    begin
+        ServiceLine.Validate(Quantity, GetMaxQuantity(FSWorkOrderProduct.EstimateDuration, FSWorkOrderProduct.Duration, FSWorkOrderProduct.DurationToBill) / 60);
+        ServiceLine.Validate("Qty. to Ship", GetMaxQuantity(FSWorkOrderProduct.Duration, FSWorkOrderProduct.DurationToBill) / 60);
+        ServiceLine.Validate("Qty. to Invoice", FSWorkOrderProduct.DurationToBill / 60);
+    end;
+
+    procedure GetMaxQuantity(Quantity1: Decimal; Quantity2: Decimal): Decimal
+    var
+        MaxQuantity: Decimal;
+    begin
+        MaxQuantity := Quantity1;
+
+        if Quantity2 > MaxQuantity then
+            MaxQuantity := Quantity2;
+
+        exit(MaxQuantity);
+    end;
+
+    procedure GetMaxQuantity(Quantity1: Decimal; Quantity2: Decimal; Quantity3: Decimal): Decimal
+    var
+        MaxQuantity: Decimal;
+    begin
+        MaxQuantity := Quantity1;
+
+        if Quantity2 > MaxQuantity then
+            MaxQuantity := Quantity2;
+
+        if Quantity3 > MaxQuantity then
+            MaxQuantity := Quantity3;
+
+        exit(MaxQuantity);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Int. Table. Subscriber", 'OnFindNewValueForCoupledRecordPK', '', false, false)]

@@ -748,27 +748,6 @@ codeunit 6611 "FS Setup Defaults"
           IntegrationFieldMapping.Direction::Bidirectional,
           '', true, false);
 
-        InsertIntegrationFieldMapping(
-          IntegrationTableMappingName,
-          ServiceLine.FieldNo("Qty. to Ship"),
-          FSWorkOrderProduct.FieldNo(Quantity),
-          IntegrationFieldMapping.Direction::FromIntegrationTable,
-          '', true, false);
-
-        InsertIntegrationFieldMapping(
-          IntegrationTableMappingName,
-          ServiceLine.FieldNo("Qty. to Consume"),
-          FSWorkOrderProduct.FieldNo(QtyToBill),
-          IntegrationFieldMapping.Direction::FromIntegrationTable,
-          '', true, false);
-
-        InsertIntegrationFieldMapping(
-          IntegrationTableMappingName,
-          ServiceLine.FieldNo("Qty. to Invoice"),
-          FSWorkOrderProduct.FieldNo(QtyToBill),
-          IntegrationFieldMapping.Direction::FromIntegrationTable,
-          '', true, false);
-
         // InsertIntegrationFieldMapping(
         //   IntegrationTableMappingName,
         //   ServiceLine.FieldNo("Quantity Shipped"),
@@ -861,27 +840,6 @@ codeunit 6611 "FS Setup Defaults"
           ServiceLine.FieldNo(Quantity),
           FSWorkOrderService.FieldNo(EstimateDuration),
           IntegrationFieldMapping.Direction::Bidirectional,
-          '', true, false);
-
-        InsertIntegrationFieldMapping(
-          IntegrationTableMappingName,
-          ServiceLine.FieldNo("Qty. to Ship"),
-          FSWorkOrderService.FieldNo(Duration),
-          IntegrationFieldMapping.Direction::FromIntegrationTable,
-          '', true, false);
-
-        InsertIntegrationFieldMapping(
-          IntegrationTableMappingName,
-          ServiceLine.FieldNo("Qty. to Consume"),
-          FSWorkOrderService.FieldNo(DurationToBill),
-          IntegrationFieldMapping.Direction::FromIntegrationTable,
-          '', true, false);
-
-        InsertIntegrationFieldMapping(
-          IntegrationTableMappingName,
-          ServiceLine.FieldNo("Qty. to Invoice"),
-          FSWorkOrderService.FieldNo(DurationToBill),
-          IntegrationFieldMapping.Direction::FromIntegrationTable,
           '', true, false);
 
         // InsertIntegrationFieldMapping(
