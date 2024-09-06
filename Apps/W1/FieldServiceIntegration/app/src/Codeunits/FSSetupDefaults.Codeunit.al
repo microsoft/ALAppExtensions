@@ -66,6 +66,8 @@ codeunit 6611 "FS Setup Defaults"
 
             if IsNullGuid(FSConnectionSetup."Default Work Order Incident ID") then
                 FSConnectionSetup."Default Work Order Incident ID" := FSIntegrationMgt.GenerateDefaultWorkOrderIncident();
+
+            FSIntegrationMgt.EnableServiceOrderArchive();
         end;
 
         SetCustomIntegrationsTableMappings(FSConnectionSetup);

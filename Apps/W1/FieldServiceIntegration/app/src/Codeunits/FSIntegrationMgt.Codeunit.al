@@ -189,6 +189,18 @@ codeunit 6615 "FS Integration Mgt."
         exit(GuidVar);
     end;
 
+    internal procedure EnableServiceOrderArchive()
+    var
+        ServiceMgtSetup: Record "Service Mgt. Setup";
+    begin
+        ServiceMgtSetup.Get();
+        if ServiceMgtSetup."Archive Orders" then
+            exit;
+
+        ServiceMgtSetup.Validate("Archive Orders", true);
+        ServiceMgtSetup.Modify(true);
+    end;
+
     internal procedure TestManualServiceOrderNoSeriesFlag(IntegrationType: Enum "FS Integration Type")
     var
         ServiceMgtSetup: Record "Service Mgt. Setup";
@@ -292,7 +304,6 @@ codeunit 6615 "FS Integration Mgt."
 
         exit(FSBookingStatus.BookingStatusId);
     end;
-
 
     [EventSubscriber(ObjectType::Table, Database::"Service Connection", 'OnRegisterServiceConnection', '', false, false)]
     local procedure RegisterFSConnectionOnRegisterServiceConnection(var ServiceConnection: Record "Service Connection")
