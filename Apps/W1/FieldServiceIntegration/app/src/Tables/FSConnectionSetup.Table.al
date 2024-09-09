@@ -985,6 +985,14 @@ table 6623 "FS Connection Setup"
                         JobQueueEntry.SetStatus(NewStatus);
                     until JobQueueEntry.Next() = 0;
             until IntegrationTableMapping.Next() = 0;
+
+        JobQueueEntry.Reset();
+        JobQueueEntry.SetRange("Object Type to Run");
+        JobQueueEntry.SetRange("Object ID to Run", Codeunit::"FS Archived Service Orders Job");
+        if JobQueueEntry.FindSet() then
+            repeat
+                JobQueueEntry.SetStatus(NewStatus);
+            until JobQueueEntry.Next() = 0;
     end;
 
     internal procedure GetConnectionStringAsStoredInSetup() ConnectionString: Text
