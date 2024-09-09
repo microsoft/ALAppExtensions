@@ -402,7 +402,7 @@ page 30126 "Shpfy Products"
                     var
                         BackgroundSyncs: Codeunit "Shpfy Background Syncs";
                     begin
-                        BackgroundSyncs.InventorySync(Rec."Shop Code");
+                        BackgroundSyncs.InventorySyncWithReqPage(Rec."Shop Code");
                     end;
                 }
             }
