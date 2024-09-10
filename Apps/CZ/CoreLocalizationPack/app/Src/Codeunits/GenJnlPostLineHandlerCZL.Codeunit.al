@@ -451,4 +451,24 @@ codeunit 31315 "Gen.Jnl. Post Line Handler CZL"
         if GenJnlLine."Additional Currency Factor CZL" <> 0 then
             CurrencyFactor := GenJnlLine."Additional Currency Factor CZL";
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPostDeferralPostBufferOnBeforeInsertGLEntryForDeferralAccount', '', false, false)]
+    local procedure OnPostDeferralPostBufferOnBeforeInsertGLEntryForDeferralAccount(GenJournalLine: Record "Gen. Journal Line"; var GLEntry: Record "G/L Entry")
+    var
+        GLEntryasCorrectionCZL: Codeunit "G/L Entry as Correction CZL";
+    begin
+        if (GLEntry.Amount < 0) and
+           (GLEntry."Posting Date" = GenJournalLine."Posting Date") and
+           (GLEntry."G/L Account No." = GenJournalLine."Account No.")
+        then
+            GLEntryasCorrectionCZL.Enable();
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnPostDeferralPostBufferOnAfterInsertGLEntry', '', false, false)]
+    local procedure OnPostDeferralPostBufferOnAfterInsertGLEntry()
+    var
+        GLEntryasCorrectionCZL: Codeunit "G/L Entry as Correction CZL";
+    begin
+        GLEntryasCorrectionCZL.Disable();
+    end;
 }

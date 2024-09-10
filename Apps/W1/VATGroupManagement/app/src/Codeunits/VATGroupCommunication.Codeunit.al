@@ -8,6 +8,7 @@ using Microsoft.Finance.VAT.Reporting;
 using System.Azure.KeyVault;
 using System.Environment;
 using System.Security.Authentication;
+using System.Telemetry;
 #if not CLEAN25
 using System.Text;
 #endif
@@ -151,11 +152,11 @@ codeunit 4700 "VAT Group Communication"
         end;
 
         if (FirstPartyAppId <> '') and (not FirstPartyAppCertificate.IsEmpty()) then begin
-            Session.LogMessage('0000MXQ', AttemptingAuthCodeTokenWithCertTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', VATGroupTok);
+            Session.LogMessage('0000MXQ', AttemptingAuthCodeTokenWithCertTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', VATGroupTok, 'AppId', FirstPartyAppId);
             OAuth2.AcquireTokenByAuthorizationCodeWithCertificate(FirstPartyAppId, FirstPartyAppCertificate, AuthorityURL, RedirectURL, ResourceURL, PromptInteraction::Login, BearerToken, AuthError)
         end else begin
             CreateScopesFromResourceURL(ResourceURL, Scopes);
-            Session.LogMessage('0000MXR', AttemptingAuthCodeTokenWithClientSecretTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', VATGroupTok);
+            Session.LogMessage('0000MXR', AttemptingAuthCodeTokenWithClientSecretTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', VATGroupTok, 'AppId', ClientId);
             OAuth2.AcquireTokenByAuthorizationCode(ClientId, ClientSecret, AuthorityURL, RedirectURL, Scopes, PromptInteraction::Login, BearerToken, AuthError);
         end;
 
@@ -285,6 +286,7 @@ codeunit 4700 "VAT Group Communication"
     [NonDebuggable]
     local procedure PrepareHeaders(HttpRequestMessage: HttpRequestMessage; IsBatch: Boolean)
     var
+        FeatureTelemetry: Codeunit "Feature Telemetry";
 #if not CLEAN25
         Base64Convert: Codeunit "Base64 Convert";
 #endif
@@ -293,6 +295,8 @@ codeunit 4700 "VAT Group Communication"
         Base64AuthHeader: SecretText;
 #endif
     begin
+        FeatureTelemetry.LogUptake('0000NG8', FeatureName(), Enum::"Feature Uptake Status"::Used);
+        FeatureTelemetry.LogUsage('0000NG9', FeatureName(), 'Submitting VAT return to group representative.');
         HttpRequestMessage.GetHeaders(HttpRequestHeaders);
 
         HttpRequestHeaders.Add('Accept', 'application/json');
@@ -393,5 +397,10 @@ codeunit 4700 "VAT Group Communication"
     begin
         Scopes.Add(ResourceURL + BCReadWriteScopeTok);
         Scopes.Add(ResourceURL + BCUserImpersonationScopeTok);
+    end;
+
+    internal procedure FeatureName(): Text
+    begin
+        exit('VAT Group Management');
     end;
 }

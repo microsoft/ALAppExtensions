@@ -3,9 +3,17 @@ using Microsoft.Sustainability.Scorecard;
 
 codeunit 6230 "Compute Sust. Goal Cue"
 {
+    var
+        CalledFromManualRefresh: Boolean;
+
     procedure GetLatestSustainabilityGoalCue(var SustGoalCue: Record "Sustainability Goal Cue")
     begin
         ComputeValues(SustGoalCue);
+    end;
+
+    procedure SetCalledFromManualRefresh(NewCalledFromManualRefresh: Boolean)
+    begin
+        CalledFromManualRefresh := NewCalledFromManualRefresh;
     end;
 
     local procedure ComputeValues(var SustGoalCue: Record "Sustainability Goal Cue")
@@ -34,11 +42,10 @@ codeunit 6230 "Compute Sust. Goal Cue"
         SustGoalCue."Last Refreshed Datetime" := CurrentDateTime();
         SustGoalCue.Modify();
 
-        if SustGoalCue.GetFilter("Date Filter") <> '' then
-            SustainabilityGoal.CopyFilter("Baseline Period", SustGoalCue."Date Filter");
         if SustainabilityGoal.FindSet() then
             repeat
                 SustainabilityGoal.UpdateCurrentDateFilter(SustainabilityGoal."Start Date", SustainabilityGoal."End Date");
+                SustainabilityGoal.UpdateBaselineDateFilter(SustainabilityGoal."Baseline Start Date", SustainabilityGoal."Baseline End Date");
                 SustainabilityGoal.CalcFields(
                     "Current Value for CO2",
                     "Current Value for CH4",
@@ -107,6 +114,9 @@ codeunit 6230 "Compute Sust. Goal Cue"
         OnBeforeEvaluateCanRefreshCueValues(LastUpdatedDateTime, CanRefresh, IsHandled);
         if IsHandled then
             exit(CanRefresh);
+
+        if CalledFromManualRefresh then
+            exit(true);
 
         if LastUpdatedDateTime = 0DT then
             exit(true);

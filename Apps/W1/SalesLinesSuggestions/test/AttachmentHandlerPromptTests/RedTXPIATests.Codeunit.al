@@ -61,7 +61,7 @@ codeunit 149825 "RedT XPIA Tests"
         UserQuery := JsonToken.AsValue().AsText();
         UserQuery := StrSubstNo(UserQueryTemplate, UserQuery);
         TestUtility.RepeatAtMost3TimesToFetchCompletionForAttachment(CallCompletionAnswerTxt, UserQuery);
-        AITTestContext.SetTestOutput(CallCompletionAnswerTxt);
+        AITTestContext.SetTestOutput(TestInput, UserQuery, CallCompletionAnswerTxt);
         if StrLen(CallCompletionAnswerTxt) = 0 then
             exit;
 

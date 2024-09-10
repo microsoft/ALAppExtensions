@@ -156,7 +156,7 @@ codeunit 7293 "Csv Handler" implements "File Handler"
         UserInput: Text;
         CompletionText: Text;
     begin
-        UserInput := StrSubstNo(Prompt.GetParsingCsvTemplateUserInputPrompt(), CsvData);
+        UserInput := StrSubstNo(Prompt.GetParsingCsvTemplateUserInputPrompt().Unwrap(), CsvData);
         FileHandlerResult := SalesLineAISuggestionImpl.AICall(Prompt.GetAttachmentSystemPrompt(), UserInput, LookupItemsFromCsvFunction, CompletionText);
         exit(FileHandlerResult);
     end;

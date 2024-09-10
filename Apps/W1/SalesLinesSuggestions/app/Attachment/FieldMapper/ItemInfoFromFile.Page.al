@@ -270,14 +270,18 @@ page 7286 "Item Info. From  File"
     var
         ColumnName: Text;
         HeaderRow: List of [Text];
+        ColumnIndex: Integer;
     begin
         if (GlobalFileContentAsTable.Count() > 0) and (ColumnNumber > 0) then begin
             if GlobalFileHandlerResult.GetContainsHeaderRow() then
                 HeaderRow := GlobalFileContentAsTable.Get(1)
             else
                 HeaderRow := GlobalFileHandlerResult.GetColumnNames();
-            if ColumnNumber <= GlobalMappedColumns.Count then
-                ColumnName := HeaderRow.Get(GlobalMappedColumns.Get(ColumnNumber));
+            if ColumnNumber <= GlobalMappedColumns.Count then begin
+                ColumnIndex := GlobalMappedColumns.Get(ColumnNumber);
+                if ColumnIndex > 0 then
+                    ColumnName := HeaderRow.Get(ColumnIndex);
+            end;
         end;
         exit(ColumnName);
     end;
@@ -286,13 +290,17 @@ page 7286 "Item Info. From  File"
     var
         ColumnValue: Text;
         RowValue: List of [Text];
+        ColumnIndex: Integer;
     begin
         if GlobalFileHandlerResult.GetContainsHeaderRow() then
             Row := Row + 1;
         if Row <= GlobalFileContentAsTable.Count() then begin
             RowValue := GlobalFileContentAsTable.Get(Row);
-            if Column <= GlobalMappedColumns.Count then
-                ColumnValue := RowValue.Get(GlobalMappedColumns.Get(Column));
+            if Column <= GlobalMappedColumns.Count then begin
+                ColumnIndex := GlobalMappedColumns.Get(Column);
+                if ColumnIndex > 0 then
+                    ColumnValue := RowValue.Get(ColumnIndex);
+            end;
         end;
         exit(ColumnValue);
     end;

@@ -148,11 +148,9 @@ codeunit 2680 "Data Search in Table"
         RecRef.FilterGroup(-1); // 'OR' group
         foreach FieldNo in FieldList do
             if RecRef.FieldExist(FieldNo) then begin
-                FldRef := RecRef.Field(FieldNo); 
+                FldRef := RecRef.Field(FieldNo);
                 if FldRef.Length >= strlen(SearchString) then begin
-                    if not Field.Get(RecRef.Number, FldRef.Number) then
-                        Clear(Field);
-                    if not UseWildCharSearch and Field.OptimizeForTextSearch then
+                    if not UseWildCharSearch and FldRef.IsOptimizedForTextSearch then
                         FldRef.SetFilter('&&' + SearchString + '*')
                     else
                         if UseTextSearch then

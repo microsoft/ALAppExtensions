@@ -43,9 +43,24 @@ page 6235 "Sustainability Manager RC"
             {
                 ApplicationArea = Basic, Suite;
             }
-            part(Scope; "Emission Scope Ratio Chart")
+            group("Emission By Scope")
             {
-                ApplicationArea = Basic, Suite;
+                Caption = 'CO2 Emission By Scope';
+                part(CO2RatioChart; "Emission Scope Ratio Chart")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'CO2';
+                }
+                part(CH4RatioChart; "CH4 Emission Ratio Chart")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'CH4';
+                }
+                part(N2ORatioChart; "N2O Emission Ratio Chart")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'N2O';
+                }
             }
         }
     }
@@ -54,46 +69,54 @@ page 6235 "Sustainability Manager RC"
     {
         area(Creation)
         {
-            action(SustainabilityJournal)
+            group("Journals")
             {
-                ApplicationArea = Basic, Suite;
-                RunObject = Page "Sustainability Journal";
-                Caption = 'Sustainability Journal';
-                ToolTip = 'Executes the Sustainability Journal action.';
-            }
-            action(RecurringSustainabilityJnl)
-            {
-                ApplicationArea = Basic, Suite;
-                RunObject = Page "Recurring Sustainability Jnl.";
-                Caption = 'Recurring Sustainability Journals';
-                ToolTip = 'Executes the Recurring Sustainability Journals action.';
+                Caption = 'Journals';
+                action(SustainabilityJournal)
+                {
+                    ApplicationArea = Basic, Suite;
+                    RunObject = Page "Sustainability Journal";
+                    Caption = 'Sustainability Journal';
+                    ToolTip = 'Executes the Sustainability Journal action.';
+                }
+                action(RecurringSustainabilityJnl)
+                {
+                    ApplicationArea = Basic, Suite;
+                    RunObject = Page "Recurring Sustainability Jnl.";
+                    Caption = 'Recurring Sustainability Journals';
+                    ToolTip = 'Executes the Recurring Sustainability Journals action.';
+                }
             }
         }
         area(Reporting)
         {
-            action(TotalEmissions)
+            group("Reports")
             {
-                Caption = 'Total Emissions';
-                RunObject = report "Total Emissions";
-                Image = Report;
-                ToolTip = 'View total emissions details.';
-                ApplicationArea = Basic, Suite;
-            }
-            action(EmissionByCategory)
-            {
-                Caption = 'Emission By Category';
-                RunObject = report "Emission By Category";
-                Image = Report;
-                ToolTip = 'View emissions details by category.';
-                ApplicationArea = Basic, Suite;
-            }
-            action(EmissionPerFacility)
-            {
-                Caption = 'Emission Per Facility';
-                RunObject = report "Emission Per Facility";
-                Image = Report;
-                ToolTip = 'View emissions details by responsibility center.';
-                ApplicationArea = Basic, Suite;
+                Caption = 'Reports';
+                action(TotalEmissions)
+                {
+                    Caption = 'Total Emissions';
+                    RunObject = report "Total Emissions";
+                    Image = Report;
+                    ToolTip = 'View total emissions details.';
+                    ApplicationArea = Basic, Suite;
+                }
+                action(EmissionByCategory)
+                {
+                    Caption = 'Emission By Category';
+                    RunObject = report "Emission By Category";
+                    Image = Report;
+                    ToolTip = 'View emissions details by category.';
+                    ApplicationArea = Basic, Suite;
+                }
+                action(EmissionPerFacility)
+                {
+                    Caption = 'Emission Per Facility';
+                    RunObject = report "Emission Per Facility";
+                    Image = Report;
+                    ToolTip = 'View emissions details by responsibility center.';
+                    ApplicationArea = Basic, Suite;
+                }
             }
         }
         area(Sections)

@@ -787,6 +787,14 @@ table 30102 "Shpfy Shop"
         {
             DataClassification = SystemMetadata;
         }
+        field(201; "Items Mapped to Products"; Boolean)
+        {
+            Caption = 'Items Must be Mapped to Products';
+        }
+        field(202; "Posted Invoice Sync"; Boolean)
+        {
+            Caption = 'Posted Invoice Sync';
+        }
     }
 
     keys

@@ -170,6 +170,7 @@ page 7290 "Sales Line From Attachment"
         SummarizePromptAndPageCaption();
     end;
 
+    [NonDebuggable]
     local procedure BuildSearchQuery(FileData: List of [List of [Text]]; FileParserResult: Codeunit "File Handler Result"): Text
     var
         SLSPrompts: Codeunit "SLS Prompts";
@@ -219,7 +220,7 @@ page 7290 "Sales Line From Attachment"
                 Error(DataTooLargeErr);
         end;
 
-        SearchQuery := StrSubstNo(SLSPrompts.GetProductFromCsvTemplateUserInputPrompt(), Rows);
+        SearchQuery := StrSubstNo(SLSPrompts.GetProductFromCsvTemplateUserInputPrompt().Unwrap(), Rows);
         exit(SearchQuery);
     end;
 

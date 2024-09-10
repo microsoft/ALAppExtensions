@@ -109,21 +109,21 @@ codeunit 4410 "Trial Balance"
     begin
         LocalGlAccount.Copy(GLAccount);
         if GlobalBreakdownByDimension then begin
-            GLAccount.SetFilter("Global Dimension 1 Filter", Dimension1ValueCode);
-            GLAccount.SetFilter("Global Dimension 2 Filter", Dimension2ValueCode);
+            LocalGLAccount.SetFilter("Global Dimension 1 Filter", '= ''%1''', Dimension1ValueCode);
+            LocalGLAccount.SetFilter("Global Dimension 2 Filter", '= ''%1''', Dimension2ValueCode);
         end;
         if GlobalBreakdownByBusinessUnit then
-            GLAccount.SetFilter("Business Unit Filter", BusinessUnitCode);
-        InsertTrialBalanceDataForGLAccountWithFilters(LocalGlAccount, TrialBalanceData, Dimension1Values, Dimension2Values);
+            LocalGLAccount.SetFilter("Business Unit Filter", '= %1', BusinessUnitCode);
+        InsertTrialBalanceDataForGLAccountWithFilters(LocalGlAccount, Dimension1ValueCode, Dimension2ValueCode, BusinessUnitCode, TrialBalanceData, Dimension1Values, Dimension2Values);
     end;
 
-    local procedure InsertTrialBalanceDataForGLAccountWithFilters(var GLAccount: Record "G/L Account"; var TrialBalanceData: Record "EXR Trial Balance Buffer"; var Dimension1Values: Record "Dimension Value" temporary; var Dimension2Values: Record "Dimension Value" temporary)
+    local procedure InsertTrialBalanceDataForGLAccountWithFilters(var GLAccount: Record "G/L Account"; Dimension1ValueCode: Code[20]; Dimension2ValueCode: Code[20]; BusinessUnitCode: Code[20]; var TrialBalanceData: Record "EXR Trial Balance Buffer"; var Dimension1Values: Record "Dimension Value" temporary; var Dimension2Values: Record "Dimension Value" temporary)
     begin
         GlAccount.CalcFields("Net Change", "Balance at Date", "Additional-Currency Net Change", "Add.-Currency Balance at Date", "Budgeted Amount", "Budget at Date");
         TrialBalanceData."G/L Account No." := GlAccount."No.";
-        TrialBalanceData."Dimension 1 Code" := CopyStr(GLAccount.GetFilter("Global Dimension 1 Filter"), 1, MaxStrLen(TrialBalanceData."Dimension 1 Code"));
-        TrialBalanceData."Dimension 2 Code" := CopyStr(GLAccount.GetFilter("Global Dimension 2 Filter"), 1, MaxStrLen(TrialBalanceData."Dimension 2 Code"));
-        TrialBalanceData."Business Unit Code" := CopyStr(GLAccount.GetFilter("Business Unit Filter"), 1, MaxStrLen(TrialBalanceData."Business Unit Code"));
+        TrialBalanceData."Dimension 1 Code" := Dimension1ValueCode;
+        TrialBalanceData."Dimension 2 Code" := Dimension2ValueCode;
+        TrialBalanceData."Business Unit Code" := BusinessUnitCode;
         TrialBalanceData.Validate("Net Change", GLAccount."Net Change");
         TrialBalanceData.Validate(Balance, GLAccount."Balance at Date");
         TrialBalanceData.Validate("Net Change (ACY)", GLAccount."Additional-Currency Net Change");

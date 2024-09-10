@@ -44,15 +44,11 @@ tableextension 4817 "Intrastat Report Purch. Head." extends "Purchase Header"
         if not IntrastatReportSetup.Get() then
             exit;
 
-        if (FieldNo = FieldNo("Buy-from Vendor No.")) and
-           (IntrastatReportSetup."VAT No. Based On" = IntrastatReportSetup."VAT No. Based On"::"Sell-to VAT")
-        then
-            VendorNo := "Buy-from Vendor No.";
+        if FieldNo = FieldNo("Buy-from Vendor No.") then
+            VendorNo := IntrastatReportSetup.GetPartnerNo("Buy-from Vendor No.", "Pay-to Vendor No.", IntrastatReportSetup."VAT No. Based On"::"Sell-to VAT");
 
-        if (FieldNo = FieldNo("Pay-to Vendor No.")) and
-           (IntrastatReportSetup."VAT No. Based On" = IntrastatReportSetup."VAT No. Based On"::"Bill-to VAT")
-        then
-            VendorNo := "Pay-to Vendor No.";
+        if FieldNo = FieldNo("Pay-to Vendor No.") then
+            VendorNo := IntrastatReportSetup.GetPartnerNo("Buy-from Vendor No.", "Pay-to Vendor No.", IntrastatReportSetup."VAT No. Based On"::"Bill-to VAT");
 
         if VendorNo = '' then
             exit;

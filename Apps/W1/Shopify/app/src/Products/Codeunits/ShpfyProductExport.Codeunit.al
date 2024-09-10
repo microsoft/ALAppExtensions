@@ -66,126 +66,139 @@ codeunit 30178 "Shpfy Product Export"
         GraphQueryList: List of [TextBuilder];
 
     /// <summary> 
-    /// Create Product Body.
+    /// Creates html body for a product from extended text, marketing text and attributes.
     /// </summary>
-    /// <param name="ItemNo">Parameter of type Code[20].</param>
-    /// <returns>Return variable "ProductBodyHtml" of type Text.</returns>
-    local procedure CreateProductBody(ItemNo: Code[20]) ProductBodyHtml: Text
+    /// <param name="ItemNo">Item number.</param>
+    /// <param name="LanguageCode">Language code to look for translations.</param>
+    /// <returns>Product body html.</returns>
+    internal procedure CreateProductBody(ItemNo: Code[20]; LanguageCode: Code[10]) ProductBodyHtml: Text
     var
         Item: Record Item;
-        ExtendedTextHeader: Record "Extended Text Header";
-        ExtendedTextLine: Record "Extended Text Line";
-        ItemAttrValueTranslation: Record "Item Attr. Value Translation";
-        ItemAttribute: Record "Item Attribute";
-        ItemAttributeTranslation: Record "Item Attribute Translation";
-        ItemAttributeValue: Record "Item Attribute Value";
-        ItemAttributeValueMapping: Record "Item Attribute Value Mapping";
-        Translator: Report "Shpfy Translator";
         EntityText: Codeunit "Entity Text";
         EntityTextScenario: Enum "Entity Text Scenario";
         IsHandled: Boolean;
         MarketingText: Text;
         Result: TextBuilder;
     begin
-        ProductEvents.OnBeforeCreateProductBodyHtml(ItemNo, Shop, ProductBodyHtml, IsHandled);
+        ProductEvents.OnBeforeCreateProductBodyHtml(ItemNo, Shop, ProductBodyHtml, IsHandled, LanguageCode);
         if not IsHandled then begin
-            if Shop."Sync Item Extended Text" then begin
-                ExtendedTextHeader.SetRange("Table Name", ExtendedTextHeader."Table Name"::Item);
-                ExtendedTextHeader.SetRange("No.", ItemNo);
-                ExtendedTextHeader.SetFilter("Language Code", '%1|%2', '', Shop."Language Code");
-                ExtendedTextHeader.SetRange("Starting Date", 0D, Today());
-                ExtendedTextHeader.SetFilter("Ending Date", '%1|%2..', 0D, Today());
-                if ExtendedTextHeader.FindSet() then begin
-                    result.Append('<div class="productDescription">');
-                    repeat
-                        if (ExtendedTextHeader."Language Code" = Shop."Language Code") or ExtendedTextHeader."All Language Codes" then begin
-                            ExtendedTextLine.SetRange("Table Name", ExtendedTextHeader."Table Name");
-                            ExtendedTextLine.SetRange("No.", ExtendedTextHeader."No.");
-                            ExtendedTextLine.SetRange("Language Code", ExtendedTextHeader."Language Code");
-                            ExtendedTextLine.SetRange("Text No.", ExtendedTextHeader."Text No.");
-                            if ExtendedTextLine.FindSet() then begin
-                                Result.Append('  ');
-                                repeat
-                                    Result.Append(ExtendedTextLine.Text);
-                                    if strlen(ExtendedTextLine.Text) > 0 then
-                                        case ExtendedTextLine.Text[StrLen(ExtendedTextLine.Text)] of
-                                            '.', '?', '!', ':':
-                                                begin
-                                                    Result.Append('<br />');
-                                                    Result.Append('  ');
-                                                end;
-                                            '/':
-                                                ;
-                                            else
-                                                Result.Append(' ');
-                                        end
-                                    else begin
-                                        Result.Append('<br />');
-                                        Result.Append('  ');
-                                    end;
-                                until ExtendedTextLine.Next() = 0;
-                            end;
-                        end;
-                    until ExtendedTextHeader.Next() = 0;
-                    result.Append('</div>');
-                    Result.Append('<br>');
-                end;
-            end;
+            if Shop."Sync Item Extended Text" then
+                AddExtendTextHtml(ItemNo, Result, LanguageCode);
 
             if Shop."Sync Item Marketing Text" then
-                if Item.Get(ItemNo) then begin
-                    MarketingText := EntityText.GetText(Database::Item, Item.SystemId, EntityTextScenario::"Marketing Text");
-                    if MarketingText <> '' then begin
-                        Result.Append('<div class="productDescription">');
-                        Result.Append(MarketingText);
-                        Result.Append('</div>');
-                        Result.Append('<br>');
-                    end
-                end;
+                if LanguageCode = Shop."Language Code" then
+                    if Item.Get(ItemNo) then begin
+                        MarketingText := EntityText.GetText(Database::Item, Item.SystemId, EntityTextScenario::"Marketing Text");
+                        if MarketingText <> '' then begin
+                            Result.Append('<div class="productDescription">');
+                            Result.Append(MarketingText);
+                            Result.Append('</div>');
+                            Result.Append('<br>');
+                        end
+                    end;
 
-            if Shop."Sync Item Attributes" then begin
-                ItemAttributeValueMapping.SetRange("Table ID", Database::Item);
-                ItemAttributeValueMapping.SetRange("No.", ItemNo);
-                if ItemAttributeValueMapping.FindSet() then begin
-                    Result.Append('<div class="productAttributes">');
-                    Result.Append('  <div class="productAttributesTitle">');
-                    Result.Append(Translator.GetAttributeTitle(Shop."Language Code"));
-                    Result.Append('  </div>');
-                    Result.Append('  <table>');
-                    repeat
-                        if ItemAttribute.Get(ItemAttributeValueMapping."Item Attribute ID") and (not ItemAttribute.Blocked) then begin
-                            Result.Append('    <tr>');
-                            Result.Append('      <td class="attributeName">');
-                            if ItemAttributeTranslation.Get(ItemAttributeValueMapping."Item Attribute ID", Shop."Language Code") then
-                                Result.Append(ItemAttributeTranslation.Name)
-                            else
-                                Result.Append(ItemAttribute.Name);
-                            Result.Append('      </td>');
-                            Result.Append('      <td class="attributeValue">');
-                            if ItemAttrValueTranslation.Get(ItemAttributeValueMapping."Item Attribute ID", ItemAttributeValueMapping."Item Attribute Value ID", Shop."Language Code") then
-                                Result.Append(ItemAttrValueTranslation.Name)
-                            else
-                                if ItemAttributeValue.Get(ItemAttributeValueMapping."Item Attribute ID", ItemAttributeValueMapping."Item Attribute Value ID") then begin
-                                    Result.Append(ItemAttributeValue.Value);
-                                    case ItemAttribute.Type of
-                                        ItemAttribute.Type::Integer, ItemAttribute.Type::Decimal:
-                                            begin
-                                                Result.Append(' ');
-                                                Result.Append(ItemAttribute."Unit of Measure");
-                                            end;
-                                    end;
-                                end;
-                            Result.Append('      </td>');
-                            Result.Append('    </tr>');
-                        end;
-                    until ItemAttributeValueMapping.Next() = 0;
-                    Result.Append('  </table>');
-                    Result.Append('</div>');
-                end;
-            end;
+            if Shop."Sync Item Attributes" then
+                AddAtributeHtml(ItemNo, Result, LanguageCode);
+
             ProductBodyHtml := Result.ToText();
         end;
-        ProductEvents.OnAfterCreateProductbodyHtml(ItemNo, Shop, ProductBodyHtml);
+        ProductEvents.OnAfterCreateProductbodyHtml(ItemNo, Shop, ProductBodyHtml, LanguageCode);
+    end;
+
+    local procedure AddExtendTextHtml(ItemNo: Code[20]; Result: TextBuilder; LanguageCode: Code[10])
+    var
+        ExtendedTextHeader: Record "Extended Text Header";
+        ExtendedTextLine: Record "Extended Text Line";
+    begin
+        ExtendedTextHeader.SetRange("Table Name", ExtendedTextHeader."Table Name"::Item);
+        ExtendedTextHeader.SetRange("No.", ItemNo);
+        ExtendedTextHeader.SetFilter("Language Code", '%1|%2', '', LanguageCode);
+        ExtendedTextHeader.SetRange("Starting Date", 0D, Today());
+        ExtendedTextHeader.SetFilter("Ending Date", '%1|%2..', 0D, Today());
+        if ExtendedTextHeader.FindSet() then begin
+            result.Append('<div class="productDescription">');
+            repeat
+                if (ExtendedTextHeader."Language Code" = LanguageCode) or ExtendedTextHeader."All Language Codes" then begin
+                    ExtendedTextLine.SetRange("Table Name", ExtendedTextHeader."Table Name");
+                    ExtendedTextLine.SetRange("No.", ExtendedTextHeader."No.");
+                    ExtendedTextLine.SetRange("Language Code", ExtendedTextHeader."Language Code");
+                    ExtendedTextLine.SetRange("Text No.", ExtendedTextHeader."Text No.");
+                    if ExtendedTextLine.FindSet() then begin
+                        Result.Append('  ');
+                        repeat
+                            Result.Append(ExtendedTextLine.Text);
+                            if StrLen(ExtendedTextLine.Text) > 0 then
+                                case ExtendedTextLine.Text[StrLen(ExtendedTextLine.Text)] of
+                                    '.', '?', '!', ':':
+                                        begin
+                                            Result.Append('<br />');
+                                            Result.Append('  ');
+                                        end;
+                                    '/':
+                                        ;
+                                    else
+                                        Result.Append(' ');
+                                end
+                            else begin
+                                Result.Append('<br />');
+                                Result.Append('  ');
+                            end;
+                        until ExtendedTextLine.Next() = 0;
+                    end;
+                end;
+            until ExtendedTextHeader.Next() = 0;
+            result.Append('</div>');
+            Result.Append('<br>');
+        end;
+    end;
+
+    local procedure AddAtributeHtml(ItemNo: Code[20]; Result: TextBuilder; LanguageCode: Code[10])
+    var
+        ItemAttrValueTranslation: Record "Item Attr. Value Translation";
+        ItemAttribute: Record "Item Attribute";
+        ItemAttributeTranslation: Record "Item Attribute Translation";
+        ItemAttributeValue: Record "Item Attribute Value";
+        ItemAttributeValueMapping: Record "Item Attribute Value Mapping";
+        Translator: Report "Shpfy Translator";
+    begin
+        ItemAttributeValueMapping.SetRange("Table ID", Database::Item);
+        ItemAttributeValueMapping.SetRange("No.", ItemNo);
+        if ItemAttributeValueMapping.FindSet() then begin
+            Result.Append('<div class="productAttributes">');
+            Result.Append('  <div class="productAttributesTitle">');
+            Result.Append(Translator.GetAttributeTitle(LanguageCode));
+            Result.Append('  </div>');
+            Result.Append('  <table>');
+            repeat
+                if ItemAttribute.Get(ItemAttributeValueMapping."Item Attribute ID") and (not ItemAttribute.Blocked) then begin
+                    Result.Append('    <tr>');
+                    Result.Append('      <td class="attributeName">');
+                    if ItemAttributeTranslation.Get(ItemAttributeValueMapping."Item Attribute ID", LanguageCode) then
+                        Result.Append(ItemAttributeTranslation.Name)
+                    else
+                        Result.Append(ItemAttribute.Name);
+                    Result.Append('      </td>');
+                    Result.Append('      <td class="attributeValue">');
+                    if ItemAttrValueTranslation.Get(ItemAttributeValueMapping."Item Attribute ID", ItemAttributeValueMapping."Item Attribute Value ID", LanguageCode) then
+                        Result.Append(ItemAttrValueTranslation.Name)
+                    else
+                        if ItemAttributeValue.Get(ItemAttributeValueMapping."Item Attribute ID", ItemAttributeValueMapping."Item Attribute Value ID") then begin
+                            Result.Append(ItemAttributeValue.Value);
+                            case ItemAttribute.Type of
+                                ItemAttribute.Type::Integer, ItemAttribute.Type::Decimal:
+                                    begin
+                                        Result.Append(' ');
+                                        Result.Append(ItemAttribute."Unit of Measure");
+                                    end;
+                            end;
+                        end;
+                    Result.Append('      </td>');
+                    Result.Append('    </tr>');
+                end;
+            until ItemAttributeValueMapping.Next() = 0;
+            Result.Append('  </table>');
+            Result.Append('</div>');
+        end;
     end;
 
     /// <summary> 
@@ -269,7 +282,7 @@ codeunit 30178 "Shpfy Product Export"
         end;
         ShopifyProduct.Vendor := CopyStr(GetVendor(Item."Vendor No."), 1, MaxStrLen(ShopifyProduct.Vendor));
         ShopifyProduct."Product Type" := CopyStr(GetProductType(Item."Item Category Code"), 1, MaxStrLen(ShopifyProduct."Product Type"));
-        ShopifyProduct.SetDescriptionHtml(CreateProductBody(Item."No."));
+        ShopifyProduct.SetDescriptionHtml(CreateProductBody(Item."No.", Shop."Language Code"));
         ShopifyProduct."Tags Hash" := ShopifyProduct.CalcTagsHash();
         if Item.Blocked then
             case Shop."Action for Removed Products" of
@@ -680,15 +693,33 @@ codeunit 30178 "Shpfy Product Export"
                             end;
                         until ItemUnitofMeasure.Next() = 0;
             end;
+
+            UpdateMetafields(ShopifyProduct.Id);
+            UpdateProductTranslations(ShopifyProduct.Id, Item)
         end;
     end;
 
+    local procedure UpdateMetafields(ProductId: BigInteger)
+    var
+        ShpfyVariant: Record "Shpfy Variant";
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
+    begin
+        MetafieldAPI.CreateOrUpdateMetafieldsInShopify(Database::"Shpfy Product", ProductId);
+
+        ShpfyVariant.SetRange("Product Id", ProductId);
+        ShpfyVariant.ReadIsolation := IsolationLevel::ReadCommitted;
+        if ShpfyVariant.FindSet() then
+            repeat
+                MetafieldAPI.CreateOrUpdateMetafieldsInShopify(Database::"Shpfy Variant", ShpfyVariant.Id);
+            until ShpfyVariant.Next() = 0;
+    end;
+
     /// <summary> 
-    /// Update Product Variant.
+    /// Updates a product variant in Shopify. Used when item variant does not exist in BC, but variants per UoM are maintained in Shopify.
     /// </summary>
-    /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
-    /// <param name="Item">Parameter of type Record Item.</param>
-    /// <param name="ItemUnitofMeasure">Parameter of type Record "Item Unit of Measure".</param>
+    /// <param name="ShopifyVariant">Shopify variant to update.</param>
+    /// <param name="Item">Item where information is taken from.</param>
+    /// <param name="ItemUnitofMeasure">Item unit of measure where information is taken from.</param>
     local procedure UpdateProductVariant(ShopifyVariant: Record "Shpfy Variant"; Item: Record Item; ItemUnitofMeasure: Record "Item Unit of Measure")
     var
         TempShopifyVariant: Record "Shpfy Variant" temporary;
@@ -703,7 +734,7 @@ codeunit 30178 "Shpfy Product Export"
     end;
 
     /// <summary> 
-    /// Update Product Variant.
+    /// Updates a Product Variant in Shopify. Used when variants per UoM are not maintained in Shopify.
     /// </summary>
     /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
     /// <param name="Item">Parameter of type Record Item.</param>
@@ -717,12 +748,14 @@ codeunit 30178 "Shpfy Product Export"
         FillInProductVariantData(ShopifyVariant, Item, ItemVariant);
         if OnlyUpdatePrice then
             VariantApi.UpdateProductPrice(ShopifyVariant, TempShopifyVariant, BulkOperationInput, GraphQueryList, RecordCount)
-        else
+        else begin
             VariantApi.UpdateProductVariant(ShopifyVariant, TempShopifyVariant);
+            UpdateVariantTranslations(ShopifyVariant.Id, ItemVariant);
+        end;
     end;
 
     /// <summary> 
-    /// Update Product Variant.
+    /// Update a Product Variant in Shopify. Used when item variant exists in BC and variants per UoM are maintained in Shopify.
     /// </summary>
     /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
     /// <param name="Item">Parameter of type Record Item.</param>
@@ -737,7 +770,57 @@ codeunit 30178 "Shpfy Product Export"
         FillInProductVariantData(ShopifyVariant, Item, ItemVariant, ItemUnitofMeasure);
         if OnlyUpdatePrice then
             VariantApi.UpdateProductPrice(ShopifyVariant, TempShopifyVariant, BulkOperationInput, GraphQueryList, RecordCount)
-        else
+        else begin
             VariantApi.UpdateProductVariant(ShopifyVariant, TempShopifyVariant);
+            UpdateVariantTranslations(ShopifyVariant.Id, ItemVariant);
+        end;
     end;
+
+    #region Translations
+    local procedure UpdateProductTranslations(ProductId: BigInteger; Item: Record Item)
+    var
+        TempTranslation: Record "Shpfy Translation" temporary;
+        TranslationAPI: Codeunit "Shpfy Translation API";
+    begin
+        if OnlyUpdatePrice then
+            exit;
+
+        TempTranslation."Resource Type" := TempTranslation."Resource Type"::Product;
+        TempTranslation."Resource ID" := ProductId;
+
+        CollectTranslations(Item, TempTranslation, TempTranslation."Resource Type");
+        TranslationAPI.CreateOrUpdateTranslations(TempTranslation);
+    end;
+
+    local procedure UpdateVariantTranslations(VariantId: BigInteger; ItemVariant: Record "Item Variant")
+    var
+        TempTranslation: Record "Shpfy Translation" temporary;
+        TranslationAPI: Codeunit "Shpfy Translation API";
+    begin
+        if OnlyUpdatePrice then
+            exit;
+
+        TempTranslation."Resource Type" := TempTranslation."Resource Type"::ProductVariant;
+        TempTranslation."Resource ID" := VariantId;
+
+        CollectTranslations(ItemVariant, TempTranslation, TempTranslation."Resource Type");
+        TranslationAPI.CreateOrUpdateTranslations(TempTranslation);
+    end;
+
+    local procedure CollectTranslations(RecVariant: Variant; var TempTranslation: Record "Shpfy Translation" temporary; ICreateTranslation: Interface "Shpfy ICreate Translation")
+    var
+        ShpfyLanguage: Record "Shpfy Language";
+        TranslationAPI: Codeunit "Shpfy Translation API";
+        Digests: Dictionary of [Text, Text];
+    begin
+        Digests := TranslationAPI.RetrieveTranslatableContentDigests(TempTranslation."Resource Type", TempTranslation."Resource ID");
+
+        ShpfyLanguage.SetRange("Shop Code", Shop.Code);
+        ShpfyLanguage.SetRange("Sync Translations", true);
+        if ShpfyLanguage.FindSet() then
+            repeat
+                ICreateTranslation.CreateTranslation(RecVariant, ShpfyLanguage, TempTranslation, Digests);
+            until ShpfyLanguage.Next() = 0;
+    end;
+    #endregion
 }

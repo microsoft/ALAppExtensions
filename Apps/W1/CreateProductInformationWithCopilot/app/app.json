@@ -1,0 +1,41 @@
+{
+  "id": "93a71c5e-237e-47e8-835b-1a7f9e844f1b",
+  "name": "Create Product Information With Copilot",
+  "publisher": "Microsoft",
+  "version": "25.0.0.0",
+  "brief": "Create product information with Copilot (Preview) can assist with finding substitution items, and create or update product information based on the result.",
+  "description": "Create product information with Copilot (Preview) can assist with finding substitution items, and create or update product information based on the result.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2261665",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2261665",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "25.0.0.0",
+  "application": "25.0.0.0",
+  "target": "OnPrem",
+  "idRanges": [
+    {
+      "from": 7330,
+      "to": 7450
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "internalsVisibleTo": [
+    {
+      "id": "b123f63d-67a0-4384-b421-440ab9f08e97",
+      "name": "Create product information with Copilot Tests",
+      "publisher": "Microsoft"
+    }
+  ],
+  "features": [
+    "NoImplicitWith",
+    "TranslationFile"
+  ]
+}

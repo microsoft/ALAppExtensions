@@ -500,6 +500,7 @@ codeunit 30189 "Shpfy Variant API"
     /// <returns>Return variable "Result" of type Boolean.</returns>
     internal procedure UpdateShopifyVariantFields(ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var ShopifyInventoryItem: Record "Shpfy Inventory Item"; JVariant: JsonObject) Result: Boolean
     var
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
         RecordRef: RecordRef;
         UpdatedAt: DateTime;
         JMetafields: JsonArray;
@@ -595,7 +596,19 @@ codeunit 30189 "Shpfy Variant API"
         end;
         if JsonHelper.GetJsonObject(JVariant, JNode, 'metafields') then
             if JsonHelper.GetJsonArray(JNode, JMetafields, 'edges') then
-                foreach JItem in JMetafields do;
+                MetafieldAPI.UpdateMetafieldsFromShopify(JMetafields, Database::"Shpfy Variant", ShopifyVariant.Id);
+    end;
+
+    /// <summary>
+    /// Deletes a product variant from Shopify.
+    /// </summary>
+    /// <param name="ShopifyVariantId">Id of the Shopify variant to delete.</param>
+    internal procedure DeleteProductVariant(ShopifyVariantId: BigInteger)
+    var
+        Parameters: Dictionary of [Text, Text];
+    begin
+        Parameters.Add('VariantId', Format(ShopifyVariantId));
+        CommunicationMgt.ExecuteGraphQL(Enum::"Shpfy GraphQL Type"::ProductVariantDelete, Parameters);
     end;
 
     /// <summary>

@@ -12,6 +12,14 @@ codeunit 38500 "External Events Helper"
         exit(Link);
     end;
 
+    procedure CreateLink(url: Text; Id1: Guid; Id2: Guid): Text[250]
+    var
+        Link: Text[250];
+    begin
+        Link := GetBaseUrl() + StrSubstNo(url, GetCompanyId(), TrimGuid(Id1), TrimGuid(Id2));
+        exit(Link);
+    end;
+
     local procedure GetBaseUrl(): Text
     begin
         exit(GetUrl(ClientType::Api));

@@ -86,6 +86,18 @@
         <DataExchFieldMapping ColumnNo="43" Optional="true" TargetTableID="288" TargetFieldID="14" />
       </DataExchMapping>
     </DataExchLineDef>
+    <DataExchLineDef LineType="0" Code="PEPPOLATTACHMENT" Name="PEPPOL - Attachments" ColumnCount="4" DataLineTag="/CreditNote/cac:AdditionalDocumentReference" ParentCode="PEPPOLCRMEMOHEADER">
+      <DataExchColumnDef ColumnNo="1" Name="AdditionalDocumentReferenceID" Show="false" DataType="0" Description="AdditionalDocumentReference ID" Path="/CreditNote/cac:AdditionalDocumentReference/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="2" Name="EmbeddedDocumentBinaryObject" Show="false" DataType="0" Description="EmbeddedDocumentBinaryObject" Path="/CreditNote/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="3" Name="MimeCode" Show="false" DataType="0" Description="EmbeddedDocumentBinaryObject Mime Code" Path="/CreditNote/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@mimeCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="4" Name="Filename" Show="false" DataType="0" Description="EmbeddedDocumentBinaryObject Filename" Path="/CreditNote/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@filename" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchMapping TableId="1214" UseAsIntermediateTable="true" Name="PEPPOL to Document Attachments">
+        <DataExchFieldMapping ColumnNo="1" TargetTableID="1173" TargetFieldID="1" />
+        <DataExchFieldMapping ColumnNo="2" TargetTableID="1173" TargetFieldID="8" />
+        <DataExchFieldMapping ColumnNo="3" TargetTableID="1173" TargetFieldID="7" />
+        <DataExchFieldMapping ColumnNo="4" TargetTableID="1173" TargetFieldID="5" />
+      </DataExchMapping>
+    </DataExchLineDef>
     <DataExchLineDef LineType="0" Code="PEPPOLCRMEMOLINES" Name="PEPPOL - Credit Memo Lines" ColumnCount="18" DataLineTag="/CreditNote/cac:CreditNoteLine" ParentCode="PEPPOLCRMEMOHEADER">
       <DataExchColumnDef ColumnNo="1" Name="CreditNoteLineNote" Show="true" DataType="0" Path="/CreditNote/cac:CreditNoteLine/cbc:Note" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
       <DataExchColumnDef ColumnNo="2" Name="CreditedQuantity" Show="true" DataType="0" Description="Quantity" Path="/CreditNote/cac:CreditNoteLine/cbc:CreditedQuantity" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />

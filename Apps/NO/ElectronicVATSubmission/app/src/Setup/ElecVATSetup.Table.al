@@ -22,9 +22,12 @@ table 10686 "Elec. VAT Setup"
             trigger OnValidate()
             var
                 CustomerConsentMgt: Codeunit "Customer Consent Mgt.";
+                ElectVATSetupConsentProvidedLbl: Label 'NO Elect. VAT Setup - consent provided by UserSecurityId %1.', Locked = true;
             begin
-                if Enabled THEN
+                if Enabled then
                     Enabled := CustomerConsentMgt.ConfirmUserConsent();
+                if Enabled then
+                    Session.LogAuditMessage(StrSubstNo(ElectVATSetupConsentProvidedLbl, UserSecurityId()), SecurityOperationResult::Success, AuditCategory::ApplicationManagement, 4, 0);
             end;
         }
         field(3; "OAuth Feature GUID"; GUID)

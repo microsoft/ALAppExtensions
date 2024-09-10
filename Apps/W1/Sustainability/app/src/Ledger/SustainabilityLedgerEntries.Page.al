@@ -123,9 +123,15 @@ page 6220 "Sustainability Ledger Entries"
                 {
                     ToolTip = 'Specifies the emission N2O of the entry.';
                 }
-                field("Emission Fee"; Rec."Emission Fee")
+                field("CO2e Emission"; Rec."CO2e Emission")
                 {
-                    ToolTip = 'Specifies the emission Fee of the entry.';
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies total carbon dioxide and other equivalents emission expressing different greenhouse gases impact in terms of the amount of CO2 that would create the same effect.';
+                }
+                field("Carbon Fee"; Rec."Carbon Fee")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies internal carbon fee that a company charges itself for each unit of CO2 equivalent that it emits.';
                 }
                 field("Country/Region Code"; Rec."Country/Region Code")
                 {

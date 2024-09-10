@@ -78,32 +78,45 @@ codeunit 6225 "Sust. Purchase Subscriber"
     var
         SustainabilityJnlLine: Record "Sustainability Jnl. Line";
         SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
+        GHGCredit: Boolean;
+        Sign: Integer;
         CO2ToPost: Decimal;
         CH4ToPost: Decimal;
         N2OToPost: Decimal;
     begin
+        GHGCredit := IfGHGCreditLine(PurchaseLine);
+
+        if GHGCredit then begin
+            PurchaseLine.TestField("Emission CH4 Per Unit", 0);
+            PurchaseLine.TestField("Emission N2O Per Unit", 0);
+        end;
+
+        Sign := GetPostingSign(PurchaseHeader, GHGCredit);
+
         CO2ToPost := PurchaseLine."Emission CO2" - PurchaseLine."Posted Emission CO2";
         CH4ToPost := PurchaseLine."Emission CH4" - PurchaseLine."Posted Emission CH4";
         N2OToPost := PurchaseLine."Emission N2O" - PurchaseLine."Posted Emission N2O";
 
+        CO2ToPost := CO2ToPost * Sign;
+        CH4ToPost := CH4ToPost * Sign;
+        N2OToPost := N2OToPost * Sign;
+
         if not CanPostSustainabilityJnlLine(PurchaseHeader, PurchaseLine, CO2ToPost, CH4ToPost, N2OToPost) then
             exit;
-
-        if PurchaseHeader."Document Type" in [PurchaseHeader."Document Type"::"Credit Memo", PurchaseHeader."Document Type"::"Return Order"] then begin
-            CO2ToPost := -CO2ToPost;
-            CH4ToPost := -CH4ToPost;
-            N2OToPost := -N2OToPost;
-        end;
 
         SustainabilityJnlLine.Init();
         SustainabilityJnlLine."Journal Template Name" := PurchaseHeader."Journal Templ. Name";
         SustainabilityJnlLine."Journal Batch Name" := '';
         SustainabilityJnlLine."Source Code" := SrcCode;
         SustainabilityJnlLine.Validate("Posting Date", PurchaseHeader."Posting Date");
-        if PurchaseHeader."Document Type" in [PurchaseHeader."Document Type"::"Credit Memo", PurchaseHeader."Document Type"::"Return Order"] then
-            SustainabilityJnlLine.Validate("Document Type", SustainabilityJnlLine."Document Type"::"Credit Memo")
+
+        if GHGCredit then
+            SustainabilityJnlLine.Validate("Document Type", SustainabilityJnlLine."Document Type"::"GHG Credit")
         else
-            SustainabilityJnlLine.Validate("Document Type", SustainabilityJnlLine."Document Type"::Invoice);
+            if PurchaseHeader."Document Type" in [PurchaseHeader."Document Type"::"Credit Memo", PurchaseHeader."Document Type"::"Return Order"] then
+                SustainabilityJnlLine.Validate("Document Type", SustainabilityJnlLine."Document Type"::"Credit Memo")
+            else
+                SustainabilityJnlLine.Validate("Document Type", SustainabilityJnlLine."Document Type"::Invoice);
 
         SustainabilityJnlLine.Validate("Document No.", GenJnlLineDocNo);
         SustainabilityJnlLine.Validate("Account No.", PurchaseLine."Sust. Account No.");
@@ -118,49 +131,41 @@ codeunit 6225 "Sust. Purchase Subscriber"
         SustainabilityJnlLine.Validate("Emission CO2", CO2ToPost);
         SustainabilityJnlLine.Validate("Emission CH4", CH4ToPost);
         SustainabilityJnlLine.Validate("Emission N2O", N2OToPost);
+        SustainabilityJnlLine.Validate("Country/Region Code", PurchaseHeader."Buy-from Country/Region Code");
         SustainabilityPostMgt.InsertLedgerEntry(SustainabilityJnlLine);
-
-        PostCarbonCreditSustainabilityLine(PurchaseLine, SustainabilityJnlLine);
     end;
 
-    local procedure PostCarbonCreditSustainabilityLine(PurchaseLine: Record "Purchase Line"; FromSustainabilityJnlLine: Record "Sustainability Jnl. Line")
+    local procedure GetPostingSign(PurchaseHeader: Record "Purchase Header"; GHGCredit: Boolean): Integer
     var
-        PurchaseLine1: Record "Purchase Line";
-        SustainabilityJnlLine: Record "Sustainability Jnl. Line";
-        Item: Record Item;
-        SustainabilityPostMgt: Codeunit "Sustainability Post Mgt";
-        CO2Emission: Decimal;
-        EmissionFee: Decimal;
+        Sign: Integer;
     begin
-        if PurchaseLine.Type <> PurchaseLine.Type::Item then
-            exit;
+        Sign := 1;
 
-        if not Item.Get(PurchaseLine."No.") then
-            exit;
-
-        if not Item."GHG Credit" then
-            exit;
-
-        // To ensure that Carbon Credit is posted with full Amount and Quantity.
-        if not PurchaseLine1.Get(PurchaseLine."Document Type", PurchaseLine."Document No.", PurchaseLine."Line No.") then
-            exit;
-
-        EmissionFee := PurchaseLine1."Line Amount";
-        CO2Emission := PurchaseLine1.Quantity * Item."Carbon Credit Per UOM";
-
-        if PurchaseLine."Document Type" in [PurchaseLine."Document Type"::Order, PurchaseLine."Document Type"::Invoice] then begin
-            CO2Emission := -CO2Emission;
-            EmissionFee := -EmissionFee;
+        case PurchaseHeader."Document Type" of
+            PurchaseHeader."Document Type"::"Credit Memo", PurchaseHeader."Document Type"::"Return Order":
+                if not GHGCredit then
+                    Sign := -1;
+            else
+                if GHGCredit then
+                    Sign := -1;
         end;
 
-        SustainabilityJnlLine.Init();
-        SustainabilityJnlLine := FromSustainabilityJnlLine;
-        SustainabilityJnlLine.Validate("Document Type", SustainabilityJnlLine."Document Type"::"GHG Credit");
-        SustainabilityJnlLine.Validate("Emission CO2", CO2Emission);
-        SustainabilityJnlLine.Validate("Emission CH4", 0);
-        SustainabilityJnlLine.Validate("Emission N2O", 0);
-        SustainabilityJnlLine.Validate("Emission Fee", EmissionFee);
-        SustainabilityPostMgt.InsertLedgerEntry(SustainabilityJnlLine);
+        exit(Sign);
+    end;
+
+    local procedure IfGHGCreditLine(PurchaseLine: Record "Purchase Line"): Boolean
+    var
+        Item: Record Item;
+    begin
+        if PurchaseLine.Type <> PurchaseLine.Type::Item then
+            exit(false);
+
+        if PurchaseLine."No." = '' then
+            exit(false);
+
+        Item.Get(PurchaseLine."No.");
+
+        exit(Item."GHG Credit");
     end;
 
     local procedure CanPostSustainabilityJnlLine(PurchaseHeader: Record "Purchase Header"; PurchaseLine: Record "Purchase Line"; CO2ToPost: Decimal; CH4ToPost: Decimal; N2OToPost: Decimal): Boolean

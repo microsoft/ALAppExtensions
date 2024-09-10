@@ -13,6 +13,7 @@ table 6222 "Sustainability Certificate"
         {
             DataClassification = CustomerContent;
             Caption = 'No.';
+            NotBlank = true;
         }
         field(2; "Name"; Text[100])
         {

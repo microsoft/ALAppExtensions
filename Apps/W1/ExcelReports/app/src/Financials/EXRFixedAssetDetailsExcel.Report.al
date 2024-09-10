@@ -2,6 +2,7 @@ namespace Microsoft.Finance.ExcelReports;
 
 using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.FixedAssets.Depreciation;
+using Microsoft.FixedAssets.Setup;
 using Microsoft.FixedAssets.Ledger;
 
 report 4411 "EXR Fixed Asset Details Excel"
@@ -97,6 +98,16 @@ report 4411 "EXR Fixed Asset Details Excel"
                 }
             }
         }
+
+        trigger OnOpenPage()
+        var
+            FASetup: Record "FA Setup";
+        begin
+            if not FASetup.Get() then
+                exit;
+            DepreciationBookCode := FASetup."Default Depr. Book";
+        end;
+
     }
     rendering
     {

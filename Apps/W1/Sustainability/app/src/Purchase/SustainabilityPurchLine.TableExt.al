@@ -3,6 +3,7 @@ namespace Microsoft.Sustainability.Purchase;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Setup;
 using Microsoft.Purchases.Document;
+using Microsoft.Inventory.Item;
 
 tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
 {
@@ -37,6 +38,9 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
                 end;
 
                 CreateDimFromDefaultDim(FieldNo(Rec."Sust. Account No."));
+
+                if Rec.Type = Rec.Type::Item then
+                    UpdateCarbonCreditInformation();
             end;
         }
         field(6211; "Sust. Account Name"; Text[100])
@@ -221,11 +225,22 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
     end;
 
     local procedure ValidateEmissionPrerequisite(PurchaseLine: Record "Purchase Line"; CurrentFieldNo: Integer)
+    var
+        Item: Record Item;
     begin
         case CurrentFieldNo of
-            PurchaseLine.FieldNo("Emission CO2 Per Unit"),
-            PurchaseLine.FieldNo("Emission CH4 Per Unit"),
-            PurchaseLine.FieldNo("Emission N2O Per Unit"):
+            PurchaseLine.FieldNo("Emission N2O Per Unit"),
+            PurchaseLine.FieldNo("Emission CH4 Per Unit"):
+                begin
+                    PurchaseLine.TestField("Sust. Account No.");
+
+                    if (PurchaseLine.Type = PurchaseLine.Type::Item) and (PurchaseLine."No." <> '') then begin
+                        Item.Get(PurchaseLine."No.");
+                        if Item."GHG Credit" then
+                            Item.TestField("GHG Credit", false);
+                    end;
+                end;
+            PurchaseLine.FieldNo("Emission CO2 Per Unit"):
                 PurchaseLine.TestField("Sust. Account No.");
             PurchaseLine.FieldNo("Sust. Account No."),
             PurchaseLine.FieldNo("Sust. Account Category"),
@@ -249,6 +264,19 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
 
         if (PurchLine."Posted Emission N2O" <> 0) and (PurchLine."Posted Emission N2O" < PurchLine."Emission N2O") then
             Error(EmissionShouldNotBeLessThanPostedErr, PurchLine."Emission N2O", PurchLine."Posted Emission N2O", PurchLine."Document Type", PurchLine."Document No.", PurchLine."Line No.");
+    end;
+
+    local procedure UpdateCarbonCreditInformation()
+    var
+        Item: Record Item;
+    begin
+        if not Item.Get(Rec."No.") then
+            exit;
+
+        if not Item."GHG Credit" then
+            exit;
+
+        Rec.Validate("Emission CO2 Per Unit", Item."Carbon Credit Per UOM");
     end;
 
     var

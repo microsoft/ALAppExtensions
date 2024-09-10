@@ -19,6 +19,15 @@ codeunit 31147 "Non-Deductible VAT CZL"
         UndefinedNonDeductibleVATSetupErr: Label 'Non-deductible VAT setup is not defined for the specified date.';
         ShowNonDeductibleVATSetupLbl: Label 'Show Non-deductible VAT setup';
 
+    procedure IsNonDeductibleVATEnabled(): Boolean
+    var
+        VATSetup: Record "VAT Setup";
+    begin
+        if not VATSetup.Get() then
+            exit(false);
+        exit(VATSetup."Enable Non-Deductible VAT" and VATSetup."Enable Non-Deductible VAT CZL");
+    end;
+
     procedure ExistNonDeductibleVATSetupToDate(ToDate: Date): Boolean
     var
         NonDeductibleVATSetupCZL: Record "Non-Deductible VAT Setup CZL";
@@ -159,6 +168,17 @@ codeunit 31147 "Non-Deductible VAT CZL"
             DeferralDocType::Sales:
                 exit(GeneralPostingType::Sale);
         end;
+    end;
+
+    internal procedure UpdateAllowNonDeductibleVAT()
+    var
+        VATPostingSetup: Record "VAT Posting Setup";
+    begin
+        if VATPostingSetup.FindSet() then
+            repeat
+                VATPostingSetup.UpdateAllowNonDeductibleVAT();
+                VATPostingSetup.Modify();
+            until VATPostingSetup.Next() = 0;
     end;
 
     [IntegrationEvent(false, false)]

@@ -44,15 +44,11 @@ tableextension 4815 "Intrastat Report Sales Head." extends "Sales Header"
         if not IntrastatReportSetup.Get() then
             exit;
 
-        if (FieldNo = FieldNo("Sell-to Customer No.")) and
-           (IntrastatReportSetup."VAT No. Based On" = IntrastatReportSetup."VAT No. Based On"::"Sell-to VAT")
-        then
-            CustomerNo := "Sell-to Customer No.";
+        if FieldNo = FieldNo("Sell-to Customer No.") then
+            CustomerNo := IntrastatReportSetup.GetPartnerNo("Sell-to Customer No.", "Bill-to Customer No.", IntrastatReportSetup."VAT No. Based On"::"Sell-to VAT");
 
-        if (FieldNo = FieldNo("Bill-to Customer No.")) and
-           (IntrastatReportSetup."VAT No. Based On" = IntrastatReportSetup."VAT No. Based On"::"Bill-to VAT")
-        then
-            CustomerNo := "Bill-to Customer No.";
+        if FieldNo = FieldNo("Bill-to Customer No.") then
+            CustomerNo := IntrastatReportSetup.GetPartnerNo("Sell-to Customer No.", "Bill-to Customer No.", IntrastatReportSetup."VAT No. Based On"::"Bill-to VAT");
 
         if CustomerNo = '' then
             exit;

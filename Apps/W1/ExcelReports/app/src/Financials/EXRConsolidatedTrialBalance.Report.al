@@ -123,10 +123,13 @@ report 4410 "EXR Consolidated Trial Balance"
 
     trigger OnPreReport()
     var
+        BusinessUnit: Record "Business Unit";
         TrialBalance: Codeunit "Trial Balance";
     begin
         if EndingDate = 0D then
             Error(EnterAnEndingDateErr);
+        if BusinessUnit.IsEmpty() then
+            Error(NoBusinessUnitsErr);
         GLAccounts.SetRange("Date Filter", StartingDate, EndingDate);
 
         TrialBalance.ConfigureTrialBalance(true, true);
@@ -137,4 +140,5 @@ report 4410 "EXR Consolidated Trial Balance"
         IndentedAccountName: Text;
         StartingDate, EndingDate : Date;
         EnterAnEndingDateErr: Label 'Please enter an ending date.';
+        NoBusinessUnitsErr: Label 'There are no business units configured for the current company. Please run this report from the consolidation company.';
 }
