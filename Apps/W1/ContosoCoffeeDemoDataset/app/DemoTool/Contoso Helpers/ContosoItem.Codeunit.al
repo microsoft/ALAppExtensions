@@ -241,12 +241,21 @@ codeunit 5143 "Contoso Item"
     procedure InsertItemJournalLine(TemplateName: Code[10]; BatchName: Code[10]; ItemNo: Code[20]; DocumentNo: Code[20]; EntryType: Enum "Item Ledger Entry Type"; Quantity: Decimal; LocationCode: Code[10]; PostingDate: Date)
     var
         ItemJournalLine: Record "Item Journal Line";
+        ItemJnlBatch: Record "Item Journal Batch";
+        NoSeries: Codeunit "No. Series";
     begin
         ItemJournalLine.Validate("Journal Template Name", TemplateName);
         ItemJournalLine.Validate("Journal Batch Name", BatchName);
         ItemJournalLine.Validate("Line No.", GetNextItemJournalLineNo(TemplateName, BatchName));
         ItemJournalLine.Validate("Item No.", ItemNo);
         ItemJournalLine.Validate("Entry Type", EntryType);
+        if DocumentNo = '' then begin
+            ItemJnlBatch.Get(TemplateName, BatchName);
+            if ItemJnlBatch."No. Series" <> '' then
+                DocumentNo := NoSeries.PeekNextNo(ItemJnlBatch."No. Series", PostingDate)
+            else
+                DocumentNo := ItemJnlBatch.Name;
+        end;
         ItemJournalLine.Validate("Document No.", DocumentNo);
         ItemJournalLine.Validate(Quantity, Quantity);
         ItemJournalLine.Validate("Location Code", LocationCode);

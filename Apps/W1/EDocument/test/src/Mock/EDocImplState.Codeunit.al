@@ -11,7 +11,6 @@ codeunit 139630 "E-Doc. Impl. State"
         ThrowRuntimeError, ThrowLoggedError, ThrowBasicInfoError, ThrowCompleteInfoError, OnGetResponseSuccess, OnGetApprovalSuccess : Boolean;
         LocalHttpResponse: HttpResponseMessage;
 
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Export", 'OnAfterCreateEDocument', '', false, false)]
     local procedure OnAfterCreateEDocument(var EDocument: Record "E-Document")
     begin
@@ -213,8 +212,12 @@ codeunit 139630 "E-Doc. Impl. State"
         TmpPurchLine: Record "Purchase Line" temporary;
         PurchDocTestBuffer: Codeunit "E-Doc. Test Buffer";
     begin
-        PurchDocTestBuffer.GetPurchaseDocToTempVariables(TmpPurchHeader, TmpPurchLine);
-        Count := TmpPurchHeader.Count();
+        if LibraryVariableStorage.Length() > 0 then
+            Count := LibraryVariableStorage.DequeueInteger()
+        else begin
+            PurchDocTestBuffer.GetPurchaseDocToTempVariables(TmpPurchHeader, TmpPurchLine);
+            Count := TmpPurchHeader.Count();
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Integration Mock", 'OnReceiveDocument', '', false, false)]
@@ -222,8 +225,11 @@ codeunit 139630 "E-Doc. Impl. State"
     var
         OutStr: OutStream;
     begin
-        TempBlob.CreateOutStream(OutStr);
-        OutStr.WriteText('Some Test Content');
+        TempBlob.CreateOutStream(OutStr, TextEncoding::UTF8);
+        if LibraryVariableStorage.Length() > 0 then
+            OutStr.WriteText(LibraryVariableStorage.DequeueText())
+        else
+            OutStr.WriteText('Some Test Content');
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Integration Mock", 'OnGetApproval', '', false, false)]
@@ -255,7 +261,6 @@ codeunit 139630 "E-Doc. Impl. State"
     begin
         ThrowCompleteInfoError := true;
     end;
-
 
     internal procedure SetThrowBasicInfoError()
     begin

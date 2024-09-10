@@ -20,13 +20,13 @@ codeunit 7286 SalesInvoiceLookup implements DocumentLookupSubType
     var
         SourceSalesHeader: Record "Sales Header";
         SalesInvoiceHeader: Record "Sales Invoice Header";
-        DocumentLookup: Codeunit "Document Lookup Function";
+        SearchItemsWithFiltersFunc: Codeunit "Search Items With Filters Func";
         DocumentNo: Text;
         StartDateStr: Text;
         EndDateStr: Text;
         FoundDocNo: Code[20];
     begin
-        DocumentLookup.GetParametersFromCustomDimension(CustomDimension, SourceSalesHeader, DocumentNo, StartDateStr, EndDateStr);
+        SearchItemsWithFiltersFunc.GetParametersFromCustomDimension(CustomDimension, SourceSalesHeader, DocumentNo, StartDateStr, EndDateStr);
         SalesInvoiceHeader.SetLoadFields("No.");
         // setup SecurityFilter
         SalesInvoiceHeader.SetSecurityFilterOnRespCenter();

@@ -42,6 +42,10 @@ codeunit 31022 "Purch.-Post Handler CZZ"
         if (not PurchHeader.Invoice) or (not PurchHeader.IsAdvanceLetterDocTypeCZZ()) then
             exit;
 
+        PurchInvHeader.CalcFields("Remaining Amount");
+        if PurchInvHeader."Remaining Amount" = 0 then
+            exit;
+
         AdvLetterUsageDocTypeCZZ := PurchHeader.GetAdvLetterUsageDocTypeCZZ();
 
         VendorLedgerEntry.Get(PurchInvHeader."Vendor Ledger Entry No.");

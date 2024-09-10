@@ -751,6 +751,16 @@ table 30118 "Shpfy Order Header"
             Caption = 'Shipping Agent Service Code';
             TableRelation = "Shipping Agent Services".Code where("Shipping Agent Code" = field("Shipping Agent Code"));
         }
+        field(1030; "Payment Terms Type"; Code[20])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Payment Terms Type';
+        }
+        field(1040; "Payment Terms Name"; Text[50])
+        {
+            DataClassification = CustomerContent;
+            Caption = 'Payment Terms Name';
+        }
     }
     keys
     {

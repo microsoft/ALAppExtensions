@@ -1,8 +1,9 @@
 namespace Microsoft.Sustainability.Posting;
 
+using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Emission;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Ledger;
-using Microsoft.Sustainability.Account;
 
 codeunit 6212 "Sustainability Post Mgt"
 {
@@ -25,6 +26,7 @@ codeunit 6212 "Sustainability Post Mgt"
         CopyDateFromAccountSubCategory(SustainabilityLedgerEntry, SustainabilityJnlLine."Account Category", SustainabilityJnlLine."Account Subcategory");
 
         SustainabilityLedgerEntry.Validate("User ID", CopyStr(UserId(), 1, 50));
+        UpdateCarbonFeeEmission(SustainabilityLedgerEntry);
         SustainabilityLedgerEntry.Insert(true);
     end;
 
@@ -35,6 +37,66 @@ codeunit 6212 "Sustainability Post Mgt"
         SustainabilityJnlLine.SetRange("Journal Template Name", SustainabilityJnlLine."Journal Template Name");
         SustainabilityJnlLine.SetRange("Journal Batch Name", SustainabilityJnlLine."Journal Batch Name");
         SustainabilityJnlLine.FilterGroup(0);
+    end;
+
+    procedure UpdateCarbonFeeEmission(var SustainabilityLedgerEntry: Record "Sustainability Ledger Entry")
+    var
+        AccountCategory: Record "Sustain. Account Category";
+        ScopeType: Enum "Emission Scope";
+    begin
+        if AccountCategory.Get(SustainabilityLedgerEntry."Account Category") then
+            ScopeType := AccountCategory."Emission Scope";
+
+        UpdateCarbonFeeEmissionValues(SustainabilityLedgerEntry, ScopeType);
+    end;
+
+    local procedure UpdateCarbonFeeEmissionValues(
+        var SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        ScopeType: Enum "Emission Scope"): Decimal
+    var
+        EmissionFee: Record "Emission Fee";
+        CO2eEmission: Decimal;
+        CarbonFee: Decimal;
+        CO2Factor: Decimal;
+        N2OFactor: Decimal;
+        CH4Factor: Decimal;
+        EmissionCarbonFee: Decimal;
+    begin
+        EmissionFee.SetFilter("Scope Type", '%1|%2', ScopeType, ScopeType::" ");
+        EmissionFee.SetFilter("Starting Date", '<=%1|%2', SustainabilityLedgerEntry."Posting Date", 0D);
+        EmissionFee.SetFilter("Ending Date", '>=%1|%2', SustainabilityLedgerEntry."Posting Date", 0D);
+        EmissionFee.SetFilter("Country/Region Code", '%1|%2', SustainabilityLedgerEntry."Country/Region Code", '');
+
+        if SustainabilityLedgerEntry."Emission CO2" <> 0 then
+            if FindEmissionFeeForEmissionType(EmissionFee, Enum::"Emission Type"::CO2) then begin
+                CO2Factor := EmissionFee."Carbon Equivalent Factor";
+                EmissionCarbonFee := EmissionFee."Carbon Fee";
+            end;
+
+        if SustainabilityLedgerEntry."Emission N2O" <> 0 then
+            if FindEmissionFeeForEmissionType(EmissionFee, Enum::"Emission Type"::N2O) then begin
+                N2OFactor := EmissionFee."Carbon Equivalent Factor";
+                EmissionCarbonFee += EmissionFee."Carbon Fee";
+            end;
+
+        if SustainabilityLedgerEntry."Emission CH4" <> 0 then
+            if FindEmissionFeeForEmissionType(EmissionFee, Enum::"Emission Type"::CH4) then begin
+                CH4Factor := EmissionFee."Carbon Equivalent Factor";
+                EmissionCarbonFee += EmissionFee."Carbon Fee";
+            end;
+
+        CO2eEmission := (SustainabilityLedgerEntry."Emission CO2" * CO2Factor) + (SustainabilityLedgerEntry."Emission N2O" * N2OFactor) + (SustainabilityLedgerEntry."Emission CH4" * CH4Factor);
+        CarbonFee := CO2eEmission * EmissionCarbonFee;
+
+        SustainabilityLedgerEntry."CO2e Emission" := CO2eEmission;
+        SustainabilityLedgerEntry."Carbon Fee" := CarbonFee;
+    end;
+
+    local procedure FindEmissionFeeForEmissionType(var EmissionFee: Record "Emission Fee"; EmissionType: Enum "Emission Type"): Boolean
+    begin
+        EmissionFee.SetRange("Emission Type", EmissionType);
+        if EmissionFee.FindLast() then
+            exit(true);
     end;
 
     internal procedure GetStartPostingProgressMessage(): Text

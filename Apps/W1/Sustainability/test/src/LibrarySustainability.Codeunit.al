@@ -90,8 +90,8 @@ codeunit 148182 "Library - Sustainability"
     procedure InsertSustainabilityGoal(var SustainabilityGoal: Record "Sustainability Goal"; GoalCode: Code[20]; ScorecardCode: Code[20]; LineNo: Integer; Name: Text[100])
     begin
         SustainabilityGoal.Init();
-        SustainabilityGoal.Validate("No.", GoalCode);
         SustainabilityGoal.Validate("Scorecard No.", ScorecardCode);
+        SustainabilityGoal.Validate("No.", GoalCode);
         SustainabilityGoal.Validate("Line No.", LineNo);
         SustainabilityGoal.Validate(Name, Name);
         SustainabilityGoal.Insert(true);
@@ -124,6 +124,19 @@ codeunit 148182 "Library - Sustainability"
         SustainabilityCertificate.Insert(true);
     end;
 
+    procedure InsertEmissionFee(var EmissionFee: Record "Emission Fee"; EmissionType: Enum "Emission Type"; ScopeType: Enum "Emission Scope"; StartingDate: Date; EndingDate: Date; CountryRegionCode: Code[10]; CarbonEquivalentFactor: Decimal)
+    begin
+        EmissionFee.Init();
+        EmissionFee.Validate("Emission Type", EmissionType);
+        EmissionFee.Validate("Scope Type", ScopeType);
+        EmissionFee.Validate("Starting Date", StartingDate);
+        EmissionFee.Validate("Ending Date", EndingDate);
+        EmissionFee.Validate("Country/Region Code", CountryRegionCode);
+        if EmissionType <> EmissionType::CO2 then
+            EmissionFee.Validate("Carbon Equivalent Factor", CarbonEquivalentFactor);
+        EmissionFee.Insert();
+    end;
+
     procedure CleanUpBeforeTesting()
     var
         SustainabilityJnlTemplate: Record "Sustainability Jnl. Template";
@@ -135,6 +148,7 @@ codeunit 148182 "Library - Sustainability"
         SustainabilityAccountSubcategory: Record "Sustain. Account Subcategory";
         SustainabilityGoal: Record "Sustainability Goal";
         SustainabilityScorecard: Record "Sustainability Scorecard";
+        EmissionFee: Record "Emission Fee";
     begin
         SustainabilityJnlTemplate.DeleteAll();
         SustainabilityJnlBatch.DeleteAll();
@@ -145,5 +159,6 @@ codeunit 148182 "Library - Sustainability"
         SustainabilityAccountSubcategory.DeleteAll();
         SustainabilityGoal.DeleteAll();
         SustainabilityScorecard.DeleteAll();
+        EmissionFee.DeleteAll();
     end;
 }

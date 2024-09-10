@@ -6,6 +6,7 @@
 namespace Microsoft.Finance.ExcelReports;
 
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.Consolidation;
 
 table 4402 "EXR Trial Balance Buffer"
 {
@@ -252,6 +253,8 @@ table 4402 "EXR Trial Balance Buffer"
         field(201; "Business Unit Code"; Code[20])
         {
             Caption = 'Business Unit Code';
+            TableRelation = "Business Unit";
+            ValidateTableRelation = false;
         }
         field(1000; "Account Type"; Enum "G/L Account Type")
         {

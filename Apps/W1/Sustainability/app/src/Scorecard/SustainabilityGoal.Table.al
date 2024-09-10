@@ -19,11 +19,20 @@ table 6219 "Sustainability Goal"
         field(1; "No."; Code[20])
         {
             Caption = 'No.';
+
+            trigger OnValidate()
+            begin
+                if Rec."No." <> xRec."No." then begin
+                    Rec.TestField("Scorecard No.");
+                    UpdateScorecardInformation(Rec."Scorecard No.");
+                end;
+            end;
         }
         field(2; "Scorecard No."; Code[20])
         {
             Caption = 'Scorecard No.';
             TableRelation = "Sustainability Scorecard"."No.";
+            NotBlank = true;
 
             trigger OnValidate()
             begin
@@ -166,6 +175,25 @@ table 6219 "Sustainability Goal"
                     ValidateIfMainGoalIsAlreadyMarked();
             end;
         }
+        field(23; "Baseline Start Date"; Date)
+        {
+            Caption = 'Baseline Start Date';
+
+            trigger OnValidate()
+            begin
+                if (Rec."Baseline Start Date" > Rec."Baseline End Date") and (Rec."Baseline End Date" <> 0D) then
+                    Error(InvalidStartAndEndDateErr, Rec.FieldCaption("Baseline Start Date"), Rec.FieldCaption("Baseline End Date"));
+            end;
+        }
+        field(24; "Baseline End Date"; Date)
+        {
+            Caption = 'Baseline End Date';
+
+            trigger OnValidate()
+            begin
+                Rec.Validate("Baseline Start Date");
+            end;
+        }
     }
 
     keys
@@ -175,6 +203,14 @@ table 6219 "Sustainability Goal"
             Clustered = true;
         }
     }
+
+    trigger OnInsert()
+    var
+        SustainabilitySetup: Record "Sustainability Setup";
+    begin
+        SustainabilitySetup.Get();
+        Rec.Validate("Unit of Measure", SustainabilitySetup."Emission Unit of Measure Code");
+    end;
 
     local procedure ValidateIfMainGoalIsAlreadyMarked()
     var
@@ -202,6 +238,11 @@ table 6219 "Sustainability Goal"
     procedure UpdateCurrentDateFilter(StartDate: Date; EndDate: Date)
     begin
         Rec.SetFilter("Current Period Filter", '%1..%2', StartDate, EndDate);
+    end;
+
+    procedure UpdateBaselineDateFilter(StartDate: Date; EndDate: Date)
+    begin
+        Rec.SetFilter("Baseline Period", '%1..%2', StartDate, EndDate);
     end;
 
     procedure ApplyOwnerFilter(var SustainabilityGoal: Record "Sustainability Goal")
@@ -244,15 +285,25 @@ table 6219 "Sustainability Goal"
         SustainabilityGoals."Current Value for CH4" := 0;
         SustainabilityGoals."Current Value for N2O" := 0;
 
+        SustainabilityGoals."Baseline for CO2" := 0;
+        SustainabilityGoals."Baseline for CH4" := 0;
+        SustainabilityGoals."Baseline for N2O" := 0;
+
         if not SustainabilityGoals2.Get(SustainabilityGoals."Scorecard No.", SustainabilityGoals."No.", SustainabilityGoals."Line No.") then
             exit;
 
         SustainabilityGoals2.UpdateCurrentDateFilter(SustainabilityGoals."Start Date", SustainabilityGoals."End Date");
+        SustainabilityGoals2.UpdateBaselineDateFilter(SustainabilityGoals."Baseline Start Date", SustainabilityGoals."Baseline End Date");
         SustainabilityGoals2.CalcFields("Current Value for CO2", "Current Value for CH4", "Current Value for N2O");
+        SustainabilityGoals2.CalcFields("Baseline for CO2", "Baseline for CH4", "Baseline for N2O");
 
         SustainabilityGoals."Current Value for CO2" := SustainabilityGoals2."Current Value for CO2";
         SustainabilityGoals."Current Value for CH4" := SustainabilityGoals2."Current Value for CH4";
         SustainabilityGoals."Current Value for N2O" := SustainabilityGoals2."Current Value for N2O";
+
+        SustainabilityGoals."Baseline for CO2" := SustainabilityGoals2."Baseline for CO2";
+        SustainabilityGoals."Baseline for CH4" := SustainabilityGoals2."Baseline for CH4";
+        SustainabilityGoals."Baseline for N2O" := SustainabilityGoals2."Baseline for N2O";
     end;
 
     var

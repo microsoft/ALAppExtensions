@@ -5,8 +5,8 @@
 namespace Microsoft.Sales.Document.Attachment;
 table 7278 "Mapping Cache"
 {
-    InherentEntitlements = X;
-    InherentPermissions = X;
+    InherentEntitlements = RIMDX;
+    InherentPermissions = RIMDX;
     Access = Internal;
 
     fields

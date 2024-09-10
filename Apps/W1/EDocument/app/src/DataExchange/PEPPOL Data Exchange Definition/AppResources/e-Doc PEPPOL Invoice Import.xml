@@ -83,6 +83,18 @@
         <DataExchFieldMapping ColumnNo="42" Optional="true" TargetTableID="288" TargetFieldID="14" />
       </DataExchMapping>
     </DataExchLineDef>
+    <DataExchLineDef LineType="0" Code="PEPPOLATTACHMENT" Name="PEPPOL - Attachments" ColumnCount="4" DataLineTag="/Invoice/cac:AdditionalDocumentReference" ParentCode="PEPPOLINVHEADER">
+      <DataExchColumnDef ColumnNo="1" Name="AdditionalDocumentReferenceID" Show="false" DataType="0" Description="AdditionalDocumentReference ID" Path="/Invoice/cac:AdditionalDocumentReference/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="2" Name="EmbeddedDocumentBinaryObject" Show="false" DataType="0" Description="EmbeddedDocumentBinaryObject" Path="/Invoice/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="3" Name="MimeCode" Show="false" DataType="0" Description="EmbeddedDocumentBinaryObject Mime Code" Path="/Invoice/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@mimeCode" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchColumnDef ColumnNo="4" Name="Filename" Show="false" DataType="0" Description="EmbeddedDocumentBinaryObject Filename" Path="/Invoice/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@filename" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
+      <DataExchMapping TableId="1214" UseAsIntermediateTable="true" Name="PEPPOL to Document Attachments">
+        <DataExchFieldMapping ColumnNo="1" TargetTableID="1173" TargetFieldID="1" />
+        <DataExchFieldMapping ColumnNo="2" TargetTableID="1173" TargetFieldID="8" />
+        <DataExchFieldMapping ColumnNo="3" TargetTableID="1173" TargetFieldID="7" />
+        <DataExchFieldMapping ColumnNo="4" TargetTableID="1173" TargetFieldID="5" />
+      </DataExchMapping>
+    </DataExchLineDef>
     <DataExchLineDef LineType="0" Code="PEPPOLINVLINES" Name="PEPPOL - Invoice Lines" ColumnCount="18" DataLineTag="/Invoice/cac:InvoiceLine" ParentCode="PEPPOLINVHEADER">
       <DataExchColumnDef ColumnNo="1" Name="InvoiceLineNote" Show="true" DataType="0" Path="/Invoice/cac:InvoiceLine/cbc:Note" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />
       <DataExchColumnDef ColumnNo="2" Name="InvoicedQuantity" Show="true" DataType="0" Description="Quantity" Path="/Invoice/cac:InvoiceLine/cbc:InvoicedQuantity" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="false" />

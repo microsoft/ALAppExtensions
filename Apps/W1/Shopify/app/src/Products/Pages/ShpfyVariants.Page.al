@@ -213,6 +213,20 @@ page 30127 "Shpfy Variants"
                     end;
                 end;
             }
+            action(Metafields)
+            {
+                ApplicationArea = All;
+                Caption = 'Metafields';
+                Image = PriceAdjustment;
+                ToolTip = 'Add metafields to a variant. This can be used for adding custom data fields to variants in Shopify.';
+
+                trigger OnAction()
+                var
+                    Metafields: Page "Shpfy Metafields";
+                begin
+                    Metafields.RunForResource(Database::"Shpfy Variant", Rec.Id, Rec."Shop Code");
+                end;
+            }
             action(AddItemsAsVariants)
             {
                 ApplicationArea = All;

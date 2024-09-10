@@ -6,11 +6,10 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
 {
     layout
     {
-        addbefore("Posting Details")
+        addafter(Warehouse)
         {
             group("Sustainability")
             {
-                Visible = Rec.Type = Rec.Type::Inventory;
                 Caption = 'Sustainability';
                 field("GHG Credit"; Rec."GHG Credit")
                 {

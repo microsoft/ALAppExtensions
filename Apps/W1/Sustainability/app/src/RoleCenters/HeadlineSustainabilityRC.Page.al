@@ -28,6 +28,7 @@ page 6238 "Headline Sustainability RC"
             group(Footprint)
             {
                 ShowCaption = false;
+                Visible = CanShowCarbonFootprintHeadline;
                 field(FootprintText; RCHeadlinePageSust.GetFootPrintText())
                 {
                     ApplicationArea = Basic, Suite;
@@ -55,6 +56,27 @@ page 6238 "Headline Sustainability RC"
         }
     }
 
+    actions
+    {
+        area(Processing)
+        {
+            action("Refresh Now")
+            {
+                ApplicationArea = All;
+                Caption = 'Refresh Now';
+                Image = Refresh;
+                ToolTip = 'Refresh Headlines for Sustainability Emission and Carbon Foorprint';
+
+                trigger OnAction()
+                begin
+                    RCHeadlinePageSust.GetFootPrintText();
+                    FormatLine();
+                    CurrPage.Update();
+                end;
+            }
+        }
+    }
+
     trigger OnOpenPage()
     begin
         RCHeadlinesPageCommon.HeadlineOnOpenPage(Page::"Headline RC Order Processor");
@@ -62,9 +84,25 @@ page 6238 "Headline Sustainability RC"
         UserGreetingVisible := RCHeadlinesPageCommon.IsUserGreetingVisible();
     end;
 
+    trigger OnAfterGetCurrRecord()
+    begin
+        FormatLine();
+    end;
+
+    trigger OnAfterGetRecord()
+    begin
+        FormatLine();
+    end;
+
+    local procedure FormatLine()
+    begin
+        CanShowCarbonFootprintHeadline := RCHeadlinePageSust.CanShowFootPrint();
+    end;
+
     var
         RCHeadlinesPageCommon: Codeunit "RC Headlines Page Common";
         RCHeadlinePageSust: Codeunit "RC Headline Page Sust.";
         DefaultFieldsVisible: Boolean;
         UserGreetingVisible: Boolean;
+        CanShowCarbonFootprintHeadline: Boolean;
 }

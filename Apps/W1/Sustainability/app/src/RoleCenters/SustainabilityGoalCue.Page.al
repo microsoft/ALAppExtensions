@@ -55,6 +55,29 @@ page 6240 "Sustainability Goal Cue"
         }
     }
 
+    actions
+    {
+        area(Processing)
+        {
+            action("Refresh Now")
+            {
+                ApplicationArea = All;
+                Caption = 'Refresh Now';
+                ToolTip = 'Refresh the cues for Sustainability Goals';
+                Image = Refresh;
+
+                trigger OnAction()
+                begin
+                    ComputeSustGoalCue.SetCalledFromManualRefresh(true);
+                    ComputeSustGoalCue.GetLatestSustainabilityGoalCue(Rec);
+                    ComputeSustGoalCue.SetCalledFromManualRefresh(false);
+
+                    CurrPage.Update(true);
+                end;
+            }
+        }
+    }
+
     trigger OnOpenPage()
     begin
         Rec.Reset();

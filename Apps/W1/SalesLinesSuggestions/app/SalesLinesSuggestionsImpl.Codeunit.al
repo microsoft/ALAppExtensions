@@ -16,6 +16,13 @@ codeunit 7275 "Sales Lines Suggestions Impl."
 
     var
         ChatCompletionResponseErr: Label 'Sorry, something went wrong. Please rephrase and try again.';
+        NoSalesLinesSuggestionsMsg: Label 'There are no suggestions for this description. Please rephrase it.';
+        UnknownDocTypeMsg: Label 'Copilot does not support the specified document type. Please rephrase the description.';
+        DocumentNotFoundMsg: Label 'Copilot could not find the document. Please rephrase the description.';
+        ItemNotFoundMsg: Label 'Copilot could not find the requsted items. Please rephrase the description.';
+        CopyFromMultipleDocsMsg: Label 'You cannot copy lines from more than one document. Please rephrase the description.';
+        SalesHeaderNotInitializedErr: Label '%1 header is not initialized', Comment = '%1 = Document Type';
+
 
     internal procedure GetFeatureName(): Text
     begin
@@ -28,10 +35,28 @@ codeunit 7275 "Sales Lines Suggestions Impl."
     end;
 
     internal procedure GetNoSalesLinesSuggestionsMsg(): Text
-    var
-        NoSalesLinesSuggestionsMsg: Label 'There are no suggestions for this description. Please rephrase it.';
     begin
         exit(NoSalesLinesSuggestionsMsg);
+    end;
+
+    internal procedure GetUnknownDocTypeMsg(): Text
+    begin
+        exit(UnknownDocTypeMsg);
+    end;
+
+    internal procedure GetDocumentNotFoundMsg(): Text
+    begin
+        exit(DocumentNotFoundMsg);
+    end;
+
+    internal procedure GetItemNotFoundMsg(): Text
+    begin
+        exit(ItemNotFoundMsg);
+    end;
+
+    internal procedure GetCopyFromMultipleDocsMsg(): Text
+    begin
+        exit(CopyFromMultipleDocsMsg);
     end;
 
     local procedure MaxTokens(): Integer
@@ -48,7 +73,6 @@ codeunit 7275 "Sales Lines Suggestions Impl."
         SalesLineAISuggestions: Page "Sales Line AI Suggestions";
         ALSearch: DotNet ALSearch;
         FeatureTelemetryCustomDimension: Dictionary of [Text, Text];
-        SalesHeaderNotInitializedErr: Label '%1 header is not initialized', Comment = '%1 = Document Type';
         ErrorTxt: Text;
     begin
         SalesLine.TestStatusOpen();

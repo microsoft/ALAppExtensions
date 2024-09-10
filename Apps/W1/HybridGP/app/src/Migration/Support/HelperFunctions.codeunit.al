@@ -552,6 +552,13 @@ codeunit 4037 "Helper Functions"
         CreateCustomerClassesImp();
     end;
 
+    local procedure CreateKitItems()
+    var
+        GPItemMigrator: Codeunit "GP Item Migrator";
+    begin
+        GPItemMigrator.MigrateKitItems();
+    end;
+
     procedure CreateSetupRecordsIfNeeded()
     var
         CompanyInformation: Record "Company Information";
@@ -999,7 +1006,8 @@ codeunit 4037 "Helper Functions"
         if not GPCompanyAdditionalSettings.GetInventoryModuleEnabled() then
             exit(0);
 
-        GPIV00101.SetFilter(ITEMTYPE, '<>%1', GPIV00101.KitItemTypeId());
+        if not GPCompanyAdditionalSettings.GetMigrateKitItems() then
+            GPIV00101.SetFilter(ITEMTYPE, '<>%1', GPIV00101.KitItemTypeId());
 
         if not GPCompanyAdditionalSettings.GetMigrateInactiveItems() then
             GPIV00101.SetRange(INACTIVE, false);
@@ -2086,6 +2094,9 @@ codeunit 4037 "Helper Functions"
             if not CustomerClassesCreated() then
                 CreateCustomerClasses();
 
+        if GPCompanyAdditionalSettings.GetMigrateKitItems() then
+            CreateKitItems();
+
         exit(GPConfiguration.IsAllPostMigrationDataCreated());
     end;
 
@@ -2124,6 +2135,21 @@ codeunit 4037 "Helper Functions"
             OutValue := '';
 
         exit(OutValue);
+    end;
+
+    procedure ContainsAlphaChars(InValue: Text[30]): Boolean
+    var
+        NextChar: Char;
+        I: Integer;
+    begin
+        for I := 1 to StrLen(InValue) do begin
+            NextChar := InValue[I];
+            if ((NextChar >= 65) and (NextChar <= 90)) or       // A-Z
+                ((NextChar >= 97) and (NextChar <= 122)) then   // a-z
+                exit(true);
+        end;
+
+        exit(false);
     end;
 
     procedure GetGPAccountNumberByIndex(GPAccountIndex: Integer): Code[20]
@@ -2217,6 +2243,10 @@ codeunit 4037 "Helper Functions"
         GPCompanyAdditionalSettings: Record "GP Company Additional Settings";
     begin
         if GPIV00101.Get(ItemNo) then begin
+            if not GPCompanyAdditionalSettings.GetMigrateKitItems() then
+                if GPIV00101.ITEMTYPE = 3 then
+                    exit(false);
+
             if GPIV00101.INACTIVE then
                 if not GPCompanyAdditionalSettings.GetMigrateInactiveItems() then
                     exit(false);

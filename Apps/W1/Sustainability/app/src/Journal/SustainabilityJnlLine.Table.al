@@ -101,7 +101,6 @@ table 6214 "Sustainability Jnl. Line"
         field(10; "Account Subcategory"; Code[20])
         {
             Caption = 'Account Subcategory';
-            Editable = false;
             TableRelation = "Sustain. Account Subcategory".Code where("Category Code" = field("Account Category"));
         }
         field(11; Description; Text[100])

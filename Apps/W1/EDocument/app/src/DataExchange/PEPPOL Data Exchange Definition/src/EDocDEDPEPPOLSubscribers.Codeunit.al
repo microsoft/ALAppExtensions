@@ -13,6 +13,7 @@ using Microsoft.Sales.Document;
 using Microsoft.Sales.History;
 using Microsoft.Sales.Peppol;
 using Microsoft.Service.History;
+using Microsoft.Foundation.Attachment;
 using System.IO;
 using System.Utilities;
 
@@ -33,6 +34,7 @@ codeunit 6162 "E-Doc. DED PEPPOL Subscribers"
         AllowanceChargeLoopNumber := 1;
         DataExchEntryNo := DataExchEntryNo2;
         ProcessedDocType := ProcessedDocType2;
+        DocumentAttachmentNumber := 1;
     end;
 
     procedure IsRoundingLine(SalesLine2: Record "Sales Line"): Boolean;
@@ -500,6 +502,32 @@ codeunit 6162 "E-Doc. DED PEPPOL Subscribers"
                 '/cac:InvoiceLine/cac:Price/cbc:BaseQuantity',
                 '/cac:CreditNoteLine/cac:Price/cbc:BaseQuantity':
                     xmlNodeValue := BaseQuantity;
+                '/cac:AdditionalDocumentReference':
+                    begin
+                        if ProcessedDocType = ProcessedDocType::"Sales Invoice" then
+                            ProcessedDocTypeInt := 0
+                        else
+                            ProcessedDocTypeInt := 1;
+
+                        PEPPOLMgt.GetAdditionalDocRefInfo(
+                            DocumentAttachmentNumber,
+                            DocumentAttachment,
+                            SalesHeader,
+                            AdditionalDocumentReferenceID,
+                            AdditionalDocRefDocumentType,
+                            URI,
+                            filename,
+                            mimeCode,
+                            EmbeddedDocumentBinaryObject,
+                            ProcessedDocTypeInt
+                        );
+
+                        DocumentAttachmentNumber += 1;
+                    end;
+                '/cac:AdditionalDocumentReference/cbc:ID':
+                    xmlNodeValue := AdditionalDocumentReferenceID;
+                '/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject':
+                    xmlNodeValue := EmbeddedDocumentBinaryObject;
             end;
     end;
 
@@ -575,6 +603,10 @@ codeunit 6162 "E-Doc. DED PEPPOL Subscribers"
                 '/cac:InvoiceLine/cac:Price/cbc:BaseQuantity[@unitCode]',
                 '/cac:CreditNoteLine/cac:Price/cbc:BaseQuantity[@unitCode]':
                     xmlAttributeValue := UnitCodeBaseQty;
+                '/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject[@filename]':
+                    xmlAttributeValue := Filename;
+                '/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject[@mimeCode]':
+                    xmlAttributeValue := MimeCode;
             end;
     end;
 
@@ -603,6 +635,9 @@ codeunit 6162 "E-Doc. DED PEPPOL Subscribers"
                                 PEPPOLMgt.GetTaxCategories(SalesLine, TempVATProductPostingGroup);
                             end;
                         until SalesInvoiceLine.Next() = 0;
+
+                    DocumentAttachment.SetRange("No.", SalesInvoiceHeader."No.");
+                    DocumentAttachment.SetRange("Table ID", Database::"Sales Invoice Header");
                 end;
 
             ProcessedDocType::"Service Invoice":
@@ -624,6 +659,9 @@ codeunit 6162 "E-Doc. DED PEPPOL Subscribers"
                                 PEPPOLMgt.GetTaxCategories(SalesLine, TempVATProductPostingGroup);
                             end;
                         until ServiceInvoiceLine.Next() = 0;
+
+                    DocumentAttachment.SetRange("No.", ServiceInvoiceHeader."No.");
+                    DocumentAttachment.SetRange("Table ID", Database::"Service Invoice Header");
                 end;
 
             ProcessedDocType::"Sales Credit Memo":
@@ -644,6 +682,9 @@ codeunit 6162 "E-Doc. DED PEPPOL Subscribers"
                                 PEPPOLMgt.GetTaxCategories(SalesLine, TempVATProductPostingGroup);
                             end;
                         until SalesCrMemoLine.Next() = 0;
+
+                    DocumentAttachment.SetRange("No.", SalesCrMemoHeader."No.");
+                    DocumentAttachment.SetRange("Table ID", Database::"Sales Cr.Memo Header");
                 end;
 
             ProcessedDocType::"Service Credit Memo":
@@ -665,6 +706,9 @@ codeunit 6162 "E-Doc. DED PEPPOL Subscribers"
                                 PEPPOLMgt.GetTaxCategories(SalesLine, TempVATProductPostingGroup);
                             end;
                         until ServiceCrMemoLine.Next() = 0;
+
+                    DocumentAttachment.SetRange("No.", ServiceCrMemoHeader."No.");
+                    DocumentAttachment.SetRange("Table ID", Database::"Service Cr.Memo Header");
                 end;
         end;
 
@@ -751,12 +795,15 @@ codeunit 6162 "E-Doc. DED PEPPOL Subscribers"
         ServiceCrMemoLine: Record "Service Cr.Memo Line";
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
+        DocumentAttachment: Record "Document Attachment";
         TempVATAmtLine: Record "VAT Amount Line" temporary;
         TempSalesLineRounding: Record "Sales Line" temporary;
         TempVATProductPostingGroup: Record "VAT Product Posting Group" temporary;
         PEPPOLMgt: Codeunit "PEPPOL Management";
         ServPEPPOLMgt: Codeunit "Serv. PEPPOL Management";
         ProcessedDocType: Enum "E-Document Type";
+        DocumentAttachmentNumber, ProcessedDocTypeInt : Integer;
+        AdditionalDocumentReferenceID, AdditionalDocRefDocumentType, URI, Filename, MimeCode, EmbeddedDocumentBinaryObject : Text;
         TaxAmountLCY, TaxCurrencyCodeLCY, TaxTotalCurrencyIDLCY : Text;
         SupplierEndpointID, SupplierSchemeID, SupplierName : Text;
         StreetName, AdditionalStreetName, CityName, PostalZone, CountrySubentity, IdentificationCode, DummyVar : Text;

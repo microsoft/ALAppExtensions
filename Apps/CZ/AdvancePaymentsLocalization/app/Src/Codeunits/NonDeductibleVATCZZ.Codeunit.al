@@ -13,14 +13,13 @@ using Microsoft.Foundation.Enums;
 codeunit 31157 "Non-Deductible VAT CZZ"
 {
     var
-        NonDeductibleVAT: Codeunit "Non-Deductible VAT";
         NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
 
     procedure IsNonDeductibleVATEnabled(): Boolean
     var
         VATSetup: Record "VAT Setup";
     begin
-        if not NonDeductibleVAT.IsNonDeductibleVATEnabled() then
+        if not NonDeductibleVATCZL.IsNonDeductibleVATEnabled() then
             exit(false);
         VATSetup.Get();
         exit(VATSetup."Use For Advances CZZ");

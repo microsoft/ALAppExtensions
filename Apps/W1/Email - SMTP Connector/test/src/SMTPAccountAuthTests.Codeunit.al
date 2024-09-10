@@ -170,6 +170,7 @@ codeunit 139762 "SMTP Account Auth Tests"
     var
         AzureADMgtSetup: Record "Azure AD Mgt. Setup";
         AzureADAppSetup: Record "Azure AD App Setup";
+        DummyKey: Text;
     begin
         AzureADMgtSetup.Get();
         AzureADMgtSetup."Auth Flow Codeunit ID" := ProviderCodeunit;
@@ -179,7 +180,8 @@ codeunit 139762 "SMTP Account Auth Tests"
             AzureADAppSetup.Init();
             AzureADAppSetup."Redirect URL" := 'http://dummyurl:1234/Main_Instance1/WebClient/OAuthLanding.htm';
             AzureADAppSetup."App ID" := CreateGuid();
-            AzureADAppSetup.SetSecretKeyToIsolatedStorage(CreateGuid());
+            DummyKey := CreateGuid();
+            AzureADAppSetup.SetSecretKeyToIsolatedStorage(DummyKey);
             AzureADAppSetup.Insert();
         end;
     end;

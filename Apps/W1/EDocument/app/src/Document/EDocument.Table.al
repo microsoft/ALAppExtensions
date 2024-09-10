@@ -182,6 +182,16 @@ table 6121 "E-Document"
         }
     }
 
+    trigger OnModify()
+    var
+        EDocAttachGen: Codeunit "E-Doc. Attachment Processor";
+    begin
+        if Rec.Status = Status::Error then
+            EDocAttachGen.DeleteAll(Rec);
+        if (Rec.Status = Status::Processed) and (Rec.Direction = Direction::Incoming) then
+            EDocAttachGen.MoveToProcessedDocument(Rec);
+    end;
+
     internal procedure OpenEDocument(EDocumentRecordId: RecordId)
     var
         EDocument: Record "E-Document";
