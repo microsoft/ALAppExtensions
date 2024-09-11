@@ -284,6 +284,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         FSConnectionSetup: Record "FS Connection Setup";
         FSWorkOrderProduct: Record "FS Work Order Product";
         FSWorkOrderService: Record "FS Work Order Service";
+        FSBookableResourceBooking: Record "FS Bookable Resource Booking";
         ServiceLine: Record "Service Line";
         SourceDestCode: Text;
     begin
@@ -309,6 +310,16 @@ codeunit 6610 "FS Int. Table Subscriber"
                     DestinationRecordRef.SetTable(ServiceLine);
 
                     UpdateQuantities(FSWorkOrderService, ServiceLine);
+
+                    DestinationRecordRef.GetTable(ServiceLine);
+                end;
+
+            'FS Bookable Resource Booking-Service Line':
+                begin
+                    SourceRecordRef.SetTable(FSBookableResourceBooking);
+                    DestinationRecordRef.SetTable(ServiceLine);
+
+                    UpdateQuantities(FSBookableResourceBooking, ServiceLine);
 
                     DestinationRecordRef.GetTable(ServiceLine);
                 end;
@@ -573,6 +584,13 @@ codeunit 6610 "FS Int. Table Subscriber"
         ServiceLine.Validate(Quantity, GetMaxQuantity(FSWorkOrderProduct.EstimateDuration, FSWorkOrderProduct.Duration, FSWorkOrderProduct.DurationToBill) / 60);
         ServiceLine.Validate("Qty. to Ship", GetMaxQuantity(FSWorkOrderProduct.Duration, FSWorkOrderProduct.DurationToBill) / 60 - ServiceLine."Quantity Shipped");
         ServiceLine.Validate("Qty. to Invoice", FSWorkOrderProduct.DurationToBill / 60 - ServiceLine."Quantity Invoiced");
+    end;
+
+    local procedure UpdateQuantities(FSBookableResourceBooking: Record "FS Bookable Resource Booking"; var ServiceLine: Record "Service Line")
+    begin
+        ServiceLine.Validate("Qty. to Consume", 0);
+        ServiceLine.Validate(Quantity, FSBookableResourceBooking.Duration / 60);
+        ServiceLine.Validate("Qty. to Consume", ServiceLine.Quantity - ServiceLine."Quantity Consumed");
     end;
 
     procedure GetMaxQuantity(Quantity1: Decimal; Quantity2: Decimal): Decimal
