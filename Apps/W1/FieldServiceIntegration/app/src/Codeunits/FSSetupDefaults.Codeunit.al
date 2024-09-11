@@ -669,6 +669,13 @@ codeunit 6611 "FS Setup Defaults"
           FSWorkOrderIncident.FieldNo(CustomerAsset),
           IntegrationFieldMapping.Direction::Bidirectional,
           '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceItemLine.FieldNo(Description),
+          FSWorkOrderIncident.FieldNo(Description),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
     end;
 
     local procedure ResetServiceOrderLineItemMapping(var FSConnectionSetup: Record "FS Connection Setup"; IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean)
