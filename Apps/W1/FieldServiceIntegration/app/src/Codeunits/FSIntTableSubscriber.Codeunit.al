@@ -320,6 +320,7 @@ codeunit 6610 "FS Int. Table Subscriber"
     var
         FSConnectionSetup: Record "FS Connection Setup";
         CRMIntegrationRecord: Record "CRM Integration Record";
+        FSWorkOrder: Record "FS Work Order";
         FSWorkOrderService: Record "FS Work Order Service";
         FSWorkOrderProduct: Record "FS Work Order Product";
         FSBookableResourceBooking: Record "FS Bookable Resource Booking";
@@ -400,6 +401,18 @@ codeunit 6610 "FS Int. Table Subscriber"
                         DurationInHours := ServiceLine."Quantity Consumed";
                         DurationInMinutes := DurationInHours * 60;
                         NewValue := DurationInMinutes;
+                        IsValueFound := true;
+                        NeedsConversion := false;
+                    end;
+            end;
+
+        if (SourceFieldRef.Record().Number = Database::"FS Work Order") then
+            case SourceFieldRef.Name() of
+                FSWorkOrder.FieldName(CreatedOn):
+                    begin
+                        SourceRecordRef := SourceFieldRef.Record();
+                        SourceRecordRef.SetTable(FSWorkOrder);
+                        NewValue := DT2Date(FSWorkOrder.CreatedOn);
                         IsValueFound := true;
                         NeedsConversion := false;
                     end;
