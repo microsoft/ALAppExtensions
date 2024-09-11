@@ -655,6 +655,7 @@ codeunit 6611 "FS Setup Defaults"
         IntegrationTableMapping.SetIntegrationTableFilter(
           GetTableFilterFromView(Database::"FS Work Order Incident", FSWorkOrderIncident.TableCaption(), FSWorkOrderIncident.GetView()));
         IntegrationTableMapping."Dependency Filter" := 'SRVORDER|SVCITEM-CUSTASSET';
+        IntegrationTableMapping."Update-Conflict Resolution" := IntegrationTableMapping."Update-Conflict Resolution"::"Get Update from Integration";
         IntegrationTableMapping.Modify();
 
         InsertIntegrationFieldMapping(
@@ -714,6 +715,7 @@ codeunit 6611 "FS Setup Defaults"
         IntegrationTableMapping.SetIntegrationTableFilter(
           GetTableFilterFromView(Database::"FS Work Order Product", FSWorkOrderProduct.TableCaption(), FSWorkOrderProduct.GetView()));
         IntegrationTableMapping."Dependency Filter" := 'SRVORDER|SRVORDERITEMLINE';
+        IntegrationTableMapping."Update-Conflict Resolution" := IntegrationTableMapping."Update-Conflict Resolution"::"Get Update from Integration";
         IntegrationTableMapping.Modify();
 
         InsertIntegrationFieldMapping(
@@ -757,12 +759,12 @@ codeunit 6611 "FS Setup Defaults"
           IntegrationFieldMapping.Direction::Bidirectional,
           '', true, false);
 
-        // InsertIntegrationFieldMapping(
-        //   IntegrationTableMappingName,
-        //   ServiceLine.FieldNo("Quantity Shipped"),
-        //   FSWorkOrderProduct.FieldNo(QuantityInvoiced), // TODO! QuantityShipped
-        //   IntegrationFieldMapping.Direction::ToIntegrationTable,
-        //   '', true, false);
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Quantity Shipped"),
+          FSWorkOrderProduct.FieldNo(QuantityShipped),
+          IntegrationFieldMapping.Direction::ToIntegrationTable,
+          '', true, false);
 
         InsertIntegrationFieldMapping(
           IntegrationTableMappingName,
@@ -815,6 +817,7 @@ codeunit 6611 "FS Setup Defaults"
         IntegrationTableMapping.SetIntegrationTableFilter(
           GetTableFilterFromView(Database::"FS Work Order Service", FSWorkOrderService.TableCaption(), FSWorkOrderService.GetView()));
         IntegrationTableMapping."Dependency Filter" := 'SRVORDER|SRVORDERITEMLINE';
+        IntegrationTableMapping."Update-Conflict Resolution" := IntegrationTableMapping."Update-Conflict Resolution"::"Get Update from Integration";
         IntegrationTableMapping.Modify();
 
         InsertIntegrationFieldMapping(
@@ -851,12 +854,12 @@ codeunit 6611 "FS Setup Defaults"
           IntegrationFieldMapping.Direction::Bidirectional,
           '', true, false);
 
-        // InsertIntegrationFieldMapping(
-        //   IntegrationTableMappingName,
-        //   ServiceLine.FieldNo("Quantity Shipped"),
-        //   FSWorkOrderProduct.FieldNo(QuantityInvoiced), // TODO! QuantityShipped
-        //   IntegrationFieldMapping.Direction::ToIntegrationTable,
-        //   '', true, false);
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Quantity Shipped"),
+          FSWorkOrderService.FieldNo(DurationShipped),
+          IntegrationFieldMapping.Direction::ToIntegrationTable,
+          '', true, false);
 
         InsertIntegrationFieldMapping(
           IntegrationTableMappingName,
@@ -911,6 +914,7 @@ codeunit 6611 "FS Setup Defaults"
         IntegrationTableMapping.SetIntegrationTableFilter(
           GetTableFilterFromView(Database::"FS Bookable Resource Booking", FSBookableResourceBooking.TableCaption(), FSBookableResourceBooking.GetView()));
         IntegrationTableMapping."Dependency Filter" := 'SRVORDER|SRVORDERITEMLINE|RESOURCE-BOOKABLERSC';
+        IntegrationTableMapping."Update-Conflict Resolution" := IntegrationTableMapping."Update-Conflict Resolution"::"Get Update from Integration";
         IntegrationTableMapping.Modify();
 
         InsertIntegrationFieldMapping(

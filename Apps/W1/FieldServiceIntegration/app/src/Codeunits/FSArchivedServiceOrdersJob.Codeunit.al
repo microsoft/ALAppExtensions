@@ -95,11 +95,10 @@ codeunit 6617 "FS Archived Service Orders Job"
     var
         Modified: Boolean;
     begin
-        // TODO! Add Quantity Shipped
-        // if FSWorkOrderProduct.QuantityShipped <> (SalesLineArchive."Quantity Shipped" + SalesLineArchive."Qty. to Ship") then begin
-        //     FSWorkOrderProduct.QuantityShipped := SalesLineArchive."Quantity Shipped" + SalesLineArchive."Qty. to Ship";
-        //     Modified := true;
-        // end;
+        if FSWorkOrderProduct.QuantityShipped <> (SalesLineArchive."Quantity Shipped" + SalesLineArchive."Qty. to Ship") then begin
+            FSWorkOrderProduct.QuantityShipped := SalesLineArchive."Quantity Shipped" + SalesLineArchive."Qty. to Ship";
+            Modified := true;
+        end;
 
         if FSWorkOrderProduct.QuantityInvoiced <> (SalesLineArchive."Quantity Invoiced" + SalesLineArchive."Qty. to Ship") then begin
             FSWorkOrderProduct.QuantityInvoiced := SalesLineArchive."Quantity Invoiced" + SalesLineArchive."Qty. to Ship";
@@ -119,11 +118,10 @@ codeunit 6617 "FS Archived Service Orders Job"
     var
         Modified: Boolean;
     begin
-        // TODO! Add Quantity Shipped
-        // if FSWorkOrderService.QuantityShipped <> (SalesLineArchive."Quantity Shipped" + SalesLineArchive."Qty. to Ship") then begin
-        //     FSWorkOrderService.QuantityShipped := SalesLineArchive."Quantity Shipped" + SalesLineArchive."Qty. to Ship";
-        //     Modified := true;
-        // end;
+        if FSWorkOrderService.DurationShipped <> (SalesLineArchive."Quantity Shipped" + SalesLineArchive."Qty. to Ship") then begin
+            FSWorkOrderService.DurationShipped := (SalesLineArchive."Quantity Shipped" + SalesLineArchive."Qty. to Ship") * 60;
+            Modified := true;
+        end;
 
         if FSWorkOrderService.DurationInvoiced <> (SalesLineArchive."Quantity Invoiced" + SalesLineArchive."Qty. to Ship") then begin
             FSWorkOrderService.DurationInvoiced := (SalesLineArchive."Quantity Invoiced" + SalesLineArchive."Qty. to Ship") * 60;

@@ -747,6 +747,13 @@ table 6620 "FS Work Order Service"
             Description = 'Duration invoiced in Dynamics 365 Business Central. When this value is different than 0, you can no longer edit the work order service.';
             Caption = 'Duration Invoiced';
         }
+        field(114; DurationShipped; Integer)
+        {
+            ExternalName = 'bcbi_durationshipped';
+            ExternalType = 'Integer';
+            Description = 'Duration shipped in Dynamics 365 Business Central. When this value is different than 0, you can no longer edit the work order service.';
+            Caption = 'Duration Shipped';
+        }
     }
     keys
     {

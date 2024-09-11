@@ -347,6 +347,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         if SourceFieldRef.Number() = DestinationFieldRef.Number() then
             if SourceFieldRef.Record().Number() = DestinationFieldRef.Record().Number() then
                 exit;
+
         if (SourceFieldRef.Record().Number = Database::"Service Line") and
             (DestinationFieldRef.Record().Number = Database::"FS Work Order Product") then
             case DestinationFieldRef.Name() of
@@ -379,6 +380,16 @@ codeunit 6610 "FS Int. Table Subscriber"
                         SourceRecordRef := SourceFieldRef.Record();
                         SourceRecordRef.SetTable(ServiceLine);
                         DurationInHours := ServiceLine.Quantity;
+                        DurationInMinutes := DurationInHours * 60;
+                        NewValue := DurationInMinutes;
+                        IsValueFound := true;
+                        NeedsConversion := false;
+                    end;
+                FSWorkOrderService.FieldName(DurationShipped):
+                    begin
+                        SourceRecordRef := SourceFieldRef.Record();
+                        SourceRecordRef.SetTable(ServiceLine);
+                        DurationInHours := ServiceLine."Quantity Shipped";
                         DurationInMinutes := DurationInHours * 60;
                         NewValue := DurationInMinutes;
                         IsValueFound := true;
@@ -553,15 +564,15 @@ codeunit 6610 "FS Int. Table Subscriber"
     local procedure UpdateQuantities(FSWorkOrderProduct: Record "FS Work Order Product"; var ServiceLine: Record "Service Line")
     begin
         ServiceLine.Validate(Quantity, GetMaxQuantity(FSWorkOrderProduct.EstimateQuantity, FSWorkOrderProduct.Quantity, FSWorkOrderProduct.QtyToBill));
-        ServiceLine.Validate("Qty. to Ship", GetMaxQuantity(FSWorkOrderProduct.Quantity, FSWorkOrderProduct.QtyToBill));
-        ServiceLine.Validate("Qty. to Invoice", FSWorkOrderProduct.QtyToBill);
+        ServiceLine.Validate("Qty. to Ship", GetMaxQuantity(FSWorkOrderProduct.Quantity, FSWorkOrderProduct.QtyToBill) - ServiceLine."Quantity Shipped");
+        ServiceLine.Validate("Qty. to Invoice", FSWorkOrderProduct.QtyToBill - ServiceLine."Quantity Invoiced");
     end;
 
     local procedure UpdateQuantities(FSWorkOrderProduct: Record "FS Work Order Service"; var ServiceLine: Record "Service Line")
     begin
         ServiceLine.Validate(Quantity, GetMaxQuantity(FSWorkOrderProduct.EstimateDuration, FSWorkOrderProduct.Duration, FSWorkOrderProduct.DurationToBill) / 60);
-        ServiceLine.Validate("Qty. to Ship", GetMaxQuantity(FSWorkOrderProduct.Duration, FSWorkOrderProduct.DurationToBill) / 60);
-        ServiceLine.Validate("Qty. to Invoice", FSWorkOrderProduct.DurationToBill / 60);
+        ServiceLine.Validate("Qty. to Ship", GetMaxQuantity(FSWorkOrderProduct.Duration, FSWorkOrderProduct.DurationToBill) / 60 - ServiceLine."Quantity Shipped");
+        ServiceLine.Validate("Qty. to Invoice", FSWorkOrderProduct.DurationToBill / 60 - ServiceLine."Quantity Invoiced");
     end;
 
     procedure GetMaxQuantity(Quantity1: Decimal; Quantity2: Decimal): Decimal
