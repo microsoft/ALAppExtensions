@@ -279,7 +279,7 @@ codeunit 6610 "FS Int. Table Subscriber"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnAfterTransferRecordFields', '', false, false)]
-    local procedure OnAfterTransferRecordFields(SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
+    local procedure OnAfterTransferRecordFields(SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef; var AdditionalFieldsWereModified: Boolean)
     var
         FSConnectionSetup: Record "FS Connection Setup";
         FSWorkOrderProduct: Record "FS Work Order Product";
@@ -300,6 +300,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                     DestinationRecordRef.SetTable(ServiceLine);
 
                     UpdateQuantities(FSWorkOrderProduct, ServiceLine);
+                    AdditionalFieldsWereModified := true;
 
                     DestinationRecordRef.GetTable(ServiceLine);
                 end;
@@ -310,6 +311,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                     DestinationRecordRef.SetTable(ServiceLine);
 
                     UpdateQuantities(FSWorkOrderService, ServiceLine);
+                    AdditionalFieldsWereModified := true;
 
                     DestinationRecordRef.GetTable(ServiceLine);
                 end;
@@ -320,6 +322,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                     DestinationRecordRef.SetTable(ServiceLine);
 
                     UpdateQuantities(FSBookableResourceBooking, ServiceLine);
+                    AdditionalFieldsWereModified := true;
 
                     DestinationRecordRef.GetTable(ServiceLine);
                 end;
@@ -368,6 +371,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                         DestinationRecordRef.SetTable(FSWorkOrderProduct);
                         // only update estimated quantity if the line status is estimated
                         if FSWorkOrderProduct.LineStatus <> FSWorkOrderProduct.LineStatus::Estimated then begin
+                            NewValue := FSWorkOrderProduct.EstimateQuantity;
                             IsValueFound := true;
                             NeedsConversion := false;
                         end;
@@ -383,6 +387,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                         DestinationRecordRef.SetTable(FSWorkOrderService);
                         // only update estimated quantity if the line status is estimated
                         if FSWorkOrderService.LineStatus <> FSWorkOrderService.LineStatus::Estimated then begin
+                            NewValue := FSWorkOrderService.EstimateDuration;
                             IsValueFound := true;
                             NeedsConversion := false;
                             exit;
