@@ -562,19 +562,6 @@ codeunit 6610 "FS Int. Table Subscriber"
                         exit;
                     end;
             end;
-        if (SourceFieldRef.Record().Number = Database::"FS Bookable Resource Booking") then
-            case SourceFieldRef.Name() of
-                FSBookableResourceBooking.FieldName(Duration):
-                    begin
-                        SourceRecordRef := SourceFieldRef.Record();
-                        SourceRecordRef.SetTable(FSBookableResourceBooking);
-                        DurationInMinutes := FSBookableResourceBooking.Duration;
-                        DurationInHours := (DurationInMinutes / 60);
-                        NewValue := DurationInHours;
-                        IsValueFound := true;
-                        NeedsConversion := false;
-                    end;
-            end;
     end;
 
     local procedure UpdateQuantities(FSWorkOrderProduct: Record "FS Work Order Product"; var ServiceLine: Record "Service Line")
@@ -593,7 +580,8 @@ codeunit 6610 "FS Int. Table Subscriber"
 
     local procedure UpdateQuantities(FSBookableResourceBooking: Record "FS Bookable Resource Booking"; var ServiceLine: Record "Service Line")
     begin
-        ServiceLine.Validate("Qty. to Consume", 0);
+        if ServiceLine."Qty. to Consume" <> 0 then
+            ServiceLine.Validate("Qty. to Consume", 0);
         ServiceLine.Validate(Quantity, FSBookableResourceBooking.Duration / 60);
         ServiceLine.Validate("Qty. to Consume", ServiceLine.Quantity - ServiceLine."Quantity Consumed");
     end;

@@ -936,14 +936,6 @@ codeunit 6611 "FS Setup Defaults"
           FSBookableResourceBooking.FieldNo(Name),
           IntegrationFieldMapping.Direction::FromIntegrationTable,
           '', true, false);
-
-        InsertIntegrationFieldMapping(
-          IntegrationTableMappingName,
-          ServiceLine.FieldNo(Quantity),
-          FSBookableResourceBooking.FieldNo(Duration),
-          IntegrationFieldMapping.Direction::Bidirectional,
-          '', false, false);
-
     end;
 
     local procedure ShouldResetServiceItemMapping(): Boolean
