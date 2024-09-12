@@ -12,12 +12,7 @@ pageextension 6217 "Sust. Purch. Order Stats." extends "Purchase Order Statistic
             {
                 Visible = EnableSustainability;
                 Caption = 'Sustainability';
-                field("Sustainability Lines Exist"; Rec."Sustainability Lines Exist")
-                {
-                    ApplicationArea = Basic, Suite;
-                    Caption = 'Sustainability Lines Exist';
-                    ToolTip = 'Specifies the Sustainability Lines Exist for Purchase Order';
-                }
+
                 field("Emission C02"; Rec."Emission C02")
                 {
                     ApplicationArea = Basic, Suite;

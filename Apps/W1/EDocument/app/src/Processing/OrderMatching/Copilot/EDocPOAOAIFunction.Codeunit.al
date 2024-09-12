@@ -11,7 +11,7 @@ codeunit 6167 "E-Doc. PO AOAI Function" implements "AOAI Function"
         EDocPOCopilotMatching: Codeunit "E-Doc. PO Copilot Matching";
         EDocumentMappingToolPrompt: Text;
     begin
-        if AzureKeyVault.GetAzureKeyVaultSecret('EDocumentMappingToolStruct', EDocumentMappingToolPrompt) then
+        if AzureKeyVault.GetAzureKeyVaultSecret('EDocumentMappingToolStructV2', EDocumentMappingToolPrompt) then
             Prompt.ReadFrom(EDocumentMappingToolPrompt)
         else
             Session.LogMessage('0000MOW', FailedToGetPromptSecretErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', EDocPOCopilotMatching.FeatureName());
@@ -84,7 +84,7 @@ codeunit 6167 "E-Doc. PO AOAI Function" implements "AOAI Function"
         TempPurchaseLine: Record "Purchase Line" temporary;
         TempAIProposalBuffer: Record "E-Doc. PO Match Prop. Buffer" temporary;
         Data: JsonObject;
-        FunctionNameLbl: Label 'match-lines', Locked = true;
+        FunctionNameLbl: Label 'match_lines', Locked = true;
         MatchLineTxt: Label 'Matched to Purchase Order Line %1', Comment = '%1 = Number of the order line that the E-Document line is matched to';
         FailedToGetPromptSecretErr: Label 'Failed to get the prompt secret from Azure Key Vault', Locked = true;
 }

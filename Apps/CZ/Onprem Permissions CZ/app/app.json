@@ -1,28 +1,24 @@
 {
-    "id":  "f93c2c47-6485-40a7-91c8-a9e8e52d9aa5",
-    "name":  "OnPrem Permissions (CZ)",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "This extension includes permission set for on premise systems.",
-    "description":  "This extension includes permission set for on premise systems.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=834880",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2013440",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2115702",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "OnPrem",
-    "application":  "25.0.0.0"
+  "id": "f93c2c47-6485-40a7-91c8-a9e8e52d9aa5",
+  "name": "OnPrem Permissions (CZ)",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "This extension includes permission set for on premise systems.",
+  "description": "This extension includes permission set for on premise systems.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=834880",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2013440",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2115702",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "OnPrem",
+  "application": "26.0.0.0"
 }

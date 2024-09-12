@@ -1,36 +1,36 @@
 {
-    "id":  "5512093d-54ab-4fca-9e39-43aa3b45362c",
-    "name":  "Electronic VAT submission for Norway",
-    "publisher":  "Microsoft",
-    "brief":  "Easily submit VAT returns to the Skatteetaten.",
-    "description":  "This app provides functionality that enables easy submission of the VAT return in the Norway. It allows submission of VAT returns already prepared in Dynamics 365 Business Central.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2181211",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2181211",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "3d5fd255-4fb4-464b-9362-44cd85a883e7",
-                             "publisher":  "Microsoft",
-                             "name":  "Standard Audit File - Tax Localization for Norway",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "idRanges":  [
-                     {
-                         "from":  10680,
-                         "to":  10699
-                     }
-                 ],
-    "platform":  "25.0.0.0",
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "5512093d-54ab-4fca-9e39-43aa3b45362c",
+  "name": "Electronic VAT submission for Norway",
+  "publisher": "Microsoft",
+  "brief": "Easily submit VAT returns to the Skatteetaten.",
+  "description": "This app provides functionality that enables easy submission of the VAT return in the Norway. It allows submission of VAT returns already prepared in Dynamics 365 Business Central.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2181211",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2181211",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "3d5fd255-4fb4-464b-9362-44cd85a883e7",
+      "publisher": "Microsoft",
+      "name": "Standard Audit File - Tax Localization for Norway",
+      "version": "26.0.0.0"
+    }
+  ],
+  "idRanges": [
+    {
+      "from": 10680,
+      "to": 10699
+    }
+  ],
+  "platform": "26.0.0.0",
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

@@ -16,6 +16,8 @@ codeunit 139789 "Attachment Data Size Test"
     var
         Assert: Codeunit Assert;
         LibtraryUtility: Codeunit "Library - Utility";
+        TestUtility: Codeunit "SLS Test Utility";
+        IsInitialized: Boolean;
 
     [Test]
     procedure ThrowErrorIfFirstRowIsMoreThanMaxAllowedHeaderLength()
@@ -29,6 +31,7 @@ codeunit 139789 "Attachment Data Size Test"
     begin
         // [FEATURE] [Sales Line From Attachment with AI] 
         // [SCENARIO] Error is thrown if the first row is more than the maximum allowed header length
+        Initialize();
 
         // [GIVEN] Create input data that is more than the allowed header length of 10000
         InputData := LibtraryUtility.GenerateRandomAlphabeticText(10001, 1);
@@ -56,6 +59,7 @@ codeunit 139789 "Attachment Data Size Test"
     begin
         // [FEATURE] [Sales Line From Attachment with AI] 
         // [SCENARIO] Complete lines are read inside the allowed size
+        Initialize();
 
         // [GIVEN] Create input data that is more than the allowed header length of 10000
         TempBlob.CreateOutStream(OutStream);
@@ -72,5 +76,15 @@ codeunit 139789 "Attachment Data Size Test"
 
         // [THEN] Error is thrown
         Assert.AreEqual(9004, StrLen(ReadLines), ''); // (1499 * 6) + (5 * 2(\n))
+    end;
+
+    local procedure Initialize()
+    begin
+        if IsInitialized then
+            exit;
+
+        TestUtility.RegisterCopilotCapability();
+
+        IsInitialized := true;
     end;
 }

@@ -1,39 +1,37 @@
 {
-    "id":  "928f7b70-0dbd-431a-beb5-f45c4adbd361",
-    "name":  "Enforced Digital Vouchers Test Library",
-    "publisher":  "Microsoft",
-    "brief":  "The app is to test the Digital Vouchers feature",
-    "description":  "The app is to test the Digital Vouchers feature",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://learn.microsoft.com/en-us/dynamics365/business-central/finance-how-setup-use-service-declaration",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2204541",
-    "dependencies":  [
-                         {
-                             "id":  "e2ae191d-8829-44c3-a373-3749a2742d4e",
-                             "name":  "Enforced Digital Vouchers",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  139517,
-                         "to":  139518
-                     }
-                 ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0",
-    "target":  "OnPrem"
+  "id": "928f7b70-0dbd-431a-beb5-f45c4adbd361",
+  "name": "Enforced Digital Vouchers Test Library",
+  "publisher": "Microsoft",
+  "brief": "The app is to test the Digital Vouchers feature",
+  "description": "The app is to test the Digital Vouchers feature",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://learn.microsoft.com/en-us/dynamics365/business-central/finance-how-setup-use-service-declaration",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "dependencies": [
+    {
+      "id": "e2ae191d-8829-44c3-a373-3749a2742d4e",
+      "name": "Enforced Digital Vouchers",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 139517,
+      "to": 139518
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0",
+  "target": "OnPrem"
 }

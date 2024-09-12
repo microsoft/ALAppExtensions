@@ -1,43 +1,41 @@
 {
   "id": "41b3ab6e-3f20-47c7-a67f-feccc4d58a55",
   "name": "Field Service Integration Test Library",
-  "publisher":  "Microsoft",
-  "brief":  "Test library for the Field Service Integration extension.",
-  "description":  "Test library for the Field Service Integration extension.",
-  "version":  "25.0.0.0",
-  "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-  "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
-  "help":  "https://go.microsoft.com/fwlink/?linkid=2206519",
-  "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/",
-  "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-  "logo":  "ExtensionLogo.png",
-  "dependencies":  [
-                       {
-                           "id":  "1ba1031e-eae9-4f20-b9d2-d19b6d1e3f29",
-                           "name":  "Field Service Integration",
-                           "publisher":  "Microsoft",
-                           "version":  "25.0.0.0"
-                       }
-                   ],
-  "screenshots":  [
-
-                  ],
-  "platform":  "25.0.0.0",
-  "target":  "OnPrem",
-  "resourceExposurePolicy":  {
-                                 "allowDebugging":  false,
-                                 "allowDownloadingSource":  true,
-                                 "includeSourceInSymbolFile":  true
-                             },
-  "application":  "25.0.0.0",
-  "idRanges":  [
+  "publisher": "Microsoft",
+  "brief": "Test library for the Field Service Integration extension.",
+  "description": "Test library for the Field Service Integration extension.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2206519",
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/dynamics365/business-central/",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
     {
-        "from":  139205,
-        "to":  139205
+      "id": "1ba1031e-eae9-4f20-b9d2-d19b6d1e3f29",
+      "name": "Field Service Integration",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 139205,
+      "to": 139205
     }
   ],
   "features": [
-      "NoImplicitWith",
-      "TranslationFile"
-    ]
+    "NoImplicitWith",
+    "TranslationFile"
+  ]
 }

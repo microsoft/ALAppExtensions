@@ -18,19 +18,19 @@ pageextension 6211 "Sust. Purch. Order Subform" extends "Purchase Order Subform"
         }
         addafter("Quantity Invoiced")
         {
-            field("Emission CO2 Per Unit"; Rec."Emission CO2 Per Unit")
+            field("Emission CO2"; Rec."Emission CO2")
             {
                 Visible = SustainabilityVisible;
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the value of the Emission CO2 Per Unit field.';
             }
-            field("Emission CH4 Per Unit"; Rec."Emission CH4 Per Unit")
+            field("Emission CH4"; Rec."Emission CH4")
             {
                 Visible = SustainabilityVisible;
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the value of the Emission CH4 Per Unit field.';
             }
-            field("Emission N2O Per Unit"; Rec."Emission N2O Per Unit")
+            field("Emission N2O"; Rec."Emission N2O")
             {
                 Visible = SustainabilityVisible;
                 ApplicationArea = Basic, Suite;

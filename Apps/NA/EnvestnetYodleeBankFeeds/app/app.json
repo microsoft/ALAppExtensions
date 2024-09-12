@@ -1,28 +1,24 @@
 {
-    "id":  "e2743298-9ccb-49cd-9d8e-4b2d1ab91d36",
-    "name":  "Envestnet Yodlee Bank Feeds",
-    "publisher":  "Microsoft",
-    "brief":  "Envestnet Yodlee Bank Feeds enables you to process payments and reconcile bank accounts faster and safer.",
-    "description":  "To quickly reconcile payments made to your bank accounts, Envestnet Yodlee Bank Feeds extension (a third-party service) allows you to link your system bank account to your online bank account. This means that the latest bank statement is automatically or manually fed into your reconciliation journal, ensuring that you are always processing the latest payments with minimal risk of errors.&#13;&#10;&#13;&#10;The Envestnet Yodlee Bank Feeds extension provides the following benefits for Dynamics 365 Business Central:&#13;&#10;&#8226; Removes the need for manual entry&#13;&#10;&#8226; Improves efficiency and accuracy when doing payment reconciliation&#13;&#10;&#8226; Supports a large number of banks&#13;&#10;&#8226; Allows up-to-date information about bank transactions&#13;&#10;&#8226; Supports manual as well as automatic bank feeds&#13;&#10;&#8226; Enables outsourcing of payment reconciliation to an accountant by providing access to bank statements.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?LinkId=733362",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?LinkId=733362",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "e2743298-9ccb-49cd-9d8e-4b2d1ab91d36",
+  "name": "Envestnet Yodlee Bank Feeds",
+  "publisher": "Microsoft",
+  "brief": "Envestnet Yodlee Bank Feeds enables you to process payments and reconcile bank accounts faster and safer.",
+  "description": "To quickly reconcile payments made to your bank accounts, Envestnet Yodlee Bank Feeds extension (a third-party service) allows you to link your system bank account to your online bank account. This means that the latest bank statement is automatically or manually fed into your reconciliation journal, ensuring that you are always processing the latest payments with minimal risk of errors.&#13;&#10;&#13;&#10;The Envestnet Yodlee Bank Feeds extension provides the following benefits for Dynamics 365 Business Central:&#13;&#10;&#8226; Removes the need for manual entry&#13;&#10;&#8226; Improves efficiency and accuracy when doing payment reconciliation&#13;&#10;&#8226; Supports a large number of banks&#13;&#10;&#8226; Allows up-to-date information about bank transactions&#13;&#10;&#8226; Supports manual as well as automatic bank feeds&#13;&#10;&#8226; Enables outsourcing of payment reconciliation to an accountant by providing access to bank statements.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?LinkId=733362",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?LinkId=733362",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

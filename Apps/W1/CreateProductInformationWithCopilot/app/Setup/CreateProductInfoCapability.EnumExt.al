@@ -10,6 +10,6 @@ enumextension 7330 "Create Product Info Capability" extends "Copilot Capability"
 {
     value(7330; "Create Product Information")
     {
-        Caption = 'Create Product Information';
+        Caption = 'Create product information';
     }
 }

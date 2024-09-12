@@ -13,6 +13,11 @@ page 6243 "Sust. Certificate Card"
         {
             group(General)
             {
+                field(Type; Rec.Type)
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the Type of Sustainability Certificate';
+                }
                 field("No."; Rec."No.")
                 {
                     ApplicationArea = Basic, Suite;
@@ -22,11 +27,6 @@ page 6243 "Sust. Certificate Card"
                 {
                     ApplicationArea = Basic, Suite;
                     ToolTip = 'Specifies the Name of Sustainability Certificate';
-                }
-                field(Type; Rec.Type)
-                {
-                    ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the Type of Sustainability Certificate';
                 }
                 field("Area"; Rec."Area")
                 {

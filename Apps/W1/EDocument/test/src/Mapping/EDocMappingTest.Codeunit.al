@@ -1,7 +1,7 @@
 codeunit 139617 "E-Doc. Mapping Test"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
+    Permissions = tabledata "E-Doc. Mapping Test Rec" = rimd;
 
     trigger OnRun()
     begin
@@ -11,12 +11,14 @@ codeunit 139617 "E-Doc. Mapping Test"
 
     var
         EDocMappingTestRec: Record "E-Doc. Mapping Test Rec";
+        EDocService: Record "E-Document Service";
         LibraryRandom: Codeunit "Library - Random";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryEDoc: Codeunit "Library - E-Document";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         Assert: Codeunit Assert;
         EDocMappingMgt: Codeunit "E-Doc. Mapping";
+        LibraryPermission: Codeunit "Library - Lower Permissions";
         TextAndCodeReplacementLbl: Label 'REPLACEMENT';
         GeneralMappingRuleErr: Label 'Incorrect direct mapping was applied to field';
         TranformationMappingRuleErr: Label 'Incorrect transformation rule was applied to field';
@@ -36,12 +38,16 @@ codeunit 139617 "E-Doc. Mapping Test"
 
         // [GIVEN] A record with different type of fields
         Initialize();
+        EDocService.Get(LibraryEDoc.CreateService());
+
+        LibraryPermission.SetTeamMember();
         EDocMappingTestRec.FindFirst();
 
         // [WHEN] A direct mapping is setup
-        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocMappingTestRec."Text Value", TextAndCodeReplacementLbl);
-        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocMappingTestRec."Code Value", TextAndCodeReplacementLbl);
-        LibraryEDoc.CreateDirectMapping(EDocMapping, Format(EDocMappingTestRec."Decimal Value"), TextAndCodeReplacementLbl);
+        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocService, EDocMappingTestRec."Text Value", TextAndCodeReplacementLbl);
+        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocService, EDocMappingTestRec."Code Value", TextAndCodeReplacementLbl);
+        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocService, Format(EDocMappingTestRec."Decimal Value"), TextAndCodeReplacementLbl);
+        EDocMapping.SetRange(Code, EDocService.Code);
         EDocMapping.FindSet();
 
         // [WHEN] Record is mapped into record causing error
@@ -58,14 +64,21 @@ codeunit 139617 "E-Doc. Mapping Test"
         // [FEATURE] [E-Document] [Mapping]
         // [SCENARIO] Map with general rules - Direct mapping from A to B on Text and Code values
 
+        // Because of Error in last test we reinit 
+        IsInitialized := false;
+
         // [GIVEN] A record with different type of fields
         Initialize();
+        EDocService.Get(LibraryEDoc.CreateService());
+
+        LibraryPermission.SetTeamMember();
         EDocMappingTestRec.FindFirst();
 
         // [WHEN] A direct mapping is setup
-        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocMappingTestRec."Text Value", TextAndCodeReplacementLbl);
-        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocMappingTestRec."Code Value", TextAndCodeReplacementLbl);
-        LibraryEDoc.CreateDirectMapping(EDocMapping, Format(EDocMappingTestRec."Decimal Value"), TextAndCodeReplacementLbl);
+        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocService, EDocMappingTestRec."Text Value", TextAndCodeReplacementLbl);
+        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocService, EDocMappingTestRec."Code Value", TextAndCodeReplacementLbl);
+        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocService, Format(EDocMappingTestRec."Decimal Value"), TextAndCodeReplacementLbl);
+        EDocMapping.SetRange(Code, EDocService.Code);
         EDocMapping.FindSet();
 
         // [WHEN] Record is mapped into temporary record
@@ -80,7 +93,7 @@ codeunit 139617 "E-Doc. Mapping Test"
     [Test]
     procedure MappingTableRuleSuccess()
     var
-        EDocMapping, EDocMapping2 : Record "E-Doc. Mapping";
+        EDocMapping: Record "E-Doc. Mapping";
         TempEDocMappingTestRec2, TempEDocMappingTestRec3 : Record "E-Doc. Mapping Test Rec" temporary;
     begin
         // [FEATURE] [E-Document] [Mapping]
@@ -88,13 +101,17 @@ codeunit 139617 "E-Doc. Mapping Test"
 
         // [GIVEN] A record with different type of fields
         Initialize();
+        EDocService.Get(LibraryEDoc.CreateService());
+
+        LibraryPermission.SetTeamMember();
         EDocMappingTestRec.FindFirst();
 
         // [WHEN] A direct mapping is setup for table "E-Doc. Mapping Test Rec"
-        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocMappingTestRec."Text Value", TextAndCodeReplacementLbl, Database::"E-Doc. Mapping Test Rec", 0);
-        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocMappingTestRec."Code Value", TextAndCodeReplacementLbl, Database::"E-Doc. Mapping Test Rec", 0);
-        LibraryEDoc.CreateDirectMapping(EDocMapping, Format(EDocMappingTestRec."Decimal Value"), TextAndCodeReplacementLbl, Database::"E-Doc. Mapping Test Rec", 0);
+        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocService, EDocMappingTestRec."Text Value", TextAndCodeReplacementLbl, Database::"E-Doc. Mapping Test Rec", 0);
+        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocService, EDocMappingTestRec."Code Value", TextAndCodeReplacementLbl, Database::"E-Doc. Mapping Test Rec", 0);
+        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocService, Format(EDocMappingTestRec."Decimal Value"), TextAndCodeReplacementLbl, Database::"E-Doc. Mapping Test Rec", 0);
 
+        EDocMapping.SetRange(Code, EDocService.Code);
         EDocMapping.FindSet();
 
         // [WHEN] Record is mapped into temporary record
@@ -105,12 +122,18 @@ codeunit 139617 "E-Doc. Mapping Test"
         Assert.AreEqual(TextAndCodeReplacementLbl, TempEDocMappingTestRec2."Code Value", GeneralMappingRuleErr);
         Assert.AreNotEqual(TextAndCodeReplacementLbl, TempEDocMappingTestRec2."Decimal Value", GeneralMappingRuleErr);
 
-        // [WHEN] A direct mapping is setup for table not "E-Doc. Mapping Test Rec"      
-        EDocMapping2.DeleteAll();
+        // [WHEN] A direct mapping is setup for table not "E-Doc. Mapping Test Rec"
+        LibraryPermission.SetOutsideO365Scope();
+        EDocMapping.DeleteAll();
+        EDocMapping.Reset();
+        EDocService.Get(LibraryEDoc.CreateService());
+        LibraryPermission.SetTeamMember();
 
-        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocMappingTestRec."Text Value", TextAndCodeReplacementLbl, Database::"E-Doc. Mapping", 0);
-        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocMappingTestRec."Code Value", TextAndCodeReplacementLbl, Database::"E-Doc. Mapping", 0);
-        LibraryEDoc.CreateDirectMapping(EDocMapping, Format(EDocMappingTestRec."Decimal Value"), TextAndCodeReplacementLbl, Database::"E-Doc. Mapping", 0);
+        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocService, EDocMappingTestRec."Text Value", TextAndCodeReplacementLbl, Database::"E-Doc. Mapping", 0);
+        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocService, EDocMappingTestRec."Code Value", TextAndCodeReplacementLbl, Database::"E-Doc. Mapping", 0);
+        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocService, Format(EDocMappingTestRec."Decimal Value"), TextAndCodeReplacementLbl, Database::"E-Doc. Mapping", 0);
+        EDocMapping.SetRange(Code, EDocService.Code);
+        EDocMapping.FindSet();
 
         // [WHEN] Record is mapped into temporary record
         MapRecord(EDocMapping, EDocMappingTestRec, TempEDocMappingTestRec3);
@@ -132,13 +155,17 @@ codeunit 139617 "E-Doc. Mapping Test"
 
         // [GIVEN] A record with different type of fields
         Initialize();
+        EDocService.Get(LibraryEDoc.CreateService());
+
+        LibraryPermission.SetTeamMember();
         EDocMappingTestRec.FindFirst();
 
         // [WHEN] A direct mapping is setup for table "E-Doc. Mapping Test Rec" on fields Text Value and Key Field
-        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocMappingTestRec."Text Value", TextAndCodeReplacementLbl, Database::"E-Doc. Mapping Test Rec", EDocMappingTestRec.FieldNo(EDocMappingTestRec."Text Value"));
-        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocMappingTestRec."Code Value", TextAndCodeReplacementLbl, Database::"E-Doc. Mapping Test Rec", EDocMappingTestRec.FieldNo(EDocMappingTestRec."Key Field"));
-        LibraryEDoc.CreateDirectMapping(EDocMapping, Format(EDocMappingTestRec."Decimal Value"), TextAndCodeReplacementLbl, Database::"E-Doc. Mapping Test Rec", EDocMappingTestRec.FieldNo(EDocMappingTestRec."Decimal Value"));
+        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocService, EDocMappingTestRec."Text Value", TextAndCodeReplacementLbl, Database::"E-Doc. Mapping Test Rec", EDocMappingTestRec.FieldNo(EDocMappingTestRec."Text Value"));
+        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocService, EDocMappingTestRec."Code Value", TextAndCodeReplacementLbl, Database::"E-Doc. Mapping Test Rec", EDocMappingTestRec.FieldNo(EDocMappingTestRec."Key Field"));
+        LibraryEDoc.CreateDirectMapping(EDocMapping, EDocService, Format(EDocMappingTestRec."Decimal Value"), TextAndCodeReplacementLbl, Database::"E-Doc. Mapping Test Rec", EDocMappingTestRec.FieldNo(EDocMappingTestRec."Decimal Value"));
 
+        EDocMapping.SetRange(Code, EDocService.Code);
         EDocMapping.FindSet();
 
         // [WHEN] Record is mapped into temporary record
@@ -163,12 +190,16 @@ codeunit 139617 "E-Doc. Mapping Test"
 
         // [GIVEN] A record with different type of fields
         Initialize();
+        EDocService.Get(LibraryEDoc.CreateService());
+
+        LibraryPermission.SetTeamMember();
         EDocMappingTestRec.FindFirst();
         TransformationRule.CreateDefaultTransformations();
         TransformationRule.Get(TransformationRule.GetFourthToSixthSubstringCode());
 
         // [WHEN] A transformation mapping is setup
-        LibraryEDoc.CreateTransformationMapping(EDocMapping, TransformationRule);
+        LibraryEDoc.CreateTransformationMapping(EDocMapping, TransformationRule, EDocService.Code);
+        EDocMapping.SetRange(Code, EDocService.Code);
         EDocMapping.FindSet();
 
         // [WHEN] Record is mapped into temporary record
@@ -193,12 +224,16 @@ codeunit 139617 "E-Doc. Mapping Test"
 
         // [GIVEN] A record with different type of fields
         Initialize();
+        EDocService.Get(LibraryEDoc.CreateService());
+
+        LibraryPermission.SetTeamMember();
         EDocMappingTestRec.FindFirst();
         TransformationRule.CreateDefaultTransformations();
         TransformationRule.Get(TransformationRule.GetFourthToSixthSubstringCode());
 
         // [WHEN] A transformation mapping is setup
-        LibraryEDoc.CreateTransformationMapping(EDocMapping, TransformationRule);
+        LibraryEDoc.CreateTransformationMapping(EDocMapping, TransformationRule, EDocService.Code);
+        EDocMapping.SetRange(Code, EDocService.Code);
         EDocMapping.FindSet();
 
         // [WHEN] Record is mapped into temporary record and changes ar stored in variable
@@ -236,13 +271,15 @@ codeunit 139617 "E-Doc. Mapping Test"
         EDocMapping: Record "E-Doc. Mapping";
         TempEDocMappingTestRec2: Record "E-Doc. Mapping Test Rec" temporary;
         TempChanges: Record "E-Doc. Mapping" temporary;
-        EDocService: Record "E-Document Service";
     begin
         // [FEATURE] [E-Document] [Mapping]
         // [SCENARIO] Check that correct number of entries show up on preview mapping page
 
         // [GIVEN] A record with different type of fields
         Initialize();
+        EDocService.Get(LibraryEDoc.CreateService());
+
+        LibraryPermission.SetTeamMember();
         EDocMappingTestRec.FindFirst();
         TransformationRule.CreateDefaultTransformations();
         TransformationRule.Get(TransformationRule.GetFourthToSixthSubstringCode());
@@ -250,6 +287,7 @@ codeunit 139617 "E-Doc. Mapping Test"
         // [WHEN] A transformation mapping is setup
         EDocService.Get(LibraryEDoc.CreateService());
         LibraryEDoc.CreateTransformationMapping(EDocMapping, TransformationRule, EDocService.Code);
+        EDocMapping.SetRange(Code, EDocService.Code);
         EDocMapping.FindSet();
 
         // [WHEN] Record is mapped into temporary record and changes ar stored in variable
@@ -265,14 +303,19 @@ codeunit 139617 "E-Doc. Mapping Test"
 
     local procedure Initialize()
     begin
-        LibraryEDoc.Initialize();
+        LibraryPermission.SetOutsideO365Scope();
+        if IsInitialized then
+            exit;
 
+        LibraryPermission.PushPermissionSet('E-Doc. Test');
         EDocMappingTestRec.Init();
         EDocMappingTestRec."Key Field" := 1;
         EDocMappingTestRec."Code Value" := CopyStr(LibraryRandom.RandText(LibraryUtility.GetFieldLength(DATABASE::"E-Doc. Mapping Test Rec", EDocMappingTestRec.FieldNo("Code Value"))), 1, LibraryUtility.GetFieldLength(DATABASE::"E-Doc. Mapping Test Rec", EDocMappingTestRec.FieldNo("Code Value")));
         EDocMappingTestRec."Text Value" := CopyStr(LibraryRandom.RandText(LibraryUtility.GetFieldLength(DATABASE::"E-Doc. Mapping Test Rec", EDocMappingTestRec.FieldNo("Text Value"))), 1, LibraryUtility.GetFieldLength(DATABASE::"E-Doc. Mapping Test Rec", EDocMappingTestRec.FieldNo("Text Value")));
         EDocMappingTestRec."Decimal Value" := LibraryRandom.RandDec(5, 5);
         EDocMappingTestRec.Insert();
+        LibraryPermission.SetOutsideO365Scope();
+
         IsInitialized := true;
     end;
 
@@ -296,6 +339,7 @@ codeunit 139617 "E-Doc. Mapping Test"
     [ModalPageHandler]
     internal procedure EDocServicesPageHandler(var EDocServicesPage: TestPage "E-Document Services")
     begin
+        EDocServicesPage.Filter.SetFilter(Code, EDocService.Code);
         EDocServicesPage.First();
         EDocServicesPage.OK().Invoke();
     end;

@@ -1,7 +1,7 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Codeunit Shpfy Payment Terms API (ID 30360).
+/// Codeunit Shpfy Payment Terms API (ID 30168).
 /// </summary>
 codeunit 30360 "Shpfy Payment Terms API"
 {
@@ -53,7 +53,7 @@ codeunit 30360 "Shpfy Payment Terms API"
 
         if IsNew then begin
             Clear(ShpfyPaymentTerms);
-            ShpfyPaymentTerms.Id := Id;
+            ShpfyPaymentTerms."Id" := Id;
             ShpfyPaymentTerms."Shop Code" := ShopCode;
         end;
 
@@ -64,22 +64,9 @@ codeunit 30360 "Shpfy Payment Terms API"
         JsonHelper.GetValueIntoField(JTemplate, 'description', PaymentTermRecordRef, ShpfyPaymentTerms.FieldNo(Description));
         PaymentTermRecordRef.SetTable(ShpfyPaymentTerms);
 
-        if ShpfyPaymentTerms.Type = 'FIXED' then
-            if ShouldBeMarkedAsPrimary() then
-                ShpfyPaymentTerms.Validate("Is Primary", true);
-
         if IsNew then
             ShpfyPaymentTerms.Insert(true)
         else
             ShpfyPaymentTerms.Modify(true);
-    end;
-
-    local procedure ShouldBeMarkedAsPrimary(): Boolean
-    var
-        ShpfyPaymentTerms: Record "Shpfy Payment Terms";
-    begin
-        ShpfyPaymentTerms.SetRange("Shop Code", ShopCode);
-        ShpfyPaymentTerms.SetRange("Is Primary", true);
-        exit(ShpfyPaymentTerms.IsEmpty());
     end;
 }

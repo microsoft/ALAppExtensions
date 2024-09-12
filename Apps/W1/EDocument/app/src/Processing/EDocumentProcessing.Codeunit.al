@@ -22,6 +22,96 @@ using System.Reflection;
 codeunit 6108 "E-Document Processing"
 {
     Access = Internal;
+    Permissions = tabledata "E-Document Service Status" = rim,
+                tabledata "E-Document" = m;
+
+    /// <summary>
+    /// Inserts E-Document Service Status record. Throws runtime error if record does exists.
+    /// </summary>
+    procedure InsertServiceStatus(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; EDocumentStatus: Enum "E-Document Service Status")
+    var
+        EDocumentServiceStatus: Record "E-Document Service Status";
+    begin
+        EDocumentServiceStatus.Validate("E-Document Entry No", EDocument."Entry No");
+        EDocumentServiceStatus.Validate("E-Document Service Code", EDocumentService.Code);
+        EDocumentServiceStatus.Validate(Status, EDocumentStatus);
+        EDocumentServiceStatus.Insert();
+    end;
+
+    /// <summary>
+    /// Updates existing service status record. Throws runtime error if record does not exists.
+    /// </summary>
+    procedure ModifyServiceStatus(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; EDocumentStatus: Enum "E-Document Service Status")
+    var
+        EDocumentServiceStatus: Record "E-Document Service Status";
+    begin
+        EDocumentServiceStatus.ReadIsolation(IsolationLevel::ReadCommitted);
+        EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
+        EDocumentServiceStatus.Validate(Status, EDocumentStatus);
+        EDocumentServiceStatus.Modify();
+    end;
+
+    /// <summary>
+    /// Updates EDocument status based on E-Document Service Status value
+    /// </summary>
+    procedure ModifyEDocumentStatus(var EDocument: Record "E-Document"; EDocumentStatus: Enum "E-Document Service Status")
+    var
+        EDocumentServiceStatus: Record "E-Document Service Status";
+#if not CLEAN26
+        EDocumentLog: Codeunit "E-Document Log";
+#endif
+        EDocServiceCount: Integer;
+#if not CLEAN26
+        IsHandled: Boolean;
+#endif
+    begin
+#if not CLEAN26
+        EDocumentLog.OnUpdateEDocumentStatus(EDocument, IsHandled);
+        if IsHandled then
+            exit;
+#endif
+
+        // Check for errors
+        EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
+        EDocumentServiceStatus.SetFilter(Status, '%1|%2|%3|%4|%5',
+            EDocumentServiceStatus.Status::"Sending Error",
+            EDocumentServiceStatus.Status::"Export Error",
+            EDocumentServiceStatus.Status::"Cancel Error",
+            EDocumentServiceStatus.Status::"Imported Document Processing Error",
+            EDocumentServiceStatus.Status::Rejected);
+
+        if not EDocumentServiceStatus.IsEmpty() then begin
+            EDocument.Get(EDocument."Entry No");
+            EDocument.Validate(Status, EDocument.Status::Error);
+            EDocument.Modify(true);
+            exit;
+        end;
+
+        Clear(EDocumentServiceStatus);
+        EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
+        EDocServiceCount := EDocumentServiceStatus.Count();
+
+        EDocumentServiceStatus.SetFilter(Status, '%1|%2|%3|%4|%5|%6',
+            EDocumentServiceStatus.Status::Sent,
+            EDocumentServiceStatus.Status::Exported,
+            EDocumentServiceStatus.Status::"Imported Document Created",
+            EDocumentServiceStatus.Status::"Journal Line Created",
+            EDocumentServiceStatus.Status::Approved,
+            EDocumentServiceStatus.Status::Canceled);
+
+        // There can be service status for multiple services:
+        // Example Service A and Service B
+        // Service A -> Sent
+        // Service B -> Exported
+        EDocument.Get(EDocument."Entry No");
+        if EDocumentServiceStatus.Count() = EDocServiceCount then
+            EDocument.Validate(Status, EDocument.Status::Processed)
+        else
+            EDocument.Validate(Status, EDocument.Status::"In Progress");
+
+        EDocument.Modify(true);
+    end;
+
     procedure GetDocSendingProfileForDocRef(var RecRef: RecordRef): Record "Document Sending Profile";
     var
         SalesHeader: Record "Sales Header";

@@ -1,8 +1,8 @@
 namespace Microsoft.Sales.Document.Test;
 
 using Microsoft.Sales.Document;
-using System.TestTools.TestRunner;
 using System.Environment.Configuration;
+using System.TestTools.TestRunner;
 using System.TestTools.AITestToolkit;
 
 codeunit 149800 "Magic Function Prompt Test"
@@ -13,6 +13,7 @@ codeunit 149800 "Magic Function Prompt Test"
     var
         GlobalSalesHeader: Record "Sales Header";
         LibrarySales: Codeunit "Library - Sales";
+        TestUtility: Codeunit "SLS Test Utility";
         Assert: Codeunit Assert;
         IsInitialized: Boolean;
 
@@ -24,8 +25,9 @@ codeunit 149800 "Magic Function Prompt Test"
         SalesOrderPage: TestPage "Sales Order";
         SalesLineAISuggestionsPage: TestPage "Sales Line AI Suggestions";
     begin
-        // [GIVEN] A sales order
         Initialize();
+
+        // [GIVEN] A sales order
         SalesOrderPage.OpenEdit();
         SalesOrderPage.GoToRecord(GlobalSalesHeader);
 
@@ -46,9 +48,30 @@ codeunit 149800 "Magic Function Prompt Test"
         AITestContext: Codeunit "AIT Test Context";
         CompletionAnswerTxt: Text;
     begin
+        Initialize();
+
         // [GIVEN] A question from the dataset
         // [WHEN] Sales lines are suggested
         TestUtil.RepeatAtMost3TimesToFetchCompletion(CompletionAnswerTxt, AITestContext.GetQuestion().ValueAsText());
+
+        // [THEN] Magic function should be returned or the response should be empty
+        if StrLen(CompletionAnswerTxt) > 0 then // CompletionAnswerTxt is empty if there is no function returned form the api call
+            AssertMagicFunction(CompletionAnswerTxt);
+    end;
+
+    [Test]
+    procedure AssertMagicFunctionOrFailedResponseUnitTestWithEmbeddedInput()
+    var
+        TestUtil: Codeunit "SLS Test Utility";
+        AITestContext: Codeunit "AIT Test Context";
+        CompletionAnswerTxt: Text;
+        InputTemplateLbl: Label 'Add 2 athens desk and %1.', Comment = '%1 = input string';
+    begin
+        Initialize();
+
+        // [GIVEN] A question from the dataset
+        // [WHEN] Sales lines are suggested
+        TestUtil.RepeatAtMost3TimesToFetchCompletion(CompletionAnswerTxt, StrSubstNo(InputTemplateLbl, AITestContext.GetQuestion().ValueAsText()));
 
         // [THEN] Magic function should be returned or the response should be empty
         if StrLen(CompletionAnswerTxt) > 0 then // CompletionAnswerTxt is empty if there is no function returned form the api call
@@ -73,6 +96,8 @@ codeunit 149800 "Magic Function Prompt Test"
         if IsInitialized then
             exit;
 
+        TestUtility.RegisterCopilotCapability();
+
         // Create a new sales header record
         LibrarySales.CreateSalesOrder(GlobalSalesHeader);
 
@@ -89,17 +114,24 @@ codeunit 149800 "Magic Function Prompt Test"
         AITestContext: Codeunit "AIT Test Context";
         TestOutputJson: Codeunit "Test Output Json";
         TestUtil: Codeunit "SLS Test Utility";
+        FunctionArray: JsonArray;
         Function: JsonToken;
         FunctionName: JsonToken;
+        MagicFunctionFound: Boolean;
         AssertMsg: Label 'The completion answer is not a magic function. Expected: magic_function, Actual: %1', Comment = 'Actual: %1';
     begin
         TestOutputJson.Initialize();
         TestOutputJson.Add('completion_answer', CompletionAnswerTxt);
         AITestContext.SetTestOutput(TestOutputJson.ToText()); // Log the response
 
-        Function := TestUtil.GetFunctionToken(CompletionAnswerTxt);
-        Function.AsObject().Get('name', FunctionName);
-        if FunctionName.AsValue().AsText() <> 'magic_function' then
+        FunctionArray := TestUtil.GetFunctionArray(CompletionAnswerTxt);
+        foreach Function in FunctionArray do begin
+            Function.AsObject().Get('name', FunctionName);
+            if FunctionName.AsValue().AsText() = 'magic_function' then
+                MagicFunctionFound := true;
+        end;
+
+        if (FunctionArray.Count > 0) and not MagicFunctionFound then
             Assert.Fail(StrSubstNo(AssertMsg, FunctionName.AsValue().AsText()));
     end;
 }

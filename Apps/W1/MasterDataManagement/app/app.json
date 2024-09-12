@@ -1,45 +1,41 @@
 {
-    "id":  "a01864f8-9c3f-42f6-8328-8d7be1ce3e20",
-    "name":  "_Exclude_Master_Data_Management",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "_Exclude_Master_Data_Management",
-    "description":  "_Exclude_Master_Data_Management",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2206176",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "internalsVisibleTo":  [
-                               {
-                                   "id":  "044e7b4c-db9b-43c6-8a08-e1fd8954d40c",
-                                   "name":  "_Exclude_Master_Data_Management_Test_Library",
-                                   "publisher":  "Microsoft"
-                               }
-                           ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  1,
-                         "to":  9999
-                     }
-                 ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2134520",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "Cloud",
-    "application":  "25.0.0.0",
-    "features":  [
-                     "TranslationFile",
-                     "GenerateCaptions"
-                 ]
+  "id": "a01864f8-9c3f-42f6-8328-8d7be1ce3e20",
+  "name": "_Exclude_Master_Data_Management",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "_Exclude_Master_Data_Management",
+  "description": "_Exclude_Master_Data_Management",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2206176",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "internalsVisibleTo": [
+    {
+      "id": "044e7b4c-db9b-43c6-8a08-e1fd8954d40c",
+      "name": "_Exclude_Master_Data_Management_Test_Library",
+      "publisher": "Microsoft"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 1,
+      "to": 9999
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2134520",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "Cloud",
+  "application": "26.0.0.0",
+  "features": [
+    "TranslationFile",
+    "GenerateCaptions"
+  ]
 }

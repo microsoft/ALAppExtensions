@@ -1,42 +1,38 @@
 {
-    "id":  "64977288-facd-4b48-abaa-bb0e288edfb3",
-    "name":  "Electronic VAT Declaration for Denmark",
-    "publisher":  "Microsoft",
-    "brief":  "This extension provides functionality to export VAT Returns to Skat.dk electronically.",
-    "description":  "The extension offers the functionality to utilize the electronic API provided by the Danish tax authority (Skat.dk). This allows users to retrieve VAT Return periods, submit VAT Returns to the tax authority, and monitor the status of the submitted VAT Return.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2204541",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  13604,
-                         "to":  13607
-                     },
-                     {
-                         "from":  13610,
-                         "to":  13620
-                     },
-                     {
-                         "from":  13668,
-                         "to":  13669
-                     }
-                 ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "OnPrem"
+  "id": "64977288-facd-4b48-abaa-bb0e288edfb3",
+  "name": "Electronic VAT Declaration for Denmark",
+  "publisher": "Microsoft",
+  "brief": "This extension provides functionality to export VAT Returns to Skat.dk electronically.",
+  "description": "The extension offers the functionality to utilize the electronic API provided by the Danish tax authority (Skat.dk). This allows users to retrieve VAT Return periods, submit VAT Returns to the tax authority, and monitor the status of the submitted VAT Return.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 13604,
+      "to": 13607
+    },
+    {
+      "from": 13610,
+      "to": 13620
+    },
+    {
+      "from": 13668,
+      "to": 13669
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "OnPrem"
 }

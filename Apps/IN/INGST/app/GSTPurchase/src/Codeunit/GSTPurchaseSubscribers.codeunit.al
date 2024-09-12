@@ -1459,6 +1459,7 @@ codeunit 18080 "GST Purchase Subscribers"
         PurchaseLine.SetFilter(Type, '<>%1', PurchaseLine.Type::" ");
         if PurchaseLine.FindSet() then
             repeat
+                TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
                 TaxTransactionValue.SetRange("Tax Type", GSTSetup."GST Tax Type");
                 TaxTransactionValue.SetRange("Tax Record ID", PurchaseLine.RecordId);
                 TaxTransactionValue.SetFilter(Percent, '<>%1', 0);

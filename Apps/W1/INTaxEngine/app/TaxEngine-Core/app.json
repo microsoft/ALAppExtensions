@@ -1,37 +1,35 @@
 {
-    "id":  "52cd6cb4-0433-4e94-8e62-9d12fff1a02b",
-    "name":  "Tax Engine Core",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Contains Tax Engine's core functionality.",
-    "description":  "Core contains user interface elements and tables that are used throughout Tax Engine. It also provides library functions that extensions can use to get values.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=724013",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2139719",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "application":  "25.0.0.0",
-    "platform":  "25.0.0.0",
-    "screenshots":  [
-
-                    ],
-    "idRanges":  [
-                     {
-                         "from":  20130,
-                         "to":  20145
-                     }
-                 ],
-    "internalsVisibleTo":  [
-                               {
-                                   "id":  "3f63a3de-6597-4097-9f34-b0ff7f92e6b0",
-                                   "name":  "DemoTool",
-                                   "publisher":  "Microsoft"
-                               }
-                           ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2139719",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               }
+  "id": "52cd6cb4-0433-4e94-8e62-9d12fff1a02b",
+  "name": "Tax Engine Core",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Contains Tax Engine's core functionality.",
+  "description": "Core contains user interface elements and tables that are used throughout Tax Engine. It also provides library functions that extensions can use to get values.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2139719",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "application": "26.0.0.0",
+  "platform": "26.0.0.0",
+  "screenshots": [],
+  "idRanges": [
+    {
+      "from": 20130,
+      "to": 20145
+    }
+  ],
+  "internalsVisibleTo": [
+    {
+      "id": "3f63a3de-6597-4097-9f34-b0ff7f92e6b0",
+      "name": "DemoTool",
+      "publisher": "Microsoft"
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2139719",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  }
 }

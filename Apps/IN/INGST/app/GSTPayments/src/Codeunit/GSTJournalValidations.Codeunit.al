@@ -389,6 +389,8 @@ codeunit 18246 "GST Journal Validations"
 
         // Assuming rounding precision for GST Tax Components are the same.
         TaxTransactionValue.Reset();
+        TaxTransactionValue.SetLoadFields("Tax Type", "Tax Record ID", "Value Type", "Value ID");
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
         TaxTransactionValue.SetRange("Tax Type", GSTSetup."GST Tax Type");
         TaxTransactionValue.SetRange("Tax Record ID", TaxRecordId);
         TaxTransactionValue.SetRange("Value Type", TaxTransactionValue."Value Type"::COMPONENT);

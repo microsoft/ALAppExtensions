@@ -59,7 +59,7 @@ tableextension 6220 "Sust. Item" extends Item
         Rec.TestField(Type, Rec.Type::Inventory);
         Rec."Sust. Cert. Name" := '';
 
-        if SustCertificate.Get(Rec."Sust. Cert. No.") then
+        if SustCertificate.Get(SustCertificate.Type::Item, Rec."Sust. Cert. No.") then
             Rec.Validate("Sust. Cert. Name", SustCertificate.Name);
     end;
 }

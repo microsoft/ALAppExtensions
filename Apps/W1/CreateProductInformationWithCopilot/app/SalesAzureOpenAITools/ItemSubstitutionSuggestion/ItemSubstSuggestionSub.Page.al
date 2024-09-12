@@ -31,6 +31,7 @@ page 7411 "Item Subst. Suggestion Sub"
                 field(SubstituteType; Rec."Substitute Type")
                 {
                     Editable = false;
+                    Visible = false;
                     ToolTip = 'Specifies Substitute Type';
                 }
                 field(SubstituteNo; Rec."Substitute No.")

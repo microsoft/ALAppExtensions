@@ -25,7 +25,7 @@ page 4504 "Microsoft 365 Email Wizard"
             group(Header)
             {
                 ShowCaption = false;
-                InstructionalText = 'Enter the email address of your shared mailbox in the Microsoft 365 admin center.';
+                InstructionalText = 'Enter the email address of your mailbox in the Microsoft 365 admin center.';
 
                 field(LearnMoreAboutSharedAccount; LearnMoreTok)
                 {

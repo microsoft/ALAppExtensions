@@ -1,34 +1,30 @@
 {
-    "id":  "cd6afb88-73aa-406f-a087-50a6149d5779",
-    "name":  "IS Core",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Provides standard local functionality in Business Central for Iceland.",
-    "description":  "Provides standard local functionality in Business Central for Iceland.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2250227",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2250227",
-    "url":  "https://go.microsoft.com/fwlink/?linkid=2250227",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  14600,
-                         "to":  14620
-                     }
-                 ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "Cloud"
+  "id": "cd6afb88-73aa-406f-a087-50a6149d5779",
+  "name": "IS Core",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Provides standard local functionality in Business Central for Iceland.",
+  "description": "Provides standard local functionality in Business Central for Iceland.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2250227",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2250227",
+  "url": "https://go.microsoft.com/fwlink/?linkid=2250227",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 14600,
+      "to": 14620
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "Cloud"
 }

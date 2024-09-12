@@ -1,34 +1,30 @@
 {
-    "id":  "3d5b2137-efeb-4014-8489-41d37f8fd4c3",
-    "name":  "Late Payment Prediction",
-    "publisher":  "Microsoft",
-    "brief":  "Predict whether payments for sales will be on-time.",
-    "description":  "Keep receivables healthy by assessing the risk of late payments up-front. This extension uses historical data to predict delinquent invoices, so you can take a pre-emptive action such as changing the payment terms.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206446",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2206446",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  1,
-                         "to":  49999
-                     }
-                 ],
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "3d5b2137-efeb-4014-8489-41d37f8fd4c3",
+  "name": "Late Payment Prediction",
+  "publisher": "Microsoft",
+  "brief": "Predict whether payments for sales will be on-time.",
+  "description": "Keep receivables healthy by assessing the risk of late payments up-front. This extension uses historical data to predict delinquent invoices, so you can take a pre-emptive action such as changing the payment terms.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2206446",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2206446",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 1,
+      "to": 49999
+    }
+  ],
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

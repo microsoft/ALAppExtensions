@@ -30,13 +30,21 @@ codeunit 6146 "E-Document Send"
         EDocumentIntegrationInterface.SendBatch(EDocument, TempBlob, IsAsync2, HttpRequest, HttpResponse);
     end;
 
-    procedure SetSource(EDocService2: Record "E-Document Service"; EDocument2: Record "E-Document"; var TempBlob2: Codeunit "Temp Blob"; var HttpRequest2: HttpRequestMessage; var HttpResponse2: HttpResponseMessage)
+    procedure SetSource(var EDocService: Record "E-Document Service"; var EDocument2: Record "E-Document"; var TempBlob2: Codeunit "Temp Blob"; var HttpRequest2: HttpRequestMessage; var HttpResponse2: HttpResponseMessage)
     begin
-        EDocumentService.Copy(EDocService2);
+        EDocumentService.Copy(EDocService);
         EDocument.Copy(EDocument2);
         TempBlob := TempBlob2;
         HttpResponse := HttpResponse2;
         HttpRequest := HttpRequest2;
+    end;
+
+    procedure GetSource(var EDocService: Record "E-Document Service"; var EDocument2: Record "E-Document"; var HttpRequest2: HttpRequestMessage; var HttpResponse2: HttpResponseMessage)
+    begin
+        EDocService.Copy(EDocumentService);
+        EDocument2.Copy(EDocument);
+        HttpRequest2 := HttpRequest;
+        HttpResponse2 := HttpResponse;
     end;
 
     procedure IsAsync(): Boolean

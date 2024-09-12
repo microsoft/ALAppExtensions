@@ -4,14 +4,16 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Setup;
 
+using Microsoft.Finance.VAT.Calculation;
+
 pageextension 11756 "VAT Posting Setup CZL" extends "VAT Posting Setup"
 {
     layout
     {
         modify("Non-Deductible VAT% ")
         {
-            Visible = false;
-            Enabled = false;
+            Visible = NonDeductibleVATPerVisible;
+            Enabled = NonDeductibleVATPerVisible;
         }
         modify("Allow Non-Deductible VAT")
         {
@@ -87,4 +89,14 @@ pageextension 11756 "VAT Posting Setup CZL" extends "VAT Posting Setup"
             }
         }
     }
+
+    trigger OnOpenPage()
+    begin
+        NonDeductibleVATPerVisible := NonDeductibleVAT.IsNonDeductibleVATEnabled() and not NonDeductibleVATCZL.IsNonDeductibleVATEnabled();
+    end;
+
+    var
+        NonDeductibleVAT: Codeunit "Non-Deductible VAT";
+        NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
+        NonDeductibleVATPerVisible: Boolean;
 }

@@ -14,6 +14,8 @@ codeunit 139788 "Save File Mapping Test"
 
     var
         Assert: Codeunit Assert;
+        TestUtility: Codeunit "SLS Test Utility";
+        IsInitialized: Boolean;
 
     [Test]
     procedure SaveToJsonTest()
@@ -27,6 +29,7 @@ codeunit 139788 "Save File Mapping Test"
     begin
         // [FEATURE] [Sales Line From Attachment with AI] 
         // [SCENARIO] FileHandlerResult can be converted to a jsonobject and saved as a jsonstring.
+        Initialize();
 
         // [GIVEN] Create a new file handler result with column delimiter '$', product column indexes 20, 30, 40, quantity column index 60, UoM column index 70, contains header row true, column names and column types
         Clear(FileHandlerResult);
@@ -69,6 +72,7 @@ codeunit 139788 "Save File Mapping Test"
     begin
         // [FEATURE] [Sales Line From Attachment with AI] 
         // [SCENARIO] FileHandlerResult can be initialized from a jsonobject.
+        Initialize();
 
         // [GIVEN] Create a json object from json string
         MappingAsJsonObject.ReadFrom(ExpectedJsonStringLbl);
@@ -115,6 +119,7 @@ codeunit 139788 "Save File Mapping Test"
     begin
         // [FEATURE] [Sales Line From Attachment with AI] 
         // [SCENARIO] MappingCacheManagement functions help in saving and restoring the mappings.
+        Initialize();
 
         // [GIVEN] Create a hash of the passed text. In the product, it would typically be the text in the first line when header is present
         FileInfoAsHash := MappingCacheManagement.GenerateFileHashInHex(PartOfFileToSaveLbl);
@@ -142,5 +147,15 @@ codeunit 139788 "Save File Mapping Test"
         // [THEN] The JsonObject should be valid
         MappingAsJsonObject.ReadFrom(ExpectedMappingAsJsonText);
         FileHandlerResult.FromJson(MappingAsJsonObject);
+    end;
+
+    local procedure Initialize()
+    begin
+        if IsInitialized then
+            exit;
+
+        TestUtility.RegisterCopilotCapability();
+
+        IsInitialized := true;
     end;
 }

@@ -1,59 +1,57 @@
 {
-    "id":  "8af4c184-24a7-4bc5-b7b9-b0ea7f4d5907",
-    "name":  "Tax Engine Use Case Builder Tests",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Use cases and the components calculation logic.",
-    "description":  "Tax Use Case Handler extension contains UI elements with their tables which can be used for configuring taxation for a business use case.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=724013",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2139719",
-    "url":  "https://go.microsoft.com/fwlink/?linkid=2139719",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "name":  "Tax Engine",
-                             "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "name":  "Tests-TestLibraries",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0",
-                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997"
-                         },
-                         {
-                             "name":  "Tax Engine Tax Type Handler Tests",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0",
-                             "id":  "93eca88b-3dfb-405d-86b0-6a294c0a8339"
-                         },
-                         {
-                             "name":  "Tax Engine Core - Test",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0",
-                             "id":  "f4b9b739-0b47-4c9a-9e52-a1ea5408e12e"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "application":  "25.0.0.0",
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  136851,
-                         "to":  136900
-                     }
-                 ],
-    "features":  [
-                     "TranslationFile"
-                 ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2139719",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               }
+  "id": "8af4c184-24a7-4bc5-b7b9-b0ea7f4d5907",
+  "name": "Tax Engine Use Case Builder Tests",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Use cases and the components calculation logic.",
+  "description": "Tax Use Case Handler extension contains UI elements with their tables which can be used for configuring taxation for a business use case.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2139719",
+  "url": "https://go.microsoft.com/fwlink/?linkid=2139719",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "name": "Tax Engine",
+      "id": "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0",
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997"
+    },
+    {
+      "name": "Tax Engine Tax Type Handler Tests",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0",
+      "id": "93eca88b-3dfb-405d-86b0-6a294c0a8339"
+    },
+    {
+      "name": "Tax Engine Core - Test",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0",
+      "id": "f4b9b739-0b47-4c9a-9e52-a1ea5408e12e"
+    }
+  ],
+  "screenshots": [],
+  "application": "26.0.0.0",
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 136851,
+      "to": 136900
+    }
+  ],
+  "features": [
+    "TranslationFile"
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2139719",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  }
 }

@@ -198,15 +198,6 @@ codeunit 30165 "Shpfy Orders API"
             exit(Enum::"Shpfy Financial Status"::" ");
     end;
 
-    local procedure ConvertToRiskLevel(Value: Text): Enum "Shpfy Risk Level"
-    begin
-        Value := CommunicationMgt.ConvertToCleanOptionValue(Value);
-        if Enum::"Shpfy Risk Level".Names().Contains(Value) then
-            exit(Enum::"Shpfy Risk Level".FromInteger(Enum::"Shpfy Risk Level".Ordinals().Get(Enum::"Shpfy Risk Level".Names().IndexOf(Value))))
-        else
-            exit(Enum::"Shpfy Risk Level"::" ");
-    end;
-
     internal procedure ExtractShopifyOrdersToImport(var ShopifyShop: Record "Shpfy Shop"; JResponse: JsonObject; var Cursor: Text): Boolean
     var
         OrdersToImport: Record "Shpfy Orders to Import";
@@ -246,7 +237,6 @@ codeunit 30165 "Shpfy Orders API"
                     JsonHelper.GetValueIntoField(JNode, 'totalPriceSet.shopMoney.currencyCode', RecordRef, OrdersToImport.FieldNo("Currency Code"));
                     JsonHelper.GetValueIntoField(JNode, 'channel.name', RecordRef, OrdersToImport.FieldNo("Channel Name"));
                     RecordRef.SetTable(OrdersToImport);
-                    OrdersToImport."Risk Level" := ConvertToRiskLevel(JsonHelper.GetValueAsText(JNode, 'riskLevel'));
                     OrdersToImport."Financial Status" := ConvertToFinancialStatus(JsonHelper.GetValueAsText(JNode, 'displayFinancialStatus'));
                     OrdersToImport."Fulfillment Status" := ConvertToFulfillmentStatus(JsonHelper.GetValueAsText(JNode, 'displayFulfillmentStatus'));
                     if JsonHelper.GetJsonObject(JNode, JObject, 'purchasingEntity') then

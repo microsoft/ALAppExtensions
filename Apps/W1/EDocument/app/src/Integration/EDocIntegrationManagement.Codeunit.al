@@ -9,6 +9,8 @@ using System.Utilities;
 
 codeunit 6134 "E-Doc. Integration Management"
 {
+    Permissions = tabledata "E-Document" = m;
+
     internal procedure Send(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var IsAsync: Boolean) Success: Boolean
     var
         TempBlob: Codeunit "Temp Blob";
@@ -22,13 +24,15 @@ codeunit 6134 "E-Doc. Integration Management"
 
         if not EDocumentLog.GetDocumentBlobFromLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Exported) then begin
             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(EDocumentBlobErr, EDocument."Entry No"));
-            EDocumentLog.InsertLog(EDocument, EDocumentService, Enum::"E-Document Service Status"::"Sending Error");
+            AddLogAndUpdateEDocument(EDocument, EDocumentService, Enum::"E-Document Service Status"::"Sending Error");
             exit;
         end;
         ErrorCount := EDocumentErrorHelper.ErrorMessageCount(EDocument);
         Send(EDocumentService, EDocument, TempBlob, IsAsync, HttpRequest, HttpResponse);
         Success := EDocumentErrorHelper.ErrorMessageCount(EDocument) = ErrorCount;
-        SetDocumentStatusAndInsertLogs(EDocument, EDocumentService, 0, HttpRequest, HttpResponse, IsAsync, Success);
+
+        AddLogAndUpdateEDocument(EDocument, EDocumentService, CalculateServiceStatus(IsAsync, Success));
+        EDocumentLog.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
     end;
 
     internal procedure SendBatch(var EDocuments: Record "E-Document"; EDocumentService: Record "E-Document Service"; var IsAsync: Boolean) Success: Boolean
@@ -47,7 +51,7 @@ codeunit 6134 "E-Doc. Integration Management"
         if not EDocumentLog.GetDocumentBlobFromLog(EDocuments, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Exported) then begin
             repeat
                 EDocumentErrorHelper.LogSimpleErrorMessage(EDocuments, StrSubstNo(EDocumentBlobErr, EDocuments."Entry No"));
-                EDocumentLog.InsertLog(EDocuments, EDocumentService, Enum::"E-Document Service Status"::"Sending Error");
+                AddLogAndUpdateEDocument(EDocuments, EDocumentService, Enum::"E-Document Service Status"::"Sending Error");
             until EDocuments.Next() = 0;
             exit;
         end;
@@ -61,7 +65,8 @@ codeunit 6134 "E-Doc. Integration Management"
         repeat
             BeforeSendEDocErrorCount.Get(EDocuments."Entry No", ErrorCount);
             Success := EDocumentErrorHelper.ErrorMessageCount(EDocuments) = ErrorCount;
-            SetDocumentStatusAndInsertLogs(EDocuments, EDocumentService, 0, HttpRequest, HttpResponse, IsAsync, Success);
+            AddLogAndUpdateEDocument(EDocuments, EDocumentService, CalculateServiceStatus(IsAsync, Success));
+            EDocumentLog.InsertIntegrationLog(EDocuments, EDocumentService, HttpRequest, HttpResponse);
         until EDocuments.Next() = 0;
     end;
 
@@ -69,6 +74,7 @@ codeunit 6134 "E-Doc. Integration Management"
     var
         EDocumentServiceStatus: Record "E-Document Service Status";
         EDocIntegration: Interface "E-Document Integration";
+        EDocServiceStatus: Enum "E-Document Service Status";
         HttpResponse: HttpResponseMessage;
         HttpRequest: HttpRequestMessage;
         IsHandled: Boolean;
@@ -76,15 +82,21 @@ codeunit 6134 "E-Doc. Integration Management"
         if EDocumentService."Service Integration" = EDocumentService."Service Integration"::"No Integration" then
             exit;
 
+        EDocServiceStatus := Enum::"E-Document Service Status"::Rejected;
         EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
         EDocIntegration := EDocumentService."Service Integration";
 
         if EDocIntegration.GetApproval(EDocument, HttpRequest, HttpResponse) then
-            EDocumentLog.InsertLogWithIntegration(EDocument, EDocumentService, Enum::"E-Document Service Status"::Approved, 0, HttpRequest, HttpResponse)
+            EDocServiceStatus := Enum::"E-Document Service Status"::Approved
         else begin
             OnGetEDocumentApprovalReturnsFalse(EDocument, EDocumentService, HttpRequest, HttpResponse, IsHandled);
             if not IsHandled then
-                EDocumentLog.InsertLogWithIntegration(EDocument, EDocumentService, Enum::"E-Document Service Status"::Rejected, 0, HttpRequest, HttpResponse)
+                EDocServiceStatus := Enum::"E-Document Service Status"::Rejected
+        end;
+
+        if not IsHandled then begin
+            AddLogAndUpdateEDocument(EDocument, EDocumentService, EDocServiceStatus);
+            EDocumentLog.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
         end;
     end;
 
@@ -92,6 +104,7 @@ codeunit 6134 "E-Doc. Integration Management"
     var
         EDocumentServiceStatus: Record "E-Document Service Status";
         EDocIntegration: Interface "E-Document Integration";
+        EDocServiceStatus: Enum "E-Document Service Status";
         HttpResponse: HttpResponseMessage;
         HttpRequest: HttpRequestMessage;
         IsHandled: Boolean;
@@ -103,17 +116,20 @@ codeunit 6134 "E-Doc. Integration Management"
         EDocIntegration := EDocumentService."Service Integration";
 
         if EDocIntegration.Cancel(EDocument, HttpRequest, HttpResponse) then
-            EDocumentLog.InsertLogWithIntegration(EDocument, EDocumentService, Enum::"E-Document Service Status"::"Canceled", 0, HttpRequest, HttpResponse)
+            EDocServiceStatus := Enum::"E-Document Service Status"::"Canceled"
         else begin
             OnCancelEDocumentReturnsFalse(EDocument, EDocumentService, HttpRequest, HttpResponse, IsHandled);
             if not IsHandled then
-                EDocumentLog.InsertLogWithIntegration(EDocument, EDocumentService, Enum::"E-Document Service Status"::"Cancel Error", 0, HttpRequest, HttpResponse)
+                EDocServiceStatus := Enum::"E-Document Service Status"::"Cancel Error";
+        end;
+
+        if not IsHandled then begin
+            AddLogAndUpdateEDocument(EDocument, EDocumentService, EDocServiceStatus);
+            EDocumentLog.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
         end;
     end;
 
-    local procedure SetDocumentStatusAndInsertLogs(Edocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; EDocDataStorageEntryNo: Integer; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage; IsAsync: Boolean; SendingWasSuccessful: Boolean)
-    var
-        Status: Enum "E-Document Service Status";
+    local procedure CalculateServiceStatus(IsAsync: Boolean; SendingWasSuccessful: Boolean) Status: Enum "E-Document Service Status"
     begin
         if IsAsync then
             Status := Enum::"E-Document Service Status"::"Pending Response"
@@ -122,8 +138,6 @@ codeunit 6134 "E-Doc. Integration Management"
 
         if not SendingWasSuccessful then
             Status := Enum::"E-Document Service Status"::"Sending Error";
-
-        EDocumentLog.InsertLogWithIntegration(EDocument, EDocumentService, Status, EDocDataStorageEntryNo, HttpRequest, HttpResponse);
     end;
 
     local procedure IsEDocumentInStateToSend(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"): Boolean
@@ -153,7 +167,7 @@ codeunit 6134 "E-Doc. Integration Management"
     begin
         // Commit before create document with error handling
         Commit();
-        EDocumentHelper.GetTelemetryDimensions(EDocService, EDocument, TelemetryDimensions);
+        EDocumentProcessing.GetTelemetryDimensions(EDocService, EDocument, TelemetryDimensions);
         Telemetry.LogMessage('0000LBL', EDocTelemetrySendScopeStartLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
 
         Clear(EDocumentSend);
@@ -163,7 +177,7 @@ codeunit 6134 "E-Doc. Integration Management"
         if not EDocumentSend.Run() then
             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, GetLastErrorText());
 
-        EDocumentSend.GetRequestResponse(HttpRequest, HttpResponse);
+        EDocumentSend.GetSource(EDocService, EDocument, HttpRequest, HttpResponse);
         IsAsync := EDocumentSend.IsAsync();
 
         OnAfterSendDocument(EDocument, EDocService, HttpRequest, HttpResponse);
@@ -179,7 +193,7 @@ codeunit 6134 "E-Doc. Integration Management"
     begin
         // Commit before create document with error handling
         Commit();
-        EDocumentHelper.GetTelemetryDimensions(EDocService, EDocuments, TelemetryDimensions);
+        EDocumentProcessing.GetTelemetryDimensions(EDocService, EDocuments, TelemetryDimensions);
         Telemetry.LogMessage('0000LBN', EDocTelemetrySendBatchScopeStartLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
 
         Clear(EDocumentSend);
@@ -192,15 +206,22 @@ codeunit 6134 "E-Doc. Integration Management"
             until EDocuments.Next() = 0;
         end;
 
-        EDocumentSend.GetRequestResponse(HttpRequest, HttpResponse);
+        EDocumentSend.GetSource(EDocService, EDocuments, HttpRequest, HttpResponse);
         IsAsync := EDocumentSend.IsAsync();
 
         Telemetry.LogMessage('0000LBO', EDocTelemetrySendBatchScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;
 
+    local procedure AddLogAndUpdateEDocument(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; EDocServiceStatus: Enum "E-Document Service Status")
+    begin
+        EDocumentLog.InsertLog(EDocument, EDocumentService, EDocServiceStatus);
+        EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatus);
+        EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatus);
+    end;
+
     var
         EDocumentLog: Codeunit "E-Document Log";
-        EDocumentHelper: Codeunit "E-Document Processing";
+        EDocumentProcessing: Codeunit "E-Document Processing";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         Telemetry: Codeunit Telemetry;
         EDocumentSendErr: Label 'E-document is %1 and can not be sent in this state.', Comment = '%1 - Status';

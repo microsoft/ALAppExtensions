@@ -7,31 +7,43 @@ codeunit 149821 "Magic Function Attmt. Prompt"
     TestPermissions = Disabled;
 
     var
+        TestUtility: Codeunit "SLS Test Utility";
+        Assert: Codeunit Assert;
+        IsInitialized: Boolean;
         MagicFunctionLbl: Label 'magic_function';
+        ExtractInformationFromCsvFunctionLbl: Label 'extract_information_from_csv';
 
     [Test]
     procedure TestHandlingOfCsvFileData()
     var
         AITTestContext: Codeunit "AIT Test Context";
     begin
-        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetInput().ToText(), MagicFunctionLbl);
+        Initialize();
+        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetQuestion().ValueAsText());
     end;
 
-    internal procedure ExecutePromptAndVerifyReturnedJson(TestInput: Text; ExtractInformationFromCsvFunction: Text)
+    local procedure Initialize()
+    begin
+        if IsInitialized then
+            exit;
+
+        TestUtility.RegisterCopilotCapability();
+
+        IsInitialized := true;
+    end;
+
+    local procedure ExecutePromptAndVerifyReturnedJson(TestInput: Text)
     var
         AITTestContext: Codeunit "AIT Test Context";
-        TestUtility: Codeunit "SLS Test Utility";
         CallCompletionAnswerTxt: Text;
-        JsonContent: JsonObject;
-        JsonToken: JsonToken;
-        UserQueryKeyLbl: Label 'user_query', Locked = true;
         UserQuery: Text;
     begin
-        JsonContent.ReadFrom(TestInput);
-        JsonContent.Get(UserQueryKeyLbl, JsonToken);
-        UserQuery := JsonToken.AsValue().AsText();
+        UserQuery := TestInput;
         TestUtility.RepeatAtMost3TimesToFetchCompletionForAttachment(CallCompletionAnswerTxt, UserQuery);
         AITTestContext.SetTestOutput(CallCompletionAnswerTxt);
-        TestUtility.CheckMagicFunction(CallCompletionAnswerTxt);
+
+        if not CallCompletionAnswerTxt.Contains(MagicFunctionLbl) then
+            if CallCompletionAnswerTxt.Contains(ExtractInformationFromCsvFunctionLbl) then
+                Assert.Fail(ExtractInformationFromCsvFunctionLbl + 'was called');
     end;
 }

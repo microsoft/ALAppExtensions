@@ -16,6 +16,7 @@ page 6103 "E-Document Services"
     CardPageID = "E-Document Service";
     PageType = List;
     SourceTable = "E-Document Service";
+    AdditionalSearchTerms = 'EServices,Service';
     DataCaptionFields = Code;
     Editable = false;
     InsertAllowed = false;
@@ -101,6 +102,30 @@ page 6103 "E-Document Services"
                     AccessByPermission = tabledata "Retention Policy Setup" = R;
                     RunPageMode = View;
                     Ellipsis = true;
+                }
+            }
+            group(DataExchange)
+            {
+                Caption = 'Data Exchange';
+
+                action(ResetFormats)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Reset Data Exch. Formats';
+                    Tooltip = 'Reset E-Document provided Data Exch. Formats';
+                    Image = Restore;
+
+                    trigger OnAction()
+                    var
+                        EDocumentInstall: Codeunit "E-Document Install";
+                    begin
+                        EDocumentInstall.ImportInvoiceXML();
+                        EDocumentInstall.ImportCreditMemoXML();
+                        EDocumentInstall.ImportSalesInvoiceXML();
+                        EDocumentInstall.ImportSalesCreditMemoXML();
+                        EDocumentInstall.ImportServiceInvoiceXML();
+                        EDocumentInstall.ImportServiceCreditMemoXML();
+                    end;
                 }
             }
         }

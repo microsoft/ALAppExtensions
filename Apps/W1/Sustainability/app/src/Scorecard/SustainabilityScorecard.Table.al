@@ -14,6 +14,7 @@ table 6218 "Sustainability Scorecard"
         field(1; "No."; Code[20])
         {
             Caption = 'No.';
+            NotBlank = true;
         }
         field(2; "Name"; Text[100])
         {

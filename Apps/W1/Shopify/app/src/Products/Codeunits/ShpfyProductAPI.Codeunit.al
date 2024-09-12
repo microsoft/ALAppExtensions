@@ -26,9 +26,8 @@ codeunit 30176 "Shpfy Product API"
     internal procedure CreateProduct(var ShopifyProduct: Record "Shpfy Product"; var ShopifyVariant: Record "Shpfy Variant"; var ShopifyTag: Record "Shpfy Tag"): BigInteger
     var
         NewShopifyProduct: Record "Shpfy Product";
-        ShopLocation: Record "Shpfy Shop Location";
         NewShopifyVariant: Record "Shpfy Variant";
-        IStockAvailable: Interface "Shpfy IStock Available";
+        EmptyShopifyVariant: Record "Shpfy Variant";
         JArray: JsonArray;
         JResponse: JsonToken;
         JToken: JsonToken;
@@ -40,17 +39,17 @@ codeunit 30176 "Shpfy Product API"
         ProductEvents.OnBeforeSendCreateShopifyProduct(Shop, ShopifyProduct, ShopifyVariant, ShopifyTag);
         GraphQuery.Append('{"query":"mutation {productCreate(input: {');
         GraphQuery.Append('title: \"');
-        GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyProduct.Title));
+        GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyProduct.Title));
         GraphQuery.Append('\"');
         Data := ShopifyProduct.GetDescriptionHtml();
         if Data <> '' then begin
             GraphQuery.Append(', descriptionHtml: \"');
-            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(Data));
+            GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(Data));
             GraphQuery.Append('\"');
         end;
         if ShopifyProduct."Product Type" <> '' then begin
             GraphQuery.Append(', productType: \"');
-            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyProduct."Product Type"));
+            GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyProduct."Product Type"));
             GraphQuery.Append('\"');
         end;
         GraphQuery.Append(', status: ');
@@ -63,87 +62,10 @@ codeunit 30176 "Shpfy Product API"
         end;
         if ShopifyProduct.Vendor <> '' then begin
             GraphQuery.Append(', vendor: \"');
-            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyProduct.Vendor));
+            GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyProduct.Vendor));
             GraphQuery.Append('\"');
         end;
-        if ShopifyProduct."Has Variants" or (ShopifyVariant."UoM Option Id" > 0) then begin
-            GraphQuery.Append(', options: [\"');
-            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyVariant."Option 1 Name"));
-            if ShopifyVariant."Option 2 Name" <> '' then begin
-                GraphQuery.Append('\", \"');
-                GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyVariant."Option 2 Name"));
-            end;
-            GraphQuery.Append('\"]');
-        end;
-        GraphQuery.Append(', published: true');
-        GraphQuery.Append(', variants: {inventoryPolicy: ');
-        GraphQuery.Append(ShopifyVariant."Inventory Policy".Names.Get(ShopifyVariant."Inventory Policy".Ordinals.IndexOf(ShopifyVariant."Inventory Policy".AsInteger())));
-        if ShopifyVariant.Barcode <> '' then begin
-            GraphQuery.Append(', barcode: \"');
-            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyVariant.Barcode));
-            GraphQuery.Append('\"');
-        end;
-        if ShopifyVariant.SKU <> '' then begin
-            GraphQuery.Append(', sku: \"');
-            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyVariant.SKU));
-            GraphQuery.Append('\"');
-        end;
-        if ShopifyVariant.Taxable then
-            GraphQuery.Append(', taxable: true');
-        if ShopifyVariant."Tax Code" <> '' then begin
-            GraphQuery.Append(', taxCode: \"');
-            GraphQuery.Append(ShopifyVariant."Tax Code");
-            GraphQuery.Append('\"');
-        end;
-        if ShopifyVariant.Weight > 0 then begin
-            GraphQuery.Append(', weight: ');
-            GraphQuery.Append(Format(ShopifyVariant.Weight, 0, 9));
-        end;
-        if ShopifyVariant.Price > 0 then begin
-            GraphQuery.Append(', price: \"');
-            GraphQuery.Append(Format(ShopifyVariant.Price, 0, 9));
-            GraphQuery.Append('\"')
-        end;
-        if ShopifyVariant."Compare at Price" > ShopifyVariant.Price then begin
-            GraphQuery.Append(', compareAtPrice: \"');
-            GraphQuery.Append(Format(ShopifyVariant."Compare at Price", 0, 9));
-            GraphQuery.Append('\"');
-        end;
-        if ShopifyProduct."Has Variants" or (ShopifyVariant."UoM Option Id" > 0) then begin
-            GraphQuery.Append(', options: [\"');
-            GraphQuery.Append(ShopifyVariant."Option 1 Value");
-            if ShopifyVariant."Option 2 Name" <> '' then begin
-                GraphQuery.Append('\", \"');
-                GraphQuery.Append(ShopifyVariant."Option 2 Value");
-            end;
-            GraphQuery.Append('\"]');
-        end;
-        ShopLocation.SetRange("Shop Code", ShopifyProduct."Shop Code");
-        ShopLocation.SetRange(Active, true);
-        ShopLocation.SetRange("Default Product Location", true);
-        if ShopLocation.FindSet(false) then begin
-            GraphQuery.Append(', inventoryQuantities: [');
-            repeat
-                IStockAvailable := ShopLocation."Stock Calculation";
-                GraphQuery.Append('{availableQuantity: 0, locationId: \"gid://shopify/Location/');
-                GraphQuery.Append(Format(ShopLocation.Id));
-                GraphQuery.Append('\"}, ');
-            until ShopLocation.Next() = 0;
-            GraphQuery.Remove(GraphQuery.Length - 1, 2);
-            GraphQuery.Append(']');
-        end;
-        GraphQuery.Append(', inventoryItem: {tracked: ');
-        if Shop."Inventory Tracked" then
-            GraphQuery.Append('true')
-        else
-            GraphQuery.Append('false');
-        if ShopifyVariant."Unit Cost" > 0 then begin
-            GraphQuery.Append(', cost: \"');
-            GraphQuery.Append(Format(ShopifyVariant."Unit Cost", 0, 9));
-            GraphQuery.Append('\"');
-        end;
-        GraphQuery.Append('}}}) ');
-
+        GraphQuery.Append(', published: true}) ');
         GraphQuery.Append('{product {legacyResourceId, onlineStoreUrl, onlineStorePreviewUrl, createdAt, updatedAt, tags, variants(first: 1) {edges {node {legacyResourceId, createdAt, updatedAt}}}}, userErrors {field, message}}');
         GraphQuery.Append('}"}');
 
@@ -169,6 +91,8 @@ codeunit 30176 "Shpfy Product API"
             NewShopifyVariant."Updated At" := JsonHelper.GetValueAsDateTime(JToken, 'edges.node.updatedAt');
             NewShopifyVariant.Insert();
         end;
+
+        VariantApi.UpdateProductVariant(NewShopifyVariant, EmptyShopifyVariant, true, ShopifyProduct."Has Variants");
 
         while ShopifyVariant.Next() > 0 do begin
             ShopifyVariant."Product Id" := NewShopifyProduct.Id;
@@ -446,6 +370,21 @@ codeunit 30176 "Shpfy Product API"
         until not JsonHelper.GetValueAsBoolean(JResponse, 'data.products.pageInfo.hasNextPage');
     end;
 
+    internal procedure CheckShopifyProductImageExists(ProductId: BigInteger; ImageId: BigInteger): Boolean
+    var
+        Parameters: Dictionary of [Text, Text];
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        JMedias: JsonArray;
+        JResponse: JsonToken;
+    begin
+        Parameters.Add('ProductId', Format(ProductId));
+        Parameters.add('ImageId', Format(ImageId));
+        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::GetProductImage, Parameters);
+        if JsonHelper.GetJsonArray(JResponse, JMedias, 'data.product.media.edges') then
+            if JMedias.Count = 1 then
+                exit(true);
+    end;
+
     /// <summary> 
     ///  Set Shop.
     /// </summary>
@@ -485,18 +424,18 @@ codeunit 30176 "Shpfy Product API"
         GraphQuery.Append('\"');
         if ShopifyProduct.Title <> xShopifyProduct.Title then begin
             GraphQuery.Append(', title: \"');
-            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyProduct.Title));
+            GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyProduct.Title));
             GraphQuery.Append('\"');
         end;
         Data := ShopifyProduct.GetDescriptionHtml();
         if Data <> xShopifyProduct.GetDescriptionHtml() then begin
             GraphQuery.Append(', descriptionHtml: \"');
-            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(Data));
+            GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(Data));
             GraphQuery.Append('\"');
         end;
         if ShopifyProduct."Product Type" <> xShopifyProduct."Product Type" then begin
             GraphQuery.Append(', productType: \"');
-            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyProduct."Product Type"));
+            GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyProduct."Product Type"));
             GraphQuery.Append('\"');
         end;
         if ShopifyProduct.Status <> xShopifyProduct.Status then begin
@@ -506,21 +445,21 @@ codeunit 30176 "Shpfy Product API"
         Data := ShopifyProduct.GetCommaSeparatedTags();
         if Data <> '' then begin
             GraphQuery.Append(', tags: \"');
-            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(Data));
+            GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(Data));
             GraphQuery.Append('\"');
         end;
         if ShopifyProduct.Vendor <> xShopifyProduct.Vendor then begin
             GraphQuery.Append(', vendor: \"');
-            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyProduct.Vendor));
+            GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyProduct.Vendor));
             GraphQuery.Append('\"');
         end;
         if (ShopifyProduct."SEO Title" <> xShopifyProduct."SEO Title") or (ShopifyProduct."SEO Description" <> xShopifyProduct."SEO Description") then begin
             GraphQuery.Append(', seo: {');
             GraphQuery.Append('description: \"');
-            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyProduct."SEO Description"));
+            GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyProduct."SEO Description"));
             GraphQuery.Append('\", ');
             GraphQuery.Append('title: \"');
-            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyProduct."SEO Title"));
+            GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyProduct."SEO Title"));
             GraphQuery.Append('\", ');
             GraphQuery.Remove(GraphQuery.Length - 1, 2);
             GraphQuery.Append('}')

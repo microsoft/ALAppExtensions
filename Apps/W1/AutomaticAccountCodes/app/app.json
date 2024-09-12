@@ -1,31 +1,29 @@
 {
-    "id":  "639580c8-7356-11ed-a1eb-0242ac120002",
-    "name":  "Automatic Account Codes",
-    "publisher":  "Microsoft",
-    "brief":  "Automatic account codes are used to automate postings related to payroll overhead.",
-    "description":  "When posting total salary expenses at the end of the month, automatic account codes can be used to assign a percentage of the total salary to automatically post as overhead expenses.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2204541",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/en-us/dynamics365/business-central/ui-extensions",
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  4850,
-                         "to":  4870
-                     }
-                 ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0",
-    "target":  "Cloud"
+  "id": "639580c8-7356-11ed-a1eb-0242ac120002",
+  "name": "Automatic Account Codes",
+  "publisher": "Microsoft",
+  "brief": "Automatic account codes are used to automate postings related to payroll overhead.",
+  "description": "When posting total salary expenses at the end of the month, automatic account codes can be used to assign a percentage of the total salary to automatically post as overhead expenses.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/en-us/dynamics365/business-central/ui-extensions",
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 4850,
+      "to": 4870
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0",
+  "target": "Cloud"
 }

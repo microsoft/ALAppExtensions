@@ -11,10 +11,4 @@ enum 30161 "Shpfy Resource Type" implements "Shpfy ICreate Translation"
         Caption = 'Product';
         Implementation = "Shpfy ICreate Translation" = "Shpfy Create Transl. Product";
     }
-
-    value(1; ProductVariant)
-    {
-        Caption = 'Product Variant';
-        Implementation = "Shpfy ICreate Translation" = "Shpfy Create Transl. Variant";
-    }
 }

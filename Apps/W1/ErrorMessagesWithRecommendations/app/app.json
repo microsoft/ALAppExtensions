@@ -1,39 +1,35 @@
 {
-    "id":  "64c9d5e2-7744-4866-bc0e-5ebc2898e651",
-    "name":  "Error Messages with Recommendations",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "[Preview] Use the actionable error messages displayed on the Error Messages page to resolve the issue and continue working.",
-    "description":  "Error messages can sometimes prevent you from completing a task, especially if the task requires an easy fix. To help you get unblocked and back to work, we have updated our Error Messages page to include actions that can make it easy to fix the problem yourself or fix it in bulk across multiple errors. For example, you can fix dimension errors one by one or in bulk by selecting multiple errors in Error Messages page and running Accept Recommended action.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2234374",
-    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
-    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/en-us/dynamics365/release-plan/2023wave1/smb/dynamics365-business-central/get-unblocked-using-actionable-error-messages-select-application-areas",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  7900,
-                         "to":  7920
-                     }
-                 ],
-    "target":  "Cloud",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "features":  [
-                     "NoImplicitWith",
-                     "GenerateCaptions",
-                     "TranslationFile"
-                 ]
+  "id": "64c9d5e2-7744-4866-bc0e-5ebc2898e651",
+  "name": "Error Messages with Recommendations",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "[Preview] Use the actionable error messages displayed on the Error Messages page to resolve the issue and continue working.",
+  "description": "Error messages can sometimes prevent you from completing a task, especially if the task requires an easy fix. To help you get unblocked and back to work, we have updated our Error Messages page to include actions that can make it easy to fix the problem yourself or fix it in bulk across multiple errors. For example, you can fix dimension errors one by one or in bulk by selecting multiple errors in Error Messages page and running Accept Recommended action.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2234374",
+  "url": "https://go.microsoft.com/fwlink/?linkid=724011",
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/en-us/dynamics365/release-plan/2023wave1/smb/dynamics365-business-central/get-unblocked-using-actionable-error-messages-select-application-areas",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 7900,
+      "to": 7920
+    }
+  ],
+  "target": "Cloud",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "features": [
+    "NoImplicitWith",
+    "GenerateCaptions",
+    "TranslationFile"
+  ]
 }

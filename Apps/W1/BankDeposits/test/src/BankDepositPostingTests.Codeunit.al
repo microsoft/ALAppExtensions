@@ -533,12 +533,61 @@ codeunit 139769 "Bank Deposit Posting Tests"
         GenJournalLine.Modify();
         UpdateBankDepositHeaderWithAmount(BankDepositHeader);
         Commit();
-        // [THEN] It should be possible to post the deposit.
+        // [WHEN] It should be possible to post the deposit.
         PostBankDeposit(BankDepositHeader);
         // [THEN] The total amount of the deposit should be the sum of the lines.
         PostedBankDepositHeader.SetAutoCalcFields("Total Deposit Lines");
         PostedBankDepositHeader.Get(BankDepositHeader."No.");
         Assert.AreEqual(-Amount, PostedBankDepositHeader."Total Deposit Lines", 'The total amount of the deposit should be the sum of the lines');
+    end;
+
+    [Test]
+    [HandlerFunctions('GeneralJournalBatchesPageHandler,ConfirmHandler')]
+    procedure TestThatLumpSumCanBePostedWithOneCustomerLineAndOneGLLine()
+    var
+        GLAccount: Record "G/L Account";
+        Customer: Record Customer;
+        BankDepositHeader: Record "Bank Deposit Header";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalLine: Record "Gen. Journal Line";
+        GenJournalTemplate: Record "Gen. Journal Template";
+        PostedBankDepositHeader: Record "Posted Bank Deposit Header";
+        GenJournalDocumentType: Enum "Gen. Journal Document Type";
+        Amount: Decimal;
+    begin
+        // [SCENARIO 546764] A bank deposit can be posted if the order of lines are one Customer and one G/L lines with gen. posting type Purchase
+        Initialize();
+        CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Type::"Bank Deposits");
+
+        CreateBankDepositHeaderWithBankAccount(BankDepositHeader, GenJournalBatch);
+        BankDepositHeader."Post as Lump Sum" := true;
+        BankDepositHeader.Modify();
+        LibrarySales.CreateCustomer(Customer);
+
+        GLAccount."No." := LibraryERM.CreateGLAccountWithPurchSetup();
+        // [GIVEN] A deposit with a Customer line followed by a G/L line with gen. posting type Purchase
+        Amount := 100;
+        LibraryERM.CreateGeneralJnlLine(
+          GenJournalLine, BankDepositHeader."Journal Template Name", BankDepositHeader."Journal Batch Name", GenJournalDocumentType::" ",
+          GenJournalLine."Account Type"::"Customer", Customer."No.", Amount);
+        GenJournalLine."Document No." := BankDepositHeader."No.";
+        GenJournalLine."Document No." := BankDepositHeader."No.";
+        GenJournalLine.Modify();
+
+        LibraryERM.CreateGeneralJnlLine(
+          GenJournalLine, BankDepositHeader."Journal Template Name", BankDepositHeader."Journal Batch Name", GenJournalDocumentType::" ",
+          GenJournalLine."Account Type"::"G/L Account", GLAccount."No.", 2 * Amount);
+        GenJournalLine."Document No." := BankDepositHeader."No.";
+        GenJournalLine.Modify();
+
+        UpdateBankDepositHeaderWithAmount(BankDepositHeader);
+        Commit();
+        // [THEN] It should be possible to post the deposit.
+        PostBankDeposit(BankDepositHeader);
+        // [THEN] The total amount of the deposit should be the sum of the lines.
+        PostedBankDepositHeader.SetAutoCalcFields("Total Deposit Lines");
+        PostedBankDepositHeader.Get(BankDepositHeader."No.");
+        Assert.AreEqual(-3 * Amount, PostedBankDepositHeader."Total Deposit Lines", 'The total amount of the deposit should be the sum of the lines');
     end;
 
     [Test]

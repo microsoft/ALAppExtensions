@@ -1,64 +1,62 @@
 {
-    "id":  "feeb3504-556e-4790-b28d-a2b9ce302d81",
-    "name":  "Dynamics GP Intelligent Cloud",
-    "publisher":  "Microsoft",
-    "brief":  "This extension will allow you to set up data migration from your Dynamics GP companies to your Dynamics 365 Business Central tenant through a wizard.",
-    "description":  "This extension will take you through the process to migrate data from your Dynamics GP on-premises solution to your Dynamics 365 Business Central cloud tenant.  This will enable you to take advantage of what the cloud has to offer your business such as, enhanced insights into your business, artificial intelligence, multiple device access, and anytime, anywhere access.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2009037",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2244149",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "7c7d97ca-3598-40f5-b263-f713f49bd2a5",
-                             "name":  "Dynamics GP Historical Data",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "58623bfa-0559-4bc2-ae1c-0979c29fd9e0",
-                             "name":  "Intelligent Cloud Base",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "c526b3e9-b8ca-4683-81ba-fcd5f6b1472a",
-                             "name":  "Sales and Inventory Forecast",
-                             "publisher":  "Microsoft",
-                            "version": "25.0.0.0"
-                        },
-                        {
-                            "id": "ea130081-c669-460f-a5f4-5dde14f03131",
-                            "name": "Statistical Accounts",
-                            "publisher": "Microsoft",
-                            "version": "25.0.0.0"
-                        }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "internalsVisibleTo":  [
-                               {
-                                   "id":  "82acac14-8067-499b-8cf0-f068448dff34",
-                                   "name":  "Dynamics GP Intelligent Cloud Tests",
-                                   "publisher":  "Microsoft"
-                               }
-                           ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  1,
-                         "to":  49999
-                     }
-                 ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "Cloud",
-    "application":  "25.0.0.0"
+  "id": "feeb3504-556e-4790-b28d-a2b9ce302d81",
+  "name": "Dynamics GP Intelligent Cloud",
+  "publisher": "Microsoft",
+  "brief": "This extension will allow you to set up data migration from your Dynamics GP companies to your Dynamics 365 Business Central tenant through a wizard.",
+  "description": "This extension will take you through the process to migrate data from your Dynamics GP on-premises solution to your Dynamics 365 Business Central cloud tenant.  This will enable you to take advantage of what the cloud has to offer your business such as, enhanced insights into your business, artificial intelligence, multiple device access, and anytime, anywhere access.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2009037",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2244149",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "7c7d97ca-3598-40f5-b263-f713f49bd2a5",
+      "name": "Dynamics GP Historical Data",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "58623bfa-0559-4bc2-ae1c-0979c29fd9e0",
+      "name": "Intelligent Cloud Base",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "c526b3e9-b8ca-4683-81ba-fcd5f6b1472a",
+      "name": "Sales and Inventory Forecast",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "ea130081-c669-460f-a5f4-5dde14f03131",
+      "name": "Statistical Accounts",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "internalsVisibleTo": [
+    {
+      "id": "82acac14-8067-499b-8cf0-f068448dff34",
+      "name": "Dynamics GP Intelligent Cloud Tests",
+      "publisher": "Microsoft"
+    }
+  ],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 1,
+      "to": 49999
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "Cloud",
+  "application": "26.0.0.0"
 }

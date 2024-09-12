@@ -447,9 +447,21 @@ codeunit 6205 "Transaction Storage ABS"
         exit(FileSize > 100 * 1024 * 1024);     // 100 MB
     end;
 
-    local procedure RemoveProhibitedChars(InputValue: Text): Text
+    local procedure RemoveProhibitedChars(InputValue: Text) OutputValue: Text
+    var
+        Backspace: Char;
+        Tab: Char;
+        LF: Char;
+        CR: Char;
+        Ch: Char;
     begin
-        exit(DelChr(InputValue, '=', './\'));
+        Backspace := 8;
+        Tab := 9;
+        LF := 10;
+        CR := 13;
+        foreach Ch in InputValue do
+            if not (Ch in [Backspace, Tab, LF, CR, '.', '/', '\']) then
+                OutputValue += Ch;
     end;
 
     local procedure FormatContainerName(InputValue: Text) OutputValue: Text

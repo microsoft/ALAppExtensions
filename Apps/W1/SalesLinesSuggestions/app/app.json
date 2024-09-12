@@ -2,7 +2,7 @@
   "id": "dd3f226b-40bf-4b3c-9988-9b1e0f74edd8",
   "name": "Sales Lines Suggestions",
   "publisher": "Microsoft",
-  "version": "25.0.0.0",
+  "version": "26.0.0.0",
   "brief": "Sales Lines Suggestions (Preview) can assist with creating lines on sales documents such as sales quotes, sales orders, and invoices based on structured input or natural language.",
   "description": "Sales Lines Suggestions with Copilot can assist with creating lines on sales documents such as sales quotes, sales orders, and invoices based on structured input or natural language. The Sales lines suggestions is not a general-purpose chat bot, but highly specific and integrated experience available from sales documents and offering two distinct skills. These skills help users find data they are looking for, either individual products or the whole documents.",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
@@ -13,8 +13,8 @@
   "logo": "ExtensionLogo.png",
   "dependencies": [],
   "screenshots": [],
-  "platform": "25.0.0.0",
-  "application": "25.0.0.0",
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
   "target": "OnPrem",
   "idRanges": [
     {

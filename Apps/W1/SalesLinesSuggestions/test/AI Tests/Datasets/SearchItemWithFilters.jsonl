@@ -44,7 +44,7 @@
 {"question": "I would like to reorder the black chair from the posted sales invoice PSO-0003.", "given": ["Items", "Posted Sales Orders"], "Expected": [{"Description": 'PARIS Guest Chair, black'}]}
 {"question": "I need 10 items 1896-S and 5 whiteboards 1996-S as per posted sales shipment PSO-0004.", "given": ["Items", "Posted Sales Orders"], "Expected": [{"Description": 'ATHENS Desk', "Quantity": 1}, {"Description": 'ATLANTA Whiteboard', "Quantity": 4}]}
 {"question": "Provide the yellow chairs and items 1996-S mentioned in invoice PSO-0004.", "given": ["Items", "Posted Sales Orders"], "Expected": [{"Description": 'ATLANTA Whiteboard', "Quantity": 4}, {"Description": 'BERLIN Guest Chair, yellow'}]}
-{"question": "Can I get the item 'Conference package 1' from my shipment PSO-0005?", "given": ["Items", "Posted Sales Orders"], "Expected": []}
+{"question": "Can I get the item 'Conference package 1' from my shipment PSO-0005?", "given": ["Items", "Posted Sales Orders"], "Expected": [{"Description": "Conference Bundle"}]}
 {"question": "I need the black and yellow chairs, desk, whiteboard, and printer from sales invoice PSO-0006.", "given": ["Items", "Posted Sales Orders"], "Expected": [{"Description": 'ATHENS Desk'}, {"Description": 'PARIS Guest Chair, black'}, {"Description": 'BERLIN Guest Chair, yellow'}, {"Description": 'ATLANTA Whiteboard'}]}
 {"question": "I need ATHENS Desk from blanket order SBO-0001", "given": ["Items", "Sales Blanket Orders"], "Expected": [{"Description": 'ATHENS Desk', "Quantity": 1}]}
 {"question": "Retrieve PARIS chair from blanket order SBO-0001", "given": ["Items", "Sales Blanket Orders"], "Expected": []}

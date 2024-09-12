@@ -1,7 +1,6 @@
 codeunit 139631 "E-Doc. Flow Test"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 
     var
@@ -10,7 +9,7 @@ codeunit 139631 "E-Doc. Flow Test"
         LibrarySales: Codeunit "Library - Sales";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibraryEDoc: Codeunit "Library - E-Document";
-        IsInitialized: Boolean;
+        LibraryLowerPermission: Codeunit "Library - Lower Permissions";
         WrongValueErr: Label 'Wrong value';
         WorkflowEmptyErr: Label 'Must return false for an empty workflow';
         NoWorkflowArgumentErr: Label 'E-Document Service must be specified in Workflow Argument';
@@ -35,7 +34,8 @@ codeunit 139631 "E-Doc. Flow Test"
         ServiceCode := LibraryEDoc.CreateService();
         WorkflowCode := LibraryEDoc.CreateFlowWithService(DocSendProfileNo, ServiceCode);
 
-        // [THEN] DoesFlowHasEDocService returns Service A 
+        // [THEN] Team Member DoesFlowHasEDocService returns Service A 
+        LibraryLowerPermission.SetTeamMember();
         EDocWorkflowProcessing.DoesFlowHasEDocService(EDocService, WorkflowCode);
         EDocService.FindSet();
         Assert.AreEqual(1, EDocService.Count(), WrongValueErr);
@@ -118,6 +118,7 @@ codeunit 139631 "E-Doc. Flow Test"
 
         // [THEN] An error message has been logged for the e-document
         ErrorMessage.DeleteAll();
+        LibraryLowerPermission.SetTeamMember();
         EDocWorkflowProcessing.SendEDocument(EDocument, WorkflowStepInstance);
         Assert.IsFalse(ErrorMessage.IsEmpty(), WrongValueErr);
         ErrorMessage.FindLast();
@@ -129,7 +130,7 @@ codeunit 139631 "E-Doc. Flow Test"
     var
         TransformationRule: Record "Transformation Rule";
     begin
-        IsInitialized := true;
+        LibraryLowerPermission.SetOutsideO365Scope();
         LibraryVariableStorage.Clear();
         LibraryEDoc.Initialize();
         TransformationRule.DeleteAll();

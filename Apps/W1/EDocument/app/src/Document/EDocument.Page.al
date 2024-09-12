@@ -156,7 +156,7 @@ page 6121 "E-Document"
                 SubPageLink = "E-Document Entry No" = field("Entry No");
                 ShowFilter = false;
             }
-#if NOT CLEAN24
+#if not CLEAN24
             group(EDocServiceStatus)
             {
                 Visible = false;
@@ -172,7 +172,7 @@ page 6121 "E-Document"
                 ShowFilter = false;
                 UpdatePropagation = Both;
             }
-#if NOT CLEAN24
+#if not CLEAN24
             group("Errors and Warnings")
             {
                 Visible = false;
@@ -327,20 +327,6 @@ page 6121 "E-Document"
                     end;
                 }
 #endif
-                action(MatchToOrderCopilotEnabled)
-                {
-                    Caption = 'Match Purchase Order With Copilot';
-                    ToolTip = 'Match E-document lines to Purchase Order.';
-                    Image = SparkleFilled;
-                    Visible = ShowMapToOrder and CopilotVisible;
-
-                    trigger OnAction()
-                    var
-                        EDocOrderMatch: Codeunit "E-Doc. Line Matching";
-                    begin
-                        EDocOrderMatch.RunMatching(Rec, true);
-                    end;
-                }
                 action(MatchToOrder)
                 {
                     Caption = 'Match Purchase Order';
@@ -393,7 +379,6 @@ page 6121 "E-Document"
                     end;
                 }
             }
-
         }
         area(Navigation)
         {
@@ -469,6 +454,23 @@ page 6121 "E-Document"
                 }
             }
 #endif
+        }
+        area(Prompting)
+        {
+            action(MatchToOrderCopilotEnabled)
+            {
+                Caption = 'Match Purchase Order With Copilot';
+                ToolTip = 'Match E-document lines to Purchase Order.';
+                Image = SparkleFilled;
+                Visible = ShowMapToOrder and CopilotVisible;
+
+                trigger OnAction()
+                var
+                    EDocOrderMatch: Codeunit "E-Doc. Line Matching";
+                begin
+                    EDocOrderMatch.RunMatching(Rec, true);
+                end;
+            }
         }
     }
 

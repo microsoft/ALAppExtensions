@@ -124,6 +124,22 @@ table 6623 "FS Connection Setup"
             DataClassification = SystemMetadata;
             Caption = 'Is CRM Solution Installed';
         }
+        field(69; "Enable Invt. Availability"; Boolean)
+        {
+            DataClassification = SystemMetadata;
+            Caption = 'Enable Inventory Availability by Location';
+
+            trigger OnValidate()
+            var
+                FilterList: List of [Text];
+            begin
+                if "Enable Invt. Availability" then begin
+                    FilterList.Add(GetEntityLogicalName());
+                    CDSIntegrationImpl.ScheduleEnablingVirtualTables(FilterList);
+                    SendNotification();
+                end;
+            end;
+        }
         field(76; "Proxy Version"; Integer)
         {
             Caption = 'Proxy Version';
@@ -303,6 +319,8 @@ table 6623 "FS Connection Setup"
         CRMConnSetupMustBeEnabledErr: label 'You must enable the connection in page %1', Comment = '%1 - page caption';
         HourUnitOfMeasureMustBePickedErr: label 'Field Service uses a fixed unit of measure for bookable resources - hour. You must pick a corresponding resource unit of measure.';
         UncoupleResourcesQst: label 'The current coupling of Resource records to Product entity will be removed. New mapping will be set up between Resource table and Bookable Resource entity. All resources will be uncoupled, but not deleted. Do you want to continue?';
+        EnablingJobScheduledNotificationLbl: Label 'A job queue entry has been scheduled to enable the selected virtual tables in the Dataverse environment. You can close this page and continue working.';
+        DetailsTxt: Label 'Details';
 
     local procedure RemoveExistingCouplingOfResources(): Boolean
     var
@@ -1049,6 +1067,50 @@ table 6623 "FS Connection Setup"
         CRMConnectionNotEnabledErrorInfo.AddNavigationAction(ShowCRMConnectionSetupLbl);
         CRMConnectionNotEnabledErrorInfo.PageNo(Page::"CRM Connection Setup Wizard");
         Error(CRMConnectionNotEnabledErrorInfo);
+    end;
+
+    internal procedure IsVirtualTablesAppInstalled(): Boolean
+    var
+        CDSConnectionSetup: Record "CDS Connection Setup";
+        [NonDebuggable]
+        TempAdminCDSConnectionSetup: Record "CDS Connection Setup" temporary;
+        AccessToken: SecretText;
+    begin
+        CDSConnectionSetup.Get();
+        CDSIntegrationImpl.GetAccessToken(CDSConnectionSetup."Server Address", true, AccessToken);
+        CDSIntegrationImpl.GetTempConnectionSetup(TempAdminCDSConnectionSetup, CDSConnectionSetup, AccessToken);
+        exit(CDSIntegrationImpl.IsVirtualTablesAppInstalled(TempAdminCDSConnectionSetup));
+    end;
+
+    local procedure SendNotification()
+    var
+        ScheduledJobNotification: Notification;
+    begin
+        ScheduledJobNotification.Message(EnablingJobScheduledNotificationLbl);
+        ScheduledJobNotification.Scope(NotificationScope::LocalScope);
+        ScheduledJobNotification.AddAction(DetailsTxt, Codeunit::"CDS Integration Impl.", 'OpenEnableVirtualTablesJobFromNotification');
+        ScheduledJobNotification.Send();
+    end;
+
+    internal procedure GetEntityLogicalName(): Text
+    begin
+        exit('itemavailabilitybylocation_v2_0');
+    end;
+
+    internal procedure SetupVirtualTables(VirtualTableAppInstalled: Boolean)
+    var
+        CDSConnectionSetup: Record "CDS Connection Setup";
+    begin
+        if not VirtualTableAppInstalled then
+            exit;
+
+        CDSConnectionSetup.Get();
+        if CDSConnectionSetup."Business Events Enabled" then
+            exit;
+
+        CDSIntegrationImpl.SetupVirtualTables(CDSConnectionSetup, CDSConnectionSetup."Virtual Tables Config Id");
+        CDSConnectionSetup."Business Events Enabled" := true;
+        CDSIntegrationImpl.UpdateBusinessEventsSetupFromWizard(CDSConnectionSetup);
     end;
 }
 

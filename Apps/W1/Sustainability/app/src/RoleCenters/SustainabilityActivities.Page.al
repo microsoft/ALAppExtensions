@@ -2,8 +2,8 @@ namespace Microsoft.Sustainability.RoleCenters;
 
 using Microsoft.EServices.EDocument;
 using Microsoft.Purchases.Document;
-using Microsoft.API.V1;
 using System.Device;
+using Microsoft.Sustainability.Ledger;
 
 page 6236 "Sustainability Activities"
 {
@@ -24,21 +24,21 @@ page 6236 "Sustainability Activities"
                 {
                     ApplicationArea = All;
                     Caption = 'CO2 This Month';
-                    DrillDownPageId = "Sustainability Ledg. Entries";
+                    DrillDownPageId = "Sustainability Ledger Entries";
                     ToolTip = 'Specifies the value of the CO2 This Month field.';
                 }
                 field("Emission CH4"; Rec."Emission CH4")
                 {
                     ApplicationArea = All;
                     Caption = 'CH4 This Month';
-                    DrillDownPageId = "Sustainability Ledg. Entries";
+                    DrillDownPageId = "Sustainability Ledger Entries";
                     ToolTip = 'Specifies the value of the CH4 This Month field.';
                 }
                 field("Emission N2O"; Rec."Emission N2O")
                 {
                     ApplicationArea = All;
                     Caption = 'N2O This Month';
-                    DrillDownPageId = "Sustainability Ledg. Entries";
+                    DrillDownPageId = "Sustainability Ledger Entries";
                     ToolTip = 'Specifies the value of the N2O This Month field.';
                 }
             }

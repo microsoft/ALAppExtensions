@@ -1,43 +1,39 @@
 {
-    "id":  "672777d5-ab26-4369-b334-6f04256efffd",
-    "name":  "_Exclude_Onboarding Signals",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Adding first party Onboarding Signals",
-    "description":  "Adding Microsoft Onboarding Signals and Providing an example how Onboarding Signals can be added.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2219800",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2219800",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "internalsVisibleTo":  [
-                               {
-                                   "id":  "b0189501-269d-460e-bf1d-38a7bc5e5deb",
-                                   "name":  "_Exclude_Onboarding Signals Tests",
-                                   "publisher":  "Microsoft"
-                               }
-                           ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  20370,
-                         "to":  20379
-                     }
-                 ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "features":  [
-                     "NoImplicitWith"
-                 ]
+  "id": "672777d5-ab26-4369-b334-6f04256efffd",
+  "name": "_Exclude_Onboarding Signals",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Adding first party Onboarding Signals",
+  "description": "Adding Microsoft Onboarding Signals and Providing an example how Onboarding Signals can be added.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2219800",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2219800",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "internalsVisibleTo": [
+    {
+      "id": "b0189501-269d-460e-bf1d-38a7bc5e5deb",
+      "name": "_Exclude_Onboarding Signals Tests",
+      "publisher": "Microsoft"
+    }
+  ],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 20370,
+      "to": 20379
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "features": [
+    "NoImplicitWith"
+  ]
 }

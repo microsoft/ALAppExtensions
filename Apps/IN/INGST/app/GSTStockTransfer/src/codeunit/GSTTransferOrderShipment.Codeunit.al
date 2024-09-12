@@ -184,6 +184,7 @@ codeunit 18391 "GST Transfer Order Shipment"
         if (TransferLine."GST Group Code" = '') or (TransferLine."HSN/SAC Code" = '') then
             exit;
 
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
         TaxTransactionValue.SetRange("Tax Record ID", TransferLine.RecordId);
         if TaxTransactionValue.IsEmpty then
             exit;
@@ -336,6 +337,7 @@ codeunit 18391 "GST Transfer Order Shipment"
                     TransferLine.TestField(Quantity);
                     Item.Get(TransferLine."Item No.");
                     TaxTransactionValue.Reset();
+                    TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
                     TaxTransactionValue.SetFilter("Tax Type", '%1|%2', GSTSetup."GST Tax Type", GSTSetup."Cess Tax Type");
                     TaxTransactionValue.SetRange("Tax Record ID", TransferLine.RecordId);
                     TaxTransactionValue.SetRange("Value Type", TaxTransactionValue."Value Type"::COMPONENT);

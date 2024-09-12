@@ -155,7 +155,6 @@ codeunit 139607 "Shpfy Order Handling Helper"
         JOrder.Add('displayFulfillmentStatus', Format(OrdersToImport."Fulfillment Status").ToUpper());
         JOrder.Add('total_weight', Any.IntegerInRange(0, 1000));
         JOrder.Add('refundable', false);
-        JOrder.Add('riskLevel', "Shpfy Risk Level".Names().Get(OrdersToImport."Risk Level".AsInteger()).ToUpper().Replace(' ', '_'));
         JOrder.Add('risks', GetRiskLevels());
         JOrder.Add('tags', OrdersToImport.Tags);
         JOrder.Add('paymentGatewayNames', GetPaymentGatewayNames());

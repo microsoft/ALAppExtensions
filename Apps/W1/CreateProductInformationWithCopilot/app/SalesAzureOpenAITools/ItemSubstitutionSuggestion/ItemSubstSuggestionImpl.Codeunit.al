@@ -16,7 +16,7 @@ codeunit 7330 "Item Subst. Suggestion Impl."
     var
         ItemSubstSuggestUtility: Codeunit "Create Product Info. Utility";
         ItemNotFoundErr: Label 'Item not found';
-        NoSuggestionsMsg: Label 'There are no suggestions for this description. Please rephrase it.';
+        NoSuggestionsMsg: Label 'There are no items matching the description or keywords in the prompt.';
         ResponseErr: Label 'Response error code: %1', Comment = '%1 = Error code', Locked = true;
 
     internal procedure GetFeatureName(): Text
@@ -94,7 +94,7 @@ codeunit 7330 "Item Subst. Suggestion Impl."
             exit;
 
         // Generate OpenAI Completion
-        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4Preview());
+        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4oPreview());
         AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"Create Product Information");
 
         AOAIChatCompletionParams.SetMaxTokens(ItemSubstSuggestUtility.GetMaxTokens());

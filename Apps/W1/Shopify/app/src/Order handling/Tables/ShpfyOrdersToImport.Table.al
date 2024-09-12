@@ -86,12 +86,19 @@ table 30121 "Shpfy Orders to Import"
             DataClassification = CustomerContent;
             Editable = false;
         }
-
         field(12; "Risk Level"; enum "Shpfy Risk Level")
         {
             Caption = 'Risk Level';
             DataClassification = CustomerContent;
             Editable = false;
+            ObsoleteReason = 'This field is not imported.';
+#if not CLEAN25
+            ObsoleteState = Pending;
+            ObsoleteTag = '25.0';
+#else
+                                ObsoleteState = Removed;
+                                ObsoleteTag = '28.0';
+#endif
         }
         field(13; "Financial Status"; enum "Shpfy Financial Status")
         {

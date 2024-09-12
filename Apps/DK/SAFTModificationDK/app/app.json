@@ -1,49 +1,47 @@
 {
-    "id":  "fed2a629-3c57-4250-b2b7-f3c7a9c53cd5",
-    "name":  "SAF-T Modification DK",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "SAF-T modification for Denmark.",
-    "description":  "SAF-T app modification is used to export audit data that is specific for Denmark.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2270111",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2204541",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "a41b0c3e-bf1c-4c97-ad1b-b430a3933ada",
-                             "name":  "Audit File Export",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "4ce93371-6bd6-4027-a78f-021064ad250e",
-                             "name":  "SAF-T",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  13687,
-                         "to":  13689
-                     },
-                     {
-                         "from":  13695,
-                         "to":  13698
-                     }
-                 ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "Cloud"
+  "id": "fed2a629-3c57-4250-b2b7-f3c7a9c53cd5",
+  "name": "SAF-T Modification DK",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "SAF-T modification for Denmark.",
+  "description": "SAF-T app modification is used to export audit data that is specific for Denmark.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2270111",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "a41b0c3e-bf1c-4c97-ad1b-b430a3933ada",
+      "name": "Audit File Export",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "4ce93371-6bd6-4027-a78f-021064ad250e",
+      "name": "SAF-T",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 13687,
+      "to": 13689
+    },
+    {
+      "from": 13695,
+      "to": 13698
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "Cloud"
 }

@@ -9,7 +9,6 @@ page 30123 "Shpfy Order Risks"
     PageType = List;
     SourceTable = "Shpfy Order Risk";
     UsageCategory = None;
-    SourceTableView = where(Display = const(true));
     Editable = false;
 
     layout
@@ -18,6 +17,11 @@ page 30123 "Shpfy Order Risks"
         {
             repeater(General)
             {
+                field("Provider"; Rec.Provider)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the provider of the Shopify Order Risk.';
+                }
                 field(Level; Rec.Level)
                 {
                     ApplicationArea = All;
@@ -27,6 +31,11 @@ page 30123 "Shpfy Order Risks"
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the message that''s displayed to the merchant to indicate the results of the fraud check.';
+                }
+                field(Sentiment; Rec.Sentiment)
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the sentiment of the Shopify Order Risk.';
                 }
             }
         }

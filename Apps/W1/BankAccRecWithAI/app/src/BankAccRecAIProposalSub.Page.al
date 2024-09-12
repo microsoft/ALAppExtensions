@@ -47,6 +47,7 @@ page 7251 "Bank Acc. Rec. AI Proposal Sub"
                 {
                     ApplicationArea = All;
                     Tooltip = 'Specifies the action proposed by the AI';
+                    CaptionClass = ProposalFieldCaption;
 
                     trigger OnDrillDown()
                     begin
@@ -214,11 +215,17 @@ page 7251 "Bank Acc. Rec. AI Proposal Sub"
             until Rec.Next() = 0;
     end;
 
+    internal procedure SetProposalFieldCaption(PropFldCap: Text)
+    begin
+        ProposalFieldCaption := PropFldCap;
+    end;
+
     var
         TempInitialBankAccRecAIProposal: Record "Bank Acc. Rec. AI Proposal" temporary;
         MapTextToAccountVisible: Boolean;
+        ProposalFieldCaption: Text;
         MapTextToAccountTxt: label 'Save...';
-        ApplyToMultipleLedgerEntriesTxt: label 'Apply to multiple entries. Drill down to see more.';
+        ApplyToMultipleLedgerEntriesTxt: label 'Match multiple entries. Drill down to see more.';
         TelemetryUserSavingProposalTxt: label 'User saving Copilot proposal in Text-toAccount Mapping table', Locked = true;
         TelemetryUserChangedProposalTxt: label 'User changed Copilot proposal for transfering to G/L Account', Locked = true;
 

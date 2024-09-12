@@ -27,12 +27,17 @@ pageextension 30116 "Shpfy Sales Order List" extends "Sales Order List"
                     ShopifyOrderMgt.ShowShopifyOrder(VariantRec);
                 end;
             }
+#if not CLEAN25
             field(ShpfyRiskLevel; Rec."Shpfy Risk Level")
             {
                 ApplicationArea = All;
                 ToolTip = 'Specifies the risk level from the Shopify order.';
                 Visible = false;
+                ObsoleteReason = 'This field is not imported.';
+                ObsoleteState = Pending;
+                ObsoleteTag = '25.0';
             }
+#endif
         }
     }
 }

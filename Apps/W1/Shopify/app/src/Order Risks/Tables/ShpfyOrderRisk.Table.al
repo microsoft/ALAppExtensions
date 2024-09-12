@@ -40,6 +40,27 @@ table 30123 "Shpfy Order Risk"
             Caption = 'Display';
             DataClassification = SystemMetadata;
             Editable = false;
+            ObsoleteReason = 'This field is not imported.';
+#if not CLEAN25
+            ObsoleteState = Pending;
+            ObsoleteTag = '25.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '28.0';
+#endif
+
+        }
+        field(6; Provider; Text[512])
+        {
+            Caption = 'Provider';
+            DataClassification = SystemMetadata;
+            Editable = false;
+        }
+        field(7; Sentiment; Enum "Shpfy Assessment Sentiment")
+        {
+            Caption = 'Sentiment';
+            DataClassification = SystemMetadata;
+            Editable = false;
         }
     }
     keys

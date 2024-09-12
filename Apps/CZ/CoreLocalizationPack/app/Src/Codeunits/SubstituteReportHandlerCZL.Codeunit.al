@@ -60,9 +60,6 @@ codeunit 31097 "Substitute Report Handler CZL"
             case ReportId of
                 Report::"Balance Sheet":
                     NewReportId := Report::"Balance Sheet CZL";
-#if not CLEAN23
-                Report::"Adjust Exchange Rates",
-#endif
                 Report::"Exch. Rate Adjustment":
                     NewReportId := Report::"Adjust Exchange Rates CZL";
                 Report::"Calc. and Post VAT Settlement":

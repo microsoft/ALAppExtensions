@@ -1,46 +1,44 @@
 {
-    "id":  "4ce93371-6bd6-4027-a78f-021064ad250e",
-    "name":  "SAF-T",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "SAF-T provides a user interface for exporting accounting, tax, and other data required by auditors or authorities.",
-    "description":  "As a part of the audit reporting, companies must be able to export transaction data according to the SAF-T format based on OECD standard. This feature enables using SAF-T format for exporting data within Audit File Export app, where you can specify Standard Chart of Accounts and map other required data to fulfill all requirements.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://learn.microsoft.com/en-us/dynamics365/business-central/localfunctionality/denmark/how-to-use-saft-audit-files-export",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2204541",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "a41b0c3e-bf1c-4c97-ad1b-b430a3933ada",
-                             "name":  "Audit File Export",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "internalsVisibleTo":  [
-                               {
-                                   "id":  "dfe6916f-cba8-4973-afdc-1544705c661f",
-                                   "name":  "SAF-T Tests",
-                                   "publisher":  "Microsoft"
-                               }
-                           ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  5280,
-                         "to":  5299
-                     }
-                 ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "Cloud"
+  "id": "4ce93371-6bd6-4027-a78f-021064ad250e",
+  "name": "SAF-T",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "SAF-T provides a user interface for exporting accounting, tax, and other data required by auditors or authorities.",
+  "description": "As a part of the audit reporting, companies must be able to export transaction data according to the SAF-T format based on OECD standard. This feature enables using SAF-T format for exporting data within Audit File Export app, where you can specify Standard Chart of Accounts and map other required data to fulfill all requirements.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://learn.microsoft.com/en-us/dynamics365/business-central/localfunctionality/denmark/how-to-use-saft-audit-files-export",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "a41b0c3e-bf1c-4c97-ad1b-b430a3933ada",
+      "name": "Audit File Export",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "internalsVisibleTo": [
+    {
+      "id": "dfe6916f-cba8-4973-afdc-1544705c661f",
+      "name": "SAF-T Tests",
+      "publisher": "Microsoft"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 5280,
+      "to": 5299
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "Cloud"
 }

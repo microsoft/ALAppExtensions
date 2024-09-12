@@ -21,6 +21,8 @@ permissionset 6612 "FS - Objects"
                 page "FS Connection Setup" = X,
                 page "FS Connection Setup Wizard" = X,
                 page "FS Customer Asset List" = X,
+                page "FS Item Avail. by Location" = X,
+                query "FS Item Avail. by Location" = X,
                 table "FS Bookable Resource" = X,
                 table "FS Bookable Resource Booking" = X,
                 table "FS BookableResourceBookingHdr" = X,

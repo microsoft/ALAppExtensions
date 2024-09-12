@@ -3,7 +3,7 @@ namespace Microsoft.Integration.Shopify;
 using Microsoft.Foundation.PaymentTerms;
 
 /// <summary>
-/// Table Shpfy Payment Terms (ID 30158).
+/// Table Shpfy Payment Terms (ID 30157).
 /// </summary>
 table 30158 "Shpfy Payment Terms"
 {
@@ -19,7 +19,7 @@ table 30158 "Shpfy Payment Terms"
             TableRelation = "Shpfy Shop";
             Editable = false;
         }
-        field(2; Id; BigInteger)
+        field(2; "Id"; BigInteger)
         {
             Caption = 'ID';
             Editable = false;
@@ -34,12 +34,12 @@ table 30158 "Shpfy Payment Terms"
             Caption = 'Due In Days';
             Editable = false;
         }
-        field(40; Description; Text[50])
+        field(40; "Description"; Text[50])
         {
             Caption = 'Description';
             Editable = false;
         }
-        field(50; Type; Code[20])
+        field(50; "Type"; Code[20])
         {
             Caption = 'Type';
             Editable = false;
@@ -50,15 +50,13 @@ table 30158 "Shpfy Payment Terms"
 
             trigger OnValidate()
             var
-                ShpfyPaymentTerms: Record "Shpfy Payment Terms";
-                PrimaryPaymentTermsExistsErr: Label 'Primary payment terms already exist for this shop.';
+                ShopifyPaymentTerms: Record "Shpfy Payment Terms";
             begin
-                ShpfyPaymentTerms.SetRange("Shop Code", Rec."Shop Code");
-                ShpfyPaymentTerms.SetRange("Is Primary", true);
-                ShpfyPaymentTerms.SetFilter(Id, '<>%1', Rec.Id);
-
-                if not ShpfyPaymentTerms.IsEmpty() then
-                    Error(PrimaryPaymentTermsExistsErr);
+                if Rec."Is Primary" then begin
+                    ShopifyPaymentTerms.SetRange("Is Primary", true);
+                    if not ShopifyPaymentTerms.IsEmpty() then
+                        Error(MultiplePrimaryPaymentTermsErr);
+                end;
             end;
         }
         field(70; "Payment Terms Code"; Code[10])
@@ -70,9 +68,12 @@ table 30158 "Shpfy Payment Terms"
 
     keys
     {
-        key(PK; "Shop Code", Id)
+        key(PK; "Shop Code", "Id")
         {
             Clustered = true;
         }
     }
+
+    var
+        MultiplePrimaryPaymentTermsErr: Label 'Only one primary payment term is allowed.';
 }

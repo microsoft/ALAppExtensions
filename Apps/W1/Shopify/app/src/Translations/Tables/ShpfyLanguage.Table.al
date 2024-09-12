@@ -16,14 +16,12 @@ table 30156 "Shpfy Language"
             Editable = false;
             TableRelation = "Shpfy Shop";
         }
-
         field(2; Locale; text[2])
         {
             Caption = 'Locale';
             DataClassification = SystemMetadata;
             Editable = false;
         }
-
         field(3; "Sync Translations"; Boolean)
         {
             Caption = 'Sync translations';
@@ -62,11 +60,11 @@ table 30156 "Shpfy Language"
     /// <param name="LocaleText">Locale of the language.</param>
     internal procedure AddLanguage(Shop: Record "Shpfy Shop"; NewLocale: Text[2])
     var
-        ShpfyLanguage: Record "Shpfy Language";
+        ShopifyLanguage: Record "Shpfy Language";
     begin
-        ShpfyLanguage.Init();
-        ShpfyLanguage."Shop Code" := Shop.Code;
-        ShpfyLanguage.Locale := NewLocale;
-        ShpfyLanguage.Insert(true);
+        ShopifyLanguage.Init();
+        ShopifyLanguage."Shop Code" := Shop.Code;
+        ShopifyLanguage.Locale := NewLocale;
+        ShopifyLanguage.Insert(true);
     end;
 }

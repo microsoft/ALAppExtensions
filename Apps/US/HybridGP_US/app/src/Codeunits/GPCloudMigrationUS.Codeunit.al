@@ -1,15 +1,17 @@
 namespace Microsoft.DataMigration.GP;
 
 using System.Integration;
+#if not CLEAN25
 using System.Environment.Configuration;
-using System.Environment;
+#endif
 using Microsoft.Purchases.Vendor;
-using Microsoft.Finance.VAT.Reporting;
 
 codeunit 42004 "GP Cloud Migration US"
 {
     var
+#if not CLEAN25
         IRSFormFeatureKeyIdTok: Label 'IRSForm', Locked = true;
+#endif
 
     [EventSubscriber(ObjectType::Codeunit, CodeUnit::"Data Migration Mgt.", 'OnAfterMigrationFinished', '', false, false)]
     local procedure OnAfterMigrationFinishedSubscriber(var DataMigrationStatus: Record "Data Migration Status"; WasAborted: Boolean; StartTime: DateTime; Retry: Boolean)
