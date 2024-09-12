@@ -2131,13 +2131,14 @@ codeunit 6610 "FS Int. Table Subscriber"
     internal procedure IgnorePostedJobJournalLinesOnQueryPostFilterIgnoreRecord(SourceRecordRef: RecordRef; var IgnoreRecord: Boolean)
     var
         FSConnectionSetup: Record "FS Connection Setup";
+        FSWorkOrder: Record "FS Work Order";
         FSWorkOrderProduct: Record "FS Work Order Product";
         FSWorkOrderService: Record "FS Work Order Service";
-        FieldServiceId: Guid;
         QuantityCurrentlyConsumed: Decimal;
         QuantityCurrentlyInvoiced: Decimal;
         FSQuantityToConsume: Decimal;
         FSQuantityToInvoice: Decimal;
+        IntegrateToService: Boolean;
     begin
         if not FSConnectionSetup.IsIntegrationTypeProjectEnabled() then
             exit;
@@ -2150,24 +2151,29 @@ codeunit 6610 "FS Int. Table Subscriber"
             Database::"FS Work Order Product":
                 begin
                     SourceRecordRef.SetTable(FSWorkOrderProduct);
-                    FieldServiceId := FSWorkOrderProduct.WorkOrderProductId;
                     if FSWorkOrderProduct.LineStatus = FSWorkOrderProduct.LineStatus::Used then begin
                         FSQuantityToConsume := FSWorkOrderProduct.Quantity;
                         FSQuantityToInvoice := FSWorkOrderProduct.QtyToBill;
                     end;
+                    if FSWorkOrder.Get(FSWorkOrderProduct.WorkOrder) then
+                        IntegrateToService := FSWorkOrder.IntegrateToService;
                 end;
             Database::"FS Work Order Service":
                 begin
                     SourceRecordRef.SetTable(FSWorkOrderService);
-                    FieldServiceId := FSWorkOrderService.WorkOrderServiceId;
                     if FSWorkOrderService.LineStatus = FSWorkOrderService.LineStatus::Used then begin
                         FSQuantityToConsume := FSWorkOrderService.Duration / 60;
                         FSQuantityToInvoice := FSWorkOrderService.DurationToBill / 60;
                     end;
+                    if FSWorkOrder.Get(FSWorkOrderService.WorkOrder) then
+                        IntegrateToService := FSWorkOrder.IntegrateToService;
                 end;
         end;
 
         SetCurrentProjectPlanningQuantities(SourceRecordRef, QuantityCurrentlyConsumed, QuantityCurrentlyInvoiced);
+
+        if IntegrateToService then
+            IgnoreRecord := true;
 
         if (QuantityCurrentlyConsumed = FSQuantityToConsume) and (QuantityCurrentlyInvoiced = FSQuantityToInvoice) then
             IgnoreRecord := true;
