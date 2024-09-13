@@ -16,23 +16,6 @@ pageextension 6137 "E-Doc. Purchase Order List" extends "Purchase Order List"
         {
             group("E-Document")
             {
-                action(MatchToOrderCopilotEnabled)
-                {
-                    Caption = 'Map E-Document Lines With Copilot';
-                    ToolTip = 'Map received E-Document to the Purchase Order';
-                    ApplicationArea = All;
-                    Image = SparkleFilled;
-                    Visible = ShowMapToEDocument and CopilotVisible;
-
-                    trigger OnAction()
-                    var
-                        EDocument: Record "E-Document";
-                        EDocOrderMatch: Codeunit "E-Doc. Line Matching";
-                    begin
-                        EDocument.GetBySystemId(Rec."E-Document Link");
-                        EDocOrderMatch.RunMatching(EDocument, true);
-                    end;
-                }
                 action(MatchToOrder)
                 {
                     Caption = 'Map E-Document Lines';
@@ -66,6 +49,27 @@ pageextension 6137 "E-Doc. Purchase Order List" extends "Purchase Order List"
                     end;
                 }
             }
+        }
+        addlast(Prompting)
+        {
+            action(MatchToOrderCopilotEnabled)
+            {
+                Caption = 'Map E-Document Lines With Copilot';
+                ToolTip = 'Map received E-Document to the Purchase Order';
+                ApplicationArea = All;
+                Image = SparkleFilled;
+                Visible = ShowMapToEDocument and CopilotVisible;
+
+                trigger OnAction()
+                var
+                    EDocument: Record "E-Document";
+                    EDocOrderMatch: Codeunit "E-Doc. Line Matching";
+                begin
+                    EDocument.GetBySystemId(Rec."E-Document Link");
+                    EDocOrderMatch.RunMatching(EDocument, true);
+                end;
+            }
+
         }
         addlast(Category_Process)
         {

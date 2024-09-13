@@ -1,0 +1,45 @@
+{
+  "id": "e4e86220-cac0-4ec3-b853-7c2fa610399d",
+  "name": "PowerBI Reports",
+  "publisher": "Microsoft",
+  "brief": "Analyse Business Central data in Power BI",
+  "description": "Core Connector for Power BI allows you to easily integrate Business Central data with Power BI.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2104024",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/dynamics365/business-central/",
+  "logo": "assets/ExtensionLogo.png",
+  "dependencies": [],
+  "internalsVisibleTo": [
+    {
+      "id": "7628c8de-f349-4806-a540-21b0044f7722",
+      "name": "PowerBI Reports Test",
+      "publisher": "Microsoft"
+    }
+  ],
+  "screenshots": [],
+  "application": "26.0.0.0",
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 36950,
+      "to": 37049
+    },
+    {
+      "from": 37055,
+      "to": 37069
+    }
+  ],
+  "features": [
+    "TranslationFile",
+    "NoImplicitWith"
+  ],
+  "supportedLocales": [
+    "en-US",
+    "fr-FR",
+    "es-ES",
+    "de-DE"
+  ]
+}

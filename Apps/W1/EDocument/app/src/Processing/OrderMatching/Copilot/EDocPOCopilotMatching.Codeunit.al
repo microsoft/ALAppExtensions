@@ -111,7 +111,7 @@ codeunit 6163 "E-Doc. PO Copilot Matching"
         Session.LogMessage('0000MOT', AttempToUseCopilotMsg, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());
 
         // Generate OpenAI Completion
-        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4Latest());
+        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4oLatest());
         AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"E-Document Matching Assistance");
 
         AOAIChatCompletionParams.SetMaxTokens(MaxTokens());
@@ -147,14 +147,11 @@ codeunit 6163 "E-Doc. PO Copilot Matching"
 
     procedure IsCopilotVisible(): Boolean
     var
+        CopilotCapability: Codeunit "Copilot Capability";
         AIMatchingImpl: Codeunit "E-Doc. PO Copilot Matching";
-        EnvironmentInformation: Codeunit "Environment Information";
     begin
         AIMatchingImpl.RegisterAICapability();
-        if not EnvironmentInformation.IsSaaSInfrastructure() then
-            exit(false);
-
-        exit(true);
+        exit(CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"E-Document Matching Assistance"));
     end;
 
     procedure SumUnitCostForAIMatches(var TempAIProposalBuffer: Record "E-Doc. PO Match Prop. Buffer" temporary) Sum: Decimal
@@ -295,7 +292,7 @@ codeunit 6163 "E-Doc. PO Copilot Matching"
         AzureKeyVault: Codeunit "Azure Key Vault";
         Prompt: SecretText;
     begin
-        if AzureKeyVault.GetAzureKeyVaultSecret('EDocumentMappingPrompt', Prompt) then
+        if AzureKeyVault.GetAzureKeyVaultSecret('EDocumentMappingPromptV2', Prompt) then
             exit(Prompt);
 
         Session.LogMessage('0000MOV', FailedToGetPromptSecretErr, Verbosity::Error, DataClassification::SystemMetadata, TelemetryScope::All, 'Category', FeatureName());

@@ -68,6 +68,7 @@ page 30101 "Shpfy Shop Card"
 #endif
                         BulkOperationMgt.EnableBulkOperations(Rec);
                         Rec."B2B Enabled" := Rec.GetB2BEnabled();
+                        Rec."Weight Unit" := Rec.GetShopWeightUnit();
                         Rec.SyncCountries();
                         FeatureTelemetry.LogUptake('0000HUT', 'Shopify', Enum::"Feature Uptake Status"::"Set up");
                     end;
@@ -245,10 +246,22 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the status of a product in Shopify via the sync when an item is removed in Shopify or an item is blocked in Business Central.';
                 }
+#if not CLEAN26
                 field("Items Mapped to Products"; Rec."Items Mapped to Products")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies if only the items that are mapped to Shopify products/Shopify variants are synchronized from Posted Sales Invoices to Shopify.';
+                    Visible = false;
+                    ObsoleteReason = 'This setting is not used.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '26.0';
+                }
+#endif
+                field(WeightUnit; Rec."Weight Unit")
+                {
+                    ApplicationArea = All;
+                    Importance = Additional;
+                    ToolTip = 'Specifies the weight unit of the Shopify Shop.';
                 }
             }
             group(PriceSynchronization)
@@ -1012,7 +1025,6 @@ page 30101 "Shpfy Shop Card"
                 action(SyncPostedSalesInvoices)
                 {
                     ApplicationArea = All;
-                    Ellipsis = true;
                     Caption = 'Sync Posted Sales Invoices';
                     Image = Export;
                     Promoted = true;
@@ -1183,6 +1195,7 @@ page 30101 "Shpfy Shop Card"
                 if Confirm(StrSubstNo(ScopeChangeConfirmLbl, Rec.Code)) then begin
                     Rec.RequestAccessToken();
                     Rec."B2B Enabled" := Rec.GetB2BEnabled();
+                    Rec."Weight Unit" := Rec.GetShopWeightUnit();
                     Rec.Modify();
                 end else begin
                     Rec.Enabled := false;

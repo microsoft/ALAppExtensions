@@ -58,7 +58,7 @@ codeunit 11743 "Sales Header Handler CZL"
             Rec."EU 3-Party Intermed. Role CZL" := false;
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnBeforeValidateEvent', 'Currency Code', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Sales Header", 'OnAfterValidateEvent', 'Currency Code', false, false)]
     local procedure UpdateVatCurrencyCodeCZLOnBeforeCurrencyCodeValidate(var Rec: Record "Sales Header")
     begin
         Rec.Validate("VAT Currency Code CZL", Rec."Currency Code");

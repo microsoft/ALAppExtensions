@@ -1,39 +1,37 @@
 {
-    "id":  "c0146fcd-d0fe-4eec-8857-8a66551d010d",
-    "name":  "Data Archive Tests",
-    "publisher":  "Microsoft",
-    "brief":  "Data Archive Tests.",
-    "description":  "Data Archive Tests.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=847985",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2173136",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206251",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "7819d79d-feea-4f09-bbed-5bbaca4bf323",
-                             "name":  "Data Archive",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
-                             "name":  "Library Assert",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "c0146fcd-d0fe-4eec-8857-8a66551d010d",
+  "name": "Data Archive Tests",
+  "publisher": "Microsoft",
+  "brief": "Data Archive Tests.",
+  "description": "Data Archive Tests.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=847985",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2173136",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2206251",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "7819d79d-feea-4f09-bbed-5bbaca4bf323",
+      "name": "Data Archive",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+      "name": "Library Assert",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

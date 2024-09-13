@@ -11,7 +11,6 @@ codeunit 30197 "Shpfy Sync Inventory"
     var
         InventoryApi: Codeunit "Shpfy Inventory API";
 
-
     trigger OnRun()
     var
         ShopInventory: Record "Shpfy Shop Inventory";
@@ -23,6 +22,7 @@ codeunit 30197 "Shpfy Sync Inventory"
             ShopLocation.SetRange("Shop Code", ShopFilter);
             ShopInventory.SetRange("Shop Code", ShopFilter);
         end;
+        ShopLocation.SetFilter("Stock Calculation", '<>%1', ShopLocation."Stock Calculation"::Disabled);
         if ShopLocation.FindSet(false) then begin
             InventoryApi.SetShop(ShopLocation."Shop Code");
             InventoryApi.SetInventoryIds();

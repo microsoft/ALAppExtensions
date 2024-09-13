@@ -1,28 +1,24 @@
 {
-    "id":  "ac762be1-e90f-4a72-b519-612a5e3ddc2e",
-    "name":  "OIOUBL",
-    "publisher":  "Microsoft",
-    "brief":  "Easily submit business documents in the Offentlig Information Online Universal Business Language (OIOUBL) format.",
-    "description":  "This extension makes it easy to meet the expectations of public authorities in Denmark for submitting invoices, credit memos, finance charge memos, and reminders for sales and services.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2194213",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2194213",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "ac762be1-e90f-4a72-b519-612a5e3ddc2e",
+  "name": "OIOUBL",
+  "publisher": "Microsoft",
+  "brief": "Easily submit business documents in the Offentlig Information Online Universal Business Language (OIOUBL) format.",
+  "description": "This extension makes it easy to meet the expectations of public authorities in Denmark for submitting invoices, credit memos, finance charge memos, and reminders for sales and services.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2194213",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2194213",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

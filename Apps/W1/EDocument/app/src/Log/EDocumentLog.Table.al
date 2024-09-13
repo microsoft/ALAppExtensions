@@ -82,6 +82,7 @@ table 6124 "E-Document Log"
     var
         EDOCLogFileTxt: Label 'E-Document_Log_%1', Locked = true;
         EDocLogEntryNoExportMsg: Label 'E-Document log entry does not contain data to export.';
+        NonEmptyTempBlobErr: Label 'Temp blob is not empty.';
 
     internal procedure ExportDataStorage()
     var
@@ -105,16 +106,23 @@ table 6124 "E-Document Log"
         DownloadFromStream(InStr, '', '', '', FileName);
     end;
 
-    internal procedure GetDataStorage(var TempBlob: Codeunit "Temp Blob")
+    internal procedure GetDataStorage(var TempBlob: Codeunit "Temp Blob"): Boolean
     var
         EDocDataStorage: Record "E-Doc. Data Storage";
     begin
+        if TempBlob.HasValue() then
+            Error(NonEmptyTempBlobErr);
+        if "E-Doc. Data Storage Entry No." = 0 then
+            exit(false);
         EDocDataStorage.Get("E-Doc. Data Storage Entry No.");
         EDocDataStorage.CalcFields("Data Storage");
         if not EDocDataStorage."Data Storage".HasValue() then
-            exit;
+            exit(false);
 
         TempBlob.FromRecord(EDocDataStorage, EDocDataStorage.FieldNo("Data Storage"));
+        if not TempBlob.HasValue() then
+            exit(false);
+        exit(true);
     end;
 
     internal procedure CanHaveMappingLogs(): Boolean

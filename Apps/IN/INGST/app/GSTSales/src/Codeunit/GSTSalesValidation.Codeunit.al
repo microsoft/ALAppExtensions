@@ -114,6 +114,7 @@ codeunit 18143 "GST Sales Validation"
         if (SalesLine."Unit Price Incl. of Tax" = 0) or (SalesLine."Total UPIT Amount" = 0) then
             exit;
 
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
         TaxTransactionValue.SetRange("Tax Type", GSTSetup."GST Tax Type");
         TaxTransactionValue.SetRange("Tax Record ID", SalesLine.RecordId);
         TaxTransactionValue.SetRange("Value Type", TaxTransactionValue."Value Type"::COMPONENT);
@@ -1641,6 +1642,7 @@ codeunit 18143 "GST Sales Validation"
         SalesLine.SetFilter(Type, '<>%1', SalesLine.Type::" ");
         if SalesLine.FindSet() then
             repeat
+                TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
                 TaxTransactionValue.SetRange("Tax Type", GSTSetup."GST Tax Type");
                 TaxTransactionValue.SetRange("Tax Record ID", SalesLine.RecordId);
                 TaxTransactionValue.SetFilter(Percent, '<>%1', 0);
@@ -1925,6 +1927,7 @@ codeunit 18143 "GST Sales Validation"
     var
         TaxTransactionValue: Record "Tax Transaction Value";
     begin
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
         TaxTransactionValue.SetRange("Tax Type", TaxTypeSetupCode);
         TaxTransactionValue.SetRange("Tax Record ID", RecordId);
         TaxTransactionValue.SetFilter(Percent, '<>%1', 0);

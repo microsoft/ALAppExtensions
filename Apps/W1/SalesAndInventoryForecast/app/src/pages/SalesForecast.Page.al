@@ -21,6 +21,24 @@ page 1850 "Sales Forecast"
     {
         area(content)
         {
+            group(Disclaimer)
+            {
+                Caption = '';
+                Editable = false;
+                ShowCaption = false;
+
+                field(DisclaimerText; DisclaimerValueMsg)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Enabled = true;
+                    Visible = true;
+                    MultiLine = true;
+                    Style = AttentionAccent;
+                    StyleExpr = true;
+                    ToolTip = 'AI generated suggestions may not always be accurate. Please validate results for correctness before using content provided.';
+                    ShowCaption = false;
+                }
+            }
             usercontrol(ForecastBusinessChart; BusinessChart)
             {
                 ApplicationArea = Basic, Suite;
@@ -236,6 +254,7 @@ page 1850 "Sales Forecast"
         InventoryForecastTxt: Label 'Inventory Forecast';
         SalesForecastTxt: Label 'Sales Forecast';
         StatusLbl: Label 'Status';
+        DisclaimerValueMsg: Label 'AI generated suggestions may not always be accurate. Please validate results for correctness before using content provided.';
         IsStatusTextEnabled: Boolean;
         PrevRecNo: Code[20];
         LastUpdatedTxt: Label 'Updated %1', Comment = '%1 = Last updated date';

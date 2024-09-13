@@ -110,20 +110,6 @@ page 6167 "E-Doc. Order Line Matching"
                     SetUserInteractions();
                 end;
             }
-            action(MatchCopilot)
-            {
-                Caption = 'Match with Copilot';
-                ToolTip = 'Match e-document lines with the assistance of Copilot';
-                ApplicationArea = All;
-                Image = SparkleFilled;
-                Visible = CopilotActionVisible;
-
-                trigger OnAction()
-                begin
-                    MatchWithCopilot(true);
-                    SetUserInteractions();
-                end;
-            }
             action(RemoveMatch)
             {
                 Caption = 'Remove Match';
@@ -176,6 +162,23 @@ page 6167 "E-Doc. Order Line Matching"
                 begin
                     CurrPage.ImportedLines.Page.ShowAll();
                     CurrPage.OrderLines.Page.ShowAll();
+                end;
+            }
+        }
+        area(Prompting)
+        {
+            action(MatchCopilot)
+            {
+                Caption = 'Match with Copilot';
+                ToolTip = 'Match e-document lines with the assistance of Copilot';
+                ApplicationArea = All;
+                Image = SparkleFilled;
+                Visible = CopilotActionVisible;
+
+                trigger OnAction()
+                begin
+                    MatchWithCopilot(true);
+                    SetUserInteractions();
                 end;
             }
         }

@@ -465,6 +465,7 @@ codeunit 18440 "GST Service Validations"
         ServiceLine.SetRange("Document No.", ServiceHeader."No.");
         if ServiceLine.FindSet() then
             repeat
+                TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
                 TaxTransactionValue.SetRange("Tax Type", GSTSetup."GST Tax Type");
                 TaxTransactionValue.SetRange("Tax Record ID", ServiceLine.RecordId);
                 if not TaxTransactionValue.IsEmpty() then

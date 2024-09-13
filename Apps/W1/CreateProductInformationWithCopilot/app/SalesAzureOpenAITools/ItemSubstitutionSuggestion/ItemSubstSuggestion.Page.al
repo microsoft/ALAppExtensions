@@ -31,7 +31,7 @@ page 7410 "Item Subst. Suggestion"
                 ShowCaption = false;
                 ToolTip = 'Enter your search query here. You can use natural language to describe what you are looking for.';
                 Caption = 'Item Description';
-                InstructionalText = 'Adjust item description to suggest item substitutions';
+                InstructionalText = 'Type a description or keywords for suggesting item substitutions';
             }
         }
         area(Content)
@@ -94,7 +94,7 @@ page 7410 "Item Subst. Suggestion"
             }
             systemaction(OK)
             {
-                Caption = 'Insert';
+                Caption = 'Insert all';
                 ToolTip = 'Keep item substitution suggestions proposed by Copilot.';
                 Enabled = IsInsertEnabled;
             }

@@ -27,6 +27,10 @@ table 7252 "Trans. to G/L Acc. Jnl. Batch"
             Caption = 'Journal Batch Name';
             TableRelation = "Gen. Journal Batch".Name where("Journal Template Name" = field("Journal Template Name"));
         }
+        field(7252; "Open Journal Batch"; Boolean)
+        {
+            Caption = 'Open Journal Batch';
+        }
     }
     keys
     {

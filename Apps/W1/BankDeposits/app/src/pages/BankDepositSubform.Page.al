@@ -291,6 +291,7 @@ page 1693 "Bank Deposit Subform"
                     trigger OnAction()
                     begin
                         ShowApplyEntries();
+                        CurrPage.Update();
                     end;
                 }
             }

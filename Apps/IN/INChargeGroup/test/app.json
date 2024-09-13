@@ -1,80 +1,78 @@
 {
-    "id":  "0a2cbf4b-52df-4060-bd2d-cd7c8e80e586",
-    "name":  "India Charge Group Tests",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Tests for India Charge Group.",
-    "description":  "Tests for India Charge Group.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=724013",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2221043&clcid=0x4009",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.Png",
-    "dependencies":  [
-                         {
-                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
-                             "publisher":  "Microsoft",
-                             "name":  "Library Assert",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
-                             "publisher":  "Microsoft",
-                             "name":  "Tests-TestLibraries",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "d3c551dd-5903-4194-b153-04ced9d29a2c",
-                             "publisher":  "Microsoft",
-                             "name":  "India Tax Base",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
-                             "publisher":  "Microsoft",
-                             "name":  "Tax Engine",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "db643212-b7fb-4dd4-b5a8-cb44ac714461",
-                             "publisher":  "Microsoft",
-                             "name":  "India GST",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "07729019-da51-4639-a987-3db38ccc62c7",
-                             "publisher":  "Microsoft",
-                             "name":  "India Charge Group",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "20cc6140-cbda-4a21-b15d-8f6190fb5469",
-                             "publisher":  "Microsoft",
-                             "name":  "India Tax Base Tests",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "66eea9f9-cc7d-4274-8dbc-084182071a5f",
-                             "publisher":  "Microsoft",
-                             "name":  "India GST Tests",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  18990,
-                         "to":  18994
-                     }
-                 ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2221043&clcid=0x4009",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               }
+  "id": "0a2cbf4b-52df-4060-bd2d-cd7c8e80e586",
+  "name": "India Charge Group Tests",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Tests for India Charge Group.",
+  "description": "Tests for India Charge Group.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2221043&clcid=0x4009",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.Png",
+  "dependencies": [
+    {
+      "id": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+      "publisher": "Microsoft",
+      "name": "Library Assert",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "publisher": "Microsoft",
+      "name": "Tests-TestLibraries",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "d3c551dd-5903-4194-b153-04ced9d29a2c",
+      "publisher": "Microsoft",
+      "name": "India Tax Base",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
+      "publisher": "Microsoft",
+      "name": "Tax Engine",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "db643212-b7fb-4dd4-b5a8-cb44ac714461",
+      "publisher": "Microsoft",
+      "name": "India GST",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "07729019-da51-4639-a987-3db38ccc62c7",
+      "publisher": "Microsoft",
+      "name": "India Charge Group",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "20cc6140-cbda-4a21-b15d-8f6190fb5469",
+      "publisher": "Microsoft",
+      "name": "India Tax Base Tests",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "66eea9f9-cc7d-4274-8dbc-084182071a5f",
+      "publisher": "Microsoft",
+      "name": "India GST Tests",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 18990,
+      "to": 18994
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2221043&clcid=0x4009",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  }
 }

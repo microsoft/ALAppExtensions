@@ -1,52 +1,52 @@
 {
-    "id":  "8f11ea55-e417-46ae-95cb-b795359191e2",
-    "name":  "Electronic VAT submission for Norway Tests",
-    "publisher":  "Microsoft",
-    "brief":  "Easily submit VAT returns to the Skatteetaten.",
-    "description":  "This app provides functionality that enables easy submission of the VAT return in the Norway. It allows submission of VAT returns already prepared in Dynamics 365 Business Central.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2047615",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2047615",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "5512093d-54ab-4fca-9e39-43aa3b45362c",
-                             "publisher":  "Microsoft",
-                             "name":  "Electronic VAT submission for Norway",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
-                             "name":  "Tests-TestLibraries",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5095f467-0a01-4b99-99d1-9ff1237d286f",
-                             "publisher":  "Microsoft",
-                             "name":  "Library Variable Storage",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "idRanges":  [
-                     {
-                         "from":  139500,
-                         "to":  139899
-                     },
-                     {
-                         "from":  148130,
-                         "to":  148135
-                     }
-                 ],
-    "platform":  "25.0.0.0",
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "8f11ea55-e417-46ae-95cb-b795359191e2",
+  "name": "Electronic VAT submission for Norway Tests",
+  "publisher": "Microsoft",
+  "brief": "Easily submit VAT returns to the Skatteetaten.",
+  "description": "This app provides functionality that enables easy submission of the VAT return in the Norway. It allows submission of VAT returns already prepared in Dynamics 365 Business Central.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2047615",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2047615",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "5512093d-54ab-4fca-9e39-43aa3b45362c",
+      "publisher": "Microsoft",
+      "name": "Electronic VAT submission for Norway",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+      "publisher": "Microsoft",
+      "name": "Library Variable Storage",
+      "version": "26.0.0.0"
+    }
+  ],
+  "idRanges": [
+    {
+      "from": 139500,
+      "to": 139899
+    },
+    {
+      "from": 148130,
+      "to": 148135
+    }
+  ],
+  "platform": "26.0.0.0",
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

@@ -14,6 +14,7 @@ codeunit 30343 "Shpfy Create Item As Variant"
         VariantApi: Codeunit "Shpfy Variant API";
         ProductApi: Codeunit "Shpfy Product API";
         DefaultVariantId: BigInteger;
+        Options: Dictionary of [Text, Text];
 
     trigger OnRun()
     begin
@@ -31,7 +32,10 @@ codeunit 30343 "Shpfy Create Item As Variant"
         CreateProduct.CreateTempShopifyVariantFromItem(Item, TempShopifyVariant);
         TempShopifyVariant."Product Id" := ShopifyProduct."Id";
         TempShopifyVariant.Title := Item."No.";
-        TempShopifyVariant."Option 1 Name" := 'Variant';
+        if Options.Count = 1 then
+            TempShopifyVariant."Option 1 Name" := CopyStr(Options.Values.Get(1), 1, MaxStrLen(TempShopifyVariant."Option 1 Name"))
+        else
+            TempShopifyVariant."Option 1 Name" := 'Variant';
         TempShopifyVariant."Option 1 Value" := Item."No.";
 
         if VariantApi.AddProductVariant(TempShopifyVariant) then begin
@@ -50,7 +54,6 @@ codeunit 30343 "Shpfy Create Item As Variant"
     var
         MultipleOptionsErr: Label 'The product has more than one option. Items cannot be added as variants to a product with multiple options.';
         UOMAsVariantEnabledErr: Label 'Items cannot be added as variants to a product with the "%1" setting enabled for this store.', Comment = '%1 - UoM as Variant field caption';
-        Options: Dictionary of [Text, Text];
     begin
         if Shop."UoM as Variant" then
             Error(UOMAsVariantEnabledErr, Shop.FieldCaption("UoM as Variant"));

@@ -305,6 +305,107 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [Test]
+    [HandlerFunctions('SelectPOHandlerFirst')]
+    procedure ReceiveSinglePurchaseInvoice_PEPPOL_WithAttachment_ToOrder()
+    var
+        EDocService: Record "E-Document Service";
+        EDocument: Record "E-Document";
+        Item: Record Item;
+        ItemReference: Record "Item Reference";
+        DocumentAttachment: Record "Document Attachment";
+        TempXMLBuffer: Record "XML Buffer" temporary;
+        VATPostingSetup: Record "VAT Posting Setup";
+        TempBlob: Codeunit "Temp Blob";
+        EDocServicePage: TestPage "E-Document Service";
+        EDocumentPage: TestPage "E-Document";
+        Document: Text;
+        XMLInstream: InStream;
+    begin
+        // [FEATURE] [E-Document] [Receive]
+        // [SCENARIO] Receive single e-document with two attachments and create purchase invoice
+        Initialize();
+        BindSubscription(EDocImplState);
+
+        // [GIVEN] e-Document service to receive one single purchase invoice
+        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService);
+        LibraryPurchase.CreateVendorWithVATRegNo(Vendor);
+        LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 1);
+
+        // Setup correct vendor VAT and Item Ref to process document 
+        Vendor."VAT Bus. Posting Group" := VATPostingSetup."VAT Bus. Posting Group";
+        Vendor."VAT Registration No." := 'GB123456789';
+        Vendor."Receive E-Document To" := Enum::"E-Document Type"::"Purchase Order";
+        Vendor.Modify();
+        Item.FindFirst();
+        Item."VAT Prod. Posting Group" := VATPostingSetup."VAT Prod. Posting Group";
+        Item.Modify();
+        ItemReference.DeleteAll();
+        ItemReference."Item No." := Item."No.";
+        ItemReference."Reference No." := '1000';
+        ItemReference.Insert();
+
+        TempXMLBuffer.LoadFromText(EDocReceiveFiles.GetDocument1());
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.SetRange(Type, TempXMLBuffer.Type::Element);
+        TempXMLBuffer.SetRange(Path, '/Invoice/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID');
+        TempXMLBuffer.FindFirst();
+        TempXMLBuffer.Value := Vendor."VAT Registration No.";
+        TempXMLBuffer.Modify();
+
+        TempXMLBuffer.Reset();
+        TempXMLBuffer.FindFirst();
+        TempXMLBuffer.Save(TempBlob);
+
+        TempBlob.CreateInStream(XMLInstream, TextEncoding::UTF8);
+        XMLInstream.Read(Document);
+
+        // [GIVEN] We receive PEPPOL XML
+        LibraryVariableStorage.Clear();
+        LibraryVariableStorage.Enqueue(Document);
+        LibraryVariableStorage.Enqueue(1);
+        EDocImplState.SetVariableStorage(LibraryVariableStorage);
+
+        EDocService."Document Format" := "E-Document Format"::"PEPPOL BIS 3.0";
+        EDocService."Lookup Account Mapping" := false;
+        EDocService."Lookup Item GTIN" := false;
+        EDocService."Lookup Item Reference" := false;
+        EDocService."Resolve Unit Of Measure" := false;
+        EDocService."Validate Line Discount" := false;
+        EDocService."Verify Totals" := false;
+        EDocService."Use Batch Processing" := false;
+        EDocService."Validate Receiving Company" := false;
+        EDocService.Modify();
+
+        LibraryPurchase.CreatePurchHeader(PurchaseHeader, PurchaseHeader."Document Type"::Order, Vendor."No.");
+        LibraryPurchase.CreatePurchaseLine(PurchaseLine, PurchaseHeader, PurchaseLine.Type::Item, Item."No.", 10);
+        PurchaseLine.Validate("Direct Unit Cost", 100);
+        PurchaseLine.Modify(true);
+
+        // [WHEN] Running Receive
+        EDocServicePage.OpenView();
+        EDocServicePage.Filter.SetFilter(Code, EDocService.Code);
+        EDocServicePage.Receive.Invoke();
+
+        // [THEN] Purchase invoice is created with corresponfing values
+        EDocument.FindLast();
+        EDocumentPage.OpenView();
+        EDocumentPage.Filter.SetFilter("Document No.", EDocument."Document No.");
+
+        Assert.AreEqual(Format(Enum::"E-Document Service Status"::"Order Linked"), EDocumentPage.EdocoumentServiceStatus.Status.Value(), 'Wrong service status for processed document');
+
+        // [THEN] E-Document Errors and Warnings has correct status
+        Assert.AreEqual('', EDocumentPage.ErrorMessagesPart."Message Type".Value(), 'Wrong error message type.');
+        Assert.AreEqual('', EDocumentPage.ErrorMessagesPart.Description.Value(), 'Wrong message in error.');
+
+        // [THEN] Attachments are moved to Purchase Header
+        DocumentAttachment.SetRange("No.", PurchaseHeader."No.");
+        DocumentAttachment.SetRange("Table ID", Database::"Purchase Header");
+        DocumentAttachment.SetRange("Document Type", Enum::"Attachment Document Type"::Order);
+        DocumentAttachment.SetRange("E-Document Attachment", true);
+        Assert.RecordCount(DocumentAttachment, 2);
+    end;
+
+    [Test]
     [HandlerFunctions('SelectPOHandler')]
     procedure ReceiveToPurchaseOrderLink()
     var
@@ -323,6 +424,7 @@ codeunit 139628 "E-Doc. Receive Test"
         LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService);
         BindSubscription(EDocImplState);
 
+        EDocService."Document Format" := Enum::"E-Document Format"::Mock;
         EDocService."Lookup Account Mapping" := false;
         EDocService."Lookup Item GTIN" := false;
         EDocService."Lookup Item Reference" := false;
@@ -1346,6 +1448,13 @@ codeunit 139628 "E-Doc. Receive Test"
     end;
 
     [ModalPageHandler]
+    procedure SelectPOHandlerFirst(var POList: TestPage "Purchase Order List")
+    begin
+        POList.First();
+        POList.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
     procedure SelectPOHandlerCancel(var POList: TestPage "Purchase Order List")
     begin
         POList.Cancel().Invoke();
@@ -1372,12 +1481,17 @@ codeunit 139628 "E-Doc. Receive Test"
     local procedure Initialize()
     var
         DocumentAttachment: Record "Document Attachment";
+        EDocument: Record "E-Document";
     begin
         Clear(EDocImplState);
         Clear(PurchaseHeader);
         Clear(LibraryVariableStorage);
         PurchaseHeader.DeleteAll();
         DocumentAttachment.DeleteAll();
+
+        Vendor.SetRange("VAT Registration No.", 'GB123456789');
+        Vendor.DeleteAll();
+        EDocument.DeleteAll();
     end;
 
     local procedure CheckPurchaseHeadersAreEqual(var PurchHeader1: Record "Purchase Header"; var PurchHeader2: Record "Purchase Header")

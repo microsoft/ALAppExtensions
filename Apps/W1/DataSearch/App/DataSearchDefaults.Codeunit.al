@@ -82,6 +82,12 @@ codeunit 2681 "Data Search Defaults"
         BaseLbl: Label '(default)';
         AllProfileDescriptionFilterTxt: Label 'Navigation menu only.';
 
+    // OnRun mainly provided for test, but can also be used for default init
+    trigger OnRun()
+    begin
+        InitSetupForAllProfiles();
+    end;
+
     internal procedure InitSetupForAllProfiles()
     var
         TempAllProfile: Record "All Profile" temporary;
@@ -339,8 +345,11 @@ codeunit 2681 "Data Search Defaults"
     var
         DataSearchSetupTable: Record "Data Search Setup (Table)";
     begin
-        if DataSearchSetupTable.Get(TableNo, RoleCenterID) then
+        DataSearchSetupTable.SetRange("Table No.", TableNo);
+        DataSearchSetupTable.SetRange("Role Center ID", RoleCenterID);
+        if not DataSearchSetupTable.IsEmpty then
             exit;
+        DataSearchSetupTable.Reset();
         DataSearchSetupTable.Init();
         DataSearchSetupTable."Table No." := TableNo;
         DataSearchSetupTable."Role Center ID" := RoleCenterID;

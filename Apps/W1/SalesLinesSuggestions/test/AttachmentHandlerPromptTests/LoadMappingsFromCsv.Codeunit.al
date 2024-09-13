@@ -9,15 +9,30 @@ codeunit 149822 "Load Mappings from csv"
     Subtype = Test;
     TestPermissions = Disabled;
 
+    var
+        TestUtility: Codeunit "SLS Test Utility";
+        IsInitialized: Boolean;
+
     [Test]
     procedure TestHandlingOfCsvFileData()
     var
         AITTestContext: Codeunit "AIT Test Context";
     begin
+        Initialize();
         ExecutePromptAndVerifyReturnedJson(AITTestContext.GetInput().ToText());
     end;
 
-    internal procedure ExecutePromptAndVerifyReturnedJson(TestInput: Text)
+    local procedure Initialize()
+    begin
+        if IsInitialized then
+            exit;
+
+        TestUtility.RegisterCopilotCapability();
+
+        IsInitialized := true;
+    end;
+
+    local procedure ExecutePromptAndVerifyReturnedJson(TestInput: Text)
     var
         SalesHeader: Record "Sales Header";
         SalesLineFromAttachment: Codeunit "Sales Line From Attachment";
@@ -41,13 +56,13 @@ codeunit 149822 "Load Mappings from csv"
         ValidateSalesLineAttachmentPage(SalesLineFromAttachmentPage, ExpectedProductInfoColumnIndex, ExpectedQuantityColumnIndex, ExpectedUoMColumnIndex, ExpectedColumnInfo);
     end;
 
-    internal procedure ReadDatasetInput(TestInput: Text; var UserQuery: Text; var ExpectedProductInfoColumnIndex: List of [Integer]; var ExpectedQuantityColumnIndex: Integer; var ExpectedUoMColumnIndex: Integer; var ExpectedColumnInfo: List of [List of [Text]])
+    local procedure ReadDatasetInput(TestInput: Text; var UserQuery: Text; var ExpectedProductInfoColumnIndex: List of [Integer]; var ExpectedQuantityColumnIndex: Integer; var ExpectedUoMColumnIndex: Integer; var ExpectedColumnInfo: List of [List of [Text]])
     var
         JsonContent: JsonObject;
         JsonToken, JsonToken1 : JsonToken;
         JsonArray: JsonArray;
         JsonObject: JsonObject;
-        UserQueryKeyLbl: Label 'user_query', Locked = true;
+        UserQueryKeyLbl: Label 'question', Locked = true;
         ExpectedProductInfoColumnIndexKeyLbl: Label 'ExpectedProductInfoColumnIndex', Locked = true;
         ExpectedQuantityColumnIndexKeyLbl: Label 'ExpectedQuantityColumnIndex', Locked = true;
         ExpectedUoMColumnIndexKeyLbl: Label 'ExpectedUoMColumnIndex', Locked = true;
@@ -88,7 +103,7 @@ codeunit 149822 "Load Mappings from csv"
         end;
     end;
 
-    procedure ValidateSalesLineAttachmentPage(var SalesLineFromAttachmentPage: TestPage "Sales Line From Attachment"; ExpectedProductInfoColumnIndex: List of [Integer]; ExpectedQuantityColumnIndex: Integer; ExpectedUoMColumnIndex: Integer; ExpectedColumnInfo: List of [List of [Text]])
+    local procedure ValidateSalesLineAttachmentPage(var SalesLineFromAttachmentPage: TestPage "Sales Line From Attachment"; ExpectedProductInfoColumnIndex: List of [Integer]; ExpectedQuantityColumnIndex: Integer; ExpectedUoMColumnIndex: Integer; ExpectedColumnInfo: List of [List of [Text]])
     var
         RowIndex: Integer;
         ExpectedColumnName: Text;

@@ -318,7 +318,9 @@ codeunit 2685 "Data Search Object Mapping"
                             FilterTxt.Append('''');
                         until GenJournalTemplate.Next() = 0;
                     if FilterTxt.Length > 0 then
-                        FldRef.SetFilter(FilterTxt.ToText());
+                        FldRef.SetFilter(FilterTxt.ToText())
+                    else
+                        FldRef.SetRange(CopyStr(DelChr(Format(CreateGuid()), '=', '{-}'), 1, 10)); // no templates, so we don't find any lines (likely)
                 end;
             else
                 FldRef.SetRange(TableType);

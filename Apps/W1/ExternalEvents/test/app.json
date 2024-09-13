@@ -1,67 +1,65 @@
 {
-    "id":  "d65067bd-e0d4-4bab-a5c5-9c0eb94d8f88",
-    "name":  "_Exclude_Business_Events_Test",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Business Events. Use business events to notify and trigger external systems",
-    "description":  "Business Events. Use business events to notify and trigger external systems",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2206519",
-    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "6f2c034f-5ebe-4eae-b34c-90a0d4e87687",
-                             "name":  "_Exclude_Business_Events_",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
-                             "name":  "Tests-TestLibraries",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "9856ae4f-d1a7-46ef-89bb-6ef056398228",
-                             "name":  "System Application Test Library",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
-                             "name":  "Any",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5095f467-0a01-4b99-99d1-9ff1237d286f",
-                             "publisher":  "Microsoft",
-                             "name":  "Library Variable Storage",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  139640,
-                         "to":  139649
-                     }
-                 ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "OnPrem",
-    "runtime":  "10.0",
-    "features":  [
-                     "NoImplicitWith"
-                 ]
+  "id": "d65067bd-e0d4-4bab-a5c5-9c0eb94d8f88",
+  "name": "_Exclude_Business_Events_Test",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Business Events. Use business events to notify and trigger external systems",
+  "description": "Business Events. Use business events to notify and trigger external systems",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2206519",
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/dynamics365/business-central/",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "6f2c034f-5ebe-4eae-b34c-90a0d4e87687",
+      "name": "_Exclude_Business_Events_",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "9856ae4f-d1a7-46ef-89bb-6ef056398228",
+      "name": "System Application Test Library",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
+      "name": "Any",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+      "publisher": "Microsoft",
+      "name": "Library Variable Storage",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 139640,
+      "to": 139649
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "OnPrem",
+  "runtime": "10.0",
+  "features": [
+    "NoImplicitWith"
+  ]
 }

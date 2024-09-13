@@ -271,6 +271,7 @@ codeunit 18148 "GST Fin Charge Memo Validation"
         if not GSTSetup.Get() then
             exit;
 
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
         TaxTransactionValue.SetRange("Tax Record ID", RecID);
         TaxTransactionValue.SetRange("Value Type", TaxTransactionValue."Value Type"::COMPONENT);
         TaxTransactionValue.SetRange("Tax Type", GSTSetup."GST Tax Type");

@@ -45,7 +45,7 @@ codeunit 7342 "Suggest Substitutions Function" implements "AOAI Function"
     begin
         if Arguments.Get('results', ItemsResults) then begin
             ItemResultsArray := ItemsResults.AsArray();
-            if SearchUtility.SearchMultiple(ItemResultsArray, SearchStyle, SearchIntentLbl, SearchQuery, 0, 25, false, true, TempItemSubst, ItemNoFilter, ItemType) then begin
+            if SearchUtility.SearchMultiple(ItemResultsArray, SearchStyle, SearchIntentLbl, SearchQuery, 10, 100, false, true, TempItemSubst, ItemNoFilter, ItemType) then begin
                 TempItemSubst.SetRange(Confidence, "Search Confidence"::None);
                 if TempItemSubst.FindSet() then
                     TempItemSubst.DeleteAll();

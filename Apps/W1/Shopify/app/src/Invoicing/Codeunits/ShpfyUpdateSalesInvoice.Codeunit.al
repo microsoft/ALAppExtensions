@@ -1,6 +1,8 @@
 namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.History;
+using Microsoft.Utilities;
+using Microsoft.Sales.Document;
 
 codeunit 30364 "Shpfy Update Sales Invoice"
 {
@@ -18,5 +20,13 @@ codeunit 30364 "Shpfy Update Sales Invoice"
     local procedure SetShopifyOrderIdOnBeforeSalesShptHeaderModify(var SalesInvoiceHeader: Record "Sales Invoice Header"; SalesInvoiceHeaderRec: Record "Sales Invoice Header")
     begin
         SalesInvoiceHeader."Shpfy Order Id" := SalesInvoiceHeaderRec."Shpfy Order Id";
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Copy Document Mgt.", 'OnCopySalesDocOnAfterTransferPostedInvoiceFields', '', false, false)]
+    local procedure OnCopySalesDocOnAfterCopySalesDocUpdateHeader(var ToSalesHeader: Record "Sales Header")
+    begin
+        Clear(ToSalesHeader."Shpfy Order Id");
+        Clear(ToSalesHeader."Shpfy Order No.");
+        Clear(ToSalesHeader."Shpfy Refund Id");
     end;
 }

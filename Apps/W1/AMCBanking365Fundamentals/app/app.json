@@ -1,48 +1,48 @@
 {
-    "id":  "16319982-4995-4fb1-8fb2-2b1e13773e3b",
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "version":  "25.0.0.0",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2101583",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "description":  "AMC Banking Fundamentals enable Microsoft Dynamics 365 Business Central to speak the same language as your banks. Easily export payment files containing all your vendor payments in a file-format your bank will support. Import statements in many formats to utilize the automatic reconciliation functionality. AMC Banking Fundamentals connects Business Central to our third-party server, where you will automatically have access to all developed formats, so you never have to think about bank formats again. Sign up, free of charge for the first bank account on https://license.amcbanking.com/register",
-    "internalsVisibleTo":  [
-                               {
-                                   "id":  "798a05da-4249-48b7-a85c-70dd5e508fa2",
-                                   "name":  "AMC Banking 365 Fundamentals Test Automations",
-                                   "publisher":  "Microsoft"
-                               },
-                               {
-                                   "id":  "b7a9d320-4dac-4e5b-b35f-adcb8626bfe2",
-                                   "name":  "AMC Banking 365 Business",
-                                   "publisher":  "AMC Banking"
-                               },
-                               {
-                                   "id":  "c147e5a8-20ba-4637-810b-e807f6615872",
-                                   "name":  "AMC Banking 365 Business Testautomation",
-                                   "publisher":  "AMC Banking"
-                               }
-                           ],
-    "logo":  "./AppResources/amclogo.png",
-    "target":  "OnPrem",
-    "idRanges":  [
-                     {
-                         "from":  20100,
-                         "to":  20150
-                     }
-                 ],
-    "brief":  "AMC Banking 365 Fundamentals for Microsoft Dynamics 365 Business Central",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=724010",
-    "name":  "AMC Banking 365 Fundamentals",
-    "publisher":  "Microsoft",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://amcbanking.com/kb/",
-    "features":  [
-                     "TranslationFile"
-                 ]
+  "id": "16319982-4995-4fb1-8fb2-2b1e13773e3b",
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "version": "26.0.0.0",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2101583",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "description": "AMC Banking Fundamentals enable Microsoft Dynamics 365 Business Central to speak the same language as your banks. Easily export payment files containing all your vendor payments in a file-format your bank will support. Import statements in many formats to utilize the automatic reconciliation functionality. AMC Banking Fundamentals connects Business Central to our third-party server, where you will automatically have access to all developed formats, so you never have to think about bank formats again. Sign up, free of charge for the first bank account on https://license.amcbanking.com/register",
+  "internalsVisibleTo": [
+    {
+      "id": "798a05da-4249-48b7-a85c-70dd5e508fa2",
+      "name": "AMC Banking 365 Fundamentals Test Automations",
+      "publisher": "Microsoft"
+    },
+    {
+      "id": "b7a9d320-4dac-4e5b-b35f-adcb8626bfe2",
+      "name": "AMC Banking 365 Business",
+      "publisher": "AMC Banking"
+    },
+    {
+      "id": "c147e5a8-20ba-4637-810b-e807f6615872",
+      "name": "AMC Banking 365 Business Testautomation",
+      "publisher": "AMC Banking"
+    }
+  ],
+  "logo": "./AppResources/amclogo.png",
+  "target": "OnPrem",
+  "idRanges": [
+    {
+      "from": 20100,
+      "to": 20150
+    }
+  ],
+  "brief": "AMC Banking 365 Fundamentals for Microsoft Dynamics 365 Business Central",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=724010",
+  "name": "AMC Banking 365 Fundamentals",
+  "publisher": "Microsoft",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://amcbanking.com/kb/",
+  "features": [
+    "TranslationFile"
+  ]
 }

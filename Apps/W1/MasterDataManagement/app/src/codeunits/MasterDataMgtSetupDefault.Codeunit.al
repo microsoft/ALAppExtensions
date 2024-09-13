@@ -1331,8 +1331,18 @@ codeunit 7230 "Master Data Mgt. Setup Default"
                 end;
             until TableField.Next() = 0;
 
-        RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 30);
+        RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, DefaultNumberOfMinutesBetweenRuns(), ShouldRecreateJobQueueEntry, DefaultInactivityTimeoutPeriod());
         Commit();
+    end;
+
+    internal procedure DefaultNumberOfMinutesBetweenRuns(): Integer
+    begin
+        exit(20 + Random(10))
+    end;
+
+    internal procedure DefaultInactivityTimeoutPeriod(): Integer
+    begin
+        exit(680 + Random(40))
     end;
 
     internal procedure InsertIntegrationFieldMapping(IntegrationTableMappingName: Code[20]; var IntegrationFieldMapping: Record "Integration Field Mapping"; TableFieldNo: Integer; IntegrationTableFieldNo: Integer; SynchDirection: Option; ConstValue: Text; ValidateField: Boolean; ValidateIntegrationTableField: Boolean)

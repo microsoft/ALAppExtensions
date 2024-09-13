@@ -1,37 +1,33 @@
 {
-    "id":  "12fe63f9-1931-4404-be38-abfc46a2298d",
-    "name":  "Transactions and Receipts Storage",
-    "publisher":  "Microsoft",
-    "brief":  "The Transactions and Receipts Storage app allows companies to have archived all transactions and receipts outside of the database, as required by the law.",
-    "description":  "In some countries/regions, authorities require to keep transactions and receipts for software users in a machine-readable format for a certain period of time. This requirement applies irrespective of any termination of Microsoft relations with the software user or its bankruptcy or forced dissolution. The recorded transactions are preserved so that they cannot be changed, backdated or deleted by the user. This app provides archiving required transactions and receipts in the Azure BLOB Storage.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://learn.microsoft.com/en-us/dynamics365/business-central/localfunctionality/denmark/denmark-local-functionality",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2204541",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  6200,
-                         "to":  6250
-                     }
-                 ],
-    "features":  [
-                     "TranslationFile"
-                 ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  false,
-                                   "includeSourceInSymbolFile":  false
-                               },
-    "application":  "25.0.0.0",
-    "target":  "OnPrem"
+  "id": "12fe63f9-1931-4404-be38-abfc46a2298d",
+  "name": "Transactions and Receipts Storage",
+  "publisher": "Microsoft",
+  "brief": "The Transactions and Receipts Storage app allows companies to have archived all transactions and receipts outside of the database, as required by the law.",
+  "description": "In some countries/regions, authorities require to keep transactions and receipts for software users in a machine-readable format for a certain period of time. This requirement applies irrespective of any termination of Microsoft relations with the software user or its bankruptcy or forced dissolution. The recorded transactions are preserved so that they cannot be changed, backdated or deleted by the user. This app provides archiving required transactions and receipts in the Azure BLOB Storage.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://learn.microsoft.com/en-us/dynamics365/business-central/localfunctionality/denmark/denmark-local-functionality",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 6200,
+      "to": 6250
+    }
+  ],
+  "features": [
+    "TranslationFile"
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": false,
+    "includeSourceInSymbolFile": false
+  },
+  "application": "26.0.0.0",
+  "target": "OnPrem"
 }

@@ -1,41 +1,35 @@
 {
-    "id":  "8c972578-fe72-4aa5-ae51-cc5575fef2ea",
-    "name":  "Send To Email Printer",
-    "publisher":  "Microsoft",
-    "brief":  "Provides functionality to use the printer's email address to send print jobs to the printer.",
-    "description":  "Provides functionality to use the printer's email address to send print jobs to the printer.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=724013",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2118801",
-    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "internalsVisibleTo":  [
-
-                           ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "target":  "OnPrem",
-    "idRanges":  [
-                     {
-                         "from":  2650,
-                         "to":  2655
-                     },
-                     {
-                         "from":  5650,
-                         "to":  5660
-                     }
-                 ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2118801",
-    "application":  "25.0.0.0",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               }
+  "id": "8c972578-fe72-4aa5-ae51-cc5575fef2ea",
+  "name": "Send To Email Printer",
+  "publisher": "Microsoft",
+  "brief": "Provides functionality to use the printer's email address to send print jobs to the printer.",
+  "description": "Provides functionality to use the printer's email address to send print jobs to the printer.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2118801",
+  "url": "https://go.microsoft.com/fwlink/?linkid=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "internalsVisibleTo": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "target": "OnPrem",
+  "idRanges": [
+    {
+      "from": 2650,
+      "to": 2655
+    },
+    {
+      "from": 5650,
+      "to": 5660
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2118801",
+  "application": "26.0.0.0",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  }
 }

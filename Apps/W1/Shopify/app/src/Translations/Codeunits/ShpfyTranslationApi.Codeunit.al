@@ -12,7 +12,7 @@ codeunit 30213 "Shpfy Translation API"
     /// </remarks>
     internal procedure PullLanguages(ShopCode: Code[20])
     var
-        ShpfyLanguage: Record "Shpfy Language";
+        ShopifyLanguage: Record "Shpfy Language";
         Shop: Record "Shpfy Shop";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         JsonHelper: Codeunit "Shpfy Json Helper";
@@ -39,25 +39,25 @@ codeunit 30213 "Shpfy Translation API"
             IsPrimary := JsonHelper.GetValueAsBoolean(JLocale, 'primary');
 
             if not IsPrimary then // Primary language is handled by Shop."Language Code"
-                if not ShpfyLanguage.Get(Shop.Code, LocaleText) then
-                    ShpfyLanguage.AddLanguage(Shop, LocaleText);
+                if not ShopifyLanguage.Get(Shop.Code, LocaleText) then
+                    ShopifyLanguage.AddLanguage(Shop, LocaleText);
         end;
 
         foreach LocaleText in CurrentLocales do begin
-            ShpfyLanguage.Get(Shop.Code, LocaleText);
-            ShpfyLanguage.Delete(true);
+            ShopifyLanguage.Get(Shop.Code, LocaleText);
+            ShopifyLanguage.Delete(true);
         end;
     end;
 
     local procedure CollectLocales(ShopCode: Code[20]) Locales: List of [Text[2]]
     var
-        ShpfyLanguage: Record "Shpfy Language";
+        ShopifyLanguage: Record "Shpfy Language";
     begin
-        ShpfyLanguage.SetRange("Shop Code", ShopCode);
-        if ShpfyLanguage.FindSet() then
+        ShopifyLanguage.SetRange("Shop Code", ShopCode);
+        if ShopifyLanguage.FindSet() then
             repeat
-                Locales.Add(ShpfyLanguage.Locale);
-            until ShpfyLanguage.Next() = 0;
+                Locales.Add(ShopifyLanguage.Locale);
+            until ShopifyLanguage.Next() = 0;
     end;
     #endregion
 

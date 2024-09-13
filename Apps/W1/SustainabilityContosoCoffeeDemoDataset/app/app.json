@@ -1,50 +1,46 @@
 {
-    "id":  "a0673989-48a4-48a0-9517-499c9f4037d3",
-    "name":  "Sustainability Contoso Coffee Demo Dataset",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "To help partners demonstrate the capabilities of Sustainability extension, we are making demo data available for various sustainability scenarios.",
-    "description":  "Sustainability specialists can run the tool on top of Cronus or My Company and get the setup and demo data they'll need when they demonstrate various sustainability reporting scenarios.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2187180",
-    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
-    "logo":  "./ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "b3780cd9-f8f8-4a83-a4d5-0c2ad87b28af",
-                             "name":  "Sustainability",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5a0b41e9-7a42-4123-d521-2265186cfb31",
-                             "name":  "Contoso Coffee Demo Dataset",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "internalsVisibleTo":  [
-
-                           ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  5212,
-                         "to":  5222
-                     }
-                 ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  false,
-                                   "includeSourceInSymbolFile":  false
-                               },
-    "features":  [
-                     "TranslationFile"
-                 ],
-    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/en-us/dynamics365/business-central/contoso-coffee/contoso-coffee-intro"
+  "id": "a0673989-48a4-48a0-9517-499c9f4037d3",
+  "name": "Sustainability Contoso Coffee Demo Dataset",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "To help partners demonstrate the capabilities of Sustainability extension, we are making demo data available for various sustainability scenarios.",
+  "description": "Sustainability specialists can run the tool on top of Cronus or My Company and get the setup and demo data they'll need when they demonstrate various sustainability reporting scenarios.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2187180",
+  "url": "https://go.microsoft.com/fwlink/?linkid=724011",
+  "logo": "./ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "b3780cd9-f8f8-4a83-a4d5-0c2ad87b28af",
+      "name": "Sustainability",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5a0b41e9-7a42-4123-d521-2265186cfb31",
+      "name": "Contoso Coffee Demo Dataset",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "internalsVisibleTo": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 5212,
+      "to": 5222
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": false,
+    "includeSourceInSymbolFile": false
+  },
+  "features": [
+    "TranslationFile"
+  ],
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/en-us/dynamics365/business-central/contoso-coffee/contoso-coffee-intro"
 }

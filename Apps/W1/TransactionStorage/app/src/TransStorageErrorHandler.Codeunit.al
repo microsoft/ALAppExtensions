@@ -9,6 +9,7 @@ codeunit 6204 "Trans. Storage Error Handler"
     InherentEntitlements = X;
     InherentPermissions = X;
     Permissions = tabledata "Transact. Storage Export State" = RIM,
+                  tabledata "Transact. Storage Task Entry" = R,
                   tabledata "Trans. Storage Export Data" = RD;
 
     var

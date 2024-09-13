@@ -246,7 +246,7 @@ report 11754 "Close Balance Sheet CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Gen. Journal Template';
-                        TableRelation = "Gen. Journal Template";
+                        TableRelation = "Gen. Journal Template" where(Type = const(General), Recurring = const(false));
                         ToolTip = 'Specifies the journal template. This template will be used as the format for report results.';
 
                         trigger OnValidate()

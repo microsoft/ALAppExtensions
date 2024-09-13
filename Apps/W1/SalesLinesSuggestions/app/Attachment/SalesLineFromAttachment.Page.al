@@ -171,13 +171,18 @@ page 7290 "Sales Line From Attachment"
     end;
 
     [NonDebuggable]
+    // Builds the search query based on the data in the file and the mapping provided by the user.
+    // An exampel for the output is: Search for products based on product info and quantities listed below. Ensure decimal numbers in quantity is preserved.\n20 pieces "Paint, red",10 boxes paint brush
     local procedure BuildSearchQuery(FileData: List of [List of [Text]]; FileParserResult: Codeunit "File Handler Result"): Text
     var
         SLSPrompts: Codeunit "SLS Prompts";
         ProductInfoAsText: Text;
+        QuantityAsText: Text;
+        UoMAsText: Text;
+        UserQuery: Text;
+        ProductQuery: Text;
         HeaderRow: List of [Text];
         SearchQuery: Text;
-        Rows: Text;
         StartIndex, Index1, Index2 : Integer;
     begin
         // Add header row
@@ -189,38 +194,47 @@ page 7290 "Sales Line From Attachment"
             StartIndex := 1;
         end;
 
-        // Add header row
-        ProductInfoAsText := ProductInfoTok;
-        if FileParserResult.GetQuantityColumnIndex() <> 0 then
-            ProductInfoAsText := StrSubstNo('%1%2%3', ProductInfoAsText, FileParserResult.GetColumnDelimiter(), QuantityTok);
-        if FileParserResult.GetUoMColumnIndex() <> 0 then
-            ProductInfoAsText := StrSubstNo('%1%2%3', ProductInfoAsText, FileParserResult.GetColumnDelimiter(), UoMTok);
-
-        // Add new line character
-        ProductInfoAsText := StrSubstNo('%1%2', ProductInfoAsText, '\n');
-        Rows := ProductInfoAsText;
         // Add data to the list
-        Clear(ProductInfoAsText);
+        UserQuery := '';
         for Index1 := StartIndex to FileData.Count() do begin
             Clear(ProductInfoAsText);
+            Clear(QuantityAsText);
+            Clear(UoMAsText);
+            Clear(ProductQuery);
+
             foreach Index2 in FileParserResult.GetProductColumnIndex() do
                 if ProductInfoAsText = '' then
-                    ProductInfoAsText := FileData.Get(Index1).Get(Index2)
+                    ProductInfoAsText := FormatProductName(FileData.Get(Index1).Get(Index2))
                 else
-                    ProductInfoAsText := StrSubstNo('%1 %2', ProductInfoAsText, FileData.Get(Index1).Get(Index2));
+                    ProductInfoAsText := StrSubstNo('%1 %2', ProductInfoAsText, FormatProductName(FileData.Get(Index1).Get(Index2)));
 
             if FileParserResult.GetQuantityColumnIndex() <> 0 then
-                ProductInfoAsText := StrSubstNo('%1%2%3', ProductInfoAsText, FileParserResult.GetColumnDelimiter(), FileData.Get(Index1).Get(FileParserResult.GetQuantityColumnIndex()));
+                QuantityAsText := FileData.Get(Index1).Get(FileParserResult.GetQuantityColumnIndex());
 
             if FileParserResult.GetUoMColumnIndex() <> 0 then
-                ProductInfoAsText := StrSubstNo('%1%2%3', ProductInfoAsText, FileParserResult.GetColumnDelimiter(), FileData.Get(Index1).Get(FileParserResult.GetUoMColumnIndex()));
-            ProductInfoAsText := StrSubstNo('%1%2', ProductInfoAsText, '\n');
-            Rows += ProductInfoAsText;
-            if StrLen(Rows) > SalesLineFromAttachment.GetMaxPromptSize() then
+                UoMAsText := FileData.Get(Index1).Get(FileParserResult.GetUoMColumnIndex());
+
+            if UoMAsText = '' then begin
+                if QuantityAsText = '' then // if qty and uom are empty, just use the product info
+                    ProductQuery := ProductInfoAsText
+                else
+                    ProductQuery := StrSubstNo('%1 %2', QuantityAsText, ProductInfoAsText); // if qty is not empty and uom is empty, use qty and product info
+            end else
+                if QuantityAsText = '' then
+                    ProductQuery := StrSubstNo('1 %1 %2', UoMAsText, ProductInfoAsText) // if qty is empty and uom is not empty, use uom with qty as 1 and product info
+                else
+                    ProductQuery := StrSubstNo('%1 %2 %3', QuantityAsText, UoMAsText, ProductInfoAsText);
+
+            if UserQuery <> '' then
+                UserQuery := StrSubstNo('%1,%2', UserQuery, ProductQuery)
+            else
+                UserQuery := ProductQuery;
+
+            if StrLen(UserQuery) > SalesLineFromAttachment.GetMaxPromptSize() then
                 Error(DataTooLargeErr);
         end;
 
-        SearchQuery := StrSubstNo(SLSPrompts.GetProductFromCsvTemplateUserInputPrompt().Unwrap(), Rows);
+        SearchQuery := StrSubstNo(SLSPrompts.GetProductFromCsvTemplateUserInputPrompt().Unwrap(), UserQuery);
         exit(SearchQuery);
     end;
 
@@ -280,6 +294,14 @@ page 7290 "Sales Line From Attachment"
             // PageCaptionTxt will be of the format "Suggest sales lines from Sample.csv. Use ; as a column separator. Mapped columns Product Information: Product Name, Product No. Quantity: Quantity UoM: UoM"
             PageCaptionTxt := StrSubstNo('%1 %2', PageCaptionTxt, ProductInfoColumnCaption);
         end;
+    end;
+
+    local procedure FormatProductName(ProductName: Text): Text
+    begin
+        if ProductName.Contains(',') then
+            if not ProductName.StartsWith('"') then
+                ProductName := StrSubstNo('"%1"', ProductName);
+        exit(ProductName);
     end;
 
     var

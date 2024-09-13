@@ -182,12 +182,12 @@ page 7275 "Sales Line AI Suggestions"
                 action(DocumentSearchCopyFromLastInvoicePrompt)
                 {
 #pragma warning restore AW0005
-                    Caption = 'Copy from the last posted invoice';
+                    Caption = 'Copy from the latest posted invoice';
                     ToolTip = 'Sample prompt for copying line items from the customer''s latest posted sales invoice.';
 
                     trigger OnAction()
                     var
-                        CopyFromLbl: Label 'Copy from the last sales invoice';
+                        CopyFromLbl: Label 'Copy from the latest sales invoice';
                     begin
                         SearchQueryTxt := CopyFromLbl;
                         CurrPage.Update(false);

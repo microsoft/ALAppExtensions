@@ -119,10 +119,14 @@ codeunit 6115 "E-Document Error Helper"
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
         TelemetryDimensions: Dictionary of [Text, Text];
+        ErrorText: text;
     begin
+        ErrorText := GetLastErrorText();
+        if ErrorText = '' then
+            ErrorText := Message;
         TelemetryDimensions.Add('E-Document', EDocument.ToString());
         TelemetryDimensions.Add('Message', Message);
-        FeatureTelemetry.LogError('0000LBJ', GetTelemetryFeatureName(), GetTelemetryImplErrLbl(), GetLastErrorText(), GetLastErrorCallStack(), TelemetryDimensions);
+        FeatureTelemetry.LogError('0000LBJ', GetTelemetryFeatureName(), GetTelemetryImplErrLbl(), ErrorText, GetLastErrorCallStack(), TelemetryDimensions);
     end;
 
     var

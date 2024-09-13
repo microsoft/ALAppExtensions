@@ -412,7 +412,7 @@ codeunit 10684 "Elec. VAT Create Content"
         end
     end;
 
-#if NOT CLEAN23
+#if not CLEAN23
     [Obsolete('Use the procedure with the VAT Reporting Code parameter instead', '23.0')]
     local procedure GetReportingVATBaseFromVATStatementReportLine(VATStatementReportLine: Record "VAT Statement Report Line"; VATCode: Record "VAT Code"): Decimal
     var

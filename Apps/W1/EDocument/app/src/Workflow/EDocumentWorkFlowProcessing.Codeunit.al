@@ -11,7 +11,8 @@ using System.Utilities;
 codeunit 6135 "E-Document WorkFlow Processing"
 {
     Permissions =
-        tabledata "E-Document" = m;
+        tabledata "E-Document" = m,
+        tabledata "E-Doc. Mapping Log" = i;
 
     internal procedure DoesFlowHasEDocService(var EDocServices: Record "E-Document Service"; WorkfLowCode: Code[20]): Boolean
     var
@@ -105,11 +106,15 @@ codeunit 6135 "E-Document WorkFlow Processing"
         EDocumentBackgroundjobs: Codeunit "E-Document Background Jobs";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
         TempBlob: Codeunit "Temp Blob";
+        EDocServiceStatus: Enum "E-Document Service Status";
         BeforeExportEDocErrorCount: Dictionary of [Integer, Integer];
         IsAsync, IsHandled, AnyErrors : Boolean;
         ErrorCount: Integer;
     begin
+        EDocServiceStatus := Enum::"E-Document Service Status"::"Pending Batch";
         EDocumentLog.InsertLog(EDocument, EDocumentService, Enum::"E-Document Service Status"::"Pending Batch");
+        EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatus);
+        EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatus);
 
         if EDocumentService."Batch Mode" = EDocumentService."Batch Mode"::Recurrent then
             exit;
@@ -146,29 +151,37 @@ codeunit 6135 "E-Document WorkFlow Processing"
     local procedure InsertLogsForThresholdBatch(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var TempEDocMappingLogs: Record "E-Doc. Mapping Log" temporary; var TempBlob: Codeunit "Temp Blob"; Error: Boolean)
     var
         EDocMappingLog: Record "E-Doc. Mapping Log";
-        EDocumentLogRecord: Record "E-Document Log";
+        EDocLog: Record "E-Document Log";
         EDocumentLog: Codeunit "E-Document Log";
-        EDocDataStorageEntryNo, EDocLogEntryNo : Integer;
+        EDocServiceStatus: Enum "E-Document Service Status";
+        EDocDataStorageEntryNo: Integer;
     begin
         EDocument.FindSet();
         if Error then begin
             repeat
-                EDocLogEntryNo := EDocumentLog.InsertLog(EDocument, EDocumentService, Enum::"E-Document Service Status"::"Export Error");
+                EDocServiceStatus := Enum::"E-Document Service Status"::"Export Error";
+                EDocumentLog.InsertLog(EDocument, EDocumentService, EDocServiceStatus);
+                EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatus);
+                EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatus);
             until EDocument.Next() = 0;
             exit;
         end;
-        EDocDataStorageEntryNo := EDocumentLog.AddTempBlobToLog(TempBlob);
+        EDocDataStorageEntryNo := EDocumentLog.InsertDataStorage(TempBlob);
         repeat
-            EDocLogEntryNo := EDocumentLog.InsertLog(EDocument, EDocumentService, Enum::"E-Document Service Status"::Exported);
+            EDocServiceStatus := Enum::"E-Document Service Status"::Exported;
+            EDocLog := EDocumentLog.InsertLog(EDocument, EDocumentService, EDocServiceStatus);
+            EDocumentLog.ModifyDataStorageEntryNo(EDocLog, EDocDataStorageEntryNo);
+            EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, EDocServiceStatus);
+            EDocumentProcessing.ModifyEDocumentStatus(EDocument, EDocServiceStatus);
+
             TempEDocMappingLogs.SetRange("E-Doc Entry No.", EDocument."Entry No");
-            if TempEDocMappingLogs.FindFirst() then begin
-                EDocMappingLog.Copy(TempEDocMappingLogs);
-                EDocMappingLog."Entry No." := 0;
-                EDocMappingLog.Validate("E-Doc Log Entry No.", EDocLogEntryNo);
-                EDocMappingLog.Insert();
-            end;
-            EDocumentLogRecord.Get(EDocLogEntryNo);
-            EDocumentLog.SetDataStorage(EDocumentLogRecord, EDocDataStorageEntryNo);
+            if TempEDocMappingLogs.FindSet() then
+                repeat
+                    EDocMappingLog.TransferFields(TempEDocMappingLogs);
+                    EDocMappingLog."Entry No." := 0;
+                    EDocMappingLog.Validate("E-Doc Log Entry No.", EDocLog."Entry No.");
+                    EDocMappingLog.Insert();
+                until TempEDocMappingLogs.Next() = 0;
         until EDocument.Next() = 0
     end;
 
@@ -240,6 +253,7 @@ codeunit 6135 "E-Document WorkFlow Processing"
     end;
 
     var
+        EDocumentProcessing: Codeunit "E-Document Processing";
         NotSupportedBatchModeErr: Label 'Batch Mode %1 is not supported in E-Document Framework.', Comment = '%1 - The batch mode enum value';
         EDocTelemetryProcessingStartScopeLbl: Label 'E-Document Processing: Start Scope', Locked = true;
         EDocTelemetryProcessingEndScopeLbl: Label 'E-Document Processing: End Scope', Locked = true;

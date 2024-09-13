@@ -31,7 +31,7 @@ codeunit 6161 "E-Document Install"
     var
         UpgradeTag: Codeunit "Upgrade Tag";
     begin
-        if UpgradeTag.HasUpgradeTag(GetEDOCDataExchUpdateTag()) and UpgradeTag.HasUpgradeTag(GetEDOCDataExchUpdate2Tag()) then
+        if UpgradeTag.HasUpgradeTag(GetEDOCDataExchUpdateTag()) then
             exit;
 
         ImportInvoiceXML();
@@ -45,8 +45,6 @@ codeunit 6161 "E-Document Install"
 
         if not UpgradeTag.HasUpgradeTag(GetEDOCDataExchUpdateTag()) then
             UpgradeTag.SetUpgradeTag(GetEDOCDataExchUpdateTag());
-        if not UpgradeTag.HasUpgradeTag(GetEDOCDataExchUpdate2Tag()) then
-            UpgradeTag.SetUpgradeTag(GetEDOCDataExchUpdate2Tag());
     end;
 
     internal procedure ImportServiceInvoiceXML()
@@ -173,17 +171,11 @@ codeunit 6161 "E-Document Install"
     local procedure RegisterUpgradeTags(var PerCompanyUpgradeTags: List of [Code[250]])
     begin
         PerCompanyUpgradeTags.Add(GetEDOCDataExchUpdateTag());
-        PerCompanyUpgradeTags.Add(GetEDOCDataExchUpdate2Tag());
     end;
 
     local procedure GetEDOCDataExchUpdateTag(): Code[250]
     begin
         exit('MS-365688-EDOCDataExchPEPPOL-20231113');
-    end;
-
-    local procedure GetEDOCDataExchUpdate2Tag(): Code[250]
-    begin
-        exit('MS-365688-EDOCPEPPOLAttachments-20240813');
     end;
 
     var

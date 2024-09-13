@@ -6,6 +6,7 @@ namespace Microsoft.FixedAssets;
 
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.GeneralLedger.Account;
+using Microsoft.Finance.GeneralLedger.Journal;
 using Microsoft.FixedAssets.Depreciation;
 using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.FixedAssets.Journal;
@@ -236,8 +237,7 @@ codeunit 31235 "FA Disposal Handler CZF"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"FA Jnl.-Post Line", 'OnBeforePostDisposalEntry', '', false, false)]
-    local procedure PostDisposalEntryOnBeforePostDisposalEntry(var FALedgEntry: Record "FA Ledger Entry"; DeprBook: Record "Depreciation Book"; FANo: Code[20];
-                                                               ErrorEntryNo: Integer; var FAInsertLedgEntry: Codeunit "FA Insert Ledger Entry"; var IsHandled: Boolean)
+    local procedure PostDisposalEntryOnBeforePostDisposalEntry(var FALedgEntry: Record "FA Ledger Entry"; DeprBook: Record "Depreciation Book"; FANo: Code[20]; ErrorEntryNo: Integer; var FAInsertLedgEntry: Codeunit "FA Insert Ledger Entry"; var IsHandled: Boolean)
     var
         FAPostingGroup: Record "FA Posting Group";
         CalculateDisposal: Codeunit "Calculate Disposal";
@@ -541,11 +541,7 @@ codeunit 31235 "FA Disposal Handler CZF"
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"FA Insert G/L Account", 'OnBeforeFAInsertGLAccount', '', false, false)]
-    local procedure OnRunOnBeforeFAInsertGLAccount(var FALedgerEntry: Record "FA Ledger Entry"; var TempFAGLPostBuf: Record "FA G/L Posting Buffer";
-                                                   var FAGLPostBuf: Record "FA G/L Posting Buffer"; DisposalEntry: Boolean; BookValueEntry: Boolean; var NextEntryNo: Integer;
-                                                   var GLEntryNo: Integer; var OrgGenJnlLine: Boolean; var NetDisp: Boolean; var NumberOfEntries: Integer;
-                                                   var DisposalEntryNo: Integer; var DisposalAmount: Decimal; var GainLossAmount: Decimal;
-                                                   var FAPostingGr2: Record "FA Posting Group"; var IsHandled: Boolean)
+    local procedure OnRunOnBeforeFAInsertGLAccount(var FALedgerEntry: Record "FA Ledger Entry"; var TempFAGLPostBuf: Record "FA G/L Posting Buffer"; var FAGLPostBuf: Record "FA G/L Posting Buffer"; DisposalEntry: Boolean; BookValueEntry: Boolean; var NextEntryNo: Integer; var GLEntryNo: Integer; var OrgGenJnlLine: Boolean; var NetDisp: Boolean; var NumberOfEntries: Integer; var DisposalEntryNo: Integer; var DisposalAmount: Decimal; var GainLossAmount: Decimal; var FAPostingGr2: Record "FA Posting Group"; var IsHandled: Boolean)
     var
         DepreciationBook: Record "Depreciation Book";
         DepreciationDisposalEntry: Boolean;
@@ -641,8 +637,7 @@ codeunit 31235 "FA Disposal Handler CZF"
         IsHandled := true;
     end;
 
-    local procedure InsertBufferEntry(var TempFAGLPostingBuffer: Record "FA G/L Posting Buffer" temporary; var FAGLPostingBuffer: Record "FA G/L Posting Buffer";
-                                      var NextEntryNo: Integer; GLEntryNo: Integer; OrgGenJnlLine: Boolean; NetDisp: Boolean; var NumberOfEntries: Integer)
+    local procedure InsertBufferEntry(var TempFAGLPostingBuffer: Record "FA G/L Posting Buffer" temporary; var FAGLPostingBuffer: Record "FA G/L Posting Buffer"; var NextEntryNo: Integer; GLEntryNo: Integer; OrgGenJnlLine: Boolean; NetDisp: Boolean; var NumberOfEntries: Integer)
     begin
         if TempFAGLPostingBuffer.IsEmpty() then
             NextEntryNo := GLEntryNo
@@ -657,8 +652,7 @@ codeunit 31235 "FA Disposal Handler CZF"
         NumberOfEntries += 1;
     end;
 
-    local procedure CalcDisposalAmount(FALedgerEntry: Record "FA Ledger Entry"; var TempFAGLPostingBuffer: Record "FA G/L Posting Buffer" temporary;
-                                       var DisposalEntryNo: Integer; var DisposalAmount: Decimal; var GainLossAmount: Decimal; var FAPostingGroup2: Record "FA Posting Group")
+    local procedure CalcDisposalAmount(FALedgerEntry: Record "FA Ledger Entry"; var TempFAGLPostingBuffer: Record "FA G/L Posting Buffer" temporary; var DisposalEntryNo: Integer; var DisposalAmount: Decimal; var GainLossAmount: Decimal; var FAPostingGroup2: Record "FA Posting Group")
     begin
         DisposalEntryNo := TempFAGLPostingBuffer."Entry No.";
         FADepreciationBook.Get(FALedgerEntry."FA No.", FALedgerEntry."Depreciation Book Code");
@@ -668,10 +662,7 @@ codeunit 31235 "FA Disposal Handler CZF"
         FAPostingGroup2.Get(FALedgerEntry."FA Posting Group");
     end;
 
-    local procedure CorrectDisposalEntry(var FALedgerEntry: Record "FA Ledger Entry"; var TempFAGLPostingBuffer: Record "FA G/L Posting Buffer" temporary;
-                                        var FAGLPostingBuffer: Record "FA G/L Posting Buffer"; DisposalEntryNo: Integer; DisposalAmount: Decimal;
-                                        GainLossAmount: Decimal; var FAPostingGroup2: Record "FA Posting Group"; var NextEntryNo: Integer;
-                                        GLEntryNo: Integer; var OrgGenJnlLine: Boolean; NetDisp: Boolean; var NumberOfEntries: Integer)
+    local procedure CorrectDisposalEntry(var FALedgerEntry: Record "FA Ledger Entry"; var TempFAGLPostingBuffer: Record "FA G/L Posting Buffer" temporary; var FAGLPostingBuffer: Record "FA G/L Posting Buffer"; DisposalEntryNo: Integer; DisposalAmount: Decimal; GainLossAmount: Decimal; var FAPostingGroup2: Record "FA Posting Group"; var NextEntryNo: Integer; GLEntryNo: Integer; var OrgGenJnlLine: Boolean; NetDisp: Boolean; var NumberOfEntries: Integer)
     var
         LastDisposal: Boolean;
         GLAmount: Decimal;
@@ -725,10 +716,7 @@ codeunit 31235 "FA Disposal Handler CZF"
         end;
     end;
 
-    local procedure CorrectBookValueEntry(var FALedgerEntry: Record "FA Ledger Entry"; var TempFAGLPostingBuffer: Record "FA G/L Posting Buffer" temporary;
-                                        var FAGLPostingBuffer: Record "FA G/L Posting Buffer"; DisposalEntryNo: Integer;
-                                        GainLossAmount: Decimal; var FAPostingGroup2: Record "FA Posting Group"; var NextEntryNo: Integer;
-                                        GLEntryNo: Integer; var OrgGenJnlLine: Boolean; NetDisp: Boolean; var NumberOfEntries: Integer)
+    local procedure CorrectBookValueEntry(var FALedgerEntry: Record "FA Ledger Entry"; var TempFAGLPostingBuffer: Record "FA G/L Posting Buffer" temporary; var FAGLPostingBuffer: Record "FA G/L Posting Buffer"; DisposalEntryNo: Integer; GainLossAmount: Decimal; var FAPostingGroup2: Record "FA Posting Group"; var NextEntryNo: Integer; GLEntryNo: Integer; var OrgGenJnlLine: Boolean; NetDisp: Boolean; var NumberOfEntries: Integer)
     var
         DisposalFALedgerEntry: Record "FA Ledger Entry";
         BookValueAmount: Decimal;
@@ -838,14 +826,10 @@ codeunit 31235 "FA Disposal Handler CZF"
         exit(ProceedsOnDisposalFALedgerEntry.IsEmpty());
     end;
 
-    local procedure InsertBufferBalAcc(var FALedgerEntry: Record "FA Ledger Entry"; var TempFAGLPostingBuffer: Record "FA G/L Posting Buffer" temporary;
-                                       var FAGLPostingBuffer: Record "FA G/L Posting Buffer"; var NextEntryNo: Integer; GLEntryNo: Integer;
-                                       OrgGenJnlLine: Boolean; NetDisp: Boolean; var NumberOfEntries: Integer;
-                                       FAPostingType2: Enum "FA Posting Group Account Type"; AllocAmount: Decimal; DeprBookCode2: Code[10]; PostingGrCode: Code[20];
-                                       GlobalDim1Code: Code[20]; GlobalDim2Code: Code[20]; DimSetID: Integer; AutomaticEntry: Boolean; Correction: Boolean)
+    local procedure InsertBufferBalAcc(var FALedgerEntry: Record "FA Ledger Entry"; var TempFAGLPostingBuffer: Record "FA G/L Posting Buffer" temporary; var FAGLPostingBuffer: Record "FA G/L Posting Buffer"; var NextEntryNo: Integer; GLEntryNo: Integer; OrgGenJnlLine: Boolean; NetDisp: Boolean; var NumberOfEntries: Integer; FAPostingType2: Enum "FA Posting Group Account Type"; AllocAmount: Decimal; DeprBookCode2: Code[10]; PostingGrCode: Code[20]; GlobalDim1Code: Code[20]; GlobalDim2Code: Code[20]; DimSetID: Integer; AutomaticEntry: Boolean; Correction: Boolean)
     var
         FAAllocation: Record "FA Allocation";
-        FAPostingGroup3: Record "FA Posting Group";
+        FAPostingGroup: Record "FA Posting Group";
         SourceCodeSetup: Record "Source Code Setup";
         GLAccNo: Code[20];
         DimensionSetIDArr: array[10] of Integer;
@@ -856,20 +840,22 @@ codeunit 31235 "FA Disposal Handler CZF"
         ReasonMaintenanceCode := FALedgerEntry."Reason Code";
         NumberOfEntries := 0;
         TotalAllocAmount := 0;
-        FAPostingGroup3.GetPostingGroup(PostingGrCode, DeprBookCode2);
-        GLAccNo := GetGLAccNoFromFAPostingGroup(FAPostingGroup3, FAPostingType2, ReasonMaintenanceCode);
+        NewAmount := 0;
+        TotalPercent := 0;
+        FAPostingGroup.GetPostingGroup(PostingGrCode, DeprBookCode2);
+        GLAccNo := GetGLAccNoFromFAPostingGroup(FAPostingGroup, FAPostingType2, ReasonMaintenanceCode);
         DimensionSetIDArr[1] := DimSetID;
 
-        FAAllocation.SetRange(FAAllocation.Code, PostingGrCode);
-        FAAllocation.SetRange(FAAllocation."Allocation Type", FAPostingType2);
-        if not FAPostingGroup3.UseStandardDisposalCZF(ReasonMaintenanceCode) then
-            FAAllocation.SetRange(FAAllocation."Reason/Maintenance Code CZF", ReasonMaintenanceCode)
+        FAAllocation.SetRange(Code, PostingGrCode);
+        FAAllocation.SetRange("Allocation Type", FAPostingType2);
+        if not FAPostingGroup.UseStandardDisposalCZF(ReasonMaintenanceCode) then
+            FAAllocation.SetRange("Reason/Maintenance Code CZF", ReasonMaintenanceCode)
         else
-            FAAllocation.SetRange(FAAllocation."Reason/Maintenance Code CZF", '');
+            FAAllocation.SetRange("Reason/Maintenance Code CZF", '');
         if FAAllocation.FindSet() then
             repeat
                 if (FAAllocation."Account No." = '') and (FAAllocation."Allocation %" > 0) then
-                    FAAllocation.TestField(FAAllocation."Account No.");
+                    FAAllocation.TestField("Account No.");
                 TotalPercent += FAAllocation."Allocation %";
                 NewAmount :=
                     DepreciationCalculation.CalcRounding(DeprBookCode2, AllocAmount * TotalPercent / 100) - TotalAllocAmount;
@@ -934,5 +920,24 @@ codeunit 31235 "FA Disposal Handler CZF"
             FAExtendedPostingGroupCZF.Code := CopyStr(GLAccountWhereUsed."Key 3", 1, MaxStrLen(FAExtendedPostingGroupCZF.Code));
             Page.Run(Page::"FA Extended Posting Groups CZF", FAExtendedPostingGroupCZF);
         end;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"FA Insert G/L Account", 'OnGetBalAccAfterSaveGenJnlLineFields', '', false, false)]
+    local procedure OnGetBalAccAfterSaveGenJnlLineFields(FromGenJnlLine: Record "Gen. Journal Line"; var SkipInsert: Boolean; var sender: Codeunit "FA Insert G/L Account")
+    var
+        FAInsertGLAccHandlerCZF: Codeunit "FA Insert G/L Acc. Handler CZF";
+    begin
+        FAInsertGLAccHandlerCZF.SetReasonMaintenanceCode(FromGenJnlLine."Reason Code");
+        if FromGenJnlLine."FA Posting Type" = FromGenJnlLine."FA Posting Type"::Maintenance then
+            FAInsertGLAccHandlerCZF.SetReasonMaintenanceCode(FromGenJnlLine."Maintenance Code");
+
+        BindSubscription(FAInsertGLAccHandlerCZF);
+        sender.InsertBufferBalAcc(
+            "FA Posting Group Account Type".FromInteger(FromGenJnlLine."FA Posting Type".AsInteger() - 1), -FromGenJnlLine.Amount,
+            FromGenJnlLine."Depreciation Book Code", FromGenJnlLine."Posting Group",
+            FromGenJnlLine."Shortcut Dimension 1 Code", FromGenJnlLine."Shortcut Dimension 2 Code",
+            FromGenJnlLine."Dimension Set ID", false, false);
+        UnbindSubscription(FAInsertGLAccHandlerCZF);
+        SkipInsert := true;
     end;
 }

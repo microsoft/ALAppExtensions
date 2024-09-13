@@ -1,0 +1,32 @@
+[
+    {
+        "codeunitId": 139876,
+        "CodeunitName": "PowerBI Finance Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139877,
+        "CodeunitName": "PowerBI Inventory Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139878,
+        "CodeunitName": "PowerBI Manufacturing Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139879,
+        "CodeunitName": "PowerBI Project Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139880,
+        "CodeunitName": "PowerBI Purchases Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139881,
+        "CodeunitName": "PowerBI Sales Test",
+        "Method": "*"
+    }
+]

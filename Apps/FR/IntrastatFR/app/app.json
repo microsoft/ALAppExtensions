@@ -1,39 +1,37 @@
 {
-    "id":  "1096d1ca-2c0c-4a0e-aa0d-c734021aba2b",
-    "name":  "Intrastat FR",
-    "publisher":  "Microsoft",
-    "brief":  "The Intrastat extension makes it easy to export the Intrastat report in the format that the authorities in your country require.",
-    "description":  "The formats that businesses must use to report Intrastat vary from country to country. The Intrastat extension makes it easy to export the Intrastat report in the format that the authorities in your country require.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2204541",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2204541",
-    "dependencies":  [
-                         {
-                             "id":  "70912191-3c4c-49fc-a1de-bc6ea1ac9da6",
-                             "name":  "Intrastat Core",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  10851,
-                         "to":  10857
-                     }
-                 ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0",
-    "target":  "Cloud"
+  "id": "1096d1ca-2c0c-4a0e-aa0d-c734021aba2b",
+  "name": "Intrastat FR",
+  "publisher": "Microsoft",
+  "brief": "The Intrastat extension makes it easy to export the Intrastat report in the format that the authorities in your country require.",
+  "description": "The formats that businesses must use to report Intrastat vary from country to country. The Intrastat extension makes it easy to export the Intrastat report in the format that the authorities in your country require.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "dependencies": [
+    {
+      "id": "70912191-3c4c-49fc-a1de-bc6ea1ac9da6",
+      "name": "Intrastat Core",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 10851,
+      "to": 10857
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0",
+  "target": "Cloud"
 }

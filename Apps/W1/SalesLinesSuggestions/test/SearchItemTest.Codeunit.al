@@ -16,6 +16,8 @@ codeunit 139780 "Search Item Test"
     EventSubscriberInstance = Manual;
 
     var
+        TestUtility: Codeunit "SLS Test Utility";
+        IsInitialized: Boolean;
         GlobalUserInput: Text;
 
     var
@@ -24,67 +26,38 @@ codeunit 139780 "Search Item Test"
         LibrarySales: Codeunit "Library - Sales";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryService: Codeunit "Library - Service";
-        NoSuggestionGeneratedErr: Label 'There are no suggestions for this description. Please rephrase it.';
+        NoSuggestionGeneratedErr: Label 'Copilot could not find the requested items. Please rephrase the description.';
         DescriptionIsIncorrectErr: Label 'Description is incorrect!';
         QuantityIsIncorrectErr: Label 'Quantity is incorrect!';
-        NeedThreeItemButOneNotExistingLbl: Label 'I need one bike, one table and one Model Took Kit';
-        NeedThreeItemButOneIsItemNoLbl: Label 'I need 3 red chairs and one 1928-W, 5 red bikes';
-        NeedItemInNonEnglishLbl: Label 'I need one bicikl.';
+        NeedSameItemMoreThanOnceLbl: Label 'I need the following items: \nBike\nBike';
         InvalidPrecisionErr: Label 'The value %1 in field %2 is of lower precision than expected. \\Note: Default rounding precision of %3 is used if a rounding precision is not defined.', Comment = '%1 - decimal value, %2 - field name, %3 - default rounding precision.';
 
 
     [Test]
     [HandlerFunctions('InvokeGenerateAndCheckItemsFound')]
-    procedure TestSearchThreeItemsWithOneNotExistingItem()
+    procedure TestSearchSameItemMoreThanOnce()
     var
         SalesHeader: Record "Sales Header";
         SalesLineAISuggestions: Page "Sales Line AI Suggestions";
     begin
         // [FEATURE] [Sales with AI]:[Search Item End to End]
-        // [Scenario] User wants to search for 3 items, but 1 one of them is not existing in the system, two lines will be generated.
-        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
+        // [Scenario] User wants to search for items, but same item is specified more than once in query
         Initialize();
-        // [GIVEN] User specifies 3 items, but one of them is not existing in the system
-        LibraryVariableStorage.Enqueue(NeedThreeItemButOneNotExistingLbl);
+
+        // [GIVEN] User specifies one item twice
+        LibraryVariableStorage.Enqueue(NeedSameItemMoreThanOnceLbl);
         LibraryVariableStorage.Enqueue(2);
         EnqueueOneItemAndQty('Bicycle', 1);
-        EnqueueOneItemAndQty('ANTWERP Conference Table', 1);
         EnqueueOneItemAndQty('Bicycle', 1);
-        EnqueueOneItemAndQty('ANTWERP Conference Table', 1);
-        // [WHEN] User input is given to the AI suggestions
-        // [THEN] AI suggestions should generate two sales lines, it is handled in the handler function 'InvokeGenerateAndCheckItemsFound'
-        CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions);
-        // [THEN] One line is inserted in the sales line
-        CheckSalesLineContent(SalesHeader."No.");
-    end;
-
-    [Test]
-    [HandlerFunctions('InvokeGenerateAndCheckItemsFound')]
-    procedure TestSearchThreeItemsWithOneItemNo()
-    var
-        SalesHeader: Record "Sales Header";
-        SalesLineAISuggestions: Page "Sales Line AI Suggestions";
-    begin
-        // [FEATURE] [Sales with AI]:[Search Item End to End]
-        // [Scenario] User wants to search for 3 items, which 1 one of them Item No.
-        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
-        Initialize();
-
-        // [GIVEN] User specifies 3 items, but one of them is Item No.
-        LibraryVariableStorage.Enqueue(NeedThreeItemButOneIsItemNoLbl);
-        LibraryVariableStorage.Enqueue(3);
-        EnqueueOneItemAndQty('SEOUL Guest Chair, red', 3);
-        EnqueueOneItemAndQty('ST.MORITZ Storage Unit/Drawers', 1);
-        EnqueueOneItemAndQty('Bicycle', 5);
-        EnqueueOneItemAndQty('SEOUL Guest Chair, red', 3);
-        EnqueueOneItemAndQty('ST.MORITZ Storage Unit/Drawers', 1);
-        EnqueueOneItemAndQty('Bicycle', 5);
 
         // [WHEN] User input is given to the AI suggestions
-        // [THEN] AI suggestions should generate two sales lines, it is handled in the handler function 'InvokeGenerateAndCheckItemsFound'
+        // [THEN] AI suggestions should generate one sales line, it is handled in the handler function 'InvokeGenerateAndCheckItemsFound'
         CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions);
 
-        // [THEN] One line is inserted in the sales line
+        EnqueueOneItemAndQty('Bicycle', 1);
+        EnqueueOneItemAndQty('Bicycle', 1);
+
+        // [THEN] Two lines are inserted in the sales line
         CheckSalesLineContent(SalesHeader."No.");
     end;
 
@@ -307,6 +280,7 @@ codeunit 139780 "Search Item Test"
     procedure TestSearchBasedOnItemCategoryDesc()
     var
         SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
         Item: Record Item;
         ItemCategory: Record "Item Category";
         SalesLineAISuggestions: Page "Sales Line AI Suggestions";
@@ -324,14 +298,18 @@ codeunit 139780 "Search Item Test"
         UserInput := GlobalUserInput;
         UserInput += '5 quantity of ' + ItemCategory.Description + '; ';
         LibraryVariableStorage.Enqueue(UserInput);
-        LibraryVariableStorage.Enqueue(1);
-        EnqueueOneItemAndQty(Item.Description, 5);
-        EnqueueOneItemAndQty(Item.Description, 5);
+        LibraryVariableStorage.Enqueue(0); // Verify the item using sales line
         // [WHEN] User input is given to the AI suggestions
         // [THEN] AI suggestions should one sales lines, it is handled in the handler function 'InvokeGenerateAndCheckItemsFound'
         CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions);
-        // [THEN] One line is inserted in the sales line
-        CheckSalesLineContent(SalesHeader."No.");
+
+        // [THEN] One line is inserted in the sales line and the item belongs to the given category
+        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindFirst();
+        Item.SetLoadFields("No.", "Item Category Code");
+        Item.Get(SalesLine."No.");
+        Assert.AreEqual(Item."Item Category Code", ItemCategory.Code, 'Item Category Code does not match');
     end;
 
     [Test]
@@ -385,7 +363,7 @@ codeunit 139780 "Search Item Test"
         Item.SetRange("No.", ItemTranslation."Item No.");
         Item.FindFirst();
         UserInput := GlobalUserInput;
-        UserInput += '5 quantity of ' + ItemTranslation."Language Code" + '; ';
+        UserInput += '5 quantity of ' + ItemTranslation."Language Code" + ItemTranslation.Description + '; ';
         LibraryVariableStorage.Enqueue(UserInput);
         LibraryVariableStorage.Enqueue(1);
         EnqueueOneItemAndQty(Item.Description, 5);
@@ -503,7 +481,7 @@ codeunit 139780 "Search Item Test"
         Initialize();
         LibraryVariableStorage.Clear();
         // [GIVEN] Generate prompt with Document No.
-        LibraryVariableStorage.Enqueue(GlobalUserInput + '5 MiawCrosoft');
+        LibraryVariableStorage.Enqueue(GlobalUserInput + '5 Masdfioioagf');
         LibraryVariableStorage.Enqueue(NoSuggestionGeneratedErr);
         // [WHEN] User input is given to the AI suggestions
         // [THEN] AI suggestions should not generate any sales lines, it is handled in the handler function 'InvokeGenerateAndNoItemFound
@@ -542,48 +520,6 @@ codeunit 139780 "Search Item Test"
         CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions);
         // [THEN] No line is inserted in the sales line
         CheckSalesLineContent(SalesHeader."No.");
-    end;
-
-    [Test]
-    [HandlerFunctions('EvaluateSearchItemForMultipleItemNos')]
-    procedure EvaluateSearchItemForItemNoAsInput()
-    var
-        Item: Record Item;
-        SalesHeader: Record "Sales Header";
-        SalesLine: Record "Sales Line";
-        SalesLineAISuggestionImpl: Codeunit "Sales Lines Suggestions Impl.";
-        ListOfItems: List of [Text];
-        Qty: Decimal;
-        i: Integer;
-        UserInput: Text;
-    begin
-        // [FEATURE] [Sales with AI]:[Search Item End to End]
-        // [Scenario] Add up to 50 item no. in sales lines using AI suggestions in one user input  
-        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
-        Initialize();
-        Qty := 5;
-        Item.SetLoadFields("No.");
-        Item.SetRange(Blocked, false);
-        Item.SetRange("Sales Blocked", false);
-        UserInput := GlobalUserInput;
-        if Item.FindSet() then
-            repeat
-                UserInput += Format(Qty) + ' quantity of ' + Item."No." + '; ';
-                ListOfItems.Add(Item."No.");
-                i += 1;
-            until (Item.Next() = 0) or (i = 5);
-
-        // [GIVEN] Create a new sales order for a new customer
-        CreateSalesOrderWithSalesLine(SalesHeader, SalesLine);
-
-        // [WHEN] User input is given to the AI suggestions
-        LibraryVariableStorage.Enqueue(UserInput);
-        LibraryVariableStorage.Enqueue(ListOfItems);
-        LibraryVariableStorage.Enqueue(Qty);
-        SalesLineAISuggestionImpl.GetLinesSuggestions(SalesLine);
-
-        // [THEN] AI suggestions should generate the expected sales lines
-        // Handled in EvaluateSearchItemForMultipleItems
     end;
 
     [Test]
@@ -671,6 +607,84 @@ codeunit 139780 "Search Item Test"
     end;
 
     [Test]
+    [HandlerFunctions('InvokeGenerateAndCheckItemsFound,SendNotificationHandler')]
+    procedure SalesLineIsNotInsertedIfErrorOccursOnInsertSuggestedLine()
+    var
+        SalesHeader: Record "Sales Header";
+        Item: Record Item;
+        SalesLineAISuggestions: Page "Sales Line AI Suggestions";
+        UserInput: Text;
+        Quantity: Text;
+    begin
+        // [SCENARIO 507779] If error occurs on insert suggested lines, notification is thrown and lines are not inserted
+        Initialize();
+
+        // [GIVEN] Find first Item
+        Item.FindFirst();
+        UpdateRoundingPrecisionForItem(Item);
+
+        // [GIVEN] Create user input
+        Quantity := '2.5';
+        UserInput := GlobalUserInput;
+        UserInput += Quantity + ' quantity of ' + Item."No." + '; ';
+
+        LibraryVariableStorage.Enqueue(UserInput);
+        LibraryVariableStorage.Enqueue(1);
+        EnqueueOneItemAndQty(Item.Description, 2.5);
+
+        LibraryVariableStorage.Enqueue(StrSubstNo(InvalidPrecisionErr, Quantity, 'Quantity', '0.00001'));
+
+        // [WHEN] AI suggestions should generate sales line
+        // [HANDLER] Show a notification, it is handled in the handler function 'SendNotificationHandler'
+        CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions);
+
+        // [THEN] No line is inserted in the sales line
+        CheckSalesLineContent(SalesHeader."No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('EvaluateSearchItemForMultipleItemNos')]
+    procedure EvaluateSearchItemForItemNoAsInput()
+    var
+        Item: Record Item;
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesLineAISuggestionImpl: Codeunit "Sales Lines Suggestions Impl.";
+        ListOfItems: List of [Text];
+        Qty: Decimal;
+        i: Integer;
+        UserInput: Text;
+    begin
+        // [FEATURE] [Sales with AI]:[Search Item End to End]
+        // [Scenario] Add up to 50 item no. in sales lines using AI suggestions in one user input  
+        // [NOTE] This test is based on demo data. It should be refactored with independent items after the control of full-text searching indexing is supported.
+        Initialize();
+        Qty := 5;
+        Item.SetLoadFields("No.");
+        Item.SetRange(Blocked, false);
+        Item.SetRange("Sales Blocked", false);
+        UserInput := GlobalUserInput;
+        if Item.FindSet() then
+            repeat
+                UserInput += Format(Qty) + ' quantity of ' + Item."No." + '; ';
+                ListOfItems.Add(Item."No.");
+                i += 1;
+            until (Item.Next() = 0) or (i = 5);
+
+        // [GIVEN] Create a new sales order for a new customer
+        CreateSalesOrderWithSalesLine(SalesHeader, SalesLine);
+
+        // [WHEN] User input is given to the AI suggestions
+        LibraryVariableStorage.Enqueue(UserInput);
+        LibraryVariableStorage.Enqueue(ListOfItems);
+        LibraryVariableStorage.Enqueue(Qty);
+        SalesLineAISuggestionImpl.GetLinesSuggestions(SalesLine);
+
+        // [THEN] AI suggestions should generate the expected sales lines
+        // Handled in EvaluateSearchItemForMultipleItems
+    end;
+
+    [Test]
     [HandlerFunctions('InvokeGenerateAndCheckItemsFound')]
     procedure ExtendedTextIsInsertedOnSalesOrderLinesOnInsertSuggestedLines()
     var
@@ -689,7 +703,7 @@ codeunit 139780 "Search Item Test"
         Item.Modify(true);
 
         // [GIVEN] Create Item Extended Text
-        CreateItemExtendedText(Item."No.", ItemExtText);
+        CreateItemExtendedText(Item."No.", ItemExtText); //TODO: Make sure the item is indexed before running the test.
 
         // [GIVEN] Create user input
         UserInput := GlobalUserInput;
@@ -707,67 +721,6 @@ codeunit 139780 "Search Item Test"
         CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions);
 
         // [THEN] One line is inserted in the sales line
-        CheckSalesLineContent(SalesHeader."No.");
-    end;
-
-    [Test]
-    [HandlerFunctions('InvokeGenerateAndCheckItemsFound')]
-    procedure TestSearchItemReturnedInOriginName()
-    var
-        SalesHeader: Record "Sales Header";
-        SalesLineAISuggestions: Page "Sales Line AI Suggestions";
-    begin
-        // [FEATURE] [Sales with AI]:[Search Item End to End]
-        // [Scenario] User wants to search for item, written in different language than english, returned in origin_name property
-        Initialize();
-
-        // [GIVEN] User specifies item in different language than english
-        LibraryVariableStorage.Enqueue(NeedItemInNonEnglishLbl);
-        LibraryVariableStorage.Enqueue(1);
-        EnqueueOneItemAndQty('Bicycle', 1);
-        EnqueueOneItemAndQty('Bicycle', 1);
-
-        // [WHEN] User input is given to the AI suggestions
-        // [THEN] AI suggestions should generate one sales line, it is handled in the handler function 'InvokeGenerateAndCheckItemsFound'
-        CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions);
-
-        // [THEN] One line is inserted in the sales line
-        CheckSalesLineContent(SalesHeader."No.");
-    end;
-
-    [Test]
-    [HandlerFunctions('InvokeGenerateAndCheckItemsFound,SendNotificationHandler')]
-    procedure SalesLineIsNotInsertedIfErrorOccursOnInsertSuggestedLine()
-    var
-        SalesHeader: Record "Sales Header";
-        Item: Record Item;
-        SalesLineAISuggestions: Page "Sales Line AI Suggestions";
-        UserInput: Text;
-        Quantity: Text;
-    begin
-        // [SCENARIO 507779] If error occurs on insert suggested lines, notification is thrown and lines are not inserted
-        Initialize();
-
-        // [GIVEN] Find first Item
-        Item.FindFirst();
-        UpdateRoundingPrecisonForItem(Item);
-
-        // [GIVEN] Create user input
-        Quantity := '2.5';
-        UserInput := GlobalUserInput;
-        UserInput += Quantity + ' quantity of ' + Item."No." + '; ';
-
-        LibraryVariableStorage.Enqueue(UserInput);
-        LibraryVariableStorage.Enqueue(1);
-        EnqueueOneItemAndQty(Item.Description, 2.5);
-
-        LibraryVariableStorage.Enqueue(StrSubstNo(InvalidPrecisionErr, Quantity, 'Quantity', '0.00001'));
-
-        // [WHEN] AI suggestions should generate sales line
-        // [HANDLER] Show a notification, it is handled in the handler function 'SendNotificationHandler'
-        CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions);
-
-        // [THEN] No line is inserted in the sales line
         CheckSalesLineContent(SalesHeader."No.");
     end;
 
@@ -834,9 +787,16 @@ codeunit 139780 "Search Item Test"
 
     local procedure Initialize()
     begin
+        LibraryVariableStorage.Clear();
+
+        if IsInitialized then
+            exit;
+
+        TestUtility.RegisterCopilotCapability();
+
         GlobalUserInput := 'I need the following items: ';
 
-        LibraryVariableStorage.Clear();
+        IsInitialized := true;
     end;
 
     local procedure CreateNewSalesOrderAndRunSalesLineAISuggestionsPage(var SalesHeader: Record "Sales Header"; var SalesLineAISuggestions: Page "Sales Line AI Suggestions")
@@ -884,7 +844,7 @@ codeunit 139780 "Search Item Test"
         ExtText := ExtendedTextLine.Text;
     end;
 
-    local procedure UpdateRoundingPrecisonForItem(var Item: Record Item)
+    local procedure UpdateRoundingPrecisionForItem(var Item: Record Item)
     var
         ItemUnitOfMeasure: Record "Item Unit of Measure";
     begin

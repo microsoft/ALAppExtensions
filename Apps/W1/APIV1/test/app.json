@@ -1,51 +1,49 @@
 {
-    "id":  "8b6f7477-3589-44b7-b84f-d87f09bc764e",
-    "name":  "_Exclude_APIV1_ Tests",
-    "publisher":  "Microsoft",
-    "brief":  "Tests for the _Exclude_APIV1_ extension.",
-    "description":  "Tests for the _Exclude_APIV1_ extension.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2206603",
-    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "8afe7b40-8c87-4beb-ada0-451d1761bf95",
-                             "name":  "_Exclude_APIV1_",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
-                             "name":  "Tests-TestLibraries",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5095f467-0a01-4b99-99d1-9ff1237d286f",
-                             "publisher":  "Microsoft",
-                             "name":  "Library Variable Storage",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "9856ae4f-d1a7-46ef-89bb-6ef056398228",
-                             "publisher":  "Microsoft",
-                             "name":  "System Application Test Library",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "8b6f7477-3589-44b7-b84f-d87f09bc764e",
+  "name": "_Exclude_APIV1_ Tests",
+  "publisher": "Microsoft",
+  "brief": "Tests for the _Exclude_APIV1_ extension.",
+  "description": "Tests for the _Exclude_APIV1_ extension.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2206603",
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/dynamics365/business-central/",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "8afe7b40-8c87-4beb-ada0-451d1761bf95",
+      "name": "_Exclude_APIV1_",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+      "publisher": "Microsoft",
+      "name": "Library Variable Storage",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "9856ae4f-d1a7-46ef-89bb-6ef056398228",
+      "publisher": "Microsoft",
+      "name": "System Application Test Library",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

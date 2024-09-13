@@ -19,7 +19,7 @@ codeunit 7275 "Sales Lines Suggestions Impl."
         NoSalesLinesSuggestionsMsg: Label 'There are no suggestions for this description. Please rephrase it.';
         UnknownDocTypeMsg: Label 'Copilot does not support the specified document type. Please rephrase the description.';
         DocumentNotFoundMsg: Label 'Copilot could not find the document. Please rephrase the description.';
-        ItemNotFoundMsg: Label 'Copilot could not find the requsted items. Please rephrase the description.';
+        ItemNotFoundMsg: Label 'Copilot could not find the requested items. Please rephrase the description.';
         CopyFromMultipleDocsMsg: Label 'You cannot copy lines from more than one document. Please rephrase the description.';
         SalesHeaderNotInitializedErr: Label '%1 header is not initialized', Comment = '%1 = Document Type';
 
@@ -136,7 +136,7 @@ codeunit 7275 "Sales Lines Suggestions Impl."
             exit;
 
         // Generate OpenAI Completion
-        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4Latest());
+        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4oLatest());
         AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"Sales Lines Suggestions");
 
         AOAIChatCompletionParams.SetMaxTokens(MaxTokens());
@@ -167,6 +167,7 @@ codeunit 7275 "Sales Lines Suggestions Impl."
                     if (not AOAIFunctionResponse.IsSuccess()) or (AOAIFunctionResponse.GetFunctionName() = MagicFunction.GetName()) then begin
                         MagicFunction.Execute(EmptyArguments);
                         FeatureTelemetry.LogError('0000ME9', GetFeatureName(), 'Process function_call', 'Function not supported, defaulting to magic_function');
+                        TempSalesLineAiSuggestion.DeleteAll();
                         Clear(TempSalesLineAiSuggestion);
                         exit(CompletionAnswer);
                     end else
@@ -211,7 +212,7 @@ codeunit 7275 "Sales Lines Suggestions Impl."
             exit;
 
         // Generate OpenAI Completion
-        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4Latest());
+        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4oLatest());
         AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"Sales Lines Suggestions");
 
         AOAIChatCompletionParams.SetMaxTokens(MaxTokens());

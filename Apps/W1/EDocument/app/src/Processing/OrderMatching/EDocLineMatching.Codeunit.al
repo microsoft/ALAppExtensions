@@ -38,7 +38,8 @@ codeunit 6164 "E-Doc. Line Matching"
         EDocOrderLineMatching: Page "E-Doc. Order Line Matching";
     begin
         EDocument.TestField("Document Type", Enum::"E-Document Type"::"Purchase Order");
-        EDocument.TestField(EDocument.Status, Enum::"E-Document Status"::"In Progress");
+        EDocument.TestField(Status, Enum::"E-Document Status"::"In Progress");
+        EDocument.TestField(Direction, Enum::"E-Document Direction"::Incoming);
         EDocService := EDocLog.GetLastServiceFromLog(EDocument);
         EDocServiceStatus.Get(EDocument."Entry No", EDocService.Code);
         EDocServiceStatus.TestField(Status, Enum::"E-Document Service Status"::"Order Linked");

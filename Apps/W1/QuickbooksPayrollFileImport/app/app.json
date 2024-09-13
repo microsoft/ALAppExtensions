@@ -1,34 +1,30 @@
 {
-    "id":  "bc45ae22-3b5b-44b5-beb4-2a42bf79cc34",
-    "name":  "Import of QuickBooks Payroll Files",
-    "publisher":  "Microsoft",
-    "brief":  "The Import of QuickBooks Payroll Files functionality allows you to import payroll transactions from a Quickbooks IIF file.",
-    "description":  "The Import of QuickBooks Payroll Files functionality allows you to import payroll transactions from a Quickbooks IIF file.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?LinkId=860351",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?LinkId=860351",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  1,
-                         "to":  9999
-                     }
-                 ],
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "bc45ae22-3b5b-44b5-beb4-2a42bf79cc34",
+  "name": "Import of QuickBooks Payroll Files",
+  "publisher": "Microsoft",
+  "brief": "The Import of QuickBooks Payroll Files functionality allows you to import payroll transactions from a Quickbooks IIF file.",
+  "description": "The Import of QuickBooks Payroll Files functionality allows you to import payroll transactions from a Quickbooks IIF file.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?LinkId=860351",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?LinkId=860351",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 1,
+      "to": 9999
+    }
+  ],
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

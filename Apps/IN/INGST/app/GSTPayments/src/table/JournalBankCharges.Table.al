@@ -146,6 +146,7 @@ table 18247 "Journal Bank Charges"
             exit;
         GSTSetup.TestField("GST Tax Type");
         TaxTransactionValue.Reset();
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
         TaxTransactionValue.SetRange("Tax Type", GSTSetup."GST Tax Type");
         TaxTransactionValue.SetRange("Tax Record ID", BankChargeRecordID);
         TaxTransactionValue.SetRange("Value ID", 10);

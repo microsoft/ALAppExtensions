@@ -18,6 +18,9 @@ codeunit 31147 "Non-Deductible VAT CZL"
         UndefinedNonDeductibleVATSetupTitleLbl: Label 'Undefined Non-deductible VAT setup';
         UndefinedNonDeductibleVATSetupErr: Label 'Non-deductible VAT setup is not defined for the specified date.';
         ShowNonDeductibleVATSetupLbl: Label 'Show Non-deductible VAT setup';
+        NonDeductibleVATCZDisabledTitleLbl: Label 'Disabled Non-Deductible VAT CZ feature';
+        NonDeductibleVATCZDisabledErr: Label 'Non-Deductible VAT CZ feature is not enabled. Please enable it in the VAT Setup page.';
+        ShowVATSetupLbl: Label 'Show VAT Setup';
 
     procedure IsNonDeductibleVATEnabled(): Boolean
     var
@@ -26,6 +29,27 @@ codeunit 31147 "Non-Deductible VAT CZL"
         if not VATSetup.Get() then
             exit(false);
         exit(VATSetup."Enable Non-Deductible VAT" and VATSetup."Enable Non-Deductible VAT CZL");
+    end;
+
+    internal procedure CheckNonDeductibleVATEnabled()
+    begin
+        if not IsNonDeductibleVATEnabled() then
+            Error(GetNonDeductibleVATCZDisabledErrorInfo());
+    end;
+
+    local procedure GetNonDeductibleVATCZDisabledErrorInfo(): ErrorInfo
+    var
+        NonDeductibleVATCZDisabledErrorInfo: ErrorInfo;
+    begin
+        NonDeductibleVATCZDisabledErrorInfo.ErrorType := ErrorType::Client;
+        NonDeductibleVATCZDisabledErrorInfo.Verbosity := Verbosity::Error;
+        NonDeductibleVATCZDisabledErrorInfo.Collectible := true;
+        NonDeductibleVATCZDisabledErrorInfo.Title := NonDeductibleVATCZDisabledTitleLbl;
+        NonDeductibleVATCZDisabledErrorInfo.Message := NonDeductibleVATCZDisabledErr;
+        NonDeductibleVATCZDisabledErrorInfo.TableId := Database::"VAT Setup";
+        NonDeductibleVATCZDisabledErrorInfo.PageNo := Page::"VAT Setup";
+        NonDeductibleVATCZDisabledErrorInfo.AddNavigationAction(ShowVATSetupLbl);
+        exit(NonDeductibleVATCZDisabledErrorInfo);
     end;
 
     procedure ExistNonDeductibleVATSetupToDate(ToDate: Date): Boolean

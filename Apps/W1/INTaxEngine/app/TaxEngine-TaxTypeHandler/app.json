@@ -1,51 +1,49 @@
 {
-    "id":  "6557efcc-709a-40d9-bb71-526f2ba1a1e9",
-    "name":  "Tax Engine Tax Type Handler",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Defines core elements of taxes, such as components, attributes, and rates.",
-    "description":  "The Tax Type Handler extension contains user interface elements and tables that are helpers for configuring a business use case.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=724013",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2139719",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "application":  "25.0.0.0",
-    "platform":  "25.0.0.0",
-    "dependencies":  [
-                         {
-                             "id":  "52cd6cb4-0433-4e94-8e62-9d12fff1a02b",
-                             "publisher":  "Microsoft",
-                             "name":  "Tax Engine Core",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "0382879d-7e2a-46fd-bfd6-2672e3b9add4",
-                             "publisher":  "Microsoft",
-                             "name":  "Tax Engine Script Handler",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "internalsVisibleTo":  [
-                               {
-                                   "id":  "3f63a3de-6597-4097-9f34-b0ff7f92e6b0",
-                                   "name":  "DemoTool",
-                                   "publisher":  "Microsoft"
-                               }
-                           ],
-    "screenshots":  [
-
-                    ],
-    "idRanges":  [
-                     {
-                         "from":  20232,
-                         "to":  20282
-                     }
-                 ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2139719",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               }
+  "id": "6557efcc-709a-40d9-bb71-526f2ba1a1e9",
+  "name": "Tax Engine Tax Type Handler",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Defines core elements of taxes, such as components, attributes, and rates.",
+  "description": "The Tax Type Handler extension contains user interface elements and tables that are helpers for configuring a business use case.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2139719",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "application": "26.0.0.0",
+  "platform": "26.0.0.0",
+  "dependencies": [
+    {
+      "id": "52cd6cb4-0433-4e94-8e62-9d12fff1a02b",
+      "publisher": "Microsoft",
+      "name": "Tax Engine Core",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "0382879d-7e2a-46fd-bfd6-2672e3b9add4",
+      "publisher": "Microsoft",
+      "name": "Tax Engine Script Handler",
+      "version": "26.0.0.0"
+    }
+  ],
+  "internalsVisibleTo": [
+    {
+      "id": "3f63a3de-6597-4097-9f34-b0ff7f92e6b0",
+      "name": "DemoTool",
+      "publisher": "Microsoft"
+    }
+  ],
+  "screenshots": [],
+  "idRanges": [
+    {
+      "from": 20232,
+      "to": 20282
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2139719",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  }
 }

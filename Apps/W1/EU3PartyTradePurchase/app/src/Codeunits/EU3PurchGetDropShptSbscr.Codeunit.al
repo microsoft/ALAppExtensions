@@ -47,7 +47,7 @@ codeunit 4884 "EU3 Purch.-Get Drop Shpt Sbscr"
 #if not CLEAN23
         if not EU3PartyTradeFeatureMgt.IsEnabled() then
             exit;
-# endif
+#endif
         if (RequisitionLine."Sales Order No." = '') or (RequisitionLine."Sales Order Line No." = 0) or (not RequisitionLine."Drop Shipment") then
             exit;
 

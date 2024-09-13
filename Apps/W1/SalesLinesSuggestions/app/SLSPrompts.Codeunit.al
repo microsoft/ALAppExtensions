@@ -28,7 +28,7 @@ codeunit 7276 "SLS Prompts"
         BCSLSMetaPrompt: SecretText;
         BCSLSTaskPrompt: SecretText;
     begin
-        GetAzureKeyVaultSecret(BCSLSMetaPrompt, 'BCSLSMetaPrompt');
+        GetAzureKeyVaultSecret(BCSLSMetaPrompt, 'BCSLSMetaPrompt-V250');
         GetAzureKeyVaultSecret(BCSLSTaskPrompt, 'BCSLSTaskPrompt-V250');
 
         exit(SecretStrSubstNo('%1%2', BCSLSMetaPrompt, AddDateToTaskPrompt(BCSLSTaskPrompt)));

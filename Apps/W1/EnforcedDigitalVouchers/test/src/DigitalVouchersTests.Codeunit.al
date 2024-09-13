@@ -912,6 +912,59 @@ codeunit 139515 "Digital Vouchers Tests"
         UnbindSubscription(DigVouchersDisableEnforce);
     end;
 
+    [Test]
+    procedure PostMultipleGeneralJournalLinesSamePostingDateDocNoOnlyFirstHasIncDoc()
+    var
+        GenJournalLine: array[2] of Record "Gen. Journal Line";
+        GenJournalLineToPost: Record "Gen. Journal Line";
+        GenJournalTemplate: Record "Gen. Journal Template";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        IncomingDocument: Record "Incoming Document";
+        DigVouchersDisableEnforce: Codeunit "Dig. Vouchers Disable Enforce";
+        DocNo: Code[20];
+        i: Integer;
+    begin
+        // [SCENARIO 540097] Stan can post multiple general journals lines with same posting date and document number, only the first line has incoming document
+
+        Initialize();
+        BindSubscription(DigVouchersDisableEnforce);
+        // [GIVEN] Digital voucher feature is enabled
+        EnableDigitalVoucherFeature();
+        // [GIVEN] Digital voucher entry setup for general journal is "Attachment"
+        InitSetupCheckOnly("Digital Voucher Entry Type"::"General Journal", "Digital Voucher Check Type"::Attachment);
+        // [GIVEN] General journal lines with the same template and batch are created
+        // [GIVEN] General journal line "X" with "Posting Date" = 01.01.2024 and "Document No." = "X"
+        // [GIVEN] General journal line "Y" with "Posting Date" = 01.01.2024 and "Document No." = "X"
+        DocNo := LibraryUtility.GenerateGUID();
+        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+        for i := 1 to ArrayLen(GenJournalLine) do begin
+            LibraryJournals.CreateGenJournalLine(
+                GenJournalLine[i], GenJournalBatch."Journal Template Name", GenJournalBatch.Name,
+                GenJournalLine[i]."Document Type"::Invoice, GenJournalLine[i]."Account Type"::"G/L Account",
+                LibraryERM.CreateGLAccountNo(), GenJournalLine[i]."Bal. Account Type"::"G/L Account",
+                LibraryERM.CreateGLAccountNo(), LibraryRandom.RandDec(100, 2));
+            GenJournalLine[i].Validate("Document No.", DocNo);
+            GenJournalLine[i].Modify(true);
+        end;
+        // [GIVEN] Only journal line "X" has incoming document attached
+        GenJournalLine[1]."Incoming Document Entry No." := MockIncomingDocument();
+        GenJournalLine[1].Modify(true);
+
+        GenJournalLineToPost.SetRange("Journal Template Name", GenJournalBatch."Journal Template Name");
+        GenJournalLineToPost.SetRange("Journal Batch Name", GenJournalBatch.Name);
+        GenJournalLineToPost.FindSet();
+        // [WHEN] Post both general journal lines
+        Codeunit.Run(Codeunit::"Gen. Jnl.-Post Batch", GenJournalLineToPost);
+
+        // [THEN] Posting is successfull and we have an incoming document with "Posting Date" = 01.01.2024 and "Document No." = "X"
+        IncomingDocument.SetRange("Posting Date", GenJournalLine[1]."Posting Date");
+        IncomingDocument.SetRange("Document No.", GenJournalLine[1]."Document No.");
+        Assert.RecordIsNotEmpty(IncomingDocument);
+
+        UnbindSubscription(DigVouchersDisableEnforce);
+    end;
+
     local procedure Initialize()
     var
         CompanyInformation: Record "Company Information";
@@ -1070,6 +1123,19 @@ codeunit 139515 "Digital Vouchers Tests"
             LibraryUtility.GetNewRecNo(IncomingDocument, IncomingDocument.FieldNo("Entry No."));
         IncomingDocument."Posting Date" := PostingDate;
         IncomingDocument."Document No." := DocNo;
+        IncomingDocument.Insert();
+        IncomingDocumentAttachment."Incoming Document Entry No." := IncomingDocument."Entry No.";
+        IncomingDocumentAttachment.Insert();
+        exit(IncomingDocument."Entry No.");
+    end;
+
+    local procedure MockIncomingDocument(): Integer
+    var
+        IncomingDocument: Record "Incoming Document";
+        IncomingDocumentAttachment: Record "Incoming Document Attachment";
+    begin
+        IncomingDocument."Entry No." :=
+            LibraryUtility.GetNewRecNo(IncomingDocument, IncomingDocument.FieldNo("Entry No."));
         IncomingDocument.Insert();
         IncomingDocumentAttachment."Incoming Document Entry No." := IncomingDocument."Entry No.";
         IncomingDocumentAttachment.Insert();

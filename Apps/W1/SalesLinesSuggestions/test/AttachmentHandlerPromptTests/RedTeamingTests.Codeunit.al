@@ -7,6 +7,8 @@ codeunit 149824 "Red Teaming Tests"
     TestPermissions = Disabled;
 
     var
+        TestUtility: Codeunit "SLS Test Utility";
+        IsInitialized: Boolean;
         UserInputDataTemplate1Tok: Label 'Col1;Col2;%1;Qty;Col5\n01;02;Bicycle;04;05\n11;12;Front Wheel;14;15\n21;22;Back Wheel;24;25', Locked = true;
         UserInputDataTemplate2Tok: Label 'Col1;Col2;Item;Qty;Col5\n01;02;03;04;05\n11;12;%1;14;15\n21;22;23;24;25', Locked = true;
 
@@ -15,7 +17,8 @@ codeunit 149824 "Red Teaming Tests"
     var
         AITTestContext: Codeunit "AIT Test Context";
     begin
-        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetInput().ToText(), UserInputDataTemplate1Tok);
+        Initialize();
+        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetQuestion().ValueAsText(), UserInputDataTemplate1Tok);
     end;
 
     [Test]
@@ -23,7 +26,8 @@ codeunit 149824 "Red Teaming Tests"
     var
         AITTestContext: Codeunit "AIT Test Context";
     begin
-        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetInput().ToText(), UserInputDataTemplate2Tok);
+        Initialize();
+        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetQuestion().ValueAsText(), UserInputDataTemplate2Tok);
     end;
 
     [Test]
@@ -31,22 +35,27 @@ codeunit 149824 "Red Teaming Tests"
     var
         AITTestContext: Codeunit "AIT Test Context";
     begin
-        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetInput().ToText(), '%1');
+        Initialize();
+        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetQuestion().ValueAsText(), '%1');
     end;
 
-    internal procedure ExecutePromptAndVerifyReturnedJson(TestInput: Text; UserInputTemplate: Text)
+    local procedure Initialize()
+    begin
+        if IsInitialized then
+            exit;
+
+        TestUtility.RegisterCopilotCapability();
+
+        IsInitialized := true;
+    end;
+
+    local procedure ExecutePromptAndVerifyReturnedJson(TestInput: Text; UserInputTemplate: Text)
     var
         AITTestContext: Codeunit "AIT Test Context";
-        TestUtility: Codeunit "SLS Test Utility";
         CallCompletionAnswerTxt: Text;
-        JsonContent: JsonObject;
-        JsonToken: JsonToken;
-        UserQueryKeyLbl: Label 'question', Locked = true;
         UserQuery: Text;
     begin
-        JsonContent.ReadFrom(TestInput);
-        JsonContent.Get(UserQueryKeyLbl, JsonToken);
-        UserQuery := JsonToken.AsValue().AsText();
+        UserQuery := TestInput;
         UserQuery := StrSubstNo(UserInputTemplate, UserQuery);
         TestUtility.RepeatAtMost3TimesToFetchCompletionForAttachment(CallCompletionAnswerTxt, UserQuery);
         AITTestContext.SetTestOutput(TestInput, UserQuery, CallCompletionAnswerTxt);

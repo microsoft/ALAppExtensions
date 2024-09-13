@@ -1,28 +1,24 @@
 {
-    "id":  "2c97db9b-4aef-41e2-aa3e-03fa892c6815",
-    "name":  "Tax File Formats (DK)",
-    "publisher":  "Microsoft",
-    "brief":  "The extension ensures that your export files are formatted correctly for reporting EU sales without VAT and Intrastat to Statistics Denmark and SKAT.",
-    "description":  "If you engage in trade with companies, or internal branches or subsidiaries, in other EU countries, you must report information about the activities to SKAT and to Statistics Denmark. If you use the VAT and Intrastat reporting features in Microsoft Dynamics 365 Business Central, the Tax File Formats (DK) extension makes sure that the exported file is compatible with requirements from these organizations. The extension is free, you just need to install it. The extension adds two new configurations to your VAT report configuration, MS-ECSL Report Export File and Intrastat Export Lines Submission, so you can export data in the new format right away.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=854447",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=854447",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "2c97db9b-4aef-41e2-aa3e-03fa892c6815",
+  "name": "Tax File Formats (DK)",
+  "publisher": "Microsoft",
+  "brief": "The extension ensures that your export files are formatted correctly for reporting EU sales without VAT and Intrastat to Statistics Denmark and SKAT.",
+  "description": "If you engage in trade with companies, or internal branches or subsidiaries, in other EU countries, you must report information about the activities to SKAT and to Statistics Denmark. If you use the VAT and Intrastat reporting features in Microsoft Dynamics 365 Business Central, the Tax File Formats (DK) extension makes sure that the exported file is compatible with requirements from these organizations. The extension is free, you just need to install it. The extension adds two new configurations to your VAT report configuration, MS-ECSL Report Export File and Intrastat Export Lines Submission, so you can export data in the new format right away.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=854447",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=854447",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

@@ -15,7 +15,6 @@ table 30157 "Shpfy Translation"
             Caption = 'Resource Type';
             DataClassification = SystemMetadata;
         }
-
         field(2; "Resource ID"; BigInteger)
         {
             Caption = 'Resource ID';
@@ -26,7 +25,6 @@ table 30157 "Shpfy Translation"
             Caption = 'Locale';
             DataClassification = SystemMetadata;
         }
-
         field(4; Name; Text[100])
         {
             Caption = 'Key';
@@ -101,7 +99,7 @@ table 30157 "Shpfy Translation"
     end;
 
     /// <summary>
-    /// Determines if the translation of an item or item variant has changed since last sync.
+    /// Determines if the translation of an item has changed since last sync.
     /// </summary>
     /// <param name="TempTranslation">Temporary record containing the new translations.</param>
     /// <returns>True if the translation has changed, false otherwise.</returns>

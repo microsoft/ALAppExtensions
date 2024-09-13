@@ -74,12 +74,7 @@ codeunit 30189 "Shpfy Variant API"
         GraphQuery.Append(ShopifyVariant."Inventory Policy".Names.Get(ShopifyVariant."Inventory Policy".Ordinals.IndexOf(ShopifyVariant."Inventory Policy".AsInteger())));
         if ShopifyVariant.Barcode <> '' then begin
             GraphQuery.Append(', barcode: \"');
-            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyVariant.Barcode));
-            GraphQuery.Append('\"');
-        end;
-        if ShopifyVariant.SKU <> '' then begin
-            GraphQuery.Append(', sku: \"');
-            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyVariant.SKU));
+            GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant.Barcode));
             GraphQuery.Append('\"');
         end;
         if ShopifyVariant.Taxable then
@@ -88,10 +83,6 @@ codeunit 30189 "Shpfy Variant API"
             GraphQuery.Append(', taxCode: \"');
             GraphQuery.Append(ShopifyVariant."Tax Code");
             GraphQuery.Append('\"');
-        end;
-        if ShopifyVariant.Weight > 0 then begin
-            GraphQuery.Append(', weight: ');
-            GraphQuery.Append(Format(ShopifyVariant.Weight, 0, 9));
         end;
         if ShopifyVariant.Price > 0 then begin
             GraphQuery.Append(', price: \"');
@@ -104,10 +95,10 @@ codeunit 30189 "Shpfy Variant API"
             GraphQuery.Append('\"');
         end;
         GraphQuery.Append(', options: [\"');
-        GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyVariant."Option 1 Value"));
+        GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant."Option 1 Value"));
         if ShopifyVariant."Option 2 Name" <> '' then begin
             GraphQuery.Append('\", \"');
-            GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(ShopifyVariant."Option 2 Value"));
+            GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant."Option 2 Value"));
         end;
         GraphQuery.Append('\"]');
 
@@ -134,6 +125,22 @@ codeunit 30189 "Shpfy Variant API"
             GraphQuery.Append(', cost: \"');
             GraphQuery.Append(Format(ShopifyVariant."Unit Cost", 0, 9));
             GraphQuery.Append('\"');
+        end;
+        if ShopifyVariant.SKU <> '' then begin
+            GraphQuery.Append(', sku: \"');
+            GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(ShopifyVariant.SKU));
+            GraphQuery.Append('\"');
+        end;
+        if ShopifyVariant.Weight > 0 then begin
+            GraphQuery.Append(', measurement: {weight: {value:');
+            GraphQuery.Append(Format(ShopifyVariant.Weight, 0, 9));
+            GraphQuery.Append(', unit: ');
+            if Shop."Weight Unit" = Shop."Weight Unit"::" " then begin
+                Shop."Weight Unit" := Shop.GetShopWeightUnit();
+                Shop.Modify();
+            end;
+            GraphQuery.Append(Shop."Weight Unit".Names.Get(Shop."Weight Unit".Ordinals.IndexOf(Shop."Weight Unit".AsInteger())).Trim().ToUpper().Replace(' ', '_'));
+            GraphQuery.Append('}}');
         end;
         GraphQuery.Append('}}) {productVariant {id, legacyResourceId}, userErrors {field, message}}}"}');
 
@@ -347,6 +354,11 @@ codeunit 30189 "Shpfy Variant API"
     /// <param name="ShopifyVariant">Parameter of type Record "Shopify Variant".</param>
     /// <param name="xShopifyVariant">Parameter of type Record "Shopify Variant".</param>
     internal procedure UpdateProductVariant(ShopifyVariant: Record "Shpfy Variant"; xShopifyVariant: Record "Shpfy Variant")
+    begin
+        UpdateProductVariant(ShopifyVariant, xShopifyVariant, false, false);
+    end;
+
+    internal procedure UpdateProductVariant(ShopifyVariant: Record "Shpfy Variant"; xShopifyVariant: Record "Shpfy Variant"; UpdateDefaultVariant: Boolean; ProductMultipleVariants: Boolean)
     var
         HasChange: Boolean;
         TitleChanged: Boolean;
@@ -370,22 +382,13 @@ codeunit 30189 "Shpfy Variant API"
             GraphQuery.Append(ShopifyVariant.Barcode);
             GraphQuery.Append('\"');
         end;
-        if ShopifyVariant.SKU <> xShopifyVariant.SKU then begin
-            HasChange := true;
-            GraphQuery.Append(', sku: \"');
-            GraphQuery.Append(ShopifyVariant.SKU);
-            GraphQuery.Append('\"');
-        end;
+        if ShopifyVariant.Taxable then
+            GraphQuery.Append(', taxable: true');
         if ShopifyVariant."Tax Code" <> xShopifyVariant."Tax Code" then begin
             HasChange := true;
             GraphQuery.Append(', taxCode: \"');
             GraphQuery.Append(ShopifyVariant."Tax Code");
             GraphQuery.Append('\"');
-        end;
-        if ShopifyVariant.Weight <> xShopifyVariant.Weight then begin
-            HasChange := true;
-            GraphQuery.Append(', weight: ');
-            GraphQuery.Append(Format(ShopifyVariant.Weight, 0, 9));
         end;
         if ShopifyVariant.Price <> xShopifyVariant.Price then begin
             HasChange := true;
@@ -403,11 +406,45 @@ codeunit 30189 "Shpfy Variant API"
                 HasChange := true;
                 GraphQuery.Append(', compareAtPrice: null');
             end;
-        if ShopifyVariant."Unit Cost" <> xShopifyVariant."Unit Cost" then begin
+        if UpdateDefaultVariant then
+            if ProductMultipleVariants or (ShopifyVariant."UoM Option Id" > 0) then begin
+                GraphQuery.Append(', options: [\"');
+                GraphQuery.Append(ShopifyVariant."Option 1 Value");
+                if ShopifyVariant."Option 2 Name" <> '' then begin
+                    GraphQuery.Append('\", \"');
+                    GraphQuery.Append(ShopifyVariant."Option 2 Value");
+                end;
+                GraphQuery.Append('\"]');
+            end;
+        if (ShopifyVariant."Unit Cost" <> xShopifyVariant."Unit Cost") or (ShopifyVariant.Weight <> xShopifyVariant.Weight) or (ShopifyVariant.SKU <> xShopifyVariant.SKU) then begin
             HasChange := true;
-            GraphQuery.Append(', inventoryItem: {cost: \"');
-            GraphQuery.Append(Format(ShopifyVariant."Unit Cost", 0, 9));
-            GraphQuery.Append('\"}');
+            GraphQuery.Append(', inventoryItem: {tracked: ');
+            if Shop."Inventory Tracked" then
+                GraphQuery.Append('true')
+            else
+                GraphQuery.Append('false');
+            if ShopifyVariant."Unit Cost" <> xShopifyVariant."Unit Cost" then begin
+                GraphQuery.Append(', cost: \"');
+                GraphQuery.Append(Format(ShopifyVariant."Unit Cost", 0, 9));
+                GraphQuery.Append('\"');
+            end;
+            if ShopifyVariant.SKU <> xShopifyVariant.SKU then begin
+                GraphQuery.Append(', sku: \"');
+                GraphQuery.Append(ShopifyVariant.SKU);
+                GraphQuery.Append('\"');
+            end;
+            if ShopifyVariant.Weight <> xShopifyVariant.Weight then begin
+                GraphQuery.Append(', measurement: {weight: {value:');
+                GraphQuery.Append(Format(ShopifyVariant.Weight, 0, 9));
+                GraphQuery.Append(', unit: ');
+                if Shop."Weight Unit" = Shop."Weight Unit"::" " then begin
+                    Shop."Weight Unit" := Shop.GetShopWeightUnit();
+                    Shop.Modify();
+                end;
+                GraphQuery.Append(Shop."Weight Unit".Names.Get(Shop."Weight Unit".Ordinals.IndexOf(Shop."Weight Unit".AsInteger())).Trim().ToUpper().Replace(' ', '_'));
+                GraphQuery.Append('}}');
+            end;
+            GraphQuery.Append('}');
         end;
 
         GraphQuery.Append('}) {productVariant {updatedAt}, userErrors {field, message}}}"}');
@@ -528,7 +565,7 @@ codeunit 30189 "Shpfy Variant API"
         ShopifyVariant.Position := JsonHelper.GetValueAsInteger(JVariant, 'position');
         ShopifyVariant.Price := JsonHelper.GetValueAsDecimal(JVariant, 'price');
         ShopifyVariant.Taxable := JsonHelper.GetValueAsBoolean(JVariant, 'taxable');
-        ShopifyVariant.Weight := JsonHelper.GetValueAsDecimal(JVariant, 'weight');
+        ShopifyVariant.Weight := JsonHelper.GetValueAsDecimal(JVariant, 'inventoryItem.measurement.weight.value');
         ShopifyVariant."Unit Cost" := JsonHelper.GetValueAsDecimal(JVariant, 'inventoryItem.unitCost.amount');
 
         RecordRef.GetTable(ShopifyVariant);

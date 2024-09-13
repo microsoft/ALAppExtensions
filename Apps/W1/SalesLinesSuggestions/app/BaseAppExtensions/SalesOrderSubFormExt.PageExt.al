@@ -5,6 +5,7 @@
 namespace Microsoft.Sales.Document;
 
 using Microsoft.Sales.Document.Attachment;
+using System.Environment;
 
 pageextension 7278 "Sales Order Sub Form Ext" extends "Sales Order Subform"
 {
@@ -44,6 +45,7 @@ pageextension 7278 "Sales Order Sub Form Ext" extends "Sales Order Subform"
             {
                 Image = SparkleFilled;
                 ShowAs = SplitButton;
+                Visible = IsOnPrem;
 
                 action("Suggest Sales Lines")
                 {
@@ -77,4 +79,12 @@ pageextension 7278 "Sales Order Sub Form Ext" extends "Sales Order Subform"
     var
         SalesLineAISuggestionImp: Codeunit "Sales Lines Suggestions Impl.";
         SalesLineFromAttachment: Codeunit "Sales Line From Attachment";
+        IsOnPrem: Boolean;
+
+    trigger OnOpenPage()
+    var
+        EnvironmentT: Codeunit "Environment Information";
+    begin
+        IsOnPrem := EnvironmentT.IsOnPrem();
+    end;
 }

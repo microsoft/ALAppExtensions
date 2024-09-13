@@ -1,63 +1,61 @@
 {
-    "id":  "417e3995-43e5-46bd-ab72-1ca13df0658d",
-    "name":  "India Data Migration",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Contains Logic to finalize Data Migration",
-    "description":  "This feature contains Logic to finalize Data Migration for India Localization",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=724013",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2139282",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "db643212-b7fb-4dd4-b5a8-cb44ac714461",
-                             "publisher":  "Microsoft",
-                             "name":  "India GST",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "d3c551dd-5903-4194-b153-04ced9d29a2c",
-                             "publisher":  "Microsoft",
-                             "name":  "India Tax Base",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "eddcf82e-482c-49d1-836b-ad0284f2c5b0",
-                             "publisher":  "Microsoft",
-                             "name":  "India TCS",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "eae5779e-7797-4c4c-977e-7516652b7a65",
-                             "publisher":  "Microsoft",
-                             "name":  "India TDS",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
-                             "publisher":  "Microsoft",
-                             "name":  "Tax Engine",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  19001,
-                         "to":  19300
-                     }
-                 ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2139282",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "OnPrem"
+  "id": "417e3995-43e5-46bd-ab72-1ca13df0658d",
+  "name": "India Data Migration",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Contains Logic to finalize Data Migration",
+  "description": "This feature contains Logic to finalize Data Migration for India Localization",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2139282",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "db643212-b7fb-4dd4-b5a8-cb44ac714461",
+      "publisher": "Microsoft",
+      "name": "India GST",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "d3c551dd-5903-4194-b153-04ced9d29a2c",
+      "publisher": "Microsoft",
+      "name": "India Tax Base",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "eddcf82e-482c-49d1-836b-ad0284f2c5b0",
+      "publisher": "Microsoft",
+      "name": "India TCS",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "eae5779e-7797-4c4c-977e-7516652b7a65",
+      "publisher": "Microsoft",
+      "name": "India TDS",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
+      "publisher": "Microsoft",
+      "name": "Tax Engine",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 19001,
+      "to": 19300
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2139282",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "OnPrem"
 }

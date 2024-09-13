@@ -53,7 +53,10 @@ codeunit 30174 "Shpfy Create Product"
     begin
         CreateTempProduct(Item, TempShopifyProduct, TempShopifyVariant, TempShopifyTag);
         if not VariantApi.FindShopifyProductVariant(TempShopifyProduct, TempShopifyVariant) then
-            ProductId := ProductApi.CreateProduct(TempShopifyProduct, TempShopifyVariant, TempShopifyTag);
+            ProductId := ProductApi.CreateProduct(TempShopifyProduct, TempShopifyVariant, TempShopifyTag)
+        else
+            ProductId := TempShopifyProduct.Id;
+        ProductExport.UpdateProductTranslations(ProductId, Item);
     end;
 
     internal procedure CreateTempProduct(Item: Record Item; var TempShopifyProduct: Record "Shpfy Product" temporary; var TempShopifyVariant: Record "Shpfy Variant" temporary; var TempShopifyTag: Record "Shpfy Tag" temporary)

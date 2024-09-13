@@ -14,7 +14,7 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
                 field("GHG Credit"; Rec."GHG Credit")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the GHG Credit of Item';
+                    ToolTip = 'Specifies the Greenhouse Gas Credit of the Item.';
                 }
                 field("Carbon Credit Per UOM"; Rec."Carbon Credit Per UOM")
                 {

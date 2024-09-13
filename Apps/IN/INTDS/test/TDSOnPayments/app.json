@@ -1,61 +1,59 @@
 {
-    "id":  "5dd176ea-cca4-4052-b717-c3349fb49442",
-    "name":  "TDS on Payments Tests",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Automated Test Cases of Payments",
-    "description":  "TDS on Payments allows to deduct TDS on vendor advance payment using journals.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=724013",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2139181",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "application":  "25.0.0.0",
-    "platform":  "25.0.0.0",
-    "dependencies":  [
-                         {
-                             "id":  "d3c551dd-5903-4194-b153-04ced9d29a2c",
-                             "publisher":  "Microsoft",
-                             "name":  "India Tax Base",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "6420dd20-4768-4733-a3c7-c22d338fdd32",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "4a217711-3ba5-42f0-95c7-5f306c52042d",
-                             "name":  "India GST",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "eae5779e-7797-4c4c-977e-7516652b7a65",
-                             "publisher":  "Microsoft",
-                             "name":  "India TDS",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
-                             "publisher":  "Microsoft",
-                             "name":  "Tax Engine",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "idRanges":  [
-                     {
-                         "from":  18802,
-                         "to":  18806
-                     }
-                 ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2139181",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               }
+  "id": "5dd176ea-cca4-4052-b717-c3349fb49442",
+  "name": "TDS on Payments Tests",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Automated Test Cases of Payments",
+  "description": "TDS on Payments allows to deduct TDS on vendor advance payment using journals.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2139181",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "application": "26.0.0.0",
+  "platform": "26.0.0.0",
+  "dependencies": [
+    {
+      "id": "d3c551dd-5903-4194-b153-04ced9d29a2c",
+      "publisher": "Microsoft",
+      "name": "India Tax Base",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "6420dd20-4768-4733-a3c7-c22d338fdd32",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "4a217711-3ba5-42f0-95c7-5f306c52042d",
+      "name": "India GST",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "eae5779e-7797-4c4c-977e-7516652b7a65",
+      "publisher": "Microsoft",
+      "name": "India TDS",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
+      "publisher": "Microsoft",
+      "name": "Tax Engine",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "idRanges": [
+    {
+      "from": 18802,
+      "to": 18806
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2139181",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  }
 }

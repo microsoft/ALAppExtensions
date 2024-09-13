@@ -11,7 +11,7 @@ page 6122 "E-Documents"
     CardPageId = "E-Document";
     PageType = List;
     UsageCategory = Lists;
-    AdditionalSearchTerms = 'Edoc,Electronic Document';
+    AdditionalSearchTerms = 'Edoc,Electronic Document,EDocuments,E Documents,E invoices,Einvoices,Electronic';
     RefreshOnActivate = true;
     Editable = false;
     DeleteAllowed = false;

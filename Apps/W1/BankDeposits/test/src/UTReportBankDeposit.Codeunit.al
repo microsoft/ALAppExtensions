@@ -13,6 +13,8 @@ codeunit 139767 "UT Report Bank Deposit"
         LibraryUTUtility: Codeunit "Library UT Utility";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibraryRandom: Codeunit "Library - Random";
+        LibraryERM: Codeunit "Library - ERM";
+        LibrarySales: Codeunit "Library - Sales";
         LibraryUtility: Codeunit "Library - Utility";
         Initialized: Boolean;
         InitializeHandled: Boolean;
@@ -494,6 +496,56 @@ codeunit 139767 "UT Report Bank Deposit"
         LibraryVariableStorage.AssertEmpty();
     end;
 
+    [Test]
+    [HandlerFunctions('DepositTestReportRequestPageHandler')]
+    procedure ApplyingTwoDifferentJournalLinesWithSameDocumentNoToDifferentEntriesDisplayApplicationsInTestReport()
+    var
+        BankDepositHeader: Record "Bank Deposit Header";
+        SalesHeader: Record "Sales Header";
+        FirstInvoice: Record "Cust. Ledger Entry";
+        SecondInvoice: Record "Cust. Ledger Entry";
+        FirstJournalLine: Record "Gen. Journal Line";
+        SecondJournalLine: Record "Gen. Journal Line";
+    begin
+        // [SCENARIO 543664] When running the Test report, applications of two lines with the same document number should be displayed.
+        Initialize();
+        // [GIVEN] A bank deposit with two lines, applied to two different sales invoices, of the same customer.
+        CreateBankDepositHeader(BankDepositHeader);
+        LibrarySales.CreateSalesInvoice(SalesHeader);
+        LibrarySales.PostSalesDocument(SalesHeader, false, true);
+        CreateGenJournalLine(FirstJournalLine, BankDepositHeader, FirstJournalLine."Account Type"::Customer, SalesHeader."Bill-to Customer No.");
+        FirstInvoice.SetRange("Customer No.", SalesHeader."Bill-to Customer No.");
+        FirstInvoice.FindLast();
+        FirstInvoice."Applies-to ID" := BankDepositHeader."No.";
+        FirstInvoice.CalcFields("Remaining Amount");
+        FirstInvoice.Modify();
+        FirstJournalLine."Document No." := BankDepositHeader."No.";
+        FirstJournalLine.Amount := -FirstInvoice."Remaining Amount";
+        FirstJournalLine.Modify();
+        UpdateGenJournalLineAppliesToID(FirstJournalLine, BankDepositHeader."No.");
+        LibrarySales.CreateSalesInvoiceForCustomerNo(SalesHeader, FirstInvoice."Customer No.");
+        LibrarySales.PostSalesDocument(SalesHeader, false, true);
+        CreateGenJournalLine(SecondJournalLine, BankDepositHeader, FirstJournalLine."Account Type"::Customer, SalesHeader."Bill-to Customer No.");
+        SecondInvoice.SetRange("Customer No.", SalesHeader."Bill-to Customer No.");
+        SecondInvoice.FindLast();
+        SecondInvoice."Applies-to ID" := BankDepositHeader."No.";
+        SecondInvoice.CalcFields("Remaining Amount");
+        SecondInvoice.Modify();
+        SecondJournalLine."Document No." := BankDepositHeader."No.";
+        SecondJournalLine.Amount := -SecondInvoice."Remaining Amount";
+        SecondJournalLine.Modify();
+        UpdateGenJournalLineAppliesToID(SecondJournalLine, BankDepositHeader."No.");
+        Commit();
+        // [WHEN] Running the Test Report
+        LibraryVariableStorage.Enqueue(BankDepositHeader."No.");
+        Report.Run(Report::"Bank Deposit Test Report");
+        // [THEN] Both applications should be shown
+        LibraryReportDataSet.LoadDataSetFile();
+        LibraryReportDataSet.AssertElementTagWithValueExists('Cust__Ledger_Entry__Document_No__', FirstInvoice."Document No.");
+        LibraryReportDataSet.AssertElementTagWithValueExists('Cust__Ledger_Entry__Document_No__', SecondInvoice."Document No.");
+        BankDepositHeader.Delete();
+    end;
+
     local procedure Initialize()
     begin
         LibraryVariableStorage.Clear();
@@ -510,12 +562,19 @@ codeunit 139767 "UT Report Bank Deposit"
     end;
 
     local procedure CreateBankDepositHeader(var BankDepositHeader: Record "Bank Deposit Header")
+    var
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJournalTemplate: Record "Gen. Journal Template";
     begin
         BankDepositHeader."No." := LibraryUTUtility.GetNewCode();
         BankDepositHeader."Posting Date" := WorkDate();
         BankDepositHeader."Document Date" := WorkDate();
         BankDepositHeader."Bank Account No." := CreateBankAccount();
         BankDepositHeader."Total Deposit Amount" := LibraryRandom.RandDec(10, 2);
+        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+        BankDepositHeader."Journal Template Name" := GenJournalTemplate.Name;
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+        BankDepositHeader."Journal Batch Name" := GenJournalBatch.Name;
         BankDepositHeader.Insert();
     end;
 
@@ -537,6 +596,8 @@ codeunit 139767 "UT Report Bank Deposit"
 
     local procedure CreateGenJournalLine(var GenJournalLine: Record "Gen. Journal Line"; BankDepositHeader: Record "Bank Deposit Header"; AccountType: Option; AccountNo: Code[20])
     begin
+        GenJournalLine."Journal Batch Name" := BankDepositHeader."Journal Batch Name";
+        GenJournalLine."Journal Template Name" := BankDepositHeader."Journal Template Name";
         GenJournalLine."Line No." := LibraryUtility.GetNewRecNo(GenJournalLine, GenJournalLine.FieldNo("Line No."));
         GenJournalLine."Document Type" := GenJournalLine."Document Type"::Payment;
         GenJournalLine."Account Type" := AccountType;
@@ -681,6 +742,13 @@ codeunit 139767 "UT Report Bank Deposit"
     begin
         PostedBankDepositLine."Entry No." := EntryNo;
         PostedBankDepositLine.Modify();
+    end;
+
+    local procedure UpdateGenJournalLineAppliesToID(var GenJournalLine: Record "Gen. Journal Line"; AppliesToID: Code[50])
+    begin
+        GenJournalLine."Applies-to Doc. Type" := GenJournalLine."Applies-to Doc. Type"::Invoice;
+        GenJournalLine."Applies-to ID" := AppliesToID;
+        GenJournalLine.Modify();
     end;
 
     local procedure UpdateApplyToDocGenJournalLine(var GenJournalLine: Record "Gen. Journal Line")

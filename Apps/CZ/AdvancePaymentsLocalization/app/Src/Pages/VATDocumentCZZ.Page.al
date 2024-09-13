@@ -8,7 +8,7 @@ using Microsoft.Finance.Currency;
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Foundation.NoSeries;
 
-# pragma warning disable AW0006
+#pragma warning disable AW0006
 page 31185 "VAT Document CZZ"
 {
     PageType = StandardDialog;

@@ -15,6 +15,7 @@ codeunit 149828 "Search Items With Filters Test"
         Assert: Codeunit Assert;
         LibrarySales: Codeunit "Library - Sales";
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        TestUtility: Codeunit "SLS Test Utility";
         IsInitialized: Boolean;
 
     [Test]
@@ -36,6 +37,8 @@ codeunit 149828 "Search Items With Filters Test"
 
         if IsInitialized then
             exit;
+
+        TestUtility.RegisterCopilotCapability();
 
         IsInitialized := true;
     end;

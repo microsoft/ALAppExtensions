@@ -1,68 +1,66 @@
 {
-    "id":  "d43fbce2-722b-4c66-a6d8-a69ce1147f1b",
-    "name":  "GST Application",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Contains application of Goods and Service Tax",
-    "description":  "Contains application of Goods and Services Tax on purchase and sales documents.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=724013",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2139720",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
-                             "publisher":  "Microsoft",
-                             "name":  "Tax Engine",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "d3c551dd-5903-4194-b153-04ced9d29a2c",
-                             "publisher":  "Microsoft",
-                             "name":  "India Tax Base",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "e3cf5645-b42c-412a-ac9d-bd85793266e5",
-                             "publisher":  "Microsoft",
-                             "name":  "GST Base",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "2370cfbe-5b06-482a-be41-aa08ad0c800d",
-                             "publisher":  "Microsoft",
-                             "name":  "GST Purchase",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "3312f794-b498-4664-9ce8-d9ab32c8a128",
-                             "publisher":  "Microsoft",
-                             "name":  "GST Sales",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5a449416-ab35-4609-8dda-018519f41550",
-                             "publisher":  "Microsoft",
-                             "name":  "GST Service",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  18430,
-                         "to":  18450
-                     }
-                 ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2139720",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               }
+  "id": "d43fbce2-722b-4c66-a6d8-a69ce1147f1b",
+  "name": "GST Application",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Contains application of Goods and Service Tax",
+  "description": "Contains application of Goods and Services Tax on purchase and sales documents.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2139720",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
+      "publisher": "Microsoft",
+      "name": "Tax Engine",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "d3c551dd-5903-4194-b153-04ced9d29a2c",
+      "publisher": "Microsoft",
+      "name": "India Tax Base",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "e3cf5645-b42c-412a-ac9d-bd85793266e5",
+      "publisher": "Microsoft",
+      "name": "GST Base",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "2370cfbe-5b06-482a-be41-aa08ad0c800d",
+      "publisher": "Microsoft",
+      "name": "GST Purchase",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "3312f794-b498-4664-9ce8-d9ab32c8a128",
+      "publisher": "Microsoft",
+      "name": "GST Sales",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5a449416-ab35-4609-8dda-018519f41550",
+      "publisher": "Microsoft",
+      "name": "GST Service",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 18430,
+      "to": 18450
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2139720",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  }
 }

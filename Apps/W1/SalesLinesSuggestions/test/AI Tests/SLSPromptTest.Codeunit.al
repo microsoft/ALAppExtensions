@@ -10,6 +10,8 @@ codeunit 139781 "SLS Prompt Test"
 
     var
         Assert: Codeunit Assert;
+        TestUtility: Codeunit "SLS Test Utility";
+        IsInitialized: Boolean;
         JsonPropValueErr: Label '"%1" property is incorrect', Comment = '%1 = Json property name';
         JsonPropIsMissingErr: Label 'Expected data is missing. Expected Json property and value: "%1": %2', Comment = '%1 = Json property name, %2 = Json property value';
 
@@ -24,6 +26,8 @@ codeunit 139781 "SLS Prompt Test"
         ExpectedSearchItemExists: Boolean;
         ExpectedResultsExist: Boolean;
     begin
+        Initialize();
+
         // [GIVEN] A question from the dataset and expected properties
         ExpectedItemProps := AITestContext.GetInput().Element('Expected').ElementExists('search_item', ExpectedSearchItemExists);
         ExpectedDocProps := AITestContext.GetInput().Element('Expected').ElementExists('results', ExpectedResultsExist);
@@ -39,6 +43,16 @@ codeunit 139781 "SLS Prompt Test"
 
         if ExpectedResultsExist then
             CheckDocumentLookupJSONContent(CallCompletionAnswerTxt, ExpectedDocProps);
+    end;
+
+    local procedure Initialize()
+    begin
+        if IsInitialized then
+            exit;
+
+        TestUtility.RegisterCopilotCapability();
+
+        IsInitialized := true;
     end;
 
     local procedure CheckSearchItemJSONContent(CompletionAnswerTxt: Text; ExpectedItemProps: Codeunit "Test Input Json")
@@ -242,7 +256,9 @@ codeunit 139781 "SLS Prompt Test"
     begin
         case DateDescription of
             'LAST_YEAR':
-                Result := Format(Format(CalcDate('<-1Y>', Today()), 0, '<year4>-<month,2>-<day,2>'));
+                Result := Format(Format(CalcDate('<CY-1Y>', Today()), 0, '<year4>-<month,2>-<day,2>'));
+            'START_LAST_YEAR':
+                Result := Format(Format(CalcDate('<-CY-1Y>', Today()), 0, '<year4>-<month,2>-<day,2>'));
             'LAST_WEEK':
                 Result := FORMAT(Today() - 7, 0, '<Year4>-<Month,2>-<Day,2>');
             'YESTERDAY':
@@ -255,7 +271,7 @@ codeunit 139781 "SLS Prompt Test"
                 else
                     Result := Format(System.Date2DMY(Today(), 3)) + '-02-01';
             'LAST_CHRISTMAS':
-                Result := Format(System.Date2DMY(Today(), 3) - 1) + '-12-25'
+                Result := Format(System.Date2DMY(Today(), 3) - 1) + '-12-24'
             else
                 Result := DateDescription;
         end;

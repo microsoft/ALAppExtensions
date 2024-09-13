@@ -1,47 +1,43 @@
 {
-    "id":  "5a0b41e9-7a42-4123-d521-2265186cfb31",
-    "name":  "Contoso Coffee Demo Dataset",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "To help partners demonstrate the capabilities of Business Central, we are making new and extensive demo data available for various scenarios.",
-    "description":  "Presales specialists can run the tool on top of Cronus or My Company and get the setup and demo data they'll need when they demonstrate various scenarios.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2187180",
-    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
-    "logo":  "./ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "internalsVisibleTo":  [
-                               {
-                                   "id":  "c471774f-4b9e-45eb-9619-e7e0b96a8b98",
-                                   "name":  "Contoso Coffee Demo Dataset Tests",
-                                   "publisher":  "Microsoft"
-                               }
-                           ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  4760,
-                         "to":  4799
-                     },
-                     {
-                         "from":  5100,
-                         "to":  5300
-                     }
-                 ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  false,
-                                   "includeSourceInSymbolFile":  false
-                               },
-    "features":  [
-                     "TranslationFile"
-                 ],
-    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/en-us/dynamics365/business-central/contoso-coffee/contoso-coffee-intro"
+  "id": "5a0b41e9-7a42-4123-d521-2265186cfb31",
+  "name": "Contoso Coffee Demo Dataset",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "To help partners demonstrate the capabilities of Business Central, we are making new and extensive demo data available for various scenarios.",
+  "description": "Presales specialists can run the tool on top of Cronus or My Company and get the setup and demo data they'll need when they demonstrate various scenarios.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?linkid=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2187180",
+  "url": "https://go.microsoft.com/fwlink/?linkid=724011",
+  "logo": "./ExtensionLogo.png",
+  "dependencies": [],
+  "internalsVisibleTo": [
+    {
+      "id": "c471774f-4b9e-45eb-9619-e7e0b96a8b98",
+      "name": "Contoso Coffee Demo Dataset Tests",
+      "publisher": "Microsoft"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 4760,
+      "to": 4799
+    },
+    {
+      "from": 5100,
+      "to": 5300
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": false,
+    "includeSourceInSymbolFile": false
+  },
+  "features": [
+    "TranslationFile"
+  ],
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/en-us/dynamics365/business-central/contoso-coffee/contoso-coffee-intro"
 }

@@ -1,34 +1,30 @@
 {
-    "id":  "6f2c034f-5ebe-4eae-b34c-90a0d4e87687",
-    "name":  "_Exclude_Business_Events_",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Business Events. Use business events to notify and trigger external systems",
-    "description":  "Business Events. Use business events to notify and trigger external systems",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2206519",
-    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  38500,
-                         "to":  38599
-                     }
-                 ],
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "6f2c034f-5ebe-4eae-b34c-90a0d4e87687",
+  "name": "_Exclude_Business_Events_",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Business Events. Use business events to notify and trigger external systems",
+  "description": "Business Events. Use business events to notify and trigger external systems",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2206519",
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/dynamics365/business-central/",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 38500,
+      "to": 38599
+    }
+  ],
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

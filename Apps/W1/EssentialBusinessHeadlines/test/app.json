@@ -1,49 +1,47 @@
 {
-    "id":  "75d80607-b974-4b20-bac2-d9ab5b1e44e2",
-    "name":  "Essential Business Headlines Test",
-    "publisher":  "Microsoft",
-    "brief":  "Tests for the Essential Business Headlines extension.",
-    "description":  "Tests for the Essential Business Headlines extension.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=870429",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=870429",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "2a89f298-7ffd-44a5-a7ce-e08dac98abce",
-                             "name":  "Essential Business Headlines",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
-                             "name":  "Tests-TestLibraries",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  139500,
-                         "to":  139899
-                     },
-                     {
-                         "from":  148000,
-                         "to":  148499
-                     }
-                 ],
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "75d80607-b974-4b20-bac2-d9ab5b1e44e2",
+  "name": "Essential Business Headlines Test",
+  "publisher": "Microsoft",
+  "brief": "Tests for the Essential Business Headlines extension.",
+  "description": "Tests for the Essential Business Headlines extension.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=870429",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=870429",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "2a89f298-7ffd-44a5-a7ce-e08dac98abce",
+      "name": "Essential Business Headlines",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 139500,
+      "to": 139899
+    },
+    {
+      "from": 148000,
+      "to": 148499
+    }
+  ],
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

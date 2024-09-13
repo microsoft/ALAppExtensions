@@ -2,6 +2,8 @@ namespace Microsoft.Sales.Document.Test;
 
 using Microsoft.Sales.Document;
 using Microsoft.Sales.Document.Attachment;
+using System.AI;
+using System.TestLibraries.AI;
 codeunit 139785 "SLS Test Utility"
 {
     Access = Internal;
@@ -24,12 +26,37 @@ codeunit 139785 "SLS Test Utility"
             end
     end;
 
+    local procedure GetFunctionArray(AnswerJson: JsonObject) FunctionArray: JsonArray
+    var
+        ToolsArrayToken: JsonToken;
+        ToolType: JsonToken;
+        Tool: JsonToken;
+        Function: JsonToken;
+    begin
+        if AnswerJson.Get('tool_calls', ToolsArrayToken) then
+            foreach Tool in ToolsArrayToken.AsArray() do begin
+                Tool.AsObject().Get('type', ToolType);
+                if ToolType.AsValue().asText() = 'function' then begin
+                    Tool.AsObject().Get('function', Function);
+                    FunctionArray.Add(Function);
+                end;
+            end
+    end;
+
     internal procedure GetFunctionToken(AnswerText: Text) result: JsonToken;
     var
         AnswerJson: JsonObject;
     begin
         AnswerJson.ReadFrom(AnswerText);
         exit(GetFunctionToken(AnswerJson));
+    end;
+
+    internal procedure GetFunctionArray(AnswerText: Text) result: JsonArray;
+    var
+        AnswerJson: JsonObject;
+    begin
+        AnswerJson.ReadFrom(AnswerText);
+        exit(GetFunctionArray(AnswerJson));
     end;
 
     // Completion functions
@@ -105,6 +132,17 @@ codeunit 139785 "SLS Test Utility"
         Assert.AreEqual('magic_function', FunctionName.AsValue().AsText(), 'Function name is not correct');
     end;
 
+    internal procedure RegisterCopilotCapability()
+    begin
+        CopilotTestLibrary.RegisterCopilotCapabilityWithAppId(Enum::"Copilot Capability"::"Sales Lines Suggestions", GetSalesLineSuggestionAppId());
+    end;
+
+    local procedure GetSalesLineSuggestionAppId(): Text
+    begin
+        exit('dd3f226b-40bf-4b3c-9988-9b1e0f74edd8');
+    end;
+
     var
         Assert: Codeunit Assert;
+        CopilotTestLibrary: Codeunit "Copilot Test Library";
 }
