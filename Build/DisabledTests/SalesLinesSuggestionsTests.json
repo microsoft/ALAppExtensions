@@ -83,5 +83,15 @@
         "codeunitId": 149828,
         "CodeunitName": "Search Items With Filters Test",
         "Method": "*"
+    },
+    {
+        "codeunitId": 139788,
+        "CodeunitName": "Save File Mapping Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139789,
+        "CodeunitName": "Attachment Data Size Test",
+        "Method": "*"
     }
 ]
