@@ -1,5 +1,5 @@
 {
-  "id": "eb59fb9f-b1b0-47ba-963d-80f38ad130b4",
+  "id": "2ac317ef-11a5-4753-92f4-31c84b520c7b",
   "name": "Subscription & Recurring Billing Test",
   "publisher": "Microsoft",
   "version": "26.0.0.0",
@@ -25,7 +25,7 @@
       "version": "26.0.0.0"
     },
     {
-      "id": "c12f11e8-b5a0-4450-a3f5-110b6cd46d1e",
+      "id": "3099ffc7-4cf7-4df6-9b96-7e4bc2bb587c",
       "publisher": "Microsoft",
       "name": "Subscription & Recurring Billing",
       "version": "26.0.0.0"
