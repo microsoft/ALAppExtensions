@@ -6,7 +6,7 @@ namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.Dataverse;
 
-tableextension 6617 "FS Integration Record" extends "CRM Integration Record"
+tableextension 6618 "FS Integration Record" extends "CRM Integration Record"
 {
     fields
     {

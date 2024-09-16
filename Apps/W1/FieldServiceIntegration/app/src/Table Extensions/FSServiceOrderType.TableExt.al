@@ -7,7 +7,7 @@ namespace Microsoft.Integration.DynamicsFieldService;
 using Microsoft.Service.Setup;
 using Microsoft.Integration.Dataverse;
 
-tableextension 6618 "FS Service Order Type" extends "Service Order Type"
+tableextension 6619 "FS Service Order Type" extends "Service Order Type"
 {
     fields
     {

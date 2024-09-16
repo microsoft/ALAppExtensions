@@ -13,7 +13,7 @@ using Microsoft.Integration.Graph;
 using Microsoft.Service.Document;
 using Microsoft.API.V2;
 
-page 6614 "FS Posted Service Invoice API"
+page 6618 "FS Posted Service Invoice API"
 {
     APIVersion = 'v2.0';
     EntityCaption = 'Posted Service Invoice';
