@@ -126,7 +126,7 @@ table 1917 "MigrationQB Config"
             IsolatedStorage.Set('Migration QB Token Secret', TokenSecret, DataScope::Company);
         end;
     end;
-# endif
+#endif
 
     procedure IsOnlineData(): Boolean
     begin

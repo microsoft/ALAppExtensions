@@ -1,28 +1,28 @@
 {
-    "id":  "79b1a79a-2f66-4736-bc1b-8abb3537eb51",
-    "name":  "Simplified Bank Statement Import",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "The Simplified Bank Statement Import extension makes it easy to define a bank statement format.",
-    "description":  "The Simplified Bank Statement Import extension makes it easy to define a bank statement format.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2172520",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  8850,
-                         "to":  8862
-                     }
-                 ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206253",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "Cloud"
+  "id": "79b1a79a-2f66-4736-bc1b-8abb3537eb51",
+  "name": "Simplified Bank Statement Import",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "The Simplified Bank Statement Import extension makes it easy to define a bank statement format.",
+  "description": "The Simplified Bank Statement Import extension makes it easy to define a bank statement format.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2172520",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 8850,
+      "to": 8862
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2206253",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "Cloud"
 }

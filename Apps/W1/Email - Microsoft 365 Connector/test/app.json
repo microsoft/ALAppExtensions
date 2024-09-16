@@ -1,68 +1,66 @@
 {
-    "id":  "c436fd91-e29f-406c-b91f-33cd176ca9be",
-    "name":  "Email - Microsoft 365 Connector Tests",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Tests for Microsoft 365 Connector",
-    "description":  "Tests for Microsoft 365 Connector",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2134520",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
-                             "publisher":  "Microsoft",
-                             "name":  "System Application",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "e6328152-bb29-4664-9dae-3bc7eaae1fd8",
-                             "name":  "Email - Outlook REST API",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "aceb66c8-472e-437c-81d3-27e6c07d0f14",
-                             "name":  "Email - Microsoft 365 Connector",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
-                             "name":  "Library Assert",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "b5034210-b258-4983-8858-f5cbfd54cb35",
-                             "name":  "Library Outlook REST API",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
-                             "name":  "Any",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  135144,
-                         "to":  1351144
-                     }
-                 ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2134520",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "OnPrem"
+  "id": "c436fd91-e29f-406c-b91f-33cd176ca9be",
+  "name": "Email - Microsoft 365 Connector Tests",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Tests for Microsoft 365 Connector",
+  "description": "Tests for Microsoft 365 Connector",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2134520",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
+      "publisher": "Microsoft",
+      "name": "System Application",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "e6328152-bb29-4664-9dae-3bc7eaae1fd8",
+      "name": "Email - Outlook REST API",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "aceb66c8-472e-437c-81d3-27e6c07d0f14",
+      "name": "Email - Microsoft 365 Connector",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "dd0be2ea-f733-4d65-bb34-a28f4624fb14",
+      "name": "Library Assert",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "b5034210-b258-4983-8858-f5cbfd54cb35",
+      "name": "Library Outlook REST API",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "e7320ebb-08b3-4406-b1ec-b4927d3e280b",
+      "name": "Any",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 139751,
+      "to": 139751
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2134520",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "OnPrem"
 }

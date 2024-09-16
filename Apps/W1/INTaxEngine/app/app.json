@@ -1,42 +1,40 @@
 {
-    "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
-    "name":  "Tax Engine",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Provides features for calculating tax based on use cases. Intended for use only in India.",
-    "description":  "The Tax Engine extension calculates tax based on use cases that can be attached to a predefined business event. If the event meets the conditions of the rules, the Tax Engine runs the use case.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=724013",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2139719",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "application":  "25.0.0.0",
-    "platform":  "25.0.0.0",
-    "screenshots":  [
-
-                    ],
-    "idRanges":  [
-                     {
-                         "from":  20130,
-                         "to":  20399
-                     }
-                 ],
-    "internalsVisibleTo":  [
-                               {
-                                   "id":  "68bed2a6-e0d4-4774-b94f-eb81a3fc6dae",
-                                   "name":  "Tax Engine Test",
-                                   "publisher":  "Microsoft"
-                               },
-                               {
-                                   "id":  "3f63a3de-6597-4097-9f34-b0ff7f92e6b0",
-                                   "name":  "DemoTool",
-                                   "publisher":  "Microsoft"
-                               }
-                           ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2139719",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               }
+  "id": "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
+  "name": "Tax Engine",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Provides features for calculating tax based on use cases. Intended for use only in India.",
+  "description": "The Tax Engine extension calculates tax based on use cases that can be attached to a predefined business event. If the event meets the conditions of the rules, the Tax Engine runs the use case.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2139719",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "application": "26.0.0.0",
+  "platform": "26.0.0.0",
+  "screenshots": [],
+  "idRanges": [
+    {
+      "from": 20130,
+      "to": 20399
+    }
+  ],
+  "internalsVisibleTo": [
+    {
+      "id": "68bed2a6-e0d4-4774-b94f-eb81a3fc6dae",
+      "name": "Tax Engine Test",
+      "publisher": "Microsoft"
+    },
+    {
+      "id": "3f63a3de-6597-4097-9f34-b0ff7f92e6b0",
+      "name": "DemoTool",
+      "publisher": "Microsoft"
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2139719",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  }
 }

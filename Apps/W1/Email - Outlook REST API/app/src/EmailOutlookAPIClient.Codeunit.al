@@ -33,6 +33,8 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         AttachmentRangeUploadErr: Label 'Failed to upload attachment byte range: %1-%2/%3', Comment = '%1 - From byte, %2 - To byte, %3 - Total bytes', Locked = true;
         ContentRangeLbl: Label 'bytes %1-%2/%3', Comment = '%1 - From byte, %2 - To byte, %3 - Total bytes', Locked = true;
         RestAPINotSupportedErr: Label 'REST API is not yet supported for this mailbox', Locked = true;
+        TokenExpiredErr: Label 'token is expired', Locked = true;
+        AccessTokenExpiredErr: Label 'The access token used has expired.', Locked = true;
         TheMailboxIsNotValidErr: Label 'The mailbox is not valid.\\A likely cause is that the user does not have a valid license for Office 365. To read about other potential causes, visit https://go.microsoft.com/fwlink/?linkid=2206177';
         ExternalSecurityChallengeNotSatisfiedMsg: Label 'Multi-Factor Authentication is enabled on this account but the user did not complete the setup. Please sign in to the account and try again.';
         EnvironmentBlocksErr: Label 'The request to send email has been blocked. To resolve the problem, enable outgoing HTTP requests for the Email - Outlook REST API app on the Extension Management page.';
@@ -40,6 +42,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         RetrieveEmailSelectedFieldsTxt: Label 'id,conversationId,sentDateTime,receivedDateTime,subject,webLink,sender,toRecipients,ccRecipients,body,hasAttachments', Locked = true;
         RetrieveEmailsUriTxt: Label '/v1.0/users/%1/messages', Locked = true;
         RetrieveEmailsFiltersTxt: Label '?$expand=attachments&$filter=isRead ne true&isDraft ne true&$count=true&$top=%1&$select=%2', Locked = true;
+        RetrieveEmailsMessageErr: Label 'Failed to retrieve emails. Error:\\%1', Comment = '%1 = Error message';
         MarkAsReadUriTxt: Label '/v1.0/users/%1/messages/%2', Locked = true;
         RetrieveEmailUriTxt: Label '/v1.0/users/%1/messages/%2', Locked = true;
         UpdateDraftUriTxt: Label '/v1.0/users/%1/messages/%2', Locked = true;
@@ -59,6 +62,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         TelemetryRetrievingAnEmailTxt: Label 'Retrieving an email.', Locked = true;
         TelemetryReplyingToEmailTxt: Label 'Replying to email.', Locked = true;
         TelemetryMarkingEmailAsReadTxt: Label 'Marking email as read.', Locked = true;
+        TelemetryFailedStatusCodeTxt: Label 'Failed with status code %1.', Comment = '%1 - Http status code', Locked = true;
 
 #if not CLEAN24
     [NonDebuggable]
@@ -75,7 +79,7 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         exit(TryGetAccountInformation(AccessToken, Email, Name));
     end;
 
-# if not CLEAN24
+#if not CLEAN24
     [NonDebuggable]
     [TryFunction]
     [Obsolete('Replaced by TryGetAccountInformation with SecretText data type for AccessToken parameter.', '24.0')]
@@ -297,8 +301,8 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
 
         if MailHttpResponseMessage.HttpStatusCode <> 200 then begin
             HttpErrorMessage := GetHttpErrorMessageAsText(MailHttpResponseMessage);
-            Session.LogMessage('0000NBB', HttpErrorMessage, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
-            ProcessErrorMessageResponse(HttpErrorMessage);
+            Session.LogMessage('0000NBB', StrSubstNo(TelemetryFailedStatusCodeTxt, Format(MailHttpResponseMessage.HttpStatusCode)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+            ProcessRetrieveErrorMessageResponse(HttpErrorMessage);
         end else
             Session.LogMessage('0000NBC', EmailsRetrievedTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
 
@@ -510,13 +514,25 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
 
         if MailHttpResponseMessage.HttpStatusCode <> 202 then begin
             HttpErrorMessage := GetHttpErrorMessageAsText(MailHttpResponseMessage);
-            Session.LogMessage('0000D1Q', HttpErrorMessage, Verbosity::Normal, DataClassification::CustomerContent, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
-            ProcessErrorMessageResponse(HttpErrorMessage);
+            Session.LogMessage('0000D1Q', StrSubstNo(TelemetryFailedStatusCodeTxt, Format(MailHttpResponseMessage.HttpStatusCode)), Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
+            ProcessSendErrorMessageResponse(HttpErrorMessage);
         end else
             Session.LogMessage('0000D1R', EmailSentTxt, Verbosity::Normal, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, 'Category', OutlookCategoryLbl);
     end;
 
-    local procedure ProcessErrorMessageResponse(ErrorMessage: Text)
+    local procedure ProcessRetrieveErrorMessageResponse(ErrorMessage: Text)
+    begin
+        ProcessGenericErrorMessageResponse(ErrorMessage);
+        Error(RetrieveEmailsMessageErr, ErrorMessage);
+    end;
+
+    local procedure ProcessSendErrorMessageResponse(ErrorMessage: Text)
+    begin
+        ProcessGenericErrorMessageResponse(ErrorMessage);
+        Error(SendEmailMessageErr, ErrorMessage);
+    end;
+
+    local procedure ProcessGenericErrorMessageResponse(ErrorMessage: Text)
     begin
         if ErrorMessage.Contains(RestAPINotSupportedErr) then
             Error(TheMailboxIsNotValidErr);
@@ -526,7 +542,8 @@ codeunit 4508 "Email - Outlook API Client" implements "Email - Outlook API Clien
         if ErrorMessage.Contains('AADSTS50158') then
             Error(ExternalSecurityChallengeNotSatisfiedMsg);
 
-        Error(SendEmailMessageErr, ErrorMessage);
+        if ErrorMessage.Contains(TokenExpiredErr) then
+            Error(AccessTokenExpiredErr);
     end;
 
     [NonDebuggable]

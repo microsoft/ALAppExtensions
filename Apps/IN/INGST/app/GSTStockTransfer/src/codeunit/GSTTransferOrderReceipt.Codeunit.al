@@ -425,6 +425,7 @@ codeunit 18390 "GST Transfer Order Receipt"
                     TransferLine.TestField(Quantity);
 
                     TaxTransactionValue.Reset();
+                    TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
                     TaxTransactionValue.SetFilter("Tax Type", '%1|%2', GSTSetup."GST Tax Type", GSTSetup."Cess Tax Type");
                     TaxTransactionValue.SetRange("Tax Record ID", TransferLine.RecordId);
                     TaxTransactionValue.SetRange("Value Type", TaxTransactionValue."Value Type"::COMPONENT);
@@ -1116,7 +1117,10 @@ codeunit 18390 "GST Transfer Order Receipt"
 
         TransferLine.Get(ItemJournalLine."Order No.", ItemJournalLine."Order Line No.");
 
-        RoundDiffAmt := TransferLine.Amount - (-TransferCost);
+        if TransferLine."Qty. to Receive" = TransferLine.Quantity then
+            RoundDiffAmt := TransferLine.Amount - (-TransferCost)
+        else
+            RoundDiffAmt := Round((TransferLine.Amount / TransferLine.Quantity) * TransferLine."Qty. to Receive", 0.01, '=') - (-TransferCost);
         TotalTransferPriceDiff := 0;
 
         AmntUnitCost := ValueEntry."Cost Amount (Actual)" / ValueEntry."Item Ledger Entry Quantity";

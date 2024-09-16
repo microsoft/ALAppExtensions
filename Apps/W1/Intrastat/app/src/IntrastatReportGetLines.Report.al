@@ -282,19 +282,19 @@ report 4810 "Intrastat Report Get Lines"
                     Caption = 'Options';
                     field(StartingDate; StartDate)
                     {
-                        ApplicationArea = BasicEU, BasicCH, BasicNO;
+                        ApplicationArea = All;
                         Caption = 'Starting Date';
                         ToolTip = 'Specifies the date from which the report or batch job processes information.';
                     }
                     field(EndingDate; EndDate)
                     {
-                        ApplicationArea = BasicEU, BasicCH, BasicNO;
+                        ApplicationArea = All;
                         Caption = 'Ending Date';
                         ToolTip = 'Specifies the date to which the report or batch job processes information.';
                     }
                     field(AmtInclItemCharges; AmountInclItemCharges)
                     {
-                        ApplicationArea = BasicEU, BasicCH, BasicNO;
+                        ApplicationArea = All;
                         Caption = 'Amount incl. Item Charges';
                         ToolTip = 'Specifies the amount of the entry including any item charges.';
 
@@ -310,7 +310,7 @@ report 4810 "Intrastat Report Get Lines"
                     }
                     field(IndCostPctReq; IndirectCostPctReq)
                     {
-                        ApplicationArea = BasicEU, BasicCH, BasicNO;
+                        ApplicationArea = All;
                         Caption = 'Cost Regulation %';
                         DecimalPlaces = 0 : 5;
                         MaxValue = 100;
@@ -324,20 +324,20 @@ report 4810 "Intrastat Report Get Lines"
                     Caption = 'Additional';
                     field(SkipRecalcForZeros; SkipRecalcZeroAmounts)
                     {
-                        ApplicationArea = BasicEU, BasicCH, BasicNO;
+                        ApplicationArea = All;
                         Caption = 'Skip Recalculation for Zero Amounts';
                         ToolTip = 'Specifies that lines without amounts will not be recalculated during the batch job.';
                     }
                     field(SkipZeros; SkipZeroAmounts)
                     {
-                        ApplicationArea = BasicEU, BasicCH, BasicNO;
+                        ApplicationArea = All;
                         Caption = 'Skip Zero Amounts';
                         ToolTip = 'Specifies that item ledger entries without amounts will not be included in the batch job.';
                     }
 #if not CLEAN24
                     field(ShowingItemCharges; ShowItemCharges)
                     {
-                        ApplicationArea = BasicEU, BasicCH, BasicNO;
+                        ApplicationArea = All;
                         ObsoleteReason = 'Generates false quantity in a period where an item is not moved';
                         ObsoleteState = Pending;
                         ObsoleteTag = '24.0';
@@ -348,7 +348,7 @@ report 4810 "Intrastat Report Get Lines"
 #endif
                     field(SkipNotInvoiced; SkipNotInvoicedEntries)
                     {
-                        ApplicationArea = BasicEU, BasicCH, BasicNO;
+                        ApplicationArea = All;
                         Caption = 'Skip Non-Invoiced Entries';
                         ToolTip = 'Specifies if item ledger entries that are shipped or received but not yet invoiced must be excluded from the process.';
                     }

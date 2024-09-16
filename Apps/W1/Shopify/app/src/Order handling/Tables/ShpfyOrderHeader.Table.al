@@ -132,6 +132,14 @@ table 30118 "Shpfy Order Header"
             Caption = 'Risk Level';
             DataClassification = SystemMetadata;
             Editable = false;
+            ObsoleteReason = 'This field is not imported.';
+#if not CLEAN25
+            ObsoleteState = Pending;
+            ObsoleteTag = '25.0';
+#else
+                    ObsoleteState = Removed;
+                    ObsoleteTag = '28.0';
+#endif
         }
         field(22; "Fully Paid"; Boolean)
         {

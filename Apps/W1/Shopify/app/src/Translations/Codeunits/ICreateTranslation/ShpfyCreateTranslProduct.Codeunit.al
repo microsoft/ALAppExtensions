@@ -6,7 +6,7 @@ codeunit 30342 "Shpfy Create Transl. Product" implements "Shpfy ICreate Translat
 {
     Access = Internal;
 
-    procedure CreateTranslation(RecVariant: Variant; ShpfyLanguage: Record "Shpfy Language"; var TempTranslation: Record "Shpfy Translation" temporary; Digests: Dictionary of [Text, Text])
+    procedure CreateTranslation(RecVariant: Variant; ShopifyLanguage: Record "Shpfy Language"; var TempTranslation: Record "Shpfy Translation" temporary; Digests: Dictionary of [Text, Text])
     var
         Item: Record Item;
         TranslationMgt: Codeunit "Shpfy Translation Mgt.";
@@ -16,15 +16,16 @@ codeunit 30342 "Shpfy Create Transl. Product" implements "Shpfy ICreate Translat
         Digest: Text;
     begin
         Item := RecVariant;
+        ProductExport.SetShop(ShopifyLanguage."Shop Code");
 
-        TranslationText := TranslationMgt.GetItemTranslation(Item."No.", '', ShpfyLanguage."Language Code");
+        TranslationText := TranslationMgt.GetItemTranslation(Item."No.", '', ShopifyLanguage."Language Code");
         TranslationKey := 'title';
         if Digests.Get(TranslationKey, Digest) and (TranslationText <> '') then
-            TempTranslation.AddTranslation(ShpfyLanguage.Locale, TranslationKey, Digests.Get(TranslationKey), TranslationText);
+            TempTranslation.AddTranslation(ShopifyLanguage.Locale, TranslationKey, Digests.Get(TranslationKey), TranslationText);
 
         TranslationKey := 'body_html';
-        TranslationText := ProductExport.CreateProductBody(Item."No.", ShpfyLanguage."Language Code");
+        TranslationText := ProductExport.CreateProductBody(Item."No.", ShopifyLanguage."Language Code");
         if Digests.Get(TranslationKey, Digest) and (TranslationText <> '') then
-            TempTranslation.AddTranslation(ShpfyLanguage.Locale, TranslationKey, Digest, TranslationText);
+            TempTranslation.AddTranslation(ShopifyLanguage.Locale, TranslationKey, Digest, TranslationText);
     end;
 }

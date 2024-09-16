@@ -1,34 +1,30 @@
 {
-    "id":  "64977288-facd-4b48-aaaa-bb0e288edfb3",
-    "name":  "Payment Practices",
-    "publisher":  "Microsoft",
-    "brief":  "The Payment Practices app introduces a feature enabling the calculation of payment times, aggregated across various metrics.",
-    "description":  "Numerous countries have regulatory requirements to report payment times to vendors. This app offers a user-friendly solution to report payment times for both vendors and customers. Additionally, it offers adaptable interfaces for introducing personalized aggregation methods and data collection.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2204541",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  685,
-                         "to":  694
-                     }
-                 ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0",
-    "target":  "Cloud"
+  "id": "64977288-facd-4b48-aaaa-bb0e288edfb3",
+  "name": "Payment Practices",
+  "publisher": "Microsoft",
+  "brief": "The Payment Practices app introduces a feature enabling the calculation of payment times, aggregated across various metrics.",
+  "description": "Numerous countries have regulatory requirements to report payment times to vendors. This app offers a user-friendly solution to report payment times for both vendors and customers. Additionally, it offers adaptable interfaces for introducing personalized aggregation methods and data collection.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 685,
+      "to": 694
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0",
+  "target": "Cloud"
 }

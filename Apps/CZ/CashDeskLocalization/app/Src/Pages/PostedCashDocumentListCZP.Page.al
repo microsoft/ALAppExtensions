@@ -202,7 +202,7 @@ page 31167 "Posted Cash Document List CZP"
                 {
                 }
             }
-#if not CLEANT22
+#if not CLEAN26
             group(Category_Report)
             {
                 Caption = 'Report';
@@ -213,9 +213,15 @@ page 31167 "Posted Cash Document List CZP"
 
                 actionref(PrinttoAttachmentPromoted; PrintToAttachment)
                 {
+                    ObsoleteTag = '26.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This action has been removed.';
                 }
                 actionref(PrintPromoted; "&Print")
                 {
+                    ObsoleteTag = '26.0';
+                    ObsoleteState = Pending;
+                    ObsoleteReason = 'This action has been removed.';
                 }
             }
 #endif

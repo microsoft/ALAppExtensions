@@ -748,10 +748,8 @@ codeunit 30178 "Shpfy Product Export"
         FillInProductVariantData(ShopifyVariant, Item, ItemVariant);
         if OnlyUpdatePrice then
             VariantApi.UpdateProductPrice(ShopifyVariant, TempShopifyVariant, BulkOperationInput, GraphQueryList, RecordCount)
-        else begin
+        else
             VariantApi.UpdateProductVariant(ShopifyVariant, TempShopifyVariant);
-            UpdateVariantTranslations(ShopifyVariant.Id, ItemVariant);
-        end;
     end;
 
     /// <summary> 
@@ -770,14 +768,12 @@ codeunit 30178 "Shpfy Product Export"
         FillInProductVariantData(ShopifyVariant, Item, ItemVariant, ItemUnitofMeasure);
         if OnlyUpdatePrice then
             VariantApi.UpdateProductPrice(ShopifyVariant, TempShopifyVariant, BulkOperationInput, GraphQueryList, RecordCount)
-        else begin
+        else
             VariantApi.UpdateProductVariant(ShopifyVariant, TempShopifyVariant);
-            UpdateVariantTranslations(ShopifyVariant.Id, ItemVariant);
-        end;
     end;
 
     #region Translations
-    local procedure UpdateProductTranslations(ProductId: BigInteger; Item: Record Item)
+    internal procedure UpdateProductTranslations(ProductId: BigInteger; Item: Record Item)
     var
         TempTranslation: Record "Shpfy Translation" temporary;
         TranslationAPI: Codeunit "Shpfy Translation API";
@@ -792,35 +788,20 @@ codeunit 30178 "Shpfy Product Export"
         TranslationAPI.CreateOrUpdateTranslations(TempTranslation);
     end;
 
-    local procedure UpdateVariantTranslations(VariantId: BigInteger; ItemVariant: Record "Item Variant")
-    var
-        TempTranslation: Record "Shpfy Translation" temporary;
-        TranslationAPI: Codeunit "Shpfy Translation API";
-    begin
-        if OnlyUpdatePrice then
-            exit;
-
-        TempTranslation."Resource Type" := TempTranslation."Resource Type"::ProductVariant;
-        TempTranslation."Resource ID" := VariantId;
-
-        CollectTranslations(ItemVariant, TempTranslation, TempTranslation."Resource Type");
-        TranslationAPI.CreateOrUpdateTranslations(TempTranslation);
-    end;
-
     local procedure CollectTranslations(RecVariant: Variant; var TempTranslation: Record "Shpfy Translation" temporary; ICreateTranslation: Interface "Shpfy ICreate Translation")
     var
-        ShpfyLanguage: Record "Shpfy Language";
+        ShopifyLanguage: Record "Shpfy Language";
         TranslationAPI: Codeunit "Shpfy Translation API";
         Digests: Dictionary of [Text, Text];
     begin
         Digests := TranslationAPI.RetrieveTranslatableContentDigests(TempTranslation."Resource Type", TempTranslation."Resource ID");
 
-        ShpfyLanguage.SetRange("Shop Code", Shop.Code);
-        ShpfyLanguage.SetRange("Sync Translations", true);
-        if ShpfyLanguage.FindSet() then
+        ShopifyLanguage.SetRange("Shop Code", Shop.Code);
+        ShopifyLanguage.SetRange("Sync Translations", true);
+        if ShopifyLanguage.FindSet() then
             repeat
-                ICreateTranslation.CreateTranslation(RecVariant, ShpfyLanguage, TempTranslation, Digests);
-            until ShpfyLanguage.Next() = 0;
+                ICreateTranslation.CreateTranslation(RecVariant, ShopifyLanguage, TempTranslation, Digests);
+            until ShopifyLanguage.Next() = 0;
     end;
     #endregion
 }

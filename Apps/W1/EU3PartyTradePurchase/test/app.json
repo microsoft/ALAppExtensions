@@ -1,58 +1,58 @@
 {
-    "id":  "3df4eddc-d735-46f7-9645-3c027296d54f",
-    "name":  "EU 3-Party Trade Purchase Tests",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Tests for the Microsoft EU 3-Party Trade Purchase extension.",
-    "description":  "Tests for the Microsoft EU 3-Party Trade Purchase extension.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2179727",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "dependencies":  [
-                         {
-                             "id":  "0a9a9ce1-6f98-4cf0-82e2-0b3e7cabb32a",
-                             "name":  "EU 3-Party Trade Purchase",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
-                             "name":  "Tests-TestLibraries",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "9856ae4f-d1a7-46ef-89bb-6ef056398228",
-                             "name":  "System Application Test Library",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5095f467-0a01-4b99-99d1-9ff1237d286f",
-                             "publisher":  "Microsoft",
-                             "name":  "Library Variable Storage",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "idRanges":  [
-                     {
-                         "from":  139500,
-                         "to":  139899
-                     },
-                     {
-                         "from":  148000,
-                         "to":  148499
-                     }
-                 ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2141039",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "OnPrem"
+  "id": "3df4eddc-d735-46f7-9645-3c027296d54f",
+  "name": "EU 3-Party Trade Purchase Tests",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Tests for the Microsoft EU 3-Party Trade Purchase extension.",
+  "description": "Tests for the Microsoft EU 3-Party Trade Purchase extension.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2179727",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "dependencies": [
+    {
+      "id": "0a9a9ce1-6f98-4cf0-82e2-0b3e7cabb32a",
+      "name": "EU 3-Party Trade Purchase",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "9856ae4f-d1a7-46ef-89bb-6ef056398228",
+      "name": "System Application Test Library",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+      "publisher": "Microsoft",
+      "name": "Library Variable Storage",
+      "version": "26.0.0.0"
+    }
+  ],
+  "idRanges": [
+    {
+      "from": 139500,
+      "to": 139899
+    },
+    {
+      "from": 148000,
+      "to": 148499
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2141039",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "OnPrem"
 }

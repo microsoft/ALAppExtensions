@@ -1,38 +1,34 @@
 {
-    "id":  "e2ae191d-8829-44c3-a373-3749a2742d4d",
-    "name":  "Service Declaration",
-    "publisher":  "Microsoft",
-    "brief":  "The Service Declaration extension makes it easy to export the service declaration in the format that the authorities in your country require.",
-    "description":  "In some EU countries, authorities require reporting for exporting services to the other EU countries. This feature enables collecting EU service''s intertrade and its reporting to the authorities. Even this feature is primarily created for Belgian, French and Italian markets, it can be used in all EU countries if needed as reporting is configurable.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://learn.microsoft.com/en-us/dynamics365/business-central/finance-how-setup-use-service-declaration",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2204541",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  5010,
-                         "to":  5049
-                     },
-                     {
-                         "from":  5250,
-                         "to":  5259
-                     }
-                 ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0",
-    "target":  "Cloud"
+  "id": "e2ae191d-8829-44c3-a373-3749a2742d4d",
+  "name": "Service Declaration",
+  "publisher": "Microsoft",
+  "brief": "The Service Declaration extension makes it easy to export the service declaration in the format that the authorities in your country require.",
+  "description": "In some EU countries, authorities require reporting for exporting services to the other EU countries. This feature enables collecting EU service''s intertrade and its reporting to the authorities. Even this feature is primarily created for Belgian, French and Italian markets, it can be used in all EU countries if needed as reporting is configurable.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://learn.microsoft.com/en-us/dynamics365/business-central/finance-how-setup-use-service-declaration",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 5010,
+      "to": 5049
+    },
+    {
+      "from": 5250,
+      "to": 5259
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0",
+  "target": "Cloud"
 }

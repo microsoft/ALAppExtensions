@@ -2,7 +2,7 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Codeunit Shpfy GQL Payment Terms (ID 30357) implements Interface Shpfy IGraphQL.
+/// Codeunit Shpfy GQL Payment Terms (ID 30213) implements Interface Shpfy IGraphQL.
 /// </summary>
 codeunit 30357 "Shpfy GQL Payment Terms" implements "Shpfy IGraphQL"
 {

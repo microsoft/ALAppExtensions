@@ -62,7 +62,7 @@ table 6222 "Sustainability Certificate"
 
     keys
     {
-        key(Key1; "No.")
+        key(Key1; Type, "No.")
         {
             Clustered = true;
         }

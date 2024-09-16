@@ -1,35 +1,35 @@
 {
-    "id":  "a53a4bb0-aa53-8ff8-77d6-fe3388db0eb8",
-    "name":  "Recommended Apps",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Create a collection of apps that you can recommend to customers.",
-    "description":  "Create a collection of apps that you can recommend to customers.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2173058",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  4750,
-                         "to":  4753
-                     }
-                 ],
-    "internalsVisibleTo":  [
-                               {
-                                   "id":  "4b1cbbc7-a6fd-442c-87b1-60b1d2b059d7",
-                                   "publisher":  "Microsoft",
-                                   "name":  "Recommended Apps Tests"
-                               }
-                           ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "OnPrem",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2173058"
+  "id": "a53a4bb0-aa53-8ff8-77d6-fe3388db0eb8",
+  "name": "Recommended Apps",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Create a collection of apps that you can recommend to customers.",
+  "description": "Create a collection of apps that you can recommend to customers.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2173058",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 4750,
+      "to": 4753
+    }
+  ],
+  "internalsVisibleTo": [
+    {
+      "id": "4b1cbbc7-a6fd-442c-87b1-60b1d2b059d7",
+      "publisher": "Microsoft",
+      "name": "Recommended Apps Tests"
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "OnPrem",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2173058"
 }

@@ -13,7 +13,7 @@ codeunit 30144 "Shpfy GQL OrderRisks" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query": "{order(id: \"gid://shopify/Order/{{OrderId}}\") {risks(first: 100) {level display message}}}"}');
+        exit('{"query": "{order(id: \"gid://shopify/Order/{{OrderId}}\") {risk { assessments { facts { description sentiment } provider { title } riskLevel }}}}"}');
     end;
 
     /// <summary>
@@ -22,7 +22,7 @@ codeunit 30144 "Shpfy GQL OrderRisks" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Integer.</returns>
     internal procedure GetExpectedCost(): Integer
     begin
-        exit(2);
+        exit(5);
     end;
 
 }

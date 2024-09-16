@@ -35,7 +35,7 @@ codeunit 30114 "Shpfy Customer API"
             GraphQuery.Append(': \"')
         else
             GraphQuery.Append(': ');
-        GraphQuery.Append(CommunicationMgt.EscapeGrapQLData(Format(ValueAsVariant)));
+        GraphQuery.Append(CommunicationMgt.EscapeGraphQLData(Format(ValueAsVariant)));
         if ValueAsString then
             GraphQuery.Append('\", ')
         else
@@ -313,7 +313,7 @@ codeunit 30114 "Shpfy Customer API"
         if ShopifyCustomer."Phone No." <> xShopifyCustomer."Phone No." then
             HasChange := AddFieldToGraphQuery(GraphQuery, 'phone', ShopifyCustomer."Phone No.");
         if ShopifyCustomer.GetNote() <> xShopifyCustomer.GetNote() then
-            HasChange := AddFieldToGraphQuery(GraphQuery, 'note', CommunicationMgt.EscapeGrapQLData(ShopifyCustomer.GetNote()));
+            HasChange := AddFieldToGraphQuery(GraphQuery, 'note', CommunicationMgt.EscapeGraphQLData(ShopifyCustomer.GetNote()));
 
         GraphQuery.Append('addresses: {');
 
@@ -325,13 +325,13 @@ codeunit 30114 "Shpfy Customer API"
         if ShopifyCustomerAddress."Last Name" <> xShopifyCustomer."Last Name" then
             HasChange := AddFieldToGraphQuery(GraphQuery, 'lastName', ShopifyCustomerAddress."Last Name");
         if ShopifyCustomerAddress."Address 1" <> '' then
-            HasChange := AddFieldToGraphQuery(GraphQuery, 'address1', CommunicationMgt.EscapeGrapQLData(ShopifyCustomerAddress."Address 1"));
+            HasChange := AddFieldToGraphQuery(GraphQuery, 'address1', CommunicationMgt.EscapeGraphQLData(ShopifyCustomerAddress."Address 1"));
         if ShopifyCustomerAddress."Address 2" <> '' then
-            HasChange := AddFieldToGraphQuery(GraphQuery, 'address2', CommunicationMgt.EscapeGrapQLData(ShopifyCustomerAddress."Address 2"));
+            HasChange := AddFieldToGraphQuery(GraphQuery, 'address2', CommunicationMgt.EscapeGraphQLData(ShopifyCustomerAddress."Address 2"));
         if ShopifyCustomerAddress.Zip <> '' then
             HasChange := AddFieldToGraphQuery(GraphQuery, 'zip', ShopifyCustomerAddress.Zip);
         if ShopifyCustomerAddress.City <> '' then
-            HasChange := AddFieldToGraphQuery(GraphQuery, 'city', CommunicationMgt.EscapeGrapQLData(ShopifyCustomerAddress.City));
+            HasChange := AddFieldToGraphQuery(GraphQuery, 'city', CommunicationMgt.EscapeGraphQLData(ShopifyCustomerAddress.City));
         if ShopifyCustomerAddress."Province Code" <> '' then
             HasChange := AddFieldToGraphQuery(GraphQuery, 'provinceCode', ShopifyCustomerAddress."Province Code");
         if ShopifyCustomerAddress."Country/Region Code" <> '' then

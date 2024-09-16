@@ -36,11 +36,17 @@ page 30115 "Shpfy Orders"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the Shopify Shop from which the order originated.';
                 }
+#if not CLEAN25
                 field(RiskLevel; Rec."Risk Level")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the risk level from the Shopify order.';
+                    Visible = false;
+                    ObsoleteReason = 'This field is not imported.';
+                    ObsoleteState = Pending;
+                    ObsoleteTag = '25.0';
                 }
+#endif
                 field(Closed; Rec.Closed)
                 {
                     ApplicationArea = All;

@@ -59,4 +59,21 @@ page 6245 "Emission Fees"
             }
         }
     }
+
+    actions
+    {
+        area(Processing)
+        {
+            action("Update Carbon Fees")
+            {
+                Caption = 'Update Carbon Fees';
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Update Carbon Fees and CO2e on Posted transactions for already Posted values related to the new setup';
+                Image = UpdateShipment;
+                Promoted = true;
+                PromotedCategory = Process;
+                RunObject = report "Batch Update Carbon Emission";
+            }
+        }
+    }
 }

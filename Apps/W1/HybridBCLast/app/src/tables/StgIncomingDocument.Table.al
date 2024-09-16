@@ -7,7 +7,7 @@ table 4037 "Stg Incoming Document"
 #if not CLEAN24
     ObsoleteState = Pending;
     ObsoleteTag = '24.0';
-# else
+#else
     ObsoleteState = Removed;
     ObsoleteTag = '27.0';
 #endif

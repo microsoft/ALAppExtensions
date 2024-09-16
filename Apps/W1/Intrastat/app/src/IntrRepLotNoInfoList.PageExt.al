@@ -14,7 +14,7 @@ pageextension 4826 "Intr. Rep. Lot No. Info List" extends "Lot No. Information L
         {
             field("Country/Region Code"; Rec."Country/Region Code")
             {
-                ApplicationArea = BasicEU, BasicCH, BasicNO;
+                ApplicationArea = All;
                 ToolTip = 'Specifies a code of the country/region where the item was produced or processed.';
             }
         }

@@ -28,7 +28,10 @@ page 2681 "Data Search lines"
 
                     trigger OnDrillDown()
                     begin
-                        Rec.ShowRecord(RoleCenterID, SearchString);
+                        if ErrorMessages.ContainsKey(Rec."Table/Type ID") then
+                            Message(ErrorMessages.Get(Rec."Table/Type ID"))
+                        else
+                            Rec.ShowRecord(RoleCenterID, SearchString);
                     end;
                 }
             }
@@ -86,6 +89,7 @@ page 2681 "Data Search lines"
     var
         ModifiedTablesSetup: List of [Integer];
         RemovedTablesSetup: List of [Integer];
+        ErrorMessages: Dictionary of [Integer, Text];
         GetStyleExprTxt: Text;
         MoreRecLbl: Label '%1: Show all results', Comment = '%1 is a table name, e.g. Customer';
         SearchString: Text;
@@ -113,6 +117,7 @@ page 2681 "Data Search lines"
         TableSubtype: Integer;
         i: Integer;
         RecID: Guid;
+        SearchErr: Label 'NB! Search failed. Drill down to see the error.';
     begin
         if NewResults.Count() = 0 then
             exit;
@@ -162,7 +167,19 @@ page 2681 "Data Search lines"
                 else
                     Rec."Line Type" := Rec."Line Type"::MoreData;
                 Rec.Insert();
-            end;
+            end else
+                if NewResults.Keys.Get(i) = '*ERROR*' then begin
+                    Rec."Entry No." += 1;
+                    Rec."Table No." := TableNo;
+                    Rec."Table Subtype" := TableSubtype;
+                    Rec."Table/Type ID" := TableTypeID;
+                    Rec."No. of Hits" := 2000000000 - DataSearchSetupTable."No. of Hits";
+                    Clear(Rec."Parent ID");
+                    Rec.Description := '  ' + CopyStr(SearchErr, 1, MaxStrLen(Rec.Description) - 2);
+                    Rec."Line Type" := Rec."Line Type"::Data;
+                    Rec.Insert();
+                    ErrorMessages.Add(Rec."Table/Type ID", NewResults.Values.Get(i));
+                end;
         SetDefaultView();
     end;
 
@@ -172,6 +189,7 @@ page 2681 "Data Search lines"
         Rec.DeleteAll();
         SetDefaultView();
         RecallLastNotification();
+        Clear(ErrorMessages);
         CurrPage.Update(false);
     end;
 

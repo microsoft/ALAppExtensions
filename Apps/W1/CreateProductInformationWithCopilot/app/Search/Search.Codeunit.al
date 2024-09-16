@@ -182,10 +182,10 @@ codeunit 7333 "Search"
             TempItemSubst."Substitute No." := Item."No.";
             TempItemSubst.Description := Item.Description;
             TempItemSubst.Score := TempSearchResponse.Score;
-            TempItemSubst.Confidence := GetConfidence(TempSearchResponse.Score * 100);
+            TempItemSubst.Confidence := GetConfidence(TempSearchResponse.Score);
             TempItemSubst.SetPrimarySearchTerms(SearchPrimaryKeyWords);
             TempItemSubst.SetAdditionalSearchTerms(SearchAdditionalKeyWords);
-            TempItemSubst.Insert();
+            if TempItemSubst.Insert() then;
         end;
     end;
 
@@ -243,11 +243,12 @@ codeunit 7333 "Search"
 
     local procedure GetConfidence(Score: Decimal): Enum "Search Confidence"
     begin
-        if Score > 80 then
+        Score := Round(Score * 100, 1);
+        if Score > 85 then
             exit("Search Confidence"::High);
-        if Score > 50 then
+        if Score > 83 then
             exit("Search Confidence"::Medium);
-        if Score > 20 then
+        if Score > 79 then
             exit("Search Confidence"::Low);
 
         exit("Search Confidence"::None);

@@ -239,6 +239,7 @@ codeunit 18251 "GST Purchase Non Availment"
         TaxAmount: Decimal;
     begin
         TaxTransactionValue.Reset();
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
         TaxTransactionValue.SetRange("Tax Type", TaxType);
         TaxTransactionValue.SetRange("Tax Record ID", PurchaseLineTaxID);
         TaxTransactionValue.SetFilter(Percent, '<>%1', 0);

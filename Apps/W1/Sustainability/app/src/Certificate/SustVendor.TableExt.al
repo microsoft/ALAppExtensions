@@ -31,7 +31,7 @@ tableextension 6219 "Sust. Vendor" extends Vendor
     begin
         Rec."Sust. Cert. Name" := '';
 
-        if SustCertificate.Get(Rec."Sust. Cert. No.") then
+        if SustCertificate.Get(SustCertificate.Type::Vendor, Rec."Sust. Cert. No.") then
             Rec."Sust. Cert. Name" := SustCertificate.Name;
     end;
 }

@@ -110,10 +110,15 @@ codeunit 11725 "Cash Document-Release CZP"
 
     procedure CheckCashDocument(CashDocumentHeaderCZP: Record "Cash Document Header CZP")
     begin
+        CheckExceededBalanceLimit(CashDocumentHeaderCZP);
+        CheckCashDocumentForPosting(CashDocumentHeaderCZP);
+    end;
+
+    internal procedure CheckCashDocumentForPosting(CashDocumentHeaderCZP: Record "Cash Document Header CZP")
+    begin
         CheckCashDesk(CashDocumentHeaderCZP);
         CheckMandatoryFields(CashDocumentHeaderCZP);
         CheckCashDocumentAmount(CashDocumentHeaderCZP);
-        CheckExceededBalanceLimit(CashDocumentHeaderCZP);
         CheckCashDocumentLines(CashDocumentHeaderCZP);
         CheckCashPaymentLimit(CashDocumentHeaderCZP);
     end;

@@ -32,4 +32,8 @@ enum 30152 "Shpfy Delivery Method Type"
     {
         Caption = 'Shipping';
     }
+    value(6; "Pickup Point")
+    {
+        Caption = 'Pickup Point';
+    }
 }

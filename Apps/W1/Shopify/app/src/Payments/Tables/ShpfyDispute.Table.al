@@ -41,7 +41,7 @@ table 30155 "Shpfy Dispute"
         }
         field(6; "Reason"; enum "Shpfy Dispute Reason")
         {
-            Caption = 'Shpfy Dispute Reason';
+            Caption = 'Shopify Dispute Reason';
             DataClassification = CustomerContent;
         }
         field(7; "Network Reason Code"; Text[100])

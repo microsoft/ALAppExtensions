@@ -597,16 +597,21 @@ table 11733 "Cash Document Line CZP"
             DataClassification = CustomerContent;
 
             trigger OnValidate()
+            var
+                TotalCashDocumentLineCZP: Record "Cash Document Line CZP";
             begin
                 GetCashDocumentHeaderCZP();
+                CalcTotalAmounts(TotalCashDocumentLineCZP);
                 "VAT Base Amount" := Round("VAT Base Amount", Currency."Amount Rounding Precision");
 
                 case "VAT Calculation Type" of
                     "VAT Calculation Type"::"Normal VAT",
                   "VAT Calculation Type"::"Reverse Charge VAT":
                         "VAT Amount" :=
-                          Round("VAT Base Amount" * ("VAT %" / 100),
-                            Currency."Amount Rounding Precision", Currency.VATRoundingDirection());
+                            Round(
+                                (TotalCashDocumentLineCZP."VAT Base Amount" + "VAT Base Amount") * ("VAT %" / 100),
+                                Currency."Amount Rounding Precision", Currency.VATRoundingDirection()) -
+                            TotalCashDocumentLineCZP."VAT Amount";
                     "VAT Calculation Type"::"Full VAT":
                         if "VAT Base Amount" <> 0 then
                             FieldError("VAT Base Amount", StrSubstNo(MustBeZeroErr, FieldCaption("VAT Calculation Type"),
@@ -635,14 +640,21 @@ table 11733 "Cash Document Line CZP"
             DataClassification = CustomerContent;
 
             trigger OnValidate()
+            var
+                TotalCashDocumentLineCZP: Record "Cash Document Line CZP";
             begin
                 GetCashDocumentHeaderCZP();
+                CalcTotalAmounts(TotalCashDocumentLineCZP);
                 "Amount Including VAT" := Round("Amount Including VAT", Currency."Amount Rounding Precision");
 
                 case "VAT Calculation Type" of
                     "VAT Calculation Type"::"Normal VAT",
                   "VAT Calculation Type"::"Reverse Charge VAT":
-                        "VAT Amount" := Round("Amount Including VAT" * "VAT %" / (100 + "VAT %"), Currency."Amount Rounding Precision");
+                        "VAT Amount" :=
+                            Round(
+                                (TotalCashDocumentLineCZP."Amount Including VAT" + "Amount Including VAT") * "VAT %" / (100 + "VAT %"),
+                                Currency."Amount Rounding Precision", Currency.VATRoundingDirection()) -
+                            TotalCashDocumentLineCZP."VAT Amount";
                     "VAT Calculation Type"::"Full VAT":
                         "VAT Base Amount" := 0;
                 end;
@@ -1892,6 +1904,23 @@ table 11733 "Cash Document Line CZP"
             exit(AllocationAccount.Get("Account No."));
 
         exit(false);
+    end;
+
+    local procedure CalcTotalAmounts(var TotalCashDocumentLineCZP: Record "Cash Document Line CZP")
+    begin
+        TotalCashDocumentLineCZP.Init();
+        if ("VAT Calculation Type" = "VAT Calculation Type"::"Sales Tax") or
+           (("VAT Calculation Type" in
+            ["VAT Calculation Type"::"Normal VAT", "VAT Calculation Type"::"Reverse Charge VAT"]) and ("VAT %" <> 0))
+        then begin
+            TotalCashDocumentLineCZP.SetRange("Cash Desk No.", "Cash Desk No.");
+            TotalCashDocumentLineCZP.SetRange("Cash Document No.", "Cash Document No.");
+            TotalCashDocumentLineCZP.SetFilter("Line No.", '<>%1', "Line No.");
+            TotalCashDocumentLineCZP.SetRange("VAT Identifier", "VAT Identifier");
+            TotalCashDocumentLineCZP.SetFilter("VAT %", '<>%1', 0);
+            if not TotalCashDocumentLineCZP.IsEmpty() then
+                TotalCashDocumentLineCZP.CalcSums("VAT Base Amount", "Amount Including VAT", "VAT Amount");
+        end;
     end;
 
     [IntegrationEvent(false, false)]

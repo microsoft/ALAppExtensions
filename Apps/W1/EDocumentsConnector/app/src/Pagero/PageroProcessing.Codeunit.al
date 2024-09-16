@@ -606,6 +606,9 @@ codeunit 6369 "Pagero Processing"
         DocumentOutStream: OutStream;
         ContentData, DocumentId, FileId : Text;
     begin
+        if EDocumentService."Service Integration" <> EDocumentService."Service Integration"::Pagero then
+            exit;
+
         HttpResponse.Content.ReadAs(ContentData);
         if not ParseReceivedDocument(ContentData, EDocument."Index In Batch", DocumentId, FileId) then begin
             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, DocumentIdNotFoundErr);

@@ -55,7 +55,7 @@ codeunit 11744 "Purchase Header Handler CZL"
         PurchaseHeader."Tax Registration No. CZL" := Vendor."Tax Registration No. CZL";
     end;
 
-    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnBeforeValidateEvent', 'Currency Code', false, false)]
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Header", 'OnAfterValidateEvent', 'Currency Code', false, false)]
     local procedure UpdateVatCurrencyCodeCZLOnBeforeCurrencyCodeValidate(var Rec: Record "Purchase Header")
     begin
         Rec.Validate("VAT Currency Code CZL", Rec."Currency Code");

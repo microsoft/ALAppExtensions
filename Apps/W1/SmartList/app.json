@@ -1,37 +1,33 @@
 {
-    "id":  "e86e9234-8b95-459d-a9ba-4d901208ca38",
-    "name":  "_Exclude_Microsoft Dynamics 365 - SmartList",
-    "publisher":  "Microsoft",
-    "brief":  "SmartList",
-    "description":  "View query information within Business Central list pages that dynamically renders data on the page based on query definition.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=847985",
-    "help":  "https://go.microsoft.com/fwlink/?LinkId=849257",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?LinkId=849257",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "features":  [
-                     "TranslationFile"
-                 ],
-    "idRanges":  [
-                     {
-                         "from":  2400,
-                         "to":  3010
-                     }
-                 ],
-    "application":  "25.0.0.0"
+  "id": "e86e9234-8b95-459d-a9ba-4d901208ca38",
+  "name": "_Exclude_Microsoft Dynamics 365 - SmartList",
+  "publisher": "Microsoft",
+  "brief": "SmartList",
+  "description": "View query information within Business Central list pages that dynamically renders data on the page based on query definition.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=847985",
+  "help": "https://go.microsoft.com/fwlink/?LinkId=849257",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?LinkId=849257",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "features": [
+    "TranslationFile"
+  ],
+  "idRanges": [
+    {
+      "from": 2400,
+      "to": 3010
+    }
+  ],
+  "application": "26.0.0.0"
 }

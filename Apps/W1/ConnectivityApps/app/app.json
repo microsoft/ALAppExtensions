@@ -1,35 +1,35 @@
 {
-    "id":  "16c26bda-5f9c-4a77-a17e-4835f06062c0",
-    "name":  "_Exclude_Connectivity Apps",
-    "publisher":  "Microsoft",
-    "brief":  "Easily identify the right app to use to connect your business to productivity services in your market space.",
-    "description":  "Connectivity Apps helps you easily discover third-party solutions that connect Business Central with productivity services.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2204236",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  20350,
-                         "to":  20359
-                     }
-                 ],
-    "internalsVisibleTo":  [
-                               {
-                                   "id":  "018f12d9-597c-4eb5-8a5d-27983426ffc2",
-                                   "name":  "_Exclude_Connectivity Apps Tests",
-                                   "publisher":  "Microsoft"
-                               }
-                           ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "OnPrem",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2204236"
+  "id": "16c26bda-5f9c-4a77-a17e-4835f06062c0",
+  "name": "_Exclude_Connectivity Apps",
+  "publisher": "Microsoft",
+  "brief": "Easily identify the right app to use to connect your business to productivity services in your market space.",
+  "description": "Connectivity Apps helps you easily discover third-party solutions that connect Business Central with productivity services.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2204236",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 20350,
+      "to": 20359
+    }
+  ],
+  "internalsVisibleTo": [
+    {
+      "id": "018f12d9-597c-4eb5-8a5d-27983426ffc2",
+      "name": "_Exclude_Connectivity Apps Tests",
+      "publisher": "Microsoft"
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "OnPrem",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2204236"
 }

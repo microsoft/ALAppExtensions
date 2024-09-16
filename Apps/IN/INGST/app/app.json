@@ -1,54 +1,52 @@
 {
-    "id":  "db643212-b7fb-4dd4-b5a8-cb44ac714461",
-    "name":  "India GST",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Contains features for deducting Goods and Services Tax on purchase, transfer, and sales transactions.",
-    "description":  "The GST feature contains setups that are required for calculating Goods and Services Tax (GST). This lets you deduct GST on vendor and customer invoices through purchase orders, invoices, and journal vouchers, vendor and customer payments, and on service or stock transfers. It also allows adjustments, reconciliation, and settlement of GST amounts and deposit GST that has been deducted.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=724013",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2139720",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "features":  [
-                     "TranslationFile",
-                     "GenerateCaptions"
-                 ],
-    "dependencies":  [
-                         {
-                             "id":  "d3c551dd-5903-4194-b153-04ced9d29a2c",
-                             "publisher":  "Microsoft",
-                             "name":  "India Tax Base",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
-                             "publisher":  "Microsoft",
-                             "name":  "Tax Engine",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "7106d701-c601-4a5f-97c2-b8b323ae2c18",
-                             "publisher":  "Microsoft",
-                             "name":  "QR Generator",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  18000,
-                         "to":  18500
-                     }
-                 ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2139720",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               }
+  "id": "db643212-b7fb-4dd4-b5a8-cb44ac714461",
+  "name": "India GST",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Contains features for deducting Goods and Services Tax on purchase, transfer, and sales transactions.",
+  "description": "The GST feature contains setups that are required for calculating Goods and Services Tax (GST). This lets you deduct GST on vendor and customer invoices through purchase orders, invoices, and journal vouchers, vendor and customer payments, and on service or stock transfers. It also allows adjustments, reconciliation, and settlement of GST amounts and deposit GST that has been deducted.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2139720",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "features": [
+    "TranslationFile",
+    "GenerateCaptions"
+  ],
+  "dependencies": [
+    {
+      "id": "d3c551dd-5903-4194-b153-04ced9d29a2c",
+      "publisher": "Microsoft",
+      "name": "India Tax Base",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
+      "publisher": "Microsoft",
+      "name": "Tax Engine",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "7106d701-c601-4a5f-97c2-b8b323ae2c18",
+      "publisher": "Microsoft",
+      "name": "QR Generator",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 18000,
+      "to": 18500
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2139720",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  }
 }

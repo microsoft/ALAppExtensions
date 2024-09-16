@@ -11,13 +11,16 @@ codeunit 139782 "Item Entity Search"
 
     var
         Assert: Codeunit Assert;
+        TestUtility: Codeunit "SLS Test Utility";
         IsInitialized: Boolean;
 
     local procedure Initialize()
     begin
         if IsInitialized then
             exit;
-        // TODO: register capability and wait till items are indexed
+
+        TestUtility.RegisterCopilotCapability();
+
         IsInitialized := true;
     end;
 
@@ -38,18 +41,23 @@ codeunit 139782 "Item Entity Search"
         ItemNoMismatchErr: Label 'Item No. does not match. Expected: %1, Actual: %2', Comment = '%1 = Expected Item No., %2 = Actual Item No.';
     begin
         Initialize();
+
         // [GIVEN] A question from the dataset, parameters for the Search API 
         // [WHEN] The Search API is called
-        case AITestContext.GetInput().Element('SearchStyle').ValueAsText() of
-            'Permissive':
-                SearchStyle := SearchStyle::Permissive;
-            'Balanced':
-                SearchStyle := SearchStyle::Balanced;
-            'Precise':
-                SearchStyle := SearchStyle::Precise;
-            else
-                Error('Invalid Search Style');
-        end;
+        Element := AITestContext.GetInput().ElementExists('SearchStyle', ElementExists);
+        if ElementExists then
+            case Element.ValueAsText() of
+                'Permissive':
+                    SearchStyle := SearchStyle::Permissive;
+                'Balanced':
+                    SearchStyle := SearchStyle::Balanced;
+                'Precise':
+                    SearchStyle := SearchStyle::Precise;
+                else
+                    Error('Invalid Search Style');
+            end
+        else
+            SearchStyle := SearchStyle::Balanced;
 
         SLSSearch.SearchMultiple(
             AITestContext.GetInput().Element('ItemResultsArray').AsJsonToken().AsArray(),

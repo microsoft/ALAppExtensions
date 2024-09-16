@@ -17,8 +17,6 @@ tableextension 31067 "VAT Setup CZL" extends "VAT Setup"
                 if not ConfirmMgt.GetResponse(UpdateAllowNonDeductibleVATQst, true) then
                     error('');
                 NonDeductibleVATCZL.UpdateAllowNonDeductibleVAT();
-                if ConfirmMgt.GetResponse(OpenNonDeductibleVATSetupQst, true) then
-                    Page.RunModal(Page::"Non-Deductible VAT Setup CZL");
             end;
         }
     }
@@ -26,5 +24,4 @@ tableextension 31067 "VAT Setup CZL" extends "VAT Setup"
     var
         NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
         UpdateAllowNonDeductibleVATQst: Label 'When you enable it the "Allow Non-Deductible VAT" field in the VAT Posting Setup table will be updated.\\Do you want to continue?';
-        OpenNonDeductibleVATSetupQst: Label 'Do you want to open the Non-Deductible VAT Setup page to complete the activation CZ feature?';
 }

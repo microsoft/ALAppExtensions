@@ -588,7 +588,7 @@ codeunit 148187 "Sust. Certificate Test"
             Item."No.",
             LibraryRandom.RandInt(10));
 
-        // [GIVEN] Update Sustainability Account No.,Emission CO2 Per Unit,Emission CH4 Per Unit,Emission N2O Per Unit.
+        // [GIVEN] Update Sustainability Account No.,Emission CO2 ,Emission CH4 ,Emission N2O.
         PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
         PurchaseLine.Validate("Sust. Account No.", AccountCode);
         PurchaseLine.Modify();
@@ -619,7 +619,7 @@ codeunit 148187 "Sust. Certificate Test"
                 0,
                 SustainabilityLedgerEntry.TableCaption()));
         Assert.AreEqual(
-            -(PurchaseLine."Qty. per Unit of Measure" * Item."Carbon Credit Per UOM"),
+            -(PurchaseLine."Qty. per Unit of Measure" * Item."Carbon Credit Per UOM" * PurchaseLine."Qty. to Invoice"),
             SustainabilityLedgerEntry."Emission CO2",
             StrSubstNo(
                 ValueMustBeEqualErr,
@@ -644,7 +644,7 @@ codeunit 148187 "Sust. Certificate Test"
         CategoryCode: Code[20];
         SubcategoryCode: Code[20];
         AccountCode: Code[20];
-        EmissionCO2PerUnit: Decimal;
+        EmissionCO2: Decimal;
     begin
         // [SCENARIO 496566] Verify Sustainability Ledger entry should be Kocked Off when the Cancel Credit Memo is posted If "GHG Credit" is enabled in Item.
         LibrarySustainability.CleanUpBeforeTesting();
@@ -679,8 +679,8 @@ codeunit 148187 "Sust. Certificate Test"
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode);
 
-        // [GIVEN] Generate Emission per Unit.
-        EmissionCO2PerUnit := LibraryRandom.RandInt(5);
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(5);
 
         // [GIVEN] Create a Purchase Header.
         LibraryPurchase.CreatePurchHeader(PurchaseHeader, "Purchase Document Type"::Order, LibraryPurchase.CreateVendorNo());
@@ -693,12 +693,12 @@ codeunit 148187 "Sust. Certificate Test"
             Item."No.",
             LibraryRandom.RandInt(10));
 
-        // [GIVEN] Update Sustainability Account No.,Emission CO2 Per Unit,Emission CH4 Per Unit,Emission N2O Per Unit.
+        // [GIVEN] Update Sustainability Account No.,Emission CO2 ,Emission CH4 ,Emission N2O.
         PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
         PurchaseLine.Validate("Sust. Account No.", AccountCode);
-        PurchaseLine.Validate("Emission CO2 Per Unit", EmissionCO2PerUnit);
-        PurchaseLine.Validate("Emission CH4 Per Unit", 0);
-        PurchaseLine.Validate("Emission N2O Per Unit", 0);
+        PurchaseLine.Validate("Emission CO2", EmissionCO2);
+        PurchaseLine.Validate("Emission CH4", 0);
+        PurchaseLine.Validate("Emission N2O", 0);
         PurchaseLine.Modify();
 
         // [GIVEN] Update Reason Code in Purchase Header.

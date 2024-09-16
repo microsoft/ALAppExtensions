@@ -10,7 +10,7 @@ codeunit 30233 "Shpfy GQL CreateFulfillmentSvc" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query": "mutation { fulfillmentServiceCreate(name: \"Business Central Fulfillment Service\", fulfillmentOrdersOptIn: true, callbackUrl: \"https://www.shopifyconnector.com/callback_url\") {fulfillmentService {id fulfillmentOrdersOptIn}}}"}');
+        exit('{"query": "mutation { fulfillmentServiceCreate(name: \"Business Central Fulfillment Service\", callbackUrl: \"https://www.shopifyconnector.com/callback_url\") {fulfillmentService {id}}}"}');
     end;
 
     /// <summary>

@@ -131,6 +131,8 @@ codeunit 13621 "Digital Voucher DK Impl."
     begin
         if not DigitalVoucherFeature.EnforceDigitalVoucherFunctionality() then
             exit;
+        if not DigitalVoucherSetup.WritePermission() then
+            exit;
         if not DigitalVoucherSetup.Get() then
             DigitalVoucherSetup.Insert();
         if not DigitalVoucherSetup.Enabled then begin

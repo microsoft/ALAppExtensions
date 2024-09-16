@@ -1,34 +1,30 @@
 {
-    "id":  "ce917438-506c-4724-9b01-13c1b860e851",
-    "name":  "Microsoft Pay Payments",
-    "publisher":  "Microsoft",
-    "brief":  "The Microsoft Pay Payments service adds a Microsoft Pay Payments link to your sales documents so customers can easily pay using Microsoft Pay Payments. From inside Dynamics 365 Business Central you can send the documents by email to provide higher customer service and shorten the time it takes for customers' payments to arrive on your bank account.",
-    "description":  "Customers continuously require higher levels of service, both in terms of the quality of product, but also in terms of delivery and payment services. The Microsoft Pay Payments service adds a Microsoft Pay Payments link to your sales documents so customers can easily pay using Microsoft Pay Payments. You can send the documents by email to provide higher customer service and shorten the time it takes for customer payments to arrive in your bank account. This extension can embed a link to Microsoft Pay Payments on all invoices automatically, or a user can do it on individual invoices. The Microsoft Pay Payments extension gives customers more ways to pay invoices because Microsoft Pay Payments offers multiple ways of handling payments, including credit card processing, WePay, PayPal, and other sources. Plus, Microsoft Pay Payments delivers a trustworthy payment service, which customers prefer to entering credit card information on unknown websites, and Microsoft Pay Payments does not require monthly fees or setup fees. Because this functionality is built as an extension, it gives you full control to enable it when and if your business processes require it.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=857276",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=857276",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  1,
-                         "to":  9999
-                     }
-                 ],
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "ce917438-506c-4724-9b01-13c1b860e851",
+  "name": "Microsoft Pay Payments",
+  "publisher": "Microsoft",
+  "brief": "The Microsoft Pay Payments service adds a Microsoft Pay Payments link to your sales documents so customers can easily pay using Microsoft Pay Payments. From inside Dynamics 365 Business Central you can send the documents by email to provide higher customer service and shorten the time it takes for customers' payments to arrive on your bank account.",
+  "description": "Customers continuously require higher levels of service, both in terms of the quality of product, but also in terms of delivery and payment services. The Microsoft Pay Payments service adds a Microsoft Pay Payments link to your sales documents so customers can easily pay using Microsoft Pay Payments. You can send the documents by email to provide higher customer service and shorten the time it takes for customer payments to arrive in your bank account. This extension can embed a link to Microsoft Pay Payments on all invoices automatically, or a user can do it on individual invoices. The Microsoft Pay Payments extension gives customers more ways to pay invoices because Microsoft Pay Payments offers multiple ways of handling payments, including credit card processing, WePay, PayPal, and other sources. Plus, Microsoft Pay Payments delivers a trustworthy payment service, which customers prefer to entering credit card information on unknown websites, and Microsoft Pay Payments does not require monthly fees or setup fees. Because this functionality is built as an extension, it gives you full control to enable it when and if your business processes require it.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=857276",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=857276",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 1,
+      "to": 9999
+    }
+  ],
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

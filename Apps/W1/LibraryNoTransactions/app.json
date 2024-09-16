@@ -1,24 +1,22 @@
 {
-    "id":  "3e66e11e-b732-462d-ab82-09a8f710504c",
-    "name":  "Library - No Transactions",
-    "brief":  "Used for testing that no transactions are invoked",
-    "description":  "This app is used for testing that the transactions are not executed. If any transaction is detected with this extension published we will throw an error.",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "platform":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2206178",
-    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               }
+  "id": "3e66e11e-b732-462d-ab82-09a8f710504c",
+  "name": "Library - No Transactions",
+  "brief": "Used for testing that no transactions are invoked",
+  "description": "This app is used for testing that the transactions are not executed. If any transaction is detected with this extension published we will throw an error.",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "platform": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2206178",
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/dynamics365/business-central/",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  }
 }

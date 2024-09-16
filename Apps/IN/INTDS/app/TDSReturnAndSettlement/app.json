@@ -1,56 +1,54 @@
 {
-    "id":  "2ccd4f40-5cc3-495a-b7d5-1c3ca1448066",
-    "name":  "TDS Return and Settlement",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Contains features for Tax Deducted at Source for returns and settlements.",
-    "description":  "TDS Return and Settlement lets you adjust and settle corrections to TDS amounts, and submit TDS that has been deducted to the government.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=724013",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2139181",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "application":  "25.0.0.0",
-    "platform":  "25.0.0.0",
-    "dependencies":  [
-                         {
-                             "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
-                             "publisher":  "Microsoft",
-                             "name":  "Tax Engine",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "d3c551dd-5903-4194-b153-04ced9d29a2c",
-                             "publisher":  "Microsoft",
-                             "name":  "India Tax Base",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "4a217711-3ba5-42f0-95c7-5f306c52042d",
-                             "name":  "India GST",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "3147530a-3d75-43c7-b5e9-b28f0faa5a3a",
-                             "name":  "TDS For Customer",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "idRanges":  [
-                     {
-                         "from":  18746,
-                         "to":  18765
-                     }
-                 ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2139181",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               }
+  "id": "2ccd4f40-5cc3-495a-b7d5-1c3ca1448066",
+  "name": "TDS Return and Settlement",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Contains features for Tax Deducted at Source for returns and settlements.",
+  "description": "TDS Return and Settlement lets you adjust and settle corrections to TDS amounts, and submit TDS that has been deducted to the government.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2139181",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "application": "26.0.0.0",
+  "platform": "26.0.0.0",
+  "dependencies": [
+    {
+      "id": "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
+      "publisher": "Microsoft",
+      "name": "Tax Engine",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "d3c551dd-5903-4194-b153-04ced9d29a2c",
+      "publisher": "Microsoft",
+      "name": "India Tax Base",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "4a217711-3ba5-42f0-95c7-5f306c52042d",
+      "name": "India GST",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "3147530a-3d75-43c7-b5e9-b28f0faa5a3a",
+      "name": "TDS For Customer",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "idRanges": [
+    {
+      "from": 18746,
+      "to": 18765
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2139181",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  }
 }

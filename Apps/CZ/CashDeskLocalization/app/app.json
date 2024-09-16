@@ -1,33 +1,31 @@
 {
-    "id":  "bc0899d1-2cc9-4091-93f8-032538dbb70f",
-    "name":  "Cash Desk Localization for Czech",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Provides functionality for cash desk operations in Business Central for the Czech Republic.",
-    "description":  "The Cash Desk solution helps companies meet regulatory requirements for cash desk operations in the Czech Republic. The Cash Desks and Cash Documents features allow you to define cash accounts and cash desks for physical receipt and withdrawal of cash. You can set up number series for receipt cash documents and withdrawal cash documents. Cash Desk events are pre-defined cases that simplify document entry. One or more users can be responsible for managing Cash Desk operations, and they can take turns handling the responsibility.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2151334",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2151334",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "267b59d3-7302-44c5-ba77-c87000380514",
-                             "name":  "Core Localization Pack for Czech",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "target":  "Cloud",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "bc0899d1-2cc9-4091-93f8-032538dbb70f",
+  "name": "Cash Desk Localization for Czech",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Provides functionality for cash desk operations in Business Central for the Czech Republic.",
+  "description": "The Cash Desk solution helps companies meet regulatory requirements for cash desk operations in the Czech Republic. The Cash Desks and Cash Documents features allow you to define cash accounts and cash desks for physical receipt and withdrawal of cash. You can set up number series for receipt cash documents and withdrawal cash documents. Cash Desk events are pre-defined cases that simplify document entry. One or more users can be responsible for managing Cash Desk operations, and they can take turns handling the responsibility.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2151334",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2151334",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "267b59d3-7302-44c5-ba77-c87000380514",
+      "name": "Core Localization Pack for Czech",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "target": "Cloud",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

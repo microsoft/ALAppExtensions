@@ -1,46 +1,46 @@
 {
-    "id": "dff12793-4e1c-4f3c-b7d3-331552c4cf5c",
-    "name": "IRS Forms Test Library",
-    "publisher": "Microsoft",
-    "brief": "The app is a library to test the IRS 1099 feature",
-    "description": "The app is a library to test the IRS 1099 feature",
-    "version": "25.0.0.0",
-    "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help": "https://learn.microsoft.com/en-us/dynamics365/business-central/finance-how-setup-use-service-declaration",
-    "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo": "ExtensionLogo.png",
-    "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2204541",
-    "dependencies": [
-        {
-            "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
-            "name": "Tests-TestLibraries",
-            "publisher": "Microsoft",
-            "version": "25.0.0.0"
-        },
-        {
-            "id": "b696b4c9-637c-49d1-a806-763ff8f0a20e",
-            "name": "IRS Forms",
-            "publisher": "Microsoft",
-            "version": "25.0.0.0"
-        }
-    ],
-    "features": [
-        "TranslationFile"
-    ],
-    "screenshots": [],
-    "platform": "25.0.0.0",
-    "idRanges": [
-        {
-            "from": 148000,
-            "to": 148004
-        }
-    ],
-    "resourceExposurePolicy": {
-        "allowDebugging": true,
-        "allowDownloadingSource": true,
-        "includeSourceInSymbolFile": true
+  "id": "dff12793-4e1c-4f3c-b7d3-331552c4cf5c",
+  "name": "IRS Forms Test Library",
+  "publisher": "Microsoft",
+  "brief": "The app is a library to test the IRS 1099 feature",
+  "description": "The app is a library to test the IRS 1099 feature",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://learn.microsoft.com/en-us/dynamics365/business-central/finance-how-setup-use-service-declaration",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "dependencies": [
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
     },
-    "application": "25.0.0.0",
-    "target": "OnPrem"
+    {
+      "id": "b696b4c9-637c-49d1-a806-763ff8f0a20e",
+      "name": "IRS Forms",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "features": [
+    "TranslationFile"
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 148000,
+      "to": 148004
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0",
+  "target": "OnPrem"
 }

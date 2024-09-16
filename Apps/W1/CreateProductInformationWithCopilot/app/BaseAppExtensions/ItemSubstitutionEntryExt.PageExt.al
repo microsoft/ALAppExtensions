@@ -14,7 +14,7 @@ pageextension 7330 "Item Substitution Entry Ext." extends "Item Substitution Ent
             action("Suggest Substitution Prompting")
             {
                 ApplicationArea = All;
-                Caption = 'Suggest with Copilot';
+                Caption = 'Suggest substitutions';
                 Image = SparkleFilled;
                 ToolTip = 'Get item substitution suggestion from Copilot';
 
@@ -29,7 +29,7 @@ pageextension 7330 "Item Substitution Entry Ext." extends "Item Substitution Ent
             action("Suggest Substitution")
             {
                 ApplicationArea = All;
-                Caption = 'Suggest with Copilot';
+                Caption = 'Suggest substitutions';
                 Image = SparkleFilled;
                 ToolTip = 'Get item substitution suggestion from Copilot';
                 Visible = ProcessingActionVisible;

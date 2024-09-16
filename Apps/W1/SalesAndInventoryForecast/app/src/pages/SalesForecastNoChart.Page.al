@@ -19,6 +19,24 @@ page 1851 "Sales Forecast No Chart"
     {
         area(content)
         {
+            group(Disclaimer)
+            {
+                Caption = '';
+                Editable = false;
+                ShowCaption = false;
+
+                field(DisclaimerText; DisclaimerValueMsg)
+                {
+                    ApplicationArea = Basic, Suite;
+                    Enabled = true;
+                    Visible = true;
+                    MultiLine = true;
+                    Style = AttentionAccent;
+                    StyleExpr = true;
+                    ToolTip = 'AI generated suggestions may not always be accurate. Please validate results for correctness before using content provided.';
+                    ShowCaption = false;
+                }
+            }
             field(StatusText; StatusTextValue)
             {
                 ApplicationArea = Basic, Suite;
@@ -81,6 +99,7 @@ page 1851 "Sales Forecast No Chart"
         MSSalesForecastSetup: Record "MS - Sales Forecast Setup";
         MSSalesForecastParameter: Record "MS - Sales Forecast Parameter";
         NoForecastLbl: Label 'Sales forecast not available for this item.';
+        DisclaimerValueMsg: Label 'AI generated suggestions may not always be accurate. Please validate results for correctness before using content provided.';
         NeedsUpdate: Boolean;
         StatusType: Option " ","No columns due to high variance","Limited columns due to high variance","Forecast expired","Forecast period type changed","Not enough historical data","Zero Forecast";
         StatusTextValue: Text;

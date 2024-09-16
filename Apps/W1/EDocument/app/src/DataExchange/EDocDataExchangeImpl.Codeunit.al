@@ -532,7 +532,7 @@ codeunit 6152 "E-Doc. Data Exchange Impl." implements "E-Document"
     /// Allow for empty Data Exch filtering.
     /// Example: Document Attachments might not exist for document, so dont throw error if no record exists.
     /// </summary>
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Mapping", 'OnBeforeCheckRecRefCount', '', true, true)]
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Export Mapping", OnBeforeCheckRecRefCount, '', true, true)]
     local procedure OnBeforeCheckRecRefCount(var IsHandled: Boolean; DataExchMapping: Record "Data Exch. Mapping")
     var
         EDocServiceDataExchDef: Record "E-Doc. Service Data Exch. Def.";

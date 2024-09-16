@@ -14,7 +14,7 @@ pageextension 4830 "Intr. Rep. Ser. No. Info List" extends "Serial No. Informati
         {
             field("Country/Region Code"; Rec."Country/Region Code")
             {
-                ApplicationArea = BasicEU, BasicCH, BasicNO;
+                ApplicationArea = All;
                 ToolTip = 'Specifies a code of the country/region where the item was produced or processed.';
             }
         }

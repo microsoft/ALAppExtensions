@@ -1,7 +1,6 @@
 codeunit 139616 "E-Doc Log Test"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
     EventSubscriberInstance = Manual;
 
     trigger OnRun()
@@ -12,10 +11,13 @@ codeunit 139616 "E-Doc Log Test"
 
     var
 
+        Customer: Record Customer;
+        EDocumentService: Record "E-Document Service";
         Assert: Codeunit Assert;
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
         LibraryEDoc: Codeunit "Library - E-Document";
         LibraryJobQueue: Codeunit "Library - Job Queue";
+        LibraryPermission: Codeunit "Library - Lower Permissions";
         IsInitialized: Boolean;
         IncorrectValueErr: Label 'Incorrect value found';
         FailLastEntryInBatch, ErrorInExport : Boolean;
@@ -27,24 +29,26 @@ codeunit 139616 "E-Doc Log Test"
         EDocument: Record "E-Document";
         EDocLog: Record "E-Document Log";
         EDocMappingLogs: Record "E-Doc. Mapping Log";
-        CustomerNo, DocumentSendingProfile : Code[20];
     begin
         // [FEATURE] [E-Document] [Log]
-        // [SCENARIO] EDocument Log on EDocument creation 
+        // [SCENARIO] EDocument Log on EDocument creation - No run of job queue to trigger export and send
 
         // [GIVEN] Creating a EDocument from Sales Invoice 
-        Initialize();
-        CustomerNo := LibraryEDoc.CreateCustomerNoWithEDocSendingProfile(DocumentSendingProfile);
-        LibraryEDoc.CreateSimpleFlow(DocumentSendingProfile, LibraryEDoc.CreateService());
+        Init();
 
-        LibraryEDoc.CreateEDocumentFromSales(EDocument, CustomerNo);
-        EDocLog.SetRange(Status, EDocLog.Status::Created);
+        // [Given] Team member that post invoice and EDocument is created
+        LibraryPermission.SetTeamMember();
+        LibraryEDoc.PostInvoice(Customer);
+
+        // [Then] Get last records from database
+        EDocument.FindLast();
         EDocLog.FindLast();
-        SalesInvHeader.FindLast();
+        SalesInvHeader.SetRange("No.", EDocument."Document No.");
+
 
         // [THEN] Fields on document log is correctly 
         Assert.AreEqual(EDocument."Entry No", EDocLog."E-Doc. Entry No", IncorrectValueErr);
-        Assert.AreEqual(SalesInvHeader."No.", EDocLog."Document No.", IncorrectValueErr);
+        Assert.RecordCount(SalesInvHeader, 1);
         Assert.AreEqual(EDocLog."Document Type"::"Sales Invoice", EDocLog."Document Type", IncorrectValueErr);
         Assert.AreEqual(0, EDocLog."E-Doc. Data Storage Entry No.", IncorrectValueErr);
         Assert.AreEqual(0, EDocLog."E-Doc. Data Storage Size", IncorrectValueErr);
@@ -63,13 +67,11 @@ codeunit 139616 "E-Doc Log Test"
     var
         SalesInvHeader: Record "Sales Invoice Header";
         EDocument: Record "E-Document";
-        EDocumentService: Record "E-Document Service";
         EDocLog: Record "E-Document Log";
         EDocMappingLog: Record "E-Doc. Mapping Log";
         EDocServiceStatus: Record "E-Document Service Status";
         EDocExportMgt: Codeunit "E-Doc. Export";
         EDocLogTest: Codeunit "E-Doc Log Test";
-        CustomerNo, DocumentSendingProfile, ServiceCode : Code[20];
     begin
         // [FEATURE] [E-Document] [Log]
         // [SCENARIO] EDocument Log on EDocument export without mapping 
@@ -79,24 +81,26 @@ codeunit 139616 "E-Doc Log Test"
         // 3. E-Document Service Status is updated to "Exported."
         // 4. No mapping logs are created in this scenario.
 
-        // [GIVEN] Exporting E-Document for service without mapping
-        Initialize();
-        CustomerNo := LibraryEDoc.CreateCustomerNoWithEDocSendingProfile(DocumentSendingProfile);
-        ServiceCode := LibraryEDoc.CreateService();
-        LibraryEDoc.CreateSimpleFlow(DocumentSendingProfile, ServiceCode);
+        // [GIVEN] Creating a EDocument from Sales Invoice is exported
+        Init();
 
-        LibraryEDoc.CreateEDocumentFromSales(EDocument, CustomerNo);
-        EDocumentService.Get(ServiceCode);
+        // [Given] Team member that post invoice and EDocument is created
+        LibraryPermission.SetTeamMember();
+        LibraryEDoc.PostInvoice(Customer);
+        EDocument.FindLast();
+
+        // [THEN] Export EDocument
         BindSubscription(EDocLogTest);
         EDocExportMgt.ExportEDocument(EDocument, EDocumentService);
         UnbindSubscription(EDocLogTest);
+
         EDocLog.FindLast();
-        SalesInvHeader.FindLast();
-        EDocument.Get(EDocument."Entry No");
+        EDocument.FindLast();
+        SalesInvHeader.SetRange("No.", EDocument."Document No.");
 
         // [THEN] Fields on document log is correctly 
         Assert.AreEqual(EDocument."Entry No", EDocLog."E-Doc. Entry No", IncorrectValueErr);
-        Assert.AreEqual(SalesInvHeader."No.", EDocLog."Document No.", IncorrectValueErr);
+        Assert.RecordCount(SalesInvHeader, 1);
         Assert.AreEqual(EDocLog."Document Type"::"Sales Invoice", EDocLog."Document Type", IncorrectValueErr);
         Assert.AreNotEqual(0, EDocLog."E-Doc. Data Storage Entry No.", IncorrectValueErr);
         Assert.AreEqual(0, EDocLog."E-Doc. Data Storage Size", IncorrectValueErr);
@@ -120,13 +124,11 @@ codeunit 139616 "E-Doc Log Test"
         EDocMapping: Record "E-Doc. Mapping";
         TransformationRule: Record "Transformation Rule";
         EDocument: Record "E-Document";
-        EDocumentService: Record "E-Document Service";
         EDocServiceStatus: Record "E-Document Service Status";
         EDocLog: Record "E-Document Log";
         EDocMappingLog: Record "E-Doc. Mapping Log";
         EDocExportMgt: Codeunit "E-Doc. Export";
         EDocLogTest: Codeunit "E-Doc Log Test";
-        CustomerNo, DocumentSendingProfile, ServiceCode : Code[20];
     begin
         // [FEATURE] [E-Document] [Log]
         // [SCENARIO] EDocument Log on EDocument export with mapping 
@@ -138,29 +140,25 @@ codeunit 139616 "E-Doc Log Test"
         // [4] A mapping log is correctly created.
 
         // [GIVEN] Exporting E-Document for service with mapping
-        Initialize();
-        TransformationRule.Get(TransformationRule.GetLowercaseCode());
-        CustomerNo := LibraryEDoc.CreateCustomerNoWithEDocSendingProfile(DocumentSendingProfile);
-        ServiceCode := LibraryEDoc.CreateServiceWithMapping(EDocMapping, TransformationRule);
-        LibraryEDoc.CreateSimpleFlow(DocumentSendingProfile, ServiceCode);
+        Init();
+        LibraryEDoc.CreateServiceMapping(EDocumentService);
 
-        LibraryEDoc.CreateEDocumentFromSales(EDocument, CustomerNo);
-        EDocMapping."Table ID" := Database::"Sales Invoice Header";
-        EDocMapping."Field ID" := SalesInvHeader.FieldNo("Bill-to Name");
-        EDocMapping.Modify();
+        // [Given] Team member that post invoice and EDocument is created
+        LibraryPermission.SetTeamMember();
+        LibraryEDoc.PostInvoice(Customer);
+        EDocument.FindLast();
 
-        EDocumentService.Get(ServiceCode);
+        // [Given] We export and get last data
         BindSubscription(EDocLogTest);
         EDocExportMgt.ExportEDocument(EDocument, EDocumentService);
         UnBindSubscription(EDocLogTest);
-
         EDocLog.FindLast();
-        SalesInvHeader.FindLast();
-        EDocument.Get(EDocument."Entry No");
+        EDocument.FindLast();
+        SalesInvHeader.SetRange("No.", EDocument."Document No.");
 
         // [THEN] Fields on document log is correctly 
         Assert.AreEqual(EDocument."Entry No", EDocLog."E-Doc. Entry No", IncorrectValueErr);
-        Assert.AreEqual(SalesInvHeader."No.", EDocLog."Document No.", IncorrectValueErr);
+        Assert.RecordCount(SalesInvHeader, 1);
         Assert.AreEqual(EDocLog."Document Type"::"Sales Invoice", EDocLog."Document Type", IncorrectValueErr);
         Assert.AreNotEqual(0, EDocLog."E-Doc. Data Storage Entry No.", IncorrectValueErr);
         Assert.AreEqual(0, EDocLog."E-Doc. Data Storage Size", IncorrectValueErr);
@@ -172,14 +170,31 @@ codeunit 139616 "E-Doc Log Test"
         EDocServiceStatus.Get(EDocLog."E-Doc. Entry No", EDocLog."Service Code");
         Assert.AreEqual(EDocLog.Status, EDocServiceStatus.Status, IncorrectValueErr);
 
-        // [THEN] Mapping log is correctly created
+        // [THEN] Mapping log is correctly created and logs contain correct values
         EDocMappingLog.SetRange("E-Doc Log Entry No.", EDocLog."Entry No.");
+        Assert.RecordCount(EDocMappingLog, 2);
+
         EDocMappingLog.FindSet();
-        Assert.AreEqual(1, EDocMappingLog.Count(), IncorrectValueErr);
+        EDocMapping.FindSet();
+        TransformationRule.Get(TransformationRule.GetLowercaseCode());
+        SalesInvHeader.FindFirst();
+
         Assert.AreEqual(EDocMapping."Table ID", EDocMappingLog."Table ID", IncorrectValueErr);
         Assert.AreEqual(EDocMapping."Field ID", EDocMappingLog."Field ID", IncorrectValueErr);
         Assert.AreEqual(SalesInvHeader."Bill-to Name", EDocMappingLog."Find Value", IncorrectValueErr);
         Assert.AreEqual(TransformationRule.TransformText(SalesInvHeader."Bill-to Name"), EDocMappingLog."Replace Value", IncorrectValueErr);
+
+        EDocMappingLog.Next();
+        EDocMapping.Next();
+
+        Assert.AreEqual(EDocMapping."Table ID", EDocMappingLog."Table ID", IncorrectValueErr);
+        Assert.AreEqual(EDocMapping."Field ID", EDocMappingLog."Field ID", IncorrectValueErr);
+        Assert.AreEqual(SalesInvHeader."Bill-to Address", EDocMappingLog."Find Value", IncorrectValueErr);
+        Assert.AreEqual(TransformationRule.TransformText(SalesInvHeader."Bill-to Address"), EDocMappingLog."Replace Value", IncorrectValueErr);
+
+        // Tear down 
+        LibraryPermission.SetOutsideO365Scope();
+        LibraryEDoc.DeleteServiceMapping(EDocumentService);
     end;
 
     [Test]
@@ -189,61 +204,48 @@ codeunit 139616 "E-Doc Log Test"
         EDocMapping: Record "E-Doc. Mapping";
         TransformationRule: Record "Transformation Rule";
         EDocumentA: Record "E-Document";
-        EDocumentService: Record "E-Document Service";
         EDocServiceStatus: Record "E-Document Service Status";
         EDocLog: Record "E-Document Log";
         EDocMappingLog: Record "E-Doc. Mapping Log";
-        EDocDataStorage: Record "E-Doc. Data Storage";
+        //EDocDataStorage: Record "E-Doc. Data Storage";
         EDocLogTest: Codeunit "E-Doc Log Test";
-        ServiceCode: Code[20];
     begin
         // [FEATURE] [E-Document] [Log]
         // [SCENARIO] EDocument Log on EDocument export when Create interface has errors
         // ---------------------------------------------------------------------------
         // [Expected Outcomes]
         // [1] Two logs should be created: one for document creation and another for the export error. 
-        // [2] No data storage log entries should be generated.
+        // [2] Data storage log entries should be generated.
         // [3] The document log fields should be accurately populated, indicating "Export Failed" status.
         // [4] The E-Doc Service Status should reflect the error status.
-        // [5] No mapping logs should be generated as part of this scenario.
+        // [5] Mapping logs should be generated as part of this scenario.
 
         // [GIVEN] Exporting E-Document with errors on edocument
-        Initialize();
-        BindSubscription(EDocLogTest); // Bind subscription to get events to insert into blobs
+        Init();
+        LibraryEDoc.CreateServiceMapping(EDocumentService);
+        BindSubscription(EDocLogTest);
         EDocLogTest.SetExportError();
+        EDocLog.SetAutoCalcFields("E-Doc. Data Storage Size");
 
-        TransformationRule.Get(TransformationRule.GetLowercaseCode());
-        ServiceCode := LibraryEDoc.CreateServiceWithMapping(EDocMapping, TransformationRule, false);
-        LibraryEDoc.CreateSimpleFlow(ServiceCode);
-        EDocumentService.Get(ServiceCode);
-        EDocumentService."Use Batch Processing" := false;
-        EDocumentService.Modify();
-        LibraryJobQueue.SetDoNotHandleCodeunitJobQueueEnqueueEvent(true);
-
-        // [WHEN] Post a documents
-        LibraryEDoc.PostSalesDocument();
+        // [Given] Team member that post invoice and EDocument is created with error in exporting
+        LibraryPermission.SetTeamMember();
+        LibraryEDoc.PostInvoice(Customer);
         EDocumentA.FindLast();
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocumentA.RecordId());
 
         // [THEN] Two logs are created and one data storage log is saved 
-        EDocumentA.FindSet();
-        Assert.RecordCount(EDocumentA, 1);
-
-        // ( Created + Export Error ) * 2
-        Assert.AreEqual(2, EDocLog.Count(), IncorrectValueErr);
-
-        asserterror EDocDataStorage.FindSet();
-        Assert.AreEqual(0, EDocDataStorage.Count(), IncorrectValueErr);
+        EDocLog.SetRange("E-Doc. Entry No", EDocumentA."Entry No");
+        Assert.AreEqual(2, EDocLog.Count(), IncorrectValueErr); // ( Created + Export Error )
 
         EDocLog.FindLast();
         SalesInvHeader.Get(EDocumentA."Document No.");
 
-        // [THEN] Fields on document log is correctly with 'Export Failed'
+        // [THEN] Fields on document log is set correctly with 'Export Failed'
         Assert.AreEqual(EDocumentA."Entry No", EDocLog."E-Doc. Entry No", IncorrectValueErr);
         Assert.AreEqual(SalesInvHeader."No.", EDocLog."Document No.", IncorrectValueErr);
         Assert.AreEqual(EDocLog."Document Type"::"Sales Invoice", EDocLog."Document Type", IncorrectValueErr);
-        Assert.AreEqual(0, EDocLog."E-Doc. Data Storage Entry No.", IncorrectValueErr);
-        Assert.AreEqual(0, EDocLog."E-Doc. Data Storage Size", IncorrectValueErr);
+        Assert.AreNotEqual(0, EDocLog."E-Doc. Data Storage Entry No.", IncorrectValueErr);
+        Assert.AreNotEqual(0, EDocLog."E-Doc. Data Storage Size", IncorrectValueErr);
         Assert.AreEqual(EDocumentService.Code, EDocLog."Service Code", IncorrectValueErr);
         Assert.AreEqual(EDocLog."Service Integration"::Mock, EDocLog."Service Integration", IncorrectValueErr);
         Assert.AreEqual(EDocLog.Status::"Export Error", EDocLog.Status, IncorrectValueErr);
@@ -252,10 +254,30 @@ codeunit 139616 "E-Doc Log Test"
         EDocServiceStatus.Get(EDocLog."E-Doc. Entry No", EDocLog."Service Code");
         Assert.AreEqual(EDocLog.Status, EDocServiceStatus.Status, IncorrectValueErr);
 
-        // [THEN] Mapping log is not logged
+        // [THEN] Verify logs: Mapping log is correctly created and logs contain correct values
         EDocMappingLog.SetRange("E-Doc Log Entry No.", EDocLog."Entry No.");
-        asserterror EDocMappingLog.FindSet();
-        Assert.AssertNothingInsideFilter();
+        Assert.RecordCount(EDocMappingLog, 2);
+
+        EDocMappingLog.FindSet();
+        EDocMapping.FindSet();
+        TransformationRule.Get(TransformationRule.GetLowercaseCode());
+
+        Assert.AreEqual(EDocMapping."Table ID", EDocMappingLog."Table ID", IncorrectValueErr);
+        Assert.AreEqual(EDocMapping."Field ID", EDocMappingLog."Field ID", IncorrectValueErr);
+        Assert.AreEqual(SalesInvHeader."Bill-to Name", EDocMappingLog."Find Value", IncorrectValueErr);
+        Assert.AreEqual(TransformationRule.TransformText(SalesInvHeader."Bill-to Name"), EDocMappingLog."Replace Value", IncorrectValueErr);
+
+        EDocMappingLog.Next();
+        EDocMapping.Next();
+
+        Assert.AreEqual(EDocMapping."Table ID", EDocMappingLog."Table ID", IncorrectValueErr);
+        Assert.AreEqual(EDocMapping."Field ID", EDocMappingLog."Field ID", IncorrectValueErr);
+        Assert.AreEqual(SalesInvHeader."Bill-to Address", EDocMappingLog."Find Value", IncorrectValueErr);
+        Assert.AreEqual(TransformationRule.TransformText(SalesInvHeader."Bill-to Address"), EDocMappingLog."Replace Value", IncorrectValueErr);
+
+        // Tear down 
+        LibraryPermission.SetOutsideO365Scope();
+        LibraryEDoc.DeleteServiceMapping(EDocumentService);
     end;
 
     [Test]
@@ -265,13 +287,12 @@ codeunit 139616 "E-Doc Log Test"
         EDocMapping: Record "E-Doc. Mapping";
         TransformationRule: Record "Transformation Rule";
         EDocumentA, EDocumentB : Record "E-Document";
-        EDocumentService: Record "E-Document Service";
         EDocLog: Record "E-Document Log";
         EDocMappingLog: Record "E-Doc. Mapping Log";
         EDocDataStorage: Record "E-Doc. Data Storage";
         EDocServiceStatus: Record "E-Document Service Status";
         EDocLogTest: Codeunit "E-Doc Log Test";
-        ServiceCode: Code[20];
+        EntryNo, EntryNoEdoc : Integer;
     begin
         // [FEATURE] [E-Document] [Log]
         // [SCENARIO] EDocument Log on EDocument batch export with mapping 
@@ -284,43 +305,39 @@ codeunit 139616 "E-Doc Log Test"
         // [5] Mapping logs are correctly created, capturing mapping details.
 
         // [GIVEN] Exporting E-Documents for service with mapping
-        Initialize();
-        BindSubscription(EDocLogTest); // Bind subscription to get events to insert into blobs
-
-        TransformationRule.Get(TransformationRule.GetLowercaseCode());
-        ServiceCode := LibraryEDoc.CreateServiceWithMapping(EDocMapping, TransformationRule, true);
-        LibraryEDoc.CreateSimpleFlow(ServiceCode);
-        LibraryJobQueue.SetDoNotHandleCodeunitJobQueueEnqueueEvent(true);
-        EDocMapping."Table ID" := Database::"Sales Invoice Header";
-        EDocMapping."Field ID" := SalesInvHeader.FieldNo("Bill-to Name");
-        EDocMapping.Modify();
-
-        LibraryVariableStorage.Clear();
-        EDocLogTest.SetVariableStorage(LibraryVariableStorage);
-
-        EDocumentService.Get(ServiceCode);
-        EDocumentService."Batch Mode" := EDocumentService."Batch Mode"::Threshold;
+        Init();
+        LibraryEDoc.CreateServiceMapping(EDocumentService);
+        EDocumentService."Use Batch Processing" := true;
+        EDocumentService."Batch Mode" := enum::"E-Document Batch Mode"::Threshold;
         EDocumentService."Batch Threshold" := 2;
         EDocumentService.Modify();
+        BindSubscription(EDocLogTest);
+        EDocLog.SetAutoCalcFields("E-Doc. Data Storage Size");
+        if EDocDataStorage.FindLast() then
+            EntryNo := EDocDataStorage."Entry No.";
+        if EDocumentA.FindLast() then
+            EntryNoEdoc := EDocumentA."Entry No";
 
-        // [WHEN] Post two documents
-        LibraryEDoc.PostSalesDocument();
+        // [Given] Team member that post two invoices and EDocuments is created with batch mode for service
+        LibraryPermission.SetTeamMember();
+        LibraryEDoc.PostInvoice(Customer);
         EDocumentA.FindLast();
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocumentA.RecordId());
 
-        LibraryEDoc.PostSalesDocument();
+        LibraryEDoc.PostInvoice(Customer);
         EDocumentB.FindLast();
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocumentB.RecordId());
 
         // [THEN] 8 logs are created and one data storage log is saved 
-        EDocumentA.FindSet();
-        Assert.RecordCount(EDocumentA, 2);
-
         // ( Created + Pending + Exported + Sent ) * 2
+        EDocumentA.SetFilter("Entry No", '>%1', EntryNoEdoc);
+        Assert.RecordCount(EDocumentA, 2);
+        EDocLog.SetFilter("E-Doc. Entry No", '%1|%2', EDocumentA."Entry No", EDocumentB."Entry No");
         Assert.AreEqual(8, EDocLog.Count(), IncorrectValueErr);
 
-        EDocDataStorage.FindSet();
-        Assert.AreEqual(1, EDocDataStorage.Count(), IncorrectValueErr);
+        EDocDataStorage.SetFilter("Entry No.", '>%1', EntryNo);
+        Assert.RecordCount(EDocDataStorage, 1);
+        EDocDataStorage.FindFirst();
         Assert.AreEqual(4, EDocDataStorage."Data Storage Size", IncorrectValueErr);
 
         // [THEN] Each log contains correct information
@@ -328,7 +345,6 @@ codeunit 139616 "E-Doc Log Test"
             EDocLog.SetRange("E-Doc. Entry No", EDocumentA."Entry No");
             EDocLog.SetRange(Status, EDocLog.Status::Exported);
             EDocLog.FindFirst();
-            EDocLog.CalcFields("E-Doc. Data Storage Size");
             SalesInvHeader.Get(EDocumentA."Document No.");
 
             // [THEN] Fields on document log is correctly 
@@ -347,28 +363,42 @@ codeunit 139616 "E-Doc Log Test"
 
             // [THEN] Mapping log is correctly created
             EDocMappingLog.SetRange("E-Doc Log Entry No.", EDocLog."Entry No.");
+            Assert.RecordCount(EDocMappingLog, 2);
+
             EDocMappingLog.FindSet();
-            Assert.AreEqual(1, EDocMappingLog.Count(), IncorrectValueErr);
+            EDocMapping.FindSet();
+            TransformationRule.Get(TransformationRule.GetLowercaseCode());
+
             Assert.AreEqual(EDocMapping."Table ID", EDocMappingLog."Table ID", IncorrectValueErr);
             Assert.AreEqual(EDocMapping."Field ID", EDocMappingLog."Field ID", IncorrectValueErr);
             Assert.AreEqual(SalesInvHeader."Bill-to Name", EDocMappingLog."Find Value", IncorrectValueErr);
             Assert.AreEqual(TransformationRule.TransformText(SalesInvHeader."Bill-to Name"), EDocMappingLog."Replace Value", IncorrectValueErr);
+
+            EDocMappingLog.Next();
+            EDocMapping.Next();
+
+            Assert.AreEqual(EDocMapping."Table ID", EDocMappingLog."Table ID", IncorrectValueErr);
+            Assert.AreEqual(EDocMapping."Field ID", EDocMappingLog."Field ID", IncorrectValueErr);
+            Assert.AreEqual(SalesInvHeader."Bill-to Address", EDocMappingLog."Find Value", IncorrectValueErr);
+            Assert.AreEqual(TransformationRule.TransformText(SalesInvHeader."Bill-to Address"), EDocMappingLog."Replace Value", IncorrectValueErr);
+
         until EdocumentA.Next() = 0;
+
+        // Tear down 
+        LibraryPermission.SetOutsideO365Scope();
+        LibraryEDoc.DeleteServiceMapping(EDocumentService);
     end;
 
     [Test]
     procedure ExportEDocBatchThresholdFailure()
     var
-        EDocMapping: Record "E-Doc. Mapping";
-        TransformationRule: Record "Transformation Rule";
         EDocumentA, EDocumentB : Record "E-Document";
-        EDocumentService, EDocumentService2 : Record "E-Document Service";
+        EDocumentService2: Record "E-Document Service";
         EDocServiceStatus: Record "E-Document Service Status";
         EDocDataStorage: Record "E-Doc. Data Storage";
         EDocLog: Record "E-Document Log";
         EDocMappingLog: Record "E-Doc. Mapping Log";
         EDocLogTest: Codeunit "E-Doc Log Test";
-        ServiceCode: Code[20];
     begin
         // [FEATURE] [E-Document] [Log]
         // [SCENARIO] EDocument Log on EDocument threshold batch export when there is errors during export
@@ -382,38 +412,34 @@ codeunit 139616 "E-Doc Log Test"
         // [6] Ensure no mapping logs or data storage is created for either document.
 
         // [GIVEN] A flow to send to service with threshold batch 
-        Initialize();
-
+        Init();
+        LibraryEDoc.CreateServiceMapping(EDocumentService);
+        EDocumentService."Use Batch Processing" := true;
+        EDocumentService."Batch Mode" := enum::"E-Document Batch Mode"::Threshold;
+        EDocumentService."Batch Threshold" := 2;
+        EDocumentService.Modify();
         BindSubscription(EDocLogTest); // Bind subscription to get events to insert into blobs
         EDocLogTest.SetLastEntryInBatchToError(); // Make sure last entry in create batch fails
 
-        TransformationRule.Get(TransformationRule.GetLowercaseCode());
-        ServiceCode := LibraryEDoc.CreateServiceWithMapping(EDocMapping, TransformationRule, true);
-        LibraryEDoc.CreateSimpleFlow(ServiceCode);
-        LibraryJobQueue.SetDoNotHandleCodeunitJobQueueEnqueueEvent(true);
-
-        EDocumentService.Get(ServiceCode);
-        EDocumentService."Batch Mode" := EDocumentService."Batch Mode"::Threshold;
-        EDocumentService."Batch Threshold" := 2;
-        EDocumentService.Modify();
-
-        // [WHEN] Post first documents
-        LibraryEDoc.PostSalesDocument();
+        // [Given] Team member that post two invoices and EDocuments is created with batch mode for service
+        LibraryPermission.SetTeamMember();
+        LibraryEDoc.PostInvoice(Customer);
         EDocumentA.FindLast();
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocumentA.RecordId());
 
-        // [THEN] First documents is pending batch for the service
-        EDocServiceStatus.SetRange("E-Document Service Code", ServiceCode);
+        // [Then] First documents is pending batch for the service
+        EDocServiceStatus.SetRange("E-Document Entry No", EDocumentA."Entry No");
+        EDocServiceStatus.SetRange("E-Document Service Code", EDocumentService.Code);
         EDocServiceStatus.SetRange(Status, EDocServiceStatus.Status::"Pending Batch");
         Assert.RecordCount(EDocServiceStatus, 1);
 
-        // [WHEN] Post second document
-        LibraryEDoc.PostSalesDocument();
+        LibraryEDoc.PostInvoice(Customer);
         EDocumentB.FindLast();
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocumentB.RecordId());
 
         // [THEN] All documents are marked as export error
-        EDocServiceStatus.SetRange("E-Document Service Code", ServiceCode);
+        EDocServiceStatus.SetFilter("E-Document Entry No", '%1|%2', EDocumentA."Entry No", EDocumentB."Entry No");
+        EDocServiceStatus.SetRange("E-Document Service Code", EDocumentService.Code);
         EDocServiceStatus.SetRange(Status, EDocServiceStatus.Status::"Export Error");
         Assert.RecordCount(EDocServiceStatus, 2);
 
@@ -452,27 +478,28 @@ codeunit 139616 "E-Doc Log Test"
 
         // [THEN] Mapping log is not created
         EDocMappingLog.SetRange("E-Doc Log Entry No.", EDocLog."Entry No.");
-        asserterror EDocMappingLog.FindSet();
-        Assert.AssertNothingInsideFilter();
+        Assert.RecordIsEmpty(EDocMappingLog);
 
         // [THEN] No Data Storage created
         asserterror EDocDataStorage.Get(EDocLog."E-Doc. Data Storage Entry No.");
+
+        // Tear down 
+        LibraryPermission.SetOutsideO365Scope();
+        LibraryEDoc.DeleteServiceMapping(EDocumentService);
     end;
 
     [Test]
     procedure ExportEDocBatchtRecurrentSuccess()
     var
-        EDocMapping: Record "E-Doc. Mapping";
-        TransformationRule: Record "Transformation Rule";
         EDocumentA, EDocumentB : Record "E-Document";
-        EDocumentService, EDocumentService2 : Record "E-Document Service";
+        EDocumentService2: Record "E-Document Service";
         EDocServiceStatus: Record "E-Document Service Status";
         EDocDataStorage: Record "E-Doc. Data Storage";
         EDocLog: Record "E-Document Log";
         EDocMappingLog: Record "E-Doc. Mapping Log";
         EDocLogTest: Codeunit "E-Doc Log Test";
         EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
-        ServiceCode: Code[20];
+    //ServiceCode: Code[20];
     begin
         // [FEATURE] [E-Document] [Log]
         // [SCENARIO] EDocument Log on EDocument when send in recurrent batch.
@@ -489,32 +516,28 @@ codeunit 139616 "E-Doc Log Test"
         // [8] Ensure mapping logs are created.
 
         // [GIVEN] A flow to send to service with recurrent batch 
-        Initialize();
-
-        BindSubscription(EDocLogTest); // Bind subscription to get events to insert into blobs
-
-        TransformationRule.Get(TransformationRule.GetLowercaseCode());
-        ServiceCode := LibraryEDoc.CreateServiceWithMapping(EDocMapping, TransformationRule, true);
-        LibraryEDoc.CreateSimpleFlow(ServiceCode);
-        LibraryJobQueue.SetDoNotHandleCodeunitJobQueueEnqueueEvent(true);
-
-        EDocumentService.Get(ServiceCode);
+        Init();
+        LibraryEDoc.CreateServiceMapping(EDocumentService);
+        EDocumentService."Use Batch Processing" := true;
         EDocumentService."Batch Mode" := EDocumentService."Batch Mode"::Recurrent;
         EDocumentService."Batch Minutes between runs" := 1;
         EDocumentService."Batch Start Time" := Time();
         EDocumentService.Modify();
+        BindSubscription(EDocLogTest); // Bind subscription to get events to insert into blobs
 
-        // [WHEN] Post two documents
-        LibraryEDoc.PostSalesDocument();
+        // [Given] Team member that post two invoices and EDocuments is created with batch mode for service
+        LibraryPermission.SetTeamMember();
+        LibraryEDoc.PostInvoice(Customer);
         EDocumentA.FindLast();
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocumentA.RecordId());
 
-        LibraryEDoc.PostSalesDocument();
+        LibraryEDoc.PostInvoice(Customer);
         EDocumentB.FindLast();
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocumentB.RecordId());
 
         // [THEN] Two documents are pending batch for the service
-        EDocServiceStatus.SetRange("E-Document Service Code", ServiceCode);
+        EDocServiceStatus.SetFilter("E-Document Entry No", '%1|%2', EDocumentA."Entry No", EDocumentB."Entry No");
+        EDocServiceStatus.SetRange("E-Document Service Code", EDocumentService.Code);
         EDocServiceStatus.SetRange(Status, EDocServiceStatus.Status::"Pending Batch");
         Assert.RecordCount(EDocServiceStatus, 2);
 
@@ -546,8 +569,8 @@ codeunit 139616 "E-Doc Log Test"
 
         // [THEN] Data storage is created for the exported document, and for temp blob at send
         // [THEN] Exported Blob has size 4
-        EDocDataStorage.FindSet();
-        Assert.AreEqual(1, EDocDataStorage.Count(), IncorrectValueErr);
+        EDocDataStorage.SetRange("Entry No.", EDocLog."E-Doc. Data Storage Entry No.");
+        Assert.RecordCount(EDocDataStorage, 1);
         EDocDataStorage.Get(EDocLog."E-Doc. Data Storage Entry No.");
         Assert.AreEqual(4, EDocDataStorage."Data Storage Size", IncorrectValueErr);
 
@@ -574,7 +597,7 @@ codeunit 139616 "E-Doc Log Test"
 
         // [THEN] Mapping log exists for Exported log
         EDocMappingLog.SetRange("E-Doc Log Entry No.", EDocLog."Entry No.");
-        EDocMappingLog.FindSet();
+        Assert.RecordIsNotEmpty(EDocMappingLog);
 
         // [THEN] Data storage is created for document B, and for temp blob at send
         // [THEN] Exported Blob has size 4
@@ -586,22 +609,23 @@ codeunit 139616 "E-Doc Log Test"
         // [THEN] Fields on document B log is correctly for Sent log
         AssertEDocLogState(EDocumentB, EDocLog, EDocumentService, Enum::"E-Document Service Status"::"Sent");
         EDocLog.SetRange(Status);
+
+        // Tear down 
+        LibraryPermission.SetOutsideO365Scope();
+        LibraryEDoc.DeleteServiceMapping(EDocumentService);
     end;
 
     [Test]
     procedure ExportEDocBatchtRecurrentFailure()
     var
-        EDocMapping: Record "E-Doc. Mapping";
-        TransformationRule: Record "Transformation Rule";
         EDocumentA, EDocumentB : Record "E-Document";
-        EDocumentService, EDocumentService2 : Record "E-Document Service";
+        EDocumentService2: Record "E-Document Service";
         EDocServiceStatus: Record "E-Document Service Status";
         EDocDataStorage: Record "E-Doc. Data Storage";
         EDocLog: Record "E-Document Log";
         EDocMappingLog: Record "E-Doc. Mapping Log";
         EDocLogTest: Codeunit "E-Doc Log Test";
         EDocumentBackgroundJobs: Codeunit "E-Document Background Jobs";
-        ServiceCode: Code[20];
     begin
         // [FEATURE] [E-Document] [Log]
         // [SCENARIO] EDocument Log on EDocument recurrent batch when there is errors during export for a document
@@ -618,33 +642,31 @@ codeunit 139616 "E-Doc Log Test"
         // [9] Ensure no mapping logs are created.
 
         // [GIVEN] A flow to send to service with recurrent batch 
-        Initialize();
-
-        BindSubscription(EDocLogTest); // Bind subscription to get events to insert into blobs
-        EDocLogTest.SetLastEntryInBatchToError(); // Make sure last entry in create batch fails
-
-        TransformationRule.Get(TransformationRule.GetLowercaseCode());
-        ServiceCode := LibraryEDoc.CreateServiceWithMapping(EDocMapping, TransformationRule, true);
-        LibraryEDoc.CreateSimpleFlow(ServiceCode);
-        LibraryJobQueue.SetDoNotHandleCodeunitJobQueueEnqueueEvent(true);
-
-        EDocumentService.Get(ServiceCode);
+        Init();
+        LibraryEDoc.CreateServiceMapping(EDocumentService);
+        EDocumentService.Get(EDocumentService.Code);
+        EDocumentService."Use Batch Processing" := true;
         EDocumentService."Batch Mode" := EDocumentService."Batch Mode"::Recurrent;
         EDocumentService."Batch Minutes between runs" := 1;
         EDocumentService."Batch Start Time" := Time();
         EDocumentService.Modify();
 
-        // [WHEN] Post two documents
-        LibraryEDoc.PostSalesDocument();
+        BindSubscription(EDocLogTest); // Bind subscription to get events to insert into blobs
+        EDocLogTest.SetLastEntryInBatchToError(); // Make sure last entry in create batch fails
+
+        // [Given] Team member that post two invoices and EDocuments is created with batch mode for service
+        LibraryPermission.SetTeamMember();
+        LibraryEDoc.PostInvoice(Customer);
         EDocumentA.FindLast();
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocumentA.RecordId());
 
-        LibraryEDoc.PostSalesDocument();
+        LibraryEDoc.PostInvoice(Customer);
         EDocumentB.FindLast();
         LibraryJobQueue.FindAndRunJobQueueEntryByRecordId(EDocumentB.RecordId());
 
         // [THEN] Two documents are pending batch for the service
-        EDocServiceStatus.SetRange("E-Document Service Code", ServiceCode);
+        EDocServiceStatus.SetFilter("E-Document Entry No", '%1|%2', EDocumentA."Entry No", EDocumentB."Entry No");
+        EDocServiceStatus.SetRange("E-Document Service Code", EDocumentService.Code);
         EDocServiceStatus.SetRange(Status, EDocServiceStatus.Status::"Pending Batch");
         Assert.RecordCount(EDocServiceStatus, 2);
 
@@ -676,8 +698,8 @@ codeunit 139616 "E-Doc Log Test"
 
         // [THEN] Data storage is created for the exported document, and for temp blob at send
         // [THEN] Exported Blob has size 4
-        EDocDataStorage.FindSet();
-        Assert.AreEqual(1, EDocDataStorage.Count(), IncorrectValueErr);
+        EDocDataStorage.SetRange("Entry No.", EDocLog."E-Doc. Data Storage Entry No.");
+        Assert.RecordCount(EDocDataStorage, 1);
         EDocDataStorage.Get(EDocLog."E-Doc. Data Storage Entry No.");
         Assert.AreEqual(4, EDocDataStorage."Data Storage Size", IncorrectValueErr);
 
@@ -704,15 +726,18 @@ codeunit 139616 "E-Doc Log Test"
 
         // [THEN] Mapping log is not created
         EDocMappingLog.SetRange("E-Doc Log Entry No.", EDocLog."Entry No.");
-        asserterror EDocMappingLog.FindSet();
-        Assert.AssertNothingInsideFilter();
+        Assert.RecordIsNotEmpty(EDocMappingLog);
+
+        // Tear down 
+        LibraryPermission.SetOutsideO365Scope();
+        LibraryEDoc.DeleteServiceMapping(EDocumentService);
     end;
 
     [Test]
     procedure IntegrationLogs()
     var
         EDocument: Record "E-Document";
-        EDocumentService: Record "E-Document Service";
+        EDocumentService2: Record "E-Document Service";
         EDocumentLogRec: Record "E-Document Log";
         EDocumentIntegrationLog: Record "E-Document Integration Log";
         EDocumentServiceStatus: Record "E-Document Service Status";
@@ -724,14 +749,16 @@ codeunit 139616 "E-Doc Log Test"
         // [FEATURE] [E-Document] [Log]
         // [SCENARIO] EDocument Log on EDocument recurrent batch when there is errors during export for a document
         // [GIVEN]
-        InitIntegrationData(EDocument, EDocumentService, EDocumentServiceStatus, HttpRequest, HttpResponse);
+        InitIntegrationData(EDocument, EDocumentService2, EDocumentServiceStatus, HttpRequest, HttpResponse);
 
         // [WHEN] Inserting integration logs
-        EDocumentLog.InsertLogWithIntegration(EDocumentServiceStatus, HttpRequest, HttpResponse);
+        EDocumentLog.InsertLog(EDocument, EDocumentServiceStatus.Status);
+        EDocumentLog.InsertIntegrationLog(EDocument, EDocumentService2, HttpRequest, HttpResponse);
 
         // [THEN] It should insert EDocumentLog and EDocument integration log.
-        Assert.IsTrue(EDocumentLogRec.FindFirst(), 'There should be an edocument log entry');
-        Assert.IsTrue(EDocumentIntegrationLog.FindFirst(), 'There should be an edocument integration log entry');
+        Assert.RecordIsNotEmpty(EDocumentLogRec);
+        Assert.RecordIsNotEmpty(EDocumentIntegrationLog);
+        EDocumentIntegrationLog.FindLast();
         Assert.AreEqual(EDocumentIntegrationLog."E-Doc. Entry No", EDocument."Entry No", 'EDocument integration log should be linked to edocument');
         Assert.AreEqual(HttpRequest.Method(), EDocumentIntegrationLog.Method, 'Integration log should contain method type from request message');
         Assert.AreEqual(HttpRequest.GetRequestUri(), EDocumentIntegrationLog."Request URL", 'Integration log should contain url from request message');
@@ -747,12 +774,13 @@ codeunit 139616 "E-Doc Log Test"
         Assert.AreEqual('Test response', LibraryEDoc.TempBlobToTxt(TempBlob), 'Integration log response blob is not correct');
     end;
 
-    local procedure InitIntegrationData(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var EDocumentServiceStatus: Record "E-Document Service Status"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
+    local procedure InitIntegrationData(var EDocument: Record "E-Document"; var EDocumentService2: Record "E-Document Service"; var EDocumentServiceStatus: Record "E-Document Service Status"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
     var
         EDocumentIntegrationLog: Record "E-Document Integration Log";
     begin
+        LibraryPermission.SetOutsideO365Scope();
         EDocument.DeleteAll();
-        EDocumentService.DeleteAll();
+        EDocumentService2.DeleteAll();
         EDocumentIntegrationLog.DeleteAll();
         HttpRequest.SetRequestUri('http://cronus.test');
         HttpRequest.Method := 'POST';
@@ -762,47 +790,50 @@ codeunit 139616 "E-Doc Log Test"
         HttpResponse.Headers.Add('Accept', '*');
 
         EDocument.Insert();
-        EDocumentService.Code := 'Test Service 1';
-        EDocumentService."Service Integration" := EDocumentService."Service Integration"::Mock;
-        EDocumentService.Insert();
+        EDocumentService2.Code := 'Test Service 1';
+        EDocumentService2."Service Integration" := EDocumentService2."Service Integration"::Mock;
+        EDocumentService2.Insert();
 
         EDocumentServiceStatus."E-Document Entry No" := EDocument."Entry No";
-        EDocumentServiceStatus."E-Document Service Code" := EDocumentService.Code;
+        EDocumentServiceStatus."E-Document Service Code" := EDocumentService2.Code;
         EDocumentServiceStatus.Insert();
     end;
 
-    local procedure AssertEDocLogState(var EDocument: Record "E-Document"; var EDocLog: Record "E-Document Log"; var EDocumentService: Record "E-Document Service"; Status: Enum "E-Document Service Status")
+    local procedure AssertEDocLogState(var EDocument: Record "E-Document"; var EDocLog: Record "E-Document Log"; var EDocumentService2: Record "E-Document Service"; Status: Enum "E-Document Service Status")
     begin
         EDocLog.SetRange(Status, Status);
         Assert.RecordCount(EDocLog, 1);
         EDocLog.FindFirst();
-        AssertLogValues(EDocument, EDocLog, EDocumentService, Status);
+        AssertLogValues(EDocument, EDocLog, EDocumentService2, Status);
     end;
 
-    local procedure AssertLogValues(var EDocument: Record "E-Document"; var EDocLog: Record "E-Document Log"; var EDocumentService: Record "E-Document Service"; Status: Enum "E-Document Service Status")
+    local procedure AssertLogValues(var EDocument: Record "E-Document"; var EDocLog: Record "E-Document Log"; var EDocumentService2: Record "E-Document Service"; Status: Enum "E-Document Service Status")
     begin
         Assert.AreEqual(EDocument."Entry No", EDocLog."E-Doc. Entry No", IncorrectValueErr);
         Assert.AreEqual(EDocLog."Document Type"::"Sales Invoice", EDocLog."Document Type", IncorrectValueErr);
-        Assert.AreEqual(EDocumentService.Code, EDocLog."Service Code", IncorrectValueErr);
-        Assert.AreEqual(EDocumentService."Service Integration", EDocLog."Service Integration", IncorrectValueErr);
+        Assert.AreEqual(EDocumentService2.Code, EDocLog."Service Code", IncorrectValueErr);
+        Assert.AreEqual(EDocumentService2."Service Integration", EDocLog."Service Integration", IncorrectValueErr);
         Assert.AreEqual(Status, EDocLog.Status, IncorrectValueErr);
     end;
 
-    local procedure Initialize()
+    local procedure Init()
     var
         TransformationRule: Record "Transformation Rule";
-        SalesInvHeader: Record "Sales Invoice Header";
     begin
-        IsInitialized := true;
+        LibraryPermission.SetOutsideO365Scope();
+        if IsInitialized then
+            exit;
+
+        LibraryEDoc.SetupStandardVAT();
+        LibraryEDoc.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::Mock, Enum::"E-Document Integration"::Mock);
         ErrorInExport := false;
         FailLastEntryInBatch := false;
-        LibraryEDoc.Initialize();
 
         LibraryVariableStorage.Clear();
         TransformationRule.DeleteAll();
         TransformationRule.CreateDefaultTransformations();
 
-        SalesInvHeader.DeleteAll();
+        IsInitialized := true;
     end;
 
     procedure SetVariableStorage(var NewLibraryVariableStorage: Codeunit "Library - Variable Storage")

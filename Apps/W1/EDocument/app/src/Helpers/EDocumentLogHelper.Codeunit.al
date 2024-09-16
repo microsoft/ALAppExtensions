@@ -39,7 +39,7 @@ codeunit 6131 "E-Document Log Helper"
     /// <param name="EDocumentServiceStatus">The status of the E-Document Service at the time of log insertion.</param>
     procedure InsertLog(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocumentServiceStatus: Enum "E-Document Service Status"): Integer
     begin
-        exit(EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, EDocumentServiceStatus));
+        exit(EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, EDocumentServiceStatus)."Entry No.");
     end;
 
     var

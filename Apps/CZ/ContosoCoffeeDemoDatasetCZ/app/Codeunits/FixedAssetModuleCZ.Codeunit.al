@@ -212,7 +212,7 @@ codeunit 31213 "Fixed Asset Module CZ"
         FAExtendedPosingGroupCZF: Record "FA Extended Posting Group CZF";
         Exists: Boolean;
     begin
-        if FAExtendedPosingGroupCZF.Get(Code, FAExtendedPostigType, GroupCode) then
+        if FAExtendedPosingGroupCZF.Get(GroupCode, FAExtendedPostigType, Code) then
             Exists := true;
 
         FAExtendedPosingGroupCZF.Validate("FA Posting Group Code", GroupCode);

@@ -23,6 +23,9 @@ codeunit 7237 "Master Data Mgt. Subscribers"
     Permissions = tabledata "Master Data Mgt. Coupling" = rm,
                   tabledata "Integration Field Mapping" = r,
                   tabledata "Integration Table Mapping" = rm,
+                  tabledata "Tenant Media" = imd,
+                  tabledata "Tenant Media Set" = imd,
+                  tabledata "Tenant Media Thumbnails" = imd,
                   tabledata "Integration Synch. Job" = r,
                   tabledata "Job Queue Entry" = rmd,
                   tabledata "Master Data Management Setup" = r;

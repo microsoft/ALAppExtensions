@@ -32,9 +32,7 @@ codeunit 18719 "TDS Statistics"
             until PurchaseLine.Next() = 0;
 
         for i := 1 to RecordIDList.Count() do
-            TDSAmount += GetTDSAmount(RecordIDList.Get(i));
-
-        TDSAmount := TDSEntityManagement.RoundTDSAmount(TDSAmount);
+            TDSAmount += TDSEntityManagement.RoundTDSAmount(GetTDSAmount(RecordIDList.Get(i)));
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Calculate Statistics", 'OnGetPartialPurchaseHeaderTDSAmount', '', false, false)]

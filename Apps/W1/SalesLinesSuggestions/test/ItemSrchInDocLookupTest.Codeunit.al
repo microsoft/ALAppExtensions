@@ -19,11 +19,12 @@ codeunit 139787 "Item Srch. In Doc. Lookup Test"
     var
         Assert: Codeunit Assert;
         LibraryVariableStorage: Codeunit "Library - Variable Storage";
+        TestUtility: Codeunit "SLS Test Utility";
         LibrarySales: Codeunit "Library - Sales";
+        IsInitialized: Boolean;
 
         NeedSpecificItemFromSpecifiedSalesOrderLbl: Label 'I need %1 from sales order %2', Comment = '%1 = item description, %2 = Label for document number';
         NeedTwoItemsFromSpecifiedSalesOrderLbl: Label 'I need %1 and %2 from sales order %3', Comment = '%1,%2 = item description, %3 = Label for document number';
-        NeedTwoItemsWithQuantityFromSpecifiedSalesOrderLbl: Label 'I need %1 %2 and %3 %4 from sales order %5', Comment = '%1,%3 = Quantities,  %2,%4 = item description, %5 = Label for document number';
         DescriptionIsIncorrectErr: Label 'Description is incorrect!';
         VariantIsIncorrectErr: Label 'Variant is incorrect!';
         QuantityIsIncorrectErr: Label 'Quantity is incorrect!';
@@ -43,7 +44,7 @@ codeunit 139787 "Item Srch. In Doc. Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Item Search] [Sales Order]
         // [SCENARIO] Copy only the specified line from a document.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
 
         // [GIVEN] Create a new sales order for the new customer
@@ -79,7 +80,7 @@ codeunit 139787 "Item Srch. In Doc. Lookup Test"
         LibraryVariableStorage.Enqueue('1'); // Number of lines to copy
         LibraryVariableStorage.Enqueue(Item1.Description); // Item to look for
         LibraryVariableStorage.Enqueue(''); // Variant Code
-        LibraryVariableStorage.Enqueue('1'); // Quantity
+        LibraryVariableStorage.Enqueue('5'); // Same quantity as the document is copied
 
         // [WHEN] Run Sales Line AI Suggestions Page to generate suggestions lines
         // [THEN] Check that correct lines are generated in 'CheckGenerateFromSalesOrder' handler function
@@ -88,7 +89,7 @@ codeunit 139787 "Item Srch. In Doc. Lookup Test"
         // [THEN] Check the correct sales lines are inserted
         LibraryVariableStorage.Enqueue(Item1.Description);
         LibraryVariableStorage.Enqueue('');
-        LibraryVariableStorage.Enqueue('1');
+        LibraryVariableStorage.Enqueue('5'); // Same quantity as the document is copied
         CheckSalesLineContent(SalesLine, SalesHeader."No.");
     end;
 
@@ -108,7 +109,7 @@ codeunit 139787 "Item Srch. In Doc. Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Item Search] [Sales Order]
         // [SCENARIO] Copy only the specified line from a document.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
 
         // [GIVEN] Create a new sales order for the new customer
@@ -165,7 +166,7 @@ codeunit 139787 "Item Srch. In Doc. Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Sales Order]
         // [SCENARIO] User input 'I want all the products from sales order 10000' in current customer's sales order. System will find the order and copy all the lines to the current sales order.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
         // [GIVEN] Create a new sales order for the new customer
         LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
@@ -198,7 +199,7 @@ codeunit 139787 "Item Srch. In Doc. Lookup Test"
     begin
         // [FEATURE] [Sales Line with AI] [Document Lookup] [Item Search] [Sales Order]
         // [SCENARIO] Copy lines for multiple items from the specified document.
-        LibraryVariableStorage.Clear();
+        Initialize();
         LibrarySales.CreateCustomer(Customer);
 
         // [GIVEN] Create a new sales order for the new customer
@@ -216,17 +217,17 @@ codeunit 139787 "Item Srch. In Doc. Lookup Test"
         // [GIVEN] Add 3 lines to the new sales order
         LibrarySales.CreateSimpleItemSalesLine(SalesLine, SalesHeader, "Sales Line Type"::Item);
         SalesLine.Validate("No.", Item1."No.");
-        SalesLine.Validate(Quantity, 5);
+        SalesLine.Validate(Quantity, 1);
         SalesLine.Modify(true);
 
         LibrarySales.CreateSimpleItemSalesLine(SalesLine, SalesHeader, "Sales Line Type"::Item);
         SalesLine.Validate("No.", Item2."No.");
-        SalesLine.Validate(Quantity, 5);
+        SalesLine.Validate(Quantity, 1);
         SalesLine.Modify(true);
 
         LibrarySales.CreateSimpleItemSalesLine(SalesLine, SalesHeader, "Sales Line Type"::Item);
         SalesLine.Validate("No.", Item3."No.");
-        SalesLine.Validate(Quantity, 5);
+        SalesLine.Validate(Quantity, 1);
         SalesLine.Modify(true);
 
         // [GIVEN] Generate prompt with Item name and Document No.
@@ -245,70 +246,16 @@ codeunit 139787 "Item Srch. In Doc. Lookup Test"
         CheckSalesLineContent(SalesLine, SalesHeader."No.");
     end;
 
-    [Test]
-    [HandlerFunctions('CheckGenerateFromSalesOrder')]
-    procedure TestMultipleLinesWithNewQuantitiesFromSalesOrder()
-    var
-        Customer: Record Customer;
-        SalesHeader: Record "Sales Header";
-        SalesLine: Record "Sales Line";
-        Item: Record Item;
-        Item1: Record Item;
-        Item2: Record Item;
-        Item3: Record Item;
-        SalesLineAISuggestions: Page "Sales Line AI Suggestions";
-        ItemDescriptions: array[2] of Text[100];
-        ItemQuantities: array[2] of Integer;
+    local procedure Initialize()
     begin
-        // [FEATURE] [Sales Line with AI] [Document Lookup] [Item Search] [Sales Order]
-        // [SCENARIO] Copy multiple lines from the specified document and also set the quantity if specified in user input.
         LibraryVariableStorage.Clear();
-        LibrarySales.CreateCustomer(Customer);
 
-        // [GIVEN] Create a new sales order for the new customer
-        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, Customer."No.");
+        if IsInitialized then
+            exit;
 
-        // [GIVEN] Find 3 items for the test
-        Assert.IsTrue(Item.Count >= 3, 'There are not enough items in the system to run the test');
-        Item.FindSet();
-        Item1 := Item;
-        Item.Next();
-        Item2 := Item;
-        Item.Next();
-        Item3 := Item;
+        TestUtility.RegisterCopilotCapability();
 
-        // [GIVEN] Add 3 lines to the new sales order
-        LibrarySales.CreateSimpleItemSalesLine(SalesLine, SalesHeader, "Sales Line Type"::Item);
-        SalesLine.Validate("No.", Item1."No.");
-        SalesLine.Validate(Quantity, 5);
-        SalesLine.Modify(true);
-        ItemDescriptions[1] := Item1.Description;
-        ItemQuantities[1] := 10;
-
-        LibrarySales.CreateSimpleItemSalesLine(SalesLine, SalesHeader, "Sales Line Type"::Item);
-        SalesLine.Validate("No.", Item2."No.");
-        SalesLine.Validate(Quantity, 5);
-        SalesLine.Modify(true);
-        ItemDescriptions[2] := Item2.Description;
-        ItemQuantities[2] := 20;
-
-        LibrarySales.CreateSimpleItemSalesLine(SalesLine, SalesHeader, "Sales Line Type"::Item);
-        SalesLine.Validate("No.", Item3."No.");
-        SalesLine.Validate(Quantity, 5);
-        SalesLine.Modify(true);
-
-        // [GIVEN] Generate prompt with Item name and Document No.
-        LibraryVariableStorage.Enqueue(StrSubstNo(NeedTwoItemsWithQuantityFromSpecifiedSalesOrderLbl, ItemQuantities[1], Item1.Description, ItemQuantities[2], Item2.Description, SalesHeader."No."));
-        LibraryVariableStorage.Enqueue('2'); // Number of lines to copy
-        Enqueue2SalesLineWithItemDescriptionAndQuantity(ItemDescriptions, ItemQuantities);
-
-        // [WHEN] Run Sales Line AI Suggestions Page to generate suggestions lines
-        // [THEN] Check that correct lines are generated in 'CheckGenerateFromSalesOrder' handler function
-        CreateNewSalesHeaderAndRunSalesLineAISuggestionsPage(SalesHeader, SalesLineAISuggestions, Customer."No.", SalesHeader."Document Type"::Order);
-
-        // [THEN] Check the correct sales lines are inserted
-        Enqueue2SalesLineWithItemDescriptionAndQuantity(ItemDescriptions, ItemQuantities);
-        CheckSalesLineContent(SalesLine, SalesHeader."No.");
+        IsInitialized := true;
     end;
 
     // Help functions
@@ -374,16 +321,6 @@ codeunit 139787 "Item Srch. In Doc. Lookup Test"
         SalesLine.SetRange("Document No.", DocumentNo);
         SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
         Assert.IsFalse(SalesLine.FindFirst(), 'No sales line should be generated');
-    end;
-
-    local procedure Enqueue2SalesLineWithItemDescriptionAndQuantity(ItemDescriptions: array[3] of Text[100]; ItemQuantites: array[2] of Integer)
-    begin
-        LibraryVariableStorage.Enqueue(ItemDescriptions[1]);
-        LibraryVariableStorage.Enqueue('');
-        LibraryVariableStorage.Enqueue(Format(ItemQuantites[1]));
-        LibraryVariableStorage.Enqueue(ItemDescriptions[2]);
-        LibraryVariableStorage.Enqueue('');
-        LibraryVariableStorage.Enqueue(Format(ItemQuantites[2]));
     end;
 
     local procedure Enqueue2SalesLineWithItemDescription(ItemDescriptions: array[2] of Text[100])

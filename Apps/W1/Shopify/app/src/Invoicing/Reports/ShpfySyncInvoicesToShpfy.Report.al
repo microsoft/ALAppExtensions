@@ -3,7 +3,7 @@ namespace Microsoft.Integration.Shopify;
 using Microsoft.Sales.History;
 
 /// <summary>
-/// Report Shpfy Sync Invoices to Shpfy (ID 30119).
+/// Report Shpfy Sync Invoices to Shpfy (ID 30117).
 /// </summary>
 report 30119 "Shpfy Sync Invoices to Shpfy"
 {
@@ -19,18 +19,31 @@ report 30119 "Shpfy Sync Invoices to Shpfy"
             RequestFilterFields = "No.", "Posting Date";
             trigger OnPreDataItem()
             var
+                ShopifyPaymentTerms: Record "Shpfy Payment Terms";
                 ShopCodeNotSetErr: Label 'Shopify Shop Code is empty.';
                 PostedInvoiceSyncNotSetErr: Label 'Posted Invoice Sync is not enabled for this shop.';
             begin
                 if ShopCode = '' then
                     Error(ShopCodeNotSetErr);
 
-                ShpfyShop.Get(ShopCode);
+                Shop.Get(ShopCode);
 
-                if not ShpfyShop."Posted Invoice Sync" then
+                if not Shop."Posted Invoice Sync" then
                     Error(PostedInvoiceSyncNotSetErr);
 
-                ShpfyPostedInvoiceExport.SetShop(ShopCode);
+                ShopifyPaymentTerms.SetRange("Shop Code", ShopCode);
+                if ShopifyPaymentTerms.IsEmpty() then
+                    PaymentTermsMappingNotConfiguredError();
+                ShopifyPaymentTerms.SetFilter("Payment Terms Code", '<>%1', '');
+                if ShopifyPaymentTerms.IsEmpty() then begin
+                    ShopifyPaymentTerms.SetRange("Payment Terms Code");
+                    ShopifyPaymentTerms.SetRange("Is Primary", true);
+                    if ShopifyPaymentTerms.IsEmpty() then
+                        PaymentTermsMappingNotConfiguredError();
+                end;
+
+
+                PostedInvoiceExport.SetShop(ShopCode);
                 SetRange("Shpfy Order Id", 0);
 
                 if GuiAllowed then begin
@@ -47,17 +60,13 @@ report 30119 "Shpfy Sync Invoices to Shpfy"
                     ProcessDialog.Update();
                 end;
 
-                ShpfyPostedInvoiceExport.Run(SalesInvoiceHeader);
+                PostedInvoiceExport.Run(SalesInvoiceHeader);
             end;
 
             trigger OnPostDataItem()
-            var
-                ShpfyBackgroundSyncs: Codeunit "Shpfy Background Syncs";
             begin
                 if GuiAllowed then
                     ProcessDialog.Close();
-
-                ShpfyBackgroundSyncs.InventorySync(ShopCode);
             end;
         }
     }
@@ -87,12 +96,14 @@ report 30119 "Shpfy Sync Invoices to Shpfy"
     }
 
     var
-        ShpfyShop: Record "Shpfy Shop";
-        ShpfyPostedInvoiceExport: Codeunit "Shpfy Posted Invoice Export";
+        Shop: Record "Shpfy Shop";
+        PostedInvoiceExport: Codeunit "Shpfy Posted Invoice Export";
         ShopCode: Code[20];
         CurrSalesInvoiceHeaderNo: Code[20];
         ProcessDialog: Dialog;
         ProcessMsg: Label 'Synchronizing Posted Sales Invoice #1####################', Comment = '#1 = Posted Sales Invoice No.';
+        NoPaymentTermsErr: Label 'You need to configure the payment terms mapping.';
+        ConfigurePaymentTermsMappingLbl: Label 'Configure Payment Terms Mapping';
 
     /// <summary> 
     /// Sets a global shopify shop code to be used.
@@ -101,5 +112,18 @@ report 30119 "Shpfy Sync Invoices to Shpfy"
     internal procedure SetShop(NewShopCode: Code[20])
     begin
         ShopCode := NewShopCode;
+    end;
+
+    local procedure PaymentTermsMappingNotConfiguredError()
+    var
+        PaymentTermsMappingErrorInfo: ErrorInfo;
+    begin
+        PaymentTermsMappingErrorInfo.DataClassification := PaymentTermsMappingErrorInfo.DataClassification::SystemMetadata;
+        PaymentTermsMappingErrorInfo.ErrorType := PaymentTermsMappingErrorInfo.ErrorType::Client;
+        PaymentTermsMappingErrorInfo.Verbosity := PaymentTermsMappingErrorInfo.Verbosity::Error;
+        PaymentTermsMappingErrorInfo.Message := NoPaymentTermsErr;
+        PaymentTermsMappingErrorInfo.RecordId(Shop.RecordId());
+        PaymentTermsMappingErrorInfo.AddAction(ConfigurePaymentTermsMappingLbl, Codeunit::"Shpfy Posted Invoice Export", 'ConfigurePaymentTermsMapping');
+        Error(PaymentTermsMappingErrorInfo);
     end;
 }

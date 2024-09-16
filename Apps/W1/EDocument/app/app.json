@@ -4,7 +4,7 @@
   "publisher": "Microsoft",
   "brief": "The Dynamics 365 Business Central E-Documents module enables different models of electronic invoicing, available for additional localizations.",
   "description": "Business Central's E-Documents module is the foundation layer for all e-invoicing standards covering most common processes, but it can be used for other electronic documents. The module is easily extendable with the country-based e-invoicing apps. The E-Documents app covers both sales and purchase processes and can have different lifecycles from standard invoices in Business Central.",
-  "version": "25.0.0.0",
+  "version": "26.0.0.0",
   "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
   "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
   "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
@@ -20,7 +20,7 @@
     }
   ],
   "screenshots": [],
-  "platform": "25.0.0.0",
+  "platform": "26.0.0.0",
   "idRanges": [
     {
       "from": 6100,
@@ -32,6 +32,6 @@
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
-  "application": "25.0.0.0",
+  "application": "26.0.0.0",
   "target": "OnPrem"
 }

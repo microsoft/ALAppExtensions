@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Setup;
 
+using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.ReceivablesPayables;
 using Microsoft.Finance.VAT.Reporting;
@@ -17,6 +18,14 @@ tableextension 11738 "VAT Posting Setup CZL" extends "VAT Posting Setup"
             trigger OnAfterValidate()
             begin
                 AssertThatNonDeductibleVATPctIsNotUsed();
+            end;
+        }
+        modify("Allow Non-Deductible VAT")
+        {
+            trigger OnBeforeValidate()
+            begin
+                if "Allow Non-Deductible VAT" = "Allow Non-Deductible VAT"::"Do not apply CZL" then
+                    NonDeductibleVATCZL.CheckNonDeductibleVATEnabled();
             end;
         }
         field(11770; "Reverse Charge Check CZL"; Enum "Reverse Charge Check CZL")
@@ -101,6 +110,7 @@ tableextension 11738 "VAT Posting Setup CZL" extends "VAT Posting Setup"
     }
 
     var
+        NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
         NotUsedNonDeductibleVATPctErr: Label 'The "Non-Deductible VAT %" field should not be used. Use the "Non-Deductible VAT Setup" page instead.';
 
     trigger OnAfterInsert()
@@ -136,6 +146,9 @@ tableextension 11738 "VAT Posting Setup CZL" extends "VAT Posting Setup"
         IsHandled := false;
         OnBeforeAssertThatNonDeductibleVATPctIsNotUsedCZL(Rec, IsHandled);
         if IsHandled then
+            exit;
+
+        if not NonDeductibleVATCZL.IsNonDeductibleVATEnabled() then
             exit;
 
         if "Non-Deductible VAT %" <> 0 then

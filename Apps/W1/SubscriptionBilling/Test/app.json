@@ -1,0 +1,61 @@
+{
+  "id": "2ac317ef-11a5-4753-92f4-31c84b520c7b",
+  "name": "Subscription & Recurring Billing Test",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Test for Subscription & Recurring Billing",
+  "description": "The app enables the selling of recurring services and provides accurate billing for a wide range of pricing models.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2104024",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2104024",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+      "publisher": "Microsoft",
+      "name": "Library Variable Storage",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "3099ffc7-4cf7-4df6-9b96-7e4bc2bb587c",
+      "publisher": "Microsoft",
+      "name": "Subscription & Recurring Billing",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 139684,
+      "to": 139694
+    },
+    {
+      "from": 139875,
+      "to": 139898
+    },
+    {
+      "from": 139912,
+      "to": 139916
+    },
+    {
+      "from": 148152,
+      "to": 148161
+    }
+  ],
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": false,
+    "includeSourceInSymbolFile": false
+  }
+}

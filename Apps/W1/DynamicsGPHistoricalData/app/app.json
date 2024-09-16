@@ -1,34 +1,30 @@
 {
-    "id":  "7c7d97ca-3598-40f5-b263-f713f49bd2a5",
-    "name":  "Dynamics GP Historical Data",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "This extension adds the necessary components to retain historical Dynamics GP data after the cloud migration. Only uninstall this extension if the historical data is no longer needed.",
-    "description":  "This extension adds the necessary components to retain historical Dynamics GP data after the cloud migration. Only uninstall this extension if the historical data is no longer needed.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2009037",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2244040",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  1,
-                         "to":  49999
-                     }
-                 ],
-    "application":  "25.0.0.0",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "Cloud"
+  "id": "7c7d97ca-3598-40f5-b263-f713f49bd2a5",
+  "name": "Dynamics GP Historical Data",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "This extension adds the necessary components to retain historical Dynamics GP data after the cloud migration. Only uninstall this extension if the historical data is no longer needed.",
+  "description": "This extension adds the necessary components to retain historical Dynamics GP data after the cloud migration. Only uninstall this extension if the historical data is no longer needed.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2009037",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2244040",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 1,
+      "to": 49999
+    }
+  ],
+  "application": "26.0.0.0",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "Cloud"
 }

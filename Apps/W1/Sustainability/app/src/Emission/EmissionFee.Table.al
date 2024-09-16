@@ -32,6 +32,7 @@ table 6226 "Emission Fee"
             DataClassification = CustomerContent;
             Caption = 'Carbon Fee';
             DecimalPlaces = 2 : 5;
+            BlankNumbers = BlankNeg;
 
             trigger OnValidate()
             begin

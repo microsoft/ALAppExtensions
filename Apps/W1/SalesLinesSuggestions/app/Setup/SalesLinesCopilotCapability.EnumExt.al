@@ -10,6 +10,6 @@ enumextension 7275 "Sales Lines Copilot Capability" extends "Copilot Capability"
 {
     value(7275; "Sales Lines Suggestions")
     {
-        Caption = 'Sales Lines Suggestions';
+        Caption = 'Sales lines suggestions';
     }
 }

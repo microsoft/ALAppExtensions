@@ -23,5 +23,12 @@ enum 30126 "Shpfy Risk Level"
     {
         Caption = 'High';
     }
-
+    value(4; Pending)
+    {
+        Caption = 'Pending';
+    }
+    value(5; None)
+    {
+        Caption = 'None';
+    }
 }

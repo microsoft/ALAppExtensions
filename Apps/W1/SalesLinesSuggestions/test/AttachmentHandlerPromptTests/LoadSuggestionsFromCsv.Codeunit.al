@@ -9,15 +9,30 @@ codeunit 149823 "Load Suggestions from csv"
     Subtype = Test;
     TestPermissions = Disabled;
 
+    var
+        TestUtility: Codeunit "SLS Test Utility";
+        IsInitialized: Boolean;
+
     [Test]
     procedure TestHandlingOfCsvFileData()
     var
         AITTestContext: Codeunit "AIT Test Context";
     begin
+        Initialize();
         ExecutePromptAndVerifyReturnedJson(AITTestContext.GetInput().ToText());
     end;
 
-    internal procedure ExecutePromptAndVerifyReturnedJson(TestInput: Text)
+    local procedure Initialize()
+    begin
+        if IsInitialized then
+            exit;
+
+        TestUtility.RegisterCopilotCapability();
+
+        IsInitialized := true;
+    end;
+
+    local procedure ExecutePromptAndVerifyReturnedJson(TestInput: Text)
     var
         SalesHeader: Record "Sales Header";
         SalesLineFromAttachment: Codeunit "Sales Line From Attachment";
@@ -41,12 +56,12 @@ codeunit 149823 "Load Suggestions from csv"
         ValidateSalesLineAttachmentPage(SalesLineFromAttachmentPage, ExpectedProducts, ExpectedQuantitys, ExpectedUoMs);
     end;
 
-    internal procedure ReadDatasetInput(TestInput: Text; var UserQuery: Text; var ExpectedProducts: List of [Text]; var ExpectedQuantitys: List of [Decimal]; var ExpectedUoMs: List of [Text])
+    local procedure ReadDatasetInput(TestInput: Text; var UserQuery: Text; var ExpectedProducts: List of [Text]; var ExpectedQuantitys: List of [Decimal]; var ExpectedUoMs: List of [Text])
     var
         JsonContent: JsonObject;
         JsonToken: JsonToken;
         JsonArray: JsonArray;
-        UserQueryKeyLbl: Label 'user_query', Locked = true;
+        UserQueryKeyLbl: Label 'question', Locked = true;
         ExpectedProductsKeyLbl: Label 'ExpectedItemNos', Locked = true;
         ExpectedQuantitysKeyLbl: Label 'ExpectedQuantitys', Locked = true;
         ExpectedUoMsKeyLbl: Label 'ExpectedUoMs', Locked = true;
@@ -75,7 +90,7 @@ codeunit 149823 "Load Suggestions from csv"
         end;
     end;
 
-    procedure ValidateSalesLineAttachmentPage(var SalesLineFromAttachmentPage: TestPage "Sales Line From Attachment"; ExpectedProducts: List of [Text]; ExpectedQuantitys: List of [Decimal]; ExpectedUoMs: List of [Text])
+    local procedure ValidateSalesLineAttachmentPage(var SalesLineFromAttachmentPage: TestPage "Sales Line From Attachment"; ExpectedProducts: List of [Text]; ExpectedQuantitys: List of [Decimal]; ExpectedUoMs: List of [Text])
     var
         RowIndex: Integer;
     begin
