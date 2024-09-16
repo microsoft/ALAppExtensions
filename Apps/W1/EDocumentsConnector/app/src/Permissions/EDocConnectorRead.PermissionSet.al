@@ -11,5 +11,7 @@ permissionset 6362 "EDocConnector - Read"
     IncludedPermissionSets = "EDoc. Connector Objects";
 
     Permissions = tabledata "E-Doc. Ext. Connection Setup" = R,
-                  tabledata Microsoft.EServices.EDocumentConnector.Avalara."Connection Setup" = r;
+                tabledata Microsoft.EServices.EDocumentConnector.Avalara."Connection Setup" = r
+                tabledata SignUpConnectionSetup = R,
+                tabledata SignUpConnectionAuth = R;
 }
