@@ -153,6 +153,7 @@ page 6380 SignUpConnectionSetupCard
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedOnly = true;
+                Visible = IsSaaSInfrastructure;
                 ToolTip = 'Create client credentials and open the onboarding process in a web browser.';
 
                 trigger OnAction()
