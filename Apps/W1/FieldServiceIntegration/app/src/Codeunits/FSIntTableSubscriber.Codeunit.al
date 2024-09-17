@@ -2350,6 +2350,21 @@ codeunit 6610 "FS Int. Table Subscriber"
         end;
     end;
 
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Integration Management", 'OnBeforeOpenRecordCardPage', '', false, false)]
+    local procedure OnBeforeOpenRecordCardPage(RecordID: RecordID; var IsHandled: Boolean)
+    var
+        ServiceHeader: Record "Service Header";
+        RecordRef: RecordRef;
+    begin
+        RecordRef := RecordID.GetRecord();
+        if RecordID.TableNo <> Database::"Service Header" then
+            exit;
+
+        RecordRef.SetTable(ServiceHeader);
+        Page.Run(Page::"Service Order", ServiceHeader);
+        IsHandled := true;
+    end;
+
     [IntegrationEvent(false, false)]
     local procedure OnSetUpNewLineOnNewLine(var JobJournalLine: Record "Job Journal Line"; var JobJournalTemplate: Record "Job Journal Template"; var JobJournalBatch: Record "Job Journal Batch"; var Handled: Boolean);
     begin
