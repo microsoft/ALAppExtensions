@@ -5,6 +5,7 @@
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using System.Telemetry;
+using System.Environment;
 
 page 6370 SignUpConnectionSetupCard
 {
@@ -27,6 +28,7 @@ page 6370 SignUpConnectionSetupCard
                     ToolTip = 'Specifies the client ID token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
+                    Visible = not IsSaaSInfrastructure;
                     ShowMandatory = true;
 
                     trigger OnValidate()
@@ -40,6 +42,7 @@ page 6370 SignUpConnectionSetupCard
                     ToolTip = 'Specifies the client secret token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
+                    Visible = not IsSaaSInfrastructure;
                     ShowMandatory = true;
 
                     trigger OnValidate()
@@ -53,7 +56,7 @@ page 6370 SignUpConnectionSetupCard
                     ToolTip = 'Specifies the client tenant id token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = false;
+                    Visible = not IsSaaSInfrastructure;
 
                     trigger OnValidate()
                     begin
@@ -66,7 +69,7 @@ page 6370 SignUpConnectionSetupCard
                     ToolTip = 'Specifies the root app id token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = false;
+                    Visible = not IsSaaSInfrastructure;
 
                     trigger OnValidate()
                     begin
@@ -79,7 +82,7 @@ page 6370 SignUpConnectionSetupCard
                     ToolTip = 'Specifies the root secret token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = false;
+                    Visible = not IsSaaSInfrastructure;
 
                     trigger OnValidate()
                     begin
@@ -92,7 +95,7 @@ page 6370 SignUpConnectionSetupCard
                     ToolTip = 'Specifies the root tenant id token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = false;
+                    Visible = not IsSaaSInfrastructure;
 
                     trigger OnValidate()
                     begin
@@ -105,7 +108,7 @@ page 6370 SignUpConnectionSetupCard
                     ToolTip = 'Specifies the root url token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = false;
+                    Visible = not IsSaaSInfrastructure;
 
                     trigger OnValidate()
                     begin
@@ -165,7 +168,10 @@ page 6370 SignUpConnectionSetupCard
     }
 
     trigger OnOpenPage()
+    var
+        EnvironmentInfo: Codeunit "Environment Information";
     begin
+        IsSaaSInfrastructure := EnvironmentInfo.IsSaaSInfrastructure();
         SignUpAuth.InitConnectionSetup();
         if Rec.Get() then
             ;
@@ -196,6 +202,7 @@ page 6370 SignUpConnectionSetupCard
         FeatureTelemetry: Codeunit "Feature Telemetry";
         [NonDebuggable]
         ClientID, ClientSecret, ClientTenant, ClientUrl, RootID, RootSecret, RootTenant, RootUrl : Text;
+        IsSaaSInfrastructure: Boolean;
         ExternalServiceTok: Label 'ExternalServiceConnector', Locked = true;
 
 
