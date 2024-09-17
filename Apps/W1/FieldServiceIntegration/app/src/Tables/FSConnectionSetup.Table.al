@@ -95,8 +95,10 @@ table 6623 "FS Connection Setup"
                 CRMConnectionSetupPage: Page "CRM Connection Setup";
             begin
                 if "Is Enabled" then begin
-                    TestField("Job Journal Template");
-                    TestField("Job Journal Batch");
+                    if "Integration Type" <> "Integration Type"::Service then begin
+                        TestField("Job Journal Template");
+                        TestField("Job Journal Batch");
+                    end;
                     if not CRMConnectionSetup.IsEnabled() then
                         Error(CRMConnSetupMustBeEnabledErr, CRMConnectionSetupPage.Caption());
                     if "Hour Unit of Measure" = '' then

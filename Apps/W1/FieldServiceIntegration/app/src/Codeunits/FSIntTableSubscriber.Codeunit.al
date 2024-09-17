@@ -565,21 +565,21 @@ codeunit 6610 "FS Int. Table Subscriber"
             end;
     end;
 
-    local procedure UpdateQuantities(FSWorkOrderProduct: Record "FS Work Order Product"; var ServiceLine: Record "Service Line")
+    internal procedure UpdateQuantities(FSWorkOrderProduct: Record "FS Work Order Product"; var ServiceLine: Record "Service Line")
     begin
         ServiceLine.Validate(Quantity, GetMaxQuantity(FSWorkOrderProduct.EstimateQuantity, FSWorkOrderProduct.Quantity, FSWorkOrderProduct.QtyToBill));
         ServiceLine.Validate("Qty. to Ship", GetMaxQuantity(FSWorkOrderProduct.Quantity, FSWorkOrderProduct.QtyToBill) - ServiceLine."Quantity Shipped");
         ServiceLine.Validate("Qty. to Invoice", FSWorkOrderProduct.QtyToBill - ServiceLine."Quantity Invoiced");
     end;
 
-    local procedure UpdateQuantities(FSWorkOrderProduct: Record "FS Work Order Service"; var ServiceLine: Record "Service Line")
+    internal procedure UpdateQuantities(FSWorkOrderService: Record "FS Work Order Service"; var ServiceLine: Record "Service Line")
     begin
-        ServiceLine.Validate(Quantity, GetMaxQuantity(FSWorkOrderProduct.EstimateDuration, FSWorkOrderProduct.Duration, FSWorkOrderProduct.DurationToBill) / 60);
-        ServiceLine.Validate("Qty. to Ship", GetMaxQuantity(FSWorkOrderProduct.Duration, FSWorkOrderProduct.DurationToBill) / 60 - ServiceLine."Quantity Shipped");
-        ServiceLine.Validate("Qty. to Invoice", FSWorkOrderProduct.DurationToBill / 60 - ServiceLine."Quantity Invoiced");
+        ServiceLine.Validate(Quantity, GetMaxQuantity(FSWorkOrderService.EstimateDuration, FSWorkOrderService.Duration, FSWorkOrderService.DurationToBill) / 60);
+        ServiceLine.Validate("Qty. to Ship", GetMaxQuantity(FSWorkOrderService.Duration, FSWorkOrderService.DurationToBill) / 60 - ServiceLine."Quantity Shipped");
+        ServiceLine.Validate("Qty. to Invoice", FSWorkOrderService.DurationToBill / 60 - ServiceLine."Quantity Invoiced");
     end;
 
-    local procedure UpdateQuantities(FSBookableResourceBooking: Record "FS Bookable Resource Booking"; var ServiceLine: Record "Service Line")
+    internal procedure UpdateQuantities(FSBookableResourceBooking: Record "FS Bookable Resource Booking"; var ServiceLine: Record "Service Line")
     begin
         if ServiceLine."Qty. to Consume" <> 0 then
             ServiceLine.Validate("Qty. to Consume", 0);
@@ -1177,7 +1177,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         end;
     end;
 
-    local procedure ArchiveServiceOrder(ServiceHeader: Record "Service Header"; ArchivedServiceOrders: List of [Code[20]])
+    internal procedure ArchiveServiceOrder(ServiceHeader: Record "Service Header"; ArchivedServiceOrders: List of [Code[20]])
     var
         ServiceMgtSetup: Record "Service Mgt. Setup";
         ServiceDocumentArchiveMgmt: Codeunit "Service Document Archive Mgmt.";
@@ -2128,7 +2128,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         end;
     end;
 
-    local procedure IgnorePostedJobJournalLinesOnQueryPostFilterIgnoreRecord(SourceRecordRef: RecordRef; var IgnoreRecord: Boolean)
+    internal procedure IgnorePostedJobJournalLinesOnQueryPostFilterIgnoreRecord(SourceRecordRef: RecordRef; var IgnoreRecord: Boolean)
     var
         FSConnectionSetup: Record "FS Connection Setup";
         FSWorkOrderProduct: Record "FS Work Order Product";
@@ -2173,7 +2173,7 @@ codeunit 6610 "FS Int. Table Subscriber"
             IgnoreRecord := true;
     end;
 
-    local procedure IgnoreArchievedServiceOrdersOnQueryPostFilterIgnoreRecord(SourceRecordRef: RecordRef; var IgnoreRecord: Boolean)
+    internal procedure IgnoreArchievedServiceOrdersOnQueryPostFilterIgnoreRecord(SourceRecordRef: RecordRef; var IgnoreRecord: Boolean)
     var
         FSConnectionSetup: Record "FS Connection Setup";
         ServiceHeader: Record "Service Header";
@@ -2193,7 +2193,7 @@ codeunit 6610 "FS Int. Table Subscriber"
             IgnoreRecord := true;
     end;
 
-    local procedure IgnoreArchievedCRMWorkOrdersOnQueryPostFilterIgnoreRecord(SourceRecordRef: RecordRef; var IgnoreRecord: Boolean)
+    internal procedure IgnoreArchievedCRMWorkOrdersOnQueryPostFilterIgnoreRecord(SourceRecordRef: RecordRef; var IgnoreRecord: Boolean)
     var
         FSConnectionSetup: Record "FS Connection Setup";
         FSWorkOrder: Record "FS Work Order";
@@ -2318,7 +2318,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         MarkArchivedServiceOrderLine(ServiceLine, ServiceLineArchive);
     end;
 
-    procedure MarkArchivedServiceOrder(ServiceHeader: Record "Service Header")
+    internal procedure MarkArchivedServiceOrder(ServiceHeader: Record "Service Header")
     var
         FSConnectionSetup: Record "FS Connection Setup";
         CRMIntegrationRecord: Record "CRM Integration Record";
@@ -2334,7 +2334,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         end;
     end;
 
-    local procedure MarkArchivedServiceOrderLine(var ServiceLine: Record "Service Line"; var ServiceLineArchive: Record "Service Line Archive")
+    internal procedure MarkArchivedServiceOrderLine(var ServiceLine: Record "Service Line"; var ServiceLineArchive: Record "Service Line Archive")
     var
         FSConnectionSetup: Record "FS Connection Setup";
         CRMIntegrationRecord: Record "CRM Integration Record";

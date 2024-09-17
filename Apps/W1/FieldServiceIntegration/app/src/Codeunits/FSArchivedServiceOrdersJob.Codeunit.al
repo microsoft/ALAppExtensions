@@ -91,7 +91,7 @@ codeunit 6617 "FS Archived Service Orders Job"
             until FSWorkOrderService.Next() = 0;
     end;
 
-    local procedure UpdateWorkOrderProduct(SalesLineArchive: Record "Service Line Archive"; var FSWorkOrderProduct: Record "FS Work Order Product")
+    internal procedure UpdateWorkOrderProduct(SalesLineArchive: Record "Service Line Archive"; var FSWorkOrderProduct: Record "FS Work Order Product")
     var
         Modified: Boolean;
     begin
@@ -100,8 +100,8 @@ codeunit 6617 "FS Archived Service Orders Job"
             Modified := true;
         end;
 
-        if FSWorkOrderProduct.QuantityInvoiced <> (SalesLineArchive."Quantity Invoiced" + SalesLineArchive."Qty. to Ship") then begin
-            FSWorkOrderProduct.QuantityInvoiced := SalesLineArchive."Quantity Invoiced" + SalesLineArchive."Qty. to Ship";
+        if FSWorkOrderProduct.QuantityInvoiced <> (SalesLineArchive."Quantity Invoiced" + SalesLineArchive."Qty. to Invoice") then begin
+            FSWorkOrderProduct.QuantityInvoiced := SalesLineArchive."Quantity Invoiced" + SalesLineArchive."Qty. to Invoice";
             Modified := true;
         end;
 
@@ -114,7 +114,7 @@ codeunit 6617 "FS Archived Service Orders Job"
             FSWorkOrderProduct.Modify();
     end;
 
-    local procedure UpdateWorkOrderService(SalesLineArchive: Record "Service Line Archive"; var FSWorkOrderService: Record "FS Work Order Service")
+    internal procedure UpdateWorkOrderService(SalesLineArchive: Record "Service Line Archive"; var FSWorkOrderService: Record "FS Work Order Service")
     var
         Modified: Boolean;
     begin
@@ -123,8 +123,8 @@ codeunit 6617 "FS Archived Service Orders Job"
             Modified := true;
         end;
 
-        if FSWorkOrderService.DurationInvoiced <> (SalesLineArchive."Quantity Invoiced" + SalesLineArchive."Qty. to Ship") then begin
-            FSWorkOrderService.DurationInvoiced := (SalesLineArchive."Quantity Invoiced" + SalesLineArchive."Qty. to Ship") * 60;
+        if FSWorkOrderService.DurationInvoiced <> (SalesLineArchive."Quantity Invoiced" + SalesLineArchive."Qty. to Invoice") then begin
+            FSWorkOrderService.DurationInvoiced := (SalesLineArchive."Quantity Invoiced" + SalesLineArchive."Qty. to Invoice") * 60;
             Modified := true;
         end;
 
