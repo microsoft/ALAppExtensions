@@ -6,7 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using System.Azure.Identity;
 
-codeunit 6373 SignUpErrorSensitive
+codeunit 6383 SignUpErrorSensitive
 {
     Access = Internal;
     Description = 'Create functions to run sensitive code that may fail out of your control but you need to keep the code going';

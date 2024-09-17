@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-table 6371 SignUpConnectionSetup
+table 6381 SignUpConnectionSetup
 {
     Access = Internal;
     DataPerCompany = false;
@@ -69,7 +69,7 @@ table 6371 SignUpConnectionSetup
         {
             Caption = 'Client App Tenant';
             DataClassification = CustomerContent;
-        } // "Access Token Due DateTime"
+        }
         field(30; "Client Token Due DateTime"; DateTime)
         {
             Caption = 'Client Token Timestamp';

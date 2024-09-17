@@ -7,7 +7,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 using System.Utilities;
 using Microsoft.EServices.EDocument;
 
-codeunit 6376 SignUpIntegrationImpl implements "E-Document Integration"
+codeunit 6386 SignUpIntegrationImpl implements "E-Document Integration"
 {
     Access = Internal;
 

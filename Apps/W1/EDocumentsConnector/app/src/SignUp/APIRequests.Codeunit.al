@@ -12,7 +12,7 @@ using System.Text;
 using System.Utilities;
 using System.Xml;
 
-codeunit 6370 SignUpAPIRequests
+codeunit 6380 SignUpAPIRequests
 {
     Access = Internal;
 

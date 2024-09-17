@@ -8,7 +8,7 @@ using System.Telemetry;
 using System.Threading;
 using Microsoft.EServices.EDocument;
 
-codeunit 6374 SignUpGetReadyStatus
+codeunit 6384 SignUpGetReadyStatus
 {
     TableNo = "Job Queue Entry";
     Access = Internal;

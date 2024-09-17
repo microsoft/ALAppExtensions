@@ -7,7 +7,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 using System.Telemetry;
 using System.Environment;
 
-page 6370 SignUpConnectionSetupCard
+page 6380 SignUpConnectionSetupCard
 {
     PageType = Card;
     SourceTable = SignUpConnectionSetup;

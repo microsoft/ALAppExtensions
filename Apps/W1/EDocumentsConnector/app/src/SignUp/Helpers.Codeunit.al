@@ -6,7 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using System.Text;
 
-codeunit 6375 SignUpHelpers
+codeunit 6385 SignUpHelpers
 {
     Access = Internal;
 

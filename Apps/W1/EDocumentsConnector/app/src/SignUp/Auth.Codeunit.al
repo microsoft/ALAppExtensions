@@ -9,7 +9,7 @@ using Microsoft.Sales.Customer;
 using System.Environment;
 using System.Reflection;
 
-codeunit 6371 SignUpAuth
+codeunit 6381 SignUpAuth
 {
     Access = Internal;
 

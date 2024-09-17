@@ -9,7 +9,7 @@ using System.Telemetry;
 using System.Text;
 using System.Utilities;
 
-codeunit 6378 SignUpProcessing
+codeunit 6388 SignUpProcessing
 {
     Access = Internal;
     Permissions = tabledata "E-Document" = m,

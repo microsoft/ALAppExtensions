@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-enum 6370 SignUpSendMode
+enum 6380 SignUpSendMode
 {
     Access = Internal;
 

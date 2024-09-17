@@ -9,7 +9,7 @@ using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Posting;
 using System.Utilities;
 
-codeunit 6372 SignUpConnection
+codeunit 6382 SignUpConnection
 {
     Access = Internal;
     Permissions = tabledata "E-Document" = m;

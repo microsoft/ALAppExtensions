@@ -7,7 +7,7 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 using System.Threading;
 using Microsoft.EServices.EDocument;
 
-codeunit 6377 SignUpPatchSent
+codeunit 6387 SignUpPatchSent
 {
     TableNo = "Job Queue Entry";
     Access = Internal;
