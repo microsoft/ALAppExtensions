@@ -365,7 +365,7 @@ codeunit 6378 SignUpProcessing
         EDocumentIntegrationLog.Validate("E-Doc. Entry No", EDocument."Entry No");
         EDocumentIntegrationLog.Validate("Service Code", EDocumentService.Code);
         EDocumentIntegrationLog.Validate("Response Status", HttpResponse.HttpStatusCode());
-        EDocumentIntegrationLog.Validate(URL, HttpRequest.GetRequestUri());
+        EDocumentIntegrationLog.Validate("Request URL", HttpRequest.GetRequestUri());
         EDocumentIntegrationLog.Validate(Method, HttpRequest.Method());
         EDocumentIntegrationLog.Insert();
 
