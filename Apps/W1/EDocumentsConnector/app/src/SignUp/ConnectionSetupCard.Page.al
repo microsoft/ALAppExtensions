@@ -198,6 +198,7 @@ page 6380 SignUpConnectionSetupCard
             RootUrl := '*';
     end;
 
+
     var
         SignUpAuth: Codeunit SignUpAuth;
         FeatureTelemetry: Codeunit "Feature Telemetry";

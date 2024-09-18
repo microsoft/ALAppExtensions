@@ -123,14 +123,14 @@ codeunit 6380 SignUpAPIRequests
         SendRequest(HttpRequestMessage, HttpResponseMessage, false);
     end;
 
-    local procedure SendRequest(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage; RootReequest: Boolean): Boolean
+    local procedure SendRequest(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage; RootRequest: Boolean): Boolean
     var
         SignUpAuth: Codeunit SignUpAuth;
         HttpClient: HttpClient;
         HttpHeaders: HttpHeaders;
     begin
         HttpRequestMessage.GetHeaders(HttpHeaders);
-        if RootReequest then
+        if RootRequest then
             HttpHeaders.Add('Authorization', SignUpAuth.GetRootBearerAuthText())
         else
             HttpHeaders.Add('Authorization', SignUpAuth.GetBearerAuthText());

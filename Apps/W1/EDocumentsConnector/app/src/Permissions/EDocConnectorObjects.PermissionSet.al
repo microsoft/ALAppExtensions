@@ -8,12 +8,10 @@ permissionset 6363 "EDoc. Connector Objects"
 {
     Access = Public;
     Assignable = false;
+    IncludedPermissionSets = Microsoft.EServices.EDocumentConnector.SignUp.SignUpEDocObjects;
 
     Permissions = table "E-Doc. Ext. Connection Setup" = X,
-                  table SignUpConnectionSetup = X,
-                  table SignUpConnectionAuth = X,
                   page "EDoc Ext Connection Setup Card" = X,
-                  page SignUpConnectionSetupCard = X,
                   codeunit "Pagero API Requests" = X,
                   codeunit "Pagero Auth." = X,
                   codeunit "Pagero Connection" = X,

@@ -8,10 +8,9 @@ permissionset 6362 "EDocConnector - Read"
 {
     Access = Public;
     Assignable = true;
-    IncludedPermissionSets = "EDoc. Connector Objects";
+    IncludedPermissionSets = "EDoc. Connector Objects",
+                            Microsoft.EServices.EDocumentConnector.SignUp.SignUpEDocRead;
 
     Permissions = tabledata "E-Doc. Ext. Connection Setup" = R,
-                tabledata Microsoft.EServices.EDocumentConnector.Avalara."Connection Setup" = r
-                tabledata SignUpConnectionSetup = R,
-                tabledata SignUpConnectionAuth = R;
+                tabledata Microsoft.EServices.EDocumentConnector.Avalara."Connection Setup" = r;
 }
