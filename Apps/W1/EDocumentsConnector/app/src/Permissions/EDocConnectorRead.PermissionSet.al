@@ -4,12 +4,14 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector;
 
+using Microsoft.EServices.EDocumentConnector.SignUp;
+
 permissionset 6362 "EDocConnector - Read"
 {
     Access = Public;
     Assignable = true;
     IncludedPermissionSets = "EDoc. Connector Objects",
-                            Microsoft.EServices.EDocumentConnector.SignUp.SignUpEDocRead;
+                            SignUpEDocRead;
 
     Permissions = tabledata "E-Doc. Ext. Connection Setup" = R,
                 tabledata Microsoft.EServices.EDocumentConnector.Avalara."Connection Setup" = r;
