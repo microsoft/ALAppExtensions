@@ -7,10 +7,10 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 using System.Telemetry;
 using System.Environment;
 
-page 6380 SignUpConnectionSetupCard
+page 6380 ConnectionSetupCard
 {
     PageType = Card;
-    SourceTable = SignUpConnectionSetup;
+    SourceTable = ConnectionSetup;
     ApplicationArea = Basic, Suite;
     UsageCategory = None;
     Caption = 'E-Document External Connection Setup';
@@ -33,7 +33,7 @@ page 6380 SignUpConnectionSetupCard
 
                     trigger OnValidate()
                     begin
-                        SignUpAuth.StorageSet(Rec."Client ID", ClientID);
+                        Auth.StorageSet(Rec."Client ID", ClientID);
                     end;
                 }
                 field(ClientSecret; ClientSecret)
@@ -47,7 +47,7 @@ page 6380 SignUpConnectionSetupCard
 
                     trigger OnValidate()
                     begin
-                        SignUpAuth.StorageSet(Rec."Client Secret", ClientSecret);
+                        Auth.StorageSet(Rec."Client Secret", ClientSecret);
                     end;
                 }
                 field(ClientTenant; ClientTenant)
@@ -60,7 +60,7 @@ page 6380 SignUpConnectionSetupCard
 
                     trigger OnValidate()
                     begin
-                        SignUpAuth.StorageSet(Rec."Client Tenant", ClientTenant);
+                        Auth.StorageSet(Rec."Client Tenant", ClientTenant);
                     end;
                 }
                 field(RootID; RootID)
@@ -73,7 +73,7 @@ page 6380 SignUpConnectionSetupCard
 
                     trigger OnValidate()
                     begin
-                        SignUpAuth.StorageSet(Rec."Root App ID", RootID);
+                        Auth.StorageSet(Rec."Root App ID", RootID);
                     end;
                 }
                 field(RootSecret; RootSecret)
@@ -86,7 +86,7 @@ page 6380 SignUpConnectionSetupCard
 
                     trigger OnValidate()
                     begin
-                        SignUpAuth.StorageSet(Rec."Root Secret", RootSecret);
+                        Auth.StorageSet(Rec."Root Secret", RootSecret);
                     end;
                 }
                 field(RootTenant; RootTenant)
@@ -99,7 +99,7 @@ page 6380 SignUpConnectionSetupCard
 
                     trigger OnValidate()
                     begin
-                        SignUpAuth.StorageSet(Rec."Root Tenant", RootTenant);
+                        Auth.StorageSet(Rec."Root Tenant", RootTenant);
                     end;
                 }
                 field(RootUrl; RootUrl)
@@ -112,7 +112,7 @@ page 6380 SignUpConnectionSetupCard
 
                     trigger OnValidate()
                     begin
-                        SignUpAuth.StorageSet(Rec."Root Market URL", RootUrl);
+                        Auth.StorageSet(Rec."Root Market URL", RootUrl);
                     end;
                 }
                 field("Authentication URL"; Rec."Authentication URL")
@@ -158,10 +158,10 @@ page 6380 SignUpConnectionSetupCard
 
                 trigger OnAction()
                 begin
-                    SignUpAuth.CreateClientCredentials();
+                    Auth.CreateClientCredentials();
                     CurrPage.Update();
                     SetPageVariables();
-                    Hyperlink(SignUpAuth.GetRootOnboardingUrl());
+                    Hyperlink(Auth.GetRootOnboardingUrl());
                     FeatureTelemetry.LogUptake('', ExternalServiceTok, Enum::"Feature Uptake Status"::"Set up");
                 end;
             }
@@ -173,7 +173,7 @@ page 6380 SignUpConnectionSetupCard
         EnvironmentInfo: Codeunit "Environment Information";
     begin
         IsSaaSInfrastructure := EnvironmentInfo.IsSaaSInfrastructure();
-        SignUpAuth.InitConnectionSetup();
+        Auth.InitConnectionSetup();
         if Rec.Get() then
             ;
         SetPageVariables();
@@ -199,7 +199,7 @@ page 6380 SignUpConnectionSetupCard
     end;
 
     var
-        SignUpAuth: Codeunit SignUpAuth;
+        Auth: Codeunit Auth;
         FeatureTelemetry: Codeunit "Feature Telemetry";
         [NonDebuggable]
         ClientID, ClientSecret, ClientTenant, ClientUrl, RootID, RootSecret, RootTenant, RootUrl : Text;

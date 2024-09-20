@@ -5,24 +5,23 @@
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using System.Azure.KeyVault;
-using Microsoft.Sales.Customer;
 using System.Environment;
 using System.Reflection;
 
-codeunit 6381 SignUpAuth
+codeunit 6381 Auth
 {
     Access = Internal;
 
     procedure InitConnectionSetup()
     var
-        lSignUpConnectionSetup: Record SignUpConnectionSetup;
+        lConnectionSetup: Record ConnectionSetup;
     begin
-        if lSignUpConnectionSetup.Get() then
+        if lConnectionSetup.Get() then
             exit;
-        lSignUpConnectionSetup."Authentication URL" := AuthURLTxt;
-        lSignUpConnectionSetup.ServiceURL := ProdServiceAPITxt;
-        StorageSet(lSignUpConnectionSetup."Client Tenant", ProdTenantIdTxt);
-        lSignUpConnectionSetup.Insert();
+        lConnectionSetup."Authentication URL" := AuthURLTxt;
+        lConnectionSetup.ServiceURL := ProdServiceAPITxt;
+        StorageSet(lConnectionSetup."Client Tenant", ProdTenantIdTxt);
+        lConnectionSetup.Insert();
     end;
 
     procedure GetRootOnboardingUrl(): Text
@@ -45,8 +44,8 @@ codeunit 6381 SignUpAuth
         if not GetClientCredentials(HttpRequestMessage, HttpResponseMessage) then
             Error(ErrorUnableToCreateClientCredentialsLbl);
         if HttpResponseMessage.Content.ReadAs(JText) then begin
-            ClientId := SignUpHelpers.GetJsonValueFromText(JText, 'clientId');
-            ClientSecret := SignUpHelpers.GetJsonValueFromText(JText, 'clientSecret');
+            ClientId := Helpers.GetJsonValueFromText(JText, 'clientId');
+            ClientSecret := Helpers.GetJsonValueFromText(JText, 'clientSecret');
             if (ClientId <> '') and (not ClientSecret.IsEmpty()) then
                 SaveClientCredentials(ClientId, ClientSecret);
         end;
@@ -55,12 +54,12 @@ codeunit 6381 SignUpAuth
     [NonDebuggable]
     local procedure GetClientCredentials(var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     var
-        SignUpSignUpAPIRequests: Codeunit SignUpAPIRequests;
+        APIRequests: Codeunit APIRequests;
     begin
-        SignUpSignUpAPIRequests.GetMarketPlaceCredentials(HttpRequest, HttpResponse);
+        APIRequests.GetMarketPlaceCredentials(HttpRequest, HttpResponse);
         if not HttpResponse.IsSuccessStatusCode then
             exit(false);
-        exit(SignUpHelpers.ParseJsonString(HttpResponse.Content) <> '');
+        exit(Helpers.ParseJsonString(HttpResponse.Content) <> '');
     end;
 
     procedure GetBearerAuthText(): SecretText;
@@ -75,15 +74,15 @@ codeunit 6381 SignUpAuth
 
     procedure GetAuthBearerToken(): SecretText;
     var
-        SignUpConnectionAuth: Record SignUpConnectionAuth;
+        ConnectionAuth: Record ConnectionAuth;
         HttpError: Text;
     begin
-        SignUpConnectionAuth.GetRecordOnce();
-        if SignUpConnectionAuth."Token Timestamp" < CurrentDateTime() + 60 * 1000 then
+        ConnectionAuth.GetRecordOnce();
+        if ConnectionAuth."Token Timestamp" < CurrentDateTime() + 60 * 1000 then
             if not RefreshAccessToken(HttpError) then
                 Error(HttpError);
 
-        exit(StorageGet(SignUpConnectionAuth."Access Token", DataScope::Company));
+        exit(StorageGet(ConnectionAuth."Access Token", DataScope::Company));
     end;
 
     procedure GetRootAuthBearerToken() ReturnValue: SecretText;
@@ -97,18 +96,18 @@ codeunit 6381 SignUpAuth
     [NonDebuggable]
     local procedure RefreshAccessToken(var HttpError: Text): Boolean;
     var
-        SignUpConnectionAuth: Record SignUpConnectionAuth;
+        ConnectionAuth: Record ConnectionAuth;
         SecretToken: SecretText;
         RefreshToken: SecretText;
     begin
-        SignUpConnectionAuth.GetRecordOnce();
+        ConnectionAuth.GetRecordOnce();
         if not GetClientAccessToken(SecretToken) then begin
             HttpError := GetLastErrorText();
             exit(false);
         end;
-        SignUpConnectionAuth."Token Timestamp" := CurrentDateTime();
-        SaveTokens(SignUpConnectionAuth, DataScope::Company, SecretToken, RefreshToken);
-        SignUpConnectionAuth.Modify();
+        ConnectionAuth."Token Timestamp" := CurrentDateTime();
+        SaveTokens(ConnectionAuth, DataScope::Company, SecretToken, RefreshToken);
+        ConnectionAuth.Modify();
         exit(true);
     end;
 
@@ -121,12 +120,12 @@ codeunit 6381 SignUpAuth
     [NonDebuggable]
     local procedure GetClientAccessToken(var AccessToken: SecretText): Boolean
     begin
-        SignUpConnectionSetup.GetRecordOnce();
+        ConnectionSetup.GetRecordOnce();
         exit(GetAccessToken(
             AccessToken,
-            StorageGetText(SignUpConnectionSetup."Client ID", DataScope::Module),
-            StorageGet(SignUpConnectionSetup."Client Secret", DataScope::Module),
-            StorageGetText(SignUpConnectionSetup."Client Tenant", DataScope::Module)));
+            StorageGetText(ConnectionSetup."Client ID", DataScope::Module),
+            StorageGet(ConnectionSetup."Client Secret", DataScope::Module),
+            StorageGetText(ConnectionSetup."Client Tenant", DataScope::Module)));
     end;
 
     [NonDebuggable]
@@ -142,8 +141,8 @@ codeunit 6381 SignUpAuth
         ContentTemplateTxt: Label 'grant_type=client_credentials&client_id=%1&client_secret=%2&resource=%3', Locked = true;
         JText: Text;
     begin
-        SignUpConnectionSetup.GetRecordOnce();
-        SignUpConnectionSetup.TestField("Authentication URL");
+        ConnectionSetup.GetRecordOnce();
+        ConnectionSetup.TestField("Authentication URL");
 
         ContentText := SecretStrSubstNo(ContentTemplateTxt, TypeHelper.UriEscapeDataString(ClientId), ClientSecret, TypeHelper.UriEscapeDataString(ClientId));
 
@@ -154,31 +153,31 @@ codeunit 6381 SignUpAuth
         HttpHeaders.Add('Content-Type', 'application/x-www-form-urlencoded');
 
         HttpRequestMessage.Method := 'POST';
-        HttpRequestMessage.SetRequestUri(StrSubstNo(SignUpConnectionSetup."Authentication URL", ClientTenant));
+        HttpRequestMessage.SetRequestUri(StrSubstNo(ConnectionSetup."Authentication URL", ClientTenant));
         HttpRequestMessage.Content(HttpContent);
 
         Clear(AccessToken);
         if HttpClient.Send(HttpRequestMessage, HttpResponseMessage) then
             if HttpResponseMessage.IsSuccessStatusCode() then
                 if HttpResponseMessage.Content.ReadAs(JText) then
-                    AccessToken := SignUpHelpers.GetJsonValueFromText(JText, 'access_token');
+                    AccessToken := Helpers.GetJsonValueFromText(JText, 'access_token');
         exit(not AccessToken.IsEmpty());
     end;
 
-    local procedure SaveTokens(var SignUpConnectionAuth: Record SignUpConnectionAuth; TokenDataScope: DataScope; AccessToken: SecretText; RefreshToken: SecretText)
+    local procedure SaveTokens(var ConnectionAuth: Record ConnectionAuth; TokenDataScope: DataScope; AccessToken: SecretText; RefreshToken: SecretText)
     begin
-        StorageSet(SignUpConnectionAuth."Access Token", AccessToken, TokenDataScope);
-        StorageSet(SignUpConnectionAuth."Refresh Token", RefreshToken, TokenDataScope);
+        StorageSet(ConnectionAuth."Access Token", AccessToken, TokenDataScope);
+        StorageSet(ConnectionAuth."Refresh Token", RefreshToken, TokenDataScope);
     end;
 
     procedure SaveClientCredentials(ClientId: Text; ClientSecret: SecretText)
     begin
-        Clear(SignUpConnectionSetup);
-        SignUpConnectionSetup.GetRecordOnce();
-        StorageSet(SignUpConnectionSetup."Client ID", ClientId);
-        StorageSet(SignUpConnectionSetup."Client Secret", ClientSecret);
-        SignUpConnectionSetup.Modify();
-        Clear(SignUpConnectionSetup);
+        Clear(ConnectionSetup);
+        ConnectionSetup.GetRecordOnce();
+        StorageSet(ConnectionSetup."Client ID", ClientId);
+        StorageSet(ConnectionSetup."Client Secret", ClientSecret);
+        ConnectionSetup.Modify();
+        Clear(ConnectionSetup);
     end;
 
     local procedure StorageGet(TokenKey: Text; TokenDataScope: DataScope) TokenValueAsSecret: SecretText
@@ -243,11 +242,11 @@ codeunit 6381 SignUpAuth
     [NonDebuggable]
     local procedure GetRootId() ReturnValue: Text
     begin
-        if FetchSecretFromKeyVault('signup-root-id', ReturnValue) then
+        if FetchSecretFromKeyVault('-root-id', ReturnValue) then
             exit;
-        if SignUpConnectionSetup.GetRecordOnce() then begin
-            SignUpConnectionSetup.TestField("Root App ID");
-            ReturnValue := StorageGetText(SignUpConnectionSetup."Root App ID", DataScope::Module);
+        if ConnectionSetup.GetRecordOnce() then begin
+            ConnectionSetup.TestField("Root App ID");
+            ReturnValue := StorageGetText(ConnectionSetup."Root App ID", DataScope::Module);
         end;
     end;
 
@@ -256,9 +255,9 @@ codeunit 6381 SignUpAuth
     begin
         if FetchSecretFromKeyVault('signup-root-secret', ReturnValue) then
             exit;
-        if SignUpConnectionSetup.GetRecordOnce() then begin
-            SignUpConnectionSetup.TestField("Root Secret");
-            ReturnValue := StorageGetText(SignUpConnectionSetup."Root Secret", DataScope::Module);
+        if ConnectionSetup.GetRecordOnce() then begin
+            ConnectionSetup.TestField("Root Secret");
+            ReturnValue := StorageGetText(ConnectionSetup."Root Secret", DataScope::Module);
         end;
     end;
 
@@ -267,9 +266,9 @@ codeunit 6381 SignUpAuth
     begin
         if FetchSecretFromKeyVault('signup-root-tenant', ReturnValue) then
             exit;
-        if SignUpConnectionSetup.GetRecordOnce() then begin
-            SignUpConnectionSetup.TestField("Root Tenant");
-            ReturnValue := StorageGetText(SignUpConnectionSetup."Root Tenant", DataScope::Module);
+        if ConnectionSetup.GetRecordOnce() then begin
+            ConnectionSetup.TestField("Root Tenant");
+            ReturnValue := StorageGetText(ConnectionSetup."Root Tenant", DataScope::Module);
         end;
     end;
 
@@ -278,9 +277,9 @@ codeunit 6381 SignUpAuth
     begin
         if FetchSecretFromKeyVault('signup-root-url', ReturnValue) then
             exit;
-        if SignUpConnectionSetup.GetRecordOnce() then begin
-            SignUpConnectionSetup.TestField("Root Market URL");
-            ReturnValue := StorageGetText(SignUpConnectionSetup."Root Market URL", DataScope::Module);
+        if ConnectionSetup.GetRecordOnce() then begin
+            ConnectionSetup.TestField("Root Market URL");
+            ReturnValue := StorageGetText(ConnectionSetup."Root Market URL", DataScope::Module);
         end;
     end;
 
@@ -305,21 +304,21 @@ codeunit 6381 SignUpAuth
 
     local procedure GetAADTenantInformation(var AADTenantID: Text; var AADDomainName: Text): Boolean
     var
-        SignUpSignUpErrorSensitive: Codeunit SignUpErrorSensitive;
+        ErrorSensitive: Codeunit ErrorSensitive;
     begin
-        Clear(SignUpSignUpErrorSensitive);
-        SignUpSignUpErrorSensitive.SetParameter('AADDETAILS');
+        Clear(ErrorSensitive);
+        ErrorSensitive.SetParameter('AADDETAILS');
         Commit();
-        if SignUpSignUpErrorSensitive.Run() then begin
-            AADTenantID := SignUpSignUpErrorSensitive.GetFirstResult();
-            AADDomainName := SignUpSignUpErrorSensitive.GetSecondResult();
+        if ErrorSensitive.Run() then begin
+            AADTenantID := ErrorSensitive.GetFirstResult();
+            AADDomainName := ErrorSensitive.GetSecondResult();
             exit(true);
         end;
     end;
 
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
-        SignUpHelpers: Codeunit SignUpHelpers;
+        ConnectionSetup: Record ConnectionSetup;
+        Helpers: Codeunit Helpers;
         BearerTxt: Label 'Bearer %1', Comment = '%1 = text value', Locked = true;
         AuthURLTxt: Label 'https://login.microsoftonline.com/%1/oauth2/token', Comment = '%1 Entra Tenant Id', Locked = true;
         ProdTenantIdTxt: Label '0d725623-dc26-484f-a090-b09d2003d092', Locked = true;

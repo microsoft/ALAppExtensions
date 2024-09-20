@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-table 6381 SignUpConnectionSetup
+table 6381 ConnectionSetup
 {
     Access = Internal;
     DataPerCompany = false;
@@ -28,14 +28,14 @@ table 6381 SignUpConnectionSetup
         field(10; "Client ID"; Guid)
         {
             Caption = 'Client ID';
-            DataClassification = EndUserIdentifiableInformation;
+            DataClassification = CustomerContent;
         }
         field(11; "Client Secret"; Guid)
         {
             Caption = 'Client Secret';
-            DataClassification = EndUserIdentifiableInformation;
+            DataClassification = CustomerContent;
         }
-        field(12; "Send Mode"; Enum SignUpSendMode)
+        field(12; "Send Mode"; Enum SendMode)
         {
             Caption = 'Send Mode';
             DataClassification = CustomerContent;

@@ -4,19 +4,19 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-permissionset 6380 SignUpEDocObjects
+permissionset 6380 "SignUpEDoc. - Objects"
 {
     Access = Internal;
     Assignable = false;
 
-    Permissions = table SignUpConnectionSetup = X,
-                  table SignUpConnectionAuth = X,
-                  page SignUpConnectionSetupCard = X,
-                  codeunit SignUpIntegrationImpl = X,
-                  codeunit SignUpProcessing = X,
-                  codeunit SignUpAuth = X,
-                  codeunit SignUpAPIRequests = X,
-                  codeunit SignUpConnection = X,
-                  codeunit SignUpPatchSent = X,
-                  codeunit SignUpGetReadyStatus = X;
+    Permissions = table ConnectionSetup = X,
+                  table ConnectionAuth = X,
+                  page ConnectionSetupCard = X,
+                  codeunit IntegrationImpl = X,
+                  codeunit Processing = X,
+                  codeunit Auth = X,
+                  codeunit APIRequests = X,
+                  codeunit Connection = X,
+                  codeunit PatchSent = X,
+                  codeunit GetReadyStatus = X;
 }

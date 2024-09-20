@@ -4,13 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector;
 
-using Microsoft.EServices.EDocumentConnector.SignUp;
-
 permissionset 6363 "EDoc. Connector Objects"
 {
     Access = Public;
     Assignable = false;
-    IncludedPermissionSets = SignUpEDocObjects;
+    IncludedPermissionSets = Microsoft.EServices.EDocumentConnector.SignUp."SignUpEDoc. - Objects";
 
     Permissions = table "E-Doc. Ext. Connection Setup" = X,
                   page "EDoc Ext Connection Setup Card" = X,

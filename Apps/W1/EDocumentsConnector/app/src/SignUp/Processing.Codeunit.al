@@ -9,7 +9,7 @@ using System.Telemetry;
 using System.Text;
 using System.Utilities;
 
-codeunit 6388 SignUpProcessing
+codeunit 6388 Processing
 {
     Access = Internal;
     Permissions = tabledata "E-Document" = m,
@@ -50,14 +50,14 @@ codeunit 6388 SignUpProcessing
     var
         EDocumentService: Record "E-Document Service";
         EDocumentServiceStatus: Record "E-Document Service Status";
-        SignUpAPIRequests: Codeunit SignUpAPIRequests;
-        SignUpProcessing: Codeunit SignUpProcessing;
+        APIRequests: Codeunit APIRequests;
+        Processing: Codeunit Processing;
         HttpContentResponse: HttpContent;
         Status, StatusDescription : Text;
     begin
         EDocumentHelper.GetEdocumentService(EDocument, EdocumentService);
         EDocumentServiceStatus.Get(EDocument."Entry No", EdocumentService.Code);
-        SignUpAPIRequests.GetSentDocumentStatus(EDocument, HttpRequestMessage, HttpResponseMessage);
+        APIRequests.GetSentDocumentStatus(EDocument, HttpRequestMessage, HttpResponseMessage);
         HttpContentResponse := HttpResponseMessage.Content;
         if ParseGetADocumentApprovalResponse(HttpContentResponse, Status, StatusDescription) then
             case Status of
@@ -67,7 +67,7 @@ codeunit 6388 SignUpProcessing
                     begin
                         if StatusDescription <> '' then
                             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, 'Reason: ' + StatusDescription);
-                        SignUpProcessing.InsertLogWithIntegration(EDocument, EDocumentService, Enum::"E-Document Service Status"::Rejected, 0, HttpRequestMessage, HttpResponseMessage);
+                        Processing.InsertLogWithIntegration(EDocument, EDocumentService, Enum::"E-Document Service Status"::Rejected, 0, HttpRequestMessage, HttpResponseMessage);
                         exit(false);
                     end;
             end;
@@ -78,9 +78,9 @@ codeunit 6388 SignUpProcessing
     var
         EDocumentService: Record "E-Document Service";
         EDocumentServiceStatus: Record "E-Document Service Status";
-        SignUpAPIRequests: Codeunit SignUpAPIRequests;
-        SignUpGetReadyStatus: Codeunit SignUpGetReadyStatus;
-        SignUpProcessing: Codeunit SignUpProcessing;
+        APIRequests: Codeunit APIRequests;
+        GetReadyStatus: Codeunit GetReadyStatus;
+        Processing: Codeunit Processing;
         BlankRecordId: RecordId;
         HttpContentResponse: HttpContent;
         Status, StatusDescription : Text;
@@ -90,23 +90,23 @@ codeunit 6388 SignUpProcessing
         if not (EDocumentServiceStatus.Status in [EDocumentServiceStatus.Status::Sent, EDocumentServiceStatus.Status::"Pending Response"]) then
             Error(GetApprovalCheckStatusErr, EDocumentServiceStatus.Status);
 
-        SignUpAPIRequests.GetSentDocumentStatus(EDocument, HttpRequestMessage, HttpResponseMessage);
+        APIRequests.GetSentDocumentStatus(EDocument, HttpRequestMessage, HttpResponseMessage);
         HttpContentResponse := HttpResponseMessage.Content;
         if ParseGetADocumentApprovalResponse(HttpContentResponse, Status, StatusDescription) then
             case Status of
                 'Ready':
                     begin
                         if EDocumentServiceStatus.Status = EDocumentServiceStatus.Status::Approved then
-                            SignUpGetReadyStatus.ScheduleEDocumentJob(Codeunit::SignUpPatchSent, BlankRecordId, 300000)
+                            GetReadyStatus.ScheduleEDocumentJob(Codeunit::PatchSent, BlankRecordId, 300000)
                         else
-                            SignUpGetReadyStatus.ScheduleEDocumentJob(Codeunit::SignUpGetReadyStatus, BlankRecordId, 300000);
+                            GetReadyStatus.ScheduleEDocumentJob(Codeunit::GetReadyStatus, BlankRecordId, 300000);
                         exit(true);
                     end;
                 'Failed':
                     begin
                         if StatusDescription <> '' then
                             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, 'Reason: ' + StatusDescription);
-                        SignUpProcessing.InsertLogWithIntegration(EDocument, EDocumentService, Enum::"E-Document Service Status"::Rejected, 0, HttpRequestMessage, HttpResponseMessage);
+                        Processing.InsertLogWithIntegration(EDocument, EDocumentService, Enum::"E-Document Service Status"::Rejected, 0, HttpRequestMessage, HttpResponseMessage);
                         exit(false);
                     end;
             end;
@@ -118,7 +118,7 @@ codeunit 6388 SignUpProcessing
         ContentData: Text;
         OutStream: OutStream;
     begin
-        if not SignUpConnection.GetReceivedDocuments(HttpRequest, HttpResponse, true) then
+        if not Connection.GetReceivedDocuments(HttpRequest, HttpResponse, true) then
             exit;
 
         HttpResponse.Content.ReadAs(ContentData);
@@ -142,7 +142,7 @@ codeunit 6388 SignUpProcessing
     var
         HttpContentResponse: HttpContent;
     begin
-        SignUpConnection.HandleSendFilePostRequest(TempBlob, EDocument, HttpRequest, HttpResponse, true);
+        Connection.HandleSendFilePostRequest(TempBlob, EDocument, HttpRequest, HttpResponse, true);
         HttpContentResponse := HttpResponse.Content;
         SetEDocumentFileID(EDocument."Entry No", ParseSendFileResponse(HttpContentResponse));
     end;
@@ -192,7 +192,7 @@ codeunit 6388 SignUpProcessing
     var
         ErrorDescription: Text;
     begin
-        if not SignUpConnection.CheckDocumentStatus(EDocument, HttpRequestMessage, HttpResponse, true) then
+        if not Connection.CheckDocumentStatus(EDocument, HttpRequestMessage, HttpResponse, true) then
             exit(false);
 
         if DocumentHasErrorOrProcessing(EDocument, HttpResponse, ErrorDescription) then
@@ -207,7 +207,7 @@ codeunit 6388 SignUpProcessing
         Result: Text;
         Value: Text;
     begin
-        Result := SignUpHelpers.ParseJsonString(HttpContentResponse);
+        Result := Helpers.ParseJsonString(HttpContentResponse);
         if Result = '' then
             exit('');
 
@@ -236,13 +236,13 @@ codeunit 6388 SignUpProcessing
         EDocumentService: Record "E-Document Service";
         EDocumentServiceStatus: Record "E-Document Service Status";
         JsonManagement: Codeunit "JSON Management";
-        SignUpGetReadyStatus: Codeunit SignUpGetReadyStatus;
+        GetReadyStatus: Codeunit GetReadyStatus;
         BlankRecordId: RecordId;
         HttpContentResponse: HttpContent;
         Result, Value : Text;
     begin
         HttpContentResponse := HttpResponse.Content;
-        Result := SignUpHelpers.ParseJsonString(HttpContentResponse);
+        Result := Helpers.ParseJsonString(HttpContentResponse);
         if Result = '' then
             exit(true);
 
@@ -252,7 +252,7 @@ codeunit 6388 SignUpProcessing
         JsonManagement.GetArrayPropertyValueAsStringByName('status', Value);
 
         if Value in ['Sent'] then begin
-            SignUpGetReadyStatus.ScheduleEDocumentJob(Codeunit::SignUpGetReadyStatus, BlankRecordId, 120000);
+            GetReadyStatus.ScheduleEDocumentJob(Codeunit::GetReadyStatus, BlankRecordId, 120000);
             exit(false);
         end;
 
@@ -260,9 +260,9 @@ codeunit 6388 SignUpProcessing
             EDocumentHelper.GetEdocumentService(EDocument, EDocumentService);
             EDocumentServiceStatus.Get(EDocument."Entry No", EdocumentService.Code);
             if EDocumentServiceStatus.Status = EDocumentServiceStatus.Status::Approved then
-                SignUpGetReadyStatus.ScheduleEDocumentJob(Codeunit::SignUpPatchSent, BlankRecordId, 180000)
+                GetReadyStatus.ScheduleEDocumentJob(Codeunit::PatchSent, BlankRecordId, 180000)
             else
-                SignUpGetReadyStatus.ScheduleEDocumentJob(Codeunit::SignUpGetReadyStatus, BlankRecordId, 120000);
+                GetReadyStatus.ScheduleEDocumentJob(Codeunit::GetReadyStatus, BlankRecordId, 120000);
             exit(false);
         end;
 
@@ -280,7 +280,7 @@ codeunit 6388 SignUpProcessing
         JsonManagement: Codeunit "JSON Management";
         Result: Text;
     begin
-        Result := SignUpHelpers.ParseJsonString(HttpContentResponse);
+        Result := Helpers.ParseJsonString(HttpContentResponse);
         if Result = '' then
             exit(false);
 
@@ -332,7 +332,7 @@ codeunit 6388 SignUpProcessing
             exit;
         end;
 
-        SignUpConnection.HandleGetTargetDocumentRequest(DocumentId, LocalHttpRequest, LocalHttpResponse, false);
+        Connection.HandleGetTargetDocumentRequest(DocumentId, LocalHttpRequest, LocalHttpResponse, false);
         EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, LocalHttpRequest, LocalHttpResponse);
 
         LocalHttpResponse.Content.ReadAs(ContentData);
@@ -348,7 +348,7 @@ codeunit 6388 SignUpProcessing
         DocumentOutStream.WriteText(ContentData);
         EDocument."Document Id" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."Document Id"));
         EDocumentLogHelper.InsertLog(EDocument, EDocumentService, TempBlob, "E-Document Service Status"::Imported);
-        SignUpConnection.RemoveDocumentFromReceived(EDocument, LocalHttpRequest, LocalHttpResponse, true);
+        Connection.RemoveDocumentFromReceived(EDocument, LocalHttpRequest, LocalHttpResponse, true);
         EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, LocalHttpRequest, LocalHttpResponse);
     end;
 
@@ -561,8 +561,8 @@ codeunit 6388 SignUpProcessing
     end;
 
     var
-        SignUpConnection: Codeunit SignUpConnection;
-        SignUpHelpers: Codeunit SignUpHelpers;
+        Connection: Codeunit Connection;
+        Helpers: Codeunit Helpers;
         EDocumentHelper: Codeunit "E-Document Helper";
         EDocumentLogHelper: Codeunit "E-Document Log Helper";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";

@@ -4,12 +4,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-permissionset 6382 SignUpEDocEdit
+permissionset 6382 "SignUpEDoc. - Edit"
 {
     Access = Internal;
     Assignable = false;
-    IncludedPermissionSets = SignUpEDocRead;
+    IncludedPermissionSets = "SignUpEDoc. - Read";
 
-    Permissions = tabledata SignUpConnectionSetup = IM,
-                tabledata SignUpConnectionAuth = IM;
+    Permissions = tabledata ConnectionSetup = IM,
+                tabledata ConnectionAuth = IM;
 }

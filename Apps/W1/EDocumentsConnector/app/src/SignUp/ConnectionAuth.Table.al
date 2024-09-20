@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-table 6380 SignUpConnectionAuth
+table 6380 ConnectionAuth
 {
     Access = Internal;
 

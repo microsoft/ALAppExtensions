@@ -9,25 +9,25 @@ using Microsoft.Purchases.Document;
 using Microsoft.Purchases.Posting;
 using System.Utilities;
 
-codeunit 6382 SignUpConnection
+codeunit 6382 Connection
 {
     Access = Internal;
     Permissions = tabledata "E-Document" = m;
 
     procedure HandleSendFilePostRequest(var TempBlob: Codeunit "Temp Blob"; var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; Retry: Boolean): Boolean
     begin
-        if not SignUpAPIRequests.SendFilePostRequest(TempBlob, EDocument, HttpRequest, HttpResponse) then
+        if not APIRequests.SendFilePostRequest(TempBlob, EDocument, HttpRequest, HttpResponse) then
             if Retry then
-                SignUpAPIRequests.SendFilePostRequest(TempBlob, EDocument, HttpRequest, HttpResponse);
+                APIRequests.SendFilePostRequest(TempBlob, EDocument, HttpRequest, HttpResponse);
 
         exit(CheckIfSuccessfulRequest(EDocument, HttpResponse));
     end;
 
     procedure CheckDocumentStatus(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; Retry: Boolean): Boolean
     begin
-        if not SignUpAPIRequests.GetSentDocumentStatus(EDocument, HttpRequest, HttpResponse) then
+        if not APIRequests.GetSentDocumentStatus(EDocument, HttpRequest, HttpResponse) then
             if Retry then
-                SignUpAPIRequests.GetSentDocumentStatus(EDocument, HttpRequest, HttpResponse);
+                APIRequests.GetSentDocumentStatus(EDocument, HttpRequest, HttpResponse);
 
         exit(CheckIfSuccessfulRequest(EDocument, HttpResponse));
     end;
@@ -36,30 +36,30 @@ codeunit 6382 SignUpConnection
     var
         Parameters: Dictionary of [Text, Text];
     begin
-        if not SignUpAPIRequests.GetReceivedDocumentsRequest(HttpRequest, HttpResponse, Parameters) then
+        if not APIRequests.GetReceivedDocumentsRequest(HttpRequest, HttpResponse, Parameters) then
             if Retry then
-                SignUpAPIRequests.GetReceivedDocumentsRequest(HttpRequest, HttpResponse, Parameters);
+                APIRequests.GetReceivedDocumentsRequest(HttpRequest, HttpResponse, Parameters);
 
         if not HttpResponse.IsSuccessStatusCode then
             exit(false);
 
-        exit(SignUpHelpers.ParseJsonString(HttpResponse.Content) <> '');
+        exit(Helpers.ParseJsonString(HttpResponse.Content) <> '');
     end;
 
     procedure HandleGetTargetDocumentRequest(DocumentId: Text; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; Retry: Boolean): Boolean
     begin
-        if not SignUpAPIRequests.GetTargetDocumentRequest(DocumentId, HttpRequest, HttpResponse) then
+        if not APIRequests.GetTargetDocumentRequest(DocumentId, HttpRequest, HttpResponse) then
             if Retry then
-                SignUpAPIRequests.GetTargetDocumentRequest(DocumentId, HttpRequest, HttpResponse);
+                APIRequests.GetTargetDocumentRequest(DocumentId, HttpRequest, HttpResponse);
 
         exit(HttpResponse.IsSuccessStatusCode);
     end;
 
     procedure RemoveDocumentFromReceived(EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; Retry: Boolean): Boolean
     begin
-        if not SignUpAPIRequests.PatchReceivedDocument(EDocument, HttpRequest, HttpResponse) then
+        if not APIRequests.PatchReceivedDocument(EDocument, HttpRequest, HttpResponse) then
             if Retry then
-                SignUpAPIRequests.PatchReceivedDocument(EDocument, HttpRequest, HttpResponse);
+                APIRequests.PatchReceivedDocument(EDocument, HttpRequest, HttpResponse);
         exit(HttpResponse.IsSuccessStatusCode);
     end;
 
@@ -98,8 +98,8 @@ codeunit 6382 SignUpConnection
     end;
 
     var
-        SignUpAPIRequests: Codeunit SignUpAPIRequests;
-        SignUpHelpers: Codeunit SignUpHelpers;
+        APIRequests: Codeunit APIRequests;
+        Helpers: Codeunit Helpers;
         UnsuccessfulResponseErr: Label 'There was an error sending the request. Response code: %1 and error message: %2', Comment = '%1 - http response status code, e.g. 400, %2- error message';
         EnvironmentBlocksErr: Label 'The request to send documents has been blocked. To resolve the problem, enable outgoing HTTP requests for the E-Document apps on the Extension Management page.';
 }

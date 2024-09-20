@@ -7,14 +7,14 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 using System.Threading;
 using Microsoft.EServices.EDocument;
 
-codeunit 6387 SignUpPatchSent
+codeunit 6387 PatchSent
 {
     TableNo = "Job Queue Entry";
     Access = Internal;
 
     trigger OnRun()
     var
-        SignUpGetReadyStatus: Codeunit SignUpGetReadyStatus;
+        GetReadyStatus: Codeunit GetReadyStatus;
         BlankRecordId: RecordId;
     begin
         if not IsEDocumentApproved() then
@@ -23,7 +23,7 @@ codeunit 6387 SignUpPatchSent
         ProcessApprovedDocuments();
 
         if IsEDocumentApproved() then
-            SignUpGetReadyStatus.ScheduleEDocumentJob(Codeunit::SignUpPatchSent, BlankRecordId, 300000);
+            GetReadyStatus.ScheduleEDocumentJob(Codeunit::PatchSent, BlankRecordId, 300000);
     end;
 
     local procedure ProcessApprovedDocuments()
@@ -32,8 +32,8 @@ codeunit 6387 SignUpPatchSent
         EDocumentService: Record "E-Document Service";
         EDocumentIntegrationLog: Record "E-Document Integration Log";
         EDocument: Record "E-Document";
-        SignUpAPIRequests: Codeunit SignUpAPIRequests;
-        SignUpProcessing: Codeunit SignUpProcessing;
+        APIRequests: Codeunit APIRequests;
+        Processing: Codeunit Processing;
         HttpResponse: HttpResponseMessage;
         HttpRequest: HttpRequestMessage;
     begin
@@ -47,8 +47,8 @@ codeunit 6387 SignUpPatchSent
                 EDocumentIntegrationLog.SetRange("Response Status", 204);
                 EDocumentIntegrationLog.SetRange(Method, 'PATCH');
                 if EDocumentIntegrationLog.IsEmpty then
-                    if SignUpAPIRequests.PatchADocument(EDocument, HttpRequest, HttpResponse) then
-                        SignUpProcessing.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
+                    if APIRequests.PatchADocument(EDocument, HttpRequest, HttpResponse) then
+                        Processing.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
             until EDocumentServiceStatus.Next() = 0;
     end;
 

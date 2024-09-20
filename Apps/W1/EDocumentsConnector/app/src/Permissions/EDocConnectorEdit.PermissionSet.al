@@ -4,15 +4,12 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector;
 
-using Microsoft.EServices.EDocumentConnector.SignUp;
-
 permissionset 6361 "EDocConnector - Edit"
 {
     Access = Public;
     Assignable = true;
     IncludedPermissionSets = "EDocConnector - Read",
-                            SignUpEDocEdit;
-
+                            Microsoft.EServices.EDocumentConnector.SignUp."SignUpEDoc. - Edit";
 
     Permissions = tabledata "E-Doc. Ext. Connection Setup" = IM,
                 tabledata Microsoft.EServices.EDocumentConnector.Avalara."Connection Setup" = imd;

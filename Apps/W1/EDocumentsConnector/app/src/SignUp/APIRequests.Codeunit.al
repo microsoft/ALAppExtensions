@@ -12,28 +12,28 @@ using System.Text;
 using System.Utilities;
 using System.Xml;
 
-codeunit 6380 SignUpAPIRequests
+codeunit 6380 APIRequests
 {
     Access = Internal;
 
     // https://<BASE URL>/api/Peppol
     procedure SendFilePostRequest(var TempBlob: Codeunit "Temp Blob"; EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
+        ConnectionSetup: Record ConnectionSetup;
         Payload: Text;
         ContentHttpHeaders: HttpHeaders;
         HttpContent: HttpContent;
         ContentText: Text;
         UriTemplateLbl: Label '%1/api/Peppol', Comment = '%1 = Service Url', Locked = true;
     begin
-        InitRequest(SignUpConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::POST, StrSubstNo(UriTemplateLbl, SignUpConnectionSetup.ServiceURL));
+        InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
+        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::POST, StrSubstNo(UriTemplateLbl, ConnectionSetup.ServiceURL));
 
         Payload := XmlToTxt(TempBlob);
         if Payload = '' then
             exit(false);
         Clear(HttpContent);
-        ContentText := PrepareContentForSend(GetDocumentType(EDocument), SignUpConnectionSetup."Company Id", GetCustomerID(EDocument), GetSenderCountryCode(), Payload, SignUpConnectionSetup."Send Mode");
+        ContentText := PrepareContentForSend(GetDocumentType(EDocument), ConnectionSetup."Company Id", GetCustomerID(EDocument), GetSenderCountryCode(), Payload, ConnectionSetup."Send Mode");
         HttpContent.WriteFrom(ContentText);
         HttpContent.GetHeaders(ContentHttpHeaders);
         if ContentHttpHeaders.Contains('Content-Type') then
@@ -47,74 +47,74 @@ codeunit 6380 SignUpAPIRequests
     // https://<BASE URL>/api/Peppol/status?peppolInstanceId=
     procedure GetSentDocumentStatus(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
+        ConnectionSetup: Record ConnectionSetup;
         UriTemplateLbl: Label '%1/api/Peppol/status?peppolInstanceId=%2', Comment = '%1 = Service Url, %2 = Document ID', Locked = true;
     begin
-        InitRequest(SignUpConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::GET, StrSubstNo(UriTemplateLbl, SignUpConnectionSetup.ServiceURL, EDocument."Document Id"));
+        InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
+        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::GET, StrSubstNo(UriTemplateLbl, ConnectionSetup.ServiceURL, EDocument."Document Id"));
         exit(SendRequest(HttpRequestMessage, HttpResponseMessage));
     end;
 
     // https://<BASE URL>/api/Peppol/outbox?peppolInstanceId=
     procedure PatchADocument(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
+        ConnectionSetup: Record ConnectionSetup;
         UriTemplateLbl: Label '%1/api/Peppol/outbox?peppolInstanceId=%2', Comment = '%1 = Service Url, %2 = Document ID', Locked = true;
     begin
-        InitRequest(SignUpConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::PATCH, StrSubstNo(UriTemplateLbl, SignUpConnectionSetup.ServiceURL, EDocument."Document Id"));
+        InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
+        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::PATCH, StrSubstNo(UriTemplateLbl, ConnectionSetup.ServiceURL, EDocument."Document Id"));
         exit(SendRequest(HttpRequestMessage, HttpResponseMessage));
     end;
 
     //  https://<BASE URL>/api/Peppol/Inbox?peppolId=
     procedure GetReceivedDocumentsRequest(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage; Parameters: Dictionary of [Text, Text]): Boolean
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
+        ConnectionSetup: Record ConnectionSetup;
         UriTemplateLbl: Label '%1/api/Peppol/Inbox?peppolId=%2', Comment = '%1 = Service Url, %2 = Peppol Identifier', Locked = true;
     begin
-        InitRequest(SignUpConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::GET, StrSubstNo(UriTemplateLbl, SignUpConnectionSetup.ServiceURL, GetSenderReceiverPrefix() + SignUpConnectionSetup."Company Id"));
+        InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
+        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::GET, StrSubstNo(UriTemplateLbl, ConnectionSetup.ServiceURL, GetSenderReceiverPrefix() + ConnectionSetup."Company Id"));
         exit(SendRequest(HttpRequestMessage, HttpResponseMessage));
     end;
 
     // https://<BASE URL>/api/Peppol/inbox-document?peppolId=
     procedure GetTargetDocumentRequest(DocumentId: Text; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
+        ConnectionSetup: Record ConnectionSetup;
         UriTemplateLbl: Label '%1/api/Peppol/inbox-document?peppolId=%2&peppolInstanceId=%3', Comment = '%1 = Service Url, %2 = Peppol Identifier, %3 = Peppol Gateway Instance', Locked = true;
     begin
-        InitRequest(SignUpConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::GET, StrSubstNo(UriTemplateLbl, SignUpConnectionSetup.ServiceURL, GetSenderReceiverPrefix() + SignUpConnectionSetup."Company Id", DocumentId));
+        InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
+        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::GET, StrSubstNo(UriTemplateLbl, ConnectionSetup.ServiceURL, GetSenderReceiverPrefix() + ConnectionSetup."Company Id", DocumentId));
         exit(SendRequest(HttpRequestMessage, HttpResponseMessage));
     end;
 
     // https://<BASE URL>/api/Peppol/inbox?peppolInstanceId=
     procedure PatchReceivedDocument(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
+        ConnectionSetup: Record ConnectionSetup;
         UriTemplateLbl: Label '%1/api/Peppol/inbox?peppolInstanceId=%2', Comment = '%1 = Service Url, %2 = Peppol Gateway Instance', Locked = true;
     begin
-        InitRequest(SignUpConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::PATCH, StrSubstNo(UriTemplateLbl, SignUpConnectionSetup.ServiceURL, EDocument."Document Id"));
+        InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
+        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::PATCH, StrSubstNo(UriTemplateLbl, ConnectionSetup.ServiceURL, EDocument."Document Id"));
         exit(SendRequest(HttpRequestMessage, HttpResponseMessage));
     end;
 
     procedure GetMarketPlaceCredentials(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     var
-        SignUpConnectionSetup: Record SignUpConnectionSetup;
-        SignUpAuth: Codeunit SignUpAuth;
+        ConnectionSetup: Record ConnectionSetup;
+        Auth: Codeunit Auth;
         BaseUrlTxt: Label '%1/api/Registration/init?EntraTenantId=%2', Locked = true;
     begin
-        InitRequest(SignUpConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::POST, StrSubstNo(BaseUrlTxt, SignUpAuth.GetRootUrl(), SignUpAuth.GetBCInstanceIdentifier()));
+        InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
+        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::POST, StrSubstNo(BaseUrlTxt, Auth.GetRootUrl(), Auth.GetBCInstanceIdentifier()));
         exit(SendRequest(HttpRequestMessage, HttpResponseMessage, true));
     end;
 
-    local procedure InitRequest(var SignUpConnectionSetup: Record SignUpConnectionSetup; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
+    local procedure InitRequest(var ConnectionSetup: Record ConnectionSetup; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
     begin
         Clear(HttpRequestMessage);
         Clear(HttpResponseMessage);
-        if not SignUpConnectionSetup.Get() then
+        if not ConnectionSetup.Get() then
             Error(MissingSetupErr);
     end;
 
@@ -125,23 +125,23 @@ codeunit 6380 SignUpAPIRequests
 
     local procedure SendRequest(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage; RootRequest: Boolean): Boolean
     var
-        SignUpAuth: Codeunit SignUpAuth;
+        Auth: Codeunit Auth;
         HttpClient: HttpClient;
         HttpHeaders: HttpHeaders;
     begin
         HttpRequestMessage.GetHeaders(HttpHeaders);
         if RootRequest then
-            HttpHeaders.Add('Authorization', SignUpAuth.GetRootBearerAuthText())
+            HttpHeaders.Add('Authorization', Auth.GetRootBearerAuthText())
         else
-            HttpHeaders.Add('Authorization', SignUpAuth.GetBearerAuthText());
+            HttpHeaders.Add('Authorization', Auth.GetBearerAuthText());
         exit(HttpClient.Send(HttpRequestMessage, HttpResponseMessage));
     end;
 
-    local procedure PrepareRequestMsg(pHttpRequestType: Enum "Http Request Type"; Uri: Text) RequestMessage: HttpRequestMessage
+    local procedure PrepareRequestMsg(HttpRequestType: Enum "Http Request Type"; Uri: Text) RequestMessage: HttpRequestMessage
     var
         Headers: HttpHeaders;
     begin
-        RequestMessage.Method(Format(pHttpRequestType));
+        RequestMessage.Method(Format(HttpRequestType));
         RequestMessage.SetRequestUri(Uri);
         RequestMessage.GetHeaders(Headers);
         Headers.Add('Accept', '*/*');
@@ -175,9 +175,6 @@ codeunit 6380 SignUpAPIRequests
     var
         Customer: Record Customer;
     begin
-        if EDocument.Direction <> EDocument.Direction::Outgoing then
-            exit('');
-
         Customer.Get(EDocument."Bill-to/Pay-to No.");
         Customer.TestField("Service Participant Id");
         exit(Customer."Service Participant Id");
@@ -192,7 +189,7 @@ codeunit 6380 SignUpAPIRequests
         exit(CompanyInformation."Country/Region Code");
     end;
 
-    local procedure PrepareContentForSend(DocumentType: Text; SendingCompanyID: Text; RecieverCompanyID: Text; SenderCountryCode: Text; Payload: Text; SendMode: Enum SignUpSendMode): Text
+    local procedure PrepareContentForSend(DocumentType: Text; SendingCompanyID: Text; RecieverCompanyID: Text; SenderCountryCode: Text; Payload: Text; SendMode: Enum SendMode): Text
     var
         Base64Convert: Codeunit "Base64 Convert";
         SendJsonObject: JsonObject;

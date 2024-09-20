@@ -8,7 +8,7 @@ using System.Telemetry;
 using System.Threading;
 using Microsoft.EServices.EDocument;
 
-codeunit 6384 SignUpGetReadyStatus
+codeunit 6384 GetReadyStatus
 {
     TableNo = "Job Queue Entry";
     Access = Internal;
@@ -23,7 +23,7 @@ codeunit 6384 SignUpGetReadyStatus
         ProcessSentDocuments();
 
         if IsEDocumentStatusSent() then
-            ScheduleEDocumentJob(Codeunit::SignUpGetReadyStatus, BlankRecordId, 300000);
+            ScheduleEDocumentJob(Codeunit::GetReadyStatus, BlankRecordId, 300000);
     end;
 
     local procedure ProcessSentDocuments()
@@ -49,14 +49,14 @@ codeunit 6384 SignUpGetReadyStatus
 
     local procedure HandleResponse(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var EDocumentServiceStatus: Record "E-Document Service Status")
     var
-        SignUpProcessing: Codeunit SignUpProcessing;
+        Processing: Codeunit Processing;
         BlankRecordId: RecordId;
         HttpResponse: HttpResponseMessage;
         HttpRequest: HttpRequestMessage;
     begin
         if GetResponse(EDocumentServiceStatus, HttpRequest, HttpResponse) then begin
-            SignUpProcessing.InsertLogWithIntegration(EDocument, EDocumentService, Enum::"E-Document Service Status"::Approved, 0, HttpRequest, HttpResponse);
-            ScheduleEDocumentJob(Codeunit::SignUpPatchSent, BlankRecordId, 300000);
+            Processing.InsertLogWithIntegration(EDocument, EDocumentService, Enum::"E-Document Service Status"::Approved, 0, HttpRequest, HttpResponse);
+            ScheduleEDocumentJob(Codeunit::PatchSent, BlankRecordId, 300000);
         end;
 
     end;
@@ -64,7 +64,7 @@ codeunit 6384 SignUpGetReadyStatus
     local procedure GetResponse(var EDocumentServiceStatus: Record "E-Document Service Status"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage) ReturnStatus: Boolean
     var
         EDocument: Record "E-Document";
-        SignUpProcessing: Codeunit SignUpProcessing;
+        Processing: Codeunit Processing;
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         // Commit before create document with error handling
@@ -73,7 +73,7 @@ codeunit 6384 SignUpGetReadyStatus
 
         EDocument.Get(EDocumentServiceStatus."E-Document Entry No");
 
-        if SignUpProcessing.GetDocumentSentResponse(EDocument, HttpRequest, HttpResponse) then
+        if Processing.GetDocumentSentResponse(EDocument, HttpRequest, HttpResponse) then
             ReturnStatus := true;
 
         Telemetry.LogMessage('', EDocTelemetryGetResponseScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
