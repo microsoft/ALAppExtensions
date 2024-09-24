@@ -9,7 +9,7 @@ using System.Telemetry;
 using System.Text;
 using System.Utilities;
 
-codeunit 6388 Processing
+codeunit 6388 SignUpProcessing
 {
     Access = Internal;
     Permissions = tabledata "E-Document" = m,
@@ -51,7 +51,7 @@ codeunit 6388 Processing
         EDocumentService: Record "E-Document Service";
         EDocumentServiceStatus: Record "E-Document Service Status";
         APIRequests: Codeunit APIRequests;
-        Processing: Codeunit Processing;
+        SignUpProcessing: Codeunit SignUpProcessing;
         HttpContentResponse: HttpContent;
         Status, StatusDescription : Text;
     begin
@@ -67,7 +67,7 @@ codeunit 6388 Processing
                     begin
                         if StatusDescription <> '' then
                             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, 'Reason: ' + StatusDescription);
-                        Processing.InsertLogWithIntegration(EDocument, EDocumentService, Enum::"E-Document Service Status"::Rejected, 0, HttpRequestMessage, HttpResponseMessage);
+                        SignUpProcessing.InsertLogWithIntegration(EDocument, EDocumentService, Enum::"E-Document Service Status"::Rejected, 0, HttpRequestMessage, HttpResponseMessage);
                         exit(false);
                     end;
             end;
@@ -80,7 +80,7 @@ codeunit 6388 Processing
         EDocumentServiceStatus: Record "E-Document Service Status";
         APIRequests: Codeunit APIRequests;
         GetReadyStatus: Codeunit GetReadyStatus;
-        Processing: Codeunit Processing;
+        SignUpProcessing: Codeunit SignUpProcessing;
         BlankRecordId: RecordId;
         HttpContentResponse: HttpContent;
         Status, StatusDescription : Text;
@@ -106,7 +106,7 @@ codeunit 6388 Processing
                     begin
                         if StatusDescription <> '' then
                             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, 'Reason: ' + StatusDescription);
-                        Processing.InsertLogWithIntegration(EDocument, EDocumentService, Enum::"E-Document Service Status"::Rejected, 0, HttpRequestMessage, HttpResponseMessage);
+                        SignUpProcessing.InsertLogWithIntegration(EDocument, EDocumentService, Enum::"E-Document Service Status"::Rejected, 0, HttpRequestMessage, HttpResponseMessage);
                         exit(false);
                     end;
             end;

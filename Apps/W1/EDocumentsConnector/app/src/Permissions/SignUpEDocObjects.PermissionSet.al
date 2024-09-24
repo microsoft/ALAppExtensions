@@ -13,7 +13,7 @@ permissionset 6380 "SignUpEDoc. - Objects"
                   table ConnectionAuth = X,
                   page ConnectionSetupCard = X,
                   codeunit IntegrationImpl = X,
-                  codeunit Processing = X,
+                  codeunit SignUpProcessing = X,
                   codeunit Auth = X,
                   codeunit APIRequests = X,
                   codeunit Connection = X,

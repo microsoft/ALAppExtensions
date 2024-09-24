@@ -14,14 +14,14 @@ codeunit 6381 Auth
 
     procedure InitConnectionSetup()
     var
-        lConnectionSetup: Record ConnectionSetup;
+        LConnectionSetup: Record ConnectionSetup;
     begin
-        if lConnectionSetup.Get() then
+        if LConnectionSetup.Get() then
             exit;
-        lConnectionSetup."Authentication URL" := AuthURLTxt;
-        lConnectionSetup.ServiceURL := ProdServiceAPITxt;
-        StorageSet(lConnectionSetup."Client Tenant", ProdTenantIdTxt);
-        lConnectionSetup.Insert();
+        LConnectionSetup."Authentication URL" := AuthURLTxt;
+        LConnectionSetup.ServiceURL := ProdServiceAPITxt;
+        StorageSet(LConnectionSetup."Client Tenant", ProdTenantIdTxt);
+        LConnectionSetup.Insert();
     end;
 
     procedure GetRootOnboardingUrl(): Text

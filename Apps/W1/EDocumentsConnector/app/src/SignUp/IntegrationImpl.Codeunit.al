@@ -14,7 +14,7 @@ codeunit 6386 IntegrationImpl implements "E-Document Integration"
     procedure Send(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
     var
     begin
-        Processing.SendEDocument(EDocument, TempBlob, IsAsync, HttpRequest, HttpResponse);
+        SignUpProcessing.SendEDocument(EDocument, TempBlob, IsAsync, HttpRequest, HttpResponse);
     end;
 
     procedure SendBatch(var EDocuments: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
@@ -25,12 +25,12 @@ codeunit 6386 IntegrationImpl implements "E-Document Integration"
 
     procedure GetResponse(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     begin
-        exit(Processing.GetDocumentResponse(EDocument, HttpRequest, HttpResponse));
+        exit(SignUpProcessing.GetDocumentResponse(EDocument, HttpRequest, HttpResponse));
     end;
 
     procedure GetApproval(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     begin
-        exit(Processing.GetDocumentApproval(EDocument, HttpRequest, HttpResponse));
+        exit(SignUpProcessing.GetDocumentApproval(EDocument, HttpRequest, HttpResponse));
     end;
 
     procedure Cancel(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
@@ -40,12 +40,12 @@ codeunit 6386 IntegrationImpl implements "E-Document Integration"
 
     procedure ReceiveDocument(var TempBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
     begin
-        Processing.ReceiveDocument(TempBlob, HttpRequest, HttpResponse);
+        SignUpProcessing.ReceiveDocument(TempBlob, HttpRequest, HttpResponse);
     end;
 
     procedure GetDocumentCountInBatch(var TempBlob: Codeunit "Temp Blob"): Integer
     begin
-        exit(Processing.GetDocumentCountInBatch(TempBlob));
+        exit(SignUpProcessing.GetDocumentCountInBatch(TempBlob));
     end;
 
     procedure GetIntegrationSetup(var SetupPage: Integer; var SetupTable: Integer)
@@ -55,5 +55,5 @@ codeunit 6386 IntegrationImpl implements "E-Document Integration"
     end;
 
     var
-        Processing: Codeunit Processing;
+        SignUpProcessing: Codeunit SignUpProcessing;
 }
