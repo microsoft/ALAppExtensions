@@ -6,7 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.Common;
 
 using Microsoft.Sales.Customer;
 
-tableextension 6360 "E-Doc. Ext. Customer" extends Customer
+tableextension 6361 "E-Doc. Ext. Customer" extends Customer
 {
     fields
     {

@@ -6,7 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.Common;
 
 using Microsoft.Purchases.Vendor;
 
-tableextension 6361 "E-Doc. Ext. Vendor" extends Vendor
+tableextension 6362 "E-Doc. Ext. Vendor" extends Vendor
 {
     fields
     {

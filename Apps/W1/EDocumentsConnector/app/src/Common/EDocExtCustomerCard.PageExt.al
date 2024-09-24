@@ -6,7 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.Common;
 
 using Microsoft.Sales.Customer;
 
-pageextension 6360 "E-Doc. Ext. Customer Card" extends "Customer Card"
+pageextension 6362 "E-Doc. Ext. Customer Card" extends "Customer Card"
 {
     layout
     {

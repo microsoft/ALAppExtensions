@@ -6,7 +6,7 @@ namespace Microsoft.EServices.EDocumentConnector.Common;
 
 using Microsoft.Purchases.Vendor;
 
-pageextension 6361 "E-Doc. Ext. Vendor Card" extends "Vendor Card"
+pageextension 6363 "E-Doc. Ext. Vendor Card" extends "Vendor Card"
 {
     layout
     {
