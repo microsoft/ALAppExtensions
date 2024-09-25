@@ -1,9 +1,9 @@
 {
-  "name": "Ruleset used for Minor Releases",
+  "name": "Ruleset for the base application in Minor Releases",
   "includedRuleSets": [
     {
       "action": "Default",
-      "path": "./ruleset.json"
+      "path": "./../base.ruleset.json"
     }
   ],
   "rules": [
