@@ -24,6 +24,7 @@ using Microsoft.Sales.Reminder;
 using Microsoft.Service.History;
 using System.Reflection;
 using System.Telemetry;
+using System.IO;
 
 codeunit 6202 "Transact. Storage Export Data"
 {
@@ -75,6 +76,7 @@ codeunit 6202 "Transact. Storage Export Data"
         FeatureTelemetry: Codeunit "Feature Telemetry";
         TransactStorageExport: Codeunit "Transact. Storage Export";
         TransactionStorageTok: Label 'Transaction Storage', Locked = true;
+        NoOfRecordsToCollectTxt: Label 'Number of records to collect', Locked = true;
         NoOfCollectedRecordTxt: Label 'Number of collected records', Locked = true;
         NoOfCollectedPartsTxt: Label 'Parts', Locked = true;
         DocumentNoFieldNameTxt: Label 'Document No.', Locked = true;
@@ -95,15 +97,17 @@ codeunit 6202 "Transact. Storage Export Data"
         TransStorageExportData.DeleteAll(true);
         TablesToExport := GetTablesToExport();
         FilterRecToDateTime := GetFilterRecToDateTime(TablesToExport, TaskStartingDateTime);
+        LogNumberOfRecordsToCollect(TablesToExport, FilterRecToDateTime);
         foreach TableID in TablesToExport do
-            CollectDataFromTable(HandledIncomingDocs, TempFieldList, MasterData, TaskStartingDateTime, FilterRecToDateTime, TableID);
+            CollectDataFromTable(HandledIncomingDocs, TempFieldList, MasterData, FilterRecToDateTime, TableID);
+        TransactStorageExport.CheckTaskTimedOut(TaskStartingDateTime);
         LogNumberOfCollectedRecords(TablesToExport);
         CollectMasterData(MasterData);
         if (not TransStorageExportData.IsEmpty()) or (HandledIncomingDocs.Count() <> 0) then
             TransactionStorageABS.ArchiveTransactionsToABS(HandledIncomingDocs);
     end;
 
-    local procedure CollectDataFromTable(var HandledIncomingDocs: Dictionary of [Text, Integer]; var TempFieldList: Record Field temporary; var MasterData: Dictionary of [Integer, List of [Code[50]]]; TaskStartingDateTime: DateTime; FilterRecordTo: DateTime; TableID: Integer)
+    local procedure CollectDataFromTable(var HandledIncomingDocs: Dictionary of [Text, Integer]; var TempFieldList: Record Field temporary; var MasterData: Dictionary of [Integer, List of [Code[50]]]; FilterRecordTo: DateTime; TableID: Integer)
     var
         TransactStorageTableEntry: Record "Transact. Storage Table Entry";
         RecRef: RecordRef;
@@ -137,8 +141,7 @@ codeunit 6202 "Transact. Storage Export Data"
             AddJsonArrayToTransStorageExportData(Part, TableJsonArray, RecordsHandled, 0, RecRef.Number());
         end else
             TransactStorageExport.SetTableEntryProcessed(TransactStorageTableEntry, TransactStorageTableEntry."Filter Record To DT", false, '');
-        TransactStorageExport.CheckTimeDeadline(TaskStartingDateTime);
-        TransactStorageTableEntry."Record Filters" := CopyStr(RecRef.GetFilters(), 1, MaxStrLen(TransactStorageTableEntry."Record Filters"));
+        TransactStorageTableEntry."Record Filters" := CopyStr(GetRecordFilters(RecRef), 1, MaxStrLen(TransactStorageTableEntry."Record Filters"));
         TransactStorageTableEntry.Modify();
         RecRef.Close();
     end;
@@ -212,6 +215,15 @@ codeunit 6202 "Transact. Storage Export Data"
         TransactStorageTableEntry."Filter Record To DT" := FilterRecTo;
     end;
 
+    local procedure GetRecordFilters(var RecRef: RecordRef) Filters: Text
+    var
+        TranslationHelper: Codeunit "Translation Helper";
+    begin
+        TranslationHelper.SetGlobalLanguageToDefault();
+        Filters := RecRef.GetFilters();
+        TranslationHelper.RestoreGlobalLanguage();
+    end;
+
     local procedure GetFilterRecToDateTime(TablesToExport: List of [Integer]; TaskStartingDateTime: DateTime): DateTime
     var
         RecRef: RecordRef;
@@ -242,6 +254,7 @@ codeunit 6202 "Transact. Storage Export Data"
         FilterRecToDate: Date;
         FilterRecToTime: Time;
         MaxExportPeriodDays: Integer;
+        RecordCount: Integer;
         MaxRecordCount: Integer;
         CustomDimensions: Dictionary of [Text, Text];
     begin
@@ -258,7 +271,7 @@ codeunit 6202 "Transact. Storage Export Data"
         MaxRecordCount := GetMaxRecordCount();
         SystemModifiedAtFieldRef := RecRef.Field(RecRef.SystemModifiedAtNo());
         SystemModifiedAtFieldRef.SetRange(FilterRecFrom, FilterRecTo);
-        if RecRef.Count() < MaxRecordCount then
+        if RecRef.CountApprox() < MaxRecordCount then
             exit;
 
         // limit the export period to 10 days
@@ -274,18 +287,22 @@ codeunit 6202 "Transact. Storage Export Data"
             SystemModifiedAtFieldRef.SetRange(FilterRecFrom, FilterRecTo);
             FilterRecToDate -= 1;
         until (RecRef.CountApprox() < MaxRecordCount) or (FilterRecToDate - FilterRecFromDate < 1);
+        if RecRef.CountApprox() < MaxRecordCount then
+            exit;
 
         // limit the number of records to export using Entry No. field
-        if RecRef.Count() > MaxRecordCount then begin
-            CalcFilterRecToDateTimeByEntryNo(RecRef, FilterRecFrom, FilterRecTo);
+        CalcFilterRecToDateTimeByEntryNo(RecRef, FilterRecFrom, FilterRecTo);
 
+        // log warning if after all the limitations the number of records to export still exceeds the limit
+        RecordCount := RecRef.Count();
+        if RecordCount > MaxRecordCount then begin
             SystemModifiedAtFieldRef.SetRange(FilterRecFrom, FilterRecTo);
             CustomDimensions.Add('TableName', RecRef.Name);
-            CustomDimensions.Add('RecordCount', Format(RecRef.Count()));
+            CustomDimensions.Add('RecordCount', Format(RecordCount));
             CustomDimensions.Add('MaxRecordCount', Format(MaxRecordCount));
             CustomDimensions.Add('FilterRecFrom', Format(FilterRecFrom));
             CustomDimensions.Add('FilterRecordTo', Format(FilterRecTo));
-            FeatureTelemetry.LogError('0000NBO', TransactionStorageTok, '', ExportRecCountExceedsLimitErr, '', CustomDimensions);
+            TransactStorageExport.LogWarning('0000NBO', ExportRecCountExceedsLimitErr, CustomDimensions);
         end;
     end;
 
@@ -377,19 +394,69 @@ codeunit 6202 "Transact. Storage Export Data"
             UpdateTempFieldList(TempFieldList, TableID, FieldID);
     end;
 
+    local procedure LogNumberOfRecordsToCollect(TablesToExport: List of [Integer]; FilterRecTo: DateTime)
+    var
+        TransactStorageTableEntry: Record "Transact. Storage Table Entry";
+        TableMetadata: Record "Table Metadata";
+        RecRef: RecordRef;
+        SystemModifiedAtFieldRef: FieldRef;
+        TableID: Integer;
+        FilterRecFrom: DateTime;
+        RecordCountApprox: Integer;
+        CustomDimensions: Dictionary of [Text, Text];
+        RecordLogJson: JsonObject;
+        RecordLogTxt: Text;
+    begin
+        foreach TableID in TablesToExport do begin
+            RecRef.Open(TableID);
+            if RecRef.ReadPermission() then begin
+                TransactStorageExport.GetRecordExportData(TransactStorageTableEntry, RecRef);
+                FilterRecFrom := TransactStorageTableEntry."Last Handled Date/Time" + 10;
+                SystemModifiedAtFieldRef := RecRef.Field(RecRef.SystemModifiedAtNo());
+                SystemModifiedAtFieldRef.SetRange(FilterRecFrom, FilterRecTo);
+                RecordCountApprox := RecRef.CountApprox();
+            end;
+            RecRef.Close();
+
+            TableMetadata.Get(TableID);
+            Clear(RecordLogJson);
+            RecordLogJson.Add('CountApprox', RecordCountApprox);
+            RecordLogJson.Add('FilterFrom', FormatDateTimeForLog(FilterRecFrom));
+            RecordLogJson.Add('FilterTo', FormatDateTimeForLog(FilterRecTo));
+            RecordLogJson.WriteTo(RecordLogTxt);
+            CustomDimensions.Add(TableMetadata.Name, RecordLogTxt);
+        end;
+        FeatureTelemetry.LogUsage('0000NU9', TransactionStorageTok, NoOfRecordsToCollectTxt, CustomDimensions);
+    end;
+
+    local procedure FormatDateTimeForLog(InputValue: DateTime): Text
+    begin
+        exit(Format(InputValue, 0, '<Year4>-<Month,2>-<Day,2> <Hours24,2>:<Minutes,2>:<Seconds,2>'));
+    end;
+
     local procedure LogNumberOfCollectedRecords(TablesToExport: List of [Integer])
     var
         TransStorageExportData: Record "Trans. Storage Export Data";
+        TransactStorageTableEntry: Record "Transact. Storage Table Entry";
         TableMetadata: Record "Table Metadata";
         RecordsCustomDimensions: Dictionary of [Text, Text];
         PartsCustomDimensions: Dictionary of [Text, Text];
         TableID: Integer;
+        RecordLogJson: JsonObject;
+        RecordLogTxt: Text;
     begin
         foreach TableID in TablesToExport do begin
             TableMetadata.Get(TableID);
             TransStorageExportData.SetRange("Table ID", TableID);
             TransStorageExportData.CalcSums("Record Count");
-            RecordsCustomDimensions.Add(TableMetadata.Name, Format(TransStorageExportData."Record Count"));
+
+            Clear(RecordLogJson);
+            RecordLogJson.Add('Count', Format(TransStorageExportData."Record Count"));
+            if TransactStorageTableEntry.Get(TableID) then
+                RecordLogJson.Add('Filters', TransactStorageTableEntry."Record Filters");
+            RecordLogJson.WriteTo(RecordLogTxt);
+
+            RecordsCustomDimensions.Add(TableMetadata.Name, RecordLogTxt);
             PartsCustomDimensions.Add(TableMetadata.Name, Format(TransStorageExportData.Count()));
         end;
         FeatureTelemetry.LogUsage('0000LK7', TransactionStorageTok, NoOfCollectedRecordTxt, RecordsCustomDimensions);

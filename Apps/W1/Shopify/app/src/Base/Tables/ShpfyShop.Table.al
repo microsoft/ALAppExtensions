@@ -84,13 +84,8 @@ table 30102 "Shpfy Shop"
             Caption = 'Log Enabled';
             DataClassification = SystemMetadata;
             ObsoleteReason = 'Replaced with field "Logging Mode"';
-#if not CLEAN23
-            ObsoleteState = Pending;
-            ObsoleteTag = '23.0';
-#else
             ObsoleteState = Removed;
             ObsoleteTag = '26.0';
-#endif
         }
         field(6; "Customer Price Group"; Code[10])
         {

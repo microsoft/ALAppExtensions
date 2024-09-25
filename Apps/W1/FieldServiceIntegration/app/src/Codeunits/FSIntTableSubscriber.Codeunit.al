@@ -406,6 +406,8 @@ codeunit 6610 "FS Int. Table Subscriber"
     var
         FSConnectionSetup: Record "FS Connection Setup";
         IntegrationTableMapping: Record "Integration Table Mapping";
+        IntegrationFieldMapping: Record "Integration Field Mapping";
+        ProjectJournalLine: Record "Job Journal Line";
         FSSetupDefaults: Codeunit "FS Setup Defaults";
     begin
         if not Rec."Location Mandatory" then
@@ -414,10 +416,15 @@ codeunit 6610 "FS Int. Table Subscriber"
         if not FSConnectionSetup.IsEnabled() then
             exit;
 
-        if IntegrationTableMapping.Get('LOCATION') then
-            exit;
+        if not IntegrationTableMapping.Get('LOCATION') then
+            FSSetupDefaults.ResetLocationMapping(FSConnectionSetup, 'LOCATION', true, true);
 
-        FSSetupDefaults.ResetLocationMapping(FSConnectionSetup, 'LOCATION', true, true);
+        IntegrationFieldMapping.SetFilter("Integration Table Mapping Name", 'PJLINE-WORDERPRODUCT');
+        IntegrationFieldMapping.SetRange("Field No.", ProjectJournalLine.FieldNo("Location Code"));
+        if IntegrationFieldMapping.IsEmpty() then begin
+            FSSetupDefaults.SetLocationFieldMapping(true);
+            FSSetupDefaults.ResetProjectJournalLineWOProductMapping(FSConnectionSetup, 'PJLINE-WORDERPRODUCT', true);
+        end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Setup Defaults", 'OnResetItemProductMappingOnAfterInsertFieldsMapping', '', false, false)]
@@ -992,6 +999,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                         JobJournalLine.Validate("Line Type", JobJournalLine."Line Type"::Billable);
                     // set Item, but for work order products we must keep its Business Central Unit Cost
                     JobJournalLine.Validate("No.", Item."No.");
+                    JobJournalLine.Validate(Description, CopyStr(FSWorkOrderProduct.Name, 1, MaxStrLen(JobJournalLine.Description)));
                     JobJournalLine.Validate("Unit Cost", Item."Unit Cost");
                     JobJournalLine.Validate(Quantity, FSQuantity - QuantityCurrentlyConsumed);
                     JobJournalLine.Validate("Unit Price", Item."Unit Price");

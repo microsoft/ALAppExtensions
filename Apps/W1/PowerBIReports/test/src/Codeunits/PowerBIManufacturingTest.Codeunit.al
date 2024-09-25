@@ -21,11 +21,11 @@ using Microsoft.Manufacturing.ProductionBOM;
 using Microsoft.Manufacturing.Routing;
 using System.Text;
 using Microsoft.Inventory.Location;
+using System.TestLibraries.Security.AccessControl;
 
 codeunit 139878 "PowerBI Manufacturing Test"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
     Access = Internal;
 
     var
@@ -37,6 +37,8 @@ codeunit 139878 "PowerBI Manufacturing Test"
         LibRandom: Codeunit "Library - Random";
         LibUtility: Codeunit "Library - Utility";
         UriBuilder: Codeunit "Uri Builder";
+        PermissionsMock: Codeunit "Permissions Mock";
+        PowerBICoreTest: Codeunit "PowerBI Core Test";
         ResponseEmptyErr: Label 'Response should not be empty.';
 
     [Test]
@@ -205,8 +207,8 @@ codeunit 139878 "PowerBI Manufacturing Test"
         // [WHEN] Get request for production order lines is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Prod. Order Lines - Manuf.", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.GetUri(Uri);
         UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('itemNo eq ''%1''', Item."No."));
+        UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
         // [THEN] The response contains the production order line information
@@ -277,8 +279,8 @@ codeunit 139878 "PowerBI Manufacturing Test"
         // [WHEN] Get request for production order component lines is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Prod. Order Comp. - Manuf.", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.GetUri(Uri);
         UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('itemNo eq ''%1''', ItemComp."No."));
+        UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
         // [THEN] The response contains the production order component line information
@@ -342,8 +344,8 @@ codeunit 139878 "PowerBI Manufacturing Test"
         // [WHEN] Get request for production order routing lines is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Prod. Order Routing Lines", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.GetUri(Uri);
         UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('no eq ''%1''', WorkCenter."No."));
+        UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
         // [THEN] The response contains the production order routing line information
@@ -421,8 +423,8 @@ codeunit 139878 "PowerBI Manufacturing Test"
         // [WHEN] Get request for production item ledger entries is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Item Ledger Entries - Prod.", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.GetUri(Uri);
         UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('orderNo eq ''%1''', ProdOrder."No."));
+        UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
         // [THEN] The response contains the production item ledger entries information
@@ -462,6 +464,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
         Response: Text;
     begin
         // [GIVEN] Item ledger entries exist outside of the query filter
+        PermissionsMock.Assign('SUPER');
         if ItemLedgerEntry.FindLast() then;
         ItemLedgerEntry.Init();
 
@@ -477,7 +480,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
         ItemLedgerEntry."Entry No." += 1;
         ItemLedgerEntry."Entry Type" := ItemLedgerEntry."Entry Type"::"Assembly Consumption";
         ItemLedgerEntry.Insert();
-
+        PermissionsMock.ClearAssignments();
         Commit();
 
         // [WHEN] Get request for the item ledger entries outside of the query filter is made
@@ -532,8 +535,8 @@ codeunit 139878 "PowerBI Manufacturing Test"
         // [WHEN] Get request for production item ledger entries is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Capacity Ledger Entries", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.GetUri(Uri);
         UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('orderNo eq ''%1''', ProdOrder."No."));
+        UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
         // [THEN] The response contains the production item ledger entries information
@@ -721,6 +724,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
     begin
         // [SCENARIO] Test GenerateManufacturingReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Manufacturing Load Date Type" := PBISetup."Manufacturing Load Date Type"::"Start/End Date";
 
@@ -728,6 +732,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
         PBISetup."Manufacturing Start Date" := Today();
         PBISetup."Manufacturing End Date" := Today() + 10;
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         ExpectedFilterTxt := StrSubstNo('%1..%2', Today(), Today() + 10);
 
@@ -748,12 +753,14 @@ codeunit 139878 "PowerBI Manufacturing Test"
     begin
         // [SCENARIO] Test GenerateManufacturingReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Manufacturing Load Date Type" := PBISetup."Manufacturing Load Date Type"::"Relative Date";
 
         // [GIVEN] A mock date formula value
         Evaluate(PBISetup."Manufacturing Date Formula", '30D');
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         ExpectedFilterTxt := StrSubstNo('%1..', CalcDate(PBISetup."Manufacturing Date Formula"));
 
@@ -773,8 +780,11 @@ codeunit 139878 "PowerBI Manufacturing Test"
     begin
         // [SCENARIO] Test GenerateManufacturingReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = " "
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Manufacturing Load Date Type" := PBISetup."Manufacturing Load Date Type"::" ";
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         // [WHEN] GenerateManufacturingReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateManufacturingReportDateFilter();
@@ -793,6 +803,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
     begin
         // [SCENARIO] Test GenerateManufacturingReportDateTimeFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Manufacturing Load Date Type" := PBISetup."Manufacturing Load Date Type"::"Start/End Date";
 
@@ -800,6 +811,7 @@ codeunit 139878 "PowerBI Manufacturing Test"
         PBISetup."Manufacturing Start Date" := Today();
         PBISetup."Manufacturing End Date" := Today() + 10;
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         ExpectedFilterTxt := StrSubstNo('%1..%2', Format(CreateDateTime(Today(), 0T)), Format(CreateDateTime(Today() + 10, 0T)));
 
@@ -820,12 +832,14 @@ codeunit 139878 "PowerBI Manufacturing Test"
     begin
         // [SCENARIO] Test GenerateManufacturingReportDateTimeFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Manufacturing Load Date Type" := PBISetup."Manufacturing Load Date Type"::"Relative Date";
 
         // [GIVEN] A mock date formula value
         Evaluate(PBISetup."Manufacturing Date Formula", '30D');
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         ExpectedFilterTxt := StrSubstNo('%1..', Format(CreateDateTime(CalcDate(PBISetup."Manufacturing Date Formula"), 0T)));
 
@@ -845,8 +859,11 @@ codeunit 139878 "PowerBI Manufacturing Test"
     begin
         // [SCENARIO] Test GenerateManufacturingReportDateTimeFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = " "
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Manufacturing Load Date Type" := PBISetup."Manufacturing Load Date Type"::" ";
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         // [WHEN] GenerateManufacturingReportDateTimeFilter executes 
         ActualFilterTxt := PBIMgt.GenerateManufacturingReportDateTimeFilter();

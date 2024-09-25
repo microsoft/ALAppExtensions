@@ -60,6 +60,8 @@ codeunit 139687 "Recurring Billing Docs Test"
         LibraryPurchase: Codeunit "Library - Purchase";
         LibraryUtility: Codeunit "Library - Utility";
         LibraryERM: Codeunit "Library - ERM";
+        LibraryERMCountryData: Codeunit "Library - ERM Country Data";
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
         BillingProposal: Codeunit "Billing Proposal";
         DocChangeMgt: Codeunit "Document Change Management";
         LibraryRandom: Codeunit "Library - Random";
@@ -83,6 +85,1698 @@ codeunit 139687 "Recurring Billing Docs Test"
         EmptyArray: Boolean;
         NextBillingToDate: Date;
         DialogMsg: Text;
+        IsInitialized: Boolean;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure ExpectBillingLinesCheckErrorsForCustomer()
+    begin
+        Initialize();
+
+        SetupBasicBillingProposal(Enum::"Service Partner"::Customer);
+        BillingLine.SetFilter("Billing Template Code", '%1|%2', BillingTemplate.Code, BillingTemplate2.Code);
+        BillingLine.SetRange(Partner, BillingLine.Partner::Customer);
+        BillingLine.FindFirst();
+        ServiceCommitment.Get(BillingLine."Service Commitment Entry No.");
+        ServiceCommitment.Modify(true);
+        asserterror Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure ExpectBillingLinesCheckErrorsForVendor()
+    begin
+        Initialize();
+
+        SetupBasicBillingProposal(Enum::"Service Partner"::Vendor);
+        BillingLine.SetFilter("Billing Template Code", '%1|%2', BillingTemplate.Code, BillingTemplate2.Code);
+        BillingLine.SetRange(Partner, BillingLine.Partner::Vendor);
+        BillingLine.FindFirst();
+        ServiceCommitment.Get(BillingLine."Service Commitment Entry No.");
+        ServiceCommitment.Modify(true);
+        asserterror Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsTestOpenPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CheckRequestPageSelectionConfirmedForCustomer()
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
+        //The Request Page has been cancelled, therefore no Sales Document should have been created
+        if BillingLine.FindSet() then
+            repeat
+                BillingLine.TestField("Document Type", Enum::"Rec. Billing Document Type"::None);
+                BillingLine.TestField("Document No.", '');
+            until BillingLine.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('CancelCreateVendorBillingDocsTestOpenPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CheckRequestPageSelectionConfirmedForVendor()
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
+        //The Request Page has been cancelled, therefore no Purchase Document should have been created
+        if BillingLine.FindSet() then
+            repeat
+                BillingLine.TestField("Document Type", Enum::"Rec. Billing Document Type"::None);
+                BillingLine.TestField("Document No.", '');
+            until BillingLine.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CreateSalesDocumentsPerContract()
+    begin
+        Initialize();
+
+        //Contract1, Sell-to Customer1, Bill-to Customer1
+        //Contract2, Sell-to Customer2, Bill-to Customer2
+        //Contract3, Sell-to Customer2, Bill-to Customer1
+        //Contract4, Sell-to Customer3, Bill-to Customer1
+        InitAndCreateBillingDocumentsForMultipleContracts();
+        CheckIfSalesDocumentsHaveBeenCreated();
+        AssertThat.AreEqual(4, DocumentsCount, 'Sales Documents were not created correctly');
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,MessageHandler')]
+    procedure CreateSalesDocumentForContractAndCheckSorting()
+    var
+        Customer: Record Customer;
+        Item: Record Item;
+        LastContractLineNo: Integer;
+    begin
+        Initialize();
+
+        //ServiceObject
+        //ServiceObject2
+        //load ServiceObject2 in Contract
+        //load ServiceObject1 in Contract
+        //expect the same sorting in sales invoice
+        LibrarySales.CreateCustomer(Customer);
+        ContractTestLibrary.CreateServiceObjectWithItemAndWithServiceCommitment(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 0);
+        ServiceObject.SetHideValidationDialog(true);
+        ServiceObject.Validate("End-User Customer No.", Customer."No.");
+        ServiceObject.Modify(false);
+        ContractTestLibrary.CreateServiceObjectWithItemAndWithServiceCommitment(ServiceObject2, Enum::"Invoicing Via"::Contract, false, Item, 1, 0);
+        ServiceObject2.SetHideValidationDialog(true);
+        ServiceObject2.Validate("End-User Customer No.", Customer."No.");
+        ServiceObject2.Modify(false);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject2, Customer."No.");
+        ContractTestLibrary.AssignServiceObjectToCustomerContract(CustomerContract, ServiceObject, false);
+        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
+        CreateBillingDocuments();
+        BillingLine.FindLast();
+        FilterSalesLineOnDocumentLine(BillingLine.GetSalesDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
+        SalesLine.FindSet();
+        LastContractLineNo := 0;
+        repeat
+            BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(SalesLine."Document Type"), SalesLine."Document No.", SalesLine."Line No.");
+            BillingLine.FindFirst();
+            if LastContractLineNo > BillingLine."Contract Line No." then
+                Error('Line Sorting in a sales document is wrong.');
+            LastContractLineNo := BillingLine."Contract Line No.";
+        until SalesLine.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CheckSingleContractSalesInvoiceHeaderPostingDescription()
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
+        BillingLine.FindLast();
+        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
+        SalesHeader.TestField("Posting Description", 'Customer Contract ' + BillingLine."Contract No.");
+        PostAndGetSalesInvoiceHeaderFromRecurringBilling();
+        SalesInvoiceHeader.TestField("Posting Description", 'Customer Contract ' + BillingLine."Contract No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsBillToCustomerPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CheckMultipleContractsSalesInvoiceHeaderPostingDescription()
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocumentsForMultipleContracts();
+        BillingLine.FindLast();
+        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
+        SalesHeader.TestField("Posting Description", 'Multiple Customer Contracts');
+        PostAndGetSalesInvoiceHeaderFromRecurringBilling();
+        SalesInvoiceHeader.TestField("Posting Description", 'Multiple Customer Contracts');
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsSellToCustomerPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CreateSalesDocumentsPerSellToCustomer()
+    begin
+        Initialize();
+
+        //Contract1, Sell-to Customer1, Bill-to Customer1
+        //Contract2, Sell-to Customer2, Bill-to Customer2
+        //Contract3, Sell-to Customer2, Bill-to Customer1
+        //Contract4, Sell-to Customer3, Bill-to Customer1
+        InitAndCreateBillingDocumentsForMultipleContracts();
+        CheckIfSalesDocumentsHaveBeenCreated();
+        AssertThat.AreEqual(3, DocumentsCount, 'Sales Documents were not created correctly');
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsBillToCustomerPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CreateSalesDocumentsPerBillToCustomer()
+    begin
+        Initialize();
+
+        //Contract1, Sell-to Customer1, Bill-to Customer1
+        //Contract2, Sell-to Customer2, Bill-to Customer2
+        //Contract3, Sell-to Customer2, Bill-to Customer1
+        //Contract4, Sell-to Customer3, Bill-to Customer1
+        InitAndCreateBillingDocumentsForMultipleContracts();
+        CheckIfSalesDocumentsHaveBeenCreated();
+        AssertThat.AreEqual(2, DocumentsCount, 'Sales Documents were not created correctly');
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CreatePurchaseDocumentsPerContract()
+    begin
+        Initialize();
+
+        //Contract1, Buy-from Vendor1, Pay-to Vendor1
+        //Contract2, Buy-from Vendor2, Pay-to Vendor2
+        //Contract3, Buy-from Vendor2, Bill-to Vendor1
+        //Contract4, Buy-from Vendor3, Bill-to Vendor1
+        InitAndCreateBillingDocumentsForMultipleVendorContracts();
+        CheckIfPurchaseDocumentsHaveBeenCreated();
+        AssertThat.AreEqual(4, PurchaseDocumentCount, 'Purchase Documents were not created correctly');
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CheckPurchInvoiceHeaderPostingDescription()
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
+        BillingLine.FindLast();
+        PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
+        PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
+        PurchaseHeader.Modify(false);
+        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        PurchaseInvoiceHeader.Get(PostedDocumentNo);
+        AssertThat.IsSubstring(PurchaseInvoiceHeader."Posting Description", 'Vendor Contract ' + BillingLine."Contract No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsPayToVendorPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CheckMultipleContractsPurchaseInvoiceHeaderPostingDescription()
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocumentsForMultipleVendorContracts();
+        BillingLine.FindLast();
+        PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
+        PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
+        PurchaseHeader.Modify(false);
+        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        PurchaseInvoiceHeader.Get(PostedDocumentNo);
+        AssertThat.IsSubstring(PurchaseInvoiceHeader."Posting Description", 'Multiple Vendor Contract');
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsBuyFromVendorPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CreatePurchaseDocumentsPerBuyFromVendor()
+    begin
+        Initialize();
+
+        //Contract1, Buy-from Vendor1, Pay-to Vendor1
+        //Contract2, Buy-from Vendor2, Pay-to Vendor2
+        //Contract3, Buy-from Vendor2, Pay-to Vendor1
+        //Contract4, Buy-from Vendor3, Pay-to Vendor1
+        InitAndCreateBillingDocumentsForMultipleVendorContracts();
+        CheckIfPurchaseDocumentsHaveBeenCreated();
+        AssertThat.AreEqual(3, PurchaseDocumentCount, 'Purchase Documents were not created correctly');
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsPayToVendorPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CreatePurchaseDocumentsPerPayToVendor()
+    begin
+        Initialize();
+
+        //Contract1, Buy-from Vendor1, Pay-to Vendor1
+        //Contract2, Buy-from Vendor2, Pay-to Vendor2
+        //Contract3, Buy-from Vendor2, Pay-to Vendor1
+        //Contract4, Buy-from Vendor3, Pay-to Vendor1
+        InitAndCreateBillingDocumentsForMultipleVendorContracts();
+        CheckIfPurchaseDocumentsHaveBeenCreated();
+        AssertThat.AreEqual(2, PurchaseDocumentCount, 'Purchase Documents were not created correctly');
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure PostSalesInvoice()
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
+        BillingLine.FindLast();
+        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
+        PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        SalesInvoiceHeader.Get(PostedDocumentNo);
+        BillingLine.Reset();
+        BillingLine.SetRange("Contract No.", CustomerContract."No.");
+        asserterror BillingLine.FindFirst();
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure PostPurchaseInvoice()
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
+        BillingLine.FindLast();
+        PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
+        PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
+        PurchaseHeader.Modify(false);
+        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        PurchaseInvoiceHeader.Get(PostedDocumentNo);
+        BillingLine.Reset();
+        BillingLine.SetRange("Contract No.", VendorContract."No.");
+        asserterror BillingLine.FindFirst();
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure DeleteSalesDocument()
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
+        BillingLine.FindLast();
+        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
+        SalesHeader.Delete(true);
+        BillingLine.Reset();
+        BillingLine.SetRange("Document Type", Enum::"Rec. Billing Document Type"::Invoice);
+        BillingLine.SetRange("Document No.", SalesHeader."No.");
+        asserterror BillingLine.FindFirst();
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure DeletePurchaseDocument()
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
+        BillingLine.FindLast();
+        PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
+        PurchaseHeader.Delete(true);
+        BillingLine.Reset();
+        BillingLine.SetRange("Document Type", Enum::"Rec. Billing Document Type"::Invoice);
+        BillingLine.SetRange("Document No.", PurchaseHeader."No.");
+        asserterror BillingLine.FindFirst();
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure DeleteSalesLine()
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
+        BillingLine.FindLast();
+        FilterSalesLineOnDocumentLine(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.", BillingLine."Document Line No.");
+        SalesLine.FindFirst();
+        SalesLine.Delete(true);
+        BillingLine.Reset();
+        BillingLine.SetRange("Document Type", Enum::"Rec. Billing Document Type"::Invoice);
+        BillingLine.SetRange("Document No.", SalesLine."Document No.");
+        asserterror BillingLine.FindFirst();
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure DeletePurchaseLine()
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
+        BillingLine.FindLast();
+        FilterPurchaseLineOnDocumentLine(BillingLine.GetPurchaseDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
+        PurchaseLine.FindFirst();
+        PurchaseLine.Delete(true);
+        BillingLine.Reset();
+        BillingLine.SetRange("Document Type", Enum::"Rec. Billing Document Type"::Invoice);
+        BillingLine.SetRange("Document No.", PurchaseLine."Document No.");
+        asserterror BillingLine.FindFirst();
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CreateSalesDocumentsPerCurrencyCode()
+    begin
+        Initialize();
+
+        ClearAll();
+        ContractTestLibrary.CreateCustomer(Customer2);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract2, ServiceObject2, Customer2."No.");
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract3, ServiceObject3, Customer2."No.");
+        CustomerContract3.SetHideValidationDialog(true);
+        CustomerContract3.Validate("Currency Code", LibraryERM.CreateCurrencyWithRandomExchRates());
+        CustomerContract3.Modify(false);
+        CustomerContract2.SetHideValidationDialog(true);
+        CustomerContract2.Validate("Currency Code", LibraryERM.CreateCurrencyWithRandomExchRates());
+        CustomerContract2.Modify(false);
+        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
+        CreateBillingDocuments();
+        CheckIfSalesDocumentsHaveBeenCreated();
+        AssertThat.AreEqual(2, DocumentsCount, 'Sales Documents were not created correctly');
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CreatePurchaseDocumentsPerCurrencyCode()
+    begin
+        Initialize();
+
+        ClearAll();
+        ContractTestLibrary.CreateVendor(Vendor2);
+        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract2, ServiceObject2, Vendor2."No.");
+        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract3, ServiceObject3, Vendor2."No.");
+        VendorContract3.SetHideValidationDialog(true);
+        VendorContract3.Validate("Currency Code", LibraryERM.CreateCurrencyWithRandomExchRates());
+        VendorContract3.Modify(false);
+        VendorContract2.SetHideValidationDialog(true);
+        VendorContract2.Validate("Currency Code", LibraryERM.CreateCurrencyWithRandomExchRates());
+        VendorContract2.Modify(false);
+        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Vendor);
+        CreateBillingDocuments();
+        CheckIfPurchaseDocumentsHaveBeenCreated();
+        AssertThat.AreEqual(2, PurchaseDocumentCount, 'Purchase Documents were not created correctly');
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure ExpectErrorChangeBillingToDateWhenDocNoExists()
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocumentsForMultipleVendorContracts();
+        BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
+        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
+        BillingLine.FindFirst();
+        asserterror BillingProposal.UpdateBillingToDate(BillingLine, CalcDate('<+3D>', BillingLine."Billing to"));
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure ExpectErrorOnModifySalesHeader()
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
+        BillingLine.FindLast();
+        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
+        RRef.GetTable(SalesHeader);
+        PopulateArrayOfFieldsForHeaders(true);
+        TestDocumentFields(true);
+
+        PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        SalesInvoiceHeader.Get(PostedDocumentNo);
+        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader); //check if its neccessary to test Cr Memo
+        RRef.GetTable(SalesHeader);
+        TestDocumentFields(true);
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure ExpectErrorOnModifySalesLine()
+    var
+        SalesInvoiceSubForm: TestPage "Sales Invoice Subform";
+        SalesCrMemoSubForm: TestPage "Sales Cr. Memo Subform";
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
+        BillingLine.FindLast();
+        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
+        FilterSalesLineOnDocumentLine(BillingLine.GetSalesDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
+        SalesLine.FindFirst();
+        RRef.GetTable(SalesLine);
+        PopulateArrayOfFieldsForLines();
+        TestDocumentFields(true);
+        SalesInvoiceSubForm.OpenEdit();
+        SalesInvoiceSubForm.GoToRecord(SalesLine);
+        asserterror SalesInvoiceSubForm."Invoice Disc. Pct.".SetValue(LibraryRandom.RandInt(10));
+        asserterror SalesInvoiceSubForm."Invoice Discount Amount".SetValue(LibraryRandom.RandInt(10));
+        SalesInvoiceSubForm.Close();
+
+        PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        SalesInvoiceHeader.Get(PostedDocumentNo);
+        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader); //check if its neccessary to test Cr Memo
+        BillingLine.FindLast(); //Retrieve Cr Memo Billing Line
+        FilterSalesLineOnDocumentLine(BillingLine.GetSalesDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
+        SalesLine.FindFirst();
+        SalesCrMemoSubForm.OpenEdit();
+        SalesCrMemoSubForm.GoToRecord(SalesLine);
+        asserterror SalesCrMemoSubForm."Invoice Disc. Pct.".SetValue(LibraryRandom.RandInt(10));
+        asserterror SalesCrMemoSubForm."Invoice Discount Amount".SetValue(LibraryRandom.RandInt(10));
+        SalesCrMemoSubForm.Close();
+        RRef.GetTable(SalesLine);
+        TestDocumentFields(true);
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure ExpectErrorOnModifyPurchaseHeader()
+    begin
+        Initialize();
+
+        EmptyArray := false;
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
+        BillingLine.FindLast();
+        PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
+        RRef.GetTable(PurchaseHeader);
+        PopulateArrayOfFieldsForHeaders(false);
+        TestDocumentFields(false);
+
+        PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
+        PurchaseHeader.Modify(false);
+        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        PurchaseInvoiceHeader.Get(PostedDocumentNo);
+        CorrectPostedPurchaseInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseHeader); //check if its neccessary to test Cr Memo
+        RRef.GetTable(PurchaseHeader);
+        TestDocumentFields(false);
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure ExpectErrorOnModifyPurchaseLine()
+    var
+        PurchaseInvoiceSubForm: TestPage "Purch. Invoice Subform";
+        PurchaseCrMemoSubForm: TestPage "Purch. Cr. Memo Subform";
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
+        BillingLine.FindLast();
+        PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
+        FilterPurchaseLineOnDocumentLine(BillingLine.GetPurchaseDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
+        PurchaseLine.FindFirst();
+
+        PurchaseInvoiceSubForm.OpenEdit();
+        PurchaseInvoiceSubForm.GoToRecord(PurchaseLine);
+        asserterror PurchaseInvoiceSubForm."Invoice Disc. Pct.".SetValue(LibraryRandom.RandInt(10));
+        asserterror PurchaseInvoiceSubForm.InvoiceDiscountAmount.SetValue(LibraryRandom.RandInt(10));
+        PurchaseInvoiceSubForm.Close();
+        RRef.GetTable(PurchaseLine);
+        PopulateArrayOfFieldsForLines();
+        TestDocumentFields(true);
+
+        PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
+        PurchaseHeader.Modify(false);
+        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        PurchaseInvoiceHeader.Get(PostedDocumentNo);
+        CorrectPostedPurchaseInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseHeader); //check if its neccessary to test Cr Memo
+        BillingLine.FindLast(); //Fetch new BillingLine created for Cr Memo
+        FilterPurchaseLineOnDocumentLine(BillingLine.GetPurchaseDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
+        PurchaseLine.FindFirst();
+
+        PurchaseCrMemoSubForm.OpenEdit();
+        PurchaseCrMemoSubForm.GoToRecord(PurchaseLine);
+        asserterror PurchaseCrMemoSubForm."Invoice Disc. Pct.".SetValue(LibraryRandom.RandInt(10));
+        asserterror PurchaseCrMemoSubForm."Invoice Discount Amount".SetValue(LibraryRandom.RandInt(10));
+        PurchaseCrMemoSubForm.Close();
+        RRef.GetTable(PurchaseLine);
+        TestDocumentFields(true);
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CheckContractTypeIsTranslated()
+    var
+        Customer: Record Customer;
+        ContractType: Record "Contract Type";
+        FieldTranslation: Record "Field Translation";
+        LanguageMgt: Codeunit Language;
+    begin
+        Initialize();
+
+        ClearAll();
+        ContractTestLibrary.CreateContractType(ContractType);
+        ContractTestLibrary.CreateTranslationForField(FieldTranslation, ContractType, ContractType.FieldNo(Description), LanguageMgt.GetLanguageCode(GlobalLanguage));
+
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '');
+        CustomerContract.Validate("Contract Type", ContractType.Code);
+        CustomerContract.Modify(true);
+        Customer.Get(CustomerContract."Bill-to Customer No.");
+        Customer.Validate("Language Code", FieldTranslation."Language Code");
+        Customer.Modify(false);
+        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
+        CreateBillingDocuments();
+
+        BillingLine.Reset();
+        BillingLine.FindFirst();
+        BillingLine.TestField("Document No.");
+        SalesLine.Reset();
+        SalesLine.SetRange("Document Type", BillingLine.GetSalesDocumentTypeFromBillingDocumentType());
+        SalesLine.SetRange("Document No.", BillingLine."Document No.");
+        SalesLine.SetRange(Description, ContractType.Description);
+        AssertThat.AreEqual(0, SalesLine.Count, 'Untranslated Contract Type Description found');
+        SalesLine.SetRange(Description, FieldTranslation.Translation);
+        AssertThat.AreEqual(1, SalesLine.Count, 'Translated Contract Type Description not found');
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateAndPostCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CreateAndPostSalesDocumentsPerContract()
+    begin
+        Initialize();
+
+        //Contract1, Sell-to Customer1, Bill-to Customer1
+        //Contract2, Sell-to Customer2, Bill-to Customer2
+        //Contract3, Sell-to Customer2, Bill-to Customer1
+        //Contract4, Sell-to Customer3, Bill-to Customer1
+        InitAndCreateBillingDocumentsForMultipleContracts();
+        CheckIfPostedSalesDocumentsHaveBeenCreated();
+        AssertThat.AreEqual(4, DocumentsCount, 'Posted Sales Documents were not created correctly');
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateAndPostCustomerBillingDocsSellToCustomerPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CreateAndPostSalesDocumentsPerSellToCustomer()
+    begin
+        Initialize();
+
+        //Contract1, Sell-to Customer1, Bill-to Customer1
+        //Contract2, Sell-to Customer2, Bill-to Customer2
+        //Contract3, Sell-to Customer2, Bill-to Customer1
+        //Contract4, Sell-to Customer3, Bill-to Customer1
+        InitAndCreateBillingDocumentsForMultipleContracts();
+        CheckIfPostedSalesDocumentsHaveBeenCreated();
+        AssertThat.AreEqual(3, DocumentsCount, 'Posted Sales Documents were not created correctly');
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateAndPostCustomerBillingDocsBillToCustomerPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CreateAndPostSalesDocumentsPerBillToCustomer()
+    begin
+        Initialize();
+
+        //Contract1, Sell-to Customer1, Bill-to Customer1
+        //Contract2, Sell-to Customer2, Bill-to Customer2
+        //Contract3, Sell-to Customer2, Bill-to Customer1
+        //Contract4, Sell-to Customer3, Bill-to Customer1
+        InitAndCreateBillingDocumentsForMultipleContracts();
+        CheckIfPostedSalesDocumentsHaveBeenCreated();
+        AssertThat.AreEqual(2, DocumentsCount, 'Posted Sales Documents were not created correctly');
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure ExpectErrorBillingLinesForAllCustomerContractLinesExist()
+    begin
+        Initialize();
+
+        SetupBasicBillingProposal("Service Partner"::Customer);
+        asserterror BillingProposal.CreateBillingProposalFromContract(CustomerContract."No.", CustomerContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Customer);
+    end;
+
+    [Test]
+    [HandlerFunctions('DialogHandler,ExchangeRateSelectionModalPageHandler,CreateCustomerBillingDocsContractPageHandler,MessageHandler')]
+    procedure CheckCustomerBillingProposalCanBeCreatedForSalesInvoiceExists()
+    begin
+        Initialize();
+
+        //Check if correct dialog opens       
+        //Unposted invoice exists
+        InitAndCreateBillingDocument("Service Partner"::Customer);
+        DialogMsg := UnpostedSalesInvExistsMsg;
+        BillingProposal.CreateBillingProposalFromContract(CustomerContract."No.", CustomerContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Customer);
+    end;
+
+    [Test]
+    [HandlerFunctions('DialogHandler,ExchangeRateSelectionModalPageHandler,CreateAndPostCustomerBillingDocsContractPageHandler,MessageHandler')]
+    procedure CheckCustomerBillingProposalCanBeCreatedForSalesCrMemoExists()
+    begin
+        Initialize();
+
+        //Check if correct dialog opens       
+        //Credit Memo exists
+        InitAndCreateBillingDocument("Service Partner"::Customer);
+        DialogMsg := SalesCrMemoExistsMsg;
+        GetPostedSalesDocumentsFromContract(CustomerContract);
+        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader);
+        BillingProposal.CreateBillingProposalFromContract(CustomerContract."No.", CustomerContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Customer);
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,CreateBillingDocumentPageHandler,MessageHandler')]
+    procedure ExpectErrorOnCreateSingleSalesDocumentOnPreviousBillingDate()
+    begin
+        Initialize();
+
+        ClearAll();
+        ContractTestLibrary.ResetContractRecords();
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', false);
+        GetCustomerContractServiceCommitment(CustomerContract."No.");
+        NextBillingToDate := CalcDate('<-1Y>', ServiceCommitment."Next Billing Date");
+        BillingProposal.CreateBillingProposalFromContract(CustomerContract."No.", CustomerContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Customer);
+        AssertThat.ExpectedError(NoContractLinesFoundErr);
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateBillingDocumentPageHandler')]
+    procedure TestBillingLineOnCreateSingleSalesDocument()
+    begin
+        Initialize();
+
+        ClearAll();
+        ContractTestLibrary.ResetContractRecords();
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', false);
+        GetCustomerContractServiceCommitment(CustomerContract."No.");
+        NextBillingToDate := ServiceCommitment."Next Billing Date";
+        BillingProposal.CreateBillingProposalFromContract(CustomerContract."No.", CustomerContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Customer);
+        BillingLine.FindLast();
+        BillingLine.TestField("Document Type", "Rec. Billing Document Type"::Invoice);
+        BillingLine.TestField("Document No.");
+        BillingLine.TestField("Billing Template Code", '');
+        BillingLine.TestField("Billing to", NextBillingToDate);
+        BillingLine.TestField("User ID", UserId);
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateBillingDocumentPageHandler')]
+    procedure TestDeleteSingleSalesDocument()
+    begin
+        Initialize();
+
+        ClearAll();
+        ContractTestLibrary.ResetContractRecords();
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', false);
+        GetCustomerContractServiceCommitment(CustomerContract."No.");
+        NextBillingToDate := ServiceCommitment."Next Billing Date";
+        BillingProposal.CreateBillingProposalFromContract(CustomerContract."No.", CustomerContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Customer);
+        BillingLine.Reset();
+        BillingLine.SetRange("Billing Template Code", '');
+        BillingLine.FindLast();
+        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
+        SalesHeader.Delete(true);
+        BillingLine.Reset();
+        BillingLine.SetRange("Billing Template Code", '');
+        asserterror BillingLine.FindLast();
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure ExpectErrorBillingLinesForAllVendorContractLinesExist()
+    begin
+        Initialize();
+
+        SetupBasicBillingProposal("Service Partner"::Vendor);
+        asserterror BillingProposal.CreateBillingProposalFromContract(VendorContract."No.", VendorContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Vendor);
+    end;
+
+    [Test]
+    [HandlerFunctions('DialogHandler,ExchangeRateSelectionModalPageHandler,CreateVendorBillingDocsTestOpenPageHandler,MessageHandler')]
+    procedure CheckVendorBillingProposalCanBeCreatedForPurchaseInvoiceExists()
+    var
+        UnpostedPurchaseInvExistsMsg: Label 'Billing line with unposted Purchase Invoice exists. New invoices cannot be created until the current invoice is posted. Do you want to open the invoice?';
+    begin
+        Initialize();
+
+        //Check if correct dialog opens       
+        //Unposted invoice exists
+        InitAndCreateBillingDocument("Service Partner"::Vendor);
+        DialogMsg := UnpostedPurchaseInvExistsMsg;
+        BillingProposal.CreateBillingProposalFromContract(VendorContract."No.", VendorContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Vendor);
+    end;
+
+    [Test]
+    [HandlerFunctions('DialogHandler,ExchangeRateSelectionModalPageHandler,CreateVendorBillingDocsTestOpenPageHandler,MessageHandler')]
+    procedure CheckVendorBillingProposalCanBeCreatedForPurchaseCrMemoExists()
+    var
+        BillingLineArchive: Record "Billing Line Archive";
+    begin
+        Initialize();
+
+        //Check if correct dialog opens       
+        //Credit Memo exists
+        PostPurchaseInvoice();
+        DialogMsg := PurchCrMemoExistsMsg;
+        ContractTestLibrary.FilterBillingLineArchiveOnContractLine(BillingLineArchive, VendorContract."No.", 0, Enum::"Service Partner"::Vendor);
+        BillingLineArchive.FindFirst();
+        PurchaseInvoiceHeader.Get(BillingLineArchive."Document No.");
+        CorrectPostedPurchaseInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseHeader);
+        BillingProposal.CreateBillingProposalFromContract(VendorContract."No.", VendorContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Vendor);
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateBillingDocumentPageHandler')]
+    procedure ExpectErrorOnCreateSinglePurchaseDocumentOnPreviousBillingDate()
+    begin
+        Initialize();
+
+        ClearAll();
+        ContractTestLibrary.ResetContractRecords();
+        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '', false);
+        GetVendorContractServiceCommitment(VendorContract."No.");
+        NextBillingToDate := CalcDate('<-1Y>', ServiceCommitment."Next Billing Date");
+        BillingProposal.CreateBillingProposalFromContract(VendorContract."No.", VendorContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Vendor);
+        AssertThat.ExpectedError(NoContractLinesFoundErr);
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateBillingDocumentPageHandler')]
+    procedure TestBillingLineOnCreateSinglePurchaseDocument()
+    begin
+        Initialize();
+
+        ClearAll();
+        ContractTestLibrary.ResetContractRecords();
+        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '', false);
+        GetVendorContractServiceCommitment(VendorContract."No.");
+        NextBillingToDate := ServiceCommitment."Next Billing Date";
+        BillingProposal.CreateBillingProposalFromContract(VendorContract."No.", VendorContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Vendor);
+        BillingLine.FindLast();
+        BillingLine.TestField("Document Type", "Rec. Billing Document Type"::Invoice);
+        BillingLine.TestField("Document No.");
+        BillingLine.TestField("Billing Template Code", '');
+        BillingLine.TestField("Billing to", NextBillingToDate);
+        BillingLine.TestField("User ID", UserId);
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateBillingDocumentPageHandler')]
+    procedure TestDeleteSinglePurchaseDocument()
+    begin
+        Initialize();
+
+        ClearAll();
+        ContractTestLibrary.ResetContractRecords();
+        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '', false);
+        GetVendorContractServiceCommitment(VendorContract."No.");
+        NextBillingToDate := ServiceCommitment."Next Billing Date";
+        BillingProposal.CreateBillingProposalFromContract(VendorContract."No.", VendorContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Vendor);
+        BillingLine.Reset();
+        BillingLine.SetRange("Billing Template Code", '');
+        BillingLine.FindLast();
+        PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
+        PurchaseHeader.Delete(true);
+        BillingLine.Reset();
+        BillingLine.SetRange("Billing Template Code", '');
+        asserterror BillingLine.FindLast();
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateVendorBillingDocsContractPageHandler,BillingLinesArchivePageHandler')]
+    procedure TestOpenBillingLinesArchiveFromPurchaseInvoice()
+    var
+        PurchInvLine: Record "Purch. Inv. Line";
+    begin
+        Initialize();
+
+        ContractTestLibrary.InitContractsApp();
+        InitAndCreateBillingDocumentsForMultipleVendorContracts();
+        BillingLine.Reset();
+        BillingLine.FindSet();
+        repeat
+            PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
+            PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
+            PurchaseHeader.Modify(false);
+            PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true)
+        until BillingLine.Next() = 0;
+        PurchInvLine.SetRange("Document No.", PostedDocumentNo);
+        PurchInvLine.SetFilter("Contract No.", '<>%1', '');
+        PurchInvLine.SetFilter("Contract Line No.", '<>%1', 0);
+        PurchInvLine.FindFirst();
+        ExpectedNoOfArchivedLines := CountBillingArchiveLinesOnDocument(Enum::"Rec. Billing Document Type"::Invoice, PostedDocumentNo, "Service Partner"::Vendor, PurchInvLine."Contract No.", PurchInvLine."Contract Line No.");
+        ContractsGeneralMgt.ShowArchivedBillingLines(PurchInvLine."Contract No.", PurchInvLine."Contract Line No.", "Service Partner"::Vendor, Enum::"Rec. Billing Document Type"::Invoice, PostedDocumentNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateVendorBillingDocsContractPageHandler,BillingLinesArchivePageHandler')]
+    procedure TestOpenBillingLinesArchiveFromPurchaseCreditMemo()
+    var
+        PurchCrMemoLine: Record "Purch. Cr. Memo Line";
+    begin
+        Initialize();
+
+        ContractTestLibrary.InitContractsApp();
+        InitAndCreateBillingDocumentsForMultipleVendorContracts();
+        BillingLine.Reset();
+        BillingLine.FindSet();
+        repeat
+            PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
+            PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
+            PurchaseHeader.Modify(false);
+            PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+            PurchaseInvoiceHeader.Get(PostedDocumentNo);
+            CorrectPostedPurchaseInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseHeader);
+            PurchaseHeader.Validate("Vendor Cr. Memo No.", LibraryUtility.GenerateGUID());
+            PurchaseHeader.Modify(false);
+            PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        until BillingLine.Next() = 0;
+        PurchCrMemoLine.SetRange("Document No.", PostedDocumentNo);
+        PurchCrMemoLine.SetFilter("Contract No.", '<>%1', '');
+        PurchCrMemoLine.SetFilter("Contract Line No.", '<>%1', 0);
+        PurchCrMemoLine.FindFirst();
+        ExpectedNoOfArchivedLines := CountBillingArchiveLinesOnDocument(Enum::"Rec. Billing Document Type"::"Credit Memo", PostedDocumentNo, "Service Partner"::Vendor, PurchCrMemoLine."Contract No.", PurchCrMemoLine."Contract Line No.");
+        ContractsGeneralMgt.ShowArchivedBillingLines(PurchCrMemoLine."Contract No.", PurchCrMemoLine."Contract Line No.", "Service Partner"::Vendor, Enum::"Rec. Billing Document Type"::"Credit Memo", PostedDocumentNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateCustomerBillingDocsContractPageHandler,BillingLinesArchivePageHandler')]
+    procedure TestOpenBillingLinesArchiveFromSalesInvoice()
+    var
+        SalesInvLine: Record "Sales Invoice Line";
+    begin
+        Initialize();
+
+        ContractTestLibrary.InitContractsApp();
+        InitAndCreateBillingDocumentsForMultipleContracts();
+        BillingLine.Reset();
+        BillingLine.FindSet();
+        repeat
+            SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
+            PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true)
+        until BillingLine.Next() = 0;
+        SalesInvLine.SetRange("Document No.", PostedDocumentNo);
+        SalesInvLine.SetFilter("Contract No.", '<>%1', '');
+        SalesInvLine.SetFilter("Contract Line No.", '<>%1', 0);
+        SalesInvLine.FindFirst();
+        ExpectedNoOfArchivedLines := CountBillingArchiveLinesOnDocument(Enum::"Rec. Billing Document Type"::Invoice, PostedDocumentNo, "Service Partner"::Customer, SalesInvLine."Contract No.", SalesInvLine."Contract Line No.");
+        ContractsGeneralMgt.ShowArchivedBillingLines(SalesInvLine."Contract No.", SalesInvLine."Contract Line No.", "Service Partner"::Customer, Enum::"Rec. Billing Document Type"::Invoice, PostedDocumentNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateCustomerBillingDocsContractPageHandler,BillingLinesArchivePageHandler')]
+    procedure TestOpenBillingLinesArchiveFromSalesCreditMemo()
+    var
+        SalesCrMemoLine: Record "Sales Cr.Memo Line";
+    begin
+        Initialize();
+
+        ContractTestLibrary.InitContractsApp();
+        InitAndCreateBillingDocumentsForMultipleContracts();
+        BillingLine.Reset();
+        BillingLine.FindSet();
+        repeat
+            SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
+            PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+            SalesInvoiceHeader.Get(PostedDocumentNo);
+            CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader);
+            PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        until BillingLine.Next() = 0;
+        SalesCrMemoLine.SetRange("Document No.", PostedDocumentNo);
+        SalesCrMemoLine.SetFilter("Contract No.", '<>%1', '');
+        SalesCrMemoLine.SetFilter("Contract Line No.", '<>%1', 0);
+        SalesCrMemoLine.FindFirst();
+        ExpectedNoOfArchivedLines := CountBillingArchiveLinesOnDocument(Enum::"Rec. Billing Document Type"::"Credit Memo", PostedDocumentNo, "Service Partner"::Customer, SalesCrMemoLine."Contract No.", SalesCrMemoLine."Contract Line No.");
+        ContractsGeneralMgt.ShowArchivedBillingLines(SalesCrMemoLine."Contract No.", SalesCrMemoLine."Contract Line No.", "Service Partner"::Customer, "Rec. Billing Document Type"::"Credit Memo", PostedDocumentNo);
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure ExpectErrorOnServiceObjectDescriptionChangeWhenUnpostedDocumentsExistCustomer()
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocument("Service Partner"::Customer);
+        CheckIfSalesDocumentsHaveBeenCreated();
+        asserterror ServiceObject.Validate(Description, LibraryRandom.RandText(MaxStrLen(ServiceObject.Description)));
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure ExpectErrorOnServiceObjectDescriptionChangeWhenUnpostedDocumentsExistVendor()
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocument("Service Partner"::Vendor);
+        CheckIfPurchaseDocumentsHaveBeenCreated();
+        asserterror ServiceObject.Validate(Description, LibraryRandom.RandText(MaxStrLen(ServiceObject.Description)));
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure TestRecurringBillingInCustLedgerEntries()
+    var
+        CustLedgEntry: Record "Cust. Ledger Entry";
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
+        BillingLine.FindLast();
+        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
+        PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
+        CustLedgEntry.SetRange("Document Type", CustLedgEntry."Document Type"::Invoice);
+        CustLedgEntry.SetRange("Document No.", PostedDocumentNo);
+        CustLedgEntry.FindSet();
+        CustLedgEntry.TestField("Recurring Billing", true);
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure TestRecurringBillingInVendorLedgerEntries()
+    var
+        VendorLedgerEntry: Record "Vendor Ledger Entry";
+    begin
+        Initialize();
+
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
+        BillingLine.FindLast();
+        PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
+        PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
+        PurchaseHeader.Modify(false);
+        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        VendorLedgerEntry.SetRange("Document Type", VendorLedgerEntry."Document Type"::Invoice);
+        VendorLedgerEntry.SetRange("Document No.", PostedDocumentNo);
+        VendorLedgerEntry.FindSet();
+        VendorLedgerEntry.TestField("Recurring Billing", true);
+    end;
+
+    [Test]
+    procedure TestPostingPurchaseInvoiceFromGeneralJournal()
+    var
+        GeneralJournalLine: Record "Gen. Journal Line";
+        GenJournalTemplate: Record "Gen. Journal Template";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        Vendor: Record Vendor;
+        GLAccount: Record "G/L Account";
+    begin
+        Initialize();
+
+        //Expect that posting of simple general journal is not affected with Recurring billing field in Vendor Ledger Entries
+        //Ref. IC230221) Posting of Recurring General Journal fails
+        LibraryPurchase.CreateVendor(Vendor);
+        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+        LibraryERM.CreateGeneralJnlLine(GeneralJournalLine, GenJournalTemplate.Name, GenJournalBatch.Name, Enum::"Gen. Journal Document Type"::Invoice,
+                                        Enum::"Gen. Journal Account Type"::Vendor, Vendor."No.", -100);
+        LibraryERM.CreateGLAccount(GLAccount);
+        GeneralJournalLine."Bal. Account Type" := GeneralJournalLine."Bal. Account Type"::"G/L Account";
+        GeneralJournalLine."Bal. Account No." := GLAccount."No.";
+        GeneralJournalLine.Modify(false);
+        LibraryERM.PostGeneralJnlLine(GeneralJournalLine);
+    end;
+
+    [Test]
+    procedure TestPostingSalesInvoiceFromGeneralJournal()
+    var
+        GeneralJournalLine: Record "Gen. Journal Line";
+        GenJournalTemplate: Record "Gen. Journal Template";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        Customer: Record Customer;
+        GLAccount: Record "G/L Account";
+    begin
+        Initialize();
+
+        //Expect that posting of simple general journal is not affected with Recurring billing field in Customer Ledger Entries
+        //Ref. IC230221) Posting of Recurring General Journal fails
+        LibrarySales.CreateCustomer(Customer);
+        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
+        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
+        LibraryERM.CreateGeneralJnlLine(GeneralJournalLine, GenJournalTemplate.Name, GenJournalBatch.Name, Enum::"Gen. Journal Document Type"::Invoice,
+                                        Enum::"Gen. Journal Account Type"::Customer, Customer."No.", 100);
+        LibraryERM.CreateGLAccount(GLAccount);
+        GeneralJournalLine."Bal. Account Type" := GeneralJournalLine."Bal. Account Type"::"G/L Account";
+        GeneralJournalLine."Bal. Account No." := GLAccount."No.";
+        GeneralJournalLine.Modify(false);
+        LibraryERM.PostGeneralJnlLine(GeneralJournalLine);
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CheckContractSalesInvoiceDescriptions()
+    var
+        ServiceContractSetup: Record "Service Contract Setup";
+        ItemAttribute: Record "Item Attribute";
+        ItemAttribute2: Record "Item Attribute";
+        ItemAttributeValue: Record "Item Attribute Value";
+        ItemAttributeValue2: Record "Item Attribute Value";
+        ParentSalesLine: Record "Sales Line";
+        CustomerNo: Code[20];
+    begin
+        Initialize();
+
+        // Test: Sales Invoice Line Description and attached lines are created according to setup
+        ClearAll();
+        BillingLine.Reset();
+        if not BillingLine.IsEmpty() then
+            BillingLine.DeleteAll(false);
+
+        ServiceContractSetup.Get();
+        ServiceContractSetup."Contract Invoice Description" := Enum::"Contract Invoice Text Type"::"Service Commitment";
+        ServiceContractSetup."Contract Invoice Add. Line 1" := Enum::"Contract Invoice Text Type"::"Billing Period";
+        ServiceContractSetup."Contract Invoice Add. Line 2" := Enum::"Contract Invoice Text Type"::"Service Object";
+        ServiceContractSetup."Contract Invoice Add. Line 3" := Enum::"Contract Invoice Text Type"::"Serial No.";
+        ServiceContractSetup."Contract Invoice Add. Line 4" := Enum::"Contract Invoice Text Type"::"Customer Reference";
+        ServiceContractSetup."Contract Invoice Add. Line 5" := Enum::"Contract Invoice Text Type"::"Primary attribute";
+        ServiceContractSetup.Modify(false);
+
+        CustomerNo := '';
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, CustomerNo);
+        ServiceObject."Customer Reference" := CopyStr(LibraryRandom.RandText(MaxStrLen(ServiceObject."Customer Reference")), 1, MaxStrLen(ServiceObject."Customer Reference"));
+        ServiceObject."Serial No." := CopyStr(LibraryRandom.RandText(MaxStrLen(ServiceObject."Serial No.")), 1, MaxStrLen(ServiceObject."Serial No."));
+        ServiceObject.Modify(false);
+
+        ContractTestLibrary.CreateServiceObjectAttributeMappedToServiceObject(ServiceObject."No.", ItemAttribute, ItemAttributeValue, false);
+        ContractTestLibrary.CreateServiceObjectAttributeMappedToServiceObject(ServiceObject."No.", ItemAttribute2, ItemAttributeValue2, true);
+
+        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
+
+        CreateBillingDocuments(false);
+
+        BillingLine.Reset();
+        BillingLine.FindFirst();
+        BillingLine.TestField("Document Type", BillingLine."Document Type"::Invoice);
+
+        SalesLine.Reset();
+        FilterSalesLineOnDocumentLine(BillingLine.GetSalesDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
+        AssertThat.AreEqual(1, SalesLine.Count, 'The Sales lines were not created properly.');
+        SalesLine.FindFirst();
+        SalesLine.TestField(Description, BillingLine."Service Commitment Description");
+        SalesLine.TestField("Description 2", '');
+
+        SalesLine2.Reset();
+        SalesLine2.SetRange("Document Type", SalesLine."Document Type");
+        SalesLine2.SetRange("Document No.", SalesLine."Document No.");
+        SalesLine2.SetRange("Attached to Line No.", SalesLine."Line No.");
+        AssertThat.AreEqual(5, SalesLine2.Count, 'Setup-failure: expected five attached Lines.');
+        SalesLine2.FindSet();
+        // 1st line: Service Period
+        AssertThat.IsSubstring(SalesLine2.Description, 'Service period');
+        ParentSalesLine.Get(SalesLine2."Document Type", SalesLine2."Document No.", SalesLine2."Attached to Line No.");
+        SalesLine2.Next();
+        // 2nd line: Service Object Description
+        AssertThat.AreEqual(SalesLine2.Description, ServiceObject.Description, 'Description does not match expected value');
+        ParentSalesLine.Get(SalesLine2."Document Type", SalesLine2."Document No.", SalesLine2."Attached to Line No.");
+        SalesLine2.Next();
+        // 3rd line: Serial No.
+        AssertThat.IsSubstring(SalesLine2.Description, ServiceObject."Serial No.");
+        ParentSalesLine.Get(SalesLine2."Document Type", SalesLine2."Document No.", SalesLine2."Attached to Line No.");
+        SalesLine2.Next();
+        // 4th line: Customer Reference
+        AssertThat.IsSubstring(SalesLine2.Description, ServiceObject."Customer Reference");
+        ParentSalesLine.Get(SalesLine2."Document Type", SalesLine2."Document No.", SalesLine2."Attached to Line No.");
+        SalesLine2.Next();
+        // 5th line: Primary Attribute
+        AssertThat.IsSubstring(ServiceObject.GetPrimaryAttributeValue(), SalesLine2.Description);
+        ParentSalesLine.Get(SalesLine2."Document Type", SalesLine2."Document No.", SalesLine2."Attached to Line No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CheckContractZeroNamesAreTransferredToSalesDocumentOnBillingPerContractOptionsOff()
+    var
+        FieldValueNotExpectedTxt: Label '"%1" should not be present as a description-line', Locked = true;
+    begin
+        Initialize();
+
+        // Test: Names are NOT transferred as Description Lines in Sales Document (Create per Contract (see PageHandler), both options off)
+        ClearAll();
+        PrepareCustomerContractWithNames();
+
+        CustomerContract."Contractor Name in coll. Inv." := false;
+        CustomerContract."Recipient Name in coll. Inv." := false;
+        CustomerContract.Modify(false);
+        Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
+
+        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Sell-to Customer Name"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Sell-to Customer Name")));
+        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Sell-to Customer Name 2"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Sell-to Customer Name 2")));
+        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Ship-to Name"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Ship-to Name")));
+        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Ship-to Name 2"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Ship-to Name 2")));
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsBillToCustomerPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CheckContractZeroNamesAreTransferredToSalesDocumentOnBillingPerBillToContractOptionsOff()
+    var
+        FieldValueNotExpectedTxt: Label '"%1" should not be present as a description-line', Locked = true;
+    begin
+        Initialize();
+
+        // Test: Names are NOT transferred as Description Lines in Sales Document (Create per bill-to (see PageHandler), both options off)
+        ClearAll();
+        PrepareCustomerContractWithNames();
+
+        CustomerContract."Contractor Name in coll. Inv." := false;
+        CustomerContract."Recipient Name in coll. Inv." := false;
+        CustomerContract.Modify(false);
+        Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
+
+        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Sell-to Customer Name"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Sell-to Customer Name")));
+        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Sell-to Customer Name 2"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Sell-to Customer Name 2")));
+        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Ship-to Name"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Ship-to Name")));
+        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Ship-to Name 2"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Ship-to Name 2")));
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CheckContractZeroNamesAreTransferredToSalesDocumentOnBillingPerContractOptionsOn()
+    var
+        FieldValueNotExpectedTxt: Label '"%1" should not be present as a description-line', Locked = true;
+    begin
+        Initialize();
+
+        // Test: Names are NOT transferred as Description Lines in Sales Document (Create per Contract (see PageHandler), both options on)
+        ClearAll();
+        PrepareCustomerContractWithNames();
+
+        CustomerContract."Contractor Name in coll. Inv." := true;
+        CustomerContract."Recipient Name in coll. Inv." := true;
+        CustomerContract.Modify(false);
+        Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
+
+        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Sell-to Customer Name"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Sell-to Customer Name")));
+        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Sell-to Customer Name 2"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Sell-to Customer Name 2")));
+        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Ship-to Name"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Ship-to Name")));
+        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Ship-to Name 2"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Ship-to Name 2")));
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsBillToCustomerPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CheckContractNamesAreTransferredToSalesDocumentOnBillingPerBillToContractOptionsOn()
+    var
+        FieldValueNotExpectedTxt: Label '"%1" should be present (once) as a description-line', Locked = true;
+    begin
+        Initialize();
+
+        // Test: Names are transferred as Description Lines in Sales Document (Create per bill-to (see PageHandler), both options on)
+        ClearAll();
+        PrepareCustomerContractWithNames();
+
+        CustomerContract."Contractor Name in coll. Inv." := true;
+        CustomerContract."Recipient Name in coll. Inv." := true;
+        CustomerContract.Modify(false);
+        Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
+
+        AssertThat.AreEqual(1, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Sell-to Customer Name"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Sell-to Customer Name")));
+        AssertThat.AreEqual(1, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Sell-to Customer Name 2"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Sell-to Customer Name 2")));
+        AssertThat.AreEqual(1, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Ship-to Name"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Ship-to Name")));
+        AssertThat.AreEqual(1, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Ship-to Name 2"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Ship-to Name 2")));
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CheckIfBillingLinesAreDeletedOnCreateCustomerInvoiceWithError()
+    var
+        Customer: Record Customer;
+    begin
+        Initialize();
+
+        ClearAll();
+        ContractTestLibrary.ResetContractRecords();
+        ContractTestLibrary.CreateCustomer(Customer);
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
+        Customer."Customer Posting Group" := '';
+        Customer.Modify(false);
+        asserterror CustomerContract.CreateBillingProposal();
+
+        //Check if Billing lines for customer contract are empty
+        BillingLine.Reset();
+        BillingLine.SetRange("Billing Template Code", '');
+        BillingLine.SetRange("Contract No.", CustomerContract."No.");
+        asserterror BillingLine.FindSet();
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateCustomerBillingDocsContractPageHandler,BillingLinesArchivePageHandler')]
+    procedure TestShowBillingLineArchiveFromServiceCommitment()
+    var
+        BillingLineArchive: Record "Billing Line Archive";
+    begin
+        Initialize();
+
+        ContractTestLibrary.InitContractsApp();
+        InitAndCreateBillingDocumentsForMultipleContracts();
+        BillingLine.Reset();
+        BillingLine.FindSet();
+        repeat
+            SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
+            LibrarySales.PostSalesDocument(SalesHeader, true, true)
+        until BillingLine.Next() = 0;
+
+        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Contract Line Type", Enum::"Contract Line Type"::"Service Commitment");
+        CustomerContractLine.FindFirst();
+        ExpectedNoOfArchivedLines := CountBillingArchiveLinesOnServiceCommitment(CustomerContractLine."Service Commitment Entry No.");
+        ContractsGeneralMgt.ShowArchivedBillingLinesForServiceCommitment(CustomerContractLine."Service Commitment Entry No.");
+
+        CustomerContractLine.GetServiceCommitment(ServiceCommitment);
+        //Force Close service commitment
+        ServiceCommitment."Service End Date" := CalcDate('<-1D>', Today());
+        ServiceCommitment."Next Billing Date" := CalcDate('<+1D>', ServiceCommitment."Service End Date");
+        ServiceCommitment.Modify(false);
+        ServiceObject.UpdateServicesDates();
+        ServiceCommitment.Delete(true);
+
+        BillingLineArchive.FilterBillingLineArchiveOnServiceCommitment(CustomerContractLine."Service Commitment Entry No.");
+        AssertThat.RecordIsEmpty(BillingLineArchive);
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,ConfirmHandler,MessageHandler,CreateCustomerBillingDocsContractPageHandler,BillingLinesArchivePageHandler')]
+    procedure TestShowBillingLineArchiveFromRecreatedCustomerContractLine()
+    var
+        LineNo: Integer;
+    begin
+        Initialize();
+
+        ContractTestLibrary.InitContractsApp();
+        InitAndCreateBillingDocumentsForMultipleContracts();
+        BillingLine.Reset();
+        BillingLine.FindSet();
+        repeat
+            SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
+            LibrarySales.PostSalesDocument(SalesHeader, true, true)
+        until BillingLine.Next() = 0;
+
+        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
+        CustomerContractLine.SetRange("Contract Line Type", Enum::"Contract Line Type"::"Service Commitment");
+        CustomerContractLine.FindFirst();
+        ExpectedNoOfArchivedLines := CountBillingArchiveLinesOnServiceCommitment(CustomerContractLine."Service Commitment Entry No.");
+        ContractsGeneralMgt.ShowArchivedBillingLinesForServiceCommitment(CustomerContractLine."Service Commitment Entry No.");
+
+        CustomerContractLine.GetServiceCommitment(ServiceCommitment);
+        //Force Close service commitment
+        ServiceCommitment."Service End Date" := CalcDate('<-1D>', Today());
+        ServiceCommitment."Next Billing Date" := CalcDate('<+1D>', ServiceCommitment."Service End Date");
+        ServiceCommitment.Modify(false);
+        ServiceObject.UpdateServicesDates();
+
+        //Delete customer contract line
+        //create a new line with same line no
+        LineNo := CustomerContractLine."Line No.";
+        CustomerContractLine.Get(CustomerContractLine."Contract No.", CustomerContractLine."Line No.");
+        CustomerContractLine.Delete(true);
+        CustomerContractLine.Init();
+        CustomerContractLine."Contract No." := CustomerContract."No.";
+        CustomerContractLine."Line No." := LineNo;
+        CustomerContractLine."Contract Line Type" := Enum::"Contract Line Type"::Comment;
+        CustomerContractLine.Insert(false);
+
+        ExpectedNoOfArchivedLines := 0;
+        ContractsGeneralMgt.ShowArchivedBillingLinesForServiceCommitment(CustomerContractLine."Service Commitment Entry No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,ConfirmHandler,MessageHandler,CreateVendorBillingDocsContractPageHandler,BillingLinesArchivePageHandler')]
+    procedure TestShowBillingLineArchiveFromRecreatedVendorContractLine()
+    var
+        LineNo: Integer;
+    begin
+        Initialize();
+
+        ContractTestLibrary.InitContractsApp();
+        InitAndCreateBillingDocumentsForMultipleVendorContracts();
+        BillingLine.Reset();
+        BillingLine.FindSet();
+        repeat
+            PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
+            PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
+            PurchaseHeader.Modify(false);
+            LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
+        until BillingLine.Next() = 0;
+
+        VendorContractLine.SetRange("Contract No.", VendorContract."No.");
+        VendorContractLine.SetRange("Contract Line Type", Enum::"Contract Line Type"::"Service Commitment");
+        VendorContractLine.FindFirst();
+        ExpectedNoOfArchivedLines := CountBillingArchiveLinesOnServiceCommitment(VendorContractLine."Service Commitment Entry No.");
+        ContractsGeneralMgt.ShowArchivedBillingLinesForServiceCommitment(VendorContractLine."Service Commitment Entry No.");
+
+        VendorContractLine.GetServiceCommitment(ServiceCommitment);
+        //Force Close service commitment
+        ServiceCommitment."Service End Date" := CalcDate('<-1D>', Today());
+        ServiceCommitment."Next Billing Date" := CalcDate('<+1D>', ServiceCommitment."Service End Date");
+        ServiceCommitment.Modify(false);
+        ServiceObject.UpdateServicesDates();
+
+        //Delete vendor contract line
+        //create a new line with same line no
+        LineNo := VendorContractLine."Line No.";
+        VendorContractLine.Get(VendorContractLine."Contract No.", VendorContractLine."Line No.");
+        VendorContractLine.Delete(true);
+        VendorContractLine.Init();
+        VendorContractLine."Contract No." := CustomerContract."No.";
+        VendorContractLine."Line No." := LineNo;
+        VendorContractLine."Contract Line Type" := Enum::"Contract Line Type"::Comment;
+        VendorContractLine.Insert(false);
+
+        ExpectedNoOfArchivedLines := 0;
+        ContractsGeneralMgt.ShowArchivedBillingLinesForServiceCommitment(VendorContractLine."Service Commitment Entry No.");
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,MessageHandler')]
+    procedure TestBillingLinesWithInvoiceDocumentType()
+    var
+        Item: Record Item;
+        ServiceCommitmentTemplate: Record "Service Commitment Template";
+        ServiceCommitmentPackage: Record "Service Commitment Package";
+        ServiceCommPackageLine: Record "Service Comm. Package Line";
+    begin
+        Initialize();
+
+        ClearAll();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
+        ServiceCommitmentTemplate."Invoicing Item No." := Item."No.";
+        ServiceCommitmentTemplate."Calculation Base %" := LibraryRandom.RandDecInRange(0, 100, 2);
+        Evaluate(ServiceCommitmentTemplate."Billing Base Period", '<12M>');
+        ServiceCommitmentTemplate.Modify(false);
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ServiceCommPackageLine."Calculation Base Type" := ServiceCommPackageLine."Calculation Base Type"::"Document Price";
+        ContractTestLibrary.InitServiceCommitmentPackageLineFields(ServiceCommPackageLine);
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
+
+        CreateAndPostSimpleSalesDocument(Item."No.");
+        CreateCustomerContractAndAssignServiceObjects(Item."No.");
+        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer, WorkDate());
+        CreateBillingDocuments();
+
+        BillingLine.Reset();
+        BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
+        BillingLine.SetRange(Partner, BillingLine.Partner::Customer);
+        BillingLine.SetRange("Contract No.", CustomerContract."No.");
+        BillingLine.FindSet();
+        repeat
+            BillingLine.TestField("Document Type", BillingLine."Document Type"::Invoice);
+        until BillingLine.Next() = 0;
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,MessageHandler')]
+    procedure TestBillingLinesWithCreditMemoDocumentType()
+    var
+        Item: Record Item;
+        ServiceCommitmentTemplate: Record "Service Commitment Template";
+        ServiceCommitmentPackage: Record "Service Commitment Package";
+        ServiceCommPackageLine: Record "Service Comm. Package Line";
+        PreviousNextBillingDate: Date;
+        InitialNextBillingDate: Date;
+    begin
+        Initialize();
+
+        ClearAll();
+        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
+        ServiceCommitmentTemplate."Invoicing Item No." := Item."No.";
+        ServiceCommitmentTemplate."Calculation Base %" := LibraryRandom.RandDecInRange(0, 100, 2);
+        Evaluate(ServiceCommitmentTemplate."Billing Base Period", '<12M>');
+        ServiceCommitmentTemplate.Modify(false);
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ServiceCommPackageLine."Calculation Base Type" := ServiceCommPackageLine."Calculation Base Type"::"Document Price";
+        ContractTestLibrary.InitServiceCommitmentPackageLineFields(ServiceCommPackageLine);
+        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
+
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, '');
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", 1);
+        SalesLine.Validate("Unit Price", -50);
+        SalesLine.Modify(false);
+        LibrarySales.PostSalesDocument(SalesHeader, true, false);
+        CreateCustomerContractAndAssignServiceObjects(Item."No.");
+        InitialNextBillingDate := ServiceCommitment."Next Billing Date";
+
+        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer, WorkDate());
+        CreateBillingDocuments();
+
+        BillingLine.Reset();
+        BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
+        BillingLine.SetRange(Partner, BillingLine.Partner::Customer);
+        BillingLine.SetRange("Contract No.", CustomerContract."No.");
+        BillingLine.FindSet();
+        repeat
+            BillingLine.TestField("Document Type", BillingLine."Document Type"::"Credit Memo");
+        until BillingLine.Next() = 0;
+        CustomerContractLine.Get(BillingLine."Contract No.", BillingLine."Contract Line No."); //Save Customer Contract Line
+
+        FilterSalesLineOnDocumentLine(BillingLine.GetSalesDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
+        SalesLine.SetRange(Type, "Sales Line Type"::Item);
+        SalesLine.FindSet();
+        if SalesLine."Line Amount" < 0 then
+            Error('Unit Price and Line Amount in Credit memo have wrong sign');
+        CustomerContractLine.GetServiceCommitment(ServiceCommitment);
+        PreviousNextBillingDate := ServiceCommitment."Next Billing Date";
+
+        SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
+        SalesHeader.Delete(true);
+        CustomerContractLine.GetServiceCommitment(ServiceCommitment);
+        AssertThat.AreEqual(ServiceCommitment."Next Billing Date", PreviousNextBillingDate, 'Next billing date was updated when Sales Document is deleted');
+
+        BillingLine.FindLast();
+        repeat
+            BillingLine.Delete(true);
+        until BillingLine.Next(-1) = 0;
+        CustomerContractLine.GetServiceCommitment(ServiceCommitment);
+        AssertThat.AreEqual(ServiceCommitment."Next Billing Date", InitialNextBillingDate, 'Next billing date was not updated when billing line is deleted');
+    end;
+
+    [Test]
+    [HandlerFunctions('MessageHandler')]
+    procedure TestBillingLinesAreDeletedForCreditMemos()
+    var
+        Item: Record Item;
+        ServiceCommPackageLine: Record "Service Comm. Package Line";
+        Assert: Codeunit Assert;
+    begin
+        Initialize();
+
+        // Test: When a Credit Memo (created directly from a Contract) is deleted, all linked Billing Lines should also be deleted
+        Clear(SalesHeader);
+        Clear(CustomerContract);
+
+        ServiceCommPackageLine.Reset();
+        if not ServiceCommPackageLine.IsEmpty() then
+            ServiceCommPackageLine.DeleteAll(false);
+        ContractTestLibrary.CreateServiceObjectItemWithServiceCommitments(Item);
+        ServiceCommPackageLine.FindFirst();
+        ServiceCommPackageLine.Validate("Calculation Base Type", ServiceCommPackageLine."Calculation Base Type"::"Document Price");
+        ServiceCommPackageLine."Invoicing Item No." := Item."No.";
+        ServiceCommPackageLine.Validate("Calculation Base %", 100);
+        ServiceCommPackageLine.Modify(true);
+
+        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, '');
+        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", 1);
+        SalesLine.Validate("Unit Price", -1200);
+        SalesLine.Modify(true);
+        LibrarySales.PostSalesDocument(SalesHeader, true, false);
+        CreateCustomerContractAndAssignServiceObjects(Item."No.");
+
+        CustomerContract.TestField("No.");
+        ServiceObject.TestField("No.");
+        ServiceCommitment.Reset();
+        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
+        ServiceCommitment.FindFirst();
+        if ServiceCommitment."Calculation Base Amount" >= 0 then
+            Error('Setup-Failure: negative "Calculation Base Amount" expected for Service Commitment.');
+
+        BillingProposal.CreateBillingProposalForContract(
+            Enum::"Service Partner"::Customer,
+            CustomerContract."No.",
+            '',
+            '',
+            CalcDate('<+CY>', WorkDate()),
+            CalcDate('<+CY>', WorkDate()));
+        if not BillingProposal.CreateBillingDocument(
+            Enum::"Service Partner"::Customer,
+            CustomerContract."No.",
+            CalcDate('<+CY>', WorkDate()),
+            CalcDate('<+CY>', WorkDate()),
+            false,
+            false)
+        then
+            Error(GetLastErrorText());
+
+        CustomerContract.TestField("No.");
+        BillingLine.Reset();
+        BillingLine.SetRange("Contract No.", CustomerContract."No.");
+        Assert.AreEqual(1, BillingLine.Count, 'Setup-failure, creating billing document: expected one billing line');
+        BillingLine.SetLoadFields("Document Type", "Document No.", "Billing Template Code");
+        BillingLine.FindFirst();
+        Assert.AreEqual(BillingLine."Document Type"::"Credit Memo", BillingLine."Document Type", 'Setup-failure, creating billing document: expected a credit memo to be created');
+        BillingLine.TestField("Document No.");
+        BillingLine.TestField("Billing Template Code", '');
+        SalesHeader.Get(SalesHeader."Document Type"::"Credit Memo", BillingLine."Document No.");
+        SalesHeader.Delete(true);
+        Assert.AreEqual(0, BillingLine.Count, 'Zero remaining billing lines expected after deleting the credit memo.');
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
+    procedure CheckBatchDeleteAllContractDocuments()
+    begin
+        Initialize();
+
+        // Test: multiple Sales- and Purchase-Contract Documents can be batch-deleted by using the function from the recurring billing page
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
+        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
+
+        BillingProposal.DeleteBillingDocuments(1, false); // Selection: 1 = "All Documents"
+
+        AssertThat.AreEqual(0, GetNumberOfContractDocumentsSales(Enum::"Sales Document Type"::Invoice), 'Failed to delete all Sales Contract Invoices');
+        AssertThat.AreEqual(0, GetNumberOfContractDocumentsSales(Enum::"Sales Document Type"::"Credit Memo"), 'Failed to delete all Sales Contract Credit Memos');
+        AssertThat.AreEqual(0, GetNumberOfContractDocumentsPurchase(Enum::"Purchase Document Type"::Invoice), 'Failed to delete all Purchase Contract Invoices');
+        AssertThat.AreEqual(0, GetNumberOfContractDocumentsPurchase(Enum::"Purchase Document Type"::"Credit Memo"), 'Failed to delete all Purchase Contract Credit Memos');
+    end;
+
+    [Test]
+    procedure CheckBatchDeleteSelectedContractDocuments()
+    begin
+        Initialize();
+
+        // Test: multiple Sales- and Purchase-Contract Invoices can be batch-deleted depending on the selected document type
+        // Selection: 2 = "All Sales Invoices"
+        CreateAndDeleteDummyContractDocuments(2, 0, 2, 2, 2);
+        // Selection: 3 = "All Sales Credit Memos"
+        CreateAndDeleteDummyContractDocuments(3, 2, 0, 2, 2);
+        // Selection: 4 = "All Purchase Invoices"
+        CreateAndDeleteDummyContractDocuments(4, 2, 2, 0, 2);
+        // Selection: 5 = "All Purchase Credit Memos"
+        CreateAndDeleteDummyContractDocuments(5, 2, 2, 2, 0);
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateBillingDocumentPageHandler,MessageHandler,ExchangeRateSelectionModalPageHandler')]
+    procedure TestVendorContractPurchaseInvoicePricesTakenFromServiceCommitment()
+    var
+        Item: Record Item;
+        ServiceCommitmentTemplate: Record "Service Commitment Template";
+        ServiceCommitmentPackage: Record "Service Commitment Package";
+        ServiceCommPackageLine: Record "Service Comm. Package Line";
+        PriceListHeader: Record "Price List Header";
+        PriceListLine: Record "Price List Line";
+    begin
+        //[SCENARIO]: Test if Prices in Purchase Invoice (created from Vendor Contract) are taken from service commitments
+        Initialize();
+
+        //[GIVEN]:
+        //Setup service commitment item with purchase price 
+        //Create service object from the Sales order
+        //Assign the service commitment to the vendor contract (at this point service commitment has prices taken from the sales order)
+        ClearAll();
+        ContractTestLibrary.ResetContractRecords();
+
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '<1M>', 100, "Invoicing Via"::Contract, "Calculation Base Type"::"Document Price");
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '<1M>', 100, '', "Service Partner"::Vendor, Item."No.", "Invoicing Via"::Contract, "Calculation Base Type"::"Document Price", '', '<1M>', false);
+        ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item", ServiceCommitmentPackage.Code);
+
+        LibraryPriceCalculation.CreatePriceHeader(PriceListHeader, "Price Type"::Purchase, "Price Source Type"::"All Vendors", '');
+        LibraryPriceCalculation.CreatePriceListLine(PriceListLine, PriceListHeader.Code, PriceListHeader."Price Type", PriceListHeader."Source Type", PriceListHeader."Parent Source No.", PriceListHeader."Source No.", Enum::"Price Amount Type"::Any, Enum::"Price Asset Type"::Item, Item."No.");
+        PriceListManagement.ActivateDraftLines(PriceListHeader);
+
+        LibrarySales.CreateSalesDocumentWithItem(SalesHeader, SalesLine, Enum::"Sales Document Type"::Order, '', Item."No.", LibraryRandom.RandDecInRange(1, 8, 0), '', CalcDate('<-CM>', WorkDate()));
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        ServiceObject.FindLast();
+        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '', false);
+        GetVendorContractServiceCommitment(VendorContract."No.");
+
+        //[WHEN]:
+        //Create purchase invoice directly from the vendor contract
+        NextBillingToDate := CalcDate('<CM>', ServiceCommitment."Next Billing Date"); //Take the whole month for more accurate comparison
+        BillingProposal.CreateBillingProposalFromContract(VendorContract."No.", VendorContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Vendor);
+
+        //[THEN]:
+        //Expect that Discount from the price list is not applied in the purchase line
+        //Expect that the Line amount is set from the service commitment and not the price list
+        BillingLine.FindLast();
+        FilterPurchaseLineOnDocumentLine(BillingLine.GetPurchaseDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
+        PurchaseLine.SetRange("Line Amount", ServiceCommitment."Service Amount");
+        PurchaseLine.SetRange("Line Discount %", ServiceCommitment."Discount %");
+        AssertThat.RecordIsNotEmpty(PurchaseLine);
+    end;
+
+    [Test]
+    [HandlerFunctions('CreateBillingDocumentPageHandler,MessageHandler')]
+    procedure TestCustomerContractSalesInvoicePricesTakenFromServiceCommitment()
+    var
+        Item: Record Item;
+        ServiceCommitmentTemplate: Record "Service Commitment Template";
+        ServiceCommitmentPackage: Record "Service Commitment Package";
+        ServiceCommPackageLine: Record "Service Comm. Package Line";
+        PriceListHeader: Record "Price List Header";
+        PriceListLine: Record "Price List Line";
+    begin
+        //[SCENARIO]: Test if Prices in Sales Invoice (created from Customer Contract) are taken from service commitments
+        Initialize();
+
+        //[GIVEN]:
+        //Setup service commitment item with sales price 
+        //Create service object from the Sales order
+        //Assign the service commitment to the customer contract (at this point service commitment has prices taken from the sales order)
+        ClearAll();
+        ContractTestLibrary.ResetContractRecords();
+
+        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '<1M>', 100, "Invoicing Via"::Contract, "Calculation Base Type"::"Document Price");
+        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
+        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '<1M>', 100, '', "Service Partner"::Customer, Item."No.", "Invoicing Via"::Contract, "Calculation Base Type"::"Document Price", '', '<1M>', false);
+        ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item", ServiceCommitmentPackage.Code);
+
+        LibraryPriceCalculation.CreatePriceHeader(PriceListHeader, "Price Type"::Sale, "Price Source Type"::"All Customers", '');
+        LibraryPriceCalculation.CreatePriceListLine(PriceListLine, PriceListHeader.Code, PriceListHeader."Price Type", PriceListHeader."Source Type", PriceListHeader."Parent Source No.", PriceListHeader."Source No.", Enum::"Price Amount Type"::Any, Enum::"Price Asset Type"::Item, Item."No.");
+        PriceListManagement.ActivateDraftLines(PriceListHeader);
+
+        LibrarySales.CreateSalesDocumentWithItem(SalesHeader, SalesLine, Enum::"Sales Document Type"::Order, '', Item."No.", LibraryRandom.RandDecInRange(1, 8, 0), '', CalcDate('<-CM>', WorkDate()));
+        LibrarySales.PostSalesDocument(SalesHeader, true, true);
+
+        ServiceObject.FindLast();
+        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, SalesHeader."Sell-to Customer No.", false);
+        GetCustomerContractServiceCommitment(CustomerContract."No.");
+
+        //[WHEN]:
+        //Create purchase invoice directly from the vendor contract
+        NextBillingToDate := CalcDate('<CM>', ServiceCommitment."Next Billing Date"); //Take the whole month for more accurate comparison
+        BillingProposal.CreateBillingProposalFromContract(CustomerContract."No.", CustomerContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Customer);
+        BillingLine.FindLast();
+        //[THEN]:
+        //Expect that Discount from the price list is not applied in the sales line
+        //Expect that the Line amount is set from the service commitment and not the price list
+        FilterSalesLineOnDocumentLine(BillingLine.GetSalesDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
+        SalesLine.SetRange("Line Amount", ServiceCommitment."Service Amount");
+        SalesLine.SetRange("Line Discount %", ServiceCommitment."Discount %");
+        AssertThat.RecordIsNotEmpty(SalesLine);
+    end;
+
+    local procedure Initialize()
+    begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Recurring Billing Docs Test");
+
+        if IsInitialized then
+            exit;
+
+        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Recurring Billing Docs Test");
+        LibraryERMCountryData.UpdatePurchasesPayablesSetup();
+        LibraryERMCountryData.UpdateSalesReceivablesSetup();
+        LibraryERMCountryData.UpdateGeneralLedgerSetup();
+        LibraryERMCountryData.UpdateJournalTemplMandatory(false);
+        LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Recurring Billing Docs Test");
+    end;
+
+    local procedure FilterSalesLineOnDocumentLine(SalesDocumentType: Enum "Sales Document Type"; DocumentNo: Code[20]; LineNo: Integer)
+    begin
+        SalesLine.SetRange("Document Type", SalesDocumentType);
+        SalesLine.SetRange("Document No.", DocumentNo);
+        SalesLine.SetRange("Line No.", LineNo);
+    end;
+
+    local procedure FilterPurchaseLineOnDocumentLine(PurchaseDocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20]; LineNo: Integer)
+    begin
+        PurchaseLine.SetRange("Document Type", PurchaseDocumentType);
+        PurchaseLine.SetRange("Document No.", DocumentNo);
+        PurchaseLine.SetRange("Line No.", LineNo);
+    end;
 
     local procedure InitServiceContractSetup()
     var
@@ -232,516 +1926,6 @@ codeunit 139687 "Recurring Billing Docs Test"
             until BillingLine.Next() = 0;
     end;
 
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure ExpectBillingLinesCheckErrorsForCustomer()
-    begin
-        SetupBasicBillingProposal(Enum::"Service Partner"::Customer);
-        BillingLine.SetFilter("Billing Template Code", '%1|%2', BillingTemplate.Code, BillingTemplate2.Code);
-        BillingLine.SetRange(Partner, BillingLine.Partner::Customer);
-        BillingLine.FindFirst();
-        ServiceCommitment.Get(BillingLine."Service Commitment Entry No.");
-        ServiceCommitment.Modify(true);
-        asserterror Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
-    end;
-
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure ExpectBillingLinesCheckErrorsForVendor()
-    begin
-        SetupBasicBillingProposal(Enum::"Service Partner"::Vendor);
-        BillingLine.SetFilter("Billing Template Code", '%1|%2', BillingTemplate.Code, BillingTemplate2.Code);
-        BillingLine.SetRange(Partner, BillingLine.Partner::Vendor);
-        BillingLine.FindFirst();
-        ServiceCommitment.Get(BillingLine."Service Commitment Entry No.");
-        ServiceCommitment.Modify(true);
-        asserterror Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsTestOpenPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CheckRequestPageSelectionConfirmedForCustomer()
-    begin
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
-        //The Request Page has been cancelled, therefore no Sales Document should have been created
-        if BillingLine.FindSet() then
-            repeat
-                BillingLine.TestField("Document Type", Enum::"Rec. Billing Document Type"::None);
-                BillingLine.TestField("Document No.", '');
-            until BillingLine.Next() = 0;
-    end;
-
-    [Test]
-    [HandlerFunctions('CancelCreateVendorBillingDocsTestOpenPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CheckRequestPageSelectionConfirmedForVendor()
-    begin
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
-        //The Request Page has been cancelled, therefore no Purchase Document should have been created
-        if BillingLine.FindSet() then
-            repeat
-                BillingLine.TestField("Document Type", Enum::"Rec. Billing Document Type"::None);
-                BillingLine.TestField("Document No.", '');
-            until BillingLine.Next() = 0;
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CreateSalesDocumentsPerContract()
-    begin
-        //Contract1, Sell-to Customer1, Bill-to Customer1
-        //Contract2, Sell-to Customer2, Bill-to Customer2
-        //Contract3, Sell-to Customer2, Bill-to Customer1
-        //Contract4, Sell-to Customer3, Bill-to Customer1
-        InitAndCreateBillingDocumentsForMultipleContracts();
-        CheckIfSalesDocumentsHaveBeenCreated();
-        AssertThat.AreEqual(4, DocumentsCount, 'Sales Documents were not created correctly');
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,MessageHandler')]
-    procedure CreateSalesDocumentForContractAndCheckSorting()
-    var
-        Customer: Record Customer;
-        Item: Record Item;
-        LastContractLineNo: Integer;
-    begin
-        //ServiceObject
-        //ServiceObject2
-        //load ServiceObject2 in Contract
-        //load ServiceObject1 in Contract
-        //expect the same sorting in sales invoice
-        LibrarySales.CreateCustomer(Customer);
-        ContractTestLibrary.CreateServiceObjectWithItemAndWithServiceCommitment(ServiceObject, Enum::"Invoicing Via"::Contract, false, Item, 1, 0);
-        ServiceObject.SetHideValidationDialog(true);
-        ServiceObject.Validate("End-User Customer No.", Customer."No.");
-        ServiceObject.Modify(false);
-        ContractTestLibrary.CreateServiceObjectWithItemAndWithServiceCommitment(ServiceObject2, Enum::"Invoicing Via"::Contract, false, Item, 1, 0);
-        ServiceObject2.SetHideValidationDialog(true);
-        ServiceObject2.Validate("End-User Customer No.", Customer."No.");
-        ServiceObject2.Modify(false);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject2, Customer."No.");
-        ContractTestLibrary.AssignServiceObjectToCustomerContract(CustomerContract, ServiceObject, false);
-        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
-        CreateBillingDocuments();
-        BillingLine.FindLast();
-        FilterSalesLineOnDocumentLine(BillingLine.GetSalesDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
-        SalesLine.FindSet();
-        LastContractLineNo := 0;
-        repeat
-            BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(SalesLine."Document Type"), SalesLine."Document No.", SalesLine."Line No.");
-            BillingLine.FindFirst();
-            if LastContractLineNo > BillingLine."Contract Line No." then
-                Error('Line Sorting in a sales document is wrong.');
-            LastContractLineNo := BillingLine."Contract Line No.";
-        until SalesLine.Next() = 0;
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CheckSingleContractSalesInvoiceHeaderPostingDescription()
-    begin
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
-        BillingLine.FindLast();
-        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
-        SalesHeader.TestField("Posting Description", 'Customer Contract ' + BillingLine."Contract No.");
-        PostAndGetSalesInvoiceHeaderFromRecurringBilling();
-        SalesInvoiceHeader.TestField("Posting Description", 'Customer Contract ' + BillingLine."Contract No.");
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsBillToCustomerPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CheckMultipleContractsSalesInvoiceHeaderPostingDescription()
-    begin
-        InitAndCreateBillingDocumentsForMultipleContracts();
-        BillingLine.FindLast();
-        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
-        SalesHeader.TestField("Posting Description", 'Multiple Customer Contracts');
-        PostAndGetSalesInvoiceHeaderFromRecurringBilling();
-        SalesInvoiceHeader.TestField("Posting Description", 'Multiple Customer Contracts');
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsSellToCustomerPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CreateSalesDocumentsPerSellToCustomer()
-    begin
-        //Contract1, Sell-to Customer1, Bill-to Customer1
-        //Contract2, Sell-to Customer2, Bill-to Customer2
-        //Contract3, Sell-to Customer2, Bill-to Customer1
-        //Contract4, Sell-to Customer3, Bill-to Customer1
-        InitAndCreateBillingDocumentsForMultipleContracts();
-        CheckIfSalesDocumentsHaveBeenCreated();
-        AssertThat.AreEqual(3, DocumentsCount, 'Sales Documents were not created correctly');
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsBillToCustomerPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CreateSalesDocumentsPerBillToCustomer()
-    begin
-        //Contract1, Sell-to Customer1, Bill-to Customer1
-        //Contract2, Sell-to Customer2, Bill-to Customer2
-        //Contract3, Sell-to Customer2, Bill-to Customer1
-        //Contract4, Sell-to Customer3, Bill-to Customer1
-        InitAndCreateBillingDocumentsForMultipleContracts();
-        CheckIfSalesDocumentsHaveBeenCreated();
-        AssertThat.AreEqual(2, DocumentsCount, 'Sales Documents were not created correctly');
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CreatePurchaseDocumentsPerContract()
-    begin
-        //Contract1, Buy-from Vendor1, Pay-to Vendor1
-        //Contract2, Buy-from Vendor2, Pay-to Vendor2
-        //Contract3, Buy-from Vendor2, Bill-to Vendor1
-        //Contract4, Buy-from Vendor3, Bill-to Vendor1
-        InitAndCreateBillingDocumentsForMultipleVendorContracts();
-        CheckIfPurchaseDocumentsHaveBeenCreated();
-        AssertThat.AreEqual(4, PurchaseDocumentCount, 'Purchase Documents were not created correctly');
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CheckPurchInvoiceHeaderPostingDescription()
-    begin
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
-        BillingLine.FindLast();
-        PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
-        PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
-        PurchaseHeader.Modify(false);
-        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
-        PurchaseInvoiceHeader.Get(PostedDocumentNo);
-        AssertThat.IsSubstring(PurchaseInvoiceHeader."Posting Description", 'Vendor Contract ' + BillingLine."Contract No.");
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsPayToVendorPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CheckMultipleContractsPurchaseInvoiceHeaderPostingDescription()
-    begin
-        InitAndCreateBillingDocumentsForMultipleVendorContracts();
-        BillingLine.FindLast();
-        PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
-        PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
-        PurchaseHeader.Modify(false);
-        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
-        PurchaseInvoiceHeader.Get(PostedDocumentNo);
-        AssertThat.IsSubstring(PurchaseInvoiceHeader."Posting Description", 'Multiple Vendor Contract');
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsBuyFromVendorPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CreatePurchaseDocumentsPerBuyFromVendor()
-    begin
-        //Contract1, Buy-from Vendor1, Pay-to Vendor1
-        //Contract2, Buy-from Vendor2, Pay-to Vendor2
-        //Contract3, Buy-from Vendor2, Pay-to Vendor1
-        //Contract4, Buy-from Vendor3, Pay-to Vendor1
-        InitAndCreateBillingDocumentsForMultipleVendorContracts();
-        CheckIfPurchaseDocumentsHaveBeenCreated();
-        AssertThat.AreEqual(3, PurchaseDocumentCount, 'Purchase Documents were not created correctly');
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsPayToVendorPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CreatePurchaseDocumentsPerPayToVendor()
-    begin
-        //Contract1, Buy-from Vendor1, Pay-to Vendor1
-        //Contract2, Buy-from Vendor2, Pay-to Vendor2
-        //Contract3, Buy-from Vendor2, Pay-to Vendor1
-        //Contract4, Buy-from Vendor3, Pay-to Vendor1
-        InitAndCreateBillingDocumentsForMultipleVendorContracts();
-        CheckIfPurchaseDocumentsHaveBeenCreated();
-        AssertThat.AreEqual(2, PurchaseDocumentCount, 'Purchase Documents were not created correctly');
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure PostSalesInvoice()
-    begin
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
-        BillingLine.FindLast();
-        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
-        PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        SalesInvoiceHeader.Get(PostedDocumentNo);
-        BillingLine.Reset();
-        BillingLine.SetRange("Contract No.", CustomerContract."No.");
-        asserterror BillingLine.FindFirst();
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure PostPurchaseInvoice()
-    begin
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
-        BillingLine.FindLast();
-        PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
-        PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
-        PurchaseHeader.Modify(false);
-        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
-        PurchaseInvoiceHeader.Get(PostedDocumentNo);
-        BillingLine.Reset();
-        BillingLine.SetRange("Contract No.", VendorContract."No.");
-        asserterror BillingLine.FindFirst();
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure DeleteSalesDocument()
-    begin
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
-        BillingLine.FindLast();
-        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
-        SalesHeader.Delete(true);
-        BillingLine.Reset();
-        BillingLine.SetRange("Document Type", Enum::"Rec. Billing Document Type"::Invoice);
-        BillingLine.SetRange("Document No.", SalesHeader."No.");
-        asserterror BillingLine.FindFirst();
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure DeletePurchaseDocument()
-    begin
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
-        BillingLine.FindLast();
-        PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
-        PurchaseHeader.Delete(true);
-        BillingLine.Reset();
-        BillingLine.SetRange("Document Type", Enum::"Rec. Billing Document Type"::Invoice);
-        BillingLine.SetRange("Document No.", PurchaseHeader."No.");
-        asserterror BillingLine.FindFirst();
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure DeleteSalesLine()
-    begin
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
-        BillingLine.FindLast();
-        FilterSalesLineOnDocumentLine(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.", BillingLine."Document Line No.");
-        SalesLine.FindFirst();
-        SalesLine.Delete(true);
-        BillingLine.Reset();
-        BillingLine.SetRange("Document Type", Enum::"Rec. Billing Document Type"::Invoice);
-        BillingLine.SetRange("Document No.", SalesLine."Document No.");
-        asserterror BillingLine.FindFirst();
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure DeletePurchaseLine()
-    begin
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
-        BillingLine.FindLast();
-        FilterPurchaseLineOnDocumentLine(BillingLine.GetPurchaseDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
-        PurchaseLine.FindFirst();
-        PurchaseLine.Delete(true);
-        BillingLine.Reset();
-        BillingLine.SetRange("Document Type", Enum::"Rec. Billing Document Type"::Invoice);
-        BillingLine.SetRange("Document No.", PurchaseLine."Document No.");
-        asserterror BillingLine.FindFirst();
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CreateSalesDocumentsPerCurrencyCode()
-    begin
-        ClearAll();
-        ContractTestLibrary.CreateCustomer(Customer2);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract2, ServiceObject2, Customer2."No.");
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract3, ServiceObject3, Customer2."No.");
-        CustomerContract3.SetHideValidationDialog(true);
-        CustomerContract3.Validate("Currency Code", LibraryERM.CreateCurrencyWithRandomExchRates());
-        CustomerContract3.Modify(false);
-        CustomerContract2.SetHideValidationDialog(true);
-        CustomerContract2.Validate("Currency Code", LibraryERM.CreateCurrencyWithRandomExchRates());
-        CustomerContract2.Modify(false);
-        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
-        CreateBillingDocuments();
-        CheckIfSalesDocumentsHaveBeenCreated();
-        AssertThat.AreEqual(2, DocumentsCount, 'Sales Documents were not created correctly');
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CreatePurchaseDocumentsPerCurrencyCode()
-    begin
-        ClearAll();
-        ContractTestLibrary.CreateVendor(Vendor2);
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract2, ServiceObject2, Vendor2."No.");
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract3, ServiceObject3, Vendor2."No.");
-        VendorContract3.SetHideValidationDialog(true);
-        VendorContract3.Validate("Currency Code", LibraryERM.CreateCurrencyWithRandomExchRates());
-        VendorContract3.Modify(false);
-        VendorContract2.SetHideValidationDialog(true);
-        VendorContract2.Validate("Currency Code", LibraryERM.CreateCurrencyWithRandomExchRates());
-        VendorContract2.Modify(false);
-        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Vendor);
-        CreateBillingDocuments();
-        CheckIfPurchaseDocumentsHaveBeenCreated();
-        AssertThat.AreEqual(2, PurchaseDocumentCount, 'Purchase Documents were not created correctly');
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure ExpectErrorChangeBillingToDateWhenDocNoExists()
-    begin
-        InitAndCreateBillingDocumentsForMultipleVendorContracts();
-        BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange("Service Object No.", ServiceObject."No.");
-        BillingLine.FindFirst();
-        asserterror BillingProposal.UpdateBillingToDate(BillingLine, CalcDate('<+3D>', BillingLine."Billing to"));
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure ExpectErrorOnModifySalesHeader()
-    begin
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
-        BillingLine.FindLast();
-        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
-        RRef.GetTable(SalesHeader);
-        PopulateArrayOfFieldsForHeaders(true);
-        TestDocumentFields(true);
-
-        PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        SalesInvoiceHeader.Get(PostedDocumentNo);
-        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader); //check if its neccessary to test Cr Memo
-        RRef.GetTable(SalesHeader);
-        TestDocumentFields(true);
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure ExpectErrorOnModifySalesLine()
-    var
-        SalesInvoiceSubForm: TestPage "Sales Invoice Subform";
-        SalesCrMemoSubForm: TestPage "Sales Cr. Memo Subform";
-    begin
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
-        BillingLine.FindLast();
-        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
-        FilterSalesLineOnDocumentLine(BillingLine.GetSalesDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
-        SalesLine.FindFirst();
-        RRef.GetTable(SalesLine);
-        PopulateArrayOfFieldsForLines();
-        TestDocumentFields(true);
-        SalesInvoiceSubForm.OpenEdit();
-        SalesInvoiceSubForm.GoToRecord(SalesLine);
-        asserterror SalesInvoiceSubForm."Invoice Disc. Pct.".SetValue(LibraryRandom.RandInt(10));
-        asserterror SalesInvoiceSubForm."Invoice Discount Amount".SetValue(LibraryRandom.RandInt(10));
-        SalesInvoiceSubForm.Close();
-
-        PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        SalesInvoiceHeader.Get(PostedDocumentNo);
-        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader); //check if its neccessary to test Cr Memo
-        BillingLine.FindLast(); //Retrieve Cr Memo Billing Line
-        FilterSalesLineOnDocumentLine(BillingLine.GetSalesDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
-        SalesLine.FindFirst();
-        SalesCrMemoSubForm.OpenEdit();
-        SalesCrMemoSubForm.GoToRecord(SalesLine);
-        asserterror SalesCrMemoSubForm."Invoice Disc. Pct.".SetValue(LibraryRandom.RandInt(10));
-        asserterror SalesCrMemoSubForm."Invoice Discount Amount".SetValue(LibraryRandom.RandInt(10));
-        SalesCrMemoSubForm.Close();
-        RRef.GetTable(SalesLine);
-        TestDocumentFields(true);
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure ExpectErrorOnModifyPurchaseHeader()
-    begin
-        EmptyArray := false;
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
-        BillingLine.FindLast();
-        PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
-        RRef.GetTable(PurchaseHeader);
-        PopulateArrayOfFieldsForHeaders(false);
-        TestDocumentFields(false);
-
-        PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
-        PurchaseHeader.Modify(false);
-        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
-        PurchaseInvoiceHeader.Get(PostedDocumentNo);
-        CorrectPostedPurchaseInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseHeader); //check if its neccessary to test Cr Memo
-        RRef.GetTable(PurchaseHeader);
-        TestDocumentFields(false);
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure ExpectErrorOnModifyPurchaseLine()
-    var
-        PurchaseInvoiceSubForm: TestPage "Purch. Invoice Subform";
-        PurchaseCrMemoSubForm: TestPage "Purch. Cr. Memo Subform";
-    begin
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
-        BillingLine.FindLast();
-        PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
-        FilterPurchaseLineOnDocumentLine(BillingLine.GetPurchaseDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
-        PurchaseLine.FindFirst();
-
-        PurchaseInvoiceSubForm.OpenEdit();
-        PurchaseInvoiceSubForm.GoToRecord(PurchaseLine);
-        asserterror PurchaseInvoiceSubForm."Invoice Disc. Pct.".SetValue(LibraryRandom.RandInt(10));
-        asserterror PurchaseInvoiceSubForm.InvoiceDiscountAmount.SetValue(LibraryRandom.RandInt(10));
-        PurchaseInvoiceSubForm.Close();
-        RRef.GetTable(PurchaseLine);
-        PopulateArrayOfFieldsForLines();
-        TestDocumentFields(true);
-
-        PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
-        PurchaseHeader.Modify(false);
-        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
-        PurchaseInvoiceHeader.Get(PostedDocumentNo);
-        CorrectPostedPurchaseInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseHeader); //check if its neccessary to test Cr Memo
-        BillingLine.FindLast(); //Fetch new BillingLine created for Cr Memo
-        FilterPurchaseLineOnDocumentLine(BillingLine.GetPurchaseDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
-        PurchaseLine.FindFirst();
-
-        PurchaseCrMemoSubForm.OpenEdit();
-        PurchaseCrMemoSubForm.GoToRecord(PurchaseLine);
-        asserterror PurchaseCrMemoSubForm."Invoice Disc. Pct.".SetValue(LibraryRandom.RandInt(10));
-        asserterror PurchaseCrMemoSubForm."Invoice Discount Amount".SetValue(LibraryRandom.RandInt(10));
-        PurchaseCrMemoSubForm.Close();
-        RRef.GetTable(PurchaseLine);
-        TestDocumentFields(true);
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CheckContractTypeIsTranslated()
-    var
-        Customer: Record Customer;
-        ContractType: Record "Contract Type";
-        FieldTranslation: Record "Field Translation";
-        LanguageMgt: Codeunit Language;
-    begin
-        ClearAll();
-        ContractTestLibrary.CreateContractType(ContractType);
-        ContractTestLibrary.CreateTranslationForField(FieldTranslation, ContractType, ContractType.FieldNo(Description), LanguageMgt.GetLanguageCode(GlobalLanguage));
-
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '');
-        CustomerContract.Validate("Contract Type", ContractType.Code);
-        CustomerContract.Modify(true);
-        Customer.Get(CustomerContract."Bill-to Customer No.");
-        Customer.Validate("Language Code", FieldTranslation."Language Code");
-        Customer.Modify(false);
-        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
-        CreateBillingDocuments();
-
-        BillingLine.Reset();
-        BillingLine.FindFirst();
-        BillingLine.TestField("Document No.");
-        SalesLine.Reset();
-        SalesLine.SetRange("Document Type", BillingLine.GetSalesDocumentTypeFromBillingDocumentType());
-        SalesLine.SetRange("Document No.", BillingLine."Document No.");
-        SalesLine.SetRange(Description, ContractType.Description);
-        AssertThat.AreEqual(0, SalesLine.Count, 'Untranslated Contract Type Description found');
-        SalesLine.SetRange(Description, FieldTranslation.Translation);
-        AssertThat.AreEqual(1, SalesLine.Count, 'Translated Contract Type Description not found');
-    end;
-
     local procedure TestDocumentFields(CalledFromSales: Boolean)
     var
         ValueCode: Text[10];
@@ -855,128 +2039,6 @@ codeunit 139687 "Recurring Billing Docs Test"
         SalesInvoiceHeader.Get(PostedDocumentNo);
     end;
 
-    [MessageHandler]
-    procedure MessageHandler(Message: Text[1024])
-    begin
-    end;
-
-    [ModalPageHandler]
-    procedure CreateCustomerBillingDocsTestOpenPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
-    var
-        PagePostingDate: Date;
-        PageDocumentDate: Date;
-    begin
-        Evaluate(PagePostingDate, CreateCustomerBillingDocs.PostingDate.Value);
-        Evaluate(PageDocumentDate, CreateCustomerBillingDocs.DocumentDate.Value);
-        AssertThat.AreEqual(WorkDate(), PagePostingDate, 'Posting Date is not initialized correctly.');
-        AssertThat.AreEqual(WorkDate(), PageDocumentDate, 'Document Date is not initialized correctly.');
-        CreateCustomerBillingDocs.Cancel().Invoke();
-    end;
-
-    [ModalPageHandler]
-    procedure CreateCustomerBillingDocsContractPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
-    begin
-        CreateCustomerBillingDocs.OK().Invoke();
-    end;
-
-    [ModalPageHandler]
-    procedure CreateCustomerBillingDocsSellToCustomerPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
-    begin
-        CreateCustomerBillingDocs.GroupingType.SetValue(Enum::"Customer Rec. Billing Grouping"::"Sell-to Customer No.");
-        CreateCustomerBillingDocs.OK().Invoke();
-    end;
-
-    [ModalPageHandler]
-    procedure CreateCustomerBillingDocsBillToCustomerPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
-    begin
-        CreateCustomerBillingDocs.GroupingType.SetValue(Enum::"Customer Rec. Billing Grouping"::"Bill-to Customer No.");
-        CreateCustomerBillingDocs.OK().Invoke();
-    end;
-
-    [ModalPageHandler]
-    procedure CancelCreateVendorBillingDocsTestOpenPageHandler(var CreateVendorBillingDocs: TestPage "Create Vendor Billing Docs")
-    var
-        PagePostingDate: Date;
-        PageDocumentDate: Date;
-    begin
-        Evaluate(PagePostingDate, CreateVendorBillingDocs.PostingDate.Value);
-        Evaluate(PageDocumentDate, CreateVendorBillingDocs.DocumentDate.Value);
-        AssertThat.AreEqual(WorkDate(), PagePostingDate, 'Posting Date is not initialized correctly.');
-        AssertThat.AreEqual(WorkDate(), PageDocumentDate, 'Document Date is not initialized correctly.');
-        CreateVendorBillingDocs.Cancel().Invoke();
-    end;
-
-    [ModalPageHandler]
-    procedure CreateVendorBillingDocsContractPageHandler(var CreateVendorBillingDocs: TestPage "Create Vendor Billing Docs")
-    begin
-        CreateVendorBillingDocs.OK().Invoke();
-    end;
-
-    [ModalPageHandler]
-    procedure CreateVendorBillingDocsPayToVendorPageHandler(var CreateVendorBillingDocs: TestPage "Create Vendor Billing Docs")
-    begin
-        CreateVendorBillingDocs.GroupingType.SetValue(Enum::"Vendor Rec. Billing Grouping"::"Pay-to Vendor No.");
-        CreateVendorBillingDocs.OK().Invoke();
-    end;
-
-    [ModalPageHandler]
-    procedure CreateVendorBillingDocsBuyFromVendorPageHandler(var CreateVendorBillingDocs: TestPage "Create Vendor Billing Docs")
-    begin
-        CreateVendorBillingDocs.GroupingType.SetValue(Enum::"Vendor Rec. Billing Grouping"::"Buy-From Vendor No.");
-        CreateVendorBillingDocs.OK().Invoke();
-    end;
-
-    [ConfirmHandler]
-    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
-    begin
-        Reply := true;
-    end;
-
-    [ModalPageHandler]
-    procedure ExchangeRateSelectionModalPageHandler(var ExchangeRateSelectionPage: TestPage "Exchange Rate Selection")
-    begin
-        ExchangeRateSelectionPage.OK().Invoke();
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateAndPostCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CreateAndPostSalesDocumentsPerContract()
-    begin
-        //Contract1, Sell-to Customer1, Bill-to Customer1
-        //Contract2, Sell-to Customer2, Bill-to Customer2
-        //Contract3, Sell-to Customer2, Bill-to Customer1
-        //Contract4, Sell-to Customer3, Bill-to Customer1
-        InitAndCreateBillingDocumentsForMultipleContracts();
-        CheckIfPostedSalesDocumentsHaveBeenCreated();
-        AssertThat.AreEqual(4, DocumentsCount, 'Posted Sales Documents were not created correctly');
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateAndPostCustomerBillingDocsSellToCustomerPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CreateAndPostSalesDocumentsPerSellToCustomer()
-    begin
-        //Contract1, Sell-to Customer1, Bill-to Customer1
-        //Contract2, Sell-to Customer2, Bill-to Customer2
-        //Contract3, Sell-to Customer2, Bill-to Customer1
-        //Contract4, Sell-to Customer3, Bill-to Customer1
-        InitAndCreateBillingDocumentsForMultipleContracts();
-        CheckIfPostedSalesDocumentsHaveBeenCreated();
-        AssertThat.AreEqual(3, DocumentsCount, 'Posted Sales Documents were not created correctly');
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateAndPostCustomerBillingDocsBillToCustomerPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CreateAndPostSalesDocumentsPerBillToCustomer()
-    begin
-        //Contract1, Sell-to Customer1, Bill-to Customer1
-        //Contract2, Sell-to Customer2, Bill-to Customer2
-        //Contract3, Sell-to Customer2, Bill-to Customer1
-        //Contract4, Sell-to Customer3, Bill-to Customer1
-        InitAndCreateBillingDocumentsForMultipleContracts();
-        CheckIfPostedSalesDocumentsHaveBeenCreated();
-        AssertThat.AreEqual(2, DocumentsCount, 'Posted Sales Documents were not created correctly');
-    end;
-
     local procedure CheckIfPostedSalesDocumentsHaveBeenCreated()
     begin
         TempSalesInvoiceHeader.Reset();
@@ -1028,619 +2090,6 @@ codeunit 139687 "Recurring Billing Docs Test"
         exit(BillingArchiveLine.Count());
     end;
 
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure ExpectErrorBillingLinesForAllCustomerContractLinesExist()
-    begin
-        SetupBasicBillingProposal("Service Partner"::Customer);
-        asserterror BillingProposal.CreateBillingProposalFromContract(CustomerContract."No.", CustomerContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Customer);
-    end;
-
-    [Test]
-    [HandlerFunctions('DialogHandler,ExchangeRateSelectionModalPageHandler,CreateCustomerBillingDocsContractPageHandler,MessageHandler')]
-    procedure CheckCustomerBillingProposalCanBeCreatedForSalesInvoiceExists()
-    begin
-        //Check if correct dialog opens       
-        //Unposted invoice exists
-        InitAndCreateBillingDocument("Service Partner"::Customer);
-        DialogMsg := UnpostedSalesInvExistsMsg;
-        BillingProposal.CreateBillingProposalFromContract(CustomerContract."No.", CustomerContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Customer);
-    end;
-
-    [Test]
-    [HandlerFunctions('DialogHandler,ExchangeRateSelectionModalPageHandler,CreateAndPostCustomerBillingDocsContractPageHandler,MessageHandler')]
-    procedure CheckCustomerBillingProposalCanBeCreatedForSalesCrMemoExists()
-    begin
-        //Check if correct dialog opens       
-        //Credit Memo exists
-        InitAndCreateBillingDocument("Service Partner"::Customer);
-        DialogMsg := SalesCrMemoExistsMsg;
-        GetPostedSalesDocumentsFromContract(CustomerContract);
-        CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader);
-        BillingProposal.CreateBillingProposalFromContract(CustomerContract."No.", CustomerContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Customer);
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,CreateBillingDocumentPageHandler,MessageHandler')]
-    procedure ExpectErrorOnCreateSingleSalesDocumentOnPreviousBillingDate()
-    begin
-        ClearAll();
-        ContractTestLibrary.ResetContractRecords();
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', false);
-        GetCustomerContractServiceCommitment(CustomerContract."No.");
-        NextBillingToDate := CalcDate('<-1Y>', ServiceCommitment."Next Billing Date");
-        BillingProposal.CreateBillingProposalFromContract(CustomerContract."No.", CustomerContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Customer);
-        AssertThat.ExpectedError(NoContractLinesFoundErr);
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateBillingDocumentPageHandler')]
-    procedure TestBillingLineOnCreateSingleSalesDocument()
-    begin
-        ClearAll();
-        ContractTestLibrary.ResetContractRecords();
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', false);
-        GetCustomerContractServiceCommitment(CustomerContract."No.");
-        NextBillingToDate := ServiceCommitment."Next Billing Date";
-        BillingProposal.CreateBillingProposalFromContract(CustomerContract."No.", CustomerContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Customer);
-        BillingLine.FindLast();
-        BillingLine.TestField("Document Type", "Rec. Billing Document Type"::Invoice);
-        BillingLine.TestField("Document No.");
-        BillingLine.TestField("Billing Template Code", '');
-        BillingLine.TestField("Billing to", NextBillingToDate);
-        BillingLine.TestField("User ID", UserId);
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateBillingDocumentPageHandler')]
-    procedure TestDeleteSingleSalesDocument()
-    begin
-        ClearAll();
-        ContractTestLibrary.ResetContractRecords();
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, '', false);
-        GetCustomerContractServiceCommitment(CustomerContract."No.");
-        NextBillingToDate := ServiceCommitment."Next Billing Date";
-        BillingProposal.CreateBillingProposalFromContract(CustomerContract."No.", CustomerContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Customer);
-        BillingLine.Reset();
-        BillingLine.SetRange("Billing Template Code", '');
-        BillingLine.FindLast();
-        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
-        SalesHeader.Delete(true);
-        BillingLine.Reset();
-        BillingLine.SetRange("Billing Template Code", '');
-        asserterror BillingLine.FindLast();
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure ExpectErrorBillingLinesForAllVendorContractLinesExist()
-    begin
-        SetupBasicBillingProposal("Service Partner"::Vendor);
-        asserterror BillingProposal.CreateBillingProposalFromContract(VendorContract."No.", VendorContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Vendor);
-    end;
-
-    [Test]
-    [HandlerFunctions('DialogHandler,ExchangeRateSelectionModalPageHandler,CreateVendorBillingDocsTestOpenPageHandler,MessageHandler')]
-    procedure CheckVendorBillingProposalCanBeCreatedForPurchaseInvoiceExists()
-    var
-        UnpostedPurchaseInvExistsMsg: Label 'Billing line with unposted Purchase Invoice exists. New invoices cannot be created until the current invoice is posted. Do you want to open the invoice?';
-    begin
-        //Check if correct dialog opens       
-        //Unposted invoice exists
-        InitAndCreateBillingDocument("Service Partner"::Vendor);
-        DialogMsg := UnpostedPurchaseInvExistsMsg;
-        BillingProposal.CreateBillingProposalFromContract(VendorContract."No.", VendorContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Vendor);
-    end;
-
-    [Test]
-    [HandlerFunctions('DialogHandler,ExchangeRateSelectionModalPageHandler,CreateVendorBillingDocsTestOpenPageHandler,MessageHandler')]
-    procedure CheckVendorBillingProposalCanBeCreatedForPurchaseCrMemoExists()
-    var
-        BillingLineArchive: Record "Billing Line Archive";
-    begin
-        //Check if correct dialog opens       
-        //Credit Memo exists
-        PostPurchaseInvoice();
-        DialogMsg := PurchCrMemoExistsMsg;
-        ContractTestLibrary.FilterBillingLineArchiveOnContractLine(BillingLineArchive, VendorContract."No.", 0, Enum::"Service Partner"::Vendor);
-        BillingLineArchive.FindFirst();
-        PurchaseInvoiceHeader.Get(BillingLineArchive."Document No.");
-        CorrectPostedPurchaseInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseHeader);
-        BillingProposal.CreateBillingProposalFromContract(VendorContract."No.", VendorContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Vendor);
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateBillingDocumentPageHandler')]
-    procedure ExpectErrorOnCreateSinglePurchaseDocumentOnPreviousBillingDate()
-    begin
-        ClearAll();
-        ContractTestLibrary.ResetContractRecords();
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '', false);
-        GetVendorContractServiceCommitment(VendorContract."No.");
-        NextBillingToDate := CalcDate('<-1Y>', ServiceCommitment."Next Billing Date");
-        BillingProposal.CreateBillingProposalFromContract(VendorContract."No.", VendorContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Vendor);
-        AssertThat.ExpectedError(NoContractLinesFoundErr);
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateBillingDocumentPageHandler')]
-    procedure TestBillingLineOnCreateSinglePurchaseDocument()
-    begin
-        ClearAll();
-        ContractTestLibrary.ResetContractRecords();
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '', false);
-        GetVendorContractServiceCommitment(VendorContract."No.");
-        NextBillingToDate := ServiceCommitment."Next Billing Date";
-        BillingProposal.CreateBillingProposalFromContract(VendorContract."No.", VendorContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Vendor);
-        BillingLine.FindLast();
-        BillingLine.TestField("Document Type", "Rec. Billing Document Type"::Invoice);
-        BillingLine.TestField("Document No.");
-        BillingLine.TestField("Billing Template Code", '');
-        BillingLine.TestField("Billing to", NextBillingToDate);
-        BillingLine.TestField("User ID", UserId);
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateBillingDocumentPageHandler')]
-    procedure TestDeleteSinglePurchaseDocument()
-    begin
-        ClearAll();
-        ContractTestLibrary.ResetContractRecords();
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '', false);
-        GetVendorContractServiceCommitment(VendorContract."No.");
-        NextBillingToDate := ServiceCommitment."Next Billing Date";
-        BillingProposal.CreateBillingProposalFromContract(VendorContract."No.", VendorContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Vendor);
-        BillingLine.Reset();
-        BillingLine.SetRange("Billing Template Code", '');
-        BillingLine.FindLast();
-        PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
-        PurchaseHeader.Delete(true);
-        BillingLine.Reset();
-        BillingLine.SetRange("Billing Template Code", '');
-        asserterror BillingLine.FindLast();
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateVendorBillingDocsContractPageHandler,BillingLinesArchivePageHandler')]
-    procedure TestOpenBillingLinesArchiveFromPurchaseInvoice()
-    var
-        PurchInvLine: Record "Purch. Inv. Line";
-    begin
-        ContractTestLibrary.InitContractsApp();
-        InitAndCreateBillingDocumentsForMultipleVendorContracts();
-        BillingLine.Reset();
-        BillingLine.FindSet();
-        repeat
-            PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
-            PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
-            PurchaseHeader.Modify(false);
-            PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true)
-        until BillingLine.Next() = 0;
-        PurchInvLine.SetRange("Document No.", PostedDocumentNo);
-        PurchInvLine.SetFilter("Contract No.", '<>%1', '');
-        PurchInvLine.SetFilter("Contract Line No.", '<>%1', 0);
-        PurchInvLine.FindFirst();
-        ExpectedNoOfArchivedLines := CountBillingArchiveLinesOnDocument(Enum::"Rec. Billing Document Type"::Invoice, PostedDocumentNo, "Service Partner"::Vendor, PurchInvLine."Contract No.", PurchInvLine."Contract Line No.");
-        ContractsGeneralMgt.ShowArchivedBillingLines(PurchInvLine."Contract No.", PurchInvLine."Contract Line No.", "Service Partner"::Vendor, Enum::"Rec. Billing Document Type"::Invoice, PostedDocumentNo);
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateVendorBillingDocsContractPageHandler,BillingLinesArchivePageHandler')]
-    procedure TestOpenBillingLinesArchiveFromPurchaseCreditMemo()
-    var
-        PurchCrMemoLine: Record "Purch. Cr. Memo Line";
-    begin
-        ContractTestLibrary.InitContractsApp();
-        InitAndCreateBillingDocumentsForMultipleVendorContracts();
-        BillingLine.Reset();
-        BillingLine.FindSet();
-        repeat
-            PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
-            PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
-            PurchaseHeader.Modify(false);
-            PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
-            PurchaseInvoiceHeader.Get(PostedDocumentNo);
-            CorrectPostedPurchaseInvoice.CreateCreditMemoCopyDocument(PurchaseInvoiceHeader, PurchaseHeader);
-            PurchaseHeader.Validate("Vendor Cr. Memo No.", LibraryUtility.GenerateGUID());
-            PurchaseHeader.Modify(false);
-            PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
-        until BillingLine.Next() = 0;
-        PurchCrMemoLine.SetRange("Document No.", PostedDocumentNo);
-        PurchCrMemoLine.SetFilter("Contract No.", '<>%1', '');
-        PurchCrMemoLine.SetFilter("Contract Line No.", '<>%1', 0);
-        PurchCrMemoLine.FindFirst();
-        ExpectedNoOfArchivedLines := CountBillingArchiveLinesOnDocument(Enum::"Rec. Billing Document Type"::"Credit Memo", PostedDocumentNo, "Service Partner"::Vendor, PurchCrMemoLine."Contract No.", PurchCrMemoLine."Contract Line No.");
-        ContractsGeneralMgt.ShowArchivedBillingLines(PurchCrMemoLine."Contract No.", PurchCrMemoLine."Contract Line No.", "Service Partner"::Vendor, Enum::"Rec. Billing Document Type"::"Credit Memo", PostedDocumentNo);
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateCustomerBillingDocsContractPageHandler,BillingLinesArchivePageHandler')]
-    procedure TestOpenBillingLinesArchiveFromSalesInvoice()
-    var
-        SalesInvLine: Record "Sales Invoice Line";
-    begin
-        ContractTestLibrary.InitContractsApp();
-        InitAndCreateBillingDocumentsForMultipleContracts();
-        BillingLine.Reset();
-        BillingLine.FindSet();
-        repeat
-            SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
-            PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true)
-        until BillingLine.Next() = 0;
-        SalesInvLine.SetRange("Document No.", PostedDocumentNo);
-        SalesInvLine.SetFilter("Contract No.", '<>%1', '');
-        SalesInvLine.SetFilter("Contract Line No.", '<>%1', 0);
-        SalesInvLine.FindFirst();
-        ExpectedNoOfArchivedLines := CountBillingArchiveLinesOnDocument(Enum::"Rec. Billing Document Type"::Invoice, PostedDocumentNo, "Service Partner"::Customer, SalesInvLine."Contract No.", SalesInvLine."Contract Line No.");
-        ContractsGeneralMgt.ShowArchivedBillingLines(SalesInvLine."Contract No.", SalesInvLine."Contract Line No.", "Service Partner"::Customer, Enum::"Rec. Billing Document Type"::Invoice, PostedDocumentNo);
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateCustomerBillingDocsContractPageHandler,BillingLinesArchivePageHandler')]
-    procedure TestOpenBillingLinesArchiveFromSalesCreditMemo()
-    var
-        SalesCrMemoLine: Record "Sales Cr.Memo Line";
-    begin
-        ContractTestLibrary.InitContractsApp();
-        InitAndCreateBillingDocumentsForMultipleContracts();
-        BillingLine.Reset();
-        BillingLine.FindSet();
-        repeat
-            SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
-            PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
-            SalesInvoiceHeader.Get(PostedDocumentNo);
-            CorrectPostedSalesInvoice.CreateCreditMemoCopyDocument(SalesInvoiceHeader, SalesHeader);
-            PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        until BillingLine.Next() = 0;
-        SalesCrMemoLine.SetRange("Document No.", PostedDocumentNo);
-        SalesCrMemoLine.SetFilter("Contract No.", '<>%1', '');
-        SalesCrMemoLine.SetFilter("Contract Line No.", '<>%1', 0);
-        SalesCrMemoLine.FindFirst();
-        ExpectedNoOfArchivedLines := CountBillingArchiveLinesOnDocument(Enum::"Rec. Billing Document Type"::"Credit Memo", PostedDocumentNo, "Service Partner"::Customer, SalesCrMemoLine."Contract No.", SalesCrMemoLine."Contract Line No.");
-        ContractsGeneralMgt.ShowArchivedBillingLines(SalesCrMemoLine."Contract No.", SalesCrMemoLine."Contract Line No.", "Service Partner"::Customer, "Rec. Billing Document Type"::"Credit Memo", PostedDocumentNo);
-    end;
-
-    [ModalPageHandler]
-    procedure CreateAndPostCustomerBillingDocsContractPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
-    begin
-        CreateCustomerBillingDocs.PostDocuments.SetValue(true);
-        CreateCustomerBillingDocs.OK().Invoke();
-    end;
-
-    [ModalPageHandler]
-    procedure CreateAndPostCustomerBillingDocsSellToCustomerPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
-    begin
-        CreateCustomerBillingDocs.PostDocuments.SetValue(true);
-        CreateCustomerBillingDocs.GroupingType.SetValue(Enum::"Customer Rec. Billing Grouping"::"Sell-to Customer No.");
-        CreateCustomerBillingDocs.OK().Invoke();
-    end;
-
-    [ModalPageHandler]
-    procedure CreateAndPostCustomerBillingDocsBillToCustomerPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
-    begin
-        CreateCustomerBillingDocs.PostDocuments.SetValue(true);
-        CreateCustomerBillingDocs.GroupingType.SetValue(Enum::"Customer Rec. Billing Grouping"::"Bill-to Customer No.");
-        CreateCustomerBillingDocs.OK().Invoke();
-    end;
-
-    [ModalPageHandler]
-    procedure CreateVendorBillingDocsTestOpenPageHandler(var CreateVendorBillingDocs: TestPage "Create Vendor Billing Docs")
-    begin
-        CreateVendorBillingDocs.OK().Invoke();
-    end;
-
-    [ConfirmHandler]
-    procedure DialogHandler(Question: Text[1024]; var Reply: Boolean)
-    begin
-        if not (Question = DialogMsg) then
-            Error('No Dialog Question found!');
-        Reply := false;
-    end;
-
-    [ModalPageHandler]
-    procedure CreateBillingDocumentPageHandler(var CreateBillingDocument: TestPage "Create Billing Document")
-    begin
-        CreateBillingDocument.BillingDate.SetValue(NextBillingToDate);
-        CreateBillingDocument.BillingTo.SetValue(NextBillingToDate);
-        CreateBillingDocument.OpenDocument.SetValue(false);
-        CreateBillingDocument.PostDocument.SetValue(false);
-        CreateBillingDocument.OK().Invoke()
-    end;
-
-    [PageHandler]
-    procedure BillingLinesArchivePageHandler(var BillingLinesArchive: TestPage "Archived Billing Lines")
-    var
-        NoOfRecords: Integer;
-    begin
-        if BillingLinesArchive.First() then
-            repeat
-                NoOfRecords += 1;
-            until not BillingLinesArchive.Next();
-        AssertThat.AreEqual(NoOfRecords, ExpectedNoOfArchivedLines, 'Page Billing Lines Archive is not filtered properly.');
-        BillingLinesArchive.OK().Invoke();
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure ExpectErrorOnServiceObjectDescriptionChangeWhenUnpostedDocumentsExistCustomer()
-    begin
-        InitAndCreateBillingDocument("Service Partner"::Customer);
-        CheckIfSalesDocumentsHaveBeenCreated();
-        asserterror ServiceObject.Validate(Description, LibraryRandom.RandText(MaxStrLen(ServiceObject.Description)));
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure ExpectErrorOnServiceObjectDescriptionChangeWhenUnpostedDocumentsExistVendor()
-    begin
-        InitAndCreateBillingDocument("Service Partner"::Vendor);
-        CheckIfPurchaseDocumentsHaveBeenCreated();
-        asserterror ServiceObject.Validate(Description, LibraryRandom.RandText(MaxStrLen(ServiceObject.Description)));
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure TestRecurringBillingInCustLedgerEntries()
-    var
-        CustLedgEntry: Record "Cust. Ledger Entry";
-    begin
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
-        BillingLine.FindLast();
-        SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
-        PostedDocumentNo := LibrarySales.PostSalesDocument(SalesHeader, true, true);
-        CustLedgEntry.SetRange("Document Type", CustLedgEntry."Document Type"::Invoice);
-        CustLedgEntry.SetRange("Document No.", PostedDocumentNo);
-        CustLedgEntry.FindSet();
-        CustLedgEntry.TestField("Recurring Billing", true);
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure TestRecurringBillingInVendorLedgerEntries()
-    var
-        VendorLedgerEntry: Record "Vendor Ledger Entry";
-    begin
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
-        BillingLine.FindLast();
-        PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
-        PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
-        PurchaseHeader.Modify(false);
-        PostedDocumentNo := LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
-        VendorLedgerEntry.SetRange("Document Type", VendorLedgerEntry."Document Type"::Invoice);
-        VendorLedgerEntry.SetRange("Document No.", PostedDocumentNo);
-        VendorLedgerEntry.FindSet();
-        VendorLedgerEntry.TestField("Recurring Billing", true);
-    end;
-
-    [Test]
-    procedure TestPostingPurchaseInvoiceFromGeneralJournal()
-    var
-        GeneralJournalLine: Record "Gen. Journal Line";
-        GenJournalTemplate: Record "Gen. Journal Template";
-        GenJournalBatch: Record "Gen. Journal Batch";
-        Vendor: Record Vendor;
-        GLAccount: Record "G/L Account";
-    begin
-        //Expect that posting of simple general journal is not affected with Recurring billing field in Vendor Ledger Entries
-        //Ref. IC230221) Posting of Recurring General Journal fails
-        LibraryPurchase.CreateVendor(Vendor);
-        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
-        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
-        LibraryERM.CreateGeneralJnlLine(GeneralJournalLine, GenJournalTemplate.Name, GenJournalBatch.Name, Enum::"Gen. Journal Document Type"::Invoice,
-                                        Enum::"Gen. Journal Account Type"::Vendor, Vendor."No.", -100);
-        LibraryERM.CreateGLAccount(GLAccount);
-        GeneralJournalLine."Bal. Account Type" := GeneralJournalLine."Bal. Account Type"::"G/L Account";
-        GeneralJournalLine."Bal. Account No." := GLAccount."No.";
-        GeneralJournalLine.Modify(false);
-        LibraryERM.PostGeneralJnlLine(GeneralJournalLine);
-    end;
-
-    [Test]
-    procedure TestPostingSalesInvoiceFromGeneralJournal()
-    var
-        GeneralJournalLine: Record "Gen. Journal Line";
-        GenJournalTemplate: Record "Gen. Journal Template";
-        GenJournalBatch: Record "Gen. Journal Batch";
-        Customer: Record Customer;
-        GLAccount: Record "G/L Account";
-    begin
-        //Expect that posting of simple general journal is not affected with Recurring billing field in Customer Ledger Entries
-        //Ref. IC230221) Posting of Recurring General Journal fails
-        LibrarySales.CreateCustomer(Customer);
-        LibraryERM.CreateGenJournalTemplate(GenJournalTemplate);
-        LibraryERM.CreateGenJournalBatch(GenJournalBatch, GenJournalTemplate.Name);
-        LibraryERM.CreateGeneralJnlLine(GeneralJournalLine, GenJournalTemplate.Name, GenJournalBatch.Name, Enum::"Gen. Journal Document Type"::Invoice,
-                                        Enum::"Gen. Journal Account Type"::Customer, Customer."No.", 100);
-        LibraryERM.CreateGLAccount(GLAccount);
-        GeneralJournalLine."Bal. Account Type" := GeneralJournalLine."Bal. Account Type"::"G/L Account";
-        GeneralJournalLine."Bal. Account No." := GLAccount."No.";
-        GeneralJournalLine.Modify(false);
-        LibraryERM.PostGeneralJnlLine(GeneralJournalLine);
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CheckContractSalesInvoiceDescriptions()
-    var
-        ServiceContractSetup: Record "Service Contract Setup";
-        ItemAttribute: Record "Item Attribute";
-        ItemAttribute2: Record "Item Attribute";
-        ItemAttributeValue: Record "Item Attribute Value";
-        ItemAttributeValue2: Record "Item Attribute Value";
-        ParentSalesLine: Record "Sales Line";
-        CustomerNo: Code[20];
-    begin
-        // Test: Sales Invoice Line Description and attached lines are created according to setup
-        ClearAll();
-        BillingLine.Reset();
-        if not BillingLine.IsEmpty() then
-            BillingLine.DeleteAll(false);
-
-        ServiceContractSetup.Get();
-        ServiceContractSetup."Contract Invoice Description" := Enum::"Contract Invoice Text Type"::"Service Commitment";
-        ServiceContractSetup."Contract Invoice Add. Line 1" := Enum::"Contract Invoice Text Type"::"Billing Period";
-        ServiceContractSetup."Contract Invoice Add. Line 2" := Enum::"Contract Invoice Text Type"::"Service Object";
-        ServiceContractSetup."Contract Invoice Add. Line 3" := Enum::"Contract Invoice Text Type"::"Serial No.";
-        ServiceContractSetup."Contract Invoice Add. Line 4" := Enum::"Contract Invoice Text Type"::"Customer Reference";
-        ServiceContractSetup."Contract Invoice Add. Line 5" := Enum::"Contract Invoice Text Type"::"Primary attribute";
-        ServiceContractSetup.Modify(false);
-
-        CustomerNo := '';
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, CustomerNo);
-        ServiceObject."Customer Reference" := CopyStr(LibraryRandom.RandText(MaxStrLen(ServiceObject."Customer Reference")), 1, MaxStrLen(ServiceObject."Customer Reference"));
-        ServiceObject."Serial No." := CopyStr(LibraryRandom.RandText(MaxStrLen(ServiceObject."Serial No.")), 1, MaxStrLen(ServiceObject."Serial No."));
-        ServiceObject.Modify(false);
-
-        ContractTestLibrary.CreateServiceObjectAttributeMappedToServiceObject(ServiceObject."No.", ItemAttribute, ItemAttributeValue, false);
-        ContractTestLibrary.CreateServiceObjectAttributeMappedToServiceObject(ServiceObject."No.", ItemAttribute2, ItemAttributeValue2, true);
-
-        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer);
-
-        CreateBillingDocuments(false);
-
-        BillingLine.Reset();
-        BillingLine.FindFirst();
-        BillingLine.TestField("Document Type", BillingLine."Document Type"::Invoice);
-
-        SalesLine.Reset();
-        FilterSalesLineOnDocumentLine(BillingLine.GetSalesDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
-        AssertThat.AreEqual(1, SalesLine.Count, 'The Sales lines were not created properly.');
-        SalesLine.FindFirst();
-        SalesLine.TestField(Description, BillingLine."Service Commitment Description");
-        SalesLine.TestField("Description 2", '');
-
-        SalesLine2.Reset();
-        SalesLine2.SetRange("Document Type", SalesLine."Document Type");
-        SalesLine2.SetRange("Document No.", SalesLine."Document No.");
-        SalesLine2.SetRange("Attached to Line No.", SalesLine."Line No.");
-        AssertThat.AreEqual(5, SalesLine2.Count, 'Setup-failure: expected five attached Lines.');
-        SalesLine2.FindSet();
-        // 1st line: Service Period
-        AssertThat.IsSubstring(SalesLine2.Description, 'Service period');
-        ParentSalesLine.Get(SalesLine2."Document Type", SalesLine2."Document No.", SalesLine2."Attached to Line No.");
-        SalesLine2.Next();
-        // 2nd line: Service Object Description
-        AssertThat.AreEqual(SalesLine2.Description, ServiceObject.Description, 'Description does not match expected value');
-        ParentSalesLine.Get(SalesLine2."Document Type", SalesLine2."Document No.", SalesLine2."Attached to Line No.");
-        SalesLine2.Next();
-        // 3rd line: Serial No.
-        AssertThat.IsSubstring(SalesLine2.Description, ServiceObject."Serial No.");
-        ParentSalesLine.Get(SalesLine2."Document Type", SalesLine2."Document No.", SalesLine2."Attached to Line No.");
-        SalesLine2.Next();
-        // 4th line: Customer Reference
-        AssertThat.IsSubstring(SalesLine2.Description, ServiceObject."Customer Reference");
-        ParentSalesLine.Get(SalesLine2."Document Type", SalesLine2."Document No.", SalesLine2."Attached to Line No.");
-        SalesLine2.Next();
-        // 5th line: Primary Attribute
-        AssertThat.IsSubstring(ServiceObject.GetPrimaryAttributeValue(), SalesLine2.Description);
-        ParentSalesLine.Get(SalesLine2."Document Type", SalesLine2."Document No.", SalesLine2."Attached to Line No.");
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CheckContractZeroNamesAreTransferredToSalesDocumentOnBillingPerContractOptionsOff()
-    var
-        FieldValueNotExpectedTxt: Label '"%1" should not be present as a description-line', Locked = true;
-    begin
-        // Test: Names are NOT transferred as Description Lines in Sales Document (Create per Contract (see PageHandler), both options off)
-        ClearAll();
-        PrepareCustomerContractWithNames();
-
-        CustomerContract."Contractor Name in coll. Inv." := false;
-        CustomerContract."Recipient Name in coll. Inv." := false;
-        CustomerContract.Modify(false);
-        Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
-
-        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Sell-to Customer Name"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Sell-to Customer Name")));
-        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Sell-to Customer Name 2"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Sell-to Customer Name 2")));
-        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Ship-to Name"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Ship-to Name")));
-        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Ship-to Name 2"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Ship-to Name 2")));
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsBillToCustomerPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CheckContractZeroNamesAreTransferredToSalesDocumentOnBillingPerBillToContractOptionsOff()
-    var
-        FieldValueNotExpectedTxt: Label '"%1" should not be present as a description-line', Locked = true;
-    begin
-        // Test: Names are NOT transferred as Description Lines in Sales Document (Create per bill-to (see PageHandler), both options off)
-        ClearAll();
-        PrepareCustomerContractWithNames();
-
-        CustomerContract."Contractor Name in coll. Inv." := false;
-        CustomerContract."Recipient Name in coll. Inv." := false;
-        CustomerContract.Modify(false);
-        Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
-
-        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Sell-to Customer Name"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Sell-to Customer Name")));
-        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Sell-to Customer Name 2"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Sell-to Customer Name 2")));
-        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Ship-to Name"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Ship-to Name")));
-        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Ship-to Name 2"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Ship-to Name 2")));
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CheckContractZeroNamesAreTransferredToSalesDocumentOnBillingPerContractOptionsOn()
-    var
-        FieldValueNotExpectedTxt: Label '"%1" should not be present as a description-line', Locked = true;
-    begin
-        // Test: Names are NOT transferred as Description Lines in Sales Document (Create per Contract (see PageHandler), both options on)
-        ClearAll();
-        PrepareCustomerContractWithNames();
-
-        CustomerContract."Contractor Name in coll. Inv." := true;
-        CustomerContract."Recipient Name in coll. Inv." := true;
-        CustomerContract.Modify(false);
-        Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
-
-        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Sell-to Customer Name"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Sell-to Customer Name")));
-        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Sell-to Customer Name 2"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Sell-to Customer Name 2")));
-        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Ship-to Name"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Ship-to Name")));
-        AssertThat.AreEqual(0, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Ship-to Name 2"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Ship-to Name 2")));
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsBillToCustomerPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CheckContractNamesAreTransferredToSalesDocumentOnBillingPerBillToContractOptionsOn()
-    var
-        FieldValueNotExpectedTxt: Label '"%1" should be present (once) as a description-line', Locked = true;
-    begin
-        // Test: Names are transferred as Description Lines in Sales Document (Create per bill-to (see PageHandler), both options on)
-        ClearAll();
-        PrepareCustomerContractWithNames();
-
-        CustomerContract."Contractor Name in coll. Inv." := true;
-        CustomerContract."Recipient Name in coll. Inv." := true;
-        CustomerContract.Modify(false);
-        Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
-
-        AssertThat.AreEqual(1, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Sell-to Customer Name"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Sell-to Customer Name")));
-        AssertThat.AreEqual(1, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Sell-to Customer Name 2"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Sell-to Customer Name 2")));
-        AssertThat.AreEqual(1, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Ship-to Name"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Ship-to Name")));
-        AssertThat.AreEqual(1, GetNoOfSalesInvoiceLineWithDescription(CustomerContract."Ship-to Name 2"), StrSubstNo(FieldValueNotExpectedTxt, CustomerContract.FieldCaption("Ship-to Name 2")));
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    procedure CheckIfBillingLinesAreDeletedOnCreateCustomerInvoiceWithError()
-    var
-        Customer: Record Customer;
-    begin
-        ClearAll();
-        ContractTestLibrary.ResetContractRecords();
-        ContractTestLibrary.CreateCustomer(Customer);
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, Customer."No.");
-        Customer."Customer Posting Group" := '';
-        Customer.Modify(false);
-        asserterror CustomerContract.CreateBillingProposal();
-
-        //Check if Billing lines for customer contract are empty
-        BillingLine.Reset();
-        BillingLine.SetRange("Billing Template Code", '');
-        BillingLine.SetRange("Contract No.", CustomerContract."No.");
-        asserterror BillingLine.FindSet();
-    end;
-
     local procedure PrepareCustomerContractWithNames()
     begin
         SetupBasicBillingProposal(Enum::"Service Partner"::Customer);
@@ -1665,296 +2114,6 @@ codeunit 139687 "Recurring Billing Docs Test"
         SalesLine.SetRange("Document No.", BillingLine."Document No.");
         SalesLine.SetRange(Description, ExpectedDescriptionText);
         exit(SalesLine.Count());
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,MessageHandler,CreateCustomerBillingDocsContractPageHandler,BillingLinesArchivePageHandler')]
-    procedure TestShowBillingLineArchiveFromServiceCommitment()
-    var
-        BillingLineArchive: Record "Billing Line Archive";
-    begin
-        ContractTestLibrary.InitContractsApp();
-        InitAndCreateBillingDocumentsForMultipleContracts();
-        BillingLine.Reset();
-        BillingLine.FindSet();
-        repeat
-            SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
-            LibrarySales.PostSalesDocument(SalesHeader, true, true)
-        until BillingLine.Next() = 0;
-
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
-        CustomerContractLine.SetRange("Contract Line Type", Enum::"Contract Line Type"::"Service Commitment");
-        CustomerContractLine.FindFirst();
-        ExpectedNoOfArchivedLines := CountBillingArchiveLinesOnServiceCommitment(CustomerContractLine."Service Commitment Entry No.");
-        ContractsGeneralMgt.ShowArchivedBillingLinesForServiceCommitment(CustomerContractLine."Service Commitment Entry No.");
-
-        CustomerContractLine.GetServiceCommitment(ServiceCommitment);
-        //Force Close service commitment
-        ServiceCommitment."Service End Date" := CalcDate('<-1D>', Today());
-        ServiceCommitment."Next Billing Date" := CalcDate('<+1D>', ServiceCommitment."Service End Date");
-        ServiceCommitment.Modify(false);
-        ServiceObject.UpdateServicesDates();
-        ServiceCommitment.Delete(true);
-
-        BillingLineArchive.FilterBillingLineArchiveOnServiceCommitment(CustomerContractLine."Service Commitment Entry No.");
-        AssertThat.RecordIsEmpty(BillingLineArchive);
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,ConfirmHandler,MessageHandler,CreateCustomerBillingDocsContractPageHandler,BillingLinesArchivePageHandler')]
-    procedure TestShowBillingLineArchiveFromRecreatedCustomerContractLine()
-    var
-        LineNo: Integer;
-    begin
-        ContractTestLibrary.InitContractsApp();
-        InitAndCreateBillingDocumentsForMultipleContracts();
-        BillingLine.Reset();
-        BillingLine.FindSet();
-        repeat
-            SalesHeader.Get(Enum::"Sales Document Type"::Invoice, BillingLine."Document No.");
-            LibrarySales.PostSalesDocument(SalesHeader, true, true)
-        until BillingLine.Next() = 0;
-
-        CustomerContractLine.SetRange("Contract No.", CustomerContract."No.");
-        CustomerContractLine.SetRange("Contract Line Type", Enum::"Contract Line Type"::"Service Commitment");
-        CustomerContractLine.FindFirst();
-        ExpectedNoOfArchivedLines := CountBillingArchiveLinesOnServiceCommitment(CustomerContractLine."Service Commitment Entry No.");
-        ContractsGeneralMgt.ShowArchivedBillingLinesForServiceCommitment(CustomerContractLine."Service Commitment Entry No.");
-
-        CustomerContractLine.GetServiceCommitment(ServiceCommitment);
-        //Force Close service commitment
-        ServiceCommitment."Service End Date" := CalcDate('<-1D>', Today());
-        ServiceCommitment."Next Billing Date" := CalcDate('<+1D>', ServiceCommitment."Service End Date");
-        ServiceCommitment.Modify(false);
-        ServiceObject.UpdateServicesDates();
-
-        //Delete customer contract line
-        //create a new line with same line no
-        LineNo := CustomerContractLine."Line No.";
-        CustomerContractLine.Get(CustomerContractLine."Contract No.", CustomerContractLine."Line No.");
-        CustomerContractLine.Delete(true);
-        CustomerContractLine.Init();
-        CustomerContractLine."Contract No." := CustomerContract."No.";
-        CustomerContractLine."Line No." := LineNo;
-        CustomerContractLine."Contract Line Type" := Enum::"Contract Line Type"::Comment;
-        CustomerContractLine.Insert(false);
-
-        ExpectedNoOfArchivedLines := 0;
-        ContractsGeneralMgt.ShowArchivedBillingLinesForServiceCommitment(CustomerContractLine."Service Commitment Entry No.");
-    end;
-
-    [Test]
-    [HandlerFunctions('ExchangeRateSelectionModalPageHandler,ConfirmHandler,MessageHandler,CreateVendorBillingDocsContractPageHandler,BillingLinesArchivePageHandler')]
-    procedure TestShowBillingLineArchiveFromRecreatedVendorContractLine()
-    var
-        LineNo: Integer;
-    begin
-        ContractTestLibrary.InitContractsApp();
-        InitAndCreateBillingDocumentsForMultipleVendorContracts();
-        BillingLine.Reset();
-        BillingLine.FindSet();
-        repeat
-            PurchaseHeader.Get(Enum::"Purchase Document Type"::Invoice, BillingLine."Document No.");
-            PurchaseHeader.Validate("Vendor Invoice No.", LibraryUtility.GenerateGUID());
-            PurchaseHeader.Modify(false);
-            LibraryPurchase.PostPurchaseDocument(PurchaseHeader, true, true);
-        until BillingLine.Next() = 0;
-
-        VendorContractLine.SetRange("Contract No.", VendorContract."No.");
-        VendorContractLine.SetRange("Contract Line Type", Enum::"Contract Line Type"::"Service Commitment");
-        VendorContractLine.FindFirst();
-        ExpectedNoOfArchivedLines := CountBillingArchiveLinesOnServiceCommitment(VendorContractLine."Service Commitment Entry No.");
-        ContractsGeneralMgt.ShowArchivedBillingLinesForServiceCommitment(VendorContractLine."Service Commitment Entry No.");
-
-        VendorContractLine.GetServiceCommitment(ServiceCommitment);
-        //Force Close service commitment
-        ServiceCommitment."Service End Date" := CalcDate('<-1D>', Today());
-        ServiceCommitment."Next Billing Date" := CalcDate('<+1D>', ServiceCommitment."Service End Date");
-        ServiceCommitment.Modify(false);
-        ServiceObject.UpdateServicesDates();
-
-        //Delete vendor contract line
-        //create a new line with same line no
-        LineNo := VendorContractLine."Line No.";
-        VendorContractLine.Get(VendorContractLine."Contract No.", VendorContractLine."Line No.");
-        VendorContractLine.Delete(true);
-        VendorContractLine.Init();
-        VendorContractLine."Contract No." := CustomerContract."No.";
-        VendorContractLine."Line No." := LineNo;
-        VendorContractLine."Contract Line Type" := Enum::"Contract Line Type"::Comment;
-        VendorContractLine.Insert(false);
-
-        ExpectedNoOfArchivedLines := 0;
-        ContractsGeneralMgt.ShowArchivedBillingLinesForServiceCommitment(VendorContractLine."Service Commitment Entry No.");
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,MessageHandler')]
-    procedure TestBillingLinesWithInvoiceDocumentType()
-    var
-        Item: Record Item;
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-    begin
-        ClearAll();
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
-        ServiceCommitmentTemplate."Invoicing Item No." := Item."No.";
-        ServiceCommitmentTemplate."Calculation Base %" := LibraryRandom.RandDecInRange(0, 100, 2);
-        Evaluate(ServiceCommitmentTemplate."Billing Base Period", '<12M>');
-        ServiceCommitmentTemplate.Modify(false);
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ServiceCommPackageLine."Calculation Base Type" := ServiceCommPackageLine."Calculation Base Type"::"Document Price";
-        ContractTestLibrary.InitServiceCommitmentPackageLineFields(ServiceCommPackageLine);
-        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
-
-        CreateAndPostSimpleSalesDocument(Item."No.");
-        CreateCustomerContractAndAssignServiceObjects(Item."No.");
-        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer, WorkDate());
-        CreateBillingDocuments();
-
-        BillingLine.Reset();
-        BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange(Partner, BillingLine.Partner::Customer);
-        BillingLine.SetRange("Contract No.", CustomerContract."No.");
-        BillingLine.FindSet();
-        repeat
-            BillingLine.TestField("Document Type", BillingLine."Document Type"::Invoice);
-        until BillingLine.Next() = 0;
-    end;
-
-    [Test]
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,MessageHandler')]
-    procedure TestBillingLinesWithCreditMemoDocumentType()
-    var
-        Item: Record Item;
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        PreviousNextBillingDate: Date;
-        InitialNextBillingDate: Date;
-    begin
-        ClearAll();
-        ContractTestLibrary.CreateItemWithServiceCommitmentOption(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item");
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate);
-        ServiceCommitmentTemplate."Invoicing Item No." := Item."No.";
-        ServiceCommitmentTemplate."Calculation Base %" := LibraryRandom.RandDecInRange(0, 100, 2);
-        Evaluate(ServiceCommitmentTemplate."Billing Base Period", '<12M>');
-        ServiceCommitmentTemplate.Modify(false);
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ServiceCommPackageLine."Calculation Base Type" := ServiceCommPackageLine."Calculation Base Type"::"Document Price";
-        ContractTestLibrary.InitServiceCommitmentPackageLineFields(ServiceCommPackageLine);
-        ContractTestLibrary.AssignItemToServiceCommitmentPackage(Item, ServiceCommitmentPackage.Code, true);
-
-        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, '');
-        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", 1);
-        SalesLine.Validate("Unit Price", -50);
-        SalesLine.Modify(false);
-        LibrarySales.PostSalesDocument(SalesHeader, true, false);
-        CreateCustomerContractAndAssignServiceObjects(Item."No.");
-        InitialNextBillingDate := ServiceCommitment."Next Billing Date";
-
-        ContractTestLibrary.CreateBillingProposal(BillingTemplate, Enum::"Service Partner"::Customer, WorkDate());
-        CreateBillingDocuments();
-
-        BillingLine.Reset();
-        BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
-        BillingLine.SetRange(Partner, BillingLine.Partner::Customer);
-        BillingLine.SetRange("Contract No.", CustomerContract."No.");
-        BillingLine.FindSet();
-        repeat
-            BillingLine.TestField("Document Type", BillingLine."Document Type"::"Credit Memo");
-        until BillingLine.Next() = 0;
-        CustomerContractLine.Get(BillingLine."Contract No.", BillingLine."Contract Line No."); //Save Customer Contract Line
-
-        FilterSalesLineOnDocumentLine(BillingLine.GetSalesDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
-        SalesLine.SetRange(Type, "Sales Line Type"::Item);
-        SalesLine.FindSet();
-        if SalesLine."Line Amount" < 0 then
-            Error('Unit Price and Line Amount in Credit memo have wrong sign');
-        CustomerContractLine.GetServiceCommitment(ServiceCommitment);
-        PreviousNextBillingDate := ServiceCommitment."Next Billing Date";
-
-        SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
-        SalesHeader.Delete(true);
-        CustomerContractLine.GetServiceCommitment(ServiceCommitment);
-        AssertThat.AreEqual(ServiceCommitment."Next Billing Date", PreviousNextBillingDate, 'Next billing date was updated when Sales Document is deleted');
-
-        BillingLine.FindLast();
-        repeat
-            BillingLine.Delete(true);
-        until BillingLine.Next(-1) = 0;
-        CustomerContractLine.GetServiceCommitment(ServiceCommitment);
-        AssertThat.AreEqual(ServiceCommitment."Next Billing Date", InitialNextBillingDate, 'Next billing date was not updated when billing line is deleted');
-    end;
-
-    [Test]
-    [HandlerFunctions('MessageHandler')]
-    procedure TestBillingLinesAreDeletedForCreditMemos()
-    var
-        Item: Record Item;
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        Assert: Codeunit Assert;
-    begin
-        // Test: When a Credit Memo (created directly from a Contract) is deleted, all linked Billing Lines should also be deleted
-        Clear(SalesHeader);
-        Clear(CustomerContract);
-
-        ServiceCommPackageLine.Reset();
-        if not ServiceCommPackageLine.IsEmpty() then
-            ServiceCommPackageLine.DeleteAll(false);
-        ContractTestLibrary.CreateServiceObjectItemWithServiceCommitments(Item);
-        ServiceCommPackageLine.FindFirst();
-        ServiceCommPackageLine.Validate("Calculation Base Type", ServiceCommPackageLine."Calculation Base Type"::"Document Price");
-        ServiceCommPackageLine."Invoicing Item No." := Item."No.";
-        ServiceCommPackageLine.Validate("Calculation Base %", 100);
-        ServiceCommPackageLine.Modify(true);
-
-        LibrarySales.CreateSalesHeader(SalesHeader, SalesHeader."Document Type"::Order, '');
-        LibrarySales.CreateSalesLine(SalesLine, SalesHeader, Enum::"Sales Line Type"::Item, Item."No.", 1);
-        SalesLine.Validate("Unit Price", -1200);
-        SalesLine.Modify(true);
-        LibrarySales.PostSalesDocument(SalesHeader, true, false);
-        CreateCustomerContractAndAssignServiceObjects(Item."No.");
-
-        CustomerContract.TestField("No.");
-        ServiceObject.TestField("No.");
-        ServiceCommitment.Reset();
-        ServiceCommitment.SetRange("Service Object No.", ServiceObject."No.");
-        ServiceCommitment.FindFirst();
-        if ServiceCommitment."Calculation Base Amount" >= 0 then
-            Error('Setup-Failure: negative "Calculation Base Amount" expected for Service Commitment.');
-
-        BillingProposal.CreateBillingProposalForContract(
-            Enum::"Service Partner"::Customer,
-            CustomerContract."No.",
-            '',
-            '',
-            CalcDate('<+CY>', WorkDate()),
-            CalcDate('<+CY>', WorkDate()));
-        if not BillingProposal.CreateBillingDocument(
-            Enum::"Service Partner"::Customer,
-            CustomerContract."No.",
-            CalcDate('<+CY>', WorkDate()),
-            CalcDate('<+CY>', WorkDate()),
-            false,
-            false)
-        then
-            Error(GetLastErrorText());
-
-        CustomerContract.TestField("No.");
-        BillingLine.Reset();
-        BillingLine.SetRange("Contract No.", CustomerContract."No.");
-        Assert.AreEqual(1, BillingLine.Count, 'Setup-failure, creating billing document: expected one billing line');
-        BillingLine.SetLoadFields("Document Type", "Document No.", "Billing Template Code");
-        BillingLine.FindFirst();
-        Assert.AreEqual(BillingLine."Document Type"::"Credit Memo", BillingLine."Document Type", 'Setup-failure, creating billing document: expected a credit memo to be created');
-        BillingLine.TestField("Document No.");
-        BillingLine.TestField("Billing Template Code", '');
-        SalesHeader.Get(SalesHeader."Document Type"::"Credit Memo", BillingLine."Document No.");
-        SalesHeader.Delete(true);
-        Assert.AreEqual(0, BillingLine.Count, 'Zero remaining billing lines expected after deleting the credit memo.');
     end;
 
     local procedure CreateAndPostSimpleSalesDocument(ItemNo: Code[20])
@@ -1990,39 +2149,7 @@ codeunit 139687 "Recurring Billing Docs Test"
         until CustomerContractLine.Next() = 0;
     end;
 
-    [HandlerFunctions('CreateCustomerBillingDocsContractPageHandler,CreateVendorBillingDocsContractPageHandler,ExchangeRateSelectionModalPageHandler,MessageHandler')]
-    [Test]
-    procedure CheckBatchDeleteAllContractDocuments()
-    begin
-        // Test: multiple Sales- and Purchase-Contract Documents can be batch-deleted by using the function from the recurring billing page
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Customer);
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
-        InitAndCreateBillingDocument(Enum::"Service Partner"::Vendor);
-
-        BillingProposal.DeleteBillingDocuments(1, false); // Selection: 1 = "All Documents"
-
-        AssertThat.AreEqual(0, GetNumberOfContractDocumentsSales(Enum::"Sales Document Type"::Invoice), 'Failed to delete all Sales Contract Invoices');
-        AssertThat.AreEqual(0, GetNumberOfContractDocumentsSales(Enum::"Sales Document Type"::"Credit Memo"), 'Failed to delete all Sales Contract Credit Memos');
-        AssertThat.AreEqual(0, GetNumberOfContractDocumentsPurchase(Enum::"Purchase Document Type"::Invoice), 'Failed to delete all Purchase Contract Invoices');
-        AssertThat.AreEqual(0, GetNumberOfContractDocumentsPurchase(Enum::"Purchase Document Type"::"Credit Memo"), 'Failed to delete all Purchase Contract Credit Memos');
-    end;
-
-    [Test]
-    procedure CheckBatchDeleteSelectedContractDocuments()
-    begin
-        // Test: multiple Sales- and Purchase-Contract Invoices can be batch-deleted depending on the selected document type
-        // Selection: 2 = "All Sales Invoices"
-        CreateAndDeleteDummyContractDocuments(2, 0, 2, 2, 2);
-        // Selection: 3 = "All Sales Credit Memos"
-        CreateAndDeleteDummyContractDocuments(3, 2, 0, 2, 2);
-        // Selection: 4 = "All Purchase Invoices"
-        CreateAndDeleteDummyContractDocuments(4, 2, 2, 0, 2);
-        // Selection: 5 = "All Purchase Credit Memos"
-        CreateAndDeleteDummyContractDocuments(5, 2, 2, 2, 0);
-    end;
-
-    procedure CreateAndDeleteDummyContractDocuments(Selection: Integer; NoOfSalesInvoices: Integer; NoOfSalesCrMemos: Integer; NoOfPurchaseInvoices: Integer; NoOfPurchaseCrMemos: Integer)
+    local procedure CreateAndDeleteDummyContractDocuments(Selection: Integer; NoOfSalesInvoices: Integer; NoOfSalesCrMemos: Integer; NoOfPurchaseInvoices: Integer; NoOfPurchaseCrMemos: Integer)
     begin
         SalesHeader.Reset();
         SalesHeader.SetFilter("Document Type", '%1|%2', SalesHeader."Document Type"::Invoice, SalesHeader."Document Type"::"Credit Memo");
@@ -2095,118 +2222,146 @@ codeunit 139687 "Recurring Billing Docs Test"
         exit(BillingArchiveLine.Count());
     end;
 
-    [Test]
-    [HandlerFunctions('CreateBillingDocumentPageHandler,MessageHandler,ExchangeRateSelectionModalPageHandler')]
-    procedure TestVendorContractPurchaseInvoicePricesTakenFromServiceCommitment()
+    [ConfirmHandler]
+    procedure DialogHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        if not (Question = DialogMsg) then
+            Error('No Dialog Question found!');
+        Reply := false;
+    end;
+
+    [ConfirmHandler]
+    procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
+    begin
+        Reply := true;
+    end;
+
+    [MessageHandler]
+    procedure MessageHandler(Message: Text[1024])
+    begin
+    end;
+
+    [ModalPageHandler]
+    procedure CreateCustomerBillingDocsTestOpenPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
     var
-        Item: Record Item;
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        PriceListHeader: Record "Price List Header";
-        PriceListLine: Record "Price List Line";
+        PagePostingDate: Date;
+        PageDocumentDate: Date;
     begin
-        //[SCENARIO]: Test if Prices in Purchase Invoice (created from Vendor Contract) are taken from service commitments
-
-        //[GIVEN]:
-        //Setup service commitment item with purchase price 
-        //Create service object from the Sales order
-        //Assign the service commitment to the vendor contract (at this point service commitment has prices taken from the sales order)
-        ClearAll();
-        ContractTestLibrary.ResetContractRecords();
-
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '<1M>', 100, "Invoicing Via"::Contract, "Calculation Base Type"::"Document Price");
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '<1M>', 100, '', "Service Partner"::Vendor, Item."No.", "Invoicing Via"::Contract, "Calculation Base Type"::"Document Price", '', '<1M>', false);
-        ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item", ServiceCommitmentPackage.Code);
-
-        LibraryPriceCalculation.CreatePriceHeader(PriceListHeader, "Price Type"::Purchase, "Price Source Type"::"All Vendors", '');
-        LibraryPriceCalculation.CreatePriceListLine(PriceListLine, PriceListHeader.Code, PriceListHeader."Price Type", PriceListHeader."Source Type", PriceListHeader."Parent Source No.", PriceListHeader."Source No.", Enum::"Price Amount Type"::Any, Enum::"Price Asset Type"::Item, Item."No.");
-        PriceListManagement.ActivateDraftLines(PriceListHeader);
-
-        LibrarySales.CreateSalesDocumentWithItem(SalesHeader, SalesLine, Enum::"Sales Document Type"::Order, '', Item."No.", LibraryRandom.RandDecInRange(1, 8, 0), '', CalcDate('<-CM>', WorkDate()));
-        LibrarySales.PostSalesDocument(SalesHeader, true, true);
-
-        ServiceObject.FindLast();
-        ContractTestLibrary.CreateVendorContractAndCreateContractLines(VendorContract, ServiceObject, '', false);
-        GetVendorContractServiceCommitment(VendorContract."No.");
-
-        //[WHEN]:
-        //Create purchase invoice directly from the vendor contract
-        NextBillingToDate := CalcDate('<CM>', ServiceCommitment."Next Billing Date"); //Take the whole month for more accurate comparison
-        BillingProposal.CreateBillingProposalFromContract(VendorContract."No.", VendorContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Vendor);
-
-        //[THEN]:
-        //Expect that Discount from the price list is not applied in the purchase line
-        //Expect that the Line amount is set from the service commitment and not the price list
-        BillingLine.FindLast();
-        FilterPurchaseLineOnDocumentLine(BillingLine.GetPurchaseDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
-        PurchaseLine.SetRange("Line Amount", ServiceCommitment."Service Amount");
-        PurchaseLine.SetRange("Line Discount %", ServiceCommitment."Discount %");
-        AssertThat.RecordIsNotEmpty(PurchaseLine);
+        Evaluate(PagePostingDate, CreateCustomerBillingDocs.PostingDate.Value);
+        Evaluate(PageDocumentDate, CreateCustomerBillingDocs.DocumentDate.Value);
+        AssertThat.AreEqual(WorkDate(), PagePostingDate, 'Posting Date is not initialized correctly.');
+        AssertThat.AreEqual(WorkDate(), PageDocumentDate, 'Document Date is not initialized correctly.');
+        CreateCustomerBillingDocs.Cancel().Invoke();
     end;
 
-    [Test]
-    [HandlerFunctions('CreateBillingDocumentPageHandler,MessageHandler')]
-    procedure TestCustomerContractSalesInvoicePricesTakenFromServiceCommitment()
+    [ModalPageHandler]
+    procedure CreateCustomerBillingDocsContractPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
+    begin
+        CreateCustomerBillingDocs.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure CreateCustomerBillingDocsSellToCustomerPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
+    begin
+        CreateCustomerBillingDocs.GroupingType.SetValue(Enum::"Customer Rec. Billing Grouping"::"Sell-to Customer No.");
+        CreateCustomerBillingDocs.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure CreateCustomerBillingDocsBillToCustomerPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
+    begin
+        CreateCustomerBillingDocs.GroupingType.SetValue(Enum::"Customer Rec. Billing Grouping"::"Bill-to Customer No.");
+        CreateCustomerBillingDocs.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure CancelCreateVendorBillingDocsTestOpenPageHandler(var CreateVendorBillingDocs: TestPage "Create Vendor Billing Docs")
     var
-        Item: Record Item;
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        PriceListHeader: Record "Price List Header";
-        PriceListLine: Record "Price List Line";
+        PagePostingDate: Date;
+        PageDocumentDate: Date;
     begin
-        //[SCENARIO]: Test if Prices in Sales Invoice (created from Customer Contract) are taken from service commitments
-
-        //[GIVEN]:
-        //Setup service commitment item with sales price 
-        //Create service object from the Sales order
-        //Assign the service commitment to the customer contract (at this point service commitment has prices taken from the sales order)
-        ClearAll();
-        ContractTestLibrary.ResetContractRecords();
-
-        ContractTestLibrary.CreateServiceCommitmentTemplate(ServiceCommitmentTemplate, '<1M>', 100, "Invoicing Via"::Contract, "Calculation Base Type"::"Document Price");
-        ContractTestLibrary.CreateServiceCommitmentPackageWithLine(ServiceCommitmentTemplate.Code, ServiceCommitmentPackage, ServiceCommPackageLine);
-        ContractTestLibrary.UpdateServiceCommitmentPackageLine(ServiceCommPackageLine, '<1M>', 100, '', "Service Partner"::Customer, Item."No.", "Invoicing Via"::Contract, "Calculation Base Type"::"Document Price", '', '<1M>', false);
-        ContractTestLibrary.SetupSalesServiceCommitmentItemAndAssignToServiceCommitmentPackage(Item, Enum::"Item Service Commitment Type"::"Service Commitment Item", ServiceCommitmentPackage.Code);
-
-        LibraryPriceCalculation.CreatePriceHeader(PriceListHeader, "Price Type"::Sale, "Price Source Type"::"All Customers", '');
-        LibraryPriceCalculation.CreatePriceListLine(PriceListLine, PriceListHeader.Code, PriceListHeader."Price Type", PriceListHeader."Source Type", PriceListHeader."Parent Source No.", PriceListHeader."Source No.", Enum::"Price Amount Type"::Any, Enum::"Price Asset Type"::Item, Item."No.");
-        PriceListManagement.ActivateDraftLines(PriceListHeader);
-
-        LibrarySales.CreateSalesDocumentWithItem(SalesHeader, SalesLine, Enum::"Sales Document Type"::Order, '', Item."No.", LibraryRandom.RandDecInRange(1, 8, 0), '', CalcDate('<-CM>', WorkDate()));
-        LibrarySales.PostSalesDocument(SalesHeader, true, true);
-
-        ServiceObject.FindLast();
-        ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, SalesHeader."Sell-to Customer No.", false);
-        GetCustomerContractServiceCommitment(CustomerContract."No.");
-
-        //[WHEN]:
-        //Create purchase invoice directly from the vendor contract
-        NextBillingToDate := CalcDate('<CM>', ServiceCommitment."Next Billing Date"); //Take the whole month for more accurate comparison
-        BillingProposal.CreateBillingProposalFromContract(CustomerContract."No.", CustomerContract.GetFilter("Billing Rhythm Filter"), "Service Partner"::Customer);
-        BillingLine.FindLast();
-        //[THEN]:
-        //Expect that Discount from the price list is not applied in the sales line
-        //Expect that the Line amount is set from the service commitment and not the price list
-        FilterSalesLineOnDocumentLine(BillingLine.GetSalesDocumentTypeFromBillingDocumentType(), BillingLine."Document No.", BillingLine."Document Line No.");
-        SalesLine.SetRange("Line Amount", ServiceCommitment."Service Amount");
-        SalesLine.SetRange("Line Discount %", ServiceCommitment."Discount %");
-        AssertThat.RecordIsNotEmpty(SalesLine);
+        Evaluate(PagePostingDate, CreateVendorBillingDocs.PostingDate.Value);
+        Evaluate(PageDocumentDate, CreateVendorBillingDocs.DocumentDate.Value);
+        AssertThat.AreEqual(WorkDate(), PagePostingDate, 'Posting Date is not initialized correctly.');
+        AssertThat.AreEqual(WorkDate(), PageDocumentDate, 'Document Date is not initialized correctly.');
+        CreateVendorBillingDocs.Cancel().Invoke();
     end;
 
-    procedure FilterSalesLineOnDocumentLine(SalesDocumentType: Enum "Sales Document Type"; DocumentNo: Code[20]; LineNo: Integer)
+    [ModalPageHandler]
+    procedure CreateVendorBillingDocsContractPageHandler(var CreateVendorBillingDocs: TestPage "Create Vendor Billing Docs")
     begin
-        SalesLine.SetRange("Document Type", SalesDocumentType);
-        SalesLine.SetRange("Document No.", DocumentNo);
-        SalesLine.SetRange("Line No.", LineNo);
+        CreateVendorBillingDocs.OK().Invoke();
     end;
 
-    procedure FilterPurchaseLineOnDocumentLine(PurchaseDocumentType: Enum "Purchase Document Type"; DocumentNo: Code[20]; LineNo: Integer)
+    [ModalPageHandler]
+    procedure CreateVendorBillingDocsPayToVendorPageHandler(var CreateVendorBillingDocs: TestPage "Create Vendor Billing Docs")
     begin
-        PurchaseLine.SetRange("Document Type", PurchaseDocumentType);
-        PurchaseLine.SetRange("Document No.", DocumentNo);
-        PurchaseLine.SetRange("Line No.", LineNo);
+        CreateVendorBillingDocs.GroupingType.SetValue(Enum::"Vendor Rec. Billing Grouping"::"Pay-to Vendor No.");
+        CreateVendorBillingDocs.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure CreateVendorBillingDocsBuyFromVendorPageHandler(var CreateVendorBillingDocs: TestPage "Create Vendor Billing Docs")
+    begin
+        CreateVendorBillingDocs.GroupingType.SetValue(Enum::"Vendor Rec. Billing Grouping"::"Buy-From Vendor No.");
+        CreateVendorBillingDocs.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure ExchangeRateSelectionModalPageHandler(var ExchangeRateSelectionPage: TestPage "Exchange Rate Selection")
+    begin
+        ExchangeRateSelectionPage.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure CreateAndPostCustomerBillingDocsContractPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
+    begin
+        CreateCustomerBillingDocs.PostDocuments.SetValue(true);
+        CreateCustomerBillingDocs.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure CreateAndPostCustomerBillingDocsSellToCustomerPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
+    begin
+        CreateCustomerBillingDocs.PostDocuments.SetValue(true);
+        CreateCustomerBillingDocs.GroupingType.SetValue(Enum::"Customer Rec. Billing Grouping"::"Sell-to Customer No.");
+        CreateCustomerBillingDocs.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure CreateAndPostCustomerBillingDocsBillToCustomerPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
+    begin
+        CreateCustomerBillingDocs.PostDocuments.SetValue(true);
+        CreateCustomerBillingDocs.GroupingType.SetValue(Enum::"Customer Rec. Billing Grouping"::"Bill-to Customer No.");
+        CreateCustomerBillingDocs.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure CreateVendorBillingDocsTestOpenPageHandler(var CreateVendorBillingDocs: TestPage "Create Vendor Billing Docs")
+    begin
+        CreateVendorBillingDocs.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure CreateBillingDocumentPageHandler(var CreateBillingDocument: TestPage "Create Billing Document")
+    begin
+        CreateBillingDocument.BillingDate.SetValue(NextBillingToDate);
+        CreateBillingDocument.BillingTo.SetValue(NextBillingToDate);
+        CreateBillingDocument.OpenDocument.SetValue(false);
+        CreateBillingDocument.PostDocument.SetValue(false);
+        CreateBillingDocument.OK().Invoke()
+    end;
+
+    [PageHandler]
+    procedure BillingLinesArchivePageHandler(var BillingLinesArchive: TestPage "Archived Billing Lines")
+    var
+        NoOfRecords: Integer;
+    begin
+        if BillingLinesArchive.First() then
+            repeat
+                NoOfRecords += 1;
+            until not BillingLinesArchive.Next();
+        AssertThat.AreEqual(NoOfRecords, ExpectedNoOfArchivedLines, 'Page Billing Lines Archive is not filtered properly.');
+        BillingLinesArchive.OK().Invoke();
     end;
 }

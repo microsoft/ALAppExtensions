@@ -15,9 +15,41 @@ codeunit 139690 "Contract Price Proposal Test"
     TestPermissions = Disabled;
     Access = Internal;
 
+    var
+        Customer: Record Customer;
+        Customer2: Record Customer;
+        Vendor: Record Vendor;
+        Vendor2: Record Vendor;
+        Item: Record Item;
+        ServiceCommitmentTemplate: Record "Service Commitment Template";
+        ServiceCommitmentPackage: Record "Service Commitment Package";
+        ServiceCommPackageLine: Record "Service Comm. Package Line";
+        Currency: Record Currency;
+        TempContractPriceUpdateLine: Record "Contract Price Update Line" temporary;
+        PriceUpdateTemplateCustomer: Record "Price Update Template";
+        PriceUpdateTemplateVendor: Record "Price Update Template";
+        ContractPriceUpdateLine: Record "Contract Price Update Line";
+        BillingTemplate: Record "Billing Template";
+        BillingLine: Record "Billing Line";
+        ServiceObject: Record "Service Object";
+        ServiceCommitment: Record "Service Commitment";
+        ContractTestLibrary: Codeunit "Contract Test Library";
+        LibraryRandom: Codeunit "Library - Random";
+        LibraryERMCountryData: Codeunit "Library - ERM Country Data";
+        LibraryTestInitialize: Codeunit "Library - Test Initialize";
+        PriceUpdateManagement: Codeunit "Price Update Management";
+        Assert: Codeunit Assert;
+        LibrarySales: Codeunit "Library - Sales";
+        LibraryPurchase: Codeunit "Library - Purchase";
+        LibraryUtility: Codeunit "Library - Utility";
+        StrMenuHandlerStep: Integer;
+        IsInitialized: Boolean;
+
     [Test]
     procedure TestCreateContractPriceUpdateProposal()
     begin
+        Initialize();
+
         CreateContractPriceUpdateProposalForCustomerServiceCommitments("Price Update Method"::"Calculation Base by %", WorkDate(), '<12M>', '<1M>', LibraryRandom.RandDec(100, 2), '<12M>', '<12M>', '<12M>');
         ContractPriceUpdateLine.SetRange("Price Update Template Code", PriceUpdateTemplateCustomer.Code);
         Assert.RecordIsNotEmpty(ContractPriceUpdateLine);
@@ -27,6 +59,8 @@ codeunit 139690 "Contract Price Proposal Test"
     [HandlerFunctions('StrMenuHandlerDeleteProposal')]
     procedure TestDeleteContractPriceUpdateProposal()
     begin
+        Initialize();
+
         CreateContractPriceUpdateProposalForCustomerServiceCommitments("Price Update Method"::"Calculation Base by %", WorkDate(), '<12M>', '<1M>', LibraryRandom.RandDec(100, 2), '<12M>', '<12M>', '<12M>');
 
         StrMenuHandlerStep := 1;
@@ -45,6 +79,8 @@ codeunit 139690 "Contract Price Proposal Test"
     [Test]
     procedure TestCreateContractPriceUpdateProposalCalculationBaseByPerc()
     begin
+        Initialize();
+
         CreateContractPriceUpdateProposalForCustomerServiceCommitments("Price Update Method"::"Calculation Base by %", WorkDate(), '<12M>', '<1M>', LibraryRandom.RandDec(100, 2), '<12M>', '<12M>', '<12M>');
 
         ContractPriceUpdateLine.SetRange("Price Update Template Code", PriceUpdateTemplateCustomer.Code);
@@ -68,6 +104,8 @@ codeunit 139690 "Contract Price Proposal Test"
     [Test]
     procedure TestCreateContractPriceUpdateProposalPriceByPerc()
     begin
+        Initialize();
+
         CreateContractPriceUpdateProposalForCustomerServiceCommitments("Price Update Method"::"Price by %", WorkDate(), '<12M>', '<1M>', LibraryRandom.RandDec(100, 2), '<12M>', '<12M>', '<12M>');
         Currency.InitRoundingPrecision();
         ContractPriceUpdateLine.SetRange("Price Update Template Code", PriceUpdateTemplateCustomer.Code);
@@ -91,6 +129,8 @@ codeunit 139690 "Contract Price Proposal Test"
     [Test]
     procedure TestCreateContractPriceUpdateProposalRecentItemPrices()
     begin
+        Initialize();
+
         CreateContractPriceUpdateProposalForCustomerServiceCommitments("Price Update Method"::"Recent Item Prices", WorkDate(), '<12M>', '<1M>', 0, '<12M>', '<12M>', '<12M>');
 
         ContractPriceUpdateLine.SetRange("Price Update Template Code", PriceUpdateTemplateCustomer.Code);
@@ -117,6 +157,8 @@ codeunit 139690 "Contract Price Proposal Test"
         CustomerContract: Record "Customer Contract";
         CustomerContract2: Record "Customer Contract";
     begin
+        Initialize();
+
         CreateCustomerContractPriceUpdateFromMultipleContracts(CustomerContract, CustomerContract2);
         PriceUpdateManagement.InitTempTable(TempContractPriceUpdateLine, Enum::"Contract Billing Grouping"::None);
         TempContractPriceUpdateLine.SetRange(Indent, 0);
@@ -151,6 +193,8 @@ codeunit 139690 "Contract Price Proposal Test"
         VendorContract: Record "Vendor Contract";
         VendorContract2: Record "Vendor Contract";
     begin
+        Initialize();
+
         CreateVendorContractPriceUpdateFromMultipleContracts(VendorContract, VendorContract2);
         PriceUpdateManagement.InitTempTable(TempContractPriceUpdateLine, Enum::"Contract Billing Grouping"::None);
         TempContractPriceUpdateLine.SetRange(Indent, 0);
@@ -189,6 +233,8 @@ codeunit 139690 "Contract Price Proposal Test"
         TempContractPriceUpdateLine2: Record "Contract Price Update Line" temporary;
         TempServiceCommitment: Record "Service Commitment" temporary;
     begin
+        Initialize();
+
         CreateContractPriceUpdateProposalForCustomerServiceCommitments("Price Update Method"::"Calculation Base by %", WorkDate(), '<12M>', '<12M>', LibraryRandom.RandDec(100, 2), '<1M>', '<1M>', '<1M>');
         //Make sure that the service commitment is fully invoice until date of next price update
         ContractTestLibrary.CreateCustomerContractAndCreateContractLines(CustomerContract, ServiceObject, ServiceObject."End-User Customer No.");
@@ -221,6 +267,8 @@ codeunit 139690 "Contract Price Proposal Test"
         PlannedServiceCommitment: Record "Planned Service Commitment";
         TempContractPriceUpdateLine2: Record "Contract Price Update Line" temporary;
     begin
+        Initialize();
+
         CreateContractPriceUpdateProposalForCustomerServiceCommitments("Price Update Method"::"Recent Item Prices", CalcDate('<1M>', WorkDate()), '<12M>', '<12M>', 0, '<12M>', '<24M>', '<12M>');
 
         ContractPriceUpdateLine.SetRange("Price Update Template Code", PriceUpdateTemplateCustomer.Code);
@@ -242,6 +290,8 @@ codeunit 139690 "Contract Price Proposal Test"
     [Test]
     procedure TestIfContractPriceUpdateLinesAreDeletedAfterPerformPriceUpdate()
     begin
+        Initialize();
+
         CreateContractPriceUpdateProposalForCustomerServiceCommitments("Price Update Method"::"Recent Item Prices", CalcDate('<1M>', WorkDate()), '<12M>', '<12M>', 0, '<12M>', '<24M>', '<12M>');
 
         PerformPriceUpdate();
@@ -258,6 +308,8 @@ codeunit 139690 "Contract Price Proposal Test"
         CustomerContract: Record "Customer Contract";
         SalesInvoiceHeader: Record "Sales Invoice Header";
     begin
+        Initialize();
+
         CreateContractPriceUpdateProposalForCustomerServiceCommitments("Price Update Method"::"Recent Item Prices", CalcDate('<1M>', WorkDate()), '<12M>', '<12M>', 0, '<12M>', '<24M>', '<12M>');
         ContractPriceUpdateLine.Reset();
         ContractPriceUpdateLine.FindLast();
@@ -289,6 +341,8 @@ codeunit 139690 "Contract Price Proposal Test"
         PurchaseHeader: Record "Purchase Header";
         PurchInvHeader: Record "Purch. Inv. Header";
     begin
+        Initialize();
+
         CreateContractPriceUpdateProposalForVendorServiceCommitments("Price Update Method"::"Recent Item Prices", CalcDate('<1M>', WorkDate()), 0, '<12M>', '<24M>', '<12M>');
         ContractPriceUpdateLine.Reset();
         ContractPriceUpdateLine.FindLast();
@@ -322,6 +376,8 @@ codeunit 139690 "Contract Price Proposal Test"
         ServiceCommitmentArchive: Record "Service Commitment Archive";
         CorrectPostedSalesInvoice: Codeunit "Correct Posted Sales Invoice";
     begin
+        Initialize();
+
         CreateContractPriceUpdateProposalForCustomerServiceCommitments("Price Update Method"::"Calculation Base by %", CalcDate('<1M>', WorkDate()), '<12M>', '<12M>', 50, '<12M>', '<24M>', '<12M>');
 
         ContractPriceUpdateLine.Reset();
@@ -364,6 +420,8 @@ codeunit 139690 "Contract Price Proposal Test"
         ServiceCommitmentArchive: Record "Service Commitment Archive";
         CorrectPostedPurchInvoice: Codeunit "Correct Posted Purch. Invoice";
     begin
+        Initialize();
+
         CreateContractPriceUpdateProposalForVendorServiceCommitments("Price Update Method"::"Recent Item Prices", CalcDate('<1M>', WorkDate()), 0, '<12M>', '<24M>', '<12M>');
         ContractPriceUpdateLine.Reset();
         ContractPriceUpdateLine.FindLast();
@@ -398,6 +456,8 @@ codeunit 139690 "Contract Price Proposal Test"
     [Test]
     procedure TestIfServiceCommitmentWithoutNextPriceUpdateIsIncludedInContractPriceUpdateProposal()
     begin
+        Initialize();
+
         InitTest();
         ContractTestLibrary.CreatePriceUpdateTemplate(PriceUpdateTemplateCustomer, "Service Partner"::Customer, Enum::"Price Update Method"::"Calculation Base by %", LibraryRandom.RandDec(100, 2), '<12M>', '<12M>', '<12M>');
         ContractTestLibrary.CreateMultipleServiceObjectsWithItemSetup(Customer, ServiceObject, Item, 2);
@@ -419,29 +479,27 @@ codeunit 139690 "Contract Price Proposal Test"
         Assert.RecordIsNotEmpty(ContractPriceUpdateLine);
     end;
 
+    local procedure Initialize()
+    begin
+        LibraryTestInitialize.OnTestInitialize(Codeunit::"Contract Price Proposal Test");
+
+        if IsInitialized then
+            exit;
+
+        LibraryTestInitialize.OnBeforeTestSuiteInitialize(Codeunit::"Contract Price Proposal Test");
+        LibraryERMCountryData.UpdatePurchasesPayablesSetup();
+        LibraryERMCountryData.UpdateSalesReceivablesSetup();
+        LibraryERMCountryData.UpdateGeneralLedgerSetup();
+        LibraryERMCountryData.UpdateJournalTemplMandatory(false);
+        LibraryTestInitialize.OnAfterTestSuiteInitialize(Codeunit::"Contract Price Proposal Test");
+    end;
+
     local procedure CreateBillingDocuments()
     begin
         BillingLine.SetRange("Billing Template Code", BillingTemplate.Code);
         BillingLine.SetRange(Partner, BillingTemplate.Partner);
         Codeunit.Run(Codeunit::"Create Billing Documents", BillingLine);
         Commit(); // retain data after asserterror
-    end;
-
-    [MessageHandler]
-    procedure MessageHandler(Message: Text[1024])
-    begin
-    end;
-
-    [ModalPageHandler]
-    procedure CreateCustomerBillingDocsContractPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
-    begin
-        CreateCustomerBillingDocs.OK().Invoke();
-    end;
-
-    [ModalPageHandler]
-    procedure CreateVendorBillingDocsContractPageHandler(var CreateVendorBillingDocs: TestPage "Create Vendor Billing Docs")
-    begin
-        CreateVendorBillingDocs.OK().Invoke();
     end;
 
     local procedure InitTest()
@@ -489,25 +547,6 @@ codeunit 139690 "Contract Price Proposal Test"
         Item.Get(ItemNo);
         Item."Last Direct Cost" := LibraryRandom.RandDec(100, 2);
         Item.Modify(false);
-    end;
-
-    [ModalPageHandler]
-    procedure ExchangeRateSelectionModalPageHandler(var ExchangeRateSelectionPage: TestPage "Exchange Rate Selection")
-    begin
-        ExchangeRateSelectionPage.OK().Invoke();
-    end;
-
-    [StrMenuHandler]
-    procedure StrMenuHandlerDeleteProposal(Option: Text[1024]; var Choice: Integer; Instruction: Text[1024])
-    begin
-        case StrMenuHandlerStep of
-            1:
-                Choice := 1;
-            2:
-                Choice := 2;
-            else
-                Choice := 0;
-        end;
     end;
 
     local procedure TestIfArchivedServiceCommitmentIsCreated(TempServiceCommitment: Record "Service Commitment" temporary)
@@ -596,30 +635,39 @@ codeunit 139690 "Contract Price Proposal Test"
         Commit(); // Commit after processing
     end;
 
-    var
-        Customer: Record Customer;
-        Customer2: Record Customer;
-        Vendor: Record Vendor;
-        Vendor2: Record Vendor;
-        Item: Record Item;
-        ServiceCommitmentTemplate: Record "Service Commitment Template";
-        ServiceCommitmentPackage: Record "Service Commitment Package";
-        ServiceCommPackageLine: Record "Service Comm. Package Line";
-        Currency: Record Currency;
-        TempContractPriceUpdateLine: Record "Contract Price Update Line" temporary;
-        PriceUpdateTemplateCustomer: Record "Price Update Template";
-        PriceUpdateTemplateVendor: Record "Price Update Template";
-        ContractPriceUpdateLine: Record "Contract Price Update Line";
-        BillingTemplate: Record "Billing Template";
-        BillingLine: Record "Billing Line";
-        ServiceObject: Record "Service Object";
-        ServiceCommitment: Record "Service Commitment";
-        ContractTestLibrary: Codeunit "Contract Test Library";
-        LibraryRandom: Codeunit "Library - Random";
-        PriceUpdateManagement: Codeunit "Price Update Management";
-        Assert: Codeunit Assert;
-        LibrarySales: Codeunit "Library - Sales";
-        LibraryPurchase: Codeunit "Library - Purchase";
-        LibraryUtility: Codeunit "Library - Utility";
-        StrMenuHandlerStep: Integer;
+    [MessageHandler]
+    procedure MessageHandler(Message: Text[1024])
+    begin
+    end;
+
+    [ModalPageHandler]
+    procedure CreateCustomerBillingDocsContractPageHandler(var CreateCustomerBillingDocs: TestPage "Create Customer Billing Docs")
+    begin
+        CreateCustomerBillingDocs.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure CreateVendorBillingDocsContractPageHandler(var CreateVendorBillingDocs: TestPage "Create Vendor Billing Docs")
+    begin
+        CreateVendorBillingDocs.OK().Invoke();
+    end;
+
+    [ModalPageHandler]
+    procedure ExchangeRateSelectionModalPageHandler(var ExchangeRateSelectionPage: TestPage "Exchange Rate Selection")
+    begin
+        ExchangeRateSelectionPage.OK().Invoke();
+    end;
+
+    [StrMenuHandler]
+    procedure StrMenuHandlerDeleteProposal(Option: Text[1024]; var Choice: Integer; Instruction: Text[1024])
+    begin
+        case StrMenuHandlerStep of
+            1:
+                Choice := 1;
+            2:
+                Choice := 2;
+            else
+                Choice := 0;
+        end;
+    end;
 }

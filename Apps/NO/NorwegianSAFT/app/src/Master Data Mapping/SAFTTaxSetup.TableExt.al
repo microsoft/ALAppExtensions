@@ -40,19 +40,8 @@ tableextension 10679 "SAF-T Tax Setup" extends "VAT Posting Setup"
             Caption = 'Sales SAF-T Standard Tax Code';
             TableRelation = "VAT Code";
             ObsoleteReason = 'Use the field "Sale VAT Reporting Code" in BaseApp W1.';
-#if CLEAN23
             ObsoleteState = Removed;
             ObsoleteTag = '26.0';
-#else
-            ObsoleteState = Pending;
-            ObsoleteTag = '23.0';
-
-            trigger OnValidate()
-            begin
-                If "Sales SAF-T Standard Tax Code" <> '' then
-                    TestField("Sales VAT Account");
-            end;
-#endif
         }
         field(10673; "Purch. SAF-T Standard Tax Code"; Code[10])
         {
@@ -60,19 +49,8 @@ tableextension 10679 "SAF-T Tax Setup" extends "VAT Posting Setup"
             Caption = 'Purchase SAF-T Standard Tax Code';
             TableRelation = "VAT Code";
             ObsoleteReason = 'Use the field "Purch. VAT Reporting Code" in BaseApp W1.';
-#if CLEAN23
             ObsoleteState = Removed;
             ObsoleteTag = '26.0';
-#else
-            ObsoleteState = Pending;
-            ObsoleteTag = '23.0';
-
-            trigger OnValidate()
-            begin
-                If "Purch. SAF-T Standard Tax Code" <> '' then
-                    TestField("Purchase VAT Account");
-            end;
-#endif
         }
     }
 

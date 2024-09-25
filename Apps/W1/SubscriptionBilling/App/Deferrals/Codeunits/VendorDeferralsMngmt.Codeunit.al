@@ -30,34 +30,6 @@ codeunit 8068 "Vendor Deferrals Mngmt."
         TempVendorContractDeferral.DeleteAll(false);
     end;
 
-#if not CLEAN23
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", OnFillInvoicePostingBufferOnBeforeSetAccount, '', false, false)]
-    local procedure SetPurchaseAccountOnAfterSetAmounts(PurchaseLine: Record "Purchase Line"; var PurchAccount: Code[20])
-    var
-        VendContractHeader: Record "Vendor Contract";
-        GeneralPostingSetup: Record "General Posting Setup";
-        BillingLine: Record "Billing Line";
-    begin
-        BillingLine.SetRange("Document Type", BillingLine.GetBillingDocumentTypeFromPurchaseDocumentType(PurchaseLine."Document Type"));
-        BillingLine.SetRange("Document No.", PurchaseLine."Document No.");
-        BillingLine.SetRange("Document Line No.", PurchaseLine."Line No.");
-        BillingLine.SetFilter("Billing from", '>=%1', PurchaseLine."Recurring Billing from");
-        BillingLine.SetFilter("Billing to", '<=%1', PurchaseLine."Recurring Billing to");
-        if not BillingLine.FindFirst() then
-            exit;
-
-        VendContractHeader.Get(BillingLine."Contract No.");
-        GeneralPostingSetup.Get(PurchaseLine."Gen. Bus. Posting Group", PurchaseLine."Gen. Prod. Posting Group");
-        if VendContractHeader."Without Contract Deferrals" then begin
-            GeneralPostingSetup.TestField("Vendor Contract Account");
-            PurchAccount := GeneralPostingSetup."Vendor Contract Account";
-        end else begin
-            GeneralPostingSetup.TestField("Vend. Contr. Deferral Account");
-            PurchAccount := GeneralPostingSetup."Vend. Contr. Deferral Account";
-        end;
-    end;
-#endif
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice Events", 'OnPrepareLineOnBeforeSetAccount', '', false, false)]
     local procedure OnPrepareLineOnBeforeSetAccount(PurchLine: Record "Purchase Line"; var SalesAccount: Code[20])
     var
@@ -83,19 +55,6 @@ codeunit 8068 "Vendor Deferrals Mngmt."
             SalesAccount := GeneralPostingSetup."Vend. Contr. Deferral Account";
         end;
     end;
-
-#if not CLEAN23
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", OnFillInvoicePostBufferOnAfterInitAmounts, '', false, false)]
-    local procedure SetVendorContractDeferralLinePostingOld(PurchLine: Record "Purchase Line")
-    begin
-        VendorContractDeferralLinePosting := false;
-        Clear(TempPurchaseLine);
-        if IsVendorContractWithDeferrals(PurchLine) then begin
-            VendorContractDeferralLinePosting := true;
-            TempPurchaseLine := PurchLine;
-        end;
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice Events", 'OnAfterInitTotalAmounts', '', false, false)]
     local procedure SetVendorContractDeferralLinePosting(PurchLine: Record "Purchase Line")

@@ -81,7 +81,7 @@ codeunit 6216 "Sustainability Jnl.-Check"
         SustainabilityCalcMgt: Codeunit "Sustainability Calc. Mgt.";
         EmissionCO2, EmissionCH4, EmissionN2O : Decimal;
     begin
-        if (SustainabilityJnlLine."Emission CO2" = 0) and (SustainabilityJnlLine."Emission CH4" = 0) and (SustainabilityJnlLine."Emission N2O" = 0) then
+        if AllEmissionsZeroCheck(SustainabilityJnlLine) then
             Error(ErrorInfo.Create(AllEmissionsZeroErr, true, SustainabilityJnlLine));
 
         EmissionCO2 := SustainabilityJnlLine."Emission CO2";
@@ -92,6 +92,25 @@ codeunit 6216 "Sustainability Jnl.-Check"
 
         if (EmissionCO2 <> SustainabilityJnlLine."Emission CO2") or (EmissionCH4 <> SustainabilityJnlLine."Emission CH4") or (EmissionN2O <> SustainabilityJnlLine."Emission N2O") then
             Error(ErrorInfo.Create(EmissionCalculationErr, true, SustainabilityJnlLine));
+    end;
+
+    local procedure AllEmissionsZeroCheck(SustainabilityJnlLine: Record "Sustainability Jnl. Line"): Boolean
+    begin
+        if IsRenewableEnergyCheck(SustainabilityJnlLine) then
+            exit(false);
+
+        if (SustainabilityJnlLine."Emission CO2" = 0) and (SustainabilityJnlLine."Emission CH4" = 0) and (SustainabilityJnlLine."Emission N2O" = 0) then
+            exit(true);
+
+        exit(false);
+    end;
+
+    local procedure IsRenewableEnergyCheck(SustainabilityJnlLine: Record "Sustainability Jnl. Line"): Boolean
+    var
+        SustainAccountSubcategory: Record "Sustain. Account Subcategory";
+    begin
+        if SustainAccountSubcategory.Get(SustainabilityJnlLine."Account Category", SustainabilityJnlLine."Account Subcategory") then
+            exit(SustainAccountSubcategory."Renewable Energy");
     end;
 
     local procedure TestRequiredFieldsFromSetupForJnlLine(SustainabilityJnlLine: Record "Sustainability Jnl. Line")

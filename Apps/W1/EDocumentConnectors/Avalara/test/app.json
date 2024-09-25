@@ -1,0 +1,84 @@
+{
+    "id":  "e1d97edc-c239-46b4-8d84-6368bdf67c8e",
+    "name":  "E-Document Connector - Avalara Tests",
+    "publisher":  "Microsoft",
+    "brief":  "E-Document Connector - Avalara Tests",
+    "description":  "E-Document Connector - Avalara Tests",
+    "version":  "26.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2204541",
+    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
+    "logo":  "ExtensionLogo.png",
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206603",
+    "dependencies":  [
+                        {
+                            "id": "e1d97edc-c239-46b4-8d84-6368bdf67c8b",
+                            "name": "E-Document Core",
+                            "publisher": "Microsoft",
+                            "version": "26.0.0.0"
+                        },
+                        {
+                            "id":  "f35c56a6-7c5f-4dbe-89c4-fef5145d00f4",
+                            "name":  "E-Document Connector - Avalara",
+                            "publisher":  "Microsoft",
+                            "version": "26.0.0.0"
+                        },
+                        {
+                            "id": "d852a468-263e-49e5-bfda-f09e33342b89",
+                            "name": "E-Documents Connector with External Endpoints",
+                            "publisher": "Microsoft",
+                            "version":  "26.0.0.0"
+                        },
+                        {
+                            "id":  "e1d97edc-c239-46b4-8d84-6368bdf67c8c",
+                            "name":  "E-Document Core Tests",
+                            "publisher":  "Microsoft",
+                            "version":  "26.0.0.0"
+                        },
+                        {
+                            "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
+                            "name":  "Tests-TestLibraries",
+                            "publisher":  "Microsoft",
+                            "version":  "26.0.0.0"
+                        },
+                        {
+                            "id":  "9856ae4f-d1a7-46ef-89bb-6ef056398228",
+                            "name":  "System Application Test Library",
+                            "publisher":  "Microsoft",
+                            "version":  "26.0.0.0"
+                        },
+                        {
+                            "id":  "5095f467-0a01-4b99-99d1-9ff1237d286f",
+                            "publisher":  "Microsoft",
+                            "name":  "Library Variable Storage",
+                            "version":  "26.0.0.0"
+                        },
+                        {
+                            "id":  "40860557-a18d-42ad-aecb-22b7dd80dc80",
+                            "name":  "Permissions Mock",
+                            "publisher":  "Microsoft",
+                            "version":  "26.0.0.0"
+                        }
+                     ],
+    "screenshots":  [
+
+                    ],
+    "platform":  "26.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  148191,
+                         "to":  148192
+                     }
+                 ],
+    "resourceExposurePolicy":  {
+                                   "allowDebugging":  true,
+                                   "allowDownloadingSource":  true,
+                                   "includeSourceInSymbolFile":  true
+                               },
+    "application":  "26.0.0.0",
+    "target":  "OnPrem",
+    "features": [
+        "TranslationFile"
+    ]
+}

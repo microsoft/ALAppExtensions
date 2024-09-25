@@ -64,7 +64,7 @@ codeunit 30116 "Shpfy Customer Export"
             Metafield.Namespace := 'Microsoft.Dynamics365.BusinessCentral';
             Metafield.Validate("Parent Table No.", Database::"Shpfy Customer");
             Metafield."Owner Id" := ShopifyCustomer.Id;
-            Metafield.Type := Metafield.Type::string;
+            Metafield.Type := Metafield.Type::single_line_text_field;
             Metafield.Value := Format(MetadataFieldRef.Value);
         end;
     end;
