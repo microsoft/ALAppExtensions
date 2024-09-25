@@ -22,18 +22,6 @@ pageextension 11767 "Customer List CZL" extends "Customer List"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the registration number of customer.';
             }
-#if not CLEAN23
-            field("Registration No. CZL"; Rec."Registration No. CZL")
-            {
-                Caption = 'Registration No. (Obsolete)';
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the registration number of customer.';
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '23.0';
-                ObsoleteReason = 'Replaced by standard "Registration Number" field.';
-            }
-#endif
         }
     }
 

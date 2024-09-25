@@ -1,16 +1,10 @@
 namespace Microsoft.Integration.Shopify;
 
 using System.Integration;
-#if not CLEAN23
-using System.Environment.Configuration;
-#endif
 
 codeunit 30270 "Shpfy Bulk Operation Mgt."
 {
     var
-#if not CLEAN23
-        BulkOperationFeatureIdTok: Label 'ShopifyBulkAPI';
-#endif
         InvalidUserErr: Label 'You must sign in with a Business Central licensed user to enable the feature.';
         CategoryTok: Label 'Shopify Integration', Locked = true;
         BulkOperationsDontMatchLbl: Label 'Searched bulk operation (%1, %2, %3) does not match with current one (%4)', Comment = '%1 = Bulk Operation Id, %2 = Shop Code, %3 = Type, %4 = Bulk Operation Id', Locked = true;
@@ -166,44 +160,6 @@ codeunit 30270 "Shpfy Bulk Operation Mgt."
     begin
         exit(10);
     end;
-
-#if not CLEAN23
-    [Obsolete('Feature ShopifyBulkAPI will be enabled by default in version 26.0.', '23.0')]
-    procedure IsBulkOperationFeatureEnabled() FeatureEnabled: Boolean;
-    var
-        FeatureManagementFacade: Codeunit "Feature Management Facade";
-    begin
-        FeatureEnabled := FeatureManagementFacade.IsEnabled(BulkOperationFeatureIdTok);
-        OnIsBulkOperationFeatureEnabled(FeatureEnabled);
-    end;
-
-    [Obsolete('Feature ShopifyBulkAPI will be enabled by default in version 26.0.', '23.0')]
-    procedure GetBulkOperationFeatureKey(): Text[50]
-    begin
-        exit(BulkOperationFeatureIdTok);
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Feature Management Facade", 'OnAfterFeatureEnableConfirmed', '', false, false)]
-    local procedure HandleOnAfterFeatureEnableConfirmed(var FeatureKey: Record "Feature Key")
-    var
-        Shop: Record "Shpfy Shop";
-    begin
-        if FeatureKey.ID = BulkOperationFeatureIdTok then begin
-            Shop.SetRange(Enabled, true);
-            if Shop.FindSet() then
-                repeat
-                    EnableBulkOperations(Shop);
-                until Shop.Next() = 0;
-        end;
-    end;
-
-    [Obsolete('Feature ShopifyBulkAPI will be enabled by default in version 26.0.', '23.0')]
-    [InternalEvent(false, false)]
-    local procedure OnIsBulkOperationFeatureEnabled(var FeatureEnabled: Boolean)
-    begin
-    end;
-#endif
-
 
     [InternalEvent(false, false)]
     local procedure OnInvalidUser(var IsHandled: Boolean)

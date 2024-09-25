@@ -63,9 +63,6 @@ page 30101 "Shpfy Shop Card"
                         if not Rec.Enabled then
                             exit;
                         Rec.RequestAccessToken();
-#if not CLEAN23
-                        if BulkOperationMgt.IsBulkOperationFeatureEnabled() then
-#endif
                         BulkOperationMgt.EnableBulkOperations(Rec);
                         Rec."B2B Enabled" := Rec.GetB2BEnabled();
                         Rec."Weight Unit" := Rec.GetShopWeightUnit();
@@ -93,18 +90,6 @@ page 30101 "Shpfy Shop Card"
                     Importance = Additional;
                     ToolTip = 'Specifies the language of the Shopify Shop.';
                 }
-#if not CLEAN23
-                field(LogActivated; Rec."Log Enabled")
-                {
-                    ApplicationArea = All;
-                    Importance = Additional;
-                    ToolTip = 'Specifies whether the log is activated.';
-                    Visible = false;
-                    ObsoleteReason = 'Replaced with field "Logging Mode"';
-                    ObsoleteState = Pending;
-                    ObsoleteTag = '23.0';
-                }
-#endif
                 field(LoggingMode; Rec."Logging Mode")
                 {
                     ApplicationArea = All;

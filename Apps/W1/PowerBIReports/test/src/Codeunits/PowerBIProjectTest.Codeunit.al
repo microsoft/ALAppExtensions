@@ -57,8 +57,8 @@ codeunit 139879 "PowerBI Project Test"
         // [WHEN] Get request for jobs is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::Jobs, '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.GetUri(Uri);
         UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('no eq ''%1'' or no eq ''%2''', Job."No.", Job2."No."));
+        UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
         // [THEN] The response contains the job information
@@ -105,14 +105,14 @@ codeunit 139879 "PowerBI Project Test"
         LibJob.CreateJob(Job);
         LibJob.CreateJobTask(Job, JobTask);
         LibJob.CreateJobTask(Job, JobTask2);
-        JobTask.SetFilter("Job No.", Job."No.");
+        JobTask.SetRange("Job No.", Job."No.");
         Commit();
 
         // [WHEN] Get request for job tasks is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Job Tasks", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.GetUri(Uri);
         UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('jobNo eq ''%1''', Job."No."));
+        UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
         // [THEN] The response contains the job task information
@@ -161,8 +161,8 @@ codeunit 139879 "PowerBI Project Test"
         // [WHEN] Get request for job planning lines is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Job Planning Lines", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.GetUri(Uri);
         UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('jobNo eq ''%1''', Job."No."));
+        UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
         // [THEN] The response contains the job planning line information
@@ -228,8 +228,8 @@ codeunit 139879 "PowerBI Project Test"
         // [WHEN] Get request for job ledger entries is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::Microsoft.Projects.PowerBIReports."Job Ledger Entries", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.GetUri(Uri);
         UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('jobNo eq ''%1''', Job."No."));
+        UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
         // [THEN] The response contains the job ledger entry information
@@ -255,11 +255,11 @@ codeunit 139879 "PowerBI Project Test"
         Assert.AreEqual(JobLedgerEntry.Description, JsonMgt.GetValue('description'), 'Description did not match.');
         Assert.AreEqual(JobLedgerEntry."Location Code", JsonMgt.GetValue('locationCode'), 'Location code did not match.');
         Assert.AreEqual(JobLedgerEntry."Unit of Measure Code", JsonMgt.GetValue('unitOfMeasureCode'), 'Unit of measure code did not match.');
-        Assert.AreEqual(Format(JobLedgerEntry.Quantity, 0, 9), JsonMgt.GetValue('quantity'), 'Quantity did not match.');
-        Assert.AreEqual(Format(JobLedgerEntry."Unit Cost (LCY)", 0, 9), JsonMgt.GetValue('unitCostLCY'), 'Unit cost (LCY) did not match.');
-        Assert.AreEqual(Format(JobLedgerEntry."Total Cost (LCY)", 0, 9), JsonMgt.GetValue('totalCostLCY'), 'Total cost (LCY) did not match.');
-        Assert.AreEqual(Format(JobLedgerEntry."Unit Price", 0, 9), JsonMgt.GetValue('unitPrice'), 'Unit price did not match.');
-        Assert.AreEqual(Format(JobLedgerEntry."Total Price (LCY)", 0, 9), JsonMgt.GetValue('totalPriceLCY'), 'Total price (LCY) did not match.');
+        Assert.AreNearlyEqual(JobLedgerEntry.Quantity, CastToDecimal(JsonMgt.GetValue('quantity')), 0.01, 'Quantity did not match.');
+        Assert.AreNearlyEqual(JobLedgerEntry."Unit Cost (LCY)", CastToDecimal(JsonMgt.GetValue('unitCostLCY')), 0.01, 'Unit cost (LCY) did not match.');
+        Assert.AreNearlyEqual(JobLedgerEntry."Total Cost (LCY)", CastToDecimal(JsonMgt.GetValue('totalCostLCY')), 0.01, 'Total cost (LCY) did not match.');
+        Assert.AreNearlyEqual(JobLedgerEntry."Unit Price", CastToDecimal(JsonMgt.GetValue('unitPrice')), 0.01, 'Unit price did not match.');
+        Assert.AreNearlyEqual(JobLedgerEntry."Total Price (LCY)", CastToDecimal(JsonMgt.GetValue('totalPriceLCY')), 0.01, 'Total price (LCY) did not match.');
         Assert.AreEqual(Format(JobLedgerEntry."Dimension Set ID"), JsonMgt.GetValue('dimensionSetID'), 'Dimension set ID did not match.');
     end;
 
@@ -282,8 +282,8 @@ codeunit 139879 "PowerBI Project Test"
         // [WHEN] Get request for outstanding PO lines is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Purch. Lines - Job Outstanding", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.GetUri(Uri);
         UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('jobNo eq ''%1''', Job."No."));
+        UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
         // [THEN] The response contains the outstanding PO line information
@@ -397,8 +397,8 @@ codeunit 139879 "PowerBI Project Test"
         // [WHEN] Get request for received not invoiced PO lines is made
         TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::"Purch. Lines - Job Received", '');
         UriBuilder.Init(TargetURL);
-        UriBuilder.GetUri(Uri);
         UriBuilder.AddODataQueryParameter('$filter', StrSubstNo('jobNo eq ''%1''', Job."No."));
+        UriBuilder.GetUri(Uri);
         LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
 
         // [THEN] The response contains the received not invoiced PO line information
@@ -448,6 +448,14 @@ codeunit 139879 "PowerBI Project Test"
         PurchLine.Validate("Job No.", JobTask."Job No.");
         PurchLine.Validate("Job Task No.", JobTask."Job Task No.");
         PurchLine.Modify(true);
+    end;
+
+    local procedure CastToDecimal(Value: Text) Output: Decimal
+    begin
+        if Value = '' then
+            exit(0);
+        Evaluate(Output, Value);
+        exit(Output);
     end;
 
     [ConfirmHandler]

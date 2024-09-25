@@ -20,7 +20,11 @@ pageextension 4405 EXRARRoleCenter extends "Account Receivables"
                 action(EXRTrialBalanceExcel)
                 {
                     ApplicationArea = Basic, Suite;
+#if not CLEAN25
                     Caption = 'Trial Balance (Preview)';
+#else
+                Caption = 'Trial Balance';
+#endif
                     Image = "Report";
                     RunObject = report "EXR Trial Balance Excel";
                     ToolTip = 'Open a spreadsheet that shows Trial Balance Excel data.';
@@ -44,7 +48,11 @@ pageextension 4405 EXRARRoleCenter extends "Account Receivables"
                 action(EXRAgedAccountsRecExcel)
                 {
                     ApplicationArea = Basic, Suite;
+#if not CLEAN25
                     Caption = 'Aged Accounts Receivable (Preview)';
+#else
+                    Caption = 'Aged Accounts Receivable';
+#endif
                     Image = "Report";
                     RunObject = report "EXR Aged Accounts Rec Excel";
                     ToolTip = 'Open a spreadsheet that shows the Aged Accounts Receivable data.';

@@ -202,19 +202,19 @@ codeunit 8051 "Sub. Billing Installation"
     var
         CustomerLbl: Label 'Customer';
         CustomerBillingTemplateDescriptionTxt: Label 'Sample template for customer billing';
-        CustomerContractCodeLbl: Label 'CUSTCONTR';
+        CustomerContractCodeLbl: Label 'CUSTCONTR', MaxLength = 20;
         CustomerContractDescriptionLbl: Label 'Customer Contracts';
-        CustomerContractNoSeriesLineLbl: Label 'CUC';
+        CustomerContractNoSeriesLineLbl: Label 'CUC', MaxLength = 14;
         VendorLbl: Label 'Vendor';
         VendorBillingTemplateDescriptionTxt: Label 'Sample template for vendor billing';
-        VendorContractCodeLbl: Label 'VENDCONTR';
+        VendorContractCodeLbl: Label 'VENDCONTR', MaxLength = 20;
         VendorContractDescriptionLbl: Label 'Vendor Contracts';
-        VendorContractNoSeriesLineLbl: Label 'VEC';
-        ServiceObjectCodeLbl: Label 'SERVOBJECT';
+        VendorContractNoSeriesLineLbl: Label 'VEC', MaxLength = 14;
+        ServiceObjectCodeLbl: Label 'SERVOBJECT', MaxLength = 20;
         ServiceObjectDescriptionLbl: Label 'Service Objects';
-        ServiceObjectNoSeriesLineLbl: Label 'SOBJ';
+        ServiceObjectNoSeriesLineLbl: Label 'SOBJ', MaxLength = 14;
         CustContractDimensionCodeLbl: Label 'CUSTOMERCONTRACT';
         CustContractDimensionDescriptionLbl: Label 'Customer Contract Dimension';
-        ContractDeferralReleaseCodeLbl: Label 'CONTDEFREL';
+        ContractDeferralReleaseCodeLbl: Label 'CONTDEFREL', MaxLength = 10;
         ContractDeferralsReleaseDescriptionLbl: Label 'Contract Deferrals Release';
 }

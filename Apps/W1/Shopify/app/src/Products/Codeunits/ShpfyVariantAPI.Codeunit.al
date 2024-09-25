@@ -471,11 +471,7 @@ codeunit 30189 "Shpfy Variant API"
         Price: Text;
         CompareAtPrice: Text;
     begin
-#if not CLEAN23
-        IsBulkOperationEnabled := BulkOperationMgt.IsBulkOperationFeatureEnabled() and (RecordCount >= BulkOperationMgt.GetBulkOperationThreshold());
-#else
         IsBulkOperationEnabled := RecordCount >= BulkOperationMgt.GetBulkOperationThreshold();
-#endif
         GraphQuery.Append('{"query":"mutation { productVariantUpdate(input: {id: \"gid://shopify/ProductVariant/');
         GraphQuery.Append(Format(ShopifyVariant.Id));
         GraphQuery.Append('\"');

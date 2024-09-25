@@ -32,5 +32,17 @@ pageextension 4407 "Fixed Asset List" extends "Fixed Asset List"
                 ToolTip = 'View detailed information about the fixed asset ledger entries that have been posted to a specified depreciation book for each fixed asset.';
             }
         }
+        addlast(Category_Report)
+        {
+            actionref(FAAnalysisExcel_Promoted; "Fixed Asset Analysis - Excel")
+            {
+            }
+            actionref(FAProjectedExcel_Promoted; "Fixed Asset Projected - Excel")
+            {
+            }
+            actionref(FADetailsExcel_Promoted; "Fixed Asset Details - Excel")
+            {
+            }
+        }
     }
 }

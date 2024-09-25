@@ -110,14 +110,6 @@ codeunit 18767 "TDS Journals Subscribers"
             Error(SectionErr, VendorLedgerEntry."Document No.", GenJnlLine."TDS Section Code");
     end;
 
-#if not CLEAN23
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostBalancingEntry', '', false, false)]
-    local procedure OnBeforePostBalancingEntry(var GenJnlLine: Record "Gen. Journal Line"; var PurchHeader: Record "Purchase Header")
-    begin
-        PostBalancingEntryForGenJnlLine(GenJnlLine, PurchHeader);
-    end;
-#endif
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice Events", 'OnPostBalancingEntryOnBeforeGenJnlPostLine', '', false, false)]
     local procedure OnPostBalancingEntryOnBeforeGenJnlPostLine(var GenJnlLine: Record "Gen. Journal Line"; var PurchHeader: Record "Purchase Header")
     begin

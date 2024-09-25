@@ -71,5 +71,8 @@
                                    "includeSourceInSymbolFile":  true
                                },
     "application":  "26.0.0.0",
-    "target":  "OnPrem"
+    "target":  "OnPrem",
+    "features": [
+        "TranslationFile"
+    ]
 }

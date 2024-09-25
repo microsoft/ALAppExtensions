@@ -5,7 +5,7 @@ using Microsoft.Inventory.Item;
 using Microsoft.Sales.Customer;
 using Microsoft.Purchases.Vendor;
 
-codeunit 139894 "Usage Based Extend Contr. Test"
+codeunit 148159 "Usage Based Extend Contr. Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;

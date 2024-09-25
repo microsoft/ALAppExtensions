@@ -13,7 +13,7 @@ codeunit 30150 "Shpfy GQL VariantById" implements "Shpfy IGraphQL"
     /// <returns>Return value of type Text.</returns>
     internal procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{productVariant(id: \"gid://shopify/ProductVariant/{{VariantId}}\") {createdAt updatedAt availableForSale barcode compareAtPrice displayName inventoryPolicy position price sku taxCode taxable title product{id}selectedOptions{name value} inventoryItem{countryCodeOfOrigin createdAt id inventoryHistoryUrl legacyResourceId measurement { weight { value }} provinceCodeOfOrigin requiresShipping sku tracked updatedAt unitCost { amount currencyCode }} metafields(first: 50) {edges {node {id namespace ownerType legacyResourceId key value}}}}}"}');
+        exit('{"query":"{productVariant(id: \"gid://shopify/ProductVariant/{{VariantId}}\") {createdAt updatedAt availableForSale barcode compareAtPrice displayName inventoryPolicy position price sku taxCode taxable title product{id}selectedOptions{name value} inventoryItem{countryCodeOfOrigin createdAt id inventoryHistoryUrl legacyResourceId measurement { weight { value }} provinceCodeOfOrigin requiresShipping sku tracked updatedAt unitCost { amount currencyCode }} metafields(first: 50) {edges {node {id namespace type legacyResourceId key value}}}}}"}');
     end;
 
     /// <summary>

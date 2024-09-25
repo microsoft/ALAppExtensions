@@ -33,26 +33,6 @@ pageextension 18971 "Payment Journal VI" extends "Payment Journal"
         }
         addafter("Void Check")
         {
-#if not CLEAN23
-#pragma warning disable AL0678
-            action(Void_Check)
-            {
-                ApplicationArea = Basic, Suite;
-                Caption = 'Void Check';
-                ToolTip = 'Void the check if, for example, the check is not cashed by the bank.';
-                Image = VoidCheck;
-                Visible = false;
-                ObsoleteReason = 'Name conflict. Use the action "IN_Void_Check" instead.';
-                ObsoleteState = Pending;
-                ObsoleteTag = '23.0';
-
-                trigger OnAction()
-                begin
-                    VoidCheckVoucher();
-                end;
-            }
-#pragma warning restore AL0678
-#endif            
             action("IN_Void_Check")
             {
                 ApplicationArea = Basic, Suite;

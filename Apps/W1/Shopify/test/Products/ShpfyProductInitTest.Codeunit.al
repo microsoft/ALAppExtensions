@@ -177,7 +177,7 @@ codeunit 139603 "Shpfy Product Init Test"
     end;
 
 
-#if not CLEAN23
+#if not CLEAN25
     internal procedure CreateSalesPrice(Code: Code[10]; ItemNo: Code[20]; Price: Decimal)
     var
         CustomerPriceGroup: Record "Customer Price Group";

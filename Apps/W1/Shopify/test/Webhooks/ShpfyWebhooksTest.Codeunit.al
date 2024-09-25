@@ -158,39 +158,6 @@ codeunit 139612 "Shpfy Webhooks Test"
         Clear();
     end;
 
-#if not CLEAN23
-    [Obsolete('Feature ShopifyBulkAPI will be enabled by default in version 26.0.', '23.0')]
-    [HandlerFunctions('EnableFeatureConfirmHandler')]
-    [Test]
-    procedure TestEnableBulkOperationFeature()
-    var
-        Shop: Record "Shpfy Shop";
-        WebhookSubscription: Record "Webhook Subscription";
-        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
-        FeatureManagement: TestPage "Feature Management";
-    begin
-        // [SCENARIO] Enabling bulk operation feature registers webhook with Shopify and creates a subscription
-
-        // [GINVEN] A Shop record
-        Initialize();
-        WebhooksSubcriber.InitCreateWebhookResponse(CreateShopifyWebhookCreateJson(BulkOperationTopicLbl), CreateShopifyWebhookDeleteJson(), CreateShopifyEmptyWebhookJson());
-        BindSubscription(WebhooksSubcriber);
-        BindSubscription(BulkOpSubscriber);
-
-        // [WHEN] Feature is enabled
-        FeatureManagement.OpenEdit();
-        FeatureManagement.Filter.SetFilter(ID, 'ShopifyBulkAPI');
-        FeatureManagement.EnabledFor.Value('All Users');
-
-        // [THEN] Subscription is created and id field is filled
-        Shop := CommunicationMgt.GetShopRecord();
-        LibraryAssert.AreEqual(Shop."Bulk Operation Webhook Id", SubscriptionId, 'Subscription id should be filled.');
-        WebhookSubscription.SetRange(Endpoint, BulkOperationTopicLbl);
-        LibraryAssert.RecordCount(WebhookSubscription, 1);
-        Clear();
-    end;
-#endif
-
     [Test]
     procedure TestEnableBulkOperationWebhook()
     var
@@ -367,13 +334,4 @@ codeunit 139612 "Shpfy Webhooks Test"
     begin
         exit(ShopUrl.Replace('https://', '').Replace('.myshopify.com', '').TrimEnd('/'));
     end;
-
-#if not CLEAN23
-    [Obsolete('Feature ShopifyBulkAPI will be enabled by default in version 26.0.', '23.0')]
-    [ConfirmHandler]
-    procedure EnableFeatureConfirmHandler(Question: Text[1024]; var Reply: Boolean)
-    begin
-        Reply := true;
-    end;
-#endif
 }

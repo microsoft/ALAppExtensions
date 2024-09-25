@@ -3,10 +3,6 @@ namespace Microsoft.Utility.ImageAnalysis;
 using System.AI;
 using System.Environment.Configuration;
 using System.Environment;
-#if not CLEAN23
-using Microsoft.Inventory.Item;
-using Microsoft.CRM.Contact;
-#endif
 using Microsoft.Utilities;
 using System.Security.User;
 using System.Globalization;
@@ -30,10 +26,6 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
         SetupNotificationDescriptionTxt: Label 'Notify me that the Image Analyzer extension can suggest attributes detected in imported images.';
         ContactQuestionnairePopulatedNameTxt: Label 'Image Analyzer profile questionnaire completed';
         ContactQuestionnairePopulatedNotificationDescriptionTxt: Label 'Notify me when Image Analyzer has been used in profile questionnaire to analyze a picture of a contact.';
-#if not CLEAN23
-        AnalyzerDisabledMsg: Label 'Looks like the Image Analyzer extension is disabled. Do you want to learn more and enable it?';
-        SetupActionTxt: Label 'Enable';
-#endif
         GotItTxt: Label 'Got it';
         NeverShowAgainTxt: Label 'Don''t tell me again';
         ImageAnalysisCategoryLbl: Label 'Image Analysis', Locked = true;
@@ -179,54 +171,6 @@ codeunit 2027 "Image Analyzer Ext. Mgt."
             Notification.AddAction(OpenSetupTxt, Codeunit::"Image Analyzer Ext. Mgt.", 'OpenSetup');
         Notification.Send();
     end;
-
-#if not CLEAN23
-    [Obsolete('Notifications to enable image analysis have been discontinued.', '23.0')]
-    procedure SendEnableNotification(CodeToSet: Code[20]; OnRecord: Option " ",Item,Contact)
-    var
-        SetupNotification: Notification;
-    begin
-        SetupNotification.Id := GetEnabledNotificationId();
-        SetupNotification.Message := AnalyzerDisabledMsg;
-
-        case OnRecord of
-            OnRecord::Contact:
-                SetupNotification.SetData(GetContactNoForNotificationData(), Format(CodeToSet));
-
-            OnRecord::Item:
-                SetupNotification.SetData(GetItemNoForNotificationData(), Format(CodeToSet));
-        end;
-
-        SetupNotification.AddAction(SetupActionTxt, Codeunit::"Image Analyzer Ext. Mgt.", 'OpenSetupWizard');
-        SetupNotification.Send();
-
-        OnSendEnableNotification();
-    end;
-
-    [Obsolete('Notifications to enable image analysis have been discontinued.', '23.0')]
-    procedure OpenSetupWizard(var SetupNotification: Notification)
-    var
-        Item: Record Item;
-        Contact: Record Contact;
-        ImageAnalyzerWizard: Page "Image Analyzer Wizard";
-        ItemNoCode: Code[20];
-        ContactNoCode: Code[20];
-    begin
-        if SetupNotification.HasData(GetItemNoForNotificationData()) then begin
-            ItemNoCode := CopyStr(SetupNotification.GetData(GetItemNoForNotificationData()), 1, MaxStrLen(ItemNoCode));
-            if Item.get(ItemNoCode) then
-                ImageAnalyzerWizard.SetItem(item);
-        end;
-
-        if SetupNotification.HasData(GetContactNoForNotificationData()) then begin
-            ContactNoCode := CopyStr(SetupNotification.GetData(GetContactNoForNotificationData()), 1, MaxStrLen(ContactNoCode));
-            if Contact.get(ContactNoCode) then
-                ImageAnalyzerWizard.SetContact(Contact);
-        end;
-
-        ImageAnalyzerWizard.RunModal();
-    end;
-#endif
 
     procedure HandleSetupAndEnable()
     var

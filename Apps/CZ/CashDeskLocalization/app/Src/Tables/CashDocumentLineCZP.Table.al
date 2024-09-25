@@ -220,9 +220,12 @@ table 11733 "Cash Document Line CZP"
                             end;
                         "Account Type"::Employee:
                             begin
-                                CashDocumentHeaderCZP.TestField("Currency Code", '');
                                 Employee.Get("Account No.");
                                 Description := CopyStr(Employee.FullName(), 1, MaxStrLen(Description));
+                                "Posting Group" := Employee."Employee Posting Group";
+                                "Gen. Posting Type" := "Gen. Posting Type"::" ";
+                                "VAT Bus. Posting Group" := '';
+                                "VAT Prod. Posting Group" := '';
                             end;
                     end;
 

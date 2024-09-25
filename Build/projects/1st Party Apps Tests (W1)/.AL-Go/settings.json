@@ -2,6 +2,8 @@
     "projectName": "1st Party Apps Tests (W1)",
     "testFolders":  [
         "..\\..\\..\\Apps\\W1\\*\\test",
-        "..\\..\\..\\Apps\\W1\\*\\test library"
+        "..\\..\\..\\Apps\\W1\\*\\test library",
+        "..\\..\\..\\Apps\\W1\\*\\*\\test",
+        "..\\..\\..\\Apps\\W1\\*\\*\\test library"
     ]
 }

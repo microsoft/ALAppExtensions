@@ -890,11 +890,4 @@ codeunit 4022 "GP Vendor Migrator"
         if PayablesAccountNo = '' then
             PayablesAccountNo := DefaultPayablesAccountNo;
     end;
-
-#if not CLEAN23
-    [Obsolete('Updated to use the OnMigrateVendorPostingGroups event subscriber.', '23.0')]
-    procedure MigrateVendorClasses()
-    begin
-    end;
-#endif
 }
