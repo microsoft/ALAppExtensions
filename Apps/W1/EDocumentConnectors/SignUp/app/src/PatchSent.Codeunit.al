@@ -33,7 +33,7 @@ codeunit 6387 PatchSent
         EDocumentIntegrationLog: Record "E-Document Integration Log";
         EDocument: Record "E-Document";
         APIRequests: Codeunit APIRequests;
-        SignUpProcessing: Codeunit SignUpProcessing;
+        Processing: Codeunit Processing;
         HttpResponse: HttpResponseMessage;
         HttpRequest: HttpRequestMessage;
     begin
@@ -48,7 +48,7 @@ codeunit 6387 PatchSent
                 EDocumentIntegrationLog.SetRange(Method, 'PATCH');
                 if EDocumentIntegrationLog.IsEmpty then
                     if APIRequests.PatchADocument(EDocument, HttpRequest, HttpResponse) then
-                        SignUpProcessing.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
+                        Processing.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
             until EDocumentServiceStatus.Next() = 0;
     end;
 
