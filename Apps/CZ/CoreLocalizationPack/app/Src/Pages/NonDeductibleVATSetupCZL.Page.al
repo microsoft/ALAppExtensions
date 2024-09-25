@@ -21,10 +21,12 @@ page 31215 "Non-Deductible VAT Setup CZL"
                 field("From Date"; Rec."From Date")
                 {
                     ToolTip = 'Specifies the date from which the VAT coefficient is valid.';
+                    ShowMandatory = true;
                 }
                 field("To Date"; Rec."To Date")
                 {
                     ToolTip = 'Specifies the date to which the VAT coefficient is valid.';
+                    ShowMandatory = true;
                 }
                 field("Advance Coefficient"; Rec."Advance Coefficient")
                 {

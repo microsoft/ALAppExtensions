@@ -21,6 +21,7 @@ codeunit 6611 "FS Setup Defaults"
 {
     var
         CRMProductName: Codeunit "CRM Product Name";
+        LocationFieldMapping: Boolean;
         JobQueueCategoryLbl: Label 'BCI INTEG', Locked = true;
         OptionJobQueueCategoryLbl: Label 'BCI OPTION', Locked = true;
         CategoryTok: Label 'AL Field Service Integration', Locked = true;
@@ -179,12 +180,13 @@ codeunit 6611 "FS Setup Defaults"
           IntegrationFieldMapping.Direction::FromIntegrationTable,
           '', true, false);
 
-        InsertIntegrationFieldMapping(
-                 IntegrationTableMappingName,
-                 JobJournalLine.FieldNo("Location Code"),
-                 FSWorkOrderProduct.FieldNo(WarehouseId),
-                 IntegrationFieldMapping.Direction::FromIntegrationTable,
-                 '', true, false);
+        if LocationFieldMapping then
+            InsertIntegrationFieldMapping(
+              IntegrationTableMappingName,
+              JobJournalLine.FieldNo("Location Code"),
+              FSWorkOrderProduct.FieldNo(WarehouseId),
+              IntegrationFieldMapping.Direction::FromIntegrationTable,
+              '', true, false);
 
         OnAfterResetProjectJournalLineWOProductMapping(IntegrationTableMappingName);
 
@@ -557,6 +559,11 @@ codeunit 6611 "FS Setup Defaults"
             Codeunit.Run(Codeunit::"Job Queue - Enqueue", JobQueueEntry)
         else
             JobQueueEntry.Insert(true);
+    end;
+
+    internal procedure SetLocationFieldMapping(DoFieldMapping: Boolean)
+    begin
+        LocationFieldMapping := DoFieldMapping;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Setup Defaults", 'OnGetCDSTableNo', '', false, false)]

@@ -77,7 +77,7 @@ table 36951 "PowerBI Reports Setup"
             Caption = 'Calendar Range';
             OptionMembers = Calendar,FiscalGregorian,FiscalWeekly;
             OptionCaption = 'Standard,Fiscal Calendar,Weekly';
-            InitValue = "Calendar";
+            InitValue = FiscalGregorian;
             DataClassification = CustomerContent;
             // Defines to which type of calendar the year boundaries are applied during table’s generation. 
             // Using FiscalWeekly the first and last day of the year might not correspond to a first and last day of a month, respectively.

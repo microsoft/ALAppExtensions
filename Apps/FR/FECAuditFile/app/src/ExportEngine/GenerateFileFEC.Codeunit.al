@@ -161,19 +161,11 @@ codeunit 10826 "Generate File FEC"
                 UpdateProgressDialog(1, Format(Round(Counter / CounterTotal * 100, 1)));
 
                 if GLEntry."Posting Date" <> ClosingDate(GLEntry."Posting Date") then
-#if not CLEAN23
-                    ProcessGLEntry(GLEntry, AuditFileExportHeader);
-#else
                     ProcessGLEntry(GLEntry);
-#endif
             until GLEntry.Next() = 0;
     end;
 
-#if not CLEAN23
-    local procedure ProcessGLEntry(var GLEntry: Record "G/L Entry"; AuditFileExportHeader: Record "Audit File Export Header")
-#else
     local procedure ProcessGLEntry(var GLEntry: Record "G/L Entry")
-#endif
     var
         BankAccountLedgerEntry: Record "Bank Account Ledger Entry";
         GLRegister: Record "G/L Register";
@@ -185,6 +177,7 @@ codeunit 10826 "Generate File FEC"
         CurrencyCode: Code[10];
         DocNoApplied: Text;
         DateApplied: Date;
+        DateCreated: Date;
     begin
         PartyNo := '';
         PartyName := '';
@@ -241,15 +234,15 @@ codeunit 10826 "Generate File FEC"
             end;
 
         FindGLRegister(GLRegister, GLEntry."Entry No.");
+        if GLRegister.SystemCreatedAt <> 0DT then
+            DateCreated := DT2Date(GLRegister.SystemCreatedAt)
+        else
+            DateCreated := GLRegister."Creation Date";
 
         WriteGLEntryToFile(
             GLEntry,
-#if CLEAN23
             GLEntry."Transaction No.",
-#else
-            GetProgressiveNo(GLRegister, GLEntry, AuditFileExportHeader),
-#endif
-            DT2Date(GLRegister.SystemCreatedAt), PartyNo, PartyName, FCYAmount, CurrencyCode, DocNoApplied, DateApplied);
+            DateCreated, PartyNo, PartyName, FCYAmount, CurrencyCode, DocNoApplied, DateApplied);
     end;
 
     local procedure CalcDetailedBalanceBySource(GLAccountNo: Code[20]; SourceType: Enum "Gen. Journal Source Type"; SourceNo: Code[20]) TotalAmt: Decimal
@@ -289,11 +282,7 @@ codeunit 10826 "Generate File FEC"
             exit;
         end;
 
-#if not CLEAN24
         GLRegister.SetLoadFields("From Entry No.", "To Entry No.", "Creation Date");
-#else
-        GLRegister.SetLoadFields("From Entry No.", "To Entry No.");
-#endif
         if EntryNo > GLRegisterGlobal."To Entry No." then
             GLRegister.SetFilter("No.", '>%1', GLRegisterGlobal."No.");
         GLRegister.SetFilter("From Entry No.", '<=%1', EntryNo);
@@ -307,9 +296,7 @@ codeunit 10826 "Generate File FEC"
         GLRegisterGlobal."No." := GLRegister."No.";
         GLRegisterGlobal."From Entry No." := GLRegister."From Entry No.";
         GLRegisterGlobal."To Entry No." := GLRegister."To Entry No.";
-#if not CLEAN24
         GLRegisterGlobal."Creation Date" := GLRegister."Creation Date";
-#endif
         GLRegisterGlobal.SystemCreatedAt := GLRegister.SystemCreatedAt;
     end;
 
@@ -491,15 +478,6 @@ codeunit 10826 "Generate File FEC"
             DescriptionValue := SourceCode.Description;
         end;
     end;
-
-#if not CLEAN23
-    local procedure GetProgressiveNo(var GLRegister: Record "G/L Register"; var GLEntry: Record "G/L Entry"; AuditFileExportHeader: Record "Audit File Export Header"): Integer
-    begin
-        if AuditFileExportHeader."Use Transaction No." then
-            exit(GLEntry."Transaction No.");
-        exit(GLRegister."No.");
-    end;
-#endif
 
     local procedure GetTransPayRecEntriesCount(TransactionNo: Integer; PayRecAcc: Code[20]): Integer
     var

@@ -33,7 +33,7 @@ codeunit 149800 "Magic Function Prompt Test"
 
         // [WHEN] Sales lines are suggested based on the question from the dataset
         SalesLineAISuggestionsPage.Trap();
-        SalesOrderPage.SalesLines."Suggest Sales Lines".Invoke();
+        SalesOrderPage.SalesLines."Suggest Sales Lines Prompting".Invoke();
         SalesLineAISuggestionsPage.SearchQueryTxt.SetValue(AITestContext.GetQuestion().ValueAsText());
         SalesLineAISuggestionsPage.Generate.Invoke(); // AssertErrorNotificationHandler will be called
 

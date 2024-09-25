@@ -55,34 +55,6 @@ codeunit 18838 "TCS Sales Subscribers"
             SalesHeader."Assessee Code" := '';
     end;
 
-#if not CLEAN23
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", 'OnBeforePostCustomerEntry', '', false, false)]
-    local procedure PostCustEntry(
-        var GenJnlLine: Record "Gen. Journal Line";
-        var SalesHeader: Record "Sales Header";
-        var TotalSalesLine: Record "Sales Line";
-        var TotalSalesLineLCY: Record "Sales Line")
-    var
-        SalesLine: Record "Sales Line";
-        CompanyInformation: Record "Company Information";
-        Location: Record Location;
-    begin
-        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
-        SalesLine.SetRange("Document No.", SalesHeader."No.");
-        if SalesLine.FindFirst() then
-            GenJnlLine."TCS Nature of Collection" := SalesLine."TCS Nature of Collection";
-
-        if GenJnlLine."Location Code" <> '' then begin
-            Location.Get(GenJnlLine."Location Code");
-            if Location."T.C.A.N. No." <> '' then
-                GenJnlLine."T.C.A.N. No." := Location."T.C.A.N. No."
-        end else begin
-            CompanyInformation.Get();
-            GenJnlLine."T.C.A.N. No." := CompanyInformation."T.C.A.N. No.";
-        end;
-    end;
-#endif
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
     local procedure OnPostLedgerEntryOnBeforeGenJnlPostLine(
         var GenJnlLine: Record "Gen. Journal Line";

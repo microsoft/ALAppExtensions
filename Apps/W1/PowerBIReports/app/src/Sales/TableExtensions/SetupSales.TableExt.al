@@ -28,5 +28,15 @@ tableextension 36958 "Setup - Sales" extends "PowerBI Reports Setup"
             Caption = 'Item Sales Report Date Formula';
             DataClassification = CustomerContent;
         }
+        field(36972; "Sales Report Id"; Guid)
+        {
+            Caption = 'Sales Report ID';
+            DataClassification = CustomerContent;
+        }
+        field(36973; "Sales Report Name"; Text[200])
+        {
+            Caption = 'Sales Report Name';
+            DataClassification = CustomerContent;
+        }
     }
 }

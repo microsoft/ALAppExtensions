@@ -154,6 +154,7 @@ codeunit 6205 "Transaction Storage ABS"
     local procedure WriteIncomingDocumentsToABS(IncomingDocs: Dictionary of [Text, Integer]; AzureFunctionsAuth: Interface "Azure Functions Authentication"; CurrentDate: Date; var ExportLog: JsonObject)
     var
         IncomingDocAttachment: Record "Incoming Document Attachment";
+        TransactStorageExport: Codeunit "Transact. Storage Export";
         AzureFunctionsResponse: Codeunit "Azure Functions Response";
         TempBlob: Codeunit "Temp Blob";
         IncomingDocKey: Text;
@@ -202,7 +203,7 @@ codeunit 6205 "Transaction Storage ABS"
         end;
         ExportLog.Add(IncomingDocAttachment.TableName, ExportedDocCount);
         if LargeFileCount > 0 then
-            FeatureTelemetry.LogError('0000M7H', TransactionStorageTok, '', StrSubstNo(LargeFileFoundErr, LargeFileCount));
+            TransactStorageExport.LogWarning('0000M7H', StrSubstNo(LargeFileFoundErr, LargeFileCount));
         CustomDimensions.Add(CollectedDocsCountTxt, Format(IncomingDocAttachment.Count()));
         CustomDimensions.Add(ExportedDocsCountTxt, Format(ExportedDocCount));
         FeatureTelemetry.LogUsage('0000LT3', TransactionStorageTok, IncomingDocsExportedTxt, CustomDimensions);

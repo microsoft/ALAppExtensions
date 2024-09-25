@@ -14,11 +14,11 @@ using System.Text;
 using Microsoft.Inventory.Item;
 using Microsoft.PowerBIReports;
 using Microsoft.Sales.PowerBIReports;
+using System.TestLibraries.Security.AccessControl;
 
 codeunit 139881 "PowerBI Sales Test"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
     Access = Internal;
 
     var
@@ -29,6 +29,8 @@ codeunit 139881 "PowerBI Sales Test"
         LibInv: Codeunit "Library - Inventory";
         LibRandom: Codeunit "Library - Random";
         UriBuilder: Codeunit "Uri Builder";
+        PermissionsMock: Codeunit "Permissions Mock";
+        PowerBICoreTest: Codeunit "PowerBI Core Test";
         IsInitialized: Boolean;
         ResponseEmptyErr: Label 'Response should not be empty.';
 
@@ -307,6 +309,7 @@ codeunit 139881 "PowerBI Sales Test"
     begin
         // [SCENARIO] Test GenerateItemSalesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Item Sales Load Date Type" := PBISetup."Item Sales Load Date Type"::"Start/End Date";
 
@@ -314,6 +317,7 @@ codeunit 139881 "PowerBI Sales Test"
         PBISetup."Item Sales Start Date" := Today();
         PBISetup."Item Sales End Date" := Today() + 10;
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         ExpectedFilterTxt := StrSubstNo('%1..%2', Today(), Today() + 10);
 
@@ -334,12 +338,14 @@ codeunit 139881 "PowerBI Sales Test"
     begin
         // [SCENARIO] Test GenerateItemSalesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Item Sales Load Date Type" := PBISetup."Item Sales Load Date Type"::"Relative Date";
 
         // [GIVEN] A mock date formula value
         Evaluate(PBISetup."Item Sales Date Formula", '30D');
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         ExpectedFilterTxt := StrSubstNo('%1..', CalcDate(PBISetup."Item Sales Date Formula"));
 
@@ -359,8 +365,11 @@ codeunit 139881 "PowerBI Sales Test"
     begin
         // [SCENARIO] Test GenerateItemSalesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = " "
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Item Sales Load Date Type" := PBISetup."Item Sales Load Date Type"::" ";
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         // [WHEN] GenerateItemSalesReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateItemSalesReportDateFilter();

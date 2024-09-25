@@ -21,11 +21,13 @@ using Microsoft.Purchases.History;
 using Microsoft.Purchases.Payables;
 using Microsoft.Purchases.Document;
 using System.TestLibraries.Utilities;
+using Microsoft.Foundation.AuditCodes;
+using Microsoft.Finance.GeneralLedger.Setup;
+using System.TestLibraries.Security.AccessControl;
 
 codeunit 139876 "PowerBI Finance Test"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
     Access = Internal;
 
     var
@@ -40,6 +42,8 @@ codeunit 139876 "PowerBI Finance Test"
         LibRandom: Codeunit "Library - Random";
         LibUtility: Codeunit "Library - Utility";
         UriBuilder: Codeunit "Uri Builder";
+        PermissionsMock: Codeunit "Permissions Mock";
+        PowerBICoreTest: Codeunit "PowerBI Core Test";
         ResponseEmptyErr: Label 'Response should not be empty.';
 
     [Test]
@@ -385,6 +389,7 @@ codeunit 139876 "PowerBI Finance Test"
         Response: Text;
     begin
         // [GIVEN] General journal lines for income statement account is posted, with one line outside the date range
+        PowerBICoreTest.AssignAdminPermissionSet();
         if not PBISetup.Get() then begin
             PBISetup.Init();
             PBISetup.Insert();
@@ -392,6 +397,7 @@ codeunit 139876 "PowerBI Finance Test"
         PBISetup."Finance Start Date" := 0D;
         PBISetup."Finance Start Date" := WorkDate();
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
         CreateGeneralJournalBatch(GenJournalBatch, GLAccount);
         GLAccount."Income/Balance" := GLAccount."Income/Balance"::"Income Statement";
         GLAccount.Modify(true);
@@ -473,11 +479,13 @@ codeunit 139876 "PowerBI Finance Test"
         GLAccount."Income/Balance" := GLAccount."Income/Balance"::"Income Statement";
         GLAccount.Insert();
 
+        PermissionsMock.Assign('SUPER');
         if GLEntry.FindLast() then;
         GLEntry.Init();
         GLEntry."Entry No." += 1;
         GLEntry."G/L Account No." := GLAccount."No.";
         GLEntry.Insert();
+        PermissionsMock.ClearAssignments();
 
         Commit();
 
@@ -503,6 +511,65 @@ codeunit 139876 "PowerBI Finance Test"
         Assert.AreEqual(0, JToken.AsArray().Count(), 'Response contains data outside of the filter.');
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandler,CloseIncomeStatementRequestPageHandler,MessageHandler')]
+    procedure TestClosingGLEntry()
+    var
+        SourceCodeSetup: Record "Source Code Setup";
+        GenJournalBatch: Record "Gen. Journal Batch";
+        GenJnlLine: Record "Gen. Journal Line";
+        GLAccount: Record "G/L Account";
+        BalGLAccount: Record "G/L Account";
+        GLEntry: Record "G/L Entry";
+        Uri: Codeunit Uri;
+        TargetURL: Text;
+        Response: Text;
+    begin
+        // [GIVEN] Income statement is posted and closing G/L entries are created
+        LibFiscalYear.CloseFiscalYear();
+        LibFiscalYear.CreateFiscalYear();
+        CreateGeneralJournalBatch(GenJournalBatch, BalGLAccount);
+        LibERM.CreateGLAccount(GLAccount);
+        CreateGeneralJournalLines(GenJournalBatch, GLAccount, GenJnlLine, LibFiscalYear.GetLastPostingDate(true));
+        LibERM.PostGeneralJnlLine(GenJnlLine);
+        RunCloseIncomeStatement(GenJnlLine, GenJnlLine."Document No.");
+        GenJnlLine.SetRange("Journal Batch Name", GenJnlLine."Journal Batch Name");
+        GenJnlLine.FindLast();
+        LibERM.PostGeneralJnlLine(GenJnlLine);
+        SourceCodeSetup.Get();
+        GLEntry.SetRange("Source Code", SourceCodeSetup."Close Income Statement");
+        GLEntry.SetFilter("G/L Account No.", '%1|%2', GLAccount."No.", BalGLAccount."No.");
+
+        Commit();
+
+        // [WHEN] Get request for income statement G/L entry is made
+        TargetURL := LibGraphMgt.CreateQueryTargetURL(Query::Microsoft.Finance.PowerBIReports."G/L Entries - Closing", '');
+        UriBuilder.Init(TargetURL);
+        UriBuilder.AddQueryParameter('$filter', StrSubstNo('glAccountNo eq ''%1'' or glAccountNo eq ''%2''', GLAccount."No.", BalGLAccount."No."));
+        UriBuilder.GetUri(Uri);
+        LibGraphMgt.GetFromWebService(Response, Uri.GetAbsoluteUri());
+
+        // [THEN] The response contains the income statement G/L entry information
+        Assert.AreNotEqual('', Response, ResponseEmptyErr);
+        GLEntry.FindSet();
+        repeat
+            VerifyPostedGLEntry(Response, GLAccount, GLEntry, true);
+        until GLEntry.Next() = 0;
+    end;
+
+    local procedure CreateGeneralJournalLines(GenJournalBatch: Record "Gen. Journal Batch"; GLAccount: Record "G/L Account"; var GenJournalLine: Record "Gen. Journal Line"; PostingDate: Date)
+    var
+        Counter: Integer;
+    begin
+        for Counter := 1 to LibRandom.RandIntInRange(3, 5) do begin
+            LibERM.CreateGeneralJnlLine(
+            GenJournalLine, GenJournalBatch."Journal Template Name", GenJournalBatch.Name, GenJournalLine."Document Type"::" ",
+            GenJournalLine."Account Type"::"G/L Account", GLAccount."No.", LibRandom.RandInt(1000));
+            GenJournalLine.Validate("Posting Date", PostingDate);
+            GenJournalLine.Modify(true);
+        end;
+    end;
+
     local procedure VerifyPostedGLEntry(Response: Text; GLAccount: Record "G/L Account"; GLEntry: Record "G/L Entry"; EntryShouldExist: Boolean)
     var
         JsonMgt: Codeunit "JSON Management";
@@ -522,10 +589,49 @@ codeunit 139876 "PowerBI Finance Test"
             Assert.IsFalse(JsonMgt.SelectTokenFromRoot(StrSubstNo('$..value[?(@.entryNo == %1)]', GLEntry."Entry No.")), 'G/L entry should not be found.');
     end;
 
+    local procedure RunCloseIncomeStatement(GenJournalLine: Record "Gen. Journal Line"; DocumentNo: Code[20])
+    var
+        Date: Record Date;
+    begin
+        // Run the Close Income Statement Batch Job.
+        Date.SetRange("Period Type", Date."Period Type"::Month);
+        Date.SetRange("Period Start", LibFiscalYear.GetLastPostingDate(true));
+        Date.FindFirst();
+
+        RunCloseIncomeStatement(GenJournalLine, NormalDate(Date."Period End"), true, false, DocumentNo);
+    end;
+
+    local procedure RunCloseIncomeStatement(GenJournalLine: Record "Gen. Journal Line"; PostingDate: Date; ClosePerBusinessUnit: Boolean; UseDimensions: Boolean; DocumentNo: Code[20])
+    begin
+        // Enqueue values for CloseIncomeStatementRequestPageHandler.
+        LibVariableStorage.Enqueue(PostingDate);
+        LibVariableStorage.Enqueue(GenJournalLine."Journal Template Name");
+        LibVariableStorage.Enqueue(GenJournalLine."Journal Batch Name");
+        LibVariableStorage.Enqueue(DocumentNo);
+        LibVariableStorage.Enqueue(ClosePerBusinessUnit);
+        LibVariableStorage.Enqueue(UseDimensions);
+
+        Commit();  // commit requires to run report.
+        Report.Run(Report::"Close Income Statement");
+    end;
+
     [ConfirmHandler]
     procedure ConfirmHandler(Question: Text[1024]; var Reply: Boolean)
     begin
         Reply := true;
+    end;
+
+    [RequestPageHandler]
+    procedure CloseIncomeStatementRequestPageHandler(var CloseIncomeStatement: TestRequestPage "Close Income Statement")
+    begin
+        CloseIncomeStatement.FiscalYearEndingDate.SetValue(LibVariableStorage.DequeueDate()); // Fiscal Year Ending Date
+        CloseIncomeStatement.GenJournalTemplate.SetValue(LibVariableStorage.DequeueText()); // Gen. Journal Template
+        CloseIncomeStatement.GenJournalBatch.SetValue(LibVariableStorage.DequeueText()); // Gen. Journal Batch
+        CloseIncomeStatement.DocumentNo.SetValue(LibVariableStorage.DequeueText()); // Document No.
+        CloseIncomeStatement.ClosePerBusUnit.SetValue(LibVariableStorage.DequeueBoolean()); // Close Business Unit Code
+        if LibVariableStorage.DequeueBoolean() then // get stored flag for usage Dimensions
+            CloseIncomeStatement.Dimensions.AssistEdit(); // Select Dimensions
+        CloseIncomeStatement.OK().Invoke();
     end;
 
     [MessageHandler]
@@ -563,12 +669,14 @@ codeunit 139876 "PowerBI Finance Test"
     begin
         // [SCENARIO] Test GenerateFinanceReportDateFilter
         // [GIVEN] Power BI setup record is created
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
 
         // [GIVEN] Mock start & end date values are entered 
         PBISetup."Finance Start Date" := Today();
         PBISetup."Finance End Date" := Today() + 10;
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         ExpectedFilterTxt := StrSubstNo('%1..%2', Today(), Today() + 10);
 
@@ -587,7 +695,9 @@ codeunit 139876 "PowerBI Finance Test"
     begin
         // [SCENARIO] Test GenerateFinanceReportDateFilter
         // [GIVEN] Power BI setup record is created with blank start & end dates
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
+        PermissionsMock.ClearAssignments();
 
         // [WHEN] GenerateFinanceReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateFinanceReportDateFilter();

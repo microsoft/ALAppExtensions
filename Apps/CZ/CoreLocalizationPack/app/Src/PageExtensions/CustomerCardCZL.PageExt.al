@@ -24,27 +24,6 @@ pageextension 11704 "Customer Card CZL" extends "Customer Card"
         }
         addafter("VAT Registration No.")
         {
-#if not CLEAN23
-            field("Registration No. CZL"; Rec."Registration No. CZL")
-            {
-                Caption = 'Registration No. (Obsolete)';
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the registration number of customer.';
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '23.0';
-                ObsoleteReason = 'Replaced by standard "Registration Number" field.';
-
-                trigger OnDrillDown()
-                var
-                    RegistrationLogMgtCZL: Codeunit "Registration Log Mgt. CZL";
-                begin
-                    CurrPage.SaveRecord();
-                    RegistrationLogMgtCZL.AssistEditCustomerRegNo(Rec);
-                    CurrPage.Update(false);
-                end;
-            }
-#endif
             field("Tax Registration No. CZL"; Rec."Tax Registration No. CZL")
             {
                 ApplicationArea = Basic, Suite;

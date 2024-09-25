@@ -31,7 +31,7 @@
   "idRanges": [
     {
       "from": 6360,
-      "to": 6379
+      "to": 6369
     }
   ],
   "resourceExposurePolicy": {
@@ -40,5 +40,8 @@
     "includeSourceInSymbolFile": true
   },
   "application": "26.0.0.0",
-  "target": "OnPrem"
+  "target": "OnPrem",
+  "features": [
+    "TranslationFile"
+  ]
 }

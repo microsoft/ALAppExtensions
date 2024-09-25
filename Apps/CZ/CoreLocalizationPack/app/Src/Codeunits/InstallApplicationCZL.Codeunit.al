@@ -463,9 +463,6 @@ codeunit 11748 "Install Application CZL"
         CustomerDataTransfer: DataTransfer;
     begin
         CustomerDataTransfer.SetTables(Database::Customer, Database::Customer);
-#if not CLEAN23
-        CustomerDataTransfer.AddFieldValue(Customer.FieldNo("Registration No."), Customer.FieldNo("Registration No. CZL"));
-#endif
         CustomerDataTransfer.AddFieldValue(Customer.FieldNo("Registration No."), Customer.FieldNo("Registration Number"));
         CustomerDataTransfer.AddFieldValue(Customer.FieldNo("Tax Registration No."), Customer.FieldNo("Tax Registration No. CZL"));
         CustomerDataTransfer.AddFieldValue(Customer.FieldNo("Transaction Type"), Customer.FieldNo("Transaction Type CZL"));
@@ -481,9 +478,6 @@ codeunit 11748 "Install Application CZL"
         VendorDataTransfer: DataTransfer;
     begin
         VendorDataTransfer.SetTables(Database::Vendor, Database::Vendor);
-#if not CLEAN23
-        VendorDataTransfer.AddFieldValue(Vendor.FieldNo("Registration No."), Vendor.FieldNo("Registration No. CZL"));
-#endif
         VendorDataTransfer.AddFieldValue(Vendor.FieldNo("Registration No."), Vendor.FieldNo("Registration Number"));
         VendorDataTransfer.AddFieldValue(Vendor.FieldNo("Tax Registration No."), Vendor.FieldNo("Tax Registration No. CZL"));
         VendorDataTransfer.AddFieldValue(Vendor.FieldNo("Disable Uncertainty Check"), Vendor.FieldNo("Disable Unreliab. Check CZL"));
@@ -510,9 +504,6 @@ codeunit 11748 "Install Application CZL"
         ContactDataTransfer: DataTransfer;
     begin
         ContactDataTransfer.SetTables(Database::Contact, Database::Contact);
-#if not CLEAN23
-        ContactDataTransfer.AddFieldValue(Contact.FieldNo("Registration No."), Contact.FieldNo("Registration No. CZL"));
-#endif
         ContactDataTransfer.AddFieldValue(Contact.FieldNo("Registration No."), Contact.FieldNo("Registration Number"));
         ContactDataTransfer.AddFieldValue(Contact.FieldNo("Tax Registration No."), Contact.FieldNo("Tax Registration No. CZL"));
         ContactDataTransfer.CopyFields();
@@ -1122,9 +1113,6 @@ codeunit 11748 "Install Application CZL"
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Physical Transfer"), PurchaseHeader.FieldNo("Physical Transfer CZL"));
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Intrastat Exclude"), PurchaseHeader.FieldNo("Intrastat Exclude CZL"));
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("EU 3-Party Intermediate Role"), PurchaseHeader.FieldNo("EU 3-Party Intermed. Role CZL"));
-#if not CLEAN23
-        PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("EU 3-Party Trade"), PurchaseHeader.FieldNo("EU 3-Party Trade CZL"));
-#endif
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("EU 3-Party Trade"), PurchaseHeader.FieldNo("EU 3 Party Trade"));
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("Original Document VAT Date"), PurchaseHeader.FieldNo("Original Doc. VAT Date CZL"));
         PurchaseHeaderDataTransfer.AddFieldValue(PurchaseHeader.FieldNo("VAT Currency Factor"), PurchaseHeader.FieldNo("VAT Currency Factor CZL"));
@@ -1167,9 +1155,6 @@ codeunit 11748 "Install Application CZL"
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Physical Transfer"), PurchInvHeader.FieldNo("Physical Transfer CZL"));
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Intrastat Exclude"), PurchInvHeader.FieldNo("Intrastat Exclude CZL"));
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("EU 3-Party Intermediate Role"), PurchInvHeader.FieldNo("EU 3-Party Intermed. Role CZL"));
-#if not CLEAN23
-        PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("EU 3-Party Trade"), PurchInvHeader.FieldNo("EU 3-Party Trade CZL"));
-#endif
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("EU 3-Party Trade"), PurchInvHeader.FieldNo("EU 3 Party Trade"));
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("Original Document VAT Date"), PurchInvHeader.FieldNo("Original Doc. VAT Date CZL"));
         PurchInvHeaderDataTransfer.AddFieldValue(PurchInvHeader.FieldNo("VAT Currency Factor"), PurchInvHeader.FieldNo("VAT Currency Factor CZL"));
@@ -1197,9 +1182,6 @@ codeunit 11748 "Install Application CZL"
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Physical Transfer"), PurchCrMemoHdr.FieldNo("Physical Transfer CZL"));
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Intrastat Exclude"), PurchCrMemoHdr.FieldNo("Intrastat Exclude CZL"));
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("EU 3-Party Intermediate Role"), PurchCrMemoHdr.FieldNo("EU 3-Party Intermed. Role CZL"));
-#if not CLEAN23
-        PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("EU 3-Party Trade"), PurchCrMemoHdr.FieldNo("EU 3-Party Trade CZL"));
-#endif
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("EU 3-Party Trade"), PurchCrMemoHdr.FieldNo("EU 3 Party Trade"));
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("Original Document VAT Date"), PurchCrMemoHdr.FieldNo("Original Doc. VAT Date CZL"));
         PurchCrMemoHdrDataTransfer.AddFieldValue(PurchCrMemoHdr.FieldNo("VAT Currency Factor"), PurchCrMemoHdr.FieldNo("VAT Currency Factor CZL"));
@@ -1658,11 +1640,6 @@ codeunit 11748 "Install Application CZL"
                 VATStatementLine."Gen. Prod. Posting Group CZL" := VATStatementLine."Gen. Prod. Posting Group";
                 VATStatementLine."Show CZL" := VATStatementLine.Show;
                 VATStatementLine."EU 3-Party Intermed. Role CZL" := VATStatementLine."EU 3-Party Intermediate Role";
-#if not CLEAN23
-#pragma warning disable AL0432
-                VATStatementLine."EU-3 Party Trade CZL" := VATStatementLine."EU-3 Party Trade";
-#pragma warning restore AL0432
-#endif
                 case VATStatementLine."EU-3 Party Trade" of
                     VATStatementLine."EU-3 Party Trade"::" ":
                         VATStatementLine."EU 3 Party Trade" := VATStatementLine."EU 3 Party Trade"::All;

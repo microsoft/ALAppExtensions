@@ -33,11 +33,11 @@ using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Sales.Setup;
 using Microsoft.Inventory.PowerBIReports;
 using Microsoft.Service.Test;
+using System.TestLibraries.Security.AccessControl;
 
 codeunit 139877 "PowerBI Inventory Test"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
     Access = Internal;
 
     var
@@ -55,6 +55,7 @@ codeunit 139877 "PowerBI Inventory Test"
         LibRandom: Codeunit "Library - Random";
         LibUtility: Codeunit "Library - Utility";
         UriBuilder: Codeunit "Uri Builder";
+        PermissionsMock: Codeunit "Permissions Mock";
         ResponseEmptyErr: Label 'Response should not be empty.';
 
     [Test]
@@ -1030,12 +1031,14 @@ codeunit 139877 "PowerBI Inventory Test"
         Response: Text;
     begin
         // [GIVEN] Value entry exists outside of the query filter
+        PermissionsMock.Assign('SUPER');
         if ValueEntry.FindLast() then;
         ValueEntry.Init();
         ValueEntry."Entry No." += 1;
         ValueEntry."Entry Type" := ValueEntry."Entry Type"::"Direct Cost";
         ValueEntry."Item No." := '';
         ValueEntry.Insert();
+        PermissionsMock.ClearAssignments();
         Commit();
 
         // [WHEN] Get request for the value entry outside of the query filter is made

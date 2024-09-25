@@ -44,37 +44,6 @@ codeunit 18082 "GST Vendor Ledger Entry"
         end;
     end;
 
-#if not CLEAN23
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostVendorEntry', '', false, false)]
-    local procedure CopyInfortoVendorEntry(var PurchHeader: Record "Purchase Header"; var GenJnlLine: Record "Gen. Journal Line")
-    var
-        PurchaseLine: Record "Purchase Line";
-    begin
-        GenJnlLine."Location Code" := PurchHeader."Location Code";
-        GenJnlLine."GST Input Service Distribution" := PurchHeader."GST Input Service Distribution";
-        GenJnlLine."GST Reverse Charge" := IsReverseCharge(PurchHeader);
-        GenJnlLine."GST Vendor Type" := PurchHeader."GST Vendor Type";
-        GenJnlLine."RCM Exempt" := PurchHeader."RCM Exempt";
-        GenJnlLine."Location State Code" := PurchHeader."Location State Code";
-        GenJnlLine."Location GST Reg. No." := PurchHeader."Location GST Reg. No.";
-        if PurchHeader."Order Address Code" <> '' then begin
-            GenJnlLine."Order Address Code" := PurchHeader."Order Address Code";
-            GenJnlLine."Order Address State Code" := PurchHeader."GST Order Address State";
-            GenJnlLine."Order Address GST Reg. No." := PurchHeader."Order Address GST Reg. No.";
-        end else begin
-            GenJnlLine."GST Bill-to/BuyFrom State Code" := PurchHeader.State;
-            GenJnlLine."Vendor GST Reg. No." := PurchHeader."Vendor GST Reg. No.";
-        end;
-
-        PurchaseLine.SetRange("Document Type", PurchHeader."Document Type");
-        PurchaseLine.SetRange("Document No.", PurchHeader."No.");
-        PurchaseLine.SetFilter(Type, '<>%1', PurchaseLine.Type::" ");
-        PurchaseLine.SetFilter(Quantity, '<>%1', 0);
-        if PurchaseLine.FindFirst() then
-            GenJnlLine."GST Jurisdiction Type" := PurchaseLine."GST Jurisdiction Type";
-    end;
-#endif
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
     local procedure CopyInfortoVendorEntryOnPostLedgerEntryOnBeforeGenJnlPostLine(var PurchHeader: Record "Purchase Header"; var GenJnlLine: Record "Gen. Journal Line")
     var

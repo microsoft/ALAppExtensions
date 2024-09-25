@@ -10,6 +10,5 @@ permissionset 6361 "EDocConnector - Edit"
     Assignable = true;
     IncludedPermissionSets = "EDocConnector - Read";
 
-    Permissions = tabledata "E-Doc. Ext. Connection Setup" = IM,
-                tabledata Microsoft.EServices.EDocumentConnector.Avalara."Connection Setup" = imd;
+    Permissions = tabledata "E-Doc. Ext. Connection Setup" = IM;
 }

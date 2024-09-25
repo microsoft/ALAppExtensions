@@ -18,6 +18,7 @@ using Microsoft.CRM.Outlook;
 using Microsoft.Finance.Dimension;
 using Microsoft.Finance.Currency;
 using Microsoft.Bank.BankAccount;
+using System.Security.AccessControl;
 
 table 8052 "Customer Contract"
 {
@@ -806,7 +807,7 @@ table 8052 "Customer Contract"
         {
             Caption = 'Assigned User ID';
             DataClassification = EndUserIdentifiableInformation;
-            TableRelation = "User Setup";
+            TableRelation = User."User Name";
         }
         field(9500; Active; Boolean)
         {

@@ -268,19 +268,6 @@ codeunit 31236 "FA Acquisition Handler CZF"
         IsHandled := true;
     end;
 
-#if not CLEAN23
-#pragma warning disable AL0432
-    [EventSubscriber(ObjectType::Table, Database::"Invoice Post. Buffer", 'OnAfterCopyToGenJnlLineFA', '', false, false)]
-    local procedure FAPostingTypeCustom2OnAfterCopyToGenJnlLineFAObsolete(var GenJnlLine: Record "Gen. Journal Line"; InvoicePostBuffer: Record "Invoice Post. Buffer")
-    begin
-        case InvoicePostBuffer."FA Posting Type" of
-            InvoicePostBuffer."FA Posting Type"::"Custom 2 CZF":
-                GenJnlLine."FA Posting Type" := GenJnlLine."FA Posting Type"::"Custom 2";
-        end;
-    end;
-
-#pragma warning restore AL0432
-#endif
     [EventSubscriber(ObjectType::Table, Database::"Invoice Posting Buffer", 'OnAfterCopyToGenJnlLineFA', '', false, false)]
     local procedure FAPostingTypeCustom2OnAfterCopyToGenJnlLineFA(var GenJnlLine: Record "Gen. Journal Line"; InvoicePostingBuffer: Record "Invoice Posting Buffer")
     begin
