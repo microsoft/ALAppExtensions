@@ -36,5 +36,15 @@ tableextension 36953 "Setup - Finance" extends "PowerBI Reports Setup"
             Caption = 'Vendor Ledger Entry End Date';
             DataClassification = CustomerContent;
         }
+        field(36950; "Finance Report Id"; Guid)
+        {
+            Caption = 'Finance Report ID';
+            DataClassification = CustomerContent;
+        }
+        field(36951; "Finance Report Name"; Text[200])
+        {
+            Caption = 'Finance Report Name';
+            DataClassification = CustomerContent;
+        }
     }
 }

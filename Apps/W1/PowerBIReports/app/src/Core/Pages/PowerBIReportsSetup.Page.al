@@ -16,180 +16,33 @@ page 36951 "PowerBI Reports Setup"
     {
         area(Content)
         {
-            group(FinanceReport)
-            {
-                Caption = 'Finance Report';
-                group(IncomeStatementFilters)
-                {
-                    Caption = 'Income Statement & G/L Budget Entry Filters';
-                    field("Finance Start Date"; Rec."Finance Start Date")
-                    {
-                        Caption = 'Start Date';
-                        ApplicationArea = All;
-                        ToolTip = 'Specifies the start date for Income Statement and G/L Budget Entries filter.';
-                    }
-                    field("Finance End Date"; Rec."Finance End Date")
-                    {
-                        Caption = 'End Date';
-                        ApplicationArea = All;
-                        ToolTip = 'Specifies the end date for Income Statement and G/L Budget Entries filter.';
-                    }
-                }
-                group(CustomerLedgerFilters)
-                {
-                    Caption = 'Customer Ledger Entry Filters';
-
-                    field("Cust. Ledger Entry Start Date"; Rec."Cust. Ledger Entry Start Date")
-                    {
-                        Caption = 'Start Date';
-                        ApplicationArea = All;
-                        ToolTip = 'Specifies the start date for the Customer Ledger Entries filter.';
-                    }
-                    field("Cust. Ledger Entry End Date"; Rec."Cust. Ledger Entry End Date")
-                    {
-                        Caption = 'End Date';
-                        ApplicationArea = All;
-                        ToolTip = 'Specifies the end date for the Customer Ledger Entries filter.';
-                    }
-                }
-                group(VendorLedgerFilters)
-                {
-                    Caption = 'Vendor Ledger Entry Filters';
-
-                    field("Vend. Ledger Entry Start Date"; Rec."Vend. Ledger Entry Start Date")
-                    {
-                        Caption = 'Start Date';
-                        ApplicationArea = All;
-                        ToolTip = 'Specifies the start date for the Vendor Ledger Entries filter.';
-                    }
-                    field("Vend. Ledger Entry End Date"; Rec."Vend. Ledger Entry End Date")
-                    {
-                        Caption = 'End Date';
-                        ApplicationArea = All;
-                        ToolTip = 'Specifies the end date for the Vendor Ledger Entries filter.';
-                    }
-                }
-            }
-
-            group(ItemSalesReport)
-            {
-                Caption = 'Item Sales Report';
-                field("Item Sales Load Date Type"; Rec."Item Sales Load Date Type")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the date type for Item Sales report filter.';
-                }
-                field("Item Sales Start Date"; Rec."Item Sales Start Date")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the start date for Item Sales report filter.';
-                }
-                field("Item Sales End Date"; Rec."Item Sales End Date")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the end date for Item Sales report filter.';
-                }
-                field("Item Sales Date Formula"; Rec."Item Sales Date Formula")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the date formula for Item Sales report filter.';
-                }
-            }
-
-            group(ItemPurchasesReport)
-            {
-                Caption = 'Item Purchases Report';
-
-                field("Item Purch. Load Date Type"; Rec."Item Purch. Load Date Type")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the date type for Item Purchases report filter.';
-                }
-                field("Item Purch. Start Date"; Rec."Item Purch. Start Date")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the start date for Item Purchases report filter.';
-                }
-                field("Item Purch. End Date"; Rec."Item Purch. End Date")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the end date for Item Purchases report filter.';
-                }
-                field("Item Purch. Date Formula"; Rec."Item Purch. Date Formula")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the date formula for Item Purchases report filter.';
-                }
-            }
-
-            group(JobsReport)
-            {
-                Caption = 'Jobs Report';
-                group(JobLedgerEntryFilters)
-                {
-                    Caption = 'Job Ledger Entry Filters';
-                    field("Job Ledger Entry Start Date"; Rec."Job Ledger Entry Start Date")
-                    {
-                        Caption = 'Start Date';
-                        ApplicationArea = All;
-                        ToolTip = 'Specifies the start date for Job Ledger Entries filter.';
-                    }
-                    field("Job Ledger Entry End Date"; Rec."Job Ledger Entry End Date")
-                    {
-                        Caption = 'End Date';
-                        ApplicationArea = All;
-                        ToolTip = 'Specifies the end date for Job Ledger Entries filter.';
-                    }
-                }
-            }
-
-            group(ManufacturingReport)
-            {
-                Caption = 'Manufacturing Report';
-
-                field("Manufacturing Load Date Type"; Rec."Manufacturing Load Date Type")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the date type for Manufacturing report filter.';
-                }
-                field("Manufacturing Start Date"; Rec."Manufacturing Start Date")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the start date for Manufacturing report filter.';
-                }
-                field("Manufacturing End Date"; Rec."Manufacturing End Date")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the end date for Manufacturing report filter.';
-                }
-                field("Manufacturing Date Formula"; Rec."Manufacturing Date Formula")
-                {
-                    ApplicationArea = All;
-                    ToolTip = 'Specifies the date formula for Manufacturing report filter.';
-                }
-            }
             group(ConnectionDetails)
             {
                 Caption = 'Connection Details';
 
-                field(Environment; Text.UpperCase(EnvironmentInformation.GetEnvironmentName()))
+                group(EnvironmentDetails)
                 {
-                    ApplicationArea = All;
-                    Caption = 'Environment';
-                    ToolTip = 'Specifies the environment used to connect Business Central to a Power BI semantic model.';
-                    Editable = false;
-                    MultiLine = false;
-                    Style = Favorable;
+                    ShowCaption = false;
+                    field(Environment; Text.UpperCase(EnvironmentInformation.GetEnvironmentName()))
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Environment';
+                        ToolTip = 'Specifies the environment used to connect Business Central to a Power BI semantic model.';
+                        Editable = false;
+                        MultiLine = false;
+                        Style = Favorable;
+                    }
+                    field(Company; CompanyName)
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Company Name';
+                        ToolTip = 'Specifies the company used to connect Business Central to a Power BI semantic model.';
+                        Editable = false;
+                        MultiLine = false;
+                        Style = Favorable;
+                    }
                 }
-                field(Company; CompanyName)
-                {
-                    ApplicationArea = All;
-                    Caption = 'Company Name';
-                    ToolTip = 'Specifies the company used to connect Business Central to a Power BI semantic model.';
-                    Editable = false;
-                    MultiLine = false;
-                    Style = Favorable;
-                }
+
                 field(ViewDeveloperDoc; ViewDeveloperDocLbl)
                 {
                     ApplicationArea = All;
@@ -202,6 +55,7 @@ page 36951 "PowerBI Reports Setup"
                     end;
                 }
             }
+
             group(DateSetup)
             {
                 Caption = 'Date Table Configuration';
@@ -333,6 +187,271 @@ page 36951 "PowerBI Reports Setup"
                     }
                 }
             }
+
+            group(FinanceReport)
+            {
+                Caption = 'Finance Report';
+                group(FinanceGeneral)
+                {
+                    ShowCaption = false;
+                    field("Finance Report Name"; Format(Rec."Finance Report Name"))
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Power BI Finance Report';
+                        ToolTip = 'Specifies the Finance Report Name from the Finance App.';
+
+                        trigger OnAssistEdit()
+                        begin
+                            SetupHelper.EnsureUserAcceptedPowerBITerms();
+                            SetupHelper.LookupPowerBIReport(Rec."Finance Report ID", Rec."Finance Report Name");
+                        end;
+                    }
+                }
+                group(IncomeStatementFilters)
+                {
+                    Caption = 'Income Statement & G/L Budget Entry Filters';
+                    field("Finance Start Date"; Rec."Finance Start Date")
+                    {
+                        Caption = 'Start Date';
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the start date for Income Statement and G/L Budget Entries filter.';
+                    }
+                    field("Finance End Date"; Rec."Finance End Date")
+                    {
+                        Caption = 'End Date';
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the end date for Income Statement and G/L Budget Entries filter.';
+                    }
+                }
+                group(CustomerLedgerFilters)
+                {
+                    Caption = 'Customer Ledger Entry Filters';
+
+                    field("Cust. Ledger Entry Start Date"; Rec."Cust. Ledger Entry Start Date")
+                    {
+                        Caption = 'Start Date';
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the start date for the Customer Ledger Entries filter.';
+                    }
+                    field("Cust. Ledger Entry End Date"; Rec."Cust. Ledger Entry End Date")
+                    {
+                        Caption = 'End Date';
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the end date for the Customer Ledger Entries filter.';
+                    }
+                }
+                group(VendorLedgerFilters)
+                {
+                    Caption = 'Vendor Ledger Entry Filters';
+
+                    field("Vend. Ledger Entry Start Date"; Rec."Vend. Ledger Entry Start Date")
+                    {
+                        Caption = 'Start Date';
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the start date for the Vendor Ledger Entries filter.';
+                    }
+                    field("Vend. Ledger Entry End Date"; Rec."Vend. Ledger Entry End Date")
+                    {
+                        Caption = 'End Date';
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the end date for the Vendor Ledger Entries filter.';
+                    }
+                }
+            }
+
+            group(ItemSalesReport)
+            {
+                Caption = 'Sales Report';
+                group(SalesGeneral)
+                {
+                    ShowCaption = false;
+                    field("Sales Report Name"; Format(Rec."Sales Report Name"))
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Power BI Sales';
+                        ToolTip = 'Specifies the Sales Report Name from the Sales App.';
+
+                        trigger OnAssistEdit()
+                        begin
+                            SetupHelper.EnsureUserAcceptedPowerBITerms();
+                            SetupHelper.LookupPowerBIReport(Rec."Sales Report ID", Rec."Sales Report Name");
+                        end;
+                    }
+                }
+                field("Item Sales Load Date Type"; Rec."Item Sales Load Date Type")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the date type for Item Sales report filter.';
+                }
+                field("Item Sales Start Date"; Rec."Item Sales Start Date")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the start date for Item Sales report filter.';
+                }
+                field("Item Sales End Date"; Rec."Item Sales End Date")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the end date for Item Sales report filter.';
+                }
+                field("Item Sales Date Formula"; Rec."Item Sales Date Formula")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the date formula for Item Sales report filter.';
+                }
+            }
+
+            group(ItemPurchasesReport)
+            {
+                Caption = 'Purchases Report';
+                group(PurchasesGeneral)
+                {
+                    ShowCaption = false;
+                    field("Purchases Report Name"; Format(Rec."Purchases Report Name"))
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Power BI Purchases';
+                        ToolTip = 'Specifies the Purchases Report Name from the Purchases App.';
+
+                        trigger OnAssistEdit()
+                        begin
+                            SetupHelper.EnsureUserAcceptedPowerBITerms();
+                            SetupHelper.LookupPowerBIReport(Rec."Purchases Report ID", Rec."Purchases Report Name");
+                        end;
+                    }
+                }
+                field("Item Purch. Load Date Type"; Rec."Item Purch. Load Date Type")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the date type for Item Purchases report filter.';
+                }
+                field("Item Purch. Start Date"; Rec."Item Purch. Start Date")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the start date for Item Purchases report filter.';
+                }
+                field("Item Purch. End Date"; Rec."Item Purch. End Date")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the end date for Item Purchases report filter.';
+                }
+                field("Item Purch. Date Formula"; Rec."Item Purch. Date Formula")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the date formula for Item Purchases report filter.';
+                }
+            }
+
+            group(InventoryReport)
+            {
+                Caption = 'Inventory Report';
+                group(InventoryGeneral)
+                {
+                    ShowCaption = false;
+                    field("Inventory Report Name"; Format(Rec."Inventory Report Name"))
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Power BI Inventory Report';
+                        ToolTip = 'Specifies the Inventory Report Name from the Inventory App.';
+
+                        trigger OnAssistEdit()
+                        begin
+                            SetupHelper.EnsureUserAcceptedPowerBITerms();
+                            SetupHelper.LookupPowerBIReport(Rec."Inventory Report ID", Rec."Inventory Report Name");
+                        end;
+                    }
+                    field("Inventory Val. Report Name"; Format(Rec."Inventory Val. Report Name"))
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Power BI Inventory Valuation Report';
+                        ToolTip = 'Specifies the Inventory Report Name from the Inventory Valuation App.';
+
+                        trigger OnAssistEdit()
+                        begin
+                            SetupHelper.EnsureUserAcceptedPowerBITerms();
+                            SetupHelper.LookupPowerBIReport(Rec."Inventory Val. Report ID", Rec."Inventory Val. Report Name");
+                        end;
+                    }
+                }
+            }
+
+            group(JobsReport)
+            {
+                Caption = 'Projects Report';
+                group(ProjectsGeneral)
+                {
+                    ShowCaption = false;
+                    field("Projects Report Name"; Format(Rec."Projects Report Name"))
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Power BI Projects Report';
+                        ToolTip = 'Specifies the Projects Report Name from the Projects App.';
+
+                        trigger OnAssistEdit()
+                        begin
+                            SetupHelper.EnsureUserAcceptedPowerBITerms();
+                            SetupHelper.LookupPowerBIReport(Rec."Projects Report ID", Rec."Projects Report Name");
+                        end;
+                    }
+                }
+                group(ProjectsLedgerEntryFilters)
+                {
+                    Caption = 'Projects Ledger Entry Filters';
+                    field("Job Ledger Entry Start Date"; Rec."Job Ledger Entry Start Date")
+                    {
+                        Caption = 'Start Date';
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the start date for Projects Ledger Entries filter.';
+                    }
+                    field("Job Ledger Entry End Date"; Rec."Job Ledger Entry End Date")
+                    {
+                        Caption = 'End Date';
+                        ApplicationArea = All;
+                        ToolTip = 'Specifies the end date for Projects Ledger Entries filter.';
+                    }
+                }
+            }
+
+            group(ManufacturingReport)
+            {
+                Caption = 'Manufacturing Report';
+                group(ManufacturingGeneral)
+                {
+                    ShowCaption = false;
+                    field("Manufacturing Report Name"; Format(Rec."Manufacturing Report Name"))
+                    {
+                        ApplicationArea = All;
+                        Caption = 'Power BI Manufacturing Report';
+                        ToolTip = 'Specifies the Manufacturing Report Name from the Manufacturing App.';
+
+                        trigger OnAssistEdit()
+                        begin
+                            SetupHelper.EnsureUserAcceptedPowerBITerms();
+                            SetupHelper.LookupPowerBIReport(Rec."Manufacturing Report ID", Rec."Manufacturing Report Name");
+                        end;
+                    }
+                }
+                field("Manufacturing Load Date Type"; Rec."Manufacturing Load Date Type")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the date type for Manufacturing report filter.';
+                }
+                field("Manufacturing Start Date"; Rec."Manufacturing Start Date")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the start date for Manufacturing report filter.';
+                }
+                field("Manufacturing End Date"; Rec."Manufacturing End Date")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the end date for Manufacturing report filter.';
+                }
+                field("Manufacturing Date Formula"; Rec."Manufacturing Date Formula")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the date formula for Manufacturing report filter.';
+                }
+            }
+
             group(Dimensions)
             {
                 Caption = 'Dimensions';
@@ -352,15 +471,17 @@ page 36951 "PowerBI Reports Setup"
             action(InsertJobQueue)
             {
                 ApplicationArea = All;
-                Caption = 'Insert Job Queue Entry';
-                ToolTip = 'Inserts the required job queue entry for automatically updating Power BI Dimension Set Entries in the background.';
+                Caption = 'Schedule Power BI Dimension Refresh';
+                ToolTip = 'Create a job queue entry that will refresh Power BI Dimension Set Entries in the background. This is required for dimensions to be displayed in Power BI Reports.';
                 Image = Setup;
 
                 trigger OnAction()
                 var
                     JobQueueDescLbl: Label 'Update Power BI Dimension Set Entries';
+                    JobQueueCreatedMsg: Label 'Job Queue Entry created successfully. You can view or edit this entry on the Job Queue Entries page.';
                 begin
                     PBIManagement.InitialiseJobQueue(Codeunit::"Update Dim. Set Entries", JobQueueDescLbl);
+                    Message(JobQueueCreatedMsg);
                 end;
             }
             action(SetupWorkingDays)
@@ -437,6 +558,7 @@ page 36951 "PowerBI Reports Setup"
         EnvironmentInformation: Codeunit "Environment Information";
         PBIManagement: Codeunit Initialization;
         TimeZoneSelection: Codeunit "Time Zone Selection";
+        SetupHelper: Codeunit "Setup Helper";
         ViewDeveloperDocLbl: Label 'Power BI Documentation';
         DevDocUrlTxt: Label 'https://learn.microsoft.com/en-au/dynamics365/business-central/admin-powerbi#get-ready-to-use-power-bi', Locked = true;
         StandardCalendarVisible: Boolean;

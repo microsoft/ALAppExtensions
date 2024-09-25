@@ -545,11 +545,4 @@ codeunit 4018 "GP Customer Migrator"
         if ReceivablesAccountNo = '' then
             ReceivablesAccountNo := DefaultReceivablesAccountNo;
     end;
-
-#if not CLEAN23
-    [Obsolete('Updated to use the OnMigrateCustomerPostingGroups event subscriber.', '23.0')]
-    procedure MigrateCustomerClasses()
-    begin
-    end;
-#endif
 }

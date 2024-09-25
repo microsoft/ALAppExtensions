@@ -126,31 +126,6 @@ codeunit 18440 "GST Service Validations"
             Rec."GST Bill-to State Code" := Customer."State Code";
     end;
 
-#if not CLEAN23
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Serv-Posting Journals Mgt.", 'OnBeforePostCustomerEntry', '', false, false)]
-    local procedure FillCustomerEntry(var GenJournalLine: Record "Gen. Journal Line"; ServiceHeader: Record "Service Header")
-    var
-        ServiceLine: Record "Service Line";
-    begin
-        GenJournalLine."GST Customer Type" := ServiceHeader."GST Customer Type";
-        GenJournalLine."Location State Code" := ServiceHeader."Location State Code";
-        GenJournalLine."Location GST Reg. No." := ServiceHeader."Location GST Reg. No.";
-        GenJournalLine."GST Bill-to/BuyFrom State Code" := ServiceHeader."GST Bill-to State Code";
-        GenJournalLine."Customer GST Reg. No." := ServiceHeader."Customer GST Reg. No.";
-        GenJournalLine."GST Place of Supply" := GenJournalLine."GST Place of Supply"::"Bill-to Address";
-        GenJournalLine."Ship-to Code" := ServiceHeader."Ship-to Code";
-        GenJournalLine."GST Ship-to State Code" := ServiceHeader."GST Ship-to State Code";
-        GenJournalLine."Ship-to GST Reg. No." := ServiceHeader."Ship-to GST Reg. No.";
-        GenJournalLine."Location Code" := ServiceHeader."Location Code";
-
-        ServiceLine.SetRange("Document No.", ServiceHeader."No.");
-        ServiceLine.SetRange("Document Type", ServiceHeader."Document Type");
-        ServiceLine.SetFilter("Qty. to Invoice", '<>%1', 0);
-        if ServiceLine.FindFirst() then
-            GenJournalLine."GST Jurisdiction Type" := ServiceLine."GST Jurisdiction Type";
-    end;
-#endif
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Service Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
     local procedure OnPostLedgerEntryOnBeforeGenJnlPostLine(var GenJournalLine: Record "Gen. Journal Line"; ServiceHeader: Record "Service Header")
     var

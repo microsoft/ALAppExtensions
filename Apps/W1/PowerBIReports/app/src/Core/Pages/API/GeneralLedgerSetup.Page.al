@@ -56,6 +56,10 @@ page 36956 "General Ledger Setup"
                 {
 
                 }
+                field(localCurrencyCode; Rec."LCY Code")
+                {
+
+                }
             }
         }
     }

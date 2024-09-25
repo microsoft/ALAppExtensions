@@ -145,9 +145,6 @@ page 5021 "Serv. Decl. Setup Wizard"
                         var
                             ServiceTransactionTypesPage: Page "Service Transaction Types";
                         begin
-#if not CLEAN23
-                            ServiceTransactionTypesPage.SetSetupMode();
-#endif
                             ServiceTransactionTypesPage.RunModal();
                             UpdateServTransTypesCount();
                         end;

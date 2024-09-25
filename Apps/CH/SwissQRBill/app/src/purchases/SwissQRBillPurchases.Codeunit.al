@@ -551,35 +551,6 @@ codeunit 11502 "Swiss QR-Bill Purchases"
         Message(MessageResult)
     end;
 
-#if not CLEAN23
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnBeforePostVendorEntry', '', false, false)]
-    local procedure OnBeforePostVendorEntry(
-            var GenJnlLine: Record "Gen. Journal Line";
-            var PurchHeader: Record "Purchase Header";
-            var TotalPurchLine: Record "Purchase Line";
-            var TotalPurchLineLCY: Record "Purchase Line";
-            PreviewMode: Boolean;
-            CommitIsSupressed: Boolean;
-             var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line")
-    var
-        QRBillCurrencyCode: Code[10];
-        ErrText: Text;
-    begin
-        if PurchHeader."Swiss QR-Bill" and (PurchHeader."Prepayment %" = 0) and (PurchHeader."Swiss QR-Bill Amount" <> 0) then begin
-            QRBillCurrencyCode := SwissQRBillIncomingDoc.GetCurrency(PurchHeader."Swiss QR-Bill Currency");
-            if PurchHeader."Currency Code" <> QRBillCurrencyCode then begin
-                ErrText := StrSubstNo(CurrencyErr, QRBillCurrencyCode, PurchHeader."Currency Code");
-                Error(ErrText);
-            end;
-            if Abs(TotalPurchLine."Amount Including VAT") <> PurchHeader."Swiss QR-Bill Amount" then begin
-                ErrText := StrSubstNo(AmountErr, PurchHeader."Swiss QR-Bill Amount", Abs(TotalPurchLine."Amount Including VAT"));
-                Error(ErrText);
-            end;
-            VoidPurchDocQRBill(PurchHeader);
-        end;
-    end;
-#endif
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch. Post Invoice Events", 'OnPostLedgerEntryOnBeforeGenJnlPostLine', '', false, false)]
     local procedure OnPostLedgerEntryOnBeforeGenJnlPostLine(
             var GenJnlLine: Record "Gen. Journal Line";

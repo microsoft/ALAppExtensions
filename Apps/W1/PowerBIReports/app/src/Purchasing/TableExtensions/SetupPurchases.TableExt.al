@@ -28,5 +28,15 @@ tableextension 36956 "Setup - Purchases" extends "PowerBI Reports Setup"
             Caption = 'Item Purchases Report Date Formula';
             DataClassification = CustomerContent;
         }
+        field(36974; "Purchases Report Id"; Guid)
+        {
+            Caption = 'Purchases Report ID';
+            DataClassification = CustomerContent;
+        }
+        field(36975; "Purchases Report Name"; Text[200])
+        {
+            Caption = 'Purchases Report Name';
+            DataClassification = CustomerContent;
+        }
     }
 }

@@ -24,23 +24,28 @@ codeunit 6140 "E-Doc. Import"
         InStr: InStream;
         FileName: Text;
     begin
-        if Page.RunModal(Page::"E-Document Services", EDocumentService) = Action::LookupOK then begin
-            UploadIntoStream('', '', '', FileName, InStr);
+        if Page.RunModal(Page::"E-Document Services", EDocumentService) <> Action::LookupOK then
+            exit;
 
-            TempBlob.CreateOutStream(OutStr);
-            if CopyStream(OutStr, InStr) then begin
-                EDocument.Direction := EDocument.Direction::Incoming;
-                EDocument."Document Type" := Enum::"E-Document Type"::None;
-                if EDocument."Entry No" = 0 then
-                    EDocument.Insert(true)
-                else
-                    EDocument.Modify(true);
+        if not UploadIntoStream('', '', '', FileName, InStr) then
+            exit;
 
-                EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Imported);
-                EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Imported);
-                EDocumentProcessing.ModifyEDocumentStatus(EDocument, Enum::"E-Document Service Status"::Imported);
-            end;
+        TempBlob.CreateOutStream(OutStr);
+        CopyStream(OutStr, InStr);
+
+        EDocument.Direction := EDocument.Direction::Incoming;
+        EDocument."Document Type" := Enum::"E-Document Type"::None;
+
+        if EDocument."Entry No" = 0 then begin
+            EDocument.Insert(true);
+            EDocumentProcessing.InsertServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Imported);
+        end else begin
+            EDocument.Modify(true);
+            EDocumentProcessing.ModifyServiceStatus(EDocument, EDocumentService, Enum::"E-Document Service Status"::Imported);
         end;
+
+        EDocumentLog.InsertLog(EDocument, EDocumentService, TempBlob, Enum::"E-Document Service Status"::Imported);
+        EDocumentProcessing.ModifyEDocumentStatus(EDocument, Enum::"E-Document Service Status"::Imported);
     end;
 
     internal procedure GetBasicInfo(var EDocument: Record "E-Document")

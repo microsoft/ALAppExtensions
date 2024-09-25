@@ -50,7 +50,7 @@ codeunit 6364 "Pagero Auth."
     begin
         EDocExtConnectionSetup.Get();
 
-        if EnvironmentInfo.IsSaaS() then
+        if EnvironmentInfo.IsSaaSInfrastructure() then
             exit(true);
 
         if HasToken(EDocExtConnectionSetup."Client ID", DataScope::Company) then
@@ -192,7 +192,7 @@ codeunit 6364 "Pagero Auth."
         Secret: Text;
     begin
 
-        if EnvironmentInfo.IsSaaS() then begin
+        if EnvironmentInfo.IsSaaSInfrastructure() then begin
             AzureKeyVault.GetAzureKeyVaultSecret('pagero-client-id', Secret);
             exit(Secret);
         end;
@@ -207,7 +207,7 @@ codeunit 6364 "Pagero Auth."
         AzureKeyVault: Codeunit "Azure Key Vault";
         Secret: SecretText;
     begin
-        if EnvironmentInfo.IsSaaS() then begin
+        if EnvironmentInfo.IsSaaSInfrastructure() then begin
             AzureKeyVault.GetAzureKeyVaultSecret('pagero-client-secret', Secret);
             exit(Secret);
         end;

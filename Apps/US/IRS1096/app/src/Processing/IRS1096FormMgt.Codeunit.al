@@ -21,15 +21,8 @@ codeunit 10016 "IRS 1096 Form Mgt."
     var
         FeatureTelemetry: Codeunit "Feature Telemetry";
         ServDeclFormTok: Label 'Service Declaration', Locked = true;
-#if not CLEAN23
-        InstallFeatureNotificationMsg: Label 'There is a new IRS 1096 form feature. An administrator can enable it on the Feature Management page.';
-        DontShowAgainTxt: Label 'Do not show again';
-#endif
         InstallIRS1096NotificationNameTxt: Label 'IRS 1096 Form - Install feature';
         InstallIRS1096NotificationDescriptionTxt: Label 'This notification is used to let users know about the new IRS 1096 feature . It can be used to open the Feature Management and install the 1096 feature.';
-#if not CLEAN23        
-        FeatureNotEnabledMessageTxt: Label 'The %1 page is part of the new IRS 1096 feature, which is not yet enabled in your Business Central. An administrator can enable the feature on the Feature Management page.', Comment = '%1 - page caption';
-#endif
         NoEntriesToCreateFormsMsg: Label 'No entries have been found by filters specified.';
 #if not CLEAN25
         FormPerPeriodAlreadyExistsQst: Label 'The form %1 for the period from %2 to %3 already exist. If you want to replace it, use the Replace parameter on the request page. Do you want to stop the creation of forms?', Comment = '%1 - code of the form, %2,%3 - starting and ending dates of the period';
@@ -158,26 +151,6 @@ codeunit 10016 "IRS 1096 Form Mgt."
         FeatureTelemetry.LogUsage('0000ISC', ServDeclFormTok, 'File created');
     end;
 
-#if not CLEAN23
-    [Obsolete('Not used anymore as the feature is installed by default', '23.0')]
-    procedure ShowInstallFeatureNotification()
-    var
-        MyNotifications: Record "My Notifications";
-        Install1096FeatureNotification: Notification;
-    begin
-        if IsFeatureEnabled() then
-            exit;
-        if not MyNotifications.IsEnabled(GetIRS1096FeatureNotificationId()) then
-            exit;
-
-        Install1096FeatureNotification.Id := GetIRS1096FeatureNotificationId();
-        Install1096FeatureNotification.Recall();
-        Install1096FeatureNotification.Message := InstallFeatureNotificationMsg;
-        Install1096FeatureNotification.AddAction(DontShowAgainTxt, Codeunit::"IRS 1096 Form Mgt.", 'DontShowAgainDisableAutomaticNotificationAction');
-        Install1096FeatureNotification.Send();
-    end;
-#endif    
-
     procedure DontShowAgainDisableAutomaticNotificationAction(var Notification: Notification)
     var
         MyNotifications: Record "My Notifications";
@@ -185,14 +158,6 @@ codeunit 10016 "IRS 1096 Form Mgt."
         if not MyNotifications.Disable(GetIRS1096FeatureNotificationId()) then
             MyNotifications.InsertDefault(GetIRS1096FeatureNotificationId(), InstallIRS1096NotificationNameTxt, InstallIRS1096NotificationDescriptionTxt, false);
     end;
-
-#if not CLEAN23
-    [Obsolete('Not used anymore as the feature is installed by default', '23.0')]
-    procedure ShowNotEnabledMessage(PageCaption: Text)
-    begin
-        Message(FeatureNotEnabledMessageTxt, PageCaption);
-    end;
-#endif
 
     procedure ShowRelatedVendorsLedgerEntries(FormNo: Code[20]; FormLineNo: Integer)
     var

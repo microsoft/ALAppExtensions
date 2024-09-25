@@ -1907,11 +1907,7 @@ codeunit 148103 "SAF-T XML Tests"
         SAFTTestHelper.AssertElementName(TempXMLBuffer, 'n1:TaxTableEntry');
         SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:TaxType', 'MVA');
         SAFTTestHelper.AssertElementValue(TempXMLBuffer, 'n1:Description', 'Merverdiavgift');
-#if CLEAN23
         NotApplicationVATCode := SAFTExportMgt.GetNotApplicableVATCode();
-#else
-        NotApplicationVATCode := SAFTExportMgt.GetNotApplicationVATCode();
-#endif
         // Verify first VAT Posting Setup with no standard tax codes
         VerifySingleVATPostingSetup(
             TempXMLBuffer, VATPostingSetup."Sales SAF-T Tax Code", VATPostingSetup.Description,
@@ -1921,21 +1917,12 @@ codeunit 148103 "SAF-T XML Tests"
             VATPostingSetup."VAT %", NotApplicationVATCode, false, 100);
         VATPostingSetup.Next();
         repeat
-#if CLEAN23
             VerifySingleVATPostingSetup(
                 TempXMLBuffer, VATPostingSetup."Sales SAF-T Tax Code", VATPostingSetup.Description,
                 VATPostingSetup."VAT %", VATPostingSetup."Sale VAT Reporting Code", false, 100);
             VerifySingleVATPostingSetup(
                 TempXMLBuffer, VATPostingSetup."Purchase SAF-T Tax Code", VATPostingSetup.Description,
                 VATPostingSetup."VAT %", VATPostingSetup."Purch. VAT Reporting Code", false, 100);
-#else
-            VerifySingleVATPostingSetup(
-                TempXMLBuffer, VATPostingSetup."Sales SAF-T Tax Code", VATPostingSetup.Description,
-                VATPostingSetup."VAT %", VATPostingSetup."Sales SAF-T Standard Tax Code", false, 100);
-            VerifySingleVATPostingSetup(
-                TempXMLBuffer, VATPostingSetup."Purchase SAF-T Tax Code", VATPostingSetup.Description,
-                VATPostingSetup."VAT %", VATPostingSetup."Purch. SAF-T Standard Tax Code", false, 100);
-#endif
         until VATPostingSetup.Next() = 0;
     end;
 

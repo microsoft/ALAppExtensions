@@ -23,7 +23,7 @@ codeunit 6203 "Transact. Storage Export"
         TransactionStorageTok: Label 'Transaction Storage', Locked = true;
         ExportStartedTxt: Label 'Export started', Locked = true;
         ExportEndedTxt: Label 'Export ended', Locked = true;
-        TimeDeadlineExceededErr: Label 'Export task timed out. Time deadline: %1 hours. Task time: %2 hours.', Comment = '%1, %2 - number of hours', Locked = true;
+        TaskTimedOutErr: Label 'Export task timed out. Time deadline: %1 hours. Task time: %2 hours.', Comment = '%1, %2 - number of hours', Locked = true;
 
     trigger OnRun()
     var
@@ -40,19 +40,25 @@ codeunit 6203 "Transact. Storage Export"
         FeatureTelemetry.LogUsage('0000LK4', TransactionStorageTok, ExportEndedTxt);
     end;
 
-    procedure CheckTimeDeadline(TaskStartingDateTime: DateTime)
+    procedure IsTaskTimedOut(TaskStartingDateTime: DateTime; var TaskRunTimeHours: Decimal; var MaxExpectedRunTimeHours: Integer): Boolean
     var
         TransactionStorageSetup: Record "Transaction Storage Setup";
-        TaskTimeHours: Decimal;
     begin
         if not TransactionStorageSetup.Get() then
             TransactionStorageSetup.Insert(true);
-        if (CurrentDateTime() - TaskStartingDateTime) >= (TransactionStorageSetup."Max. Number of Hours" * 60 * 60 * 1000) then begin
-            TaskTimeHours := Round((CurrentDateTime() - TaskStartingDateTime) / (60 * 60 * 1000), 0.1);
-            FeatureTelemetry.LogError(
-                '0000LNB', TransactionStorageTok, '', StrSubstNo(TimeDeadlineExceededErr, TransactionStorageSetup."Max. Number of Hours", TaskTimeHours));
-            Error('');
-        end;
+        MaxExpectedRunTimeHours := TransactionStorageSetup."Max. Number of Hours";
+        TaskRunTimeHours := Round((CurrentDateTime() - TaskStartingDateTime) / (60 * 60 * 1000), 0.1);
+
+        exit(TaskRunTimeHours > MaxExpectedRunTimeHours);
+    end;
+
+    procedure CheckTaskTimedOut(TaskStartingDateTime: DateTime)
+    var
+        TaskRunTimeHours: Decimal;
+        MaxExpectedRunTimeHours: Integer;
+    begin
+        if IsTaskTimedOut(TaskStartingDateTime, TaskRunTimeHours, MaxExpectedRunTimeHours) then
+            LogWarning('0000LNB', StrSubstNo(TaskTimedOutErr, MaxExpectedRunTimeHours, TaskRunTimeHours));
     end;
 
     procedure GetRecordExportData(var TransactStorageTableEntry: Record "Transact. Storage Table Entry"; var RecRef: RecordRef)
@@ -144,5 +150,20 @@ codeunit 6203 "Transact. Storage Export"
     begin
         ContainerName := TransactionStorageABS.GetContainerName();
         TransactionStorageABS.VerifyContainerNameLength(ContainerName);
+    end;
+
+    procedure LogWarning(EventId: Text; WarningText: Text)
+    var
+        Telemetry: Codeunit Telemetry;
+    begin
+        Telemetry.LogMessage(EventId, WarningText, Verbosity::Warning, DataClassification::SystemMetadata);
+    end;
+
+    procedure LogWarning(EventId: Text; WarningText: Text; CustomDimensions: Dictionary of [Text, Text])
+    var
+        Telemetry: Codeunit Telemetry;
+    begin
+        Telemetry.LogMessage(
+            EventId, WarningText, Verbosity::Warning, DataClassification::SystemMetadata, TelemetryScope::ExtensionPublisher, CustomDimensions);
     end;
 }

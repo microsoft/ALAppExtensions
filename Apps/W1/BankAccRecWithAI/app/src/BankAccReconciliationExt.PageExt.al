@@ -2,7 +2,6 @@ namespace Microsoft.Bank.Reconciliation;
 
 using System.AI;
 using Microsoft.Finance.GeneralLedger.Journal;
-using System.Environment;
 using System.Telemetry;
 
 pageextension 7253 BankAccReconciliationExt extends "Bank Acc. Reconciliation"
@@ -17,6 +16,7 @@ pageextension 7253 BankAccReconciliationExt extends "Bank Acc. Reconciliation"
                 Caption = 'Reconcile';
                 ToolTip = 'Match statement lines with the assistance of Copilot';
                 Visible = CopilotActionsVisible;
+                Enabled = CopilotActionsVisible;
 #pragma warning disable AL0482
                 Image = SparkleFilled;
 #pragma warning restore AL0482
@@ -45,6 +45,7 @@ pageextension 7253 BankAccReconciliationExt extends "Bank Acc. Reconciliation"
                 Caption = 'Post difference to G/L account';
                 ToolTip = 'Find suitable G/L Accounts for selected statement lines, post their differences as new payments and reconcile statement lines with the new payments';
                 Visible = CopilotActionsVisible;
+                Enabled = CopilotActionsVisible;
 #pragma warning disable AL0482
                 Image = SparkleFilled;
 #pragma warning restore AL0482
@@ -163,9 +164,9 @@ pageextension 7253 BankAccReconciliationExt extends "Bank Acc. Reconciliation"
 
     trigger OnOpenPage()
     var
-        EnvironmentInformation: Codeunit "Environment Information";
+        CopilotCapability: Codeunit "Copilot Capability";
     begin
-        CopilotActionsVisible := EnvironmentInformation.IsSaaSInfrastructure();
+        CopilotActionsVisible := CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"Bank Account Reconciliation");
     end;
 
     var

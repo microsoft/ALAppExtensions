@@ -19,9 +19,6 @@ using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.ReceivablesPayables;
 using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Setup;
-#if not CLEAN23
-using Microsoft.FixedAssets.Journal;
-#endif
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Attachment;
 using Microsoft.Foundation.AuditCodes;
@@ -1058,38 +1055,6 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         exit((not HasPayToAddress()) and PayToVendor.HasAddress());
     end;
 
-#if not CLEAN23
-#pragma warning disable AL0432
-    [Obsolete('Temporary fix to convert Dim Arrays to Dictionary', '23.0')]
-    local procedure CreateDefaultDimSourcesFromDimArray(var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; TableID: array[10] of Integer; No: array[10] of Code[20])
-    var
-        DimArrayConversionHelper: Codeunit "Dim. Array Conversion Helper";
-    begin
-        DimArrayConversionHelper.CreateDefaultDimSourcesFromDimArray(Database::"FA Journal Line", DefaultDimSource, TableID, No);
-    end;
-
-    [Obsolete('Temporary fix to convert Dim Arrays to Dictionary', '23.0')]
-    local procedure CreateDimTableIDs(DefaultDimSource: List of [Dictionary of [Integer, Code[20]]]; var TableID: array[10] of Integer; var No: array[10] of Code[20])
-    var
-        DimArrayConversionHelper: Codeunit "Dim. Array Conversion Helper";
-    begin
-        DimArrayConversionHelper.CreateDimTableIDs(Database::"FA Journal Line", DefaultDimSource, TableID, No);
-    end;
-
-    [Obsolete('Temporary fix to convert Dim Arrays to Dictionary', '23.0')]
-    local procedure RunEventOnAfterCreateDimTableIDs(var DefaultDimSource: List of [Dictionary of [Integer, Code[20]]])
-    var
-        DimArrayConversionHelper: Codeunit "Dim. Array Conversion Helper";
-        TableID: array[10] of Integer;
-        No: array[10] of Code[20];
-    begin
-        CreateDimTableIDs(DefaultDimSource, TableID, No);
-        OnAfterCreateDimTableIDs(Rec, CurrFieldNo, TableID, No);
-        CreateDefaultDimSourcesFromDimArray(DefaultDimSource, TableID, No);
-    end;
-#pragma warning restore AL0432
-
-#endif
     procedure CreateDimFromDefaultDim(FieldNo: Integer)
     var
         DefaultDimSource: List of [Dictionary of [Integer, Code[20]]];
@@ -1104,11 +1069,6 @@ table 31008 "Purch. Adv. Letter Header CZZ"
         DimensionManagement.AddDimSource(DefaultDimSource, Database::"Salesperson/Purchaser", Rec."Purchaser Code", FieldNo = Rec.FieldNo("Purchaser Code"));
         DimensionManagement.AddDimSource(DefaultDimSource, Database::"Responsibility Center", Rec."Responsibility Center", FieldNo = Rec.FieldNo("Responsibility Center"));
 
-#if not CLEAN23
-#pragma warning disable AL0432
-        RunEventOnAfterCreateDimTableIDs(DefaultDimSource);
-#pragma warning restore AL0432
-#endif
         OnAfterInitDefaultDimensionSources(Rec, DefaultDimSource);
     end;
 
@@ -1713,16 +1673,6 @@ table 31008 "Purch. Adv. Letter Header CZZ"
     begin
     end;
 
-#if not CLEAN23
-#pragma warning disable AL0432
-    [Obsolete('Use OnAfterInitDefaultDimensionSources instead.', '23.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnAfterCreateDimTableIDs(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; CallingFieldNo: Integer; var TableID: array[10] of Integer; var No: array[10] of Code[20])
-    begin
-    end;
-#pragma warning restore AL0432
-
-#endif
     [IntegrationEvent(false, false)]
     local procedure OnAfterUpdatePayToCont(var PurchAdvLetterHeaderCZZ: Record "Purch. Adv. Letter Header CZZ"; Vendor: Record Vendor; Contact: Record Contact)
     begin

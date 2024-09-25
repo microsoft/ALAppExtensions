@@ -2,7 +2,7 @@ namespace Microsoft.SubscriptionBilling;
 
 using Microsoft.Inventory.Item;
 
-codeunit 139883 "Service Commitment Test"
+codeunit 148156 "Service Commitment Test"
 {
     Subtype = Test;
     Access = Internal;

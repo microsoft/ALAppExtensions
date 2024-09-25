@@ -162,70 +162,6 @@ codeunit 11755 "Registration Log Mgt. CZL"
         if NewRegistrationLogCZL.LogDetails() then
             NewRegistrationLogCZL.Modify();
     end;
-#if not CLEAN23
-    [Obsolete('Replaced by LogVerification and LogError functions with JsonObject parameter.', '23.0')]
-    procedure LogVerification(var NewRegistrationLogCZL: Record "Registration Log CZL"; XmlDoc: XmlDocument; Namespace: Text)
-    var
-        Address: array[10] of Text;
-        AddressText: Text;
-        Error: Text;
-    begin
-        if ExtractValue('//D:VBAS', XmlDoc, Namespace) <> '' then begin
-            NewRegistrationLogCZL."Entry No." := 0;
-            NewRegistrationLogCZL.Status := NewRegistrationLogCZL.Status::Valid;
-            NewRegistrationLogCZL."Verified Date" := CurrentDateTime;
-            NewRegistrationLogCZL."User ID" := CopyStr(UserId(), 1, MaxStrLen(NewRegistrationLogCZL."User ID"));
-
-            // VAT Registration No.
-            NewRegistrationLogCZL."Verified VAT Registration No." :=
-              CopyStr(ExtractValue('//D:DIC', XmlDoc, Namespace), 1, MaxStrLen(NewRegistrationLogCZL."Verified VAT Registration No."));
-
-            // Name
-            NewRegistrationLogCZL."Verified Name" :=
-              CopyStr(ExtractValue('//D:OF', XmlDoc, Namespace), 1, MaxStrLen(NewRegistrationLogCZL."Verified Name"));
-
-            // Address information
-            if ExtractValue('//D:AA', XmlDoc, Namespace) <> '' then begin
-                // City
-                NewRegistrationLogCZL."Verified City" :=
-                  CopyStr(ExtractValue('//D:N', XmlDoc, Namespace), 1, MaxStrLen(NewRegistrationLogCZL."Verified City"));
-
-                // Post Code
-                NewRegistrationLogCZL."Verified Post Code" :=
-                  CopyStr(ExtractValue('//D:PSC', XmlDoc, Namespace), 1, MaxStrLen(NewRegistrationLogCZL."Verified Post Code"));
-
-                Address[1] := ExtractValue('//D:NU', XmlDoc, Namespace);  // Street
-                Address[2] := ExtractValue('//D:NCO', XmlDoc, Namespace); // Quarter
-                Address[3] := ExtractValue('//D:CD', XmlDoc, Namespace);  // Descriptive No.
-                Address[4] := ExtractValue('//D:CO', XmlDoc, Namespace);  // House No.
-                AddressText := ExtractValue('//D:AT', XmlDoc, Namespace); // Address Text
-            end;
-
-            NewRegistrationLogCZL."Verified Address" := CopyStr(FormatAddress(Address), 1, MaxStrLen(NewRegistrationLogCZL."Verified Address"));
-            if NewRegistrationLogCZL."Verified Address" = '' then
-                NewRegistrationLogCZL."Verified Address" := CopyStr(AddressText, 1, MaxStrLen(NewRegistrationLogCZL."Verified Address"));
-            NewRegistrationLogCZL.Insert(true);
-
-            if NewRegistrationLogCZL.LogDetails() then
-                NewRegistrationLogCZL.Modify();
-        end else begin
-            if ExtractValue('//D:E', XmlDoc, Namespace) <> '' then
-                Error := ExtractValue('//D:ET', XmlDoc, Namespace);
-
-            NewRegistrationLogCZL."Entry No." := 0;
-            NewRegistrationLogCZL."Verified Date" := CurrentDateTime;
-            NewRegistrationLogCZL.Status := NewRegistrationLogCZL.Status::Invalid;
-            NewRegistrationLogCZL."User ID" := CopyStr(UserId(), 1, MaxStrLen(NewRegistrationLogCZL."User ID"));
-            NewRegistrationLogCZL."Verified Result" := CopyStr(Error, 1, MaxStrLen(NewRegistrationLogCZL."Verified Result"));
-            NewRegistrationLogCZL."Verified Name" := '';
-            NewRegistrationLogCZL."Verified Address" := '';
-            NewRegistrationLogCZL."Verified City" := '';
-            NewRegistrationLogCZL."Verified Post Code" := '';
-            NewRegistrationLogCZL."Verified VAT Registration No." := '';
-            NewRegistrationLogCZL.Insert(true);
-        end;
-    end;
-#endif
 
     local procedure FormatPostCode(PostCode: Text): Code[20]
     var
@@ -371,17 +307,6 @@ codeunit 11755 "Registration Log Mgt. CZL"
             exit;
         InitServiceSetup();
     end;
-#if not CLEAN23
-    local procedure ExtractValue(Xpath: Text; XMLDoc: XmlDocument; Namespace: Text): Text
-    var
-        XMLNamespaceManager: XmlNamespaceManager;
-        FoundXMLNode: XmlNode;
-    begin
-        XmlNamespaceManager.AddNamespace('D', Namespace);
-        if XmlDoc.SelectSingleNode(XPath, XmlNamespaceManager, FoundXMLNode) then
-            exit(FoundXMLNode.AsXmlElement().InnerText());
-    end;
-#endif
 
     local procedure GetValue(JsonObject: JsonObject; JsonKey: Text; var Result: Text): Boolean
     var
