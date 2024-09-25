@@ -1,9 +1,9 @@
 {
-  "name": "Ruleset used for Minor Releases",
+  "name": "Ruleset for first-party extensions in Minor Releases",
   "includedRuleSets": [
     {
       "action": "Default",
-      "path": "./ruleset.json"
+      "path": "./../app.ruleset.json"
     }
   ],
   "rules": [
