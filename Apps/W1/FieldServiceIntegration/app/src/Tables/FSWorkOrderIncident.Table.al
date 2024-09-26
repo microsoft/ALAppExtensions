@@ -300,6 +300,15 @@ table 6618 "FS Work Order Incident"
             TableRelation = "FS Incident Type".IncidentTypeId;
             DataClassification = SystemMetadata;
         }
+        field(70; CompanyId; GUID)
+        {
+            ExternalName = 'bcbi_company';
+            ExternalType = 'Lookup';
+            Description = 'Business Central Company';
+            Caption = 'Company Id';
+            TableRelation = "CDS Company".CompanyId;
+            DataClassification = SystemMetadata;
+        }
     }
     keys
     {

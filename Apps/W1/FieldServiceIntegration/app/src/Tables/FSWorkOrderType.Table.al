@@ -235,6 +235,15 @@ table 6622 "FS Work Order Type"
             Caption = 'Integrate To Service';
             DataClassification = SystemMetadata;
         }
+        field(50; CompanyId; GUID)
+        {
+            ExternalName = 'bcbi_company';
+            ExternalType = 'Lookup';
+            Description = 'Business Central Company';
+            Caption = 'Company Id';
+            TableRelation = "CDS Company".CompanyId;
+            DataClassification = SystemMetadata;
+        }
     }
     keys
     {

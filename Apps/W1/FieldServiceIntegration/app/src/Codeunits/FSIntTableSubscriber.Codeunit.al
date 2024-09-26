@@ -1444,6 +1444,8 @@ codeunit 6610 "FS Int. Table Subscriber"
         SourceDestCode := GetSourceDestCode(SourceRecordRef, DestinationRecordRef);
 
         case SourceDestCode of
+            'Location-FS Warehouse':
+                SetCompanyId(DestinationRecordRef);
             'Service Item-FS Customer Asset':
                 SetCompanyId(DestinationRecordRef);
             'FS Customer Asset-Service Item':
@@ -1552,8 +1554,14 @@ codeunit 6610 "FS Int. Table Subscriber"
                     end;
                     DestinationRecordRef.GetTable(JobJournalLine);
                 end;
+            'Service Order Type-FS Work Order Type':
+                SetCompanyId(DestinationRecordRef);
+            'Service Header-FS Work Order':
+                SetCompanyId(DestinationRecordRef);
             'Service Item Line-FS Work Order Incident':
                 begin
+                    SetCompanyId(DestinationRecordRef);
+
                     SourceRecordRef.SetTable(ServiceItemLine);
                     DestinationRecordRef.SetTable(FSWorkOrderIncident);
                     if CRMIntegrationRecord.FindIDFromRecordID(GetServiceOrderRecordId(ServiceItemLine."Document No."), WorkOrderId) then
@@ -1563,6 +1571,8 @@ codeunit 6610 "FS Int. Table Subscriber"
                 end;
             'Service Line-FS Work Order Product':
                 begin
+                    SetCompanyId(DestinationRecordRef);
+
                     SourceRecordRef.SetTable(ServiceLine);
                     DestinationRecordRef.SetTable(FSWorkOrderProduct);
                     if CRMIntegrationRecord.FindIDFromRecordID(GetServiceOrderRecordId(ServiceLine."Document No."), WorkOrderId) then
@@ -1573,6 +1583,8 @@ codeunit 6610 "FS Int. Table Subscriber"
                 end;
             'Service Line-FS Work Order Service':
                 begin
+                    SetCompanyId(DestinationRecordRef);
+
                     SourceRecordRef.SetTable(ServiceLine);
                     DestinationRecordRef.SetTable(FSWorkOrderService);
                     if CRMIntegrationRecord.FindIDFromRecordID(GetServiceOrderRecordId(ServiceLine."Document No."), WorkOrderId) then
