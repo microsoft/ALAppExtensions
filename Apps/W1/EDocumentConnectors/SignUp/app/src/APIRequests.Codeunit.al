@@ -26,7 +26,7 @@ codeunit 6380 APIRequests
         ContentText: Text;
     begin
         InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::POST, StrSubstNo(SendFilePostRequestUriTxt, ConnectionSetup.ServiceURL));
+        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::POST, ConnectionSetup.ServiceURL + '/api/Peppol');
 
         Payload := XmlToTxt(TempBlob);
         if Payload = '' then
@@ -49,7 +49,7 @@ codeunit 6380 APIRequests
         ConnectionSetup: Record ConnectionSetup;
     begin
         InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::GET, StrSubstNo(GetSentDocumentStatusUriTxt, ConnectionSetup.ServiceURL, EDocument."Document Id"));
+        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::GET, ConnectionSetup.ServiceURL + '/api/Peppol/status?peppolInstanceId=' + EDocument."Document Id");
         exit(SendRequest(HttpRequestMessage, HttpResponseMessage));
     end;
 
@@ -59,7 +59,7 @@ codeunit 6380 APIRequests
         ConnectionSetup: Record ConnectionSetup;
     begin
         InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::PATCH, StrSubstNo(PatchADocumentUriTxt, ConnectionSetup.ServiceURL, EDocument."Document Id"));
+        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::PATCH, ConnectionSetup.ServiceURL + '/api/Peppol/outbox?peppolInstanceId=' + EDocument."Document Id");
         exit(SendRequest(HttpRequestMessage, HttpResponseMessage));
     end;
 
@@ -69,7 +69,7 @@ codeunit 6380 APIRequests
         ConnectionSetup: Record ConnectionSetup;
     begin
         InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::GET, StrSubstNo(GetReceivedDocumentsUriTxt, ConnectionSetup.ServiceURL, GetSenderReceiverPrefix() + ConnectionSetup."Company Id"));
+        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::GET, ConnectionSetup.ServiceURL + '/api/Peppol/Inbox?peppolId=' + GetSenderReceiverPrefix() + ConnectionSetup."Company Id");
         exit(SendRequest(HttpRequestMessage, HttpResponseMessage));
     end;
 
@@ -79,7 +79,7 @@ codeunit 6380 APIRequests
         ConnectionSetup: Record ConnectionSetup;
     begin
         InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::GET, StrSubstNo(GetTargetDocumentUriTxt, ConnectionSetup.ServiceURL, GetSenderReceiverPrefix() + ConnectionSetup."Company Id", DocumentId));
+        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::GET, ConnectionSetup.ServiceURL + '/api/Peppol/inbox-document?peppolId=' + GetSenderReceiverPrefix() + ConnectionSetup."Company Id" + '&peppolInstanceId=' + DocumentId);
         exit(SendRequest(HttpRequestMessage, HttpResponseMessage));
     end;
 
@@ -89,7 +89,7 @@ codeunit 6380 APIRequests
         ConnectionSetup: Record ConnectionSetup;
     begin
         InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::PATCH, StrSubstNo(PatchReceivedDocumentUriTxt, ConnectionSetup.ServiceURL, EDocument."Document Id"));
+        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::PATCH, ConnectionSetup.ServiceURL + '/api/Peppol/inbox?peppolInstanceId=' + EDocument."Document Id");
         exit(SendRequest(HttpRequestMessage, HttpResponseMessage));
     end;
 
@@ -99,7 +99,7 @@ codeunit 6380 APIRequests
         Auth: Codeunit Auth;
     begin
         InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::POST, StrSubstNo(GetMarketPlaceCredentialsUriTxt, Auth.GetRootUrl(), Auth.GetBCInstanceIdentifier()));
+        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::POST, Auth.GetRootUrl() + '/api/Registration/init?EntraTenantId=' + Auth.GetBCInstanceIdentifier());
         exit(SendRequest(HttpRequestMessage, HttpResponseMessage, true));
     end;
 
@@ -220,13 +220,6 @@ codeunit 6380 APIRequests
         MissingSetupErr: Label 'Connection Setup is missing';
         MissingSetupMessageLbl: Label 'You must set up service integration in the e-document service card.';
         MissingSetupNavigationActionLbl: Label 'Show E-Document Services';
-        GetSentDocumentStatusUriTxt: Label '%1/api/Peppol/status?peppolInstanceId=%2', Comment = '%1 = Service Url, %2 = Document ID', Locked = true;
-        SendFilePostRequestUriTxt: Label '%1/api/Peppol', Comment = '%1 = Service Url', Locked = true;
-        PatchADocumentUriTxt: Label '%1/api/Peppol/outbox?peppolInstanceId=%2', Comment = '%1 = Service Url, %2 = Document ID', Locked = true;
-        GetReceivedDocumentsUriTxt: Label '%1/api/Peppol/Inbox?peppolId=%2', Comment = '%1 = Service Url, %2 = Peppol Identifier', Locked = true;
-        GetTargetDocumentUriTxt: Label '%1/api/Peppol/inbox-document?peppolId=%2&peppolInstanceId=%3', Comment = '%1 = Service Url, %2 = Peppol Identifier, %3 = Peppol Gateway Instance', Locked = true;
-        PatchReceivedDocumentUriTxt: Label '%1/api/Peppol/inbox?peppolInstanceId=%2', Comment = '%1 = Service Url, %2 = Peppol Gateway Instance', Locked = true;
-        GetMarketPlaceCredentialsUriTxt: Label '%1/api/Registration/init?EntraTenantId=%2', Locked = true;
         UnSupportedDocumentTypeLbl: Label 'Document %1 is not supported.', Comment = '%1 = EDocument Type', Locked = true;
         SenderReceiverPrefixLbl: Label 'iso6523-actorid-upis::', Locked = true;
 }
