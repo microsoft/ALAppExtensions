@@ -59,6 +59,7 @@ codeunit 30178 "Shpfy Product Export"
         ProductEvents: Codeunit "Shpfy Product Events";
         ProductPriceCalc: Codeunit "Shpfy Product Price Calc.";
         VariantApi: Codeunit "Shpfy Variant API";
+        ShopifySkipRecordMgt: Codeunit "Shpfy Skip Record Mgt.";
         OnlyUpdatePrice: Boolean;
         RecordCount: Integer;
         NullGuid: Guid;
@@ -352,7 +353,9 @@ codeunit 30178 "Shpfy Product Export"
     begin
         if Shop."Sync Prices" or OnlyUpdatePrice then
             if (not Item.Blocked) and (not Item."Sales Blocked") then
-                ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, Item."Sales Unit of Measure", ShopifyVariant."Unit Cost", ShopifyVariant.Price, ShopifyVariant."Compare at Price");
+                ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, Item."Sales Unit of Measure", ShopifyVariant."Unit Cost", ShopifyVariant.Price, ShopifyVariant."Compare at Price")
+            else
+                ShopifySkipRecordMgt.LogSkippedRecord(ShopifyVariant.Id, Database::"Shpfy Variant", Item.RecordId, 'Item is blocked/sales blocked');
         if not OnlyUpdatePrice then begin
             ShopifyVariant."Available For Sales" := (not Item.Blocked) and (not Item."Sales Blocked");
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure"), 1, MaxStrLen(ShopifyVariant.Barcode));
@@ -397,7 +400,9 @@ codeunit 30178 "Shpfy Product Export"
     begin
         if Shop."Sync Prices" or OnlyUpdatePrice then
             if (not Item.Blocked) and (not Item."Sales Blocked") then
-                ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, ItemUnitofMeasure.Code, ShopifyVariant."Unit Cost", ShopifyVariant.Price, ShopifyVariant."Compare at Price");
+                ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, ItemUnitofMeasure.Code, ShopifyVariant."Unit Cost", ShopifyVariant.Price, ShopifyVariant."Compare at Price")
+            else
+                ShopifySkipRecordMgt.LogSkippedRecord(ShopifyVariant.Id, Database::"Shpfy Variant", ItemVariant.RecordId, 'Price is not synchronized becuse the item is blocked/sales blocked.');
         if not OnlyUpdatePrice then begin
             ShopifyVariant."Available For Sales" := (not Item.Blocked) and (not Item."Sales Blocked");
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, ItemUnitofMeasure.Code), 1, MaxStrLen(ShopifyVariant.Barcode));
@@ -554,8 +559,10 @@ codeunit 30178 "Shpfy Product Export"
                     if Item.Blocked and (ShopifyProduct.Status = ShopifyProduct.Status::Draft) then
                         exit;
                 Shop."Action for Removed Products"::DoNothing:
-                    if Item.Blocked then
+                    if Item.Blocked then begin
+                        ShopifySkipRecordMgt.LogSkippedRecord(ShopifyProduct.Id, Database::"Shpfy Product", Item.RecordId, 'Product is blocked');
                         exit;
+                    end;
             end;
             TempShopifyProduct := ShopifyProduct;
             FillInProductFields(Item, ShopifyProduct);

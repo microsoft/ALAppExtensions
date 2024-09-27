@@ -296,10 +296,13 @@ codeunit 30116 "Shpfy Customer Export"
     var
         ShopifyCustomer: Record "Shpfy Customer";
         CustomerAddress: Record "Shpfy Customer Address";
+        ShopifySkipRecordMgt: Codeunit "Shpfy Skip Record Mgt.";
     begin
         ShopifyCustomer.Get(CustomerID);
-        if ShopifyCustomer."Customer SystemId" <> Customer.SystemId then
+        if ShopifyCustomer."Customer SystemId" <> Customer.SystemId then begin
+            ShopifySkipRecordMgt.LogSkippedRecord(ShopifyCustomer.Id, Database::"Shpfy Customer", Customer.RecordId, 'Customer already exists with the same e-mail or phone.');
             exit;  // An other customer with the same e-mail or phone is the source of it.
+        end;
 
         CustomerAddress.SetRange("Customer Id", CustomerId);
         CustomerAddress.SetRange(Default, true);
