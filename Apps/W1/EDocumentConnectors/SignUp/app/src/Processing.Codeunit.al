@@ -41,7 +41,7 @@ codeunit 6388 Processing
     var
         ErrorDescription: Text;
     begin
-        if not Connection.CheckDocumentStatus(EDocument, HttpRequest, HttpResponse, true) then
+        if not Connection.CheckDocumentStatus(EDocument, HttpRequest, HttpResponse) then
             exit;
         exit(DocumentHasErrorOrProcessing(EDocument, HttpResponse, ErrorDescription));
     end;
@@ -118,7 +118,7 @@ codeunit 6388 Processing
         ContentData: Text;
         OutStream: OutStream;
     begin
-        if not Connection.GetReceivedDocuments(HttpRequest, HttpResponse, true) then
+        if not Connection.GetReceivedDocuments(HttpRequest, HttpResponse) then
             exit;
 
         HttpResponse.Content.ReadAs(ContentData);
@@ -142,7 +142,7 @@ codeunit 6388 Processing
     var
         HttpContentResponse: HttpContent;
     begin
-        Connection.HandleSendFilePostRequest(TempBlob, EDocument, HttpRequest, HttpResponse, true);
+        Connection.HandleSendFilePostRequest(TempBlob, EDocument, HttpRequest, HttpResponse);
         HttpContentResponse := HttpResponse.Content;
         SetEDocumentFileID(EDocument."Entry No", ParseSendFileResponse(HttpContentResponse));
     end;
@@ -319,7 +319,7 @@ codeunit 6388 Processing
             exit;
         end;
 
-        Connection.HandleGetTargetDocumentRequest(DocumentId, LocalHttpRequest, LocalHttpResponse, false);
+        Connection.HandleGetTargetDocumentRequest(DocumentId, LocalHttpRequest, LocalHttpResponse);
         EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, LocalHttpRequest, LocalHttpResponse);
 
         LocalHttpResponse.Content.ReadAs(ContentData);
@@ -335,7 +335,7 @@ codeunit 6388 Processing
         DocumentOutStream.WriteText(ContentData);
         EDocument."Document Id" := CopyStr(DocumentId, 1, MaxStrLen(EDocument."Document Id"));
         EDocumentLogHelper.InsertLog(EDocument, EDocumentService, TempBlob, "E-Document Service Status"::Imported);
-        Connection.RemoveDocumentFromReceived(EDocument, LocalHttpRequest, LocalHttpResponse, true);
+        Connection.RemoveDocumentFromReceived(EDocument, LocalHttpRequest, LocalHttpResponse);
         EDocumentLogHelper.InsertIntegrationLog(EDocument, EDocumentService, LocalHttpRequest, LocalHttpResponse);
     end;
 

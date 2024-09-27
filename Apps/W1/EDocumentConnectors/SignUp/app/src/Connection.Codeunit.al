@@ -14,31 +14,23 @@ codeunit 6382 Connection
     Access = Internal;
     Permissions = tabledata "E-Document" = m;
 
-    procedure HandleSendFilePostRequest(var TempBlob: Codeunit "Temp Blob"; var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; Retry: Boolean): Boolean
+    procedure HandleSendFilePostRequest(var TempBlob: Codeunit "Temp Blob"; var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     begin
-        if not APIRequests.SendFilePostRequest(TempBlob, EDocument, HttpRequest, HttpResponse) then
-            if Retry then
-                APIRequests.SendFilePostRequest(TempBlob, EDocument, HttpRequest, HttpResponse);
-
+        APIRequests.SendFilePostRequest(TempBlob, EDocument, HttpRequest, HttpResponse);
         exit(CheckIfSuccessfulRequest(EDocument, HttpResponse));
     end;
 
-    procedure CheckDocumentStatus(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; Retry: Boolean): Boolean
+    procedure CheckDocumentStatus(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     begin
-        if not APIRequests.GetSentDocumentStatus(EDocument, HttpRequest, HttpResponse) then
-            if Retry then
-                APIRequests.GetSentDocumentStatus(EDocument, HttpRequest, HttpResponse);
-
+        APIRequests.GetSentDocumentStatus(EDocument, HttpRequest, HttpResponse);
         exit(CheckIfSuccessfulRequest(EDocument, HttpResponse));
     end;
 
-    procedure GetReceivedDocuments(var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; Retry: Boolean): Boolean
+    procedure GetReceivedDocuments(var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     var
         Parameters: Dictionary of [Text, Text];
     begin
-        if not APIRequests.GetReceivedDocumentsRequest(HttpRequest, HttpResponse, Parameters) then
-            if Retry then
-                APIRequests.GetReceivedDocumentsRequest(HttpRequest, HttpResponse, Parameters);
+        APIRequests.GetReceivedDocumentsRequest(HttpRequest, HttpResponse, Parameters);
 
         if not HttpResponse.IsSuccessStatusCode then
             exit(false);
@@ -46,20 +38,15 @@ codeunit 6382 Connection
         exit(Helpers.ParseJsonString(HttpResponse.Content) <> '');
     end;
 
-    procedure HandleGetTargetDocumentRequest(DocumentId: Text; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; Retry: Boolean): Boolean
+    procedure HandleGetTargetDocumentRequest(DocumentId: Text; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     begin
-        if not APIRequests.GetTargetDocumentRequest(DocumentId, HttpRequest, HttpResponse) then
-            if Retry then
-                APIRequests.GetTargetDocumentRequest(DocumentId, HttpRequest, HttpResponse);
-
+        APIRequests.GetTargetDocumentRequest(DocumentId, HttpRequest, HttpResponse);
         exit(HttpResponse.IsSuccessStatusCode);
     end;
 
-    procedure RemoveDocumentFromReceived(EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage; Retry: Boolean): Boolean
+    procedure RemoveDocumentFromReceived(EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     begin
-        if not APIRequests.PatchReceivedDocument(EDocument, HttpRequest, HttpResponse) then
-            if Retry then
-                APIRequests.PatchReceivedDocument(EDocument, HttpRequest, HttpResponse);
+        APIRequests.PatchReceivedDocument(EDocument, HttpRequest, HttpResponse);
         exit(HttpResponse.IsSuccessStatusCode);
     end;
 
