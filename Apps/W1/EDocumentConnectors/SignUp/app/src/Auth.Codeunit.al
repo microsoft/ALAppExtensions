@@ -25,10 +25,8 @@ codeunit 6381 Auth
     end;
 
     procedure GetRootOnboardingUrl(): Text
-    var
-        UrlTxt: Label '%1/supm/landingpage?EntraTenantId=%2', Comment = '%1 = Root Market URL, %2 = BC Instance Identifier', Locked = true;
     begin
-        exit(StrSubstNo(UrlTxt, GetRootUrl(), GetBCInstanceIdentifier()));
+        exit(GetRootUrl() + '/supm/landingpage?EntraTenantId=' + GetBCInstanceIdentifier());
     end;
 
     [NonDebuggable]
@@ -39,7 +37,6 @@ codeunit 6381 Auth
         JText: Text;
         ClientId: Text;
         ClientSecret: SecretText;
-        ErrorUnableToCreateClientCredentialsLbl: Label 'Unable to create client credentials.';
     begin
         if not GetClientCredentials(HttpRequestMessage, HttpResponseMessage) then
             Error(ErrorUnableToCreateClientCredentialsLbl);
@@ -86,8 +83,6 @@ codeunit 6381 Auth
     end;
 
     procedure GetRootAuthBearerToken() ReturnValue: SecretText;
-    var
-        ErrorTokenLbl: Label 'Unable to fetch a root token.';
     begin
         if not GetRootAccessToken(ReturnValue) then
             Error(ErrorTokenLbl);
@@ -138,7 +133,6 @@ codeunit 6381 Auth
         HttpContent: HttpContent;
         HttpHeaders: HttpHeaders;
         ContentText: SecretText;
-        ContentTemplateTxt: Label 'grant_type=client_credentials&client_id=%1&client_secret=%2&resource=%3', Locked = true;
         JText: Text;
     begin
         ConnectionSetup.GetRecordOnce();
@@ -323,4 +317,7 @@ codeunit 6381 Auth
         AuthURLTxt: Label 'https://login.microsoftonline.com/%1/oauth2/token', Comment = '%1 Entra Tenant Id', Locked = true;
         ProdTenantIdTxt: Label '0d725623-dc26-484f-a090-b09d2003d092', Locked = true;
         ProdServiceAPITxt: Label 'https://edoc.exflow.io', Locked = true;
+        ContentTemplateTxt: Label 'grant_type=client_credentials&client_id=%1&client_secret=%2&resource=%3', Locked = true;
+        ErrorTokenLbl: Label 'Unable to fetch a root token.';
+        ErrorUnableToCreateClientCredentialsLbl: Label 'Unable to create client credentials.';
 }

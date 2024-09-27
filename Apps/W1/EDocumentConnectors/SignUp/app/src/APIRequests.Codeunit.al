@@ -212,8 +212,6 @@ codeunit 6380 APIRequests
     end;
 
     local procedure GetSenderReceiverPrefix(): Text
-    var
-        SenderReceiverPrefixLbl: Label 'iso6523-actorid-upis::', Locked = true;
     begin
         exit(SenderReceiverPrefixLbl);
     end;
@@ -230,4 +228,5 @@ codeunit 6380 APIRequests
         PatchReceivedDocumentUriTxt: Label '%1/api/Peppol/inbox?peppolInstanceId=%2', Comment = '%1 = Service Url, %2 = Peppol Gateway Instance', Locked = true;
         GetMarketPlaceCredentialsUriTxt: Label '%1/api/Registration/init?EntraTenantId=%2', Locked = true;
         UnSupportedDocumentTypeLbl: Label 'Document %1 is not supported.', Comment = '%1 = EDocument Type', Locked = true;
+        SenderReceiverPrefixLbl: Label 'iso6523-actorid-upis::', Locked = true;
 }
