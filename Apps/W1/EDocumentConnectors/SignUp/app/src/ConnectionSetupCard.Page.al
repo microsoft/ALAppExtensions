@@ -206,5 +206,4 @@ page 6380 ConnectionSetupCard
         IsSaaSInfrastructure: Boolean;
         ExternalServiceTok: Label 'ExternalServiceConnector', Locked = true;
 
-
 }

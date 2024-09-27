@@ -193,12 +193,9 @@ codeunit 6388 Processing
         ErrorDescription: Text;
     begin
         if not Connection.CheckDocumentStatus(EDocument, HttpRequestMessage, HttpResponse, true) then
-            exit(false);
+            exit;
 
-        if DocumentHasErrorOrProcessing(EDocument, HttpResponse, ErrorDescription) then
-            exit(false);
-
-        exit(true);
+        exit(not DocumentHasErrorOrProcessing(EDocument, HttpResponse, ErrorDescription));
     end;
 
     local procedure ParseSendFileResponse(HttpContentResponse: HttpContent): Text
