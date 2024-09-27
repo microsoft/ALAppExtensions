@@ -20,7 +20,7 @@ codeunit 6386 IntegrationImpl implements "E-Document Integration"
     procedure SendBatch(var EDocuments: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
     begin
         IsAsync := false;
-        Error('Batch sending is not supported in this version');
+        Error(BatchSendNotSupportedErr);
     end;
 
     procedure GetResponse(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
@@ -35,7 +35,7 @@ codeunit 6386 IntegrationImpl implements "E-Document Integration"
 
     procedure Cancel(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     begin
-        Error('Cancel is not supported in this version');
+        Error(CancelNotSupportedErr);
     end;
 
     procedure ReceiveDocument(var TempBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
@@ -56,4 +56,6 @@ codeunit 6386 IntegrationImpl implements "E-Document Integration"
 
     var
         Processing: Codeunit Processing;
+        BatchSendNotSupportedErr: Label 'Batch sending is not supported in this version';
+        CancelNotSupportedErr: Label 'Cancel is not supported in this version';
 }
