@@ -39,11 +39,11 @@ codeunit 6388 Processing
 
     procedure GetDocumentResponse(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     var
+        ErrorDescription: Text;
     begin
-        if not CheckIfDocumentStatusSuccessful(EDocument, HttpRequest, HttpResponse) then
-            exit(false);
-
-        exit(true);
+        if not Connection.CheckDocumentStatus(EDocument, HttpRequest, HttpResponse, true) then
+            exit;
+        exit(DocumentHasErrorOrProcessing(EDocument, HttpResponse, ErrorDescription));
     end;
 
     procedure GetDocumentSentResponse(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
@@ -186,16 +186,6 @@ codeunit 6388 Processing
         JsonManagement.InitializeCollection(Value);
 
         exit(JsonManagement.GetCollectionCount());
-    end;
-
-    local procedure CheckIfDocumentStatusSuccessful(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
-    var
-        ErrorDescription: Text;
-    begin
-        if not Connection.CheckDocumentStatus(EDocument, HttpRequestMessage, HttpResponse, true) then
-            exit;
-
-        exit(not DocumentHasErrorOrProcessing(EDocument, HttpResponse, ErrorDescription));
     end;
 
     local procedure ParseSendFileResponse(HttpContentResponse: HttpContent): Text
