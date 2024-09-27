@@ -104,11 +104,18 @@ codeunit 6380 APIRequests
     end;
 
     local procedure InitRequest(var ConnectionSetup: Record ConnectionSetup; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
+    var
+        MissingSetupErrorInfo: ErrorInfo;
     begin
         Clear(HttpRequestMessage);
         Clear(HttpResponseMessage);
-        if not ConnectionSetup.Get() then
-            Error(MissingSetupErr);
+        if not ConnectionSetup.Get() then begin
+            MissingSetupErrorInfo.Title := MissingSetupErr;
+            MissingSetupErrorInfo.Message := MissingSetupMessageLbl;
+            MissingSetupErrorInfo.PageNo := Page::"E-Document Services";
+            MissingSetupErrorInfo.AddNavigationAction(MissingSetupNavigationActionLbl);
+            Error(MissingSetupErrorInfo);
+        end;
     end;
 
     local procedure SendRequest(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
@@ -212,7 +219,9 @@ codeunit 6380 APIRequests
     end;
 
     var
-        MissingSetupErr: Label 'You must set up service integration in the E-Document service card.';
+        MissingSetupErr: Label 'Connection Setup is missing';
+        MissingSetupMessageLbl: Label 'You must set up service integration in the e-document service card.';
+        MissingSetupNavigationActionLbl: Label 'Show E-Document Services';
         GetSentDocumentStatusUriTxt: Label '%1/api/Peppol/status?peppolInstanceId=%2', Comment = '%1 = Service Url, %2 = Document ID', Locked = true;
         SendFilePostRequestUriTxt: Label '%1/api/Peppol', Comment = '%1 = Service Url', Locked = true;
         PatchADocumentUriTxt: Label '%1/api/Peppol/outbox?peppolInstanceId=%2', Comment = '%1 = Service Url, %2 = Document ID', Locked = true;
