@@ -161,6 +161,8 @@ codeunit 6380 APIRequests
                 exit('Invoice');
             "E-Document Type"::"Issued Finance Charge Memo", "E-Document Type"::"Issued Reminder":
                 exit('PaymentReminder');
+            else
+                Error(UnSupportedDocumentTypeLbl, EDocument."Document Type");
         end;
     end;
 
@@ -218,4 +220,5 @@ codeunit 6380 APIRequests
         GetTargetDocumentUriTxt: Label '%1/api/Peppol/inbox-document?peppolId=%2&peppolInstanceId=%3', Comment = '%1 = Service Url, %2 = Peppol Identifier, %3 = Peppol Gateway Instance', Locked = true;
         PatchReceivedDocumentUriTxt: Label '%1/api/Peppol/inbox?peppolInstanceId=%2', Comment = '%1 = Service Url, %2 = Peppol Gateway Instance', Locked = true;
         GetMarketPlaceCredentialsUriTxt: Label '%1/api/Registration/init?EntraTenantId=%2', Locked = true;
+        UnSupportedDocumentTypeLbl: Label 'Document %1 is not supported.', Comment = '%1 = EDocument Type', Locked = true;
 }
