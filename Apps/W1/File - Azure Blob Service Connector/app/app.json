@@ -1,0 +1,31 @@
+{
+    "id":  "c9ce86fe-cb70-4b79-be03-d21856b1a4ca",
+    "name":  "File - Azure Blob Service Connector",
+    "publisher":  "Microsoft",
+    "brief":  "Enable all users to use a Azure Blob Storage to save files from Business Central.",
+    "description":  "This app enables all users to store files in the smae azure blob storage in Business Central.",
+    "version":  "25.0.0.0",
+    "privacyStatement":  "https://go.microsoft.com/fwlink/?linkid=724009",
+    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
+    "help":  "https://go.microsoft.com/fwlink/?linkid=2134520",
+    "url":  "https://go.microsoft.com/fwlink/?linkid=724011",
+    "logo":  "ExtensionLogo.png",
+    "application":  "24.0.0.0",
+    "internalsVisibleTo":  [],
+    "dependencies":  [],
+    "screenshots":  [],
+                    "platform":  "24.0.0.0",
+    "idRanges":  [
+                     {
+                         "from":  80100,
+                         "to":  80199
+                     }
+                 ],
+    "target":  "OnPrem",
+    "resourceExposurePolicy":  {
+                                   "allowDebugging":  false,
+                                   "allowDownloadingSource":  true,
+                                   "includeSourceInSymbolFile":  true
+                               },
+    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2134520"
+}
