@@ -204,6 +204,5 @@ page 6380 ConnectionSetupCard
         [NonDebuggable]
         ClientID, ClientSecret, ClientTenant, ClientUrl, RootID, RootSecret, RootTenant, RootUrl : Text;
         IsSaaSInfrastructure: Boolean;
-        ExternalServiceTok: Label 'ExternalServiceConnector', Locked = true;
-
+        ExternalServiceTok: Label 'E-Document - SignUp', Locked = true;
 }

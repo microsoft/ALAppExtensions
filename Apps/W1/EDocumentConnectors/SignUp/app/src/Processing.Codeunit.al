@@ -556,5 +556,5 @@ codeunit 6388 Processing
         GetApprovalCheckStatusErr: Label 'You cannot ask for approval with the E-Document in this current status %1. You can request for approval when E-document status is Sent or Pending Response.', Comment = '%1 - Status';
         CouldNotRetrieveDocumentErr: Label 'Could not retrieve document with id: %1 from the service', Comment = '%1 - Document ID';
         DocumentIdNotFoundErr: Label 'Document ID not found in response';
-        ExternalServiceTok: Label 'ExternalServiceConnector', Locked = true;
+        ExternalServiceTok: Label 'E-Document - SignUp', Locked = true;
 }
