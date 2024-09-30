@@ -59,7 +59,7 @@ codeunit 30284 "Shpfy Company Export"
                     ShopifyCompany.Insert();
 
                     if Shop."Auto Create Catalog" then
-                        CatalogAPI.CreateCatalog(ShopifyCompany);
+                        CatalogAPI.CreateCatalog(ShopifyCompany, Customer);
 
                     CompanyLocation."Company SystemId" := ShopifyCompany.SystemId;
                     CompanyLocation.Insert();
