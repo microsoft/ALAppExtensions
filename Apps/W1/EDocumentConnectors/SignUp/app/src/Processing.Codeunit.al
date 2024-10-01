@@ -43,7 +43,7 @@ codeunit 6388 Processing
     begin
         if not Connection.CheckDocumentStatus(EDocument, HttpRequest, HttpResponse) then
             exit;
-        exit(DocumentHasErrorOrProcessing(EDocument, HttpResponse, ErrorDescription));
+        exit(not DocumentHasErrorOrStillInProcessing(EDocument, HttpResponse, ErrorDescription));
     end;
 
     procedure GetDocumentSentResponse(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
@@ -218,7 +218,7 @@ codeunit 6388 Processing
         EDocument.Modify();
     end;
 
-    local procedure DocumentHasErrorOrProcessing(EDocument: Record "E-Document"; HttpResponse: HttpResponseMessage; var ErrorDescription: Text): Boolean
+    local procedure DocumentHasErrorOrStillInProcessing(EDocument: Record "E-Document"; HttpResponse: HttpResponseMessage; var ErrorDescription: Text): Boolean
     var
         EDocumentService: Record "E-Document Service";
         EDocumentServiceStatus: Record "E-Document Service Status";
