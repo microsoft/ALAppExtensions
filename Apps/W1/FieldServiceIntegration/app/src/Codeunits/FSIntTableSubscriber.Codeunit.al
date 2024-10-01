@@ -2347,6 +2347,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         CRMIntegrationRecord.SetRange("Table ID", Database::"Service Header");
         CRMIntegrationRecord.SetRange("Integration ID", ServiceHeader.SystemId);
         if CRMIntegrationRecord.FindFirst() then begin
+            CRMIntegrationRecord."Archived Service Header Id" := GetLatestServiceOrderArchiveSystemId(ServiceHeader."No.");
             CRMIntegrationRecord."Archived Service Order" := true;
             CRMIntegrationRecord.Modify();
         end;
@@ -2368,19 +2369,64 @@ codeunit 6610 "FS Int. Table Subscriber"
         end;
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Integration Management", 'OnBeforeOpenRecordCardPage', '', false, false)]
-    local procedure OnBeforeOpenRecordCardPage(RecordID: RecordID; var IsHandled: Boolean)
+    local procedure GetLatestServiceOrderArchiveSystemId(OrderNo: Code[20]): Guid
     var
-        ServiceHeader: Record "Service Header";
-        RecordRef: RecordRef;
+        ServiceHeaderArchive: Record "Service Header Archive";
+        EmptyGuid: Guid;
     begin
-        RecordRef := RecordID.GetRecord();
-        if RecordID.TableNo <> Database::"Service Header" then
+        ServiceHeaderArchive.SetRange("Document Type", ServiceHeaderArchive."Document Type"::Order);
+        ServiceHeaderArchive.SetRange("No.", OrderNo);
+        if not ServiceHeaderArchive.FindLast() then
+            exit(EmptyGuid);
+
+        exit(ServiceHeaderArchive.SystemId);
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Integration Management", 'OnBeforeOpenCoupledNavRecordPage', '', false, false)]
+    local procedure OnBeforeOpenCoupledNavRecordPage(CRMID: Guid; CRMEntityTypeName: Text; var Result: Boolean; var IsHandled: Boolean)
+    begin
+        if IsHandled or Result then
             exit;
 
-        RecordRef.SetTable(ServiceHeader);
+        Result := OpenServiceHeader(CRMID);
+        if not Result then
+            Result := OpenServiceHeaderArchive(CRMID);
+
+        IsHandled := Result;
+    end;
+
+    local procedure OpenServiceHeader(CRMID: Guid): Boolean
+    var
+        CRMIntegrationRecord: Record "CRM Integration Record";
+        ServiceHeader: Record "Service Header";
+    begin
+        CRMIntegrationRecord.SetRange("Table ID", Database::"Service Header");
+        CRMIntegrationRecord.SetRange("CRM ID", CRMID);
+        if not CRMIntegrationRecord.FindFirst() then
+            exit(false);
+
+        if not ServiceHeader.GetBySystemId(CRMIntegrationRecord."Integration ID") then
+            exit(false);
+
         Page.Run(Page::"Service Order", ServiceHeader);
-        IsHandled := true;
+        exit(true);
+    end;
+
+    local procedure OpenServiceHeaderArchive(CRMID: Guid): Boolean
+    var
+        CRMIntegrationRecord: Record "CRM Integration Record";
+        ServiceHeaderArchive: Record "Service Header Archive";
+    begin
+        CRMIntegrationRecord.SetRange("Table ID", Database::"Service Header");
+        CRMIntegrationRecord.SetRange("CRM ID", CRMID);
+        if not CRMIntegrationRecord.FindFirst() then
+            exit(false);
+
+        if not ServiceHeaderArchive.GetBySystemId(CRMIntegrationRecord."Archived Service Header Id") then
+            exit(false);
+
+        Page.Run(Page::"Service Order Archive", ServiceHeaderArchive);
+        exit(true);
     end;
 
     [IntegrationEvent(false, false)]

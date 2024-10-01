@@ -20,7 +20,12 @@ tableextension 6618 "FS Integration Record" extends "CRM Integration Record"
             Caption = 'Archived Service Order Updated';
             DataClassification = SystemMetadata;
         }
-        field(12002; "Archived Service Line Id"; Guid)
+        field(12002; "Archived Service Header Id"; Guid)
+        {
+            Caption = 'Archived Service Header Id';
+            DataClassification = SystemMetadata;
+        }
+        field(12003; "Archived Service Line Id"; Guid)
         {
             Caption = 'Archived Service Line Id';
             DataClassification = SystemMetadata;
@@ -29,7 +34,10 @@ tableextension 6618 "FS Integration Record" extends "CRM Integration Record"
 
     keys
     {
-        key(Key1; "Archived Service Line Id")
+        key(Key1; "Archived Service Header Id")
+        {
+        }
+        key(Key2; "Archived Service Line Id")
         {
         }
     }
