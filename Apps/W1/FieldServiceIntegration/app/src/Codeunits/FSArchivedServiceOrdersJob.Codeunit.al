@@ -49,7 +49,7 @@ codeunit 6617 "FS Archived Service Orders Job"
         if CRMIntegrationRecord.FindSet() then
             repeat
                 if FSWorkOrder.Get(CRMIntegrationRecord."CRM ID") then
-                    if UpdateFromSalesHeader(FSWorkOrder) then begin
+                    if UpdateFromServiceHeader(FSWorkOrder) then begin
                         CRMIntegrationRecord2.GetBySystemId(CRMIntegrationRecord.SystemId);
                         CRMIntegrationRecord2."Archived Service Order Updated" := true;
                         CRMIntegrationRecord2.Modify();
@@ -62,14 +62,14 @@ codeunit 6617 "FS Archived Service Orders Job"
     end;
 
     [TryFunction]
-    local procedure UpdateFromSalesHeader(var FSWorkOrder: Record "FS Work Order")
+    local procedure UpdateFromServiceHeader(var FSWorkOrder: Record "FS Work Order")
     begin
         ResetFSWorkOrderLineFromServiceOrderLine(FSWorkOrder);
     end;
 
     local procedure ResetFSWorkOrderLineFromServiceOrderLine(var FSWorkOrder: Record "FS Work Order")
     var
-        SalesLineArchive: Record "Service Line Archive";
+        ServiceLineArchive: Record "Service Line Archive";
         FSWorkOrderProduct: Record "FS Work Order Product";
         FSWorkOrderService: Record "FS Work Order Service";
         CRMIntegrationRecord: Record "CRM Integration Record";
@@ -78,35 +78,35 @@ codeunit 6617 "FS Archived Service Orders Job"
         if FSWorkOrderProduct.FindSet() then
             repeat
                 if CRMIntegrationRecord.FindByCRMID(FSWorkOrderProduct.WorkOrderProductId) then
-                    if SalesLineArchive.GetBySystemId(CRMIntegrationRecord."Archived Service Line Id") then
-                        UpdateWorkOrderProduct(SalesLineArchive, FSWorkOrderProduct);
+                    if ServiceLineArchive.GetBySystemId(CRMIntegrationRecord."Archived Service Line Id") then
+                        UpdateWorkOrderProduct(ServiceLineArchive, FSWorkOrderProduct);
             until FSWorkOrderProduct.Next() = 0;
 
         FSWorkOrderService.SetRange(WorkOrder, FSWorkOrder.WorkOrderId);
         if FSWorkOrderService.FindSet() then
             repeat
                 if CRMIntegrationRecord.FindByCRMID(FSWorkOrderService.WorkOrderServiceId) then
-                    if SalesLineArchive.GetBySystemId(CRMIntegrationRecord."Archived Service Line Id") then
-                        UpdateWorkOrderService(SalesLineArchive, FSWorkOrderService);
+                    if ServiceLineArchive.GetBySystemId(CRMIntegrationRecord."Archived Service Line Id") then
+                        UpdateWorkOrderService(ServiceLineArchive, FSWorkOrderService);
             until FSWorkOrderService.Next() = 0;
     end;
 
-    internal procedure UpdateWorkOrderProduct(SalesLineArchive: Record "Service Line Archive"; var FSWorkOrderProduct: Record "FS Work Order Product")
+    internal procedure UpdateWorkOrderProduct(ServiceLineArchive: Record "Service Line Archive"; var FSWorkOrderProduct: Record "FS Work Order Product")
     var
         Modified: Boolean;
     begin
-        if FSWorkOrderProduct.QuantityShipped <> (SalesLineArchive."Quantity Shipped" + SalesLineArchive."Qty. to Ship") then begin
-            FSWorkOrderProduct.QuantityShipped := SalesLineArchive."Quantity Shipped" + SalesLineArchive."Qty. to Ship";
+        if FSWorkOrderProduct.QuantityShipped <> (ServiceLineArchive."Quantity Shipped" + ServiceLineArchive."Qty. to Ship") then begin
+            FSWorkOrderProduct.QuantityShipped := ServiceLineArchive."Quantity Shipped" + ServiceLineArchive."Qty. to Ship";
             Modified := true;
         end;
 
-        if FSWorkOrderProduct.QuantityInvoiced <> (SalesLineArchive."Quantity Invoiced" + SalesLineArchive."Qty. to Invoice") then begin
-            FSWorkOrderProduct.QuantityInvoiced := SalesLineArchive."Quantity Invoiced" + SalesLineArchive."Qty. to Invoice";
+        if FSWorkOrderProduct.QuantityInvoiced <> (ServiceLineArchive."Quantity Invoiced" + ServiceLineArchive."Qty. to Invoice") then begin
+            FSWorkOrderProduct.QuantityInvoiced := ServiceLineArchive."Quantity Invoiced" + ServiceLineArchive."Qty. to Invoice";
             Modified := true;
         end;
 
-        if FSWorkOrderProduct.QuantityConsumed <> SalesLineArchive."Quantity Consumed" + SalesLineArchive."Qty. to Consume" then begin
-            FSWorkOrderProduct.QuantityConsumed := SalesLineArchive."Quantity Consumed" + SalesLineArchive."Qty. to Consume";
+        if FSWorkOrderProduct.QuantityConsumed <> ServiceLineArchive."Quantity Consumed" + ServiceLineArchive."Qty. to Consume" then begin
+            FSWorkOrderProduct.QuantityConsumed := ServiceLineArchive."Quantity Consumed" + ServiceLineArchive."Qty. to Consume";
             Modified := true;
         end;
 
@@ -114,22 +114,22 @@ codeunit 6617 "FS Archived Service Orders Job"
             FSWorkOrderProduct.Modify();
     end;
 
-    internal procedure UpdateWorkOrderService(SalesLineArchive: Record "Service Line Archive"; var FSWorkOrderService: Record "FS Work Order Service")
+    internal procedure UpdateWorkOrderService(ServiceLineArchive: Record "Service Line Archive"; var FSWorkOrderService: Record "FS Work Order Service")
     var
         Modified: Boolean;
     begin
-        if FSWorkOrderService.DurationShipped <> (SalesLineArchive."Quantity Shipped" + SalesLineArchive."Qty. to Ship") then begin
-            FSWorkOrderService.DurationShipped := (SalesLineArchive."Quantity Shipped" + SalesLineArchive."Qty. to Ship") * 60;
+        if FSWorkOrderService.DurationShipped <> (ServiceLineArchive."Quantity Shipped" + ServiceLineArchive."Qty. to Ship") then begin
+            FSWorkOrderService.DurationShipped := (ServiceLineArchive."Quantity Shipped" + ServiceLineArchive."Qty. to Ship") * 60;
             Modified := true;
         end;
 
-        if FSWorkOrderService.DurationInvoiced <> (SalesLineArchive."Quantity Invoiced" + SalesLineArchive."Qty. to Invoice") then begin
-            FSWorkOrderService.DurationInvoiced := (SalesLineArchive."Quantity Invoiced" + SalesLineArchive."Qty. to Invoice") * 60;
+        if FSWorkOrderService.DurationInvoiced <> (ServiceLineArchive."Quantity Invoiced" + ServiceLineArchive."Qty. to Invoice") then begin
+            FSWorkOrderService.DurationInvoiced := (ServiceLineArchive."Quantity Invoiced" + ServiceLineArchive."Qty. to Invoice") * 60;
             Modified := true;
         end;
 
-        if FSWorkOrderService.DurationConsumed <> SalesLineArchive."Quantity Consumed" + SalesLineArchive."Qty. to Consume" then begin
-            FSWorkOrderService.DurationConsumed := (SalesLineArchive."Quantity Consumed" + SalesLineArchive."Qty. to Consume") * 60;
+        if FSWorkOrderService.DurationConsumed <> ServiceLineArchive."Quantity Consumed" + ServiceLineArchive."Qty. to Consume" then begin
+            FSWorkOrderService.DurationConsumed := (ServiceLineArchive."Quantity Consumed" + ServiceLineArchive."Qty. to Consume") * 60;
             Modified := true;
         end;
 
