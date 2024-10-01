@@ -89,32 +89,32 @@ codeunit 30362 "Shpfy Posted Invoice Export"
     var
         ShopifyCompany: Record "Shpfy Company";
         ShopifyCustomer: Record "Shpfy Customer";
-        CustomerNotExistingAsCompanyOrCustomerLbl: Label 'Customer not existing as Shopify company or customer';
-        PaymentTermsNotExistLbl: Label 'Payment terms %1 does not exist in Shopify', Comment = '%1 = Payment Terms Code';
-        CustomerNoIsDefaultCustomerNoLbl: Label 'Customer No. is the default customer no. from Shopify shop';
-        CustomerTemplateExistsLbl: Label 'Shopify Customer template exists for customer no. %1 shop %2', Comment = '%1 = Customer No., %2 = Shop Code';
+        CustomerNotExistingAsCompanyOrCustomerLbl: Label 'Customer not existing as Shopify company or customer.';
+        PaymentTermsNotExistLbl: Label 'Payment terms %1 does not exist in Shopify.', Comment = '%1 = Payment Terms Code.';
+        CustomerNoIsDefaultCustomerNoLbl: Label 'Customer No. is the default customer no. from Shopify shop.';
+        CustomerTemplateExistsLbl: Label 'Shopify Customer template exists for customer no. %1 shop %2.', Comment = '%1 = Customer No., %2 = Shop Code';
     begin
         ShopifyCompany.SetRange("Customer No.", SalesInvoiceHeader."Bill-to Customer No.");
         if ShopifyCompany.IsEmpty() then begin
             ShopifyCustomer.SetRange("Customer No.", SalesInvoiceHeader."Bill-to Customer No.");
             if ShopifyCustomer.IsEmpty() then begin
-                SkipRecordMgt.LogSkippedRecord(0, Database::"Sales Invoice Header", SalesInvoiceHeader.RecordId, CustomerNotExistingAsCompanyOrCustomerLbl);
+                SkipRecordMgt.LogSkippedRecord(0, Database::"Sales Invoice Header", SalesInvoiceHeader.RecordId, CustomerNotExistingAsCompanyOrCustomerLbl, Shop);
                 exit(false);
             end;
         end;
 
         if not ShopifyPaymentTermsExists(SalesInvoiceHeader."Payment Terms Code") then begin
-            SkipRecordMgt.LogSkippedRecord(0, Database::"Sales Invoice Header", SalesInvoiceHeader.RecordId, StrSubstNo(PaymentTermsNotExistLbl, SalesInvoiceHeader."Payment Terms Code"));
+            SkipRecordMgt.LogSkippedRecord(0, Database::"Sales Invoice Header", SalesInvoiceHeader.RecordId, StrSubstNo(PaymentTermsNotExistLbl, SalesInvoiceHeader."Payment Terms Code"), Shop);
             exit(false);
         end;
 
         if Shop."Default Customer No." = SalesInvoiceHeader."Bill-to Customer No." then begin
-            SkipRecordMgt.LogSkippedRecord(0, Database::"Sales Invoice Header", SalesInvoiceHeader.RecordId, CustomerNoIsDefaultCustomerNoLbl);
+            SkipRecordMgt.LogSkippedRecord(0, Database::"Sales Invoice Header", SalesInvoiceHeader.RecordId, CustomerNoIsDefaultCustomerNoLbl, Shop);
             exit(false);
         end;
 
         if CheckCustomerTemplates(SalesInvoiceHeader."Bill-to Customer No.") then begin
-            SkipRecordMgt.LogSkippedRecord(0, Database::"Sales Invoice Header", SalesInvoiceHeader.RecordId, StrSubstNo(CustomerTemplateExistsLbl, SalesInvoiceHeader."Bill-to Customer No.", Shop.Code));
+            SkipRecordMgt.LogSkippedRecord(0, Database::"Sales Invoice Header", SalesInvoiceHeader.RecordId, StrSubstNo(CustomerTemplateExistsLbl, SalesInvoiceHeader."Bill-to Customer No.", Shop.Code), Shop);
             exit(false);
         end;
 
@@ -154,10 +154,15 @@ codeunit 30362 "Shpfy Posted Invoice Export"
     local procedure CheckSalesInvoiceHeaderLines(SalesInvoiceHeader: Record "Sales Invoice Header"): Boolean
     var
         SalesInvoiceLine: Record "Sales Invoice Line";
+        NoLinesInSalesInvoiceLbl: Label 'No lines in sales invoice.';
+        InvalidQuantityLbl: Label 'Invalid quantity in sales invoice line.';
+        CommentLineLbl: Label 'Comment line in sales invoice.';
     begin
         SalesInvoiceLine.SetFilter(Type, '<>%1', SalesInvoiceLine.Type::" ");
-        if SalesInvoiceLine.IsEmpty() then
+        if SalesInvoiceLine.IsEmpty() then begin
+            SkipRecordMgt.LogSkippedRecord(0, Database::"Sales Invoice Header", SalesInvoiceHeader.RecordId, NoLinesInSalesInvoiceLbl, Shop);
             exit(false);
+        end;
 
         SalesInvoiceLine.Reset();
 
@@ -165,11 +170,14 @@ codeunit 30362 "Shpfy Posted Invoice Export"
         SalesInvoiceLine.SetRange(Type, SalesInvoiceLine.Type::Item);
         if SalesInvoiceLine.FindSet() then
             repeat
-                if (SalesInvoiceLine.Quantity <> 0) and (SalesInvoiceLine.Quantity <> Round(SalesInvoiceLine.Quantity, 1)) then
+                if (SalesInvoiceLine.Quantity <> 0) and (SalesInvoiceLine.Quantity <> Round(SalesInvoiceLine.Quantity, 1)) then begin
+                    SkipRecordMgt.LogSkippedRecord(0, Database::"Sales Invoice Line", SalesInvoiceLine.RecordId, InvalidQuantityLbl, Shop);
                     exit(false);
+                end;
 
                 if (SalesInvoiceLine.Type <> SalesInvoiceLine.Type::" ") and (SalesInvoiceLine."No." = '') then
-                    exit(false);
+                    SkipRecordMgt.LogSkippedRecord(0, Database::"Sales Invoice Line", SalesInvoiceLine.RecordId, CommentLineLbl, Shop);
+                exit(false);
             until SalesInvoiceLine.Next() = 0;
 
         exit(true);
