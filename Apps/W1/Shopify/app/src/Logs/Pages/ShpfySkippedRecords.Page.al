@@ -56,6 +56,16 @@ page 30165 "Shpfy Skipped Records"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the reason why the record was skipped.';
                 }
+                field("Created On"; Rec."Created On")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the date and time when the record was created.';
+                }
+                field("Created Time"; Rec."Created Time")
+                {
+                    ApplicationArea = All;
+                    ToolTip = 'Specifies the time when the record was created.';
+                }
             }
         }
     }

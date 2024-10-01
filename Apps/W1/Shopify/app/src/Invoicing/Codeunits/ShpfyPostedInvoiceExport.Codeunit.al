@@ -17,6 +17,7 @@ codeunit 30362 "Shpfy Posted Invoice Export"
         DraftOrdersAPI: Codeunit "Shpfy Draft Orders API";
         FulfillmentAPI: Codeunit "Shpfy Fulfillment API";
         JsonHelper: Codeunit "Shpfy Json Helper";
+        SkipRecordMgt: Codeunit "Shpfy Skip Record Mgt.";
 
     trigger OnRun()
     begin
@@ -88,22 +89,34 @@ codeunit 30362 "Shpfy Posted Invoice Export"
     var
         ShopifyCompany: Record "Shpfy Company";
         ShopifyCustomer: Record "Shpfy Customer";
+        CustomerNotExistingAsCompanyOrCustomerLbl: Label 'Customer not existing as Shopify company or customer';
+        PaymentTermsNotExistLbl: Label 'Payment terms %1 does not exist in Shopify', Comment = '%1 = Payment Terms Code';
+        CustomerNoIsDefaultCustomerNoLbl: Label 'Customer No. is the default customer no. from Shopify shop';
+        CustomerTemplateExistsLbl: Label 'Shopify Customer template exists for customer no. %1 shop %2', Comment = '%1 = Customer No., %2 = Shop Code';
     begin
         ShopifyCompany.SetRange("Customer No.", SalesInvoiceHeader."Bill-to Customer No.");
         if ShopifyCompany.IsEmpty() then begin
             ShopifyCustomer.SetRange("Customer No.", SalesInvoiceHeader."Bill-to Customer No.");
-            if ShopifyCustomer.IsEmpty() then
+            if ShopifyCustomer.IsEmpty() then begin
+                SkipRecordMgt.LogSkippedRecord(0, Database::"Sales Invoice Header", SalesInvoiceHeader.RecordId, CustomerNotExistingAsCompanyOrCustomerLbl);
                 exit(false);
+            end;
         end;
 
-        if not ShopifyPaymentTermsExists(SalesInvoiceHeader."Payment Terms Code") then
+        if not ShopifyPaymentTermsExists(SalesInvoiceHeader."Payment Terms Code") then begin
+            SkipRecordMgt.LogSkippedRecord(0, Database::"Sales Invoice Header", SalesInvoiceHeader.RecordId, StrSubstNo(PaymentTermsNotExistLbl, SalesInvoiceHeader."Payment Terms Code"));
             exit(false);
+        end;
 
-        if Shop."Default Customer No." = SalesInvoiceHeader."Bill-to Customer No." then
+        if Shop."Default Customer No." = SalesInvoiceHeader."Bill-to Customer No." then begin
+            SkipRecordMgt.LogSkippedRecord(0, Database::"Sales Invoice Header", SalesInvoiceHeader.RecordId, CustomerNoIsDefaultCustomerNoLbl);
             exit(false);
+        end;
 
-        if CheckCustomerTemplates(SalesInvoiceHeader."Bill-to Customer No.") then
+        if CheckCustomerTemplates(SalesInvoiceHeader."Bill-to Customer No.") then begin
+            SkipRecordMgt.LogSkippedRecord(0, Database::"Sales Invoice Header", SalesInvoiceHeader.RecordId, StrSubstNo(CustomerTemplateExistsLbl, SalesInvoiceHeader."Bill-to Customer No.", Shop.Code));
             exit(false);
+        end;
 
         if not CheckSalesInvoiceHeaderLines(SalesInvoiceHeader) then
             exit(false);

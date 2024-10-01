@@ -65,7 +65,11 @@ table 30159 "Shpfy Skipped Record"
             Caption = 'Created On';
             DataClassification = SystemMetadata;
         }
-
+        field(9; "Created Time"; Time)
+        {
+            Caption = 'Created Time';
+            DataClassification = SystemMetadata;
+        }
 
 
     }

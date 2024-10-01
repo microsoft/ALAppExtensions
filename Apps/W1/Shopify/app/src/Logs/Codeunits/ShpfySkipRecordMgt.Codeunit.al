@@ -14,7 +14,8 @@ codeunit 30168 "Shpfy Skip Record Mgt."
         ShpfySkippedRecord.Validate("Table ID", TableId);
         ShpfySkippedRecord.Validate("Record ID", RecordId);
         ShpfySkippedRecord.Validate("Skipped Reason", SkippedReason);
-        ShpfySkippedRecord.Validate("Created On", CURRENTDATETIME);
+        ShpfySkippedRecord.Validate("Created On", CurrentDateTime);
+        ShpfySkippedRecord.Validate("Created Time", DT2Time(CurrentDateTime));
         ShpfySkippedRecord.Insert(false);
     end;
 
