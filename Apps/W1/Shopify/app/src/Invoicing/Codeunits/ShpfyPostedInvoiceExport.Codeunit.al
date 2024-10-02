@@ -156,7 +156,7 @@ codeunit 30362 "Shpfy Posted Invoice Export"
         SalesInvoiceLine: Record "Sales Invoice Line";
         NoLinesInSalesInvoiceLbl: Label 'No lines in sales invoice.';
         InvalidQuantityLbl: Label 'Invalid quantity in sales invoice line.';
-        CommentLineLbl: Label 'Comment line in sales invoice.';
+        EmptyNoInLineLbl: Label 'No. is empty in Sales Invoice Line.';
     begin
         SalesInvoiceLine.SetFilter(Type, '<>%1', SalesInvoiceLine.Type::" ");
         if SalesInvoiceLine.IsEmpty() then begin
@@ -175,9 +175,10 @@ codeunit 30362 "Shpfy Posted Invoice Export"
                     exit(false);
                 end;
 
-                if (SalesInvoiceLine.Type <> SalesInvoiceLine.Type::" ") and (SalesInvoiceLine."No." = '') then
-                    SkipRecordMgt.LogSkippedRecord(0, Database::"Sales Invoice Line", SalesInvoiceLine.RecordId, CommentLineLbl, Shop);
-                exit(false);
+                if (SalesInvoiceLine.Type <> SalesInvoiceLine.Type::" ") and (SalesInvoiceLine."No." = '') then begin
+                    SkipRecordMgt.LogSkippedRecord(0, Database::"Sales Invoice Line", SalesInvoiceLine.RecordId, EmptyNoInLineLbl, Shop);
+                    exit(false);
+                end;
             until SalesInvoiceLine.Next() = 0;
 
         exit(true);
