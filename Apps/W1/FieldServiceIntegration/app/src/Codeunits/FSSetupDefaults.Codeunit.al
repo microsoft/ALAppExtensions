@@ -663,16 +663,17 @@ codeunit 6611 "FS Setup Defaults"
 
         ServiceItemLine.Reset();
         ServiceItemLine.SetRange("Document Type", ServiceItemLine."Document Type"::Order);
+        ServiceItemLine.SetRange("FS Bookings", false);
 
         FSWorkOrderIncident.Reset();
         if CDSIntegrationMgt.GetCDSCompany(CDSCompany) then
             FSWorkOrderIncident.SetRange(CompanyId, CDSCompany.CompanyId);
 
         InsertIntegrationTableMapping(
-      IntegrationTableMapping, IntegrationTableMappingName,
-      Database::"Service Item Line", Database::"FS Work Order Incident",
-      FSWorkOrderIncident.FieldNo(WorkOrderIncidentId), FSWorkOrderIncident.FieldNo(ModifiedOn),
-      '', '', false);
+          IntegrationTableMapping, IntegrationTableMappingName,
+          Database::"Service Item Line", Database::"FS Work Order Incident",
+          FSWorkOrderIncident.FieldNo(WorkOrderIncidentId), FSWorkOrderIncident.FieldNo(ModifiedOn),
+          '', '', false);
 
         IntegrationTableMapping.SetTableFilter(
           GetTableFilterFromView(Database::"Service Item Line", ServiceItemLine.TableCaption(), ServiceItemLine.GetView()));

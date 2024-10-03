@@ -18,5 +18,10 @@ tableextension 6620 "FS Service Item Line" extends "Service Item Line"
             Editable = false;
             CalcFormula = exist("CRM Integration Record" where("Integration ID" = field(SystemId), "Table ID" = const(Database::"Service Item Line")));
         }
+        field(12001; "FS Bookings"; Boolean)
+        {
+            Caption = 'Field Service Bookings';
+            DataClassification = CustomerContent;
+        }
     }
 }

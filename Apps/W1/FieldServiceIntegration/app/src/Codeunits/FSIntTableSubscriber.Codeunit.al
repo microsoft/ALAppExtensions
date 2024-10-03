@@ -1047,6 +1047,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         FSBookableResourceBooking: Record "FS Bookable Resource Booking";
         FSBookableResourceBooking2: Record "FS Bookable Resource Booking";
         CRMIntegrationTableSynch: Codeunit "CRM Integration Table Synch.";
+        FSIntegrationMgt: Codeunit "FS Integration Mgt.";
         FSBookableResourceBookingRecordRef: RecordRef;
         FSBookableResourceBookingId: Guid;
         FSBookableResourceBookingIdList: List of [Guid];
@@ -1067,14 +1068,17 @@ codeunit 6610 "FS Int. Table Subscriber"
                     if FSBookableResourceBooking.IsEmpty() then begin
                         CRMIntegrationRecord.Delete();
                         ArchiveServiceOrder(ServiceHeader, ArchivedServiceOrders);
-                        if ServiceLineToDelete.GetBySystemId(ServiceLine.SystemId) then
+                        if ServiceLineToDelete.GetBySystemId(ServiceLine.SystemId) then begin
+                            DeleteServiceItemLineForBooking(ServiceLine);
                             ServiceLineToDelete.Delete(true);
+                        end;
                     end;
                 end;
             until ServiceLine.Next() = 0;
 
         FSBookableResourceBooking.Reset();
         FSBookableResourceBooking.SetRange(WorkOrder, FSWorkOrder.WorkOrderId);
+        FSBookableResourceBooking.SetRange(BookingStatus, FSIntegrationMgt.GetBookingStatusCompleted());
         if FSBookableResourceBooking.FindSet() then begin
             repeat
                 FSBookableResourceBookingIdList.Add(FSBookableResourceBooking.BookableResourceBookingId)
@@ -1103,6 +1107,7 @@ codeunit 6610 "FS Int. Table Subscriber"
 
         ServiceItemLine.SetRange("Document Type", ServiceHeader."Document Type");
         ServiceItemLine.SetRange("Document No.", ServiceHeader."No.");
+        ServiceItemLine.SetRange("FS Bookings", false);
         if not ServiceItemLine.IsEmpty() then begin
             ServiceItemLineRecordRef.GetTable(ServiceItemLine);
             CRMIntegrationTableSynch.SynchRecordsToIntegrationTable(ServiceItemLineRecordRef, false, false);
@@ -1555,6 +1560,12 @@ codeunit 6610 "FS Int. Table Subscriber"
                     end;
                     DestinationRecordRef.GetTable(JobJournalLine);
                 end;
+            'FS Bookable Resource Booking-Service Line':
+                begin
+                    DestinationRecordRef.SetTable(ServiceLine);
+                    GenerateServiceItemLineForBooking(ServiceLine);
+                    DestinationRecordRef.GetTable(ServiceLine);
+                end;
             'Service Order Type-FS Work Order Type':
                 SetCompanyId(DestinationRecordRef);
             'Service Header-FS Work Order':
@@ -1595,6 +1606,52 @@ codeunit 6610 "FS Int. Table Subscriber"
                     DestinationRecordRef.GetTable(FSWorkOrderService);
                 end;
         end;
+    end;
+
+    local procedure GenerateServiceItemLineForBooking(var ServiceLine: Record "Service Line")
+    var
+        ServiceItemLine: Record "Service Item Line";
+        Resource: Record Resource;
+    begin
+        if not GetServiceItemLine(ServiceLine, ServiceItemLine) then begin
+            ServiceItemLine.Validate("Document Type", ServiceLine."Document Type");
+            ServiceItemLine.Validate("Document No.", ServiceLine."Document No.");
+            ServiceItemLine.Validate("Line No.", GetNextLineNo(ServiceItemLine));
+            ServiceItemLine.Validate(Description, Resource.TableCaption());
+            ServiceItemLine.Validate("FS Bookings", true);
+            ServiceItemLine.Insert(true);
+        end;
+
+        ServiceLine.Validate("Service Item Line No.", ServiceItemLine."Line No.");
+    end;
+
+    local procedure DeleteServiceItemLineForBooking(ServiceLineToDelete: Record "Service Line")
+    var
+        ServiceItemLine: Record "Service Item Line";
+        ServiceLine: Record "Service Line";
+    begin
+        // other service line exists?
+        ServiceLine.SetRange("Document Type", ServiceLineToDelete."Document Type");
+        ServiceLine.SetRange("Document No.", ServiceLineToDelete."Document No.");
+        ServiceLine.SetRange("Service Item Line No.", ServiceLineToDelete."Service Item Line No.");
+        ServiceLine.SetFilter("Line No.", '<>%1', ServiceLineToDelete."Line No.");
+        if not ServiceLine.IsEmpty() then
+            exit;
+
+        // delete service item line -> only if no other service line exists
+        ServiceItemLine.SetRange("Document Type", ServiceLineToDelete."Document Type");
+        ServiceItemLine.SetRange("Document No.", ServiceLineToDelete."Document No.");
+        ServiceItemLine.SetRange("Line No.", ServiceLineToDelete."Service Item Line No.");
+        if not ServiceItemLine.IsEmpty() then
+            ServiceItemLine.DeleteAll()
+    end;
+
+    local procedure GetServiceItemLine(ServiceLine: Record "Service Line"; var ServiceItemLine: Record "Service Item Line"): Boolean
+    begin
+        ServiceItemLine.SetRange("Document Type", ServiceLine."Document Type");
+        ServiceItemLine.SetRange("Document No.", ServiceLine."Document No.");
+        ServiceItemLine.SetRange("FS Bookings", true);
+        exit(ServiceItemLine.FindFirst());
     end;
 
     local procedure GetNextLineNo(ServiceItemLine: Record "Service Item Line"): Integer
