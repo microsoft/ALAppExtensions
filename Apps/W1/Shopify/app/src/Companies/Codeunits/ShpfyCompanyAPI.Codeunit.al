@@ -300,6 +300,7 @@ codeunit 30286 "Shpfy Company API"
         OutStream: OutStream;
         PhoneNo: Text;
         IsDefaultCompanyLocation: Boolean;
+        CompanyLocationId: BigInteger;
     begin
         UpdatedAt := JsonHelper.GetValueAsDateTime(JCompany, 'updatedAt');
         if UpdatedAt <= ShopifyCompany."Updated At" then
@@ -322,11 +323,13 @@ codeunit 30286 "Shpfy Company API"
         IsDefaultCompanyLocation := true;
         if JsonHelper.GetJsonArray(JCompany, JLocations, 'locations.edges') then
             foreach JItem in JLocations do begin
-                ShopifyCompany."Location Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'node.id'));
+                CompanyLocationId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'node.id'));
+                if IsDefaultCompanyLocation then
+                    ShopifyCompany."Location Id" := CompanyLocationId;
 
-                CompanyLocation.SetRange(Id, ShopifyCompany."Location Id");
+                CompanyLocation.SetRange(Id, CompanyLocationId);
                 if not CompanyLocation.FindFirst() then begin
-                    CompanyLocation.Id := ShopifyCompany."Location Id";
+                    CompanyLocation.Id := CompanyLocationId;
                     CompanyLocation."Company SystemId" := ShopifyCompany.SystemId;
                     CompanyLocation.Name := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.name'), 1, MaxStrLen(CompanyLocation.Name));
                     CompanyLocation.Insert();
@@ -343,7 +346,6 @@ codeunit 30286 "Shpfy Company API"
                 PhoneNo := CopyStr(DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()')), 1, MaxStrLen(CompanyLocation."Phone No."));
                 CompanyLocation."Phone No." := CopyStr(PhoneNo, 1, MaxStrLen(CompanyLocation."Phone No."));
                 CompanyLocation."Tax Registration Id" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.taxRegistrationId', MaxStrLen(CompanyLocation."Tax Registration Id")), 1, MaxStrLen(CompanyLocation."Tax Registration Id"));
-                CompanyLocation.Default := false;
                 if IsDefaultCompanyLocation then begin
                     CompanyLocation.Default := IsDefaultCompanyLocation;
                     IsDefaultCompanyLocation := false;
