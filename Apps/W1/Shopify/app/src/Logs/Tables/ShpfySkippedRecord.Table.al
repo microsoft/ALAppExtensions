@@ -43,7 +43,7 @@ table 30159 "Shpfy Skipped Record"
         field(5; "Record ID"; RecordID)
         {
             Caption = 'Record ID';
-            DataClassification = CustomerContent;
+            DataClassification = SystemMetadata;
 
             trigger OnValidate()
             begin
@@ -90,7 +90,7 @@ table 30159 "Shpfy Skipped Record"
                 exit(AllObjWithCaption."Object Caption");
     end;
 
-    procedure GetRecDescription() Result: Text
+    local procedure GetRecDescription() Result: Text
     var
         RecRef: RecordRef;
         PKFilter: Text;
@@ -111,6 +111,9 @@ table 30159 "Shpfy Skipped Record"
         end;
     end;
 
+    /// <summary>
+    /// Show related record from Record ID field.
+    /// </summary>
     internal procedure ShowPage()
     var
         TableMetadata: Record "Table Metadata";

@@ -33,8 +33,6 @@ codeunit 30199 "Shpfy Authentication Mgt."
         EnvironmentInformation: Codeunit "Environment Information";
         ClientId: SecretText;
     begin
-        exit(SecretText.SecretStrSubstNo('ff3cdb3a6a4fe97dbd9219e32a9594f3'));
-
         if not EnvironmentInformation.IsSaaS() then
             Error(NotSupportedOnPremErr);
 
@@ -51,8 +49,6 @@ codeunit 30199 "Shpfy Authentication Mgt."
         EnvironmentInformation: Codeunit "Environment Information";
         ClientSecret: SecretText;
     begin
-        exit(SecretText.SecretStrSubstNo('96fa169b584920fe01183a02ffd00d7f'));
-
         if not EnvironmentInformation.IsSaaS() then
             Error(NotSupportedOnPremErr);
 
