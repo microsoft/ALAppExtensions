@@ -30,6 +30,11 @@ tableextension 6618 "FS Integration Record" extends "CRM Integration Record"
             Caption = 'Archived Service Line Id';
             DataClassification = SystemMetadata;
         }
+        field(12004; "Skip Reimport"; Boolean)
+        {
+            Caption = 'Skip Reimport';
+            DataClassification = SystemMetadata;
+        }
     }
 
     keys

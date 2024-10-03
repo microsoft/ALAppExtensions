@@ -905,7 +905,8 @@ codeunit 6610 "FS Int. Table Subscriber"
         FSWorkOrderIncident.SetRange(WorkOrder, FSWorkOrder.WorkOrderId);
         if FSWorkOrderIncident.FindSet() then begin
             repeat
-                FSWorkOrderIncidentIdList.Add(FSWorkOrderIncident.WorkOrderIncidentId)
+                if not SkipReimport(FSWorkOrderIncident.WorkOrderIncidentId, FSWorkOrderIncident.ModifiedOn) then
+                    FSWorkOrderIncidentIdList.Add(FSWorkOrderIncident.WorkOrderIncidentId)
             until FSWorkOrderIncident.Next() = 0;
 
             foreach CRMSalesorderdetailId in FSWorkOrderIncidentIdList do
@@ -970,7 +971,8 @@ codeunit 6610 "FS Int. Table Subscriber"
         FSWorkOrderProduct.SetRange(WorkOrder, FSWorkOrder.WorkOrderId);
         if FSWorkOrderProduct.FindSet() then begin
             repeat
-                FSWorkOrderProductIdList.Add(FSWorkOrderProduct.WorkOrderProductId)
+                if not SkipReimport(FSWorkOrderProduct.WorkOrderProductId, FSWorkOrderProduct.ModifiedOn) then
+                    FSWorkOrderProductIdList.Add(FSWorkOrderProduct.WorkOrderProductId);
             until FSWorkOrderProduct.Next() = 0;
 
             foreach FSWorkOrderProductId in FSWorkOrderProductIdList do
@@ -1024,7 +1026,8 @@ codeunit 6610 "FS Int. Table Subscriber"
         FSWorkOrderService.SetRange(WorkOrder, FSWorkOrder.WorkOrderId);
         if FSWorkOrderService.FindSet() then begin
             repeat
-                FSWorkOrderServiceIdList.Add(FSWorkOrderService.WorkOrderServiceId)
+                if not SkipReimport(FSWorkOrderService.WorkOrderServiceId, FSWorkOrderService.ModifiedOn) then
+                    FSWorkOrderServiceIdList.Add(FSWorkOrderService.WorkOrderServiceId);
             until FSWorkOrderService.Next() = 0;
 
             foreach FSWorkOrderServiceId in FSWorkOrderServiceIdList do
@@ -1081,7 +1084,8 @@ codeunit 6610 "FS Int. Table Subscriber"
         FSBookableResourceBooking.SetRange(BookingStatus, FSIntegrationMgt.GetBookingStatusCompleted());
         if FSBookableResourceBooking.FindSet() then begin
             repeat
-                FSBookableResourceBookingIdList.Add(FSBookableResourceBooking.BookableResourceBookingId)
+                if not SkipReimport(FSBookableResourceBooking.BookableResourceBookingId, FSBookableResourceBooking.ModifiedOn) then
+                    FSBookableResourceBookingIdList.Add(FSBookableResourceBooking.BookableResourceBookingId);
             until FSBookableResourceBooking.Next() = 0;
 
             foreach FSBookableResourceBookingId in FSBookableResourceBookingIdList do
@@ -1092,6 +1096,23 @@ codeunit 6610 "FS Int. Table Subscriber"
             FSBookableResourceBookingRecordRef.GetTable(FSBookableResourceBooking2);
             CRMIntegrationTableSynch.SynchRecordsFromIntegrationTable(FSBookableResourceBookingRecordRef, Database::"Service Line", false, false);
         end;
+    end;
+
+    local procedure SkipReimport(CRMId: Guid; CurrentModifyTimeStamp: DateTime): Boolean
+    var
+        CRMIntegrationRecord: Record "CRM Integration Record";
+    begin
+        // check if skipped (because of deletion)
+        CRMIntegrationRecord.SetRange("CRM ID", CRMId);
+        if not CRMIntegrationRecord.FindFirst() then
+            exit(false);
+        if not CRMIntegrationRecord."Skip Reimport" then
+            exit(false);
+        if (CRMIntegrationRecord."Skip Reimport") and (CRMIntegrationRecord."Last Synch. Modified On" > CurrentModifyTimeStamp) then
+            exit(true);
+
+        CRMIntegrationRecord.Delete(); // there was an update in field service -> start import again with new coupling
+        exit(false);
     end;
 
     local procedure ResetFSWorkOrderIncidentFromServiceOrderItemLine(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef)
@@ -2380,7 +2401,7 @@ codeunit 6610 "FS Int. Table Subscriber"
     end;
 
     [EventSubscriber(ObjectType::Table, Database::"Service Header", 'OnAfterDeleteEvent', '', false, false)]
-    local procedure HandleOnAfterDeleteAfterPosting(var Rec: Record "Service Header")
+    local procedure HandleOnAfterDeleteServiceHeader(var Rec: Record "Service Header")
     begin
         if Rec.IsTemporary() then
             exit;
@@ -2394,12 +2415,74 @@ codeunit 6610 "FS Int. Table Subscriber"
         MarkArchivedServiceOrderLine(ServiceLine, ServiceLineArchive);
     end;
 
+    [EventSubscriber(ObjectType::Table, Database::"Service Item Line", 'OnAfterDeleteEvent', '', false, false)]
+    local procedure HandleOnAfterDeleteServiceItemLine(var Rec: Record "Service Item Line")
+    begin
+        if Rec.IsTemporary() then
+            exit;
+
+        UncoupleRecord(Rec);
+    end;
+
+    [EventSubscriber(ObjectType::Table, Database::"Service Line", 'OnAfterDeleteEvent', '', false, false)]
+    local procedure HandleOnAfterDeleteServiceLine(var Rec: Record "Service Line")
+    begin
+        if Rec.IsTemporary() then
+            exit;
+
+        UncoupleRecord(Rec);
+    end;
+
+    local procedure UncoupleRecord(ServiceItemLine: Record "Service Item Line")
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+    begin
+        if not FSConnectionSetup.IsIntegrationTypeServiceEnabled() then
+            exit;
+
+        CRMIntegrationRecord.SetCurrentKey("Integration ID");
+        CRMIntegrationRecord.SetRange("Integration ID", ServiceItemLine.SystemId);
+        if not CRMIntegrationRecord.FindFirst() then
+            exit;
+
+        CRMIntegrationRecord."Last Synch. CRM Modified On" := CurrentDateTime();
+        CRMIntegrationRecord."Last Synch. CRM Result" := CRMIntegrationRecord."Last Synch. CRM Result"::Success;
+        CRMIntegrationRecord."Last Synch. Modified On" := CurrentDateTime();
+        CRMIntegrationRecord."Last Synch. Result" := CRMIntegrationRecord."Last Synch. Result"::Success;
+        CRMIntegrationRecord.Skipped := true;
+        CRMIntegrationRecord."Skip Reimport" := true;
+        CRMIntegrationRecord.Modify();
+    end;
+
+    local procedure UncoupleRecord(ServiceLine: Record "Service Line")
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        CRMIntegrationRecord: Record "CRM Integration Record";
+    begin
+        if not FSConnectionSetup.IsIntegrationTypeServiceEnabled() then
+            exit;
+
+        CRMIntegrationRecord.SetCurrentKey("Integration ID");
+        CRMIntegrationRecord.SetRange("Integration ID", ServiceLine.SystemId);
+        if not CRMIntegrationRecord.FindFirst() then
+            exit;
+
+        CRMIntegrationRecord."Last Synch. CRM Modified On" := CurrentDateTime();
+        CRMIntegrationRecord."Last Synch. CRM Result" := CRMIntegrationRecord."Last Synch. CRM Result"::Success;
+        CRMIntegrationRecord."Last Synch. Modified On" := CurrentDateTime();
+        CRMIntegrationRecord."Last Synch. Result" := CRMIntegrationRecord."Last Synch. Result"::Success;
+        CRMIntegrationRecord.Skipped := true;
+        CRMIntegrationRecord."Skip Reimport" := true;
+        CRMIntegrationRecord.Modify();
+    end;
+
     internal procedure MarkArchivedServiceOrder(ServiceHeader: Record "Service Header")
     var
         FSConnectionSetup: Record "FS Connection Setup";
         CRMIntegrationRecord: Record "CRM Integration Record";
     begin
-        if not FSConnectionSetup.IsEnabled() then
+        if not FSConnectionSetup.IsIntegrationTypeServiceEnabled() then
             exit;
 
         CRMIntegrationRecord.SetRange("Table ID", Database::"Service Header");
@@ -2416,7 +2499,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         FSConnectionSetup: Record "FS Connection Setup";
         CRMIntegrationRecord: Record "CRM Integration Record";
     begin
-        if not FSConnectionSetup.IsEnabled() then
+        if not FSConnectionSetup.IsIntegrationTypeServiceEnabled() then
             exit;
 
         CRMIntegrationRecord.SetRange("Table ID", Database::"Service Line");
