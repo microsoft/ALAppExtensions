@@ -399,12 +399,14 @@ codeunit 30178 "Shpfy Product Export"
     /// <param name="ItemVariant">Parameter of type Record "Item Variant".</param>
     /// <param name="ItemUnitofMeasure">Parameter of type Record "Item Unit of Measure".</param>
     local procedure FillInProductVariantData(var ShopifyVariant: Record "Shpfy Variant"; Item: Record Item; ItemVariant: Record "Item Variant"; ItemUnitofMeasure: Record "Item Unit of Measure")
+    var
+        ItemIsBlockedLbl: Label 'Price is not synchronized becuse the item is blocked/sales blocked.';
     begin
         if Shop."Sync Prices" or OnlyUpdatePrice then
             if (not Item.Blocked) and (not Item."Sales Blocked") then
                 ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, ItemUnitofMeasure.Code, ShopifyVariant."Unit Cost", ShopifyVariant.Price, ShopifyVariant."Compare at Price")
             else
-                ShopifySkipRecordMgt.LogSkippedRecord(ShopifyVariant.Id, Database::"Shpfy Variant", ItemVariant.RecordId, 'Price is not synchronized becuse the item is blocked/sales blocked.', Shop);
+                ShopifySkipRecordMgt.LogSkippedRecord(ShopifyVariant.Id, Database::"Shpfy Variant", ItemVariant.RecordId, ItemIsBlockedLbl, Shop);
         if not OnlyUpdatePrice then begin
             ShopifyVariant."Available For Sales" := (not Item.Blocked) and (not Item."Sales Blocked");
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, ItemUnitofMeasure.Code), 1, MaxStrLen(ShopifyVariant.Barcode));
