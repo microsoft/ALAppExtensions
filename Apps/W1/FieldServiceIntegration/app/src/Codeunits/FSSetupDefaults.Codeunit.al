@@ -71,7 +71,7 @@ codeunit 6611 "FS Setup Defaults"
 
             FSIntegrationMgt.EnableServiceOrderArchive();
         end;
-        
+
         SetCustomIntegrationsTableMappings(FSConnectionSetup);
     end;
 
@@ -135,6 +135,7 @@ codeunit 6611 "FS Setup Defaults"
         FSWorkOrderProduct: Record "FS Work Order Product";
         JobJournalLine: Record "Job Journal Line";
         CDSCompany: Record "CDS Company";
+        InventorySetup: Record "Inventory Setup";
         CDSIntegrationMgt: Codeunit "CDS Integration Mgt.";
         IsHandled: Boolean;
         EmptyGuid: Guid;
@@ -204,12 +205,13 @@ codeunit 6611 "FS Setup Defaults"
           IntegrationFieldMapping.Direction::FromIntegrationTable,
           '', true, false);
 
-        InsertIntegrationFieldMapping(
-          IntegrationTableMappingName,
-          JobJournalLine.FieldNo("Location Code"),
-          FSWorkOrderProduct.FieldNo(WarehouseId),
-          IntegrationFieldMapping.Direction::FromIntegrationTable,
-          '', true, false);
+        if InventorySetup.Get() and (InventorySetup."Location Mandatory") then
+            InsertIntegrationFieldMapping(
+              IntegrationTableMappingName,
+              JobJournalLine.FieldNo("Location Code"),
+              FSWorkOrderProduct.FieldNo(WarehouseId),
+              IntegrationFieldMapping.Direction::FromIntegrationTable,
+              '', true, false);
 
         OnAfterResetProjectJournalLineWOProductMapping(IntegrationTableMappingName);
 
@@ -708,6 +710,7 @@ codeunit 6611 "FS Setup Defaults"
         ServiceLine: Record "Service Line";
         FSWorkOrderProduct: Record "FS Work Order Product";
         CDSCompany: Record "CDS Company";
+        InventorySetup: Record "Inventory Setup";
         CDSIntegrationMgt: Codeunit "CDS Integration Mgt.";
         EmptyGuid: Guid;
         IsHandled: Boolean;
@@ -771,19 +774,21 @@ codeunit 6611 "FS Setup Defaults"
           IntegrationFieldMapping.Direction::Bidirectional,
           '', true, false);
 
-        InsertIntegrationFieldMapping(
-          IntegrationTableMappingName,
-          ServiceLine.FieldNo("Location Code"),
-          FSWorkOrderProduct.FieldNo(WarehouseId),
-          IntegrationFieldMapping.Direction::Bidirectional,
-          '', true, false);
+        if InventorySetup.Get() and (InventorySetup."Location Mandatory") then begin
+            InsertIntegrationFieldMapping(
+              IntegrationTableMappingName,
+              ServiceLine.FieldNo("Location Code"),
+              FSWorkOrderProduct.FieldNo(WarehouseId),
+              IntegrationFieldMapping.Direction::Bidirectional,
+              '', true, false);
 
-        InsertIntegrationFieldMapping(
-          IntegrationTableMappingName,
-          ServiceLine.FieldNo("Location Code"),
-          FSWorkOrderProduct.FieldNo(LocationCode),
-          IntegrationFieldMapping.Direction::ToIntegrationTable,
-          '', true, false);
+            InsertIntegrationFieldMapping(
+              IntegrationTableMappingName,
+              ServiceLine.FieldNo("Location Code"),
+              FSWorkOrderProduct.FieldNo(LocationCode),
+              IntegrationFieldMapping.Direction::ToIntegrationTable,
+              '', true, false);
+        end;
 
         InsertIntegrationFieldMapping(
           IntegrationTableMappingName,
