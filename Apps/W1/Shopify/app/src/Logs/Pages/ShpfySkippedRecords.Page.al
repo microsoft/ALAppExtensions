@@ -1,7 +1,7 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Page Shpfy Skipped Records (ID 30119).
+/// Page Shpfy Skipped Records (ID 30165).
 /// </summary>
 page 30165 "Shpfy Skipped Records"
 {

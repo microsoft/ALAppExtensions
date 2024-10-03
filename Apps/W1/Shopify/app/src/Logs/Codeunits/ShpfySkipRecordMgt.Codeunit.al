@@ -1,7 +1,8 @@
 namespace Microsoft.Integration.Shopify;
 
-using Microsoft.Integration.Shopify;
-
+/// <summary>
+/// Codeunit Shpfy Skip Record Mgt. (ID 30168).
+/// </summary>
 codeunit 30168 "Shpfy Skip Record Mgt."
 {
     Access = Internal;
