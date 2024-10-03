@@ -139,6 +139,8 @@ codeunit 6610 "FS Int. Table Subscriber"
             exit;
 
         ServiceItem.SetView(Rec.GetTableFilter());
+        if ServiceItem.GetFilter(SystemId) <> '' then
+            exit;
         if ServiceItem.GetFilter("Service Item Components") = '' then
             Error(MandatoryFilterErr, ServiceItem.FieldCaption("Service Item Components"));
     end;
@@ -1424,7 +1426,6 @@ codeunit 6610 "FS Int. Table Subscriber"
         FSWorkOrderIncident: Record "FS Work Order Incident";
         FSWorkOrderProduct: Record "FS Work Order Product";
         FSWorkOrderService: Record "FS Work Order Service";
-        FSBookableResourceBooking: Record "FS Bookable Resource Booking";
         ServiceItemLine: Record "Service Item Line";
         ServiceLine: Record "Service Line";
         CRMProductName: Codeunit "CRM Product Name";
