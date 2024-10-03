@@ -890,13 +890,6 @@ codeunit 6611 "FS Setup Defaults"
 
         InsertIntegrationFieldMapping(
           IntegrationTableMappingName,
-          ServiceLine.FieldNo("No."),
-          FSWorkOrderService.FieldNo(ProductId),
-          IntegrationFieldMapping.Direction::ToIntegrationTable,
-          '', true, false);
-
-        InsertIntegrationFieldMapping(
-          IntegrationTableMappingName,
           ServiceLine.FieldNo(Description),
           FSWorkOrderService.FieldNo(Name),
           IntegrationFieldMapping.Direction::Bidirectional,

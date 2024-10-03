@@ -769,13 +769,6 @@ table 6620 "FS Work Order Service"
             Caption = 'Location Code';
             ExternalAccess = Read;
         }
-        field(122; ProductId; Text[1024])
-        {
-            ExternalName = 'bcbi_productid';
-            ExternalType = 'String';
-            Description = 'Unique identifier of the warehouse associated with the entity.';
-            Caption = 'Location Code';
-        }
     }
     keys
     {
