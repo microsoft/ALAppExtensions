@@ -29,6 +29,7 @@ codeunit 30286 "Shpfy Company API"
         if JResponse.SelectToken('$.data.companyCreate.company', JItem) then
             if JItem.IsObject then
                 ShopifyCompany.Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'id'));
+        // JZA: Task2 - Task is only for Company location import. Exports won't work with for all locations
         if JsonHelper.GetJsonArray(JResponse, JLocations, 'data.companyCreate.company.locations.edges') then
             if JLocations.Count = 1 then
                 if JLocations.Get(0, JItem) then begin
@@ -298,6 +299,7 @@ codeunit 30286 "Shpfy Company API"
         JItem: JsonToken;
         OutStream: OutStream;
         PhoneNo: Text;
+        IsDefaultCompanyLocation: Boolean;
     begin
         UpdatedAt := JsonHelper.GetValueAsDateTime(JCompany, 'updatedAt');
         if UpdatedAt <= ShopifyCompany."Updated At" then
@@ -317,31 +319,37 @@ codeunit 30286 "Shpfy Company API"
             Clear(ShopifyCompany.Note);
         ShopifyCompany.Modify();
 
+        IsDefaultCompanyLocation := true;
         if JsonHelper.GetJsonArray(JCompany, JLocations, 'locations.edges') then
-            if JLocations.Count = 1 then
-                if JLocations.Get(0, JItem) then begin
-                    ShopifyCompany."Location Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'node.id'));
+            foreach JItem in JLocations do begin
+                ShopifyCompany."Location Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'node.id'));
 
-                    CompanyLocation.SetRange(Id, ShopifyCompany."Location Id");
-                    if not CompanyLocation.FindFirst() then begin
-                        CompanyLocation.Id := ShopifyCompany."Location Id";
-                        CompanyLocation."Company SystemId" := ShopifyCompany.SystemId;
-                        CompanyLocation.Name := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.name'), 1, MaxStrLen(CompanyLocation.Name));
-                        CompanyLocation.Insert();
-                    end;
-
-                    CompanyLocation.Address := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.address1', MaxStrLen(CompanyLocation.Address)), 1, MaxStrLen(CompanyLocation.Address));
-                    CompanyLocation."Address 2" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.address2', MaxStrLen(CompanyLocation."Address 2")), 1, MaxStrLen(CompanyLocation."Address 2"));
-                    CompanyLocation.Zip := CopyStr(JsonHelper.GetValueAsCode(JItem, 'node.billingAddress.zip', MaxStrLen(CompanyLocation.Zip)), 1, MaxStrLen(CompanyLocation.Zip));
-                    CompanyLocation.City := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.city', MaxStrLen(CompanyLocation.City)), 1, MaxStrLen(CompanyLocation.City));
-                    CompanyLocation."Country/Region Code" := CopyStr(JsonHelper.GetValueAsCode(JItem, 'node.billingAddress.countryCode', MaxStrLen(CompanyLocation."Country/Region Code")), 1, MaxStrLen(CompanyLocation."Country/Region Code"));
-                    CompanyLocation."Province Code" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.zoneCode', MaxStrLen(CompanyLocation."Province Code")), 1, MaxStrLen(CompanyLocation."Province Code"));
-                    CompanyLocation."Province Name" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.province', MaxStrLen(CompanyLocation."Province Name")), 1, MaxStrLen(CompanyLocation."Province Name"));
-                    PhoneNo := JsonHelper.GetValueAsText(JItem, 'node.billingAddress.phone');
-                    PhoneNo := CopyStr(DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()')), 1, MaxStrLen(CompanyLocation."Phone No."));
-                    CompanyLocation."Phone No." := CopyStr(PhoneNo, 1, MaxStrLen(CompanyLocation."Phone No."));
-                    CompanyLocation."Tax Registration Id" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.taxRegistrationId', MaxStrLen(CompanyLocation."Tax Registration Id")), 1, MaxStrLen(CompanyLocation."Tax Registration Id"));
-                    CompanyLocation.Modify();
+                CompanyLocation.SetRange(Id, ShopifyCompany."Location Id");
+                if not CompanyLocation.FindFirst() then begin
+                    CompanyLocation.Id := ShopifyCompany."Location Id";
+                    CompanyLocation."Company SystemId" := ShopifyCompany.SystemId;
+                    CompanyLocation.Name := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.name'), 1, MaxStrLen(CompanyLocation.Name));
+                    CompanyLocation.Insert();
                 end;
+
+                CompanyLocation.Address := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.address1', MaxStrLen(CompanyLocation.Address)), 1, MaxStrLen(CompanyLocation.Address));
+                CompanyLocation."Address 2" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.address2', MaxStrLen(CompanyLocation."Address 2")), 1, MaxStrLen(CompanyLocation."Address 2"));
+                CompanyLocation.Zip := CopyStr(JsonHelper.GetValueAsCode(JItem, 'node.billingAddress.zip', MaxStrLen(CompanyLocation.Zip)), 1, MaxStrLen(CompanyLocation.Zip));
+                CompanyLocation.City := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.city', MaxStrLen(CompanyLocation.City)), 1, MaxStrLen(CompanyLocation.City));
+                CompanyLocation."Country/Region Code" := CopyStr(JsonHelper.GetValueAsCode(JItem, 'node.billingAddress.countryCode', MaxStrLen(CompanyLocation."Country/Region Code")), 1, MaxStrLen(CompanyLocation."Country/Region Code"));
+                CompanyLocation."Province Code" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.zoneCode', MaxStrLen(CompanyLocation."Province Code")), 1, MaxStrLen(CompanyLocation."Province Code"));
+                CompanyLocation."Province Name" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.province', MaxStrLen(CompanyLocation."Province Name")), 1, MaxStrLen(CompanyLocation."Province Name"));
+                PhoneNo := JsonHelper.GetValueAsText(JItem, 'node.billingAddress.phone');
+                PhoneNo := CopyStr(DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()')), 1, MaxStrLen(CompanyLocation."Phone No."));
+                CompanyLocation."Phone No." := CopyStr(PhoneNo, 1, MaxStrLen(CompanyLocation."Phone No."));
+                CompanyLocation."Tax Registration Id" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.taxRegistrationId', MaxStrLen(CompanyLocation."Tax Registration Id")), 1, MaxStrLen(CompanyLocation."Tax Registration Id"));
+                CompanyLocation.Default := false;
+                if IsDefaultCompanyLocation then begin
+                    CompanyLocation.Default := IsDefaultCompanyLocation;
+                    IsDefaultCompanyLocation := false;
+                end;
+                CompanyLocation.Modify();
+                // end;
+            end;
     end;
 }

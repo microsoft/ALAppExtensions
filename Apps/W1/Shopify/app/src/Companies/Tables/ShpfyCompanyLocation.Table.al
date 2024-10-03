@@ -73,6 +73,11 @@ table 30151 "Shpfy Company Location"
             Caption = 'Tax Registration Id';
             DataClassification = CustomerContent;
         }
+        field(13; "Default"; Boolean)
+        {
+            Caption = 'Default';
+            DataClassification = CustomerContent;
+        }
     }
     keys
     {
