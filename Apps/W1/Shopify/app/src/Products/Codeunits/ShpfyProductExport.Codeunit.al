@@ -351,7 +351,7 @@ codeunit 30178 "Shpfy Product Export"
     /// <param name="ItemVariant">Parameter of type Record "Item Variant".</param>
     local procedure FillInProductVariantData(var ShopifyVariant: Record "Shpfy Variant"; Item: Record Item; ItemVariant: Record "Item Variant")
     var
-        ItemIsBlockedLbl: Label 'Item is blocked/sales blocked';
+        ItemIsBlockedLbl: Label 'Price is not synchronized because the item is blocked and sales blocked.';
     begin
         if Shop."Sync Prices" or OnlyUpdatePrice then
             if (not Item.Blocked) and (not Item."Sales Blocked") then
@@ -400,7 +400,7 @@ codeunit 30178 "Shpfy Product Export"
     /// <param name="ItemUnitofMeasure">Parameter of type Record "Item Unit of Measure".</param>
     local procedure FillInProductVariantData(var ShopifyVariant: Record "Shpfy Variant"; Item: Record Item; ItemVariant: Record "Item Variant"; ItemUnitofMeasure: Record "Item Unit of Measure")
     var
-        ItemIsBlockedLbl: Label 'Price is not synchronized becuse the item is blocked/sales blocked.';
+        ItemIsBlockedLbl: Label 'Price is not synchronized because the item is blocked and sales blocked.';
     begin
         if Shop."Sync Prices" or OnlyUpdatePrice then
             if (not Item.Blocked) and (not Item."Sales Blocked") then
