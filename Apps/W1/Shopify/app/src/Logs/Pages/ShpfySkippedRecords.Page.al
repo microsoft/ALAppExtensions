@@ -69,4 +69,27 @@ page 30165 "Shpfy Skipped Records"
             }
         }
     }
+
+    actions
+    {
+        area(Promoted)
+        {
+            actionref(Show_Promoted; Show) { }
+        }
+        area(Processing)
+        {
+            action(Show)
+            {
+                ApplicationArea = All;
+                Caption = 'Show record';
+                Image = View;
+                ToolTip = 'Show the details of the selected record.';
+
+                trigger OnAction()
+                begin
+                    Rec.ShowPage();
+                end;
+            }
+        }
+    }
 }
