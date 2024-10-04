@@ -572,8 +572,15 @@ codeunit 6611 "FS Setup Defaults"
 
         ServiceOrder.Reset();
         ServiceOrder.SetRange("Document Type", ServiceOrder."Document Type"::Order);
+
         FSWorkOrder.Reset();
         FSWorkOrder.SetRange(IntegrateToService, true);
+        FSWorkOrder.SetFilter(SystemStatus, '%1|%2|%3|%4',
+          FSWorkOrder.SystemStatus::Unscheduled,
+          FSWorkOrder.SystemStatus::Scheduled,
+          FSWorkOrder.SystemStatus::InProgress,
+          FSWorkOrder.SystemStatus::Completed
+        );
         if CDSIntegrationMgt.GetCDSCompany(CDSCompany) then
             FSWorkOrder.SetRange(CompanyId, CDSCompany.CompanyId);
 
@@ -628,6 +635,13 @@ codeunit 6611 "FS Setup Defaults"
           IntegrationTableMappingName,
           ServiceOrder.FieldNo("Work Description"),
           FSWorkOrder.FieldNo(WorkOrderSummary),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceOrder.FieldNo(Status),
+          FSWorkOrder.FieldNo(SystemStatus),
           IntegrationFieldMapping.Direction::Bidirectional,
           '', true, false);
 

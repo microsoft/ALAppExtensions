@@ -65,6 +65,7 @@ codeunit 6617 "FS Archived Service Orders Job"
     local procedure UpdateFromServiceHeader(var FSWorkOrder: Record "FS Work Order")
     begin
         ResetFSWorkOrderLineFromServiceOrderLine(FSWorkOrder);
+        MarkPosted(FSWorkOrder);
     end;
 
     local procedure ResetFSWorkOrderLineFromServiceOrderLine(var FSWorkOrder: Record "FS Work Order")
@@ -89,6 +90,12 @@ codeunit 6617 "FS Archived Service Orders Job"
                     if ServiceLineArchive.GetBySystemId(CRMIntegrationRecord."Archived Service Line Id") then
                         UpdateWorkOrderService(ServiceLineArchive, FSWorkOrderService);
             until FSWorkOrderService.Next() = 0;
+    end;
+
+    local procedure MarkPosted(var FSWorkOrder: Record "FS Work Order")
+    begin
+        FSWorkOrder.SystemStatus := FSWorkOrder.SystemStatus::Posted;
+        FSWorkOrder.Modify();
     end;
 
     internal procedure UpdateWorkOrderProduct(ServiceLineArchive: Record "Service Line Archive"; var FSWorkOrderProduct: Record "FS Work Order Product")

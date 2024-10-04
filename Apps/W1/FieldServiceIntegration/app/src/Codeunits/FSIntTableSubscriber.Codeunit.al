@@ -342,6 +342,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         FSWorkOrderProduct: Record "FS Work Order Product";
         FSBookableResourceBooking: Record "FS Bookable Resource Booking";
         JobJournalLine: Record "Job Journal Line";
+        ServiceHeader: Record "Service Header";
         ServiceLine: Record "Service Line";
         ItemUnitOfMeasure: Record "Item Unit of Measure";
         SourceRecordRef: RecordRef;
@@ -364,6 +365,50 @@ codeunit 6610 "FS Int. Table Subscriber"
         if SourceFieldRef.Number() = DestinationFieldRef.Number() then
             if SourceFieldRef.Record().Number() = DestinationFieldRef.Record().Number() then
                 exit;
+
+        if (SourceFieldRef.Record().Number = Database::"Service Header") and
+            (DestinationFieldRef.Record().Number = Database::"FS Work Order") then
+            case DestinationFieldRef.Name() of
+                FSWorkOrder.FieldName(SystemStatus):
+                    begin
+                        SourceFieldRef.Record().SetTable(ServiceHeader);
+                        DestinationFieldRef.Record().SetTable(FSWorkOrder);
+
+                        case ServiceHeader.Status of
+                            ServiceHeader.Status::Pending:
+                                NewValue := FSWorkOrder.SystemStatus::Unscheduled;
+                            else
+                                NewValue := FSWorkOrder.SystemStatus; // default -> no update
+                        end;
+
+                        IsValueFound := true;
+                        NeedsConversion := false;
+                    end;
+            end;
+        if (SourceFieldRef.Record().Number = Database::"FS Work Order") and
+            (DestinationFieldRef.Record().Number = Database::"Service Header") then
+            case DestinationFieldRef.Name() of
+                ServiceHeader.FieldName(Status):
+                    begin
+                        SourceFieldRef.Record().SetTable(FSWorkOrder);
+                        DestinationFieldRef.Record().SetTable(ServiceHeader);
+
+                        case FSWorkOrder.SystemStatus of
+                            FSWorkOrder.SystemStatus::Unscheduled,
+                            FSWorkOrder.SystemStatus::Scheduled:
+                                NewValue := ServiceHeader.Status::Pending;
+                            FSWorkOrder.SystemStatus::InProgress:
+                                NewValue := ServiceHeader.Status::"In Process";
+                            FSWorkOrder.SystemStatus::Completed:
+                                NewValue := ServiceHeader.Status::Finished;
+                            else
+                                NewValue := ServiceHeader.Status; // default -> no update
+                        end;
+
+                        IsValueFound := true;
+                        NeedsConversion := false;
+                    end;
+            end;
 
         if (SourceFieldRef.Record().Number = Database::"Service Line") and
             (DestinationFieldRef.Record().Number = Database::"FS Work Order Product") then
