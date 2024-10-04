@@ -259,6 +259,7 @@ codeunit 30116 "Shpfy Customer Export"
             ShopifyCustomer.Modify();
             CustomerAddress.Modify();
         end;
+
         UpdateMetafields(ShopifyCustomer.Id);
     end;
 

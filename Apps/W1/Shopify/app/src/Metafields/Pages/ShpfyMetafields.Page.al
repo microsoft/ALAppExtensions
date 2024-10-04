@@ -93,6 +93,7 @@ page 30163 "Shpfy Metafields"
         OwnerType: Enum "Shpfy Metafield Owner Type";
     begin
         Shop.Get(ShopCode);
+
         case Metafield.GetOwnerType(ParentTableId) of
             OwnerType::Product, OwnerType::ProductVariant:
                 IsPageEditable := (Shop."Sync Item" = Shop."Sync Item"::"To Shopify") and (Shop."Can Update Shopify Products");
@@ -101,6 +102,7 @@ page 30163 "Shpfy Metafields"
             OwnerType::Company:
                 IsPageEditable := Shop."Can Update Shopify Companies";
         end;
+
         Metafield.SetRange("Parent Table No.", ParentTableId);
         Metafield.SetRange("Owner Id", OwnerId);
 
