@@ -10,7 +10,7 @@ using Microsoft.Service.Document;
 using System.Threading;
 using Microsoft.Service.Archive;
 
-codeunit 6617 "FS Archived Service Orders Job"
+codeunit 6618 "FS Archived Service Orders Job"
 {
     TableNo = "Job Queue Entry";
 
