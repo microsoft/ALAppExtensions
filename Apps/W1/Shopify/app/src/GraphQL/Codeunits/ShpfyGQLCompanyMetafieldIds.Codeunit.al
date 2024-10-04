@@ -1,18 +1,17 @@
 namespace Microsoft.Integration.Shopify;
-/// <summary>
-/// Codeunit Shpfy GQL Customer Metafield Ids (ID 30168) implements Interface Shpfy IGraphQL.
-/// </summary>
-codeunit 30168 "Shpfy GQL CustomerMetafieldIds" implements "Shpfy IGraphQL"
-{
-    Access = Internal;
 
+/// <summary>
+/// Codeunit Shpfy GQL CompanyMetafieldIds (ID 30215) implements Interface Shpfy IGraphQL.
+/// </summary>
+codeunit 30215 "Shpfy GQL CompanyMetafieldIds" implements "Shpfy IGraphQL"
+{
     /// <summary>
     /// GetGraphQL.
     /// </summary>
     /// <returns>Return value of type Text.</returns>
     procedure GetGraphQL(): Text
     begin
-        exit('{"query":"{customer(id: \"gid://shopify/Customer/{{CustomerId}}\") { metafields(first: 50) {edges {node {legacyResourceId updatedAt}}}}}"}');
+        exit('{"query":"{company(id: \"gid://shopify/Company/{{CompanyId}}\") {metafields(first: 50) {edges {node {id namespace ownerType legacyResourceId }}}}}"}');
     end;
 
     /// <summary>

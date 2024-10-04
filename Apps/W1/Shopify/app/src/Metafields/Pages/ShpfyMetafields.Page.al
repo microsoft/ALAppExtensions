@@ -98,6 +98,8 @@ page 30163 "Shpfy Metafields"
                 IsPageEditable := (Shop."Sync Item" = Shop."Sync Item"::"To Shopify") and (Shop."Can Update Shopify Products");
             OwnerType::Customer:
                 IsPageEditable := Shop."Can Update Shopify Customer";
+            OwnerType::Company:
+                IsPageEditable := Shop."Can Update Shopify Companies";
         end;
         Metafield.SetRange("Parent Table No.", ParentTableId);
         Metafield.SetRange("Owner Id", OwnerId);

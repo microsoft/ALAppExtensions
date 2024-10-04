@@ -293,8 +293,10 @@ codeunit 30286 "Shpfy Company API"
     internal procedure UpdateShopifyCompanyFields(var ShopifyCompany: Record "Shpfy Company"; JCompany: JsonObject) Result: Boolean
     var
         CompanyLocation: Record "Shpfy Company Location";
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
         UpdatedAt: DateTime;
         JLocations: JsonArray;
+        JMetafields: JsonArray;
         JItem: JsonToken;
         OutStream: OutStream;
         PhoneNo: Text;
@@ -343,5 +345,7 @@ codeunit 30286 "Shpfy Company API"
                     CompanyLocation."Tax Registration Id" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.taxRegistrationId', MaxStrLen(CompanyLocation."Tax Registration Id")), 1, MaxStrLen(CompanyLocation."Tax Registration Id"));
                     CompanyLocation.Modify();
                 end;
+        if JsonHelper.GetJsonArray(JCompany, JMetafields, 'metafields.edges') then
+            MetafieldAPI.UpdateMetafieldsFromShopify(JMetafields, Database::"Shpfy Company", ShopifyCompany.Id);
     end;
 }
