@@ -8,9 +8,29 @@ codeunit 30313 "Shpfy Metafield Owner Company" implements "Shpfy IMetafield Owne
         exit(Database::"Shpfy Company");
     end;
 
-    procedure RetrieveMetafieldIdsFromShopify(OwnerId: BigInteger): Dictionary of [BigInteger, DateTime]
+    procedure RetrieveMetafieldIdsFromShopify(OwnerId: BigInteger) MetafieldIds: Dictionary of [BigInteger, DateTime]
+    var
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        JsonHelper: Codeunit "Shpfy Json Helper";
+        Parameters: Dictionary of [Text, Text];
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        JResponse: JsonToken;
+        JMetafields: JsonArray;
+        JNode: JsonObject;
+        JItem: JsonToken;
+        Id: BigInteger;
+        UpdatedAt: DateTime;
     begin
-        //not implemented yet
+        Parameters.Add('CompanyId', Format(OwnerId));
+        GraphQLType := GraphQLType::CompanyMetafieldIds;
+        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+        if JsonHelper.GetJsonArray(JResponse, JMetafields, 'data.company.metafields.edges') then
+            foreach JItem in JMetafields do
+                if JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
+                    Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JNode, 'legacyResourceId'));
+                    UpdatedAt := JsonHelper.GetValueAsDateTime(JNode, 'updatedAt');
+                    MetafieldIds.Add(Id, UpdatedAt);
+                end;
     end;
 
     procedure GetShopCode(OwnerId: BigInteger): Code[20]
