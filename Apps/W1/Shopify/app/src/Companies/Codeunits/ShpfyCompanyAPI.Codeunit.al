@@ -24,7 +24,8 @@ codeunit 30286 "Shpfy Company API"
         CompanyContactId: BigInteger;
         CompanyContactRoles: Dictionary of [Text, BigInteger];
     begin
-        GraphQuery := CreateCompanyGraphQLQuery(ShopifyCompany, CompanyLocation);
+        //JZA: Task 5 - External ID
+        GraphQuery := CreateCompanyGraphQLQuery(ShopifyCompany, CompanyLocation, ShopifyCustomer);
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
         if JResponse.SelectToken('$.data.companyCreate.company', JItem) then
             if JItem.IsObject then
@@ -102,13 +103,17 @@ codeunit 30286 "Shpfy Company API"
         exit(true);
     end;
 
-    internal procedure CreateCompanyGraphQLQuery(var ShopifyCompany: Record "Shpfy Company"; CompanyLocation: Record "Shpfy Company Location"): Text
+    internal procedure CreateCompanyGraphQLQuery(var ShopifyCompany: Record "Shpfy Company"; CompanyLocation: Record "Shpfy Company Location"; ShopifyCustomer: Record "Shpfy Customer"): Text
     var
         GraphQuery: TextBuilder;
     begin
         GraphQuery.Append('{"query":"mutation {companyCreate(input: {company: {');
         if ShopifyCompany.Name <> '' then
             AddFieldToGraphQuery(GraphQuery, 'name', ShopifyCompany.Name);
+        //JZA: Task 5 - External ID
+        ShopifyCustomer.CalcFields("Customer No.");
+        if ShopifyCustomer."Customer No." <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'externalId', ShopifyCustomer."Customer No.");
         GraphQuery.Remove(GraphQuery.Length - 1, 2);
         GraphQuery.Append('}, companyLocation: {billingSameAsShipping: true,');
         AddFieldToGraphQuery(GraphQuery, 'name', CompanyLocation.Name);
