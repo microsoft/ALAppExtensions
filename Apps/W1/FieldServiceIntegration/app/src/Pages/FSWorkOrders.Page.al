@@ -5,7 +5,6 @@
 namespace Microsoft.Integration.DynamicsFieldService;
 
 using Microsoft.Integration.Dataverse;
-using Microsoft.Service.Setup;
 using System.Environment.Configuration;
 using Microsoft.Integration.D365Sales;
 using Microsoft.Service.Document;

@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Integration.DynamicsFieldService;
 
-using Microsoft.Service.Document;
 using Microsoft.Service.Setup;
 using Microsoft.Integration.Dataverse;
 
