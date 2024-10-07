@@ -142,9 +142,26 @@ codeunit 30284 "Shpfy Company Export"
 
         CompanyLocation."Phone No." := Customer."Phone No.";
 
+        //JZA: Task 3 Tax ID
+        CompanyLocation."Tax Registration Id" := GetTaxRegistrationIdFromCustomer(Customer);
+
         if HasDiff(ShopifyCompany, TempShopifyCompany) or HasDiff(CompanyLocation, TempCompanyLocation) then begin
             ShopifyCompany."Last Updated by BC" := CurrentDateTime;
             exit(true);
+        end;
+    end;
+
+    //JZA: Task 3 Tax ID
+    local procedure GetTaxRegistrationIdFromCustomer(Customer: Record Customer): Text
+    begin
+        case Shop."Shpfy Comp. Tax Id Mapping" of
+            Shop."Shpfy Comp. Tax Id Mapping"::RegistrationNo:
+                exit(Customer."Registration Number");
+            Shop."Shpfy Comp. Tax Id Mapping"::VATRegistrationNo:
+                exit(Customer."VAT Registration No.");
+            else
+                exit('');
+        //JZA: "Shpfy Comp. Tax Id Mapping" enum is extended publisher is needed
         end;
     end;
 
@@ -186,6 +203,7 @@ codeunit 30284 "Shpfy Company Export"
             exit;
 
         CompanyLocation.SetRange("Company SystemId", ShopifyCompany.SystemId);
+        CompanyLocation.SetRange(Default, true);
         CompanyLocation.FindFirst();
 
         if FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation) then begin

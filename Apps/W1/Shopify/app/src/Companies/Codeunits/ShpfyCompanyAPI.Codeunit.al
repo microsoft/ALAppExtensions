@@ -69,6 +69,11 @@ codeunit 30286 "Shpfy Company API"
         GraphQuery := CreateGraphQueryUpdateLocation(CompanyLocation);
         if GraphQuery <> '' then
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
+
+        //JZA: Task 3 Tax ID
+        GraphQuery := CreateGraphQueryUpdateLocationTaxId(CompanyLocation);
+        if GraphQuery <> '' then
+            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
     end;
 
     internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
@@ -109,6 +114,8 @@ codeunit 30286 "Shpfy Company API"
         AddFieldToGraphQuery(GraphQuery, 'name', CompanyLocation.Name);
         if CompanyLocation."Phone No." <> '' then
             AddFieldToGraphQuery(GraphQuery, 'phone', CompanyLocation."Phone No.");
+        if CompanyLocation."Tax Registration Id" <> '' then
+            AddFieldToGraphQuery(GraphQuery, 'taxRegistrationId', CompanyLocation."Tax Registration Id");
         GraphQuery.Append('shippingAddress: {');
         AddFieldToGraphQuery(GraphQuery, 'address1', CompanyLocation.Address);
         if CompanyLocation."Address 2" <> '' then
@@ -213,6 +220,25 @@ codeunit 30286 "Shpfy Company API"
 
         if HasChange then begin
             GraphQuery.Append('}) {addresses {id}, userErrors {field, message}}}"}');
+            exit(GraphQuery.ToText());
+        end;
+    end;
+
+    internal procedure CreateGraphQueryUpdateLocationTaxId(var CompanyLocation: Record "Shpfy Company Location"): Text
+    var
+        xCompanyLocation: Record "Shpfy Company Location";
+        HasChange: Boolean;
+        GraphQuery: TextBuilder;
+        CompanyLocationIdTxt: Label 'gid://shopify/CompanyLocation/%1', Comment = '%1 = Company Location Id', Locked = true;
+    begin
+        xCompanyLocation.Get(CompanyLocation.Id);
+        GraphQuery.Append('{"query":"mutation {companyLocationCreateTaxRegistration(locationId: \"' + StrSubstNo(CompanyLocationIdTxt, CompanyLocation.Id) + '\", ');
+        if CompanyLocation."Tax Registration Id" <> xCompanyLocation."Tax Registration Id" then
+            HasChange := AddFieldToGraphQuery(GraphQuery, 'taxId', CompanyLocation."Tax Registration Id");
+        GraphQuery.Remove(GraphQuery.Length - 1, 2);
+
+        if HasChange then begin
+            GraphQuery.Append(') {companyLocation {id, name, taxRegistrationId}, userErrors {field, message}}}"}');
             exit(GraphQuery.ToText());
         end;
     end;
