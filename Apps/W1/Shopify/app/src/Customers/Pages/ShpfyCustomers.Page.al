@@ -201,8 +201,8 @@ page 30107 "Shpfy Customers"
 
                 trigger OnAction()
                 var
-                    Metafields: Page "Shpfy Metafields";
                     Shop: Record "Shpfy Shop";
+                    Metafields: Page "Shpfy Metafields";
                 begin
                     Shop.SetRange("Shop Id", Rec."Shop Id");
                     Shop.FindFirst();
