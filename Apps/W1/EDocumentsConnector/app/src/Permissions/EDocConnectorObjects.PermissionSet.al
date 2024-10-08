@@ -4,6 +4,8 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector;
 
+using Microsoft.EServices.EDocumentConnector.Continia;
+
 permissionset 6363 "EDoc. Connector Objects"
 {
     Access = Public;
@@ -16,5 +18,15 @@ permissionset 6363 "EDoc. Connector Objects"
                   codeunit "Pagero Connection" = X,
                   codeunit "Pagero Integration Impl." = X,
                   codeunit "Pagero Processing" = X,
-                  codeunit "Pagero Application Response" = X;
+                  codeunit "Pagero Application Response" = X,
+                  table "Connection Setup" = X,
+                  page "Ext. Connection Setup" = X,
+                  codeunit "Integration Impl." = X,
+                  codeunit "EDocument Processing" = X,
+                  codeunit "API URL Mgt." = X,
+                  codeunit "API Requests" = X,
+                  codeunit "Onboarding Helper" = X,
+                  codeunit "Credential Management" = X,
+                  codeunit "Session Manager" = X,
+                  codeunit "Subscription Mgt." = X;
 }
