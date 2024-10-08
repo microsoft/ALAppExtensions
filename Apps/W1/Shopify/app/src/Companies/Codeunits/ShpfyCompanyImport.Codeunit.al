@@ -68,6 +68,7 @@ codeunit 30301 "Shpfy Company Import"
     begin
         Shop := ShopifyShop;
         CompanyApi.SetShop(Shop);
+        CompanyMapping.SetShop(Shop);
     end;
 
     internal procedure SetShop(ShopCode: Code[20])

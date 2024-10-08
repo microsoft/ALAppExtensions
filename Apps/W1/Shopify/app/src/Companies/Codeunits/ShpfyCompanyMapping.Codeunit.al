@@ -1,7 +1,5 @@
 namespace Microsoft.Integration.Shopify;
 
-using Microsoft.Sales.Customer;
-
 /// <summary>
 /// Codeunit Shpfy Company Mapping (ID 30303).
 /// </summary>
@@ -22,87 +20,10 @@ codeunit 30303 "Shpfy Company Mapping"
 
     internal procedure FindMapping(var ShopifyCompany: Record "Shpfy Company"; var TempShopifyCustomer: Record "Shpfy Customer" temporary): Boolean;
     var
-        Customer: Record Customer;
-        ShopifyCustomer: Record "Shpfy Customer";
-        CompanyLocation: Record "Shpfy Company Location";
-        CustomerMapping: Codeunit "Shpfy Customer Mapping";
-        PhoneFilter: Text;
+        IMapping: Interface "Shpfy ICompany Mapping";
     begin
-        if not IsNullGuid(ShopifyCompany."Customer SystemId") then
-            if Customer.GetBySystemId(ShopifyCompany."Customer SystemId") then
-                exit(true)
-            else begin
-                Clear(ShopifyCompany."Customer SystemId");
-                ShopifyCompany.Modify();
-            end;
-
-        //JZA: Task 3 Tax ID
-        if IsNullGuid(ShopifyCompany."Customer SystemId") then begin
-            if Shop."Company Mapping Type" = Shop."Company Mapping Type"::"By Email/Phone" then begin
-                if TempShopifyCustomer.Email <> '' then begin
-                    Customer.SetFilter("E-Mail", '@' + TempShopifyCustomer.Email);
-                    if Customer.FindFirst() then begin
-                        ShopifyCompany."Customer SystemId" := Customer.SystemId;
-
-                        if not ShopifyCustomer.Get(TempShopifyCustomer.Id) then begin
-                            ShopifyCustomer.Copy(TempShopifyCustomer);
-                            ShopifyCustomer."Customer SystemId" := Customer.SystemId;
-                            ShopifyCustomer.Insert();
-                        end;
-
-                        ShopifyCompany."Main Contact Customer Id" := ShopifyCustomer.Id;
-                        ShopifyCompany.Modify();
-                        exit(true);
-                    end;
-                end;
-                if TempShopifyCustomer."Phone No." <> '' then begin
-                    PhoneFilter := CustomerMapping.CreatePhoneFilter(TempShopifyCustomer."Phone No.");
-                    if PhoneFilter <> '' then begin
-                        Clear(Customer);
-                        Customer.SetFilter("Phone No.", PhoneFilter);
-                        if Customer.FindFirst() then begin
-                            ShopifyCompany."Customer SystemId" := Customer.SystemId;
-
-                            if not ShopifyCustomer.Get(TempShopifyCustomer.Id) then begin
-                                ShopifyCustomer.Copy(TempShopifyCustomer);
-                                ShopifyCustomer."Customer SystemId" := Customer.SystemId;
-                                ShopifyCustomer.Insert();
-                            end;
-
-                            ShopifyCompany."Main Contact Customer Id" := ShopifyCustomer.Id;
-                            ShopifyCompany.Modify();
-                            exit(true);
-                        end;
-                    end;
-                end;
-            end;
-            if Shop."Company Mapping Type" = Shop."Company Mapping Type"::"By Tax Id" then begin
-                if ShopifyCompany."Location Id" <> 0 then begin
-                    CompanyLocation.Get(ShopifyCompany."Location Id");
-                    if CompanyLocation."Tax Registration Id" <> '' then begin
-                        Clear(Customer);
-                        if Shop."Shpfy Comp. Tax Id Mapping" = Shop."Shpfy Comp. Tax Id Mapping"::RegistrationNo then
-                            Customer.SetRange("Registration Number", CompanyLocation."Tax Registration Id");
-                        if Shop."Shpfy Comp. Tax Id Mapping" = Shop."Shpfy Comp. Tax Id Mapping"::VATRegistrationNo then
-                            Customer.SetRange("VAT Registration No.", CompanyLocation."Tax Registration Id");
-                        //JZA: "Shpfy Comp. Tax Id Mapping" enum is extended publisher is needed
-                        if Customer.FindFirst() then begin
-                            ShopifyCompany."Customer SystemId" := Customer.SystemId;
-
-                            if not ShopifyCustomer.Get(TempShopifyCustomer.Id) then begin
-                                ShopifyCustomer.Copy(TempShopifyCustomer);
-                                ShopifyCustomer."Customer SystemId" := Customer.SystemId;
-                                ShopifyCustomer.Insert();
-                            end;
-
-                            ShopifyCompany."Main Contact Customer Id" := ShopifyCustomer.Id;
-                            ShopifyCompany.Modify();
-                            exit(true);
-                        end;
-                    end;
-                end;
-            end;
-        end;
+        IMapping := Shop."Company Mapping Type";
+        exit(IMapping.FindMapping(ShopifyCompany, TempShopifyCustomer));
     end;
 
     internal procedure SetShop(Code: Code[20])

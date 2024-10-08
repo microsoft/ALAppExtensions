@@ -8,5 +8,10 @@ codeunit 30368 "Shpfy VAT Tax Registration No." implements "Shpfy Tax Registrati
     begin
         exit(Customer."VAT Registration No.");
     end;
+
+    procedure SetMappingFiltersForCustomers(var Customer: Record Customer; CompanyLocation: Record "Shpfy Company Location")
+    begin
+        Customer.SetRange("VAT Registration No.", CompanyLocation."Tax Registration Id");
+    end;
 }
 

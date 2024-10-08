@@ -8,5 +8,10 @@ codeunit 30367 "Shpfy Tax Registration No." implements "Shpfy Tax Registration I
     begin
         exit(Customer."Registration Number");
     end;
+
+    procedure SetMappingFiltersForCustomers(var Customer: Record Customer; CompanyLocation: Record "Shpfy Company Location")
+    begin
+        Customer.SetRange("Registration Number", CompanyLocation."Tax Registration Id");
+    end;
 }
 
