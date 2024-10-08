@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 using System.DataAdministration;
+using System.Environment;
 
 codeunit 6398 "Env. Cleanup Subscr."
 {
