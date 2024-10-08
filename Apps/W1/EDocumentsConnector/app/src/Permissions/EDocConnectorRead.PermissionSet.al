@@ -4,11 +4,18 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector;
 
+using Microsoft.EServices.EDocumentConnector.Continia;
+
 permissionset 6362 "EDocConnector - Read"
 {
     Access = Public;
     Assignable = true;
     IncludedPermissionSets = "EDoc. Connector Objects";
 
-    Permissions = tabledata "E-Doc. Ext. Connection Setup" = R;
+    Permissions = tabledata "E-Doc. Ext. Connection Setup" = R,
+                  tabledata "Connection Setup" = R,
+                  tabledata "Participation" = R,
+                  tabledata "Activated Net. Prof." = R,
+                  tabledata "Network Identifier" = R,
+                  tabledata "Network Profile" = R;
 }
