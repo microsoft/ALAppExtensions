@@ -29,7 +29,11 @@ codeunit 139583 "Shpfy Skipped Record Log Sub."
     var
         Uri: Text;
         GraphQlQuery: Text;
-        GraphQLCmdMsg: Label '{"query":"{customers(first:100){pageInfo{endCursor hasNextPage} nodes{ legacyResourceId }}}"}', Locked = true;
+        GetCustomersGQLMsg: Label '{"query":"{customers(first:100){pageInfo{endCursor hasNextPage} nodes{ legacyResourceId }}}"}', Locked = true;
+        GetProductMetafieldsGQLStartMsg: Label '{"query":"{product(id: \"gid://shopify/Product/', Locked = true;
+        GetProductMetafieldsGQLEndMsg: Label '\") { metafields(first: 50) {edges{node{legacyResourceId updatedAt}}}}}"}', Locked = true;
+        GetVariantMetafieldsGQLStartMsg: Label '{"query":"{productVariant(id: \"gid://shopify/ProductVariant/', Locked = true;
+        GetVariantMetafieldGQLEndMsg: Label '\") { metafields(first: 50) {edges{ node{legacyResourceId updatedAt}}}}}"}', Locked = true;
         GraphQLCmdTxt: Label '/graphql.json', Locked = true;
     begin
         case HttpRequestMessage.Method of
@@ -38,13 +42,20 @@ codeunit 139583 "Shpfy Skipped Record Log Sub."
                     Uri := HttpRequestMessage.GetRequestUri();
                     if Uri.EndsWith(GraphQLCmdTxt) then
                         if HttpRequestMessage.Content.ReadAs(GraphQlQuery) then
-                            if GraphQlQuery.Contains(GraphQLCmdMsg) then
-                                HttpResponseMessage := GetResult();
+                            case true of
+                                GraphQlQuery.Contains(GetCustomersGQLMsg):
+                                    HttpResponseMessage := GetCustomersResult();
+                                GraphQlQuery.StartsWith(GetProductMetafieldsGQLStartMsg) and GraphQlQuery.EndsWith(GetProductMetafieldsGQLEndMsg):
+                                    HttpResponseMessage := GetProductMetafieldsEmptyResult();
+                                GraphQlQuery.StartsWith(GetVariantMetafieldsGQLStartMsg) and GraphQlQuery.EndsWith(GetVariantMetafieldGQLEndMsg):
+                                    HttpResponseMessage := GetVariantMetafieldsEmptyResult();
+
+                            end;
                 end;
         end;
     end;
 
-    local procedure GetResult(): HttpResponseMessage
+    local procedure GetCustomersResult(): HttpResponseMessage
     var
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
@@ -53,6 +64,28 @@ codeunit 139583 "Shpfy Skipped Record Log Sub."
         HttpResponseMessage.Content.WriteFrom(Body);
         exit(HttpResponseMessage);
     end;
+
+    local procedure GetProductMetafieldsEmptyResult(): HttpResponseMessage
+    var
+        HttpResponseMessage: HttpResponseMessage;
+        Body: Text;
+    begin
+        Body := '{ "data": { "customers": { "pageInfo": { "hasNextPage": false }, "edges": [] } }, "extensions": { "cost": { "requestedQueryCost": 12, "actualQueryCost": 2, "throttleStatus": { "maximumAvailable": 2000, "currentlyAvailable": 1998, "restoreRate": 100 } } } }';
+        HttpResponseMessage.Content.WriteFrom(Body);
+        exit(HttpResponseMessage);
+    end;
+
+    local procedure GetVariantMetafieldsEmptyResult(): HttpResponseMessage
+    var
+        HttpResponseMessage: HttpResponseMessage;
+        Body: Text;
+    begin
+        Body := '{ "data": { "productVariant": { "metafields": { "edges": [] } } }, "extensions": { "cost": { "requestedQueryCost": 10, "actualQueryCost": 3, "throttleStatus": { "maximumAvailable": 2000, "currentlyAvailable": 1997, "restoreRate": 100 } } } }';
+        HttpResponseMessage.Content.WriteFrom(Body);
+        exit(HttpResponseMessage);
+    end;
+
+
 
     internal procedure SetShopifyCustomerId(Id: BigInteger)
     begin
