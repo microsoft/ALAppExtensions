@@ -17,7 +17,7 @@ page 6395 "Network Id. List"
     UsageCategory = None;
     ShowFilter = false;
     SourceTable = "Network Identifier";
-    SourceTableView = sorting("Scheme ID") order(ascending);
+    SourceTableView = sorting("Scheme Id") order(ascending);
 
     layout
     {
@@ -30,17 +30,17 @@ page 6395 "Network Id. List"
                     ApplicationArea = All;
                     ToolTip = 'The Network Name of the Network Identifier';
                 }
-                field("Scheme ID"; "Scheme ID")
+                field("Scheme Id"; "Scheme Id")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'The scheme ID of the identifier type.';
+                    ToolTip = 'The scheme Id of the identifier type.';
                 }
                 field(Description; Description)
                 {
                     ApplicationArea = All;
                     ToolTip = 'The description of the identifier type.';
                 }
-                field("Identifier Type ID"; "Identifier Type ID")
+                field("Identifier Type Id"; "Identifier Type Id")
                 {
                     ApplicationArea = All;
                     ToolTip = 'The EAS code of the identifier type.';
@@ -53,7 +53,7 @@ page 6395 "Network Id. List"
     {
         area(Processing)
         {
-            action(GetContiniaNetworkIDTypes)
+            action(GetContiniaNetworkIdTypes)
             {
                 ApplicationArea = All;
                 Caption = 'Import Network ID Types';
@@ -61,10 +61,10 @@ page 6395 "Network Id. List"
                 Image = Import;
                 trigger OnAction()
                 var
-                    APIRequests: Codeunit "API Requests";
+                    ApiRequests: Codeunit "Api Requests";
                 begin
-                    APIRequests.GetNetworkIDTypes(Enum::"Network"::peppol);
-                    APIRequests.GetNetworkIDTypes(Enum::"Network"::nemhandel);
+                    ApiRequests.GetNetworkIdTypes(Enum::"E-Delivery Network"::peppol);
+                    ApiRequests.GetNetworkIdTypes(Enum::"E-Delivery Network"::nemhandel);
                 end;
             }
         }

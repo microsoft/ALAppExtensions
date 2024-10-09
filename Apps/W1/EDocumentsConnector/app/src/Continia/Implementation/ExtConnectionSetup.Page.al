@@ -43,15 +43,15 @@ page 6390 "Ext. Connection Setup"
                     trigger OnDrillDown()
                     var
                         Participation: Record "Participation";
-                        APIRequests: Codeunit "API Requests";
+                        ApiRequests: Codeunit "Api Requests";
                         Participations: Page "Participations";
                         ProgressWindow: Dialog;
                     begin
                         ProgressWindow.Open(ProcessingWindowMsg);
                         if Participation.FindSet() then
                             repeat
-                                APIRequests.GetParticipation(Participation);
-                                APIRequests.GetAllParticipationProfiles(Participation);
+                                ApiRequests.GetParticipation(Participation);
+                                ApiRequests.GetAllParticipationProfiles(Participation);
                             until Participation.Next() = 0;
 
                         ProgressWindow.Close();
@@ -132,13 +132,13 @@ page 6390 "Ext. Connection Setup"
                 trigger OnAction()
                 var
                     Participation: Record "Participation";
-                    APIRequests: Codeunit "API Requests";
+                    ApiRequests: Codeunit "Api Requests";
                     ActivationMgt: Codeunit "Subscription Mgt.";
                 begin
                     if Confirm(UnsubscribeQst) then begin
                         if Participation.FindSet() then
                             repeat
-                                APIRequests.DeleteParticipation(Participation);
+                                ApiRequests.DeleteParticipation(Participation);
                             until Participation.Next() = 0;
                         ActivationMgt.Unsubscribe(true);
                         CurrPage.Update(false);

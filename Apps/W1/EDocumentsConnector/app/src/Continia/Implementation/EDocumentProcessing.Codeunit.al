@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 using Microsoft.eServices.EDocument;
-using Microsoft.EServices.EDocumentConnector;
 using System.Utilities;
 using System.Telemetry;
 
@@ -15,7 +14,7 @@ codeunit 6391 "EDocument Processing"
     var
         EdocumentService: Record "E-Document Service";
         EDocumentServiceStatus: Record "E-Document Service Status";
-        APIRequests: Codeunit "API Requests";
+        ApiRequests: Codeunit "Api Requests";
         EDocumentHelper: Codeunit "E-Document Helper";
         FeatureTelemetry: Codeunit "Feature Telemetry";
     begin
@@ -25,10 +24,10 @@ codeunit 6391 "EDocument Processing"
 
         case EDocumentServiceStatus.Status of
             EDocumentServiceStatus.Status::Exported:
-                APIRequests.SendDocument(EDocument, TempBlob, HttpRequest, HttpResponse);
+                ApiRequests.SendDocument(EDocument, TempBlob, HttpRequest, HttpResponse);
             EDocumentServiceStatus.Status::"Sending Error":
                 if EDocument."Document Id" = '' then
-                    APIRequests.SendDocument(EDocument, TempBlob, HttpRequest, HttpResponse);
+                    ApiRequests.SendDocument(EDocument, TempBlob, HttpRequest, HttpResponse);
         end;
 
         FeatureTelemetry.LogUptake('', ExternalServiceTok, Enum::"Feature Uptake Status"::Used);
@@ -36,22 +35,22 @@ codeunit 6391 "EDocument Processing"
 
     internal procedure GetTechnicalResponse(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     var
-        APIRequests: Codeunit "API Requests";
+        ApiRequests: Codeunit "Api Requests";
     begin
-        APIRequests.SetSupressError(true);
+        ApiRequests.SetSupressError(true);
 
-        exit(APIRequests.GetTechnicalResponse(EDocument, HttpRequest, HttpResponse));
+        exit(ApiRequests.GetTechnicalResponse(EDocument, HttpRequest, HttpResponse));
     end;
 
     internal procedure GetLastDocumentBusinessResponses(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     var
-        APIRequests: Codeunit "API Requests";
-        DocumentGUID: Guid;
+        ApiRequests: Codeunit "Api Requests";
+        DocumentGuid: Guid;
     begin
-        Evaluate(DocumentGUID, EDocument."Document Id");
+        Evaluate(DocumentGuid, EDocument."Document Id");
 
-        APIRequests.SetSupressError(true);
-        if not APIRequests.GetBusinessResponses(DocumentGUID, HttpRequest, HttpResponse) then
+        ApiRequests.SetSupressError(true);
+        if not ApiRequests.GetBusinessResponses(DocumentGuid, HttpRequest, HttpResponse) then
             exit(false);
 
         exit(IsDocumentApproved(HttpResponse));
@@ -168,7 +167,7 @@ codeunit 6391 "EDocument Processing"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Import", 'OnAfterInsertImportedEdocument', '', false, false)]
     local procedure OnAfterInsertImportedEdocument(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocCount: Integer; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
     var
-        APIRequests: Codeunit "API Requests";
+        ApiRequests: Codeunit "Api Requests";
         EDocumentLogHelper: Codeunit "E-Document Log Helper";
         ContentData: Text;
         XMLFileToken: Text;
@@ -200,13 +199,13 @@ codeunit 6391 "EDocument Processing"
         XMLFileToken := XMLFileTokenNode.AsXmlElement().InnerText;
 
         // Download XML file from XMLFileToken and save to TempBlob
-        APIRequests.DownloadFileFromURL(XMLFileToken, TempBlob);
+        ApiRequests.DownloadFileFromUrl(XMLFileToken, TempBlob);
 
         EDocumentLogHelper.InsertLog(EDocument, EDocumentService, TempBlob, "E-Document Service Status"::Imported);
 
         // Mark document as processed in Continia Online
         Evaluate(DocumentId, EDocument."Document Id");
-        APIRequests.MarkDocumentAsProcessed(DocumentId);
+        ApiRequests.MarkDocumentAsProcessed(DocumentId);
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"E-Doc. Import", 'OnBeforeInsertImportedEdocument', '', false, false)]
@@ -232,7 +231,7 @@ codeunit 6391 "EDocument Processing"
         DocumentXMLPathLbl: Label '/documents/document[%1]', Locked = true;
         CurrentEDocumentNode: XmlNode;
         ParticipationProfileIdNode: XmlNode;
-        ParticipationNetworkProfileID: Guid;
+        ParticipationNetworkProfileId: Guid;
     begin
         HttpResponse.Content.ReadAs(ContentData);
 
@@ -243,14 +242,14 @@ codeunit 6391 "EDocument Processing"
             DocumentResponse.SelectSingleNode(StrSubstNo(DocumentXMLPathLbl, EDocument."Index In Batch"), CurrentEDocumentNode);
 
         CurrentEDocumentNode.SelectSingleNode('participation_profile_id', ParticipationProfileIdNode);
-        Evaluate(ParticipationNetworkProfileID, ParticipationProfileIdNode.AsXmlElement().InnerText);
+        Evaluate(ParticipationNetworkProfileId, ParticipationProfileIdNode.AsXmlElement().InnerText);
 
-        ParticipationNetworkProfile.SetCurrentKey("CDN GUID");
-        ParticipationNetworkProfile.SetRange("CDN GUID", ParticipationNetworkProfileID);
+        ParticipationNetworkProfile.SetCurrentKey(Id);
+        ParticipationNetworkProfile.SetRange(Id, ParticipationNetworkProfileId);
         if not ParticipationNetworkProfile.FindFirst() then
             exit(false);
 
-        NetworkProfile.Get(ParticipationNetworkProfile."Network Profile ID");
+        NetworkProfile.Get(ParticipationNetworkProfile."Network Profile Id");
         if not ProfileSupportedByEDocumentService(EDocumentService, NetworkProfile) then
             exit(false);
         exit(true);

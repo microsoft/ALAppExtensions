@@ -16,7 +16,6 @@ page 6396 "Network Profile List"
     PageType = List;
     UsageCategory = None;
     SourceTable = "Network Profile";
-    SourceTableView = sorting(Description) order(ascending);
 
     layout
     {
@@ -60,10 +59,10 @@ page 6396 "Network Profile List"
                 Image = Import;
                 trigger OnAction()
                 var
-                    APIRequests: Codeunit "API Requests";
+                    ApiRequests: Codeunit "Api Requests";
                 begin
-                    APIRequests.GetNetworkProfiles(Enum::"Network"::peppol);
-                    APIRequests.GetNetworkProfiles(Enum::"Network"::nemhandel);
+                    ApiRequests.GetNetworkProfiles(Enum::"E-Delivery Network"::peppol);
+                    ApiRequests.GetNetworkProfiles(Enum::"E-Delivery Network"::nemhandel);
                 end;
             }
         }

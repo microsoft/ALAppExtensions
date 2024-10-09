@@ -5,10 +5,6 @@
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 
 using System.Email;
-using System.Utilities;
-using System.Reflection;
-using Microsoft.Purchases.Vendor;
-using Microsoft.Foundation.Company;
 using Microsoft.Foundation.Address;
 
 page 6393 "Onboarding Wizard"
@@ -668,8 +664,8 @@ page 6393 "Onboarding Wizard"
             RunScenario::General:
                 begin
                     if not SkipCompanyInformation then begin
-                        if TempCompanyContact."Partner ID" = '' then
-                            TempCompanyContact."Partner ID" := PartnerID;
+                        if TempCompanyContact."Partner Id" = '' then
+                            TempCompanyContact."Partner Id" := PartnerId;
                         OnboardingHelper.CreateSubscription(TempCompanyContact);
                     end;
                     RegisterParticipation();
@@ -747,7 +743,7 @@ page 6393 "Onboarding Wizard"
     local procedure OnBeforeMoveStep(Backwards: Boolean; CurrentStepSkipped: Boolean)
     begin
         if (Step = Step::PartnerDetails) and not Backwards and not CurrentStepSkipped then
-            PartnerID := OnboardingHelper.InitializeClient(PartnerUserName, PartnerPassword);
+            PartnerId := OnboardingHelper.InitializeClient(PartnerUserName, PartnerPassword);
 
         if (Step = Step::NetworkDetails) then
             if not Backwards and not CurrentStepSkipped then begin
@@ -776,7 +772,7 @@ page 6393 "Onboarding Wizard"
         if Step = Step::NetworkDetails then begin
             ParticipationNetwork := TempParticipation.Network;
             ParticipationIdentifierValue := TempParticipation."Identifier Value";
-            if IsNullGuid(TempParticipation."Identifier Type ID") then
+            if IsNullGuid(TempParticipation."Identifier Type Id") then
                 OnboardingHelper.SetDefaultIdentifierData(TempParticipation, IdentifierTypeDesc);
         end;
 
@@ -1016,14 +1012,14 @@ page 6393 "Onboarding Wizard"
 
     local procedure ValidateIdentifierData()
     begin
-        TempParticipation.TestField("Identifier Type ID");
+        TempParticipation.TestField("Identifier Type Id");
         TempParticipation.TestField("Identifier Value");
     end;
 
     local procedure ValidateParticipationProfiles()
     var
         TempActivatedProfiles: Record "Activated Net. Prof." temporary;
-        APIRequests: Codeunit "API Requests";
+        ApiRequests: Codeunit "Api Requests";
     begin
         CurrPage.SelectProfilesPeppol.Page.GetProfileSelection(TempActivatedProfiles);
 
@@ -1031,7 +1027,7 @@ page 6393 "Onboarding Wizard"
             Error(MustChooseAProfileErr);
 
         // Check if the profiles are not already registered, the function will thrown an error if any profiles are already registered
-        APIRequests.CheckProfilesNotRegistered(TempActivatedProfiles, TempParticipation);
+        ApiRequests.CheckProfilesNotRegistered(TempActivatedProfiles, TempParticipation);
     end;
 
     procedure SetRunScenario(ParamRunScenario: Enum "Wizard Scenario")
@@ -1117,7 +1113,7 @@ page 6393 "Onboarding Wizard"
         LicenseTermsAccepted: Boolean;
         ReceiveInvoiceCreditMemo, ReceiveInvoiceResponse, ReceiveOrder, ReceiveOrderResponse, SendInvoiceCreditMemo, SendInvoiceResponse, SendOrder, SendOrderResponse : Boolean;
         SkipCompanyInformation: Boolean;
-        ParticipationNetwork: Enum "Network";
+        ParticipationNetwork: Enum "E-Delivery Network";
         RunScenario: Enum "Wizard Scenario";
         LastStepsForward: Integer;
         EditSubscriptionPageCaptionLbl: Label 'Company Contact Information';
@@ -1132,6 +1128,6 @@ page 6393 "Onboarding Wizard"
         PartnerPassword: Text;
         [NonDebuggable]
         PartnerUserName: Text;
-        PartnerID: Code[20];
+        PartnerId: Code[20];
 
 }

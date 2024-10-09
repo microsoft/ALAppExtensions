@@ -5,66 +5,66 @@
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 using System.Environment;
 
-codeunit 6392 "API URL Mgt."
+codeunit 6392 "Api Url Mgt."
 {
     Access = Internal;
-    internal procedure NetworkProfilesURL(Network: Enum "Network"; Page: Integer; PageSize: Integer): Text
+    internal procedure NetworkProfilesUrl(Network: Enum "E-Delivery Network"; Page: Integer; PageSize: Integer): Text
     var
         ProfilesUrlLbl: Label '%1/networks/%2/profiles.xml?page=%3&page_size=%4', Locked = true;
     begin
-        exit(StrSubstNo(ProfilesUrlLbl, CDNBaseURL(), GetNetworkNameAsText(Network), Page, PageSize));
+        exit(StrSubstNo(ProfilesUrlLbl, CdnBaseUrl(), GetNetworkNameAsText(Network), Page, PageSize));
     end;
 
-    internal procedure NetworkIdentifiersURL(Network: Enum "Network"; Page: Integer; PageSize: Integer): Text
+    internal procedure NetworkIdentifiersUrl(Network: Enum "E-Delivery Network"; Page: Integer; PageSize: Integer): Text
     var
         IdentifiersUrlLbl: Label '%1/networks/%2/id_types.xml?page=%3&page_size=%4', Locked = true;
     begin
-        exit(StrSubstNo(IdentifiersUrlLbl, CDNBaseURL(), GetNetworkNameAsText(Network), Page, PageSize));
+        exit(StrSubstNo(IdentifiersUrlLbl, CdnBaseUrl(), GetNetworkNameAsText(Network), Page, PageSize));
     end;
 
-    internal procedure ParticipationURL(Network: Enum "Network"): Text
+    internal procedure ParticipationUrl(Network: Enum "E-Delivery Network"): Text
     var
         ParticipationUrlLbl: Label '%1/networks/%2/participations.xml', Locked = true;
     begin
-        exit(StrSubstNo(ParticipationUrlLbl, CDNBaseURL(), GetNetworkNameAsText(Network)))
+        exit(StrSubstNo(ParticipationUrlLbl, CdnBaseUrl(), GetNetworkNameAsText(Network)))
     end;
 
-    internal procedure SingleParticipationURL(Network: Enum "Network"; ParticipationGUID: Guid): Text
+    internal procedure SingleParticipationUrl(Network: Enum "E-Delivery Network"; ParticipationGuid: Guid): Text
     var
         SingleParticipationUrlLbl: Label '%1/networks/%2/participations/%3.xml', Locked = true;
     begin
-        exit(StrSubstNo(SingleParticipationUrlLbl, CDNBaseURL(), GetNetworkNameAsText(Network), GetGUIDAsText(ParticipationGUID)))
+        exit(StrSubstNo(SingleParticipationUrlLbl, CdnBaseUrl(), GetNetworkNameAsText(Network), GetGuidAsText(ParticipationGuid)))
     end;
 
-    internal procedure ParticipationProfilesURL(Network: Enum "Network"; ParticipationGUID: Guid): Text
+    internal procedure ParticipationProfilesUrl(Network: Enum "E-Delivery Network"; ParticipationGuid: Guid): Text
     var
         ParticipationProfilesUrlLbl: Label '%1/networks/%2/participations/%3/profiles.xml', Locked = true;
     begin
-        exit(StrSubstNo(ParticipationProfilesUrlLbl, CDNBaseURL(), GetNetworkNameAsText(Network), GetGUIDAsText(ParticipationGUID)))
+        exit(StrSubstNo(ParticipationProfilesUrlLbl, CdnBaseUrl(), GetNetworkNameAsText(Network), GetGuidAsText(ParticipationGuid)))
     end;
 
-    internal procedure ParticipationProfilesURL(Network: Enum "Network"; ParticipationGUID: Guid; Page: Integer; PageSize: Integer): Text
+    internal procedure ParticipationProfilesUrl(Network: Enum "E-Delivery Network"; ParticipationGuid: Guid; Page: Integer; PageSize: Integer): Text
     var
         ParticipationProfilesUrlPagesLbl: Label '%1/networks/%2/participations/%3/profiles.xml?page=%4&page_size=%5', Locked = true;
     begin
-        exit(StrSubstNo(ParticipationProfilesUrlPagesLbl, CDNBaseURL(), GetNetworkNameAsText(Network), GetGUIDAsText(ParticipationGUID), Page, PageSize))
+        exit(StrSubstNo(ParticipationProfilesUrlPagesLbl, CdnBaseUrl(), GetNetworkNameAsText(Network), GetGuidAsText(ParticipationGuid), Page, PageSize))
     end;
 
-    internal procedure SingleParticipationProfileURL(Network: Enum "Network"; ParticipationGUID: Guid; ProfileGUID: Guid): Text
+    internal procedure SingleParticipationProfileUrl(Network: Enum "E-Delivery Network"; ParticipationGuid: Guid; ProfileGuid: Guid): Text
     var
         SingleParticipationProfileUrlLbl: Label '%1/networks/%2/participations/%3/profiles/%4.xml', Locked = true;
     begin
-        exit(StrSubstNo(SingleParticipationProfileUrlLbl, CDNBaseURL(), GetNetworkNameAsText(Network), GetGUIDAsText(ParticipationGUID), GetGUIDAsText(ProfileGUID)))
+        exit(StrSubstNo(SingleParticipationProfileUrlLbl, CdnBaseUrl(), GetNetworkNameAsText(Network), GetGuidAsText(ParticipationGuid), GetGuidAsText(ProfileGuid)))
     end;
 
-    internal procedure ParticipationLookupURL(Network: Enum "Network"; IdType: Text[4]; IdValue: Text[50]): Text
+    internal procedure ParticipationLookupUrl(Network: Enum "E-Delivery Network"; IdType: Text[4]; IdValue: Text[50]): Text
     var
         ParticipationLookupUrlLbl: Label '%1/networks/%2/participation_lookups.xml?id_type=%3&id_value=%4', Locked = true;
     begin
-        exit(StrSubstNo(ParticipationLookupUrlLbl, CDNBaseURL(), GetNetworkNameAsText(Network), IdType, IdValue))
+        exit(StrSubstNo(ParticipationLookupUrlLbl, CdnBaseUrl(), GetNetworkNameAsText(Network), IdType, IdValue))
     end;
 
-    internal procedure DocumentsForCompanyURL(CompanyGUID: Guid; Page: Integer; PageSize: Integer; Incoming: Boolean): Text
+    internal procedure DocumentsForCompanyUrl(CompanyGuid: Guid; Page: Integer; PageSize: Integer; Incoming: Boolean): Text
     var
         DirectionQueryTxt: Text;
         DocumentsForCompanyUrlLbl: Label '%1/documents.xml?business_central_company_code=%2&page=%3&page_size=%4&direction=%5', Locked = true;
@@ -73,35 +73,35 @@ codeunit 6392 "API URL Mgt."
             DirectionQueryTxt := 'IncomingEnum'
         else
             DirectionQueryTxt := 'OutgoingEnum';
-        exit(StrSubstNo(DocumentsForCompanyUrlLbl, CDNBaseURL(), GetGUIDAsText(CompanyGUID), Page, PageSize, DirectionQueryTxt))
+        exit(StrSubstNo(DocumentsForCompanyUrlLbl, CdnBaseUrl(), GetGuidAsText(CompanyGuid), Page, PageSize, DirectionQueryTxt))
     end;
 
-    internal procedure DocumentActionUrl(DocumentGUID: Guid): Text
+    internal procedure DocumentActionUrl(DocumentGuid: Guid): Text
     var
         DocumentActionUrlLbl: Label '%1/documents/%2/action.xml', Locked = true;
     begin
-        exit(StrSubstNo(DocumentActionUrlLbl, CDNBaseURL(), GetGUIDAsText(DocumentGUID)))
+        exit(StrSubstNo(DocumentActionUrlLbl, CdnBaseUrl(), GetGuidAsText(DocumentGuid)))
     end;
 
-    internal procedure PostDocumentsUrl(CompanyGUID: Guid): Text
+    internal procedure PostDocumentsUrl(CompanyGuid: Guid): Text
     var
         PostDocumentsUrlLbl: Label '%1/documents.xml?business_central_company_code=%2', Locked = true;
     begin
-        exit(StrSubstNo(PostDocumentsUrlLbl, CDNBaseURL(), GetGUIDAsText(CompanyGUID)))
+        exit(StrSubstNo(PostDocumentsUrlLbl, CdnBaseUrl(), GetGuidAsText(CompanyGuid)))
     end;
 
-    internal procedure TechnicalResponseURL(DocumentGUID: Guid): Text
+    internal procedure TechnicalResponseUrl(DocumentGuid: Guid): Text
     var
         TechnicalResponseUrlLbl: Label '%1/documents/%2/technical_response.xml', Locked = true;
     begin
-        exit(StrSubstNo(TechnicalResponseUrlLbl, CDNBaseURL(), GetGUIDAsText(DocumentGUID)))
+        exit(StrSubstNo(TechnicalResponseUrlLbl, CdnBaseUrl(), GetGuidAsText(DocumentGuid)))
     end;
 
-    internal procedure BusinessResponseURL(DocumentGUID: Guid): Text
+    internal procedure BusinessResponseUrl(DocumentGuid: Guid): Text
     var
         BusinessResponseUrlLbl: Label '%1/documents/%2/business_responses.xml', Locked = true;
     begin
-        exit(StrSubstNo(BusinessResponseUrlLbl, CDNBaseURL(), GetGUIDAsText(DocumentGUID)))
+        exit(StrSubstNo(BusinessResponseUrlLbl, CdnBaseUrl(), GetGuidAsText(DocumentGuid)))
     end;
 
     internal procedure PartnerAccessTokenUrl(): Text
@@ -160,27 +160,27 @@ codeunit 6392 "API URL Mgt."
         exit(StrSubstNo(GetUpdateCompanyInfoUrlLbl, COBaseUrl()));
     end;
 
-    local procedure COBaseUrl() URL: Text
+    local procedure COBaseUrl() Url: Text
     var
         Handled: Boolean;
     begin
-        OnGetCOBaseUrl(URL, Handled);
+        OnGetCOBaseUrl(Url, Handled);
         if Handled then
-            exit(URL);
+            exit(Url);
 
         exit('https://auth.continiaonline.com/api/v1');
     end;
 
 
-    internal procedure CDNBaseURL() URL: Text
+    internal procedure CdnBaseUrl() Url: Text
     var
         EnvironmentInformation: Codeunit "Environment Information";
         Handled: Boolean;
         LocalizedBaseUrl: Text;
     begin
-        OnGetCDNBaseUrl(URL, Handled);
+        OnGetCdnBaseUrl(Url, Handled);
         if Handled then
-            exit(URL);
+            exit(Url);
 
         LocalizedBaseUrl := GetBaseUrlForLocalization(EnvironmentInformation.GetApplicationFamily());
         if LocalizedBaseUrl <> '' then
@@ -202,12 +202,12 @@ codeunit 6392 "API URL Mgt."
         end;
     end;
 
-    internal procedure GetNetworkNameAsText(NetworkName: Enum "Network"): Text
+    internal procedure GetNetworkNameAsText(NetworkName: Enum "E-Delivery Network"): Text
     begin
         exit(NetworkName.Names.Get(NetworkName.Ordinals.IndexOf(NetworkName.AsInteger())));
     end;
 
-    internal procedure GetGUIDAsText(Value: Guid): Text[36]
+    internal procedure GetGuidAsText(Value: Guid): Text[36]
     begin
         exit(CopyStr(DelChr(Value, '<>', '{}'), 1, 36))
     end;
@@ -219,7 +219,7 @@ codeunit 6392 "API URL Mgt."
     end;
 
     [IntegrationEvent(false, false)]
-    local procedure OnGetCDNBaseUrl(var ReturnUrl: Text; var Handled: Boolean)
+    local procedure OnGetCdnBaseUrl(var ReturnUrl: Text; var Handled: Boolean)
     begin
     end;
 

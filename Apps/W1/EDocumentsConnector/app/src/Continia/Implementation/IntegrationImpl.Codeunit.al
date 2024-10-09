@@ -41,20 +41,20 @@ codeunit 6390 "Integration Impl." implements "E-Document Integration"
 
     procedure Cancel(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     var
-        APIRequests: Codeunit "API Requests";
-        DocumentCDNGUID: Guid;
+        ApiRequests: Codeunit "Api Requests";
+        DocumentId: Guid;
     begin
-        Evaluate(DocumentCDNGUID, EDocument."Document Id");
-        APIRequests.CancelDocument(DocumentCDNGUID, HttpRequest, HttpResponse);
+        Evaluate(DocumentId, EDocument."Document Id");
+        ApiRequests.CancelDocument(DocumentId, HttpRequest, HttpResponse);
     end;
 
     procedure ReceiveDocument(var TempBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
     var
-        APIRequests: Codeunit "API Requests";
+        ApiRequests: Codeunit "Api Requests";
         OutStream: OutStream;
         ContentData: Text;
     begin
-        if not APIRequests.GetDocumentsForCompany(HttpRequest, HttpResponse) then
+        if not ApiRequests.GetDocumentsForCompany(HttpRequest, HttpResponse) then
             exit;
 
         HttpResponse.Content.ReadAs(ContentData);

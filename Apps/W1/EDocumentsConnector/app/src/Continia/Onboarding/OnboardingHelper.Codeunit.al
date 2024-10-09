@@ -59,30 +59,30 @@ codeunit 6394 "Onboarding Helper"
         exit(CredentialManagement.IsClientCredentialsValid());
     end;
 
-    internal procedure InitializeClient(PartnerUserName: Text; PartnerPassword: SecretText) PartnerID: Code[20]
+    internal procedure InitializeClient(PartnerUserName: Text; PartnerPassword: SecretText) PartnerId: Code[20]
     var
         ActivationMgt: Codeunit "Subscription Mgt.";
     begin
         ShowProgressWindow(SendingDataProgressMsg);
-        ActivationMgt.InitializeContiniaClient(PartnerUserName, PartnerPassword, PartnerID);
+        ActivationMgt.InitializeContiniaClient(PartnerUserName, PartnerPassword, PartnerId);
         AreClientCredentialsValid();
         CloseProgressWindow();
     end;
 
     internal procedure GetNetworkMetadata(ShowProgress: Boolean)
     var
-        APIRequests: Codeunit "API Requests";
+        ApiRequests: Codeunit "Api Requests";
     begin
         if MetaDataLoaded then
             exit;
         if ShowProgress then
             ShowProgressWindow(UpdatingDataProgressMsg);
 
-        APIRequests.GetNetworkIDTypes(Enum::"Network"::peppol);
-        APIRequests.GetNetworkIDTypes(Enum::"Network"::nemhandel);
+        ApiRequests.GetNetworkIdTypes(Enum::"E-Delivery Network"::peppol);
+        ApiRequests.GetNetworkIdTypes(Enum::"E-Delivery Network"::nemhandel);
 
-        APIRequests.GetNetworkProfiles(Enum::"Network"::peppol);
-        APIRequests.GetNetworkProfiles(Enum::"Network"::nemhandel);
+        ApiRequests.GetNetworkProfiles(Enum::"E-Delivery Network"::peppol);
+        ApiRequests.GetNetworkProfiles(Enum::"E-Delivery Network"::nemhandel);
 
         if ShowProgress then
             CloseProgressWindow();
@@ -118,7 +118,7 @@ codeunit 6394 "Onboarding Helper"
     var
         CompanyInformation: Record "Company Information";
         NetworkIdentifier: Record "Network Identifier";
-        EmptyGUID: Guid;
+        EmptyGuid: Guid;
     begin
         CompanyInformation.Get();
 
@@ -130,11 +130,11 @@ codeunit 6394 "Onboarding Helper"
             NetworkIdentifier.SetRange(Default, true);
 
         if NetworkIdentifier.FindFirst() then begin
-            TempParticipation."Identifier Type ID" := NetworkIdentifier."CDN GUID";
+            TempParticipation."Identifier Type Id" := NetworkIdentifier.Id;
             TempParticipation."Identifier Value" := CompanyInformation."VAT Registration No.";
-            IdentifierTypeDesc := NetworkIdentifier."Scheme ID";
+            IdentifierTypeDesc := NetworkIdentifier."Scheme Id";
         end else begin
-            TempParticipation."Identifier Type ID" := EmptyGUID;
+            TempParticipation."Identifier Type Id" := EmptyGuid;
             TempParticipation."Identifier Value" := '';
             IdentifierTypeDesc := '';
         end;
@@ -147,10 +147,10 @@ codeunit 6394 "Onboarding Helper"
         if IdentifierTypeDesc <> '' then begin
             NetworkIdentifier.SetRange(Network, TempParticipation.Network);
             NetworkIdentifier.SetRange(Enabled, true);
-            NetworkIdentifier.SetRange("Scheme ID", IdentifierTypeDesc);
+            NetworkIdentifier.SetRange("Scheme Id", IdentifierTypeDesc);
             NetworkIdentifier.FindFirst();
-            TempParticipation."Identifier Type ID" := NetworkIdentifier."CDN GUID";
-            IdentifierTypeDesc := NetworkIdentifier."Scheme ID";
+            TempParticipation."Identifier Type Id" := NetworkIdentifier.Id;
+            IdentifierTypeDesc := NetworkIdentifier."Scheme Id";
         end;
     end;
 
@@ -167,8 +167,8 @@ codeunit 6394 "Onboarding Helper"
 
         if NetworkIdentifierList.RunModal() = Action::LookupOK then begin
             NetworkIdentifierList.GetRecord(NetworkIdentifier);
-            IdentifierTypeDesc := NetworkIdentifier."Scheme ID";
-            TempParticipation."Identifier Type ID" := NetworkIdentifier."CDN GUID";
+            IdentifierTypeDesc := NetworkIdentifier."Scheme Id";
+            TempParticipation."Identifier Type Id" := NetworkIdentifier.Id;
             exit(true);
         end;
     end;
@@ -178,7 +178,7 @@ codeunit 6394 "Onboarding Helper"
         NetworkIdentifier: Record "Network Identifier";
         RegEx: Codeunit Regex;
     begin
-        if NetworkIdentifier.Get(TempParticipation."Identifier Type ID") then
+        if NetworkIdentifier.Get(TempParticipation."Identifier Type Id") then
             if not RegEx.IsMatch(TempParticipation."Identifier Value", NetworkIdentifier."Validation Rule") then
                 Error(InvalidIdentifierValueErr, TempParticipation."Identifier Value", NetworkIdentifier."Validation Rule");
     end;
@@ -188,7 +188,7 @@ codeunit 6394 "Onboarding Helper"
         ActivatedProfiles: Record "Activated Net. Prof.";
     begin
         ActivatedProfiles.SetRange(Network, TempParticipation.Network);
-        ActivatedProfiles.SetRange("Identifier Type ID", TempParticipation."Identifier Type ID");
+        ActivatedProfiles.SetRange("Identifier Type Id", TempParticipation."Identifier Type Id");
         ActivatedProfiles.SetRange("Identifier Value", TempParticipation."Identifier Value");
         if ActivatedProfiles.FindSet() then
             repeat
@@ -209,7 +209,7 @@ codeunit 6394 "Onboarding Helper"
         if NetworkProfile.FindSet() then
             repeat
                 TempActivatedProfiles.Init();
-                TempActivatedProfiles."Network Profile ID" := NetworkProfile."CDN GUID";
+                TempActivatedProfiles."Network Profile Id" := NetworkProfile.Id;
                 TempActivatedProfiles.Insert();
             until NetworkProfile.Next() = 0;
     end;
@@ -271,11 +271,11 @@ codeunit 6394 "Onboarding Helper"
 
     internal procedure UpdateParticipation(var TempParticipation: Record "Participation" temporary)
     var
-        APIRequests: Codeunit "API Requests";
+        ApiRequests: Codeunit "Api Requests";
     begin
         if IsParticipationChanged(TempParticipation) then begin
             ShowProgressWindow(SendingDataProgressMsg);
-            APIRequests.PatchParticipation(TempParticipation);
+            ApiRequests.PatchParticipation(TempParticipation);
             CloseProgressWindow();
         end;
     end;
@@ -283,34 +283,34 @@ codeunit 6394 "Onboarding Helper"
     internal procedure UpdateProfiles(var TempParticipation: Record "Participation" temporary; var TempActivatedProfiles: Record "Activated Net. Prof." temporary)
     var
         ActivatedProfiles: Record "Activated Net. Prof.";
-        APIRequests: Codeunit "API Requests";
+        ApiRequests: Codeunit "Api Requests";
     begin
         ShowProgressWindow(SendingDataProgressMsg);
         if TempActivatedProfiles.FindSet() then
             repeat
-                if IsNullGuid(TempActivatedProfiles."Identifier Type ID") and (TempActivatedProfiles."Identifier Value" = '') then
-                    TempActivatedProfiles.Rename(TempParticipation.Network, TempParticipation."Identifier Type ID", TempParticipation."Identifier Value", TempActivatedProfiles."Network Profile ID");
+                if IsNullGuid(TempActivatedProfiles."Identifier Type Id") and (TempActivatedProfiles."Identifier Value" = '') then
+                    TempActivatedProfiles.Rename(TempParticipation.Network, TempParticipation."Identifier Type Id", TempParticipation."Identifier Value", TempActivatedProfiles."Network Profile Id");
                 if ActivatedProfiles.Get(TempActivatedProfiles.RecordId) then begin
                     if (TempActivatedProfiles."Profile Direction" <> ActivatedProfiles."Profile Direction") or (TempActivatedProfiles.Disabled <> ActivatedProfiles.Disabled) then begin
-                        APIRequests.PatchParticipationProfiles(TempActivatedProfiles, TempParticipation."CDN GUID");
+                        ApiRequests.PatchParticipationProfiles(TempActivatedProfiles, TempParticipation.Id);
                         ActivatedProfiles.TransferFields(TempActivatedProfiles, false);
                         ActivatedProfiles.Modify();
                     end;
                 end else begin
-                    APIRequests.PostParticipationProfile(TempActivatedProfiles, TempParticipation."CDN GUID");
+                    ApiRequests.PostParticipationProfile(TempActivatedProfiles, TempParticipation.Id);
                     ActivatedProfiles.TransferFields(TempActivatedProfiles, true);
                     ActivatedProfiles.Insert();
                 end;
 
             until TempActivatedProfiles.Next() = 0;
 
-        ActivatedProfiles.SetRange("Identifier Type ID", TempParticipation."Identifier Type ID");
+        ActivatedProfiles.SetRange("Identifier Type Id", TempParticipation."Identifier Type Id");
         ActivatedProfiles.SetRange("Identifier Value", TempParticipation."Identifier Value");
         ActivatedProfiles.SetRange(Network, TempParticipation.Network);
         if ActivatedProfiles.FindSet() then
             repeat
                 if not TempActivatedProfiles.Get(ActivatedProfiles.RecordId) then
-                    APIRequests.DeleteParticipationProfiles(ActivatedProfiles, TempParticipation."CDN GUID");
+                    ApiRequests.DeleteParticipationProfiles(ActivatedProfiles, TempParticipation.Id);
             until ActivatedProfiles.Next() = 0;
         CloseProgressWindow();
     end;
@@ -319,23 +319,23 @@ codeunit 6394 "Onboarding Helper"
     var
         CompanyInfo: Record "Company Information";
         Participation: Record "Participation";
-        APIRequests: Codeunit "API Requests";
-        ParticipationGUID: Guid;
+        ApiRequests: Codeunit "Api Requests";
+        ParticipationGuid: Guid;
     begin
         ShowProgressWindow(SendingDataProgressMsg);
-        ParticipationGUID := APIRequests.PostParticipation(TempParticipation);
-        Participation.SetRange("CDN GUID", ParticipationGUID);
+        ParticipationGuid := ApiRequests.PostParticipation(TempParticipation);
+        Participation.SetRange(Id, ParticipationGuid);
         Participation.FindFirst();
 
         TempActivatedProfiles.FindSet();
         repeat
-            APIRequests.PostParticipationProfile(TempActivatedProfiles, ParticipationGUID);
+            ApiRequests.PostParticipationProfile(TempActivatedProfiles, ParticipationGuid);
         until TempActivatedProfiles.Next() = 0;
 
         Participation.Validate("Registration Status", Participation."Registration Status"::InProcess);
         Participation.Modify();
 
-        APIRequests.PatchParticipation(Participation);
+        ApiRequests.PatchParticipation(Participation);
 
         if Participation.Network = Participation.Network::nemhandel then begin
             CompanyInfo.Get();
@@ -351,7 +351,7 @@ codeunit 6394 "Onboarding Helper"
     var
         Participation: Record "Participation";
     begin
-        if not Participation.Get(TempParticipation.Network, TempParticipation."Identifier Type ID", TempParticipation."Identifier Value") then
+        if not Participation.Get(TempParticipation.Network, TempParticipation."Identifier Type Id", TempParticipation."Identifier Value") then
             exit(true);
         if TempParticipation.Address <> Participation.Address then
             exit(true);
@@ -414,10 +414,10 @@ codeunit 6394 "Onboarding Helper"
     internal procedure AddInvoiceCreditMemoProfiles(var TempParticipation: Record "Participation" temporary; ProfileDirection: Enum "Profile Direction"; var ActivatedProfiles: Record "Activated Net. Prof." temporary)
     begin
         case TempParticipation.Network of
-            "Network"::peppol:
+            "E-Delivery Network"::peppol:
                 AddPeppolInvoiceCreditMemoProfiles(TempParticipation."Country/Region Code", ActivatedProfiles, ProfileDirection);
-            "Network"::nemhandel:
-                AddNetworkProfileByIdentifiers("Network"::nemhandel, ActivatedProfiles, ProfileDirection,
+            "E-Delivery Network"::nemhandel:
+                AddNetworkProfileByIdentifiers("E-Delivery Network"::nemhandel, ActivatedProfiles, ProfileDirection,
                     'urn:www.nesubl.eu:profiles:profile5:ver2.0', '');
         end;
     end;
@@ -426,26 +426,26 @@ codeunit 6394 "Onboarding Helper"
     begin
         case ForCountry of
             'DE':
-                PopulateDEInvoiceCreditMemoProfiles("Network"::peppol, ActivatedProfiles, ProfileDirection);
+                PopulateDEInvoiceCreditMemoProfiles("E-Delivery Network"::peppol, ActivatedProfiles, ProfileDirection);
             'NL':
-                PopulateNLInvoiceCreditMemoProfiles("Network"::peppol, ActivatedProfiles, ProfileDirection);
+                PopulateNLInvoiceCreditMemoProfiles("E-Delivery Network"::peppol, ActivatedProfiles, ProfileDirection);
         end;
 
         //PEPPOL Credit Note (BIS 3.0)
-        AddNetworkProfileByIdentifiers("Network"::peppol, ActivatedProfiles, ProfileDirection,
+        AddNetworkProfileByIdentifiers("E-Delivery Network"::peppol, ActivatedProfiles, ProfileDirection,
             'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0',
             'urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1');
         //PEPPOL Cross Industry Invoice (BIS 3.0)
-        AddNetworkProfileByIdentifiers("Network"::peppol, ActivatedProfiles, ProfileDirection,
+        AddNetworkProfileByIdentifiers("E-Delivery Network"::peppol, ActivatedProfiles, ProfileDirection,
             'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0',
             'urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100::CrossIndustryInvoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::D16B');
         //PEPPOL Invoice (BIS 3.0)
-        AddNetworkProfileByIdentifiers("Network"::peppol, ActivatedProfiles, ProfileDirection,
+        AddNetworkProfileByIdentifiers("E-Delivery Network"::peppol, ActivatedProfiles, ProfileDirection,
             'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0',
             'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1');
     end;
 
-    local procedure PopulateDEInvoiceCreditMemoProfiles(ForNetwork: Enum "Network"; var ActivatedProfiles: Record "Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
+    local procedure PopulateDEInvoiceCreditMemoProfiles(ForNetwork: Enum "E-Delivery Network"; var ActivatedProfiles: Record "Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
     var
         NetworkProfile: Record "Network Profile";
     begin
@@ -457,7 +457,7 @@ codeunit 6394 "Onboarding Helper"
             until NetworkProfile.Next() = 0;
     end;
 
-    local procedure PopulateNLInvoiceCreditMemoProfiles(ForNetwork: Enum "Network"; var ActivatedProfiles: Record "Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
+    local procedure PopulateNLInvoiceCreditMemoProfiles(ForNetwork: Enum "E-Delivery Network"; var ActivatedProfiles: Record "Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
     begin
         //SI-UBL 2.0 Credit Note
         AddNetworkProfileByIdentifiers(ForNetwork, ActivatedProfiles, ProfileDirection,
@@ -472,10 +472,10 @@ codeunit 6394 "Onboarding Helper"
     internal procedure AddInvoiceResponseProfiles(var TempParticipation: Record "Participation" temporary; ProfileDirection: Enum "Profile Direction"; var ActivatedProfiles: Record "Activated Net. Prof.")
     begin
         case TempParticipation.Network of
-            "Network"::peppol:
+            "E-Delivery Network"::peppol:
                 PopulatePeppolInvoiceResponseProfiles(ActivatedProfiles, ProfileDirection);
-            "Network"::nemhandel:
-                AddNetworkProfileByIdentifiers("Network"::nemhandel, ActivatedProfiles, ProfileDirection,
+            "E-Delivery Network"::nemhandel:
+                AddNetworkProfileByIdentifiers("E-Delivery Network"::nemhandel, ActivatedProfiles, ProfileDirection,
                     'Procurement-BilSim-1.0', '');
         end;
     end;
@@ -483,7 +483,7 @@ codeunit 6394 "Onboarding Helper"
     local procedure PopulatePeppolInvoiceResponseProfiles(var ActivatedProfiles: Record "Activated Net. Prof."; ProfileDirection: Enum "Profile Direction")
     begin
         //PEPPOL Invoice Response (BIS 3.0)
-        AddNetworkProfileByIdentifiers("Network"::peppol, ActivatedProfiles, ProfileDirection,
+        AddNetworkProfileByIdentifiers("E-Delivery Network"::peppol, ActivatedProfiles, ProfileDirection,
             'urn:fdc:peppol.eu:poacc:bis:invoice_response:3',
             'urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2::ApplicationResponse##urn:fdc:peppol.eu:poacc:trns:invoice_response:3::2.1');
     end;
@@ -491,10 +491,10 @@ codeunit 6394 "Onboarding Helper"
     internal procedure AddOrderOnlyProfiles(var TempParticipation: Record "Participation" temporary; ProfileDirection: Enum "Profile Direction"; var ActivatedProfiles: Record "Activated Net. Prof.")
     begin
         case TempParticipation.Network of
-            "Network"::peppol:
+            "E-Delivery Network"::peppol:
                 PopulatePeppolOrderOnlyProfiles(TempParticipation."Country/Region Code", ActivatedProfiles, ProfileDirection);
-            "Network"::nemhandel:
-                AddNetworkProfileByIdentifiers("Network"::nemhandel, ActivatedProfiles, ProfileDirection,
+            "E-Delivery Network"::nemhandel:
+                AddNetworkProfileByIdentifiers("E-Delivery Network"::nemhandel, ActivatedProfiles, ProfileDirection,
                     'urn:www.nesubl.eu:profiles:profile3:ver2.0', '');
         end;
     end;
@@ -504,13 +504,13 @@ codeunit 6394 "Onboarding Helper"
         case ForCountry of
             'NO':
                 //EHF Advanced Order Initiation 3.0
-                AddNetworkProfileByIdentifiers("Network"::peppol, ActivatedProfiles, ProfileDirection,
+                AddNetworkProfileByIdentifiers("E-Delivery Network"::peppol, ActivatedProfiles, ProfileDirection,
                     'urn:fdc:anskaffelser.no:2019:ehf:postaward:g3:02:1.0',
                     'urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:fdc:peppol.eu:poacc:trns:order:3:extended:urn:fdc:anskaffelser.no:2019:ehf:spec:3.0::2.2');
         end;
 
         //PEPPOL Order Only (BIS 3.0)
-        AddNetworkProfileByIdentifiers("Network"::peppol, ActivatedProfiles, ProfileDirection,
+        AddNetworkProfileByIdentifiers("E-Delivery Network"::peppol, ActivatedProfiles, ProfileDirection,
             'urn:fdc:peppol.eu:poacc:bis:order_only:3',
             'urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:fdc:peppol.eu:poacc:trns:order:3::2.1');
     end;
@@ -518,10 +518,10 @@ codeunit 6394 "Onboarding Helper"
     internal procedure AddOrderProfiles(var TempParticipation: Record "Participation" temporary; ProfileDirection: Enum "Profile Direction"; var ActivatedProfiles: Record "Activated Net. Prof.")
     begin
         case TempParticipation.Network of
-            "Network"::peppol:
+            "E-Delivery Network"::peppol:
                 PopulatePeppolOrderProfiles(TempParticipation."Country/Region Code", ActivatedProfiles, ProfileDirection);
-            "Network"::nemhandel:
-                AddNetworkProfileByIdentifiers("Network"::nemhandel, ActivatedProfiles, ProfileDirection,
+            "E-Delivery Network"::nemhandel:
+                AddNetworkProfileByIdentifiers("E-Delivery Network"::nemhandel, ActivatedProfiles, ProfileDirection,
                     'Procurement-OrdSim-1.0', '');
         end;
     end;
@@ -531,20 +531,20 @@ codeunit 6394 "Onboarding Helper"
         case ForCountry of
             'NO':
                 //EHF Advanced Order Initiation 3.0
-                AddNetworkProfileByIdentifiers("Network"::peppol, ActivatedProfiles, ProfileDirection,
+                AddNetworkProfileByIdentifiers("E-Delivery Network"::peppol, ActivatedProfiles, ProfileDirection,
                     'urn:fdc:anskaffelser.no:2019:ehf:postaward:g3:02:1.0',
                     'urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:fdc:peppol.eu:poacc:trns:order:3:extended:urn:fdc:anskaffelser.no:2019:ehf:spec:3.0::2.2');
         end;
 
         //PEPPOL Order (BIS 3.0)
-        AddNetworkProfileByIdentifiers("Network"::peppol, ActivatedProfiles, ProfileDirection,
+        AddNetworkProfileByIdentifiers("E-Delivery Network"::peppol, ActivatedProfiles, ProfileDirection,
             'urn:fdc:peppol.eu:poacc:bis:ordering:3',
             'urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:fdc:peppol.eu:poacc:trns:order:3::2.1');
     end;
 
     internal procedure AddOrderResponseProfiles(var TempParticipation: Record "Participation" temporary; ProfileDirection: Enum "Profile Direction"; var ActivatedProfiles: Record "Activated Net. Prof.")
     begin
-        if TempParticipation.Network = "Network"::peppol then
+        if TempParticipation.Network = "E-Delivery Network"::peppol then
             PopulatePeppolOrderResponseProfiles(TempParticipation."Country/Region Code", ActivatedProfiles, ProfileDirection);
     end;
 
@@ -553,25 +553,25 @@ codeunit 6394 "Onboarding Helper"
         case ForCountry of
             'NO':
                 //EHF Advanced Order Response 3.0
-                AddNetworkProfileByIdentifiers("Network"::peppol, ActivatedProfiles, ProfileDirection,
+                AddNetworkProfileByIdentifiers("E-Delivery Network"::peppol, ActivatedProfiles, ProfileDirection,
                     'urn:fdc:anskaffelser.no:2019:ehf:postaward:g3:02:1.0',
                     'urn:oasis:names:specification:ubl:schema:xsd:OrderResponse-2::OrderResponse##urn:fdc:peppol.eu:poacc:trns:order_response:3:extended:urn:fdc:anskaffelser.no:2019:ehf:spec:3.0::2.2');
         end;
 
         //PEPPOL Order Response (BIS 3.0)
-        AddNetworkProfileByIdentifiers("Network"::peppol, ActivatedProfiles, ProfileDirection,
+        AddNetworkProfileByIdentifiers("E-Delivery Network"::peppol, ActivatedProfiles, ProfileDirection,
             'urn:fdc:peppol.eu:poacc:bis:ordering:3',
             'urn:oasis:names:specification:ubl:schema:xsd:OrderResponse-2::OrderResponse##urn:fdc:peppol.eu:poacc:trns:order_response:3::2.1');
     end;
 
     internal procedure AddInvoiceAndOrderProfiles(var TempParticipation: Record "Participation" temporary; ProfileDirection: Enum "Profile Direction"; var ActivatedProfiles: Record "Activated Net. Prof.")
     begin
-        if TempParticipation.Network = "Network"::nemhandel then
-            AddNetworkProfileByIdentifiers("Network"::nemhandel, ActivatedProfiles, ProfileDirection,
+        if TempParticipation.Network = "E-Delivery Network"::nemhandel then
+            AddNetworkProfileByIdentifiers("E-Delivery Network"::nemhandel, ActivatedProfiles, ProfileDirection,
                 'Procurement-OrdSim-BilSim-1.0', '');
     end;
 
-    local procedure AddNetworkProfileByIdentifiers(ForNetwork: Enum "Network"; var ActivatedProfiles: Record "Activated Net. Prof."; ProfileDirection: Enum "Profile Direction"; ProcessIdentifier: Text;
+    local procedure AddNetworkProfileByIdentifiers(ForNetwork: Enum "E-Delivery Network"; var ActivatedProfiles: Record "Activated Net. Prof."; ProfileDirection: Enum "Profile Direction"; ProcessIdentifier: Text;
                                                                    DocumentIdenfitier: Text)
     var
         NetworkProfile: Record "Network Profile";
@@ -583,7 +583,7 @@ codeunit 6394 "Onboarding Helper"
         if NetworkProfile.FindFirst() then begin
             ActivatedProfiles.Init();
             ActivatedProfiles.Network := NetworkProfile.Network;
-            ActivatedProfiles."Network Profile ID" := NetworkProfile."CDN GUID";
+            ActivatedProfiles."Network Profile Id" := NetworkProfile.Id;
             ActivatedProfiles."Profile Direction" := ProfileDirection;
             ActivatedProfiles.Insert();
         end;

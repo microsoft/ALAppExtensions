@@ -20,7 +20,7 @@ codeunit 6395 "Credential Management"
     internal procedure GetClientCredentialsApiBodyString(): Text
     var
         ConnectionSetup: Record "Connection Setup";
-        CredentialsStringPlaceholderTok: Label 'grant_type=password&username=%1&password=%2', Comment = '%1 - Client ID, %2 - Client Secret', Locked = true;
+        CredentialsStringPlaceholderTok: Label 'grant_type=password&username=%1&password=%2', Comment = '%1 - Client Id, %2 - Client Secret', Locked = true;
     begin
         if IsClientCredentialsValid() then begin
             ConnectionSetup.Get();
@@ -28,7 +28,7 @@ codeunit 6395 "Credential Management"
         end;
     end;
 
-    internal procedure InsertClientCredentials(ClientID: SecretText; ClientSecret: SecretText; TenantSubscriptionId: Code[50])
+    internal procedure InsertClientCredentials(ClientId: SecretText; ClientSecret: SecretText; TenantSubscriptionId: Code[50])
     var
         ConnectionSetup: Record "Connection Setup";
         SessionManager: Codeunit "Session Manager";
@@ -36,7 +36,7 @@ codeunit 6395 "Credential Management"
         if not ConnectionSetup.Get() then
             ConnectionSetup.Insert();
 
-        ConnectionSetup.SetClientId(ClientID);
+        ConnectionSetup.SetClientId(ClientId);
         ConnectionSetup.SetClientSecret(ClientSecret);
         ConnectionSetup."Local Client Identifier" := TenantSubscriptionId;
         ConnectionSetup.Modify();

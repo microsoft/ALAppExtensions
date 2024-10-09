@@ -36,8 +36,8 @@ page 6394 "Profile Selection"
                         NetworkProfile.FilterGroup(0);
                         NetworkProfileList.LookupMode(true);
 
-                        if not IsNullGuid(Rec."Network Profile ID") then
-                            NetworkProfile.Get(Rec."Network Profile ID")
+                        if not IsNullGuid(Rec."Network Profile Id") then
+                            NetworkProfile.Get(Rec."Network Profile Id")
                         else
                             if Text <> '' then
                                 NetworkProfile.SetFilter(Description, StrSubstNo('@*%1*', Text));
@@ -46,7 +46,7 @@ page 6394 "Profile Selection"
                         NetworkProfileList.SetRecord(NetworkProfile);
                         if NetworkProfileList.RunModal() = Action::LookupOK then begin
                             NetworkProfileList.GetRecord(NetworkProfile);
-                            Rec."Network Profile ID" := NetworkProfile."CDN GUID";
+                            Rec."Network Profile Id" := NetworkProfile.Id;
                             ProfileName := NetworkProfile.Description;
                             Text := NetworkProfile.Description;
                             exit(true);
@@ -75,7 +75,7 @@ page 6394 "Profile Selection"
 
     trigger OnAfterGetRecord()
     begin
-        if not IsNullGuid(Rec."Network Profile ID") then begin
+        if not IsNullGuid(Rec."Network Profile Id") then begin
             Rec.CalcFields("Network Profile Description");
             ProfileName := Rec."Network Profile Description";
         end else
@@ -147,12 +147,12 @@ page 6394 "Profile Selection"
         ActivatedNetworkProfiles := Original;
     end;
 
-    internal procedure SetCurrentNetwork(NewCurrentNetwork: Enum "Network")
+    internal procedure SetCurrentNetwork(NewCurrentNetwork: Enum "E-Delivery Network")
     begin
         CurrentNetwork := NewCurrentNetwork;
     end;
 
     var
-        CurrentNetwork: Enum "Network";
+        CurrentNetwork: Enum "E-Delivery Network";
 }
 

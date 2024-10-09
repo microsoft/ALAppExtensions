@@ -4,7 +4,6 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 
-using System;
 using System.Email;
 using Microsoft.Finance.VAT.Registration;
 using Microsoft.Foundation.Address;
@@ -17,14 +16,14 @@ table 6391 "Participation"
 
     fields
     {
-        field(1; Network; Enum "Network")
+        field(1; Network; Enum "E-Delivery Network")
         {
             Caption = 'Network';
         }
-        field(2; "Identifier Type ID"; Guid)
+        field(2; "Identifier Type Id"; Guid)
         {
             Caption = 'Identifier Type';
-            TableRelation = "Network Identifier"."CDN GUID" where(Network = field(Network));
+            TableRelation = "Network Identifier".Id where(Network = field(Network));
         }
         field(3; "Identifier Value"; Code[50])
         {
@@ -138,9 +137,9 @@ table 6391 "Participation"
                     MailManagement.CheckValidEmailAddress("Signatory Email");
             end;
         }
-        field(30; "CDN GUID"; Guid)
+        field(30; Id; Guid)
         {
-            Caption = 'CDN GUID';
+            Caption = 'ID';
             DataClassification = SystemMetadata;
         }
         field(31; Created; DateTime)
@@ -153,7 +152,7 @@ table 6391 "Participation"
             Caption = 'Updated Date-Time';
             DataClassification = SystemMetadata;
         }
-        field(33; "CDN Timestamp"; Text[250])
+        field(33; "Cdn Timestamp"; Text[250])
         {
             Caption = 'CDN Timestamp';
             DataClassification = SystemMetadata;
@@ -163,27 +162,27 @@ table 6391 "Participation"
             Caption = 'Published in Registry';
             DataClassification = SystemMetadata;
         }
-        field(40; "Identifier Scheme ID"; Text[50])
+        field(40; "Identifier Scheme Id"; Text[50])
         {
             Caption = 'Identifier Type';
             FieldClass = FlowField;
-            CalcFormula = lookup("Network Identifier"."Scheme ID" where("CDN GUID" = field("Identifier Type ID")));
+            CalcFormula = lookup("Network Identifier"."Scheme Id" where(Id = field("Identifier Type Id")));
             Editable = false;
         }
-        field(50; "Partner ID"; Code[20])
+        field(50; "Partner Id"; Code[20])
         {
-            Caption = 'Partner ID';
+            Caption = 'Partner Id';
             Editable = false;
         }
     }
 
     keys
     {
-        key(Key1; Network, "Identifier Type ID", "Identifier Value")
+        key(Key1; Network, "Identifier Type Id", "Identifier Value")
         {
             Clustered = true;
         }
-        key(Key2; "CDN GUID")
+        key(Key2; Id)
         {
         }
     }
@@ -211,9 +210,9 @@ table 6391 "Participation"
         CountryRegion.FindFirst(); // Throws the standard error if not found.
     end;
 
-    internal procedure ValidateCDNStatus(CDNStatus: Text)
+    internal procedure ValidateCdnStatus(Status: Text)
     begin
-        case CDNStatus of
+        case Status of
             'DraftEnum':
                 Validate("Registration Status", "Registration Status"::Draft);
             'InProcessEnum', 'ApprovedEnum', 'SuspendedEnum', 'ErrorEnum':
@@ -248,7 +247,7 @@ table 6391 "Participation"
 
     internal procedure GetNetworkIdentifier() NetworkIdentifier: Record "Network Identifier"
     begin
-        NetworkIdentifier.SetRange("CDN GUID", "Identifier Type ID");
+        NetworkIdentifier.SetRange(Id, "Identifier Type Id");
         NetworkIdentifier.FindFirst();
         exit(NetworkIdentifier);
     end;
@@ -258,7 +257,7 @@ table 6391 "Participation"
         ActivatedProfiles: Record "Activated Net. Prof.";
     begin
         ActivatedProfiles.SetRange(Network, Rec.Network);
-        ActivatedProfiles.SetRange("Identifier Type ID", Rec."Identifier Type ID");
+        ActivatedProfiles.SetRange("Identifier Type Id", Rec."Identifier Type Id");
         ActivatedProfiles.SetRange("Identifier Value", Rec."Identifier Value");
         ActivatedProfiles.DeleteAll();
     end;

@@ -11,36 +11,36 @@ table 6392 "Activated Net. Prof."
 
     fields
     {
-        field(1; Network; Enum "Network")
+        field(1; Network; Enum "E-Delivery Network")
         {
             Caption = 'Network';
             DataClassification = CustomerContent;
         }
-        field(2; "Identifier Type ID"; Guid)
+        field(2; "Identifier Type Id"; Guid)
         {
-            Caption = 'Identifier Type ID';
+            Caption = 'Identifier Type Id';
             DataClassification = CustomerContent;
-            TableRelation = "Network Identifier"."CDN GUID" where(Network = field(Network));
+            TableRelation = "Network Identifier".Id where(Network = field(Network));
         }
         field(3; "Identifier Value"; Code[50])
         {
             Caption = 'Identifier Value';
             DataClassification = CustomerContent;
         }
-        field(4; "Network Profile ID"; Guid)
+        field(4; "Network Profile Id"; Guid)
         {
-            Caption = 'Network Profile ID';
+            Caption = 'Network Profile Id';
             DataClassification = CustomerContent;
-            TableRelation = "Network Profile"."CDN GUID" where(Network = field(Network));
+            TableRelation = "Network Profile".Id where(Network = field(Network));
         }
         field(5; "Profile Direction"; Enum "Profile Direction")
         {
             Caption = 'Profile Direction';
             DataClassification = CustomerContent;
         }
-        field(6; "CDN GUID"; Guid)
+        field(6; Id; Guid)
         {
-            Caption = 'CDN GUID';
+            Caption = 'ID';
             DataClassification = SystemMetadata;
         }
         field(7; Created; DateTime)
@@ -62,24 +62,24 @@ table 6392 "Activated Net. Prof."
         {
             Caption = 'Profile Description';
             FieldClass = FlowField;
-            CalcFormula = lookup("Network Profile".Description where("CDN GUID" = field("Network Profile ID")));
+            CalcFormula = lookup("Network Profile".Description where(Id = field("Network Profile Id")));
             Editable = false;
         }
     }
 
     keys
     {
-        key(PK; Network, "Identifier Type ID", "Identifier Value", "Network Profile ID")
+        key(PK; Network, "Identifier Type Id", "Identifier Value", "Network Profile Id")
         {
             Clustered = true;
         }
-        key(Key2; "CDN GUID")
+        key(Key2; Id)
         {
 
         }
     }
 
-    internal procedure ValidateAPIDirection(Direction: Text)
+    internal procedure ValidateApiDirection(Direction: Text)
     begin
         case Direction of
             'BothEnum':
@@ -91,7 +91,7 @@ table 6392 "Activated Net. Prof."
         end;
     end;
 
-    internal procedure GetParticipAPIDirectionEnum(): Text
+    internal procedure GetParticipApiDirectionEnum(): Text
     begin
         case "Profile Direction" of
             "Profile Direction"::Both:
@@ -105,8 +105,8 @@ table 6392 "Activated Net. Prof."
 
     internal procedure GetNetworkProfile(var NetworkProfile: Record "Network Profile"): Boolean
     begin
-        if not IsNullGuid("Network Profile ID") then
-            exit(NetworkProfile.Get("Network Profile ID"));
+        if not IsNullGuid("Network Profile Id") then
+            exit(NetworkProfile.Get("Network Profile Id"));
     end;
 
 }

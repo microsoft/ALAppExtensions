@@ -13,19 +13,19 @@ table 6393 "Network Identifier"
 
     fields
     {
-        field(1; "CDN GUID"; Guid)
+        field(1; Id; Guid)
         {
-            Caption = 'CDN GUID';
+            Caption = 'ID';
             DataClassification = SystemMetadata;
         }
-        field(2; Network; Enum "Network")
+        field(2; Network; Enum "E-Delivery Network")
         {
             Caption = 'Network';
             DataClassification = SystemMetadata;
         }
-        field(3; "Identifier Type ID"; Text[4])
+        field(3; "Identifier Type Id"; Text[4])
         {
-            Caption = 'Identifier Type ID';
+            Caption = 'Identifier Type Id';
             DataClassification = SystemMetadata;
         }
         field(4; Description; Text[250])
@@ -33,9 +33,9 @@ table 6393 "Network Identifier"
             Caption = 'Description';
             DataClassification = SystemMetadata;
         }
-        field(5; "Scheme ID"; Text[50])
+        field(5; "Scheme Id"; Text[50])
         {
-            Caption = 'Scheme ID';
+            Caption = 'Scheme Id';
             DataClassification = SystemMetadata;
         }
         field(10; Default; Boolean)
@@ -72,11 +72,11 @@ table 6393 "Network Identifier"
 
     keys
     {
-        key(Key1; "CDN GUID")
+        key(Key1; Id)
         {
             Clustered = true;
         }
-        key(Key2; "Scheme ID")
+        key(Key2; "Scheme Id")
         {
         }
     }

@@ -4,7 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.Continia;
 
-enum 6390 "Network"
+enum 6390 "E-Delivery Network"
 {
     Extensible = false;
 
