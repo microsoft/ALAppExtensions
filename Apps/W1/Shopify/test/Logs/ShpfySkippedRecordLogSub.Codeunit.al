@@ -34,6 +34,7 @@ codeunit 139583 "Shpfy Skipped Record Log Sub."
         GetProductMetafieldsGQLEndMsg: Label '\") { metafields(first: 50) {edges{node{legacyResourceId updatedAt}}}}}"}', Locked = true;
         GetVariantMetafieldsGQLStartMsg: Label '{"query":"{productVariant(id: \"gid://shopify/ProductVariant/', Locked = true;
         GetVariantMetafieldGQLEndMsg: Label '\") { metafields(first: 50) {edges{ node{legacyResourceId updatedAt}}}}}"}', Locked = true;
+        CreateFulfimentGQLStartMsg: Label '{"query": "mutation {fulfillmentCreateV2( fulfillment: {notifyCustomer: true, trackingInfo: {number: ', Locked = true;
         GraphQLCmdTxt: Label '/graphql.json', Locked = true;
     begin
         case HttpRequestMessage.Method of
@@ -49,7 +50,8 @@ codeunit 139583 "Shpfy Skipped Record Log Sub."
                                     HttpResponseMessage := GetProductMetafieldsEmptyResult();
                                 GraphQlQuery.StartsWith(GetVariantMetafieldsGQLStartMsg) and GraphQlQuery.EndsWith(GetVariantMetafieldGQLEndMsg):
                                     HttpResponseMessage := GetVariantMetafieldsEmptyResult();
-
+                                GraphQlQuery.StartsWith(CreateFulfimentGQLStartMsg):
+                                    HttpResponseMessage := GetCreateFulfilmentFailedResult();
                             end;
                 end;
         end;
@@ -85,7 +87,15 @@ codeunit 139583 "Shpfy Skipped Record Log Sub."
         exit(HttpResponseMessage);
     end;
 
-
+    local procedure GetCreateFulfilmentFailedResult(): HttpResponseMessage
+    var
+        HttpResponseMessage: HttpResponseMessage;
+        Body: Text;
+    begin
+        Body := '{ "data": { "fulfillmentCreateV2": { "fulfillment": null, "userErrors": [ { "field": [ "fulfillment" ], "message": "Fulfillment order does not exist." } ] } }, "extensions": { "cost": { "requestedQueryCost": 24, "actualQueryCost": 10, "throttleStatus": { "maximumAvailable": 2000, "currentlyAvailable": 1990, "restoreRate": 100 } } } }';
+        HttpResponseMessage.Content.WriteFrom(Body);
+        exit(HttpResponseMessage);
+    end;
 
     internal procedure SetShopifyCustomerId(Id: BigInteger)
     begin

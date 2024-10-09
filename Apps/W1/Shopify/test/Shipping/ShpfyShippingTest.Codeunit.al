@@ -49,7 +49,7 @@ codeunit 139606 "Shpfy Shipping Test"
         end;
     end;
 
-    local procedure CreateRandomShopifyOrder(LocationId: BigInteger; DeliveryMethodType: Enum "Shpfy Delivery Method Type"): BigInteger
+    internal procedure CreateRandomShopifyOrder(LocationId: BigInteger; DeliveryMethodType: Enum "Shpfy Delivery Method Type"): BigInteger
     var
         OrderHeader: Record "Shpfy Order Header";
         OrderLine: Record "Shpfy Order Line";
@@ -71,7 +71,7 @@ codeunit 139606 "Shpfy Shipping Test"
         exit(OrderHeader."Shopify Order Id");
     end;
 
-    local procedure CreateShopifyFulfillmentOrder(ShopifyOrderId: BigInteger; DeliveryMethodType: Enum "Shpfy Delivery Method Type"): BigInteger
+    internal procedure CreateShopifyFulfillmentOrder(ShopifyOrderId: BigInteger; DeliveryMethodType: Enum "Shpfy Delivery Method Type"): BigInteger
     var
         OrderLine: Record "Shpfy Order Line";
         FulfillmentOrderHeader: Record "Shpfy FulFillment Order Header";
@@ -102,7 +102,7 @@ codeunit 139606 "Shpfy Shipping Test"
         exit(FulfillmentOrderHeader."Shopify Fulfillment Order Id");
     end;
 
-    local procedure CreateRandomSalesShipment(var SalesShipmentHeader: Record "Sales Shipment Header"; ShopifyOrderId: BigInteger)
+    internal procedure CreateRandomSalesShipment(var SalesShipmentHeader: Record "Sales Shipment Header"; ShopifyOrderId: BigInteger)
     var
         SalesShipmentLine: Record "Sales Shipment Line";
         OrderLine: Record "Shpfy Order Line";

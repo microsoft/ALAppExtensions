@@ -734,6 +734,44 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         LibraryAssert.IsFalse(SkippedRecord.IsEmpty(), 'Skipped record is not created');
     end;
 
+    [Test]
+    procedure LogSalesShipmentNoFulfilmentCreatedInSHopify()
+    var
+        SalesShipmentHeader: Record "Sales Shipment Header";
+        Shop: Record "Shpfy Shop";
+        SkippedRecord: Record "Shpfy Skipped Record";
+        ExportShipments: Codeunit "Shpfy Export Shipments";
+        ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
+        ShippingTest: Codeunit "Shpfy Shipping Test";
+        SkippedRecordLogSub: Codeunit "Shpfy Skipped Record Log Sub.";
+        ShopifyOrderId: BigInteger;
+        ShopifyOrderHeader: Record "Shpfy Order Header";
+        LocationId: BigInteger;
+        DeliveryMethodType: Enum "Shpfy Delivery Method Type";
+    begin
+        // [SCENARIO] Log skipped record when sales shipment is exported with no fulfillment created in shopify.
+
+        // [GIVEN] Sales shipment, shopify order and shopify fulfilment
+        Shop := ShpfyInitializeTest.CreateShop();
+        ShopifyOrderId := Any.IntegerInRange(10000, 999999);
+        DeliveryMethodType := DeliveryMethodType::" ";
+        ShopifyOrderId := ShippingTest.CreateRandomShopifyOrder(LocationId, DeliveryMethodType);
+        ShopifyOrderHeader.Get(ShopifyOrderId);
+        ShopifyOrderHeader."Shop Code" := Shop.Code;
+        ShopifyOrderHeader.Modify(false);
+        ShippingTest.CreateShopifyFulfillmentOrder(ShopifyOrderId, DeliveryMethodType);
+        ShippingTest.CreateRandomSalesShipment(SalesShipmentHeader, ShopifyOrderId);
+
+        // [WHEN] Invoke Shopify Sync Shipment to Shopify
+        BindSubscription(SkippedRecordLogSub);
+        ExportShipments.CreateShopifyFulfillment(SalesShipmentHeader);
+        UnbindSubscription(SkippedRecordLogSub);
+
+        // [THEN] Related record is created in shopify skipped record table.
+        SkippedRecord.SetRange("Record ID", SalesShipmentHeader.RecordId);
+        LibraryAssert.IsFalse(SkippedRecord.IsEmpty(), 'Skipped record is not created');
+    end;
+
     local procedure CreateShpfyProduct(var ShopifyProduct: Record "Shpfy Product"; ItemSystemId: Guid; ShopCode: Code[20])
     var
         ShopifyVariant: Record "Shpfy Variant";
