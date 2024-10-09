@@ -627,7 +627,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         // [GIVEN] Shop
         Shop := ShpfyInitializeTest.CreateShop();
         // [GIVEN] Posted shipment without lines.
-        CreateSalesShipmentHeader(SalesShipmentHeader);
+        CreateSalesShipmentHeader(SalesShipmentHeader, Any.IntegerInRange(10000, 999999));
         SalesShipmentNo := SalesShipmentHeader."No.";
         Commit();
 
@@ -661,7 +661,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         // [GIVEN] Shop
         Shop := ShpfyInitializeTest.CreateShop();
         // [GIVEN] Posted shipment with line.
-        CreateSalesShipmentHeader(SalesShipmentHeader);
+        CreateSalesShipmentHeader(SalesShipmentHeader, Any.IntegerInRange(10000, 999999));
         SalesShipmentNo := SalesShipmentHeader."No.";
         SalesShipmentLine.Init();
         SalesShipmentLine."Document No." := SalesShipmentHeader."No.";
@@ -684,7 +684,10 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     procedure LogSalesShipmentNoCorrespondingFulfillmentWithFailedResponse()
     var
         SalesShipmentHeader: Record "Sales Shipment Header";
+        SalesShipmentLine: Record "Sales Shipment Line";
         Shop: Record "Shpfy Shop";
+        ShopifyOrderHeader: Record "Shpfy Order Header";
+        ShopifyOrderLine: Record "Shpfy Order Line";
         Customer: Record Customer;
         ShopifyCustomer: Record "Shpfy Customer";
         SkippedRecord: Record "Shpfy Skipped Record";
@@ -692,10 +695,43 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         LibrarySales: Codeunit "Library - Sales";
         LibraryRandom: Codeunit "Library - Random";
         CustomerInitTest: Codeunit "Shpfy Customer Init Test";
-        SyncShipmentToShopify: Codeunit "Shpfy Export Shipments";
+        ExportShipments: Codeunit "Shpfy Export Shipments";
         PaymentTermsCode: Code[10];
     begin
+        // [SCENARIO] Log skipped record when sales shipment is exported with failed fulfillment response from shopify.
 
+        // [GIVEN] Shop
+        Shop := ShpfyInitializeTest.CreateShop();
+        // [GIVEN] Shopify order with line
+        ShopifyOrderHeader.Init();
+        ShopifyOrderHeader."Shop Code" := Shop.Code;
+        ShopifyOrderHeader."Shopify Order Id" := Any.IntegerInRange(10000, 999999);
+        ShopifyOrderHeader.Insert(false);
+
+        ShopifyOrderLine.Init();
+        ShopifyOrderLine."Shopify Order Id" := ShopifyOrderHeader."Shopify Order Id";
+        ShopifyOrderLine."Line Id" := Any.IntegerInRange(10000, 999999);
+        ShopifyOrderLine.Quantity := Any.IntegerInRange(1, 100);
+        ShopifyOrderLine.Insert(false);
+
+        // [GIVEN] Posted shipment with line.
+        CreateSalesShipmentHeader(SalesShipmentHeader, ShopifyOrderHeader."Shopify Order Id");
+        SalesShipmentLine.Init();
+        SalesShipmentLine."Document No." := SalesShipmentHeader."No.";
+        SalesShipmentLine."Line No." := 10000;
+        SalesShipmentLine.Type := SalesShipmentLine.Type::Item;
+        SalesShipmentLine."No." := Any.AlphanumericText(20);
+        SalesShipmentLine.Quantity := ShopifyOrderLine.Quantity;
+        SalesShipmentLine."Shpfy Order Line Id" := ShopifyOrderLine."Line Id";
+        SalesShipmentLine.Insert(false);
+        Commit();
+
+        // [WHEN] Invoke Shopify Sync Shipment to Shopify
+        ExportShipments.CreateShopifyFulfillment(SalesShipmentHeader);
+
+        // [THEN] Related record is created in shopify skipped record table.
+        SkippedRecord.SetRange("Record ID", SalesShipmentHeader.RecordId);
+        LibraryAssert.IsFalse(SkippedRecord.IsEmpty(), 'Skipped record is not created');
     end;
 
     local procedure CreateShpfyProduct(var ShopifyProduct: Record "Shpfy Product"; ItemSystemId: Guid; ShopCode: Code[20])
@@ -752,11 +788,11 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SalesInvoiceLine.Insert(false);
     end;
 
-    local procedure CreateSalesShipmentHeader(var SalesShipmentHeader: Record "Sales Shipment Header")
+    local procedure CreateSalesShipmentHeader(var SalesShipmentHeader: Record "Sales Shipment Header"; ShpfyOrderId: BigInteger)
     begin
         SalesShipmentHeader.Init();
         SalesShipmentHeader."No." := Any.AlphanumericText(20);
-        SalesShipmentHeader."Shpfy Order Id" := Any.IntegerInRange(10000, 999999);
+        SalesShipmentHeader."Shpfy Order Id" := ShpfyOrderId;
         SalesShipmentHeader.Insert(false);
     end;
 
