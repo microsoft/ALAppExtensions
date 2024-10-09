@@ -9,15 +9,13 @@ using System.Azure.Identity;
 using Microsoft.Foundation.Company;
 using System.Security.AccessControl;
 using Microsoft.CRM.Team;
-using System.IO;
-using System.Xml;
 using System.Email;
 using System.Security.User;
 
 codeunit 6397 "Subscription Mgt."
 {
     var
-        APIURLMgt: Codeunit "API URL Mgt.";
+        ApiUrlMgt: Codeunit "Api Url Mgt.";
         ClientCredentialsMissingErr: Label 'Client credentials missing.';
         CreateClientErrTitleErr: Label 'Failed to create client credentials';
         ExpectedStatusOKErr: Label 'Could not connect to Continia Online.\Invalid response, expected Status = OK';
@@ -34,7 +32,7 @@ codeunit 6397 "Subscription Mgt."
     end;
 
     [NonDebuggable]
-    internal procedure InitializeContiniaClient(PartnerUserName: Text; PartnerPassword: SecretText; var PartnerID: Code[20]) Updated: Boolean
+    internal procedure InitializeContiniaClient(PartnerUserName: Text; PartnerPassword: SecretText; var PartnerId: Code[20]) Updated: Boolean
     var
         HttpClient: HttpClient;
         HttpContent: HttpContent;
@@ -52,7 +50,7 @@ codeunit 6397 "Subscription Mgt."
         HttpRequestMessage.GetHeaders(HttpHeaders);
         HttpHeaders.Add('Accept', 'application/xml;charset=utf-8');
         HttpRequestMessage.Method('POST');
-        HttpRequestMessage.SetRequestUri(APIURLMgt.PartnerAccessTokenUrl());
+        HttpRequestMessage.SetRequestUri(ApiUrlMgt.PartnerAccessTokenUrl());
         HttpContent.WriteFrom(GetPartnerZoneConnectRequestBody(PartnerUserName, PartnerPassword));
         HttpContent.GetHeaders(HttpHeaders);
         if HttpHeaders.Contains('Content-Type') then
@@ -69,11 +67,11 @@ codeunit 6397 "Subscription Mgt."
         PartnerAccessToken := HandlePartnerZoneAccessTokenResponse(ResponseXmlDoc);
 
         if InitializeContiniaClient(PartnerAccessToken) then
-            exit(CheckPartnerAndGetPartnerID(PartnerUserName, PartnerPassword, PartnerID));
+            exit(CheckPartnerAndGetPartnerId(PartnerUserName, PartnerPassword, PartnerId));
     end;
 
     [NonDebuggable]
-    internal procedure CheckPartnerAndGetPartnerID(PartnerUserName: Text; PartnerPassword: SecretText; var PartnerID: Code[20]): Boolean
+    internal procedure CheckPartnerAndGetPartnerId(PartnerUserName: Text; PartnerPassword: SecretText; var PartnerId: Code[20]): Boolean
     var
         SessionManager: Codeunit "Session Manager";
         HttpClient: HttpClient;
@@ -83,7 +81,7 @@ codeunit 6397 "Subscription Mgt."
         HttpResponseMessage: HttpResponseMessage;
         ResponseBody: Text;
         ResponseXmlDoc: XmlDocument;
-        PartnerIDNode: XmlNode;
+        PartnerIdNode: XmlNode;
         ErrorNode: XmlNode;
     begin
         // Validate input
@@ -93,7 +91,7 @@ codeunit 6397 "Subscription Mgt."
         HttpRequestMessage.GetHeaders(HttpHeaders);
         HttpHeaders.Add('Accept', 'application/xml;charset=utf-8');
         HttpRequestMessage.Method('POST');
-        HttpRequestMessage.SetRequestUri(APIURLMgt.PartnerZoneUrl());
+        HttpRequestMessage.SetRequestUri(ApiUrlMgt.PartnerZoneUrl());
         HttpContent.WriteFrom(GetPartnerZoneConnectRequestBody(PartnerUserName, PartnerPassword));
 
         HttpHeaders.Add('Authorization', SecretStrSubstNo('Bearer %1', SessionManager.GetAccessToken()));
@@ -115,8 +113,8 @@ codeunit 6397 "Subscription Mgt."
             if ErrorNode.AsXmlAttribute().Value <> '' then
                 Error(InvalidPartnerCredErr);
 
-        if ResponseXmlDoc.SelectSingleNode('PartnerZoneConnectResponse/@Msid', PartnerIDNode) then begin
-            PartnerID := CopyStr(PartnerIDNode.AsXmlAttribute().Value, 1, MaxStrLen(PartnerID));
+        if ResponseXmlDoc.SelectSingleNode('PartnerZoneConnectResponse/@Msid', PartnerIdNode) then begin
+            PartnerId := CopyStr(PartnerIdNode.AsXmlAttribute().Value, 1, MaxStrLen(PartnerId));
             exit(true);
         end;
     end;
@@ -150,7 +148,7 @@ codeunit 6397 "Subscription Mgt."
         if EnvironmentInformation.IsSaaSInfrastructure() then
             HttpHeaders.Add('x-AzureTenantId', AzureADTenant.GetAadTenantId());
         HttpRequestMessage.Method('POST');
-        HttpRequestMessage.SetRequestUri(APIURLMgt.ClientEnvironmentInitializeUrl());
+        HttpRequestMessage.SetRequestUri(ApiUrlMgt.ClientEnvironmentInitializeUrl());
         HttpContent.WriteFrom(GetInitializeCredentialRequestBody());
         HttpContent.GetHeaders(HttpHeaders);
         if HttpHeaders.Contains('Content-Type') then
@@ -246,7 +244,7 @@ codeunit 6397 "Subscription Mgt."
 
         if SubscriptionResponse.SelectSingleNode(StrSubstNo(SubscriptionDetailsXMLPathLbl, CredentialMgt.GetAppCode()), SubscriptionNode) then begin
             SubscriptionNode.SelectSingleNode('@PartnerId', TempXMLNode);
-            ClientInfo."Partner ID" := CopyStr(TempXMLNode.AsXmlAttribute().Value, 1, MaxStrLen(ClientInfo."Partner ID"));
+            ClientInfo."Partner Id" := CopyStr(TempXMLNode.AsXmlAttribute().Value, 1, MaxStrLen(ClientInfo."Partner Id"));
 
             if SubscriptionResponse.SelectSingleNode(StrSubstNo(InvoiceDetailsXMLPathLbl, CredentialMgt.GetAppCode()), SubscriptionNode) then begin
 
@@ -331,7 +329,7 @@ codeunit 6397 "Subscription Mgt."
             HttpHeaders.Add('x-AzureTenantId', AzureADTenant.GetAadTenantId());
 
         HttpRequestMessage.Method('GET');
-        HttpRequestMessage.SetRequestUri(APIURLMgt.GetSubscriptionUrl());
+        HttpRequestMessage.SetRequestUri(ApiUrlMgt.GetSubscriptionUrl());
 
         HttpClient.Timeout := 6000;
         HttpClient.Send(HttpRequestMessage, HttpResponseMessage);
@@ -392,7 +390,7 @@ codeunit 6397 "Subscription Mgt."
             HttpHeaders.Add('x-AzureTenantId', AzureADTenant.GetAadTenantId());
 
         HttpRequestMessage.Method('POST');
-        HttpRequestMessage.SetRequestUri(APIURLMgt.UpdateSubscriptionUrl());
+        HttpRequestMessage.SetRequestUri(ApiUrlMgt.UpdateSubscriptionUrl());
         HttpContent.WriteFrom(GetUpdateSubscriptionBody(SubscriptionState, ClientInfo));
         HttpContent.GetHeaders(HttpHeaders);
         if HttpHeaders.Contains('Content-Type') then
@@ -469,7 +467,7 @@ codeunit 6397 "Subscription Mgt."
         UpdateSubscriptionRequest.SetAttribute('State', Format(MapOnlineSubscriptionState(SubscriptionState)));
         UpdateSubscriptionRequest.SetAttribute('UserId', UserId);
         UpdateSubscriptionRequest.SetAttribute('UserEmail', GetUserNotificationEmail());
-        UpdateSubscriptionRequest.SetAttribute('PartnerId', ClientInfo."Partner ID");
+        UpdateSubscriptionRequest.SetAttribute('PartnerId', ClientInfo."Partner Id");
 
         if ClientInfo."Company Name" <> '' then begin
             InvoicingDetails := XmlElement.Create('InvoicingDetails');
@@ -521,7 +519,7 @@ codeunit 6397 "Subscription Mgt."
         HttpHeaders.Add('x-continia-companyguid', CredentialManagement.GetCompanyGuidAsText());
 
         HttpRequestMessage.Method('POST');
-        HttpRequestMessage.SetRequestUri(APIURLMgt.GetAcceptCompanyLicenseUrl());
+        HttpRequestMessage.SetRequestUri(ApiUrlMgt.GetAcceptCompanyLicenseUrl());
         HttpContent.WriteFrom(GetAcceptCompanyLicenseBody(CompanyName));
         HttpContent.GetHeaders(HttpHeaders);
         if HttpHeaders.Contains('Content-Type') then
@@ -580,7 +578,7 @@ codeunit 6397 "Subscription Mgt."
             HttpHeaders.Add('x-AzureTenantId', AzureADTenant.GetAadTenantId());
 
         HttpRequestMessage.Method('POST');
-        HttpRequestMessage.SetRequestUri(APIURLMgt.GetUpdateCompanyInfoUrl());
+        HttpRequestMessage.SetRequestUri(ApiUrlMgt.GetUpdateCompanyInfoUrl());
         HttpContent.WriteFrom(GetClientInfoUpdateRequest(ClientInfo));
         HttpContent.GetHeaders(HttpHeaders);
         if HttpHeaders.Contains('Content-Type') then
@@ -722,7 +720,7 @@ codeunit 6397 "Subscription Mgt."
         HttpHeaders.Add('x-continia-check', 'true');
         Credentials := CredentialManagement.GetClientCredentialsApiBodyString();
         HttpRequestMessage.Method('POST');
-        HttpRequestMessage.SetRequestUri(APIURLMgt.ClientAccessTokenUrl());
+        HttpRequestMessage.SetRequestUri(ApiUrlMgt.ClientAccessTokenUrl());
         HttpContent.WriteFrom(Credentials);
         HttpRequestMessage.Content := HttpContent;
         HttpClient.Send(HttpRequestMessage, HttpResponseMessage);

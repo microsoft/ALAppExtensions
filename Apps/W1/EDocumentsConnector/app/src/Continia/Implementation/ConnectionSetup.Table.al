@@ -13,9 +13,9 @@ table 6390 "Connection Setup"
         {
             DataClassification = CustomerContent;
         }
-        field(3; "Client ID"; Guid)
+        field(3; "Client Id"; Guid)
         {
-            Caption = 'Client ID';
+            Caption = 'Client Id';
             DataClassification = EndUserIdentifiableInformation;
         }
         field(4; "Client Secret"; Guid)
@@ -70,7 +70,7 @@ table 6390 "Connection Setup"
     var
         CredentialManagement: Codeunit "Credential Management";
     begin
-        exit(CredentialManagement.GetIsolatedStorageValue("Client ID", DataScope::Module));
+        exit(CredentialManagement.GetIsolatedStorageValue("Client Id", DataScope::Module));
     end;
 
     internal procedure GetClientSecret(): SecretText
@@ -84,7 +84,7 @@ table 6390 "Connection Setup"
     var
         CredentialManagement: Codeunit "Credential Management";
     begin
-        exit(CredentialManagement.SetIsolatedStorageValue("Client ID", Value, DataScope::Module));
+        exit(CredentialManagement.SetIsolatedStorageValue("Client Id", Value, DataScope::Module));
     end;
 
     internal procedure SetClientSecret(Value: SecretText) UsedNewKey: Boolean

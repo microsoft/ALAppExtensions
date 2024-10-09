@@ -9,7 +9,7 @@ using System.Text;
 using Microsoft.Foundation.Address;
 using Microsoft.Foundation.Company;
 
-codeunit 6393 "API Requests"
+codeunit 6393 "Api Requests"
 {
     Access = Internal;
 
@@ -18,12 +18,11 @@ codeunit 6393 "API Requests"
                   tabledata "Participation" = rimd,
                   tabledata "Activated Net. Prof." = rimd;
 
-    #region Get Network Profiles from Continia Delivery Network API
+    #region Get Network Profiles from Continia Delivery Network Api
 
-    [InherentPermissions(PermissionObjectType::TableData, Database::"Network Profile", 'rimd', InherentPermissionsScope::Both)]
-    internal procedure GetNetworkProfiles(Network: Enum "Network")
+    internal procedure GetNetworkProfiles(Network: Enum "E-Delivery Network")
     var
-        APIUrlMgt: Codeunit "API URL Mgt.";
+        ApiUrlMgt: Codeunit "Api Url Mgt.";
         IsLastPage: Boolean;
         HttpResponseMessage: HttpResponseMessage;
         CurrPage: Integer;
@@ -34,17 +33,16 @@ codeunit 6393 "API Requests"
         IsLastPage := false;
         repeat
             CurrPage += 1;
-            if ExecuteRequest('GET', APIUrlMgt.NetworkProfilesURL(Network, CurrPage, PageSize), HttpResponseMessage) then
+            if ExecuteRequest('GET', ApiUrlMgt.NetworkProfilesUrl(Network, CurrPage, PageSize), HttpResponseMessage) then
                 IsLastPage := HandleNetworkProfileResponse(HttpResponseMessage, Network, PageSize);
         until IsLastPage;
     end;
 
-    [InherentPermissions(PermissionObjectType::TableData, Database::"Network Profile", 'rimd', InherentPermissionsScope::Both)]
-    local procedure HandleNetworkProfileResponse(var HttpResponseMessage: HttpResponseMessage; NetworkName: Enum "Network"; PageSize: Integer) IsLastPage: Boolean
+    local procedure HandleNetworkProfileResponse(var HttpResponseMessage: HttpResponseMessage; NetworkName: Enum "E-Delivery Network"; PageSize: Integer) IsLastPage: Boolean
     var
         NetworkProfile: Record "Network Profile";
         Insert: Boolean;
-        CDNGUID: Guid;
+        NetworkProfileId: Guid;
         i: Integer;
         ResponseBody: Text;
         ResponseXmlDoc: XmlDocument;
@@ -63,13 +61,13 @@ codeunit 6393 "API Requests"
 
                 TempXMLNode.SelectSingleNode('network_profile_id', TempXMLNode2);
 
-                CDNGUID := StrSubstNo('{%1}', TempXMLNode2.AsXmlElement().InnerText);
+                NetworkProfileId := StrSubstNo('{%1}', TempXMLNode2.AsXmlElement().InnerText);
 
-                if NetworkProfile.Get(CDNGUID) then
+                if NetworkProfile.Get(NetworkProfileId) then
                     Insert := false
                 else begin
                     NetworkProfile.Init();
-                    NetworkProfile."CDN GUID" := CDNGUID;
+                    NetworkProfile.Id := NetworkProfileId;
                     Insert := true;
                 end;
 
@@ -105,12 +103,11 @@ codeunit 6393 "API Requests"
 
     #endregion
 
-    #region Get Network ID Types from Continia Delivery Network API
+    #region Get Network Id Types from Continia Delivery Network Api
 
-    [InherentPermissions(PermissionObjectType::TableData, Database::"Network Profile", 'rimd', InherentPermissionsScope::Both)]
-    internal procedure GetNetworkIDTypes(Network: Enum "Network")
+    internal procedure GetNetworkIdTypes(Network: Enum "E-Delivery Network")
     var
-        APIUrlMgt: Codeunit "API URL Mgt.";
+        ApiUrlMgt: Codeunit "Api Url Mgt.";
         IsLastPage: Boolean;
         HttpResponseMessage: HttpResponseMessage;
         CurrPage: Integer;
@@ -121,17 +118,16 @@ codeunit 6393 "API Requests"
         IsLastPage := false;
         repeat
             CurrPage += 1;
-            if ExecuteRequest('GET', APIUrlMgt.NetworkIdentifiersURL(Network, CurrPage, PageSize), HttpResponseMessage) then
-                IsLastPage := HandleNetworkIDTypeResponse(HttpResponseMessage, Network, PageSize);
+            if ExecuteRequest('GET', ApiUrlMgt.NetworkIdentifiersUrl(Network, CurrPage, PageSize), HttpResponseMessage) then
+                IsLastPage := HandleNetworkIdTypeResponse(HttpResponseMessage, Network, PageSize);
         until IsLastPage;
     end;
 
-    [InherentPermissions(PermissionObjectType::TableData, Database::"Network Identifier", 'rimd', InherentPermissionsScope::Both)]
-    local procedure HandleNetworkIDTypeResponse(var HttpResponseMessage: HttpResponseMessage; NetworkName: Enum "Network"; PageSize: Integer) IsLastPage: Boolean
+    local procedure HandleNetworkIdTypeResponse(var HttpResponseMessage: HttpResponseMessage; NetworkName: Enum "E-Delivery Network"; PageSize: Integer) IsLastPage: Boolean
     var
         NetworkIdentifier: Record "Network Identifier";
         Insert: Boolean;
-        CDNGUID: Guid;
+        NetworkIdentifierId: Guid;
         i: Integer;
         ResponseBody: Text;
         ResponseXmlDoc: XmlDocument;
@@ -150,20 +146,20 @@ codeunit 6393 "API Requests"
 
                 TempXMLNode.SelectSingleNode('network_id_type_id', TempXMLNode2);
 
-                CDNGUID := StrSubstNo('{%1}', TempXMLNode2.AsXmlElement().InnerText);
+                NetworkIdentifierId := StrSubstNo('{%1}', TempXMLNode2.AsXmlElement().InnerText);
 
-                if NetworkIdentifier.Get(CDNGUID) then
+                if NetworkIdentifier.Get(NetworkIdentifierId) then
                     Insert := false
                 else begin
                     NetworkIdentifier.Init();
-                    NetworkIdentifier."CDN GUID" := CDNGUID;
+                    NetworkIdentifier.Id := NetworkIdentifierId;
                     Insert := true;
                 end;
 
                 NetworkIdentifier.Network := NetworkName;
 
                 if TempXMLNode.SelectSingleNode('code_iso6523-1', TempXMLNode2) then
-                    NetworkIdentifier."Identifier Type ID" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkIdentifier."Identifier Type ID"));
+                    NetworkIdentifier."Identifier Type Id" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkIdentifier."Identifier Type Id"));
 
                 if TempXMLNode.SelectSingleNode('default_in_country_iso3166', TempXMLNode2) then
                     NetworkIdentifier."Default in Country" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkIdentifier."Default in Country"));
@@ -175,10 +171,10 @@ codeunit 6393 "API Requests"
                     NetworkIdentifier."ICD Code" := TempXMLNode2.AsXmlElement().InnerText = 'true';
 
                 if TempXMLNode.SelectSingleNode('network_id_type_id', TempXMLNode2) then
-                    NetworkIdentifier."CDN GUID" := TempXMLNode2.AsXmlElement().InnerText;
+                    NetworkIdentifier.Id := TempXMLNode2.AsXmlElement().InnerText;
 
                 if TempXMLNode.SelectSingleNode('scheme_id', TempXMLNode2) then
-                    NetworkIdentifier."Scheme ID" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkIdentifier."Scheme ID"));
+                    NetworkIdentifier."Scheme Id" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkIdentifier."Scheme Id"));
 
                 if TempXMLNode.SelectSingleNode('vat_in_country_iso3166', TempXMLNode2) then
                     NetworkIdentifier."VAT in Country" := CopyStr(TempXMLNode2.AsXmlElement().InnerText, 1, MaxStrLen(NetworkIdentifier."VAT in Country"));
@@ -203,43 +199,42 @@ codeunit 6393 "API Requests"
     #endregion
 
     #region Participation endpoints in Continia Delivery Network
-    [InherentPermissions(PermissionObjectType::TableData, Database::"Participation", 'rm', InherentPermissionsScope::Both)]
     internal procedure GetParticipation(var Participation: Record "Participation")
     var
-        APIUrlMgt: Codeunit "API URL Mgt.";
+        ApiUrlMgt: Codeunit "Api Url Mgt.";
         HttpResponseMessage: HttpResponseMessage;
     begin
-        if ExecuteRequest('GET', APIUrlMgt.SingleParticipationURL(Participation.Network, Participation."CDN GUID"), HttpResponseMessage) then
+        if ExecuteRequest('GET', ApiUrlMgt.SingleParticipationUrl(Participation.Network, Participation.Id), HttpResponseMessage) then
             HandleParticipationResponse(HttpResponseMessage, Participation);
     end;
 
-    internal procedure PostParticipation(var TempParticipation: Record "Participation" temporary) ParticipationGUID: Guid;
+    internal procedure PostParticipation(var TempParticipation: Record "Participation" temporary) ParticipationGuid: Guid;
     var
         Participation: Record "Participation";
-        APIUrlMgt: Codeunit "API URL Mgt.";
+        ApiUrlMgt: Codeunit "Api Url Mgt.";
         HttpResponseMessage: HttpResponseMessage;
         HttpContentData: Text;
     begin
         HttpContentData := GetParticipationRequest(TempParticipation, false);
 
-        if ExecuteRequest('POST', APIUrlMgt.ParticipationURL(TempParticipation.Network), HttpContentData, HttpResponseMessage) then begin
+        if ExecuteRequest('POST', ApiUrlMgt.ParticipationUrl(TempParticipation.Network), HttpContentData, HttpResponseMessage) then begin
             Participation := TempParticipation;
             Participation.Insert();
             HandleParticipationResponse(HttpResponseMessage, Participation);
-            exit(Participation."CDN GUID");
+            exit(Participation.Id);
         end;
     end;
 
     internal procedure PatchParticipation(var TempParticipation: Record "Participation" temporary)
     var
         Participation: Record "Participation";
-        APIUrlMgt: Codeunit "API URL Mgt.";
+        ApiUrlMgt: Codeunit "Api Url Mgt.";
         HttpResponseMessage: HttpResponseMessage;
         HttpContentData: Text;
     begin
         HttpContentData := GetParticipationRequest(TempParticipation, true);
 
-        if ExecuteRequest('PATCH', APIUrlMgt.SingleParticipationURL(TempParticipation.Network, TempParticipation."CDN GUID"), HttpContentData, HttpResponseMessage) then begin
+        if ExecuteRequest('PATCH', ApiUrlMgt.SingleParticipationUrl(TempParticipation.Network, TempParticipation.Id), HttpContentData, HttpResponseMessage) then begin
             Participation.Get(TempParticipation.RecordId);
             HandleParticipationResponse(HttpResponseMessage, Participation);
         end;
@@ -247,10 +242,10 @@ codeunit 6393 "API Requests"
 
     internal procedure DeleteParticipation(var Participation: Record "Participation")
     var
-        APIUrlMgt: Codeunit "API URL Mgt.";
+        ApiUrlMgt: Codeunit "Api Url Mgt.";
         HttpResponseMessage: HttpResponseMessage;
     begin
-        if ExecuteRequest('DELETE', APIUrlMgt.SingleParticipationURL(Participation.Network, Participation."CDN GUID"), HttpResponseMessage) then
+        if ExecuteRequest('DELETE', ApiUrlMgt.SingleParticipationUrl(Participation.Network, Participation.Id), HttpResponseMessage) then
             case HttpResponseMessage.HttpStatusCode of
                 200:
                     Participation.Delete(true);
@@ -266,7 +261,7 @@ codeunit 6393 "API Requests"
     var
         CredentialManagement: Codeunit "Credential Management";
         AddressNode: XmlElement;
-        CompanyIDNode: XmlElement;
+        CompanyIdNode: XmlElement;
         CompanyNameNode: XmlElement;
         ContactEmailNode: XmlElement;
         ContactNameNode: XmlElement;
@@ -290,9 +285,9 @@ codeunit 6393 "API Requests"
         AddressNode.Add(XmlText.Create(Participation.Address));
         RootNode.Add(AddressNode);
 
-        CompanyIDNode := XmlElement.Create('business_central_company_code');
-        CompanyIDNode.Add(XmlText.Create(GetGUIDAsText(CredentialManagement.GetCompanyId())));
-        RootNode.Add(CompanyIDNode);
+        CompanyIdNode := XmlElement.Create('business_central_company_code');
+        CompanyIdNode.Add(XmlText.Create(GetGuidAsText(CredentialManagement.GetCompanyId())));
+        RootNode.Add(CompanyIdNode);
 
         CompanyNameNode := XmlElement.Create('company_name');
         CompanyNameNode.Add(XmlText.Create(Participation."Company Name"));
@@ -315,16 +310,16 @@ codeunit 6393 "API Requests"
         RootNode.Add(CountryCodeNode);
 
         NetworkIdTypeNode := XmlElement.Create('network_id_type_id');
-        NetworkIdTypeNode.Add(XmlText.Create(Participation."Identifier Type ID"));
+        NetworkIdTypeNode.Add(XmlText.Create(Participation."Identifier Type Id"));
         RootNode.Add(NetworkIdTypeNode);
 
         NetworkIdValueNode := XmlElement.Create('network_id_value');
         NetworkIdValueNode.Add(XmlText.Create(Participation."Identifier Value"));
         RootNode.Add(NetworkIdValueNode);
 
-        if not IsNullGuid(Participation."CDN GUID") then begin
+        if not IsNullGuid(Participation.Id) then begin
             NetworkIdTypeNode := XmlElement.Create('participation_id');
-            NetworkIdTypeNode.Add(XmlText.Create(GetGUIDAsText(Participation."CDN GUID")));
+            NetworkIdTypeNode.Add(XmlText.Create(GetGuidAsText(Participation.Id)));
             RootNode.Add(NetworkIdTypeNode);
         end;
 
@@ -354,7 +349,7 @@ codeunit 6393 "API Requests"
 
         if IncludeTimestamp then begin
             TimestampNode := XmlElement.Create('timestamp');
-            TimestampNode.Add(XmlText.Create(Participation."CDN Timestamp"));
+            TimestampNode.Add(XmlText.Create(Participation."Cdn Timestamp"));
             RootNode.Add(TimestampNode);
         end;
 
@@ -376,7 +371,7 @@ codeunit 6393 "API Requests"
         ContactPhoneNode: XmlNode;
         CountryCodeNode: XmlNode;
         CreatedNode: XmlNode;
-        ParicipationIDNode: XmlNode;
+        ParicipationIdNode: XmlNode;
         PostCodeNode: XmlNode;
         PublishInRegistryNode: XmlNode;
         RegistrantNameNode: XmlNode;
@@ -430,11 +425,11 @@ codeunit 6393 "API Requests"
         else
             Participation."Publish in Registry" := false;
 
-        ResponseXmlDoc.SelectSingleNode('/participation/participation_id', ParicipationIDNode);
-        Evaluate(Participation."CDN GUID", ParicipationIDNode.AsXmlElement().InnerText);
+        ResponseXmlDoc.SelectSingleNode('/participation/participation_id', ParicipationIdNode);
+        Evaluate(Participation.Id, ParicipationIdNode.AsXmlElement().InnerText);
 
         ResponseXmlDoc.SelectSingleNode('/participation/status', StatusNode);
-        Participation.ValidateCDNStatus(StatusNode.AsXmlElement().InnerText);
+        Participation.ValidateCdnStatus(StatusNode.AsXmlElement().InnerText);
 
         ResponseXmlDoc.SelectSingleNode('/participation/created_utc', CreatedNode);
         Evaluate(Participation.Created, CreatedNode.AsXmlElement().InnerText, 9);
@@ -443,7 +438,7 @@ codeunit 6393 "API Requests"
         Evaluate(Participation.Updated, UpdatedNode.AsXmlElement().InnerText, 9);
 
         ResponseXmlDoc.SelectSingleNode('/participation/timestamp', TimestampNode);
-        Participation."CDN Timestamp" := CopyStr(TimestampNode.AsXmlElement().InnerText, 1, MaxStrLen(Participation."CDN Timestamp"));
+        Participation."Cdn Timestamp" := CopyStr(TimestampNode.AsXmlElement().InnerText, 1, MaxStrLen(Participation."Cdn Timestamp"));
 
         Participation.Modify();
     end;
@@ -451,55 +446,53 @@ codeunit 6393 "API Requests"
 
     #region Participation Profiles endpoints in Continia Delivery Network
 
-    internal procedure GetParticipationProfile(var ActivatedNetworkProfile: Record "Activated Net. Prof."; ParticipationGUID: Guid)
+    internal procedure GetParticipationProfile(var ActivatedNetworkProfile: Record "Activated Net. Prof."; ParticipationGuid: Guid)
     var
-        APIUrlMgt: Codeunit "API URL Mgt.";
+        ApiUrlMgt: Codeunit "Api Url Mgt.";
         HttpResponseMessage: HttpResponseMessage;
     begin
-        if ExecuteRequest('GET', APIUrlMgt.SingleParticipationProfileURL(ActivatedNetworkProfile.Network, ParticipationGUID, ActivatedNetworkProfile."CDN GUID"), HttpResponseMessage) then
+        if ExecuteRequest('GET', ApiUrlMgt.SingleParticipationProfileUrl(ActivatedNetworkProfile.Network, ParticipationGuid, ActivatedNetworkProfile.Id), HttpResponseMessage) then
             UpdateParticipationProfile(HttpResponseMessage, ActivatedNetworkProfile);
     end;
 
-    internal procedure PostParticipationProfile(TempActivatedNetworkProfile: Record "Activated Net. Prof." temporary; ParticipationGUID: Guid)
+    internal procedure PostParticipationProfile(TempActivatedNetworkProfile: Record "Activated Net. Prof." temporary; ParticipationGuid: Guid)
     var
-        APIUrlMgt: Codeunit "API URL Mgt.";
+        ApiUrlMgt: Codeunit "Api Url Mgt.";
         HttpResponseMessage: HttpResponseMessage;
         HttpContentData: Text;
     begin
         HttpContentData := GetParticipationProfilesRequest(TempActivatedNetworkProfile);
 
-        if ExecuteRequest('POST', APIUrlMgt.ParticipationProfilesURL(TempActivatedNetworkProfile.Network, ParticipationGUID), HttpContentData, HttpResponseMessage) then
+        if ExecuteRequest('POST', ApiUrlMgt.ParticipationProfilesUrl(TempActivatedNetworkProfile.Network, ParticipationGuid), HttpContentData, HttpResponseMessage) then
             UpdateParticipationProfile(HttpResponseMessage, TempActivatedNetworkProfile);
     end;
 
-    internal procedure PatchParticipationProfiles(var ActivatedNetworkProfile: Record "Activated Net. Prof."; ParticipationGUID: Guid)
+    internal procedure PatchParticipationProfiles(var ActivatedNetworkProfile: Record "Activated Net. Prof."; ParticipationGuid: Guid)
     var
-        APIUrlMgt: Codeunit "API URL Mgt.";
+        ApiUrlMgt: Codeunit "Api Url Mgt.";
         HttpResponseMessage: HttpResponseMessage;
         HttpContentData: Text;
     begin
         HttpContentData := GetParticipationProfilesRequest(ActivatedNetworkProfile);
 
-        if ExecuteRequest('PATCH', APIUrlMgt.SingleParticipationProfileURL(ActivatedNetworkProfile.Network, ParticipationGUID, ActivatedNetworkProfile."CDN GUID"), HttpContentData, HttpResponseMessage) then
+        if ExecuteRequest('PATCH', ApiUrlMgt.SingleParticipationProfileUrl(ActivatedNetworkProfile.Network, ParticipationGuid, ActivatedNetworkProfile.Id), HttpContentData, HttpResponseMessage) then
             UpdateParticipationProfile(HttpResponseMessage, ActivatedNetworkProfile);
     end;
 
-    internal procedure DeleteParticipationProfiles(var ActivatedNetworkProfile: Record "Activated Net. Prof."; ParticipationGUID: Guid)
+    internal procedure DeleteParticipationProfiles(var ActivatedNetworkProfile: Record "Activated Net. Prof."; ParticipationGuid: Guid)
     var
-        APIUrlMgt: Codeunit "API URL Mgt.";
+        ApiUrlMgt: Codeunit "Api Url Mgt.";
         HttpResponseMessage: HttpResponseMessage;
     begin
-        if ExecuteRequest('DELETE', APIUrlMgt.SingleParticipationProfileURL(ActivatedNetworkProfile.Network, ParticipationGUID, ActivatedNetworkProfile."Network Profile ID"), HttpResponseMessage) then begin
+        if ExecuteRequest('DELETE', ApiUrlMgt.SingleParticipationProfileUrl(ActivatedNetworkProfile.Network, ParticipationGuid, ActivatedNetworkProfile."Network Profile Id"), HttpResponseMessage) then begin
             ActivatedNetworkProfile.Validate(Disabled, CreateDateTime(Today, Time));
             ActivatedNetworkProfile.Modify();
         end;
     end;
 
-    [InherentPermissions(PermissionObjectType::TableData, Database::"Participation", 'r', InherentPermissionsScope::Both)]
-    [InherentPermissions(PermissionObjectType::TableData, Database::"Activated Net. Prof.", 'rm', InherentPermissionsScope::Both)]
     internal procedure GetAllParticipationProfiles(Participation: Record "Participation")
     var
-        APIUrlMgt: Codeunit "API URL Mgt.";
+        ApiUrlMgt: Codeunit "Api Url Mgt.";
         IsLastPage: Boolean;
         HttpResponseMessage: HttpResponseMessage;
         CurrPage: Integer;
@@ -510,8 +503,8 @@ codeunit 6393 "API Requests"
         IsLastPage := false;
         repeat
             CurrPage += 1;
-            if ExecuteRequest('GET', APIUrlMgt.ParticipationProfilesURL(Participation.Network, Participation."CDN GUID", CurrPage, PageSize), HttpResponseMessage) then begin
-                HandleAPIError(HttpResponseMessage);
+            if ExecuteRequest('GET', ApiUrlMgt.ParticipationProfilesUrl(Participation.Network, Participation.Id, CurrPage, PageSize), HttpResponseMessage) then begin
+                HandleApiError(HttpResponseMessage);
                 IsLastPage := ReadParticipationProfilesResponse(HttpResponseMessage, Participation, PageSize);
             end;
         until IsLastPage;
@@ -549,17 +542,17 @@ codeunit 6393 "API Requests"
     var
         ParticipationProfileNode: XmlElement;
         ProfileDirectionNode: XmlElement;
-        ProfileIDNode: XmlElement;
+        ProfileIdNode: XmlElement;
     begin
         ParticipationProfileNode := XmlElement.Create('participation_profile');
 
         ProfileDirectionNode := XmlElement.Create('direction');
-        ProfileDirectionNode.Add(XmlText.Create(ActivatedNetworkProfile.GetParticipAPIDirectionEnum()));
+        ProfileDirectionNode.Add(XmlText.Create(ActivatedNetworkProfile.GetParticipApiDirectionEnum()));
         ParticipationProfileNode.Add(ProfileDirectionNode);
 
-        ProfileIDNode := XmlElement.Create('network_profile_id');
-        ProfileIDNode.Add(XmlText.Create(GetGUIDAsText(ActivatedNetworkProfile."Network Profile ID")));
-        ParticipationProfileNode.Add(ProfileIDNode);
+        ProfileIdNode := XmlElement.Create('network_profile_id');
+        ProfileIdNode.Add(XmlText.Create(GetGuidAsText(ActivatedNetworkProfile."Network Profile Id")));
+        ParticipationProfileNode.Add(ProfileIdNode);
 
         ParticipationProfileNode.WriteTo(RequestBody);
     end;
@@ -567,30 +560,30 @@ codeunit 6393 "API Requests"
     local procedure CreateOrUpdateParticipProfiles(Participation: Record "Participation"; ProfilesNode: XmlNode)
     var
         ActivatedNetworkProfile: Record "Activated Net. Prof.";
-        ProfileGUID: Guid;
+        ProfileGuid: Guid;
         CreatedNode: XmlNode;
         DirectionNode: XmlNode;
         DisabledNode: XmlNode;
-        ParticipationProfileIDNode: XmlNode;
-        ProfileIDNode: XmlNode;
+        ParticipationProfileIdNode: XmlNode;
+        ProfileIdNode: XmlNode;
         UpdatedNode: XmlNode;
     begin
-        ProfilesNode.SelectSingleNode('network_profile_id', ProfileIDNode);
-        Evaluate(ProfileGUID, ProfileIDNode.AsXmlElement().InnerText);
-        if not ActivatedNetworkProfile.Get(Participation.Network, Participation."Identifier Type ID", Participation."Identifier Value", ProfileGUID) then begin
+        ProfilesNode.SelectSingleNode('network_profile_id', ProfileIdNode);
+        Evaluate(ProfileGuid, ProfileIdNode.AsXmlElement().InnerText);
+        if not ActivatedNetworkProfile.Get(Participation.Network, Participation."Identifier Type Id", Participation."Identifier Value", ProfileGuid) then begin
             ActivatedNetworkProfile.Init();
             ActivatedNetworkProfile.Network := Participation.Network;
-            ActivatedNetworkProfile."Identifier Type ID" := Participation."Identifier Type ID";
+            ActivatedNetworkProfile."Identifier Type Id" := Participation."Identifier Type Id";
             ActivatedNetworkProfile."Identifier Value" := Participation."Identifier Value";
-            ActivatedNetworkProfile."Network Profile ID" := ProfileGUID;
+            ActivatedNetworkProfile."Network Profile Id" := ProfileGuid;
             ActivatedNetworkProfile.Insert();
         end;
 
-        ProfilesNode.SelectSingleNode('participation_profile_id', ParticipationProfileIDNode);
-        Evaluate(ActivatedNetworkProfile."CDN GUID", ParticipationProfileIDNode.AsXmlElement().InnerText);
+        ProfilesNode.SelectSingleNode('participation_profile_id', ParticipationProfileIdNode);
+        Evaluate(ActivatedNetworkProfile.Id, ParticipationProfileIdNode.AsXmlElement().InnerText);
 
         ProfilesNode.SelectSingleNode('direction', DirectionNode);
-        ActivatedNetworkProfile.ValidateAPIDirection(DirectionNode.AsXmlElement().InnerText);
+        ActivatedNetworkProfile.ValidateApiDirection(DirectionNode.AsXmlElement().InnerText);
 
         ProfilesNode.SelectSingleNode('created_utc', CreatedNode);
         Evaluate(ActivatedNetworkProfile.Created, CreatedNode.AsXmlElement().InnerText, 9);
@@ -613,7 +606,7 @@ codeunit 6393 "API Requests"
         CreatedNode: XmlNode;
         DirectionNode: XmlNode;
         DisabledNode: XmlNode;
-        ProfileIDNode: XmlNode;
+        ProfileIdNode: XmlNode;
         UpdatedNode: XmlNode;
     begin
         HttpResponseMessage.Content.ReadAs(ResponseBody);
@@ -621,11 +614,11 @@ codeunit 6393 "API Requests"
             exit;
 
         XmlDocument.ReadFrom(ResponseBody, ResponseXmlDoc);
-        ResponseXmlDoc.SelectSingleNode('/participation_profile/participation_profile_id', ProfileIDNode);
-        Evaluate(ActivatedNetworkProfile."CDN GUID", ProfileIDNode.AsXmlElement().InnerText);
+        ResponseXmlDoc.SelectSingleNode('/participation_profile/participation_profile_id', ProfileIdNode);
+        Evaluate(ActivatedNetworkProfile.Id, ProfileIdNode.AsXmlElement().InnerText);
 
         ResponseXmlDoc.SelectSingleNode('/participation_profile/direction', DirectionNode);
-        ActivatedNetworkProfile.ValidateAPIDirection(DirectionNode.AsXmlElement().InnerText);
+        ActivatedNetworkProfile.ValidateApiDirection(DirectionNode.AsXmlElement().InnerText);
 
         ResponseXmlDoc.SelectSingleNode('/participation_profile/created_utc', CreatedNode);
         Evaluate(ActivatedNetworkProfile.Created, CreatedNode.AsXmlElement().InnerText, 9);
@@ -649,19 +642,19 @@ codeunit 6393 "API Requests"
     internal procedure CheckProfilesNotRegistered(TempActivatedNetworkProfile: Record "Activated Net. Prof." temporary; TempParticipation: Record "Participation" temporary)
     var
         NetworkIdentifier: Record "Network Identifier";
-        APIUrlMgt: Codeunit "API URL Mgt.";
+        ApiUrlMgt: Codeunit "Api Url Mgt.";
         HttpResponseMessage: HttpResponseMessage;
     begin
         NetworkIdentifier := TempParticipation.GetNetworkIdentifier();
 
-        if ExecuteRequest('GET', APIUrlMgt.ParticipationLookupURL(TempParticipation.Network, NetworkIdentifier."Identifier Type ID", TempParticipation."Identifier Value"), HttpResponseMessage) then
+        if ExecuteRequest('GET', ApiUrlMgt.ParticipationLookupUrl(TempParticipation.Network, NetworkIdentifier."Identifier Type Id", TempParticipation."Identifier Value"), HttpResponseMessage) then
             HandleProfilesLookupResponse(HttpResponseMessage, TempActivatedNetworkProfile, TempParticipation);
     end;
 
     local procedure HandleProfilesLookupResponse(var HttpResponseMessage: HttpResponseMessage; var TempActivatedNetworkProfile: Record "Activated Net. Prof." temporary; var TempParticipation: Record "Participation" temporary)
     var
         ErrorInfo: ErrorInfo;
-        ProfileGUID: Guid;
+        ProfileGuid: Guid;
         i: Integer;
         j: Integer;
         AccessPointEmail: Text;
@@ -674,7 +667,7 @@ codeunit 6393 "API Requests"
         AccessPointNode: XmlNode;
         APEmailNode: XmlNode;
         APNameNode: XmlNode;
-        ProfileID: XmlNode;
+        ProfileId: XmlNode;
         ProfileNode: XmlNode;
         AccessPointNodeList: XmlNodeList;
         ProfilesNodeList: XmlNodeList;
@@ -690,9 +683,9 @@ codeunit 6393 "API Requests"
             AccessPointNode.SelectNodes('supported_profiles', ProfilesNodeList);
             for j := 1 to ProfilesNodeList.Count do begin
                 ProfilesNodeList.Get(j, ProfileNode);
-                if ProfileNode.SelectSingleNode('network_profile_id', ProfileID) then begin
-                    Evaluate(ProfileGUID, ProfileID.AsXmlElement().InnerText);
-                    if TempActivatedNetworkProfile.Get(TempParticipation.Network, TempParticipation."Identifier Type ID", TempParticipation."Identifier Value", ProfileGUID) then begin
+                if ProfileNode.SelectSingleNode('network_profile_id', ProfileId) then begin
+                    Evaluate(ProfileGuid, ProfileId.AsXmlElement().InnerText);
+                    if TempActivatedNetworkProfile.Get(TempParticipation.Network, TempParticipation."Identifier Type Id", TempParticipation."Identifier Value", ProfileGuid) then begin
                         AccessPointNode.SelectSingleNode('name', APNameNode);
                         AccessPointNode.SelectSingleNode('email', APEmailNode);
                         AccessPointName := APNameNode.AsXmlElement().InnerText;
@@ -712,7 +705,7 @@ codeunit 6393 "API Requests"
 
         if RegisteredProfilesErrText <> '' then begin
             ErrorInfo.Title := ParticipationAlreadyRegisteredTitleErr;
-            ErrorInfo.Message := StrSubstNo(ParticipationAlreadyRegisteredErr, TempParticipation.Network, TempParticipation."Identifier Type ID", TempParticipation."Identifier Value");
+            ErrorInfo.Message := StrSubstNo(ParticipationAlreadyRegisteredErr, TempParticipation.Network, TempParticipation."Identifier Type Id", TempParticipation."Identifier Value");
             ErrorInfo.DetailedMessage(DetailedErrText);
             Error(ErrorInfo);
         end
@@ -724,7 +717,7 @@ codeunit 6393 "API Requests"
 
     internal procedure GetDocumentsForCompany(var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     var
-        APIUrlMgt: Codeunit "API URL Mgt.";
+        ApiUrlMgt: Codeunit "Api Url Mgt.";
         CredentialManagement: Codeunit "Credential Management";
         CurrPage: Integer;
         PageSize: Integer;
@@ -732,7 +725,7 @@ codeunit 6393 "API Requests"
         CurrPage := 1;
         PageSize := 100; // only get 100 documents at a time.
 
-        if ExecuteRequest('GET', APIUrlMgt.DocumentsForCompanyURL(CredentialManagement.GetCompanyId(), CurrPage, PageSize, true), HttpRequest, HttpResponse) then
+        if ExecuteRequest('GET', ApiUrlMgt.DocumentsForCompanyUrl(CredentialManagement.GetCompanyId(), CurrPage, PageSize, true), HttpRequest, HttpResponse) then
             exit(true);
     end;
 
@@ -746,7 +739,7 @@ codeunit 6393 "API Requests"
         ConnectionSetup: Record "Connection Setup";
         CredentialManagement: Codeunit "Credential Management";
         Base64Convert: Codeunit "Base64 Convert";
-        APIUrlMgt: Codeunit "API URL Mgt.";
+        ApiUrlMgt: Codeunit "Api Url Mgt.";
         HttpResponseMessage: HttpResponseMessage;
         ReadStream: InStream;
         HttpContentData: Text;
@@ -764,61 +757,61 @@ codeunit 6393 "API Requests"
 
         RootNode.WriteTo(HttpContentData);
 
-        if ExecuteRequest('POST', APIUrlMgt.PostDocumentsUrl(CredentialManagement.GetCompanyId()), HttpContentData, HttpResponseMessage) then begin
-            SetEDocumentGUID(EDocument."Entry No", GetDocumentGUID(HttpResponseMessage));
+        if ExecuteRequest('POST', ApiUrlMgt.PostDocumentsUrl(CredentialManagement.GetCompanyId()), HttpContentData, HttpResponseMessage) then begin
+            SetEDocumentGuid(EDocument."Entry No", GetDocumentGuid(HttpResponseMessage));
             exit(true);
         end;
     end;
 
-    local procedure SetEDocumentGUID(EDocEntryNo: Integer; DocumentID: Guid)
+    local procedure SetEDocumentGuid(EDocEntryNo: Integer; DocumentId: Guid)
     var
         EDocument: Record "E-Document";
     begin
-        if IsNullGuid(DocumentID) then
+        if IsNullGuid(DocumentId) then
             exit;
         if not EDocument.Get(EDocEntryNo) then
             exit;
-        EDocument."Document Id" := DocumentID;
+        EDocument."Document Id" := DocumentId;
         EDocument.Modify();
     end;
 
-    local procedure GetDocumentGUID(var HttpResponseMessage: HttpResponseMessage) DocumentGUID: Guid
+    local procedure GetDocumentGuid(var HttpResponseMessage: HttpResponseMessage) DocumentGuid: Guid
     var
         ResponseBody: Text;
         ResponseXmlDoc: XmlDocument;
-        DocumentGUIDNode: XmlNode;
+        DocumentGuidNode: XmlNode;
     begin
         HttpResponseMessage.Content.ReadAs(ResponseBody);
         if ResponseBody = '' then
             exit;
 
         XmlDocument.ReadFrom(ResponseBody, ResponseXmlDoc);
-        ResponseXmlDoc.SelectSingleNode('/id_result/id', DocumentGUIDNode);
-        Evaluate(DocumentGUID, DocumentGUIDNode.AsXmlElement().InnerText);
-        exit(DocumentGUID);
+        ResponseXmlDoc.SelectSingleNode('/id_result/id', DocumentGuidNode);
+        Evaluate(DocumentGuid, DocumentGuidNode.AsXmlElement().InnerText);
+        exit(DocumentGuid);
     end;
     #endregion
 
     #region Get Technical response
     internal procedure GetTechnicalResponse(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     var
-        APIUrlMgt: Codeunit "API URL Mgt.";
+        ApiUrlMgt: Codeunit "Api Url Mgt.";
         EDocumentErrorHelper: Codeunit "E-Document Error Helper";
-        DocumentGUID: Guid;
+        DocumentGuid: Guid;
         SuccessfullStatusLbl: Label 'SuccessEnum';
         ErrorfullStatusLbl: Label 'ErrorEnum';
         DocumentStatus: Text;
         EDocumentDescription: Text;
         ResponseBody: Text;
         ResponseXmlDoc: XmlDocument;
-        DocumentReceiptIDNode: XmlNode;
+        DocumentReceiptIdNode: XmlNode;
         DocumentStatusNode: XmlNode;
         ErrorCodeNode: XmlNode;
         ErrorMessageNode: XmlNode;
         TechnicalResponseNode: XmlNode;
     begin
-        Evaluate(DocumentGUID, EDocument."Document Id");
-        if ExecuteRequest('GET', APIUrlMgt.TechnicalResponseURL(DocumentGUID), HttpRequest, HttpResponse) then begin
+        Evaluate(DocumentGuid, EDocument."Document Id");
+        if ExecuteRequest('GET', ApiUrlMgt.TechnicalResponseUrl(DocumentGuid), HttpRequest, HttpResponse) then begin
             HttpResponse.Content.ReadAs(ResponseBody);
             if ResponseBody = '' then
                 exit(false);
@@ -826,8 +819,8 @@ codeunit 6393 "API Requests"
             XmlDocument.ReadFrom(ResponseBody, ResponseXmlDoc);
             ResponseXmlDoc.SelectSingleNode('/technical_response', TechnicalResponseNode);
 
-            if TechnicalResponseNode.SelectSingleNode('document_receipt_id', DocumentReceiptIDNode) then begin
-                Evaluate(EDocument."Filepart Id", DocumentReceiptIDNode.AsXmlElement().InnerText);
+            if TechnicalResponseNode.SelectSingleNode('document_receipt_id', DocumentReceiptIdNode) then begin
+                Evaluate(EDocument."Filepart Id", DocumentReceiptIdNode.AsXmlElement().InnerText);
                 EDocument.Modify();
             end;
 
@@ -836,7 +829,7 @@ codeunit 6393 "API Requests"
             case DocumentStatus of
                 SuccessfullStatusLbl:
                     begin
-                        MarkDocumentAsProcessed(DocumentGUID);
+                        MarkDocumentAsProcessed(DocumentGuid);
                         exit(true);
                     end;
                 ErrorfullStatusLbl:
@@ -844,7 +837,7 @@ codeunit 6393 "API Requests"
                         if TechnicalResponseNode.SelectSingleNode('error_code', ErrorCodeNode) and TechnicalResponseNode.SelectSingleNode('error_message', ErrorMessageNode) then
                             EDocumentDescription := StrSubstNo('%1 - %2', ErrorCodeNode.AsXmlElement().InnerText, ErrorMessageNode.AsXmlElement().InnerText);
                         EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, EDocumentDescription);
-                        MarkDocumentAsProcessed(DocumentGUID);
+                        MarkDocumentAsProcessed(DocumentGuid);
                         exit(false);
                     end;
             end;
@@ -855,11 +848,11 @@ codeunit 6393 "API Requests"
     #endregion;
 
     #region Get Document Business Responses
-    internal procedure GetBusinessResponses(DocumentGUID: Guid; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
+    internal procedure GetBusinessResponses(DocumentGuid: Guid; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     var
-        APIUrlMgt: Codeunit "API URL Mgt.";
+        ApiUrlMgt: Codeunit "Api Url Mgt.";
     begin
-        exit(ExecuteRequest('GET', APIUrlMgt.BusinessResponseURL(DocumentGUID), HttpRequest, HttpResponse))
+        exit(ExecuteRequest('GET', ApiUrlMgt.BusinessResponseUrl(DocumentGuid), HttpRequest, HttpResponse))
     end;
 
     #endregion
@@ -867,39 +860,39 @@ codeunit 6393 "API Requests"
     #region Perform actions on document
 
     // Cancel document
-    internal procedure CancelDocument(DocumentGUID: Guid; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
+    internal procedure CancelDocument(DocumentGuid: Guid; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     begin
-        exit(PerformActionOnDocument(DocumentGUID, 'CancelEnum', HttpRequest, HttpResponse));
+        exit(PerformActionOnDocument(DocumentGuid, 'CancelEnum', HttpRequest, HttpResponse));
     end;
 
     // Mark document as processed
-    internal procedure MarkDocumentAsProcessed(DocumentGUID: Guid): Boolean
+    internal procedure MarkDocumentAsProcessed(DocumentGuid: Guid): Boolean
     var
         HttpRequest: HttpRequestMessage;
         HttpResponse: HttpResponseMessage;
     begin
-        exit(PerformActionOnDocument(DocumentGUID, 'MarkAsProcessedEnum', HttpRequest, HttpResponse));
+        exit(PerformActionOnDocument(DocumentGuid, 'MarkAsProcessedEnum', HttpRequest, HttpResponse));
     end;
 
-    internal procedure ApproveDocument(DocumentGUID: Guid): Boolean
+    internal procedure ApproveDocument(DocumentGuid: Guid): Boolean
     var
         HttpRequest: HttpRequestMessage;
         HttpResponse: HttpResponseMessage;
     begin
-        exit(PerformActionOnDocument(DocumentGUID, 'ApproveEnum', HttpRequest, HttpResponse));
+        exit(PerformActionOnDocument(DocumentGuid, 'ApproveEnum', HttpRequest, HttpResponse));
     end;
 
-    internal procedure RejectDocument(DocumentGUID: Guid): Boolean
+    internal procedure RejectDocument(DocumentGuid: Guid): Boolean
     var
         HttpRequest: HttpRequestMessage;
         HttpResponse: HttpResponseMessage;
     begin
-        exit(PerformActionOnDocument(DocumentGUID, 'RejectEnum', HttpRequest, HttpResponse));
+        exit(PerformActionOnDocument(DocumentGuid, 'RejectEnum', HttpRequest, HttpResponse));
     end;
 
-    internal procedure PerformActionOnDocument(DocumentGUID: Guid; Action: Text; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
+    internal procedure PerformActionOnDocument(DocumentGuid: Guid; Action: Text; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
     var
-        APIUrlMgt: Codeunit "API URL Mgt.";
+        ApiUrlMgt: Codeunit "Api Url Mgt.";
         HttpContentData: Text;
         ActionNode: XmlElement;
         RootNode: XmlElement;
@@ -912,19 +905,19 @@ codeunit 6393 "API Requests"
 
         RootNode.WriteTo(HttpContentData);
 
-        exit(ExecuteRequest('POST', APIUrlMgt.DocumentActionUrl(DocumentGUID), HttpContentData, HttpRequest, HttpResponse));
+        exit(ExecuteRequest('POST', ApiUrlMgt.DocumentActionUrl(DocumentGuid), HttpContentData, HttpRequest, HttpResponse));
     end;
     #endregion
 
     #region Helper functions
-    internal procedure DownloadFileFromURL(URL: Text; var TempBlob: Codeunit "Temp Blob")
+    internal procedure DownloadFileFromUrl(Url: Text; var TempBlob: Codeunit "Temp Blob")
     var
         HttpClient: HttpClient;
         HttpResponseMessage: HttpResponseMessage;
         ReadStream: InStream;
         WriteStream: OutStream;
     begin
-        HttpClient.Get(URL, HttpResponseMessage);
+        HttpClient.Get(Url, HttpResponseMessage);
         TempBlob.CreateOutStream(WriteStream);
         HttpResponseMessage.Content.ReadAs(ReadStream);
         CopyStream(WriteStream, ReadStream);
@@ -980,10 +973,10 @@ codeunit 6393 "API Requests"
         end;
 
         if HttpClient.Send(HttpRequestMessage, HttpResponseMessage) then
-            exit(HandleAPIError(HttpResponseMessage));
+            exit(HandleApiError(HttpResponseMessage));
     end;
 
-    internal procedure HandleAPIError(var HttpResponseMessage: HttpResponseMessage): Boolean
+    internal procedure HandleApiError(var HttpResponseMessage: HttpResponseMessage): Boolean
     var
         HttpStatusCode: Integer;
         ResponseBody: Text;
@@ -996,33 +989,33 @@ codeunit 6393 "API Requests"
         HttpResponseMessage.Content().ReadAs(ResponseBody);
         if ResponseBody <> '' then
             if not XmlDocument.ReadFrom(ResponseBody, ResponseBodyXML) then
-                exit(ThrowError(UnexpectedAPIErr));
+                exit(ThrowError(UnexpectedApiErr));
 
         ReadErrorResponse(ResponseBodyXML, HttpStatusCode);
     end;
 
     internal procedure ReadErrorResponse(var ResponseXML: XmlDocument; HttpStatusCode: Integer): Boolean
     var
-        APIErrorCode: Text;
-        APIErrorMessage: Text;
+        ApiErrorCode: Text;
+        ApiErrorMessage: Text;
         ErrorCodeNode: XmlNode;
         ErrorMessageNode: XmlNode;
     begin
         if not ResponseXML.SelectSingleNode('/error/code', ErrorCodeNode) then
-            exit(ThrowError(UnexpectedAPIErr));
+            exit(ThrowError(UnexpectedApiErr));
         if not ResponseXML.SelectSingleNode('/error/message', ErrorMessageNode) then
-            exit(ThrowError(UnexpectedAPIErr));
+            exit(ThrowError(UnexpectedApiErr));
 
-        APIErrorCode := ErrorCodeNode.AsXmlElement().InnerText;
-        APIErrorMessage := ErrorMessageNode.AsXmlElement().InnerText;
+        ApiErrorCode := ErrorCodeNode.AsXmlElement().InnerText;
+        ApiErrorMessage := ErrorMessageNode.AsXmlElement().InnerText;
 
         case HttpStatusCode of
             500, 501:
-                exit(ThrowError(StrSubstNo(Error500Err, APIErrorCode, APIErrorMessage)));
+                exit(ThrowError(StrSubstNo(Error500Err, ApiErrorCode, ApiErrorMessage)));
             400, 401, 402, 404:
-                exit(ThrowError(StrSubstNo(APIErr, APIErrorCode, APIErrorMessage)));
+                exit(ThrowError(StrSubstNo(ApiErr, ApiErrorCode, ApiErrorMessage)));
             else
-                exit(ThrowError(UnexpectedAPIErr));
+                exit(ThrowError(UnexpectedApiErr));
         end;
     end;
 
@@ -1046,7 +1039,7 @@ codeunit 6393 "API Requests"
             exit(CountryRegion."ISO Code");
     end;
 
-    internal procedure GetGUIDAsText(Value: Guid): Text[36]
+    internal procedure GetGuidAsText(Value: Guid): Text[36]
     begin
         exit(CopyStr(DelChr(Value, '<>', '{}'), 1, 36))
     end;
@@ -1061,12 +1054,12 @@ codeunit 6393 "API Requests"
     var
         SupressError: Boolean;
         AccessPointDetailedErr: Label 'Access Point: %1// Contact Email: %2// Registered Profiles://%3', Comment = '%1 = Access Point Name, %2 = Access Point Email, %3 = Registered Profiles';
-        APIErr: Label 'The Continia Delivery Network API returned the following error: Error Code %1 - %2', Comment = '%1 = Continia Delivery Network Error Code, %2 = Error Message';
+        ApiErr: Label 'The Continia Delivery Network API returned the following error: Error Code %1 - %2', Comment = '%1 = Continia Delivery Network Error Code, %2 = Error Message';
         Error500Err: Label 'The Continia Delivery Network API returned the following system error: Error Code %1 - %2', Comment = '%1 = Continia Delivery Network Error Code, %2 = Error Message';
         ParticipationAlreadyRegisteredErr: Label 'There is already a registration in %1 network with the identifier type %2 and value %3.', Comment = '%1 = Network Name, %2 = Identifier Type, %3 = Identifier Value';
 
         ParticipationAlreadyRegisteredTitleErr: Label 'Registration Already Exists';
-        UnexpectedAPIErr: Label 'There was an unexpected error while communicating with the Continia Delivery Network API.';
+        UnexpectedApiErr: Label 'There was an unexpected error while communicating with the Continia Delivery Network API.';
 
 
 }

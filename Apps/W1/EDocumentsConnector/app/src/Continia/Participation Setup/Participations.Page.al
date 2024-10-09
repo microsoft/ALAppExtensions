@@ -31,7 +31,7 @@ page 6391 "Participations"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the network name where the participation is registered in.';
                 }
-                field(IdentifierType; "Identifier Scheme ID")
+                field(IdentifierType; "Identifier Scheme Id")
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the type of identifier used for the participation.';
@@ -51,7 +51,7 @@ page 6391 "Participations"
                     ApplicationArea = All;
                     ToolTip = 'Specifies the date and time when the participation was last updated.';
                 }
-                field("CDN GUID"; "CDN GUID")
+                field(Id; Id)
                 {
                     ApplicationArea = All;
                     ToolTip = 'Specifies the unique identifier of the participation in the Continia Delivery Network.';
@@ -63,7 +63,7 @@ page 6391 "Participations"
             part(ActiveProfiles; "Active Profiles")
             {
                 ApplicationArea = All;
-                SubPageLink = Network = field(Network), "Identifier Type ID" = field("Identifier Type ID"), "Identifier Value" = field("Identifier Value");
+                SubPageLink = Network = field(Network), "Identifier Type Id" = field("Identifier Type Id"), "Identifier Value" = field("Identifier Value");
             }
         }
     }
@@ -131,12 +131,12 @@ page 6391 "Participations"
 
                 trigger OnAction()
                 var
-                    APIRequests: Codeunit "API Requests";
+                    ApiRequests: Codeunit "Api Requests";
                 begin
                     if Rec."Registration Status" = Rec."Registration Status"::Draft then
                         Rec.Delete()
                     else
-                        APIRequests.DeleteParticipation(Rec);
+                        ApiRequests.DeleteParticipation(Rec);
                 end;
             }
 

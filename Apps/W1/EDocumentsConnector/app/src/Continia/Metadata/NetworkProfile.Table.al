@@ -12,12 +12,12 @@ table 6394 "Network Profile"
 
     fields
     {
-        field(1; "CDN GUID"; Guid)
+        field(1; Id; Guid)
         {
-            Caption = 'CDN GUID';
+            Caption = 'ID';
             DataClassification = SystemMetadata;
         }
-        field(2; Network; Enum "Network")
+        field(2; Network; Enum "E-Delivery Network")
         {
             Caption = 'Network Name';
             DataClassification = SystemMetadata;
@@ -37,9 +37,9 @@ table 6394 "Network Profile"
             Caption = 'Description';
             DataClassification = SystemMetadata;
         }
-        field(6; "Customization ID"; Text[250])
+        field(6; "Customization Id"; Text[250])
         {
-            Caption = 'Customization ID';
+            Caption = 'Customization Id';
             DataClassification = SystemMetadata;
         }
         field(10; Enabled; Boolean)
@@ -62,12 +62,9 @@ table 6394 "Network Profile"
 
     keys
     {
-        key(Key1; "CDN GUID")
+        key(Key1; Id)
         {
             Clustered = true;
-        }
-        key(Key2; Description)
-        {
         }
     }
 }
