@@ -78,6 +78,11 @@ table 30151 "Shpfy Company Location"
             Caption = 'Default';
             DataClassification = CustomerContent;
         }
+        field(14; "Shpfy Payment Terms Id"; BigInteger)
+        {
+            Caption = 'Shpfy Payment Terms Id';
+            DataClassification = CustomerContent;
+        }
     }
     keys
     {

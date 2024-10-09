@@ -75,6 +75,10 @@ page 30165 "Shpfy Comp. Locations"
                 {
                     ToolTip = 'Specifies the tax registration identifier of the company location.';
                 }
+                field("Shpfy Payment Terms Id"; Rec."Shpfy Payment Terms Id")
+                {
+                    ToolTip = 'Specifies the Shopify Payment Terms Id which is mapped with Customer''s Payment Terms.';
+                }
             }
         }
     }

@@ -75,6 +75,10 @@ codeunit 30286 "Shpfy Company API"
         GraphQuery := CreateGraphQueryUpdateLocationTaxId(CompanyLocation);
         if GraphQuery <> '' then
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
+
+        GraphQuery := CreateGraphQueryUpdateCompanyLocationPaymentTerms(CompanyLocation);
+        if GraphQuery <> '' then
+            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
     end;
 
     internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
@@ -106,6 +110,7 @@ codeunit 30286 "Shpfy Company API"
     internal procedure CreateCompanyGraphQLQuery(var ShopifyCompany: Record "Shpfy Company"; CompanyLocation: Record "Shpfy Company Location"; ShopifyCustomer: Record "Shpfy Customer"): Text
     var
         GraphQuery: TextBuilder;
+        PaymentTermsTemplateIdTxt: Label 'gid://shopify/PaymentTermsTemplate/%1', Comment = '%1 = Payment Terms Template Id', Locked = true;
     begin
         GraphQuery.Append('{"query":"mutation {companyCreate(input: {company: {');
         if ShopifyCompany.Name <> '' then
@@ -135,6 +140,10 @@ codeunit 30286 "Shpfy Company API"
             AddFieldToGraphQuery(GraphQuery, 'countryCode', CompanyLocation."Country/Region Code", false);
         if CompanyLocation."Province Code" <> '' then
             AddFieldToGraphQuery(GraphQuery, 'zoneCode', CompanyLocation."Province Code");
+        if CompanyLocation."Shpfy Payment Terms Id" <> 0 then begin
+            GraphQuery.Append('}, buyerExperienceConfiguration: {');
+            AddFieldToGraphQuery(GraphQuery, 'paymentTermsTemplateId', StrSubstNo(PaymentTermsTemplateIdTxt, CompanyLocation."Shpfy Payment Terms Id"));
+        end;
         GraphQuery.Remove(GraphQuery.Length - 1, 2);
         GraphQuery.Append('}}}) {company {id, name, locations(first: 1) {edges {node {id, name}}}, contactRoles(first:10) {edges {node {id,name}}}}, userErrors {field, message}}}"}');
         exit(GraphQuery.ToText());
@@ -244,6 +253,27 @@ codeunit 30286 "Shpfy Company API"
 
         if HasChange then begin
             GraphQuery.Append(') {companyLocation {id, name, taxRegistrationId}, userErrors {field, message}}}"}');
+            exit(GraphQuery.ToText());
+        end;
+    end;
+
+    internal procedure CreateGraphQueryUpdateCompanyLocationPaymentTerms(var CompanyLocation: Record "Shpfy Company Location"): Text
+    var
+        xCompanyLocation: Record "Shpfy Company Location";
+        HasChange: Boolean;
+        GraphQuery: TextBuilder;
+        CompanyLocationIdTxt: Label 'gid://shopify/CompanyLocation/%1', Comment = '%1 = Company Location Id', Locked = true;
+        PaymentTermsTemplateIdTxt: Label 'gid://shopify/PaymentTermsTemplate/%1', Comment = '%1 = Payment Terms Template Id', Locked = true;
+    begin
+        xCompanyLocation.Get(CompanyLocation.Id);
+        GraphQuery.Append('{"query":"mutation {companyLocationUpdate(companyLocationId: \"' + StrSubstNo(CompanyLocationIdTxt, CompanyLocation.Id) + '\", input: {');
+        GraphQuery.Append('buyerExperienceConfiguration: {');
+        if CompanyLocation."Shpfy Payment Terms Id" <> xCompanyLocation."Shpfy Payment Terms Id" then
+            HasChange := AddFieldToGraphQuery(GraphQuery, 'paymentTermsTemplateId', StrSubstNo(PaymentTermsTemplateIdTxt, CompanyLocation."Shpfy Payment Terms Id"));
+        GraphQuery.Remove(GraphQuery.Length - 1, 2);
+
+        if HasChange then begin
+            GraphQuery.Append('}}) {companyLocation {id, name}, userErrors {field, message}}}"}');
             exit(GraphQuery.ToText());
         end;
     end;
@@ -377,6 +407,7 @@ codeunit 30286 "Shpfy Company API"
                 PhoneNo := CopyStr(DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()')), 1, MaxStrLen(CompanyLocation."Phone No."));
                 CompanyLocation."Phone No." := CopyStr(PhoneNo, 1, MaxStrLen(CompanyLocation."Phone No."));
                 CompanyLocation."Tax Registration Id" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.taxRegistrationId', MaxStrLen(CompanyLocation."Tax Registration Id")), 1, MaxStrLen(CompanyLocation."Tax Registration Id"));
+                CompanyLocation."Shpfy Payment Terms Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'node.buyerExperienceConfiguration.paymentTermsTemplate.id'));
                 if IsDefaultCompanyLocation then begin
                     CompanyLocation.Default := IsDefaultCompanyLocation;
                     IsDefaultCompanyLocation := false;
