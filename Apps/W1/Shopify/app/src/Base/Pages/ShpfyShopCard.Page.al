@@ -425,11 +425,10 @@ page 30101 "Shpfy Shop Card"
                     ApplicationArea = All;
                     ToolTip = 'Specifies how to map companies.';
                 }
-                //JZA: Task 3 Tax ID
                 field("Shpfy Comp.Tax Id Mapping"; Rec."Shpfy Comp. Tax Id Mapping")
                 {
                     ApplicationArea = All;
-                    ToolTip = 'Specifies how to map Shopify Tax ID.';
+                    ToolTip = 'Specifies how to map Shopify Tax ID with Business Central.';
                 }
                 field("Auto Create Unknown Companies"; Rec."Auto Create Unknown Companies")
                 {

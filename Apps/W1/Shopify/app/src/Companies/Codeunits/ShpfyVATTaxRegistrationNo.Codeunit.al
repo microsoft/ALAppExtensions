@@ -2,6 +2,9 @@ namespace Microsoft.Integration.Shopify;
 
 using Microsoft.Sales.Customer;
 
+/// <summary>
+/// Codeunit Shpfy VAT Tax Registration No. (ID 30368) implements Interface Shpfy Tax Registration Id Mapping.
+/// </summary>
 codeunit 30368 "Shpfy VAT Tax Registration No." implements "Shpfy Tax Registration Id Mapping"
 {
     procedure GetTaxRegistrationId(var Customer: Record Customer): Text;
@@ -14,4 +17,3 @@ codeunit 30368 "Shpfy VAT Tax Registration No." implements "Shpfy Tax Registrati
         Customer.SetRange("VAT Registration No.", CompanyLocation."Tax Registration Id");
     end;
 }
-

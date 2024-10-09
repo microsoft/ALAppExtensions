@@ -145,7 +145,6 @@ codeunit 30284 "Shpfy Company Export"
 
         CompanyLocation."Phone No." := Customer."Phone No.";
 
-        //JZA: Task 3 Tax ID
         ShpfyTaxRegistrationIdMapping := Shop."Shpfy Comp. Tax Id Mapping";
         CompanyLocation."Tax Registration Id" := ShpfyTaxRegistrationIdMapping.GetTaxRegistrationId(Customer);
 
@@ -196,7 +195,6 @@ codeunit 30284 "Shpfy Company Export"
             exit;
 
         CompanyLocation.SetRange("Company SystemId", ShopifyCompany.SystemId);
-        CompanyLocation.SetRange(Default, true);
         CompanyLocation.FindFirst();
 
         if FillInShopifyCompany(Customer, ShopifyCompany, CompanyLocation) then begin

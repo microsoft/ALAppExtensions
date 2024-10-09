@@ -13,7 +13,6 @@ enum 30151 "Shpfy Company Mapping" implements "Shpfy ICompany Mapping"
         Caption = 'By Email/Phone';
         Implementation = "Shpfy ICompany Mapping" = "Shpfy Comp. By Email/Phone";
     }
-    //JZA: Task 3 Tax ID
     value(1; "By Tax Id")
     {
         Caption = 'By Tax Id';

@@ -3,7 +3,7 @@ namespace Microsoft.Integration.Shopify;
 using Microsoft.Sales.Customer;
 
 /// <summary>
-/// Codeunit ShoShpfypify Comp. By Email/Phone (ID 30304) implements Interface Shpfy ICompany Mapping.
+/// Codeunit Shpfy Comp. By Tax Id (ID 30366) implements Interface Shpfy ICompany Mapping.
 /// </summary>
 codeunit 30366 "Shpfy Comp. By Tax Id" implements "Shpfy ICompany Mapping"
 {

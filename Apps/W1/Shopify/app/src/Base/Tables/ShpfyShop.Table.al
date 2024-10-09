@@ -788,7 +788,6 @@ table 30102 "Shpfy Shop"
             Caption = 'Weight Unit';
             DataClassification = CustomerContent;
         }
-        //JZA: Task 3 Tax ID
         field(130; "Shpfy Comp. Tax Id Mapping"; Enum "Shpfy Comp. Tax Id Mapping")
         {
             Caption = 'Company Tax Id Mapping';

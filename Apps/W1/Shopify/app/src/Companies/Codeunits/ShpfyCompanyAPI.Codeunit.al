@@ -24,13 +24,11 @@ codeunit 30286 "Shpfy Company API"
         CompanyContactId: BigInteger;
         CompanyContactRoles: Dictionary of [Text, BigInteger];
     begin
-        //JZA: Task 5 - External ID
         GraphQuery := CreateCompanyGraphQLQuery(ShopifyCompany, CompanyLocation, ShopifyCustomer);
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
         if JResponse.SelectToken('$.data.companyCreate.company', JItem) then
             if JItem.IsObject then
                 ShopifyCompany.Id := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'id'));
-        // JZA: Task2 - Task is only for Company location import. Exports won't work with for all locations
         if JsonHelper.GetJsonArray(JResponse, JLocations, 'data.companyCreate.company.locations.edges') then
             if JLocations.Count = 1 then
                 if JLocations.Get(0, JItem) then begin
@@ -110,7 +108,6 @@ codeunit 30286 "Shpfy Company API"
         GraphQuery.Append('{"query":"mutation {companyCreate(input: {company: {');
         if ShopifyCompany.Name <> '' then
             AddFieldToGraphQuery(GraphQuery, 'name', ShopifyCompany.Name);
-        //JZA: Task 5 - External ID
         ShopifyCustomer.CalcFields("Customer No.");
         if ShopifyCustomer."Customer No." <> '' then
             AddFieldToGraphQuery(GraphQuery, 'externalId', ShopifyCustomer."Customer No.");

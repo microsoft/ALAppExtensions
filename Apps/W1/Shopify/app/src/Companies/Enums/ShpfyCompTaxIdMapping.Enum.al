@@ -1,7 +1,7 @@
 namespace Microsoft.Integration.Shopify;
-//JZA: Task 3 Tax ID
+
 /// <summary>
-/// Enum Shopify Company Tax Id Mapping (ID 30165).
+/// Enum Shopify Company Tax Id Mapping (ID 30165) implements Interface Shpfy Tax Registration Id Mapping.
 /// </summary>
 enum 30165 "Shpfy Comp. Tax Id Mapping" implements "Shpfy Tax Registration Id Mapping"
 {
