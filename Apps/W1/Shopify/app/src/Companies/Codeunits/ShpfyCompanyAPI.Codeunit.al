@@ -71,14 +71,9 @@ codeunit 30286 "Shpfy Company API"
         if GraphQuery <> '' then
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
 
-        //JZA: Task 3 Tax ID
-        GraphQuery := CreateGraphQueryUpdateLocationTaxId(CompanyLocation);
-        if GraphQuery <> '' then
-            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
+        CreateGraphQueryUpdateCompanyLocationTaxId(CompanyLocation);
 
-        GraphQuery := CreateGraphQueryUpdateCompanyLocationPaymentTerms(CompanyLocation);
-        if GraphQuery <> '' then
-            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
+        CreateGraphQueryUpdateCompanyLocationPaymentTerms(CompanyLocation);
     end;
 
     internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
@@ -238,44 +233,36 @@ codeunit 30286 "Shpfy Company API"
         end;
     end;
 
-    internal procedure CreateGraphQueryUpdateLocationTaxId(var CompanyLocation: Record "Shpfy Company Location"): Text
+    internal procedure CreateGraphQueryUpdateCompanyLocationTaxId(var CompanyLocation: Record "Shpfy Company Location"): Text
     var
         xCompanyLocation: Record "Shpfy Company Location";
-        HasChange: Boolean;
-        GraphQuery: TextBuilder;
-        CompanyLocationIdTxt: Label 'gid://shopify/CompanyLocation/%1', Comment = '%1 = Company Location Id', Locked = true;
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        Parameters: Dictionary of [Text, Text];
     begin
         xCompanyLocation.Get(CompanyLocation.Id);
-        GraphQuery.Append('{"query":"mutation {companyLocationCreateTaxRegistration(locationId: \"' + StrSubstNo(CompanyLocationIdTxt, CompanyLocation.Id) + '\", ');
-        if CompanyLocation."Tax Registration Id" <> xCompanyLocation."Tax Registration Id" then
-            HasChange := AddFieldToGraphQuery(GraphQuery, 'taxId', CompanyLocation."Tax Registration Id");
-        GraphQuery.Remove(GraphQuery.Length - 1, 2);
+        if CompanyLocation."Tax Registration Id" = xCompanyLocation."Tax Registration Id" then
+            exit;
 
-        if HasChange then begin
-            GraphQuery.Append(') {companyLocation {id, name, taxRegistrationId}, userErrors {field, message}}}"}');
-            exit(GraphQuery.ToText());
-        end;
+        Parameters.Add('LocationId', Format(CompanyLocation.Id));
+        Parameters.Add('TaxId', Format(CompanyLocation."Tax Registration Id"));
+        CommunicationMgt.ExecuteGraphQL(GraphQLType::CreateCompanyLocationTaxId, Parameters);
     end;
 
     internal procedure CreateGraphQueryUpdateCompanyLocationPaymentTerms(var CompanyLocation: Record "Shpfy Company Location"): Text
     var
         xCompanyLocation: Record "Shpfy Company Location";
-        HasChange: Boolean;
-        GraphQuery: TextBuilder;
-        CompanyLocationIdTxt: Label 'gid://shopify/CompanyLocation/%1', Comment = '%1 = Company Location Id', Locked = true;
-        PaymentTermsTemplateIdTxt: Label 'gid://shopify/PaymentTermsTemplate/%1', Comment = '%1 = Payment Terms Template Id', Locked = true;
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        Parameters: Dictionary of [Text, Text];
     begin
         xCompanyLocation.Get(CompanyLocation.Id);
-        GraphQuery.Append('{"query":"mutation {companyLocationUpdate(companyLocationId: \"' + StrSubstNo(CompanyLocationIdTxt, CompanyLocation.Id) + '\", input: {');
-        GraphQuery.Append('buyerExperienceConfiguration: {');
-        if CompanyLocation."Shpfy Payment Terms Id" <> xCompanyLocation."Shpfy Payment Terms Id" then
-            HasChange := AddFieldToGraphQuery(GraphQuery, 'paymentTermsTemplateId', StrSubstNo(PaymentTermsTemplateIdTxt, CompanyLocation."Shpfy Payment Terms Id"));
-        GraphQuery.Remove(GraphQuery.Length - 1, 2);
+        if CompanyLocation."Shpfy Payment Terms Id" = xCompanyLocation."Shpfy Payment Terms Id" then
+            exit;
 
-        if HasChange then begin
-            GraphQuery.Append('}}) {companyLocation {id, name}, userErrors {field, message}}}"}');
-            exit(GraphQuery.ToText());
-        end;
+        Parameters.Add('LocationId', Format(CompanyLocation.Id));
+        Parameters.Add('PaymentTermsId', Format(CompanyLocation."Shpfy Payment Terms Id"));
+        CommunicationMgt.ExecuteGraphQL(GraphQLType::UpdateCompanyLocationPaymentTerms, Parameters);
     end;
 
     internal procedure RetrieveShopifyCompanyIds(var CompanyIds: Dictionary of [BigInteger, DateTime])
