@@ -91,7 +91,7 @@ codeunit 30362 "Shpfy Posted Invoice Export"
         ShopifyCustomer: Record "Shpfy Customer";
         CustomerNotExistingAsCompanyOrCustomerLbl: Label 'Customer not existing as Shopify company or customer.';
         PaymentTermsNotExistLbl: Label 'Payment terms %1 does not exist in Shopify.', Comment = '%1 = Payment Terms Code.';
-        CustomerNoIsDefaultCustomerNoLbl: Label 'Customer No. is the default customer no. from Shopify shop.';
+        CustomerNoIsDefaultCustomerNoLbl: Label 'Bill-to customer no. is the default customer no. for Shopify shop.';
         CustomerTemplateExistsLbl: Label 'Shopify Customer template exists for customer no. %1 shop %2.', Comment = '%1 = Customer No., %2 = Shop Code';
     begin
         ShopifyCompany.SetRange("Customer No.", SalesInvoiceHeader."Bill-to Customer No.");
@@ -154,9 +154,9 @@ codeunit 30362 "Shpfy Posted Invoice Export"
     local procedure CheckSalesInvoiceHeaderLines(SalesInvoiceHeader: Record "Sales Invoice Header"): Boolean
     var
         SalesInvoiceLine: Record "Sales Invoice Line";
-        NoLinesInSalesInvoiceLbl: Label 'No lines in sales invoice.';
+        NoLinesInSalesInvoiceLbl: Label 'No relevant sales invoice lines exist.';
         InvalidQuantityLbl: Label 'Invalid quantity in sales invoice line.';
-        EmptyNoInLineLbl: Label 'No. is empty in Sales Invoice Line.';
+        EmptyNoInLineLbl: Label 'No. field is empty in Sales Invoice Line.';
     begin
         SalesInvoiceLine.SetFilter(Type, '<>%1', SalesInvoiceLine.Type::" ");
         if SalesInvoiceLine.IsEmpty() then begin
