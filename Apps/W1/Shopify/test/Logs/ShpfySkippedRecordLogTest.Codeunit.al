@@ -229,6 +229,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         LibraryInventory: Codeunit "Library - Inventory";
     begin
         // [SCENARIO] Log skipped record when item variant item is blocked and sales blocked with unit of measure set fot shopify variant and shop as UoM Option ID.
+
         // [GIVEN] Shop with UoM as Variant set. Item with variants which is blocked and sales blocked.
         // [GIVEN] Shopify Shop Remove Product Action diffrent than DoNothing.
         Shop := ShpfyInitializeTest.CreateShop();
@@ -329,7 +330,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
         LibrarySales: Codeunit "Library - Sales";
     begin
-        // [SCENARIO] Log skipped record when sales invoice is exported with not existing shopify customer.
+        // [SCENARIO] Log skipped record when sales invoice export is skipped because not existing shopify customer.
 
         // [GIVEN] Shop with setup Posted Invoice Sync = true.
         Shop := ShpfyInitializeTest.CreateShop();
@@ -358,10 +359,9 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         ShopifyCustomer: Record "Shpfy Customer";
         PostedInvoiceExport: Codeunit "Shpfy Posted Invoice Export";
         ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
-        LibrarySales: Codeunit "Library - Sales";
         CustomerInitTest: Codeunit "Shpfy Customer Init Test";
     begin
-        // [SCENARIO] Log skipped record when sales invoice is exported with not existing shopify payment terms.
+        // [SCENARIO] Log skipped record when sales invoice export is skipped because of not existing shopify payment terms.
 
         // [GIVEN] Shop with setup Posted Invoice Sync = true.
         Shop := ShpfyInitializeTest.CreateShop();
@@ -395,11 +395,9 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         PostedInvoiceExport: Codeunit "Shpfy Posted Invoice Export";
         ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
         CustomerInitTest: Codeunit "Shpfy Customer Init Test";
-        LibrarySales: Codeunit "Library - Sales";
-        LibraryPaymentFormat: Codeunit "Library - Payment Format";
         PaymentTermsCode: Code[10];
     begin
-        // [SCENARIO] Log skipped record when sales invoice is exported with customer no which is default shopify shop customer no.
+        // [SCENARIO] Log skipped record when sales invoice export is skipped because bill to customer no which is default shopify shop customer no.
 
         // [GIVEN] Shop with setup Posted Invoice Sync = true.
         Shop := ShpfyInitializeTest.CreateShop();
@@ -440,11 +438,9 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         PostedInvoiceExport: Codeunit "Shpfy Posted Invoice Export";
         ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
         CustomerInitTest: Codeunit "Shpfy Customer Init Test";
-        LibrarySales: Codeunit "Library - Sales";
-        LibraryPaymentFormat: Codeunit "Library - Payment Format";
         PaymentTermsCode: Code[10];
     begin
-        // [SCENARIO] Log skipped record when sales invoice is exported with customer no which is used in shopify customer templates.
+        // [SCENARIO] Log skipped record when sales invoice export is skipped because customer no which is used in shopify customer templates.
 
         // [GIVEN] Shop with setup Posted Invoice Sync = true.
         Shop := ShpfyInitializeTest.CreateShop();
@@ -485,13 +481,10 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SkippedRecord: Record "Shpfy Skipped Record";
         PostedInvoiceExport: Codeunit "Shpfy Posted Invoice Export";
         ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
-        LibrarySales: Codeunit "Library - Sales";
-        LibraryPaymentFormat: Codeunit "Library - Payment Format";
         CustomerInitTest: Codeunit "Shpfy Customer Init Test";
         PaymentTermsCode: Code[10];
-        LibraryRandom: Codeunit "Library - Random";
     begin
-        // [SCENARIO] Log skipped record when sales invoice is exported without sales line.
+        // [SCENARIO] Log skipped record when sales invoice export is skipped because it has no sales lines.
 
         // [GIVEN] Shop with setup Posted Invoice Sync = true.
         Shop := ShpfyInitializeTest.CreateShop();
@@ -529,12 +522,11 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SkippedRecord: Record "Shpfy Skipped Record";
         PostedInvoiceExport: Codeunit "Shpfy Posted Invoice Export";
         ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
-        LibrarySales: Codeunit "Library - Sales";
         LibraryRandom: Codeunit "Library - Random";
         CustomerInitTest: Codeunit "Shpfy Customer Init Test";
         PaymentTermsCode: Code[10];
     begin
-        // [SCENARIO] Log skipped record when sales invoice is exported with sales line with decimal quantity.
+        // [SCENARIO] Log skipped record when sales invoice export is skipped sales line with decimal quantity.
 
         // [GIVEN] Shop with setup Posted Invoice Sync = true.
         Shop := ShpfyInitializeTest.CreateShop();
@@ -573,12 +565,10 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SkippedRecord: Record "Shpfy Skipped Record";
         PostedInvoiceExport: Codeunit "Shpfy Posted Invoice Export";
         ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
-        LibrarySales: Codeunit "Library - Sales";
-        LibraryRandom: Codeunit "Library - Random";
         CustomerInitTest: Codeunit "Shpfy Customer Init Test";
         PaymentTermsCode: Code[10];
     begin
-        // [SCENARIO] Log skipped record when sales invoice is exported with sales line with empty No field.
+        // [SCENARIO] Log skipped record when sales invoice export is skipped when sales invoice line has empty No field.
 
         // [GIVEN] Shop with setup Posted Invoice Sync = true.
         Shop := ShpfyInitializeTest.CreateShop();
@@ -612,17 +602,10 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     var
         SalesShipmentHeader: Record "Sales Shipment Header";
         Shop: Record "Shpfy Shop";
-        Customer: Record Customer;
-        ShopifyCustomer: Record "Shpfy Customer";
         SkippedRecord: Record "Shpfy Skipped Record";
         ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
-        LibrarySales: Codeunit "Library - Sales";
-        LibraryRandom: Codeunit "Library - Random";
-        CustomerInitTest: Codeunit "Shpfy Customer Init Test";
-        SyncShipmentToShopify: Report "Shpfy Sync Shipm. to Shopify";
-        PaymentTermsCode: Code[10];
     begin
-        // [SCENARIO] Log skipped record when sales shipment is exported without shipment lines.
+        // [SCENARIO] Log skipped record when sales shipment export is skipped because not existing shipment lines.
 
         // [GIVEN] Shop
         Shop := ShpfyInitializeTest.CreateShop();
@@ -646,17 +629,10 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SalesShipmentHeader: Record "Sales Shipment Header";
         SalesShipmentLine: Record "Sales Shipment Line";
         Shop: Record "Shpfy Shop";
-        Customer: Record Customer;
-        ShopifyCustomer: Record "Shpfy Customer";
         SkippedRecord: Record "Shpfy Skipped Record";
         ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
-        LibrarySales: Codeunit "Library - Sales";
-        LibraryRandom: Codeunit "Library - Random";
-        CustomerInitTest: Codeunit "Shpfy Customer Init Test";
-        SyncShipmentToShopify: Report "Shpfy Sync Shipm. to Shopify";
-        PaymentTermsCode: Code[10];
     begin
-        // [SCENARIO] Log skipped record when sales shipment is exported with not existing shopify order.
+        // [SCENARIO] Log skipped record when sales shipment export is skipped because not existing related shopify order.
 
         // [GIVEN] Shop
         Shop := ShpfyInitializeTest.CreateShop();
@@ -688,17 +664,11 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         Shop: Record "Shpfy Shop";
         ShopifyOrderHeader: Record "Shpfy Order Header";
         ShopifyOrderLine: Record "Shpfy Order Line";
-        Customer: Record Customer;
-        ShopifyCustomer: Record "Shpfy Customer";
         SkippedRecord: Record "Shpfy Skipped Record";
         ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
-        LibrarySales: Codeunit "Library - Sales";
-        LibraryRandom: Codeunit "Library - Random";
-        CustomerInitTest: Codeunit "Shpfy Customer Init Test";
         ExportShipments: Codeunit "Shpfy Export Shipments";
-        PaymentTermsCode: Code[10];
     begin
-        // [SCENARIO] Log skipped record when sales shipment is exported with failed fulfillment response from shopify.
+        // [SCENARIO] Log skipped record when sales shipment is export is skip because theres no fulfillment lines shopify.
 
         // [GIVEN] Shop
         Shop := ShpfyInitializeTest.CreateShop();
@@ -770,6 +740,35 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         // [THEN] Related record is created in shopify skipped record table.
         SkippedRecord.SetRange("Record ID", SalesShipmentHeader.RecordId);
         LibraryAssert.IsFalse(SkippedRecord.IsEmpty(), 'Skipped record is not created');
+    end;
+
+    [Test]
+    procedure UnitTestSkipLoggingWhenShopHasLoggingModeDisabled()
+    var
+        Shop: Record "Shpfy Shop";
+        SkippedRecord: Record "Shpfy Skipped Record";
+        SkipRecordMgt: Codeunit "Shpfy Skip Record Mgt.";
+        RecordID: RecordID;
+        ShopifyId: BigInteger;
+        TableId: Integer;
+    begin
+        // [SCENARIO] Skip logging when setup in shop for logging is Disabled.
+
+        // [GIVEN] Shop with logging mode = Disabled.
+        Shop.Init();
+        Shop.Code := Any.AlphanumericText(20);
+        Shop."Logging Mode" := Enum::"Shpfy Logging Mode"::Disabled;
+        Shop.Insert(false);
+
+        // [WHEN] Invoke Skip Record Management
+        ShopifyId := Any.IntegerInRange(10000, 999999);
+        TableId := Any.IntegerInRange(1, 50000);
+        SkipRecordMgt.LogSkippedRecord(ShopifyId, TableId, RecordID, Any.AlphabeticText(250), Shop);
+
+        // [THEN] No record is created in shopify skipped record table.
+        SkippedRecord.SetRange("Shopify Id", ShopifyId);
+        SkippedRecord.SetRange("Table Id", TableId);
+        LibraryAssert.IsTrue(SkippedRecord.IsEmpty(), 'Skipped record is created');
     end;
 
     local procedure CreateShpfyProduct(var ShopifyProduct: Record "Shpfy Product"; ItemSystemId: Guid; ShopCode: Code[20])
