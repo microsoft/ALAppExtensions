@@ -26,7 +26,6 @@ page 30165 "Shpfy Skipped Records"
                 field("Table Name"; Rec."Table Name") { }
                 field(Description; Rec.Description)
                 {
-
                     trigger OnDrillDown()
                     begin
                         Rec.ShowPage();

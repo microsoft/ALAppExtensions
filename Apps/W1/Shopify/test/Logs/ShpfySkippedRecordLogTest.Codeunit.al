@@ -170,7 +170,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SkippedRecord.SetRange("Record ID", Item.RecordId);
         SkippedRecord.SetRange("Shopify Id", ShpfyProduct.Id);
         LibraryAssert.IsTrue(SkippedRecord.FindFirst(), 'Skipped record is not created');
-        LibraryAssert.AreEqual('Shopify Product is draft.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+        LibraryAssert.AreEqual('Shopify Product is in draft status.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
     end;
 
     [Test]

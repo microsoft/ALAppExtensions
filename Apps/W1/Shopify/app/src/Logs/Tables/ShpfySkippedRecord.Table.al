@@ -61,8 +61,6 @@ table 30159 "Shpfy Skipped Record"
             Caption = 'Skipped Reason';
             ToolTip = 'Specifies the reason why the record was skipped.';
         }
-
-
     }
     keys
     {

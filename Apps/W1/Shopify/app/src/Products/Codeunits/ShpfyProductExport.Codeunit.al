@@ -553,7 +553,7 @@ codeunit 30178 "Shpfy Product Export"
         RecordRef2: RecordRef;
         VariantAction: Option " ",Create,Update;
         ItemIsBlockedLbl: Label 'Item is blocked.';
-        ItemIsDraftLbl: Label 'Shopify Product is draft.';
+        ItemIsDraftLbl: Label 'Shopify Product is in draft status.';
         ItemIsArchivedLbl: Label 'Shopify Product is archived.';
     begin
         if ShopifyProduct.Get(ProductId) and Item.GetBySystemId(ShopifyProduct."Item SystemId") then begin
