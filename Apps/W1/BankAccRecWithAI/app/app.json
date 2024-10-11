@@ -28,7 +28,7 @@
   ],
   "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2206176",
   "resourceExposurePolicy": {
-    "allowDebugging": false,
+    "allowDebugging": true,
     "allowDownloadingSource": false,
     "includeSourceInSymbolFile": false
   },
