@@ -57,11 +57,11 @@ codeunit 30190 "Shpfy Export Shipments"
                 if (JFulfillment.IsObject) then
                     SalesShipmentHeader."Shpfy Fulfillment Id" := OrderFulfillments.ImportFulfillment(SalesShipmentHeader."Shpfy Order Id", JFulfillment)
                 else begin
-                    SkipRecordMgt.LogSkippedRecord(SalesShipmentHeader."Shpfy Order Id", Database::"Sales Shipment Header", SalesShipmentHeader.RecordId, NoFullfilmentCreatedInShopifyLbl, Shop);
+                    SkipRecordMgt.LogSkippedRecord(SalesShipmentHeader."Shpfy Order Id", SalesShipmentHeader.RecordId, NoFullfilmentCreatedInShopifyLbl, Shop);
                     SalesShipmentHeader."Shpfy Fulfillment Id" := -1;
                 end;
             end else begin
-                SkipRecordMgt.LogSkippedRecord(SalesShipmentHeader."Shpfy Order Id", Database::"Sales Shipment Header", SalesShipmentHeader.RecordId, NoCorespondingFulfilmentLinesLbl, Shop);
+                SkipRecordMgt.LogSkippedRecord(SalesShipmentHeader."Shpfy Order Id", SalesShipmentHeader.RecordId, NoCorespondingFulfilmentLinesLbl, Shop);
                 SalesShipmentHeader."Shpfy Fulfillment Id" := -1;
             end;
             SalesShipmentHeader.Modify(true);

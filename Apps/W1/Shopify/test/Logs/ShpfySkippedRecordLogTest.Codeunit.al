@@ -317,7 +317,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         // [THEN] Related record is created in shopify skipped record table.
         SkippedRecord.SetRange("Record ID", SalesInvoiceHeader.RecordId);
         LibraryAssert.IsTrue(SkippedRecord.FindLast(), 'Skipped record is not created');
-        LibraryAssert.AreEqual(StrSubstNo('Payment terms %1 does not exist in Shopify.', PaymentTermsCode), SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+        LibraryAssert.AreEqual(StrSubstNo('Payment terms %1 do not exist in Shopify.', PaymentTermsCode), SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
     end;
 
     [Test]
@@ -626,11 +626,9 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         CreateShopWithDisabledLogging(Shop);
         // [GIVEN] Random Shopify Id
         ShopifyId := Any.IntegerInRange(10000, 999999);
-        // [GIVEN] Random Table Id
-        TableId := Any.IntegerInRange(1, 50000);
 
         // [WHEN] Invoke Skip Record Management
-        SkipRecordMgt.LogSkippedRecord(ShopifyId, TableId, RecordID, Any.AlphabeticText(250), Shop);
+        SkipRecordMgt.LogSkippedRecord(ShopifyId, RecordID, Any.AlphabeticText(250), Shop);
 
         // [THEN] No record is created in shopify skipped record table.
         SkippedRecord.SetRange("Shopify Id", ShopifyId);

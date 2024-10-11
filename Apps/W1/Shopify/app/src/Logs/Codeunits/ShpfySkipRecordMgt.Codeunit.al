@@ -16,7 +16,7 @@ codeunit 30168 "Shpfy Skip Record Mgt."
     /// <param name="RecordId">Record Id of the record.</param>
     /// <param name="SkippedReason">Reason for skipping the record.</param>
     /// <param name="Shop">Shop record.</param>
-    internal procedure LogSkippedRecord(ShopifyId: BigInteger; TableId: Integer; RecordId: RecordID; SkippedReason: Text[250]; Shop: Record "Shpfy Shop")
+    internal procedure LogSkippedRecord(ShopifyId: BigInteger; RecordId: RecordID; SkippedReason: Text[250]; Shop: Record "Shpfy Shop")
     var
         ShpfySkippedRecord: Record "Shpfy Skipped Record";
     begin
@@ -24,17 +24,15 @@ codeunit 30168 "Shpfy Skip Record Mgt."
             exit;
         ShpfySkippedRecord.Init();
         ShpfySkippedRecord.Validate("Shopify Id", ShopifyId);
-        ShpfySkippedRecord.Validate("Table ID", TableId);
+        ShpfySkippedRecord.Validate("Table ID", RecordId.TableNo());
         ShpfySkippedRecord.Validate("Record ID", RecordId);
         ShpfySkippedRecord.Validate("Skipped Reason", SkippedReason);
-        ShpfySkippedRecord.Validate("Created On", CurrentDateTime);
-        ShpfySkippedRecord.Validate("Created Time", DT2Time(CurrentDateTime));
         ShpfySkippedRecord.Insert(true);
     end;
 
-    internal procedure LogSkippedRecord(TableId: Integer; RecordId: RecordID; SkippedReason: Text[250]; Shop: Record "Shpfy Shop")
+    internal procedure LogSkippedRecord(RecordId: RecordID; SkippedReason: Text[250]; Shop: Record "Shpfy Shop")
     begin
-        LogSkippedRecord(0, TableId, RecordId, SkippedReason, Shop);
+        LogSkippedRecord(0, RecordId, SkippedReason, Shop);
     end;
 
 }

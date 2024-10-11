@@ -9,7 +9,7 @@ using Microsoft.Utilities;
 table 30159 "Shpfy Skipped Record"
 {
     Caption = 'Shpfy Skipped Record';
-    DataClassification = SystemMetadata;
+    DataClassification = CustomerContent;
     Access = Internal;
 
     fields
@@ -18,17 +18,18 @@ table 30159 "Shpfy Skipped Record"
         {
             AutoIncrement = true;
             Caption = 'Entry No.';
-            DataClassification = SystemMetadata;
+            ToolTip = 'Specifies the number of the entry, as assigned from the specific number series when the entry was created.';
+
         }
         field(2; "Shopify Id"; BigInteger)
         {
             Caption = 'Skipped Record Id';
-            DataClassification = SystemMetadata;
+            ToolTip = 'Specifies the Shopify Id of the skipped record.';
         }
         field(3; "Table ID"; Integer)
         {
             Caption = 'Table ID';
-            DataClassification = SystemMetadata;
+            ToolTip = 'Specifies the Table ID of the skipped record.';
 
             trigger OnValidate()
             begin
@@ -38,12 +39,12 @@ table 30159 "Shpfy Skipped Record"
         field(4; "Table Name"; Text[250])
         {
             Caption = 'Table Name';
-            DataClassification = SystemMetadata;
+            ToolTip = 'Specifies the Table Name of the skipped record.';
         }
         field(5; "Record ID"; RecordID)
         {
             Caption = 'Record ID';
-            DataClassification = SystemMetadata;
+            ToolTip = 'Specifies the Record ID of the skipped record.';
 
             trigger OnValidate()
             begin
@@ -53,22 +54,12 @@ table 30159 "Shpfy Skipped Record"
         field(6; Description; Text[250])
         {
             Caption = 'Description';
-            DataClassification = SystemMetadata;
+            ToolTip = 'Specifies the description of the skipped record.';
         }
         field(7; "Skipped Reason"; Text[250])
         {
             Caption = 'Skipped Reason';
-            DataClassification = SystemMetadata;
-        }
-        field(8; "Created On"; DateTime)
-        {
-            Caption = 'Created On';
-            DataClassification = SystemMetadata;
-        }
-        field(9; "Created Time"; Time)
-        {
-            Caption = 'Created Time';
-            DataClassification = SystemMetadata;
+            ToolTip = 'Specifies the reason why the record was skipped.';
         }
 
 
@@ -116,20 +107,9 @@ table 30159 "Shpfy Skipped Record"
     /// </summary>
     internal procedure ShowPage()
     var
-        TableMetadata: Record "Table Metadata";
         PageManagement: Codeunit "Page Management";
-        RecordId: RecordID;
     begin
-        RecordId := "Record ID";
-
-        if RecordID.TableNo() = 0 then
-            exit;
-        if not TableMetadata.Get(RecordID.TableNo()) then
-            exit;
-
-        if not TableMetadata.DataIsExternal then begin
-            PageManagement.PageRun(RecordID);
-            exit;
-        end;
+        if "Record ID".TableNo() <> 0 then
+            PageManagement.PageRun("Record ID");
     end;
 }

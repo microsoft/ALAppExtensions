@@ -39,7 +39,7 @@ report 30109 "Shpfy Sync Shipm. to Shopify"
                 ShipmentLine.SetRange(Type, ShipmentLine.Type::"Item");
                 ShipmentLine.SetFilter(Quantity, '>0');
                 if ShipmentLine.IsEmpty() then begin
-                    SkipRecordMgt.LogSkippedRecord("Sales Shipment Header"."Shpfy Order Id", Database::"Sales Shipment Header", "Sales Shipment Header".RecordId, NoLinesApplicable, Shop);
+                    SkipRecordMgt.LogSkippedRecord("Sales Shipment Header"."Shpfy Order Id", "Sales Shipment Header".RecordId, NoLinesApplicable, Shop);
                     "Shpfy Fulfillment Id" := -2;
                     Modify();
                 end else
@@ -48,7 +48,7 @@ report 30109 "Shpfy Sync Shipm. to Shopify"
                         FulfillmentOrdersAPI.GetShopifyFulfillmentOrdersFromShopifyOrder(Shop, "Sales Shipment Header"."Shpfy Order Id");
                         ExportShipments.CreateShopifyFulfillment("Sales Shipment Header");
                     end else
-                        SkipRecordMgt.LogSkippedRecord("Sales Shipment Header"."Shpfy Order Id", Database::"Sales Shipment Header", "Sales Shipment Header".RecordId, StrSubstNo(ShopifyOrderNotExistsLbl, "Sales Shipment Header"."Shpfy Order Id"), Shop);
+                        SkipRecordMgt.LogSkippedRecord("Sales Shipment Header"."Shpfy Order Id", "Sales Shipment Header".RecordId, StrSubstNo(ShopifyOrderNotExistsLbl, "Sales Shipment Header"."Shpfy Order Id"), Shop);
             end;
         }
     }
