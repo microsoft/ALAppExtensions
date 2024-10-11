@@ -54,6 +54,7 @@ codeunit 139606 "Shpfy Shipping Test"
         OrderHeader: Record "Shpfy Order Header";
         OrderLine: Record "Shpfy Order Line";
     begin
+        Any.SetDefaultSeed();
         Clear(OrderHeader);
         OrderHeader."Shopify Order Id" := Any.IntegerInRange(10000, 99999);
         OrderHeader.Insert();

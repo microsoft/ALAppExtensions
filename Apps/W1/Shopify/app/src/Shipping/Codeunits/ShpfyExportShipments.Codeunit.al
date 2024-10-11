@@ -45,7 +45,7 @@ codeunit 30190 "Shpfy Export Shipments"
         JResponse: JsonToken;
         FulfillmentOrderRequest: Text;
         NoCorespondingFulfilmentLinesLbl: Label 'No corresponding fulfillment lines found.';
-        NoFullfilmentCreatedInShopifyLbl: Label 'No corresponding fulfillment lines found.';
+        NoFullfilmentCreatedInShopifyLbl: Label 'Fullfilment was not created in Shopify.';
     begin
         if ShopifyOrderHeader.Get(SalesShipmentHeader."Shpfy Order Id") then begin
             ShopifyCommunicationMgt.SetShop(ShopifyOrderHeader."Shop Code");

@@ -29,7 +29,12 @@ codeunit 30168 "Shpfy Skip Record Mgt."
         ShpfySkippedRecord.Validate("Skipped Reason", SkippedReason);
         ShpfySkippedRecord.Validate("Created On", CurrentDateTime);
         ShpfySkippedRecord.Validate("Created Time", DT2Time(CurrentDateTime));
-        ShpfySkippedRecord.Insert(false);
+        ShpfySkippedRecord.Insert(true);
+    end;
+
+    internal procedure LogSkippedRecord(TableId: Integer; RecordId: RecordID; SkippedReason: Text[250]; Shop: Record "Shpfy Shop")
+    begin
+        LogSkippedRecord(0, TableId, RecordId, SkippedReason, Shop);
     end;
 
 }
