@@ -38,22 +38,47 @@ codeunit 139616 "Shpfy Customer Metafields Test"
     procedure UnitTestGetMetafieldOwnerValuesFromMetafieldOwnerCustomer()
     var
         ShpfyMetafield: Record "Shpfy Metafield";
-        Shop: Record "Shpfy Shop";
-        ShpfyCustomer: Record "Shpfy Customer";
-        ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
-        ShpfyMetafieldOwnerType: Enum "Shpfy Metafield Owner Type";
         IMetagieldOwnerType: Interface "Shpfy IMetafield Owner Type";
+        TableId: Integer;
     begin
         // [SCENARIO] Get Metafield Owner Values from Metafield Owner Company codeunit
         Initialize();
 
         // [GIVEN] Shopify Metafield created for Customer.
-        // [GIVEN] Shopify Metafield created for Company.
-        ShpfyMetafield.Init();
-        ShpfyMetafield."Owner Id" := Any.IntegerInRange(10000, 99999);
+        CreateMetafield(ShpfyMetafield, Any.IntegerInRange(100000, 99999), Database::"Shpfy Customer");
+        // [GIVEN] IMetafieldOwnerType
+        IMetagieldOwnerType := ShpfyMetafield.GetOwnerType(Database::"Shpfy Customer");
 
+        // [WHEN] Invoke IMetafieldOwnerType.GetTableId
+        TableId := IMetagieldOwnerType.GetTableId();
 
+        // [THEN] TableId = Database::"Shpfy Customer";
+        LibraryAssert.AreEqual(TableId, Database::"Shpfy Customer", 'Table Id is different than Customer');
+    end;
 
+    [Test]
+    procedure UnitTestGetShopCodeFromMetafieldOwnerCustomer()
+    var
+        ShpfyMetafield: Record "Shpfy Metafield";
+        ShpfyCustomer: Record "Shpfy Customer";
+        IMetagieldOwnerType: Interface "Shpfy IMetafield Owner Type";
+        ShopCode: Code[20];
+    begin
+        // [SCENARIO] Get Shop Code from Metafield Owner Customer codeunit
+        Initialize();
+
+        // [GIVEN] Shopify Customer
+        CreateShopifyCustomer(ShpfyCustomer, Shop."Shop Id");
+        // [GIVEN] Shopify Metafield created for Customer.
+        CreateMetafield(ShpfyMetafield, Any.IntegerInRange(100000, 99999), Database::"Shpfy Customer");
+        // [GIVEN] IMetafieldOwnerType
+        IMetagieldOwnerType := ShpfyMetafield.GetOwnerType(Database::"Shpfy Customer");
+
+        // [WHEN] Invoke IMetafieldOwnerType.GetShopCode
+        ShopCode := IMetagieldOwnerType.GetShopCode(ShpfyMetafield."Owner Id");
+
+        // [THEN] ShopCode = Shop.Code;
+        LibraryAssert.AreEqual(ShopCode, Shop.Code, 'Shop Code is different than Shop');
     end;
 
     [Test]
@@ -72,7 +97,9 @@ codeunit 139616 "Shpfy Customer Metafields Test"
 
         // [GIVEN] Shopify Customer
         CreateShopifyCustomer(ShopifyCustomer, Shop."Shop Id");
-        // [GIVEN] Customer
+        // [GIVEN] Customer metafields
+
+
 
 
 
@@ -86,12 +113,15 @@ codeunit 139616 "Shpfy Customer Metafields Test"
         if IsInitialized then
             exit;
         Shop := ShpfyInitializeTest.CreateShop();
+        Any.SetDefaultSeed();
     end;
 
     local procedure CreateShopifyCustomer(var ShopifyCustomer: Record "Shpfy Customer"; ShopId: BigInteger)
     begin
         ShopifyCustomer.Init();
-
+        ShopifyCustomer.Id := Any.IntegerInRange(100000, 999999);
+        ShopifyCustomer."Shop Id" := ShopId;
+        ShopifyCustomer.Insert(true);
     end;
 
     local procedure CreateShopifyMetafield(var ShpfyMetafield: Record "Shpfy Metafield"; OwnerId: BigInteger; ParentTableId: Integer)
@@ -99,6 +129,14 @@ codeunit 139616 "Shpfy Customer Metafields Test"
         ShpfyMetafield.Init();
         ShpfyMetafield."Owner Id" := OwnerId;
         ShpfyMetafield.Validate("Parent Table No.", ParentTableId);
+        ShpfyMetafield.Insert(true);
+    end;
+
+    local procedure CreateMetafield(var ShpfyMetafield: Record "Shpfy Metafield"; OwnerId: BigInteger; ParentTableId: Integer)
+    begin
+        ShpfyMetafield.Init();
+        ShpfyMetafield."Owner Id" := OwnerId;
+        ShpfyMetafield."Parent Table No." := OwnerId;
         ShpfyMetafield.Insert(true);
     end;
 
