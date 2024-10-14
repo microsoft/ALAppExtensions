@@ -16,7 +16,8 @@ codeunit 6393 "Api Requests"
     Permissions = tabledata "Network Profile" = rimd,
                   tabledata "Network Identifier" = rimd,
                   tabledata "Participation" = rimd,
-                  tabledata "Activated Net. Prof." = rimd;
+                  tabledata "Activated Net. Prof." = rimd,
+                  tabledata "E-Document" = m;
 
     #region Get Network Profiles from Continia Delivery Network Api
 
