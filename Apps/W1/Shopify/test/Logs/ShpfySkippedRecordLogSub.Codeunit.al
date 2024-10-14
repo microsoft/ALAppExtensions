@@ -1,6 +1,5 @@
 codeunit 139583 "Shpfy Skipped Record Log Sub."
 {
-    SingleInstance = true;
     EventSubscriberInstance = Manual;
 
     var

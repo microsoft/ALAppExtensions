@@ -22,8 +22,6 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
 
         Customer: Record Customer;
         SkippedRecord: Record "Shpfy Skipped Record";
-        ShpfyCustomerExport: Codeunit "Shpfy Customer Export";
-        ShpfySkippedRecordLogSub: Codeunit "Shpfy Skipped Record Log Sub.";
     begin
         // [SCENARIO] Log skipped record when customer email is empty on customer export to shopify.
         Initialize();
@@ -32,13 +30,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         CreateCustomerWithEmail(Customer, '');
 
         // [WHEN] Invoke Shopify Customer Export
-        BindSubscription(ShpfySkippedRecordLogSub);
-        ShpfySkippedRecordLogSub.SetShopifyCustomerId(0);
-        ShpfyCustomerExport.SetShop(Shop);
-        ShpfyCustomerExport.SetCreateCustomers(true);
-        Customer.SetRange("No.", Customer."No.");
-        ShpfyCustomerExport.Run(Customer);
-        UnbindSubscription(ShpfySkippedRecordLogSub);
+        InvokeShopifyCustomerExport(Customer, 0);
 
         // [THEN] Related record is created in shopify skipped record table.
         SkippedRecord.SetRange("Record ID", Customer.RecordId);
@@ -52,8 +44,6 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         Customer: Record Customer;
         ShpfyCustomer: Record "Shpfy Customer";
         SkippedRecord: Record "Shpfy Skipped Record";
-        ShpfyCustomerExport: Codeunit "Shpfy Customer Export";
-        ShpfySkippedRecordLogSub: Codeunit "Shpfy Skipped Record Log Sub.";
     begin
         // [SCENARIO] Log skipped record when customer with same email already exist on customer export to shopify.
         Initialize();
@@ -64,13 +54,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         CreateShopifyCustomerWithRandomGuid(ShpfyCustomer);
 
         // [WHEN] Invoke Shopify Customer Export
-        BindSubscription(ShpfySkippedRecordLogSub);
-        ShpfySkippedRecordLogSub.SetShopifyCustomerId(ShpfyCustomer.Id);
-        ShpfyCustomerExport.SetShop(Shop);
-        ShpfyCustomerExport.SetCreateCustomers(true);
-        Customer.SetRange("No.", Customer."No.");
-        ShpfyCustomerExport.Run(Customer);
-        UnbindSubscription(ShpfySkippedRecordLogSub);
+        InvokeShopifyCustomerExport(Customer, ShpfyCustomer.Id);
 
         // [THEN] Related record is created in shopify skipped record table.
         SkippedRecord.SetRange("Record ID", Customer.RecordId);
@@ -109,7 +93,6 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     [Test]
     procedure UnitTestLogProductItemBlockedAndProductArchived()
     var
-
         Item: Record Item;
         ShpfyProduct: Record "Shpfy Product";
         SkippedRecord: Record "Shpfy Skipped Record";
@@ -123,7 +106,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         // [GIVEN] Item that is blocked.
         CreateBlockedItem(Item);
         // [GIVEN] Shpify Product with status archived.
-        CreateSHopifyProductWithStatus(Item, ShpfyProduct, Enum::"Shpfy Product Status"::Archived);
+        CreateShopifyProductWithStatus(Item, ShpfyProduct, Enum::"Shpfy Product Status"::Archived);
 
         // [WHEN] Invoke Shopify Product Export
         ProductExport.SetShop(Shop);
@@ -157,7 +140,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         CreateBlockedItem(Item);
 
         // [GIVEN] Shpify Product with status draft.
-        CreateSHopifyProductWithStatus(Item, ShpfyProduct, Enum::"Shpfy Product Status"::Draft);
+        CreateShopifyProductWithStatus(Item, ShpfyProduct, Enum::"Shpfy Product Status"::Draft);
 
         // [WHEN] Invoke Shopify Product Export
         BindSubscription(ShpfySkippedRecordLogSub);
@@ -287,7 +270,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         // [THEN] Related record is created in shopify skipped record table.
         SkippedRecord.SetRange("Record ID", SalesInvoiceHeader.RecordId);
         LibraryAssert.IsTrue(SkippedRecord.FindLast(), 'Skipped record is not created');
-        LibraryAssert.AreEqual('Customer does not exists as Shopify company of customer.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+        LibraryAssert.AreEqual('Customer does not exists as Shopify company or customer.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
     end;
 
     [Test]
@@ -324,9 +307,9 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     procedure UnitTestLogSalesInvoiceWithCustomerNoIsDefaultCustomerNo()
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
+        ShopWithDefaultCustomerNo: Record "Shpfy Shop";
         Customer: Record Customer;
         SkippedRecord: Record "Shpfy Skipped Record";
-        Shop2: Record "Shpfy Shop";
         PostedInvoiceExport: Codeunit "Shpfy Posted Invoice Export";
         PaymentTermsCode: Code[10];
     begin
@@ -338,16 +321,14 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         // [GIVEN] Shopify Customer
         CreateShopifyCustomer(Customer);
         // [GIVEN] Shop with default customer no set.
-        CreateShop(Shop2, Customer."No.");
+        CreateShopWithDefCustomerNo(ShopWithDefaultCustomerNo, Customer."No.");
         // [GIVEN] Payment Terms Code
-        PaymentTermsCode := CreatePaymentTerms(Shop2.Code);
-        // [GIVEN] Shop with default customer no set.
-        SetCustomerAsDefaultForShop(Shop2, Customer);
+        PaymentTermsCode := CreatePaymentTerms(ShopWithDefaultCustomerNo.Code);
         // [GIVEN] Sales Invoice for default customer no.
-        CreateSalesInvoiceHeader(SalesInvoiceHeader, Shop2."Default Customer No.", PaymentTermsCode);
+        CreateSalesInvoiceHeader(SalesInvoiceHeader, ShopWithDefaultCustomerNo."Default Customer No.", PaymentTermsCode);
 
         // [WHEN] Invoke Shopify Posted Invoice Export
-        PostedInvoiceExport.SetShop(Shop2.Code);
+        PostedInvoiceExport.SetShop(ShopWithDefaultCustomerNo.Code);
         PostedInvoiceExport.ExportPostedSalesInvoiceToShopify(SalesInvoiceHeader);
 
         // [THEN] Related record is created in shopify skipped record table.
@@ -362,7 +343,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SalesInvoiceHeader: Record "Sales Invoice Header";
         Customer: Record Customer;
         SkippedRecord: Record "Shpfy Skipped Record";
-        Shop2: Record "Shpfy Shop";
+        ShopWithCustTemplates: Record "Shpfy Shop";
         ShopifyCustomerTemplate: Record "Shpfy Customer Template";
         PostedInvoiceExport: Codeunit "Shpfy Posted Invoice Export";
         PaymentTermsCode: Code[10];
@@ -372,25 +353,23 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
 
         // [GIVEN] Customer 
         CreateRandomCustomer(Customer);
-        // [GIVEN]  Shop 
-        CreateShop(Shop2, '');
         // [GIVEN] Shopify Customer
         CreateShopifyCustomer(Customer);
+        // [GIVEN]  Shop with Shopify Customer Template for customer no.
+        CreateShopWithCustomerTemplate(ShopWithCustTemplates, ShopifyCustomerTemplate, Customer."No.");
         // [GIVEN] Payment Terms Code
-        PaymentTermsCode := CreatePaymentTerms(Shop2.Code);
-        // [GIVEN] Shopify Customer Template with customer no.
-        CreateShopifyCustomerTemplate(ShopifyCustomerTemplate, Shop2, Customer);
+        PaymentTermsCode := CreatePaymentTerms(ShopWithCustTemplates.Code);
         // [GIVEN] Sales Invoice for default customer no.
         CreateSalesInvoiceHeader(SalesInvoiceHeader, ShopifyCustomerTemplate."Default Customer No.", PaymentTermsCode);
 
         // [WHEN] Invoke Shopify Posted Invoice Export
-        PostedInvoiceExport.SetShop(Shop2.Code);
+        PostedInvoiceExport.SetShop(ShopWithCustTemplates.Code);
         PostedInvoiceExport.ExportPostedSalesInvoiceToShopify(SalesInvoiceHeader);
 
         // [THEN] Related record is created in shopify skipped record table.
         SkippedRecord.SetRange("Record ID", SalesInvoiceHeader.RecordId);
         LibraryAssert.IsTrue(SkippedRecord.FindLast(), 'Skipped record is not created');
-        LibraryAssert.AreEqual(StrSubstNo('Shopify Customer template exists for customer no. %1 shop %2.', Customer."No.", Shop2.Code), SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+        LibraryAssert.AreEqual(StrSubstNo('Shopify Customer template exists for customer no. %1 shop %2.', Customer."No.", ShopWithCustTemplates.Code), SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
     end;
 
     [Test]
@@ -612,7 +591,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     [Test]
     procedure UnitTestSkipLoggingWhenShopHasLoggingModeDisabled()
     var
-
+        ShopWithDisabledLogging: Record "Shpfy Shop";
         SkippedRecord: Record "Shpfy Skipped Record";
         SkipRecordMgt: Codeunit "Shpfy Skip Record Mgt.";
         RecordID: RecordID;
@@ -623,12 +602,12 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         Initialize();
 
         // [GIVEN] Shop with logging mode = Disabled.
-        CreateShopWithDisabledLogging(Shop);
+        CreateShopWithDisabledLogging(ShopWithDisabledLogging);
         // [GIVEN] Random Shopify Id
         ShopifyId := Any.IntegerInRange(10000, 999999);
 
         // [WHEN] Invoke Skip Record Management
-        SkipRecordMgt.LogSkippedRecord(ShopifyId, RecordID, Any.AlphabeticText(250), Shop);
+        SkipRecordMgt.LogSkippedRecord(ShopifyId, RecordID, Any.AlphabeticText(250), ShopWithDisabledLogging);
 
         // [THEN] No record is created in shopify skipped record table.
         SkippedRecord.SetRange("Shopify Id", ShopifyId);
@@ -644,6 +623,8 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         Shop."Can Update Shopify Customer" := true;
         Shop."Can Update Shopify Products" := true;
         Shop.Modify(false);
+
+        Commit();
 
         IsInitialized := true;
     end;
@@ -720,7 +701,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
 
     local procedure CreateShopWithDisabledLogging(var Shop: Record "Shpfy Shop")
     begin
-        CreateShop(Shop, '');
+        CreateShopWithDefCustomerNo(Shop, '');
         Shop."Logging Mode" := Enum::"Shpfy Logging Mode"::Disabled;
         Shop.Modify(false);
     end;
@@ -756,17 +737,12 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         Customer.Insert(false);
     end;
 
-    local procedure SetCustomerAsDefaultForShop(var Shop: Record "Shpfy Shop"; Customer: Record Customer)
-    begin
-        Shop."Default Customer No." := Customer."No.";
-        Shop.Modify(false);
-    end;
 
-    local procedure CreateShopifyCustomerTemplate(var ShopifyCustomerTemplate: Record "Shpfy Customer Template"; Shop: Record "Shpfy Shop"; Customer: Record Customer)
+    local procedure CreateShopifyCustomerTemplate(var ShopifyCustomerTemplate: Record "Shpfy Customer Template"; Shop: Record "Shpfy Shop"; CustomerNo: Code[20])
     begin
         ShopifyCustomerTemplate.Init();
         ShopifyCustomerTemplate."Shop Code" := Shop.Code;
-        ShopifyCustomerTemplate."Default Customer No." := Customer."No.";
+        ShopifyCustomerTemplate."Default Customer No." := CustomerNo;
         ShopifyCustomerTemplate.Insert(false);
     end;
 
@@ -806,7 +782,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         Shop.Modify(false);
     end;
 
-    local procedure CreateSHopifyProductWithStatus(var Item: Record Item; var ShpfyProduct: Record "Shpfy Product"; ShpfyProductStatus: Enum Microsoft.Integration.Shopify."Shpfy Product Status")
+    local procedure CreateShopifyProductWithStatus(var Item: Record Item; var ShpfyProduct: Record "Shpfy Product"; ShpfyProductStatus: Enum Microsoft.Integration.Shopify."Shpfy Product Status")
     begin
         CreateShpfyProduct(ShpfyProduct, Item.SystemId, Shop.Code);
         ShpfyProduct.Status := ShpfyProductStatus;
@@ -821,12 +797,33 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         Customer.Insert(true);
     end;
 
-    local procedure CreateShop(var Shop: Record "Shpfy Shop"; DefaultCustomer: Code[20])
+    local procedure CreateShopWithDefCustomerNo(var Shop: Record "Shpfy Shop"; DefaultCustomer: Code[20])
     begin
         Shop.Init();
         Shop.Code := Any.AlphanumericText(20);
         Shop."Default Customer No." := DefaultCustomer;
         Shop.Insert(false);
+    end;
+
+    local procedure InvokeShopifyCustomerExport(var Customer: Record Customer; ShpfyCustomerId: BigInteger)
+    var
+        ShpfyCustomerExport: Codeunit "Shpfy Customer Export";
+        ShpfySkippedRecordLogSub: Codeunit "Shpfy Skipped Record Log Sub.";
+    begin
+        BindSubscription(ShpfySkippedRecordLogSub);
+        if ShpfyCustomerId <> 0 then
+            ShpfySkippedRecordLogSub.SetShopifyCustomerId(ShpfyCustomerId);
+        ShpfyCustomerExport.SetShop(Shop);
+        ShpfyCustomerExport.SetCreateCustomers(true);
+        Customer.SetRange("No.", Customer."No.");
+        ShpfyCustomerExport.Run(Customer);
+        UnbindSubscription(ShpfySkippedRecordLogSub);
+    end;
+
+    local procedure CreateShopWithCustomerTemplate(var ShopWithCustTemplates: Record "Shpfy Shop"; var ShopifyCustomerTemplate: Record "Shpfy Customer Template"; CustomerNo: Code[20])
+    begin
+        CreateShopWithDefCustomerNo(ShopWithCustTemplates, '');
+        CreateShopifyCustomerTemplate(ShopifyCustomerTemplate, ShopWithCustTemplates, CustomerNo);
     end;
 
     [RequestPageHandler]

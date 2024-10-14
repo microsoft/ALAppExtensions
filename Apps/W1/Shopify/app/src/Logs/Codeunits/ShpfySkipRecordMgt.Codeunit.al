@@ -30,6 +30,12 @@ codeunit 30168 "Shpfy Skip Record Mgt."
         ShpfySkippedRecord.Insert(true);
     end;
 
+    /// <summary>
+    /// Creates log entry for skipped recordwith empty Shopify Id.
+    /// </summary>
+    /// <param name="RecordId">Record Id of the record.</param>
+    /// <param name="SkippedReason">Reason for skipping the record.</param>
+    /// <param name="Shop">Shop record.</param>
     internal procedure LogSkippedRecord(RecordId: RecordID; SkippedReason: Text[250]; Shop: Record "Shpfy Shop")
     begin
         LogSkippedRecord(0, RecordId, SkippedReason, Shop);

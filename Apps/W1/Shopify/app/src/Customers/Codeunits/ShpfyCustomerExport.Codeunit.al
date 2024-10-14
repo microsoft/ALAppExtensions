@@ -91,7 +91,7 @@ codeunit 30116 "Shpfy Customer Export"
         EmptyEmailAddressLbl: Label 'Customer has no e-mail address.';
     begin
         if Customer."E-Mail" = '' then begin
-            ShopifySkipRecordMgt.LogSkippedRecord(Database::Customer, Customer.RecordId, EmptyEmailAddressLbl, Shop);
+            ShopifySkipRecordMgt.LogSkippedRecord(Customer.RecordId, EmptyEmailAddressLbl, Shop);
             exit;
         end;
 

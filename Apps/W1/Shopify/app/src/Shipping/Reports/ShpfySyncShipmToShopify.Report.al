@@ -32,14 +32,14 @@ report 30109 "Shpfy Sync Shipm. to Shopify"
                 ShipmentLine: Record "Sales Shipment Line";
                 Shop: Record "Shpfy Shop";
                 SkipRecordMgt: Codeunit "Shpfy Skip Record Mgt.";
-                NoLinesApplicable: Label 'No lines applicable for fulfillment.';
+                NoLinesApplicableLbl: Label 'No lines applicable for fulfillment.';
                 ShopifyOrderNotExistsLbl: Label 'Shopify order %1 does not exist.', Comment = '%1 = Shopify Order Id';
             begin
                 ShipmentLine.SetRange("Document No.", "No.");
                 ShipmentLine.SetRange(Type, ShipmentLine.Type::"Item");
                 ShipmentLine.SetFilter(Quantity, '>0');
                 if ShipmentLine.IsEmpty() then begin
-                    SkipRecordMgt.LogSkippedRecord("Sales Shipment Header"."Shpfy Order Id", "Sales Shipment Header".RecordId, NoLinesApplicable, Shop);
+                    SkipRecordMgt.LogSkippedRecord("Sales Shipment Header"."Shpfy Order Id", "Sales Shipment Header".RecordId, NoLinesApplicableLbl, Shop);
                     "Shpfy Fulfillment Id" := -2;
                     Modify();
                 end else
