@@ -89,7 +89,7 @@ codeunit 30362 "Shpfy Posted Invoice Export"
     var
         ShopifyCompany: Record "Shpfy Company";
         ShopifyCustomer: Record "Shpfy Customer";
-        CustomerNotExistInShopifyLbl: Label 'Customer not existing as Shopify company or customer.';
+        CustomerNotExistInShopifyLbl: Label 'Customer does not exists as Shopify company of customer.';
         PaymentTermsNotExistLbl: Label 'Payment terms %1 do not exist in Shopify.', Comment = '%1 = Payment Terms Code.';
         CustomerNoIsDefaultCustomerNoLbl: Label 'Bill-to customer no. is the default customer no. for Shopify shop.';
         CustomerTemplateExistsLbl: Label 'Shopify Customer template exists for customer no. %1 shop %2.', Comment = '%1 = Customer No., %2 = Shop Code';

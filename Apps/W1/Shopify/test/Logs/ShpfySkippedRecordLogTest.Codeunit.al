@@ -287,7 +287,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         // [THEN] Related record is created in shopify skipped record table.
         SkippedRecord.SetRange("Record ID", SalesInvoiceHeader.RecordId);
         LibraryAssert.IsTrue(SkippedRecord.FindLast(), 'Skipped record is not created');
-        LibraryAssert.AreEqual('Customer not existing as Shopify company or customer.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+        LibraryAssert.AreEqual('Customer does not exists as Shopify company of customer.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
     end;
 
     [Test]

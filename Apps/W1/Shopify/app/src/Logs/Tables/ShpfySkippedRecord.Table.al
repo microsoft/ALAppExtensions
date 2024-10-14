@@ -30,6 +30,7 @@ table 30159 "Shpfy Skipped Record"
         {
             Caption = 'Table ID';
             ToolTip = 'Specifies the Table ID of the skipped record.';
+            DataClassification = SystemMetadata;
 
             trigger OnValidate()
             begin
@@ -40,6 +41,7 @@ table 30159 "Shpfy Skipped Record"
         {
             Caption = 'Table Name';
             ToolTip = 'Specifies the Table Name of the skipped record.';
+            DataClassification = SystemMetadata;
         }
         field(5; "Record ID"; RecordID)
         {
