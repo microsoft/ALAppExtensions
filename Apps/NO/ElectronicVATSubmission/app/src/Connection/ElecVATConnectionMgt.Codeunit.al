@@ -267,11 +267,7 @@ codeunit 10687 "Elec. VAT Connection Mgt."
         ElecVATLoggingMgt.LogValidationRun();
         TempVATStatementReportLine := VATStatementReportLine;
         TempVATStatementReportLine.Insert();
-#if CLEAN23
         Request := ElecVATCreateContent.CreateVATReportLinesNodeContent(TempVATStatementReportLine);
-#else
-        Request := ElecVATCreateContent.CreateVATReportLinesContent(TempVATStatementReportLine);
-#endif
         ElecVATLoggingMgt.AttachXmlSubmissionTextToVATRepHeader(Request, VATReportHeader, 'mvakode-' + VATStatementReportLine."Box No.");
         Commit();
         InvokePostRequestWithAccessTokenCheck(Response, ElecVATSetup."Validate VAT Return Url", GetXmlContentType(), Request, ValidateVATReturnTxt, ValidateReturnErr);

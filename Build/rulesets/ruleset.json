@@ -90,8 +90,8 @@
       "justification": "Object ID must be in free range."
     },
     {
-      "id":  "PTE0002",
-      "action":  "None",
+      "id": "PTE0002",
+      "action": "None",
       "justification": "PTE ID ranges do not apply to 1st party apps"
     },
     {

@@ -14,11 +14,11 @@ using Microsoft.Inventory.Analysis;
 using Microsoft.Inventory.Ledger;
 using Microsoft.PowerBIReports;
 using Microsoft.Purchases.PowerBIReports;
+using System.TestLibraries.Security.AccessControl;
 
 codeunit 139880 "PowerBI Purchases Test"
 {
     Subtype = Test;
-    TestPermissions = Disabled;
     Access = Internal;
 
     var
@@ -30,6 +30,8 @@ codeunit 139880 "PowerBI Purchases Test"
         LibRandom: Codeunit "Library - Random";
         LibUtility: Codeunit "Library - Utility";
         UriBuilder: Codeunit "Uri Builder";
+        PermissionsMock: Codeunit "Permissions Mock";
+        PowerBICoreTest: Codeunit "PowerBI Core Test";
         ResponseEmptyErr: Label 'Response should not be empty.';
 
     [Test]
@@ -264,11 +266,13 @@ codeunit 139880 "PowerBI Purchases Test"
         Response: Text;
     begin
         // [GIVEN] Value entries exist outside of the query filter
+        PermissionsMock.Assign('SUPER');
         if ItemLedgerEntry.FindLast() then;
         ItemLedgerEntry.Init();
         ItemLedgerEntry."Entry No." += 1;
         ItemLedgerEntry."Entry Type" := ItemLedgerEntry."Entry Type"::Sale;
         ItemLedgerEntry.Insert();
+        PermissionsMock.ClearAssignments();
 
         if ValueEntry.FindLast() then;
         ValueEntry."Entry No." += 1;
@@ -411,6 +415,7 @@ codeunit 139880 "PowerBI Purchases Test"
     begin
         // [SCENARIO] Test GenerateItemPurchasesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Start/End Date"
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Item Purch. Load Date Type" := PBISetup."Item Purch. Load Date Type"::"Start/End Date";
 
@@ -418,6 +423,7 @@ codeunit 139880 "PowerBI Purchases Test"
         PBISetup."Item Purch. Start Date" := Today();
         PBISetup."Item Purch. End Date" := Today() + 10;
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         ExpectedFilterTxt := StrSubstNo('%1..%2', Today(), Today() + 10);
 
@@ -438,12 +444,14 @@ codeunit 139880 "PowerBI Purchases Test"
     begin
         // [SCENARIO] Test GenerateItemPurchasesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = "Relative Date"
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Item Purch. Load Date Type" := PBISetup."Item Purch. Load Date Type"::"Relative Date";
 
         // [GIVEN] A mock date formula value
         Evaluate(PBISetup."Item Purch. Date Formula", '30D');
         PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         ExpectedFilterTxt := StrSubstNo('%1..', CalcDate(PBISetup."Item Purch. Date Formula"));
 
@@ -463,8 +471,11 @@ codeunit 139880 "PowerBI Purchases Test"
     begin
         // [SCENARIO] Test GenerateItemPurchasesReportDateFilter
         // [GIVEN] Power BI setup record is created with Load Date Type = " "
+        PowerBICoreTest.AssignAdminPermissionSet();
         RecreatePBISetup();
         PBISetup."Item Purch. Load Date Type" := PBISetup."Item Purch. Load Date Type"::" ";
+        PBISetup.Modify();
+        PermissionsMock.ClearAssignments();
 
         // [WHEN] GenerateItemPurchasesReportDateFilter executes 
         ActualFilterTxt := PBIMgt.GenerateItemPurchasesReportDateFilter();

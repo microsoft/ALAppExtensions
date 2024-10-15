@@ -2,6 +2,7 @@ namespace Microsoft.SubscriptionBilling;
 
 using Microsoft.Inventory.Item;
 using Microsoft.Finance.Currency;
+using System.Security.AccessControl;
 
 table 8009 "Imported Service Commitment"
 {
@@ -211,7 +212,10 @@ table 8009 "Imported Service Commitment"
         field(102; "Processed by"; Code[50])
         {
             Caption = 'Processed by';
+            DataClassification = EndUserIdentifiableInformation;
+            TableRelation = User."User Name";
             Editable = false;
+            ValidateTableRelation = false;
         }
         field(103; "Processed at"; DateTime)
         {

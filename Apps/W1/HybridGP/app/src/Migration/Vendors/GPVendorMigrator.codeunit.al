@@ -372,7 +372,9 @@ codeunit 4022 "GP Vendor Migrator"
             VendorDataMigrationFacade.SetGenBusPostingGroup(CopyStr(PostingGroupCodeTxt, 1, MaxStrLen(GenBusinessPostingGroup."Code")));
         end;
 
+#pragma warning disable AL0432
         VendorDataMigrationFacade.SetHomePage(COPYSTR(GPVendor.INET2, 1, MaxStrLen(Vendor."Home Page")));
+#pragma warning restore AL0432
 
         GPPM00200.SetLoadFields(VADDCDPR);
         if GPPM00200.Get(VendorNo) then
@@ -890,11 +892,4 @@ codeunit 4022 "GP Vendor Migrator"
         if PayablesAccountNo = '' then
             PayablesAccountNo := DefaultPayablesAccountNo;
     end;
-
-#if not CLEAN23
-    [Obsolete('Updated to use the OnMigrateVendorPostingGroups event subscriber.', '23.0')]
-    procedure MigrateVendorClasses()
-    begin
-    end;
-#endif
 }

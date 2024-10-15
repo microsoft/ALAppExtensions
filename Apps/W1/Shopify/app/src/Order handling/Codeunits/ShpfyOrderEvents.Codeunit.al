@@ -17,29 +17,6 @@ codeunit 30162 "Shpfy Order Events"
     begin
     end;
 
-#if not CLEAN23
-    [Obsolete('This event is not used.', '23.0')]
-    [IntegrationEvent(false, false)]
-    /// <summary> 
-    /// Raised After Modify Shopify Order.
-    /// </summary>
-    /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    /// <param name="OldShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    internal procedure OnAfterModifyShopifyOrder(var ShopifyOrderHeader: Record "Shpfy Order Header"; var OldShopifyOrderHeader: Record "Shpfy Order Header")
-    begin
-    end;
-
-    [Obsolete('This event is not used.', '23.0')]
-    [IntegrationEvent(false, false)]
-    /// <summary> 
-    /// Raised After NewShopify Order.
-    /// </summary>
-    /// <param name="ShopifyOrderHeader">Parameter of type Record "Shopify Order Header".</param>
-    internal procedure OnAfterNewShopifyOrder(var ShopifyOrderHeader: Record "Shpfy Order Header")
-    begin
-    end;
-#endif
-
     [InternalEvent(false)]
     /// <summary> 
     /// Description for OnBeforeMapCustomer.

@@ -534,13 +534,5 @@ report 11016 "Create XML-File VAT Adv.Notif."
     local procedure OnAfterGetRecordOnAfterVATStmtNameSetFilters(var SalesVATAdvanceNotif: Record "Sales VAT Advance Notif."; var VATStatementName: Record "VAT Statement Name")
     begin
     end;
-
-#if not CLEAN23
-    [Obsolete('Removing with local function.', '23.0')]
-    [IntegrationEvent(false, false)]
-    local procedure OnGetProductVersion(var ProductVersion: Text)
-    begin
-    end;
-#endif
 }
 

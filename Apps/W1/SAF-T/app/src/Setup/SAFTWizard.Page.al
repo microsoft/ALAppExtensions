@@ -441,14 +441,6 @@ page 5280 "SAF-T Wizard"
         AuditMappingHelper: Codeunit "Audit Mapping Helper";
         MappingHelperSAFT: Codeunit "Mapping Helper SAF-T";
     begin
-#if not CLEAN23
-        if not SAFTDataMgt.IsFeatureEnabled() then
-            if not IsRunFromFeatureMgt then begin
-                SAFTDataMgt.ShowNotEnabledMessage(CurrPage.Caption());
-                Error('');
-            end;
-#endif
-
         FeatureTelemetry.LogUptake('0000KTC', SAFTExportTok, Enum::"Feature Uptake Status"::Discovered);
         Commit();
 
@@ -502,9 +494,6 @@ page 5280 "SAF-T Wizard"
         SetupCompleted: Boolean;
         DataUpgradeAgreed: Boolean;
         DataUpgradeRequired: Boolean;
-#if not CLEAN23
-        IsRunFromFeatureMgt: Boolean;
-#endif
         StandardAccTypeNotSpecifiedErr: label 'A standard account type is not specified.';
         SetupNotCompletedQst: label 'Set up SAF-T has not been completed.\\Are you sure that you want to exit?';
         MappingSourceNotLoadedMsg: label 'A source for mapping was not loaded due to the following error: %1.', Comment = '%1 - error text';
@@ -843,12 +832,4 @@ page 5280 "SAF-T Wizard"
     begin
         VATStartingDateSetCount := MappingHelperSAFT.GetVATPostingSetupMappedCount();
     end;
-
-#if not CLEAN23
-    [Obsolete('Feature will be enabled by default.', '23.0')]
-    procedure SetRunFromFeatureMgt()
-    begin
-        IsRunFromFeatureMgt := true;
-    end;
-#endif
 }

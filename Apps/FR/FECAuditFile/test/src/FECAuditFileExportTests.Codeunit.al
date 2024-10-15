@@ -2173,11 +2173,7 @@ codeunit 148017 "FEC Audit File Export Tests"
         CreateAndPostBankGenJnlLines(BankAccount, "Gen. Journal Account Type"::"Bank Account", StartingDate);
 
         // [WHEN] Export Tax Audit report with "Use Transaction No." = true
-#if CLEAN23
         RunFECExport(AuditFile, '', StartingDate, StartingDate, false);
-#else
-        RunFECExport(AuditFile, '', StartingDate, StartingDate, false, true);
-#endif
 
         // [THEN] "Transaction No." of the G/L entry is used in the exported file
         GLRegister.FindLast();
@@ -2202,11 +2198,7 @@ codeunit 148017 "FEC Audit File Export Tests"
         CreateAndPostCustomGenJnlLines(Customer, "Gen. Journal Account Type"::Customer, StartingDate);
 
         // [WHEN] Export Tax Audit report with "Use Transaction No." = true
-#if CLEAN23
         RunFECExport(AuditFile, '', StartingDate, StartingDate, false);
-#else
-        RunFECExport(AuditFile, '', StartingDate, StartingDate, false, true);
-#endif
 
         // [THEN] "Transaction No." of the G/L entry is used in the exported file
         GLRegister.FindLast();
@@ -2231,11 +2223,7 @@ codeunit 148017 "FEC Audit File Export Tests"
         CreateAndPostVendorGenJnlLines(Vendor, "Gen. Journal Document Type"::Invoice, StartingDate);
 
         // [WHEN] Export Tax Audit report with "Use Transaction No." = true
-#if CLEAN23
         RunFECExport(AuditFile, '', StartingDate, StartingDate, false);
-#else
-        RunFECExport(AuditFile, '', StartingDate, StartingDate, false, true);
-#endif
 
         // [THEN] "Transaction No." of the G/L entry is used in the exported file
         GLRegister.FindLast();
@@ -2278,22 +2266,6 @@ codeunit 148017 "FEC Audit File Export Tests"
         AuditFileExportHeader.Insert(true);
     end;
 
-#if not CLEAN23
-    local procedure CreateAuditFileExportDoc(var AuditFileExportHeader: Record "Audit File Export Header"; StartingDate: Date; EndingDate: Date; IncludeOpeningBalances: Boolean; UseTransactionNo: Boolean; DefaultSourceCode: Code[10]; GLAccountViewString: Text[2048])
-    begin
-        AuditFileExportHeader.Init();
-        AuditFileExportHeader.Validate("Audit File Export Format", "Audit File Export Format"::FEC);
-        AuditFileExportHeader.Validate("Starting Date", StartingDate);
-        AuditFileExportHeader.Validate("Ending Date", EndingDate);
-        AuditFileExportHeader.Validate("Include Opening Balances", IncludeOpeningBalances);
-        AuditFileExportHeader.Validate("Use Transaction No.", UseTransactionNo);
-        AuditFileExportHeader.Validate("Default Source Code", DefaultSourceCode);
-        AuditFileExportHeader.Validate("G/L Account View String", GLAccountViewString);
-        AuditFileExportHeader.Validate("Parallel Processing", false);
-        AuditFileExportHeader.Insert(true);
-    end;
-#endif
-
     local procedure CreateReadStream(var FileInStream: InStream; var AuditFile: Record "Audit File")
     begin
         AuditFile.CalcFields("File Content");
@@ -2313,22 +2285,6 @@ codeunit 148017 "FEC Audit File Export Tests"
         AuditFile.SetRange("Export ID", AuditFileExportHeader.ID);
         AuditFile.FindFirst();
     end;
-
-#if not CLEAN23
-    local procedure RunFECExport(var AuditFile: Record "Audit File"; GLAccountNoFilter: Text; StartDate: Date; EndDate: Date; IncludeOpeningBalances: Boolean; UseTransactionNo: Boolean)
-    var
-        AuditFileExportHeader: Record "Audit File Export Header";
-        GLAccount: Record "G/L Account";
-        AuditFileExportMgt: Codeunit "Audit File Export Mgt.";
-    begin
-        GLAccount.SetFilter("No.", GLAccountNoFilter);
-        CreateAuditFileExportDoc(
-            AuditFileExportHeader, StartDate, EndDate, IncludeOpeningBalances, UseTransactionNo, '', CopyStr(GLAccount.GetView(), 1, 2048));
-        AuditFileExportMgt.StartExport(AuditFileExportHeader);
-        AuditFile.SetRange("Export ID", AuditFileExportHeader.ID);
-        AuditFile.FindFirst();
-    end;
-#endif
 
     local procedure RunFECExport(GLAccountNoFilter: Text; StartDate: Date; EndDate: Date; IncludeOpeningBalances: Boolean) AuditFileExportHeaderID: Integer
     var

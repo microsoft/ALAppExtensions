@@ -87,24 +87,6 @@ page 4003 "Intelligent Cloud Management"
     {
         area(Processing)
         {
-#if not CLEAN23
-            action(ManageSchedule)
-            {
-                Enabled = IsSuper and IsSetupComplete;
-                Visible = false;
-                ApplicationArea = Basic, Suite;
-                Caption = 'Manage Schedule';
-                ToolTip = 'Manage migration schedule.';
-                Promoted = true;
-                PromotedCategory = Process;
-                RunObject = page "Intelligent Cloud Schedule";
-                RunPageMode = Edit;
-                Image = CalendarMachine;
-                ObsoleteState = Pending;
-                ObsoleteTag = '23.0';
-                ObsoleteReason = 'Scheduling is not supported and will be removed';
-            }
-#endif
             action(RunReplicationNow)
             {
                 Enabled = IsSuper and IsSetupComplete;
@@ -395,25 +377,6 @@ page 4003 "Intelligent Cloud Management"
                 Image = TransmitElectronicDoc;
             }
 
-#if not CLEAN23
-            action(InsertSetupRecords)
-            {
-                ApplicationArea = All;
-                Caption = 'Create Setup records';
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                Visible = false;
-                ObsoleteReason = 'Action is not needed';
-                ObsoleteState = Pending;
-                ObsoleteTag = '23.0';
-
-                trigger OnAction()
-                begin
-                    Error('');
-                end;
-            }
-#endif
             action(EnableDisableNewUI)
             {
                 Enabled = IsSuper and IsSetupComplete;

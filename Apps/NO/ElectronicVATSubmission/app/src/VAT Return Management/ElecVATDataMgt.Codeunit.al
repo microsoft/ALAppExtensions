@@ -54,74 +54,6 @@ codeunit 10683 "Elec. VAT Data Mgt."
         until TempVATNote.Next() = 0;
     end;
 
-#if not CLEAN23
-    [Obsolete('Use the procedure GetMissingVATReportingCodes instead', '23.0')]
-    procedure GetMissingVATCodes(var TempMissingVATCode: Record "VAT Code" temporary) MissedCodesExist: Boolean
-    var
-        TempRequiredVATCode: Record "VAT Code" temporary;
-        TempNewVATCode: Record "VAT Code" temporary;
-        VATCode: Record "VAT Code";
-        NorwegianVATTools: Codeunit "Norwegian VAT Tools";
-    begin
-        TempMissingVATCode.Reset();
-        TempMissingVATCode.DeleteAll();
-        GetRequiredVATCodes(TempRequiredVATCode);
-        NorwegianVATTools.GetVATCodes2022(TempNewVATCode);
-        if TempNewVATCode.FindSet() then
-            repeat
-                if TempRequiredVATCode.Get(TempNewVATCode."SAF-T VAT Code") then begin
-                    TempNewVATCode."Report VAT Rate" := TempRequiredVATCode."Report VAT Rate";
-                    TempNewVATCode."VAT Rate For Reporting" := TempRequiredVATCode."VAT Rate For Reporting";
-                    TempRequiredVATCode := TempNewVATCode;
-                    If TempRequiredVATCode.Insert() then;
-                end;
-            until TempNewVATCode.Next() = 0;
-        TempRequiredVATCode.FindSet();
-        repeat
-            if not VATCode.Get(TempRequiredVATCode.Code) then begin
-                TempMissingVATCode := TempRequiredVATCode;
-                TempMissingVATCode.Insert();
-                MissedCodesExist := true;
-            end;
-        until TempRequiredVATCode.Next() = 0;
-        exit(MissedCodesExist)
-    end;
-
-    [Obsolete('Use the procedure AddVATReportingCodes instead', '23.0')]
-    procedure AddVATCodes(var TempVATCode: Record "VAT Code" temporary)
-    var
-        VATCode: Record "VAT Code";
-    begin
-        if not TempVATCode.FindSet() then
-            exit;
-
-        repeat
-            if not VATCode.Get(TempVATCode.Code) then begin
-                VATCode := TempVATCode;
-                VATCode.Insert(true);
-            end;
-        until TempVATCode.Next() = 0;
-    end;
-
-    [Obsolete('Use the procedure SetVATRatesForReportingOnVATReportingCodes instead', '23.0')]
-    procedure SetVATRatesForReportingForVATCodes()
-    var
-        TempRequiredVATCode: Record "VAT Code" temporary;
-        VATCode: Record "VAT Code";
-    begin
-        GetRequiredVATCodes(TempRequiredVATCode);
-        TempRequiredVATCode.FindSet();
-        repeat
-            if VATCode.Get(TempRequiredVATCode.Code) then begin
-                VATCode."VAT Rate For Reporting" := TempRequiredVATCode."VAT Rate For Reporting";
-                VATCode."Report VAT Rate" := TempRequiredVATCode."Report VAT Rate";
-                VATCode.Modify();
-            end;
-        until TempRequiredVATCode.Next() = 0;
-        if GuiAllowed() then
-            Message(VATRatesForReportingHaveBeenSetMsg);
-    end;
-#endif
     procedure GetMissingVATReportingCodes(var TempMissingVATReportingCode: Record "VAT Reporting Code" temporary) MissedCodesExist: Boolean
     var
         TempRequiredVATCode: Record "VAT Reporting Code" temporary;
@@ -220,7 +152,6 @@ codeunit 10683 "Elec. VAT Data Mgt."
         exit(DelChr(CompanyInformation."VAT Registration No.", '=', DelChr(CompanyInformation."VAT Registration No.", '=', '1234567890')));
     end;
 
-#if CLEAN23
     local procedure CreateVATStatementLines(VATStatementName: Record "VAT Statement Name")
     var
         TempRequiredVATCode: Record "VAT Reporting Code" temporary;
@@ -290,77 +221,6 @@ codeunit 10683 "Elec. VAT Data Mgt."
             end;
         until TempRequiredVATCode.Next() = 0;
     end;
-#else
-    local procedure CreateVATStatementLines(VATStatementName: Record "VAT Statement Name")
-    var
-        TempRequiredVATCode: Record "VAT Code" temporary;
-        VATPostingSetup: Record "VAT Posting Setup";
-        TempVATPostingSetup: Record "VAT Posting Setup" temporary;
-        VATStatementLine: Record "VAT Statement Line";
-        AmountRowNo: Integer;
-        RowTotalingFilter: Text[50];
-        RowNo: Text[10];
-        BoxNo: Text[30];
-        LineNo: Integer;
-        SetupCount: Integer;
-        CalculateWith: Option;
-    begin
-        GetRequiredVATCodes(TempRequiredVATCode);
-        TempRequiredVATCode.FindSet();
-        repeat
-            TempVATPostingSetup.Reset();
-            TempVATPostingSetup.DeleteAll();
-            VATPostingSetup.Reset();
-            VATPostingSetup.SetRange("Sales SAF-T Standard Tax Code", TempRequiredVATCode.Code);
-            CopyVATPostingSetupToTempVATPostingSetup(TempVATPostingSetup, VATPostingSetup);
-            VATPostingSetup.Reset();
-            VATPostingSetup.SetRange("Purch. SAF-T Standard Tax Code", TempRequiredVATCode.Code);
-            CopyVATPostingSetupToTempVATPostingSetup(TempVATPostingSetup, VATPostingSetup);
-            if TempVATPostingSetup.FindSet() then begin
-                AmountRowNo := 0;
-                RowTotalingFilter := '';
-                SetupCount := TempVATPostingSetup.Count();
-                if IsReverseChargeVATCode(TempRequiredVATCode.Code) then
-                    CalculateWith := VATStatementLine."Calculate with"::Sign
-                else
-                    CalculateWith := VATStatementLine."Calculate with"::"Opposite Sign";
-                repeat
-                    RowNo := TempRequiredVATCode.Code;
-                    If (SetupCount > 1) or
-                       ((TempVATPostingSetup."Sales SAF-T Standard Tax Code" = TempRequiredVATCode.Code) and (TempVATPostingSetup."Purch. SAF-T Standard Tax Code" = TempRequiredVATCode.Code))
-                    then
-                        BoxNo := ''
-                    else
-                        BoxNo := TempRequiredVATCode.Code;
-                    if TempVATPostingSetup."Sales SAF-T Standard Tax Code" = TempRequiredVATCode.Code then begin
-                        LineNo += 10000;
-                        AmountRowNo += 1;
-                        if BoxNo = '' then
-                            RowNo += '-' + Format(AmountRowNo);
-                        CreateVATEntryTotalingLine(
-                            VATStatementLine, VATStatementName, RowNo, BoxNo, TempRequiredVATCode.Description, TempVATPostingSetup,
-                            VATStatementLine."Gen. Posting Type"::Sale, LineNo, CalculateWith);
-                        AddToFilter(RowTotalingFilter, VATStatementLine."Row No.");
-                    end;
-                    if TempVATPostingSetup."Purch. SAF-T Standard Tax Code" = TempRequiredVATCode.Code then begin
-                        LineNo += 10000;
-                        AmountRowNo += 1;
-                        if BoxNo = '' then
-                            RowNo += '-' + Format(AmountRowNo);
-                        CreateVATEntryTotalingLine(
-                            VATStatementLine, VATStatementName, RowNo, BoxNo, TempRequiredVATCode.Description, TempVATPostingSetup,
-                            VATStatementLine."Gen. Posting Type"::Purchase, LineNo, CalculateWith);
-                        AddToFilter(RowTotalingFilter, VATStatementLine."Row No.");
-                    end;
-                until TempVATPostingSetup.Next() = 0;
-                if BoxNo = '' then begin
-                    LineNo += 10000;
-                    CreateRowTotalingLine(VATStatementName, TempRequiredVATCode.Code, TempRequiredVATCode.Description, LineNo, RowTotalingFilter);
-                end;
-            end;
-        until TempRequiredVATCode.Next() = 0;
-    end;
-#endif
 
     local procedure AddToFilter(var Filter: Text[50]; Value: Text)
     begin
@@ -413,61 +273,6 @@ codeunit 10683 "Elec. VAT Data Mgt."
         VATStatementLine.Insert(true);
     end;
 
-#if not CLEAN23
-    local procedure GetRequiredVATCodes(var TempRequiredVATCode: Record "VAT Code" temporary)
-    begin
-        InsertTempVATCode(TempRequiredVATCode, '1', InputVATDeductibleDomesticTxt, 0, false);
-        InsertTempVATCode(TempRequiredVATCode, '3', OutputVATTxt, 25, true);
-        InsertTempVATCode(TempRequiredVATCode, '5', DomesticSalesReverseChargeTxt, 0, true);
-        InsertTempVATCode(TempRequiredVATCode, '6', NotLiableToVATTreatmentTxt, 0, true);
-        InsertTempVATCode(TempRequiredVATCode, '11', InputVATDeductibleDomesticTxt, 0, false);
-        InsertTempVATCode(TempRequiredVATCode, '12', InputVATDeductibleDomesticTxt, 0, false);
-        InsertTempVATCode(TempRequiredVATCode, '13', InputVATDeductibleDomesticTxt, 0, false);
-        InsertTempVATCode(TempRequiredVATCode, '14', InputVATDeductiblePayedOnImportTxt, 0, false);
-        InsertTempVATCode(TempRequiredVATCode, '15', InputVATDeductiblePayedOnImportTxt, 0, false);
-        InsertTempVATCode(TempRequiredVATCode, '31', OutputVATTxt, 15, true);
-        InsertTempVATCode(TempRequiredVATCode, '32', OutputVATTxt, 11.11, true);
-        InsertTempVATCode(TempRequiredVATCode, '33', OutputVATTxt, 12, true);
-        InsertTempVATCode(TempRequiredVATCode, '51', DomesticSalesReverseChargeTxt, 0, true);
-        InsertTempVATCode(TempRequiredVATCode, '52', ExportOfGoodsAndServicesTxt, 0, true);
-        InsertTempVATCode(TempRequiredVATCode, '81', ImportationOfGoodsVATDeductibleTxt, 25, true);
-        InsertTempVATCode(TempRequiredVATCode, '82', ImportationOfGoodsWithoutDeductionOfVATTxt, 25, true);
-        InsertTempVATCode(TempRequiredVATCode, '83', ImportationOfGoodsVATDeductibleTxt, 15, true);
-        InsertTempVATCode(TempRequiredVATCode, '84', ImportationOfGoodsWithoutDeductionOfVATTxt, 15, true);
-        InsertTempVATCode(TempRequiredVATCode, '85', ImportationOfGoodsNotApplicableForVATTxt, 0, true);
-        InsertTempVATCode(TempRequiredVATCode, '86', ServicesPurchasedFromAbroadVATDeductibleTxt, 25, true);
-        InsertTempVATCode(TempRequiredVATCode, '87', ServicesPurchasedFromAbroadWithoutVATDeductionTxt, 25, true);
-        InsertTempVATCode(TempRequiredVATCode, '88', ServicesPurchasedFromAbroadVATDeductibleTxt, 12, true);
-        InsertTempVATCode(TempRequiredVATCode, '89', ServicesPurchasedFromAbroadWithoutVATDeductionTxt, 12, true);
-        InsertTempVATCode(TempRequiredVATCode, '91', PurchaseOfEmissionsTradingOrGoldVATDeductibleTxt, 25, true);
-        InsertTempVATCode(TempRequiredVATCode, '92', PurchaseOfEmissionsTradingOrGoldWithoutVATDeductionTxt, 25, true);
-    end;
-
-    local procedure InsertTempVATCode(var TempVATCode: Record "VAT Code"; Code: Code[10]; Description: Text; VATRateForReporting: Decimal; ReportVATRate: Boolean)
-    begin
-        TempVATCode.Code := Code;
-        TempVATCode.Description := CopyStr(Description, 1, MaxStrLen(TempVATCode.Description));
-        TempVATCode."VAT Rate For Reporting" := VATRateForReporting;
-        TempVATCode."Report VAT Rate" := ReportVATRate;
-        TempVATCode.Insert();
-        GetRelatedVATCodes(TempVATCode, TempVATCode.Code);
-    end;
-
-    local procedure GetRelatedVATCodes(var TempRelatedVATCode: Record "VAT Code" temporary; VATCodeValue: Code[10]): Boolean
-    var
-        VATCode: Record "VAT Code";
-    begin
-        VATCode.SetRange("SAF-T VAT Code", VATCodeValue);
-        if not VATCode.FindSet() then
-            exit(false);
-
-        repeat
-            TempRelatedVATCode := VATCode;
-            TempRelatedVATCode.Insert();
-        until VATCode.Next() = 0;
-        exit(true);
-    end;
-#endif
     local procedure GetRequiredVATReportingCodes(var TempRequiredVATCode: Record "VAT Reporting Code" temporary)
     begin
         InsertTempVATReportingCode(TempRequiredVATCode, '1', InputVATDeductibleDomesticTxt, 0, false);

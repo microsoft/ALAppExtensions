@@ -31,6 +31,12 @@
       "version": "26.0.0.0"
     },
     {
+      "id": "40860557-a18d-42ad-aecb-22b7dd80dc80",
+      "publisher": "Microsoft",
+      "name": "Permissions Mock",
+      "version": "26.0.0.0"
+    },
+    {
       "id": "e4e86220-cac0-4ec3-b853-7c2fa610399d",
       "name": "PowerBI Reports",
       "publisher": "Microsoft",
