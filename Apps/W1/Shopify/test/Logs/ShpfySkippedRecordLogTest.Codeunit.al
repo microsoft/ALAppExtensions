@@ -391,11 +391,8 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         CreateShopifyCustomer(Customer);
         // [GIVEN] Payment Terms Code
         PaymentTermsCode := CreatePaymentTerms(Shop.Code);
-        // [GIVEN] Sales Invoice without sales line.
+        // [GIVEN] Sales Invoice without sales lines.
         CreateSalesInvoiceHeader(SalesInvoiceHeader, Customer."No.", PaymentTermsCode);
-        // [GIVEN] No existing sales lines.
-        if not SalesInvoiceLine.IsEmpty() then
-            SalesInvoiceLine.DeleteAll(false);
 
         // [WHEN] Invoke Shopify Posted Invoice Export
         PostedInvoiceExport.SetShop(Shop.Code);
@@ -533,7 +530,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SalesShipmentHeader: Record "Sales Shipment Header";
         SkippedRecord: Record "Shpfy Skipped Record";
         ExportShipments: Codeunit "Shpfy Export Shipments";
-        ShippingTest: Codeunit "Shpfy Shipping Test";
+        ShippingHelper: Codeunit "Shpfy Shipping Helper";
         ShopifyOrderId: BigInteger;
     begin
         // [SCENARIO] Log skipped record when sales shipment is export is skip because theres no fulfillment lines shopify.
@@ -542,7 +539,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         // [GIVEN] Shopify order with line
         ShopifyOrderId := CreateshopifyOrder(Shop, Enum::"Shpfy Delivery Method Type"::" ");
         // [GIVEN] Posted shipment with line.
-        ShippingTest.CreateRandomSalesShipment(SalesShipmentHeader, ShopifyOrderId);
+        ShippingHelper.CreateRandomSalesShipment(SalesShipmentHeader, ShopifyOrderId);
 
         // [WHEN] Invoke Shopify Sync Shipment to Shopify
         ExportShipments.CreateShopifyFulfillment(SalesShipmentHeader);
@@ -559,7 +556,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SalesShipmentHeader: Record "Sales Shipment Header";
         SkippedRecord: Record "Shpfy Skipped Record";
         ExportShipments: Codeunit "Shpfy Export Shipments";
-        ShippingTest: Codeunit "Shpfy Shipping Test";
+        ShippingHelper: Codeunit "Shpfy Shipping Helper";
         SkippedRecordLogSub: Codeunit "Shpfy Skipped Record Log Sub.";
         ShopifyOrderId: BigInteger;
         DeliveryMethodType: Enum "Shpfy Delivery Method Type";
@@ -572,10 +569,10 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         ShopifyOrderId := CreateShopifyOrder(Shop, DeliveryMethodType);
 
         // [GIVEN] Shopify fulfilment related to shopify order
-        ShippingTest.CreateShopifyFulfillmentOrder(ShopifyOrderId, DeliveryMethodType);
+        ShippingHelper.CreateShopifyFulfillmentOrder(ShopifyOrderId, DeliveryMethodType);
 
         // [GIVEN] Sales shipment related to shopify order
-        ShippingTest.CreateRandomSalesShipment(SalesShipmentHeader, ShopifyOrderId);
+        ShippingHelper.CreateRandomSalesShipment(SalesShipmentHeader, ShopifyOrderId);
 
         // [WHEN] Invoke Shopify Sync Shipment to Shopify
         BindSubscription(SkippedRecordLogSub);
@@ -709,11 +706,11 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     local procedure CreateShopifyOrder(Shop: Record "Shpfy Shop"; DeliveryMethodType: Enum "Shpfy Delivery Method Type"): BigInteger
     var
         ShopifyOrderHeader: Record "Shpfy Order Header";
-        ShippingTest: Codeunit "Shpfy Shipping Test";
+        ShippingHelper: Codeunit "Shpfy Shipping Helper";
         LocationId: BigInteger;
         ShopifyOrderId: BigInteger;
     begin
-        ShopifyOrderId := ShippingTest.CreateRandomShopifyOrder(LocationId, DeliveryMethodType);
+        ShopifyOrderId := ShippingHelper.CreateRandomShopifyOrder(LocationId, DeliveryMethodType);
         ShopifyOrderHeader.Get(ShopifyOrderId);
         ShopifyOrderHeader."Shop Code" := Shop.Code;
         ShopifyOrderHeader.Modify(false);

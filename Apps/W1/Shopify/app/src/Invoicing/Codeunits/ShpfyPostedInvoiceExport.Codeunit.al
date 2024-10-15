@@ -162,6 +162,7 @@ codeunit 30362 "Shpfy Posted Invoice Export"
         InvalidQuantityLbl: Label 'Invalid quantity in sales invoice line.';
         EmptyNoInLineLbl: Label 'No. field is empty in Sales Invoice Line.';
     begin
+        SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
         SalesInvoiceLine.SetFilter(Type, '<>%1', SalesInvoiceLine.Type::" ");
         if SalesInvoiceLine.IsEmpty() then begin
             SkipRecordMgt.LogSkippedRecord(SalesInvoiceHeader.RecordId, NoLinesInSalesInvoiceLbl, Shop);
