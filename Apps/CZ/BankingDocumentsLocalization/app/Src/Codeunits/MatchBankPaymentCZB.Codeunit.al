@@ -469,18 +469,4 @@ codeunit 31362 "Match Bank Payment CZB"
     local procedure OnFillMatchBankPaymentBufferEmployeeOnAfterEmployeeLedgerEntrySetFilters(var EmployeeLedgerEntry: Record "Employee Ledger Entry"; SearchRuleLineCZB: Record "Search Rule Line CZB"; var GenJournalLine: Record "Gen. Journal Line")
     begin
     end;
-#if not CLEAN23
-
-    [IntegrationEvent(false, false)]
-    [Obsolete('The event is no longer triggered.', '23.0')]
-    local procedure OnBeforeFillMatchBankPaymentBufferSalesAdvance(GenJournalLine: Record "Gen. Journal Line"; SearchRuleLineCZB: Record "Search Rule Line CZB"; var TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; var IsHandled: Boolean);
-    begin
-    end;
-
-    [IntegrationEvent(false, false)]
-    [Obsolete('The event is no longer triggered.', '23.0')]
-    local procedure OnBeforeFillMatchBankPaymentBufferPurchaseAdvance(GenJournalLine: Record "Gen. Journal Line"; SearchRuleLineCZB: Record "Search Rule Line CZB"; var TempMatchBankPaymentBufferCZB: Record "Match Bank Payment Buffer CZB"; var IsHandled: Boolean);
-    begin
-    end;
-#endif
 }

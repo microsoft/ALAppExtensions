@@ -26,20 +26,20 @@ function Run(publicIPServiceURL) {
         publicIP: 'error'
     };
 
-    Promise.delay = function(t, val) {
+    Promise.delay = function (t, val) {
         return new Promise(resolve => {
             setTimeout(resolve.bind(null, val), t);
         });
     }
 
-    Promise.raceAll = function(promises, timeoutTime, timeoutVal) {
+    Promise.raceAll = function (promises, timeoutTime, timeoutVal) {
         return Promise.all(promises.map(p => {
             return Promise.race([p, Promise.delay(timeoutTime, timeoutVal)])
         }));
     }
 
     Promise.raceAll(
-        [getPublicIPAsync(publicIPServiceURL)], 10000, 'error') // 10 sec timeout
+        [getPublicIPAsync(publicIPServiceURL)], 10000, '') // 10 sec timeout
         .then(
             function ([publicIP]) {
                 headersJson.publicIP = publicIP;

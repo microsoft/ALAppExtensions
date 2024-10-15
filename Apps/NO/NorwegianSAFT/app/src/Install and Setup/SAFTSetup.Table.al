@@ -37,13 +37,8 @@ table 10670 "SAF-T Setup"
             DataClassification = CustomerContent;
             TableRelation = "VAT Code";
             ObsoleteReason = 'Use the field "Not Applic. VAT Code" instead';
-#if CLEAN23
             ObsoleteState = Removed;
             ObsoleteTag = '26.0';
-#else
-            ObsoleteState = Pending;
-            ObsoleteTag = '23.0';
-#endif
         }
         field(5; "Dimension No."; Integer)
         {

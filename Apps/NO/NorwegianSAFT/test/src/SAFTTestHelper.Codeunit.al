@@ -430,7 +430,6 @@ codeunit 148099 "SAF-T Test Helper"
         GeneralLedgerSetup.Modify();
     end;
 
-#if CLEAN23
     local procedure SetupVATPostingSetupMapping()
     var
         VATPostingSetup: Record "VAT Posting Setup";
@@ -440,35 +439,14 @@ codeunit 148099 "SAF-T Test Helper"
         VATPostingSetup.Next(); // do not specify any value for Standard Tax Code in order to verify that NA value will be exported in the XML file
         VATReportingCode.FindSet();
         repeat
-
             VATPostingSetup.Validate("Sale VAT Reporting Code", VATReportingCode.Code);
             VATPostingSetup.Validate("Purch. VAT Reporting Code", VATReportingCode.Code);
-
             VATPostingSetup.Validate("Calc. Prop. Deduction VAT", false);
             VATPostingSetup.Modify(true);
             VATReportingCode.Next();
         until VATPostingSetup.Next() = 0;
         VATReportingCode.ModifyAll(Compensation, false);
     end;
-#else
-    local procedure SetupVATPostingSetupMapping()
-    var
-        VATPostingSetup: Record "VAT Posting Setup";
-        VATCode: Record "VAT Code";
-    begin
-        VATPostingSetup.FindSet();
-        VATPostingSetup.Next(); // do not specify any value for Standard Tax Code in order to verify that NA value will be exported in the XML file
-        VATCode.FindSet();
-        repeat
-            VATPostingSetup.Validate("Sales SAF-T Standard Tax Code", VATCode.Code);
-            VATPostingSetup.Validate("Purch. SAF-T Standard Tax Code", VATCode.Code);
-            VATPostingSetup.Validate("Calc. Prop. Deduction VAT", false);
-            VATPostingSetup.Modify(true);
-            VATCode.Next();
-        until VATPostingSetup.Next() = 0;
-        VATCode.ModifyAll(Compensation, false);
-    end;
-#endif
 
     local procedure SetupCompanyBankAccounts()
     var

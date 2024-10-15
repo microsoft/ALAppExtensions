@@ -39,11 +39,7 @@ codeunit 10684 "Elec. VAT Create Content"
         until VATStatementReportLine.Next() = 0;
         CLEAR(TempBlob);
         TempBlob.CreateOutStream(MessageOutStream, TEXTENCODING::UTF8);
-#if CLEAN23
         MessageOutStream.WriteText(CreateVATReportLinesNodeContent(TempVATStatementReportLine));
-#else
-        MessageOutStream.WriteText(CreateVATReportLinesContent(TempVATStatementReportLine));
-#endif
         if VATReportArchive.Get("VAT Report Config. Code", "No.") then
             VATReportArchive.Delete(true);
         VATReportArchive.ArchiveSubmissionMessage("VAT Report Config. Code", "No.", TempBlob);
@@ -52,119 +48,6 @@ codeunit 10684 "Elec. VAT Create Content"
         Commit();
     end;
 
-#if not CLEAN23
-    [Obsolete('Use the procedure CreateVATReportLinesNodeContent instead', '23.0')]
-    procedure CreateVATReportLinesContent(var TempVATStatementReportLine: Record "VAT Statement Report Line" temporary): Text
-    var
-        VATReportHeader: Record "VAT Report Header";
-        VATCode: Record "VAT Code";
-        VATSpecification: Record "VAT Specification";
-        VATNote: Record "VAT Note";
-        ElecVATXMLHelper: Codeunit "Elec. VAT XML Helper";
-        ElecVATDataMgt: Codeunit "Elec. VAT Data Mgt.";
-        OriginalVATCode: Code[10];
-        IsReverseCharge: Boolean;
-        TotalAmount: Decimal;
-    begin
-        VATReportHeader.Get(TempVATStatementReportLine."VAT Report Config. Code", TempVATStatementReportLine."VAT Report No.");
-        ElecVATXMLHelper.Initialize('mvaMeldingDto');
-        ElecVATXMLHelper.AddNewXMLNode('innsending', '');
-        ElecVATXMLHelper.AppendXMLNode('regnskapssystemsreferanse', TempVATStatementReportLine."VAT Report No.");
-        ElecVATXMLHelper.AddNewXMLNode('regnskapssystem', '');
-        ElecVATXMLHelper.AppendXMLNode('systemnavn', 'Microsoft Dynamics 365 Business Central');
-        ElecVATXMLHelper.AppendXMLNode('systemversjon', '20.0');
-        ElecVATXMLHelper.FinalizeXMLNode();
-        ElecVATXMLHelper.FinalizeXMLNode();
-
-        ElecVATXMLHelper.AddNewXMLNode('skattegrunnlagOgBeregnetSkatt', '');
-        ElecVATXMLHelper.AddNewXMLNode('skattleggingsperiode', '');
-        ElecVATXMLHelper.AddNewXMLNode('periode', '');
-        ElecVATXMLHelper.AppendXMLNode(GetPeriodTypeInNorwegian(VATReportHeader), GetPeriodTextInNorwegian(VATReportHeader));
-        ElecVATXMLHelper.FinalizeXMLNode();
-        ElecVATXMLHelper.AppendXMLNode('aar', format(Date2DMY(VATReportHeader."End Date", 3)));
-        ElecVATXMLHelper.FinalizeXMLNode();
-        TempVATStatementReportLine.FindSet();
-        repeat
-            GetVATCodeFromVATStatementLine(VATCode, TempVATStatementReportLine);
-            if ElecVATDataMgt.IsReverseChargeVATCode(GetVATCodeOriginalNumber(VATCode)) then
-                TotalAmount += TempVATStatementReportLine."Non-Deductible Amount"
-            else
-                if ElecVATDataMgt.IsVATCodeWithDeductiblePart(GetVATCodeOriginalNumber(VATCode)) then
-                    TotalAmount += TempVATStatementReportLine.Amount
-                else
-                    TotalAmount += TempVATStatementReportLine.Amount + TempVATStatementReportLine."Non-Deductible Amount";
-        until TempVATStatementReportLine.Next() = 0;
-        ElecVATXMLHelper.AppendXMLNode('fastsattMerverdiavgift', GetAmountTextRounded(TotalAmount));
-        TempVATStatementReportLine.FindSet();
-        repeat
-            GetVATCodeFromVATStatementLine(VATCode, TempVATStatementReportLine);
-            OriginalVATCode := GetVATCodeOriginalNumber(VATCode);
-            IsReverseCharge := ElecVATDataMgt.IsReverseChargeVATCode(OriginalVATCode);
-            ElecVATXMLHelper.AddNewXMLNode('mvaSpesifikasjonslinje', '');
-            ElecVATXMLHelper.AppendXMLNode('mvaKode', OriginalVATCode);
-            if VATCode."VAT Specification Code" <> '' then begin
-                VATSpecification.Get(VATCode."VAT Specification Code");
-                ElecVATXMLHelper.AppendXMLNode('spesifikasjon', VATSpecification."VAT Report Value");
-            end;
-            ElecVATXMLHelper.AppendXMLNode('mvaKodeRegnskapsystem', TempVATStatementReportLine.Description);
-            if VATCode."Report VAT Rate" then begin
-                ElecVATXMLHelper.AppendXMLNode('grunnlag', GetAmountTextRounded(GetReportingVATBaseFromVATStatementReportLine(TempVATStatementReportLine, VATCode)));
-                ElecVATXMLHelper.AppendXMLNode('sats', Format(VATCode."VAT Rate For Reporting", 0, '<Integer><Decimals><Comma,,>'));
-            end;
-            ElecVATXMLHelper.AppendXMLNode('merverdiavgift', GetAmountTextRounded(GetReportingVATAmountFromVATStatementReportLine(TempVATStatementReportLine, VATCode)));
-            if (VATCode."VAT Note Code" <> '') or (TempVATStatementReportLine.Note <> '') then begin
-                ElecVATXMLHelper.AddNewXMLNode('merknad', '');
-                if VATCode."VAT Note Code" = '' then
-                    ElecVATXMLHelper.AppendXMLNode('beskrivelse', TempVATStatementReportLine.Note)
-                else begin
-                    VATNote.Get(VATCode."VAT Note Code");
-                    ElecVATXMLHelper.AppendXMLNode('utvalgtMerknad', VATNote."VAT Report Value");
-                end;
-                ElecVATXMLHelper.FinalizeXMLNode();
-            end;
-            ElecVATXMLHelper.FinalizeXMLNode();
-            if IsReverseCharge then begin
-                ElecVATXMLHelper.AddNewXMLNode('mvaSpesifikasjonslinje', '');
-                ElecVATXMLHelper.AppendXMLNode('mvaKode', OriginalVATCode);
-                if VATCode."VAT Specification Code" <> '' then begin
-                    VATSpecification.Get(VATCode."VAT Specification Code");
-                    ElecVATXMLHelper.AppendXMLNode('spesifikasjon', VATSpecification."VAT Report Value");
-                end;
-                ElecVATXMLHelper.AppendXMLNode('mvaKodeRegnskapsystem', TempVATStatementReportLine.Description);
-                ElecVATXMLHelper.AppendXMLNode('merverdiavgift', GetAmountTextRounded(-TempVATStatementReportLine.Amount));
-                if VATCode."VAT Note Code" <> '' then begin
-                    VATNote.Get(VATCode."VAT Note Code");
-                    ElecVATXMLHelper.AddNewXMLNode('merknad', '');
-                    ElecVATXMLHelper.AppendXMLNode('utvalgtMerknad', VATNote."VAT Report Value");
-                    ElecVATXMLHelper.FinalizeXMLNode();
-                end;
-                ElecVATXMLHelper.FinalizeXMLNode();
-            end;
-        until TempVATStatementReportLine.Next() = 0;
-        ElecVATXMLHelper.FinalizeXMLNode();
-        ElecVATXMLHelper.AddNewXMLNode('betalingsinformasjon', '');
-        if VATReportHeader.KID <> '' then
-            ElecVATXMLHelper.AppendXMLNode('kundeIdentifikasjonsnummer', VATReportHeader.KID);
-        ElecVATXMLHelper.FinalizeXMLNode();
-        ElecVATXMLHelper.AddNewXMLNode('skattepliktig', '');
-        ElecVATXMLHelper.AppendXMLNode('organisasjonsnummer', ElecVATDataMgt.GetDigitVATRegNo());
-        ElecVATXMLHelper.FinalizeXMLNode();
-        ElecVATXMLHelper.AppendXMLNode('meldingskategori', 'alminnelig');
-        exit(ElecVATXMLHelper.GetXMLRequest());
-    end;
-
-    local procedure GetVATCodeFromVATStatementLine(var VATCode: Record "VAT Code"; VATStatementReportLine: Record "VAT Statement Report Line")
-    begin
-        VATCode.Get(CopyStr(VATStatementReportLine."Box No.", 1, MaxStrLen(VATCode.Code)));
-    end;
-
-    local procedure GetVATCodeOriginalNumber(VATCode: Record "VAT Code"): Code[10]
-    begin
-        if VATCode."SAF-T VAT Code" = '' then
-            exit(VATCode.Code);
-        exit(VATCode."SAF-T VAT Code");
-    end;
-#endif
     procedure CreateVATReportLinesNodeContent(var TempVATStatementReportLine: Record "VAT Statement Report Line" temporary): Text
     var
         VATReportHeader: Record "VAT Report Header";
@@ -411,28 +294,6 @@ codeunit 10684 "Elec. VAT Create Content"
                 Error(CannotIdentifyMonthNumberErr);
         end
     end;
-
-#if not CLEAN23
-    [Obsolete('Use the procedure with the VAT Reporting Code parameter instead', '23.0')]
-    local procedure GetReportingVATBaseFromVATStatementReportLine(VATStatementReportLine: Record "VAT Statement Report Line"; VATCode: Record "VAT Code"): Decimal
-    var
-        ElecVATDataMgt: Codeunit "Elec. VAT Data Mgt.";
-    begin
-        if ElecVATDataMgt.IsVATCodeWithDeductiblePart(GetVATCodeOriginalNumber(VATCode)) then
-            exit(VATStatementReportLine.Base);
-        exit(VATStatementReportLine.Base + VATStatementReportLine."Non-Deductible Base");
-    end;
-
-    [Obsolete('Use the procedure with the VAT Reporting Code parameter instead', '23.0')]
-    local procedure GetReportingVATAmountFromVATStatementReportLine(VATStatementReportLine: Record "VAT Statement Report Line"; VATCode: Record "VAT Code"): Decimal
-    var
-        ElecVATDataMgt: Codeunit "Elec. VAT Data Mgt.";
-    begin
-        if ElecVATDataMgt.IsVATCodeWithDeductiblePart(GetVATCodeOriginalNumber(VATCode)) then
-            exit(VATStatementReportLine.Amount);
-        exit(VATStatementReportLine.Amount + VATStatementReportLine."Non-Deductible Amount");
-    end;
-#endif
 
     local procedure GetReportingVATBaseFromVATStatementReportLine(VATStatementReportLine: Record "VAT Statement Report Line"; VATReportingCode: Record "VAT Reporting Code"): Decimal
     var

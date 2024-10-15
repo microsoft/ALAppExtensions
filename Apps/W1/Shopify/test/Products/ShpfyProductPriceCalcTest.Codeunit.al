@@ -32,7 +32,7 @@ codeunit 139605 "Shpfy Product Price Calc. Test"
         InitPrice := Any.DecimalInRange(2 * InitUnitCost, 4 * InitUnitCost, 1);
         InitDiscountPerc := Any.DecimalInRange(5, 20, 1);
         Item := ProductInitTest.CreateItem(Shop."Item Templ. Code", InitUnitCost, InitPrice);
-#if not CLEAN23
+#if not CLEAN25
         ProductInitTest.CreateSalesPrice(Shop.Code, Item."No.", InitPrice);
         CustomerDiscountGroup := ProductInitTest.CreateSalesLineDiscount(Shop.Code, Item."No.", InitDiscountPerc);
 #else

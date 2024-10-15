@@ -27,7 +27,11 @@ pageextension 4402 "EXT Bus. Manager Role Center" extends "Business Manager Role
             action(EXRTrialBalanceExcel)
             {
                 ApplicationArea = Basic, Suite;
+#if not CLEAN25
                 Caption = 'Trial Balance (Preview)';
+#else
+                Caption = 'Trial Balance';
+#endif
                 Image = "Report";
                 RunObject = report "EXR Trial Balance Excel";
                 ToolTip = 'Open a spreadsheet that shows Trial Balance Excel data.';
@@ -51,7 +55,11 @@ pageextension 4402 "EXT Bus. Manager Role Center" extends "Business Manager Role
             action(EXRAgedAccountsRecExcel)
             {
                 ApplicationArea = Basic, Suite;
+#if not CLEAN25
                 Caption = 'Aged Accounts Receivable (Preview)';
+#else
+                Caption = 'Aged Accounts Receivable';
+#endif
                 Image = "Report";
                 RunObject = report "EXR Aged Accounts Rec Excel";
                 ToolTip = 'Open a spreadsheet that shows the Aged Accounts Receivable data.';
@@ -75,10 +83,46 @@ pageextension 4402 "EXT Bus. Manager Role Center" extends "Business Manager Role
             action(EXRAgedAccPayableExcel)
             {
                 ApplicationArea = Basic, Suite;
+#if not CLEAN25
                 Caption = 'Aged Accounts Payable (Preview)';
+#else
+                Caption = 'Aged Accounts Payable';
+#endif
                 Image = "Report";
                 RunObject = report "EXR Aged Acc Payable Excel";
                 ToolTip = 'Open a spreadsheet that shows the Aged Accounts Payable data.';
+            }
+            action(EXRConsolidatedTrialBalance)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Consolidated Trial Balance (Preview)';
+                Image = "Report";
+                RunObject = report "EXR Consolidated Trial Balance";
+                ToolTip = 'Open an Excel workbook that shows the G/L entries totals in the different business units.';
+            }
+            action(EXRFixedAssetAnalysisExcel)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Fixed Asset Analysis (Preview)';
+                Image = "Report";
+                RunObject = report "EXR Fixed Asset Analysis Excel";
+                ToolTip = 'Open an Excel workbook that shows a comparison of fixed asset values across a date range.';
+            }
+            action(EXRFixedAssetDetailsExcel)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Fixed Asset Details (Preview)';
+                Image = "Report";
+                RunObject = report "EXR Fixed Asset Details Excel";
+                ToolTip = 'Open an Excel workbook that shows fixed asset ledger entries.';
+            }
+            action(EXRFixedAssetProjected)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Fixed Asset Projected Value (Preview)';
+                Image = "Report";
+                RunObject = report "EXR Fixed Asset Projected";
+                ToolTip = 'Open an Excel workbook that shows posted fixed asset ledger entries and projected fixed asset ledger entries.';
             }
         }
     }

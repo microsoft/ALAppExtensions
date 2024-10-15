@@ -7,9 +7,6 @@ namespace Microsoft.Purchases.Document;
 using Microsoft.Bank.BankAccount;
 using Microsoft.Bank.Setup;
 using Microsoft.Finance.Currency;
-#if not CLEAN23
-using Microsoft.Finance.EU3PartyTrade;
-#endif
 using Microsoft.Finance.GeneralLedger.Setup;
 using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.VAT.Setup;
@@ -338,11 +335,6 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
         GeneralLedgerSetup: Record "General Ledger Setup";
         UnreliablePayerMgtCZL: Codeunit "Unreliable Payer Mgt. CZL";
         ConfirmManagement: Codeunit "Confirm Management";
-#if not CLEAN23
-#pragma warning disable AL0432
-        EU3PartyTradeFeatMgt: Codeunit "EU3 Party Trade Feat Mgt. CZL";
-#pragma warning restore AL0432
-#endif
         GlobalDocumentType: Enum "Purchase Document Type";
         GlobalDocumentNo: Code[20];
         GlobalIsIntrastatTransaction: Boolean;
@@ -578,6 +570,8 @@ tableextension 11705 "Purchase Header CZL" extends "Purchase Header"
 #if not CLEAN24
 
     internal procedure IsEU3PartyTradeFeatureEnabled(): Boolean
+    var
+        EU3PartyTradeFeatMgt: Codeunit Microsoft.Finance.EU3PartyTrade."EU3 Party Trade Feat Mgt. CZL";
     begin
         exit(EU3PartyTradeFeatMgt.IsEnabled());
     end;

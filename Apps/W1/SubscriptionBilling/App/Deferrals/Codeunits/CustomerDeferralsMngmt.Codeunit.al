@@ -29,31 +29,6 @@ codeunit 8067 "Customer Deferrals Mngmt."
         TempCustomerContractDeferral.DeleteAll(false);
     end;
 
-#if not CLEAN23
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnFillInvoicePostingBufferOnBeforeSetAccount, '', false, false)]
-    local procedure SetSalesAccountOnAfterSetAmounts(SalesLine: Record "Sales Line"; var SalesAccount: Code[20])
-    var
-        CustContractHeader: Record "Customer Contract";
-        GeneralPostingSetup: Record "General Posting Setup";
-        BillingLine: Record "Billing Line";
-    begin
-        if not SalesLine.IsLineAttachedToBillingLine() then
-            exit;
-        BillingLine.FilterBillingLineOnDocumentLine(BillingLine.GetBillingDocumentTypeFromSalesDocumentType(SalesLine."Document Type"), SalesLine."Document No.", SalesLine."Line No.");
-        BillingLine.FindFirst();
-        CustContractHeader.Get(BillingLine."Contract No.");
-
-        GeneralPostingSetup.Get(SalesLine."Gen. Bus. Posting Group", SalesLine."Gen. Prod. Posting Group");
-        if CustContractHeader."Without Contract Deferrals" then begin
-            GeneralPostingSetup.TestField("Customer Contract Account");
-            SalesAccount := GeneralPostingSetup."Customer Contract Account";
-        end else begin
-            GeneralPostingSetup.TestField("Cust. Contr. Deferral Account");
-            SalesAccount := GeneralPostingSetup."Cust. Contr. Deferral Account";
-        end;
-    end;
-#endif
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnPrepareLineOnBeforeSetAccount', '', false, false)]
     local procedure OnPrepareLineOnBeforeSetAccount(SalesLine: Record "Sales Line"; var SalesAccount: Code[20])
     var
@@ -76,17 +51,6 @@ codeunit 8067 "Customer Deferrals Mngmt."
             SalesAccount := GeneralPostingSetup."Cust. Contr. Deferral Account";
         end;
     end;
-
-#if not CLEAN23
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnFillInvoicePostingBufferOnBeforeSetLineDiscAccount, '', false, false)]
-    local procedure SetLineDiscountAccountForCustomerContractDeferrals(SalesLine: Record "Sales Line"; GenPostingSetup: Record "General Posting Setup"; var LineDiscAccount: Code[20]; var IsHandled: Boolean)
-    begin
-        if IsCustomerContractWithDeferrals(SalesLine) then begin
-            LineDiscAccount := GenPostingSetup."Cust. Contr. Deferral Account";
-            IsHandled := true;
-        end;
-    end;
-#endif
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales Post Invoice Events", 'OnPrepareLineOnBeforeSetLineDiscAccount', '', false, false)]
     local procedure OnPrepareLineOnBeforeSetLineDiscAccount(SalesLine: Record "Sales Line"; GenPostingSetup: Record "General Posting Setup"; var InvDiscAccount: Code[20]; var IsHandled: Boolean)

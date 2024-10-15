@@ -34,7 +34,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         WrongAllowanceChargeErr: Label 'Wrong value of "AllowanceCharge".';
         DefaultCodeTxt: Label 'DEFAULT', Comment = 'Translate as we translate default term in local languages';
         OIOUBLFormatNameTxt: Label 'OIOUBL';
-        PEPPOLFormatNameTxt: Label 'PEPPOL 2.1';
+        PEPPOLFormatNameTxt: Label 'PEPPOL BIS 3.0';
         WrongInvoiceLineCountErr: Label 'Wrong count of "InvoiceLine".';
         BaseQuantityTxt: Label 'cbc:BaseQuantity';
         NonExistingDocumentFormatErr: Label 'The electronic document format OIOUBL does not exist for the document type %1.', Comment = '%1 = Sales Invoice';
@@ -471,7 +471,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         Initialize();
         UpdateCompanySwiftCode();
         CreateElectronicDocumentFormat(
-          PEPPOLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Invoice", CODEUNIT::"Export Sales Inv. - PEPPOL 2.1");
+          PEPPOLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Invoice", CODEUNIT::"Exp. Sales Inv. PEPPOL BIS3.0");
 
         // [GIVEN] Document Sending Profile = PEPPOL; Sales Invoice.
         CreateSalesDocumentWithItem(SalesLine, SalesHeader."Document Type"::Invoice);
@@ -679,7 +679,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         Initialize();
         UpdateCompanySwiftCode();
         CreateElectronicDocumentFormat(
-          PEPPOLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Credit Memo", CODEUNIT::"Export Sales Cr.M. - PEPPOL2.1");
+          PEPPOLFormatNameTxt, ElectronicDocumentFormat.Usage::"Sales Credit Memo", CODEUNIT::"Exp. Sales CrM. PEPPOL BIS3.0");
 
         // [GIVEN] Document Sending Profile = PEPPOL; Sales Credit Memo.
         CreateSalesDocumentWithItem(SalesLine, SalesHeader."Document Type"::"Credit Memo");
@@ -1679,6 +1679,7 @@ codeunit 148053 "OIOUBL-ERM Elec Document Sales"
         SalesHeader.VALIDATE("Bill-to City", PostCode.City);
         SalesHeader.Validate("Ship-to Address", LibraryUtility.GenerateGUID());
         SalesHeader.Validate("Ship-to City", PostCode.City);
+        SalesHeader.Validate("Your Reference", LibraryUtility.GenerateGUID());
         SalesHeader.MODIFY(true);
         ClearVATRegistrationForCustomer(SalesHeader."Sell-to Customer No.");
     end;

@@ -70,13 +70,8 @@ tableextension 18146 "GST Sales Header Archive Ext" extends "Sales Header Archiv
             DataClassification = CustomerContent;
             Editable = false;
             ObsoleteReason = 'New field introduced as E-Comm. Merchant Id';
-#if CLEAN23
             ObsoleteState = Removed;
             ObsoleteTag = '26.0';
-#else
-            ObsoleteState = Pending;
-            ObsoleteTag = '23.0';
-#endif
         }
         field(18150; "GST Bill-to State Code"; Code[10])
         {

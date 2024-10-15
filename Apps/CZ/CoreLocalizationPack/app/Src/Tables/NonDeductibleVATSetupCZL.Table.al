@@ -27,6 +27,11 @@ table 11713 "Non-Deductible VAT Setup CZL"
             DecimalPlaces = 0 : 1;
             MinValue = 0;
             MaxValue = 100;
+
+            trigger OnValidate()
+            begin
+                TestField("To Date");
+            end;
         }
         field(4; "Settlement Coefficient"; Decimal)
         {
@@ -34,6 +39,11 @@ table 11713 "Non-Deductible VAT Setup CZL"
             DecimalPlaces = 0 : 1;
             MinValue = 0;
             MaxValue = 100;
+
+            trigger OnValidate()
+            begin
+                TestField("To Date");
+            end;
         }
     }
 

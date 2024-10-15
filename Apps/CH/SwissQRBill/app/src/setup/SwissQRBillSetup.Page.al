@@ -35,17 +35,6 @@ page 11514 "Swiss QR-Bill Setup"
                         ApplicationArea = All;
                         ToolTip = 'Specifies the address type used for all printed QR-bills. Recommended value is Structured.';
                     }
-#if not CLEAN23
-                    field(UmlautCharsEncodeMode; "Umlaut Chars Encode Mode")
-                    {
-                        ApplicationArea = All;
-                        ToolTip = 'Specifies the German umlaut characters encoding mode. "Single" mode: "Ä" to "A". "Double" mode: "Ä" to "Ae". The recommended value is Double.';
-                        Visible = false;
-                        ObsoleteReason = 'No need to convert umlauts, because encoding was changed to UTF-8.';
-                        ObsoleteState = Pending;
-                        ObsoleteTag = '23.0';
-                    }
-#endif
                     field(DefaultQRBillLayout; "Default Layout")
                     {
                         ApplicationArea = All;

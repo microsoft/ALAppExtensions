@@ -1977,6 +1977,62 @@ codeunit 148184 "Sustainability Posting Test"
             StrSubstNo(ValueMustBeEqualErr, SustainabilityLedgerEntry.FieldCaption("Carbon Fee"), ExpectedCarbonFee, SustainabilityLedgerEntry.TableCaption()));
     end;
 
+    [Test]
+    [HandlerFunctions('ConfirmHandler,MessageHandler')]
+    procedure TestSustainabilityJournalPostedWithZeroEmissionWhenRenewableEnergyEnabled()
+    var
+        SustainabilityJnlBatch: Record "Sustainability Jnl. Batch";
+        NoSeries: Record "No. Series";
+        SustainabilityAccount: Record "Sustainability Account";
+        SustainAccountSubcategory: Record "Sustain. Account Subcategory";
+        SustainabilityJournalLine: Record "Sustainability Jnl. Line";
+        SustainabilityLedgerEntry: Record "Sustainability Ledger Entry";
+        SustainabilityJournalMgt: Codeunit "Sustainability Journal Mgt.";
+        SustainabilityJournal: TestPage "Sustainability Journal";
+    begin
+        // [SCENARIO 541991] Impossible to post an emission records in the Sustainability Ledger Entry with Emissions that are equal to zero even with the flag "Renewable Energy" set to true
+        LibrarySustainability.CleanUpBeforeTesting();
+
+        // [GIVEN] A Sustainability Journal Batch and update No. Series so Manual No. allowed while posting the Sustainability Journal
+        SustainabilityJnlBatch := SustainabilityJournalMgt.GetASustainabilityJournalBatch(false);
+        NoSeries.Get(SustainabilityJnlBatch."No Series");
+        NoSeries.Validate("Manual Nos.", true);
+        NoSeries.Modify(true);
+
+        // [GIVEN] Create a Sustainability Account that's ready to Post 
+        SustainabilityAccount := GetAReadyToPostSustainabilityAccount(
+            Enum::"Emission Scope"::"Scope 2",
+            Enum::"Calculation Foundation"::"Fuel/Electricity",
+            true, false, false, '', false, 0, 0, 0, true);
+
+        // [GIVEN] A Sustainability Journal Line is created and all fields are filled out
+        SustainabilityJournalLine := LibrarySustainability.InsertSustainabilityJournalLine(SustainabilityJnlBatch, SustainabilityAccount, 1000);
+        SustainabilityJournalLine."Unit of Measure" := 'kg';
+        SustainabilityJournalLine.Validate("Fuel/Electricity", 123);
+        SustainabilityJournalLine.Modify(true);
+
+        // [WHEN] Post Sustainability Journal without any Error
+        SustainabilityJournal.OpenEdit();
+        SustainabilityJournal.GoToRecord(SustainabilityJournalLine);
+        SustainabilityJournal.Post.Invoke();
+
+        // [THEN] Verify Renewable Energy is true and Emissions are zero on posted Sustainability Ledger Entry
+        SustainabilityLedgerEntry.FindFirst();
+        SustainAccountSubcategory.Get(SustainabilityAccount.Category, SustainabilityAccount.Subcategory);
+        Assert.AreEqual(
+            SustainAccountSubcategory."Renewable Energy", SustainabilityLedgerEntry."Renewable Energy",
+            StrSubstNo(InformationTakenToLedgerEntryLbl, SustainabilityLedgerEntry.FieldCaption("Renewable Energy"), SustainAccountSubcategory.TableCaption()));
+        Assert.AreEqual(
+            SustainAccountSubcategory."Emission Factor CO2", SustainabilityLedgerEntry."Emission Factor CO2",
+            StrSubstNo(InformationTakenToLedgerEntryLbl, SustainabilityLedgerEntry.FieldCaption("Emission Factor CO2"), SustainAccountSubcategory.TableCaption()));
+        Assert.AreEqual(
+            SustainAccountSubcategory."Emission Factor CH4", SustainabilityLedgerEntry."Emission Factor CH4",
+            StrSubstNo(InformationTakenToLedgerEntryLbl, SustainabilityLedgerEntry.FieldCaption("Emission Factor CH4"), SustainAccountSubcategory.TableCaption()));
+        Assert.AreEqual(
+            SustainAccountSubcategory."Emission Factor N2O", SustainabilityLedgerEntry."Emission Factor N2O",
+            StrSubstNo(InformationTakenToLedgerEntryLbl, SustainabilityLedgerEntry.FieldCaption("Emission Factor N2O"), SustainAccountSubcategory.TableCaption()));
+    end;
+
     local procedure CreateUserSetup(var UserSetup: Record "User Setup"; UserID: Code[50])
     begin
         UserSetup.Init();
@@ -2179,6 +2235,24 @@ codeunit 148184 "Sustainability Posting Test"
         EmissionFee.SetRange("Emission Type", EmissionType);
         if EmissionFee.FindLast() then
             exit(true);
+    end;
+
+    procedure GetAReadyToPostSustainabilityAccount(
+        Scope: Enum "Emission Scope";
+        CalcFoundation: Enum "Calculation Foundation";
+        CO2: Boolean; CH4: Boolean; N2O: Boolean;
+        CustomValue: Text[100]; CalcFromGL: Boolean;
+        EFCO2: Decimal; EFCH4: Decimal; EFN2O: Decimal; RenewableEnergy: Boolean) Account: Record "Sustainability Account"
+    var
+        CategoryTok, SubcategoryTok, AccountTok : Code[20];
+    begin
+        CategoryTok := LibraryRandom.RandText(20);
+        SubcategoryTok := LibraryRandom.RandText(20);
+        AccountTok := Format(LibraryRandom.RandIntInRange(10000, 20000));
+        LibrarySustainability.InsertAccountCategory(CategoryTok, '', Scope, CalcFoundation, CO2, CH4, N2O, CustomValue, CalcFromGL);
+        LibrarySustainability.InsertAccountSubcategory(CategoryTok, SubcategoryTok, '', EFCO2, EFCH4, EFN2O, RenewableEnergy);
+        Account := LibrarySustainability.InsertSustainabilityAccount(
+            AccountTok, LibraryRandom.RandText(20), CategoryTok, SubcategoryTok, Enum::"Sustainability Account Type"::Posting, '', true);
     end;
 
     [ModalPageHandler]

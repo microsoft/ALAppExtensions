@@ -21,20 +21,9 @@ codeunit 38505 "Purchases External Events"
         if PurchaseHeader.Status = PurchaseHeader.Status::Released then begin
             Url := ExternalEventsHelper.CreateLink(PurchaseOrderApiUrlTok, PurchaseHeader.SystemId);
             WebClientUrl := CopyStr(GetUrl(ClientType::Web, CompanyName(), ObjectType::Page, Page::"Purchase Order", PurchaseHeader), 1, MaxStrLen(WebClientUrl));
-#if not CLEAN23
-            MyBusinessEventPurchaseOrderReleased(PurchaseHeader.SystemId, Url);
-#endif
             MyBusinessEventPurchaseOrderReleased(PurchaseHeader.SystemId, Url, WebClientUrl);
         end;
     end;
-
-#if not CLEAN23
-    [Obsolete('This event is obsolete. Use version 1.0 instead.', '23.0')]
-    [ExternalBusinessEvent('PurchaseOrderReleased', 'Purchase order released', 'This business event is triggered when a purchase order is released to the internal warehouse/external logistics company, so they''re ready to receive goods coming their way. This trigger occurs when the Release button is clicked on Purchase Order page in Business Central.', EventCategory::Purchasing)]
-    local procedure MyBusinessEventPurchaseOrderReleased(PurchaseOrderId: Guid; Url: Text[250])
-    begin
-    end;
-#endif
 
     [ExternalBusinessEvent('PurchaseOrderReleased', 'Purchase order released', 'This business event is triggered when a purchase order is released to the internal warehouse/external logistics company, so they''re ready to receive goods coming their way. This trigger occurs when the Release button is clicked on Purchase Order page in Business Central.', EventCategory::Purchasing, '1.0')]
     local procedure MyBusinessEventPurchaseOrderReleased(PurchaseOrderId: Guid; Url: Text[250]; WebClientUrl: Text[250])

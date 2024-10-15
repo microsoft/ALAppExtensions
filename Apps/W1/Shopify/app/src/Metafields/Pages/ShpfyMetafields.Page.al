@@ -58,6 +58,7 @@ page 30163 "Shpfy Metafields"
         Evaluate(Rec."Parent Table No.", Rec.GetFilter("Parent Table No."));
         Rec.Validate("Parent Table No.");
         Evaluate(Rec."Owner Id", Rec.GetFilter("Owner Id"));
+        Rec.Validate(Type, Rec.Type::single_line_text_field);
     end;
 
     trigger OnAfterGetCurrRecord()

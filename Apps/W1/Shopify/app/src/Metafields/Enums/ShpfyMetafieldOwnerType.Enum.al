@@ -2,8 +2,6 @@ namespace Microsoft.Integration.Shopify;
 
 enum 30156 "Shpfy Metafield Owner Type" implements "Shpfy IMetafield Owner Type"
 {
-    Access = Internal;
-
     value(0; Customer)
     {
         Caption = 'Customer';
