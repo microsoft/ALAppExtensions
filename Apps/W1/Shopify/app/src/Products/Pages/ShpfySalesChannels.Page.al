@@ -42,7 +42,7 @@ page 30166 "Shpfy Sales Channels"
                 var
                     ShpfySalesChannelAPI: Codeunit "Shpfy Sales Channel API";
                 begin
-                    ShpfySalesChannelAPI.RetreiveSalesChannelsFromShopify(CopyStr(Rec.GetFilter("Shop Code"), 1, 20));
+                    ShpfySalesChannelAPI.RetrieveSalesChannelsFromShopify(CopyStr(Rec.GetFilter("Shop Code"), 1, 20));
                 end;
             }
         }

@@ -575,13 +575,45 @@ codeunit 30176 "Shpfy Product API"
     var
         SalesChannel: Record "Shpfy Sales Channel";
         GraphQuery: TextBuilder;
-        PublicationIds: TextBuilder;
-        PublicationIdTok: Label '{ publicationId: \"gid://shopify/Publication/%1\"},', Locked = true;
         JResponse: JsonToken;
     begin
-        if not GetSalesChannelsToPublishTo(SalesChannel, ShopifyProduct) then
+        if not GetSalesChannelsToPublishTo(SalesChannel, ShopifyProduct."Shop Code") then
             exit;
 
+        CreateProductPublishGraphQuery(ShopifyProduct, SalesChannel, GraphQuery);
+
+        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
+    end;
+
+    /// <summary>
+    /// Gets the sales channels product should be published to.
+    /// </summary>
+    /// <param name="SalesChannel">Sales channel record.</param>
+    /// <param name="ShopifyProduct">Shopify product record.</param>
+    local procedure GetSalesChannelsToPublishTo(var SalesChannel: Record "Shpfy Sales Channel"; ShopCode: Code[20]): Boolean
+    var
+        SalesChannelAPI: Codeunit "Shpfy Sales Channel API";
+    begin
+        SalesChannel.SetRange("Shop Code", ShopCode);
+        if SalesChannel.IsEmpty() then
+            SalesChannelAPI.RetrieveSalesChannelsFromShopify(ShopCode);
+
+        SalesChannel.SetRange(SalesChannel."Use for publication", true);
+        if SalesChannel.IsEmpty() then begin
+            SalesChannel.SetRange("Use for publication");
+            SalesChannel.SetRange(SalesChannel.Name, 'Online Store');
+            if SalesChannel.IsEmpty() then
+                exit(false);
+        end;
+
+        exit(true);
+    end;
+
+    local procedure CreateProductPublishGraphQuery(ShopifyProduct: Record "Shpfy Product"; var SalesChannel: Record "Shpfy Sales Channel"; GraphQuery: TextBuilder)
+    var
+        PublicationIds: TextBuilder;
+        PublicationIdTok: Label '{ publicationId: \"gid://shopify/Publication/%1\"},', Locked = true;
+    begin
         GraphQuery.Append('{"query":"mutation {publishablePublish(id: \"gid://shopify/Product/');
         GraphQuery.Append(Format(ShopifyProduct.Id));
         GraphQuery.Append('\" ');
@@ -594,31 +626,5 @@ codeunit 30176 "Shpfy Product API"
         GraphQuery.Append('])');
         GraphQuery.Append('{userErrors {field, message}}');
         GraphQuery.Append('}"}');
-
-        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
-    end;
-
-    /// <summary>
-    /// Gets the sales channels product should be published to.
-    /// </summary>
-    /// <param name="SalesChannel">Sales channel record.</param>
-    /// <param name="ShopifyProduct">Shopify product record.</param>
-    local procedure GetSalesChannelsToPublishTo(var SalesChannel: Record "Shpfy Sales Channel"; ShopifyProduct: Record "Shpfy Product"): Boolean
-    var
-        SalesChannelAPI: Codeunit "Shpfy Sales Channel API";
-    begin
-        SalesChannel.SetRange("Shop Code", ShopifyProduct."Shop Code");
-        if SalesChannel.IsEmpty() then
-            SalesChannelAPI.RetreiveSalesChannelsFromShopify(ShopifyProduct."Shop Code");
-
-        SalesChannel.SetRange(SalesChannel."Use for publication", true);
-        if SalesChannel.IsEmpty() then begin
-            SalesChannel.SetRange("Use for publication");
-            SalesChannel.SetRange(SalesChannel.Name, 'Online Store');
-            if SalesChannel.IsEmpty() then
-                exit(false);
-        end;
-
-        exit(true);
     end;
 }
