@@ -226,8 +226,6 @@ codeunit 6610 "FS Int. Table Subscriber"
 
                     if CRMIntegrationRecord.FindByCRMID(FSWorkOrderProduct.WorkOrder) then
                         ServiceHeader.GetBySystemId(CRMIntegrationRecord."Integration ID");
-                    if CRMIntegrationRecord.FindByCRMID(FSWorkOrderProduct.WorkOrderIncident) then
-                        ServiceItemLine.GetBySystemId(CRMIntegrationRecord."Integration ID");
 
                     ServiceLine."Document Type" := ServiceLine."Document Type"::Order;
                     ServiceLine."Document No." := ServiceHeader."No.";
@@ -248,8 +246,6 @@ codeunit 6610 "FS Int. Table Subscriber"
 
                     if CRMIntegrationRecord.FindByCRMID(FSWorkOrderService.WorkOrder) then
                         ServiceHeader.GetBySystemId(CRMIntegrationRecord."Integration ID");
-                    if CRMIntegrationRecord.FindByCRMID(FSWorkOrderService.WorkOrderIncident) then
-                        ServiceItemLine.GetBySystemId(CRMIntegrationRecord."Integration ID");
 
                     ServiceLine."Document Type" := ServiceLine."Document Type"::Order;
                     ServiceLine."Document No." := ServiceHeader."No.";
@@ -668,19 +664,33 @@ codeunit 6610 "FS Int. Table Subscriber"
         CRMIntegrationRecord: Record "CRM Integration Record";
         FSWorkOrderService: Record "FS Work Order Service";
         FSWorkOrderProduct: Record "FS Work Order Product";
+        ServiceItemLine: Record "Service Item Line";
         ServiceLine: Record "Service Line";
         ItemUnitOfMeasure: Record "Item Unit of Measure";
         CRMUom: Record "CRM Uom";
         SourceRecordRef: RecordRef;
         NAVItemUomRecordId: RecordId;
+        WorkOrderIncidentId: Guid;
         NAVItemUomId: Guid;
         NotCoupledCRMUomErr: Label 'The unit is not coupled to a unit of measure.';
     begin
         if not FSConnectionSetup.IsEnabled() then
             exit;
 
-        if (SourceFieldRef.Record().Number = Database::"FS Work Order Product") then
+        if (SourceFieldRef.Record().Number = Database::"FS Work Order Product") and
+            (DestinationFieldRef.Record().Number = Database::"Service Line") then
             case SourceFieldRef.Name() of
+                FSWorkOrderProduct.FieldName(WorkOrderIncident):
+                    begin
+                        SourceFieldRef.Record().SetTable(FSWorkOrderProduct);
+                        DestinationFieldRef.Record().SetTable(ServiceLine);
+                        if CRMIntegrationRecord.FindByCRMID(FSWorkOrderProduct.WorkOrderIncident) then begin
+                            ServiceItemLine.GetBySystemId(CRMIntegrationRecord."Integration ID");
+                            NewValue := ServiceItemLine."Line No.";
+                            IsValueFound := true;
+                        end;
+                    end;
+
                 FSWorkOrderProduct.FieldName(Unit):
                     begin
                         SourceRecordRef := SourceFieldRef.Record();
@@ -697,8 +707,20 @@ codeunit 6610 "FS Int. Table Subscriber"
                         exit;
                     end;
             end;
-        if (SourceFieldRef.Record().Number = Database::"FS Work Order Service") then
+        if (SourceFieldRef.Record().Number = Database::"FS Work Order Service") and
+            (DestinationFieldRef.Record().Number = Database::"Service Line") then
             case SourceFieldRef.Name() of
+                FSWorkOrderProduct.FieldName(WorkOrderIncident):
+                    begin
+                        SourceFieldRef.Record().SetTable(FSWorkOrderService);
+                        DestinationFieldRef.Record().SetTable(ServiceLine);
+                        if CRMIntegrationRecord.FindByCRMID(FSWorkOrderService.WorkOrderIncident) then begin
+                            ServiceItemLine.GetBySystemId(CRMIntegrationRecord."Integration ID");
+                            NewValue := ServiceItemLine."Line No.";
+                            IsValueFound := true;
+                        end;
+                    end;
+
                 FSWorkOrderService.FieldName(Unit):
                     begin
                         SourceRecordRef := SourceFieldRef.Record();
@@ -715,8 +737,45 @@ codeunit 6610 "FS Int. Table Subscriber"
                         exit;
                     end;
             end;
-        if (SourceFieldRef.Record().Number = Database::"Service Line") then
+
+        if (SourceFieldRef.Record().Number = Database::"Service Line") and
+            (DestinationFieldRef.Record().Number = Database::"FS Work Order Product") then
             case SourceFieldRef.Name() of
+                ServiceLine.FieldName("Service Item Line No."):
+                    begin
+                        SourceFieldRef.Record().SetTable(ServiceLine);
+                        if CRMIntegrationRecord.FindIDFromRecordID(GetServiceOrderItemLineRecordId(ServiceLine."Document No.", ServiceLine."Service Item Line No."), WorkOrderIncidentId) then begin
+                            NewValue := WorkOrderIncidentId;
+                            IsValueFound := true;
+                        end;
+                    end;
+            end;
+
+        if (SourceFieldRef.Record().Number = Database::"Service Line") and
+            (DestinationFieldRef.Record().Number = Database::"FS Work Order Service") then
+            case SourceFieldRef.Name() of
+                ServiceLine.FieldName("Service Item Line No."):
+                    begin
+                        SourceFieldRef.Record().SetTable(ServiceLine);
+                        if CRMIntegrationRecord.FindIDFromRecordID(GetServiceOrderItemLineRecordId(ServiceLine."Document No.", ServiceLine."Service Item Line No."), WorkOrderIncidentId) then begin
+                            NewValue := WorkOrderIncidentId;
+                            IsValueFound := true;
+                        end;
+                    end;
+            end;
+
+        if (SourceFieldRef.Record().Number = Database::"Service Line") and
+            (DestinationFieldRef.Record().Number in [Database::"FS Work Order Product", Database::"FS Work Order Service"]) then
+            case SourceFieldRef.Name() of
+                ServiceLine.FieldName("Service Item Line No."):
+                    begin
+                        SourceFieldRef.Record().SetTable(ServiceLine);
+                        if CRMIntegrationRecord.FindByCRMID(FSWorkOrderProduct.WorkOrderIncident) then begin
+                            ServiceItemLine.GetBySystemId(CRMIntegrationRecord."Integration ID");
+                            NewValue := ServiceItemLine."Line No.";
+                            IsValueFound := true;
+                        end;
+                    end;
                 ServiceLine.FieldName("Unit of Measure Code"):
                     begin
                         SourceRecordRef := SourceFieldRef.Record();
@@ -1507,7 +1566,6 @@ codeunit 6610 "FS Int. Table Subscriber"
         BillingAccId: Guid;
         ServiceAccId: Guid;
         WorkOrderId: Guid;
-        WorkOrderIncidentId: Guid;
         Handled: Boolean;
     begin
         if not FSConnectionSetup.IsEnabled() then
@@ -1655,8 +1713,6 @@ codeunit 6610 "FS Int. Table Subscriber"
                     DestinationRecordRef.SetTable(FSWorkOrderProduct);
                     if CRMIntegrationRecord.FindIDFromRecordID(GetServiceOrderRecordId(ServiceLine."Document No."), WorkOrderId) then
                         FSWorkOrderProduct.WorkOrder := WorkOrderId;
-                    if CRMIntegrationRecord.FindIDFromRecordID(GetServiceOrderItemLineRecordId(ServiceLine."Document No.", ServiceLine."Service Item Line No."), WorkOrderIncidentId) then
-                        FSWorkOrderProduct.WorkOrderIncident := WorkOrderIncidentId;
                     DestinationRecordRef.GetTable(FSWorkOrderProduct);
                 end;
             'Service Line-FS Work Order Service':
@@ -1667,8 +1723,6 @@ codeunit 6610 "FS Int. Table Subscriber"
                     DestinationRecordRef.SetTable(FSWorkOrderService);
                     if CRMIntegrationRecord.FindIDFromRecordID(GetServiceOrderRecordId(ServiceLine."Document No."), WorkOrderId) then
                         FSWorkOrderService.WorkOrder := WorkOrderId;
-                    if CRMIntegrationRecord.FindIDFromRecordID(GetServiceOrderItemLineRecordId(ServiceLine."Document No.", ServiceLine."Service Item Line No."), WorkOrderIncidentId) then
-                        FSWorkOrderService.WorkOrderIncident := WorkOrderIncidentId;
                     DestinationRecordRef.GetTable(FSWorkOrderService);
                 end;
         end;

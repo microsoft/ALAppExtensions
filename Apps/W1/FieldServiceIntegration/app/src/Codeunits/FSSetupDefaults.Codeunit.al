@@ -770,6 +770,13 @@ codeunit 6611 "FS Setup Defaults"
 
         InsertIntegrationFieldMapping(
           IntegrationTableMappingName,
+          ServiceLine.FieldNo("Service Item Line No."),
+          FSWorkOrderProduct.FieldNo(WorkOrderIncident),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
           ServiceLine.FieldNo("No."),
           FSWorkOrderProduct.FieldNo(Product),
           IntegrationFieldMapping.Direction::Bidirectional,
@@ -839,6 +846,7 @@ codeunit 6611 "FS Setup Defaults"
           FSWorkOrderProduct.FieldNo(QuantityConsumed),
           IntegrationFieldMapping.Direction::ToIntegrationTable,
           '', true, false);
+
         InsertIntegrationFieldMapping(
           IntegrationTableMappingName,
           0,
@@ -895,6 +903,13 @@ codeunit 6611 "FS Setup Defaults"
           ServiceLine.FieldNo("Document Type"),
           0, IntegrationFieldMapping.Direction::FromIntegrationTable,
           'Order', true, false);
+
+        InsertIntegrationFieldMapping(
+          IntegrationTableMappingName,
+          ServiceLine.FieldNo("Service Item Line No."),
+          FSWorkOrderService.FieldNo(WorkOrderIncident),
+          IntegrationFieldMapping.Direction::Bidirectional,
+          '', true, false);
 
         InsertIntegrationFieldMapping(
           IntegrationTableMappingName,
