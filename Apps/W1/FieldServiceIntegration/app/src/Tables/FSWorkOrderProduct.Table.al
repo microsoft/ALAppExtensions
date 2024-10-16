@@ -728,12 +728,12 @@ table 6619 "FS Work Order Product"
             Caption = 'Location Code';
             ExternalAccess = Read;
         }
-        field(122; ProductId; Text[1024])
+        field(122; ProductId; Code[20])
         {
             ExternalName = 'bcbi_productid';
             ExternalType = 'String';
-            Description = 'Unique identifier of the warehouse associated with the entity.';
-            Caption = 'Location Code';
+            Description = 'Unique identifier of the product associated with the entity.';
+            Caption = 'Product Id';
         }
     }
     keys
