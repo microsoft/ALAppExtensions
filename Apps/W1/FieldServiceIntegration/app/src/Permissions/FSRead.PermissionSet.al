@@ -26,5 +26,7 @@ permissionset 6611 "FS - Read"
                   tabledata "FS Work Order Product" = R,
                   tabledata "FS Work Order Service" = R,
                   tabledata "FS Work Order Substatus" = R,
-                  tabledata "FS Work Order Type" = R;
+                  tabledata "FS Work Order Type" = R,
+                  tabledata "FS Booking Status" = R,
+                  tabledata "FS Incident Type" = R;
 }

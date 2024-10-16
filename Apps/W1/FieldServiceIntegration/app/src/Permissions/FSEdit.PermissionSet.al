@@ -26,5 +26,7 @@ permissionset 6610 "FS - Edit"
                   tabledata "FS Work Order Product" = IMD,
                   tabledata "FS Work Order Service" = IMD,
                   tabledata "FS Work Order Substatus" = IMD,
-                  tabledata "FS Work Order Type" = IMD;
+                  tabledata "FS Work Order Type" = IMD,
+                  tabledata "FS Booking Status" = IMD,
+                  tabledata "FS Incident Type" = IMD;
 }
