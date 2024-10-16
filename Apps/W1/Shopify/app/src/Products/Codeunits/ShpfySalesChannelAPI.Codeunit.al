@@ -7,7 +7,7 @@ codeunit 30215 "Shpfy Sales Channel API"
 {
     Access = Internal;
 
-    internal procedure RetreiveSalesChannelsFromShopify()
+    internal procedure RetreiveSalesChannelsFromShopify(ShopCode: Code[20])
     var
         SalesChannel: Record "Shpfy Sales Channel";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
@@ -18,7 +18,7 @@ codeunit 30215 "Shpfy Sales Channel API"
         JPublication: JsonToken;
         ChannelId: BigInteger;
     begin
-        CommunicationMgt.SetShop('PMISHOP'); //TODO - Set the shop code
+        CommunicationMgt.SetShop(ShopCode);
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::GetSalesChannels);
         if JsonHelper.GetJsonArray(JResponse, JPublications, 'data.publications.nodes') then
             foreach JPublication in JPublications do begin
@@ -27,6 +27,7 @@ codeunit 30215 "Shpfy Sales Channel API"
                     SalesChannel.Init();
                     SalesChannel.Id := ChannelId;
                     SalesChannel.Name := JsonHelper.GetValueAsText(JPublication, 'name');
+                    SalesChannel."Shop Code" := ShopCode;
                     SalesChannel.Insert(true);
                 end;
             end;

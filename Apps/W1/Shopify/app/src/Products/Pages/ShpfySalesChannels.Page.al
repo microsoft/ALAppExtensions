@@ -6,7 +6,10 @@ page 30166 "Shpfy Sales Channels"
     Caption = 'Shpfy Sales Channels';
     PageType = List;
     SourceTable = "Shpfy Sales Channel";
-    UsageCategory = Lists;
+    InsertAllowed = false;
+    DeleteAllowed = false;
+    UsageCategory = None;
+
 
     layout
     {
@@ -16,6 +19,7 @@ page 30166 "Shpfy Sales Channels"
             {
                 field(Id; Rec.Id) { }
                 field(Name; Rec.Name) { }
+                field("Use for publication"; Rec."Use for publication") { }
             }
         }
     }
@@ -38,7 +42,7 @@ page 30166 "Shpfy Sales Channels"
                 var
                     ShpfySalesChannelAPI: Codeunit "Shpfy Sales Channel API";
                 begin
-                    ShpfySalesChannelAPI.RetreiveSalesChannelsFromShopify();
+                    ShpfySalesChannelAPI.RetreiveSalesChannelsFromShopify(CopyStr(Rec.GetFilter("Shop Code"), 1, 20));
                 end;
             }
         }

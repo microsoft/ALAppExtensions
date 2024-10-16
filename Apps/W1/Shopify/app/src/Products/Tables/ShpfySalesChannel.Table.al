@@ -19,7 +19,19 @@ table 30159 "Shpfy Sales Channel"
         field(2; Name; Text[100])
         {
             Caption = 'Name';
+            Editable = false;
             ToolTip = 'The name of the sales channel.';
+        }
+        field(3; "Shop Code"; Code[20])
+        {
+            Caption = 'Shop Code';
+            Editable = false;
+            ToolTip = 'The code of the shop.';
+        }
+        field(4; "Use for publication"; Boolean)
+        {
+            Caption = 'Use for publication';
+            ToolTip = 'Indicates if the sales channel is used for new products publication.';
         }
     }
     keys
