@@ -69,9 +69,9 @@ codeunit 30286 "Shpfy Company API"
         if GraphQuery <> '' then
             JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
 
-        CreateGraphQueryUpdateCompanyLocationTaxId(CompanyLocation);
+        UpdateCompanyLocationTaxId(CompanyLocation);
 
-        CreateGraphQueryUpdateCompanyLocationPaymentTerms(CompanyLocation);
+        UpdateCompanyLocationPaymentTerms(CompanyLocation);
     end;
 
     internal procedure SetShop(ShopifyShop: Record "Shpfy Shop")
@@ -230,10 +230,9 @@ codeunit 30286 "Shpfy Company API"
         end;
     end;
 
-    internal procedure CreateGraphQueryUpdateCompanyLocationTaxId(var CompanyLocation: Record "Shpfy Company Location"): Text
+    internal procedure UpdateCompanyLocationTaxId(var CompanyLocation: Record "Shpfy Company Location")
     var
         xCompanyLocation: Record "Shpfy Company Location";
-        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         GraphQLType: Enum "Shpfy GraphQL Type";
         Parameters: Dictionary of [Text, Text];
     begin
@@ -246,10 +245,9 @@ codeunit 30286 "Shpfy Company API"
         CommunicationMgt.ExecuteGraphQL(GraphQLType::CreateCompanyLocationTaxId, Parameters);
     end;
 
-    internal procedure CreateGraphQueryUpdateCompanyLocationPaymentTerms(var CompanyLocation: Record "Shpfy Company Location"): Text
+    internal procedure UpdateCompanyLocationPaymentTerms(var CompanyLocation: Record "Shpfy Company Location")
     var
         xCompanyLocation: Record "Shpfy Company Location";
-        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         GraphQLType: Enum "Shpfy GraphQL Type";
         Parameters: Dictionary of [Text, Text];
     begin
@@ -338,14 +336,8 @@ codeunit 30286 "Shpfy Company API"
 
     internal procedure UpdateShopifyCompanyFields(var ShopifyCompany: Record "Shpfy Company"; JCompany: JsonObject) Result: Boolean
     var
-        CompanyLocation: Record "Shpfy Company Location";
         UpdatedAt: DateTime;
-        JLocations: JsonArray;
-        JItem: JsonToken;
         OutStream: OutStream;
-        PhoneNo: Text;
-        IsDefaultCompanyLocation: Boolean;
-        CompanyLocationId: BigInteger;
     begin
         UpdatedAt := JsonHelper.GetValueAsDateTime(JCompany, 'updatedAt');
         if UpdatedAt <= ShopifyCompany."Updated At" then
@@ -365,10 +357,22 @@ codeunit 30286 "Shpfy Company API"
             Clear(ShopifyCompany.Note);
         ShopifyCompany.Modify();
 
+        UpdateShopifyCompanyLocationFields(ShopifyCompany, JCompany);
+    end;
+
+    local procedure UpdateShopifyCompanyLocationFields(var ShopifyCompany: Record "Shpfy Company"; var JCompany: JsonObject)
+    var
+        CompanyLocation: Record "Shpfy Company Location";
+        JLocations: JsonArray;
+        JLocation: JsonToken;
+        PhoneNo: Text;
+        IsDefaultCompanyLocation: Boolean;
+        CompanyLocationId: BigInteger;
+    begin
         IsDefaultCompanyLocation := true;
         if JsonHelper.GetJsonArray(JCompany, JLocations, 'locations.edges') then
-            foreach JItem in JLocations do begin
-                CompanyLocationId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'node.id'));
+            foreach JLocation in JLocations do begin
+                CompanyLocationId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JLocation, 'node.id'));
                 if IsDefaultCompanyLocation then
                     ShopifyCompany."Location Id" := CompanyLocationId;
 
@@ -376,28 +380,29 @@ codeunit 30286 "Shpfy Company API"
                 if not CompanyLocation.FindFirst() then begin
                     CompanyLocation.Id := CompanyLocationId;
                     CompanyLocation."Company SystemId" := ShopifyCompany.SystemId;
-                    CompanyLocation.Name := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.name'), 1, MaxStrLen(CompanyLocation.Name));
+                    CompanyLocation.Name := CopyStr(JsonHelper.GetValueAsText(JLocation, 'node.name'), 1, MaxStrLen(CompanyLocation.Name));
                     CompanyLocation.Insert();
                 end;
 
-                CompanyLocation.Address := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.address1', MaxStrLen(CompanyLocation.Address)), 1, MaxStrLen(CompanyLocation.Address));
-                CompanyLocation."Address 2" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.address2', MaxStrLen(CompanyLocation."Address 2")), 1, MaxStrLen(CompanyLocation."Address 2"));
-                CompanyLocation.Zip := CopyStr(JsonHelper.GetValueAsCode(JItem, 'node.billingAddress.zip', MaxStrLen(CompanyLocation.Zip)), 1, MaxStrLen(CompanyLocation.Zip));
-                CompanyLocation.City := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.city', MaxStrLen(CompanyLocation.City)), 1, MaxStrLen(CompanyLocation.City));
-                CompanyLocation."Country/Region Code" := CopyStr(JsonHelper.GetValueAsCode(JItem, 'node.billingAddress.countryCode', MaxStrLen(CompanyLocation."Country/Region Code")), 1, MaxStrLen(CompanyLocation."Country/Region Code"));
-                CompanyLocation."Province Code" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.zoneCode', MaxStrLen(CompanyLocation."Province Code")), 1, MaxStrLen(CompanyLocation."Province Code"));
-                CompanyLocation."Province Name" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.billingAddress.province', MaxStrLen(CompanyLocation."Province Name")), 1, MaxStrLen(CompanyLocation."Province Name"));
-                PhoneNo := JsonHelper.GetValueAsText(JItem, 'node.billingAddress.phone');
+                CompanyLocation.Address := CopyStr(JsonHelper.GetValueAsText(JLocation, 'node.billingAddress.address1', MaxStrLen(CompanyLocation.Address)), 1, MaxStrLen(CompanyLocation.Address));
+                CompanyLocation."Address 2" := CopyStr(JsonHelper.GetValueAsText(JLocation, 'node.billingAddress.address2', MaxStrLen(CompanyLocation."Address 2")), 1, MaxStrLen(CompanyLocation."Address 2"));
+                CompanyLocation.Zip := CopyStr(JsonHelper.GetValueAsCode(JLocation, 'node.billingAddress.zip', MaxStrLen(CompanyLocation.Zip)), 1, MaxStrLen(CompanyLocation.Zip));
+                CompanyLocation.City := CopyStr(JsonHelper.GetValueAsText(JLocation, 'node.billingAddress.city', MaxStrLen(CompanyLocation.City)), 1, MaxStrLen(CompanyLocation.City));
+                CompanyLocation."Country/Region Code" := CopyStr(JsonHelper.GetValueAsCode(JLocation, 'node.billingAddress.countryCode', MaxStrLen(CompanyLocation."Country/Region Code")), 1, MaxStrLen(CompanyLocation."Country/Region Code"));
+                CompanyLocation."Province Code" := CopyStr(JsonHelper.GetValueAsText(JLocation, 'node.billingAddress.zoneCode', MaxStrLen(CompanyLocation."Province Code")), 1, MaxStrLen(CompanyLocation."Province Code"));
+                CompanyLocation."Province Name" := CopyStr(JsonHelper.GetValueAsText(JLocation, 'node.billingAddress.province', MaxStrLen(CompanyLocation."Province Name")), 1, MaxStrLen(CompanyLocation."Province Name"));
+                PhoneNo := JsonHelper.GetValueAsText(JLocation, 'node.billingAddress.phone');
                 PhoneNo := CopyStr(DelChr(PhoneNo, '=', DelChr(PhoneNo, '=', '1234567890/+ .()')), 1, MaxStrLen(CompanyLocation."Phone No."));
                 CompanyLocation."Phone No." := CopyStr(PhoneNo, 1, MaxStrLen(CompanyLocation."Phone No."));
-                CompanyLocation."Tax Registration Id" := CopyStr(JsonHelper.GetValueAsText(JItem, 'node.taxRegistrationId', MaxStrLen(CompanyLocation."Tax Registration Id")), 1, MaxStrLen(CompanyLocation."Tax Registration Id"));
-                CompanyLocation."Shpfy Payment Terms Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JItem, 'node.buyerExperienceConfiguration.paymentTermsTemplate.id'));
+#pragma warning disable AA0139
+                CompanyLocation."Tax Registration Id" := JsonHelper.GetValueAsText(JLocation, 'node.taxRegistrationId', MaxStrLen(CompanyLocation."Tax Registration Id"));
+#pragma warning restore AA0139
+                CompanyLocation."Shpfy Payment Terms Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JLocation, 'node.buyerExperienceConfiguration.paymentTermsTemplate.id'));
                 if IsDefaultCompanyLocation then begin
                     CompanyLocation.Default := IsDefaultCompanyLocation;
                     IsDefaultCompanyLocation := false;
                 end;
-                CompanyLocation.Modify();
-                // end;
+                CompanyLocation.Modify(true);
             end;
     end;
 }

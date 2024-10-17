@@ -29,7 +29,7 @@ codeunit 30305 "Shpfy Comp. By Default Comp." implements "Shpfy ICompany Mapping
                 exit(true)
             else begin
                 Clear(ShopifyCompany."Customer SystemId");
-                ShopifyCompany.Modify();
+                ShopifyCompany.Modify(true);
             end;
 
         if IsNullGuid(ShopifyCompany."Customer SystemId") then begin
@@ -40,11 +40,11 @@ codeunit 30305 "Shpfy Comp. By Default Comp." implements "Shpfy ICompany Mapping
                 if not ShopifyCustomer.Get(TempShopifyCustomer.Id) then begin
                     ShopifyCustomer.Copy(TempShopifyCustomer);
                     ShopifyCustomer."Customer SystemId" := Customer.SystemId;
-                    ShopifyCustomer.Insert();
+                    ShopifyCustomer.Insert(true);
                 end;
 
                 ShopifyCompany."Main Contact Customer Id" := ShopifyCustomer.Id;
-                ShopifyCompany.Modify();
+                ShopifyCompany.Modify(true);
                 exit(true);
             end;
         end;

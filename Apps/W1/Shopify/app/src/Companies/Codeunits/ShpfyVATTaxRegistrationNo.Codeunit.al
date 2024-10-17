@@ -7,7 +7,9 @@ using Microsoft.Sales.Customer;
 /// </summary>
 codeunit 30368 "Shpfy VAT Tax Registration No." implements "Shpfy Tax Registration Id Mapping"
 {
-    procedure GetTaxRegistrationId(var Customer: Record Customer): Text;
+    Access = Internal;
+
+    procedure GetTaxRegistrationId(var Customer: Record Customer): Text[150];
     begin
         exit(Customer."VAT Registration No.");
     end;
