@@ -357,21 +357,45 @@ codeunit 30286 "Shpfy Company API"
             Clear(ShopifyCompany.Note);
         ShopifyCompany.Modify();
 
-        UpdateShopifyCompanyLocationFields(ShopifyCompany, JCompany);
+        UpdateShopifyCompanyLocation(ShopifyCompany);
     end;
 
-    local procedure UpdateShopifyCompanyLocationFields(var ShopifyCompany: Record "Shpfy Company"; var JCompany: JsonObject)
+    local procedure UpdateShopifyCompanyLocation(var ShopifyCompany: Record "Shpfy Company")
+    var
+        GraphQLType: Enum "Shpfy GraphQL Type";
+        Parameters: Dictionary of [Text, Text];
+        JResponse: JsonToken;
+        Cursor: Text;
+        IsDefaultCompanyLocation: Boolean;
+    begin
+        GraphQLType := "Shpfy GraphQL Type"::GetCompanyLocations;
+        Parameters.Add('CompanyId', Format(ShopifyCompany.Id));
+        IsDefaultCompanyLocation := true;
+        repeat
+            JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType, Parameters);
+            if JResponse.IsObject() then
+                if ExtractShopifyCompanyLocations(ShopifyCompany, JResponse.AsObject(), Cursor, IsDefaultCompanyLocation) then begin
+                    if Parameters.ContainsKey('After') then
+                        Parameters.Set('After', Cursor)
+                    else
+                        Parameters.Add('After', Cursor);
+                    GraphQLType := "Shpfy GraphQL Type"::GetNextCompanyLocations;
+                end else
+                    break;
+        until not JsonHelper.GetValueAsBoolean(JResponse, 'data.companyLocations.pageInfo.hasNextPage');
+    end;
+
+    local procedure ExtractShopifyCompanyLocations(var ShopifyCompany: Record "Shpfy Company"; JResponse: JsonObject; var Cursor: Text; var IsDefaultCompanyLocation: Boolean): Boolean
     var
         CompanyLocation: Record "Shpfy Company Location";
         JLocations: JsonArray;
         JLocation: JsonToken;
         PhoneNo: Text;
-        IsDefaultCompanyLocation: Boolean;
         CompanyLocationId: BigInteger;
     begin
-        IsDefaultCompanyLocation := true;
-        if JsonHelper.GetJsonArray(JCompany, JLocations, 'locations.edges') then
+        if JsonHelper.GetJsonArray(JResponse, JLocations, 'data.companyLocations.edges') then begin
             foreach JLocation in JLocations do begin
+                Cursor := JsonHelper.GetValueAsText(JLocation.AsObject(), 'cursor');
                 CompanyLocationId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JLocation, 'node.id'));
                 if IsDefaultCompanyLocation then
                     ShopifyCompany."Location Id" := CompanyLocationId;
@@ -404,5 +428,7 @@ codeunit 30286 "Shpfy Company API"
                 end;
                 CompanyLocation.Modify(true);
             end;
+            exit(true);
+        end;
     end;
 }

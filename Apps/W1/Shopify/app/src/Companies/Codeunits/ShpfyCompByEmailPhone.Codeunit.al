@@ -5,7 +5,7 @@ using Microsoft.Sales.Customer;
 /// <summary>
 /// Codeunit ShoShpfypify Comp. By Email/Phone (ID 30304) implements Interface Shpfy ICompany Mapping.
 /// </summary>
-codeunit 30304 "Shpfy Comp. By Email/Phone" implements "Shpfy ICompany Mapping"
+codeunit 30304 "Shpfy Comp. By Email/Phone" implements "Shpfy ICompany Mapping", "Shpfy ICustomer/Company Mapping"
 {
     Access = Internal;
 
@@ -68,7 +68,7 @@ codeunit 30304 "Shpfy Comp. By Email/Phone" implements "Shpfy ICompany Mapping"
         exit(ShopifyCompany."Customer No.");
     end;
 
-    local procedure FindByEmail(var ShopifyCompany: Record "Shpfy Company"; var TempShopifyCustomer: Record "Shpfy Customer" temporary): Boolean
+    local procedure FindByEmail(var ShopifyCompany: Record "Shpfy Company"; TempShopifyCustomer: Record "Shpfy Customer" temporary): Boolean
     var
         Customer: Record Customer;
         ShopifyCustomer: Record "Shpfy Customer";
@@ -89,7 +89,7 @@ codeunit 30304 "Shpfy Comp. By Email/Phone" implements "Shpfy ICompany Mapping"
         end;
     end;
 
-    local procedure FindByPhoneNo(var ShopifyCompany: Record "Shpfy Company"; var TempShopifyCustomer: Record "Shpfy Customer" temporary): Boolean
+    local procedure FindByPhoneNo(var ShopifyCompany: Record "Shpfy Company"; TempShopifyCustomer: Record "Shpfy Customer" temporary): Boolean
     var
         Customer: Record Customer;
         ShopifyCustomer: Record "Shpfy Customer";

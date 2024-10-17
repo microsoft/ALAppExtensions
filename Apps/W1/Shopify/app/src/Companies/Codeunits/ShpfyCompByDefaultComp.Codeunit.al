@@ -5,7 +5,7 @@ using Microsoft.Sales.Customer;
 /// <summary>
 /// Codeunit Shpfy Comp. By Default Comp. (ID 30305) implements Interface Shpfy ICompany Mapping.
 /// </summary>
-codeunit 30305 "Shpfy Comp. By Default Comp." implements "Shpfy ICompany Mapping"
+codeunit 30305 "Shpfy Comp. By Default Comp." implements "Shpfy ICompany Mapping", "Shpfy ICustomer/Company Mapping"
 {
     Access = Internal;
 
@@ -22,7 +22,6 @@ codeunit 30305 "Shpfy Comp. By Default Comp." implements "Shpfy ICompany Mapping
     var
         Customer: Record Customer;
         ShopifyCustomer: Record "Shpfy Customer";
-        Shop: Record "Shpfy Shop";
     begin
         if not IsNullGuid(ShopifyCompany."Customer SystemId") then
             if Customer.GetBySystemId(ShopifyCompany."Customer SystemId") then
