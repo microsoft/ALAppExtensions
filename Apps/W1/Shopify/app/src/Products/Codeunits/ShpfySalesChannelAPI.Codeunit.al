@@ -27,6 +27,11 @@ codeunit 30215 "Shpfy Sales Channel API"
             ProcessPublications(JPublications, ShopCode);
     end;
 
+    /// <summary>
+    /// Processes the sales channels from Shopify.
+    /// </summary>
+    /// <param name="JPublications">The array of sales channels data from Shopify.</param>
+    /// <param name="ShopCode">The code of the shop.</param>
     internal procedure ProcessPublications(JPublications: JsonArray; ShopCode: Code[20])
     var
         CurrentChannels: List of [BigInteger];

@@ -99,8 +99,7 @@ codeunit 30176 "Shpfy Product API"
             VariantApi.AddProductVariant(ShopifyVariant);
         end;
 
-        if NewShopifyProduct.Status = Enum::"Shpfy Product Status"::Active then
-            PublishProduct(NewShopifyProduct);
+        PublishProduct(NewShopifyProduct);
 
         exit(NewShopifyProduct.Id);
     end;
@@ -571,12 +570,15 @@ codeunit 30176 "Shpfy Product API"
             Options.Add(JsonHelper.GetValueAsText(JOption, 'id'), JsonHelper.GetValueAsText(JOption, 'name'));
     end;
 
-    local procedure PublishProduct(ShopifyProduct: Record "Shpfy Product")
+    internal procedure PublishProduct(ShopifyProduct: Record "Shpfy Product")
     var
         SalesChannel: Record "Shpfy Sales Channel";
         GraphQuery: TextBuilder;
         JResponse: JsonToken;
     begin
+        if ShopifyProduct.Status <> Enum::"Shpfy Product Status"::Active then
+            exit;
+
         if not GetSalesChannelsToPublishTo(SalesChannel, ShopifyProduct."Shop Code") then
             exit;
 
@@ -585,11 +587,6 @@ codeunit 30176 "Shpfy Product API"
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
     end;
 
-    /// <summary>
-    /// Gets the sales channels product should be published to.
-    /// </summary>
-    /// <param name="SalesChannel">Sales channel record.</param>
-    /// <param name="ShopifyProduct">Shopify product record.</param>
     local procedure GetSalesChannelsToPublishTo(var SalesChannel: Record "Shpfy Sales Channel"; ShopCode: Code[20]): Boolean
     var
         SalesChannelAPI: Codeunit "Shpfy Sales Channel API";
