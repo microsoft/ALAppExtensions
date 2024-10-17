@@ -27,7 +27,7 @@ codeunit 30215 "Shpfy Sales Channel API"
             ProcessPublications(JPublications, ShopCode);
     end;
 
-    local procedure ProcessPublications(JPublications: JsonArray; ShopCode: Code[20])
+    internal procedure ProcessPublications(JPublications: JsonArray; ShopCode: Code[20])
     var
         CurrentChannels: List of [BigInteger];
     begin
