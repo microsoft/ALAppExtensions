@@ -38,7 +38,7 @@ codeunit 139581 "Shpfy Sales Channel Test"
         // [THEN] The sales channels are imported to Business Central.
         SalesChannel.SetRange("Shop Code", Shop.Code);
         LibraryAssert.IsFalse(SalesChannel.IsEmpty(), 'Sales Channel not created');
-        LibraryAssert.AreEqual(2, SalesChannel.Count, 'Sales Channel count is not equal to 2');
+        LibraryAssert.AreEqual(2, SalesChannel.Count(), 'Sales Channel count is not equal to 2');
     end;
 
     [Test]
@@ -110,27 +110,68 @@ codeunit 139581 "Shpfy Sales Channel Test"
     end;
 
     [Test]
-    procedure UnitTestPublishProductWithPublishedStatusTest()
+    procedure UnitTestPublishProductTest()
     var
         ShopifyProduct: Record "Shpfy Product";
         ShopifyProductAPI: Codeunit "Shpfy Product API";
+        SalesChannelSubs: Codeunit "Shpfy Sales Channel Subs.";
         OnlineShopId: BigInteger;
+        ExpectedPublishQueryTok: Label '{"query":"mutation {publishablePublish(id: \"gid://shopify/Product/%1\" input: [{ publicationId: \"gid://shopify/Publication/%2\"}]){userErrors {field, message}}}"}', Locked = true;
+        ActualQuery: Text;
     begin
         // [SCENARIO] Publishing active product to Shopify Sales Channel.
         Initialize();
 
-        // [GIVEN] Product with published status.
+        // [GIVEN] Product with active status.
         CreateProductWithStatus(ShopifyProduct, Enum::"Shpfy Product Status"::Active);
         // [GIVEN] Default sales channels.
         OnlineShopId := Any.IntegerInRange(10000, 99999);
         CreateDefaultSalesChannels(OnlineShopId, Any.IntegerInRange(10000, 99999));
 
         // [WHEN] Invoking the procedure: ShopifyProductAPI.PublishProduct(ShopifyProduct)
-        asserterror ShopifyProductAPI.PublishProduct(ShopifyProduct);
+        BindSubscription(SalesChannelSubs);
+        ShopifyProductAPI.PublishProduct(ShopifyProduct);
+        ActualQuery := SalesChannelSubs.GetGraphQueryTxt();
+        UnbindSubscription(SalesChannelSubs);
 
-        // [THEN] Error that theres no response from Shopify thrown.
-        LibraryAssert.ExpectedError(StrSubstNo('The response from Shopify contains no JSON. \Requested: {"query":"mutation {publishablePublish(id: \"gid://shopify/Product/%1\" input: [{ publicationId: \"gid://shopify/Publication/%2\"}]){userErrors {field, message}}}"} \Response: ', ShopifyProduct.Id, OnlineShopId));
+        // [THEN] Query for publishing the product is generated.
+        LibraryAssert.AreEqual(StrSubstNo(ExpectedPublishQueryTok, ShopifyProduct.Id, OnlineShopId), ActualQuery, 'Wrong query for publishing the product is not generated');
     end;
+
+    [Test]
+    procedure UnitTestPublishProductToMultipleSalesChannelsTest()
+    var
+        ShopifyProduct: Record "Shpfy Product";
+        ShopifyProductAPI: Codeunit "Shpfy Product API";
+        SalesChannelSubs: Codeunit "Shpfy Sales Channel Subs.";
+        OnlineShopId, POSId : BigInteger;
+        ExpectedPublishQueryTok: Label '{"query":"mutation {publishablePublish(id: \"gid://shopify/Product/%1\" input: [{ publicationId: \"gid://shopify/Publication/%2\"},{ publicationId: \"gid://shopify/Publication/%3\"}]){userErrors {field, message}}}"}', Locked = true;
+        ActualQuery: Text;
+    begin
+        // [SCENARIO] Publishing active product to multiple Shopify Sales Channels.
+        Initialize();
+
+        // [GIVEN] Product with active status.
+        CreateProductWithStatus(ShopifyProduct, Enum::"Shpfy Product Status"::Active);
+        // [GIVEN] Default sales channels.
+        OnlineShopId := Any.IntegerInRange(10000, 99999);
+        POSId := OnlineShopId + 1;
+        CreateDefaultSalesChannels(OnlineShopId, POSId);
+        // [GIVEN] Online Shop used for publication
+        SetPublicationForSalesChannel(OnlineShopId);
+        // [GIVEN] POS used for publication
+        SetPublicationForSalesChannel(POSId);
+
+        // [WHEN] Invoking the procedure: ShopifyProductAPI.PublishProduct(ShopifyProduct)
+        BindSubscription(SalesChannelSubs);
+        ShopifyProductAPI.PublishProduct(ShopifyProduct);
+        ActualQuery := SalesChannelSubs.GetGraphQueryTxt();
+        UnbindSubscription(SalesChannelSubs);
+
+        // [THEN] Query for publishing the product to multiple sales channels is generated.
+        LibraryAssert.AreEqual(StrSubstNo(ExpectedPublishQueryTok, ShopifyProduct.Id, OnlineShopId, POSId), ActualQuery, 'Wrong query for publishing the product to multiple sales channels is not generated');
+    end;
+
 
 
     local procedure Initialize()
@@ -173,5 +214,12 @@ codeunit 139581 "Shpfy Sales Channel Test"
         ShopifyProduct.Insert(true);
     end;
 
-
+    local procedure SetPublicationForSalesChannel(SalesChannelId: BigInteger)
+    var
+        SalesChannel: Record "Shpfy Sales Channel";
+    begin
+        SalesChannel.Get(SalesChannelId);
+        SalesChannel."Use for publication" := true;
+        SalesChannel.Modify(false);
+    end;
 }
