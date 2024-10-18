@@ -35,7 +35,7 @@ tableextension 5034 "Serv. Decl. Serv. Line" extends "Service Line"
             var
                 ServiceHeader: Record "Service Header";
             begin
-                ServiceHeader.Get("Document Type", "Document No.");
+                ServiceHeader := Rec.GetServHeader();
                 if "Applicable For Serv. Decl." then
                     ServiceHeader.TestField("Applicable For Serv. Decl.");
             end;
