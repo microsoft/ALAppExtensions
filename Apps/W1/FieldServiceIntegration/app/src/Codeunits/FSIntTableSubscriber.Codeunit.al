@@ -901,6 +901,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         JobJournalLine: Record "Job Journal Line";
         FSWorkOrderProduct: Record "FS Work Order Product";
         FSWorkOrderService: Record "FS Work Order Service";
+        ServiceHeader: Record "Service Header";
         ArchivedServiceOrders: List of [Code[20]];
         SourceDestCode: Text;
     begin
@@ -932,11 +933,23 @@ codeunit 6610 "FS Int. Table Subscriber"
                 end;
             'Service Header-FS Work Order':
                 begin
+                    ProofAllServiceItemLinesAssigned(ServiceHeader);
                     ResetFSWorkOrderIncidentFromServiceOrderItemLine(SourceRecordRef, DestinationRecordRef);
                     ResetFSWorkOrderProductFromServiceOrderLine(SourceRecordRef, DestinationRecordRef);
                     ResetFSWorkOrderServiceFromServiceOrderLine(SourceRecordRef, DestinationRecordRef);
                 end;
         end;
+    end;
+
+    local procedure ProofAllServiceItemLinesAssigned(ServiceHeader: Record "Service Header")
+    var
+        ServiceLine: Record "Service Line";
+    begin
+        ServiceLine.SetRange("Document Type", ServiceLine."Document Type"::Order);
+        ServiceLine.SetRange("Document No.", ServiceHeader."No.");
+        ServiceLine.SetRange("Service Item Line No.", 0);
+        if ServiceLine.FindFirst() then
+            ServiceLine.TestField("Service Item Line No.");
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnAfterUnchangedRecordHandled', '', false, false)]
@@ -1329,6 +1342,7 @@ codeunit 6610 "FS Int. Table Subscriber"
     local procedure HandleOnBeforeModifyRecord(IntegrationTableMapping: Record "Integration Table Mapping"; SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
     var
         FSConnectionSetup: Record "FS Connection Setup";
+        ServiceHeader: Record "Service Header";
         SourceDestCode: Text;
     begin
         if not FSConnectionSetup.IsEnabled() then
@@ -1339,8 +1353,37 @@ codeunit 6610 "FS Int. Table Subscriber"
         case SourceDestCode of
             'FS Work Order Service-Job Journal Line':
                 UpdateCorrelatedJobJournalLine(SourceRecordRef, DestinationRecordRef);
+            'Service Header-FS Work Order':
+                begin
+                    SourceRecordRef.SetTable(ServiceHeader);
+                    ProofAllServiceItemLinesAssigned(ServiceHeader);
+                    SetCompanyId(DestinationRecordRef);
+                end;
         end;
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Rec. Synch. Invoke", 'OnUpdateIntegrationRecordCoupling', '', false, false)]
+    local procedure HandleOnUpdateIntegrationRecordCoupling(IntegrationTableMapping: Record "Integration Table Mapping"; SourceRecordRef: RecordRef; var DestinationRecordRef: RecordRef)
+    var
+        FSConnectionSetup: Record "FS Connection Setup";
+        ServiceHeader: Record "Service Header";
+        SourceDestCode: Text;
+    begin
+        if not FSConnectionSetup.IsEnabled() then
+            exit;
+
+        SourceDestCode := GetSourceDestCode(SourceRecordRef, DestinationRecordRef);
+
+        case SourceDestCode of
+            'Service Header-FS Work Order':
+                begin
+                    SourceRecordRef.SetTable(ServiceHeader);
+                    ProofAllServiceItemLinesAssigned(ServiceHeader);
+                    SetCompanyId(DestinationRecordRef);
+                end;
+        end;
+    end;
+
 
     [EventSubscriber(ObjectType::Table, Database::"Inventory Setup", 'OnAfterValidateEvent', 'Location Mandatory', false, false)]
     local procedure AfterValidateLocationMandatory(var Rec: Record "Inventory Setup"; var xRec: Record "Inventory Setup"; CurrFieldNo: Integer)
@@ -1556,6 +1599,7 @@ codeunit 6610 "FS Int. Table Subscriber"
         FSWorkOrderIncident: Record "FS Work Order Incident";
         FSWorkOrderProduct: Record "FS Work Order Product";
         FSWorkOrderService: Record "FS Work Order Service";
+        ServiceHeader: Record "Service Header";
         ServiceItemLine: Record "Service Item Line";
         ServiceLine: Record "Service Line";
         CRMProductName: Codeunit "CRM Product Name";
@@ -1693,7 +1737,11 @@ codeunit 6610 "FS Int. Table Subscriber"
             'Service Order Type-FS Work Order Type':
                 SetCompanyId(DestinationRecordRef);
             'Service Header-FS Work Order':
-                SetCompanyId(DestinationRecordRef);
+                begin
+                    SourceRecordRef.SetTable(ServiceHeader);
+                    ProofAllServiceItemLinesAssigned(ServiceHeader);
+                    SetCompanyId(DestinationRecordRef);
+                end;
             'Service Item Line-FS Work Order Incident':
                 begin
                     SetCompanyId(DestinationRecordRef);
