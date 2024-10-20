@@ -411,14 +411,20 @@ codeunit 6610 "FS Int. Table Subscriber"
             case DestinationFieldRef.Name() of
                 FSWorkOrderProduct.FieldName(EstimateQuantity):
                     begin
-                        DestinationRecordRef := DestinationFieldRef.Record();
-                        DestinationRecordRef.SetTable(FSWorkOrderProduct);
+                        SourceFieldRef.Record().SetTable(ServiceLine);
+                        DestinationFieldRef.Record().SetTable(FSWorkOrderProduct);
                         // only update estimated quantity if the line status is estimated
-                        if FSWorkOrderProduct.LineStatus <> FSWorkOrderProduct.LineStatus::Estimated then begin
+                        if FSWorkOrderProduct.LineStatus = FSWorkOrderProduct.LineStatus::Estimated then begin
+                            ServiceLine.Validate("Qty. to Ship", 0);
+                            ServiceLine.Validate("Qty. to Invoice", 0);
+                            ServiceLine.Validate("Qty. to Consume", 0);
+                            ServiceLine.Modify(true);
+                        end else begin
                             NewValue := FSWorkOrderProduct.EstimateQuantity;
                             IsValueFound := true;
                             NeedsConversion := false;
                         end;
+                        SourceFieldRef.Record().GetTable(ServiceLine);
                     end;
             end;
 
@@ -427,18 +433,21 @@ codeunit 6610 "FS Int. Table Subscriber"
             case DestinationFieldRef.Name() of
                 FSWorkOrderService.FieldName(EstimateDuration):
                     begin
-                        DestinationRecordRef := DestinationFieldRef.Record();
-                        DestinationRecordRef.SetTable(FSWorkOrderService);
+                        SourceFieldRef.Record().SetTable(ServiceLine);
+                        DestinationFieldRef.Record().SetTable(FSWorkOrderService);
                         // only update estimated quantity if the line status is estimated
-                        if FSWorkOrderService.LineStatus <> FSWorkOrderService.LineStatus::Estimated then begin
+                        if FSWorkOrderService.LineStatus = FSWorkOrderService.LineStatus::Estimated then begin
+                            ServiceLine.Validate("Qty. to Ship", 0);
+                            ServiceLine.Validate("Qty. to Invoice", 0);
+                            ServiceLine.Validate("Qty. to Consume", 0);
+                            ServiceLine.Modify(true);
+                        end else begin
                             NewValue := FSWorkOrderService.EstimateDuration;
                             IsValueFound := true;
                             NeedsConversion := false;
                             exit;
                         end;
 
-                        SourceRecordRef := SourceFieldRef.Record();
-                        SourceRecordRef.SetTable(ServiceLine);
                         DurationInHours := ServiceLine.Quantity;
                         DurationInMinutes := DurationInHours * 60;
                         NewValue := DurationInMinutes;
