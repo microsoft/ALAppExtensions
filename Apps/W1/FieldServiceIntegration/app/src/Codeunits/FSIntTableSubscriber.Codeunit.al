@@ -2443,6 +2443,7 @@ codeunit 6610 "FS Int. Table Subscriber"
     var
         FSConnectionSetup: Record "FS Connection Setup";
         FSWorkOrder: Record "FS Work Order";
+        FSWorkOrderIncident: Record "FS Work Order Incident";
         CRMIntegrationRecord: Record "CRM Integration Record";
     begin
         if not FSConnectionSetup.IsEnabled() then
@@ -2452,11 +2453,16 @@ codeunit 6610 "FS Int. Table Subscriber"
             exit;
 
         SourceRecordRef.SetTable(FSWorkOrder);
-        if not CRMIntegrationRecord.FindByCRMID(FSWorkOrder.WorkOrderId) then
-            exit;
 
-        if CRMIntegrationRecord."Archived Service Order" then
+        // at least one work order incident should exist
+        FSWorkOrderIncident.SetRange(WorkOrder, FSWorkOrder.WorkOrderId);
+        if FSWorkOrderIncident.IsEmpty() then
             IgnoreRecord := true;
+
+        // skip archived work orders
+        if CRMIntegrationRecord.FindByCRMID(FSWorkOrder.WorkOrderId) then
+            if CRMIntegrationRecord."Archived Service Order" then
+                IgnoreRecord := true;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Integration Table Synch.", 'OnAfterInitSynchJob', '', true, true)]
