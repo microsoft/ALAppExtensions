@@ -96,7 +96,7 @@ page 30163 "Shpfy Metafields"
         Shop.Get(ShopCode);
 
         IMetafieldOwnerType := Metafield.GetOwnerType(ParentTableId);
-        IsPageEditable := IMetafieldOwnerType.GetMetafieldsPageEditable(Shop);
+        IsPageEditable := IMetafieldOwnerType.CanEditMetafields(Shop);
 
         Metafield.SetRange("Parent Table No.", ParentTableId);
         Metafield.SetRange("Owner Id", OwnerId);

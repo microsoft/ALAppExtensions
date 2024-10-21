@@ -40,7 +40,7 @@ codeunit 30334 "Shpfy Metafield Owner Product" implements "Shpfy IMetafield Owne
         exit(Product."Shop Code");
     end;
 
-    procedure GetMetafieldsPageEditable(Shop: Record "Shpfy Shop"): Boolean
+    procedure CanEditMetafields(Shop: Record "Shpfy Shop"): Boolean
     begin
         exit((Shop."Sync Item" = Shop."Sync Item"::"To Shopify") and (Shop."Can Update Shopify Products"));
     end;

@@ -43,7 +43,7 @@ codeunit 30333 "Shpfy Metafield Owner Customer" implements "Shpfy IMetafield Own
         exit(Shop.Code);
     end;
 
-    procedure GetMetafieldsPageEditable(Shop: Record "Shpfy Shop"): Boolean
+    procedure CanEditMetafields(Shop: Record "Shpfy Shop"): Boolean
     begin
         exit(Shop."Can Update Shopify Customer");
     end;

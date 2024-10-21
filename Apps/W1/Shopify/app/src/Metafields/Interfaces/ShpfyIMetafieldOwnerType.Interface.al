@@ -28,9 +28,9 @@ interface "Shpfy IMetafield Owner Type"
     procedure GetShopCode(OwnerId: BigInteger): Code[20]
 
     /// <summary>
-    /// Retrieves the boolean value indicating whether the metafields page is editable.
+    /// Indicates if metafields can be edited.
     /// </summary>
     /// <param name="Shop">Shop record.</param>
     /// <returns>Boolean.</returns>
-    procedure GetMetafieldsPageEditable(Shop: Record "Shpfy Shop"): Boolean
+    procedure CanEditMetafields(Shop: Record "Shpfy Shop"): Boolean
 }
