@@ -5,6 +5,8 @@ namespace Microsoft.Integration.Shopify;
 /// </summary>
 codeunit 30215 "Shpfy GQL CompanyMetafieldIds" implements "Shpfy IGraphQL"
 {
+    Access = Internal;
+
     /// <summary>
     /// GetGraphQL.
     /// </summary>

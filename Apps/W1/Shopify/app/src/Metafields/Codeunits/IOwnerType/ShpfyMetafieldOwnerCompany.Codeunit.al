@@ -41,4 +41,9 @@ codeunit 30313 "Shpfy Metafield Owner Company" implements "Shpfy IMetafield Owne
         exit(Company."Shop Code");
     end;
 
+    procedure GetMetafieldsPageEditable(Shop: Record "Shpfy Shop"): Boolean
+    begin
+        exit(Shop."Can Update Shopify Companies");
+    end;
+
 }

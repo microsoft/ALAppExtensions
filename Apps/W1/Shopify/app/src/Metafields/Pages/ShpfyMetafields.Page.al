@@ -91,18 +91,12 @@ page 30163 "Shpfy Metafields"
     internal procedure RunForResource(ParentTableId: Integer; OwnerId: BigInteger; ShopCode: Code[20])
     var
         Metafield: Record "Shpfy Metafield";
-        OwnerType: Enum "Shpfy Metafield Owner Type";
+        IMetafieldOwnerType: Interface "Shpfy IMetafield Owner Type";
     begin
         Shop.Get(ShopCode);
 
-        case Metafield.GetOwnerType(ParentTableId) of
-            OwnerType::Product, OwnerType::ProductVariant:
-                IsPageEditable := (Shop."Sync Item" = Shop."Sync Item"::"To Shopify") and (Shop."Can Update Shopify Products");
-            OwnerType::Customer:
-                IsPageEditable := Shop."Can Update Shopify Customer";
-            OwnerType::Company:
-                IsPageEditable := Shop."Can Update Shopify Companies";
-        end;
+        IMetafieldOwnerType := Metafield.GetOwnerType(ParentTableId);
+        IsPageEditable := IMetafieldOwnerType.GetMetafieldsPageEditable(Shop);
 
         Metafield.SetRange("Parent Table No.", ParentTableId);
         Metafield.SetRange("Owner Id", OwnerId);

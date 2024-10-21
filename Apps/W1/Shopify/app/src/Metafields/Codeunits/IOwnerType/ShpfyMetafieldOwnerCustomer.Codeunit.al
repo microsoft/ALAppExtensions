@@ -42,4 +42,9 @@ codeunit 30333 "Shpfy Metafield Owner Customer" implements "Shpfy IMetafield Own
         Shop.FindFirst();
         exit(Shop.Code);
     end;
+
+    procedure GetMetafieldsPageEditable(Shop: Record "Shpfy Shop"): Boolean
+    begin
+        exit(Shop."Can Update Shopify Customer");
+    end;
 }
