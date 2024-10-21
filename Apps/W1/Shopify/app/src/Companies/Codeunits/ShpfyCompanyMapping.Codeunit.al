@@ -12,7 +12,7 @@ codeunit 30303 "Shpfy Company Mapping"
 
     internal procedure DoMapping(CompanyId: BigInteger; TemplateCode: Code[20]; AllowCreate: Boolean): Code[20]
     var
-        IMapping: Interface "Shpfy ICustomer/Company Mapping";
+        IMapping: Interface "Shpfy ICompany Mapping";
     begin
         IMapping := Shop."Company Mapping Type";
         exit(IMapping.DoMapping(CompanyId, Shop.Code, TemplateCode, AllowCreate));
@@ -20,10 +20,14 @@ codeunit 30303 "Shpfy Company Mapping"
 
     internal procedure FindMapping(var ShopifyCompany: Record "Shpfy Company"; var TempShopifyCustomer: Record "Shpfy Customer" temporary): Boolean;
     var
-        IMapping: Interface "Shpfy ICustomer/Company Mapping";
+        ShpfyCompByEmailPhone: Codeunit "Shpfy Comp. By Email/Phone";
+        IMapping: Interface "Shpfy ICompany Mapping";
     begin
         IMapping := Shop."Company Mapping Type";
-        exit(IMapping.FindMapping(ShopifyCompany, TempShopifyCustomer));
+        if IMapping is "Shpfy IFind Company Mapping" then
+            exit((IMapping as "Shpfy IFind Company Mapping").FindMapping(ShopifyCompany, TempShopifyCustomer))
+        else
+            ShpfyCompByEmailPhone.FindMapping(ShopifyCompany, TempShopifyCustomer);
     end;
 
     internal procedure SetShop(Code: Code[20])

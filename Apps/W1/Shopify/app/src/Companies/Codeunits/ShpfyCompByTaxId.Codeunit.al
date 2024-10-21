@@ -5,7 +5,7 @@ using Microsoft.Sales.Customer;
 /// <summary>
 /// Codeunit Shpfy Comp. By Tax Id (ID 30366) implements Interface Shpfy ICompany Mapping.
 /// </summary>
-codeunit 30366 "Shpfy Comp. By Tax Id" implements "Shpfy ICompany Mapping", "Shpfy ICustomer/Company Mapping"
+codeunit 30366 "Shpfy Comp. By Tax Id" implements "Shpfy ICompany Mapping", "Shpfy IFind Company Mapping"
 {
     Access = Internal;
 
