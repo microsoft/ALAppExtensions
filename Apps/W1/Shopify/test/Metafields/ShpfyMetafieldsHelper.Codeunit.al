@@ -18,9 +18,6 @@ codeunit 139614 "Shpfy Metafields Helper"
         exit(JMetafields);
     end;
 
-
-
-
     procedure CreateMetafield(var ShpfyMetafield: Record "Shpfy Metafield"; OwnerId: BigInteger; ParentTableId: Integer): BigInteger
     begin
         exit(CreateMetafield(ShpfyMetafield, OwnerId, ParentTableId, '', '', ''));
