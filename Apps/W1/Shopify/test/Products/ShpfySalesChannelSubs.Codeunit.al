@@ -52,5 +52,4 @@ codeunit 139614 "Shpfy Sales Channel Subs."
     begin
         exit(GraphQueryTxt);
     end;
-
 }
