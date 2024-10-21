@@ -2682,14 +2682,50 @@ codeunit 6610 "FS Int. Table Subscriber"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Integration Management", 'OnBeforeOpenCoupledNavRecordPage', '', false, false)]
     local procedure OnBeforeOpenCoupledNavRecordPage(CRMID: Guid; CRMEntityTypeName: Text; var Result: Boolean; var IsHandled: Boolean)
     begin
-        if IsHandled or Result then
+        if IsHandled or Result or (CRMEntityTypeName <> 'msdyn_workorder') then
             exit;
 
-        Result := OpenServiceHeader(CRMID);
-        if not Result then
-            Result := OpenServiceHeaderArchive(CRMID);
+        if not OnlyServiceHeaderArchiveExists(CRMID) then
+            exit;
+        Result := OpenServiceHeaderArchive(CRMID);
 
         IsHandled := Result;
+    end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Integration Management", 'OnBeforeOpenRecordCardPage', '', false, false)]
+    local procedure OnBeforeOpenRecordCardPage(RecordID: RecordID; var IsHandled: Boolean)
+    var
+        ServiceHeader: Record "Service Header";
+        RecordRef: RecordRef;
+        Result: Boolean;
+    begin
+        RecordRef := RecordID.GetRecord();
+        case RecordID.TableNo of
+            Database::"Service Header":
+                begin
+                    RecordRef.SetTable(ServiceHeader);
+                    Page.Run(Page::"Service Order", ServiceHeader);
+                    IsHandled := true;
+                end;
+        end;
+    end;
+
+    local procedure OnlyServiceHeaderArchiveExists(CRMID: Guid): Boolean
+    var
+        CRMIntegrationRecord: Record "CRM Integration Record";
+        ServiceHeader: Record "Service Header";
+        ServiceHeaderArchive: Record "Service Header Archive";
+    begin
+        CRMIntegrationRecord.SetRange("Table ID", Database::"Service Header");
+        CRMIntegrationRecord.SetRange("CRM ID", CRMID);
+        if not CRMIntegrationRecord.FindFirst() then
+            exit(false);
+
+        if ServiceHeader.GetBySystemId(CRMIntegrationRecord."Integration ID") then
+            exit(false);
+
+        if ServiceHeaderArchive.GetBySystemId(CRMIntegrationRecord."Archived Service Header Id") then
+            exit(true);
     end;
 
     local procedure OpenServiceHeader(CRMID: Guid): Boolean
