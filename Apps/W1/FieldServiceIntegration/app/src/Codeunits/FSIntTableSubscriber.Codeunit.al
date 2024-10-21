@@ -369,14 +369,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                     begin
                         SourceFieldRef.Record().SetTable(ServiceHeader);
                         DestinationFieldRef.Record().SetTable(FSWorkOrder);
-
-                        case ServiceHeader.Status of
-                            ServiceHeader.Status::Pending:
-                                NewValue := FSWorkOrder.SystemStatus::Unscheduled;
-                            else
-                                NewValue := FSWorkOrder.SystemStatus; // default -> no update
-                        end;
-
+                        NewValue := FSWorkOrder.SystemStatus; // default -> no update
                         IsValueFound := true;
                         NeedsConversion := false;
                     end;
