@@ -3,28 +3,24 @@ namespace Microsoft.Integration.Shopify;
 /// <summary>
 /// Enum Shpfy Company Mapping (ID 30151) implements Interface Shpfy ICompany Mapping.
 /// </summary>
-enum 30151 "Shpfy Company Mapping" implements "Shpfy ICompany Mapping", "Shpfy IFind Company Mapping"
+enum 30151 "Shpfy Company Mapping" implements "Shpfy ICompany Mapping"
 {
     Caption = 'Shopify Company Mapping';
     Extensible = true;
-    DefaultImplementation = "Shpfy IFind Company Mapping" = "Shpfy Comp. By Email/Phone";
 
     value(0; "By Email/Phone")
     {
         Caption = 'By Email/Phone';
-        Implementation = "Shpfy ICompany Mapping" = "Shpfy Comp. By Email/Phone",
-                         "Shpfy IFind Company Mapping" = "Shpfy Comp. By Email/Phone";
+        Implementation = "Shpfy ICompany Mapping" = "Shpfy Comp. By Email/Phone";
     }
     value(2; DefaultCompany)
     {
         Caption = 'Always take the default Company';
-        Implementation = "Shpfy ICompany Mapping" = "Shpfy Comp. By Default Comp.",
-                         "Shpfy IFind Company Mapping" = "Shpfy Comp. By Default Comp.";
+        Implementation = "Shpfy ICompany Mapping" = "Shpfy Comp. By Default Comp.";
     }
     value(3; "By Tax Id")
     {
         Caption = 'By Tax Id';
-        Implementation = "Shpfy ICompany Mapping" = "Shpfy Comp. By Tax Id",
-                         "Shpfy IFind Company Mapping" = "Shpfy Comp. By Tax Id";
+        Implementation = "Shpfy ICompany Mapping" = "Shpfy Comp. By Tax Id";
     }
 }
