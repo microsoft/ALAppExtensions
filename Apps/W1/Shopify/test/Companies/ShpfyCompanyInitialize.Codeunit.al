@@ -97,4 +97,5 @@ codeunit 139638 "Shpfy Company Initialize"
         JResult.ReadFrom(StrSubstNo(ResultLbl, Name, CompanyContactId, CustomerId, CompanyLocationId));
         exit(JResult);
     end;
+
 }
