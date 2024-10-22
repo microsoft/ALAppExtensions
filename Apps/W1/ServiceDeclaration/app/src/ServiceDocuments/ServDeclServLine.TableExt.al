@@ -5,7 +5,6 @@
 namespace Microsoft.Service.Document;
 
 using Microsoft.Inventory.Item;
-using Microsoft.Sales.Document;
 using Microsoft.Service.Reports;
 
 tableextension 5034 "Serv. Decl. Serv. Line" extends "Service Line"
@@ -34,11 +33,11 @@ tableextension 5034 "Serv. Decl. Serv. Line" extends "Service Line"
 
             trigger OnValidate()
             var
-                SalesHeader: Record "Sales Header";
+                ServiceHeader: Record "Service Header";
             begin
-                SalesHeader.Get("Document Type", "Document No.");
+                ServiceHeader := Rec.GetServHeader();
                 if "Applicable For Serv. Decl." then
-                    SalesHeader.TestField("Applicable For Serv. Decl.");
+                    ServiceHeader.TestField("Applicable For Serv. Decl.");
             end;
         }
     }
