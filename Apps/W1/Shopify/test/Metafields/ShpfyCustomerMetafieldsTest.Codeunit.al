@@ -160,17 +160,13 @@ codeunit 139616 "Shpfy Customer Metafields Test"
     var
         Customer: Record Customer;
         ShopifyCustomer: Record "Shpfy Customer";
-        ShpfyCustomerExport: Codeunit "Shpfy Customer Export";
         ShpfyMetafield: Record "Shpfy Metafield";
         ShpfyMetafieldsHelper: Codeunit "Shpfy Metafields Helper";
-        MetafieldAPI: Codeunit "Shpfy Metafield API";
-        CustomerMetafieldsSubs: Codeunit "Shpfy Customer Metafields Subs";
         CustomerInitTest: Codeunit "Shpfy Customer Init Test";
         MetafieldId: BigInteger;
         Namespace: Text;
         MetafieldKey: Text;
         MetafieldValue: Text;
-        JMetafields: JsonArray;
         ActualQuery: Text;
     begin
         // [SCENARIO] Update Metafield from Business Central to Shopify
@@ -183,14 +179,7 @@ codeunit 139616 "Shpfy Customer Metafields Test"
         // [GIVEN] Customer
         Customer := ShpfyInitializeTest.GetDummyCustomer();
         // [GIVEN] Shopify Customer
-        ShopifyCustomer.Init();
-        ShopifyCustomer.Id := Any.IntegerInRange(100000, 999999);
-        ShopifyCustomer."Shop Id" := Shop."Shop Id";
-        ShopifyCustomer."Customer SystemId" := Customer.SystemId;
-        ShopifyCustomer."First Name" := Any.AlphabeticText(100);
-        ShopifyCustomer."Last Name" := Any.AlphabeticText(100);
-        ShopifyCustomer.Email := Customer."E-Mail";
-        ShopifyCustomer.Insert(false);
+        CreateShopifyCustomer(Customer, ShopifyCustomer);
 
         // [GIVEN] Shopify Customer Address
         CustomerInitTest.CreateShopifyCustomerAddress(ShopifyCustomer);
@@ -202,15 +191,9 @@ codeunit 139616 "Shpfy Customer Metafields Test"
         MetafieldId := ShpfyMetafieldsHelper.CreateMetafield(ShpfyMetafield, ShopifyCustomer.Id, Database::"Shpfy Customer", Namespace, MetafieldKey, MetafieldValue);
 
         // [WHEN] Invoke ShopifyCustomerExport
-        BindSubscription(CustomerMetafieldsSubs);
-        CustomerMetafieldsSubs.SetShopifyCustomerId(ShopifyCustomer.Id);
-        ShpfyCustomerExport.SetShop(Shop);
-        Customer.SetRange("No.", Customer."No.");
-        ShpfyCustomerExport.Run(Customer);
-        ActualQuery := CustomerMetafieldsSubs.GetGQLQuery();
-        UnbindSubscription(CustomerMetafieldsSubs);
+        InvokeShopifyCustomerExport(Customer, ShopifyCustomer, ActualQuery);
 
-        // [THEN] Query for udpating metafields in shopify is sended
+        // [THEN] Correct Query for updating metafields in shopify is sent
         LibraryAssert.IsTrue(ActualQuery.Contains(StrSubstNo('key: \"%1\"', MetafieldKey)), 'Query does not contain Metafield Key');
         LibraryAssert.IsTrue(ActualQuery.Contains(StrSubstNo('value: \"%1\"', MetafieldValue)), 'Query does not contain Metafield Value');
         LibraryAssert.IsTrue(ActualQuery.Contains(StrSubstNo('namespace: \"%1\"', Namespace)), 'Query does not contain Namespace');
@@ -249,5 +232,31 @@ codeunit 139616 "Shpfy Customer Metafields Test"
         ShopifyCustomer.Id := Any.IntegerInRange(100000, 999999);
         ShopifyCustomer."Shop Id" := ShopId;
         ShopifyCustomer.Insert(false);
+    end;
+
+    local procedure CreateShopifyCustomer(var Customer: Record Customer; var ShopifyCustomer: Record "Shpfy Customer")
+    begin
+        ShopifyCustomer.Init();
+        ShopifyCustomer.Id := Any.IntegerInRange(100000, 999999);
+        ShopifyCustomer."Shop Id" := Shop."Shop Id";
+        ShopifyCustomer."Customer SystemId" := Customer.SystemId;
+        ShopifyCustomer."First Name" := Any.AlphabeticText(100);
+        ShopifyCustomer."Last Name" := Any.AlphabeticText(100);
+        ShopifyCustomer.Email := Customer."E-Mail";
+        ShopifyCustomer.Insert(false);
+    end;
+
+    local procedure InvokeShopifyCustomerExport(var Customer: Record Customer; var ShopifyCustomer: Record "Shpfy Customer"; var ActualQuery: Text)
+    var
+        ShpfyCustomerExport: Codeunit "Shpfy Customer Export";
+        CustomerMetafieldsSubs: Codeunit "Shpfy Customer Metafields Subs";
+    begin
+        BindSubscription(CustomerMetafieldsSubs);
+        CustomerMetafieldsSubs.SetShopifyCustomerId(ShopifyCustomer.Id);
+        ShpfyCustomerExport.SetShop(Shop);
+        Customer.SetRange("No.", Customer."No.");
+        ShpfyCustomerExport.Run(Customer);
+        ActualQuery := CustomerMetafieldsSubs.GetGQLQuery();
+        UnbindSubscription(CustomerMetafieldsSubs);
     end;
 }
