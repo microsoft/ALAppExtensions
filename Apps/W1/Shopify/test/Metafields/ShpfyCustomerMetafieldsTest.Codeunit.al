@@ -163,7 +163,6 @@ codeunit 139616 "Shpfy Customer Metafields Test"
         ShpfyMetafield: Record "Shpfy Metafield";
         ShpfyMetafieldsHelper: Codeunit "Shpfy Metafields Helper";
         CustomerInitTest: Codeunit "Shpfy Customer Init Test";
-        MetafieldId: BigInteger;
         Namespace: Text;
         MetafieldKey: Text;
         MetafieldValue: Text;
@@ -175,20 +174,17 @@ codeunit 139616 "Shpfy Customer Metafields Test"
         //[GIVEN] Shop with Can update Shopify Customer = true
         Shop."Can Update Shopify Customer" := true;
         Shop.Modify(false);
-
         // [GIVEN] Customer
         Customer := ShpfyInitializeTest.GetDummyCustomer();
         // [GIVEN] Shopify Customer
         CreateShopifyCustomer(Customer, ShopifyCustomer);
-
         // [GIVEN] Shopify Customer Address
         CustomerInitTest.CreateShopifyCustomerAddress(ShopifyCustomer);
-
         // [GIVEN] Shopify Metafield with values created for Customer.
         Namespace := Any.AlphabeticText(10);
         MetafieldKey := Any.AlphabeticText(10);
         MetafieldValue := Any.AlphabeticText(10);
-        MetafieldId := ShpfyMetafieldsHelper.CreateMetafield(ShpfyMetafield, ShopifyCustomer.Id, Database::"Shpfy Customer", Namespace, MetafieldKey, MetafieldValue);
+        ShpfyMetafieldsHelper.CreateMetafield(ShpfyMetafield, ShopifyCustomer.Id, Database::"Shpfy Customer", Namespace, MetafieldKey, MetafieldValue);
 
         // [WHEN] Invoke ShopifyCustomerExport
         InvokeShopifyCustomerExport(Customer, ShopifyCustomer, ActualQuery);

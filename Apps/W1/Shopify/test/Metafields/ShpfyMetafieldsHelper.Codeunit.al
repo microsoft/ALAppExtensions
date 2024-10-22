@@ -27,7 +27,7 @@ codeunit 139618 "Shpfy Metafields Helper"
     begin
         ShpfyMetafield.Init();
         ShpfyMetafield."Owner Id" := OwnerId;
-        ShpfyMetafield."Parent Table No." := ParentTableId;
+        ShpfyMetafield.Validate("Parent Table No.", ParentTableId);
         ShpfyMetafield.Namespace := Namespace;
         ShpfyMetafield.Name := Name;
         ShpfyMetafield.Value := Value;

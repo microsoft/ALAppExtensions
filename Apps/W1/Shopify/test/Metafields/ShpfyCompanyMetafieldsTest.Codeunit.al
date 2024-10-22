@@ -155,9 +155,50 @@ codeunit 139617 "Shpfy Company Metafields Test"
         LibraryAssert.AreNotEqual(ShpfyMetafield.Value, MetafieldValue, 'Metafield Value is different than updated');
     end;
 
-    // [Test]
-    // procedure UnitTestUpdateCompanyMetafieldsInShopify()
-    // va
+    [Test]
+    procedure UnitTestExportCompanyMetafieldToShopify()
+    var
+        Customer: Record Customer;
+        ShpfyMetafield: Record "Shpfy Metafield";
+        ShopifyCompany: Record "Shpfy Company";
+        ShpfyMetafieldsHelper: Codeunit "Shpfy Metafields Helper";
+        MetafieldId: BigInteger;
+        Namespace: Text;
+        MetafieldKey: Text;
+        MetafieldValue: Text;
+        ActualQueryTxt: Text;
+    begin
+        // [SCENARIO] Export Metafield from Business Central to Shopify
+        Initialize();
+
+        // [GIVEN] Shop Can Update Shopify Companies = true
+        Shop."Can Update Shopify Companies" := true;
+        Shop.Modify(false);
+
+        // [GIVEN] Customer
+        Customer := ShpfyInitializeTest.GetDummyCustomer();
+
+        // [GIVEN] Shopify Company , crea for Customer
+        CreateShopifyCompany(ShopifyCompany, Shop."Shop Id", Shop.Code, Customer.SystemId);
+
+        // [GIVEN] Shopify Company Location
+        CreateShopifyCompanyLocation(ShopifyCompany);
+
+        // [GIVEN] Shopify Metafield with values created for Company.
+        Namespace := Any.AlphabeticText(10);
+        MetafieldKey := Any.AlphabeticText(10);
+        MetafieldValue := Any.AlphabeticText(10);
+        MetafieldId := ShpfyMetafieldsHelper.CreateMetafield(ShpfyMetafield, ShopifyCompany.Id, Database::"Shpfy Company", Namespace, MetafieldKey, MetafieldValue);
+
+        // [WHEN] Invoke ExportCompany codeunit for company
+        InvokeExportCompany(Customer, ActualQueryTxt);
+
+        // [THEN] Correct GraphQL query is created and sent to Shopify
+        LibraryAssert.IsTrue(ActualQueryTxt.Contains(StrSubstNo('key: \"%1\"', MetafieldKey)), 'Query does not contain Metafield Key');
+        LibraryAssert.IsTrue(ActualQueryTxt.Contains(StrSubstNo('value: \"%1\"', MetafieldValue)), 'Query does not contain Metafield Value');
+        LibraryAssert.IsTrue(ActualQueryTxt.Contains(StrSubstNo('namespace: \"%1\"', Namespace)), 'Query does not contain Namespace');
+        LibraryAssert.IsTrue(ActualQueryTxt.Contains(StrSubstNo('ownerId: \"gid://shopify/Company/%1\"', ShopifyCompany.Id)), 'Query does not contain Owner Id');
+    end;
 
     local procedure Initialize()
     begin
@@ -166,7 +207,7 @@ codeunit 139617 "Shpfy Company Metafields Test"
         if IsInitialized then
             exit;
         Shop := ShpfyInitializeTest.CreateShop();
-        CreateShopifyCompany(ShpfyCompany, Shop."Shop Id", Shop.Code);
+        CreateShopifyCompany(ShpfyCompany, Shop."Shop Id", Shop.Code, CreateGuid());
 
         Commit();
 
@@ -184,12 +225,37 @@ codeunit 139617 "Shpfy Company Metafields Test"
         exit(ShpfyMetafieldsHelper.CreateMetafieldsResult(MetafieldId, Namespace, 'COMPANY', MetafieldKey, MetafieldValue));
     end;
 
-    local procedure CreateShopifyCompany(var ShopifyCompany: Record "Shpfy Company"; ShopId: BigInteger; ShopCode: Code[20])
+    local procedure CreateShopifyCompany(var ShopifyCompany: Record "Shpfy Company"; ShopId: BigInteger; ShopCode: Code[20]; CustomerSystemId: Guid)
     begin
         ShopifyCompany.Init();
+        ShopifyCompany.Id := Any.IntegerInRange(100000, 999999);
         ShopifyCompany."Shop Id" := ShopId;
         ShopifyCompany."Shop Code" := ShopCode;
         ShopifyCompany.Name := Any.AlphabeticText(10);
+        ShopifyCompany."Customer SystemId" := CustomerSystemId;
         ShopifyCompany.Insert(false);
+    end;
+
+    local procedure CreateShopifyCompanyLocation(ShopifyCompany: Record "Shpfy Company")
+    var
+        ShpfyCompanyLocation: Record "Shpfy Company Location";
+    begin
+        ShpfyCompanyLocation.Init();
+        ShpfyCompanyLocation.Id := Any.IntegerInRange(100000, 999999);
+        ShpfyCompanyLocation."Company SystemId" := ShopifyCompany.SystemId;
+        ShpfyCompanyLocation.Insert(false);
+    end;
+
+    local procedure InvokeExportCompany(var Customer: Record Customer; var ActualQueryTxt: Text)
+    var
+        CompanyMetafieldsSubs: Codeunit "Shpfy Company Metafields Subs";
+        CompanyExport: Codeunit "Shpfy Company Export";
+    begin
+        BindSubscription(CompanyMetafieldsSubs);
+        Customer.SetRange("No.", Customer."No.");
+        CompanyExport.SetShop(Shop.Code);
+        CompanyExport.Run(Customer);
+        ActualQueryTxt := CompanyMetafieldsSubs.GetGQLQuery();
+        UnbindSubscription(CompanyMetafieldsSubs);
     end;
 }
