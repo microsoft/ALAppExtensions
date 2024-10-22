@@ -30,6 +30,7 @@ codeunit 139618 "Shpfy Metafields Helper"
         ShpfyMetafield."Parent Table No." := ParentTableId;
         ShpfyMetafield.Namespace := Namespace;
         ShpfyMetafield.Name := Name;
+        ShpfyMetafield.Value := Value;
         ShpfyMetafield.Insert(true);
         exit(ShpfyMetafield.Id);
     end;

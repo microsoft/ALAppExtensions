@@ -155,6 +155,10 @@ codeunit 139617 "Shpfy Company Metafields Test"
         LibraryAssert.AreNotEqual(ShpfyMetafield.Value, MetafieldValue, 'Metafield Value is different than updated');
     end;
 
+    // [Test]
+    // procedure UnitTestUpdateCompanyMetafieldsInShopify()
+    // va
+
     local procedure Initialize()
     begin
         Any.SetDefaultSeed();

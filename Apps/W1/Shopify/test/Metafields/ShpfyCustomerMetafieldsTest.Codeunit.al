@@ -155,6 +155,68 @@ codeunit 139616 "Shpfy Customer Metafields Test"
         LibraryAssert.AreNotEqual(ShpfyMetafield.Value, MetafieldValue, 'Metafield Value is different than updated');
     end;
 
+    [Test]
+    procedure UnitTestUpdateCustomerMetafieldInShopfiy()
+    var
+        Customer: Record Customer;
+        ShopifyCustomer: Record "Shpfy Customer";
+        ShpfyCustomerExport: Codeunit "Shpfy Customer Export";
+        ShpfyMetafield: Record "Shpfy Metafield";
+        ShpfyMetafieldsHelper: Codeunit "Shpfy Metafields Helper";
+        MetafieldAPI: Codeunit "Shpfy Metafield API";
+        CustomerMetafieldsSubs: Codeunit "Shpfy Customer Metafields Subs";
+        CustomerInitTest: Codeunit "Shpfy Customer Init Test";
+        MetafieldId: BigInteger;
+        Namespace: Text;
+        MetafieldKey: Text;
+        MetafieldValue: Text;
+        JMetafields: JsonArray;
+        ActualQuery: Text;
+    begin
+        // [SCENARIO] Update Metafield from Business Central to Shopify
+        Initialize();
+
+        //[GIVEN] Shop with Can update Shopify Customer = true
+        Shop."Can Update Shopify Customer" := true;
+        Shop.Modify(false);
+
+        // [GIVEN] Customer
+        Customer := ShpfyInitializeTest.GetDummyCustomer();
+        // [GIVEN] Shopify Customer
+        ShopifyCustomer.Init();
+        ShopifyCustomer.Id := Any.IntegerInRange(100000, 999999);
+        ShopifyCustomer."Shop Id" := Shop."Shop Id";
+        ShopifyCustomer."Customer SystemId" := Customer.SystemId;
+        ShopifyCustomer."First Name" := Any.AlphabeticText(100);
+        ShopifyCustomer."Last Name" := Any.AlphabeticText(100);
+        ShopifyCustomer.Email := Customer."E-Mail";
+        ShopifyCustomer.Insert(false);
+
+        // [GIVEN] Shopify Customer Address
+        CustomerInitTest.CreateShopifyCustomerAddress(ShopifyCustomer);
+
+        // [GIVEN] Shopify Metafield with values created for Customer.
+        Namespace := Any.AlphabeticText(10);
+        MetafieldKey := Any.AlphabeticText(10);
+        MetafieldValue := Any.AlphabeticText(10);
+        MetafieldId := ShpfyMetafieldsHelper.CreateMetafield(ShpfyMetafield, ShopifyCustomer.Id, Database::"Shpfy Customer", Namespace, MetafieldKey, MetafieldValue);
+
+        // [WHEN] Invoke ShopifyCustomerExport
+        BindSubscription(CustomerMetafieldsSubs);
+        CustomerMetafieldsSubs.SetShopifyCustomerId(ShopifyCustomer.Id);
+        ShpfyCustomerExport.SetShop(Shop);
+        Customer.SetRange("No.", Customer."No.");
+        ShpfyCustomerExport.Run(Customer);
+        ActualQuery := CustomerMetafieldsSubs.GetGQLQuery();
+        UnbindSubscription(CustomerMetafieldsSubs);
+
+        // [THEN] Query for udpating metafields in shopify is sended
+        LibraryAssert.IsTrue(ActualQuery.Contains(StrSubstNo('key: \"%1\"', MetafieldKey)), 'Query does not contain Metafield Key');
+        LibraryAssert.IsTrue(ActualQuery.Contains(StrSubstNo('value: \"%1\"', MetafieldValue)), 'Query does not contain Metafield Value');
+        LibraryAssert.IsTrue(ActualQuery.Contains(StrSubstNo('namespace: \"%1\"', Namespace)), 'Query does not contain Namespace');
+        LibraryAssert.IsTrue(ActualQuery.Contains(StrSubstNo('ownerId: \"gid://shopify/Customer/%1\"', ShopifyCustomer.Id)), 'Query does not contain Owner Id');
+    end;
+
     local procedure Initialize()
     begin
         Any.SetDefaultSeed();
