@@ -100,7 +100,7 @@ codeunit 148182 "Library - Sustainability"
     procedure InsertSustainabilityCertificateArea(var SustCertificateArea: Record "Sust. Certificate Area")
     begin
         SustCertificateArea.Init();
-        SustCertificateArea.Validate("No.", LibraryUtility.GenerateRandomCode(SustCertificateArea.FieldNo("No."), DATABASE::"Sust. Certificate Area"));
+        SustCertificateArea.Validate("No.", LibraryUtility.GenerateRandomCode(SustCertificateArea.FieldNo("No."), Database::"Sust. Certificate Area"));
         SustCertificateArea.Validate(Name, LibraryUtility.GenerateGUID());
         SustCertificateArea.Insert(true);
     end;
@@ -108,7 +108,7 @@ codeunit 148182 "Library - Sustainability"
     procedure InsertSustainabilityCertificateStandard(var SustCertificateStandard: Record "Sust. Certificate Standard")
     begin
         SustCertificateStandard.Init();
-        SustCertificateStandard.Validate("No.", LibraryUtility.GenerateRandomCode(SustCertificateStandard.FieldNo("No."), DATABASE::"Sust. Certificate Standard"));
+        SustCertificateStandard.Validate("No.", LibraryUtility.GenerateRandomCode(SustCertificateStandard.FieldNo("No."), Database::"Sust. Certificate Standard"));
         SustCertificateStandard.Validate(Name, LibraryUtility.GenerateGUID());
         SustCertificateStandard.Insert(true);
     end;
@@ -116,12 +116,23 @@ codeunit 148182 "Library - Sustainability"
     procedure InsertSustainabilityCertificate(var SustainabilityCertificate: Record "Sustainability Certificate"; SustCertAreaCode: Code[20]; SustCertStandardCode: Code[20]; SustCertType: Enum "Sust. Certificate Type")
     begin
         SustainabilityCertificate.Init();
-        SustainabilityCertificate.Validate("No.", LibraryUtility.GenerateRandomCode(SustainabilityCertificate.FieldNo("No."), DATABASE::"Sustainability Certificate"));
+        SustainabilityCertificate.Validate("No.", LibraryUtility.GenerateRandomCode(SustainabilityCertificate.FieldNo("No."), Database::"Sustainability Certificate"));
         SustainabilityCertificate.Validate(Name, LibraryUtility.GenerateGUID());
         SustainabilityCertificate.Validate("Area", SustCertAreaCode);
         SustainabilityCertificate.Validate(Standard, SustCertStandardCode);
         SustainabilityCertificate.Validate(Type, SustCertType);
         SustainabilityCertificate.Insert(true);
+    end;
+
+    procedure InsertSustainabilityResponsibilityCenter(var ResponsibilityCenter: Record "Responsibility Center"; CapacityQuantity: Decimal; CapacityUnit: Code[10]; CapacityDimension: Text[20])
+    begin
+        ResponsibilityCenter.Init();
+        ResponsibilityCenter.Validate(Code, LibraryUtility.GenerateRandomCode(ResponsibilityCenter.FieldNo(Code), Database::"Responsibility Center"));
+        ResponsibilityCenter.Validate(Name, LibraryUtility.GenerateGUID());
+        ResponsibilityCenter.Validate("Water Capacity Quantity(Month)", CapacityQuantity);
+        ResponsibilityCenter.Validate("Water Capacity Unit", CapacityUnit);
+        ResponsibilityCenter.Validate("Water Capacity Dimension", CapacityDimension);
+        ResponsibilityCenter.Insert(true);
     end;
 
     procedure InsertEmissionFee(var EmissionFee: Record "Emission Fee"; EmissionType: Enum "Emission Type"; ScopeType: Enum "Emission Scope"; StartingDate: Date; EndingDate: Date; CountryRegionCode: Code[10]; CarbonEquivalentFactor: Decimal)

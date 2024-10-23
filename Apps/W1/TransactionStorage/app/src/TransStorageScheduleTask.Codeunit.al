@@ -120,7 +120,7 @@ codeunit 6207 "Trans. Storage Schedule Task"
         exit(true);
     end;
 
-    local procedure IsValidTaskExist(): Boolean
+    procedure IsValidTaskExist(): Boolean
     var
         ScheduledTask: Record "Scheduled Task";
         OutdatedTaskScheduledDate: Date;

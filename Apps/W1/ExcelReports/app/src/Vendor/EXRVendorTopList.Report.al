@@ -6,6 +6,7 @@
 namespace Microsoft.Purchases.ExcelReports;
 
 using Microsoft.Purchases.Vendor;
+using Microsoft.ExcelReports;
 
 report 4404 "EXR Vendor Top List"
 {
@@ -101,6 +102,9 @@ report 4404 "EXR Vendor Top List"
         TopVendorListLabel = 'Top Vendor List';
     }
 
+    var
+        ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
+
     protected var
         GlobalExtTopVendorReportBuffer: Record "EXR Top Vendor Report Buffer";
         EXTTopVendorCaptionHandler: Codeunit "EXT Top Vendor Caption Handler";
@@ -108,6 +112,7 @@ report 4404 "EXR Vendor Top List"
 
     trigger OnPreReport()
     begin
+        ExcelReportsTelemetry.LogReportUsage(Report::"EXR Vendor Top List");
         BindSubscription(EXTTopVendorCaptionHandler);
         BuildDataSet();
     end;

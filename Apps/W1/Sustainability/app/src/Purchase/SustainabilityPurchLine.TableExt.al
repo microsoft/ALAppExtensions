@@ -254,6 +254,7 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
     local procedure ValidateEmissionPrerequisite(PurchaseLine: Record "Purchase Line"; CurrentFieldNo: Integer)
     var
         Item: Record Item;
+        SustAccountCategory: Record "Sustain. Account Category";
     begin
         case CurrentFieldNo of
             PurchaseLine.FieldNo("Emission N2O"),
@@ -280,6 +281,10 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
                     PurchaseLine.TestField("No.");
                     if not (PurchaseLine.Type in [PurchaseLine.Type::Item, PurchaseLine.Type::"G/L Account"]) then
                         Error(InvalidTypeForSustErr, PurchaseLine.Type::Item, PurchaseLine.Type::"G/L Account");
+
+                    if SustAccountCategory.Get(PurchaseLine."Sust. Account Category") then
+                        if SustAccountCategory."Water Intensity" or SustAccountCategory."Waste Intensity" or SustAccountCategory."Discharged Into Water" then
+                            Error(NotAllowedToUseSustAccountForWaterOrWasteErr, PurchaseLine."Sust. Account No.");
                 end;
         end;
     end;
@@ -300,4 +305,5 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
     var
         SustainabilitySetup: Record "Sustainability Setup";
         InvalidTypeForSustErr: Label 'Sustainability is only applicable for Type: %1 or %2.', Comment = '%1 - Purchase Line Type Item, %2 - Purchase Line Type G/L Account';
+        NotAllowedToUseSustAccountForWaterOrWasteErr: Label 'It is not allowed to use Sustainability Account %1 for water or waste in purchase document.', Comment = '%1 = Sust. Account No.';
 }

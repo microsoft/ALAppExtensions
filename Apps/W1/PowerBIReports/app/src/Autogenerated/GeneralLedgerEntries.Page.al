@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 36995 "General Ledger Entries"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'General Ledger Entries';
     AboutTitle = 'About General Ledger Entries';
     AboutText = 'The General Ledger Entries report provides granular detail about the entries posted to the general ledger. ';

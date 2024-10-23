@@ -1112,5 +1112,33 @@ table 6623 "FS Connection Setup"
         CDSConnectionSetup."Business Events Enabled" := true;
         CDSIntegrationImpl.UpdateBusinessEventsSetupFromWizard(CDSConnectionSetup);
     end;
+
+    procedure InitializeDefaultTemplateAndBatch()
+    var
+        JobJnlTemplate: Record "Job Journal Template";
+        JobJnlBatch: Record "Job Journal Batch";
+        TemplateLbl: Label 'INT', Locked = true;
+        TemplateDescriptionLbl: Label 'Integration';
+        BatchLbl: Label 'FS', Locked = true;
+        BatchDescriptionLbl: Label 'Field Service Consumption Posting';
+        SourceCodeLbl: Label 'PROJJNL', Locked = true;
+    begin
+        if JobJnlTemplate.Get(TemplateLbl) then
+            exit;
+
+        JobJnlTemplate.Init();
+        JobJnlTemplate.Name := TemplateLbl;
+        JobJnlTemplate.Description := TemplateDescriptionLbl;
+        JobJnlTemplate.Validate("Page ID", Page::"Job Journal");
+        JobJnlTemplate."Source Code" := SourceCodeLbl;
+        JobJnlTemplate.Insert();
+
+        JobJnlBatch.Init();
+        JobJnlBatch."Journal Template Name" := JobJnlTemplate.Name;
+        JobJnlBatch.SetupNewBatch();
+        JobJnlBatch.Name := BatchLbl;
+        JobJnlBatch.Description := BatchDescriptionLbl;
+        JobJnlBatch.Insert(true);
+    end;
 }
 

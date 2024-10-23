@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA27
 namespace Microsoft.DataMigration.BC;
 
 table 4037 "Stg Incoming Document"
@@ -52,4 +53,4 @@ table 4037 "Stg Incoming Document"
     {
     }
 }
-
+#endif

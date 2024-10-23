@@ -9,6 +9,7 @@ using Microsoft.Sales.Customer;
 using Microsoft.Finance.Dimension;
 using Microsoft.Sales.Receivables;
 using Microsoft.Finance.GeneralLedger.Setup;
+using Microsoft.ExcelReports;
 
 report 4402 "EXR Aged Accounts Rec Excel"
 {
@@ -265,6 +266,9 @@ report 4402 "EXR Aged Accounts Rec Excel"
         CurrencyCodeDisplay = 'Currency Code';
     }
 
+    var
+        ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
+
     protected var
         TempEXRAgingReportBuffer: Record "EXR Aging Report Buffer" temporary;
         GeneralLedgerSetup: Record "General Ledger Setup";
@@ -285,6 +289,7 @@ report 4402 "EXR Aged Accounts Rec Excel"
 
     trigger OnPreReport()
     begin
+        ExcelReportsTelemetry.LogReportUsage(Report::"EXR Aged Accounts Rec Excel");
         InitReport();
         BindSubscription(GlobalEXTAgedAccCaptionHandler);
         GlobalEXTAgedAccCaptionHandler.SetGlobalEXRAgingReportBuffer(TempEXRAgingReportBuffer);

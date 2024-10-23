@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37019 "Purchases by Location"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Purchases by Location';
     AboutTitle = 'About Purchases by Location';
     AboutText = 'The Purchases by Location report displays purchase amounts and quantities by location. Including a Treemap to highlight item spending contributions and a bar chart to show purchase amounts by item category.';

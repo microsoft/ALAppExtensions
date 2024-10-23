@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA26
 table 4761 "Manufacturing Demo Account"
 {
     TableType = Temporary;
@@ -29,3 +30,4 @@ table 4761 "Manufacturing Demo Account"
         }
     }
 }
+#endif

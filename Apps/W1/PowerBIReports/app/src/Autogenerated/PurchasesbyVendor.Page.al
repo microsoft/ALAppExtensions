@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37018 "Purchases by Vendor"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Purchases by Vendor';
     AboutTitle = 'About Purchases by Vendor';
     AboutText = 'The Purchases by Vendor report shows purchase amounts and quantities by vendor. Featuring a Treemap for item spending contributions and a bar chart for purchase amounts by item category, offering a clear view of vendor performance and spending patterns.';

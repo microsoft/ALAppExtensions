@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37041 "Historical Utilization"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Historical Utilization';
     AboutTitle = 'About Historical Utilization';
     AboutText = 'View the historical Utilisation % by comparing Capacity Used vs Available Capacity in Hours viewed over a timeline you can define to see trends. View all or some Work Centres.';

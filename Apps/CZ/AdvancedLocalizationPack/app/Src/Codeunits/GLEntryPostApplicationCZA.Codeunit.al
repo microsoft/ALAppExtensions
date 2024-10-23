@@ -373,14 +373,9 @@ codeunit 31370 "G/L Entry Post Application CZA"
     var
         SelectedGLEntry: Record "G/L Entry";
         ApplyGLEntriesCZA: Page "Apply G/L Entries CZA";
-        EntryApplID: Code[50];
     begin
         if ApplGLEntry."Closed CZA" then
             Error(ClosedEntryErr);
-
-        EntryApplID := CopyStr(UserId, 1, MaxStrLen(EntryApplID));
-        if EntryApplID = '' then
-            EntryApplID := '***';
 
         SelectedGLEntry.SetCurrentKey("G/L Account No.");
         SelectedGLEntry.SetRange("G/L Account No.", ApplGLEntry."G/L Account No.");

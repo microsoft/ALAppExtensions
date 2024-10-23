@@ -36,6 +36,7 @@ table 1917 "MigrationQB Config"
         {
             DataClassification = SystemMetadata;
         }
+#if not CLEANSCHEMA15
         field(9; "Realm Id"; Text[250])
         {
             DataClassification = CustomerContent;
@@ -57,6 +58,7 @@ table 1917 "MigrationQB Config"
             ObsoleteReason = 'The suggested way to store the secrets is Isolated Storage, therefore Token Secret will be removed.';
             ObsoleteTag = '15.4';
         }
+#endif
     }
 
     keys
