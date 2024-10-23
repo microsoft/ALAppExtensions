@@ -1,0 +1,488 @@
+{
+  "name": "Ruleset for base app",
+  "description": "This ruleset applies to the base application",
+  "generalAction": "Error",
+  "includedRuleSets": [
+    {
+      "action": "Default",
+      "path": "./ruleset.json"
+    }
+  ],
+  "rules": [
+    {
+      "id": "AL0254",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0269",
+      "action": "Warning",
+      "justification": "Bug 472119"
+    },
+    {
+      "id": "AL0424",
+      "action": "Warning",
+      "justification": "Bug 472148. The multilanguage syntax is being deprecated. Please update to the new syntax."
+    },
+    {
+      "id": "AL0432",
+      "action": "None",
+      "justification": "Use pragma to remove obsolete warning."
+    },
+    {
+      "id": "AL0457",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0482",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0523",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0547",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0551",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0589",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0602",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0247",
+      "action": "None",
+      "justification": "Elevate when the all apps are namespaced."
+    },
+    {
+      "id": "AA0604",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0605",
+      "action": "None",
+      "justification": "Use of implicit 'with' will be removed in the future. Qualify with 'Rec'."
+    },
+    {
+      "id": "AL0606",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0640",
+      "action": "Error"
+    },
+    {
+      "id": "AL0655",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0659",
+      "action": "Warning",
+      "justification": "The length of the enum identifier 'Acc. Schedule Line Totaling Type' should not exceed 30 characters as it may result in runtime issues in cases where there are other enums with the same first 30 characters."
+    },
+    {
+      "id": "AL0667",
+      "action": "Warning",
+      "justification": "'ObsoleteReason' is being deprecated in the versions: '1.0' or greater. This property is not allowed on areas. This warning will become an error in a future release."
+    },
+    {
+      "id": "AL0684",
+      "action": "None",
+      "justification": "The permissionset contains permissionsets or permission for objects from other module. Permissions on objects from other modules will be ignored."
+    },
+    {
+      "id": "AL0685",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0717",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0719",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0729",
+      "action": "Warning",
+      "justification": "Bug 472138. The property 'Promoted' can only be set if the property 'PageType' is set with any of the values of: 'Card,Document,List,ListPlus,Worksheet' This warning will become an error in a future release."
+    },
+    {
+      "id": "AL0748",
+      "action": "Warning",
+      "justification": "The return type 'CRM Payment Terms' of the public method 'GetRec' has 'Internal' accessibility. The return value will not be usable outside of this module without an implicit conversion."
+    },
+    {
+      "id": "AL0749",
+      "action": "Warning"
+    },
+    {
+      "id": "AL0775",
+      "action": "Warning"
+    },
+    {
+      "id": "AS0059",
+      "action": "Warning",
+      "justification": "Will be fixed. Reserved database tables are read-only in a multi-tenant environment"
+    },
+    {
+      "id": "AS0112",
+      "action": "None",
+      "justification": "The permission set 'Reten. Pol. Setup - BaseApp' should not be included through a permission set extension because it includes permissions for objects defined in another application."
+    },
+    {
+      "id": "AS0014",
+      "action": "Warning",
+      "justification": "The project manifest must contain the allocated identifier range."
+    },
+    {
+      "id": "AS0015",
+      "action": "Warning",
+      "justification": "The TranslationFile flag must be added to the features array in the app.json file."
+    },
+    {
+      "id": "AS0022",
+      "action": "Warning",
+      "justification": "The external scope cannot be removed or changed to 'internal' because it will break dependent extensions. Note that adding an access modifier ('local', 'protected', or 'internal') overrides the argument in 'Scope'."
+    },
+    {
+      "id": "AS0051",
+      "action": "Warning",
+      "justification": "The manifest property 'contextSensitiveHelpUrl' must be specified and contain a meaningful value."
+    },
+    {
+      "id": "AS0052",
+      "action": "Warning",
+      "justification": "The property 'url' must be set to a valid URL."
+    },
+    {
+      "id": "AS0058",
+      "action": "Warning",
+      "justification": "Only use AssertError in Test Codeunits."
+    },
+    {
+      "id": "AS0062",
+      "action": "Warning",
+      "justification": "Action must have a value for the ApplicationArea property so that they are visible to users. From runtime 11.0, you can specify on the application object level the ApplicationArea to use as default for all its controls and actions."
+    },
+    {
+      "id": "AS0077",
+      "action": "Warning",
+      "justification": "A var modifier has been added on the parameter 'ShowDialog' in the event 'OnBeforeEmailRecords'. This might break the runtime behavior of dependent extensions subscribing to this event."
+    },
+    {
+      "id": "AS0078",
+      "action": "Warning"
+    },
+    {
+      "id": "AS0099",
+      "action": "Warning",
+      "justification": "The ID '0' for the EnumValue 'Marketing Text' is not valid. It should be within the range '[1..2147483647]', which is allocated to the application, and outside the range '[50000..99999]', which is allocated to per-tenant customizations."
+    },
+    {
+      "id": "AS0102",
+      "action": "Warning",
+      "justification": "It is not allowed to add a return value to procedure, because it might break dependent extensions at runtime."
+    },
+    {
+      "id": "AS0103",
+      "action": "Warning",
+      "justification": "Table is missing a matching permission set."
+    },
+    {
+      "id": "AA0013",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0021",
+      "action": "Warning",
+      "justification": "Variable declarations should be ordered by type. Variables should be sorted like this: Record, Report, Codeunit, XmlPort, Page, Query, Notification, BigText, DateFormula, RecordId, RecordRef, FieldRef, and FilterPageBuilder. The rest of the variables are not sorted."
+    },
+    {
+      "id": "AA0022",
+      "action": "Warning",
+      "justification": "Substitute the IF THEN ELSE structure with a CASE."
+    },
+    {
+      "id": "AA0052",
+      "action": "Warning",
+      "justification": "The permission set should not be included through a permission set extension because it includes permissions for objects defined in another application."
+    },
+    {
+      "id": "AA0073",
+      "action": "Warning",
+      "justification": "The name of temporary variable must be prefixed with Temp."
+    },
+    {
+      "id": "AA0074",
+      "action": "Warning",
+      "justification": "Variable must have a suffix from this list: Msg, Tok, Err, Qst, Lbl, Txt."
+    },
+    {
+      "id": "AA0087",
+      "action": "Warning",
+      "justification": "Do only lower permissions inside procedures of type test."
+    },
+    {
+      "id": "AL0842",
+      "action": "Warning",
+      "justification": "Bug 498357. Blocking platform uptake"
+    },
+    {
+      "id": "AA0100",
+      "action": "Warning",
+      "justification": "Do not have identifiers with quotes in the name."
+    },
+    {
+      "id": "AA0131",
+      "action": "Warning",
+      "justification": "The number of parameters passed to a string must match the placeholders."
+    },
+    {
+      "id": "AA0136",
+      "action": "Warning",
+      "justification": "Unreachable code detected."
+    },
+    {
+      "id": "AA0139",
+      "action": "Warning",
+      "justification": "Possible overflow."
+    },
+    {
+      "id": "AA0150",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0161",
+      "action": "Warning",
+      "justification": "Only use AssertError in Test Codeunits."
+    },
+    {
+      "id": "AA0175",
+      "action": "Warning",
+      "justification": "Variable queries the database in but does not use the queried record. Only find or get record if you need to access the values. Consider using ISEMPTY."
+    },
+    {
+      "id": "AA0181",
+      "action": "Warning",
+      "justification": "The FindSet() or Find() method on the record must be used only in connection with the Next() method."
+    },
+    {
+      "id": "AA0189",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0194",
+      "action": "Warning",
+      "justification": "Remember to specify either the 'OnAction' trigger or the 'RunObject' property on an action."
+    },
+    {
+      "id": "AA0198",
+      "action": "Warning",
+      "justification": "The name of the local variable is identical to a global variable."
+    },
+    {
+      "id": "AA0199",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0202",
+      "action": "Warning",
+      "justification": "The name of the local variable is identical to a field, method, or action in the same scope."
+    },
+    {
+      "id": "AA0203",
+      "action": "Warning",
+      "justification": "The name of the method is identical to a field or action in the same scope."
+    },
+    {
+      "id": "AA0204",
+      "action": "Warning",
+      "justification": "The name of the global variable is identical to a field, method, or action in the same scope."
+    },
+    {
+      "id": "AA0205",
+      "action": "Warning",
+      "justification": "Use of unassigned variable."
+    },
+    {
+      "id": "AA0206",
+      "action": "Warning",
+      "justification": "The variable is initialized but not used."
+    },
+    {
+      "id": "AA0207",
+      "action": "Warning",
+      "justification": "The EventSubscriber method must be local."
+    },
+    {
+      "id": "AA0210",
+      "action": "Warning",
+      "justification": "The table does not contain a key with the field."
+    },
+    {
+      "id": "AA0214",
+      "action": "Warning",
+      "justification": "The record should be modified before saving to the database."
+    },
+    {
+      "id": "AA0217",
+      "action": "Warning",
+      "justification": "Use a text constant or label for format string in StrSubstNo."
+    },
+    {
+      "id": "AA0218",
+      "action": "Warning",
+      "justification": "The Tooltip property for must be filled."
+    },
+    {
+      "id": "AA0219",
+      "action": "Hidden",
+      "justification": "TBD Bug: fails for actions. The Tooltip property of Fields must start with 'Specifies'. Set to None because setting it to warning will fail RunCodeCopBaseApplication_XX"
+    },
+    {
+      "id": "AA0221",
+      "action": "Warning",
+      "justification": "The OptionCaption property for must be filled in."
+    },
+    {
+      "id": "AA0224",
+      "action": "Warning",
+      "justification": "The count of option captions specified in the OptionCaption property is wrong."
+    },
+    {
+      "id": "AA0225",
+      "action": "Warning",
+      "justification": ": The Caption property for must be filled in."
+    },
+    {
+      "id": "AA0228",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0231",
+      "action": "Warning",
+      "justification": "Do not use the StrSubstNo or string concatenation as a parameter in the Error method."
+    },
+    {
+      "id": "AA0232",
+      "action": "Warning",
+      "justification": "The FlowField should be added to the SIFT key."
+    },
+    {
+      "id": "AA0233",
+      "action": "Warning",
+      "justification": "The 'Get' method on the record must be used without the Next() method."
+    },
+    {
+      "id": "AA0237",
+      "action": "Warning",
+      "justification": "The name of non temporary variables must not be prefixed with Temp."
+    },
+    {
+      "id": "AA0240",
+      "action": "Warning",
+      "justification": "The Label must not contain email addresses or phone numbers."
+    },
+    {
+      "id": "AA0242",
+      "action": "Warning",
+      "justification": "Field is not selected for loading and accessing it may cause a JIT load."
+    },
+    {
+      "id": "AA0244",
+      "action": "Warning",
+      "justification": "The name of the parameter is identical to a global variable."
+    },
+    {
+      "id": "AA0245",
+      "action": "Warning",
+      "justification": "The name of the parameter is identical to a field, method, or action in the same scope."
+    },
+    {
+      "id": "AA0448",
+      "action": "Warning",
+      "justification": "Use FieldCaption instead of FieldName and TableCaption instead of TableName in methods that display messages."
+    },
+    {
+      "id": "AA0462",
+      "action": "Warning"
+    },
+    {
+      "id": "AA0470",
+      "action": "Warning",
+      "justification": "Variable with placeholders should have a comment explaining their content."
+    },
+    {
+      "id": "AW0002",
+      "action": "Warning",
+      "justification": "The Web client does not support displaying both Actions and Fields in the Cue Group. Only Fields will be displayed."
+    },
+    {
+      "id": "AW0003",
+      "action": "Warning",
+      "justification": "The Web client does not support displaying Repeater controls containing Parts."
+    },
+    {
+      "id": "AW0004",
+      "action": "Warning",
+      "justification": "A Blob cannot be used as a source expression for a page field."
+    },
+    {
+      "id": "AW0005",
+      "action": "Warning",
+      "justification": "Action should have a value for the Image property."
+    },
+    {
+      "id": "AW0007",
+      "action": "Warning",
+      "justification": "The FlowFilter field in the Repeater control cannot be displayed by the Web client."
+    },
+    {
+      "id": "AW0009",
+      "action": "Warning",
+      "justification": "Using a Blob with subtype Bitmap on a page field is deprecated. "
+    },
+    {
+      "id": "AW0011",
+      "action": "Warning",
+      "justification": "Group 'Processing' only contains promoted actions that are not set to PromotedOnly='true'."
+    },
+    {
+      "id": "AW0014",
+      "action": "Warning",
+      "justification": "The group defined in Page should not be hidden because it contains the target actions for some ActionRefs."
+    },
+    {
+      "id": "PTE0002",
+      "action": "None",
+      "justification": "Field ID must be within the range '[50000..99999]'."
+    },
+    {
+      "id": "PTE0004",
+      "action": "Warning",
+      "justification": "Table is missing a matching permission set."
+    },
+    {
+      "id": "PTE0007",
+      "action": "Warning",
+      "justification": "Only use AssertError in Test Codeunits."
+    },
+    {
+      "id": "PTE0008",
+      "action": "Warning",
+      "justification": "Action must have a value for the ApplicationArea property so that they are visible to users. From runtime 11.0, you can specify on the application object level the ApplicationArea to use as default for all its controls and actions."
+    },
+    {
+      "id": "PTE0018",
+      "action": "Warning"
+    }
+  ]
+}

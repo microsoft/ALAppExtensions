@@ -10,6 +10,7 @@ using System.Environment.Configuration;
 using System.Telemetry;
 using System.Utilities;
 using Microsoft.Integration.D365Sales;
+using System.Globalization;
 
 page 6613 "FS Connection Setup Wizard"
 {
@@ -195,6 +196,78 @@ page 6613 "FS Connection Setup Wizard"
                     }
                 }
             }
+            group(Step3)
+            {
+                Visible = ItemAvailabilityStepVisible;
+                Caption = '';
+
+                group(Control24)
+                {
+                    Caption = 'SET UP VIRTUAL TABLES';
+                    InstructionalText = 'Set up Business Central Virtual Tables app in a Dataverse environment to allow Business Central to send business events to Dataverse.';
+                }
+                group(Control25)
+                {
+                    InstructionalText = 'Use the link below to go to AppSource and get the the Business Central Virtual Table app, so you can install it in your Dataverse environment. To refresh status after you install, click back and next.';
+                    ShowCaption = false;
+
+                    field("Enable Invt. Availability"; Rec."Enable Invt. Availability")
+                    {
+                        ApplicationArea = Suite;
+                        Enabled = VirtualTableAppInstalled;
+                        ToolTip = 'Specifies if the Field Service users will be able to pull information about inventory availability by location from Business Central. This is available only if Virtual Table app is installed.';
+                    }
+
+                    field(InstallVirtualTableApp; VirtualTableAppInstallTxt)
+                    {
+                        ApplicationArea = All;
+                        Editable = false;
+                        ShowCaption = false;
+                        Caption = ' ';
+                        ToolTip = 'Get the Business Central Virtual Table app from Microsoft AppSource.';
+
+                        trigger OnDrillDown()
+                        begin
+                            Hyperlink(GetVirtualTablesAppSourceLink());
+                        end;
+                    }
+                }
+                group(Control26)
+                {
+                    Visible = VirtualTableAppInstalled;
+                    ShowCaption = false;
+
+                    field(VirtualTableAppInstalledLbl; VirtualTableAppInstalledTxt)
+                    {
+                        ApplicationArea = Suite;
+                        ToolTip = 'Indicates whether the Business Central Virtual Table app is installed in the Dataverse environment.';
+                        Caption = 'The Business Central Virtual Table app is installed.';
+                        Editable = false;
+                        ShowCaption = false;
+                        Style = Favorable;
+                    }
+                }
+                group(Control64)
+                {
+                    Visible = not VirtualTableAppInstalled;
+                    ShowCaption = false;
+
+                    field(VirtualTableAppNotInstalledLbl; VirtualTableAppNotInstalledTxt)
+                    {
+                        ApplicationArea = Suite;
+                        Tooltip = 'Indicates that the Business Central Virtual Table app is not installed in the Dataverse environment.';
+                        Caption = 'The Business Central Virtual Table app is not installed.';
+                        Editable = false;
+                        ShowCaption = false;
+                        Style = Ambiguous;
+                    }
+                }
+                group(Control28)
+                {
+                    InstructionalText = 'Choose Refresh to enable above toggle when Business Central Virtual Table app is installed.';
+                    ShowCaption = false;
+                }
+            }
         }
     }
 
@@ -258,6 +331,21 @@ page 6613 "FS Connection Setup Wizard"
                     ShowAdvancedSettings := false;
                     AdvancedActionEnabled := true;
                     SimpleActionEnabled := false;
+                end;
+            }
+            action(ActionRefresh)
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'Refresh';
+                Image = Refresh;
+                Visible = RefreshActionEnabled;
+                InFooterBar = true;
+
+                trigger OnAction()
+                begin
+                    VirtualTableAppInstalled := Rec.IsVirtualTablesAppInstalled();
+                    Rec.SetupVirtualTables(VirtualTableAppInstalled);
+                    CurrPage.Update(false);
                 end;
             }
             action(ActionFinish)
@@ -349,14 +437,16 @@ page 6613 "FS Connection Setup Wizard"
         MediaResourcesDone: Record "Media Resources";
         CRMProductName: Codeunit "CRM Product Name";
         ClientTypeManagement: Codeunit "Client Type Management";
-        Step: Option Start,Credentials,Finish;
+        Step: Option Start,Credentials,ItemAvailability,Finish;
         TopBannerVisible: Boolean;
         ConnectionStringFieldsEditable: Boolean;
         BackActionEnabled: Boolean;
         NextActionEnabled: Boolean;
         FinishActionEnabled: Boolean;
+        RefreshActionEnabled: Boolean;
         FirstStepVisible: Boolean;
         CredentialsStepVisible: Boolean;
+        ItemAvailabilityStepVisible: Boolean;
         EnableFSConnection: Boolean;
         ImportSolution: Boolean;
         EnableFSConnectionEnabled: Boolean;
@@ -366,12 +456,17 @@ page 6613 "FS Connection Setup Wizard"
         SimpleActionEnabled: Boolean;
         IsUserNamePasswordVisible: Boolean;
         PasswordSet: Boolean;
+        VirtualTableAppInstalled: Boolean;
         [NonDebuggable]
         Password: Text;
         ConnectionNotSetUpQst: Label 'The %1 connection has not been set up.\\Are you sure you want to exit?', Comment = '%1 = CRM product name';
         CRMURLShouldNotBeEmptyErr: Label 'You must specify the URL of your %1 solution.', Comment = '%1 = CRM product name';
         CRMSynchUserCredentialsNeededErr: Label 'You must specify the credentials for the user account for synchronization with %1.', Comment = '%1 = CRM product name';
         Office365AuthTxt: Label 'AuthType=Office365', Locked = true;
+        VirtualTableAppInstallTxt: Label 'Install Business Central Virtual Table app';
+        VTAppSourceLinkTxt: Label 'https://appsource.microsoft.com/%1/product/dynamics-365/microsoftdynsmb.businesscentral_virtualentity', Locked = true;
+        VirtualTableAppInstalledTxt: Label 'The Business Central Virtual Table app is installed.';
+        VirtualTableAppNotInstalledTxt: Label 'The Business Central Virtual Table app is not installed.';
 
     local procedure LoadTopBanners()
     begin
@@ -415,6 +510,7 @@ page 6613 "FS Connection Setup Wizard"
 
         FirstStepVisible := false;
         CredentialsStepVisible := false;
+        ItemAvailabilityStepVisible := false;
 
         ImportFSSolutionEnabled := true;
     end;
@@ -427,7 +523,9 @@ page 6613 "FS Connection Setup Wizard"
             Step::Start:
                 ShowStartStep();
             Step::Credentials:
-                ShowFinishStep();
+                ShowCredentialsStep();
+            Step::ItemAvailability:
+                ShowItemAvailabilityStep();
         end;
     end;
 
@@ -439,18 +537,20 @@ page 6613 "FS Connection Setup Wizard"
         FirstStepVisible := true;
         AdvancedActionEnabled := false;
         SimpleActionEnabled := false;
+        RefreshActionEnabled := false;
     end;
 
-    local procedure ShowFinishStep()
+    local procedure ShowCredentialsStep()
     var
         FSConnectionSetup: Record "FS Connection Setup";
     begin
         BackActionEnabled := true;
-        NextActionEnabled := false;
+        NextActionEnabled := true;
         AdvancedActionEnabled := not ShowAdvancedSettings;
         SimpleActionEnabled := not AdvancedActionEnabled;
         CredentialsStepVisible := true;
-        FinishActionEnabled := true;
+        FinishActionEnabled := false;
+        RefreshActionEnabled := false;
 
         EnableFSConnectionEnabled := Rec."Server Address" <> '';
         Rec."Authentication Type" := Rec."Authentication Type"::Office365;
@@ -466,6 +566,20 @@ page 6613 "FS Connection Setup Wizard"
             if EnableFSConnectionEnabled then
                 EnableFSConnection := true;
         end;
+    end;
+
+    local procedure ShowItemAvailabilityStep()
+    begin
+        BackActionEnabled := true;
+        NextActionEnabled := false;
+        FinishActionEnabled := true;
+        FirstStepVisible := false;
+        AdvancedActionEnabled := false;
+        SimpleActionEnabled := false;
+        RefreshActionEnabled := true;
+        ItemAvailabilityStepVisible := true;
+        VirtualTableAppInstalled := Rec.IsVirtualTablesAppInstalled();
+        Rec.SetupVirtualTables(VirtualTableAppInstalled);
     end;
 
     local procedure FinalizeSetup(): Boolean
@@ -512,6 +626,22 @@ page 6613 "FS Connection Setup Wizard"
         CRMIntegrationManagement: Codeunit "CRM Integration Management";
     begin
         Rec.Validate("Proxy Version", CRMIntegrationManagement.GetLastProxyVersionItem());
+    end;
+
+    local procedure GetVirtualTablesAppSourceLink(): Text
+    var
+        UserSettingsRecord: Record "User Settings";
+        Language: Codeunit Language;
+        UserSettings: Codeunit "User Settings";
+        LanguageID: Integer;
+        CultureName: Text;
+    begin
+        UserSettings.GetUserSettings(Database.UserSecurityId(), UserSettingsRecord);
+        LanguageID := UserSettingsRecord."Language ID";
+        if (LanguageID = 0) then
+            LanguageID := 1033; // Default to EN-US
+        CultureName := Language.GetCultureName(LanguageID).ToLower();
+        exit(Text.StrSubstNo(VTAppSourceLinkTxt, CultureName));
     end;
 }
 

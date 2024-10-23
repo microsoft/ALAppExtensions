@@ -1,28 +1,24 @@
 {
-    "id":  "3d5fd255-4fb4-464b-9362-44cd85a883e7",
-    "name":  "Standard Audit File - Tax Localization for Norway",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Easily configure and create SAF-T audit files for Norway",
-    "description":  "As part of tax reporting in Norway, companies must be able to produce Standard Audit Files - Tax (SAF-T) in a specific format to be sent to Norwegian authorities. This feature enables configuration of account mapping and easy export of SAF-T files from Dynamics 365 Business Central.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2106039",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2106039",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "3d5fd255-4fb4-464b-9362-44cd85a883e7",
+  "name": "Standard Audit File - Tax Localization for Norway",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Easily configure and create SAF-T audit files for Norway",
+  "description": "As part of tax reporting in Norway, companies must be able to produce Standard Audit Files - Tax (SAF-T) in a specific format to be sent to Norwegian authorities. This feature enables configuration of account mapping and easy export of SAF-T files from Dynamics 365 Business Central.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2106039",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2106039",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

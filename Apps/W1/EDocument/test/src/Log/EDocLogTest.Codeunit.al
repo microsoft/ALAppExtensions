@@ -34,7 +34,7 @@ codeunit 139616 "E-Doc Log Test"
         // [SCENARIO] EDocument Log on EDocument creation - No run of job queue to trigger export and send
 
         // [GIVEN] Creating a EDocument from Sales Invoice 
-        Initialize(Enum::"E-Document Integration"::"Mock V2");
+        Init();
 
         // [Given] Team member that post invoice and EDocument is created
         LibraryPermission.SetTeamMember();
@@ -82,7 +82,7 @@ codeunit 139616 "E-Doc Log Test"
         // 4. No mapping logs are created in this scenario.
 
         // [GIVEN] Creating a EDocument from Sales Invoice is exported
-        Initialize(Enum::"E-Document Integration"::"Mock V2");
+        Init();
 
         // [Given] Team member that post invoice and EDocument is created
         LibraryPermission.SetTeamMember();
@@ -140,7 +140,7 @@ codeunit 139616 "E-Doc Log Test"
         // [4] A mapping log is correctly created.
 
         // [GIVEN] Exporting E-Document for service with mapping
-        Initialize(Enum::"E-Document Integration"::"Mock V2");
+        Init();
         LibraryEDoc.CreateServiceMapping(EDocumentService);
 
         // [Given] Team member that post invoice and EDocument is created
@@ -221,7 +221,7 @@ codeunit 139616 "E-Doc Log Test"
         // [5] Mapping logs should be generated as part of this scenario.
 
         // [GIVEN] Exporting E-Document with errors on edocument
-        Initialize(Enum::"E-Document Integration"::"Mock V2");
+        Init();
         LibraryEDoc.CreateServiceMapping(EDocumentService);
         BindSubscription(EDocLogTest);
         EDocLogTest.SetExportError();
@@ -305,7 +305,7 @@ codeunit 139616 "E-Doc Log Test"
         // [5] Mapping logs are correctly created, capturing mapping details.
 
         // [GIVEN] Exporting E-Documents for service with mapping
-        Initialize(Enum::"E-Document Integration"::"Mock V2");
+        Init();
         LibraryEDoc.CreateServiceMapping(EDocumentService);
         EDocumentService."Use Batch Processing" := true;
         EDocumentService."Batch Mode" := enum::"E-Document Batch Mode"::Threshold;
@@ -412,7 +412,7 @@ codeunit 139616 "E-Doc Log Test"
         // [6] Ensure no mapping logs or data storage is created for either document.
 
         // [GIVEN] A flow to send to service with threshold batch 
-        Initialize(Enum::"E-Document Integration"::"Mock V2");
+        Init();
         LibraryEDoc.CreateServiceMapping(EDocumentService);
         EDocumentService."Use Batch Processing" := true;
         EDocumentService."Batch Mode" := enum::"E-Document Batch Mode"::Threshold;
@@ -516,7 +516,7 @@ codeunit 139616 "E-Doc Log Test"
         // [8] Ensure mapping logs are created.
 
         // [GIVEN] A flow to send to service with recurrent batch 
-        Initialize(Enum::"E-Document Integration"::"Mock V2");
+        Init();
         LibraryEDoc.CreateServiceMapping(EDocumentService);
         EDocumentService."Use Batch Processing" := true;
         EDocumentService."Batch Mode" := EDocumentService."Batch Mode"::Recurrent;
@@ -642,7 +642,7 @@ codeunit 139616 "E-Doc Log Test"
         // [9] Ensure no mapping logs are created.
 
         // [GIVEN] A flow to send to service with recurrent batch 
-        Initialize(Enum::"E-Document Integration"::"Mock V2");
+        Init();
         LibraryEDoc.CreateServiceMapping(EDocumentService);
         EDocumentService.Get(EDocumentService.Code);
         EDocumentService."Use Batch Processing" := true;
@@ -791,7 +791,7 @@ codeunit 139616 "E-Doc Log Test"
 
         EDocument.Insert();
         EDocumentService2.Code := 'Test Service 1';
-        EDocumentService2."Service Integration" := EDocumentService2."Service Integration"::"Mock V2";
+        EDocumentService2."Service Integration" := EDocumentService2."Service Integration"::Mock;
         EDocumentService2.Insert();
 
         EDocumentServiceStatus."E-Document Entry No" := EDocument."Entry No";
@@ -816,7 +816,7 @@ codeunit 139616 "E-Doc Log Test"
         Assert.AreEqual(Status, EDocLog.Status, IncorrectValueErr);
     end;
 
-    local procedure Initialize(Integration: Enum "E-Document Integration")
+    local procedure Init()
     var
         TransformationRule: Record "Transformation Rule";
     begin
@@ -825,7 +825,7 @@ codeunit 139616 "E-Doc Log Test"
             exit;
 
         LibraryEDoc.SetupStandardVAT();
-        LibraryEDoc.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::Mock, Integration);
+        LibraryEDoc.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::Mock, Enum::"E-Document Integration"::Mock);
         ErrorInExport := false;
         FailLastEntryInBatch := false;
 

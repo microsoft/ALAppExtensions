@@ -275,6 +275,7 @@ page 7250 "Bank Acc. Rec. AI Proposal"
             end;
 
         SummaryStyleTxt := 'Ambiguous';
+        CurrPage.ProposalDetails.Page.SetProposalFieldCaption(ProposalTxt);
     end;
 
     local procedure AutoMatchWithCopilot()
@@ -616,6 +617,7 @@ page 7250 "Bank Acc. Rec. AI Proposal"
         AllLinesMatchedTxt: label 'All lines (100%) are matched. Review match proposals.';
         SubsetOfLinesMatchedTxt: label '%1% of lines are matched. Review match proposals.', Comment = '%1 - a decimal between 0 and 100';
         InputWithReservedWordsRemovedTxt: label 'Statement line descriptions or ledger entry descriptions with reserved AI chat completion prompt words were detected. For security reasons, they were excluded from the auto-matching process. You must match these statement lines or ledger entries manually.';
+        ProposalTxt: label 'Match Entry';
         StatementDate: Date;
         BalanceLastStatement: Decimal;
         StatementEndingBalance: Decimal;

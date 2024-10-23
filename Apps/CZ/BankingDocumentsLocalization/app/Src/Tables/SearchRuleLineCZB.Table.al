@@ -9,6 +9,7 @@ using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.HumanResources.Employee;
 using Microsoft.Purchases.Vendor;
 using Microsoft.Sales.Customer;
+using System.Reflection;
 
 table 31251 "Search Rule Line CZB"
 {
@@ -239,6 +240,12 @@ table 31251 "Search Rule Line CZB"
         }
     }
 
+    trigger OnInsert()
+    begin
+        if Description = '' then
+            Description := BuildDescription();
+    end;
+
     local procedure CheckSearchRule()
     begin
         if ("Search Scope" = "Search Scope"::"Account Mapping") then
@@ -292,5 +299,34 @@ table 31251 "Search Rule Line CZB"
         Rec.Rename("Search Rule Code", -1);
         SearchRuleLine.Rename("Search Rule Code", OldLineNo);
         Rec.Rename("Search Rule Code", NewLineNo);
+    end;
+
+    local procedure BuildDescription(): Text[100]
+    var
+        TypeHelper: Codeunit "Type Helper";
+        DescriptionBuilder: TextBuilder;
+        BankAccountNoTxt: Label 'Bank Account No.';
+        VariableSymbolTxt: Label 'Variable Symbol';
+        ConstantSymbolTxt: Label 'Constant Symbol';
+        SpecificSymbolTxt: Label 'Specific Symbol';
+        AmountTxt: Label 'Amount';
+        FirstTxt: Label 'First';
+        SeparatorTok: Label ', ', Locked = true;
+    begin
+        DescriptionBuilder.AppendLine(Format("Banking Transaction Type"));
+        DescriptionBuilder.AppendLine(Format("Search Scope"));
+        if "Bank Account No." then
+            DescriptionBuilder.AppendLine(BankAccountNoTxt);
+        if "Variable Symbol" then
+            DescriptionBuilder.AppendLine(VariableSymbolTxt);
+        if "Constant Symbol" then
+            DescriptionBuilder.AppendLine(ConstantSymbolTxt);
+        if "Specific Symbol" then
+            DescriptionBuilder.AppendLine(SpecificSymbolTxt);
+        if Amount then
+            DescriptionBuilder.AppendLine(AmountTxt);
+        if "Multiple Result" = "Multiple Result"::"First Created Entry" then
+            DescriptionBuilder.AppendLine(FirstTxt);
+        exit(CopyStr(DescriptionBuilder.ToText().Replace(TypeHelper.CRLFSeparator(), SeparatorTok).TrimEnd(SeparatorTok), 1, 100));
     end;
 }

@@ -21,6 +21,7 @@ codeunit 6611 "FS Setup Defaults"
 {
     var
         CRMProductName: Codeunit "CRM Product Name";
+        LocationFieldMapping: Boolean;
         JobQueueCategoryLbl: Label 'BCI INTEG', Locked = true;
         OptionJobQueueCategoryLbl: Label 'BCI OPTION', Locked = true;
         CategoryTok: Label 'AL Field Service Integration', Locked = true;
@@ -30,6 +31,7 @@ codeunit 6611 "FS Setup Defaults"
     internal procedure ResetConfiguration(var FSConnectionSetup: Record "FS Connection Setup")
     var
         CDSIntegrationMgt: Codeunit "CDS Integration Mgt.";
+        CRMSetupDefault: Codeunit "CRM Setup Defaults";
         IsHandled: Boolean;
     begin
         IsHandled := false;
@@ -45,7 +47,8 @@ codeunit 6611 "FS Setup Defaults"
         ResetProjectJournalLineWOServiceMapping(FSConnectionSetup, 'PJLINE-WORDERSERVICE', true);
         ResetServiceItemCustomerAssetMapping(FSConnectionSetup, 'SVCITEM-CUSTASSET', true);
         ResetResourceBookableResourceMapping(FSConnectionSetup, 'RESOURCE-BOOKABLERSC', true);
-        ResetLocationMapping(FSConnectionSetup, 'LOCATION', true);
+        ResetLocationMapping(FSConnectionSetup, 'LOCATION', true, false);
+        CRMSetupDefault.ResetItemProductMapping('ITEM-PRODUCT', true);
         SetCustomIntegrationsTableMappings(FSConnectionSetup);
     end;
 
@@ -177,12 +180,13 @@ codeunit 6611 "FS Setup Defaults"
           IntegrationFieldMapping.Direction::FromIntegrationTable,
           '', true, false);
 
-        InsertIntegrationFieldMapping(
-                 IntegrationTableMappingName,
-                 JobJournalLine.FieldNo("Location Code"),
-                 FSWorkOrderProduct.FieldNo(WarehouseId),
-                 IntegrationFieldMapping.Direction::FromIntegrationTable,
-                 '', true, false);
+        if LocationFieldMapping then
+            InsertIntegrationFieldMapping(
+              IntegrationTableMappingName,
+              JobJournalLine.FieldNo("Location Code"),
+              FSWorkOrderProduct.FieldNo(WarehouseId),
+              IntegrationFieldMapping.Direction::FromIntegrationTable,
+              '', true, false);
 
         OnAfterResetProjectJournalLineWOProductMapping(IntegrationTableMappingName);
 
@@ -400,16 +404,18 @@ codeunit 6611 "FS Setup Defaults"
         RecreateJobQueueEntryFromIntTableMapping(IntegrationTableMapping, 1, ShouldRecreateJobQueueEntry, 5);
     end;
 
-    internal procedure ResetLocationMapping(var FSConnectionSetup: Record "FS Connection Setup"; IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean)
+    internal procedure ResetLocationMapping(var FSConnectionSetup: Record "FS Connection Setup"; IntegrationTableMappingName: Code[20]; ShouldRecreateJobQueueEntry: Boolean; SkipLocationMandatoryCheck: Boolean)
     var
         InventorySetup: Record "Inventory Setup";
         IntegrationTableMapping: Record "Integration Table Mapping";
         IntegrationFieldMapping: Record "Integration Field Mapping";
+        InventorySetup: Record "Inventory Setup";
         Location: Record Location;
         FSWarehouse: Record "FS Warehouse";
     begin
-        if InventorySetup.Get() and (not InventorySetup."Location Mandatory") then
-            exit;
+        if not SkipLocationMandatoryCheck then
+            if InventorySetup.Get() and (not InventorySetup."Location Mandatory") then
+                exit;
 
         Location.SetRange("Use As In-Transit", false);
         Location.SetFilter("Job Consump. Whse. Handling", '''' + Format(Location."Job Consump. Whse. Handling"::"No Warehouse Handling") + '''|''' +
@@ -554,6 +560,11 @@ codeunit 6611 "FS Setup Defaults"
             Codeunit.Run(Codeunit::"Job Queue - Enqueue", JobQueueEntry)
         else
             JobQueueEntry.Insert(true);
+    end;
+
+    internal procedure SetLocationFieldMapping(DoFieldMapping: Boolean)
+    begin
+        LocationFieldMapping := DoFieldMapping;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"CRM Setup Defaults", 'OnGetCDSTableNo', '', false, false)]
@@ -720,7 +731,7 @@ codeunit 6611 "FS Setup Defaults"
                 end;
             Database::Location:
                 if IntegrationTableMapping."Integration Table ID" = Database::"FS Warehouse" then
-                    ResetLocationMapping(FSConnectionSetup, IntegrationTableMapping.Name, true);
+                    ResetLocationMapping(FSConnectionSetup, IntegrationTableMapping.Name, true, false);
         end;
     end;
 

@@ -625,6 +625,8 @@ codeunit 139530 "MigrationQBO Tests"
 
     [Normal]
     local procedure Initialize()
+    var
+        DummyAccessToken: Text;
     begin
         if not BindSubscription(MigrationQBOMigrationTests) then
             exit;
@@ -635,7 +637,8 @@ codeunit 139530 "MigrationQBO Tests"
         MigrationQBVendor.DeleteAll();
 
         MigrationQBConfig.DeleteAll();
-        MigrationQBConfig.InitializeOnlineConfig('accesstokey', 'realmid');
+        DummyAccessToken := 'accesstokey';
+        MigrationQBConfig.InitializeOnlineConfig(DummyAccessToken, 'realmid');
         SetPostingAccounts();
 
         if UnbindSubscription(MigrationQBOMigrationTests) then

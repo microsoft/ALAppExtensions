@@ -15,6 +15,7 @@ permissionset 4713 "HybridGPUS - Objects"
         codeunit "GP Cloud Migration US" = X,
         codeunit "GP Populate Vendor 1099 Data" = X,
         codeunit "GP Vendor 1099 Mapping Helpers" = X,
+        codeunit "GP IRS Form Data" = X,
         page "GP 1099 Migration Log" = X,
         page "GP 1099 Migration Log Factbox" = X;
 }

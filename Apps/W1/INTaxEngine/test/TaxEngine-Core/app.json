@@ -1,47 +1,47 @@
 {
-    "id":  "f4b9b739-0b47-4c9a-9e52-a1ea5408e12e",
-    "name":  "Tax Engine Core - Test",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Contains core functionality of Tax Engine.",
-    "description":  "Core extension contains the UI elements with their tables which are commonly used throughout Tax Engine. Also, it has some library functions available which can be used by any different extension other than Tax Engine to get any value.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=724013",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2139719",
-    "url":  "https://go.microsoft.com/fwlink/?linkid=2139719",
-    "logo":  "ExtensionLogo.png",
-    "application":  "25.0.0.0",
-    "platform":  "25.0.0.0",
-    "dependencies":  [
-                         {
-                             "name":  "Tax Engine",
-                             "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "name":  "Tests-TestLibraries",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0",
-                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997"
-                         },
-                         {
-                             "name":  "System Application Test Library",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0",
-                             "id":  "9856ae4f-d1a7-46ef-89bb-6ef056398228"
-                         }
-                     ],
-    "idRanges":  [
-                     {
-                         "from":  136700,
-                         "to":  136750
-                     }
-                 ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2139719",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               }
+  "id": "f4b9b739-0b47-4c9a-9e52-a1ea5408e12e",
+  "name": "Tax Engine Core - Test",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Contains core functionality of Tax Engine.",
+  "description": "Core extension contains the UI elements with their tables which are commonly used throughout Tax Engine. Also, it has some library functions available which can be used by any different extension other than Tax Engine to get any value.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2139719",
+  "url": "https://go.microsoft.com/fwlink/?linkid=2139719",
+  "logo": "ExtensionLogo.png",
+  "application": "26.0.0.0",
+  "platform": "26.0.0.0",
+  "dependencies": [
+    {
+      "name": "Tax Engine",
+      "id": "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0",
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997"
+    },
+    {
+      "name": "System Application Test Library",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0",
+      "id": "9856ae4f-d1a7-46ef-89bb-6ef056398228"
+    }
+  ],
+  "idRanges": [
+    {
+      "from": 136700,
+      "to": 136750
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2139719",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  }
 }

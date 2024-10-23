@@ -35,9 +35,6 @@ codeunit 5012 "Service Declaration Mgt."
 
     var
         TransactionTypeCodeNotSpecifiedInLineErr: Label 'A service transaction type code is not specified in the line no. %1 with %2 %3', Comment = '%1 = number of line;%2 = type of the line (item, resource, etc.);%3 = item/resource code';
-#if not CLEAN23
-        FeatureNotEnabledMessageTxt: Label 'The %1 page is part of the new Service Declaration feature, which is not yet enabled in your Business Central. An administrator can enable the feature on the Feature Management page.', Comment = '%1 - page caption';
-#endif        
         ServDeclLbl: Label 'Service Declaration';
         AssistedSetupTxt: Label 'Set up a service declaration';
         AssistedSetupDescriptionTxt: Label 'The Service Declaration it easy to export the servide declaration in the format that the authorities in your country require.';
@@ -156,14 +153,6 @@ codeunit 5012 "Service Declaration Mgt."
         NoSeriesLine.Modify(true);
         exit(NoSeriesCode);
     end;
-
-#if not CLEAN23
-    [Obsolete('This function is not used anymore as the feature is enabled by default', '23.0')]
-    procedure ShowNotEnabledMessage(PageCaption: Text)
-    begin
-        Message(FeatureNotEnabledMessageTxt, PageCaption);
-    end;
-#endif
 
     local procedure IsSalesDocApplicableForServDecl(SalesHeader: Record "Sales Header"): Boolean
     var

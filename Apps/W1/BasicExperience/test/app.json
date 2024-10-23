@@ -1,53 +1,51 @@
 {
-    "id":  "2f6c4641-78af-4832-a8ce-4a55251d033e",
-    "name":  "Basic Experience Tests",
-    "publisher":  "Microsoft",
-    "brief":  "Tests for the Basic Experience extension.",
-    "description":  "Tests for the Basic Experience extension.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=",
-    "contextSensitiveHelpUrl":  "https://AL16.com/help/",
-    "logo":  "logo/ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "0242c240-2336-450f-9678-2f13f4ce9a6e",
-                             "name":  "Basic Experience",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
-                             "name":  "Tests-TestLibraries",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  139502,
-                         "to":  139502
-                     }
-                 ],
-    "target":  "Cloud",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "supportedLocales":  [
-                             "da-DK",
-                             "is-IS",
-                             "en-AU"
-                         ],
-    "features":  [
-                     "TranslationFile"
-                 ]
+  "id": "2f6c4641-78af-4832-a8ce-4a55251d033e",
+  "name": "Basic Experience Tests",
+  "publisher": "Microsoft",
+  "brief": "Tests for the Basic Experience extension.",
+  "description": "Tests for the Basic Experience extension.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=",
+  "help": "https://go.microsoft.com/fwlink/?linkid=",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=",
+  "contextSensitiveHelpUrl": "https://AL16.com/help/",
+  "logo": "logo/ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "0242c240-2336-450f-9678-2f13f4ce9a6e",
+      "name": "Basic Experience",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 139502,
+      "to": 139502
+    }
+  ],
+  "target": "Cloud",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "supportedLocales": [
+    "da-DK",
+    "is-IS",
+    "en-AU"
+  ],
+  "features": [
+    "TranslationFile"
+  ]
 }

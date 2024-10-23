@@ -8,6 +8,8 @@ codeunit 149826 "Extract Info. Accuracy"
 
     var
         Assert: Codeunit Assert;
+        TestUtility: Codeunit "SLS Test Utility";
+        IsInitialized: Boolean;
         ExtractInformationFromCsvFunctionLbl: Label 'extract_information_from_csv';
 
     [Test]
@@ -15,35 +17,33 @@ codeunit 149826 "Extract Info. Accuracy"
     var
         AITTestContext: Codeunit "AIT Test Context";
     begin
-        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetInput().ToText(), ExtractInformationFromCsvFunctionLbl);
+        Initialize();
+        ExecutePromptAndVerifyReturnedJson(AITTestContext.GetQuestion().ValueAsText(), ExtractInformationFromCsvFunctionLbl);
     end;
 
-    internal procedure ExecutePromptAndVerifyReturnedJson(TestInput: Text; ExtractInformationFromCsvFunction: Text)
+    local procedure Initialize()
+    begin
+        if IsInitialized then
+            exit;
+
+        TestUtility.RegisterCopilotCapability();
+
+        IsInitialized := true;
+    end;
+
+    local procedure ExecutePromptAndVerifyReturnedJson(TestInput: Text; ExtractInformationFromCsvFunction: Text)
     var
         AITTestContext: Codeunit "AIT Test Context";
-        TestUtility: Codeunit "SLS Test Utility";
         CallCompletionAnswerTxt: Text;
         UserQuery: Text;
     begin
-        ReadDatasetInput(TestInput, UserQuery);
+        UserQuery := TestInput;
         TestUtility.RepeatAtMost3TimesToFetchCompletionForAttachment(CallCompletionAnswerTxt, UserQuery);
         AITTestContext.SetTestOutput(CallCompletionAnswerTxt);
         CheckReturnedJSONContent(CallCompletionAnswerTxt, ExtractInformationFromCsvFunction);
     end;
 
-    internal procedure ReadDatasetInput(TestInput: Text; var UserQuery: Text)
-    var
-        JsonContent: JsonObject;
-        JsonToken: JsonToken;
-        UserQueryKeyLbl: Label 'user_query', Locked = true;
-    begin
-        JsonContent.ReadFrom(TestInput);
-        JsonContent.Get(UserQueryKeyLbl, JsonToken);
-        UserQuery := JsonToken.AsValue().AsText();
-    end;
-
-    [NonDebuggable]
-    procedure CheckReturnedJSONContent(CompletionAnswerTxt: Text; ExpectedFunctionName: Text)
+    local procedure CheckReturnedJSONContent(CompletionAnswerTxt: Text; ExpectedFunctionName: Text)
     var
         Utility: Codeunit "SLS Test Utility";
         Function: JsonToken;

@@ -307,16 +307,30 @@ codeunit 31102 "VAT Ctrl. Report Mgt. CZL"
                 TempDocumentBudgetBuffer."Dimension Value Code 3" := TempVATEntry."Bill-to/Pay-to No.";
                 TempDocumentBudgetBuffer.Date := TempVATEntry."Posting Date";
                 repeat
-                    if TempGlobalVATEntry."VAT Calculation Type" = TempGlobalVATEntry."VAT Calculation Type"::"Reverse Charge VAT" then
-                        TempDocumentBudgetBuffer.Amount += TempGlobalVATEntry.Base
-                    else
-                        TempDocumentBudgetBuffer.Amount += (TempGlobalVATEntry.Base + TempGlobalVATEntry.Amount);
+                    TempDocumentBudgetBuffer.Amount += GetAmount(TempGlobalVATEntry);
                 until TempGlobalVATEntry.Next() = 0;
                 OnGetDocumentAmountOnBeforeInsertTempDocumentBudgetBuffer(TempVATEntry, TempDocumentBudgetBuffer);
                 TempDocumentBudgetBuffer.Insert();
             end;
         end;
         exit(TempDocumentBudgetBuffer.Amount);
+    end;
+
+    local procedure GetAmount(var TempVATEntry: Record "VAT Entry" temporary): Decimal
+    var
+        Base, Amount : Decimal;
+    begin
+        if GeneralLedgerSetup."Additional Reporting Currency" <> '' then begin
+            Base := TempVATEntry."Additional-Currency Base";
+            Amount := TempVATEntry."Additional-Currency Amount";
+        end else begin
+            Base := TempVATEntry.Base;
+            Amount := TempVATEntry.Amount;
+        end;
+
+        if TempVATEntry."VAT Calculation Type" = TempVATEntry."VAT Calculation Type"::"Reverse Charge VAT" then
+            exit(Base);
+        exit(Base + Amount);
     end;
 
     local procedure IsDocumentWithReverseChargeVAT(DocumentNo: Code[20]; PostingDate: Date): Boolean

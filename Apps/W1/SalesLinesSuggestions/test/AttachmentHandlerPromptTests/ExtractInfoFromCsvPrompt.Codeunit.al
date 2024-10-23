@@ -8,6 +8,8 @@ codeunit 149820 "Extract Info. from csv Prompt"
 
     var
         Assert: Codeunit Assert;
+        TestUtility: Codeunit "SLS Test Utility";
+        IsInitialized: Boolean;
         ExtractInformationFromCsvFunctionLbl: Label 'extract_information_from_csv';
 
     [Test]
@@ -15,13 +17,23 @@ codeunit 149820 "Extract Info. from csv Prompt"
     var
         AITTestContext: Codeunit "AIT Test Context";
     begin
+        Initialize();
         ExecutePromptAndVerifyReturnedJson(AITTestContext.GetInput().ToText(), ExtractInformationFromCsvFunctionLbl);
     end;
 
-    internal procedure ExecutePromptAndVerifyReturnedJson(TestInput: Text; ExtractInformationFromCsvFunction: Text)
+    local procedure Initialize()
+    begin
+        if IsInitialized then
+            exit;
+
+        TestUtility.RegisterCopilotCapability();
+
+        IsInitialized := true;
+    end;
+
+    local procedure ExecutePromptAndVerifyReturnedJson(TestInput: Text; ExtractInformationFromCsvFunction: Text)
     var
         AITTestContext: Codeunit "AIT Test Context";
-        TestUtility: Codeunit "SLS Test Utility";
         CallCompletionAnswerTxt: Text;
         UserQuery: Text;
         ExpectedColumnDelimitor: Text;
@@ -37,13 +49,13 @@ codeunit 149820 "Extract Info. from csv Prompt"
         CheckReturnedJSONContent(CallCompletionAnswerTxt, ExtractInformationFromCsvFunction, ExpectedColumnDelimitor, ExpectedProductInfoColumnIndex, ExpectedQuantityColumnIndex, ExpectedUoMColumnIndex, ExpectedCsVHeaderExists, ExpectedColumnInfo);
     end;
 
-    internal procedure ReadDatasetInput(TestInput: Text; var UserQuery: Text; var ExpectedColumnDelimitor: Text; var ExpectedProductInfoColumnIndex: List of [Integer]; var ExpectedQuantityColumnIndex: Integer; var ExpectedUoMColumnIndex: Integer; var ExpectedCsVHeaderExists: Boolean; var ExpectedColumnInfo: List of [List of [Text]])
+    local procedure ReadDatasetInput(TestInput: Text; var UserQuery: Text; var ExpectedColumnDelimitor: Text; var ExpectedProductInfoColumnIndex: List of [Integer]; var ExpectedQuantityColumnIndex: Integer; var ExpectedUoMColumnIndex: Integer; var ExpectedCsVHeaderExists: Boolean; var ExpectedColumnInfo: List of [List of [Text]])
     var
         JsonContent: JsonObject;
         JsonToken, JsonToken1 : JsonToken;
         JsonArray: JsonArray;
         JsonObject: JsonObject;
-        UserQueryKeyLbl: Label 'user_query', Locked = true;
+        UserQueryKeyLbl: Label 'question', Locked = true;
         ExpectedColumnIdentifierKeyLbl: Label 'ExpectedColumnIdentifier', Locked = true;
         ExpectedProductInfoColumnIndexKeyLbl: Label 'ExpectedProductInfoColumnIndex', Locked = true;
         ExpectedQuantityColumnIndexKeyLbl: Label 'ExpectedQuantityColumnIndex', Locked = true;

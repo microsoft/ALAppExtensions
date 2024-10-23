@@ -127,7 +127,7 @@ codeunit 139628 "E-Doc. Receive Test"
         BindSubscription(EDocImplState);
 
         // [GIVEN] e-Document service to receive one single purchase invoice
-        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"E-Document Integration"::"Mock V2");
+        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService);
         LibraryPurchase.CreateVendorWithVATRegNo(Vendor);
         LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 1);
 
@@ -224,7 +224,7 @@ codeunit 139628 "E-Doc. Receive Test"
         BindSubscription(EDocImplState);
 
         // [GIVEN] e-Document service to receive one single purchase invoice
-        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"E-Document Integration"::"Mock V2");
+        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService);
         LibraryPurchase.CreateVendorWithVATRegNo(Vendor);
 
         // Setup correct vendor VAT and Item Ref to process document 
@@ -327,7 +327,7 @@ codeunit 139628 "E-Doc. Receive Test"
         BindSubscription(EDocImplState);
 
         // [GIVEN] e-Document service to receive one single purchase invoice
-        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService, Enum::"E-Document Integration"::"Mock V2");
+        LibraryEDoc.CreateTestReceiveServiceForEDoc(EDocService);
         LibraryPurchase.CreateVendorWithVATRegNo(Vendor);
         LibraryERM.CreateVATPostingSetupWithAccounts(VATPostingSetup, Enum::"Tax Calculation Type"::"Normal VAT", 1);
 

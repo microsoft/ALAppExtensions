@@ -1,24 +1,54 @@
 namespace Microsoft.Bank.Reconciliation;
 
 using System.AI;
-using System.Environment;
+using Microsoft.Finance.GeneralLedger.Journal;
 using System.Telemetry;
 
 pageextension 7253 BankAccReconciliationExt extends "Bank Acc. Reconciliation"
 {
     actions
     {
-        addafter("Transfer to General Journal")
+        addfirst(Prompting)
         {
-            action("Transfer to G/L Account")
+            action("Match With Copilot")
             {
                 ApplicationArea = All;
-                Caption = 'Post Difference to G/L Account';
+                Caption = 'Reconcile';
+                ToolTip = 'Match statement lines with the assistance of Copilot';
+                Visible = CopilotActionsVisible;
+                Enabled = CopilotActionsVisible;
 #pragma warning disable AL0482
                 Image = SparkleFilled;
 #pragma warning restore AL0482
+
+                trigger OnAction()
+                var
+                    MatchBankRecLines: Codeunit "Match Bank Rec. Lines";
+                    FeatureTelemetry: Codeunit "Feature Telemetry";
+                    BankRecAIMatchingImpl: Codeunit "Bank Rec. AI Matching Impl.";
+                    AzureOpenAI: Codeunit "Azure OpenAI";
+                begin
+                    BankRecAIMatchingImpl.RegisterCapability();
+
+                    if not AzureOpenAI.IsEnabled(Enum::"Copilot Capability"::"Bank Account Reconciliation") then
+                        exit;
+
+                    FeatureTelemetry.LogUptake('0000LF2', BankRecAIMatchingImpl.FeatureName(), Enum::"Feature Uptake Status"::Discovered);
+                    FeatureTelemetry.LogUptake('0000LF3', BankRecAIMatchingImpl.FeatureName(), Enum::"Feature Uptake Status"::"Set up");
+                    MatchBankRecLines.BankAccReconciliationAutoMatch(Rec, 1, true, false);
+                end;
+            }
+
+            action("Transfer to G/L Account")
+            {
+                ApplicationArea = All;
+                Caption = 'Post difference to G/L account';
                 ToolTip = 'Find suitable G/L Accounts for selected statement lines, post their differences as new payments and reconcile statement lines with the new payments';
                 Visible = CopilotActionsVisible;
+                Enabled = CopilotActionsVisible;
+#pragma warning disable AL0482
+                Image = SparkleFilled;
+#pragma warning restore AL0482
 
                 trigger OnAction()
                 var
@@ -26,9 +56,12 @@ pageextension 7253 BankAccReconciliationExt extends "Bank Acc. Reconciliation"
                     BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line";
                     BankAccReconciliation: Record "Bank Acc. Reconciliation";
                     TempBankAccRecAIProposal: Record "Bank Acc. Rec. AI Proposal" temporary;
+                    TransToGLAccountBatch: Record "Trans. to G/L Acc. Jnl. Batch";
+                    GenJournalBatch: Record "Gen. Journal Batch";
                     FeatureTelemetry: Codeunit "Feature Telemetry";
                     BankRecAIMatchingImpl: Codeunit "Bank Rec. AI Matching Impl.";
                     AzureOpenAI: Codeunit "Azure OpenAI";
+                    GenJnlManagement: Codeunit GenJnlManagement;
                     TransToGLAccAIProposal: Page "Trans. To GL Acc. AI Proposal";
                     LineNoFilter: Text;
                 begin
@@ -89,62 +122,51 @@ pageextension 7253 BankAccReconciliationExt extends "Bank Acc. Reconciliation"
                         TransToGLAccAIProposal.LookupMode(true);
                         if TransToGLAccAIProposal.RunModal() = Action::OK then
                             CurrPage.Update();
+
+                        if TransToGLAccountBatch.FindFirst() then
+                            if TransToGLAccountBatch."Open Journal Batch" then
+                                if GenJournalBatch.Get(TransToGLAccountBatch."Journal Template Name", TransToGLAccountBatch."Journal Batch Name") then
+                                    GenJnlManagement.TemplateSelectionFromBatch(GenJournalBatch);
                     end;
                 end;
             }
         }
-        addafter(MatchAutomatically)
-        {
-            action("Match With Copilot")
-            {
-                ApplicationArea = All;
-                Caption = 'Reconcile with Copilot';
-#pragma warning disable AL0482
-                Image = SparkleFilled;
-#pragma warning restore AL0482
-                ToolTip = 'Match statement lines with the assistance of Copilot';
-                Visible = CopilotActionsVisible;
-
-                trigger OnAction()
-                var
-                    MatchBankRecLines: Codeunit "Match Bank Rec. Lines";
-                    FeatureTelemetry: Codeunit "Feature Telemetry";
-                    BankRecAIMatchingImpl: Codeunit "Bank Rec. AI Matching Impl.";
-                    AzureOpenAI: Codeunit "Azure OpenAI";
-                begin
-                    BankRecAIMatchingImpl.RegisterCapability();
-
-                    if not AzureOpenAI.IsEnabled(Enum::"Copilot Capability"::"Bank Account Reconciliation") then
-                        exit;
-
-                    FeatureTelemetry.LogUptake('0000LF2', BankRecAIMatchingImpl.FeatureName(), Enum::"Feature Uptake Status"::Discovered);
-                    FeatureTelemetry.LogUptake('0000LF3', BankRecAIMatchingImpl.FeatureName(), Enum::"Feature Uptake Status"::"Set up");
-                    MatchBankRecLines.BankAccReconciliationAutoMatch(Rec, 1, true, false);
-                end;
-            }
-        }
+#if not CLEAN25
         addbefore("Transfer to General Journal_Promoted")
         {
             actionref("Match With Copilot_Promoted"; "Match With Copilot")
             {
+                Visible = false;
+                ObsoleteReason = 'Actions no longer promoted, but shown in the Prompting area';
+                ObsoleteState = Pending;
+                ObsoleteTag = '25.0';
             }
             actionref("Transfer to G/L Account_Promoted"; "Transfer to G/L Account")
             {
+                Visible = false;
+                ObsoleteReason = 'Actions no longer promoted, but shown in the Prompting area';
+                ObsoleteState = Pending;
+                ObsoleteTag = '25.0';
             }
         }
         addbefore(MatchAutomatically_Promoted)
         {
             actionref("Match With Copilot_Promoted2"; "Match With Copilot")
             {
+                Visible = false;
+                ObsoleteReason = 'Actions no longer promoted, but shown in the Prompting area';
+                ObsoleteState = Pending;
+                ObsoleteTag = '25.0';
             }
         }
+#endif
     }
 
     trigger OnOpenPage()
     var
-        EnvironmentInformation: Codeunit "Environment Information";
+        CopilotCapability: Codeunit "Copilot Capability";
     begin
-        CopilotActionsVisible := EnvironmentInformation.IsSaaSInfrastructure();
+        CopilotActionsVisible := CopilotCapability.IsCapabilityRegistered(Enum::"Copilot Capability"::"Bank Account Reconciliation");
     end;
 
     var

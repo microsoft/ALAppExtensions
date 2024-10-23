@@ -121,7 +121,7 @@ codeunit 30290 "Shpfy Catalog API"
         VariantIdTxt: Label 'gid://shopify/ProductVariant/%1', Locked = true, Comment = '%1 = The product variant Id';
     begin
         JSetPrice.Add('variantId', StrSubstNo(VariantIdTxt, TempCatalogPrice."Variant Id"));
-        if TempCatalogPrice.Price <> Price then begin
+        if (TempCatalogPrice.Price <> Price) or (TempCatalogPrice."Compare at Price" <> CompareAtPrice) then begin
             HasChange := true;
             JPrice.Add('amount', Format(Price, 0, 9));
             JPrice.Add('currencyCode', TempCatalogPrice."Price List Currency");

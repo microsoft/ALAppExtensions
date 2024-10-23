@@ -948,16 +948,6 @@ report 11971 "Calc. and Post VAT Settl. CZL"
                     TaxJurisdiction.TestField("Tax Account (Sales)");
         end;
     end;
-#if not CLEAN23
-    [Obsolete('Replaced by GetVATAccountNo function with TaxJurisdiction parameter.', '23.0')]
-    procedure GetVATAccountNo(VATEntry: Record "VAT Entry"; VATPostingSetup: Record "VAT Posting Setup"): Code[20]
-    var
-        TaxJurisdiction: Record "Tax Jurisdiction";
-    begin
-        TaxJurisdiction.Get(VATEntry."Tax Jurisdiction Code");
-        exit(GetVATAccountNo(VATEntry, VATPostingSetup, TaxJurisdiction));
-    end;
-#endif
 
     procedure GetVATAccountNo(VATEntry: Record "VAT Entry"; VATPostingSetup: Record "VAT Posting Setup"; TaxJurisdiction: Record "Tax Jurisdiction"): Code[20]
     var

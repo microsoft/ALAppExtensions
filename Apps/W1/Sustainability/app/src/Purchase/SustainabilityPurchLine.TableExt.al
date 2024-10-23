@@ -3,6 +3,7 @@ namespace Microsoft.Sustainability.Purchase;
 using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Setup;
 using Microsoft.Purchases.Document;
+using Microsoft.Inventory.Item;
 
 tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
 {
@@ -18,6 +19,7 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
             var
                 SustainabilityAccount: Record "Sustainability Account";
             begin
+                Rec.TestStatusOpen();
                 if Rec."Sust. Account No." <> xRec."Sust. Account No." then
                     ClearEmissionInformation(Rec);
 
@@ -37,6 +39,9 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
                 end;
 
                 CreateDimFromDefaultDim(FieldNo(Rec."Sust. Account No."));
+
+                if Rec.Type = Rec.Type::Item then
+                    UpdateCarbonCreditInformation();
             end;
         }
         field(6211; "Sust. Account Name"; Text[100])
@@ -88,7 +93,6 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
                     ValidateEmissionPrerequisite(Rec, Rec.FieldNo("Emission CO2 Per Unit"));
 
                 UpdateSustainabilityEmission(Rec);
-                ValidateWithPostedEmission(Rec);
             end;
         }
         field(6215; "Emission CH4 Per Unit"; Decimal)
@@ -104,7 +108,6 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
                     ValidateEmissionPrerequisite(Rec, Rec.FieldNo("Emission CH4 Per Unit"));
 
                 UpdateSustainabilityEmission(Rec);
-                ValidateWithPostedEmission(Rec);
             end;
         }
         field(6216; "Emission N2O Per Unit"; Decimal)
@@ -120,7 +123,6 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
                     ValidateEmissionPrerequisite(Rec, Rec.FieldNo("Emission N2O Per Unit"));
 
                 UpdateSustainabilityEmission(Rec);
-                ValidateWithPostedEmission(Rec);
             end;
         }
         field(6217; "Emission CO2"; Decimal)
@@ -134,6 +136,9 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
             begin
                 if Rec."Emission CO2" <> 0 then
                     ValidateEmissionPrerequisite(Rec, Rec.FieldNo("Emission CO2"));
+
+                if CurrFieldNo <> Rec.FieldNo("Emission CH4 Per Unit") then
+                    UpdateEmissionPerUnit(Rec);
             end;
         }
         field(6218; "Emission CH4"; Decimal)
@@ -147,6 +152,8 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
             begin
                 if Rec."Emission CH4" <> 0 then
                     ValidateEmissionPrerequisite(Rec, Rec.FieldNo("Emission CH4"));
+
+                UpdateEmissionPerUnit(Rec);
             end;
         }
         field(6219; "Emission N2O"; Decimal)
@@ -160,6 +167,8 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
             begin
                 if Rec."Emission N2O" <> 0 then
                     ValidateEmissionPrerequisite(Rec, Rec.FieldNo("Emission N2O"));
+
+                UpdateEmissionPerUnit(Rec);
             end;
         }
         field(6220; "Posted Emission CO2"; Decimal)
@@ -208,9 +217,31 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
 
     procedure UpdateSustainabilityEmission(var PurchLine: Record "Purchase Line")
     begin
-        PurchLine.Validate("Emission CO2", PurchLine."Emission CO2 Per Unit" * PurchLine."Qty. per Unit of Measure");
-        PurchLine.Validate("Emission CH4", PurchLine."Emission CH4 Per Unit" * PurchLine."Qty. per Unit of Measure");
-        PurchLine.Validate("Emission N2O", PurchLine."Emission N2O Per Unit" * PurchLine."Qty. per Unit of Measure");
+        PurchLine."Emission CO2" := PurchLine."Emission CO2 Per Unit" * PurchLine."Qty. per Unit of Measure" * PurchLine."Qty. to Invoice";
+        PurchLine."Emission CH4" := PurchLine."Emission CH4 Per Unit" * PurchLine."Qty. per Unit of Measure" * PurchLine."Qty. to Invoice";
+        PurchLine."Emission N2O" := PurchLine."Emission N2O Per Unit" * PurchLine."Qty. per Unit of Measure" * PurchLine."Qty. to Invoice";
+    end;
+
+    procedure UpdateEmissionPerUnit(var PurchLine: Record "Purchase Line")
+    var
+        Denominator: Decimal;
+    begin
+        PurchLine."Emission CO2 Per Unit" := 0;
+        PurchLine."Emission CH4 Per Unit" := 0;
+        PurchLine."Emission N2O Per Unit" := 0;
+
+        if (PurchLine."Qty. per Unit of Measure" = 0) or (PurchLine."Qty. to Invoice" = 0) then
+            exit;
+
+        Denominator := PurchLine."Qty. per Unit of Measure" * PurchLine."Qty. to Invoice";
+        if PurchLine."Emission CO2" <> 0 then
+            PurchLine."Emission CO2 Per Unit" := PurchLine."Emission CO2" / Denominator;
+
+        if PurchLine."Emission CH4" <> 0 then
+            PurchLine."Emission CH4 Per Unit" := PurchLine."Emission CH4" / Denominator;
+
+        if PurchLine."Emission N2O" <> 0 then
+            PurchLine."Emission N2O Per Unit" := PurchLine."Emission N2O" / Denominator;
     end;
 
     local procedure ClearEmissionInformation(var PurchLine: Record "Purchase Line")
@@ -221,11 +252,25 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
     end;
 
     local procedure ValidateEmissionPrerequisite(PurchaseLine: Record "Purchase Line"; CurrentFieldNo: Integer)
+    var
+        Item: Record Item;
     begin
         case CurrentFieldNo of
-            PurchaseLine.FieldNo("Emission CO2 Per Unit"),
-            PurchaseLine.FieldNo("Emission CH4 Per Unit"),
-            PurchaseLine.FieldNo("Emission N2O Per Unit"):
+            PurchaseLine.FieldNo("Emission N2O"),
+            PurchaseLine.FieldNo("Emission N2O Per Unit"),
+            PurchaseLine.FieldNo("Emission CH4"),
+            PurchaseLine.FieldNo("Emission CH4 Per Unit"):
+                begin
+                    PurchaseLine.TestField("Sust. Account No.");
+
+                    if (PurchaseLine.Type = PurchaseLine.Type::Item) and (PurchaseLine."No." <> '') then begin
+                        Item.Get(PurchaseLine."No.");
+                        if Item."GHG Credit" then
+                            Item.TestField("GHG Credit", false);
+                    end;
+                end;
+            PurchaseLine.FieldNo("Emission CO2"),
+            PurchaseLine.FieldNo("Emission CO2 Per Unit"):
                 PurchaseLine.TestField("Sust. Account No.");
             PurchaseLine.FieldNo("Sust. Account No."),
             PurchaseLine.FieldNo("Sust. Account Category"),
@@ -239,20 +284,20 @@ tableextension 6211 "Sustainability Purch. Line" extends "Purchase Line"
         end;
     end;
 
-    local procedure ValidateWithPostedEmission(PurchLine: Record "Purchase Line")
+    local procedure UpdateCarbonCreditInformation()
+    var
+        Item: Record Item;
     begin
-        if (PurchLine."Posted Emission CO2" <> 0) and (PurchLine."Posted Emission CO2" < PurchLine."Emission CO2") then
-            Error(EmissionShouldNotBeLessThanPostedErr, PurchLine."Emission CO2", PurchLine."Posted Emission CO2", PurchLine."Document Type", PurchLine."Document No.", PurchLine."Line No.");
+        if not Item.Get(Rec."No.") then
+            exit;
 
-        if (PurchLine."Posted Emission CH4" <> 0) and (PurchLine."Posted Emission CH4" < PurchLine."Emission CH4") then
-            Error(EmissionShouldNotBeLessThanPostedErr, PurchLine."Emission CH4", PurchLine."Posted Emission CH4", PurchLine."Document Type", PurchLine."Document No.", PurchLine."Line No.");
+        if not Item."GHG Credit" then
+            exit;
 
-        if (PurchLine."Posted Emission N2O" <> 0) and (PurchLine."Posted Emission N2O" < PurchLine."Emission N2O") then
-            Error(EmissionShouldNotBeLessThanPostedErr, PurchLine."Emission N2O", PurchLine."Posted Emission N2O", PurchLine."Document Type", PurchLine."Document No.", PurchLine."Line No.");
+        Rec.Validate("Emission CO2 Per Unit", Item."Carbon Credit Per UOM");
     end;
 
     var
         SustainabilitySetup: Record "Sustainability Setup";
         InvalidTypeForSustErr: Label 'Sustainability is only applicable for Type: %1 or %2.', Comment = '%1 - Purchase Line Type Item, %2 - Purchase Line Type G/L Account';
-        EmissionShouldNotBeLessThanPostedErr: Label '%1 should not be less than %2 in Purchase Line : Document Type : %3, Document No. : %4, Line No. : %5', Comment = '%1 - Emission Field Name, %2 Emission Value, %3 - Document Type, %4 - Document No., %5 - Line No.';
 }

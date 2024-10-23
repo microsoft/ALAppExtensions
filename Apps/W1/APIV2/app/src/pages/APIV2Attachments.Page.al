@@ -33,7 +33,6 @@ page 30039 "APIV2 - Attachments"
                 field(parentId; Rec."Document Id")
                 {
                     Caption = 'Parent Id';
-                    ShowMandatory = true;
                 }
                 field(fileName; Rec."File Name")
                 {
@@ -89,7 +88,10 @@ page 30039 "APIV2 - Attachments"
 
     trigger OnDeleteRecord(): Boolean
     begin
-        GraphMgtAttachmentBuffer.PropagateDeleteAttachmentWithDocumentType(Rec);
+        if not IsNullGuid(Rec."Document Id") then
+            GraphMgtAttachmentBuffer.PropagateDeleteAttachmentWithDocumentType(Rec)
+        else
+            GraphMgtAttachmentBuffer.PropagateDeleteAttachmentWithoutDocumentType(Rec);
         exit(false);
     end;
 
@@ -108,13 +110,16 @@ page 30039 "APIV2 - Attachments"
             AttachmentIdFilter := Rec.GetFilter(Id);
             if (AttachmentIdFilter <> '') and ((DocumentIdFilter = '') or (DocumentTypeFilter = '')) then begin
                 DocumentId := GraphMgtAttachmentBuffer.GetDocumentIdFromAttachmentId(AttachmentIdFilter);
-                DocumentTypeFilter := Format(GraphMgtAttachmentBuffer.GetDocumentTypeFromAttachmentIdAndDocumentId(AttachmentIdFilter, DocumentId));
-                DocumentIdFilter := Format(DocumentId);
+                if not IsNullGuid(DocumentId) then begin
+                    DocumentTypeFilter := Format(GraphMgtAttachmentBuffer.GetDocumentTypeFromAttachmentIdAndDocumentId(AttachmentIdFilter, DocumentId));
+                    DocumentIdFilter := Format(DocumentId);
+                end;
             end;
-            if DocumentIdFilter = '' then
-                Error(MissingParentIdErr);
+            if DocumentIdFilter <> '' then
+                GraphMgtAttachmentBuffer.LoadAttachmentsWithDocumentType(Rec, DocumentIdFilter, AttachmentIdFilter, DocumentTypeFilter)
+            else
+                GraphMgtAttachmentBuffer.LoadAttachmentsWithoutDocumentType(Rec, AttachmentIdFilter);
 
-            GraphMgtAttachmentBuffer.LoadAttachmentsWithDocumentType(Rec, DocumentIdFilter, AttachmentIdFilter, DocumentTypeFilter);
             Rec.SetView(FilterView);
             AttachmentsFound := Rec.FindFirst();
             if not AttachmentsFound then
@@ -143,8 +148,6 @@ page 30039 "APIV2 - Attachments"
             end;
             Rec.SetView(FilterView);
         end;
-        if IsNullGuid(Rec."Document Id") then
-            Error(MissingParentIdErr);
 
         if not FileManagement.IsValidFileName(Rec."File Name") then
             Rec.Validate("File Name", 'filename.txt');
@@ -154,7 +157,10 @@ page 30039 "APIV2 - Attachments"
 
         ByteSizeFromContent();
 
-        GraphMgtAttachmentBuffer.PropagateInsertAttachmentSafeWithDocumentType(Rec, TempFieldBuffer);
+        if not IsNullGuid(Rec."Document Id") then
+            GraphMgtAttachmentBuffer.PropagateInsertAttachmentSafeWithDocumentType(Rec, TempFieldBuffer)
+        else
+            GraphMgtAttachmentBuffer.PropagateInsertAttachmentSafeWithoutDocumentType(Rec, TempFieldBuffer);
 
         exit(false);
     end;
@@ -168,7 +174,11 @@ page 30039 "APIV2 - Attachments"
         if xRec."Document Type" <> Rec."Document Type" then
             Error(CannotModifyKeyFieldErr, 'parentType');
 
-        GraphMgtAttachmentBuffer.PropagateModifyAttachmentWithDocumentType(Rec, TempFieldBuffer);
+        if not IsNullGuid(Rec."Document Id") then
+            GraphMgtAttachmentBuffer.PropagateModifyAttachmentWithDocumentType(Rec, TempFieldBuffer)
+        else
+            GraphMgtAttachmentBuffer.PropagateModifyAttachmentWithoutDocumentType(Rec, TempFieldBuffer);
+
         ByteSizeFromContent();
         exit(false);
     end;
@@ -178,7 +188,6 @@ page 30039 "APIV2 - Attachments"
         GraphMgtAttachmentBuffer: Codeunit "Graph Mgt - Attachment Buffer";
         AttachmentsLoaded: Boolean;
         AttachmentsFound: Boolean;
-        MissingParentIdErr: Label 'You must specify a parentId in the request body.';
         CannotModifyKeyFieldErr: Label 'You cannot change the value of the key field %1.', Comment = '%1 = Field name';
         ParentTypeNotSupportedErr: Label 'Parent type %1 is not supported. Use documentAttachments API instead.', Comment = '%1 = Parent type';
 

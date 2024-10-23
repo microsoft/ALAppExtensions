@@ -338,6 +338,7 @@ codeunit 31155 "Cash Doc. Alloc. Acc. Mgt. CZP"
     begin
         CashDocumentLineCZP.TransferFields(AllocationCashDocumentLineCZP, true);
         CashDocumentLineCZP."Line No." := LastLineNo + Increment;
+        CashDocumentLineCZP."Cash Desk Event" := '';
         CashDocumentLineCZP."Account Type" := CashDocumentLineCZP."Account Type"::"G/L Account";
         CashDocumentLineCZP.Validate("Account No.", AllocationLine."Destination Account Number");
         if AllocationCashDocumentLineCZP."VAT Bus. Posting Group" <> '' then

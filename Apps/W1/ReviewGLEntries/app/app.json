@@ -1,36 +1,32 @@
 {
-    "id":  "87990153-0e35-4e5d-ba61-2e93077d1699",
-    "name":  "Review General Ledger Entries",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Review General Ledger Entries",
-    "description":  "Exclude Review General Ledger Entries",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2206176",
-    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "features":  [
-                     "NoImplicitWith"
-                 ],
-    "idRanges":  [
-                     {
-                         "from":  22200,
-                         "to":  22220
-                     }
-                 ]
+  "id": "87990153-0e35-4e5d-ba61-2e93077d1699",
+  "name": "Review General Ledger Entries",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Review General Ledger Entries",
+  "description": "Exclude Review General Ledger Entries",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2206176",
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/dynamics365/business-central/",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "features": [
+    "NoImplicitWith"
+  ],
+  "idRanges": [
+    {
+      "from": 22200,
+      "to": 22220
+    }
+  ]
 }

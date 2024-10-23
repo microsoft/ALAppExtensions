@@ -23,18 +23,6 @@ pageextension 11768 "Vendor List CZL" extends "Vendor List"
                 ApplicationArea = Basic, Suite;
                 ToolTip = 'Specifies the registration number of vendor.';
             }
-#if not CLEAN23
-            field("Registration No. CZL"; Rec."Registration No. CZL")
-            {
-                Caption = 'Registration No. (Obsolete)';
-                ApplicationArea = Basic, Suite;
-                ToolTip = 'Specifies the registration number of vendor.';
-                Visible = false;
-                ObsoleteState = Pending;
-                ObsoleteTag = '23.0';
-                ObsoleteReason = 'Replaced by standard "Registration Number" field.';
-            }
-#endif
         }
     }
 

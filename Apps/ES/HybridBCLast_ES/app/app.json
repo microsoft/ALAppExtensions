@@ -1,39 +1,37 @@
 {
-    "id":  "6babad6a-c6b1-4842-b3e2-50c3db9085d7",
-    "name":  "Business Central Cloud Migration - Previous Release (ES)",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Enables data migration from the previous version of Dynamics BC (n-1) to the current release of Dynamics 365 Business Central SaaS.",
-    "description":  "This extension, in conjuction with the Business Central Cloud Migration Previous Release, will enable you to migrate data from your Business Central on-premises solution for Spain to your Dynamics 365 Business Central cloud tenant for Spain. This extension is required to update country specific tables. Once you have walked through the cloud migration wizard in assisted setup, you will be able to migrate your data from your on-premises environment to your cloud tenant.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=834880",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2013440",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2115702",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "publisher":  "Microsoft",
-                             "name":  "Intelligent Cloud Base",
-                             "version":  "25.0.0.0",
-                             "id":  "58623bfa-0559-4bc2-ae1c-0979c29fd9e0"
-                         },
-                         {
-                             "publisher":  "Microsoft",
-                             "name":  "Business Central Cloud Migration - Previous Release",
-                             "version":  "25.0.0.0",
-                             "id":  "6992416f-3f39-4d3c-8242-3fff61350bea"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "OnPrem",
-    "application":  "25.0.0.0"
+  "id": "6babad6a-c6b1-4842-b3e2-50c3db9085d7",
+  "name": "Business Central Cloud Migration - Previous Release (ES)",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Enables data migration from the previous version of Dynamics BC (n-1) to the current release of Dynamics 365 Business Central SaaS.",
+  "description": "This extension, in conjuction with the Business Central Cloud Migration Previous Release, will enable you to migrate data from your Business Central on-premises solution for Spain to your Dynamics 365 Business Central cloud tenant for Spain. This extension is required to update country specific tables. Once you have walked through the cloud migration wizard in assisted setup, you will be able to migrate your data from your on-premises environment to your cloud tenant.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=834880",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2013440",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2115702",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "publisher": "Microsoft",
+      "name": "Intelligent Cloud Base",
+      "version": "26.0.0.0",
+      "id": "58623bfa-0559-4bc2-ae1c-0979c29fd9e0"
+    },
+    {
+      "publisher": "Microsoft",
+      "name": "Business Central Cloud Migration - Previous Release",
+      "version": "26.0.0.0",
+      "id": "6992416f-3f39-4d3c-8242-3fff61350bea"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "OnPrem",
+  "application": "26.0.0.0"
 }

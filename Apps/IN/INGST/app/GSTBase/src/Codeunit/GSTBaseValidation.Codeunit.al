@@ -665,8 +665,13 @@ codeunit 18001 "GST Base Validation"
     var
         TaxTransactionValue: Record "Tax Transaction Value";
     begin
+        if (GenJnlLine."TDS Section Code" = '') or (not GenJnlLine."Provisional Entry") then
+            exit;
+
+        TaxTransactionValue.SetLoadFields("Tax Record ID", "Tax Type");
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
         TaxTransactionValue.SetRange("Tax Record ID", GenJnlLine.RecordId);
-        if (GenJnlLine."TDS Section Code" = '') or (not GenJnlLine."Provisional Entry") or (TaxTransactionValue.IsEmpty) then
+        if TaxTransactionValue.IsEmpty then
             exit;
 
         GenJnlLine.TestField("GST Group Code", '');

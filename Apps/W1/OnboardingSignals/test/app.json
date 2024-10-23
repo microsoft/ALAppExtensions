@@ -1,54 +1,52 @@
 {
-    "id":  "b0189501-269d-460e-bf1d-38a7bc5e5deb",
-    "name":  "_Exclude_Onboarding Signals Tests",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Tests for first party Onboarding Signals",
-    "description":  "Tests for Microsoft Onboarding Signals and Providing an example how Onboarding Signals can be tested.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2219800",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2219800",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "672777d5-ab26-4369-b334-6f04256efffd",
-                             "name":  "_Exclude_Onboarding Signals",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
-                             "name":  "Tests-TestLibraries",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "9856ae4f-d1a7-46ef-89bb-6ef056398228",
-                             "name":  "System Application Test Library",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  139536,
-                         "to":  139539
-                     }
-                 ],
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "features":  [
-                     "NoImplicitWith"
-                 ]
+  "id": "b0189501-269d-460e-bf1d-38a7bc5e5deb",
+  "name": "_Exclude_Onboarding Signals Tests",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Tests for first party Onboarding Signals",
+  "description": "Tests for Microsoft Onboarding Signals and Providing an example how Onboarding Signals can be tested.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2219800",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2219800",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "672777d5-ab26-4369-b334-6f04256efffd",
+      "name": "_Exclude_Onboarding Signals",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "9856ae4f-d1a7-46ef-89bb-6ef056398228",
+      "name": "System Application Test Library",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 139536,
+      "to": 139539
+    }
+  ],
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "features": [
+    "NoImplicitWith"
+  ]
 }

@@ -33,6 +33,5 @@
     "includeSourceInSymbolFile": true
   },
   "application": "26.0.0.0",
-  "target": "OnPrem",
-  "preprocessorSymbols": [""]
+  "target": "OnPrem"
 }

@@ -1,34 +1,30 @@
 {
-    "id":  "ea130081-c669-460f-a5f4-5dde14f03131",
-    "name":  "Statistical Accounts",
-    "publisher":  "Microsoft",
-    "brief":  "Statistical Accounts lets you hold measures for use in Financial reporting to create reports with KPIs based on non-financial data.",
-    "description":  "When reporting on your Business Central data through financial Reporting you often want to add non-financial data to the reports, for KPI for comparisons etc. Statistical Accounts improve analyses and progress tracking by letting you hold number-based statistical measures in a separate ledger. For example, you might want track square meters in your buildings for KPIs on rental expenses, or number of full-time employees, for metrics such as revenue or costs per employee. You set up new accounts in Statistical Accounts, and register values in Statistical Accounts Journals. The accounts can be used in Row definitions in Financial Reporting to create new insights on your business.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206520",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2206520",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  1,
-                         "to":  9999
-                     }
-                 ],
-    "target":  "Cloud",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "ea130081-c669-460f-a5f4-5dde14f03131",
+  "name": "Statistical Accounts",
+  "publisher": "Microsoft",
+  "brief": "Statistical Accounts lets you hold measures for use in Financial reporting to create reports with KPIs based on non-financial data.",
+  "description": "When reporting on your Business Central data through financial Reporting you often want to add non-financial data to the reports, for KPI for comparisons etc. Statistical Accounts improve analyses and progress tracking by letting you hold number-based statistical measures in a separate ledger. For example, you might want track square meters in your buildings for KPIs on rental expenses, or number of full-time employees, for metrics such as revenue or costs per employee. You set up new accounts in Statistical Accounts, and register values in Statistical Accounts Journals. The accounts can be used in Row definitions in Financial Reporting to create new insights on your business.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2206520",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2206520",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 1,
+      "to": 9999
+    }
+  ],
+  "target": "Cloud",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

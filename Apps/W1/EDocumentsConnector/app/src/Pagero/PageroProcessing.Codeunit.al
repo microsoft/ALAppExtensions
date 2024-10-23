@@ -540,9 +540,9 @@ codeunit 6369 "Pagero Processing"
 
             if Value = 'Received' then begin
                 TempNameValueBuffer.Init();
-                TempNameValueBuffer.Name := DocumentId;
-                TempNameValueBuffer.Value := DocumentNo;
-                TempNameValueBuffer."Value Long" := Status;
+                TempNameValueBuffer.Name := CopyStr(DocumentId, 1, 250);
+                TempNameValueBuffer.Value := CopyStr(DocumentNo, 1, 250);
+                TempNameValueBuffer."Value Long" := CopyStr(Status, 1, 2048);
                 TempNameValueBuffer.Insert();
             end;
         end;
@@ -606,6 +606,9 @@ codeunit 6369 "Pagero Processing"
         DocumentOutStream: OutStream;
         ContentData, DocumentId, FileId : Text;
     begin
+        if EDocumentService."Service Integration" <> EDocumentService."Service Integration"::Pagero then
+            exit;
+
         HttpResponse.Content.ReadAs(ContentData);
         if not ParseReceivedDocument(ContentData, EDocument."Index In Batch", DocumentId, FileId) then begin
             EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, DocumentIdNotFoundErr);

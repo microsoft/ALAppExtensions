@@ -11,6 +11,7 @@ using System.Telemetry;
 using System.Threading;
 using Microsoft.Integration.D365Sales;
 using Microsoft.Projects.Project.Journal;
+using System.Environment;
 
 page 6612 "FS Connection Setup"
 {
@@ -126,6 +127,12 @@ page 6612 "FS Connection Setup"
                     ApplicationArea = Suite;
                     ShowMandatory = true;
                     ToolTip = 'Specifies the unit of measure that corresponds to the ''hour'' unit that is used on Dynamics 365 Field Service bookable resources.';
+                }
+                field("Enable Invt. Availability"; Rec."Enable Invt. Availability")
+                {
+                    ApplicationArea = Suite;
+                    Enabled = VirtualTableAppInstalled;
+                    ToolTip = 'Specifies if the Field Service users will be able to pull information about inventory availability by location from Business Central. This is available only if Virtual Table app is installed.';
                 }
             }
             group(SynchSettings)
@@ -393,6 +400,11 @@ page 6612 "FS Connection Setup"
                 if Rec."Disable Reason" <> '' then
                     CRMIntegrationManagement.SendConnectionDisabledNotification(Rec."Disable Reason");
         end;
+
+        if EnvironmentInfo.IsSaaSInfrastructure() then begin
+            VirtualTableAppInstalled := Rec.IsVirtualTablesAppInstalled();
+            Rec.SetupVirtualTables(VirtualTableAppInstalled);
+        end;
     end;
 
     trigger OnQueryClosePage(CloseAction: Action): Boolean
@@ -414,6 +426,7 @@ page 6612 "FS Connection Setup"
 
     var
         CRMProductName: Codeunit "CRM Product Name";
+        EnvironmentInfo: Codeunit "Environment Information";
         ResetIntegrationTableMappingConfirmQst: Label 'This will restore the default integration table mappings and synchronization jobs for %1. All custom mappings and jobs will be deleted. The default mappings and jobs will be used the next time data is synchronized. Do you want to continue?', Comment = '%1 = CRM product name';
         ResetOneIntegrationTableMappingConfirmQst: Label 'This will restore the default integration table mappings and synchronization jobs for %1. Do you want to continue?', Comment = '%1 = CRM product name';
         UnfavorableCRMSolutionInstalledMsg: Label 'The %1 Integration Solution was not detected.', Comment = '%1 - product name';
@@ -437,6 +450,7 @@ page 6612 "FS Connection Setup"
         IsEditable: Boolean;
         IsCdsIntegrationEnabled: Boolean;
         CRMVersionStatus: Boolean;
+        VirtualTableAppInstalled: Boolean;
 
     local procedure RefreshData()
     begin

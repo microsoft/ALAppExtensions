@@ -124,7 +124,6 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         OrderHeader."Fulfillment Status" := Enum::"Shpfy Order Fulfill. Status"::Fulfilled;
         OrderHeader."Total Weight" := Any.DecimalInRange(1000, 2);
         OrderHeader.Refundable := false;
-        OrderHeader."Risk Level" := Enum::"Shpfy Risk Level"::Low;
         OrderHeader."Processed At" := CurrentDateTime;
         OrderHeader.Gateway := 'bogus';
         OrderHeader."Total Amount" := 317.76;

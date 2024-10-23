@@ -1,34 +1,30 @@
 {
-    "id":  "a41b0c3e-bf1c-4c97-ad1b-b430a3933ada",
-    "name":  "Audit File Export",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Audit File Export app provides an interface for dependent extensions that are used to export accounting and tax data in specific formats.",
-    "description":  "Audit File Export is an app used for exporting the accounting and tax information of a company to the tax authorities. This app can work with different standardized audit file formats (SAF-T, SIE, etc.) for the electronic exchange of reliable accounting data between organizations and/or tax authorities (or external auditors).",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2204541",
-    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/ui-extensions",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  5260,
-                         "to":  5279
-                     }
-                 ],
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "Cloud"
+  "id": "a41b0c3e-bf1c-4c97-ad1b-b430a3933ada",
+  "name": "Audit File Export",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Audit File Export app provides an interface for dependent extensions that are used to export accounting and tax data in specific formats.",
+  "description": "Audit File Export is an app used for exporting the accounting and tax information of a company to the tax authorities. This app can work with different standardized audit file formats (SAF-T, SIE, etc.) for the electronic exchange of reliable accounting data between organizations and/or tax authorities (or external auditors).",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/dynamics365/business-central/ui-extensions",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 5260,
+      "to": 5279
+    }
+  ],
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "Cloud"
 }

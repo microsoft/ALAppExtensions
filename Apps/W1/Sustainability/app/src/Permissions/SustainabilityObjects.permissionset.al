@@ -1,13 +1,18 @@
 namespace Microsoft.Sustainability;
 
+using Microsoft.API.V1;
+using Microsoft.Sustainability.Account;
+using Microsoft.Sustainability.Calculation;
+using Microsoft.Sustainability.Certificate;
+using Microsoft.Sustainability.Emission;
+using Microsoft.Sustainability.FinancialReporting;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Ledger;
-using Microsoft.Sustainability.Calculation;
 using Microsoft.Sustainability.Posting;
-using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Reports;
+using Microsoft.Sustainability.RoleCenters;
+using Microsoft.Sustainability.Scorecard;
 using Microsoft.Sustainability.Setup;
-using Microsoft.API.V1;
 
 permissionset 6210 "Sustainability - Objects"
 {
@@ -24,6 +29,15 @@ permissionset 6210 "Sustainability - Objects"
         table "Sustainability Jnl. Line" = X,
         table "Sustainability Ledger Entry" = X,
         table "Sustainability Setup" = X,
+        table "Emission Fee" = X,
+        table "Sust. Account (Analysis View)" = X,
+        table "Sust. Certificate Area" = X,
+        table "Sust. Certificate Standard" = X,
+        table "Sustainability Certificate" = X,
+        table "Sustainability Cue" = X,
+        table "Sustainability Goal" = X,
+        table "Sustainability Goal Cue" = X,
+        table "Sustainability Scorecard" = X,
         page "Chart of Sustain. Accounts" = X,
         page "Collect Amount from G/L Entry" = X,
         page "G/L Accounts Subform" = X,
@@ -46,6 +60,20 @@ permissionset 6210 "Sustainability - Objects"
         page "Sust. Acc. Subcategory" = X,
         page "Sustainability Journal Line" = X,
         page "Sustainability Ledg. Entries" = X,
+        page "Emission Fees" = X,
+        page "Emission Scope Ratio Chart" = X,
+        page "Headline Sustainability RC" = X,
+        page "Sust. Accs. (Analysis View)" = X,
+        page "Sust. Certificate Areas" = X,
+        page "Sust. Certificate Card" = X,
+        page "Sust. Certificate Standards" = X,
+        page "Sustainability Activities" = X,
+        page "Sustainability Certificates" = X,
+        page "Sustainability Goal Cue" = X,
+        page "Sustainability Goals" = X,
+        page "Sustainability Manager RC" = X,
+        page "Sustainability Scorecard" = X,
+        page "Sustainability Scorecards" = X,
         codeunit "Sustainability Account Mgt." = X,
         codeunit "Sustainability Journal Mgt." = X,
         codeunit "Sustainability Jnl.-Post" = X,
@@ -56,7 +84,21 @@ permissionset 6210 "Sustainability - Objects"
         codeunit "Sustainability Calc. Mgt." = X,
         codeunit "Sustain. Jnl. Errors Mgt." = X,
         codeunit "Check Sust. Jnl. Line. Backgr." = X,
+        codeunit "Acc. Sch. Line Mgmt. Helper" = X,
+        codeunit "Acc. Schedule Line Subscribers" = X,
+        codeunit "Analysis View Entry Subscriber" = X,
+        codeunit AnalysisViewEntryToSustEntries = X,
+        codeunit "Compute Sust. Goal Cue" = X,
+        codeunit "Install Sustainability Setup" = X,
+        codeunit "RC Headline Page Sust." = X,
+        codeunit "Sust. Acc. Analysis View Mgt." = X,
+        codeunit "Sust. Certificate Subscribers" = X,
+        codeunit "Sust. Preview Post Instance" = X,
+        codeunit "Sust. Preview Post. Subscriber" = X,
+        codeunit "Sust. Preview Posting Handler" = X,
+        codeunit "Sustainability Chart Mgmt." = X,
         report "Emission By Category" = X,
         report "Emission Per Facility" = X,
-        report "Total Emissions" = X;
+        report "Total Emissions" = X,
+        report "Batch Update Carbon Emission" = X;
 }

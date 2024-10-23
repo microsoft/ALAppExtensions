@@ -13,8 +13,18 @@ codeunit 139507 "Test Data Search"
     var
         LibraryAssert: Codeunit "Library Assert";
 
-    // It seems like the datasearch page makes the client hang
-    // Bug 539845: Test defect: OptimizeForTextSearch property causes Data Search to hang in some tests
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure TestSetupTables()
+    var
+        DataSearchSetupTable: Record "Data Search Setup (Table)";
+        DataSearchSetupField: Record "Data Search Setup (Field)";
+        TestDataSearchOnArchives: Codeunit "Test Data Search On Archives";
+    begin
+        // precondition: no setup exists
+        DataSearchSetupTable.DeleteAll();
+        DataSearchSetupField.DeleteAll();
 
     /*
         [Test]
@@ -30,8 +40,8 @@ codeunit 139507 "Test Data Search"
             DataSearchSetupTable.DeleteAll();
             DataSearchSetupField.DeleteAll();
 
-            // activate the sales archive test subscribers
-            BindSubscription(TestDataSearchOnArchives);
+        // When a search is initiated, a default setup is added via "Data Search Defaults"
+        Codeunit.run(Codeunit::"Data Search Defaults");
 
             // When a search is initiated, a default setup is added
             DataSearchPage.OpenEdit();
@@ -76,17 +86,30 @@ codeunit 139507 "Test Data Search"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
-    procedure TestSearchNothingFound()
+    procedure TestInvalidSearchTerm()
     var
         DataSearchPage: TestPage "Data Search";
     begin
         Init();
         DataSearchPage.OpenEdit();
-        DataSearchPage.SearchString.Value(Format(CreateGuid())); // should hopeully not find anything
-
-        LibraryAssert.AreEqual('', Format(DataSearchPage.LinesPart.Description), 'Should be empty');
+        asserterror DataSearchPage.SearchString.Value('10000..30000'); // ranges are not allowed as search filters
+        asserterror DataSearchPage.SearchString.Value('(hello)'); // parentheses are not allowed as search filters
     end;
 
+    /*  Bug 546705: [Test Defect]Tests that involve pagebackgroundtasks make the system hang
+        [Test]
+        [TransactionModel(TransactionModel::AutoRollback)]
+        procedure TestSearchNothingFound()
+        var
+            DataSearchPage: TestPage "Data Search";
+        begin
+            Init();
+            DataSearchPage.OpenEdit();
+            DataSearchPage.SearchString.Value(Format(CreateGuid())); // should hopeully not find anything
+
+            LibraryAssert.AreEqual('', Format(DataSearchPage.LinesPart.Description), 'Should be empty');
+        end;
+    */
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestSearchFewFound()
@@ -209,17 +232,57 @@ codeunit 139507 "Test Data Search"
             DataSearchSetupField."Field No." := 41; // "Shortcut Dimension 1 Code"
             DataSearchSetupField.Insert();
 
-            LibrarySales.CreateCustomer(Customer);
-            LibrarySales.CreateSalesOrder(SalesHeader);
-            SalesDocumentType := SalesHeader."Document Type";
-            LibrarySales.CreateSimpleItemSalesLine(SalesLine, SalesHeader, SalesDocumentType);
-            SalesLine."Shortcut Dimension 1 Code" := 'Hello';  // are not marked as OptimizeForTextSearch
-            SalesLine."Shortcut Dimension 2 Code" := 'World';
-            SalesLine.Modify();
+    [Test]
+    [HandlerFunctions('SalesOrderPageHandler,ConfirmDlgYes,CloseMessage,SalesOrderArchivePageHandler')]
+    [TransactionModel(TransactionModel::AutoCommit)]
+    procedure TestSearchSalesOrders()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        Customer: Record Customer;
+        DataSearchSetupTable: Record "Data Search Setup (Table)";
+        DataSearchSetupField: Record "Data Search Setup (Field)";
+        TestDataSearchOnArchives: Codeunit "Test Data Search On Archives";
+        LibrarySales: Codeunit "Library - Sales";
+        DataSearchPage: TestPage "Data Search";
+        SalesDocumentType: Enum "Sales Document Type";
+        i: Integer;
+    begin
+        BindSubscription(TestDataSearchOnArchives);
+        // Given: Sales order with sales line with description 'Hello' and descr.2 'World';
+        DataSearchSetupTable.Setrange("Role Center ID", DataSearchSetupTable.GetRoleCenterID());
+        DataSearchSetupTable.SetFilter("Table No.", '%1|%2', Database::"Sales Line", Database::"Sales Line Archive");
+        DataSearchSetupTable.DeleteAll();
+        DataSearchSetupTable.Init();
+        DataSearchSetupTable."Role Center ID" := DataSearchSetupTable.GetRoleCenterID();
+        DataSearchSetupTable."Table No." := Database::"Sales Line";
+        DataSearchSetupTable.InsertRec(true);
+        DataSearchSetupField.Init();
+        DataSearchSetupField."Table No." := Database::"Sales Line";
+        DataSearchSetupField."Field No." := 40; // "Shortcut Dimension 1 Code"
+        DataSearchSetupField."Enable Search" := true;
+        DataSearchSetupField.Insert();
+        DataSearchSetupField."Field No." := 41; // "Shortcut Dimension 1 Code"
+        DataSearchSetupField.Insert();
+        DataSearchSetupTable.Init();
+        DataSearchSetupTable."Table No." := Database::"Sales Line Archive";
+        DataSearchSetupTable."Table Subtype" := 0;
+        DataSearchSetupTable.InsertRec(true);
+        DataSearchSetupField.Init();
+        DataSearchSetupField."Table No." := Database::"Sales Line Archive";
+        DataSearchSetupField."Field No." := 40; // "Shortcut Dimension 1 Code"
+        DataSearchSetupField."Enable Search" := true;
+        DataSearchSetupField.Insert();
+        DataSearchSetupField."Field No." := 41; // "Shortcut Dimension 1 Code"
+        DataSearchSetupField.Insert();
 
-            // When user searches for 'hello world'...
-            DataSearchPage.OpenEdit();
-            DataSearchPage.TestSearchForSalesOrders.Invoke();
+        LibrarySales.CreateCustomer(Customer);
+        LibrarySales.CreateSalesOrder(SalesHeader);
+        SalesDocumentType := SalesHeader."Document Type";
+        LibrarySales.CreateSimpleItemSalesLine(SalesLine, SalesHeader, SalesDocumentType);
+        SalesLine."Shortcut Dimension 1 Code" := 'Hello';  // are not marked as OptimizeForTextSearch
+        SalesLine."Shortcut Dimension 2 Code" := 'World';
+        SalesLine.Modify();
 
             // there should be at least one sales line found
             DataSearchPage.LinesPart.First();
@@ -232,9 +295,16 @@ codeunit 139507 "Test Data Search"
                 DataSearchPage.LinesPart.Description.Value, 'wrong line');
             DataSearchPage.LinesPart.Description.Drilldown(); // should open a sales order page which invokes the archive function
 
-            // New search for same data - this time there should also be a sales order archive
-            // activate the sales archive test subscribers
-            DataSearchPage.TestClearResults.Invoke();
+        // there should be at least one sales line found
+        DataSearchPage.LinesPart.First();
+        LibraryAssert.AreEqual('Sales Orders - lines', DataSearchPage.LinesPart.Description.Value, 'wrong header');
+        DataSearchPage.LinesPart.Next();
+        // example:  '  Order 101017 20000: hortcut Dimension 1 Code: HELLO, Shortcut Dimension 2 Code: WORLD'
+#pragma warning disable AA0217
+        LibraryAssert.AreEqual(StrSubstNo('  %1 %2 %3: Shortcut Dimension 1 Code: HELLO, Shortcut Dimension 2 Code: WORLD', SalesLine."Document Type", SalesLine."Document No.", SalesLine."Line No."),
+#pragma warning restore AA0217
+                DataSearchPage.LinesPart.Description.Value, 'wrong line');
+        DataSearchPage.LinesPart.Description.Drilldown(); // should open a sales order page which invokes the archive function
 
             DataSearchSetupTable.Setrange("Role Center ID", DataSearchSetupTable.GetRoleCenterID());
             DataSearchSetupTable.Setrange("Table No.", Database::"Sales Line Archive");
@@ -265,7 +335,18 @@ codeunit 139507 "Test Data Search"
             UnBindSubscription(TestDataSearchOnArchives);
             DataSearchPage.Close();
         end;
-    */
+        LibraryAssert.AreEqual('Sales Order Archives - lines', DataSearchPage.LinesPart.Description.Value, 'wrong header for archive');
+
+        DataSearchPage.LinesPart.Next();  // The first sales line archive
+                                          // example:  '  Order 101017 1 1 20000: Shortcut Dimension 1 Code: HELLO, Shortcut Dimension 2 Code: WORLD'
+        LibraryAssert.IsTrue(StrPos(DataSearchPage.LinesPart.Description.Value, 'Order') > 0, 'wrong line for archive');
+        LibraryAssert.IsTrue(StrPos(DataSearchPage.LinesPart.Description.Value, 'Shortcut Dimension 1 Code: HELLO, Shortcut Dimension 2 Code: WORLD') > 0, 'wrong line for archive 2');
+        DataSearchPage.LinesPart.Description.Drilldown(); // should open a sales order archive page which invokes the archive function
+
+        UnBindSubscription(TestDataSearchOnArchives);
+        DataSearchPage.Close();
+    end;
+
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
     procedure TestGetPageIdForCustomer()
@@ -406,6 +487,7 @@ codeunit 139507 "Test Data Search"
         begin
         end;
 
+    /*  Bug 546705: [Test Defect]Tests that involve pagebackgroundtasks make the system hang
         [Test]
         [HandlerFunctions('DataSearchPageHandler')]
         [TransactionModel(TransactionModel::AutoRollback)]
@@ -413,14 +495,14 @@ codeunit 139507 "Test Data Search"
         var
             DataSearch: Page "Data Search";
         begin
-            DataSearch.SetSearchString('Hello World');
+            DataSearch.SetSearchString('*Hello World');
             DataSearch.Run();
         end;
 
         [PageHandler]
         procedure DataSearchPageHandler(var DataSearch: TestPage "Data Search")
         begin
-            LibraryAssert.AreEqual('Searching for "Hello World"...', DataSearch.SearchString.Value, 'Start-up parameter not specified correctly.');
+            LibraryAssert.IsTrue(StrPos(DataSearch.SearchString.Value, 'Searching for "*Hello World"') = 1, 'Start-up parameter not specified correctly.');
             DataSearch.Close();
         end;
     */

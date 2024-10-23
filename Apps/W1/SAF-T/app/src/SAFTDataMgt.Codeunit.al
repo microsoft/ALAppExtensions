@@ -25,9 +25,6 @@ using Microsoft.Sales.History;
 using Microsoft.Sales.Receivables;
 using Microsoft.Service.History;
 using System.Environment;
-#if not CLEAN23
-using System.Environment.Configuration;
-#endif
 
 codeunit 5280 "SAF-T Data Mgt."
 {
@@ -38,9 +35,6 @@ codeunit 5280 "SAF-T Data Mgt."
         XMLFileNameSAFTTxt: label 'SAF-T Financial_%1_%2_%3_%4.xml', Comment = '%1 - VAT Reg No., %2 - date + time, %3 - number of file, %4 - total number of files', Locked = true;
         ProductTxt: label 'Goods', Locked = true;
         ServiceTxt: label 'Service', Locked = true;
-#if not CLEAN23
-        FeatureNotEnabledMsg: label 'The %1 page is part of the new SAF-T feature, which is not enabled yet in your Business Central. An administrator can enable the feature on the Feature Management page.', Comment = '%1 - page caption';
-#endif
 
     /// <summary>
     /// Returns the VAT Reporting Code that is used in cases when the VAT Reporting Code is not set in VAT Posting Setup.
@@ -678,31 +672,6 @@ codeunit 5280 "SAF-T Data Mgt."
         exit(GLAccNo in [Currency."Unrealized Gains Acc.", Currency."Unrealized Losses Acc.", Currency."Realized Gains Acc.", Currency."Realized Losses Acc."]);
     end;
 
-#if not CLEAN23
-    [Obsolete('Feature will be enabled by default', '23.0')]
-    internal procedure IsFeatureEnabled() IsEnabled: Boolean
-    var
-        FeatureMgtFacade: Codeunit "Feature Management Facade";
-    begin
-        IsEnabled := FeatureMgtFacade.IsEnabled(GetSAFTAuditFileExportFeatureKeyId());
-        OnAfterCheckFeatureEnabled(IsEnabled);
-    end;
-
-    /// <summary>
-    /// Returns the Feature Key Id for the SAF-T feature.
-    /// </summary>
-    [Obsolete('Feature will be enabled by default', '23.0')]
-    procedure GetSAFTAuditFileExportFeatureKeyId(): Text[50]
-    begin
-        exit('SAFTAuditFileExport');
-    end;
-
-    [Obsolete('Feature will be enabled by default', '23.0')]
-    internal procedure ShowNotEnabledMessage(PageCaption: Text)
-    begin
-        Message(FeatureNotEnabledMsg, PageCaption);
-    end;
-#endif
     local procedure InitShipToAddress(var ShipToAddress: Record "Ship-to Address"; Address: Text[100]; Address2: Text[50]; City: Text[30]; PostCode: Code[20]; CountryCode: Code[10])
     begin
         ShipToAddress.Init();
@@ -730,27 +699,4 @@ codeunit 5280 "SAF-T Data Mgt."
             end;
         end;
     end;
-
-#if not CLEAN23
-    [Obsolete('Feature will be enabled by default', '23.0')]
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Feature Management Facade", 'OnAfterFeatureEnableConfirmed', '', true, true)]
-    local procedure OnAfterFeatureEnableConfirmed(var FeatureKey: Record "Feature Key")
-    var
-        SAFTWizard: Page "SAF-T Wizard";
-    begin
-        if FeatureKey.ID = GetSAFTAuditFileExportFeatureKeyId() then begin
-            Commit();
-            SAFTWizard.SetRunFromFeatureMgt();
-            if SAFTWizard.RunModal() = Action::OK then
-                if not SAFTWizard.IsSetupCompleted() then
-                    Error('');
-        end;
-    end;
-
-    [Obsolete('Feature will be enabled by default.', '23.0')]
-    [IntegrationEvent(true, false)]
-    local procedure OnAfterCheckFeatureEnabled(var IsEnabled: Boolean)
-    begin
-    end;
-#endif
 }

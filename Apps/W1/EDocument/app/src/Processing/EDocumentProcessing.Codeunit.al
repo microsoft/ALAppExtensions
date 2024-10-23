@@ -78,7 +78,7 @@ codeunit 6108 "E-Document Processing"
             EDocumentServiceStatus.Status::"Export Error",
             EDocumentServiceStatus.Status::"Cancel Error",
             EDocumentServiceStatus.Status::"Imported Document Processing Error",
-            EDocumentServiceStatus.Status::"Approval Error");
+            EDocumentServiceStatus.Status::Rejected);
 
         if not EDocumentServiceStatus.IsEmpty() then begin
             EDocument.Get(EDocument."Entry No");
@@ -97,7 +97,6 @@ codeunit 6108 "E-Document Processing"
             EDocumentServiceStatus.Status::"Imported Document Created",
             EDocumentServiceStatus.Status::"Journal Line Created",
             EDocumentServiceStatus.Status::Approved,
-            EDocumentServiceStatus.Status::Rejected,
             EDocumentServiceStatus.Status::Canceled);
 
         // There can be service status for multiple services:

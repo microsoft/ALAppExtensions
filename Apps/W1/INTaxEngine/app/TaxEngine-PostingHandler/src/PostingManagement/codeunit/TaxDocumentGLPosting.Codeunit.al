@@ -89,7 +89,8 @@ codeunit 20341 "Tax Document GL Posting"
     begin
         if QtyToInvoice = 0 then
             exit;
-
+            
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
         TaxTransactionValue.SetRange("Tax Record ID", RecID);
         if TaxTransactionValue.FindSet() then
             repeat

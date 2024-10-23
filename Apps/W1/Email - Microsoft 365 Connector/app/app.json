@@ -1,55 +1,53 @@
 {
-    "id":  "aceb66c8-472e-437c-81d3-27e6c07d0f14",
-    "name":  "Email - Microsoft 365 Connector",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Enable all users to use a single Microsoft 365 email account to send email in Business Central.",
-    "description":  "This connector enables all users to send email from the same email account in Business Central.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2134520",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
-                             "publisher":  "Microsoft",
-                             "name":  "System Application",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "e6328152-bb29-4664-9dae-3bc7eaae1fd8",
-                             "name":  "Email - Outlook REST API",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "internalsVisibleTo":  [
-                               {
-                                   "id":  "c436fd91-e29f-406c-b91f-33cd176ca9be",
-                                   "name":  "Email - Microsoft 365 Connector Tests",
-                                   "publisher":  "Microsoft"
-                               }
-                           ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  1,
-                         "to":  1
-                     },
-                     {
-                         "from":  4503,
-                         "to":  4504
-                     }
-                 ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2134520",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "Cloud"
+  "id": "aceb66c8-472e-437c-81d3-27e6c07d0f14",
+  "name": "Email - Microsoft 365 Connector",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Enable all users to use a single Microsoft 365 email account to send email in Business Central.",
+  "description": "This connector enables all users to send email from the same email account in Business Central.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2134520",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "63ca2fa4-4f03-4f2b-a480-172fef340d3f",
+      "publisher": "Microsoft",
+      "name": "System Application",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "e6328152-bb29-4664-9dae-3bc7eaae1fd8",
+      "name": "Email - Outlook REST API",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "internalsVisibleTo": [
+    {
+      "id": "c436fd91-e29f-406c-b91f-33cd176ca9be",
+      "name": "Email - Microsoft 365 Connector Tests",
+      "publisher": "Microsoft"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 1,
+      "to": 1
+    },
+    {
+      "from": 4503,
+      "to": 4504
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2134520",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "Cloud"
 }

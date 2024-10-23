@@ -63,13 +63,8 @@ tableextension 18154 "GST Sales Shipment Header Ext" extends "Sales Shipment Hea
                 "Customer No." = field("e-Commerce Customer"));
             DataClassification = CustomerContent;
             ObsoleteReason = 'New field introduced as E-Comm. Merchant Id';
-#if CLEAN23
             ObsoleteState = Removed;
             ObsoleteTag = '26.0';
-#else
-            ObsoleteState = Pending;
-            ObsoleteTag = '23.0';
-#endif
         }
         field(18150; "GST Bill-to State Code"; Code[10])
         {

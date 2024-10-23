@@ -79,6 +79,12 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
             CompletionTaskTxt := AddCompletionPromptLine(CompletionTaskTxt, 'Statement Line: Id: 6, Description: I 522, Amount: 100, Date: 2023-07-05\n');
             CompletionTaskTxt := AddCompletionPromptLine(CompletionTaskTxt, 'Ledger Entry: Id: 52, DocumentNo: 522, Description: J, Amount: 348, Date: 2023-07-02\n');
             CompletionTaskTxt := AddCompletionPromptLine(CompletionTaskTxt, 'Matches: (5, [52]), (6, [52])\n\n');
+            CompletionTaskTxt := AddCompletionPromptLine(CompletionTaskTxt, '\n**Example 6**:\n');
+            CompletionTaskTxt := AddCompletionPromptLine(CompletionTaskTxt, 'Statement Line: Id: 7, Description: ABCD 3, Amount: 250, Date: 2023-07-02\n');
+            CompletionTaskTxt := AddCompletionPromptLine(CompletionTaskTxt, 'Statement Line: Id: 8, Description: ABCD, Amount: 248, Date: 2023-07-05\n');
+            CompletionTaskTxt := AddCompletionPromptLine(CompletionTaskTxt, 'Ledger Entry: Id: 62, DocumentNo: 622, Description: ABCD 3, Amount: 248, Date: 2023-07-02\n');
+            CompletionTaskTxt := AddCompletionPromptLine(CompletionTaskTxt, 'Ledger Entry: Id: 63, DocumentNo: 623, Description: ABCD Amount: 248, Date: 2023-07-02\n');
+            CompletionTaskTxt := AddCompletionPromptLine(CompletionTaskTxt, 'Matches: (7, [62]), (8, [63])\n\n');
         end;
         CompletionTaskTxt := AddCompletionPromptLine(CompletionTaskTxt, '\n\n');
         exit(CompletionTaskTxt);
@@ -280,7 +286,7 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
             exit;
 
         // Generate OpenAI Completion
-        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4Latest());
+        AzureOpenAI.SetAuthorization(Enum::"AOAI Model Type"::"Chat Completions", AOAIDeployments.GetGPT4oLatest());
         AzureOpenAI.SetCopilotCapability(Enum::"Copilot Capability"::"Bank Account Reconciliation");
         AOAIChatCompletionParams.SetMaxTokens(MaxTokens());
         AOAIChatCompletionParams.SetTemperature(0);
@@ -604,8 +610,11 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
     local procedure MatchIsAcceptable(var BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line"; var TempLedgerEntryMatchingBuffer: Record "Ledger Entry Matching Buffer" temporary; MatchedLineNoTxt: Text; MatchedEntryNoTxt: Text): Boolean
     var
         LocalBankAccReconciliationLine: Record "Bank Acc. Reconciliation Line";
+        RecordMatchMng: Codeunit "Record Match Mgt.";
         MatchedEntryNo: Integer;
         MatchedLineNo: Integer;
+        BankRecLineDescription: Text;
+        SimilarityScore: Decimal;
     begin
         if not Evaluate(MatchedEntryNo, MatchedEntryNoTxt) then
             exit(false);
@@ -622,6 +631,20 @@ codeunit 7250 "Bank Rec. AI Matching Impl."
             exit(false);
 
         if not SameSign(LocalBankAccReconciliationLine.Difference, TempLedgerEntryMatchingBuffer."Remaining Amount") then
+            exit(false);
+
+        // if amount matches exactly, the match is acceptable
+        if LocalBankAccReconciliationLine.Difference = TempLedgerEntryMatchingBuffer."Remaining Amount" then
+            exit(true);
+
+        // if description doesn't match at least on a substring of 3, the match is not acceptable
+        BankRecLineDescription := LocalBankAccReconciliationLine.Description;
+        if LocalBankAccReconciliationLine."Additional Transaction Info" <> '' then
+            BankRecLineDescription += (' ' + LocalBankAccReconciliationLine."Additional Transaction Info");
+        BankRecLineDescription := RemoveShortWords(CopyStr(BankRecLineDescription, 1, 250));
+
+        SimilarityScore := RecordMatchMng.CalculateStringNearness(RemoveShortWords(TempLedgerEntryMatchingBuffer."Description" + ' ' + TempLedgerEntryMatchingBuffer."Document No." + ' ' + TempLedgerEntryMatchingBuffer."External Document No." + ' ' + TempLedgerEntryMatchingBuffer."Payment Reference"), CopyStr(BankRecLineDescription, 1, 250), 3, 100) / 100.0;
+        if SimilarityScore = 0 then
             exit(false);
 
         exit(true)

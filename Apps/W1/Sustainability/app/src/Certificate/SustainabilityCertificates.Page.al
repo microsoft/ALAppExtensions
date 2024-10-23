@@ -6,6 +6,7 @@ page 6239 "Sustainability Certificates"
     Caption = 'Sustainability Certificates';
     ApplicationArea = Basic, Suite;
     UsageCategory = Lists;
+    Editable = false;
     SourceTable = "Sustainability Certificate";
     CardPageId = "Sust. Certificate Card";
 
@@ -15,6 +16,11 @@ page 6239 "Sustainability Certificates"
         {
             repeater(GroupName)
             {
+                field(Type; Rec.Type)
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies the Type of Sustainability Certificate';
+                }
                 field("No."; Rec."No.")
                 {
                     ApplicationArea = Basic, Suite;

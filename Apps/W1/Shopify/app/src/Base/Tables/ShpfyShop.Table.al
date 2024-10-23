@@ -74,7 +74,7 @@ table 30102 "Shpfy Shop"
                 end else begin
                     Rec.Enabled := true;
                     Rec.Validate("Order Created Webhooks", false);
-                    WebhooksMgt.DisableBulkOperationsWebhook(Rec, CompanyName());
+                    WebhooksMgt.DisableBulkOperationsWebhook(Rec);
                     Rec.Enabled := false;
                 end;
             end;
@@ -84,13 +84,8 @@ table 30102 "Shpfy Shop"
             Caption = 'Log Enabled';
             DataClassification = SystemMetadata;
             ObsoleteReason = 'Replaced with field "Logging Mode"';
-#if not CLEAN23
-            ObsoleteState = Pending;
-            ObsoleteTag = '23.0';
-#else
             ObsoleteState = Removed;
-            ObsoleteTag = '25.0';
-#endif
+            ObsoleteTag = '26.0';
         }
         field(6; "Customer Price Group"; Code[10])
         {
@@ -621,7 +616,7 @@ table 30102 "Shpfy Shop"
                 if "Order Created Webhooks" then
                     ShpfyWebhooksMgt.EnableOrderCreatedWebhook(Rec)
                 else
-                    ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec, CompanyName());
+                    ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec);
             end;
         }
         field(109; "Order Created Webhook User"; Code[50])
@@ -783,9 +778,30 @@ table 30102 "Shpfy Shop"
             Caption = 'Return Location Priority';
             DataClassification = CustomerContent;
         }
+        field(129; "Weight Unit"; Enum "Shpfy Weight Unit")
+        {
+            Caption = 'Weight Unit';
+            DataClassification = CustomerContent;
+        }
         field(200; "Shop Id"; Integer)
         {
             DataClassification = SystemMetadata;
+        }
+        field(201; "Items Mapped to Products"; Boolean)
+        {
+            Caption = 'Items Must be Mapped to Products';
+            ObsoleteReason = 'This setting is not used';
+#if not CLEAN26
+            ObsoleteState = Pending;
+            ObsoleteTag = '26.0';
+#else
+            ObsoleteState = Removed;
+            ObsoleteTag = '29.0';
+#endif
+        }
+        field(202; "Posted Invoice Sync"; Boolean)
+        {
+            Caption = 'Posted Invoice Sync';
         }
     }
 
@@ -796,13 +812,16 @@ table 30102 "Shpfy Shop"
             Clustered = true;
         }
         key(Idx1; "Shop Id") { }
+        key(Idx2; "Shopify URL") { }
+        key(Idx3; Enabled) { }
     }
 
     trigger OnDelete()
     var
         ShpfyWebhooksMgt: Codeunit "Shpfy Webhooks Mgt.";
     begin
-        ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec, CompanyName());
+        ShpfyWebhooksMgt.DisableOrderCreatedWebhook(Rec);
+        ShpfyWebhooksMgt.DisableBulkOperationsWebhook(Rec);
     end;
 
     var
@@ -1001,6 +1020,17 @@ table 30102 "Shpfy Shop"
             end;
     end;
 
+    internal procedure GetShopWeightUnit(): Enum "Shpfy Weight Unit"
+    var
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+        JsonHelper: Codeunit "Shpfy Json Helper";
+        JResponse: JsonToken;
+    begin
+        CommunicationMgt.SetShop(Rec);
+        JResponse := CommunicationMgt.ExecuteGraphQL('{"query":"query { shop { weightUnit } }"}');
+        exit(ConvertToWeightUnit(JsonHelper.GetValueAsText(JResponse, 'data.shop.weightUnit')));
+    end;
+
 #if not CLEAN24
     local procedure UpdateOrderAttributes(ShopCode: Code[20])
     var
@@ -1023,5 +1053,16 @@ table 30102 "Shpfy Shop"
     internal procedure SyncCountries()
     begin
         Codeunit.Run(Codeunit::"Shpfy Sync Countries", Rec);
+    end;
+
+    local procedure ConvertToWeightUnit(Value: Text): Enum "Shpfy Weight Unit"
+    var
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
+    begin
+        Value := CommunicationMgt.ConvertToCleanOptionValue(Value);
+        if Enum::"Shpfy Weight Unit".Names().Contains(Value) then
+            exit(Enum::"Shpfy Weight Unit".FromInteger(Enum::"Shpfy Weight Unit".Ordinals().Get(Enum::"Shpfy Weight Unit".Names().IndexOf(Value))))
+        else
+            exit(Enum::"Shpfy Weight Unit"::" ");
     end;
 }

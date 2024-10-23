@@ -29,9 +29,9 @@ codeunit 148186 "Sustainability Financial Test"
         CategoryCode: Code[20];
         SubcategoryCode: Code[20];
         AccountCode: Code[20];
-        EmissionCO2PerUnit: Decimal;
-        EmissionCH4PerUnit: Decimal;
-        EmissionN2OPerUnit: Decimal;
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
     begin
         // [SCENARIO 507032] Verify the Financial Report Data for Sustainability Account.
         LibrarySustainability.CleanUpBeforeTesting();
@@ -43,19 +43,19 @@ codeunit 148186 "Sustainability Financial Test"
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode);
 
-        // [GIVEN] Generate Emission per Unit.
-        EmissionCO2PerUnit := LibraryRandom.RandInt(5);
-        EmissionCH4PerUnit := LibraryRandom.RandInt(5);
-        EmissionN2OPerUnit := LibraryRandom.RandInt(5);
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(5);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
 
         // [GIVEN] Create and Post Purchase Order with WorkDate().
-        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2PerUnit, EmissionCH4PerUnit, EmissionN2OPerUnit);
+        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2, EmissionCH4, EmissionN2O);
 
         // [GIVEN] Change WorkDate + 1.
         WorkDate(Today + 1);
 
         // [GIVEN] Create and Post Purchase Order with WorkDate() + 1.
-        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2PerUnit, EmissionCH4PerUnit, EmissionN2OPerUnit);
+        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2, EmissionCH4, EmissionN2O);
 
         // [GIVEN] Change WorkDate.
         WorkDate(Today);
@@ -72,7 +72,7 @@ codeunit 148186 "Sustainability Financial Test"
         FinancialReports.ViewFinancialReport.Invoke();
 
         // [VERIFY] Financial Report shows the correct data
-        VerifyDataFinancialReport(AccScheduleOverview, EmissionCO2PerUnit, EmissionCH4PerUnit + EmissionN2OPerUnit);
+        VerifyDataFinancialReport(AccScheduleOverview, EmissionCO2, EmissionCH4 + EmissionN2O);
     end;
 
     [Test]
@@ -85,9 +85,9 @@ codeunit 148186 "Sustainability Financial Test"
         CategoryCode: Code[20];
         SubcategoryCode: Code[20];
         AccountCode: Code[20];
-        EmissionCO2PerUnit: Decimal;
-        EmissionCH4PerUnit: Decimal;
-        EmissionN2OPerUnit: Decimal;
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
     begin
         // [SCENARIO 507032] Verify the Analysis View Entry for Sustainability Account.
         LibrarySustainability.CleanUpBeforeTesting();
@@ -102,23 +102,23 @@ codeunit 148186 "Sustainability Financial Test"
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode);
 
-        // [GIVEN] Generate Emission per Unit.
-        EmissionCO2PerUnit := LibraryRandom.RandInt(5);
-        EmissionCH4PerUnit := LibraryRandom.RandInt(5);
-        EmissionN2OPerUnit := LibraryRandom.RandInt(5);
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(5);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
 
         // [GIVEN] Create and Post Purchase Order with WorkDate().
-        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2PerUnit, EmissionCH4PerUnit, EmissionN2OPerUnit);
+        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2, EmissionCH4, EmissionN2O);
 
         // [GIVEN] Create and Post another Purchase Order with WorkDate().
-        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2PerUnit, EmissionCH4PerUnit, EmissionN2OPerUnit);
+        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2, EmissionCH4, EmissionN2O);
 
         // [WHEN] Analysis view record for Sustainability Account.
         CreateAnalysisViewForSustainabilityAccount(AnalysisViewCard, AnalysisView, AccountCode);
         AnalysisViewCard.Close();
 
         // [VERIFY] Verify the Analysis View Entry for Sustainability Account.
-        VerifyAnalysisViewEntry(AnalysisView.Code, AccountCode, EmissionCO2PerUnit * 2, EmissionCH4PerUnit * 2, EmissionN2OPerUnit * 2)
+        VerifyAnalysisViewEntry(AnalysisView.Code, AccountCode, EmissionCO2 * 2, EmissionCH4 * 2, EmissionN2O * 2)
     end;
 
     [Test]
@@ -131,9 +131,9 @@ codeunit 148186 "Sustainability Financial Test"
         CategoryCode: Code[20];
         SubcategoryCode: Code[20];
         AccountCode: Code[20];
-        EmissionCO2PerUnit: Decimal;
-        EmissionCH4PerUnit: Decimal;
-        EmissionN2OPerUnit: Decimal;
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
     begin
         // [SCENARIO 507032] Verify the Analysis View Entry for Sustainability Account with Different Dates.
         LibrarySustainability.CleanUpBeforeTesting();
@@ -148,26 +148,26 @@ codeunit 148186 "Sustainability Financial Test"
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode);
 
-        // [GIVEN] Generate Emission per Unit.
-        EmissionCO2PerUnit := LibraryRandom.RandInt(5);
-        EmissionCH4PerUnit := LibraryRandom.RandInt(5);
-        EmissionN2OPerUnit := LibraryRandom.RandInt(5);
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(10);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
 
         // [GIVEN] Create and Post Purchase Order with WorkDate().
-        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2PerUnit, EmissionCH4PerUnit, EmissionN2OPerUnit);
+        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2, EmissionCH4, EmissionN2O);
 
         // [GIVEN] Change WorkDate + 1.
         WorkDate(Today + 1);
 
         // [GIVEN] Create and Post another Purchase Order with WorkDate() + 1 .
-        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2PerUnit, EmissionCH4PerUnit, EmissionN2OPerUnit);
+        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2, EmissionCH4, EmissionN2O);
 
         // [WHEN] Analysis view record for Sustainability Account.
         CreateAnalysisViewForSustainabilityAccount(AnalysisViewCard, AnalysisView, AccountCode);
         AnalysisViewCard.Close();
 
         // [VERIFY] Verify the Analysis View Entry for Sustainability Account with Different Dates.
-        VerifyAnalysisViewEntryWithDifferentDates(AnalysisView.Code, AccountCode, EmissionCO2PerUnit, EmissionCH4PerUnit, EmissionN2OPerUnit)
+        VerifyAnalysisViewEntryWithDifferentDates(AnalysisView.Code, AccountCode, EmissionCO2, EmissionCH4, EmissionN2O)
     end;
 
     [Test]
@@ -212,9 +212,9 @@ codeunit 148186 "Sustainability Financial Test"
         CategoryCode: Code[20];
         SubcategoryCode: Code[20];
         AccountCode: Code[20];
-        EmissionCO2PerUnit: Decimal;
-        EmissionCH4PerUnit: Decimal;
-        EmissionN2OPerUnit: Decimal;
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
     begin
         // [SCENARIO 507032] Verify amount Lookup should open Sustainablity Ledger Entries in Analysis View Entry.
         LibrarySustainability.CleanUpBeforeTesting();
@@ -229,16 +229,16 @@ codeunit 148186 "Sustainability Financial Test"
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode);
 
-        // [GIVEN] Generate Emission per Unit.
-        EmissionCO2PerUnit := LibraryRandom.RandInt(5);
-        EmissionCH4PerUnit := LibraryRandom.RandInt(5);
-        EmissionN2OPerUnit := LibraryRandom.RandInt(5);
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(5);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
 
         // [GIVEN] Create and Post Purchase Order with WorkDate().
-        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2PerUnit, EmissionCH4PerUnit, EmissionN2OPerUnit);
+        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2, EmissionCH4, EmissionN2O);
 
         // [GIVEN] Create and Post another Purchase Order with WorkDate().
-        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2PerUnit, EmissionCH4PerUnit, EmissionN2OPerUnit);
+        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2, EmissionCH4, EmissionN2O);
 
         // [WHEN] Analysis view record for Sustainability Account.
         CreateAnalysisViewForSustainabilityAccount(AnalysisViewCard, AnalysisView, AccountCode);
@@ -246,9 +246,9 @@ codeunit 148186 "Sustainability Financial Test"
 
         // [GIVEN] Save Expected Amount.
         LibraryVariableStorage.Enqueue(2);
-        LibraryVariableStorage.Enqueue(EmissionCO2PerUnit * 2);
-        LibraryVariableStorage.Enqueue(EmissionCH4PerUnit * 2);
-        LibraryVariableStorage.Enqueue(EmissionN2OPerUnit * 2);
+        LibraryVariableStorage.Enqueue(EmissionCO2 * 2);
+        LibraryVariableStorage.Enqueue(EmissionCH4 * 2);
+        LibraryVariableStorage.Enqueue(EmissionN2O * 2);
 
         // [WHEN] Open Analysis View Entry.
         AnalysisViewEntries.OpenView();
@@ -272,9 +272,9 @@ codeunit 148186 "Sustainability Financial Test"
         CategoryCode: Code[20];
         SubcategoryCode: Code[20];
         AccountCode: Code[20];
-        EmissionCO2PerUnit: Decimal;
-        EmissionCH4PerUnit: Decimal;
-        EmissionN2OPerUnit: Decimal;
+        EmissionCO2: Decimal;
+        EmissionCH4: Decimal;
+        EmissionN2O: Decimal;
     begin
         // [SCENARIO 507032] Verify amount Lookup should open Sustainablity Ledger Entries in Analysis View Entry with different dates.
         LibrarySustainability.CleanUpBeforeTesting();
@@ -289,19 +289,19 @@ codeunit 148186 "Sustainability Financial Test"
         CreateSustainabilityAccount(AccountCode, CategoryCode, SubcategoryCode, LibraryRandom.RandInt(10));
         SustainabilityAccount.Get(AccountCode);
 
-        // [GIVEN] Generate Emission per Unit.
-        EmissionCO2PerUnit := LibraryRandom.RandInt(5);
-        EmissionCH4PerUnit := LibraryRandom.RandInt(5);
-        EmissionN2OPerUnit := LibraryRandom.RandInt(5);
+        // [GIVEN] Generate Emission.
+        EmissionCO2 := LibraryRandom.RandInt(10);
+        EmissionCH4 := LibraryRandom.RandInt(5);
+        EmissionN2O := LibraryRandom.RandInt(5);
 
         // [GIVEN] Create and Post Purchase Order with WorkDate().
-        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2PerUnit, EmissionCH4PerUnit, EmissionN2OPerUnit);
+        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2, EmissionCH4, EmissionN2O);
 
         // [GIVEN] Change WorkDate + 1.
         WorkDate(Today + 1);
 
         // [GIVEN] Create and Post another Purchase Order with WorkDate().
-        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2PerUnit, EmissionCH4PerUnit, EmissionN2OPerUnit);
+        CreateAndPostPurchaseOrderWithSustAccount(AccountCode, WorkDate(), EmissionCO2, EmissionCH4, EmissionN2O);
 
         // [GIVEN] Change WorkDate to today.
         WorkDate(Today);
@@ -312,9 +312,9 @@ codeunit 148186 "Sustainability Financial Test"
 
         // [GIVEN] Save Expected Amount.
         LibraryVariableStorage.Enqueue(1);
-        LibraryVariableStorage.Enqueue(EmissionCO2PerUnit);
-        LibraryVariableStorage.Enqueue(EmissionCH4PerUnit);
-        LibraryVariableStorage.Enqueue(EmissionN2OPerUnit);
+        LibraryVariableStorage.Enqueue(EmissionCO2);
+        LibraryVariableStorage.Enqueue(EmissionCH4);
+        LibraryVariableStorage.Enqueue(EmissionN2O);
 
         // [WHEN] Open Analysis View Entry.
         AnalysisViewEntries.OpenView();
@@ -328,9 +328,9 @@ codeunit 148186 "Sustainability Financial Test"
 
         // [GIVEN] Save Expected Amount.
         LibraryVariableStorage.Enqueue(1);
-        LibraryVariableStorage.Enqueue(EmissionCO2PerUnit);
-        LibraryVariableStorage.Enqueue(EmissionCH4PerUnit);
-        LibraryVariableStorage.Enqueue(EmissionN2OPerUnit);
+        LibraryVariableStorage.Enqueue(EmissionCO2);
+        LibraryVariableStorage.Enqueue(EmissionCH4);
+        LibraryVariableStorage.Enqueue(EmissionN2O);
 
         // [WHEN] Open Analysis View Entry.
         AnalysisViewEntries.OpenView();
@@ -368,7 +368,7 @@ codeunit 148186 "Sustainability Financial Test"
             true, true, true, '', false);
     end;
 
-    local procedure CreateAndPostPurchaseOrderWithSustAccount(AccountCode: Code[20]; PostingDate: Date; EmissionCO2PerUnit: Decimal; EmissionCH4PerUnit: Decimal; EmissionN2OPerUnit: Decimal)
+    local procedure CreateAndPostPurchaseOrderWithSustAccount(AccountCode: Code[20]; PostingDate: Date; EmissionCO2: Decimal; EmissionCH4: Decimal; EmissionN2O: Decimal)
     var
         PurchaseHeader: Record "Purchase Header";
         PurchaseLine: Record "Purchase Line";
@@ -387,12 +387,12 @@ codeunit 148186 "Sustainability Financial Test"
             LibraryInventory.CreateItemNo(),
             LibraryRandom.RandInt(10));
 
-        // Update Sustainability Account No.,Emission CO2 Per Unit,Emission CH4 Per Unit,Emission N2O Per Unit.
+        // Update Sustainability Account No.,Emission CO2 ,Emission CH4 ,Emission N2O .
         PurchaseLine.Validate("Direct Unit Cost", LibraryRandom.RandIntInRange(10, 200));
         PurchaseLine.Validate("Sust. Account No.", AccountCode);
-        PurchaseLine.Validate("Emission CO2 Per Unit", EmissionCO2PerUnit);
-        PurchaseLine.Validate("Emission CH4 Per Unit", EmissionCH4PerUnit);
-        PurchaseLine.Validate("Emission N2O Per Unit", EmissionN2OPerUnit);
+        PurchaseLine.Validate("Emission CO2", EmissionCO2);
+        PurchaseLine.Validate("Emission CH4", EmissionCH4);
+        PurchaseLine.Validate("Emission N2O", EmissionN2O);
         PurchaseLine.Modify();
 
         // Post a Purchase Document.
@@ -541,42 +541,42 @@ codeunit 148186 "Sustainability Financial Test"
     procedure SustainabilityLedgEntriesPageHandler(var SustainabilityLedgEntries: TestPage "Sustainability Ledger Entries");
     var
         RecordCount: Integer;
-        TotalEmissionCO2PerUnit: Decimal;
-        TotalEmissionCH4PerUnit: Decimal;
-        TotalEmissionN2OPerUnit: Decimal;
+        TotalEmissionCO2: Decimal;
+        TotalEmissionCH4: Decimal;
+        TotalEmissionN2O: Decimal;
         VerifyRecordCount: Integer;
-        VerifyTotalEmissionCO2PerUnit: Decimal;
-        VerifyTotalEmissionCH4PerUnit: Decimal;
-        VerifyTotalEmissionN2OPerUnit: Decimal;
+        VerifyTotalEmissionCO2: Decimal;
+        VerifyTotalEmissionCH4: Decimal;
+        VerifyTotalEmissionN2O: Decimal;
     begin
         SustainabilityLedgEntries.First();
         repeat
             RecordCount += 1;
-            TotalEmissionCO2PerUnit += SustainabilityLedgEntries."Emission CO2".AsDecimal();
-            TotalEmissionCH4PerUnit += SustainabilityLedgEntries."Emission CH4".AsDecimal();
-            TotalEmissionN2OPerUnit += SustainabilityLedgEntries."Emission N2O".AsDecimal();
+            TotalEmissionCO2 += SustainabilityLedgEntries."Emission CO2".AsDecimal();
+            TotalEmissionCH4 += SustainabilityLedgEntries."Emission CH4".AsDecimal();
+            TotalEmissionN2O += SustainabilityLedgEntries."Emission N2O".AsDecimal();
         until not SustainabilityLedgEntries.Next();
 
         VerifyRecordCount := LibraryVariableStorage.DequeueInteger();
-        VerifyTotalEmissionCO2PerUnit := LibraryVariableStorage.DequeueDecimal();
-        VerifyTotalEmissionCH4PerUnit := LibraryVariableStorage.DequeueDecimal();
-        VerifyTotalEmissionN2OPerUnit := LibraryVariableStorage.DequeueDecimal();
+        VerifyTotalEmissionCO2 := LibraryVariableStorage.DequeueDecimal();
+        VerifyTotalEmissionCH4 := LibraryVariableStorage.DequeueDecimal();
+        VerifyTotalEmissionN2O := LibraryVariableStorage.DequeueDecimal();
 
         Assert.AreEqual(
             VerifyRecordCount,
             RecordCount,
             StrSubstNo(RecordCountMustBeEqualErr, VerifyRecordCount, SustainabilityLedgEntries.Caption()));
         Assert.AreEqual(
-            VerifyTotalEmissionCO2PerUnit,
-            TotalEmissionCO2PerUnit,
-            StrSubstNo(EmissionAmountMustBeEqualErr, SustainabilityLedgEntries."Emission CO2".Caption(), VerifyTotalEmissionCO2PerUnit, SustainabilityLedgEntries.Caption()));
+            VerifyTotalEmissionCO2,
+            TotalEmissionCO2,
+            StrSubstNo(EmissionAmountMustBeEqualErr, SustainabilityLedgEntries."Emission CO2".Caption(), VerifyTotalEmissionCO2, SustainabilityLedgEntries.Caption()));
         Assert.AreEqual(
-            VerifyTotalEmissionCH4PerUnit,
-            TotalEmissionCH4PerUnit,
-            StrSubstNo(EmissionAmountMustBeEqualErr, SustainabilityLedgEntries."Emission CH4".Caption(), VerifyTotalEmissionCH4PerUnit, SustainabilityLedgEntries.Caption()));
+            VerifyTotalEmissionCH4,
+            TotalEmissionCH4,
+            StrSubstNo(EmissionAmountMustBeEqualErr, SustainabilityLedgEntries."Emission CH4".Caption(), VerifyTotalEmissionCH4, SustainabilityLedgEntries.Caption()));
         Assert.AreEqual(
-            VerifyTotalEmissionN2OPerUnit,
-            TotalEmissionN2OPerUnit,
-            StrSubstNo(EmissionAmountMustBeEqualErr, SustainabilityLedgEntries."Emission N2O".Caption(), VerifyTotalEmissionN2OPerUnit, SustainabilityLedgEntries.Caption()));
+            VerifyTotalEmissionN2O,
+            TotalEmissionN2O,
+            StrSubstNo(EmissionAmountMustBeEqualErr, SustainabilityLedgEntries."Emission N2O".Caption(), VerifyTotalEmissionN2O, SustainabilityLedgEntries.Caption()));
     end;
 }

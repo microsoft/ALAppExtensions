@@ -1,41 +1,45 @@
 {
-    "id":  "abe5dab1-9b38-44fc-a5f2-747ca8f4551e",
-    "name":  "Dynamics GP Intelligent Cloud - US",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "This extension migrates US specific information during a GP migration.",
-    "description":  "This extension migrates US specific information during a GP migration, such as Vendor 1099 data.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2009037",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "58623bfa-0559-4bc2-ae1c-0979c29fd9e0",
-                             "name":  "Intelligent Cloud Base",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "feeb3504-556e-4790-b28d-a2b9ce302d81",
-                             "name":  "Dynamics GP Intelligent Cloud",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "features":  [
-                     "NoImplicitWith"
-                 ]
+  "id": "abe5dab1-9b38-44fc-a5f2-747ca8f4551e",
+  "name": "Dynamics GP Intelligent Cloud - US",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "This extension migrates US specific information during a GP migration.",
+  "description": "This extension migrates US specific information during a GP migration, such as Vendor 1099 data.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2009037",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/dynamics365/business-central/",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "58623bfa-0559-4bc2-ae1c-0979c29fd9e0",
+      "name": "Intelligent Cloud Base",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "feeb3504-556e-4790-b28d-a2b9ce302d81",
+      "name": "Dynamics GP Intelligent Cloud",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "b696b4c9-637c-49d1-a806-763ff8f0a20e",
+      "name": "IRS Forms",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "features": [
+    "NoImplicitWith"
+  ]
 }

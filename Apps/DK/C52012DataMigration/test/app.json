@@ -1,49 +1,47 @@
 {
-    "id":  "7c7412f7-da1e-41ad-a5b9-d7d503c16f1c",
-    "name":  "C5 2012 Data Migration Tests",
-    "publisher":  "Microsoft",
-    "brief":  "Tests for the C5 2012 Data Migration extension.",
-    "description":  "Tests for the C5 2012 Data Migration extension.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=859310",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=859310",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "3d5b2137-eeeb-4014-8489-41d37f8fd4c3",
-                             "name":  "C5 2012 Data Migration",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
-                             "name":  "Tests-TestLibraries",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  139500,
-                         "to":  139899
-                     },
-                     {
-                         "from":  148000,
-                         "to":  148499
-                     }
-                 ],
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "7c7412f7-da1e-41ad-a5b9-d7d503c16f1c",
+  "name": "C5 2012 Data Migration Tests",
+  "publisher": "Microsoft",
+  "brief": "Tests for the C5 2012 Data Migration extension.",
+  "description": "Tests for the C5 2012 Data Migration extension.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=859310",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=859310",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "3d5b2137-eeeb-4014-8489-41d37f8fd4c3",
+      "name": "C5 2012 Data Migration",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 139500,
+      "to": 139899
+    },
+    {
+      "from": 148000,
+      "to": 148499
+    }
+  ],
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

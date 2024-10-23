@@ -1,33 +1,31 @@
 {
-    "id":  "2078250c-40a0-40da-812a-8d635104dc80",
-    "name":  "Compensation Localization for Czech",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Provides functionality for offsetting receivables and payables in Business Central for the Czech Republic.",
-    "description":  "The Compensation app helps you offset receivables and payables when your customer is also your supplier. You can create entries either manually or automatically on the Compensation card and print the Agreement on Mutual Settlement of Receivables and Payables according to Czech legislation.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2150951",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2150951",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "267b59d3-7302-44c5-ba77-c87000380514",
-                             "name":  "Core Localization Pack for Czech",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "target":  "Cloud",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "2078250c-40a0-40da-812a-8d635104dc80",
+  "name": "Compensation Localization for Czech",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Provides functionality for offsetting receivables and payables in Business Central for the Czech Republic.",
+  "description": "The Compensation app helps you offset receivables and payables when your customer is also your supplier. You can create entries either manually or automatically on the Compensation card and print the Agreement on Mutual Settlement of Receivables and Payables according to Czech legislation.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2150951",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2150951",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "267b59d3-7302-44c5-ba77-c87000380514",
+      "name": "Core Localization Pack for Czech",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "target": "Cloud",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

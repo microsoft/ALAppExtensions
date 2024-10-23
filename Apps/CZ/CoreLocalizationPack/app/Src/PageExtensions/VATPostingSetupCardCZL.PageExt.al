@@ -12,8 +12,8 @@ pageextension 11757 "VAT Posting Setup Card CZL" extends "VAT Posting Setup Card
     {
         modify("Non-Deductible VAT %")
         {
-            Visible = false;
-            Enabled = false;
+            Visible = NonDeductibleVATPerVisible;
+            Enabled = NonDeductibleVATPerVisible;
         }
         modify("Allow Non-Deductible VAT")
         {
@@ -109,10 +109,13 @@ pageextension 11757 "VAT Posting Setup Card CZL" extends "VAT Posting Setup Card
 
     trigger OnOpenPage()
     begin
-        NonDeductibleVATVisible := NonDeductibleVAT.IsNonDeductibleVATEnabled();
+        NonDeductibleVATPerVisible := NonDeductibleVAT.IsNonDeductibleVATEnabled() and not NonDeductibleVATCZL.IsNonDeductibleVATEnabled();
+        NonDeductibleVATVisible := NonDeductibleVATCZL.IsNonDeductibleVATEnabled();
     end;
 
     var
         NonDeductibleVAT: Codeunit "Non-Deductible VAT";
+        NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
+        NonDeductibleVATPerVisible: Boolean;
         NonDeductibleVATVisible: Boolean;
 }

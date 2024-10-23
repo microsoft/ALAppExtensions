@@ -1,42 +1,38 @@
 {
-    "id":  "8afe7b40-8c87-4beb-ada0-451d1761bf95",
-    "name":  "_Exclude_APIV1_",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "APIV1",
-    "description":  "APIV1",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?LinkId=2182906",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2206603",
-    "contextSensitiveHelpUrl":  "https://learn.microsoft.com/dynamics365/business-central/",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  2146,
-                         "to":  2148
-                     },
-                     {
-                         "from":  5503,
-                         "to":  5503
-                     },
-                     {
-                         "from":  20000,
-                         "to":  20099
-                     }
-                 ],
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "8afe7b40-8c87-4beb-ada0-451d1761bf95",
+  "name": "_Exclude_APIV1_",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "APIV1",
+  "description": "APIV1",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?LinkId=2182906",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2206603",
+  "contextSensitiveHelpUrl": "https://learn.microsoft.com/dynamics365/business-central/",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 2146,
+      "to": 2148
+    },
+    {
+      "from": 5503,
+      "to": 5503
+    },
+    {
+      "from": 20000,
+      "to": 20099
+    }
+  ],
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

@@ -28,6 +28,14 @@ tableextension 30101 "Shpfy Sales Header" extends "Sales Header"
             Caption = 'Risk Level';
             FieldClass = FlowField;
             CalcFormula = lookup("Shpfy Order Header"."Risk Level" where("Shopify Order Id" = field("Shpfy Order Id")));
+            ObsoleteReason = 'This field is not imported.';
+#if not CLEAN25
+            ObsoleteState = Pending;
+            ObsoleteTag = '25.0';
+#else
+                            ObsoleteState = Removed;
+                            ObsoleteTag = '28.0';
+#endif
         }
         field(30103; "Shpfy Refund Id"; BigInteger)
         {

@@ -3,6 +3,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector;
+using Microsoft.eServices.EDocument;
 
 table 6361 "E-Doc. Ext. Connection Setup"
 {
@@ -61,6 +62,12 @@ table 6361 "E-Doc. Ext. Connection Setup"
         {
             Caption = 'Send Mode';
             DataClassification = EndUserIdentifiableInformation;
+        }
+        field(13; "E-Document Service"; Code[20])
+        {
+            TableRelation = "E-Document Service";
+            Caption = 'E-Document Service';
+            DataClassification = CustomerContent;
         }
     }
 

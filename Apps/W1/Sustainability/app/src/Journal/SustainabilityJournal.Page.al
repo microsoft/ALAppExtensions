@@ -93,6 +93,7 @@ page 6219 "Sustainability Journal"
                 field("Document Type"; Rec."Document Type")
                 {
                     ToolTip = 'Specifies the type of the document.';
+                    ValuesAllowed = " ", Invoice, "Credit Memo";
 
                     trigger OnValidate()
                     begin

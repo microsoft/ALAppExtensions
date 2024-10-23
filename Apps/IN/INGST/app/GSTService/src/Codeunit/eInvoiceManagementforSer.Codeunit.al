@@ -189,6 +189,7 @@ codeunit 18161 "e-Invoice Management for Ser."
     var
         TaxTransactionValue: Record "Tax Transaction Value";
     begin
+        TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
         TaxTransactionValue.SetRange("Tax Type", TaxType);
         TaxTransactionValue.SetRange("Tax Record ID", RecId);
         Exit(not TaxTransactionValue.IsEmpty());

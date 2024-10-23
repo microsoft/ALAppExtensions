@@ -162,7 +162,7 @@ codeunit 30160 "Shpfy Order Fulfillments"
             FulfillmentLine."Fulfillment Id" := FulfillmentId;
             FulfillmentLine."Order Line Id" := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JFulFillmentLine, 'lineItem.id'));
             FulfillmentLine.Quantity := JsonHelper.GetValueAsInteger(JFulFillmentLine, 'quantity');
-            FulfillmentLine."Is Gift Card" := JsonHelper.GetValueAsBoolean(JFulfillmentLine, 'lineItem.product.isGiftCard');
+            FulfillmentLine."Is Gift Card" := JsonHelper.GetValueAsBoolean(JFulfillmentLine, 'lineItem.isGiftCard');
             FulfillmentLine.Modify();
         end;
     end;

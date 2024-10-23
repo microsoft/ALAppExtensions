@@ -405,8 +405,7 @@ page 2752 "Add Universal Printers Wizard"
 
     local procedure AadOnpremSetup()
     var
-        [NonDebuggable]
-        AccessToken: Text;
+        AccessToken: SecretText;
     begin
         if not this.UniversalPrintGraphHelper.TryGetAccessToken(AccessToken, true) then
             Error(this.NoTokenForOnPremErr);
@@ -422,8 +421,7 @@ page 2752 "Add Universal Printers Wizard"
 
     local procedure ShowOnPremAadSetupStep(): Boolean
     var
-        [NonDebuggable]
-        AccessToken: Text;
+        AccessToken: SecretText;
     begin
         // Show only if OnPrem and the setup is not done
         if this.IsOnPrem then

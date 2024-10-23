@@ -1,28 +1,24 @@
 {
-    "id":  "cc11c22e-5ca3-423f-8804-88cac6d91983",
-    "name":  "Dynamics BC Excel Reports",
-    "publisher":  "Microsoft",
-    "brief":  "The Dynamics Business Central Excel Reports extension enables you to generate Excel reports that provide insights into your business data.",
-    "description":  "The Dynamics Business Central Excel Reports extension enables you to generate Excel reports that provide valuable insights into your data, like to investigate aged account receivables and payables, top customers trends, and trial balance data.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2204541",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2204541",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "Cloud"
+  "id": "cc11c22e-5ca3-423f-8804-88cac6d91983",
+  "name": "Dynamics BC Excel Reports",
+  "publisher": "Microsoft",
+  "brief": "The Dynamics Business Central Excel Reports extension enables you to generate Excel reports that provide insights into your business data.",
+  "description": "The Dynamics Business Central Excel Reports extension enables you to generate Excel reports that provide valuable insights into your data, like to investigate aged account receivables and payables, top customers trends, and trial balance data.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2204541",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "Cloud"
 }

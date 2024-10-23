@@ -1,3 +1,4 @@
+#pragma warning disable AS0032
 namespace Microsoft.Sustainability.RoleCenters;
 
 using Microsoft.API.V1;
@@ -18,6 +19,7 @@ using Microsoft.Sustainability.Account;
 using Microsoft.Sustainability.Certificate;
 using Microsoft.Sustainability.Journal;
 using Microsoft.Sustainability.Ledger;
+using Microsoft.Finance.Analysis.StatisticalAccount;
 using Microsoft.Sustainability.Reports;
 using Microsoft.Sustainability.Scorecard;
 using Microsoft.Sustainability.Setup;
@@ -43,9 +45,20 @@ page 6235 "Sustainability Manager RC"
             {
                 ApplicationArea = Basic, Suite;
             }
-            part(Scope; "Emission Scope Ratio Chart")
+            part(CO2RatioChart; "Emission Scope Ratio Chart")
             {
                 ApplicationArea = Basic, Suite;
+                Caption = 'CO2';
+            }
+            part(CH4RatioChart; "CH4 Emission Ratio Chart")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'CH4';
+            }
+            part(N2ORatioChart; "N2O Emission Ratio Chart")
+            {
+                ApplicationArea = Basic, Suite;
+                Caption = 'N2O';
             }
         }
     }
@@ -54,46 +67,54 @@ page 6235 "Sustainability Manager RC"
     {
         area(Creation)
         {
-            action(SustainabilityJournal)
+            group("Journals")
             {
-                ApplicationArea = Basic, Suite;
-                RunObject = Page "Sustainability Journal";
-                Caption = 'Sustainability Journal';
-                ToolTip = 'Executes the Sustainability Journal action.';
-            }
-            action(RecurringSustainabilityJnl)
-            {
-                ApplicationArea = Basic, Suite;
-                RunObject = Page "Recurring Sustainability Jnl.";
-                Caption = 'Recurring Sustainability Journals';
-                ToolTip = 'Executes the Recurring Sustainability Journals action.';
+                Caption = 'Journals';
+                action(SustainabilityJournal)
+                {
+                    ApplicationArea = Basic, Suite;
+                    RunObject = Page "Sustainability Journal";
+                    Caption = 'Sustainability Journal';
+                    ToolTip = 'Executes the Sustainability Journal action.';
+                }
+                action(RecurringSustainabilityJnl)
+                {
+                    ApplicationArea = Basic, Suite;
+                    RunObject = Page "Recurring Sustainability Jnl.";
+                    Caption = 'Recurring Sustainability Journals';
+                    ToolTip = 'Executes the Recurring Sustainability Journals action.';
+                }
             }
         }
         area(Reporting)
         {
-            action(TotalEmissions)
+            group("Reports")
             {
-                Caption = 'Total Emissions';
-                RunObject = report "Total Emissions";
-                Image = Report;
-                ToolTip = 'View total emissions details.';
-                ApplicationArea = Basic, Suite;
-            }
-            action(EmissionByCategory)
-            {
-                Caption = 'Emission By Category';
-                RunObject = report "Emission By Category";
-                Image = Report;
-                ToolTip = 'View emissions details by category.';
-                ApplicationArea = Basic, Suite;
-            }
-            action(EmissionPerFacility)
-            {
-                Caption = 'Emission Per Facility';
-                RunObject = report "Emission Per Facility";
-                Image = Report;
-                ToolTip = 'View emissions details by responsibility center.';
-                ApplicationArea = Basic, Suite;
+                Caption = 'Reports';
+                action(TotalEmissions)
+                {
+                    Caption = 'Total Emissions';
+                    RunObject = report "Total Emissions";
+                    Image = Report;
+                    ToolTip = 'View total emissions details.';
+                    ApplicationArea = Basic, Suite;
+                }
+                action(EmissionByCategory)
+                {
+                    Caption = 'Emission By Category';
+                    RunObject = report "Emission By Category";
+                    Image = Report;
+                    ToolTip = 'View emissions details by category.';
+                    ApplicationArea = Basic, Suite;
+                }
+                action(EmissionPerFacility)
+                {
+                    Caption = 'Emission Per Facility';
+                    RunObject = report "Emission Per Facility";
+                    Image = Report;
+                    ToolTip = 'View emissions details by responsibility center.';
+                    ApplicationArea = Basic, Suite;
+                }
             }
         }
         area(Sections)
@@ -111,14 +132,14 @@ page 6235 "Sustainability Manager RC"
                 action("Sust. Account Categories")
                 {
                     ApplicationArea = Basic, Suite;
-                    RunObject = Page "Sust. Account Categories";
+                    RunObject = Page "Sustain. Account Categories";
                     Caption = 'Sust. Account Categories';
                     ToolTip = 'Executes the Sust. Account Categories action.';
                 }
                 action("Sust. Acc. Subcategory")
                 {
                     ApplicationArea = Basic, Suite;
-                    RunObject = Page "Sust. Acc. Subcategory";
+                    RunObject = Page "Sustain. Account Subcategories";
                     Caption = 'Sust. Acc. Subcategory';
                     ToolTip = 'Executes the Sust. Acc. Subcategory action.';
                 }
@@ -147,8 +168,8 @@ page 6235 "Sustainability Manager RC"
                 {
                     ApplicationArea = Basic, Suite;
                     RunObject = Page "Sustainability Scorecards";
-                    Caption = 'Sust. Scoredcards';
-                    ToolTip = 'Executes the Sust. Scoredcards action.';
+                    Caption = 'Sust. Scorecards';
+                    ToolTip = 'Executes the Sust. Scorecards action.';
                 }
                 action("Goals")
                 {
@@ -225,9 +246,9 @@ page 6235 "Sustainability Manager RC"
                 }
                 action("Statistical Accounts")
                 {
-                    ApplicationArea = Dimensions;
+                    ApplicationArea = Suite;
                     Caption = 'Statistical Accounts';
-                    RunObject = page "Dimensions";
+                    RunObject = page "Statistical Account List";
                     Tooltip = 'Open the Statistical Accounts page.';
                 }
                 action("Allocations")
@@ -340,3 +361,4 @@ page 6235 "Sustainability Manager RC"
         }
     }
 }
+#pragma warning restore

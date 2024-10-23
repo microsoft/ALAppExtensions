@@ -4,6 +4,7 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.Finance.VAT.Setup;
 
+using Microsoft.Finance.VAT.Calculation;
 using Microsoft.Finance.GeneralLedger.Account;
 using Microsoft.Finance.ReceivablesPayables;
 using Microsoft.Finance.VAT.Reporting;
@@ -17,6 +18,14 @@ tableextension 11738 "VAT Posting Setup CZL" extends "VAT Posting Setup"
             trigger OnAfterValidate()
             begin
                 AssertThatNonDeductibleVATPctIsNotUsed();
+            end;
+        }
+        modify("Allow Non-Deductible VAT")
+        {
+            trigger OnBeforeValidate()
+            begin
+                if "Allow Non-Deductible VAT" = "Allow Non-Deductible VAT"::"Do not apply CZL" then
+                    NonDeductibleVATCZL.CheckNonDeductibleVATEnabled();
             end;
         }
         field(11770; "Reverse Charge Check CZL"; Enum "Reverse Charge Check CZL")
@@ -101,6 +110,7 @@ tableextension 11738 "VAT Posting Setup CZL" extends "VAT Posting Setup"
     }
 
     var
+        NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
         NotUsedNonDeductibleVATPctErr: Label 'The "Non-Deductible VAT %" field should not be used. Use the "Non-Deductible VAT Setup" page instead.';
 
     trigger OnAfterInsert()
@@ -138,8 +148,23 @@ tableextension 11738 "VAT Posting Setup CZL" extends "VAT Posting Setup"
         if IsHandled then
             exit;
 
+        if not NonDeductibleVATCZL.IsNonDeductibleVATEnabled() then
+            exit;
+
         if "Non-Deductible VAT %" <> 0 then
             Error(NotUsedNonDeductibleVATPctErr);
+    end;
+
+    internal procedure UpdateAllowNonDeductibleVAT()
+    begin
+        case true of
+            "Non-Deductible VAT %" = 0:
+                "Allow Non-Deductible VAT" := "Allow Non-Deductible VAT"::"Do Not Allow";
+            "Non-Deductible VAT %" = 100:
+                "Allow Non-Deductible VAT" := "Allow Non-Deductible VAT"::"Do not apply CZL";
+            else
+                "Allow Non-Deductible VAT" := "Allow Non-Deductible VAT"::"Allow";
+        end;
     end;
 
     [IntegrationEvent(false, false)]

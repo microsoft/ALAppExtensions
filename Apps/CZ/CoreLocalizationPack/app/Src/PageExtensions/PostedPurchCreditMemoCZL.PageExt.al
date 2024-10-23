@@ -118,20 +118,9 @@ pageextension 11746 "Posted Purch. Credit Memo CZL" extends "Posted Purchase Cre
         }
         addafter("Invoice Details")
         {
-#if not CLEAN23
-#pragma warning disable AS0011
-            group("Foreign Trade")
-#pragma warning restore AS0011
-#else
             group("Foreign Trade CZL")
-#endif
             {
                 Caption = 'Foreign Trade';
-#if not CLEAN23
-                ObsoleteState = Pending;
-                ObsoleteTag = '23.0';
-                ObsoleteReason = 'The group will be renamed from Foreign Trade to Foreign Trade CZL.';
-#endif
                 field("Language Code CZL"; Rec."Language Code")
                 {
                     ApplicationArea = Basic, Suite;

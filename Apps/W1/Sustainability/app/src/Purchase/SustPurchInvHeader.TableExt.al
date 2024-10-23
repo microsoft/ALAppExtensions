@@ -1,6 +1,7 @@
 namespace Microsoft.Sustainability.Purchase;
 
 using Microsoft.Sustainability.Setup;
+using Microsoft.Sustainability.Ledger;
 using Microsoft.Purchases.History;
 
 tableextension 6217 "Sust. Purch. Inv. Header" extends "Purch. Inv. Header"
@@ -18,7 +19,7 @@ tableextension 6217 "Sust. Purch. Inv. Header" extends "Purch. Inv. Header"
         {
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
-            CalcFormula = sum("Purch. Inv. Line"."Emission CO2" where("Document No." = field("No.")));
+            CalcFormula = sum("Sustainability Ledger Entry"."Emission CO2" where("Document No." = field("No."), "Document Type" = filter(Invoice | "GHG Credit")));
             Caption = 'Emission CO2';
             Editable = false;
             FieldClass = FlowField;
@@ -27,7 +28,7 @@ tableextension 6217 "Sust. Purch. Inv. Header" extends "Purch. Inv. Header"
         {
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
-            CalcFormula = sum("Purch. Inv. Line"."Emission CH4" where("Document No." = field("No.")));
+            CalcFormula = sum("Sustainability Ledger Entry"."Emission CH4" where("Document No." = field("No."), "Document Type" = filter(Invoice | "GHG Credit")));
             Caption = 'Emission CH4';
             Editable = false;
             FieldClass = FlowField;
@@ -36,7 +37,7 @@ tableextension 6217 "Sust. Purch. Inv. Header" extends "Purch. Inv. Header"
         {
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
-            CalcFormula = sum("Purch. Inv. Line"."Emission N2O" where("Document No." = field("No.")));
+            CalcFormula = sum("Sustainability Ledger Entry"."Emission N2O" where("Document No." = field("No."), "Document Type" = filter(Invoice | "GHG Credit")));
             Caption = 'Emission N2O';
             Editable = false;
             FieldClass = FlowField;

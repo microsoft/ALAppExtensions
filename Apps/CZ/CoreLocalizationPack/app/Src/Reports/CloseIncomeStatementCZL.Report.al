@@ -248,7 +248,7 @@ report 11753 "Close Income Statement CZL"
                     {
                         ApplicationArea = Basic, Suite;
                         Caption = 'Gen. Journal Template';
-                        TableRelation = "Gen. Journal Template";
+                        TableRelation = "Gen. Journal Template" where(Type = const(General), Recurring = const(false));
                         ToolTip = 'Specifies the general journal template that is used by the batch job.';
 
                         trigger OnValidate()

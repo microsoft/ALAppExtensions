@@ -15,14 +15,14 @@ codeunit 139659 "E-Doc. Line Matching Test"
         LibraryPermission: Codeunit "Library - Lower Permissions";
         IsInitialized: Boolean;
 
-    procedure Initialize(Integration: Enum "E-Document Integration")
+    procedure Initialize()
     begin
         LibraryPermission.SetOutsideO365Scope();
         if IsInitialized then
             exit;
 
         LibraryEdoc.SetupStandardVAT();
-        LibraryEdoc.SetupStandardPurchaseScenario(Vendor, EDocumentService, Enum::"E-Document Format"::Mock, Integration);
+        LibraryEdoc.SetupStandardPurchaseScenario(Vendor, EDocumentService, Enum::"E-Document Format"::Mock, Enum::"E-Document Integration"::Mock);
 
         IsInitialized := true;
     end;

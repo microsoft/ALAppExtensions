@@ -1,64 +1,64 @@
 {
-    "id":  "7fbfa99a-6ec6-402c-ac7b-a41bc035b1e4",
-    "name":  "Service Declaration IT Tests",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Tests for the Microsoft Service Declaration IT extension.",
-    "description":  "Tests for the Microsoft Service Declaration IT extension.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://learn.microsoft.com/en-us/dynamics365/business-central/finance-how-setup-use-service-declaration",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "platform":  "25.0.0.0",
-    "application":  "25.0.0.0",
-    "dependencies":  [
-                         {
-                             "id":  "e2ae191d-8829-44c3-a373-3749a2742d4d",
-                             "name":  "Service Declaration",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "ed85bbd8-074d-4541-9651-e3eb86e1390f",
-                             "name":  "Service Declaration IT",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
-                             "name":  "Tests-TestLibraries",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "9856ae4f-d1a7-46ef-89bb-6ef056398228",
-                             "name":  "System Application Test Library",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5095f467-0a01-4b99-99d1-9ff1237d286f",
-                             "publisher":  "Microsoft",
-                             "name":  "Library Variable Storage",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "idRanges":  [
-                     {
-                         "from":  144109,
-                         "to":  144109
-                     },
-                     {
-                         "from":  144112,
-                         "to":  144112
-                     }
-                 ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2141039",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "target":  "OnPrem"
+  "id": "7fbfa99a-6ec6-402c-ac7b-a41bc035b1e4",
+  "name": "Service Declaration IT Tests",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Tests for the Microsoft Service Declaration IT extension.",
+  "description": "Tests for the Microsoft Service Declaration IT extension.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://learn.microsoft.com/en-us/dynamics365/business-central/finance-how-setup-use-service-declaration",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "platform": "26.0.0.0",
+  "application": "26.0.0.0",
+  "dependencies": [
+    {
+      "id": "e2ae191d-8829-44c3-a373-3749a2742d4d",
+      "name": "Service Declaration",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "ed85bbd8-074d-4541-9651-e3eb86e1390f",
+      "name": "Service Declaration IT",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "9856ae4f-d1a7-46ef-89bb-6ef056398228",
+      "name": "System Application Test Library",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+      "publisher": "Microsoft",
+      "name": "Library Variable Storage",
+      "version": "26.0.0.0"
+    }
+  ],
+  "idRanges": [
+    {
+      "from": 144109,
+      "to": 144109
+    },
+    {
+      "from": 144112,
+      "to": 144112
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2141039",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "target": "OnPrem"
 }

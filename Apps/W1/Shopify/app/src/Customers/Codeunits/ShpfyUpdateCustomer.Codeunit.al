@@ -112,7 +112,7 @@ codeunit 30124 "Shpfy Update Customer"
         if ShopifyCustomer.Email <> '' then
             Customer.Validate("E-Mail", CopyStr(ShopifyCustomer.Email, 1, MaxStrLen(Customer."E-Mail")));
 
-        if ShopifyTaxArea.Get(CustomerAddress."Country/Region Code", CustomerAddress."Province Name") then begin // TODONAT
+        if ShopifyTaxArea.Get(CustomerAddress."Country/Region Code", CustomerAddress."Province Name") then begin
             if (ShopifyTaxArea."Tax Area Code" <> '') then begin
                 Customer.Validate("Tax Area Code", ShopifyTaxArea."Tax Area Code");
                 Customer.Validate("Tax Liable", ShopifyTaxArea."Tax Liable");

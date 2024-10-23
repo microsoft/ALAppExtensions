@@ -407,6 +407,7 @@ report 18467 "Delivery Challan"
         if DeliveryChallanLine.FindSet() then
             repeat
                 TaxTransactionValue.Reset();
+                TaxTransactionValue.SetCurrentKey("Tax Record ID", "Tax Type");
                 TaxTransactionValue.SetRange("Tax Record ID", DeliveryChallanLine.RecordId);
                 TaxTransactionValue.SetRange("Tax Type", GSTSetup."GST Tax Type");
                 TaxTransactionValue.SetRange("Value Type", TaxTransactionValue."Value Type"::COMPONENT);

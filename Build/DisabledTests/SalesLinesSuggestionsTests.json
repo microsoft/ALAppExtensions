@@ -68,5 +68,30 @@
         "codeunitId": 149826,
         "CodeunitName": "Extract Info. Accuracy",
         "Method": "*"
+    },
+    {
+        "codeunitId": 139782,
+        "CodeunitName": "Item Entity Search",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 149823,
+        "CodeunitName": "Load Suggestions from csv",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 149828,
+        "CodeunitName": "Search Items With Filters Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139788,
+        "CodeunitName": "Save File Mapping Test",
+        "Method": "*"
+    },
+    {
+        "codeunitId": 139789,
+        "CodeunitName": "Attachment Data Size Test",
+        "Method": "*"
     }
 ]

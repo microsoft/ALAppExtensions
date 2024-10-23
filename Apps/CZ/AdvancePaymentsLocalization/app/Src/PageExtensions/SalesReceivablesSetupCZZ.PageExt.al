@@ -8,7 +8,17 @@ using Microsoft.Sales.Setup;
 
 pageextension 31107 "Sales & Receivables Setup CZZ" extends "Sales & Receivables Setup"
 {
-
+    layout
+    {
+        modify("Posted Prepmt. Inv. Nos.")
+        {
+            Visible = false;
+        }
+        modify("Posted Prepmt. Cr. Memo Nos.")
+        {
+            Visible = false;
+        }
+    }
     actions
     {
         addlast(navigation)

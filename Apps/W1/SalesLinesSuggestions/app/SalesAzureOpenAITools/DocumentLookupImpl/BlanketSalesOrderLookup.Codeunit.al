@@ -19,13 +19,13 @@ codeunit 7281 BlanketSalesOrderLookup implements DocumentLookupSubType
     var
         SourceSalesHeader: Record "Sales Header";
         SalesHeader: Record "Sales Header";
-        DocumentLookup: Codeunit "Document Lookup Function";
+        SearchItemsWithFiltersFunc: Codeunit "Search Items With Filters Func";
         DocumentNo: Text;
         StartDateStr: Text;
         EndDateStr: Text;
         FoundDocNo: Code[20];
     begin
-        DocumentLookup.GetParametersFromCustomDimension(CustomDimension, SourceSalesHeader, DocumentNo, StartDateStr, EndDateStr);
+        SearchItemsWithFiltersFunc.GetParametersFromCustomDimension(CustomDimension, SourceSalesHeader, DocumentNo, StartDateStr, EndDateStr);
         SalesHeader.SetLoadFields("No.");
         // Setup SecurityFilter
         SalesHeader.SetSecurityFilterOnRespCenter();

@@ -6,16 +6,15 @@ pageextension 6222 "Sust. Item Card" extends "Item Card"
 {
     layout
     {
-        addbefore("Posting Details")
+        addafter(Warehouse)
         {
             group("Sustainability")
             {
-                Visible = Rec.Type = Rec.Type::Inventory;
                 Caption = 'Sustainability';
                 field("GHG Credit"; Rec."GHG Credit")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the GHG Credit of Item';
+                    ToolTip = 'Specifies the Greenhouse Gas Credit of the Item.';
                 }
                 field("Carbon Credit Per UOM"; Rec."Carbon Credit Per UOM")
                 {

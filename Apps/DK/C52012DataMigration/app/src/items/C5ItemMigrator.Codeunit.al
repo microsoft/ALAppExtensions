@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.C5;
 
-#if not CLEAN23
+#if not CLEAN25
 #else
 using Microsoft.Pricing.Asset;
 using Microsoft.Pricing.Source;
@@ -449,7 +449,7 @@ codeunit 1867 "C5 Item Migrator"
             until C5InvenPrice.Next() = 0;
     end;
 
-#if not CLEAN23
+#if not CLEAN25
     local procedure CreateSalesLineDiscountIfNeeded(C5InvenCustDisc: Record "C5 InvenCustDisc")
     var
         SalesTypeToSet: Option Customer,"Customer Disc. Group","All Customers",Campaign;
@@ -559,7 +559,7 @@ codeunit 1867 "C5 Item Migrator"
         UninitializedItemDataMigrationFacade.CreateItemDiscGroupIfNeeded(C5DiscountGroupCode, GroupDescription);
     end;
 
-#if not CLEAN23
+#if not CLEAN25
     local procedure CreateNavSalesPriceIfNeeded(C5InvenPrice: Record "C5 InvenPrice")
     var
         SalesType: Option Customer,"Customer Price Group","All Customers",Campaign;

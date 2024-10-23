@@ -1,41 +1,37 @@
 {
-    "id":  "98860128-1333-4598-a3da-0590804648b7",
-    "name":  "QR-Bill Management for Switzerland",
-    "publisher":  "Microsoft",
-    "brief":  "Easily generate, send, and import QR-bills in Dynamics 365 Business Central",
-    "description":  "QR-bills enable easier processing and payment of received invoices from vendors. The QR-Bill Management app for Switzerland allows you to generate QR-bills that are compliant with the Swiss standard to receive QR-bills either via file import or direct input scan. All received QR-bills are handled via the Incoming Documents feature from where purchase journals can be created directly from the imported QR-bills. Finally, this app ensures that all payment references from  QR-bill are carried through SEPA files to and from the bank and back to the issuer of the QR-bill for easy reconciliation. With this app, you can easily comply with the Swiss requirements for the QR-bills.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2194212",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2194212",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "internalsVisibleTo":  [
-                               {
-                                   "id":  "9076c230-cd86-4e51-883b-7fee710cb7f6",
-                                   "name":  "QR-Bill Management for Switzerland Tests",
-                                   "publisher":  "Microsoft"
-                               }
-                           ],
-    "screenshots":  [
-
-                    ],
-    "idRanges":  [
-                     {
-                         "from":  11500,
-                         "to":  11520
-                     }
-                 ],
-    "platform":  "25.0.0.0",
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "98860128-1333-4598-a3da-0590804648b7",
+  "name": "QR-Bill Management for Switzerland",
+  "publisher": "Microsoft",
+  "brief": "Easily generate, send, and import QR-bills in Dynamics 365 Business Central",
+  "description": "QR-bills enable easier processing and payment of received invoices from vendors. The QR-Bill Management app for Switzerland allows you to generate QR-bills that are compliant with the Swiss standard to receive QR-bills either via file import or direct input scan. All received QR-bills are handled via the Incoming Documents feature from where purchase journals can be created directly from the imported QR-bills. Finally, this app ensures that all payment references from  QR-bill are carried through SEPA files to and from the bank and back to the issuer of the QR-bill for easy reconciliation. With this app, you can easily comply with the Swiss requirements for the QR-bills.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2194212",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2194212",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "internalsVisibleTo": [
+    {
+      "id": "9076c230-cd86-4e51-883b-7fee710cb7f6",
+      "name": "QR-Bill Management for Switzerland Tests",
+      "publisher": "Microsoft"
+    }
+  ],
+  "screenshots": [],
+  "idRanges": [
+    {
+      "from": 11500,
+      "to": 11520
+    }
+  ],
+  "platform": "26.0.0.0",
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

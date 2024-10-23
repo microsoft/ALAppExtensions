@@ -1,39 +1,37 @@
 {
-    "id":  "0242c240-2336-450f-9678-2f13f4ce9a6e",
-    "name":  "Basic Experience",
-    "publisher":  "Microsoft",
-    "brief":  "The Basic Experience extension provides core financial capabilities for small businesses.",
-    "description":  "The Basic Experience gives small companies access to the Business Central features that are at the absolute core of doing business. For example, when you install this extension you can invoice customers, pay vendors, manage inventory, and keep your finances in order.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2130900",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2130800",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=",
-    "contextSensitiveHelpUrl":  "https://AL16.com/help/",
-    "logo":  "logo/ExtensionLogo.png",
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  20600,
-                         "to":  20699
-                     }
-                 ],
-    "target":  "Cloud",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "supportedLocales":  [
-                             "da-DK",
-                             "is-IS",
-                             "en-AU"
-                         ],
-    "features":  [
-                     "TranslationFile"
-                 ],
-    "application":  "25.0.0.0"
+  "id": "0242c240-2336-450f-9678-2f13f4ce9a6e",
+  "name": "Basic Experience",
+  "publisher": "Microsoft",
+  "brief": "The Basic Experience extension provides core financial capabilities for small businesses.",
+  "description": "The Basic Experience gives small companies access to the Business Central features that are at the absolute core of doing business. For example, when you install this extension you can invoice customers, pay vendors, manage inventory, and keep your finances in order.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2130900",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2130800",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=",
+  "contextSensitiveHelpUrl": "https://AL16.com/help/",
+  "logo": "logo/ExtensionLogo.png",
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 20600,
+      "to": 20699
+    }
+  ],
+  "target": "Cloud",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "supportedLocales": [
+    "da-DK",
+    "is-IS",
+    "en-AU"
+  ],
+  "features": [
+    "TranslationFile"
+  ],
+  "application": "26.0.0.0"
 }

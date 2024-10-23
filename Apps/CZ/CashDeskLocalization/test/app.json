@@ -1,57 +1,55 @@
 {
-    "id":  "d4a6843d-10a0-491b-bb0c-c1cca86eece2",
-    "name":  "Cash Desk Localization for Czech Tests",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Tests for the Cash Desk Localization for Czech application.",
-    "description":  "Tests for the Cash Desk Localization for Czech application.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2009120",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2118088",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2118088",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "267b59d3-7302-44c5-ba77-c87000380514",
-                             "name":  "Core Localization Pack for Czech",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "bc0899d1-2cc9-4091-93f8-032538dbb70f",
-                             "name":  "Cash Desk Localization for Czech",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5d86850b-0d76-4eca-bd7b-951ad998e997",
-                             "name":  "Tests-TestLibraries",
-                             "publisher":  "Microsoft",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "5095f467-0a01-4b99-99d1-9ff1237d286f",
-                             "publisher":  "Microsoft",
-                             "name":  "Library Variable Storage",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  148000,
-                         "to":  148499
-                     }
-                 ],
-    "target":  "Cloud",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "d4a6843d-10a0-491b-bb0c-c1cca86eece2",
+  "name": "Cash Desk Localization for Czech Tests",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Tests for the Cash Desk Localization for Czech application.",
+  "description": "Tests for the Cash Desk Localization for Czech application.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2009120",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2118088",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2118088",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "267b59d3-7302-44c5-ba77-c87000380514",
+      "name": "Core Localization Pack for Czech",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "bc0899d1-2cc9-4091-93f8-032538dbb70f",
+      "name": "Cash Desk Localization for Czech",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5d86850b-0d76-4eca-bd7b-951ad998e997",
+      "name": "Tests-TestLibraries",
+      "publisher": "Microsoft",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "5095f467-0a01-4b99-99d1-9ff1237d286f",
+      "publisher": "Microsoft",
+      "name": "Library Variable Storage",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 148000,
+      "to": 148499
+    }
+  ],
+  "target": "Cloud",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

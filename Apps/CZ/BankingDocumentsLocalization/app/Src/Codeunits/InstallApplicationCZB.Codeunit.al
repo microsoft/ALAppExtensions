@@ -520,8 +520,8 @@ codeunit 31330 "Install Application CZB"
     local procedure InitExpLauncherSEPA()
     var
         BankExportImportSetup: Record "Bank Export/Import Setup";
-        SEPACZCodeTok: Label 'SEPACZ', Locked = true;
-        SEPACZNameTxt: Label 'SEPA Czech';
+        SEPACZCodeTok: Label 'SEPACZPAIN00100109', Locked = true;
+        SEPACZNameTxt: Label 'SEPA Czech - payment orders pain.001.001.09';
     begin
         if not BankExportImportSetup.Get(SEPACZCodeTok) then begin
             BankExportImportSetup.Init();
@@ -531,7 +531,7 @@ codeunit 31330 "Install Application CZB"
         BankExportImportSetup.Name := SEPACZNameTxt;
         BankExportImportSetup.Direction := BankExportImportSetup.Direction::Export;
         BankExportImportSetup."Processing Codeunit ID" := Codeunit::"Export Launcher SEPA CZB";
-        BankExportImportSetup."Processing XMLport ID" := XmlPort::"SEPA CT pain.001.001.03";
+        BankExportImportSetup."Processing XMLport ID" := XmlPort::"SEPA CT pain.001.001.09";
         BankExportImportSetup."Check Export Codeunit" := Codeunit::"SEPA CT-Check Line";
         BankExportImportSetup."Preserve Non-Latin Characters" := false;
         BankExportImportSetup.Modify();

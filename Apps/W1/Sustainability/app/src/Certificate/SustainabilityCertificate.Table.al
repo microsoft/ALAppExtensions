@@ -13,6 +13,7 @@ table 6222 "Sustainability Certificate"
         {
             DataClassification = CustomerContent;
             Caption = 'No.';
+            NotBlank = true;
         }
         field(2; "Name"; Text[100])
         {
@@ -61,7 +62,7 @@ table 6222 "Sustainability Certificate"
 
     keys
     {
-        key(Key1; "No.")
+        key(Key1; Type, "No.")
         {
             Clustered = true;
         }

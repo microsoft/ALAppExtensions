@@ -1,34 +1,30 @@
 {
-    "id":  "c512d720-63b9-4b26-b062-a0c09b4ed322",
-    "name":  "Company Hub",
-    "publisher":  "Microsoft",
-    "brief":  "Company Hub lets you easily access all companies you work in. View key KPIs and manage User Tasks for each company.",
-    "description":  "Company Hub gives you a list of the companies you work in. You can easily add new companies by just providing a URL and a name for the company. The list of companies contains a few KPIs for the company that is displayed for the user if they have the needed access. You also have a list of assigned user tasks for a given company, so you can keep track of work required for each company. The Company Hub gives you either a dedicated Company Hub role center (if you use one tenant as the main access point) or a similar task page if you use the Company Hub from within a company where your role requires you to have a different main role center. Both have the same features and the same easy access to the companies you work in.",
-    "version":  "25.0.0.0",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=2182906",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2206520",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2206520",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-
-                     ],
-    "screenshots":  [
-
-                    ],
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  1,
-                         "to":  9999
-                     }
-                 ],
-    "target":  "OnPrem",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  false,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               },
-    "application":  "25.0.0.0"
+  "id": "c512d720-63b9-4b26-b062-a0c09b4ed322",
+  "name": "Company Hub",
+  "publisher": "Microsoft",
+  "brief": "Company Hub lets you easily access all companies you work in. View key KPIs and manage User Tasks for each company.",
+  "description": "Company Hub gives you a list of the companies you work in. You can easily add new companies by just providing a URL and a name for the company. The list of companies contains a few KPIs for the company that is displayed for the user if they have the needed access. You also have a list of assigned user tasks for a given company, so you can keep track of work required for each company. The Company Hub gives you either a dedicated Company Hub role center (if you use one tenant as the main access point) or a similar task page if you use the Company Hub from within a company where your role requires you to have a different main role center. Both have the same features and the same easy access to the companies you work in.",
+  "version": "26.0.0.0",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=2182906",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2206520",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2206520",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [],
+  "screenshots": [],
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 1,
+      "to": 9999
+    }
+  ],
+  "target": "OnPrem",
+  "resourceExposurePolicy": {
+    "allowDebugging": false,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  },
+  "application": "26.0.0.0"
 }

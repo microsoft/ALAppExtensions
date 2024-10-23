@@ -2,15 +2,13 @@ namespace Microsoft.Foundation.DataSearch;
 
 using System.Telemetry;
 
-#pragma warning disable AS0040 // SourceTable has been removed
 page 2680 "Data Search"
-#pragma warning restore AS0040
 {
     PageType = ListPlus;
-    Caption = 'Search in company data [Preview]';
+    Caption = 'Search in company data';
     ApplicationArea = All;
     AboutTitle = 'About Search in company data';
-    AboutText = 'Enter one or more search words in the search field. To see which tables are being searched, select Results | Show tables to search.';
+    AboutText = 'Enter one or more search words in the search field. To see what data is being searched, select Set up where to search.';
     InherentEntitlements = X;
 
     layout
@@ -44,6 +42,8 @@ page 2680 "Data Search"
                             exit;
                         if StrLen(FirstString) < 3 then
                             exit;
+                        if not ValidateFilter(FirstString) then
+                            Error(FilterExprErr, FirstString);
                         LaunchSearch();
                     end;
                 }
@@ -103,7 +103,8 @@ page 2680 "Data Search"
         QueuedSearches: List of [Integer];
         NoOfParallelTasks: Integer;
         NoTablesDefinedErr: Label 'No tables defined for search.';
-        StatusSearchLbl: Label 'Searching for "%1"...', Comment = '%1 can be any text';
+        FilterExprErr: Label 'The search term %1 cannot be used as a filter.', Comment = '%1 is the first word the user entered';
+        StatusSearchLbl: Label 'Searching for "%1"', Comment = '%1 can be any text';
         DataSearchStartedTelemetryLbl: Label 'Data Search started', Locked = true;
         TelemetryCategoryLbl: Label 'Data Search', Locked = true;
 
@@ -125,6 +126,14 @@ page 2680 "Data Search"
         FeatureUptakeStatus: Enum "Feature Uptake Status";
     begin
         FeatureTelemetry.LogUptake('0000IOJ', TelemetryCategoryLbl, FeatureUptakeStatus::Discovered);
+    end;
+
+    [TryFunction]
+    local procedure ValidateFilter(FilterValue: text)
+    var
+        DataSearchResultFilterTest: Record "Data Search Result";
+    begin
+        DataSearchResultFilterTest.SetFilter(Description, '*' + FilterValue + '*');  // will throw an error if filter is illegal
     end;
 
     internal procedure LaunchSearch()
@@ -154,7 +163,7 @@ page 2680 "Data Search"
             error(NoTablesDefinedErr);
 
         SearchInProgress := true;
-        DisplaySearchString := StrSubstNo(StatusSearchLbl, SearchString);
+        DisplaySearchString := GetStatusText(DataSearchSetupTable.Count());
         repeat
             QueueSearchInBackground(DataSearchSetupTable."Table/Type ID");
             NoOfTablesToSearch += 1;
@@ -181,7 +190,7 @@ page 2680 "Data Search"
             if ModifiedTablesSetup.Count() > 0 then begin
                 CancelRunningTasks();
                 SearchInProgress := true;
-                DisplaySearchString := StrSubstNo(StatusSearchLbl, SearchString);
+                DisplaySearchString := GetStatusText(ModifiedTablesSetup.Count());
                 foreach TableTypeID in ModifiedTablesSetup do
                     QueueSearchInBackground(TableTypeID);
             end;
@@ -201,6 +210,7 @@ page 2680 "Data Search"
     begin
         if NoOfParallelTasks = 0 then
             NoOfParallelTasks := 5;
+        DisplaySearchString := GetStatusText(QueuedSearches.Count() + ActiveSearches.Count());
         if QueuedSearches.Count() = 0 then
             exit;
         if ActiveSearches.Count() >= NoOfParallelTasks then
@@ -221,10 +231,23 @@ page 2680 "Data Search"
             exit;
         Args.Add('TableTypeID', Format(TableTypeID));
         Args.Add('SearchString', SearchString);
-        if not CurrPage.EnqueueBackgroundTask(NewTaskID, Codeunit::"Data Search in Table", Args) then
+        if not CurrPage.EnqueueBackgroundTask(NewTaskID, Codeunit::"Data Search in Table", Args, 120000, PageBackgroundTaskErrorLevel::Error) then
             exit(false);
         ActiveSearches.Add(NewTaskID, TableTypeID);
         exit(true);
+    end;
+
+    local procedure GetStatusText(NoOfRemainingSearches: Integer): Text
+    var
+        NewStatus: TextBuilder;
+        i: Integer;
+    begin
+        if NoOfRemainingSearches = 0 then
+            exit(SearchString);
+        NewStatus.Append(StrSubstNo(StatusSearchLbl, SearchString));
+        for i := 1 to NoOfRemainingSearches do
+            NewStatus.Append('.');
+        exit(NewStatus.ToText());
     end;
 
     local procedure CancelRunningTasks()
@@ -238,36 +261,40 @@ page 2680 "Data Search"
     end;
 
     trigger OnPageBackgroundTaskCompleted(TaskId: Integer; Results: Dictionary of [Text, Text])
+    begin
+        PageBackgroundFinished(TaskId, Results);
+    end;
+
+    trigger OnPageBackgroundTaskError(TaskId: Integer; ErrorCode: Text; ErrorText: Text; ErrorCallStack: Text; var IsHandled: Boolean)
+    var
+        Results: Dictionary of [Text, Text];
+    begin
+        IsHandled := true;
+        Results.Add('*ERROR*', ErrorText);
+        PageBackgroundFinished(TaskId, Results);
+    end;
+
+    local procedure PageBackgroundFinished(TaskId: Integer; var Results: Dictionary of [Text, Text])
     var
         TableTypeID: Integer;
     begin
-        if not ActiveSearches.ContainsKey(TaskId) then
-            exit;
-        TableTypeID := ActiveSearches.Get(TaskId);
-        ActiveSearches.Remove(TaskId);
-        if (ActiveSearches.Count() = 0) and (QueuedSearches.Count() = 0) then
-            DisplaySearchString := SearchString
-        else
-            DeQueueSearchInBackground();
+        if ActiveSearches.ContainsKey(TaskID) then begin
+            TableTypeID := ActiveSearches.Get(TaskId);
+            ActiveSearches.Remove(TaskId);
+        end;
 
         AddResults(TableTypeID, Results);
         if (ActiveSearches.Count() = 0) and (QueuedSearches.Count() = 0) then begin
+            DisplaySearchString := SearchString;
             SearchInProgress := false;
             CurrPage.Update(false);
-        end;
+        end else
+            DeQueueSearchInBackground();
     end;
 
     protected procedure AddResults(TableTypeId: Integer; var Results: Dictionary of [Text, Text])
     begin
         CurrPage.LinesPart.Page.AddResults(TableTypeID, Results);
-    end;
-
-    trigger OnPageBackgroundTaskError(TaskId: Integer; ErrorCode: Text; ErrorText: Text; ErrorCallStack: Text; var IsHandled: Boolean)
-    begin
-        IsHandled := true;
-        if ActiveSearches.ContainsKey(TaskID) then
-            ActiveSearches.Remove(TaskId);
-        DeQueueSearchInBackground();
     end;
 
     procedure SetSearchString(NewSearchString: Text)

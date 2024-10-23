@@ -1,53 +1,51 @@
 {
-    "id":  "fbc443fd-02a7-4e4e-a697-883efe7bc33b",
-    "name":  "GST Distribution",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Contains features for GST distribution for services.",
-    "description":  "GST Distribution enables you to distribute GST receivables to locations.",
-    "features":  [
-                     "TranslationFile"
-                 ],
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=724013",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2139720",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "d3c551dd-5903-4194-b153-04ced9d29a2c",
-                             "publisher":  "Microsoft",
-                             "name":  "India Tax Base",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "2370cfbe-5b06-482a-be41-aa08ad0c800d",
-                             "publisher":  "Microsoft",
-                             "name":  "GST Purchase",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
-                             "publisher":  "Microsoft",
-                             "name":  "Tax Engine",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "application":  "25.0.0.0",
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  18200,
-                         "to":  18242
-                     }
-                 ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2139720",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               }
+  "id": "fbc443fd-02a7-4e4e-a697-883efe7bc33b",
+  "name": "GST Distribution",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Contains features for GST distribution for services.",
+  "description": "GST Distribution enables you to distribute GST receivables to locations.",
+  "features": [
+    "TranslationFile"
+  ],
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2139720",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "d3c551dd-5903-4194-b153-04ced9d29a2c",
+      "publisher": "Microsoft",
+      "name": "India Tax Base",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "2370cfbe-5b06-482a-be41-aa08ad0c800d",
+      "publisher": "Microsoft",
+      "name": "GST Purchase",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
+      "publisher": "Microsoft",
+      "name": "Tax Engine",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "application": "26.0.0.0",
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 18200,
+      "to": 18242
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2139720",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  }
 }

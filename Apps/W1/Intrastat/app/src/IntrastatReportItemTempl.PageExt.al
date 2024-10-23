@@ -14,7 +14,7 @@ pageextension 4824 "Intrastat Report Item Templ." extends "Item Templ. Card"
         {
             field("Exclude from Intrastat Report"; Rec."Exclude from Intrastat Report")
             {
-                ApplicationArea = BasicEU, BasicCH, BasicNO;
+                ApplicationArea = All;
                 ToolTip = 'Specifies if the item shall be excluded from Intrastat report.';
             }
         }

@@ -1,48 +1,46 @@
 {
-    "id":  "eddcf82e-482c-49d1-836b-ad0284f2c5b0",
-    "name":  "India TCS",
-    "publisher":  "Microsoft",
-    "version":  "25.0.0.0",
-    "brief":  "Tax Collection at Source (TCS) is a tax collection method used by the government. TCS requires buyers and sellers to collect tax at the source, and remit it to tax authorities.",
-    "description":  "The TCS feature contains setups that are required for calculating Tax Collected at Source. This allows you to calculate TCS on sales transactions through sales invoices, sales orders, journal vouchers, and on customer advance payments. It also allows you to adjust and settle TCS amounts and submit TCS that has been collected to the government.",
-    "privacyStatement":  "https://go.microsoft.com/fwlink/?LinkId=724009",
-    "EULA":  "https://go.microsoft.com/fwlink/?linkid=724013",
-    "help":  "https://go.microsoft.com/fwlink/?linkid=2139281",
-    "url":  "https://go.microsoft.com/fwlink/?LinkId=724011",
-    "features":  [
-                     "TranslationFile",
-                     "GenerateCaptions"
-                 ],
-    "logo":  "ExtensionLogo.png",
-    "dependencies":  [
-                         {
-                             "id":  "d3c551dd-5903-4194-b153-04ced9d29a2c",
-                             "publisher":  "Microsoft",
-                             "name":  "India Tax Base",
-                             "version":  "25.0.0.0"
-                         },
-                         {
-                             "id":  "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
-                             "publisher":  "Microsoft",
-                             "name":  "Tax Engine",
-                             "version":  "25.0.0.0"
-                         }
-                     ],
-    "screenshots":  [
-
-                    ],
-    "application":  "25.0.0.0",
-    "platform":  "25.0.0.0",
-    "idRanges":  [
-                     {
-                         "from":  18807,
-                         "to":  18910
-                     }
-                 ],
-    "contextSensitiveHelpUrl":  "https://go.microsoft.com/fwlink/?linkid=2139281",
-    "resourceExposurePolicy":  {
-                                   "allowDebugging":  true,
-                                   "allowDownloadingSource":  true,
-                                   "includeSourceInSymbolFile":  true
-                               }
+  "id": "eddcf82e-482c-49d1-836b-ad0284f2c5b0",
+  "name": "India TCS",
+  "publisher": "Microsoft",
+  "version": "26.0.0.0",
+  "brief": "Tax Collection at Source (TCS) is a tax collection method used by the government. TCS requires buyers and sellers to collect tax at the source, and remit it to tax authorities.",
+  "description": "The TCS feature contains setups that are required for calculating Tax Collected at Source. This allows you to calculate TCS on sales transactions through sales invoices, sales orders, journal vouchers, and on customer advance payments. It also allows you to adjust and settle TCS amounts and submit TCS that has been collected to the government.",
+  "privacyStatement": "https://go.microsoft.com/fwlink/?LinkId=724009",
+  "EULA": "https://go.microsoft.com/fwlink/?linkid=724013",
+  "help": "https://go.microsoft.com/fwlink/?linkid=2139281",
+  "url": "https://go.microsoft.com/fwlink/?LinkId=724011",
+  "features": [
+    "TranslationFile",
+    "GenerateCaptions"
+  ],
+  "logo": "ExtensionLogo.png",
+  "dependencies": [
+    {
+      "id": "d3c551dd-5903-4194-b153-04ced9d29a2c",
+      "publisher": "Microsoft",
+      "name": "India Tax Base",
+      "version": "26.0.0.0"
+    },
+    {
+      "id": "c1eafb3f-e397-468e-bdb4-ecc5c317ca00",
+      "publisher": "Microsoft",
+      "name": "Tax Engine",
+      "version": "26.0.0.0"
+    }
+  ],
+  "screenshots": [],
+  "application": "26.0.0.0",
+  "platform": "26.0.0.0",
+  "idRanges": [
+    {
+      "from": 18807,
+      "to": 18910
+    }
+  ],
+  "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2139281",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true
+  }
 }

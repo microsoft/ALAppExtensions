@@ -84,6 +84,19 @@ codeunit 31073 "Inventory Posting Handler CZL"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Inventory Posting To G/L", 'OnBeforeBufferOutputPosting', '', false, false)]
     local procedure InitInvtPostBufOnBeforeBufferOutputPosting(var Sender: Codeunit "Inventory Posting To G/L"; var ValueEntry: Record "Value Entry"; var GlobalInvtPostBuf: Record "Invt. Posting Buffer"; CostToPost: Decimal; CostToPostACY: Decimal; ExpCostToPost: Decimal; ExpCostToPostACY: Decimal; var IsHandled: Boolean)
     begin
+        case ValueEntry."Entry Type" of
+            ValueEntry."Entry Type"::Rounding:
+                begin
+                    Sender.InitInvtPostBuf(
+                      ValueEntry,
+                      GlobalInvtPostBuf."Account Type"::Inventory,
+                      GlobalInvtPostBuf."Account Type"::"InvRoundingAdj CZL",
+                      CostToPost, CostToPostACY, false);
+                    IsHandled := true;
+                    exit;
+                end;
+        end;
+
         InventorySetup.Get();
         if InventorySetup."Post Exp.Cost Conv.As Corr.CZL" then
             exit;
@@ -114,15 +127,6 @@ codeunit 31073 "Inventory Posting Handler CZL"
                           GlobalInvtPostBuf."Account Type"::"WIP Inventory",
                           CostToPost, CostToPostACY, false);
                     end;
-                    IsHandled := true;
-                end;
-            ValueEntry."Entry Type"::Rounding:
-                begin
-                    Sender.InitInvtPostBuf(
-                      ValueEntry,
-                      GlobalInvtPostBuf."Account Type"::Inventory,
-                      GlobalInvtPostBuf."Account Type"::"InvRoundingAdj CZL",
-                      CostToPost, CostToPostACY, false);
                     IsHandled := true;
                 end;
         end;

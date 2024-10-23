@@ -237,7 +237,7 @@ codeunit 30195 "Shpfy Inventory API"
                 else
                     Clear(Cursor);
                 if JsonHelper.GetJsonObject(JItem.AsObject(), JNode, 'node') then begin
-                    if JsonHelper.GetJsonValue(JNode, JValue, 'available') then
+                    if JsonHelper.GetJsonValue(JNode, JValue, 'quantities.quantity') then
                         Stock := JValue.AsInteger()
                     else
                         Stock := 0;

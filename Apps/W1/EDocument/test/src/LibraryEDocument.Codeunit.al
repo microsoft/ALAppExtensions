@@ -550,6 +550,46 @@ codeunit 139629 "Library - E-Document"
     end;
 
 
+    procedure CreateServiceWithMapping(var EDocMapping: Record "E-Doc. Mapping"; TransformationRule: Record "Transformation Rule"): Code[20]
+    begin
+        EDocService.Init();
+        EDocService.Code := LibraryUtility.GenerateRandomCode20(EDocService.FieldNo(Code), Database::"E-Document Service");
+        EDocService."Document Format" := EDocDoucmentFormat;
+        EDocService."Service Integration" := EDocIntegration;
+        EDocService.Insert();
+
+        CreateSupportedDocTypes(EDocService);
+
+        exit(EDocService.Code);
+    end;
+
+    procedure CreateServiceMapping(EDocService: Record "E-Document Service")
+    var
+        TransformationRule: Record "Transformation Rule";
+        EDocMapping: Record "E-Doc. Mapping";
+        SalesInvHeader: Record "Sales Invoice Header";
+    begin
+        TransformationRule.Get(TransformationRule.GetLowercaseCode());
+        // Lower case mapping
+        CreateTransformationMapping(EDocMapping, TransformationRule, EDocService.Code);
+        EDocMapping."Table ID" := Database::"Sales Invoice Header";
+        EDocMapping."Field ID" := SalesInvHeader.FieldNo("Bill-to Name");
+        EDocMapping.Modify();
+        CreateTransformationMapping(EDocMapping, TransformationRule, EDocService.Code);
+        EDocMapping."Table ID" := Database::"Sales Invoice Header";
+        EDocMapping."Field ID" := SalesInvHeader.FieldNo("Bill-to Address");
+        EDocMapping.Modify();
+    end;
+
+    procedure DeleteServiceMapping(EDocService: Record "E-Document Service")
+    var
+        EDocMapping: Record "E-Doc. Mapping";
+    begin
+        EDocMapping.SetRange(Code, EDocService.Code);
+        EDocMapping.DeleteAll();
+    end;
+
+
     procedure CreateServiceWithMapping(var EDocMapping: Record "E-Doc. Mapping"; TransformationRule: Record "Transformation Rule"; Integration: Enum "E-Document Integration"): Code[20]
     begin
         exit(CreateServiceWithMapping(EDocMapping, TransformationRule, false, Integration));

@@ -118,7 +118,12 @@ codeunit 148001 "Library IRS 1099 Document"
     procedure MockFormDocumentForVendor(PeriodNo: Code[20]; VendNo: Code[20]; FormNo: Code[20]; Status: Enum "IRS 1099 Form Doc. Status"): Integer
     var
         IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header";
+        NewId: Integer;
     begin
+        if IRS1099FormDocHeader.FindLast() then
+            NewId := IRS1099FormDocHeader.ID;
+        NewId += 1;
+        IRS1099FormDocHeader.Id := NewId;
         IRS1099FormDocHeader."Period No." := PeriodNo;
         IRS1099FormDocHeader."Vendor No." := VendNo;
         IRS1099FormDocHeader."Form No." := FormNo;
@@ -147,16 +152,26 @@ codeunit 148001 "Library IRS 1099 Document"
     end;
 
     procedure MockVendorFormBoxBuffer(var TempIRS1099VendFormBoxBuffer: Record "IRS 1099 Vend. Form Box Buffer" temporary; var EntryNo: Integer; PeriodNo: Code[20]; VendNo: Code[20]; FormNo: Code[20]; FormBoxNo: Code[20])
+    var
+        BufferEntryNo: Integer;
     begin
+        TempIRS1099VendFormBoxBuffer.Reset();
+        if TempIRS1099VendFormBoxBuffer.FindLast() then
+            BufferEntryNo := TempIRS1099VendFormBoxBuffer."Entry No."
+        else
+            BufferEntryNo := 0;
+        BufferEntryNo += 1;
+        TempIRS1099VendFormBoxBuffer."Entry No." := BufferEntryNo;
         TempIRS1099VendFormBoxBuffer."Period No." := PeriodNo;
         TempIRS1099VendFormBoxBuffer."Vendor No." := VendNo;
         TempIRS1099VendFormBoxBuffer."Form No." := FormNo;
         TempIRS1099VendFormBoxBuffer."Form Box No." := FormBoxNo;
+        TempIRS1099VendFormBoxBuffer."Buffer Type" := TempIRS1099VendFormBoxBuffer."Buffer Type"::Amount;
         TempIRS1099VendFormBoxBuffer.Amount := LibraryRandom.RandDec(100, 2);
         TempIRS1099VendFormBoxBuffer."Reporting Amount" := LibraryRandom.RandDec(100, 2);
         TempIRS1099VendFormBoxBuffer."Include In 1099" := true;
-        EntryNo := LibraryIRS1099FormBox.MockConnectedEntryForVendFormBoxBuffer(TempIRS1099VendFormBoxBuffer);
         TempIRS1099VendFormBoxBuffer.Insert(true);
+        EntryNo := LibraryIRS1099FormBox.MockConnectedEntryForVendFormBoxBuffer(TempIRS1099VendFormBoxBuffer);
     end;
 
     procedure FindIRS1099FormDocHeader(var IRS1099FormDocHeader: Record "IRS 1099 Form Doc. Header"; PeriodNo: Code[20]; VendNo: Code[20]; FormNo: Code[20])

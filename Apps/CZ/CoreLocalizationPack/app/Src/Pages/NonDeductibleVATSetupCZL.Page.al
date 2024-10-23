@@ -21,10 +21,12 @@ page 31215 "Non-Deductible VAT Setup CZL"
                 field("From Date"; Rec."From Date")
                 {
                     ToolTip = 'Specifies the date from which the VAT coefficient is valid.';
+                    ShowMandatory = true;
                 }
                 field("To Date"; Rec."To Date")
                 {
                     ToolTip = 'Specifies the date to which the VAT coefficient is valid.';
+                    ShowMandatory = true;
                 }
                 field("Advance Coefficient"; Rec."Advance Coefficient")
                 {
@@ -38,15 +40,11 @@ page 31215 "Non-Deductible VAT Setup CZL"
         }
     }
 
-    var
-        NonDeductibleVATIsNoEnabledErr: Label 'The Non-Deductible VAT feature is not enabled. Please enable it in the VAT Setup page.';
-
     trigger OnOpenPage()
     begin
-        if not NonDeductibleVAT.IsNonDeductibleVATEnabled() then
-            Error(NonDeductibleVATIsNoEnabledErr);
+        NonDeductibleVATCZL.CheckNonDeductibleVATEnabled();
     end;
 
     var
-        NonDeductibleVAT: Codeunit "Non-Deductible VAT";
+        NonDeductibleVATCZL: Codeunit "Non-Deductible VAT CZL";
 }

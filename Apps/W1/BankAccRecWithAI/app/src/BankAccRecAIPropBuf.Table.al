@@ -94,5 +94,5 @@ table 7251 "Bank Acc. Rec. AI Prop. Buf."
     end;
 
     var
-        PostPaymentProposalTxt: label 'Post payment to account %1 (%2) and apply to the resulting entry.', Comment = '%1 - G/L Account number, %2 - G/L Account name';
+        PostPaymentProposalTxt: label '%1 (%2)', Comment = '%1 - G/L Account number, %2 - G/L Account name';
 }
