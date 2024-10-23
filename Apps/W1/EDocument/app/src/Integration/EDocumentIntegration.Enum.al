@@ -4,11 +4,27 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
-enum 6143 "E-Document Integration" implements "E-Document Integration"
+using Microsoft.eServices.EDocument.Integration.Interfaces;
+
+#if not CLEAN26
+enum 6143 "E-Document Integration" implements "E-Document Integration", Send, Receive, "Default Int. Actions"
+#else
+enum 6143 "E-Document Integration" implements Send, Receive, "Default Int. Actions"
+#endif
 {
     Extensible = true;
+#if not CLEAN26
+    DefaultImplementation = Send = "E-Document No Integration", Receive = "E-Document No Integration", "Default Int. Actions" = "E-Document No Integration", "E-Document Integration" = "E-Document No Integration";
+#else
+    DefaultImplementation = Send = "E-Document No Integration", Receive = "E-Document No Integration", "Default Int. Actions" = "E-Document No Integration";
+#endif
+
     value(0; "No Integration")
     {
+#if not CLEAN26
         Implementation = "E-Document Integration" = "E-Document No Integration";
+#else
+        Implementation = Send = "E-Document No Integration", Receive = "E-Document No Integration", "Default Int. Actions" = "E-Document No Integration";
+#endif
     }
 }

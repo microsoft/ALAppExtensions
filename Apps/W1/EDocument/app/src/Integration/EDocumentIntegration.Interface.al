@@ -2,12 +2,17 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 // ------------------------------------------------------------------------------------------------
+#if not CLEAN26
 namespace Microsoft.eServices.EDocument;
 
 using System.Utilities;
 
 interface "E-Document Integration"
 {
+    ObsoleteTag = '26.0';
+    ObsoleteState = Pending;
+    ObsoleteReason = 'This interface is obsolete. Use Send, Receive and "Default Int. Actions" interfaces instead.';
+
     /// <summary>
     /// Use it to send an E-Document to external service.
     /// </summary>
@@ -18,6 +23,7 @@ interface "E-Document Integration"
     /// <param name="HttpRequest">The HTTP request message object that you should use when sending the request.</param>
     /// <param name="HttpResponse">The HTTP response object that you should use when sending the request.</param>
     /// <remarks>If http request and response are populated, the response content and headers will be logged automatically to communication logs.</remarks>
+    [Obsolete('Replaced by Send method in Send interface.', '26.0')]
     procedure Send(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage);
 
     /// <summary>
@@ -30,6 +36,7 @@ interface "E-Document Integration"
     /// <param name="HttpRequest">The HTTP request message object that you should use when sending the request.</param>
     /// <param name="HttpResponse">The HTTP response object that you should use when sending the request.</param>
     /// <remarks>If http request and response are populated, the response content and headers will be logged automatically to communication logs.</remarks>
+    [Obsolete('Replaced by SendBatch method in Send interface.', '26.0')]
     procedure SendBatch(var EDocuments: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage);
 
     /// <summary>
@@ -49,6 +56,7 @@ interface "E-Document Integration"
     /// <remarks>
     /// If the HTTP response is populated, the response content and headers will be automatically logged to the communication logs.
     /// </remarks>
+    [Obsolete('Replaced by GetResponse method in Send interface.', '26.0')]
     procedure GetResponse(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean;
 
     /// <summary>
@@ -94,3 +102,4 @@ interface "E-Document Integration"
     /// <param name="SetupTable">The E-Dcoument integration table id.</param>
     procedure GetIntegrationSetup(var SetupPage: Integer; var SetupTable: Integer);
 }
+#endif

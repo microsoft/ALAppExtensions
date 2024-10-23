@@ -38,6 +38,7 @@ table 6127 "E-Document Integration Log"
         {
             Caption = 'Response Status';
         }
+#if not CLEANSCHEMA28
         field(7; URL; Text[250])
         {
             Caption = 'URL';
@@ -50,6 +51,7 @@ table 6127 "E-Document Integration Log"
             ObsoleteTag = '28.0';
 #endif
         }
+#endif
         field(8; Method; Text[10])
         {
             Caption = 'Method';
