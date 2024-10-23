@@ -33,6 +33,12 @@ table 30159 "Shpfy Sales Channel"
             Caption = 'Use for publication';
             ToolTip = 'Indicates if the sales channel is used for new products publication.';
         }
+        field(5; Default; Boolean)
+        {
+            Caption = 'Default';
+            Editable = false;
+            ToolTip = 'Indicates if the sales channel is the default one. Used for new products publication if any other channel is chosen.';
+        }
     }
     keys
     {

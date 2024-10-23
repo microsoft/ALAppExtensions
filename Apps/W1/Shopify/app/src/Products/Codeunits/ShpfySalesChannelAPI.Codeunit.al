@@ -23,7 +23,7 @@ codeunit 30215 "Shpfy Sales Channel API"
     begin
         CommunicationMgt.SetShop(ShopCode);
         JResponse := CommunicationMgt.ExecuteGraphQL(GraphQLType::GetSalesChannels);
-        if JsonHelper.GetJsonArray(JResponse, JPublications, 'data.publications.nodes') then
+        if JsonHelper.GetJsonArray(JResponse, JPublications, 'data.publications.edges') then
             ProcessPublications(JPublications, ShopCode);
     end;
 
@@ -71,13 +71,17 @@ codeunit 30215 "Shpfy Sales Channel API"
         SalesChannel: Record "Shpfy Sales Channel";
         JPublication: JsonToken;
         ChannelId: BigInteger;
+        Handle: Text;
     begin
         foreach JPublication in JPublications do begin
-            ChannelId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JPublication, 'id'));
+            ChannelId := CommunicationMgt.GetIdOfGId(JsonHelper.GetValueAsText(JPublication, '$.node.id'));
             if not SalesChannel.Get(ChannelId) then begin
                 SalesChannel.Init();
-                SalesChannel.Id := ChannelId;
-                SalesChannel.Name := JsonHelper.GetValueAsText(JPublication, 'name');
+                SalesChannel.Validate(Id, ChannelId);
+                SalesChannel.Validate(Name, JsonHelper.GetValueAsText(JPublication, '$.node.catalog.apps.edges[0].node.title'));
+                Handle := JsonHelper.GetValueAsText(JPublication, '$.node.catalog.apps.edges[0].node.handle');
+                if Handle = 'online_store' then
+                    SalesChannel.Default := true;
                 SalesChannel."Shop Code" := ShopCode;
                 SalesChannel.Insert(true);
             end else

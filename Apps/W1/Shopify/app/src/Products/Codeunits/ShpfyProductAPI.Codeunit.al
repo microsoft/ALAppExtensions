@@ -598,7 +598,7 @@ codeunit 30176 "Shpfy Product API"
         SalesChannel.SetRange(SalesChannel."Use for publication", true);
         if SalesChannel.IsEmpty() then begin
             SalesChannel.SetRange("Use for publication");
-            SalesChannel.SetRange(SalesChannel.Name, 'Online Store');
+            SalesChannel.SetRange(SalesChannel.Default, true);
             if SalesChannel.IsEmpty() then
                 exit(false);
         end;

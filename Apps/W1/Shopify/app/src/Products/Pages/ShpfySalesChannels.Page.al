@@ -20,6 +20,7 @@ page 30166 "Shpfy Sales Channels"
                 field(Id; Rec.Id) { }
                 field(Name; Rec.Name) { }
                 field("Use for publication"; Rec."Use for publication") { }
+                field(Default; Rec.Default) { }
             }
         }
     }
