@@ -4,11 +4,11 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
+using System.Telemetry;
+using System.Utilities;
 using Microsoft.Bank.Reconciliation;
 using Microsoft.eServices.EDocument.OrderMatch;
 using Microsoft.eServices.EDocument.OrderMatch.Copilot;
-using System.Telemetry;
-using System.Utilities;
 
 page 6121 "E-Document"
 {
@@ -241,7 +241,7 @@ page 6121 "E-Document"
                         if EDocServices.RunModal() = Action::LookupOK then begin
                             EDocServices.GetRecord(EDocService);
                             EDocumentErrorHelper.ClearErrorMessages(Rec);
-                            EDocIntegrationManagement.GetApproval(Rec, EDocService);
+                            EDocIntegrationManagement.SentDocApproval(Rec, EDocService);
                         end
                     end;
                 }
@@ -261,7 +261,7 @@ page 6121 "E-Document"
                         if EDocServices.RunModal() = Action::LookupOK then begin
                             EDocServices.GetRecord(EDocService);
                             EDocumentErrorHelper.ClearErrorMessages(Rec);
-                            EDocIntegrationManagement.Cancel(Rec, EDocService);
+                            EDocIntegrationManagement.SentDocCancellation(Rec, EDocService);
                         end
                     end;
                 }
@@ -407,7 +407,6 @@ page 6121 "E-Document"
                 actionref(Recreate_Promoted; Recreate) { }
                 actionref(Cancel_promoteed; Cancel) { }
                 actionref(Approval_promoteed; GetApproval) { }
-
             }
             group(Category_Troubleshoot)
             {
@@ -494,8 +493,9 @@ page 6121 "E-Document"
         HasErrorsOrWarnings := (EDocumentErrorHelper.ErrorMessageCount(Rec) + EDocumentErrorHelper.WarningMessageCount(Rec)) > 0;
         HasErrors := EDocumentErrorHelper.ErrorMessageCount(Rec) > 0;
         if HasErrorsOrWarnings then
-            ShowErrorsAndWarnings();
-
+            ShowErrorsAndWarnings()
+        else
+            ClearErrorsAndWarnings();
         SetStyle();
         ResetActionVisiability();
         SetIncomingDocActions();
@@ -527,6 +527,14 @@ page 6121 "E-Document"
 
         ErrorsAndWarningsNotification.Message(EDocHasErrorOrWarningMsg);
         ErrorsAndWarningsNotification.Send();
+    end;
+
+    local procedure ClearErrorsAndWarnings()
+    var
+        TempErrorMessage: Record "Error Message" temporary;
+    begin
+        CurrPage.ErrorMessagesPart.Page.SetRecords(TempErrorMessage);
+        CurrPage.ErrorMessagesPart.Page.Update(false);
     end;
 
     local procedure SendEDocument()
