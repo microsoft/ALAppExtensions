@@ -22,6 +22,7 @@ codeunit 139614 "Shpfy Sales Channel Subs."
         Uri: Text;
         GraphQlQuery: Text;
         PublishProductTok: Label '{"query":"mutation {publishablePublish(id: \"gid://shopify/Product/', locked = true;
+        ProductCreateTok: Label '{"query":"mutation {productCreate(', locked = true;
         GraphQLCmdTxt: Label '/graphql.json', Locked = true;
     begin
         case HttpRequestMessage.Method of
@@ -30,9 +31,14 @@ codeunit 139614 "Shpfy Sales Channel Subs."
                     Uri := HttpRequestMessage.GetRequestUri();
                     if Uri.EndsWith(GraphQLCmdTxt) then
                         if HttpRequestMessage.Content.ReadAs(GraphQlQuery) then
-                            if GraphQlQuery.Contains(PublishProductTok) then begin
-                                HttpResponseMessage := GetEmptyPublishResponse();
-                                GraphQueryTxt := GraphQlQuery;
+                            case true of
+                                GraphQlQuery.Contains(PublishProductTok):
+                                    begin
+                                        HttpResponseMessage := GetEmptyPublishResponse();
+                                        GraphQueryTxt := GraphQlQuery;
+                                    end;
+                                GraphQlQuery.Contains(ProductCreateTok):
+                                    HttpResponseMessage := GetCreateProductResponse();
                             end;
                 end;
         end;
@@ -44,6 +50,16 @@ codeunit 139614 "Shpfy Sales Channel Subs."
         BodyTxt: Text;
     begin
         BodyTxt := '{ "data": { "publishablePublish": { "userErrors": [] } }, "extensions": { "cost": { "requestedQueryCost": 10, "actualQueryCost": 10, "throttleStatus": { "maximumAvailable": 2000, "currentlyAvailable": 1990, "restoreRate": 100 } } } }';
+        HttpResponseMessage.Content.WriteFrom(BodyTxt);
+        exit(HttpResponseMessage);
+    end;
+
+    local procedure GetCreateProductResponse(): HttpResponseMessage
+    var
+        HttpResponseMessage: HttpResponseMessage;
+        BodyTxt: Text;
+    begin
+        BodyTxt := '{ "data": { "productCreate": { "product": { "legacyResourceId": "1234567890"} }}}';
         HttpResponseMessage.Content.WriteFrom(BodyTxt);
         exit(HttpResponseMessage);
     end;

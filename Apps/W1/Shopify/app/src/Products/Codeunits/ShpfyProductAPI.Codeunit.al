@@ -570,6 +570,10 @@ codeunit 30176 "Shpfy Product API"
             Options.Add(JsonHelper.GetValueAsText(JOption, 'id'), JsonHelper.GetValueAsText(JOption, 'name'));
     end;
 
+    /// <summary>
+    /// Publish product to selected Shopify Sales Channels
+    /// </summary>
+    /// <param name="ShopifyProduct">Shopify product to be published</param>
     internal procedure PublishProduct(ShopifyProduct: Record "Shpfy Product")
     var
         SalesChannel: Record "Shpfy Sales Channel";

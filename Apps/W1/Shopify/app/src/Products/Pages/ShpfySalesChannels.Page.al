@@ -1,9 +1,9 @@
-using Microsoft.Integration.Shopify;
+namespace Microsoft.Integration.Shopify;
 
 page 30166 "Shpfy Sales Channels"
 {
     ApplicationArea = All;
-    Caption = 'Shpfy Sales Channels';
+    Caption = 'Shopify Sales Channels';
     PageType = List;
     SourceTable = "Shpfy Sales Channel";
     InsertAllowed = false;

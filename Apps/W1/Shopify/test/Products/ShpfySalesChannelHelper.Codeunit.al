@@ -8,7 +8,7 @@ codeunit 139583 "Shpfy Sales Channel Helper"
         Any: Codeunit Any;
         JPublications: JsonArray;
         NodesTxt: Text;
-        ResponseTok: Label '[ { "id": "gid://shopify/Publication/%2", "name": "Online Store" }, { "id": "gid://shopify/Publication/%1", "name": "Point of Sale" } ]', Locked = true;
+        ResponseTok: Label '[ { "node": { "id": "gid://shopify/Publication/%1", "catalog": {"apps": { "edges": [ { "node": { "handle": "online_store", "title": "Online Store" } } ] } } } }, { "node": { "id": "gid://shopify/Publication/%2", "catalog": { "apps": { "edges": [ { "node": {"handle": "pos", "title": "Point of Sale" } } ] } } } } ]', Locked = true;
     begin
         NodesTxt := StrSubstNo(ResponseTok, OnlineStoreId, POSId);
         JPublications.ReadFrom(NodesTxt);

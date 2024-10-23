@@ -71,6 +71,8 @@ codeunit 30215 "Shpfy Sales Channel API"
         SalesChannel: Record "Shpfy Sales Channel";
         JPublication: JsonToken;
         ChannelId: BigInteger;
+        JCatalogEdges: JsonArray;
+        JCatalogEdge: JsonToken;
         Handle: Text;
     begin
         foreach JPublication in JPublications do begin
@@ -78,8 +80,10 @@ codeunit 30215 "Shpfy Sales Channel API"
             if not SalesChannel.Get(ChannelId) then begin
                 SalesChannel.Init();
                 SalesChannel.Validate(Id, ChannelId);
-                SalesChannel.Validate(Name, JsonHelper.GetValueAsText(JPublication, '$.node.catalog.apps.edges[0].node.title'));
-                Handle := JsonHelper.GetValueAsText(JPublication, '$.node.catalog.apps.edges[0].node.handle');
+                JCatalogEdges := JsonHelper.GetJsonArray(JPublication, '$.node.catalog.apps.edges');
+                JCatalogEdges.Get(0, JCatalogEdge);
+                SalesChannel.Validate(Name, JsonHelper.GetValueAsText(JCatalogEdge, '$.node.title'));
+                Handle := JsonHelper.GetValueAsText(JCatalogEdge, '$.node.handle');
                 if Handle = 'online_store' then
                     SalesChannel.Default := true;
                 SalesChannel."Shop Code" := ShopCode;
