@@ -4,8 +4,9 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.eServices.EDocument;
 
-using Microsoft.eServices.EDocument.IO.Peppol;
 using System.Telemetry;
+using Microsoft.eServices.EDocument.IO.Peppol;
+using Microsoft.eServices.EDocument.Integration.Interfaces;
 
 page 6133 "E-Document Service"
 {
@@ -194,16 +195,8 @@ page 6133 "E-Document Service"
                 Image = Setup;
 
                 trigger OnAction()
-                var
-                    EDocumentIntegration: Interface "E-Document Integration";
-                    SetupPage, SetupTable : integer;
                 begin
-                    EDocumentIntegration := Rec."Service Integration";
-                    EDocumentIntegration.GetIntegrationSetup(SetupPage, SetupTable);
-                    if SetupPage = 0 then
-                        Message(ServiceIntegrationSetupMsg)
-                    else
-                        Page.Run(SetupPage);
+                    RunSetupServiceIntegration();
                 end;
             }
             action(SupportedDocTypes)
@@ -221,10 +214,8 @@ page 6133 "E-Document Service"
                 Image = Import;
 
                 trigger OnAction()
-                var
-                    EDocImport: Codeunit "E-Doc. Import";
                 begin
-                    EDocImport.ReceiveDocument(Rec);
+                    ReceiveDocs();
                 end;
             }
         }
@@ -238,6 +229,7 @@ page 6133 "E-Document Service"
 
     var
         ServiceIntegrationSetupMsg: Label 'There is no configuration setup for this service integration.';
+        DocNotCreatedQst: Label 'Failed to create new Purchase %1 from E-Document. Do you want to open E-Document to see reported errors?', Comment = '%1 - Purchase Document Type';
 
     trigger OnOpenPage()
     var
@@ -256,4 +248,76 @@ page 6133 "E-Document Service"
         EDocumentBackgroundJobs.HandleRecurrentBatchJob(Rec);
         EDocumentBackgroundJobs.HandleRecurrentImportJob(Rec);
     end;
+
+#if not CLEAN26
+    local procedure RunSetupServiceIntegration()
+    var
+        EDocumentIntegration: Interface "E-Document Integration";
+        DefaultActions: Interface "Default Int. Actions";
+        SetupPage, SetupTable : Integer;
+    begin
+        EDocumentIntegration := Rec."Service Integration";
+        if EDocumentIntegration is "Default Int. Actions" then begin
+            DefaultActions := Rec."Service Integration";
+            if not DefaultActions.OpenServiceIntegrationSetupPage(Rec) then
+                Message(ServiceIntegrationSetupMsg)
+
+        end else begin
+            EDocumentIntegration.GetIntegrationSetup(SetupPage, SetupTable);
+
+            if SetupPage = 0 then
+                Message(ServiceIntegrationSetupMsg)
+            else
+                Page.Run(SetupPage);
+        end;
+    end;
+#else
+    local procedure RunSetupServiceIntegration()
+    var
+        DefaultActions: Interface "Default Int. Actions";
+    begin
+        DefaultActions := Rec."Service Integration";
+        if not DefaultActions.OpenServiceIntegrationSetupPage(Rec) then
+            Message(ServiceIntegrationSetupMsg)
+    end;
+#endif
+
+#if not CLEAN26
+    local procedure ReceiveDocs()
+    var
+        FailedEDocument: Record "E-Document";
+        EDocIntegrationMgt: Codeunit "E-Doc. Integration Management";
+        EDocImport: Codeunit "E-Doc. Import";
+        EDocIntegration: Interface "E-Document Integration";
+    begin
+        EDocIntegration := Rec."Service Integration";
+        if EDocIntegration is Receive then begin
+            EDocIntegrationMgt.ReceiveDocument(Rec);
+            EDocImport.ProcessReceivedDocuments(Rec, FailedEDocument);
+
+            if FailedEDocument."Entry No" <> 0 then
+                if Confirm(DocNotCreatedQst, true, FailedEDocument."Document Type") then
+                    Page.Run(Page::"E-Document", FailedEDocument);
+            exit;
+        end;
+
+        EDocIntegrationMgt.ReceiveDocument(Rec, EDocIntegration);
+    end;
+#else
+    local procedure ReceiveDocs()
+    var
+        FailedEDocument: Record "E-Document";
+        EDocIntegrationMgt: Codeunit "E-Doc. Integration Management";
+        EDocImport: Codeunit "E-Doc. Import";
+    begin
+        EDocIntegrationMgt.ReceiveDocument(Rec);
+        EDocImport.ProcessReceivedDocuments(Rec, FailedEDocument);
+
+        if FailedEDocument."Entry No" <> 0 then
+            if Confirm(DocNotCreatedQst, true, FailedEDocument."Document Type") then
+                Page.Run(Page::"E-Document", FailedEDocument);
+        
+    end;
+#endif
+
 }

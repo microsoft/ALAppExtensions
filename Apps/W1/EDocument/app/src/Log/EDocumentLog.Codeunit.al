@@ -17,30 +17,25 @@ codeunit 6132 "E-Document Log"
         tabledata "E-Document Service Status" = im,
         tabledata "E-Document Integration Log" = im;
 
-    internal procedure InsertLog(EDocument: Record "E-Document"; EDocumentServiceStatus: Enum "E-Document Service Status"): Integer
+    internal procedure InsertLog(EDocument: Record "E-Document"; EDocumentServiceStatus: Enum "E-Document Service Status"): Record "E-Document Log";
     var
         EDocumentService: Record "E-Document Service";
     begin
         exit(InsertLog(EDocument, EDocumentService, 0, EDocumentServiceStatus));
     end;
 
-    internal procedure InsertLog(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; EDocumentServiceStatus: Enum "E-Document Service Status"): Integer
+    internal procedure InsertLog(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; EDocumentServiceStatus: Enum "E-Document Service Status"): Record "E-Document Log";
     begin
         exit(InsertLog(EDocument, EDocumentService, 0, EDocumentServiceStatus));
     end;
 
-    internal procedure InsertLog(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocumentServiceStatus: Enum "E-Document Service Status"): Integer
+    internal procedure InsertLog(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocumentServiceStatus: Enum "E-Document Service Status"): Record "E-Document Log";
     begin
-        exit(InsertLog(EDocument, EDocumentService, AddTempBlobToLog(TempBlob), EDocumentServiceStatus));
+        exit(InsertLog(EDocument, EDocumentService, InsertDataStorage(TempBlob), EDocumentServiceStatus));
     end;
 
-    internal procedure InsertLog(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; EDocDataStorageEntryNo: Integer; EDocumentServiceStatus: Enum "E-Document Service Status"): Integer
-    var
-        EDocumentLog: Record "E-Document Log";
+    internal procedure InsertLog(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; EDocDataStorageEntryNo: Integer; EDocumentServiceStatus: Enum "E-Document Service Status") EDocumentLog: Record "E-Document Log";
     begin
-        if EDocumentService.Code <> '' then
-            UpdateServiceStatus(EDocument, EDocumentService, EDocumentServiceStatus);
-
         EDocumentLog.Validate("Document Type", EDocument."Document Type");
         EDocumentLog.Validate("Document No.", EDocument."Document No.");
         EDocumentLog.Validate("E-Doc. Entry No", EDocument."Entry No");
@@ -49,54 +44,10 @@ codeunit 6132 "E-Document Log"
         EDocumentLog.Validate("Service Code", EDocumentService.Code);
         EDocumentLog.Validate("Document Format", EDocumentService."Document Format");
         EDocumentLog.Validate("E-Doc. Data Storage Entry No.", EDocDataStorageEntryNo);
-
         EDocumentLog.Insert();
-        exit(EDocumentLog."Entry No.");
     end;
 
-    internal procedure InsertLogWithIntegration(EDocumentServiceStatus: Record "E-Document Service Status"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
-    var
-        EDocument: Record "E-Document";
-        EDocumentService: Record "E-Document Service";
-    begin
-        if EDocument.Get(EDocumentServiceStatus."E-Document Entry No") then;
-        if EDocumentService.Get(EDocumentServiceStatus."E-Document Service Code") then;
-        InsertLogWithIntegration(EDocument, EDocumentService, EDocumentServiceStatus.Status, 0, HttpRequest, HttpResponse);
-    end;
-
-    internal procedure InsertLogWithIntegration(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; var TempBlob: Codeunit "Temp Blob"; EDocumentServiceStatus: Enum "E-Document Service Status"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
-    begin
-        InsertLogWithIntegration(EDocument, EDocumentService, EDocumentServiceStatus, AddTempBlobToLog(TempBlob), HttpRequest, HttpResponse);
-    end;
-
-    internal procedure InsertLogWithIntegration(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; EDocumentServiceStatus: Enum "E-Document Service Status"; EDocDataStorageEntryNo: Integer; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
-    begin
-        InsertLog(EDocument, EDocumentService, EDocDataStorageEntryNo, EDocumentServiceStatus);
-        if (HttpRequest.GetRequestUri() <> '') and (HttpResponse.Headers.Keys().Count > 0) then
-            InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
-    end;
-
-    internal procedure UpdateServiceStatus(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; EDocumentStatus: Enum "E-Document Service Status")
-    var
-        EDocumentServiceStatus: Record "E-Document Service Status";
-        Exists: Boolean;
-    begin
-        EDocument.Get(EDocument."Entry No");
-        Exists := EDocumentServiceStatus.Get(EDocument."Entry No", EDocumentService.Code);
-        EDocumentServiceStatus.Validate(Status, EDocumentStatus);
-        if Exists then
-            EDocumentServiceStatus.Modify()
-        else begin
-            EDocumentServiceStatus.Validate("E-Document Entry No", EDocument."Entry No");
-            EDocumentServiceStatus.Validate("E-Document Service Code", EDocumentService.Code);
-            EDocumentServiceStatus.Validate(Status, EDocumentStatus);
-            EDocumentServiceStatus.Insert();
-        end;
-
-        UpdateEDocumentStatus(EDocument);
-    end;
-
-    internal procedure InsertIntegrationLog(EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
+    internal procedure InsertIntegrationLog(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; HttpRequest: HttpRequestMessage; HttpResponse: HttpResponseMessage)
     var
         EDocumentIntegrationLog: Record "E-Document Integration Log";
         EDocumentIntegrationLogRecRef: RecordRef;
@@ -139,22 +90,7 @@ codeunit 6132 "E-Document Log"
         TempBlob.ToRecordRef(EDocumentIntegrationLogRecRef, FieldNo);
     end;
 
-    local procedure UpdateEDocumentStatus(var EDocument: Record "E-Document")
-    var
-        IsHandled: Boolean;
-    begin
-        OnUpdateEDocumentStatus(EDocument, IsHandled);
-
-        if IsHandled then
-            exit;
-
-        if EDocumentHasErrors(EDocument) then
-            exit;
-
-        SetDocumentStatus(EDocument);
-    end;
-
-    internal procedure SetDataStorage(EDocumentLog: Record "E-Document Log"; DataStorageEntryNo: Integer)
+    internal procedure ModifyDataStorageEntryNo(EDocumentLog: Record "E-Document Log"; DataStorageEntryNo: Integer)
     begin
         if EDocumentLog."E-Doc. Data Storage Entry No." <> 0 then
             Error(EDocDataStorageAlreadySetErr);
@@ -163,11 +99,14 @@ codeunit 6132 "E-Document Log"
         EDocumentLog.Modify();
     end;
 
-    internal procedure AddTempBlobToLog(var TempBlob: Codeunit "Temp Blob"): Integer
+    internal procedure InsertDataStorage(var TempBlob: Codeunit "Temp Blob"): Integer
     var
         EDocDataStorage: Record "E-Doc. Data Storage";
         EDocRecRef: RecordRef;
     begin
+        if not TempBlob.HasValue() then
+            exit(0);
+
         EDocDataStorage.Init();
         EDocDataStorage.Insert();
         EDocDataStorage."Data Storage Size" := TempBlob.Length();
@@ -177,17 +116,15 @@ codeunit 6132 "E-Document Log"
         exit(EDocDataStorage."Entry No.");
     end;
 
-    internal procedure InsertMappingLog(EDocumentLogEntryNo: Integer; var Changes: Record "E-Doc. Mapping" temporary)
+    internal procedure InsertMappingLog(EDocumentLog: Record "E-Document Log"; var Changes: Record "E-Doc. Mapping" temporary)
     var
-        EDocumentLog: Record "E-Document Log";
         EDocumentMappingLog: Record "E-Doc. Mapping Log";
     begin
-        EDocumentLog.Get(EDocumentLogEntryNo);
         if Changes.FindSet() then
             repeat
                 EDocumentMappingLog.Init();
                 EDocumentMappingLog."Entry No." := 0;
-                EDocumentMappingLog.Validate("E-Doc Log Entry No.", EDocumentLogEntryNo);
+                EDocumentMappingLog.Validate("E-Doc Log Entry No.", EDocumentLog."Entry No.");
                 EDocumentMappingLog.Validate("E-Doc Entry No.", EDocumentLog."E-Doc. Entry No");
                 EDocumentMappingLog.Validate("Table ID", Changes."Table ID");
                 EDocumentMappingLog.Validate("Field ID", Changes."Field ID");
@@ -215,8 +152,7 @@ codeunit 6132 "E-Document Log"
             Telemetry.LogMessage('0000LCE', EDocTelemetryGetLogFailureLbl, Verbosity::Error, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
             exit(false);
         end;
-        EDocumentLog.GetDataStorage(TempBlob);
-        exit(TempBlob.HasValue());
+        exit(EDocumentLog.GetDataStorage(TempBlob));
     end;
 
     internal procedure GetLastServiceFromLog(EDocument: Record "E-Document") EDocumentService: Record "E-Document Service"
@@ -228,55 +164,15 @@ codeunit 6132 "E-Document Log"
         EDocumentService.Get(EDocumentLog."Service Code");
     end;
 
-    local procedure SetDocumentStatus(var EDocument: Record "E-Document")
-    var
-        EDocumentServiceStatus: Record "E-Document Service Status";
-        EDocServiceCount: Integer;
-    begin
-        EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
-        EDocServiceCount := EDocumentServiceStatus.Count;
-
-        EDocumentServiceStatus.SetFilter(Status, '%1|%2|%3|%4|%5|%6',
-            EDocumentServiceStatus.Status::Sent,
-            EDocumentServiceStatus.Status::Exported,
-            EDocumentServiceStatus.Status::"Imported Document Created",
-            EDocumentServiceStatus.Status::"Journal Line Created",
-            EDocumentServiceStatus.Status::Approved,
-            EDocumentServiceStatus.Status::Canceled);
-        if EDocumentServiceStatus.Count = EDocServiceCount then
-            EDocument.Status := EDocument.Status::Processed
-        else
-            EDocument.Status := EDocument.Status::"In Progress";
-
-        EDocument.Modify();
-    end;
-
-    local procedure EDocumentHasErrors(var EDocument: Record "E-Document"): Boolean
-    var
-        EDocumentServiceStatus: Record "E-Document Service Status";
-    begin
-        EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
-        EDocumentServiceStatus.SetFilter(Status, '%1|%2|%3|%4|%5',
-            EDocumentServiceStatus.Status::"Sending Error",
-            EDocumentServiceStatus.Status::"Export Error",
-            EDocumentServiceStatus.Status::"Cancel Error",
-            EDocumentServiceStatus.Status::"Imported Document Processing Error",
-            EDocumentServiceStatus.Status::Rejected);
-
-        if EDocumentServiceStatus.IsEmpty() then
-            exit(false);
-
-        EDocument.Validate(Status, EDocument.Status::Error);
-        EDocument.Modify();
-        exit(true);
-    end;
-
     var
         EDocDataStorageAlreadySetErr: Label 'E-Doc. Data Storage can not be overwritten with new entry';
         EDocTelemetryGetLogFailureLbl: Label 'E-Document Blog Log Failure', Locked = true;
 
+#if not CLEAN26
     [IntegrationEvent(false, false)]
-    local procedure OnUpdateEDocumentStatus(var EDocument: Record "E-Document"; var IsHandled: Boolean)
+    [Obsolete('Obsoleted as consumer must not be able to cancel E-Document status being set', '26.0')]
+    internal procedure OnUpdateEDocumentStatus(var EDocument: Record "E-Document"; var IsHandled: Boolean)
     begin
     end;
+#endif
 }

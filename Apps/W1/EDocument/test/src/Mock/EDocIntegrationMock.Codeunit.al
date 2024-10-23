@@ -1,3 +1,4 @@
+#if not CLEAN26
 codeunit 139619 "E-Doc. Integration Mock" implements "E-Document Integration"
 {
     procedure Send(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage);
@@ -74,7 +75,5 @@ codeunit 139619 "E-Doc. Integration Mock" implements "E-Document Integration"
     begin
     end;
 
-
-
-
 }
+#endif

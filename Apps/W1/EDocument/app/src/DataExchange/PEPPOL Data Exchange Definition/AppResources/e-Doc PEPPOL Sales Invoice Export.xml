@@ -49,7 +49,7 @@
         <DataExchFieldMapping ColumnNo="2" FieldID="3" />
       </DataExchMapping>
     </DataExchLineDef>
-    <DataExchLineDef LineType="1" Code="05-ADDDOCREF" Name="Additional Document Reference" ColumnCount="0" DataLineTag="/Invoice" ParentCode="01-INVOICE">
+    <DataExchLineDef LineType="0" Code="05-ADDDOCREF" Name="Additional Document Reference" ColumnCount="0" DataLineTag="/Invoice" ParentCode="01-INVOICE">
       <DataExchColumnDef ColumnNo="1" Name="AdditionalDocumentReference" Show="false" DataType="0" Path="/cac:AdditionalDocumentReference" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
       <DataExchColumnDef ColumnNo="2" Name="ID" Show="false" DataType="0" Path="/cac:AdditionalDocumentReference/cbc:ID" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
       <DataExchColumnDef ColumnNo="3" Name="DocumentType" Show="false" DataType="0" Path="/cac:AdditionalDocumentReference/cbc:DocumentType" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
@@ -57,7 +57,9 @@
       <DataExchColumnDef ColumnNo="5" Name="EmbeddedDocumentBinaryObject" Show="false" DataType="0" Path="/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
       <DataExchColumnDef ColumnNo="6" Name="ExternalReference" Show="false" DataType="0" Path="/cac:AdditionalDocumentReference/cac:Attachment/cac:ExternalReference" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
       <DataExchColumnDef ColumnNo="7" Name="URI" Show="false" DataType="0" Path="/cac:AdditionalDocumentReference/cac:Attachment/cac:ExternalReference/cbc:URI" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
-      <DataExchMapping TableId="112" Name="" MappingCodeunit="1269">
+      <DataExchColumnDef ColumnNo="8" Name="MimeCode" Show="false" DataType="0" Path="/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject[@mimeCode]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchColumnDef ColumnNo="9" Name="Filename" Show="false" DataType="0" Path="/cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject[@filename]" TextPaddingRequired="false" Justification="0" UseNodeNameAsValue="false" BlankZero="false" ExportIfNotBlank="true" />
+      <DataExchMapping TableId="1173" Name="" MappingCodeunit="1269">
         <DataExchFieldMapping ColumnNo="1" UseDefaultValue="true" />
       </DataExchMapping>
     </DataExchLineDef>

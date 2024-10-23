@@ -30,6 +30,13 @@ table 6121 "E-Document"
         {
             Caption = 'Document Record ID';
             DataClassification = SystemMetadata;
+
+            trigger OnValidate()
+            var
+                EDocAttachmentProcessor: Codeunit "E-Doc. Attachment Processor";
+            begin
+                EDocAttachmentProcessor.MoveAttachmentsAndDelete(Rec, Rec."Document Record ID");
+            end;
         }
         field(3; "Bill-to/Pay-to No."; Code[20])
         {
