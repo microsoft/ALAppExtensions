@@ -23,7 +23,7 @@
   "platform": "26.0.0.0",
   "target": "Cloud",
   "resourceExposurePolicy": {
-    "allowDebugging": false,
+    "allowDebugging": true,
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },

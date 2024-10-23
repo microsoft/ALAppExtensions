@@ -24,7 +24,7 @@
     "TranslationFile"
   ],
   "resourceExposurePolicy": {
-    "allowDebugging": false,
+    "allowDebugging": true,
     "allowDownloadingSource": false,
     "includeSourceInSymbolFile": false
   },

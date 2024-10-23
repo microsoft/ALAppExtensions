@@ -12,7 +12,7 @@
   "contextSensitiveHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2153001",
   "logo": "ExtensionLogo.png",
   "resourceExposurePolicy": {
-    "allowDebugging": false,
+    "allowDebugging": true,
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },

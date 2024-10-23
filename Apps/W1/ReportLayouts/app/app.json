@@ -15,7 +15,7 @@
   "application": "26.0.0.0",
   "target": "OnPrem",
   "resourceExposurePolicy": {
-    "allowDebugging": false,
+    "allowDebugging": true,
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },

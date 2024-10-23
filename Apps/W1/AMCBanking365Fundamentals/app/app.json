@@ -5,7 +5,7 @@
   "version": "26.0.0.0",
   "help": "https://go.microsoft.com/fwlink/?linkid=2101583",
   "resourceExposurePolicy": {
-    "allowDebugging": false,
+    "allowDebugging": true,
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },

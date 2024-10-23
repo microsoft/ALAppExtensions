@@ -28,7 +28,7 @@
   "screenshots": [],
   "platform": "26.0.0.0",
   "resourceExposurePolicy": {
-    "allowDebugging": false,
+    "allowDebugging": true,
     "allowDownloadingSource": true,
     "includeSourceInSymbolFile": true
   },
