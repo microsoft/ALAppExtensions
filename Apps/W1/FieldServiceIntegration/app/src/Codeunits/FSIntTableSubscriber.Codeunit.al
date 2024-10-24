@@ -298,22 +298,48 @@ codeunit 6610 "FS Int. Table Subscriber"
                     SourceRecordRef.SetTable(FSWorkOrderProduct);
                     DestinationRecordRef.SetTable(ServiceLine);
 
-                    UpdateQuantities(FSWorkOrderProduct, ServiceLine);
+                    UpdateQuantities(FSWorkOrderProduct, ServiceLine, false);
                     AdditionalFieldsWereModified := true;
 
+                    SourceRecordRef.GetTable(FSWorkOrderProduct);
                     DestinationRecordRef.GetTable(ServiceLine);
                 end;
+            'Service Line-FS Work Order Product':
+                begin
+                    SourceRecordRef.SetTable(ServiceLine);
+                    DestinationRecordRef.SetTable(FSWorkOrderProduct);
+
+                    UpdateQuantities(FSWorkOrderProduct, ServiceLine, true);
+                    AdditionalFieldsWereModified := true;
+
+                    SourceRecordRef.GetTable(ServiceLine);
+                    DestinationRecordRef.GetTable(FSWorkOrderProduct);
+                end;
+
 
             'FS Work Order Service-Service Line':
                 begin
                     SourceRecordRef.SetTable(FSWorkOrderService);
                     DestinationRecordRef.SetTable(ServiceLine);
 
-                    UpdateQuantities(FSWorkOrderService, ServiceLine);
+                    UpdateQuantities(FSWorkOrderService, ServiceLine, false);
                     AdditionalFieldsWereModified := true;
 
+                    SourceRecordRef.GetTable(FSWorkOrderService);
                     DestinationRecordRef.GetTable(ServiceLine);
                 end;
+            'Service Line-FS Work Order Service':
+                begin
+                    SourceRecordRef.SetTable(ServiceLine);
+                    DestinationRecordRef.SetTable(FSWorkOrderService);
+
+                    UpdateQuantities(FSWorkOrderService, ServiceLine, true);
+                    AdditionalFieldsWereModified := true;
+
+                    SourceRecordRef.GetTable(ServiceLine);
+                    DestinationRecordRef.GetTable(FSWorkOrderService);
+                end;
+
 
             'FS Bookable Resource Booking-Service Line':
                 begin
@@ -400,53 +426,8 @@ codeunit 6610 "FS Int. Table Subscriber"
             end;
 
         if (SourceFieldRef.Record().Number = Database::"Service Line") and
-            (DestinationFieldRef.Record().Number = Database::"FS Work Order Product") then
-            case DestinationFieldRef.Name() of
-                FSWorkOrderProduct.FieldName(EstimateQuantity):
-                    begin
-                        SourceFieldRef.Record().SetTable(ServiceLine);
-                        DestinationFieldRef.Record().SetTable(FSWorkOrderProduct);
-                        // only update estimated quantity if the line status is estimated
-                        if FSWorkOrderProduct.LineStatus = FSWorkOrderProduct.LineStatus::Estimated then begin
-                            ServiceLine.Validate("Qty. to Ship", 0);
-                            ServiceLine.Validate("Qty. to Invoice", 0);
-                            ServiceLine.Validate("Qty. to Consume", 0);
-                            ServiceLine.Modify(true);
-                        end else begin
-                            NewValue := FSWorkOrderProduct.EstimateQuantity;
-                            IsValueFound := true;
-                            NeedsConversion := false;
-                        end;
-                        SourceFieldRef.Record().GetTable(ServiceLine);
-                    end;
-            end;
-
-        if (SourceFieldRef.Record().Number = Database::"Service Line") and
             (DestinationFieldRef.Record().Number = Database::"FS Work Order Service") then
             case DestinationFieldRef.Name() of
-                FSWorkOrderService.FieldName(EstimateDuration):
-                    begin
-                        SourceFieldRef.Record().SetTable(ServiceLine);
-                        DestinationFieldRef.Record().SetTable(FSWorkOrderService);
-                        // only update estimated quantity if the line status is estimated
-                        if FSWorkOrderService.LineStatus = FSWorkOrderService.LineStatus::Estimated then begin
-                            ServiceLine.Validate("Qty. to Ship", 0);
-                            ServiceLine.Validate("Qty. to Invoice", 0);
-                            ServiceLine.Validate("Qty. to Consume", 0);
-                            ServiceLine.Modify(true);
-                        end else begin
-                            NewValue := FSWorkOrderService.EstimateDuration;
-                            IsValueFound := true;
-                            NeedsConversion := false;
-                            exit;
-                        end;
-
-                        DurationInHours := ServiceLine.Quantity;
-                        DurationInMinutes := DurationInHours * 60;
-                        NewValue := DurationInMinutes;
-                        IsValueFound := true;
-                        NeedsConversion := false;
-                    end;
                 FSWorkOrderService.FieldName(DurationShipped):
                     begin
                         SourceRecordRef := SourceFieldRef.Record();
@@ -610,18 +591,46 @@ codeunit 6610 "FS Int. Table Subscriber"
             end;
     end;
 
-    internal procedure UpdateQuantities(FSWorkOrderProduct: Record "FS Work Order Product"; var ServiceLine: Record "Service Line")
+    internal procedure UpdateQuantities(var FSWorkOrderProduct: Record "FS Work Order Product"; var ServiceLine: Record "Service Line"; ToFieldService: Boolean)
     begin
-        ServiceLine.Validate(Quantity, GetMaxQuantity(FSWorkOrderProduct.EstimateQuantity, FSWorkOrderProduct.Quantity, FSWorkOrderProduct.QtyToBill));
-        ServiceLine.Validate("Qty. to Ship", GetMaxQuantity(FSWorkOrderProduct.Quantity, FSWorkOrderProduct.QtyToBill) - ServiceLine."Quantity Shipped");
-        ServiceLine.Validate("Qty. to Invoice", FSWorkOrderProduct.QtyToBill - ServiceLine."Quantity Invoiced");
+        if FSWorkOrderProduct.LineStatus = FSWorkOrderProduct.LineStatus::Estimated then begin
+            if ToFieldService then
+                FSWorkOrderProduct.EstimateQuantity := ServiceLine.Quantity
+            else
+                ServiceLine.Validate(Quantity, FSWorkOrderProduct.EstimateQuantity);
+
+            ServiceLine.Validate("Qty. to Ship", 0);
+            ServiceLine.Validate("Qty. to Invoice", 0);
+            ServiceLine.Validate("Qty. to Consume", 0);
+
+            if ToFieldService then
+                ServiceLine.Modify(true);
+        end else begin
+            ServiceLine.Validate(Quantity, GetMaxQuantity(FSWorkOrderProduct.Quantity, FSWorkOrderProduct.QtyToBill));
+            ServiceLine.Validate("Qty. to Ship", GetMaxQuantity(FSWorkOrderProduct.Quantity, FSWorkOrderProduct.QtyToBill) - ServiceLine."Quantity Shipped");
+            ServiceLine.Validate("Qty. to Invoice", FSWorkOrderProduct.QtyToBill - ServiceLine."Quantity Invoiced");
+        end;
     end;
 
-    internal procedure UpdateQuantities(FSWorkOrderService: Record "FS Work Order Service"; var ServiceLine: Record "Service Line")
+    internal procedure UpdateQuantities(var FSWorkOrderService: Record "FS Work Order Service"; var ServiceLine: Record "Service Line"; ToFieldService: Boolean)
     begin
-        ServiceLine.Validate(Quantity, GetMaxQuantity(FSWorkOrderService.EstimateDuration, FSWorkOrderService.Duration, FSWorkOrderService.DurationToBill) / 60);
-        ServiceLine.Validate("Qty. to Ship", GetMaxQuantity(FSWorkOrderService.Duration, FSWorkOrderService.DurationToBill) / 60 - ServiceLine."Quantity Shipped");
-        ServiceLine.Validate("Qty. to Invoice", FSWorkOrderService.DurationToBill / 60 - ServiceLine."Quantity Invoiced");
+        if FSWorkOrderService.LineStatus = FSWorkOrderService.LineStatus::Estimated then begin
+            if ToFieldService then
+                FSWorkOrderService.EstimateDuration := ServiceLine.Quantity * 60
+            else
+                ServiceLine.Validate(Quantity, FSWorkOrderService.EstimateDuration / 60);
+
+            ServiceLine.Validate("Qty. to Ship", 0);
+            ServiceLine.Validate("Qty. to Invoice", 0);
+            ServiceLine.Validate("Qty. to Consume", 0);
+
+            if ToFieldService then
+                ServiceLine.Modify(true);
+        end else begin
+            ServiceLine.Validate(Quantity, GetMaxQuantity(FSWorkOrderService.Duration, FSWorkOrderService.DurationToBill) / 60);
+            ServiceLine.Validate("Qty. to Ship", GetMaxQuantity(FSWorkOrderService.Duration, FSWorkOrderService.DurationToBill) / 60 - ServiceLine."Quantity Shipped");
+            ServiceLine.Validate("Qty. to Invoice", FSWorkOrderService.DurationToBill / 60 - ServiceLine."Quantity Invoiced");
+        end;
     end;
 
     internal procedure UpdateQuantities(FSBookableResourceBooking: Record "FS Bookable Resource Booking"; var ServiceLine: Record "Service Line")

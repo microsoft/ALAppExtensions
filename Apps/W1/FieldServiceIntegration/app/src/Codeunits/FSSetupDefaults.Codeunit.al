@@ -821,13 +821,6 @@ codeunit 6611 "FS Setup Defaults"
 
         InsertIntegrationFieldMapping(
           IntegrationTableMappingName,
-          ServiceLine.FieldNo(Quantity),
-          FSWorkOrderProduct.FieldNo(EstimateQuantity),
-          IntegrationFieldMapping.Direction::Bidirectional,
-          '', true, false);
-
-        InsertIntegrationFieldMapping(
-          IntegrationTableMappingName,
           ServiceLine.FieldNo("Quantity Shipped"),
           FSWorkOrderProduct.FieldNo(QuantityShipped),
           IntegrationFieldMapping.Direction::ToIntegrationTable,
@@ -929,13 +922,6 @@ codeunit 6611 "FS Setup Defaults"
           IntegrationTableMappingName,
           ServiceLine.FieldNo("Unit of Measure Code"),
           FSWorkOrderService.FieldNo(Unit),
-          IntegrationFieldMapping.Direction::Bidirectional,
-          '', true, false);
-
-        InsertIntegrationFieldMapping(
-          IntegrationTableMappingName,
-          ServiceLine.FieldNo(Quantity),
-          FSWorkOrderService.FieldNo(EstimateDuration),
           IntegrationFieldMapping.Direction::Bidirectional,
           '', true, false);
 
