@@ -13,7 +13,7 @@ page 30070 "APIV2 - Sustainability Account"
     EntityCaption = 'Sustainability Account';
     EntitySetCaption = 'Sustainability Accounts';
     ODataKeyFields = SystemId;
-    SourceTable = "Sustainability Account";
+    SourceTable = 'Sustainability Account';
     Extensible = false;
 
     layout
@@ -33,20 +33,20 @@ page 30070 "APIV2 - Sustainability Account"
                 }
                 field("Number"; Rec."No.")
                 {
-                    Caption = "Account Number";
+                    Caption = 'Account Number';
                 }
                 field("Net_Change_CO2"; Rec."Net Change (CO2)")
                 {
-                    Caption = "Net Change (CO2))";
+                    Caption = 'Net Change (CO2))';
                 }
                 field("Balance_CO2"; Rec."Balance (CO2)")
                 {
-                    Caption = "Balance (CO2))";
+                    Caption = 'Balance (CO2))';
 
                 }
                 field("Account_Type"; Rec."Account Type")
                 {
-                    Caption = "Account Type";
+                    Caption = 'Account Type';
                 }
             }
         }
