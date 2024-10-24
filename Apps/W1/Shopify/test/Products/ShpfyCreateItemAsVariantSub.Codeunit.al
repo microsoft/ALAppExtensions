@@ -5,6 +5,7 @@ codeunit 139583 "Shpfy CreateItemAsVariantSub"
     var
         GraphQueryTxt: Text;
         NewVariantId: BigInteger;
+        MultipleOptions: Boolean;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Communication Events", 'OnClientSend', '', true, false)]
     local procedure OnClientSend(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
@@ -39,7 +40,10 @@ codeunit 139583 "Shpfy CreateItemAsVariantSub"
                                 GraphQlQuery.StartsWith(CreateItemVariantTok):
                                     HttpResponseMessage := GetCreatedVariantResponse();
                                 GraphQlQuery.StartsWith(GetOptionsStartTok) and GraphQlQuery.EndsWith(GetOptionsEndTok):
-                                    HttpResponseMessage := GetProductOptionsResponse();
+                                    if MultipleOptions then
+                                        HttpResponseMessage := GetProductMultipleOptionsResponse()
+                                    else
+                                        HttpResponseMessage := GetProductOptionsResponse();
                                 GraphQlQuery.StartsWith(RemoveVariantStartTok) and GraphQlQuery.EndsWith(RemoveVariantEndTok):
                                     begin
                                         HttpResponseMessage := GetRemoveVariantResponse();
@@ -82,6 +86,16 @@ codeunit 139583 "Shpfy CreateItemAsVariantSub"
         exit(HttpResponseMessage);
     end;
 
+    local procedure GetProductMultipleOptionsResponse(): HttpResponseMessage
+    var
+        HttpResponseMessage: HttpResponseMessage;
+        BodyTxt: Text;
+    begin
+        BodyTxt := '{"data": {"product": {"id": "gid://shopify/Product/123456", "title": "Product 1", "options": [{"id": "gid://shopify/ProductOption/1", "name": "Option 1"}, {"id": "gid://shopify/ProductOption/2", "name": "Option 2"}]}}}';
+        HttpResponseMessage.Content.WriteFrom(BodyTxt);
+        exit(HttpResponseMessage);
+    end;
+
     procedure GetNewVariantId(): BigInteger
     begin
         exit(NewVariantId);
@@ -90,5 +104,10 @@ codeunit 139583 "Shpfy CreateItemAsVariantSub"
     procedure GetGraphQueryTxt(): Text
     begin
         exit(GraphQueryTxt);
+    end;
+
+    procedure SetMultipleOptions(NewMultipleOptions: Boolean)
+    begin
+        this.MultipleOptions := NewMultipleOptions;
     end;
 }

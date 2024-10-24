@@ -80,7 +80,7 @@ codeunit 139581 "Shpfy Create Item Variant Test"
     end;
 
     [Test]
-    procedure UnitTestDeleteProduvtVariant()
+    procedure UnitTestDeleteProductVariant()
     var
         CreateItemAsVariantSub: Codeunit "Shpfy CreateItemAsVariantSub";
         VariantAPI: Codeunit "Shpfy Variant API";
@@ -104,7 +104,35 @@ codeunit 139581 "Shpfy Create Item Variant Test"
         LibraryAssert.AreEqual(StrSubstNo(ExpexctedQueryTok, VariantId), ActualQueryTxt, 'Query not correct');
     end;
 
+    [Test]
+    procedure UnitTestCreateVariantFromProductWithMultipleOptions()
+    var
+        Item: Record "Item";
+        ShpfyProductInitTest: Codeunit "Shpfy Product Init Test";
+        CreateItemAsVariant: Codeunit "Shpfy Create Item As Variant";
+        CreateItemAsVariantSub: Codeunit "Shpfy CreateItemAsVariantSub";
+        ProductId: BigInteger;
+    begin
+        // [SCENARIO] Create a variant from a product with multiple options
+        Initialize();
 
+        // [GIVEN] Item
+        Item := ShpfyProductInitTest.CreateItem(Shop."Item Templ. Code", Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 500, 2));
+        // [GIVEN] Shopify product
+        ProductId := CreateShopifyProduct(Item.SystemId);
+
+        // [GIVEN] Multiple options for the product in Shopify
+        CreateItemAsVariantSub.SetMultipleOptions(true);
+
+        // [WHEN] Invoke ProductAPI.CheckProductAndShopSettings
+        BindSubscription(CreateItemAsVariantSub);
+        CreateItemAsVariant.SetParentProduct(ProductId);
+        asserterror CreateItemAsVariant.CheckProductAndShopSettings();
+        UnbindSubscription(CreateItemAsVariantSub);
+
+        // [THEN] Error is thrown
+        LibraryAssert.ExpectedError('The product has more than one option. Items cannot be added as variants to a product with multiple options.');
+    end;
 
     local procedure Initialize()
     begin
