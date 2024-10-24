@@ -37,18 +37,18 @@ codeunit 139205 "FS Integration Test Library"
         FSSetupDefaults.ResetConfiguration(FSConnectionSetup);
     end;
 
-    procedure UpdateQuantities(FSWorkOrderProduct: Record "FS Work Order Product"; var ServiceLine: Record "Service Line")
+    procedure UpdateQuantities(FSWorkOrderProduct: Record "FS Work Order Product"; var ServiceLine: Record "Service Line"; ToFieldService: Boolean)
     var
         FSIntTableSubscriber: Codeunit "FS Int. Table Subscriber";
     begin
-        FSIntTableSubscriber.UpdateQuantities(FSWorkOrderProduct, ServiceLine);
+        FSIntTableSubscriber.UpdateQuantities(FSWorkOrderProduct, ServiceLine, ToFieldService);
     end;
 
-    procedure UpdateQuantities(FSWorkOrderService: Record "FS Work Order Service"; var ServiceLine: Record "Service Line")
+    procedure UpdateQuantities(FSWorkOrderService: Record "FS Work Order Service"; var ServiceLine: Record "Service Line"; ToFieldService: Boolean)
     var
         FSIntTableSubscriber: Codeunit "FS Int. Table Subscriber";
     begin
-        FSIntTableSubscriber.UpdateQuantities(FSWorkOrderService, ServiceLine);
+        FSIntTableSubscriber.UpdateQuantities(FSWorkOrderService, ServiceLine, ToFieldService);
     end;
 
     procedure UpdateQuantities(FSBookableResourceBooking: Record "FS Bookable Resource Booking"; var ServiceLine: Record "Service Line")

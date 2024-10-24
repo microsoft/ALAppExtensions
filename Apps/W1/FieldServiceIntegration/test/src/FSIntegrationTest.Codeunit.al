@@ -752,7 +752,7 @@ codeunit 139204 "FS Integration Test"
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
-    procedure UpdateWorkOrderProductDefault()
+    procedure UpdateWorkOrderProductDefaultEstimated()
     var
         WorkOrderProduct: Record "FS Work Order Product";
         ServiceHeader: Record "Service Header";
@@ -769,15 +769,49 @@ codeunit 139204 "FS Integration Test"
         LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
 
         // [GIVEN] Quantities on work order lines.
+        WorkOrderProduct.LineStatus := WorkOrderProduct.LineStatus::Estimated;
         WorkOrderProduct.EstimateQuantity := 3;
         WorkOrderProduct.Quantity := 2;
         WorkOrderProduct.QtyToBill := 1;
 
         // [WHEN] Update quantities on work order lines that are not posted in BC.
-        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderProduct, ServiceLine);
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderProduct, ServiceLine, false);
 
         // [THEN] Quantities should be updated accordingly.
         Assert.AreEqual(WorkOrderProduct.EstimateQuantity, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderProduct.EstimateQuantity));
+        Assert.AreEqual(0, ServiceLine."Qty. to Ship", 'Qty. to Ship should be 0');
+        Assert.AreEqual(0, ServiceLine."Qty. to Invoice", 'Qty. to Invoice should be 0');
+    end;
+
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure UpdateWorkOrderProductDefaultUsed()
+    var
+        WorkOrderProduct: Record "FS Work Order Product";
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] User updates quantities on work order lines that are not posted in BC.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+
+        // [GIVEN] Existing Service Line.
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+        LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
+
+        // [GIVEN] Quantities on work order lines.
+        WorkOrderProduct.LineStatus := WorkOrderProduct.LineStatus::Used;
+        WorkOrderProduct.EstimateQuantity := 3;
+        WorkOrderProduct.Quantity := 2;
+        WorkOrderProduct.QtyToBill := 1;
+
+        // [WHEN] Update quantities on work order lines that are not posted in BC.
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderProduct, ServiceLine, false);
+
+        // [THEN] Quantities should be updated accordingly.
+        Assert.AreEqual(WorkOrderProduct.Quantity, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderProduct.Quantity));
         Assert.AreEqual(WorkOrderProduct.Quantity, ServiceLine."Qty. to Ship", 'Qty. to Ship should be ' + Format(WorkOrderProduct.Quantity));
         Assert.AreEqual(WorkOrderProduct.QtyToBill, ServiceLine."Qty. to Invoice", 'Qty. to Invoice should be ' + Format(WorkOrderProduct.QtyToBill));
     end;
@@ -801,12 +835,13 @@ codeunit 139204 "FS Integration Test"
         LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
 
         // [GIVEN] Quantities on work order lines.
+        WorkOrderProduct.LineStatus := WorkOrderProduct.LineStatus::Used;
         WorkOrderProduct.EstimateQuantity := 3;
         WorkOrderProduct.Quantity := 10;
         WorkOrderProduct.QtyToBill := 1;
 
         // [WHEN] Update quantities on work order lines that are not posted in BC.
-        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderProduct, ServiceLine);
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderProduct, ServiceLine, false);
 
         // [THEN] Quantities should be updated accordingly. Qty to Ship increases Quantity.
         Assert.AreEqual(WorkOrderProduct.Quantity, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderProduct.Quantity));
@@ -833,12 +868,13 @@ codeunit 139204 "FS Integration Test"
         LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
 
         // [GIVEN] Quantities on work order lines.
+        WorkOrderProduct.LineStatus := WorkOrderProduct.LineStatus::Used;
         WorkOrderProduct.EstimateQuantity := 3;
         WorkOrderProduct.Quantity := 2;
         WorkOrderProduct.QtyToBill := 10;
 
         // [WHEN] Update quantities on work order lines that are not posted in BC.
-        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderProduct, ServiceLine);
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderProduct, ServiceLine, false);
 
         // [THEN] Quantities should be updated accordingly. Qty to Invoice increases all other quantities.
         Assert.AreEqual(WorkOrderProduct.QtyToBill, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderProduct.QtyToBill));
@@ -865,6 +901,7 @@ codeunit 139204 "FS Integration Test"
         LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
 
         // [GIVEN] Quantities on work order lines.
+        WorkOrderProduct.LineStatus := WorkOrderProduct.LineStatus::Used;
         WorkOrderProduct.EstimateQuantity := 5;
         WorkOrderProduct.Quantity := 3;
         WorkOrderProduct.QtyToBill := 2;
@@ -872,14 +909,46 @@ codeunit 139204 "FS Integration Test"
         ServiceLine."Quantity Invoiced" := 1;
 
         // [WHEN] Update quantities on work order lines that are partly posted in BC.
-        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderProduct, ServiceLine);
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderProduct, ServiceLine, false);
 
         // [THEN] Quantities should be updated accordingly. Posted quantities are considered.
-        Assert.AreEqual(WorkOrderProduct.EstimateQuantity, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderProduct.EstimateQuantity));
+        Assert.AreEqual(WorkOrderProduct.Quantity, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderProduct.Quantity));
         Assert.AreEqual(WorkOrderProduct.Quantity - ServiceLine."Quantity Shipped", ServiceLine."Qty. to Ship", 'Qty. to Ship should be ' + Format(WorkOrderProduct.Quantity - ServiceLine."Quantity Shipped"));
         Assert.AreEqual(WorkOrderProduct.QtyToBill - ServiceLine."Quantity Invoiced", ServiceLine."Qty. to Invoice", 'Qty. to Invoice should be ' + Format(WorkOrderProduct.QtyToBill - ServiceLine."Quantity Invoiced"));
     end;
 
+    [Test]
+    [TransactionModel(TransactionModel::AutoRollback)]
+    procedure UpdateWorkOrderServiceDefaultEstimated()
+    var
+        WorkOrderService: Record "FS Work Order Service";
+        ServiceHeader: Record "Service Header";
+        ServiceLine: Record "Service Line";
+    begin
+        // [FEATURE] [UI] Service Order Integration
+        // [SCENARIO] User updates quantities on work order lines that are not posted in BC.
+        // [GIVEN] FS Connection Setup, where "Is Enabled" = Yes.
+        Initialize();
+        InitSetup(true, '');
+
+        // [GIVEN] Existing Service Line.
+        LibraryService.CreateServiceHeader(ServiceHeader, ServiceHeader."Document Type"::Order, LibrarySales.CreateCustomerNo());
+        LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
+
+        // [GIVEN] Quantities on work order lines.
+        WorkOrderService.LineStatus := WorkOrderService.LineStatus::Estimated;
+        WorkOrderService.EstimateDuration := 180;
+        WorkOrderService.Duration := 120;
+        WorkOrderService.DurationToBill := 60;
+
+        // [WHEN] Update quantities on work order lines that are not posted in BC.
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderService, ServiceLine, false);
+
+        // [THEN] Quantities should be updated accordingly.
+        Assert.AreEqual(WorkOrderService.EstimateDuration / 60, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderService.EstimateDuration / 60));
+        Assert.AreEqual(0, ServiceLine."Qty. to Ship", 'Qty. to Ship should be 0');
+        Assert.AreEqual(0, ServiceLine."Qty. to Invoice", 'Qty. to Invoice should be 0');
+    end;
 
     [Test]
     [TransactionModel(TransactionModel::AutoRollback)]
@@ -900,15 +969,16 @@ codeunit 139204 "FS Integration Test"
         LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
 
         // [GIVEN] Quantities on work order lines.
+        WorkOrderService.LineStatus := WorkOrderService.LineStatus::Used;
         WorkOrderService.EstimateDuration := 180;
         WorkOrderService.Duration := 120;
         WorkOrderService.DurationToBill := 60;
 
         // [WHEN] Update quantities on work order lines that are not posted in BC.
-        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderService, ServiceLine);
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderService, ServiceLine, false);
 
         // [THEN] Quantities should be updated accordingly.
-        Assert.AreEqual(WorkOrderService.EstimateDuration / 60, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderService.EstimateDuration / 60));
+        Assert.AreEqual(WorkOrderService.Duration / 60, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderService.Duration / 60));
         Assert.AreEqual(WorkOrderService.Duration / 60, ServiceLine."Qty. to Ship", 'Qty. to Ship should be ' + Format(WorkOrderService.Duration / 60));
         Assert.AreEqual(WorkOrderService.DurationToBill / 60, ServiceLine."Qty. to Invoice", 'Qty. to Invoice should be ' + Format(WorkOrderService.DurationToBill / 60));
     end;
@@ -932,12 +1002,13 @@ codeunit 139204 "FS Integration Test"
         LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
 
         // [GIVEN] Quantities on work order lines.
+        WorkOrderService.LineStatus := WorkOrderService.LineStatus::Used;
         WorkOrderService.EstimateDuration := 180;
         WorkOrderService.Duration := 240;
         WorkOrderService.DurationToBill := 60;
 
         // [WHEN] Update quantities on work order lines that are not posted in BC.
-        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderService, ServiceLine);
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderService, ServiceLine, false);
 
         // [THEN] Quantities should be updated accordingly. Qty to Ship increases Quantity.
         Assert.AreEqual(WorkOrderService.Duration / 60, ServiceLine.Quantity, 'Duration should be ' + Format(WorkOrderService.Duration / 60));
@@ -964,12 +1035,13 @@ codeunit 139204 "FS Integration Test"
         LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
 
         // [GIVEN] Quantities on work order lines.
+        WorkOrderService.LineStatus := WorkOrderService.LineStatus::Used;
         WorkOrderService.EstimateDuration := 180;
         WorkOrderService.Duration := 120;
         WorkOrderService.DurationToBill := 240;
 
         // [WHEN] Update quantities on work order lines that are not posted in BC.
-        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderService, ServiceLine);
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderService, ServiceLine, false);
 
         // [THEN] Quantities should be updated accordingly. Qty to Invoice increases all other quantities.
         Assert.AreEqual(WorkOrderService.DurationToBill / 60, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderService.DurationToBill / 60));
@@ -996,6 +1068,7 @@ codeunit 139204 "FS Integration Test"
         LibraryService.CreateServiceLine(ServiceLine, ServiceHeader, ServiceLine.Type::Item, LibraryInventory.CreateItemNo());
 
         // [GIVEN] Quantities on work order lines.
+        WorkOrderService.LineStatus := WorkOrderService.LineStatus::Used;
         WorkOrderService.EstimateDuration := 300;
         WorkOrderService.Duration := 180;
         WorkOrderService.DurationToBill := 120;
@@ -1003,10 +1076,10 @@ codeunit 139204 "FS Integration Test"
         ServiceLine."Quantity Invoiced" := 1;
 
         // [WHEN] Update quantities on work order lines that are partly posted in BC.
-        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderService, ServiceLine);
+        FSIntegrationTestLibrary.UpdateQuantities(WorkOrderService, ServiceLine, false);
 
         // [THEN] Quantities should be updated accordingly. Posted Quantities are considered.
-        Assert.AreEqual(WorkOrderService.EstimateDuration / 60, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderService.EstimateDuration / 60, ServiceLine.Quantity));
+        Assert.AreEqual(WorkOrderService.Duration / 60, ServiceLine.Quantity, 'Quantity should be ' + Format(WorkOrderService.Duration / 60));
         Assert.AreEqual(WorkOrderService.Duration / 60 - ServiceLine."Quantity Shipped", ServiceLine."Qty. to Ship", 'Qty. to Ship should be ' + Format(WorkOrderService.Duration / 60 - ServiceLine."Quantity Shipped"));
         Assert.AreEqual(WorkOrderService.DurationToBill / 60 - ServiceLine."Quantity Invoiced", ServiceLine."Qty. to Invoice", 'Qty. to Invoice should be ' + Format(WorkOrderService.DurationToBill / 60 - ServiceLine."Quantity Invoiced", ServiceLine."Qty. to Invoice"));
     end;
@@ -1486,7 +1559,7 @@ codeunit 139204 "FS Integration Test"
         FSWorkOrderService.Insert();
 
         // [WHEN] Update quantities on booking lines that are not posted in BC.
-        FSIntegrationTestLibrary.UpdateWorkOrderService(ServiceLineArchive, FSWorkORderService);
+        FSIntegrationTestLibrary.UpdateWorkOrderService(ServiceLineArchive, FSWorkOrderService);
 
         // [THEN] Quantities should be updated accordingly.
         Assert.AreEqual((ServiceLineArchive."Qty. to Ship" + ServiceLineArchive."Quantity Shipped") * 60, FSWorkOrderService.DurationShipped, 'Duration should be ' + Format(ServiceLineArchive."Qty. to Ship" + ServiceLineArchive."Quantity Shipped"));
