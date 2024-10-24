@@ -5,6 +5,7 @@ codeunit 139583 "Shpfy CreateItemAsVariantSub"
     var
         GraphQueryTxt: Text;
         NewVariantId: BigInteger;
+        DefaultVariantId: BigInteger;
         MultipleOptions: Boolean;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Communication Events", 'OnClientSend', '', true, false)]
@@ -28,6 +29,8 @@ codeunit 139583 "Shpfy CreateItemAsVariantSub"
         GetOptionsEndTok: Label '\") {id title options {id name}}}"}', Locked = true;
         RemoveVariantStartTok: Label '{"query":"mutation {productVariantDelete(id: \"gid://shopify/ProductVariant/', Locked = true;
         RemoveVariantEndTok: Label '\") {deletedProductVariantId userErrors{field message}}}"}', Locked = true;
+        GetVariantsTok: Label 'variants(first:200){pageInfo{hasNextPage} edges{cursor node{legacyResourceId updatedAt}}}', Locked = true;
+
         GraphQLCmdTxt: Label '/graphql.json', Locked = true;
     begin
         case HttpRequestMessage.Method of
@@ -49,6 +52,8 @@ codeunit 139583 "Shpfy CreateItemAsVariantSub"
                                         HttpResponseMessage := GetRemoveVariantResponse();
                                         GraphQueryTxt := GraphQlQuery;
                                     end;
+                                GraphQlQuery.Contains(GetVariantsTok):
+                                    HttpResponseMessage := GetDefaultVariantResponse();
                             end;
                 end;
         end;
@@ -60,6 +65,7 @@ codeunit 139583 "Shpfy CreateItemAsVariantSub"
         HttpResponseMessage: HttpResponseMessage;
         BodyTxt: Text;
     begin
+        Any.SetDefaultSeed();
         NewVariantId := Any.IntegerInRange(100000, 999999);
         BodyTxt := StrSubstNo('{ "data": { "productVariantCreate": { "legacyResourceId": %1 } } }', NewVariantId);
         HttpResponseMessage.Content.WriteFrom(BodyTxt);
@@ -96,6 +102,16 @@ codeunit 139583 "Shpfy CreateItemAsVariantSub"
         exit(HttpResponseMessage);
     end;
 
+    local procedure GetDefaultVariantResponse(): HttpResponseMessage
+    var
+        HttpResponseMessage: HttpResponseMessage;
+        BodyTxt: Text;
+    begin
+        BodyTxt := StrSubstNo('{ "data" : { "product" : { "variants" : { "edges" : [ { "node" : { "legacyResourceId" : %1 } } ] } } } }', DefaultVariantId);
+        HttpResponseMessage.Content.WriteFrom(BodyTxt);
+        exit(HttpResponseMessage);
+    end;
+
     procedure GetNewVariantId(): BigInteger
     begin
         exit(NewVariantId);
@@ -109,5 +125,10 @@ codeunit 139583 "Shpfy CreateItemAsVariantSub"
     procedure SetMultipleOptions(NewMultipleOptions: Boolean)
     begin
         this.MultipleOptions := NewMultipleOptions;
+    end;
+
+    procedure SetDefaultVariantId(NewDefaultVariantId: BigInteger)
+    begin
+        this.DefaultVariantId := NewDefaultVariantId;
     end;
 }

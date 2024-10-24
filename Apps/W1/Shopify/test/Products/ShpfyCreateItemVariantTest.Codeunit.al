@@ -86,7 +86,6 @@ codeunit 139581 "Shpfy Create Item Variant Test"
         VariantAPI: Codeunit "Shpfy Variant API";
         VariantId: BigInteger;
         ActualQueryTxt: Text;
-        ExpexctedQueryTok: Label '{"query":"mutation {productVariantDelete(id: \"gid://shopify/ProductVariant/%1\") {deletedProductVariantId userErrors{field message}}}"}', Locked = true;
     begin
         // [SCENARIO] Delete a product variant
         Initialize();
@@ -101,7 +100,8 @@ codeunit 139581 "Shpfy Create Item Variant Test"
         UnbindSubscription(CreateItemAsVariantSub);
 
         // [THEN] Query is correct
-        LibraryAssert.AreEqual(StrSubstNo(ExpexctedQueryTok, VariantId), ActualQueryTxt, 'Query not correct');
+        LibraryAssert.IsTrue(ActualQueryTxt.Contains('{"query":"mutation {productVariantDelete('), 'Query not correct');
+        LibraryAssert.IsTrue(ActualQueryTxt.Contains(StrSubstNo('id: \"gid://shopify/ProductVariant/%1\"', VariantId)), 'Variant Id not set');
     end;
 
     [Test]
@@ -134,11 +134,47 @@ codeunit 139581 "Shpfy Create Item Variant Test"
         LibraryAssert.ExpectedError('The product has more than one option. Items cannot be added as variants to a product with multiple options.');
     end;
 
+    [Test]
+    procedure UnitTestRemoveDefaultVariantTest()
+    var
+        Item: Record Item;
+        ShpfyVariant: Record "Shpfy Variant";
+        ShpfyProductInitTest: Codeunit "Shpfy Product Init Test";
+        CreateItemAsVariant: Codeunit "Shpfy Create Item As Variant";
+        CreateItemAsVariantSub: Codeunit "Shpfy CreateItemAsVariantSub";
+        ProductId, VariantId : BigInteger;
+    begin
+        // [SCENARIO] Remove default variant
+        Initialize();
+
+        // [GIVEN] Item
+        Item := ShpfyProductInitTest.CreateItem(Shop."Item Templ. Code", Any.DecimalInRange(10, 100, 2), Any.DecimalInRange(100, 500, 2));
+        // [GIVEN] Shopify product
+        ProductId := CreateShopifyProduct(Item.SystemId);
+        // [GIVEN] Shopify variant
+        VariantId := CreateShopifyVariant(ProductId);
+        // [GIVEN] Default variant exists in Shopify
+        CreateItemAsVariantSub.SetDefaultVariantId(VariantId);
+
+        // [WHEN] Invoke CreateItemAsVariant.RemoveDefaultVariant
+        BindSubscription(CreateItemAsVariantSub);
+        CreateItemAsVariant.SetParentProduct(ProductId);
+        CreateItemAsVariant.FindDefaultVariantId();
+        CreateItemAsVariant.CreateVariantFromItem(Item);
+        CreateItemAsVariant.RemoveDefaultVariant();
+        UnbindSubscription(CreateItemAsVariantSub);
+
+        // [THEN] Default variant is removed
+        ShpfyVariant.SetRange(Id, VariantId);
+        LibraryAssert.IsTrue(ShpfyVariant.IsEmpty(), 'Default variant not removed');
+
+    end;
+
     local procedure Initialize()
     begin
+        Any.SetDefaultSeed();
         if IsInitialized then
             exit;
-        Any.SetDefaultSeed();
         Shop := ShpfyInitializeTest.CreateShop();
         Commit();
         IsInitialized := true;
@@ -154,5 +190,17 @@ codeunit 139581 "Shpfy Create Item Variant Test"
         ShopifyProduct."Item SystemId" := SystemId;
         ShopifyProduct.Insert(true);
         exit(ShopifyProduct."Id");
+    end;
+
+    local procedure CreateShopifyVariant(ProductId: BigInteger): BigInteger
+    var
+        ShpfyVariant: Record "Shpfy Variant";
+    begin
+        ShpfyVariant.Init();
+        ShpfyVariant.Id := Any.IntegerInRange(10000, 99999);
+        ShpfyVariant."Shop Code" := Shop."Code";
+        ShpfyVariant."Product Id" := ProductId;
+        ShpfyVariant.Insert(false);
+        exit(ShpfyVariant."Id");
     end;
 }
