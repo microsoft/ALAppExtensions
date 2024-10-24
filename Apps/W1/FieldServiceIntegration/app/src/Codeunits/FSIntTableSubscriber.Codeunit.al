@@ -883,6 +883,7 @@ codeunit 6610 "FS Int. Table Subscriber"
                 end;
             'FS Work Order-Service Header':
                 begin
+                    ValidateServiceHeaderAfterInsert(DestinationRecordRef);
                     ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
                     ResetServiceOrderLineFromFSWorkOrderProduct(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
                     ResetServiceOrderLineFromFSWorkOrderService(SourceRecordRef, DestinationRecordRef, ArchivedServiceOrders);
@@ -990,6 +991,16 @@ codeunit 6610 "FS Int. Table Subscriber"
                     ResetFSWorkOrderServiceFromServiceOrderLine(SourceRecordRef, DestinationRecordRef);
                 end;
         end;
+    end;
+
+    local procedure ValidateServiceHeaderAfterInsert(DestinationRecordRef: RecordRef)
+    var
+        ServiceHeader: Record "Service Header";
+    begin
+        DestinationRecordRef.SetTable(ServiceHeader);
+        ServiceHeader.Validate("Customer No."); // explicit recalculation, as InitRecord() was called after setting the customer
+        ServiceHeader.Modify(true);
+        DestinationRecordRef.GetTable(ServiceHeader);
     end;
 
     local procedure ResetServiceOrderItemLineFromFSWorkOrderIncident(SourceRecordRef: RecordRef; DestinationRecordRef: RecordRef; var ArchivedServiceOrders: List of [Code[20]])
