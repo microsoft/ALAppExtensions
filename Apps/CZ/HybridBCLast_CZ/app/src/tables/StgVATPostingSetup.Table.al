@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA24
 table 11700 "Stg VAT Posting Setup"
 {
     ReplicateData = false;
@@ -38,4 +39,4 @@ table 11700 "Stg VAT Posting Setup"
         }
     }
 }
-
+#endif

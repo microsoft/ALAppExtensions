@@ -87,6 +87,7 @@ table 30133 "Shpfy Order Transaction"
             DataClassification = SystemMetadata;
             Editable = false;
         }
+#if not CLEANSCHEMA28
         field(15; "Source Name"; Code[20])
         {
             Caption = 'Source Name';
@@ -102,6 +103,7 @@ table 30133 "Shpfy Order Transaction"
             ObsoleteTag = '28.0';
 #endif
         }
+#endif
         field(16; "Credit Card Bin"; Code[10])
         {
             Caption = 'Credit Card Bin';
@@ -180,6 +182,7 @@ table 30133 "Shpfy Order Transaction"
             FieldClass = FlowField;
             CalcFormula = lookup("Shpfy Payment Method Mapping"."Payment Method Code" where("Shop Code" = field("Shop Code"), Gateway = field(Gateway), "Credit Card Company" = field("Credit Card Company")));
         }
+#if not CLEANSCHEMA28
         field(105; "Payment Priority"; Integer)
         {
             Caption = 'Payment Priority';
@@ -194,6 +197,7 @@ table 30133 "Shpfy Order Transaction"
             ObsoleteTag = '28.0';
 #endif
         }
+#endif
         field(106; Used; Boolean)
         {
             Caption = 'Used';

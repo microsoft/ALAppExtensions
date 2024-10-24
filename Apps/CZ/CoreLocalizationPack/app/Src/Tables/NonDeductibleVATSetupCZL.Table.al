@@ -20,6 +20,11 @@ table 11713 "Non-Deductible VAT Setup CZL"
         field(2; "To Date"; Date)
         {
             Caption = 'To Date';
+
+            trigger OnValidate()
+            begin
+                TestField("To Date");
+            end;
         }
         field(3; "Advance Coefficient"; Decimal)
         {

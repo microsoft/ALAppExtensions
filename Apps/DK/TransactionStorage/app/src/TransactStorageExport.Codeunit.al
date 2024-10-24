@@ -19,6 +19,7 @@ codeunit 6203 "Transact. Storage Export"
                   tabledata "Incoming Document" = r;
 
     var
+        TransactionStorageABS: Codeunit "Transaction Storage ABS";
         FeatureTelemetry: Codeunit "Feature Telemetry";
         TransactionStorageTok: Label 'Transaction Storage', Locked = true;
         ExportStartedTxt: Label 'Export started', Locked = true;
@@ -28,8 +29,10 @@ codeunit 6203 "Transact. Storage Export"
     trigger OnRun()
     var
         TransactStorageExportData: Codeunit "Transact. Storage Export Data";
+        CustomDimensions: Dictionary of [Text, Text];
     begin
-        FeatureTelemetry.LogUsage('0000LK3', TransactionStorageTok, ExportStartedTxt);
+        CustomDimensions.Add('ContainerName', TransactionStorageABS.GetContainerName());
+        FeatureTelemetry.LogUsage('0000LK3', TransactionStorageTok, ExportStartedTxt, CustomDimensions);
         Rec.SetStatusStarted();
         Commit();
 
@@ -37,6 +40,7 @@ codeunit 6203 "Transact. Storage Export"
         TransactStorageExportData.ExportData(Rec."Starting Date/Time");
 
         Rec.SetStatusCompleted();
+        CustomDimensions.Add('TaskRunTimeHours', Format(GetTaskRuntimeHours(Rec."Starting Date/Time", CurrentDateTime())));
         FeatureTelemetry.LogUsage('0000LK4', TransactionStorageTok, ExportEndedTxt);
     end;
 
@@ -47,7 +51,7 @@ codeunit 6203 "Transact. Storage Export"
         if not TransactionStorageSetup.Get() then
             TransactionStorageSetup.Insert(true);
         MaxExpectedRunTimeHours := TransactionStorageSetup."Max. Number of Hours";
-        TaskRunTimeHours := Round((CurrentDateTime() - TaskStartingDateTime) / (60 * 60 * 1000), 0.1);
+        TaskRunTimeHours := GetTaskRuntimeHours(TaskStartingDateTime, CurrentDateTime());
 
         exit(TaskRunTimeHours > MaxExpectedRunTimeHours);
     end;
@@ -59,6 +63,11 @@ codeunit 6203 "Transact. Storage Export"
     begin
         if IsTaskTimedOut(TaskStartingDateTime, TaskRunTimeHours, MaxExpectedRunTimeHours) then
             LogWarning('0000LNB', StrSubstNo(TaskTimedOutErr, MaxExpectedRunTimeHours, TaskRunTimeHours));
+    end;
+
+    local procedure GetTaskRuntimeHours(TaskStartingDateTime: DateTime; TaskEndingDateTime: DateTime): Decimal
+    begin
+        exit(Round((TaskEndingDateTime - TaskStartingDateTime) / (60 * 60 * 1000), 0.1));
     end;
 
     procedure GetRecordExportData(var TransactStorageTableEntry: Record "Transact. Storage Table Entry"; var RecRef: RecordRef)
@@ -111,7 +120,6 @@ codeunit 6203 "Transact. Storage Export"
 
     procedure CalcTenantExportStartTime() ExportStartTime: Time
     var
-        TransactionStorageABS: Codeunit "Transaction Storage ABS";
         Convert: DotNet Convert;
         TenantIdTwoFirstChars: Text[2];
         TimeMultiplier: Integer;
@@ -145,7 +153,6 @@ codeunit 6203 "Transact. Storage Export"
 
     local procedure VerifyContainerNameLength()
     var
-        TransactionStorageABS: Codeunit "Transaction Storage ABS";
         ContainerName: Text;
     begin
         ContainerName := TransactionStorageABS.GetContainerName();

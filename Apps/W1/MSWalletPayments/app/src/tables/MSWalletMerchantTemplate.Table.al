@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA23
 table 1081 "MS - Wallet Merchant Template"
 {
     ObsoleteState = Removed;
@@ -93,3 +94,4 @@ table 1081 "MS - Wallet Merchant Template"
         EXIT(TRUE);
     end;
 }
+#endif

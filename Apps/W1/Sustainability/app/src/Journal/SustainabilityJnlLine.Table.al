@@ -78,6 +78,9 @@ table 6214 "Sustainability Jnl. Line"
                     "Account Name" := SustainabilityAccount.Name;
                 end;
 
+                if Rec."Account No." <> xRec."Account No." then
+                    ClearEmissionInformation(Rec);
+
                 CreateDimFromDefaultDim(FieldNo("Account No."));
             end;
         }
@@ -198,18 +201,33 @@ table 6214 "Sustainability Jnl. Line"
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission CO2';
+
+            trigger OnValidate()
+            begin
+                ValidateSustainabilityJournalLineByField(Rec, Rec.FieldNo("Emission CO2"), Rec."Emission CO2");
+            end;
         }
         field(20; "Emission CH4"; Decimal)
         {
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission CH4';
+
+            trigger OnValidate()
+            begin
+                ValidateSustainabilityJournalLineByField(Rec, Rec.FieldNo("Emission CH4"), Rec."Emission CH4");
+            end;
         }
         field(21; "Emission N2O"; Decimal)
         {
             AutoFormatType = 11;
             AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
             Caption = 'Emission N2O';
+
+            trigger OnValidate()
+            begin
+                ValidateSustainabilityJournalLineByField(Rec, Rec.FieldNo("Emission N2O"), Rec."Emission N2O");
+            end;
         }
         field(22; "Country/Region Code"; Code[10])
         {
@@ -220,6 +238,21 @@ table 6214 "Sustainability Jnl. Line"
         {
             Caption = 'Responsibility Center';
             TableRelation = "Responsibility Center";
+
+            trigger OnValidate()
+            var
+                ResponsibilityCenter: Record "Responsibility Center";
+                SustAccountCategory: Record "Sustain. Account Category";
+            begin
+                SustAccountCategory.Get(Rec."Account Category");
+                if (Rec."Responsibility Center" <> '') and (SustAccountCategory."Water Intensity") then begin
+                    ResponsibilityCenter.Get(Rec."Responsibility Center");
+
+                    Rec.Validate("Unit of Measure", ResponsibilityCenter."Water Capacity Unit");
+                    if not Rec."Manual Input" then
+                        Rec.Validate("Custom Amount", ResponsibilityCenter."Water Capacity Quantity(Month)");
+                end;
+            end;
         }
         field(24; "Recurring Method"; Enum "Sustain. Jnl. Recur. Method")
         {
@@ -233,6 +266,52 @@ table 6214 "Sustainability Jnl. Line"
         field(26; "Expiration Date"; Date)
         {
             Caption = 'Expiration Date';
+        }
+        field(34; "Water Intensity"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Water Intensity';
+
+            trigger OnValidate()
+            begin
+                ValidateSustainabilityJournalLineByField(Rec, Rec.FieldNo("Water Intensity"), Rec."Water Intensity");
+            end;
+        }
+        field(35; "Discharged Into Water"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Discharged Into Water';
+
+            trigger OnValidate()
+            begin
+                ValidateSustainabilityJournalLineByField(Rec, Rec.FieldNo("Discharged Into Water"), Rec."Discharged Into Water");
+            end;
+        }
+        field(36; "Waste Intensity"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Waste Intensity';
+
+            trigger OnValidate()
+            begin
+                ValidateSustainabilityJournalLineByField(Rec, Rec.FieldNo("Waste Intensity"), Rec."Waste Intensity");
+            end;
+        }
+        field(37; "Water/Waste Intensity Type"; Enum "Water/Waste Intensity Type")
+        {
+            Caption = 'Water/Waste Intensity Type';
+
+            trigger OnValidate()
+            begin
+                ValidateSustainabilityJournalLineByField(Rec, FieldNo("Water/Waste Intensity Type"), 0);
+            end;
+        }
+        field(38; "Water Type"; Enum "Water Type")
+        {
+            Caption = 'Water Type';
         }
         field(480; "Dimension Set ID"; Integer)
         {
@@ -308,6 +387,10 @@ table 6214 "Sustainability Jnl. Line"
         SustainabilitySetup: Record "Sustainability Setup";
         DimMgt: Codeunit DimensionManagement;
         JnlRecRefLbl: Label '%1 %2 %3', Locked = true;
+        ValuesMustBeZeroErr: Label '%1, %2, %3 must be Zero.', Comment = '%1,%2,%3 = Field Caption';
+        CanBeUsedOnlyForWaterErr: Label '%1 can be used only for water.', Comment = '%1 = Field Value';
+        CanBeUsedOnlyForWasteErr: Label '%1 can be only used for waste.', Comment = '%1 = Field Value';
+        CannotBeUsedForWaterErr: Label '%1 can''t be used for water.', Comment = '%1 = Field Value';
 
     procedure SetupNewLine(PreviousLine: Record "Sustainability Jnl. Line")
     var
@@ -366,6 +449,131 @@ table 6214 "Sustainability Jnl. Line"
             "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
 
         IsChanged := OldDimSetID <> "Dimension Set ID";
+    end;
+
+    local procedure ClearEmissionInformation(var SustainabilityJnlLine: Record "Sustainability Jnl. Line")
+    begin
+        SustainabilityJnlLine.Validate("Emission CO2", 0);
+        SustainabilityJnlLine.Validate("Emission CH4", 0);
+        SustainabilityJnlLine.Validate("Emission N2O", 0);
+        SustainabilityJnlLine.Validate("Waste Intensity", 0);
+        SustainabilityJnlLine.Validate("Water Intensity", 0);
+        SustainabilityJnlLine.Validate("Discharged Into Water", 0);
+        SustainabilityJnlLine.Validate("Water/Waste Intensity Type", "Water/Waste Intensity Type"::" ");
+        SustainabilityJnlLine.Validate("Water Type", "Water Type"::" ");
+    end;
+
+    local procedure ValidateSustainabilityJournalLineByField(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; CurrentFieldNo: Integer; FieldValue: Decimal)
+    begin
+        case CurrentFieldNo of
+            SustainabilityJnlLine.FieldNo("Emission CO2"),
+            SustainabilityJnlLine.FieldNo("Emission N2O"),
+            SustainabilityJnlLine.FieldNo("Emission CH4"),
+            SustainabilityJnlLine.FieldNo("Waste Intensity"),
+            SustainabilityJnlLine.FieldNo("Discharged Into Water"),
+            SustainabilityJnlLine.FieldNo("Water Intensity"):
+                begin
+                    if not SustainabilityJnlLine."Manual Input" then
+                        exit;
+
+                    if FieldValue <> 0 then
+                        CheckSustainabilityJournalLineByField(SustainabilityJnlLine, CurrentFieldNo);
+                end;
+            SustainabilityJnlLine.FieldNo("Water/Waste Intensity Type"):
+                if SustainabilityJnlLine."Water/Waste Intensity Type" <> SustainabilityJnlLine."Water/Waste Intensity Type"::" " then
+                    CheckSustainabilityJournalLineByField(SustainabilityJnlLine, CurrentFieldNo);
+        end;
+    end;
+
+    local procedure CheckSustainabilityJournalLineByField(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; CurrentFieldNo: Integer)
+    var
+        SustAccountCategory: Record "Sustain. Account Category";
+    begin
+        case CurrentFieldNo of
+            SustainabilityJnlLine.FieldNo("Emission CO2"),
+            SustainabilityJnlLine.FieldNo("Emission N2O"),
+            SustainabilityJnlLine.FieldNo("Emission CH4"):
+                CheckEmissionsMustBeZeroIfWaterOrWasteIsEnabled(SustainabilityJnlLine);
+            SustainabilityJnlLine.FieldNo("Waste Intensity"),
+            SustainabilityJnlLine.FieldNo("Discharged Into Water"),
+            SustainabilityJnlLine.FieldNo("Water Intensity"):
+                begin
+                    SustAccountCategory.Get(SustainabilityJnlLine."Account Category");
+
+                    CheckWaterAndWasteMustBeZeroIfEmissionIsEnabled(SustainabilityJnlLine, SustAccountCategory);
+                    CheckWaterOrDischargedIntoWaterAndWasteMustBeZeroIfWaterIsEnabled(SustainabilityJnlLine, SustAccountCategory);
+                    CheckWaterAndDischargedIntoWaterMustBeZeroIfWasteIsEnabled(SustainabilityJnlLine, SustAccountCategory);
+                end;
+            SustainabilityJnlLine.FieldNo("Water/Waste Intensity Type"):
+                CheckWaterOrWasteIntenistyType(SustainabilityJnlLine);
+        end;
+    end;
+
+    local procedure CheckEmissionsMustBeZeroIfWaterOrWasteIsEnabled(SustainabilityJnlLine: Record "Sustainability Jnl. Line")
+    var
+        SustAccountCategory: Record "Sustain. Account Category";
+    begin
+        SustAccountCategory.Get(SustainabilityJnlLine."Account Category");
+        if SustAccountCategory."Water Intensity" or SustAccountCategory."Waste Intensity" or SustAccountCategory."Discharged Into Water" then
+            Error(ValuesMustBeZeroErr, SustainabilityJnlLine.FieldCaption("Emission CO2"), SustainabilityJnlLine.FieldCaption("Emission CH4"), SustainabilityJnlLine.FieldCaption("Emission N2O"));
+    end;
+
+    local procedure CheckWaterAndWasteMustBeZeroIfEmissionIsEnabled(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SustAccountCategory: Record "Sustain. Account Category")
+    begin
+        if SustAccountCategory.CO2 or SustAccountCategory.CH4 or SustAccountCategory.N2O then
+            Error(ValuesMustBeZeroErr, SustainabilityJnlLine.FieldCaption("Water Intensity"), SustainabilityJnlLine.FieldCaption("Discharged Into Water"), SustainabilityJnlLine.FieldCaption("Waste Intensity"));
+    end;
+
+    local procedure CheckWaterOrDischargedIntoWaterAndWasteMustBeZeroIfWaterIsEnabled(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SustAccountCategory: Record "Sustain. Account Category")
+    begin
+        if SustAccountCategory."Water Intensity" or SustAccountCategory."Discharged Into Water" then begin
+            SustainabilityJnlLine.TestField("Waste Intensity", 0);
+
+            if not SustAccountCategory."Discharged Into Water" then
+                SustainabilityJnlLine.TestField("Discharged Into Water", 0);
+
+            if not SustAccountCategory."Water Intensity" then
+                SustainabilityJnlLine.TestField("Water Intensity", 0);
+        end;
+    end;
+
+    local procedure CheckWaterAndDischargedIntoWaterMustBeZeroIfWasteIsEnabled(SustainabilityJnlLine: Record "Sustainability Jnl. Line"; SustAccountCategory: Record "Sustain. Account Category")
+    begin
+        if SustAccountCategory."Waste Intensity" then begin
+            SustainabilityJnlLine.TestField("Water Intensity", 0);
+            SustainabilityJnlLine.TestField("Discharged Into Water", 0);
+        end;
+    end;
+
+    local procedure CheckWaterOrWasteIntenistyType(SustainabilityJnlLine: Record "Sustainability Jnl. Line")
+    var
+        SustAccountCategory: Record "Sustain. Account Category";
+    begin
+        SustAccountCategory.Get(SustainabilityJnlLine."Account Category");
+        if SustAccountCategory."Water Intensity" and SustAccountCategory."Discharged Into Water" then
+            if not (SustainabilityJnlLine."Water/Waste Intensity Type" in [SustainabilityJnlLine."Water/Waste Intensity Type"::Withdrawn,
+                                                                           SustainabilityJnlLine."Water/Waste Intensity Type"::Discharged,
+                                                                           SustainabilityJnlLine."Water/Waste Intensity Type"::Consumed,
+                                                                           SustainabilityJnlLine."Water/Waste Intensity Type"::Recycled])
+            then
+                Error(CanBeUsedOnlyForWasteErr, SustainabilityJnlLine."Water/Waste Intensity Type");
+
+        if (SustAccountCategory."Discharged Into Water") and (not SustAccountCategory."Water Intensity") then
+            SustainabilityJnlLine.TestField("Water/Waste Intensity Type", "Water/Waste Intensity Type"::Discharged);
+
+        if SustAccountCategory."Water Intensity" and not SustAccountCategory."Discharged Into Water" then
+            if not (SustainabilityJnlLine."Water/Waste Intensity Type" in [SustainabilityJnlLine."Water/Waste Intensity Type"::Withdrawn,
+                                                                           SustainabilityJnlLine."Water/Waste Intensity Type"::Consumed,
+                                                                           SustainabilityJnlLine."Water/Waste Intensity Type"::Recycled])
+            then
+                Error(CannotBeUsedForWaterErr, SustainabilityJnlLine."Water/Waste Intensity Type");
+
+        if SustAccountCategory."Waste Intensity" then
+            if not (SustainabilityJnlLine."Water/Waste Intensity Type" in [SustainabilityJnlLine."Water/Waste Intensity Type"::Generated,
+                                                                           SustainabilityJnlLine."Water/Waste Intensity Type"::Disposed,
+                                                                           SustainabilityJnlLine."Water/Waste Intensity Type"::Recovered])
+            then
+                Error(CanBeUsedOnlyForWaterErr, SustainabilityJnlLine."Water/Waste Intensity Type");
     end;
 
     [IntegrationEvent(false, false)]

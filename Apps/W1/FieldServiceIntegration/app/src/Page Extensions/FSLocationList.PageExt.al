@@ -34,7 +34,7 @@ pageextension 6623 "FS Location List" extends "Location List"
                 action(GoToProductFS)
                 {
                     ApplicationArea = Suite;
-                    Caption = 'Location in Field Service';
+                    Caption = 'Warehouse in Field Service';
                     Image = CoupledItem;
                     ToolTip = 'Open the coupled Dynamics 365 Field Service entity.';
 

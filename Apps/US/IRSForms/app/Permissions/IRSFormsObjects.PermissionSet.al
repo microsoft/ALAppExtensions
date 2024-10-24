@@ -25,6 +25,7 @@ permissionset 10032 "IRS Forms - Objects"
                   table "IRS 1099 Vend. Form Box Buffer" = X,
                   table "IRS Forms Setup" = X,
                   table "IRS Reporting Period" = X,
+                  page "IRS 1099 Email Content Setup" = X,
                   page "IRS 1099 Form Boxes" = X,
                   page "IRS 1099 Form Documents" = X,
                   page "IRS 1099 Form Document" = X,

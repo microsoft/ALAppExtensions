@@ -309,6 +309,138 @@ table 6210 "Sustainability Account"
             Editable = false;
             FieldClass = FlowField;
         }
+        field(109; "Net Change (Water)"; Decimal)
+        {
+            AutoFormatType = 1;
+            BlankZero = true;
+            CalcFormula = sum("Sustainability Ledger Entry"."Water Intensity" where("Account No." = field("No."),
+                                                        "Account No." = field(filter(Totaling)),
+                                                        "Responsibility Center" = field("Responsibility Center Filter"),
+                                                        "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
+                                                        "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
+                                                        "Posting Date" = field("Date Filter"),
+                                                        "Dimension Set ID" = field("Dimension Set ID Filter")));
+            Caption = 'Net Change (Water)';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(110; "Balance at Date (Water)"; Decimal)
+        {
+            AutoFormatType = 1;
+            BlankZero = true;
+            CalcFormula = sum("Sustainability Ledger Entry"."Water Intensity" where("Account No." = field("No."),
+                                                        "Account No." = field(filter(Totaling)),
+                                                        "Responsibility Center" = field("Responsibility Center Filter"),
+                                                        "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
+                                                        "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
+                                                        "Posting Date" = field(upperlimit("Date Filter")),
+                                                        "Dimension Set ID" = field("Dimension Set ID Filter")));
+            Caption = 'Balance at Date (Water)';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(111; "Balance (Water)"; Decimal)
+        {
+            AutoFormatType = 1;
+            BlankZero = true;
+            CalcFormula = sum("Sustainability Ledger Entry"."Water Intensity" where("Account No." = field("No."),
+                                                        "Account No." = field(filter(Totaling)),
+                                                        "Responsibility Center" = field("Responsibility Center Filter"),
+                                                        "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
+                                                        "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
+                                                        "Dimension Set ID" = field("Dimension Set ID Filter")));
+            Caption = 'Balance (Water)';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(112; "Net Change (Disch. Water)"; Decimal)
+        {
+            AutoFormatType = 1;
+            BlankZero = true;
+            CalcFormula = sum("Sustainability Ledger Entry"."Discharged Into Water" where("Account No." = field("No."),
+                                                        "Account No." = field(filter(Totaling)),
+                                                        "Responsibility Center" = field("Responsibility Center Filter"),
+                                                        "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
+                                                        "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
+                                                        "Posting Date" = field("Date Filter"),
+                                                        "Dimension Set ID" = field("Dimension Set ID Filter")));
+            Caption = 'Net Change (Disch. Water)';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(113; "Balance at Date (Disch. Water)"; Decimal)
+        {
+            AutoFormatType = 1;
+            BlankZero = true;
+            CalcFormula = sum("Sustainability Ledger Entry"."Discharged Into Water" where("Account No." = field("No."),
+                                                        "Account No." = field(filter(Totaling)),
+                                                        "Responsibility Center" = field("Responsibility Center Filter"),
+                                                        "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
+                                                        "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
+                                                        "Posting Date" = field(upperlimit("Date Filter")),
+                                                        "Dimension Set ID" = field("Dimension Set ID Filter")));
+            Caption = 'Balance at Date (Disch. Water)';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(114; "Balance (Disch. Water)"; Decimal)
+        {
+            AutoFormatType = 1;
+            BlankZero = true;
+            CalcFormula = sum("Sustainability Ledger Entry"."Discharged Into Water" where("Account No." = field("No."),
+                                                        "Account No." = field(filter(Totaling)),
+                                                        "Responsibility Center" = field("Responsibility Center Filter"),
+                                                        "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
+                                                        "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
+                                                        "Dimension Set ID" = field("Dimension Set ID Filter")));
+            Caption = 'Balance (Disch. Water)';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(115; "Net Change (Waste)"; Decimal)
+        {
+            AutoFormatType = 1;
+            BlankZero = true;
+            CalcFormula = sum("Sustainability Ledger Entry"."Waste Intensity" where("Account No." = field("No."),
+                                                        "Account No." = field(filter(Totaling)),
+                                                        "Responsibility Center" = field("Responsibility Center Filter"),
+                                                        "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
+                                                        "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
+                                                        "Posting Date" = field("Date Filter"),
+                                                        "Dimension Set ID" = field("Dimension Set ID Filter")));
+            Caption = 'Net Change (Waste)';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(116; "Balance at Date (Waste)"; Decimal)
+        {
+            AutoFormatType = 1;
+            BlankZero = true;
+            CalcFormula = sum("Sustainability Ledger Entry"."Waste Intensity" where("Account No." = field("No."),
+                                                        "Account No." = field(filter(Totaling)),
+                                                        "Responsibility Center" = field("Responsibility Center Filter"),
+                                                        "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
+                                                        "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
+                                                        "Posting Date" = field(upperlimit("Date Filter")),
+                                                        "Dimension Set ID" = field("Dimension Set ID Filter")));
+            Caption = 'Balance at Date (Waste)';
+            Editable = false;
+            FieldClass = FlowField;
+        }
+        field(117; "Balance (Waste)"; Decimal)
+        {
+            AutoFormatType = 1;
+            BlankZero = true;
+            CalcFormula = sum("Sustainability Ledger Entry"."Waste Intensity" where("Account No." = field("No."),
+                                                        "Account No." = field(filter(Totaling)),
+                                                        "Responsibility Center" = field("Responsibility Center Filter"),
+                                                        "Global Dimension 1 Code" = field("Global Dimension 1 Filter"),
+                                                        "Global Dimension 2 Code" = field("Global Dimension 2 Filter"),
+                                                        "Dimension Set ID" = field("Dimension Set ID Filter")));
+            Caption = 'Balance (Waste)';
+            Editable = false;
+            FieldClass = FlowField;
+        }
 #pragma warning restore AA0232
         field(200; "Responsibility Center Filter"; Code[20])
         {

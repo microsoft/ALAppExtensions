@@ -90,6 +90,7 @@ table 30106 "Shpfy Customer Address"
             Caption = 'Default';
             DataClassification = CustomerContent;
         }
+#if not CLEANSCHEMA24
         field(101; "Ship-To Address SystemId"; Guid)
         {
             Access = Internal;
@@ -99,6 +100,7 @@ table 30106 "Shpfy Customer Address"
             ObsoleteTag = '24.0';
             ObsoleteState = Removed;
         }
+#endif
         field(102; CustomerSystemId; Guid)
         {
             Caption = 'Customer System Id';

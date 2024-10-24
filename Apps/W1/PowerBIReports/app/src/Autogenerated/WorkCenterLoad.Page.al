@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37042 "Work Center Load"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Work Center Load';
     AboutTitle = 'About Work Center Load';
     AboutText = 'View the percentage of production order time assigned vs Available Capacity for each Work Centre Group and/or Work Centre in a specified period. Allows you to determine if a Work Centre is overloaded and requires rescheduling.';

@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA26
 table 4763 "Whse Demo Data Setup"
 {
     DataClassification = CustomerContent;
@@ -209,3 +210,4 @@ table 4763 "Whse Demo Data Setup"
         }
     }
 }
+#endif

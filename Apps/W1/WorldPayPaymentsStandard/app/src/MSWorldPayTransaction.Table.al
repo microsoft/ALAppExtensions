@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA26
 table 1367 "MS - WorldPay Transaction"
 {
     ReplicateData = false;
@@ -37,4 +38,4 @@ table 1367 "MS - WorldPay Transaction"
     {
     }
 }
-
+#endif
