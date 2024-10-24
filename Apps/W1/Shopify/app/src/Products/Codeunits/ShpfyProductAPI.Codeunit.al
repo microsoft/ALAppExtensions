@@ -577,7 +577,7 @@ codeunit 30176 "Shpfy Product API"
     internal procedure PublishProduct(ShopifyProduct: Record "Shpfy Product")
     var
         SalesChannel: Record "Shpfy Sales Channel";
-        GraphQuery: TextBuilder;
+        GraphQuery: Text;
         JResponse: JsonToken;
     begin
         if ShopifyProduct.Status <> Enum::"Shpfy Product Status"::Active then
@@ -586,9 +586,9 @@ codeunit 30176 "Shpfy Product API"
         if not GetSalesChannelsToPublishTo(SalesChannel, ShopifyProduct."Shop Code") then
             exit;
 
-        CreateProductPublishGraphQuery(ShopifyProduct, SalesChannel, GraphQuery);
+        GraphQuery := CreateProductPublishGraphQuery(ShopifyProduct, SalesChannel);
 
-        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery.ToText());
+        JResponse := CommunicationMgt.ExecuteGraphQL(GraphQuery);
     end;
 
     local procedure GetSalesChannelsToPublishTo(var SalesChannel: Record "Shpfy Sales Channel"; ShopCode: Code[20]): Boolean
@@ -610,22 +610,24 @@ codeunit 30176 "Shpfy Product API"
         exit(true);
     end;
 
-    local procedure CreateProductPublishGraphQuery(ShopifyProduct: Record "Shpfy Product"; var SalesChannel: Record "Shpfy Sales Channel"; GraphQuery: TextBuilder)
+    local procedure CreateProductPublishGraphQuery(ShopifyProduct: Record "Shpfy Product"; var SalesChannel: Record "Shpfy Sales Channel"): Text
     var
         PublicationIds: TextBuilder;
         PublicationIdTok: Label '{ publicationId: \"gid://shopify/Publication/%1\"},', Locked = true;
+        GraphQueryBuilder: TextBuilder;
     begin
-        GraphQuery.Append('{"query":"mutation {publishablePublish(id: \"gid://shopify/Product/');
-        GraphQuery.Append(Format(ShopifyProduct.Id));
-        GraphQuery.Append('\" ');
-        GraphQuery.Append('input: [');
+        GraphQueryBuilder.Append('{"query":"mutation {publishablePublish(id: \"gid://shopify/Product/');
+        GraphQueryBuilder.Append(Format(ShopifyProduct.Id));
+        GraphQueryBuilder.Append('\" ');
+        GraphQueryBuilder.Append('input: [');
         SalesChannel.FindSet();
         repeat
             PublicationIds.Append(StrSubstNo(PublicationIdTok, Format(SalesChannel.Id)));
         until SalesChannel.Next() = 0;
-        GraphQuery.Append(PublicationIds.ToText().TrimEnd(','));
-        GraphQuery.Append('])');
-        GraphQuery.Append('{userErrors {field, message}}');
-        GraphQuery.Append('}"}');
+        GraphQueryBuilder.Append(PublicationIds.ToText().TrimEnd(','));
+        GraphQueryBuilder.Append('])');
+        GraphQueryBuilder.Append('{userErrors {field, message}}');
+        GraphQueryBuilder.Append('}"}');
+        exit(GraphQueryBuilder.ToText());
     end;
 }

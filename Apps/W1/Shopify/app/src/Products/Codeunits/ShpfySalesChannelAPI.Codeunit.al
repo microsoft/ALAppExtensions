@@ -59,11 +59,10 @@ codeunit 30215 "Shpfy Sales Channel API"
         SalesChannel: Record "Shpfy Sales Channel";
         ChannelId: BigInteger;
     begin
-        if CurrentChannels.Count() <> 0 then
-            foreach ChannelId in CurrentChannels do begin
-                SalesChannel.Get(ChannelId);
-                SalesChannel.Delete(true);
-            end;
+        foreach ChannelId in CurrentChannels do begin
+            SalesChannel.Get(ChannelId);
+            SalesChannel.Delete(true);
+        end;
     end;
 
     local procedure InsertNewChannels(JPublications: JsonArray; ShopCode: Code[20]; CurrentChannels: List of [BigInteger])

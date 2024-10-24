@@ -78,6 +78,8 @@ codeunit 139581 "Shpfy Sales Channel Test"
     var
         ShopifyProduct: Record "Shpfy Product";
         ShopifyProductAPI: Codeunit "Shpfy Product API";
+        SalesChannelSubs: Codeunit "Shpfy Sales Channel Subs.";
+        GraphQueryTxt: Text;
     begin
         // [SCENARIO] Publishing not active product to Shopify Sales Channel.
         Initialize();
@@ -86,9 +88,13 @@ codeunit 139581 "Shpfy Sales Channel Test"
         CreateProductWithStatus(ShopifyProduct, Enum::"Shpfy Product Status"::Archived, Any.IntegerInRange(10000, 99999));
 
         // [WHEN] Invoking the procedure: ShopifyProductAPI.PublishProduct(ShopifyProduct)
+        BindSubscription(SalesChannelSubs);
         ShopifyProductAPI.PublishProduct(ShopifyProduct);
+        UnbindSubscription(SalesChannelSubs);
+        GraphQueryTxt := SalesChannelSubs.GetGraphQueryTxt();
 
         // [THEN] Procedure exits without publishing the product.
+        LibraryAssert.AreEqual('', GraphQueryTxt, 'Query for publishing the product is generated');
     end;
 
     [Test]
@@ -96,6 +102,8 @@ codeunit 139581 "Shpfy Sales Channel Test"
     var
         ShopifyProduct: Record "Shpfy Product";
         ShopifyProductAPI: Codeunit "Shpfy Product API";
+        SalesChannelSubs: Codeunit "Shpfy Sales Channel Subs.";
+        GraphQueryTxt: Text;
     begin
         // [SCENARIO] Publishing draft product to Shopify Sales Channel.
         Initialize();
@@ -106,9 +114,13 @@ codeunit 139581 "Shpfy Sales Channel Test"
         CreateDefaultSalesChannels(Any.IntegerInRange(10000, 99999), Any.IntegerInRange(10000, 99999));
 
         // [WHEN] Invoking the procedure: ShopifyProductAPI.PublishProduct(ShopifyProduct)
+        BindSubscription(SalesChannelSubs);
         ShopifyProductAPI.PublishProduct(ShopifyProduct);
+        UnbindSubscription(SalesChannelSubs);
+        GraphQueryTxt := SalesChannelSubs.GetGraphQueryTxt();
 
         // [THEN] Procedure exits without publishing the product.
+        LibraryAssert.AreEqual('', GraphQueryTxt, 'Query for publishing the product is generated');
     end;
 
     [Test]
@@ -188,7 +200,6 @@ codeunit 139581 "Shpfy Sales Channel Test"
         SalesChannelSubs: Codeunit "Shpfy Sales Channel Subs.";
         OnlineShopId, POSId : BigInteger;
         ProductId: BigInteger;
-        ExpectedPublishQueryTok: Label '{"query":"mutation {publishablePublish(id: \"gid://shopify/Product/%1\" input: [{ publicationId: \"gid://shopify/Publication/%2\"}]){userErrors {field, message}}}"}', Locked = true;
         ActualQuery: Text;
     begin
         // [SCENARIO] Publishing active product to Shopify Sales Channel on product creation.
@@ -216,9 +227,9 @@ codeunit 139581 "Shpfy Sales Channel Test"
 
     local procedure Initialize()
     begin
+        Any.SetDefaultSeed();
         if IsInitialized then
             exit;
-        Any.SetDefaultSeed();
         Shop := ShpfyInitializeTest.CreateShop();
         IsInitialized := true;
         Commit();
@@ -238,16 +249,15 @@ codeunit 139581 "Shpfy Sales Channel Test"
 
     local procedure CreateDefaultSalesChannels(OnlineStoreId: BigInteger; POSId: BigInteger)
     var
-        SakesChannel: Record "Shpfy Sales Channel";
+        SalesChannel: Record "Shpfy Sales Channel";
     begin
-        SakesChannel.DeleteAll(false);
+        SalesChannel.DeleteAll(false);
         CreateSalesChannel(Shop.Code, 'Online Store', OnlineStoreId, true);
         CreateSalesChannel(Shop.Code, 'Point of Sale', POSId, false);
     end;
 
     local procedure CreateProductWithStatus(var ShopifyProduct: Record "Shpfy Product"; ShpfyProductStatus: Enum Microsoft.Integration.Shopify."Shpfy Product Status"; Id: BigInteger)
     begin
-        Any.SetDefaultSeed();
         ShopifyProduct.Init();
         ShopifyProduct.Id := Id;
         ShopifyProduct."Shop Code" := Shop.Code;
