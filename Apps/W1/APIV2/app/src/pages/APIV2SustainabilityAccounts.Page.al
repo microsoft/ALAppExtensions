@@ -2,7 +2,7 @@ namespace Microsoft.API.V2;
 
 using Microsoft.Sustainability.Account;
 
-page 30070 "APIV2 - Sustainability Accounts"
+page 30075 "APIV2 - Sust. Accounts"
 {
 
     APIVersion = 'v2.0';
