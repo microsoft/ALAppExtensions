@@ -1,4 +1,4 @@
-codeunit 139581 "Shpfy Create Item Variant Test"
+codeunit 139619 "Shpfy Create Item Variant Test"
 {
     Subtype = Test;
     TestPermissions = Disabled;
