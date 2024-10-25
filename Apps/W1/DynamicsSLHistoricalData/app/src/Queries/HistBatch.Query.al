@@ -10,7 +10,6 @@ query 42816 "SL Hist. Batch"
     {
         dataitem(SLBatchHist; "SL Hist. Batch")
         {
-
             column(CpnyID; CpnyID)
             {
                 Caption = 'Company ID';
@@ -25,7 +24,6 @@ query 42816 "SL Hist. Batch"
             }
             column(BatNbr; BatNbr)
             {
-
                 Caption = 'Batch Number';
             }
             column(JrnlType; JrnlType)
@@ -68,7 +66,6 @@ query 42816 "SL Hist. Batch"
             {
                 Caption = 'Debit Total';
             }
-
         }
     }
 

@@ -45,7 +45,6 @@ query 42813 "SL Hist. ARTransactions"
                     Caption = 'Customer Name';
                 }
             }
-
             column(TranAmt; TranAmt)
             {
                 Caption = 'Transaction Amount';
@@ -82,8 +81,6 @@ query 42813 "SL Hist. ARTransactions"
             {
                 Caption = 'Task';
             }
-
-
         }
     }
 

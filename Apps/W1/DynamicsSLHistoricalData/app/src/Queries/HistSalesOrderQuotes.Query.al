@@ -26,7 +26,6 @@ query 42810 "SL Hist. SalesOrderQuotes"
             {
                 Caption = 'Customer Number';
             }
-
             column(SOTypeID; SOTypeID)
             {
                 Caption = 'Order Type';

@@ -8,7 +8,6 @@ query 42814 "SL Hist. APTransactions"
     OrderBy = ascending(BatNbr);
     QueryCategory = 'Vendor List';
     Caption = 'Dynamics SL Accounts Payable Transactions';
-
     elements
     {
         dataitem(SLAPTranHist; "SL Hist. APTran")
@@ -82,7 +81,6 @@ query 42814 "SL Hist. APTransactions"
             {
                 Caption = 'Task';
             }
-
         }
     }
 
@@ -94,5 +92,4 @@ query 42814 "SL Hist. APTransactions"
 
     var
         CpnyName: Text[10];
-
 }

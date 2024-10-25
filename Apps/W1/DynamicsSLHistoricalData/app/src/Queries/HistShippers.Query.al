@@ -8,7 +8,6 @@ query 42800 "SL Hist. Shippers"
     OrderBy = ascending(ShipperID);
     QueryCategory = 'Customer List', 'Sales Order List';
     Caption = 'Dynamics SL Shippers';
-
     elements
     {
         dataitem(SLHistSOShipHeader; "SL Hist. SOShipHeader")

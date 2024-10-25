@@ -12,7 +12,6 @@ query 42802 "SL Hist. OpenARDocuments"
     {
         dataitem(SL_ARDocHist; "SL Hist. ARDoc")
         {
-
             column(CpnyID; CpnyID)
             {
                 Caption = 'Company ID';

@@ -6,7 +6,6 @@ query 42812 "SL Hist. ShipperLineItems"
     OrderBy = ascending(ShipperID);
     QueryCategory = 'Customer List', 'Sales Order List';
     Caption = 'Dynamics SL Shipper Line Items';
-
     elements
     {
         dataitem(SL_SOShipLineHist; "SL Hist. SOShipLine")

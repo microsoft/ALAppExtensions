@@ -8,7 +8,6 @@ query 42801 "SL Hist. InventoryTransactions"
     OrderBy = ascending(BatNbr);
     QueryCategory = 'Item List';
     Caption = 'Dynamics SL Inventory Transactions';
-
     elements
     {
         dataitem(SL_INTransactionsAmountsHist; "SL Hist. INTran")
