@@ -13,7 +13,7 @@ page 30070 "APIV2 - Sustainability Account"
     EntityCaption = 'Sustainability Account';
     EntitySetCaption = 'Sustainability Accounts';
     ODataKeyFields = SystemId;
-    SourceTable = 'Sustainability Account';
+    SourceTable = "Sustainability Account";
     Extensible = false;
 
     layout
