@@ -239,4 +239,15 @@ codeunit 139564 "Shpfy Order Refunds Helper"
     begin
         exit(InitializeTest.GetDummyCustomer());
     end;
+
+    internal procedure CreateRefundHeader(): BigInteger
+    var
+        RefundHeader: Record "Shpfy Refund Header";
+    begin
+        Any.SetDefaultSeed();
+        RefundHeader.Init();
+        RefundHeader."Refund Id" := Any.IntegerInRange(100000, 9999999);
+        RefundHeader.Insert(false);
+        exit(RefundHeader."Refund Id");
+    end;
 }

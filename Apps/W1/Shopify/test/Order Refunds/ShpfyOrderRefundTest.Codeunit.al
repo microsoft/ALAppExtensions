@@ -4,7 +4,10 @@ codeunit 139611 "Shpfy Order Refund Test"
     TestPermissions = Disabled;
 
     var
+        ShpfyInitializeTest: Codeunit "Shpfy Initialize Test";
         LibraryAssert: Codeunit "Library Assert";
+        ShopifyIds: Dictionary of [Text, List of [BigInteger]];
+        IsInitialized: Boolean;
 
     trigger OnRun()
     begin
@@ -19,6 +22,7 @@ codeunit 139611 "Shpfy Order Refund Test"
         if IsInitialized then
             exit;
 
+        ShpfyInitializeTest.Run();
         ShopifyIds := OrderRefundsHelper.CreateShopifyDocuments();
 
         IsInitialized := true;
@@ -45,7 +49,6 @@ codeunit 139611 "Shpfy Order Refund Test"
         ErrorInfo: ErrorInfo;
     begin
         // [SCENARIO] Create a Credit Memo from a Shopify Refund where the item is totally refunded.
-        Codeunit.Run(Codeunit::"Shpfy Initialize Test");
         Initialize();
 
         // [GIVEN] Set the process of the document: "Auto Create Credit Memo";
@@ -82,7 +85,6 @@ codeunit 139611 "Shpfy Order Refund Test"
         ErrorInfo: ErrorInfo;
     begin
         // [SCENARIO] Create a Credit Memo from a Shopify Refund where only the shipment is refunded.
-        Codeunit.Run(Codeunit::"Shpfy Initialize Test");
         Initialize();
 
         // [GIVEN] Set the process of the document: "Auto Create Credit Memo";
@@ -119,7 +121,6 @@ codeunit 139611 "Shpfy Order Refund Test"
         ErrorInfo: ErrorInfo;
     begin
         // [SCENARIO] Create a Credit Memo from a Shopify Refund where the item is not refunded.
-        Codeunit.Run(Codeunit::"Shpfy Initialize Test");
         Initialize();
 
         // [GIVEN] Set the process of the document: "Auto Create Credit Memo";
@@ -158,7 +159,6 @@ codeunit 139611 "Shpfy Order Refund Test"
         // Non-zero refund = true
         // Linked return refund = true
         // Zero and not linked refund = false
-        Codeunit.Run(Codeunit::"Shpfy Initialize Test");
         Initialize();
 
         // [GIVEN] Non-zero refund
@@ -177,7 +177,27 @@ codeunit 139611 "Shpfy Order Refund Test"
         LibraryAssert.ExpectedError('The refund imported from Shopify can''t be used to create a credit memo. Only refunds for paid items can be used to create credit memos.');
     end;
 
+    [Test]
+    procedure UnitTestGetRefundLineWithLocation()
     var
-        ShopifyIds: Dictionary of [Text, List Of [BigInteger]];
-        IsInitialized: Boolean;
+        RefundHeader: Record "Shpfy Refund Header";
+        RefundsAPI: Codeunit "Shpfy Refunds API";
+        OrderRefundsHelper: Codeunit "Shpfy Order Refunds Helper";
+        RefundId: BigInteger;
+        ReturnLocations: Dictionary of [BigInteger, BigInteger];
+        RefundLine: Record "Shpfy Refund Line";
+        RefundLineId: BigInteger;
+    begin
+        // [SCENARIO] Import refund lines with location
+        Initialize();
+
+        // [GIVEN] Refund Header
+        RefundId := OrderRefundsHelper.CreateRefundHeader();
+
+        // [GIVEN] Return Locations
+        // RefundsAPI.
+
+
+
+    end;
 }
