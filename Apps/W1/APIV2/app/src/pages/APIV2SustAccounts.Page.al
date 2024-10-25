@@ -27,26 +27,25 @@ page 30075 "APIV2 - Sust. Accounts"
                     Caption = 'Id';
                     Editable = false;
                 }
-                field(Name; Rec.Name)
+                field(name; Rec.Name)
                 {
-                    Caption = 'Account Name';
+                    Caption = 'Account name';
                 }
-                field("Number"; Rec."No.")
+                field(number; Rec."No.")
                 {
-                    Caption = 'Account Number';
+                    Caption = 'Account number';
                 }
-                field("Net_Change_CO2"; Rec."Net Change (CO2)")
+                field(netChangeCo2; Rec."Net Change (CO2)")
                 {
-                    Caption = 'Net Change (CO2))';
+                    Caption = 'Net change (CO2))';
                 }
-                field("Balance_CO2"; Rec."Balance (CO2)")
+                field(balanceCo2; Rec."Balance (CO2)")
                 {
                     Caption = 'Balance (CO2))';
-
                 }
-                field("Account_Type"; Rec."Account Type")
+                field(accountType; Rec."Account Type")
                 {
-                    Caption = 'Account Type';
+                    Caption = 'Account type';
                 }
             }
         }
