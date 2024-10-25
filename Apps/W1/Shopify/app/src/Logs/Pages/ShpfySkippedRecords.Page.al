@@ -1,9 +1,9 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Page Shpfy Skipped Records (ID 30165).
+/// Page Shpfy Skipped Records (ID 30166).
 /// </summary>
-page 30165 "Shpfy Skipped Records"
+page 30166 "Shpfy Skipped Records"
 {
     ApplicationArea = All;
     Caption = 'Shopify Skipped Records';
