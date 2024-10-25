@@ -19,7 +19,6 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     [Test]
     procedure UnitTestLogEmptyCustomerEmail()
     var
-
         Customer: Record Customer;
         SkippedRecord: Record "Shpfy Skipped Record";
     begin
@@ -65,7 +64,6 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
     [Test]
     procedure UnitTestLogProductItemBlocked()
     var
-
         Item: Record Item;
         ShpfyItem: Record "Shpfy Product";
         SkippedRecord: Record "Shpfy Skipped Record";
@@ -117,13 +115,12 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SkippedRecord.SetRange("Record ID", Item.RecordId);
         SkippedRecord.SetRange("Shopify Id", ShpfyProduct.Id);
         LibraryAssert.IsTrue(SkippedRecord.FindFirst(), 'Skipped record is not created');
-        LibraryAssert.AreEqual('Shopify Product is archived.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+        LibraryAssert.AreEqual('Shopify product is archived.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
     end;
 
     [Test]
     procedure UnitTestLogProductItemBlockedAndProductIsDraft()
     var
-
         Item: Record Item;
         ShpfyProduct: Record "Shpfy Product";
         SkippedRecord: Record "Shpfy Skipped Record";
@@ -153,7 +150,7 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         SkippedRecord.SetRange("Record ID", Item.RecordId);
         SkippedRecord.SetRange("Shopify Id", ShpfyProduct.Id);
         LibraryAssert.IsTrue(SkippedRecord.FindFirst(), 'Skipped record is not created');
-        LibraryAssert.AreEqual('Shopify Product is in draft status.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+        LibraryAssert.AreEqual('Shopify product is in draft status.', SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
     end;
 
     [Test]
@@ -369,14 +366,13 @@ codeunit 139581 "Shpfy Skipped Record Log Test"
         // [THEN] Related record is created in shopify skipped record table.
         SkippedRecord.SetRange("Record ID", SalesInvoiceHeader.RecordId);
         LibraryAssert.IsTrue(SkippedRecord.FindLast(), 'Skipped record is not created');
-        LibraryAssert.AreEqual(StrSubstNo('Shopify Customer template exists for customer no. %1 shop %2.', Customer."No.", ShopWithCustTemplates.Code), SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
+        LibraryAssert.AreEqual(StrSubstNo('Shopify customer template exists for customer no. %1 shop %2.', Customer."No.", ShopWithCustTemplates.Code), SkippedRecord."Skipped Reason", 'Skipped reason is not as expected');
     end;
 
     [Test]
     procedure UnitTestLogSalesInvoiceWithoutSalesLine()
     var
         SalesInvoiceHeader: Record "Sales Invoice Header";
-        SalesInvoiceLine: Record "Sales Invoice Line";
         Customer: Record Customer;
         SkippedRecord: Record "Shpfy Skipped Record";
         PostedInvoiceExport: Codeunit "Shpfy Posted Invoice Export";
