@@ -36,6 +36,11 @@ table 6104 "Service Participant"
             if ("Participant Type" = const(Vendor)) Vendor;
             Caption = 'Participant';
         }
+        field(4; "Participant Identifier"; Text[200])
+        {
+            Caption = 'Participant Identifier';
+            DataClassification = CustomerContent;
+        }
 
     }
 
