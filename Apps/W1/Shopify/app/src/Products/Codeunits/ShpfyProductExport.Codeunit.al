@@ -59,13 +59,13 @@ codeunit 30178 "Shpfy Product Export"
         ProductEvents: Codeunit "Shpfy Product Events";
         ProductPriceCalc: Codeunit "Shpfy Product Price Calc.";
         VariantApi: Codeunit "Shpfy Variant API";
-        ShopifySkipRecordMgt: Codeunit "Shpfy Skip Record Mgt.";
+        ShopifySkipRecord: Codeunit "Shpfy Skip Record";
         OnlyUpdatePrice: Boolean;
         RecordCount: Integer;
         NullGuid: Guid;
         BulkOperationInput: TextBuilder;
         GraphQueryList: List of [TextBuilder];
-        VariantPriceCalcSkippedLbl: Label 'Variant price is not synchronized because the item is blocked and sales blocked.';
+        VariantPriceCalcSkippedLbl: Label 'Variant price is not synchronized because the item is blocked or sales blocked.';
 
     /// <summary> 
     /// Creates html body for a product from extended text, marketing text and attributes.
@@ -321,7 +321,7 @@ codeunit 30178 "Shpfy Product Export"
             if (not Item.Blocked) and (not Item."Sales Blocked") then
                 ProductPriceCalc.CalcPrice(Item, '', ItemUnitofMeasure.Code, ShopifyVariant."Unit Cost", ShopifyVariant.Price, ShopifyVariant."Compare at Price")
             else
-                ShopifySkipRecordMgt.LogSkippedRecord(ShopifyVariant.Id, Item.RecordId, VariantPriceCalcSkippedLbl, Shop);
+                ShopifySkipRecord.LogSkippedRecord(ShopifyVariant.Id, Item.RecordId, VariantPriceCalcSkippedLbl, Shop);
         if not OnlyUpdatePrice then begin
             ShopifyVariant."Available For Sales" := (not Item.Blocked) and (not Item."Sales Blocked");
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", '', ItemUnitofMeasure.Code), 1, MaxStrLen(ShopifyVariant.Barcode));
@@ -358,7 +358,7 @@ codeunit 30178 "Shpfy Product Export"
             if (not Item.Blocked) and (not Item."Sales Blocked") then
                 ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, Item."Sales Unit of Measure", ShopifyVariant."Unit Cost", ShopifyVariant.Price, ShopifyVariant."Compare at Price")
             else
-                ShopifySkipRecordMgt.LogSkippedRecord(ShopifyVariant.Id, Item.RecordId, VariantPriceCalcSkippedLbl, Shop);
+                ShopifySkipRecord.LogSkippedRecord(ShopifyVariant.Id, Item.RecordId, VariantPriceCalcSkippedLbl, Shop);
         if not OnlyUpdatePrice then begin
             ShopifyVariant."Available For Sales" := (not Item.Blocked) and (not Item."Sales Blocked");
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, Item."Sales Unit of Measure"), 1, MaxStrLen(ShopifyVariant.Barcode));
@@ -405,7 +405,7 @@ codeunit 30178 "Shpfy Product Export"
             if (not Item.Blocked) and (not Item."Sales Blocked") then
                 ProductPriceCalc.CalcPrice(Item, ItemVariant.Code, ItemUnitofMeasure.Code, ShopifyVariant."Unit Cost", ShopifyVariant.Price, ShopifyVariant."Compare at Price")
             else
-                ShopifySkipRecordMgt.LogSkippedRecord(ShopifyVariant.Id, Item.RecordId, VariantPriceCalcSkippedLbl, Shop);
+                ShopifySkipRecord.LogSkippedRecord(ShopifyVariant.Id, Item.RecordId, VariantPriceCalcSkippedLbl, Shop);
         if not OnlyUpdatePrice then begin
             ShopifyVariant."Available For Sales" := (not Item.Blocked) and (not Item."Sales Blocked");
             ShopifyVariant.Barcode := CopyStr(GetBarcode(Item."No.", ItemVariant.Code, ItemUnitofMeasure.Code), 1, MaxStrLen(ShopifyVariant.Barcode));
@@ -553,24 +553,24 @@ codeunit 30178 "Shpfy Product Export"
         RecordRef2: RecordRef;
         VariantAction: Option " ",Create,Update;
         ItemIsBlockedLbl: Label 'Item is blocked.';
-        ItemIsDraftLbl: Label 'Shopify Product is in draft status.';
-        ItemIsArchivedLbl: Label 'Shopify Product is archived.';
+        ItemIsDraftLbl: Label 'Shopify product is in draft status.';
+        ItemIsArchivedLbl: Label 'Shopify product is archived.';
     begin
         if ShopifyProduct.Get(ProductId) and Item.GetBySystemId(ShopifyProduct."Item SystemId") then begin
             case Shop."Action for Removed Products" of
                 Shop."Action for Removed Products"::StatusToArchived:
                     if Item.Blocked and (ShopifyProduct.Status = ShopifyProduct.Status::Archived) then begin
-                        ShopifySkipRecordMgt.LogSkippedRecord(ShopifyProduct.Id, Item.RecordId, ItemIsArchivedLbl, Shop);
+                        ShopifySkipRecord.LogSkippedRecord(ShopifyProduct.Id, Item.RecordId, ItemIsArchivedLbl, Shop);
                         exit;
                     end;
                 Shop."Action for Removed Products"::StatusToDraft:
                     if Item.Blocked and (ShopifyProduct.Status = ShopifyProduct.Status::Draft) then begin
-                        ShopifySkipRecordMgt.LogSkippedRecord(ShopifyProduct.Id, Item.RecordId, ItemIsDraftLbl, Shop);
+                        ShopifySkipRecord.LogSkippedRecord(ShopifyProduct.Id, Item.RecordId, ItemIsDraftLbl, Shop);
                         exit;
                     end;
                 Shop."Action for Removed Products"::DoNothing:
                     if Item.Blocked then begin
-                        ShopifySkipRecordMgt.LogSkippedRecord(ShopifyProduct.Id, Item.RecordId, ItemIsBlockedLbl, Shop);
+                        ShopifySkipRecord.LogSkippedRecord(ShopifyProduct.Id, Item.RecordId, ItemIsBlockedLbl, Shop);
                         exit;
                     end;
             end;

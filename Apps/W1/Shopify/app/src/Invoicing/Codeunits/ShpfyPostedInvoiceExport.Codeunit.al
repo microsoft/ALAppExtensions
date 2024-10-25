@@ -17,7 +17,7 @@ codeunit 30362 "Shpfy Posted Invoice Export"
         DraftOrdersAPI: Codeunit "Shpfy Draft Orders API";
         FulfillmentAPI: Codeunit "Shpfy Fulfillment API";
         JsonHelper: Codeunit "Shpfy Json Helper";
-        SkipRecordMgt: Codeunit "Shpfy Skip Record Mgt.";
+        SkipRecordMgt: Codeunit "Shpfy Skip Record";
 
     trigger OnRun()
     begin
@@ -96,7 +96,7 @@ codeunit 30362 "Shpfy Posted Invoice Export"
         CustomerNotExistInShopifyLbl: Label 'Customer does not exists as Shopify company or customer.';
         PaymentTermsNotExistLbl: Label 'Payment terms %1 do not exist in Shopify.', Comment = '%1 = Payment Terms Code.';
         CustomerNoIsDefaultCustomerNoLbl: Label 'Bill-to customer no. is the default customer no. for Shopify shop.';
-        CustomerTemplateExistsLbl: Label 'Shopify Customer template exists for customer no. %1 shop %2.', Comment = '%1 = Customer No., %2 = Shop Code';
+        CustomerTemplateExistsLbl: Label 'Shopify customer template exists for customer no. %1 shop %2.', Comment = '%1 = Customer No., %2 = Shop Code';
     begin
         ShopifyCompany.SetRange("Customer No.", SalesInvoiceHeader."Bill-to Customer No.");
         if ShopifyCompany.IsEmpty() then begin

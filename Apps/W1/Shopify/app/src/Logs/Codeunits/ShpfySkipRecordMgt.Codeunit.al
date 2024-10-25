@@ -1,9 +1,9 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Codeunit Shpfy Skip Record Mgt. (ID 30313).
+/// Codeunit Shpfy Skip Record (ID 30313).
 /// </summary>
-codeunit 30313 "Shpfy Skip Record Mgt."
+codeunit 30313 "Shpfy Skip Record"
 {
     Access = Internal;
     Permissions = tabledata "Shpfy Skipped Record" = rimd;

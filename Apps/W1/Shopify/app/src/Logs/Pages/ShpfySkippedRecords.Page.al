@@ -20,7 +20,6 @@ page 30166 "Shpfy Skipped Records"
         {
             repeater(General)
             {
-                field(EntryNo; Rec."Entry No.") { }
                 field("Shopify Id"; Rec."Shopify Id") { }
                 field("Table ID"; Rec."Table ID") { }
                 field("Table Name"; Rec."Table Name") { }
@@ -40,7 +39,18 @@ page 30166 "Shpfy Skipped Records"
     {
         area(Promoted)
         {
-            actionref(Show_Promoted; Show) { }
+            group(Category_Process)
+            {
+                actionref(Show_Promoted; Show) { }
+            }
+
+            group(Category_Category4)
+            {
+                Caption = 'Log Entries';
+
+                actionref(Delete7days_Promoted; Delete7days) { }
+                actionref(Delete0days_Promoted; Delete0days) { }
+            }
         }
         area(Processing)
         {
@@ -54,6 +64,30 @@ page 30166 "Shpfy Skipped Records"
                 trigger OnAction()
                 begin
                     Rec.ShowPage();
+                end;
+            }
+            action(Delete7days)
+            {
+                ApplicationArea = All;
+                Caption = 'Delete Entries Older Than 7 Days';
+                Image = ClearLog;
+                ToolTip = 'Clear the list of log entries that are older than 7 days.';
+
+                trigger OnAction();
+                begin
+                    Rec.DeleteEntries(7);
+                end;
+            }
+            action(Delete0days)
+            {
+                ApplicationArea = All;
+                Caption = 'Delete All Entries';
+                Image = Delete;
+                ToolTip = 'Clear the list of all log entries.';
+
+                trigger OnAction();
+                begin
+                    Rec.DeleteEntries(0);
                 end;
             }
         }

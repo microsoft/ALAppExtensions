@@ -40,7 +40,7 @@ codeunit 30190 "Shpfy Export Shipments"
         ShopifyOrderHeader: Record "Shpfy Order Header";
         OrderFulfillments: Codeunit "Shpfy Order Fulfillments";
         JsonHelper: Codeunit "Shpfy Json Helper";
-        SkipRecordMgt: Codeunit "Shpfy Skip Record Mgt.";
+        SkipRecordMgt: Codeunit "Shpfy Skip Record";
         JFulfillment: JsonToken;
         JResponse: JsonToken;
         FulfillmentOrderRequest: Text;

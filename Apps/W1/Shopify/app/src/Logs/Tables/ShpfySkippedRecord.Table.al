@@ -23,13 +23,13 @@ table 30159 "Shpfy Skipped Record"
         }
         field(2; "Shopify Id"; BigInteger)
         {
-            Caption = 'Skipped Record Id';
+            Caption = 'Shopify Id';
             ToolTip = 'Specifies the Shopify Id of the skipped record.';
         }
-        field(3; "Table ID"; Integer)
+        field(3; "Table Id"; Integer)
         {
-            Caption = 'Table ID';
-            ToolTip = 'Specifies the Table ID of the skipped record.';
+            Caption = 'Table Id';
+            ToolTip = 'Specifies the Table Id of the skipped record.';
             DataClassification = SystemMetadata;
 
             trigger OnValidate()
@@ -40,13 +40,13 @@ table 30159 "Shpfy Skipped Record"
         field(4; "Table Name"; Text[250])
         {
             Caption = 'Table Name';
-            ToolTip = 'Specifies the Table Name of the skipped record.';
+            ToolTip = 'Specifies the table name of the skipped record.';
             DataClassification = SystemMetadata;
         }
         field(5; "Record ID"; RecordID)
         {
-            Caption = 'Record ID';
-            ToolTip = 'Specifies the Record ID of the skipped record.';
+            Caption = 'Record Id';
+            ToolTip = 'Specifies the record Id of the skipped record.';
 
             trigger OnValidate()
             begin
@@ -71,6 +71,9 @@ table 30159 "Shpfy Skipped Record"
             Clustered = true;
         }
     }
+
+    var
+        DeleteLogEntriesLbl: Label 'Are you sure that you want to delete Shopify log entries?';
 
     local procedure GetTableCaption(): Text[250]
     var
@@ -111,5 +114,24 @@ table 30159 "Shpfy Skipped Record"
     begin
         if "Record ID".TableNo() <> 0 then
             PageManagement.PageRun("Record ID");
+    end;
+
+    /// <summary> 
+    /// Delete Entries.
+    /// </summary>
+    /// <param name="DaysOld">Parameter of type Integer.</param>
+    internal procedure DeleteEntries(DaysOld: Integer);
+    begin
+        if not Confirm(DeleteLogEntriesLbl) then
+            exit;
+
+        if DaysOld > 0 then begin
+            Rec.SetFilter(SystemCreatedAt, '<=%1', CreateDateTime(Today - DaysOld, Time));
+            if not Rec.IsEmpty() then
+                Rec.DeleteAll(false);
+            Rec.SetRange(SystemCreatedAt);
+        end else
+            if not Rec.IsEmpty() then
+                Rec.DeleteAll(false);
     end;
 }

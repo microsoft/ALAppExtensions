@@ -31,7 +31,7 @@ report 30109 "Shpfy Sync Shipm. to Shopify"
                 ShopifyOrderHeader: Record "Shpfy Order Header";
                 ShipmentLine: Record "Sales Shipment Line";
                 Shop: Record "Shpfy Shop";
-                SkipRecordMgt: Codeunit "Shpfy Skip Record Mgt.";
+                SkipRecordMgt: Codeunit "Shpfy Skip Record";
                 NoLinesApplicableLbl: Label 'No lines applicable for fulfillment.';
                 ShopifyOrderNotExistsLbl: Label 'Shopify order %1 does not exist.', Comment = '%1 = Shopify Order Id';
             begin
