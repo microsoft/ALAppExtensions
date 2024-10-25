@@ -102,10 +102,10 @@ query 42801 "SL Hist. InventoryTransactions"
 
     trigger OnBeforeOpen()
     begin
-        CpnyName := CompanyName();
-        SetFilter(CpnyID, CpnyName);
+        GlobalCompanyName := CompanyName();
+        SetFilter(CpnyID, GlobalCompanyName);
     end;
 
     var
-        CpnyName: Text[10];
+        GlobalCompanyName: Text[10];
 }

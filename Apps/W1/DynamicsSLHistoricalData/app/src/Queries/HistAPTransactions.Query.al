@@ -86,10 +86,10 @@ query 42814 "SL Hist. APTransactions"
 
     trigger OnBeforeOpen()
     begin
-        CpnyName := CompanyName();
-        SetFilter(CpnyID, CpnyName);
+        GlobalCompanyName := CompanyName();
+        SetFilter(CpnyID, GlobalCompanyName);
     end;
 
     var
-        CpnyName: Text[10];
+        GlobalCompanyName: Text[10];
 }

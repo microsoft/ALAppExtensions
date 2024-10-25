@@ -71,10 +71,10 @@ query 42816 "SL Hist. Batch"
 
     trigger OnBeforeOpen()
     begin
-        CpnyName := CompanyName();
-        SetFilter(CpnyID, CpnyName);
+        GlobalCompanyName := CompanyName();
+        SetFilter(CpnyID, GlobalCompanyName);
     end;
 
     var
-        CpnyName: Text[10];
+        GlobalCompanyName: Text[10];
 }

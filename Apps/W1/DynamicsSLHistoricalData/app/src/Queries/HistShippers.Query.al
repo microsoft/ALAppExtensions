@@ -114,10 +114,10 @@ query 42800 "SL Hist. Shippers"
 
     trigger OnBeforeOpen()
     begin
-        CpnyName := CompanyName();
-        SetFilter(CpnyID, CpnyName);
+        GlobalCompanyName := CompanyName();
+        SetFilter(CpnyID, GlobalCompanyName);
     end;
 
     var
-        CpnyName: Text[10];
+        GlobalCompanyName: Text[10];
 }
