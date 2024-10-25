@@ -186,7 +186,7 @@ codeunit 139611 "Shpfy Order Refund Test"
     end;
 
     [Test]
-    procedure UnitTestFillInRefundLineWithLocations()
+    procedure UnitTestFillInRefundLineWithReturnLocations()
     var
         RefundLine: Record "Shpfy Refund Line";
         RefundsAPI: Codeunit "Shpfy Refunds API";
@@ -240,12 +240,12 @@ codeunit 139611 "Shpfy Order Refund Test"
         Shop := ShpfyInitializeTest.CreateShop();
         Shop."Return Location Priority" := Enum::"Shpfy Return Location Priority"::"Default Return Location";
         Shop."Return Location" := Location.Code;
-        Shop.Modify();
+        Shop.Modify(false);
 
         //[GIVEN] Processed Shopify Order
         CerateProcessedShopifyOrder(OrderId, OrderLineId);
         // [GIVEN] Shopify Return
-        CreateShopifyReturn(ReturnId, OrderId);
+        CreateShopifyReturn(ReturnId, OrderId, Shop.Code);
         // [GIVEN] Refund Header
         RefundId := OrderRefundsHelper.CreateRefundHeader(OrderId, ReturnId, 156.38, Shop.Code);
         // [GIVEN] Refund line without location
@@ -256,6 +256,52 @@ codeunit 139611 "Shpfy Order Refund Test"
         SalesHeader := IReturnRefundProcess.CreateSalesDocument(Enum::"Shpfy Source Document Type"::Refund, RefundId);
 
         // [THEN] Credit Memo Line with default location is created
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.FindFirst();
+        LibraryAssert.AreEqual(Location.Code, SalesLine."Location Code", 'Sales line location not set');
+    end;
+
+    [Test]
+    procedure UnitTestCreateSalesCrMemoLineFromRefundWithReturnLocation()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        Shop: Record "Shpfy Shop";
+        Location: Record Location;
+        OrderRefundsHelper: Codeunit "Shpfy Order Refunds Helper";
+        IReturnRefundProcess: Interface "Shpfy IReturnRefund Process";
+        RefundId: BigInteger;
+        OrderId, OrderLineId : BigInteger;
+        ReturnId: BigInteger;
+        LocationId: BigInteger;
+    begin
+        // [SCENARIO] Create sales credit memo line from refund with return location
+        Initialize();
+
+        // [GIVEN] Shop with setup to use original return location
+        Shop := ShpfyInitializeTest.CreateShop();
+        Shop."Return Location Priority" := Enum::"Shpfy Return Location Priority"::"Original -> Default Location";
+        Shop."Return Location" := '';
+        Shop.Modify(false);
+        // [GIVEN] Location
+        CreateLocation(Location);
+        // [GIVEN] Shop Location
+        LocationId := CreateShopLocation(Shop.Code, Location.Code);
+        //[GIVEN] Processed Shopify Order
+        CerateProcessedShopifyOrder(OrderId, OrderLineId);
+        // [GIVEN] Shopify Return
+        CreateShopifyReturn(ReturnId, OrderId, Shop.Code);
+        // [GIVEN] Refund Header
+        RefundId := OrderRefundsHelper.CreateRefundHeader(OrderId, ReturnId, 156.38, Shop.Code);
+        // [GIVEN] Refund line without location
+        OrderRefundsHelper.CreateRefundLine(RefundId, OrderLineId, LocationId);
+
+        // [WHEN] Execute create credit memo
+        IReturnRefundProcess := Enum::"Shpfy ReturnRefund ProcessType"::"Auto Create Credit Memo";
+        SalesHeader := IReturnRefundProcess.CreateSalesDocument(Enum::"Shpfy Source Document Type"::Refund, RefundId);
+
+        // [THEN] Credit Memo Line with return location is created
         SalesLine.SetRange("Document Type", SalesHeader."Document Type");
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         SalesLine.FindFirst();
@@ -296,15 +342,17 @@ codeunit 139611 "Shpfy Order Refund Test"
     var
         OrderRefundsHelper: Codeunit "Shpfy Order Refunds Helper";
     begin
+        OrderRefundsHelper.SetDefaultSeed();
         OrderId := OrderRefundsHelper.CreateShopifyOrder();
         OrderLineId := OrderRefundsHelper.CreateOrderLine(OrderId, 10000, Any.IntegerInRange(100000, 999999), Any.IntegerInRange(100000, 999999));
         OrderRefundsHelper.ProcessShopifyOrder(OrderId);
     end;
 
-    local procedure CreateShopifyReturn(var ReturnId: BigInteger; OrderId: BigInteger)
+    local procedure CreateShopifyReturn(var ReturnId: BigInteger; OrderId: BigInteger; ShopCode: Code[20])
     var
         OrderRefundsHelper: Codeunit "Shpfy Order Refunds Helper";
     begin
+        OrderRefundsHelper.SetDefaultSeed();
         ReturnId := OrderRefundsHelper.CreateReturn(OrderId);
         OrderRefundsHelper.CreateReturnLine(ReturnId, OrderId, '');
     end;
@@ -314,5 +362,17 @@ codeunit 139611 "Shpfy Order Refund Test"
         Location.Init();
         Location.Code := Any.AlphanumericText(10);
         Location.Insert();
+    end;
+
+    local procedure CreateShopLocation(ShopCode: Code[20]; LocationCode: Code[10]): BigInteger
+    var
+        ShopLocation: Record "Shpfy Shop Location";
+    begin
+        ShopLocation.Init();
+        ShopLocation."Shop Code" := ShopCode;
+        ShopLocation.Id := Any.IntegerInRange(100000, 999999);
+        ShopLocation."Default Location Code" := LocationCode;
+        ShopLocation.Insert(false);
+        exit(ShopLocation.Id);
     end;
 }

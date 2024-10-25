@@ -75,6 +75,7 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         OrderHeader: Record "Shpfy Order Header";
         Customer: Record Customer;
     begin
+        Any.SetDefaultSeed();
         Customer := GetCustomer();
         OrderHeader."Shopify Order Id" := Any.IntegerInRange(100000, 999999);
         OrderHeader."Sales Order No." := Any.AlphabeticText(10);
@@ -206,6 +207,7 @@ codeunit 139564 "Shpfy Order Refunds Helper"
     var
         RefundHeader: Record "Shpfy Refund Header";
     begin
+        Any.SetDefaultSeed();
         RefundHeader."Refund Id" := Any.IntegerInRange(100000, 9999999);
         RefundHeader."Order Id" := OrderId;
         RefundHeader."Return Id" := ReturnId;
@@ -254,6 +256,7 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         RefundLine.Amount := 156.38;
         RefundLine."Subtotal Amount" := 156.38;
         RefundLine."Can Create Credit Memo" := RefundsAPI.IsNonZeroOrReturnRefund(RefundHeader);
+        RefundLine."Location Id" := LocationId;
         RefundLine.Insert();
     end;
 
@@ -291,5 +294,10 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         RefundHeader."Refund Id" := Any.IntegerInRange(100000, 9999999);
         RefundHeader.Insert(false);
         exit(RefundHeader."Refund Id");
+    end;
+
+    internal procedure SetDefaultSeed()
+    begin
+        Any.SetDefaultSeed();
     end;
 }
