@@ -77,7 +77,7 @@ query 42807 "SL Hist. ARInvoiceDocuments"
 
     trigger OnBeforeOpen()
     begin
-        GlobalCompanyName := CompanyName();
+        GlobalCompanyName := CopyStr(CompanyName(), 1, MaxStrLen(GlobalCompanyName));
         SetFilter(CpnyID, GlobalCompanyName);
     end;
 

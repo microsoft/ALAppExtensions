@@ -71,7 +71,7 @@ query 42806 "SL Hist. POReceiptDocuments"
 
     trigger OnBeforeOpen()
     begin
-        GlobalCompanyName := CompanyName();
+        GlobalCompanyName := CopyStr(CompanyName(), 1, MaxStrLen(GlobalCompanyName));
         SetFilter(CpnyID, GlobalCompanyName);
     end;
 

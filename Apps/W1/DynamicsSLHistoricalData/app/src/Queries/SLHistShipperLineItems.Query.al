@@ -93,7 +93,7 @@ query 42812 "SL Hist. ShipperLineItems"
 
     trigger OnBeforeOpen()
     begin
-        GlobalCompanyName := CompanyName();
+        GlobalCompanyName := CopyStr(CompanyName(), 1, MaxStrLen(GlobalCompanyName));
         SetFilter(CpnyID, GlobalCompanyName);
     end;
 

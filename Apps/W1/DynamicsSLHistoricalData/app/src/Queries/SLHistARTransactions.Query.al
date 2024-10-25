@@ -86,7 +86,7 @@ query 42813 "SL Hist. ARTransactions"
 
     trigger OnBeforeOpen()
     begin
-        GlobalCompanyName := CompanyName();
+        GlobalCompanyName := CopyStr(CompanyName(), 1, MaxStrLen(GlobalCompanyName));
         SetFilter(CpnyID, GlobalCompanyName);
     end;
 
