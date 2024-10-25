@@ -184,6 +184,7 @@ codeunit 139611 "Shpfy Order Refund Test"
         RefundsAPI: Codeunit "Shpfy Refunds API";
         OrderRefundsHelper: Codeunit "Shpfy Order Refunds Helper";
         RefundId: BigInteger;
+        JRefundLine: JsonObject;
         ReturnLocations: Dictionary of [BigInteger, BigInteger];
         RefundLine: Record "Shpfy Refund Line";
         RefundLineId: BigInteger;
@@ -194,10 +195,16 @@ codeunit 139611 "Shpfy Order Refund Test"
         // [GIVEN] Refund Header
         RefundId := OrderRefundsHelper.CreateRefundHeader();
 
-        // [GIVEN] Return Locations
-        // RefundsAPI.
+        // [GIVEN] Refund Line  response
+        JRefundLine.ReadFrom('{"lineItem": {"id": "gid://shopify/LineItem/1234567890"}, "quantity": 1, "restockType": "no_restock", "location": {"legacyResourceId": 1234567890}');
 
+        // [WHEN] Execute RefundsAPI.FillInRefundLine
+        RefundsAPI.FillInRefundLine(RefundId, JRefundLine, false, ReturnLocations);
 
-
+        // [THEN] Refund Line with location is created
+        RefundLine.SetRange("Refund Id", RefundId);
+        RefundLine.SetRange("Refund Line Id", 1234567890);
+        LibraryAssert.IsTrue(RefundLine.Find(), 'Refund line not creatred');
+        LibraryAssert.AreEqual(1234567890, RefundLine."Location Id", 'Refund line location not set');
     end;
 }
