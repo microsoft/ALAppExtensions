@@ -58,6 +58,7 @@ permissionset 30102 "Shpfy - Edit"
         tabledata "Shpfy Payout" = IMD,
         tabledata "Shpfy Product" = IMD,
         tabledata "Shpfy Registered Store New" = imd,
+        tabledata "Shpfy Sales Channel" = IMD,
         tabledata "Shpfy Shipment Method Mapping" = IMD,
         tabledata "Shpfy Shop" = IMD,
         tabledata "Shpfy Shop Collection Map" = IMD,

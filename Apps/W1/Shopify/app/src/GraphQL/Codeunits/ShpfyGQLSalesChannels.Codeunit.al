@@ -1,6 +1,6 @@
 namespace Microsoft.Integration.Shopify;
 
-codeunit 30168 "Shpfy GQL SalesChannels" implements "Shpfy IGraphQL"
+codeunit 30371 "Shpfy GQL SalesChannels" implements "Shpfy IGraphQL"
 {
     Access = Internal;
 

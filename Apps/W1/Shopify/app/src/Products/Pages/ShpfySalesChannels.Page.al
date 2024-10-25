@@ -1,6 +1,6 @@
 namespace Microsoft.Integration.Shopify;
 
-page 30166 "Shpfy Sales Channels"
+page 30167 "Shpfy Sales Channels"
 {
     ApplicationArea = All;
     Caption = 'Shopify Sales Channels';

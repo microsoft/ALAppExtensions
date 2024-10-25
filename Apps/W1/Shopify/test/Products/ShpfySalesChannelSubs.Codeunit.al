@@ -1,4 +1,4 @@
-codeunit 139614 "Shpfy Sales Channel Subs."
+codeunit 139617 "Shpfy Sales Channel Subs."
 {
     EventSubscriberInstance = Manual;
 
