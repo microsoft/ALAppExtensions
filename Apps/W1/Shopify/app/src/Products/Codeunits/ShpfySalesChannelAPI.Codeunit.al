@@ -1,7 +1,7 @@
 namespace Microsoft.Integration.Shopify;
 
 /// <summary>
-/// Codeunit Shpfy Sales Channel API (ID 30215).
+/// Codeunit Shpfy Sales Channel API (ID 30372).
 /// </summary>
 codeunit 30372 "Shpfy Sales Channel API"
 {
