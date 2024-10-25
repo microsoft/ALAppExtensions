@@ -7,7 +7,6 @@ codeunit 139564 "Shpfy Order Refunds Helper"
 
     internal procedure CreateShopifyDocuments() ShopifyIds: Dictionary of [Text, List of [BigInteger]]
     var
-        DocLink: Record "Shpfy Doc. Link To Doc.";
         CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
         OrderId: BigInteger;
         ProductId: BigInteger;
@@ -28,11 +27,7 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         ShopifyIds.Get('Order').Add(OrderId);
         ShopifyIds.Get('OrderLine').Add(CreateOrderLine(OrderId, 1, ProductId, VariantId));
         ShopifyIds.Get('OrderLine').Add(CreateOrderLine(OrderId, 2, ProductId, VariantId));
-        DocLink."Shopify Document Type" := Enum::"Shpfy shop Document Type"::"Shopify shop Order";
-        DocLink."Shopify Document Id" := OrderId;
-        DocLink."Document Type" := Enum::"Shpfy Document Type"::"Sales Order";
-        DocLink."Document No." := Any.AlphabeticText(10);
-        DocLink.Insert();
+        ProcessShopifyOrder(OrderId);
 
         ReturnId := CreateReturn(OrderId);
         CreateReturnLine(ReturnId, ShopifyIds.Get('OrderLine').Get(1), 'DEFECTIVE');
@@ -75,7 +70,7 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         exit(Ids);
     end;
 
-    local procedure CreateShopifyOrder(): BigInteger
+    internal procedure CreateShopifyOrder(): BigInteger
     var
         OrderHeader: Record "Shpfy Order Header";
         Customer: Record Customer;
@@ -136,7 +131,7 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         exit(OrderHeader."Shopify Order Id");
     end;
 
-    local procedure CreateOrderLine(OrderId: BigInteger; LineNo: Integer; ProductId: BigInteger; VariantId: BigInteger): BigInteger
+    internal procedure CreateOrderLine(OrderId: BigInteger; LineNo: Integer; ProductId: BigInteger; VariantId: BigInteger): BigInteger
     var
         Item: Record Item;
         OrderLine: Record "Shpfy Order Line";
@@ -158,7 +153,7 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         exit(OrderLine."Line Id");
     end;
 
-    local procedure CreateReturn(OrderId: BigInteger): BigInteger
+    internal procedure CreateReturn(OrderId: BigInteger): BigInteger
     var
         ReturnHeader: Record "Shpfy Return Header";
     begin
@@ -172,7 +167,7 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         exit(ReturnHeader."Return Id");
     end;
 
-    local procedure CreateReturnLine(ReturnOrderId: BigInteger; OrderLineId: BigInteger; ReturnReason: Text)
+    internal procedure CreateReturnLine(ReturnOrderId: BigInteger; OrderLineId: BigInteger; ReturnReason: Text): BigInteger
     var
         ReturnLine: Record "Shpfy Return Line";
         ReturnEnumConvertor: Codeunit "Shpfy Return Enum Convertor";
@@ -189,9 +184,10 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         ReturnLine."Weight Unit" := 'KILOGRAMS';
         ReturnLine."Discounted Total Amount" := 156.38;
         ReturnLine.Insert();
+        exit(ReturnLine."Return Line Id");
     end;
 
-    local procedure CreateRefundHeader(OrderId: BigInteger; ReturnId: BigInteger; Amount: Decimal): BigInteger
+    internal procedure CreateRefundHeader(OrderId: BigInteger; ReturnId: BigInteger; Amount: Decimal): BigInteger
     var
         RefundHeader: Record "Shpfy Refund Header";
     begin
@@ -206,7 +202,42 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         exit(RefundHeader."Refund Id");
     end;
 
-    local procedure CreateRefundLine(RefundId: BigInteger; OrderLineId: BigInteger)
+    internal procedure CreateRefundHeader(OrderId: BigInteger; ReturnId: BigInteger; Amount: Decimal; ShopCode: Code[20]): BigInteger
+    var
+        RefundHeader: Record "Shpfy Refund Header";
+    begin
+        RefundHeader."Refund Id" := Any.IntegerInRange(100000, 9999999);
+        RefundHeader."Order Id" := OrderId;
+        RefundHeader."Return Id" := ReturnId;
+        RefundHeader."Created At" := CurrentDateTime;
+        RefundHeader."Shop Code" := ShopCode;
+        RefundHeader."Updated At" := CurrentDateTime;
+        RefundHeader."Total Refunded Amount" := Amount;
+        RefundHeader.Insert();
+        exit(RefundHeader."Refund Id");
+    end;
+
+    internal procedure CreateRefundLine(RefundId: BigInteger; OrderLineId: BigInteger)
+    var
+        RefundLine: Record "Shpfy Refund Line";
+        RefundHeader: Record "Shpfy Refund Header";
+        RefundsAPI: Codeunit "Shpfy Refunds API";
+        RefundEnumConvertor: Codeunit "Shpfy Refund Enum Convertor";
+    begin
+        RefundHeader.Get(RefundId);
+        RefundLine."Refund Line Id" := Any.IntegerInRange(100000, 999999);
+        RefundLine."Refund Id" := RefundId;
+        RefundLine."Order Line Id" := OrderLineId;
+        RefundLine."Restock Type" := RefundEnumConvertor.ConvertToReStockType('RETURN');
+        RefundLine.Quantity := 1;
+        RefundLine.Restocked := true;
+        RefundLine.Amount := 156.38;
+        RefundLine."Subtotal Amount" := 156.38;
+        RefundLine."Can Create Credit Memo" := RefundsAPI.IsNonZeroOrReturnRefund(RefundHeader);
+        RefundLine.Insert();
+    end;
+
+    internal procedure CreateRefundLine(RefundId: BigInteger; OrderLineId: BigInteger; LocationId: BigInteger)
     var
         RefundLine: Record "Shpfy Refund Line";
         RefundHeader: Record "Shpfy Refund Header";
@@ -238,6 +269,17 @@ codeunit 139564 "Shpfy Order Refunds Helper"
         InitializeTest: Codeunit "Shpfy Initialize Test";
     begin
         exit(InitializeTest.GetDummyCustomer());
+    end;
+
+    internal procedure ProcessShopifyOrder(var OrderId: BigInteger)
+    var
+        DocLink: Record "Shpfy Doc. Link To Doc.";
+    begin
+        DocLink."Shopify Document Type" := Enum::"Shpfy shop Document Type"::"Shopify shop Order";
+        DocLink."Shopify Document Id" := OrderId;
+        DocLink."Document Type" := Enum::"Shpfy Document Type"::"Sales Order";
+        DocLink."Document No." := Any.AlphabeticText(10);
+        DocLink.Insert();
     end;
 
     internal procedure CreateRefundHeader(): BigInteger
