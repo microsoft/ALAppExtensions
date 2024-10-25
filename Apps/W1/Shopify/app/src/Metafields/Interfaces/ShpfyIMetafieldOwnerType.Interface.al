@@ -31,6 +31,6 @@ interface "Shpfy IMetafield Owner Type"
     /// Indicates if metafields can be edited.
     /// </summary>
     /// <param name="Shop">Shop record.</param>
-    /// <returns>Boolean.</returns>
+    /// <returns>Boolean value which is true if metafields for the owner can be edited.</returns>
     procedure CanEditMetafields(Shop: Record "Shpfy Shop"): Boolean
 }
