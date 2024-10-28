@@ -1,9 +1,9 @@
-codeunit 139625 "Shpfy Catalog API Suscribers"
+codeunit 139625 "Shpfy Catalog API Subscribers"
 {
     EventSubscriberInstance = Manual;
 
     var
-        ShopifyCustomerId: BigInteger;
+        ShopifyCatalogId: BigInteger;
         GQLQueryTxt: Text;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Communication Events", 'OnClientSend', '', true, false)]
@@ -18,22 +18,13 @@ codeunit 139625 "Shpfy Catalog API Suscribers"
         HttpResponseMessage.Content.ReadAs(Response);
     end;
 
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Customer Events", OnBeforeFindMapping, '', true, false)]
-    local procedure OnBeforeFindMapping(var Handled: Boolean; var ShopifyCustomer: Record "Shpfy Customer")
-    begin
-        ShopifyCustomer.Id := ShopifyCustomerId;
-        Handled := true;
-    end;
-
     local procedure MakeResponse(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
     var
         Uri: Text;
         GraphQlQuery: Text;
-        GetCustomersGQLMsg: Label '{"query":"{customers(first:100){pageInfo{endCursor hasNextPage} nodes{ legacyResourceId }}}"}', Locked = true;
-        ModifyCustomerGQLStartTok: Label '{"query":"mutation {customerUpdate(input: {id: \"gid://shopify/Customer/', Locked = true;
-        GetCustomerMetafieldsGQLStartTok: Label '{"query":"{customer(id: \"gid://shopify/Customer/', Locked = true;
-        GetCustomerMetafieldsGQLEndTok: Label '\") { metafields(first: 50) {edges {node {legacyResourceId updatedAt}}}}}"}', Locked = true;
-        CreateMetafieldsGQLStartTok: Label '{"query": "mutation { metafieldsSet(metafields: ', Locked = true;
+        CreateCatalogGQLStartTok: Label '{"query": "mutation { catalogCreate(input: {title: ', Locked = true;
+        CreatePublicationGQLStartTok: Label '{"query": "mutation { publicationCreate(input: {autoPublish: true, catalogId:', Locked = true;
+        CreatePriceListGQLStartTok: Label '{"query": "mutation { priceListCreate(input: {name: ', Locked = true;
         GraphQLCmdTxt: Label '/graphql.json', Locked = true;
     begin
         case HttpRequestMessage.Method of
@@ -43,28 +34,24 @@ codeunit 139625 "Shpfy Catalog API Suscribers"
                     if Uri.EndsWith(GraphQLCmdTxt) then
                         if HttpRequestMessage.Content.ReadAs(GraphQlQuery) then
                             case true of
-                                GraphQlQuery.Contains(GetCustomersGQLMsg):
-                                    HttpResponseMessage := GetCustomersResult();
-                                GraphQlQuery.StartsWith(ModifyCustomerGQLStartTok):
+                                GraphQlQuery.StartsWith(CreateCatalogGQLStartTok):
+                                    HttpResponseMessage := GetCatalogResult();
+                                GraphQlQuery.StartsWith(CreatePublicationGQLStartTok):
                                     HttpResponseMessage := GetEmptyResponse();
-                                GraphQlQuery.StartsWith(GetCustomerMetafieldsGQLStartTok) and GraphQlQuery.EndsWith(GetCustomerMetafieldsGQLEndTok):
+                                GraphQlQuery.StartsWith(CreatePriceListGQLStartTok):
                                     HttpResponseMessage := GetEmptyResponse();
-                                GraphQlQuery.StartsWith(CreateMetafieldsGQLStartTok):
-                                    begin
-                                        HttpResponseMessage := GetEmptyResponse();
-                                        GQLQueryTxt := GraphQlQuery;
-                                    end;
                             end;
                 end;
         end;
     end;
 
-    local procedure GetCustomersResult(): HttpResponseMessage
+    local procedure GetCatalogResult(): HttpResponseMessage
     var
+        Any: Codeunit Any;
         HttpResponseMessage: HttpResponseMessage;
         Body: Text;
     begin
-        Body := '{ "data": { "customers": { "pageInfo": { "hasNextPage": false }, "edges": [] } }, "extensions": { "cost": { "requestedQueryCost": 12, "actualQueryCost": 2, "throttleStatus": { "maximumAvailable": 2000, "currentlyAvailable": 1998, "restoreRate": 100 } } } }';
+        Body := StrSubstNo('{"data": {"catalogCreate": {"catalog": {"id": %1}}}}', Any.IntegerInRange(100000, 999999));
         HttpResponseMessage.Content.WriteFrom(Body);
         exit(HttpResponseMessage);
     end;
@@ -79,14 +66,8 @@ codeunit 139625 "Shpfy Catalog API Suscribers"
         exit(HttpResponseMessage);
     end;
 
-    internal procedure SetShopifyCustomerId(Id: BigInteger)
+    internal procedure SetShopifyCatalogId(Id: BigInteger)
     begin
-        ShopifyCustomerId := Id;
+        ShopifyCatalogId := Id;
     end;
-
-    internal procedure GetGQLQuery(): Text
-    begin
-        exit(GQLQueryTxt);
-    end;
-
 }

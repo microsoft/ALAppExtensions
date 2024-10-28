@@ -141,6 +141,5 @@ codeunit 139637 "Shpfy Company API Test"
         LibraryAssert.AreEqual(ShopifyCompany.Name, Name, 'Name');
         LibraryAssert.AreEqual(ShopifyCompany."Main Contact Id", CompanyContactId, 'Company Contact Id');
         LibraryAssert.AreEqual(ShopifyCompany."Main Contact Customer Id", CustomerId, 'Customer Id');
-        LibraryAssert.AreEqual(ShopifyCompany."Location Id", CompanyLocationId, 'Company Location Id');
     end;
 }

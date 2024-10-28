@@ -68,9 +68,10 @@ codeunit 139645 "Shpfy Catalog API Test"
         Shop: Record "Shpfy Shop";
         Customer: Record Customer;
         ShopifyCompany: Record "Shpfy Company";
+        Catalog: Record "Shpfy Catalog";
         CatalogAPI: Codeunit "Shpfy Catalog API";
         ShopifyInitializeTest: Codeunit "Shpfy Initialize Test";
-        Catalog: Record "Shpfy Catalog";
+        CatalogAPISubscribers: Codeunit "Shpfy Catalog API Subscribers";
         LibrarySales: Codeunit "Library - Sales";
     begin
         // [SCENARIO] Create a catalog for a company.
@@ -83,12 +84,14 @@ codeunit 139645 "Shpfy Catalog API Test"
         CreateCompany(ShopifyCompany, Customer.SystemId);
 
         // [WHEN] Invoke CatalogAPI.CreateCatalog
+        BindSubscription(CatalogAPISubscribers);
         CatalogAPI.CreateCatalog(ShopifyCompany, Customer);
+        UnbindSubscription(CatalogAPISubscribers);
 
         // [THEN] A catalog is created.
         Catalog.SetRange("Company SystemId", ShopifyCompany.SystemId);
-        LibraryAssert.RecordIsNotEmpty(Catalog);
-        LibraryAssert.AreEqual(Customer."No.", Catalog."Customer No.", 'Customer No. is not transfered to catalog');
+        Catalog.FindFirst();
+        LibraryAssert.AreEqual(Customer."No.", Catalog."Customer No.", 'Customer No. is not transferred to catalog');
     end;
 
     local procedure CreateCompany(var ShopifyCompany: Record "Shpfy Company"; CustomerSystemId: Guid)
