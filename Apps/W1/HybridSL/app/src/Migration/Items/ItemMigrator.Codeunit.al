@@ -24,6 +24,8 @@ codeunit 42026 "SL Item Migrator"
         SLItemImportPostingGroupCodeTxt: Label 'SLITEMIMPORT', Locked = true;
         SLItemImportPostingGroupDescriptionTxt: Label 'SL Item Import (No impact to GL)', Locked = true;
         SimpleInvJnlNameTxt: Label 'DEFAULT', Comment = 'The default name of the item journal', Locked = true;
+        TranStatusCodeInactiveTxt: Label 'IN', Locked = true;
+        TranStatusCodeDeleteTxt: Label 'DE', Locked = true;
         ItemBatchCodePrefixTxt: Label 'SLITM', Locked = true;
         CostingMethodOption: Option FIFO,LIFO,Specific,Average,Standard;
         ItemTypeOption: Option Inventory,Service;
@@ -62,10 +64,10 @@ codeunit 42026 "SL Item Migrator"
 
     internal procedure ShouldMigrateItem(var SLInventory: Record "SL Inventory"): Boolean
     begin
-        if SLInventory.TranStatusCode = 'IN' then
+        if SLInventory.TranStatusCode = TranStatusCodeInactiveTxt then
             if not SLCompanyAdditionalSettings.GetMigrateInactiveItems() then
                 exit(false);
-        if SLInventory.TranStatusCode = 'DE' then
+        if SLInventory.TranStatusCode = TranStatusCodeDeleteTxt then
             if not SLCompanyAdditionalSettings.GetMigrateDiscontinuedItems() then
                 exit(false);
         exit(true);
@@ -215,7 +217,7 @@ codeunit 42026 "SL Item Migrator"
             end;
 
             DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLInventory.RecordId));
-            if (SLInventory.TranStatusCode = 'IN') or (SLInventory.TranStatusCode = 'DE') then begin
+            if (SLInventory.TranStatusCode = TranStatusCodeInactiveTxt) or (SLInventory.TranStatusCode = TranStatusCodeDeleteTxt) then begin
                 Item.Reset();
                 if Item.Get(CopyStr(SLInventory.InvtID, 1, MaxStrLen(Item."No."))) then begin
                     Item.Blocked := true;
@@ -422,6 +424,7 @@ codeunit 42026 "SL Item Migrator"
                 ItemJrlLineReserve.InitFromItemJnlLine(TempTrackingSpecification, ItemJnlLine);
 
                 case SLLotSerialCode of
+                    // Lot-tracked, when received into Inventory
                     'LOTRCVD':
                         begin
                             TempTrackingSpecification."Lot No." := SLLotSerMst.LotSerNbr;
@@ -449,6 +452,7 @@ codeunit 42026 "SL Item Migrator"
                                 SLInventory.Descr, ItemJnlLine."Posting Date", ItemJnlLine."Posting Date", 0, ReservationStatus::Prospect);
                         end;
 
+                    // Lot-tracked, when received into Inventory with expiration date
                     'LOTRCVDEXP':
                         begin
                             TempTrackingSpecification."Lot No." := SLLotSerMst.LotSerNbr;
@@ -481,6 +485,7 @@ codeunit 42026 "SL Item Migrator"
                                 SLInventory.Descr, ItemJnlLine."Posting Date", ItemJnlLine."Posting Date", 0, ReservationStatus::Prospect);
                         end;
 
+                    // Serial-tracked, when received into Inventory
                     'SERRCVD':
                         begin
                             TempTrackingSpecification."Serial No." := SLLotSerMst.LotSerNbr;
@@ -508,6 +513,7 @@ codeunit 42026 "SL Item Migrator"
                                 SLInventory.Descr, ItemJnlLine."Posting Date", ItemJnlLine."Posting Date", 0, ReservationStatus::Prospect);
                         end;
 
+                    // Serial-tracked, when received into Inventory with expiration date
                     'SERRCVDEXP':
                         begin
                             TempTrackingSpecification."Serial No." := SLLotSerMst.LotSerNbr;
@@ -682,12 +688,16 @@ codeunit 42026 "SL Item Migrator"
     internal procedure GetCostingMethod(var SLInventory: Record "SL Inventory"): Option
     begin
         case SLInventory.ValMthd of
+            // FIFO, Specific Cost ID
             'F', 'S':
                 exit(CostingMethodOption::FIFO);
+            // LIFO
             'L':
                 exit(CostingMethodOption::LIFO);
+            // Average Cost, User-Specified Cost
             'A', 'U':
                 exit(CostingMethodOption::Average);
+            // Standard Cost
             'T':
                 exit(CostingMethodOption::Standard);
         end;

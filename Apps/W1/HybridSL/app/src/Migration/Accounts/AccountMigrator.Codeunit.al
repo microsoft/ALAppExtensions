@@ -16,7 +16,7 @@ codeunit 42000 "SL Account Migrator"
     var
         PostingGroupCodeTxt: Label 'SL', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from SL', Locked = true;
-        GlDocNoLbl: Label 'G00001', Locked = true;
+        GlDocNoLbl: Label 'G000000001', Locked = true;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", OnMigrateGlAccount, '', true, true)]
     local procedure OnMigrateGlAccount(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
@@ -51,13 +51,13 @@ codeunit 42000 "SL Account Migrator"
     local procedure OnMigrateAccountTransactions(var Sender: Codeunit "GL Acc. Data Migration Facade"; RecordIdToMigrate: RecordId)
     var
         MigrationSLAccount: Record "SL Account Staging";
-        slCompanyAdditionalSettings: Record "SL Company Additional Settings";
+        SLCompanyAdditionalSettings: Record "SL Company Additional Settings";
     begin
         if RecordIdToMigrate.TableNo <> Database::"SL Account Staging" then
             exit;
-        if not slCompanyAdditionalSettings.GetGLModuleEnabled() then
+        if not SLCompanyAdditionalSettings.GetGLModuleEnabled() then
             exit;
-        if slCompanyAdditionalSettings.GetMigrateOnlyGLMaster() then
+        if SLCompanyAdditionalSettings.GetMigrateOnlyGLMaster() then
             exit;
         MigrationSLAccount.Get(RecordIdToMigrate);
         GenerateGLTransactionBatches(MigrationSLAccount);
@@ -156,7 +156,6 @@ codeunit 42000 "SL Account Migrator"
         GenJournalBatch.SetRange("Journal Template Name", TemplateName);
         GenJournalBatch.SetRange(Name, GeneralJournalBatchCode);
         if not GenJournalBatch.FindFirst() then begin
-            GenJournalBatch.Init();
             GenJournalBatch.Validate("Journal Template Name", TemplateName);
             GenJournalBatch.SetupNewBatch();
             GenJournalBatch.Validate(Name, GeneralJournalBatchCode);
@@ -173,7 +172,6 @@ codeunit 42000 "SL Account Migrator"
         GenJournalTemplate.SetRange(Name, GeneralJournalTemplateCode);
         GenJournalTemplate.SetRange(Recurring, false);
         if not GenJournalTemplate.FindFirst() then begin
-            GenJournalTemplate.Init();
             GenJournalTemplate.Validate(Name, GeneralJournalTemplateCode);
             GenJournalTemplate.Validate(Type, GenJournalTemplate.Type::General);
             GenJournalTemplate.Validate(Recurring, false);

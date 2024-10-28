@@ -26,14 +26,8 @@ codeunit 42002 "SL Populate Account History"
     begin
         SLGLSetup.Reset();
         if SLGLSetup.FindFirst() then begin
-            if StrLen(SLGLSetup.LedgerID.Trim()) > 0 then
-                SLLedgerID := CopyStr(SLGLSetup.LedgerID.Trim(), 1, MaxStrLen(SLLedgerID))
-            else
-                SLLedgerID := '0000000000';
-            if StrLen(SLGLSetup.YtdNetIncAcct.Trim()) > 0 then
-                SLYtdNetIncAcct := CopyStr(SLGLSetup.YtdNetIncAcct.Trim(), 1, MaxStrLen(SLYtdNetIncAcct))
-            else
-                SLYtdNetIncAcct := '2750';
+            SLLedgerID := CopyStr(SLGLSetup.LedgerID.Trim(), 1, MaxStrLen(SLLedgerID));
+            SLYtdNetIncAcct := CopyStr(SLGLSetup.YtdNetIncAcct.Trim(), 1, MaxStrLen(SLYtdNetIncAcct));
         end;
 
         SLGLAcctBalbyPeriodWrkTbl.Reset();

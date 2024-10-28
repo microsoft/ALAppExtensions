@@ -73,7 +73,6 @@ codeunit 42005 "SL Wizard Integration"
         MaxAttempts: Integer;
         OverrideMaxAttempts: Integer;
         SessionID: Integer;
-
     begin
         TimeoutDuration := HybridSLManagement.GetDefaultJobTimeout();
         MaxAttempts := GetDefaultSLHistoricalMigrationJobMaxAttempts();
