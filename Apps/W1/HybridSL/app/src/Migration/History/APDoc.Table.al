@@ -528,7 +528,7 @@ table 42021 "SL APDoc"
     }
     keys
     {
-        key(PK; Acct, Sub, DocType, RefNbr, RecordID)
+        key(Key1; Acct, Sub, DocType, RefNbr, RecordID)
         {
             Clustered = true;
         }

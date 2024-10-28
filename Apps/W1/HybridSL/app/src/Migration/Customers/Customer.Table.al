@@ -457,7 +457,7 @@ table 42012 "SL Customer"
 
     keys
     {
-        key(PK; CustId)
+        key(Key1; CustId)
         {
             Clustered = true;
         }

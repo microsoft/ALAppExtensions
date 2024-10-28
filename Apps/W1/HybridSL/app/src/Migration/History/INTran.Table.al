@@ -505,7 +505,7 @@ table 42028 "SL INTran"
 
     keys
     {
-        key(PK; InvtID, SiteID, CpnyID, RecordID)
+        key(Key1; InvtID, SiteID, CpnyID, RecordID)
         {
             Clustered = true;
         }

@@ -365,7 +365,7 @@ table 42048 "SL POSetup"
 
     keys
     {
-        key(PK; SetupID)
+        key(Key1; SetupID)
         {
             Clustered = true;
         }

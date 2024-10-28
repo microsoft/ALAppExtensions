@@ -161,7 +161,7 @@ table 42055 "SL POAddress"
 
     keys
     {
-        key(PK; VendId, OrdFromId)
+        key(Key1; VendId, OrdFromId)
         {
             Clustered = true;
         }

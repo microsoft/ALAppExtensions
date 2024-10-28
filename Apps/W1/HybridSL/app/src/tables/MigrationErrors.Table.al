@@ -14,7 +14,7 @@ table 42030 "SL Migration Errors"
     ReplicateData = false;
     fields
     {
-        field(1; Dummy; Code[10])
+        field(1; PrimaryKey; Code[10])
         {
         }
         field(2; MigrationErrorCount; Integer)
@@ -27,7 +27,7 @@ table 42030 "SL Migration Errors"
 
     keys
     {
-        key(PK; Dummy)
+        key(Key1; PrimaryKey)
         {
             Clustered = true;
         }

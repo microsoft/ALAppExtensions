@@ -225,7 +225,7 @@ table 42023 "SL APAdjust"
 
     keys
     {
-        key(PK; AdjdRefNbr, AdjdDocType, AdjgRefNbr, AdjgDocType, VendId, AdjgAcct, AdjgSub)
+        key(Key1; AdjdRefNbr, AdjdDocType, AdjgRefNbr, AdjgDocType, VendId, AdjgAcct, AdjgSub)
         {
             Clustered = true;
         }

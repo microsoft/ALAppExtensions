@@ -301,7 +301,7 @@ table 42027 "SL Batch"
 
     keys
     {
-        key(PK; Module, BatNbr)
+        key(Key1; Module, BatNbr)
         {
             Clustered = true;
         }

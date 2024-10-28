@@ -393,7 +393,7 @@ table 42007 "SL AcctHist"
 
     keys
     {
-        key(PK; CpnyID, Acct, Sub, LedgerID, FiscYr)
+        key(Key1; CpnyID, Acct, Sub, LedgerID, FiscYr)
         {
             Clustered = true;
         }

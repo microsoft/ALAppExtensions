@@ -38,7 +38,7 @@ table 42062 "SL Migration Warnings"
     }
     keys
     {
-        key(PK; Id)
+        key(Key1; Id)
         {
             Clustered = true;
         }

@@ -589,7 +589,7 @@ table 42013 "SL SOSetup"
 
     keys
     {
-        key(PK; SetupID)
+        key(Key1; SetupID)
         {
             Clustered = true;
         }

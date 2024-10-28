@@ -32,7 +32,7 @@ table 42008 "SL Segments"
 
     keys
     {
-        key(PK; Id)
+        key(Key1; Id)
         {
             Clustered = true;
         }

@@ -26,7 +26,7 @@ table 42019 "SL Codes"
 
     keys
     {
-        key(PK; Id, Name)
+        key(Key1; Id, Name)
         {
             Clustered = true;
         }

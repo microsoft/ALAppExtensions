@@ -185,7 +185,7 @@ table 42006 "SL Account"
 
     keys
     {
-        key(PK; Acct)
+        key(Key1; Acct)
         {
             Clustered = true;
         }

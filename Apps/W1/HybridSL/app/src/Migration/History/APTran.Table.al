@@ -516,7 +516,7 @@ table 42022 "SL APTran"
     }
     keys
     {
-        key(PK; BatNbr, Acct, Sub, RefNbr, RecordID)
+        key(Key1; BatNbr, Acct, Sub, RefNbr, RecordID)
         {
             Clustered = true;
         }

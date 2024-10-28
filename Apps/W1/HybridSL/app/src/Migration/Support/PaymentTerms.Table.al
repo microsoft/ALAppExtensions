@@ -45,7 +45,7 @@ table 42040 "SL Payment Terms"
 
     keys
     {
-        key(PK; PYMTRMID)
+        key(Key1; PYMTRMID)
         {
             Clustered = true;
         }

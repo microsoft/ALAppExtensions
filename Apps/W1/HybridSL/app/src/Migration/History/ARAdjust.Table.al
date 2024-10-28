@@ -217,7 +217,7 @@ table 42026 "SL ARAdjust"
 
     keys
     {
-        key(PK; AdjdRefNbr, RecordID)
+        key(Key1; AdjdRefNbr, RecordID)
         {
             Clustered = true;
         }

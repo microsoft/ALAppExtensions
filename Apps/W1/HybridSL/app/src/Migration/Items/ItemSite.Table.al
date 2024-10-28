@@ -777,7 +777,7 @@ table 42041 "SL ItemSite"
 
     keys
     {
-        key(PK; InvtID, SiteID)
+        key(Key1; InvtID, SiteID)
         {
             Clustered = true;
         }

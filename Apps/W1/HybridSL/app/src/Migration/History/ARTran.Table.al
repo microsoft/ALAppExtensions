@@ -453,7 +453,7 @@ table 42025 "SL ARTran"
 
     keys
     {
-        key(PK; CustId, TranType, RefNbr, LineNbr, RecordID)
+        key(Key1; CustId, TranType, RefNbr, LineNbr, RecordID)
         {
             Clustered = true;
         }

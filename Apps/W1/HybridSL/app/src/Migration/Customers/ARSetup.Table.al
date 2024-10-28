@@ -397,7 +397,7 @@ table 42011 "SL ARSetup"
 
     keys
     {
-        key(PK; SetupId)
+        key(Key1; SetupId)
         {
             Clustered = true;
         }

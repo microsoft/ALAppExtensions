@@ -533,7 +533,7 @@ table 42039 "SL PurchOrd"
 
     keys
     {
-        key(PK; PONbr)
+        key(Key1; PONbr)
         {
             Clustered = true;
         }

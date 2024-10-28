@@ -261,7 +261,7 @@ table 42042 "SL LotSerMst"
 
     keys
     {
-        key(PK; InvtID, LotSerNbr, SiteID, WhseLoc)
+        key(Key1; InvtID, LotSerNbr, SiteID, WhseLoc)
         {
             Clustered = true;
         }

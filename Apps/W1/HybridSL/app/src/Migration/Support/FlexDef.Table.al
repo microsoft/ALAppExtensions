@@ -305,7 +305,7 @@ table 42043 "SL FlexDef"
 
     keys
     {
-        key(PK; FieldClassName)
+        key(Key1; FieldClassName)
         {
             Clustered = true;
         }

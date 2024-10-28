@@ -218,7 +218,7 @@ table 42056 "SL SOAddress"
 
     keys
     {
-        key(PK; CustId, ShipToId)
+        key(Key1; CustId, ShipToId)
         {
             Clustered = true;
         }

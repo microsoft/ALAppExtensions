@@ -345,7 +345,7 @@ table 42016 "SL InventoryADG"
 
     keys
     {
-        key(PK; InvtID)
+        key(Key1; InvtID)
         {
             Clustered = true;
         }

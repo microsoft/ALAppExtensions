@@ -561,7 +561,7 @@ table 42031 "SL PurOrdDet"
 
     keys
     {
-        key(PK; PONbr, LineRef)
+        key(Key1; PONbr, LineRef)
         {
             Clustered = true;
         }

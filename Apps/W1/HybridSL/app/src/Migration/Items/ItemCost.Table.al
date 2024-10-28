@@ -197,7 +197,7 @@ table 42020 "SL ItemCost"
 
     keys
     {
-        key(PK; InvtID, SiteID, LayerType, SpecificCostID, RcptNbr, RcptDate)
+        key(Key1; InvtID, SiteID, LayerType, SpecificCostID, RcptNbr, RcptDate)
         {
             Clustered = true;
         }

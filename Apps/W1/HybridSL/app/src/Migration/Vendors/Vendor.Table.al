@@ -393,7 +393,7 @@ table 42049 "SL Vendor"
 
     keys
     {
-        key(PK; VendId)
+        key(Key1; VendId)
         {
             Clustered = true;
         }

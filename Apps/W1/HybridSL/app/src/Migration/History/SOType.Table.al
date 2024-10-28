@@ -317,7 +317,7 @@ table 42051 "SL SOType"
 
     keys
     {
-        key(PK; CpnyID, SOTypeID)
+        key(Key1; CpnyID, SOTypeID)
         {
             Clustered = true;
         }

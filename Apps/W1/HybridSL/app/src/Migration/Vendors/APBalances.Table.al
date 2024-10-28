@@ -301,7 +301,7 @@ table 42046 "SL AP_Balances"
 
     keys
     {
-        key(PK; VendID, CpnyID)
+        key(Key1; VendID, CpnyID)
         {
             Clustered = true;
         }

@@ -28,7 +28,7 @@ table 42002 SLPeriodListWrkTbl
     }
     keys
     {
-        key(PK; period)
+        key(Key1; period)
         {
             Clustered = true;
         }

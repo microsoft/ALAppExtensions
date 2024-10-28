@@ -305,7 +305,7 @@ table 42032 "SL POReceipt"
 
     keys
     {
-        key(PK; RcptNbr)
+        key(Key1; RcptNbr)
         {
             Clustered = true;
         }

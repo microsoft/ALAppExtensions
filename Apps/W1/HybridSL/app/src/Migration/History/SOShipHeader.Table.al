@@ -893,7 +893,7 @@ table 42036 "SL SOShipHeader"
 
     keys
     {
-        key(PK; CpnyID, ShipperID)
+        key(Key1; CpnyID, ShipperID)
         {
             Clustered = true;
         }

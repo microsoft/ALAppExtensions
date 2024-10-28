@@ -185,7 +185,7 @@ table 42045 "SL Terms"
 
     keys
     {
-        key(PK; TermsId)
+        key(Key1; TermsId)
         {
             Clustered = true;
         }

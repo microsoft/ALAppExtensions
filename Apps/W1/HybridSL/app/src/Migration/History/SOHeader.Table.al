@@ -789,7 +789,7 @@ table 42034 "SL SOHeader"
 
     keys
     {
-        key(PK; CpnyID, OrdNbr)
+        key(Key1; CpnyID, OrdNbr)
         {
             Clustered = true;
         }

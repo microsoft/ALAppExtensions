@@ -677,7 +677,7 @@ table 42014 "SL INSetup"
 
     keys
     {
-        key(PK; SetupId)
+        key(Key1; SetupId)
         {
             Clustered = true;
         }

@@ -13,7 +13,7 @@ table 42017 "SL Migration Config"
 
     fields
     {
-        field(1; Dummy; Code[10])
+        field(1; PrimaryKey; Code[10])
         {
         }
         field(2; "Zip File"; Text[250])
@@ -88,7 +88,7 @@ table 42017 "SL Migration Config"
 
     keys
     {
-        key(PK; Dummy)
+        key(Key1; PrimaryKey)
         {
             Clustered = true;
         }

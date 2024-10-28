@@ -44,7 +44,7 @@ table 42004 SLGLAcctBalByPeriod
     }
     keys
     {
-        key(PK; ACCT, SUB, FISCYR, PERIODID)
+        key(Key1; ACCT, SUB, FISCYR, PERIODID)
         {
             Clustered = true;
         }

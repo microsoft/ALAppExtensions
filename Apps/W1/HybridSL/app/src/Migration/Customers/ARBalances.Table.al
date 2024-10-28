@@ -273,7 +273,7 @@ table 42010 "SL AR_Balances"
 
     keys
     {
-        key(PK; CpnyID, CustID)
+        key(Key1; CpnyID, CustID)
         {
             Clustered = true;
         }

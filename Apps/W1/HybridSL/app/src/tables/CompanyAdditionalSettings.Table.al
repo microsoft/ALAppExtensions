@@ -376,7 +376,7 @@ table 42061 "SL Company Additional Settings"
 
     keys
     {
-        key(PK; Name)
+        key(Key1; Name)
         {
             Clustered = true;
         }

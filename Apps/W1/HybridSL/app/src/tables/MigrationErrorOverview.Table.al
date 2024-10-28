@@ -78,7 +78,7 @@ table 42063 "SL Migration Error Overview"
     }
     keys
     {
-        key(PK; Id, "Company Name")
+        key(Key1; Id, "Company Name")
         {
             Clustered = true;
         }

@@ -82,7 +82,7 @@ table 42054 "SL AccountTransactions"
 
     keys
     {
-        key(PK; Id)
+        key(Key1; Id)
         {
             Clustered = true;
         }

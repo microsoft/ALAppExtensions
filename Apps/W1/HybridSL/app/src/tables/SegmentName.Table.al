@@ -31,7 +31,7 @@ table 42053 "SL Segment Name"
 
     keys
     {
-        key(PK; "Company Name", "Segment Number", "Segment Name")
+        key(Key1; "Company Name", "Segment Number", "Segment Name")
         {
             Clustered = true;
         }

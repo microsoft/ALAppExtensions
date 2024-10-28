@@ -757,7 +757,7 @@ table 42015 "SL Inventory"
 
     keys
     {
-        key(PK; InvtID)
+        key(Key1; InvtID)
         {
             Clustered = true;
         }

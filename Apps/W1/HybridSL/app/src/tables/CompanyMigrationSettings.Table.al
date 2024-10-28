@@ -89,7 +89,7 @@ table 42052 "SL Company Migration Settings"
 
     keys
     {
-        key(PK; Name)
+        key(Key1; Name)
         {
             Clustered = true;
         }

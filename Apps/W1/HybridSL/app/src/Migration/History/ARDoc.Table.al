@@ -517,7 +517,7 @@ table 42024 "SL ARDoc"
 
     keys
     {
-        key(PK; CustId, DocType, RefNbr, BatNbr, BatSeq)
+        key(Key1; CustId, DocType, RefNbr, BatNbr, BatSeq)
         {
             Clustered = true;
         }

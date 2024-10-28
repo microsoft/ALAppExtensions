@@ -373,7 +373,7 @@ table 42047 "SL APSetup"
 
     keys
     {
-        key(PK; SetupId)
+        key(Key1; SetupId)
         {
             Clustered = true;
         }

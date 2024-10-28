@@ -529,7 +529,7 @@ table 42033 "SL POTran"
 
     keys
     {
-        key(PK; RcptNbr, LineRef)
+        key(Key1; RcptNbr, LineRef)
         {
             Clustered = true;
         }

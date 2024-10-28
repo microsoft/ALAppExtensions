@@ -209,7 +209,7 @@ table 42038 "SL SOShipLot"
 
     keys
     {
-        key(PK; CpnyID, ShipperID, LineRef, LotSerRef)
+        key(Key1; CpnyID, ShipperID, LineRef, LotSerRef)
         {
             Clustered = true;
         }

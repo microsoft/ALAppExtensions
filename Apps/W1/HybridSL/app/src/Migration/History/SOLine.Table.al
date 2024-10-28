@@ -549,7 +549,7 @@ table 42035 "SL SOLine"
 
     keys
     {
-        key(PK; CpnyID, OrdNbr, LineRef)
+        key(Key1; CpnyID, OrdNbr, LineRef)
         {
             Clustered = true;
         }

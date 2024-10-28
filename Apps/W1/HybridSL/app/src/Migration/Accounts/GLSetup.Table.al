@@ -421,7 +421,7 @@ table 42009 "SL GLSetup"
 
     keys
     {
-        key(PK; SetupId)
+        key(Key1; SetupId)
         {
             Clustered = true;
         }

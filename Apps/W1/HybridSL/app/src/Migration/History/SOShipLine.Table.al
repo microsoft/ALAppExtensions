@@ -565,7 +565,7 @@ table 42037 "SL SOShipLine"
 
     keys
     {
-        key(PK; CpnyID, ShipperID, LineRef)
+        key(Key1; CpnyID, ShipperID, LineRef)
         {
             Clustered = true;
         }

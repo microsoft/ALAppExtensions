@@ -81,7 +81,7 @@ table 42044 "SL SegDef"
 
     keys
     {
-        key(PK; FieldClassName, SegNumber, ID)
+        key(Key1; FieldClassName, SegNumber, ID)
         {
             Clustered = true;
         }
