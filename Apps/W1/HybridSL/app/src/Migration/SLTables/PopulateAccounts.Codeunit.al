@@ -22,7 +22,7 @@ codeunit 42019 "SL Populate Accounts"
         SLAccountStaging.DeleteAll();
         repeat
             Clear(SLAccountStaging);
-#pragma warning disable AA0139
+
             SLAccountStaging.AcctNum := SLAccount.Acct;
             SLAccountStaging.AccountCategory := ConvertAccountCategoryFromAcctType(SLAccount.AcctType);
             if SLAccount.Active = 0 then
@@ -33,7 +33,7 @@ codeunit 42019 "SL Populate Accounts"
             SLAccountStaging.SearchName := SLAccount.Descr;
             SLAccountStaging.DebitCredit := 0;
             SLAccountStaging.IncomeBalance := ConvertIncomeBalanceTypeFromAccountType(SLAccount.AcctType);
-#pragma warning restore AA0139
+
             SLAccountStaging.Insert();
         until SLAccount.Next() = 0;
     end;

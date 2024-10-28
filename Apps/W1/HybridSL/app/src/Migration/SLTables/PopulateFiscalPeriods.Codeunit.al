@@ -39,7 +39,6 @@ codeunit 42003 "SL Populate Fiscal Periods"
         FiscalPerEnd11: Text[4];
         FiscalPerEnd12: Text[4];
         yearPeriod: Text[6];
-
     begin
         // initialize variables
         NumPeriods := 0;

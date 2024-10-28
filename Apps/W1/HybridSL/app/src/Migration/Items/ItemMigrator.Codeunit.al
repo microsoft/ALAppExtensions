@@ -42,39 +42,32 @@ codeunit 42026 "SL Item Migrator"
     begin
         if RecordToMigrate.TableNo() <> Database::"SL Inventory" then
             exit;
-
         SLCompanyAdditionalSettings.Get(CompanyName);
         if not SLCompanyAdditionalSettings.GetGLModuleEnabled() then
             exit;
         if not SLCompanyAdditionalSettings.GetInventoryModuleEnabled() then
             exit;
-
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(RecordToMigrate));
         if not SLInventory.Get(RecordToMigrate) then
             exit;
-
         if not ShouldMigrateItem(SLInventory) then begin
             DecrementMigratedCount();
             exit;
         end;
 
         SLINSetup.Get('IN');
-
         MigrateItemDetails(SLInventory, Sender);
         SetGeneralPostingSetupForInventory(SLINSetup);
     end;
 
     internal procedure ShouldMigrateItem(var SLInventory: Record "SL Inventory"): Boolean
     begin
-
         if SLInventory.TranStatusCode = 'IN' then
             if not SLCompanyAdditionalSettings.GetMigrateInactiveItems() then
                 exit(false);
-
         if SLInventory.TranStatusCode = 'DE' then
             if not SLCompanyAdditionalSettings.GetMigrateDiscontinuedItems() then
                 exit(false);
-
         exit(true);
     end;
 
@@ -93,7 +86,6 @@ codeunit 42026 "SL Item Migrator"
     begin
         if not ItemDataMigrationFacade.CreateItemIfNeeded(CopyStr(SLInventory.InvtID, 1, 20), CopyStr(SLInventory.Descr, 1, 50), CopyStr(SLInventory.Descr, 1, 50), ItemTypeOption::Inventory) then
             exit;
-
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLInventory.RecordId));
         ItemDataMigrationFacade.CreateUnitOfMeasureIfNeeded(SLInventory.StkUnit, SLInventory.StkUnit);
         ItemDataMigrationFacade.CreateUnitOfMeasureIfNeeded(SLInventory.DfltPOUnit, SLInventory.DfltPOUnit);
@@ -106,9 +98,7 @@ codeunit 42026 "SL Item Migrator"
             ItemDataMigrationFacade.SetStandardCost(SLInventory.StdCost)
         else
             ItemDataMigrationFacade.SetStandardCost(SLInventory.LastCost);
-
         ItemDataMigrationFacade.SetCostingMethod(GetCostingMethod(SLInventory));
-
         ItemDataMigrationFacade.SetBaseUnitOfMeasure(SLInventory.StkUnit);
         ItemDataMigrationFacade.SetPurchUnitOfMeasure(SLInventory.DfltPOUnit);
         ItemDataMigrationFacade.SetSearchDescription(CopyStr(SLInventory.Descr, 1, 50));
@@ -116,7 +106,6 @@ codeunit 42026 "SL Item Migrator"
 
         if SLCompanyAdditionalSettings.GetGLModuleEnabled() then
             ItemDataMigrationFacade.SetGeneralProductPostingGroup(DefaultPostingGroupCodeTxt);
-
         if SLInventoryADG.Get(SLInventory.InvtID) then
             ItemDataMigrationFacade.SetNetWeight(SLInventoryADG.StdGrossWt);
 
@@ -165,10 +154,8 @@ codeunit 42026 "SL Item Migrator"
     begin
         if not ChartOfAccountsMigrated then
             exit;
-
         if RecordIdToMigrate.TableNo <> Database::"SL Inventory" then
             exit;
-
         SLCompanyAdditionalSettings.Get(CompanyName);
         if not SLCompanyAdditionalSettings.GetGLModuleEnabled() then
             exit;
@@ -176,11 +163,9 @@ codeunit 42026 "SL Item Migrator"
             exit;
         if SLCompanyAdditionalSettings.GetMigrateOnlyInventoryMaster() then
             exit;
-
         if SLInventory.Get(RecordIdToMigrate) then begin
             if not Sender.DoesItemExist(CopyStr(SLInventory.InvtID, 1, MaxStrLen(Item."No."))) then
                 exit;
-
             if not ShouldMigrateItem(SLInventory) then
                 exit;
 
@@ -354,21 +339,17 @@ codeunit 42026 "SL Item Migrator"
             ItemJnlLine.Validate("Posting Date", PostingDate);
             ItemJnlLine."Document No." := SLItemCost.RcptNbr;
         end;
-
         CurrentBatchLineNo := CurrentBatchLineNo + 1;
         ItemJnlLine."Line No." := CurrentBatchLineNo;
-
         if SLItemCost.Qty > 0 then
             ItemJnlLine.Validate("Entry Type", ItemJnlLine."Entry Type"::"Positive Adjmt.")
         else
             ItemJnlLine.Validate("Entry Type", ItemJnlLine."Entry Type"::"Negative Adjmt.");
-
         ItemJnlLine.Validate("Item No.", CopyStr(SLItemCost.InvtID, 1, MaxStrLen(ItemJnlLine."Item No.")));
         ItemJnlLine.Validate(Description, SLInventory.Descr);
         ItemJnlLine.Validate(Quantity, Quantity);
         ItemJnlLine.Validate("Location Code", SLItemCost.SiteID);
         ItemJnlLine.Validate("Unit Cost", SLItemCost.UnitCost);
-
         ItemJnlLine.Validate("Gen. Prod. Posting Group", SLItemImportPostingGroupCodeTxt);
 
         ItemJnlLine.Insert(true);
@@ -393,21 +374,17 @@ codeunit 42026 "SL Item Migrator"
         ItemJnlLine.Validate("Journal Batch Name", CreateOrGetItemBatch(ItemTemplate));
         ItemJnlLine.Validate("Posting Date", PostingDate);
         ItemJnlLine."Document No." := SLLotSerMst.SrcOrdNbr;
-
         CurrentBatchLineNo := CurrentBatchLineNo + 1;
         ItemJnlLine."Line No." := CurrentBatchLineNo;
-
         if SLLotSerMst.QtyOnHand > 0 then
             ItemJnlLine.Validate("Entry Type", ItemJnlLine."Entry Type"::"Positive Adjmt.")
         else
             ItemJnlLine.Validate("Entry Type", ItemJnlLine."Entry Type"::"Negative Adjmt.");
-
         ItemJnlLine.Validate("Item No.", CopyStr(SLLotSerMst.InvtID, 1, 20));
         ItemJnlLine.Validate(Description, SLInventory.Descr);
         ItemJnlLine.Validate(Quantity, Quantity);
         ItemJnlLine.Validate("Location Code", SLLotSerMst.SiteID);
         ItemJnlLine.Validate("Unit Cost", SLLotSerMst.Cost);
-
         ItemJnlLine.Validate("Gen. Prod. Posting Group", SLItemImportPostingGroupCodeTxt);
         ItemJnlLine.Insert(true);
     end;
@@ -427,9 +404,7 @@ codeunit 42026 "SL Item Migrator"
     begin
         if (SLInventory.LotSerTrack.TrimEnd() = '') or ((SLInventory.LotSerTrack = 'NN') and (SLInventory.ValMthd <> 'S')) then
             exit;
-
         SLLotSerialCode := GetSLBCTrackingCode(SLInventory);
-
         if (SLLotSerialCode = 'LOTUSED') or (SLLotSerialCode = 'SERUSED') or (SLLotSerialCode = '') then
             exit;
 
@@ -581,15 +556,11 @@ codeunit 42026 "SL Item Migrator"
     begin
         if SLInventory.ValMthd <> 'S' then
             exit;
-
         if SLInventory.LotSerTrack <> 'NN' then
             exit;
-
         SLLotSerialCode := GetSLBCTrackingCode(SLInventory);
-
         if SLLotSerialCode.TrimEnd() <> 'LOTRCVD' then
             exit;
-
         DataMigrationErrorLogging.SetLastRecordUnderProcessing(Format(SLItemCost.RecordId));
 
         ItemJrlLineReserve.InitFromItemJnlLine(TempTrackingSpecification, ItemJnlLine);
@@ -597,11 +568,9 @@ codeunit 42026 "SL Item Migrator"
         TempTrackingSpecification."Lot No." := SLItemCost.SpecificCostID;
         TempTrackingSpecification."Warranty Date" := 0D;
         TempTrackingSpecification."Expiration Date" := 0D;
-
         LastEntryNo += 1;
         TempTrackingSpecification."Entry No." := LastEntryNo;
         TempTrackingSpecification."Creation Date" := ItemJnlLine."Posting Date";
-
         TempTrackingSpecification.Validate("Quantity (Base)", SLItemCost.Qty);
 
         TempTrackingSpecification.Insert(true);
@@ -662,7 +631,6 @@ codeunit 42026 "SL Item Migrator"
             exit('SERUSED');
         if (SLInventory.ValMthd = 'S') and ((SLInventory.LotSerTrack = 'NN') or (SLInventory.LotSerTrack in ['LI', 'SI'])) then
             exit('LOTRCVD');
-
         exit('');
     end;
 

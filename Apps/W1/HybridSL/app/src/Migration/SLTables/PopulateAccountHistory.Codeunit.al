@@ -23,7 +23,6 @@ codeunit 42002 "SL Populate Account History"
         InitialYear: Integer;
         SLLedgerID: Text[10];
         SLYtdNetIncAcct: Text[10];
-
     begin
         SLGLSetup.Reset();
         if SLGLSetup.FindFirst() then begin
@@ -40,7 +39,6 @@ codeunit 42002 "SL Populate Account History"
         SLGLAcctBalbyPeriodWrkTbl.Reset();
         if SLGLAcctBalbyPeriodWrkTbl.FindFirst() then
             SLGLAcctBalbyPeriodWrkTbl.DeleteAll();
-        ;
 
         AccountQuery.SetRange(CpnyID, CompanyName().Trim());
         AccountQuery.SetRange(LedgerID, SLLedgerID);

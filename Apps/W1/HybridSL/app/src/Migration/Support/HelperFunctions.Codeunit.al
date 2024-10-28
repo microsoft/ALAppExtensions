@@ -1011,13 +1011,10 @@ codeunit 42023 "SL Helper Functions"
         DataMigrationError.Insert();
         DataMigrationError."Last Record Under Processing" := CopyStr(DataMigrationErrorLogging.GetLastRecordUnderProcessing(), 1, MaxStrLen(DataMigrationError."Last Record Under Processing"));
         DataMigrationError.SetLastRecordUnderProcessingLog(DataMigrationErrorLogging.GetFullListOfLastRecordsUnderProcessingAsText());
-
         DataMigrationError."Error Message" := CopyStr(LastErrorMessage, 1, MaxStrLen(DataMigrationError."Error Message"));
         DataMigrationError."Migration Type" := GetMigrationTypeTxt();
-
         DataMigrationError.SetFullExceptionMessage(GetLastErrorText());
         DataMigrationError.SetExceptionCallStack(GetLastErrorCallStack());
-
         DataMigrationErrorLogging.ClearLastRecordUnderProcessing();
     end;
 

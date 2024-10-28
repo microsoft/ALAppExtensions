@@ -5,7 +5,7 @@
 
 namespace Microsoft.DataMigration.SL;
 
-using MSFT.DataMigration.SL.HistoricalData;
+using Microsoft.DataMigration.SL.HistoricalData;
 
 codeunit 42025 SLPopulateHistTables
 {
@@ -64,7 +64,6 @@ codeunit 42025 SLPopulateHistTables
         TheTime: Time;
         HistVariant: Variant;
         SourceVariant: Variant;
-
     begin
         if not SLCompanyAdditionalSettings.GetMigrateHistory() then
             exit;
@@ -221,7 +220,6 @@ codeunit 42025 SLPopulateHistTables
         SourceFieldRef: FieldRef;
         TargetFieldRef: FieldRef;
         I: Integer;
-
     begin
         SourceRecordRef.GetTable(SourceRecordVariant);
         TargetRecordRef.GetTable(TargetRecordVariant);
@@ -230,9 +228,9 @@ codeunit 42025 SLPopulateHistTables
         if SourceRecordRef.FindSet() then
             repeat
                 for I := 1 to SourceRecordRef.FieldCount() do
-                    if SourceRecordRef.FieldExist(i) then begin
-                        SourceFieldRef := SourceRecordRef.Field(i);
-                        TargetFieldRef := TargetRecordRef.Field(i);
+                    if SourceRecordRef.FieldExist(I) then begin
+                        SourceFieldRef := SourceRecordRef.Field(I);
+                        TargetFieldRef := TargetRecordRef.Field(I);
                         TargetFieldRef.Value := SourceFieldRef.Value;
                     end;
                 TargetRecordRef.Insert();

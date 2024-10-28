@@ -41,12 +41,6 @@ table 42000 "SL Account Staging"
         {
             Caption = 'Blocked';
         }
-        field(8; Balance; Decimal)
-        {
-            Caption = 'Balance';
-            ObsoleteReason = 'The balance amount is no longer populated on the account.';
-            ObsoleteState = Removed;
-        }
     }
 
     keys

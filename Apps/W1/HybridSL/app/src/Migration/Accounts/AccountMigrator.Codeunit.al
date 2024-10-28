@@ -16,7 +16,6 @@ codeunit 42000 "SL Account Migrator"
     var
         PostingGroupCodeTxt: Label 'SL', Locked = true;
         PostingGroupDescriptionTxt: Label 'Migrated from SL', Locked = true;
-
         GlDocNoLbl: Label 'G00001', Locked = true;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"GL Acc. Data Migration Facade", OnMigrateGlAccount, '', true, true)]
@@ -37,7 +36,6 @@ codeunit 42000 "SL Account Migrator"
         AccountNum: Code[20];
         AccountType: Option Posting;
     begin
-
         AccountNum := CopyStr(MigrationSLAccount.AcctNum, 1, 20);
 
         if not GLAccDataMigrationFacade.CreateGLAccountIfNeeded(AccountNum, CopyStr(MigrationSLAccount.Name, 1, 50), AccountType::Posting) then
@@ -55,15 +53,12 @@ codeunit 42000 "SL Account Migrator"
         MigrationSLAccount: Record "SL Account Staging";
         slCompanyAdditionalSettings: Record "SL Company Additional Settings";
     begin
-
         if RecordIdToMigrate.TableNo <> Database::"SL Account Staging" then
             exit;
         if not slCompanyAdditionalSettings.GetGLModuleEnabled() then
             exit;
-
         if slCompanyAdditionalSettings.GetMigrateOnlyGLMaster() then
             exit;
-
         MigrationSLAccount.Get(RecordIdToMigrate);
         GenerateGLTransactionBatches(MigrationSLAccount);
     end;
@@ -76,7 +71,6 @@ codeunit 42000 "SL Account Migrator"
     begin
         if RecordIdToMigrate.TableNo <> Database::"SL Account Staging" then
             exit;
-
         MigrationSLAccount.Get(RecordIdToMigrate);
         Sender.CreateGenBusinessPostingGroupIfNeeded(PostingGroupCodeTxt, PostingGroupDescriptionTxt);
         Sender.CreateGenProductPostingGroupIfNeeded(PostingGroupCodeTxt, PostingGroupDescriptionTxt);
@@ -128,7 +122,6 @@ codeunit 42000 "SL Account Migrator"
 
                 if MigrationSlAccountTrans.Balance = 0 then
                     exit;
-
                 if MigrationSlAccountTrans.CreditAmount > 0 then
                     MigrationSlAccountTrans.Balance := (-1 * MigrationSlAccountTrans.Balance);
 
@@ -147,8 +140,7 @@ codeunit 42000 "SL Account Migrator"
                     MigrationSlAccountTrans.Balance,
                     MigrationSlAccountTrans.Balance,
                     '',
-                    ''
-            );
+                    '');
                 DimSetID := CreateDimSet(MigrationSlAccountTrans);
                 GenJournalLine.Validate("Dimension Set ID", DimSetID);
                 GenJournalLine.Modify(true);
@@ -199,7 +191,6 @@ codeunit 42000 "SL Account Migrator"
         DimensionManagement: Codeunit DimensionManagement;
         NewDimSetID: Integer;
     begin
-
         SLSegments.SetCurrentKey(SLSegments.SegmentNumber);
         SLSegments.Ascending(true);
         if SLSegments.FindSet() then
