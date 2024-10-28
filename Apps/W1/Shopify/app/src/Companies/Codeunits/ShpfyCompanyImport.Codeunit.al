@@ -20,6 +20,8 @@ codeunit 30301 "Shpfy Company Import"
             exit;
         end;
 
+        CompanyApi.UpdateShopifyCompanyLocation(ShopifyCompany);
+
         Commit();
         if CompanyMapping.FindMapping(ShopifyCompany, TempShopifyCustomer) then begin
             if Shop."Shopify Can Update Companies" then begin

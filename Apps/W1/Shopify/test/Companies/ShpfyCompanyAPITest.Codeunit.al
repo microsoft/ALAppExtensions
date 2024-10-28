@@ -13,6 +13,7 @@ codeunit 139637 "Shpfy Company API Test"
     var
         ShopifyCompany: Record "Shpfy Company";
         CompanyLocation: Record "Shpfy Company Location";
+        ShopifyCustomer: Record "Shpfy Customer";
         CompanyAPI: Codeunit "Shpfy Company API";
         GraphQL: Text;
     begin
@@ -25,7 +26,7 @@ codeunit 139637 "Shpfy Company API Test"
         // [GIVEN] ShpfyCompanyLocation
 
         // [WHEN] Invoke CompanyAPI.CreateCompanyGraphQLQuery
-        GraphQL := CompanyAPI.CreateCompanyGraphQLQuery(ShopifyCompany, CompanyLocation);
+        GraphQL := CompanyAPI.CreateCompanyGraphQLQuery(ShopifyCompany, CompanyLocation, ShopifyCustomer);
 
         // [THEN] CompanyInitialize.CreateCompanyGraphQLResult() = GraphQL.
         LibraryAssert.AreEqual(CompanyInitialize.CreateCompanyGraphQLResult(), GraphQL, 'CreateCompanyGraphQuery');

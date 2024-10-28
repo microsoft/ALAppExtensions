@@ -356,11 +356,9 @@ codeunit 30286 "Shpfy Company API"
         end else
             Clear(ShopifyCompany.Note);
         ShopifyCompany.Modify();
-
-        UpdateShopifyCompanyLocation(ShopifyCompany);
     end;
 
-    local procedure UpdateShopifyCompanyLocation(var ShopifyCompany: Record "Shpfy Company")
+    internal procedure UpdateShopifyCompanyLocation(var ShopifyCompany: Record "Shpfy Company")
     var
         GraphQLType: Enum "Shpfy GraphQL Type";
         Parameters: Dictionary of [Text, Text];
