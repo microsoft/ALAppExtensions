@@ -71,7 +71,7 @@ page 30166 "Shpfy Skipped Records"
                 ApplicationArea = All;
                 Caption = 'Delete Entries Older Than 7 Days';
                 Image = ClearLog;
-                ToolTip = 'Clear the list of log entries that are older than 7 days.';
+                ToolTip = 'Clear the list of skipped records that are older than 7 days.';
 
                 trigger OnAction();
                 begin
@@ -83,7 +83,7 @@ page 30166 "Shpfy Skipped Records"
                 ApplicationArea = All;
                 Caption = 'Delete All Entries';
                 Image = Delete;
-                ToolTip = 'Clear the list of all log entries.';
+                ToolTip = 'Clear the list of all skipped records.';
 
                 trigger OnAction();
                 begin

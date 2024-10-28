@@ -17,7 +17,7 @@ codeunit 30362 "Shpfy Posted Invoice Export"
         DraftOrdersAPI: Codeunit "Shpfy Draft Orders API";
         FulfillmentAPI: Codeunit "Shpfy Fulfillment API";
         JsonHelper: Codeunit "Shpfy Json Helper";
-        SkipRecordMgt: Codeunit "Shpfy Skip Record";
+        SkippedRecord: Codeunit "Shpfy Skipped Record";
 
     trigger OnRun()
     begin
@@ -102,23 +102,23 @@ codeunit 30362 "Shpfy Posted Invoice Export"
         if ShopifyCompany.IsEmpty() then begin
             ShopifyCustomer.SetRange("Customer No.", SalesInvoiceHeader."Bill-to Customer No.");
             if ShopifyCustomer.IsEmpty() then begin
-                SkipRecordMgt.LogSkippedRecord(SalesInvoiceHeader.RecordId, CustomerNotExistInShopifyLbl, Shop);
+                SkippedRecord.LogSkippedRecord(SalesInvoiceHeader.RecordId, CustomerNotExistInShopifyLbl, Shop);
                 exit(false);
             end;
         end;
 
         if not ShopifyPaymentTermsExists(SalesInvoiceHeader."Payment Terms Code") then begin
-            SkipRecordMgt.LogSkippedRecord(SalesInvoiceHeader.RecordId, StrSubstNo(PaymentTermsNotExistLbl, SalesInvoiceHeader."Payment Terms Code"), Shop);
+            SkippedRecord.LogSkippedRecord(SalesInvoiceHeader.RecordId, StrSubstNo(PaymentTermsNotExistLbl, SalesInvoiceHeader."Payment Terms Code"), Shop);
             exit(false);
         end;
 
         if Shop."Default Customer No." = SalesInvoiceHeader."Bill-to Customer No." then begin
-            SkipRecordMgt.LogSkippedRecord(SalesInvoiceHeader.RecordId, CustomerNoIsDefaultCustomerNoLbl, Shop);
+            SkippedRecord.LogSkippedRecord(SalesInvoiceHeader.RecordId, CustomerNoIsDefaultCustomerNoLbl, Shop);
             exit(false);
         end;
 
         if CheckCustomerTemplates(SalesInvoiceHeader."Bill-to Customer No.") then begin
-            SkipRecordMgt.LogSkippedRecord(SalesInvoiceHeader.RecordId, StrSubstNo(CustomerTemplateExistsLbl, SalesInvoiceHeader."Bill-to Customer No.", Shop.Code), Shop);
+            SkippedRecord.LogSkippedRecord(SalesInvoiceHeader.RecordId, StrSubstNo(CustomerTemplateExistsLbl, SalesInvoiceHeader."Bill-to Customer No.", Shop.Code), Shop);
             exit(false);
         end;
 
@@ -165,7 +165,7 @@ codeunit 30362 "Shpfy Posted Invoice Export"
         SalesInvoiceLine.SetRange("Document No.", SalesInvoiceHeader."No.");
         SalesInvoiceLine.SetFilter(Type, '<>%1', SalesInvoiceLine.Type::" ");
         if SalesInvoiceLine.IsEmpty() then begin
-            SkipRecordMgt.LogSkippedRecord(SalesInvoiceHeader.RecordId, NoLinesInSalesInvoiceLbl, Shop);
+            SkippedRecord.LogSkippedRecord(SalesInvoiceHeader.RecordId, NoLinesInSalesInvoiceLbl, Shop);
             exit(false);
         end;
 
@@ -176,12 +176,12 @@ codeunit 30362 "Shpfy Posted Invoice Export"
         if SalesInvoiceLine.FindSet() then
             repeat
                 if (SalesInvoiceLine.Quantity <> 0) and (SalesInvoiceLine.Quantity <> Round(SalesInvoiceLine.Quantity, 1)) then begin
-                    SkipRecordMgt.LogSkippedRecord(SalesInvoiceLine.RecordId, InvalidQuantityLbl, Shop);
+                    SkippedRecord.LogSkippedRecord(SalesInvoiceLine.RecordId, InvalidQuantityLbl, Shop);
                     exit(false);
                 end;
 
                 if (SalesInvoiceLine.Type <> SalesInvoiceLine.Type::" ") and (SalesInvoiceLine."No." = '') then begin
-                    SkipRecordMgt.LogSkippedRecord(SalesInvoiceLine.RecordId, EmptyNoInLineLbl, Shop);
+                    SkippedRecord.LogSkippedRecord(SalesInvoiceLine.RecordId, EmptyNoInLineLbl, Shop);
                     exit(false);
                 end;
             until SalesInvoiceLine.Next() = 0;

@@ -3,7 +3,7 @@ namespace Microsoft.Integration.Shopify;
 /// <summary>
 /// Codeunit Shpfy Skip Record (ID 30313).
 /// </summary>
-codeunit 30313 "Shpfy Skip Record"
+codeunit 30313 "Shpfy Skipped Record"
 {
     Access = Internal;
     Permissions = tabledata "Shpfy Skipped Record" = rimd;
@@ -18,16 +18,16 @@ codeunit 30313 "Shpfy Skip Record"
     /// <param name="Shop">Shop record.</param>
     internal procedure LogSkippedRecord(ShopifyId: BigInteger; RecordId: RecordID; SkippedReason: Text[250]; Shop: Record "Shpfy Shop")
     var
-        ShpfySkippedRecord: Record "Shpfy Skipped Record";
+        SkippedRecord: Record "Shpfy Skipped Record";
     begin
         if Shop."Logging Mode" = Enum::"Shpfy Logging Mode"::Disabled then
             exit;
-        ShpfySkippedRecord.Init();
-        ShpfySkippedRecord.Validate("Shopify Id", ShopifyId);
-        ShpfySkippedRecord.Validate("Table ID", RecordId.TableNo());
-        ShpfySkippedRecord.Validate("Record ID", RecordId);
-        ShpfySkippedRecord.Validate("Skipped Reason", SkippedReason);
-        ShpfySkippedRecord.Insert(true);
+        SkippedRecord.Init();
+        SkippedRecord.Validate("Shopify Id", ShopifyId);
+        SkippedRecord.Validate("Table ID", RecordId.TableNo());
+        SkippedRecord.Validate("Record ID", RecordId);
+        SkippedRecord.Validate("Skipped Reason", SkippedReason);
+        SkippedRecord.Insert(true);
     end;
 
     /// <summary>

@@ -40,12 +40,12 @@ codeunit 30190 "Shpfy Export Shipments"
         ShopifyOrderHeader: Record "Shpfy Order Header";
         OrderFulfillments: Codeunit "Shpfy Order Fulfillments";
         JsonHelper: Codeunit "Shpfy Json Helper";
-        SkipRecordMgt: Codeunit "Shpfy Skip Record";
+        SkippedRecord: Codeunit "Shpfy Skipped Record";
         JFulfillment: JsonToken;
         JResponse: JsonToken;
         FulfillmentOrderRequest: Text;
-        NoCorespondingFulfilmentLinesLbl: Label 'No corresponding fulfillment lines found.';
-        NoFullfilmentCreatedInShopifyLbl: Label 'Fullfilment was not created in Shopify.';
+        NoCorrespondingFulfillmentLinesLbl: Label 'No corresponding fulfillment lines found.';
+        NoFulfillmentCreatedInShopifyLbl: Label 'Fulfillment was not created in Shopify.';
     begin
         if ShopifyOrderHeader.Get(SalesShipmentHeader."Shpfy Order Id") then begin
             ShopifyCommunicationMgt.SetShop(ShopifyOrderHeader."Shop Code");
@@ -57,11 +57,11 @@ codeunit 30190 "Shpfy Export Shipments"
                 if (JFulfillment.IsObject) then
                     SalesShipmentHeader."Shpfy Fulfillment Id" := OrderFulfillments.ImportFulfillment(SalesShipmentHeader."Shpfy Order Id", JFulfillment)
                 else begin
-                    SkipRecordMgt.LogSkippedRecord(SalesShipmentHeader."Shpfy Order Id", SalesShipmentHeader.RecordId, NoFullfilmentCreatedInShopifyLbl, Shop);
+                    SkippedRecord.LogSkippedRecord(SalesShipmentHeader."Shpfy Order Id", SalesShipmentHeader.RecordId, NoFulfillmentCreatedInShopifyLbl, Shop);
                     SalesShipmentHeader."Shpfy Fulfillment Id" := -1;
                 end;
             end else begin
-                SkipRecordMgt.LogSkippedRecord(SalesShipmentHeader."Shpfy Order Id", SalesShipmentHeader.RecordId, NoCorespondingFulfilmentLinesLbl, Shop);
+                SkippedRecord.LogSkippedRecord(SalesShipmentHeader."Shpfy Order Id", SalesShipmentHeader.RecordId, NoCorrespondingFulfillmentLinesLbl, Shop);
                 SalesShipmentHeader."Shpfy Fulfillment Id" := -1;
             end;
             SalesShipmentHeader.Modify(true);

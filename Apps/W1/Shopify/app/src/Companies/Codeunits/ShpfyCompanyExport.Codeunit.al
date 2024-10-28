@@ -1,6 +1,5 @@
 namespace Microsoft.Integration.Shopify;
 
-using Microsoft.Integration.Shopify;
 using Microsoft.Sales.Customer;
 using Microsoft.Foundation.Company;
 using Microsoft.Foundation.Address;
@@ -37,7 +36,7 @@ codeunit 30284 "Shpfy Company Export"
         Shop: Record "Shpfy Shop";
         CompanyAPI: Codeunit "Shpfy Company API";
         CatalogAPI: Codeunit "Shpfy Catalog API";
-        ShpfySkipRecord: Codeunit "Shpfy Skip Record";
+        SkippedRecord: Codeunit "Shpfy Skipped Record";
         CreateCustomers: Boolean;
         CountyCodeTooLongLbl: Label 'Can not export customer %1 %2. The length of the string is %3, but it must be less than or equal to %4 characters. Value: %5, field: %6', Comment = '%1 - Customer No., %2 - Customer Name, %3 - Length, %4 - Max Length, %5 - Value, %6 - Field Name';
 
@@ -49,7 +48,7 @@ codeunit 30284 "Shpfy Company Export"
         EmptyEmailAddressLbl: Label 'Customer (Company) has no e-mail address.';
     begin
         if Customer."E-Mail" = '' then begin
-            ShpfySkipRecord.LogSkippedRecord(Customer.RecordId, 'Customer does not have an email address.', Shop);
+            SkippedRecord.LogSkippedRecord(Customer.RecordId, EmptyEmailAddressLbl, Shop);
             exit;
         end;
 
@@ -189,7 +188,7 @@ codeunit 30284 "Shpfy Company Export"
     begin
         ShopifyCompany.Get(CompanyId);
         if ShopifyCompany."Customer SystemId" <> Customer.SystemId then begin
-            ShpfySkipRecord.LogSkippedRecord(ShopifyCompany.Id, Customer.RecordId, CompanyWithPhoneNoOrEmailExistsLbl, Shop);
+            SkippedRecord.LogSkippedRecord(ShopifyCompany.Id, Customer.RecordId, CompanyWithPhoneNoOrEmailExistsLbl, Shop);
             exit;
         end;
 

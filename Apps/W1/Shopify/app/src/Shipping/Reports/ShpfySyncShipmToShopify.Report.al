@@ -31,7 +31,7 @@ report 30109 "Shpfy Sync Shipm. to Shopify"
                 ShopifyOrderHeader: Record "Shpfy Order Header";
                 ShipmentLine: Record "Sales Shipment Line";
                 Shop: Record "Shpfy Shop";
-                SkipRecordMgt: Codeunit "Shpfy Skip Record";
+                SkippedRecord: Codeunit "Shpfy Skipped Record";
                 NoLinesApplicableLbl: Label 'No lines applicable for fulfillment.';
                 ShopifyOrderNotExistsLbl: Label 'Shopify order %1 does not exist.', Comment = '%1 = Shopify Order Id';
             begin
@@ -39,7 +39,7 @@ report 30109 "Shpfy Sync Shipm. to Shopify"
                 ShipmentLine.SetRange(Type, ShipmentLine.Type::"Item");
                 ShipmentLine.SetFilter(Quantity, '>0');
                 if ShipmentLine.IsEmpty() then begin
-                    SkipRecordMgt.LogSkippedRecord("Sales Shipment Header"."Shpfy Order Id", "Sales Shipment Header".RecordId, NoLinesApplicableLbl, Shop);
+                    SkippedRecord.LogSkippedRecord("Sales Shipment Header"."Shpfy Order Id", "Sales Shipment Header".RecordId, NoLinesApplicableLbl, Shop);
                     "Shpfy Fulfillment Id" := -2;
                     Modify();
                 end else
@@ -48,7 +48,7 @@ report 30109 "Shpfy Sync Shipm. to Shopify"
                         FulfillmentOrdersAPI.GetShopifyFulfillmentOrdersFromShopifyOrder(Shop, "Sales Shipment Header"."Shpfy Order Id");
                         ExportShipments.CreateShopifyFulfillment("Sales Shipment Header");
                     end else
-                        SkipRecordMgt.LogSkippedRecord("Sales Shipment Header"."Shpfy Order Id", "Sales Shipment Header".RecordId, StrSubstNo(ShopifyOrderNotExistsLbl, "Sales Shipment Header"."Shpfy Order Id"), Shop);
+                        SkippedRecord.LogSkippedRecord("Sales Shipment Header"."Shpfy Order Id", "Sales Shipment Header".RecordId, StrSubstNo(ShopifyOrderNotExistsLbl, "Sales Shipment Header"."Shpfy Order Id"), Shop);
             end;
         }
     }
