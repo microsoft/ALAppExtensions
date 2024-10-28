@@ -62,11 +62,14 @@ codeunit 30325 "Shpfy Mtfld Type Volume" implements "Shpfy IMetafield Type"
 
     local procedure GetVolumeTypeName(VolumeType: Enum "Shpfy Metafield Volume Type"): Text
     begin
-        exit(VolumeType.Names().Get(VolumeType.Ordinals().IndexOf(VolumeType.AsInteger())));
+        exit(VolumeType.Names.Get(VolumeType.Ordinals().IndexOf(VolumeType.AsInteger())).Trim().ToUpper().Replace(' ', '_'));
     end;
 
     local procedure ConvertToVolumeType(Value: Text) Type: Enum "Shpfy Metafield Volume Type"
+    var
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
     begin
+        Value := CommunicationMgt.ConvertToCleanOptionValue(Value);
         exit(Enum::"Shpfy Metafield Volume Type".FromInteger(Type.Ordinals().Get(Type.Names().IndexOf(Value))));
     end;
 }

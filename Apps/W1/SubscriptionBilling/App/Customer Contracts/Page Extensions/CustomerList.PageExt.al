@@ -6,7 +6,7 @@ pageextension 8052 "Customer List" extends "Customer List"
 {
     actions
     {
-        addafter(NewSalesCrMemo)
+        addlast(creation)
         {
             action(NewContract)
             {

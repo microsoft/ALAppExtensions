@@ -6,7 +6,7 @@ pageextension 8072 "Purch Cr. Memo Subform" extends "Purch. Cr. Memo Subform"
 {
     actions
     {
-        addlast(Processing)
+        addlast("&Line")
         {
             action(ShowBillingLines)
             {

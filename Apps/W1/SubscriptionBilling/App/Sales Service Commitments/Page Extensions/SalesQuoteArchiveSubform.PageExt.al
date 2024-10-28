@@ -17,7 +17,7 @@ pageextension 8078 "Sales Quote Archive Subform" extends "Sales Quote Archive Su
     }
     actions
     {
-        addfirst(processing)
+        addlast("&Line")
         {
             action(ShowSalesServiceCommitmentArchive)
             {

@@ -62,11 +62,14 @@ codeunit 30326 "Shpfy Mtfld Type Weight" implements "Shpfy IMetafield Type"
 
     local procedure GetWeightTypeName(WeightType: Enum "Shpfy Metafield Weight Type"): Text
     begin
-        exit(WeightType.Names().Get(WeightType.Ordinals().IndexOf(WeightType.AsInteger())));
+        exit(WeightType.Names.Get(WeightType.Ordinals().IndexOf(WeightType.AsInteger())).Trim().ToUpper().Replace(' ', '_'));
     end;
 
     local procedure ConvertToWeightType(Value: Text) Type: Enum "Shpfy Metafield Weight Type"
+    var
+        CommunicationMgt: Codeunit "Shpfy Communication Mgt.";
     begin
+        Value := CommunicationMgt.ConvertToCleanOptionValue(Value);
         exit(Enum::"Shpfy Metafield Weight Type".FromInteger(Type.Ordinals().Get(Type.Names().IndexOf(Value))));
     end;
 }
