@@ -8,22 +8,29 @@ using System.Telemetry;
 using System.Threading;
 using Microsoft.EServices.EDocument;
 
-codeunit 6384 GetReadyStatus
+codeunit 6384 GetReadyStatusJob
 {
     TableNo = "Job Queue Entry";
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
+
+    var
+        EDocTelemetryGetResponseScopeStartLbl: Label 'E-Document Get Response: Start Scope', Locked = true;
+        EDocTelemetryGetResponseScopeEndLbl: Label 'E-Document Get Response: End Scope', Locked = true;
 
     trigger OnRun()
     var
+        JobHelperImpl: Codeunit JobHelperImpl;
         BlankRecordId: RecordId;
     begin
-        if not IsEDocumentStatusSent() then
+        if not this.IsEDocumentStatusSent() then
             exit;
 
-        ProcessSentDocuments();
+        this.ProcessSentDocuments();
 
-        if IsEDocumentStatusSent() then
-            ScheduleEDocumentJob(Codeunit::GetReadyStatus, BlankRecordId, 300000);
+        if this.IsEDocumentStatusSent() then
+            JobHelperImpl.ScheduleEDocumentJob(Codeunit::GetReadyStatusJob, BlankRecordId, 300000);
     end;
 
     local procedure ProcessSentDocuments()
@@ -31,52 +38,46 @@ codeunit 6384 GetReadyStatus
         EDocumentServiceStatus: Record "E-Document Service Status";
         EDocumentService: Record "E-Document Service";
         EDocument: Record "E-Document";
+        JobHelperImpl: Codeunit JobHelperImpl;
     begin
+        EDocumentServiceStatus.SetLoadFields("E-Document Service Code", "E-Document Entry No");
         EDocumentServiceStatus.SetRange(Status, EDocumentServiceStatus.Status::Sent);
         if EDocumentServiceStatus.FindSet() then
             repeat
-                FetchEDocumentAndService(EDocument, EDocumentService, EDocumentServiceStatus);
-                HandleResponse(EDocument, EDocumentService, EDocumentServiceStatus);
-                FetchEDocumentAndService(EDocument, EDocumentService, EDocumentServiceStatus);
+                JobHelperImpl.FetchEDocumentAndService(EDocument, EDocumentService, EDocumentServiceStatus);
+                this.HandleResponse(EDocument, EDocumentService);
             until EDocumentServiceStatus.Next() = 0;
     end;
 
-    local procedure FetchEDocumentAndService(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var EDocumentServiceStatus: Record "E-Document Service Status")
-    begin
-        EDocumentService.Get(EDocumentServiceStatus."E-Document Service Code");
-        EDocument.Get(EDocumentServiceStatus."E-Document Entry No");
-    end;
-
-    local procedure HandleResponse(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var EDocumentServiceStatus: Record "E-Document Service Status")
+    local procedure HandleResponse(var EDocument: Record "E-Document"; EDocumentService: Record "E-Document Service")
     var
         Processing: Codeunit Processing;
+        JobHelperImpl: Codeunit JobHelperImpl;
         BlankRecordId: RecordId;
-        HttpResponse: HttpResponseMessage;
-        HttpRequest: HttpRequestMessage;
+        HttpResponseMessage: HttpResponseMessage;
+        HttpRequestMessage: HttpRequestMessage;
     begin
-        if GetResponse(EDocumentServiceStatus, HttpRequest, HttpResponse) then begin
-            Processing.InsertLogWithIntegration(EDocument, EDocumentService, Enum::"E-Document Service Status"::Approved, 0, HttpRequest, HttpResponse);
-            ScheduleEDocumentJob(Codeunit::PatchSent, BlankRecordId, 300000);
+        if this.GetResponse(EDocument, HttpRequestMessage, HttpResponseMessage) then begin
+            Processing.InsertLogWithIntegration(EDocument, EDocumentService, Enum::"E-Document Service Status"::Approved, 0, HttpRequestMessage, HttpResponseMessage);
+            JobHelperImpl.ScheduleEDocumentJob(Codeunit::PatchSentJob, BlankRecordId, 300000);
         end;
-
     end;
 
-    local procedure GetResponse(var EDocumentServiceStatus: Record "E-Document Service Status"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage) ReturnStatus: Boolean
+    local procedure GetResponse(var EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage) ReturnStatus: Boolean
     var
-        EDocument: Record "E-Document";
         Processing: Codeunit Processing;
+        Telemetry: Codeunit Telemetry;
         TelemetryDimensions: Dictionary of [Text, Text];
     begin
         // Commit before create document with error handling
         Commit();
-        Telemetry.LogMessage('', EDocTelemetryGetResponseScopeStartLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
 
-        EDocument.Get(EDocumentServiceStatus."E-Document Entry No");
+        Telemetry.LogMessage('', this.EDocTelemetryGetResponseScopeStartLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
 
-        if Processing.GetDocumentSentResponse(EDocument, HttpRequest, HttpResponse) then
+        if Processing.GetDocumentSentResponse(EDocument, HttpRequestMessage, HttpResponseMessage) then
             ReturnStatus := true;
 
-        Telemetry.LogMessage('', EDocTelemetryGetResponseScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
+        Telemetry.LogMessage('', this.EDocTelemetryGetResponseScopeEndLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All);
     end;
 
     local procedure IsEDocumentStatusSent(): Boolean
@@ -86,49 +87,4 @@ codeunit 6384 GetReadyStatus
         EdocumentServiceStatus.SetRange(Status, EdocumentServiceStatus.Status::Sent);
         exit(not EdocumentServiceStatus.IsEmpty());
     end;
-
-    procedure ScheduleEDocumentJob(CodeunitId: Integer; JobRecordId: RecordId; EarliestStartDateTime: Integer): Guid
-    var
-        JobQueueEntry: Record "Job Queue Entry";
-        TelemetryDimensions: Dictionary of [Text, Text];
-    begin
-        if IsJobQueueScheduled(CodeunitId) then
-            exit;
-
-        JobQueueEntry.Init();
-        JobQueueEntry."Object Type to Run" := JobQueueEntry."Object Type to Run"::Codeunit;
-        JobQueueEntry."Object ID to Run" := CodeunitId;
-        JobQueueEntry."Record ID to Process" := JobRecordId;
-        JobQueueEntry."User Session ID" := SessionId();
-        JobQueueEntry."Job Queue Category Code" := JobQueueCategoryTok;
-        JobQueueEntry."No. of Attempts to Run" := 0;
-        JobQueueEntry."Earliest Start Date/Time" := CurrentDateTime + EarliestStartDateTime;
-
-        TelemetryDimensions.Add('Job Queue Id', JobQueueEntry.ID);
-        TelemetryDimensions.Add('Codeunit Id', Format(CodeunitId));
-        TelemetryDimensions.Add('Record Id', Format(JobRecordId));
-        TelemetryDimensions.Add('User Session ID', Format(JobQueueEntry."User Session ID"));
-        TelemetryDimensions.Add('Earliest Start Date/Time', Format(JobQueueEntry."Earliest Start Date/Time"));
-        Telemetry.LogMessage('', EDocumentJobTelemetryLbl, Verbosity::Normal, DataClassification::OrganizationIdentifiableInformation, TelemetryScope::All, TelemetryDimensions);
-        Codeunit.Run(Codeunit::"Job Queue - Enqueue", JobQueueEntry);
-        exit(JobQueueEntry.ID);
-    end;
-
-    local procedure IsJobQueueScheduled(CodeunitId: Integer): Boolean
-    var
-        JobQueueEntry: Record "Job Queue Entry";
-    begin
-        JobQueueEntry.SetRange("Object Type to Run", JobQueueEntry."Object Type to Run"::Codeunit);
-        JobQueueEntry.SetRange("Object ID to Run", CodeunitId);
-        JobQueueEntry.SetFilter(Status, '%1|%2', JobQueueEntry.Status::Ready, JobQueueEntry.Status::"In Process");
-        if not JobQueueEntry.IsEmpty() then
-            exit(true);
-    end;
-
-    var
-        Telemetry: Codeunit Telemetry;
-        EDocTelemetryGetResponseScopeStartLbl: Label 'E-Document Get Response: Start Scope', Locked = true;
-        EDocTelemetryGetResponseScopeEndLbl: Label 'E-Document Get Response: End Scope', Locked = true;
-        JobQueueCategoryTok: Label 'EDocument', Locked = true, Comment = 'Max Length 10';
-        EDocumentJobTelemetryLbl: Label 'E-Document Background Job Scheduled', Locked = true;
 }

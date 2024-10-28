@@ -9,6 +9,7 @@ using System.Environment;
 
 page 6380 ConnectionSetupCard
 {
+    AdditionalSearchTerms = 'SignUp,electronic document,e-invoice,e-document,external,connection,connector';
     PageType = Card;
     SourceTable = ConnectionSetup;
     ApplicationArea = Basic, Suite;
@@ -16,125 +17,122 @@ page 6380 ConnectionSetupCard
     Caption = 'E-Document External Connection Setup';
     Extensible = false;
 
+
     layout
     {
         area(Content)
         {
             group(General)
             {
-                field(ClientID; ClientID)
+                field(ClientID; this.ClientID)
                 {
                     Caption = 'Client ID';
                     ToolTip = 'Specifies the client ID token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = not IsSaaSInfrastructure;
+                    Visible = not this.IsSaaSInfrastructure;
                     ShowMandatory = true;
 
                     trigger OnValidate()
                     begin
-                        Auth.StorageSet(Rec."Client ID", ClientID);
+                        this.Authentication.StorageSet(Rec."Client ID", this.ClientID);
                     end;
                 }
-                field(ClientSecret; ClientSecret)
+                field(ClientSecret; this.ClientSecret)
                 {
                     Caption = 'Client Secret';
                     ToolTip = 'Specifies the client secret token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = not IsSaaSInfrastructure;
+                    Visible = not this.IsSaaSInfrastructure;
                     ShowMandatory = true;
 
                     trigger OnValidate()
                     begin
-                        Auth.StorageSet(Rec."Client Secret", ClientSecret);
+                        this.SaveSecret(Rec."Client Secret", this.ClientSecret)
                     end;
                 }
-                field(ClientTenant; ClientTenant)
+                field(ClientTenant; this.ClientTenant)
                 {
                     Caption = 'Client Tenant ID';
                     ToolTip = 'Specifies the client tenant id token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = not IsSaaSInfrastructure;
+                    Visible = not this.IsSaaSInfrastructure;
 
                     trigger OnValidate()
                     begin
-                        Auth.StorageSet(Rec."Client Tenant", ClientTenant);
+                        this.Authentication.StorageSet(Rec."Client Tenant", this.ClientTenant);
                     end;
                 }
-                field(RootID; RootID)
+                field(RootID; this.RootID)
                 {
                     Caption = 'Root App ID';
                     ToolTip = 'Specifies the root app id token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = not IsSaaSInfrastructure;
+                    Visible = not this.IsSaaSInfrastructure;
 
                     trigger OnValidate()
                     begin
-                        Auth.StorageSet(Rec."Root App ID", RootID);
+                        this.Authentication.StorageSet(Rec."Root App ID", this.RootID);
                     end;
                 }
-                field(RootSecret; RootSecret)
+                field(RootSecret; this.RootSecret)
                 {
                     Caption = 'Root Secret';
                     ToolTip = 'Specifies the root secret token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = not IsSaaSInfrastructure;
+                    Visible = not this.IsSaaSInfrastructure;
 
                     trigger OnValidate()
                     begin
-                        Auth.StorageSet(Rec."Root Secret", RootSecret);
+                        this.SaveSecret(Rec."Root Secret", this.RootSecret)
                     end;
                 }
-                field(RootTenant; RootTenant)
+                field(RootTenant; this.RootTenant)
                 {
                     Caption = 'Root Tenant ID';
                     ToolTip = 'Specifies the root tenant id token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = not IsSaaSInfrastructure;
+                    Visible = not this.IsSaaSInfrastructure;
 
                     trigger OnValidate()
                     begin
-                        Auth.StorageSet(Rec."Root Tenant", RootTenant);
+                        this.Authentication.StorageSet(Rec."Root Tenant", this.RootTenant);
                     end;
                 }
-                field(RootUrl; RootUrl)
+                field(RootUrl; this.RootUrl)
                 {
                     Caption = 'Root Url';
                     ToolTip = 'Specifies the root url token.';
                     ApplicationArea = Basic, Suite;
                     ExtendedDatatype = Masked;
-                    Visible = not IsSaaSInfrastructure;
+                    Visible = not this.IsSaaSInfrastructure;
 
                     trigger OnValidate()
                     begin
-                        Auth.StorageSet(Rec."Root Market URL", RootUrl);
+                        this.Authentication.StorageSet(Rec."Root Market URL", this.RootUrl);
                     end;
                 }
                 field("Authentication URL"; Rec."Authentication URL")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the URL to connect Microsoft Entra.';
                 }
                 field(ServiceURL; Rec.ServiceURL)
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the service URL.';
                 }
                 field("Company Id"; Rec."Company Id")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the company ID.';
                     ShowMandatory = true;
                 }
-                field("Send Mode"; Rec."Send Mode")
+                field("Environment Type"; Rec."Environment Type")
                 {
                     ApplicationArea = Basic, Suite;
-                    ToolTip = 'Specifies the send mode.';
                     ShowMandatory = true;
                 }
             }
@@ -153,16 +151,16 @@ page 6380 ConnectionSetupCard
                 Promoted = true;
                 PromotedCategory = Process;
                 PromotedOnly = true;
-                Visible = IsSaaSInfrastructure;
+                Visible = this.IsSaaSInfrastructure;
                 ToolTip = 'Create client credentials and open the onboarding process in a web browser.';
 
                 trigger OnAction()
                 begin
-                    Auth.CreateClientCredentials();
+                    this.Authentication.CreateClientCredentials();
                     CurrPage.Update();
-                    SetPageVariables();
-                    Hyperlink(Auth.GetRootOnboardingUrl());
-                    FeatureTelemetry.LogUptake('', ExternalServiceTok, Enum::"Feature Uptake Status"::"Set up");
+                    this.SetPageVariables();
+                    Hyperlink(this.Authentication.GetRootOnboardingUrl());
+                    this.FeatureTelemetry.LogUptake('', this.ExternalServiceTok, Enum::"Feature Uptake Status"::"Set up");
                 end;
             }
         }
@@ -170,39 +168,46 @@ page 6380 ConnectionSetupCard
 
     trigger OnOpenPage()
     var
-        EnvironmentInfo: Codeunit "Environment Information";
+        EnvironmentInformation: Codeunit "Environment Information";
     begin
-        IsSaaSInfrastructure := EnvironmentInfo.IsSaaSInfrastructure();
-        Auth.InitConnectionSetup();
+        this.IsSaaSInfrastructure := EnvironmentInformation.IsSaaSInfrastructure();
+        this.Authentication.InitConnectionSetup();
         if Rec.Get() then
             ;
-        SetPageVariables();
-        FeatureTelemetry.LogUptake('', ExternalServiceTok, Enum::"Feature Uptake Status"::Discovered);
+        this.SetPageVariables();
+        this.FeatureTelemetry.LogUptake('', this.ExternalServiceTok, Enum::"Feature Uptake Status"::Discovered);
     end;
 
     local procedure SetPageVariables()
     begin
         if not IsNullGuid(Rec."Client ID") then
-            ClientID := '*';
+            this.ClientID := this.MaskTxt;
         if not IsNullGuid(Rec."Client Secret") then
-            ClientSecret := '*';
+            this.ClientSecret := this.MaskTxt;
         if not IsNullGuid(Rec."Client Tenant") then
-            ClientTenant := '*';
+            this.ClientTenant := this.MaskTxt;
         if not IsNullGuid(Rec."Root App ID") then
-            RootID := '*';
+            this.RootID := this.MaskTxt;
         if not IsNullGuid(Rec."Root Secret") then
-            RootSecret := '*';
+            this.RootSecret := this.MaskTxt;
         if not IsNullGuid(Rec."Root Tenant") then
-            RootTenant := '*';
+            this.RootTenant := this.MaskTxt;
         if not IsNullGuid(Rec."Root Market URL") then
-            RootUrl := '*';
+            this.RootUrl := this.MaskTxt;
+    end;
+
+        [NonDebuggable]
+    local procedure SaveSecret(var TokenKey: Guid; Value: SecretText)
+    begin
+        this.Authentication.StorageSet(TokenKey, Value);
     end;
 
     var
-        Auth: Codeunit Auth;
+        Authentication: Codeunit Authentication;
         FeatureTelemetry: Codeunit "Feature Telemetry";
         [NonDebuggable]
         ClientID, ClientSecret, ClientTenant, ClientUrl, RootID, RootSecret, RootTenant, RootUrl : Text;
         IsSaaSInfrastructure: Boolean;
         ExternalServiceTok: Label 'E-Document - SignUp', Locked = true;
+        MaskTxt: Label '*', Locked = true;
 }

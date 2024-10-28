@@ -6,24 +6,27 @@ namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using System.Threading;
 using Microsoft.EServices.EDocument;
+using System.Security.Authentication;
 
-codeunit 6387 PatchSent
+codeunit 6387 PatchSentJob
 {
     TableNo = "Job Queue Entry";
     Access = Internal;
+    InherentEntitlements = X;
+    InherentPermissions = X;
 
     trigger OnRun()
     var
-        GetReadyStatus: Codeunit GetReadyStatus;
+        JobHelperImpl: Codeunit JobHelperImpl;
         BlankRecordId: RecordId;
     begin
-        if not IsEDocumentApproved() then
+        if not this.IsEDocumentApproved() then
             exit;
 
-        ProcessApprovedDocuments();
+        this.ProcessApprovedDocuments();
 
-        if IsEDocumentApproved() then
-            GetReadyStatus.ScheduleEDocumentJob(Codeunit::PatchSent, BlankRecordId, 300000);
+        if this.IsEDocumentApproved() then
+            JobHelperImpl.ScheduleEDocumentJob(Codeunit::PatchSentJob, BlankRecordId, 300000);
     end;
 
     local procedure ProcessApprovedDocuments()
@@ -34,28 +37,24 @@ codeunit 6387 PatchSent
         EDocument: Record "E-Document";
         APIRequests: Codeunit APIRequests;
         Processing: Codeunit Processing;
-        HttpResponse: HttpResponseMessage;
-        HttpRequest: HttpRequestMessage;
+        JobHelperImpl: Codeunit JobHelperImpl;
+        HttpResponseMessage: HttpResponseMessage;
+        HttpRequestMessage: HttpRequestMessage;
     begin
+        EDocumentServiceStatus.SetLoadFields("E-Document Service Code", "E-Document Entry No");
         EDocumentServiceStatus.SetRange(Status, EDocumentServiceStatus.Status::Approved);
         if EDocumentServiceStatus.FindSet() then
             repeat
-                FetchEDocumentAndService(EDocument, EDocumentService, EDocumentServiceStatus);
+                JobHelperImpl.FetchEDocumentAndService(EDocument, EDocumentService, EDocumentServiceStatus);
 
                 EDocumentIntegrationLog.Reset();
                 EDocumentIntegrationLog.SetRange("E-Doc. Entry No", EDocument."Entry No");
                 EDocumentIntegrationLog.SetRange("Response Status", 204);
-                EDocumentIntegrationLog.SetRange(Method, 'PATCH');
-                if EDocumentIntegrationLog.IsEmpty then
-                    if APIRequests.PatchADocument(EDocument, HttpRequest, HttpResponse) then
-                        Processing.InsertIntegrationLog(EDocument, EDocumentService, HttpRequest, HttpResponse);
+                EDocumentIntegrationLog.SetRange(Method, Format("Http Request Type"::PATCH));
+                if EDocumentIntegrationLog.IsEmpty() then
+                    if APIRequests.PatchDocument(EDocument, HttpRequestMessage, HttpResponseMessage) then
+                        Processing.InsertIntegrationLog(EDocument, EDocumentService, HttpRequestMessage, HttpResponseMessage);
             until EDocumentServiceStatus.Next() = 0;
-    end;
-
-    local procedure FetchEDocumentAndService(var EDocument: Record "E-Document"; var EDocumentService: Record "E-Document Service"; var EDocumentServiceStatus: Record "E-Document Service Status")
-    begin
-        EDocumentService.Get(EDocumentServiceStatus."E-Document Service Code");
-        EDocument.Get(EDocumentServiceStatus."E-Document Entry No");
     end;
 
     local procedure IsEDocumentApproved(): Boolean
@@ -64,16 +63,15 @@ codeunit 6387 PatchSent
         EDocumentIntegrationLog: Record "E-Document Integration Log";
         HasRecords: Boolean;
     begin
+        EdocumentServiceStatus.SetLoadFields("E-Document Entry No");
         EdocumentServiceStatus.SetRange(Status, EdocumentServiceStatus.Status::Approved);
         if EdocumentServiceStatus.FindSet() then
             repeat
                 EDocumentIntegrationLog.Reset();
                 EDocumentIntegrationLog.SetRange("E-Doc. Entry No", EdocumentServiceStatus."E-Document Entry No");
                 EDocumentIntegrationLog.SetRange("Response Status", 204);
-                EDocumentIntegrationLog.SetRange(Method, 'PATCH');
-                if EDocumentIntegrationLog.IsEmpty then
-                    HasRecords := true;
-
+                EDocumentIntegrationLog.SetRange(Method, Format("Http Request Type"::PATCH));
+                HasRecords := EDocumentIntegrationLog.IsEmpty();
             until (EdocumentServiceStatus.Next() = 0) or (HasRecords);
 
         exit(HasRecords);

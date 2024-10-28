@@ -11,41 +11,46 @@ codeunit 6386 IntegrationImpl implements "E-Document Integration"
 {
     Access = Internal;
 
-    procedure Send(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
+    var
+        Processing: Codeunit Processing;
+        BatchSendNotSupportedErr: Label 'Batch sending is not supported in this version';
+        CancelNotSupportedErr: Label 'Cancel is not supported in this version';
+
+    procedure Send(var EDocument: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
     var
     begin
-        Processing.SendEDocument(EDocument, TempBlob, IsAsync, HttpRequest, HttpResponse);
+        this.Processing.SendEDocument(EDocument, TempBlob, IsAsync, HttpRequestMessage, HttpResponseMessage);
     end;
 
-    procedure SendBatch(var EDocuments: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
+    procedure SendBatch(var EDocuments: Record "E-Document"; var TempBlob: Codeunit "Temp Blob"; var IsAsync: Boolean; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
     begin
         IsAsync := false;
-        Error(BatchSendNotSupportedErr);
+        Error(this.BatchSendNotSupportedErr);
     end;
 
-    procedure GetResponse(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
+    procedure GetResponse(var EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     begin
-        exit(Processing.GetDocumentResponse(EDocument, HttpRequest, HttpResponse));
+        exit(this.Processing.GetDocumentResponse(EDocument, HttpRequestMessage, HttpResponseMessage));
     end;
 
-    procedure GetApproval(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
+    procedure GetApproval(var EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     begin
-        exit(Processing.GetDocumentApproval(EDocument, HttpRequest, HttpResponse));
+        exit(this.Processing.GetDocumentApproval(EDocument, HttpRequestMessage, HttpResponseMessage));
     end;
 
-    procedure Cancel(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
+    procedure Cancel(var EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     begin
-        Error(CancelNotSupportedErr);
+        Error(this.CancelNotSupportedErr);
     end;
 
-    procedure ReceiveDocument(var TempBlob: Codeunit "Temp Blob"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage)
+    procedure ReceiveDocument(var TempBlob: Codeunit "Temp Blob"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
     begin
-        Processing.ReceiveDocument(TempBlob, HttpRequest, HttpResponse);
+        this.Processing.ReceiveDocument(TempBlob, HttpRequestMessage, HttpResponseMessage);
     end;
 
     procedure GetDocumentCountInBatch(var TempBlob: Codeunit "Temp Blob"): Integer
     begin
-        exit(Processing.GetDocumentCountInBatch(TempBlob));
+        exit(this.Processing.GetDocumentCountInBatch(TempBlob));
     end;
 
     procedure GetIntegrationSetup(var SetupPage: Integer; var SetupTable: Integer)
@@ -53,9 +58,4 @@ codeunit 6386 IntegrationImpl implements "E-Document Integration"
         SetupPage := Page::ConnectionSetupCard;
         SetupTable := Database::ConnectionSetup;
     end;
-
-    var
-        Processing: Codeunit Processing;
-        BatchSendNotSupportedErr: Label 'Batch sending is not supported in this version';
-        CancelNotSupportedErr: Label 'Cancel is not supported in this version';
 }

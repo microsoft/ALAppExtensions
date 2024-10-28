@@ -5,221 +5,106 @@
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using Microsoft.EServices.EDocument;
-using Microsoft.Foundation.Company;
-using Microsoft.Sales.Customer;
-using System.Security.Authentication;
-using System.Text;
 using System.Utilities;
-using System.Xml;
+
 
 codeunit 6380 APIRequests
 {
     Access = Internal;
 
-    // https://<BASE URL>/api/Peppol
+    var
+        APIRequestsImpl: Codeunit APIRequestsImpl;
+
+    #region public methods
+
+    /// <summary>
+    /// The method sends a file to the API.
+    /// https://[BASEURL]/api/Peppol    
+    /// </summary>
+    /// <param name="TempBlob">TempBlob</param>
+    /// <param name="EDocument">EDocument table</param>
+    /// <param name="HttpRequestMessage">Http Request Message</param>
+    /// <param name="HttpResponseMessage">Http Response Message</param>
+    /// <returns>True if successfully completed</returns>
     procedure SendFilePostRequest(var TempBlob: Codeunit "Temp Blob"; EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
-    var
-        ConnectionSetup: Record ConnectionSetup;
-        Payload: Text;
-        ContentHttpHeaders: HttpHeaders;
-        HttpContent: HttpContent;
-        ContentText: Text;
     begin
-        InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::POST, ConnectionSetup.ServiceURL + '/api/Peppol');
-
-        Payload := XmlToTxt(TempBlob);
-        if Payload = '' then
-            exit(false);
-        Clear(HttpContent);
-        ContentText := PrepareContentForSend(GetDocumentType(EDocument), ConnectionSetup."Company Id", GetCustomerID(EDocument), GetSenderCountryCode(), Payload, ConnectionSetup."Send Mode");
-        HttpContent.WriteFrom(ContentText);
-        HttpContent.GetHeaders(ContentHttpHeaders);
-        if ContentHttpHeaders.Contains('Content-Type') then
-            ContentHttpHeaders.Remove('Content-Type');
-        ContentHttpHeaders.Add('Content-Type', 'application/json');
-        HttpRequestMessage.Content(HttpContent);
-
-        exit(SendRequest(HttpRequestMessage, HttpResponseMessage));
+        exit(this.APIRequestsImpl.SendFilePostRequest(TempBlob, EDocument, HttpRequestMessage, HttpResponseMessage));
     end;
 
-    // https://<BASE URL>/api/Peppol/status?peppolInstanceId=
+    /// <summary>
+    /// The method checks the status of the sent document.
+    /// https://[BASE URL]/api/Peppol/status?peppolInstanceId=
+    /// </summary>
+    /// <param name="EDocument">EDocument table</param>
+    /// <param name="HttpRequestMessage">Http Request Message</param>
+    /// <param name="HttpResponseMessage">Http Response Message</param>
+    /// <returns>True if successfully completed</returns>
     procedure GetSentDocumentStatus(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
-    var
-        ConnectionSetup: Record ConnectionSetup;
     begin
-        InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::GET, ConnectionSetup.ServiceURL + '/api/Peppol/status?peppolInstanceId=' + EDocument."Document Id");
-        exit(SendRequest(HttpRequestMessage, HttpResponseMessage));
+        exit(this.APIRequestsImpl.GetSentDocumentStatus(EDocument, HttpRequestMessage, HttpResponseMessage));
     end;
 
-    // https://<BASE URL>/api/Peppol/outbox?peppolInstanceId=
-    procedure PatchADocument(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
-    var
-        ConnectionSetup: Record ConnectionSetup;
+    /// <summary>
+    /// The method modifies the document.
+    /// https://[BASE URL]/api/Peppol/outbox?peppolInstanceId=
+    /// </summary>
+    /// <param name="EDocument">EDocument table</param>
+    /// <param name="HttpRequestMessage">Http Request Message</param>
+    /// <param name="HttpResponseMessage">Http Response Message</param>
+    /// <returns>True if successfully completed</returns>
+    procedure PatchDocument(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     begin
-        InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::PATCH, ConnectionSetup.ServiceURL + '/api/Peppol/outbox?peppolInstanceId=' + EDocument."Document Id");
-        exit(SendRequest(HttpRequestMessage, HttpResponseMessage));
+        exit(this.APIRequestsImpl.PatchDocument(EDocument, HttpRequestMessage, HttpResponseMessage));
     end;
 
-    //  https://<BASE URL>/api/Peppol/Inbox?peppolId=
-    procedure GetReceivedDocumentsRequest(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage; Parameters: Dictionary of [Text, Text]): Boolean
-    var
-        ConnectionSetup: Record ConnectionSetup;
+    /// <summary>
+    /// The method gets the received document request.
+    /// https://[BASE URL]/api/Peppol/Inbox?peppolId=
+    /// </summary>
+    /// <param name="HttpRequestMessage">Http Request Message</param>
+    /// <param name="HttpResponseMessage">Http Response Message</param>    
+    /// <returns>True if successfully completed</returns>
+    procedure GetReceivedDocumentsRequest(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
     begin
-        InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::GET, ConnectionSetup.ServiceURL + '/api/Peppol/Inbox?peppolId=' + GetSenderReceiverPrefix() + ConnectionSetup."Company Id");
-        exit(SendRequest(HttpRequestMessage, HttpResponseMessage));
+        exit(this.APIRequestsImpl.GetReceivedDocumentsRequest(HttpRequestMessage, HttpResponseMessage));
     end;
 
-    // https://<BASE URL>/api/Peppol/inbox-document?peppolId=
+    /// <summary>
+    /// The method gets the target document request.
+    /// https://[BASE URL]/api/Peppol/inbox-document?peppolId=
+    /// </summary>
+    /// <param name="DocumentId">Document ID</param>
+    /// <param name="HttpRequestMessage">Http Request Message</param>
+    /// <param name="HttpResponseMessage">Http Response Message</param>
+    /// <returns>True if successfully completed</returns>
     procedure GetTargetDocumentRequest(DocumentId: Text; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
-    var
-        ConnectionSetup: Record ConnectionSetup;
     begin
-        InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::GET, ConnectionSetup.ServiceURL + '/api/Peppol/inbox-document?peppolId=' + GetSenderReceiverPrefix() + ConnectionSetup."Company Id" + '&peppolInstanceId=' + DocumentId);
-        exit(SendRequest(HttpRequestMessage, HttpResponseMessage));
+        exit(this.APIRequestsImpl.GetTargetDocumentRequest(DocumentId, HttpRequestMessage, HttpResponseMessage));
     end;
 
-    // https://<BASE URL>/api/Peppol/inbox?peppolInstanceId=
+    /// <summary>
+    /// The method modifies the received document.
+    /// // https://[BASE URL]/api/Peppol/inbox?peppolInstanceId=
+    /// </summary>
+    /// <param name="EDocument">EDocument table</param>
+    /// <param name="HttpRequestMessage">Http Request Message</param>
+    /// <param name="HttpResponseMessage">Http Response Message</param>
+    /// <returns>True if successfully completed</returns>
     procedure PatchReceivedDocument(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
-    var
-        ConnectionSetup: Record ConnectionSetup;
     begin
-        InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::PATCH, ConnectionSetup.ServiceURL + '/api/Peppol/inbox?peppolInstanceId=' + EDocument."Document Id");
-        exit(SendRequest(HttpRequestMessage, HttpResponseMessage));
+        exit(this.APIRequestsImpl.PatchReceivedDocument(EDocument, HttpRequestMessage, HttpResponseMessage));
     end;
 
+    /// <summary>
+    /// The method gets the marketplace credentials.
+    /// </summary>
+    /// <param name="HttpRequestMessage">Http Request Message</param>
+    /// <param name="HttpResponseMessage">Http Response Message</param>
+    /// <returns>True if successfully completed</returns>
     procedure GetMarketPlaceCredentials(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
-    var
-        ConnectionSetup: Record ConnectionSetup;
-        Auth: Codeunit Auth;
     begin
-        InitRequest(ConnectionSetup, HttpRequestMessage, HttpResponseMessage);
-        HttpRequestMessage := PrepareRequestMsg("Http Request Type"::POST, Auth.GetRootUrl() + '/api/Registration/init?EntraTenantId=' + Auth.GetBCInstanceIdentifier());
-        exit(SendRequest(HttpRequestMessage, HttpResponseMessage, true));
+        exit(this.APIRequestsImpl.GetMarketPlaceCredentials(HttpRequestMessage, HttpResponseMessage));
     end;
 
-    local procedure InitRequest(var ConnectionSetup: Record ConnectionSetup; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
-    var
-        MissingSetupErrorInfo: ErrorInfo;
-    begin
-        Clear(HttpRequestMessage);
-        Clear(HttpResponseMessage);
-        if not ConnectionSetup.Get() then begin
-            MissingSetupErrorInfo.Title := MissingSetupErr;
-            MissingSetupErrorInfo.Message := MissingSetupMessageLbl;
-            MissingSetupErrorInfo.PageNo := Page::"E-Document Services";
-            MissingSetupErrorInfo.AddNavigationAction(MissingSetupNavigationActionLbl);
-            Error(MissingSetupErrorInfo);
-        end;
-    end;
-
-    local procedure SendRequest(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
-    begin
-        SendRequest(HttpRequestMessage, HttpResponseMessage, false);
-    end;
-
-    local procedure SendRequest(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage; RootRequest: Boolean): Boolean
-    var
-        Auth: Codeunit Auth;
-        HttpClient: HttpClient;
-        HttpHeaders: HttpHeaders;
-    begin
-        HttpRequestMessage.GetHeaders(HttpHeaders);
-        if RootRequest then
-            HttpHeaders.Add('Authorization', Auth.GetRootBearerAuthText())
-        else
-            HttpHeaders.Add('Authorization', Auth.GetBearerAuthText());
-        exit(HttpClient.Send(HttpRequestMessage, HttpResponseMessage));
-    end;
-
-    local procedure PrepareRequestMsg(HttpRequestType: Enum "Http Request Type"; Uri: Text) RequestMessage: HttpRequestMessage
-    var
-        Headers: HttpHeaders;
-    begin
-        RequestMessage.Method(Format(HttpRequestType));
-        RequestMessage.SetRequestUri(Uri);
-        RequestMessage.GetHeaders(Headers);
-        Headers.Add('Accept', '*/*');
-    end;
-
-    local procedure XmlToTxt(var TempBlob: Codeunit "Temp Blob"): Text
-    var
-        XMLDOMManagement: Codeunit "XML DOM Management";
-        InStr: InStream;
-        Content: Text;
-    begin
-        TempBlob.CreateInStream(InStr, TextEncoding::UTF8);
-        XMLDOMManagement.TryGetXMLAsText(InStr, Content);
-        exit(Content);
-    end;
-
-    local procedure GetDocumentType(EDocument: Record "E-Document"): Text
-    begin
-        if EDocument.Direction = EDocument.Direction::Incoming then
-            exit('ApplicationResponse');
-
-        case EDocument."Document Type" of
-            "E-Document Type"::"Sales Invoice", "E-Document Type"::"Sales Credit Memo", "E-Document Type"::"Service Invoice", "E-Document Type"::"Service Credit Memo":
-                exit('Invoice');
-            "E-Document Type"::"Issued Finance Charge Memo", "E-Document Type"::"Issued Reminder":
-                exit('PaymentReminder');
-            else
-                Error(UnSupportedDocumentTypeLbl, EDocument."Document Type");
-        end;
-    end;
-
-    local procedure GetCustomerID(EDocument: Record "E-Document"): Text[50]
-    var
-        Customer: Record Customer;
-    begin
-        Customer.Get(EDocument."Bill-to/Pay-to No.");
-        Customer.TestField("Service Participant Id");
-        exit(Customer."Service Participant Id");
-    end;
-
-    local procedure GetSenderCountryCode(): Text
-    var
-        CompanyInformation: Record "Company Information";
-    begin
-        CompanyInformation.Get();
-        CompanyInformation.TestField("Country/Region Code");
-        exit(CompanyInformation."Country/Region Code");
-    end;
-
-    local procedure PrepareContentForSend(DocumentType: Text; SendingCompanyID: Text; RecieverCompanyID: Text; SenderCountryCode: Text; Payload: Text; SendMode: Enum SendMode): Text
-    var
-        Base64Convert: Codeunit "Base64 Convert";
-        SendJsonObject: JsonObject;
-        ContentText: Text;
-    begin
-        SendJsonObject.Add('documentType', DocumentType);
-        SendJsonObject.Add('receiver', GetSenderReceiverPrefix() + RecieverCompanyID);
-        SendJsonObject.Add('sender', GetSenderReceiverPrefix() + SendingCompanyID);
-        SendJsonObject.Add('senderCountryCode', SenderCountryCode);
-        SendJsonObject.Add('documentId', 'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0::2.1');
-        SendJsonObject.Add('documentIdScheme', 'busdox-docid-qns');
-        SendJsonObject.Add('processId', 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0');
-        SendJsonObject.Add('processIdScheme', 'cenbii-procid-ubl');
-        SendJsonObject.Add('sendMode', Format(SendMode));
-        SendJsonObject.Add('document', Base64Convert.ToBase64(Payload));
-        SendJsonObject.WriteTo(ContentText);
-        exit(ContentText);
-    end;
-
-    local procedure GetSenderReceiverPrefix(): Text
-    begin
-        exit(SenderReceiverPrefixLbl);
-    end;
-
-    var
-        MissingSetupErr: Label 'Connection Setup is missing';
-        MissingSetupMessageLbl: Label 'You must set up service integration in the e-document service card.';
-        MissingSetupNavigationActionLbl: Label 'Show E-Document Services';
-        UnSupportedDocumentTypeLbl: Label 'Document %1 is not supported.', Comment = '%1 = EDocument Type', Locked = true;
-        SenderReceiverPrefixLbl: Label 'iso6523-actorid-upis::', Locked = true;
+    #endregion
 }

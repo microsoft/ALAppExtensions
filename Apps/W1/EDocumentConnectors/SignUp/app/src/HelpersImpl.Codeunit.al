@@ -4,60 +4,89 @@
 // ------------------------------------------------------------------------------------------------
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
-using System.Text;
+using System.Reflection;
+using Microsoft.Utilities;
+using System.Integration;
 
-codeunit 6385 Helpers
+codeunit 6385 HelpersImpl
 {
     Access = Internal;
 
-    [NonDebuggable]
-    procedure ParseJsonString(HttpContentResponse: HttpContent): Text
     var
-        ResponseJObject: JsonObject;
-        ResponseJson: Text;
-        Result: Text;
-        IsJsonResponse: Boolean;
-    begin
-        HttpContentResponse.ReadAs(Result);
-        IsJsonResponse := ResponseJObject.ReadFrom(Result);
-        if IsJsonResponse then
-            ResponseJObject.WriteTo(ResponseJson)
-        else
-            exit('');
+        ClaimTypeTxt: Label 'exp', Locked = true;
 
-        if not TryInitJson(ResponseJson) then
-            exit('');
+    #region public methods
 
-        exit(Result);
-    end;
-
-    [TryFunction]
     [NonDebuggable]
-    local procedure TryInitJson(JsonTxt: Text)
+    procedure ParseJsonString(HttpContent: HttpContent): Text
     var
-        JsonManagement: Codeunit "JSON Management";
+        JsonObject: JsonObject;
+        Content: Text;
     begin
-        JSONManagement.InitializeObject(JsonTxt);
+        if not HttpContent.ReadAs(Content) then
+            exit;
+
+        if JsonObject.ReadFrom(Content) then
+            exit(Content);
     end;
 
     [NonDebuggable]
-    procedure GetJsonValueFromText(JsonText: Text; Path: Text) return: Text
+    procedure GetJsonValueFromText(JsonText: Text; Path: Text): Text
     var
-        JObject: JsonObject;
-        JToken: JsonToken;
+        JsonObject: JsonObject;
+        JsonToken: JsonToken;
     begin
-        if JObject.ReadFrom(JsonText) then
-            if JObject.SelectToken(Path, JToken) then
-                return := GetJsonValue(JToken.AsValue());
+        if JsonObject.ReadFrom(JsonText) then
+            if JsonObject.SelectToken(Path, JsonToken) then
+                exit(this.GetJsonValue(JsonToken.AsValue()));
+    end;
+
+    procedure IsTokenValid(InToken: SecretText): Boolean
+    begin
+        exit(this.GetTokenDateTimeValue(InToken, this.ClaimTypeTxt) > CurrentDateTime());
+    end;
+
+    #endregion
+
+    #region local methods
+
+    local procedure GetTokenDateTimeValue(InToken: SecretText; ClaimType: Text): DateTime
+    var
+        TypeHelper: Codeunit "Type Helper";
+        Timestamp: Decimal;
+    begin
+        if Evaluate(Timestamp, this.GetValueFromToken(InToken, ClaimType)) then
+            exit(TypeHelper.EvaluateUnixTimestamp(Timestamp));
     end;
 
     [NonDebuggable]
-    procedure GetJsonValue(JValue: JsonValue): Text
+    local procedure GetValueFromToken(InToken: SecretText; ClaimType: Text): Text
+    var
+        TempNameValueBuffer: Record "Name/Value Buffer" temporary;
+        SOAPWebServiceRequestMgt: Codeunit "SOAP Web Service Request Mgt.";
     begin
-        if JValue.IsNull then
-            exit('');
-        if JValue.IsUndefined then
-            exit('');
-        exit(JValue.AsText());
+        if InToken.IsEmpty() then
+            exit;
+
+        TempNameValueBuffer.DeleteAll();
+        SOAPWebServiceRequestMgt.GetTokenDetailsAsNameBuffer(InToken, TempNameValueBuffer);
+        TempNameValueBuffer.Reset();
+        TempNameValueBuffer.SetRange(Name, ClaimType);
+        if TempNameValueBuffer.FindFirst() then
+            exit(TempNameValueBuffer.Value);
     end;
+
+    [NonDebuggable]
+    local procedure GetJsonValue(JsonValue: JsonValue): Text
+    begin
+        if JsonValue.IsNull() then
+            exit;
+
+        if JsonValue.IsUndefined() then
+            exit;
+
+        exit(JsonValue.AsText());
+    end;
+
+    #endregion
 }

@@ -8,9 +8,8 @@ permissionset 6382 Edit
 {
     Access = Internal;
     Assignable = false;
-    Caption = 'SignUp E-Document Connector - Edit';
+    Caption = 'SignUp E-Doc. Connector - Edit', MaxLength = 30;
     IncludedPermissionSets = Read;
 
-    Permissions = tabledata ConnectionSetup = imd,
-                tabledata ConnectionAuth = imd;
+    Permissions = tabledata ConnectionSetup = imd;
 }

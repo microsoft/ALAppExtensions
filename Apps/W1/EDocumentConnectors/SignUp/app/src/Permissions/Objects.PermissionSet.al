@@ -8,16 +8,22 @@ permissionset 6380 Objects
 {
     Access = Internal;
     Assignable = false;
-    Caption = 'SignUp E-Document Connector - Objects';
+    Caption = 'SignUp E-Doc. Connector - Obj.', MaxLength = 30;
 
     Permissions = table ConnectionSetup = X,
-                  table ConnectionAuth = X,
                   page ConnectionSetupCard = X,
                   codeunit IntegrationImpl = X,
-                  codeunit Processing = X,
-                  codeunit Auth = X,
+                  codeunit PatchSentJob = X,
+                  codeunit JobHelperImpl = X,
+                  codeunit GetReadyStatusJob = X,
                   codeunit APIRequests = X,
+                  codeunit APIRequestsImpl = X,
+                  codeunit Authentication = X,
+                  codeunit AuthenticationImpl = X,
                   codeunit Connection = X,
-                  codeunit PatchSent = X,
-                  codeunit GetReadyStatus = X;
+                  codeunit ConnectionImpl = X,
+                  codeunit HelpersImpl = X,
+                  codeunit Processing = X,
+                  codeunit ProcessingImpl = X;
+
 }

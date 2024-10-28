@@ -8,9 +8,8 @@ permissionset 6381 Read
 {
     Access = Internal;
     Assignable = false;
-    Caption = 'SignUp E-Document Connector - Read';
+    Caption = 'SignUp E-Doc. Connector - Read', MaxLength = 30;
     IncludedPermissionSets = Objects;
 
-    Permissions = tabledata ConnectionSetup = r,
-                  tabledata ConnectionAuth = r;
+    Permissions = tabledata ConnectionSetup = r;
 }

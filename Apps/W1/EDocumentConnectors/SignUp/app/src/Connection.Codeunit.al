@@ -5,88 +5,72 @@
 namespace Microsoft.EServices.EDocumentConnector.SignUp;
 
 using Microsoft.EServices.EDocument;
-using Microsoft.Purchases.Document;
-using Microsoft.Purchases.Posting;
 using System.Utilities;
 
 codeunit 6382 Connection
 {
     Access = Internal;
-    Permissions = tabledata "E-Document" = m;
-
-    procedure HandleSendFilePostRequest(var TempBlob: Codeunit "Temp Blob"; var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
-    begin
-        APIRequests.SendFilePostRequest(TempBlob, EDocument, HttpRequest, HttpResponse);
-        exit(CheckIfSuccessfulRequest(EDocument, HttpResponse));
-    end;
-
-    procedure CheckDocumentStatus(var EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
-    begin
-        APIRequests.GetSentDocumentStatus(EDocument, HttpRequest, HttpResponse);
-        exit(CheckIfSuccessfulRequest(EDocument, HttpResponse));
-    end;
-
-    procedure GetReceivedDocuments(var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
-    var
-        Parameters: Dictionary of [Text, Text];
-    begin
-        APIRequests.GetReceivedDocumentsRequest(HttpRequest, HttpResponse, Parameters);
-
-        if not HttpResponse.IsSuccessStatusCode then
-            exit(false);
-
-        exit(Helpers.ParseJsonString(HttpResponse.Content) <> '');
-    end;
-
-    procedure HandleGetTargetDocumentRequest(DocumentId: Text; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
-    begin
-        APIRequests.GetTargetDocumentRequest(DocumentId, HttpRequest, HttpResponse);
-        exit(HttpResponse.IsSuccessStatusCode);
-    end;
-
-    procedure RemoveDocumentFromReceived(EDocument: Record "E-Document"; var HttpRequest: HttpRequestMessage; var HttpResponse: HttpResponseMessage): Boolean
-    begin
-        APIRequests.PatchReceivedDocument(EDocument, HttpRequest, HttpResponse);
-        exit(HttpResponse.IsSuccessStatusCode);
-    end;
-
-    local procedure CheckIfSuccessfulRequest(EDocument: Record "E-Document"; HttpResponse: HttpResponseMessage): Boolean
-    var
-        EDocumentErrorHelper: Codeunit "E-Document Error Helper";
-    begin
-        if HttpResponse.IsSuccessStatusCode then
-            exit(true);
-
-        if HttpResponse.IsBlockedByEnvironment then
-            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, EnvironmentBlocksErr)
-        else
-            EDocumentErrorHelper.LogSimpleErrorMessage(EDocument, StrSubstNo(UnsuccessfulResponseErr, HttpResponse.HttpStatusCode, HttpResponse.ReasonPhrase));
-    end;
-
-    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterCheckAndUpdate', '', false, false)]
-    local procedure CheckOnPosting(var PurchaseHeader: Record "Purchase Header"; CommitIsSuppressed: Boolean; PreviewMode: Boolean)
-    var
-        EDocument: Record "E-Document";
-        EDocumentService: Record "E-Document Service";
-        EDocumentServiceStatus: Record "E-Document Service Status";
-    begin
-        EDocument.SetRange("Document Record ID", PurchaseHeader.RecordId);
-        if not EDocument.FindFirst() then
-            exit;
-
-        EDocumentService.SetRange("Service Integration", EDocumentService."Service Integration"::"ExFlow E-Invoicing");
-        if EDocumentService.FindFirst() then;
-        EDocumentServiceStatus.SetRange("E-Document Entry No", EDocument."Entry No");
-        EDocumentServiceStatus.SetRange("E-Document Service Code", EDocumentService.Code);
-        if EDocumentServiceStatus.FindSet() then
-            repeat
-                EDocumentServiceStatus.TestField(EDocumentServiceStatus.Status, EDocumentServiceStatus.Status::Approved);
-            until EDocumentServiceStatus.Next() = 0;
-    end;
 
     var
-        APIRequests: Codeunit APIRequests;
-        Helpers: Codeunit Helpers;
-        UnsuccessfulResponseErr: Label 'There was an error sending the request. Response code: %1 and error message: %2', Comment = '%1 - http response status code, e.g. 400, %2- error message';
-        EnvironmentBlocksErr: Label 'The request to send documents has been blocked. To resolve the problem, enable outgoing HTTP requests for the E-Document apps on the Extension Management page.';
+        ConnectionImpl: Codeunit ConnectionImpl;
+
+    /// <summary>
+    /// The methods sends a file to the API.
+    /// </summary>
+    /// <param name="TempBlob">Content</param>
+    /// <param name="EDocument">E-Document record</param>
+    /// <param name="HttpRequestMessage">Http Request Message</param>
+    /// <param name="HttpResponseMessage">Http Response Message</param>
+    /// <returns>True - if completed successfully</returns>
+    procedure SendFilePostRequest(var TempBlob: Codeunit "Temp Blob"; var EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
+    begin
+        exit(this.ConnectionImpl.SendFilePostRequest(TempBlob, EDocument, HttpRequestMessage, HttpResponseMessage));
+    end;
+
+    /// <summary>
+    /// The method checks the status of the document.
+    /// </summary>
+    /// <param name="EDocument">E-Document record</param>
+    /// <param name="HttpRequestMessage">HttpRequestMessage</param>
+    /// <param name="HttpResponseMessage">HttpResponseMessage</param>
+    /// <returns>True - if completed successfully</returns>
+    procedure CheckDocumentStatus(var EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
+    begin
+        exit(this.ConnectionImpl.CheckDocumentStatus(EDocument, HttpRequestMessage, HttpResponseMessage));
+    end;
+
+    /// <summary>
+    /// The method gets received documents.
+    /// </summary>
+    /// <param name="HttpRequestMessage">HttpRequestMessage</param>
+    /// <param name="HttpResponseMessage">HttpResponseMessage</param>
+    /// <returns>True - if completed successfully</returns>
+    procedure GetReceivedDocuments(var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
+    begin
+        exit(this.ConnectionImpl.GetReceivedDocuments(HttpRequestMessage, HttpResponseMessage));
+    end;
+
+    /// <summary>
+    /// The method gets the target document.
+    /// </summary>
+    /// <param name="DocumentId">DocumentId</param>
+    /// <param name="HttpRequestMessage">HttpRequestMessage</param>
+    /// <param name="HttpResponseMessage">HttpResponseMessage</param>
+    /// <returns>True - if completed successfully</returns>
+    procedure GetTargetDocumentRequest(DocumentId: Text; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
+    begin
+        exit(this.ConnectionImpl.GetTargetDocumentRequest(DocumentId, HttpRequestMessage, HttpResponseMessage));
+    end;
+
+    /// <summary>
+    /// The method removes the document from received.
+    /// </summary>
+    /// <param name="EDocument">E-Document record</param>
+    /// <param name="HttpRequestMessage">HttpRequestMessage</param>
+    /// <param name="HttpResponseMessage">HttpResponseMessage</param>
+    /// <returns>True - if completed successfully</returns>
+    procedure RemoveDocumentFromReceived(EDocument: Record "E-Document"; var HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage): Boolean
+    begin
+        exit(this.ConnectionImpl.RemoveDocumentFromReceived(EDocument, HttpRequestMessage, HttpResponseMessage));
+    end;
 }
