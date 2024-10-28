@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37000 "Sales Moving Average"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Sales Moving Average';
     AboutTitle = 'About Sales Moving Average';
     AboutText = 'The Sales Moving Average report visualizes the 30-day moving average of sales amounts over time. This helps identify trends by smoothing out fluctuations and highlighting overall patterns.';

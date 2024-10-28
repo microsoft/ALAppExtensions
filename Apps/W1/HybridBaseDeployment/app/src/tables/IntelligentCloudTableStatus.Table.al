@@ -1,3 +1,4 @@
+#if not CLEANSCHEMA16
 namespace Microsoft.DataMigration;
 
 table 4010 "Intelligent Cloud Table Status"
@@ -52,3 +53,4 @@ table 4010 "Intelligent Cloud Table Status"
         }
     }
 }
+#endif

@@ -70,7 +70,7 @@ codeunit 18017 "GST Tax Configuration"
         UseCases.Add('{6F2DE875-4569-41DB-A28E-021E4D00378A}', 1);
         UseCases.Add('{882CB936-42D9-4C2D-BFD9-028D5F5D3337}', 3);
         UseCases.Add('{87FB95AD-905D-4832-9EC3-0330B674D601}', 3);
-        UseCases.Add('{74601C3A-21C1-4924-950E-039ADD6086E6}', 5);
+        UseCases.Add('{74601C3A-21C1-4924-950E-039ADD6086E6}', 6);
         UseCases.Add('{10675EE2-5AA7-4D43-8794-03BA8CD85445}', 4);
         UseCases.Add('{D2A96240-2F58-406C-8774-03CD60C28E5D}', 6);
         UseCases.Add('{547DDC98-8D3C-46A0-84BE-03E71BA135DA}', 5);
@@ -168,7 +168,7 @@ codeunit 18017 "GST Tax Configuration"
         UseCases.Add('{85D7B57B-6657-4C5B-889D-282A48B9D0FB}', 5);
         UseCases.Add('{B61CB389-28BD-4569-BF95-284B62972B23}', 9);
         UseCases.Add('{DF123FC7-B145-43CA-85DC-287F940778FC}', 1);
-        UseCases.Add('{C07C2110-2740-4FAD-975B-293FAAD86247}', 2);
+        UseCases.Add('{C07C2110-2740-4FAD-975B-293FAAD86247}', 3);
         UseCases.Add('{9B4E1225-00F2-4467-BA93-29AD1F2EBD46}', 5);
         UseCases.Add('{E28ED0E6-8917-4D81-AD22-29D13FE94091}', 2);
         UseCases.Add('{F719A304-09CF-479B-A123-2A4E34ED3133}', 4);
@@ -406,7 +406,7 @@ codeunit 18017 "GST Tax Configuration"
         UseCases.Add('{B064E1CD-DB51-456E-AE19-7F2AC8C9DC11}', 2);
         UseCases.Add('{441D3A0A-1F6C-4F47-AC82-7F5E2782785D}', 3);
         UseCases.Add('{00B59093-4DB8-4152-99DB-7F9368A143A8}', 4);
-        UseCases.Add('{9666CA08-2C56-43C5-B36F-7FD3745FE832}', 4);
+        UseCases.Add('{9666CA08-2C56-43C5-B36F-7FD3745FE832}', 5);
         UseCases.Add('{C63F1B6C-96EE-41CB-879B-801CE9C734A6}', 1);
         UseCases.Add('{61FB3B94-A2C7-4F3F-B4A8-801D842328E1}', 2);
         UseCases.Add('{C4BC4E11-E295-4A20-9F5F-801F2406A610}', 4);
@@ -466,7 +466,7 @@ codeunit 18017 "GST Tax Configuration"
         UseCases.Add('{2EC51C0B-DBA5-490B-AA60-944452C6BD3E}', 1);
         UseCases.Add('{FCC8AA84-E16B-4D3F-A139-946089738FB0}', 2);
         UseCases.Add('{F9A5047E-5B27-41E4-AF68-9497E3B52FAE}', 3);
-        UseCases.Add('{0C3618F6-08BD-417F-8744-94A415595940}', 3);
+        UseCases.Add('{0C3618F6-08BD-417F-8744-94A415595940}', 4);
         UseCases.Add('{812E9032-CA16-4FAB-A80B-94CD7BC5EB8D}', 3);
         UseCases.Add('{B2047EB4-AD5D-4E8B-BFFC-94FB1C4EED34}', 7);
         UseCases.Add('{8011782D-C645-47CC-AE43-94FEFE437125}', 3);
@@ -537,7 +537,7 @@ codeunit 18017 "GST Tax Configuration"
         UseCases.Add('{A4044120-D393-4525-88F4-AB1A71F2E49C}', 7);
         UseCases.Add('{DA972CCF-D97D-4379-9704-AB397FA9E08F}', 3);
         UseCases.Add('{E52D7679-7E9C-4623-9CA7-AB704EF2465C}', 3);
-        UseCases.Add('{BE0C902C-E9FC-4548-B8C7-AB70E21388BC}', 3);
+        UseCases.Add('{BE0C902C-E9FC-4548-B8C7-AB70E21388BC}', 4);
         UseCases.Add('{CAC3F49D-59DD-4F1A-B0F3-AC28F7552973}', 3);
         UseCases.Add('{62AD7817-C30F-4EC6-B68C-AC4828B07DF8}', 2);
         UseCases.Add('{429F37B1-0D9F-4B5A-BC3F-AC53F994BC32}', 1);
@@ -961,6 +961,8 @@ codeunit 18017 "GST Tax Configuration"
         UseCases.Add('{9CF523A9-24DB-4928-A3CB-8DC5FCA4AF69}', 1);
         UseCases.Add('{E8B90257-9F0D-42F4-A340-13A648D11829}', 1);
         UseCases.Add('{874048A6-575B-456F-A2E7-26532DA3F1CA}', 1);
+        UseCases.Add('{2c3d6b6c-5f5b-4728-b00f-28df4fa04939}', 1);
+        UseCases.Add('{e449e955-a401-4c0d-9db6-3920da89d68e}', 1);
     end;
 
     var

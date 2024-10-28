@@ -105,6 +105,12 @@ page 31170 "Sales Advance Letters CZZ"
                     ToolTip = 'Specifies to pay amount.';
                     Visible = false;
                 }
+                field("To Pay (LCY)"; Rec."To Pay (LCY)")
+                {
+                    ApplicationArea = Basic, Suite;
+                    ToolTip = 'Specifies to pay (LCY) amount.';
+                    Visible = false;
+                }
                 field("To Use"; Rec."To Use")
                 {
                     ApplicationArea = Basic, Suite;

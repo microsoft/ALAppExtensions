@@ -13,6 +13,14 @@ pageextension 36958 "Production Planner Role Center" extends "Production Planner
                 Caption = 'Power BI Reports';
                 Image = PowerBI;
                 ToolTip = 'Power BI reports for manufacturing';
+                action("Manufacturing Report")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Manufacturing Report';
+                    Image = "PowerBI";
+                    RunObject = page "Manufacturing Report";
+                    Tooltip = 'Open a Power BI Report that offers a consolidated view of all manufacturing report pages, conveniently embedded into a single page for easy access.';
+                }
                 action("Current Utilization")
                 {
                     ApplicationArea = Basic, Suite;

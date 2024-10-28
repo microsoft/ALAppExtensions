@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 36985 "Income Statement by Month"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Income Statement by Month';
     AboutTitle = 'About Income Statement by Month';
     AboutText = 'The Income Statement by Month report provides a month-to-month comparative view of the net change for income statement accounts.';

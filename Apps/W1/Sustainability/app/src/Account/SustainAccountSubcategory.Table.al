@@ -35,6 +35,9 @@ table 6212 "Sustain. Account Subcategory"
 
             trigger OnValidate()
             begin
+                if Rec."Emission Factor CO2" <> 0 then
+                    CheckSustAccountSubCategoryByField(Rec, Rec.FieldNo("Emission Factor CO2"));
+
                 CheckIfChangeAllowedAndRecalculateJournalLines(FieldCaption("Emission Factor CO2"));
             end;
         }
@@ -46,6 +49,9 @@ table 6212 "Sustain. Account Subcategory"
 
             trigger OnValidate()
             begin
+                if Rec."Emission Factor CH4" <> 0 then
+                    CheckSustAccountSubCategoryByField(Rec, Rec.FieldNo("Emission Factor CH4"));
+
                 CheckIfChangeAllowedAndRecalculateJournalLines(FieldCaption("Emission Factor CH4"));
             end;
         }
@@ -57,6 +63,9 @@ table 6212 "Sustain. Account Subcategory"
 
             trigger OnValidate()
             begin
+                if Rec."Emission Factor N2O" <> 0 then
+                    CheckSustAccountSubCategoryByField(Rec, Rec.FieldNo("Emission Factor N2O"));
+
                 CheckIfChangeAllowedAndRecalculateJournalLines(FieldCaption("Emission Factor N2O"));
             end;
         }
@@ -71,6 +80,57 @@ table 6212 "Sustain. Account Subcategory"
         field(9; "Renewable Energy"; Boolean)
         {
             Caption = 'Renewable Energy';
+
+            trigger OnValidate()
+            begin
+                if Rec."Renewable Energy" then begin
+                    Rec.TestField("Water Intensity Factor", 0);
+                    Rec.TestField("Waste Intensity Factor", 0);
+                    Rec.TestField("Discharged Into Water Factor", 0);
+                end;
+            end;
+        }
+        field(10; "Water Intensity Factor"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Water Intensity Factor';
+
+            trigger OnValidate()
+            begin
+                if Rec."Water Intensity Factor" <> 0 then
+                    CheckSustAccountSubCategoryByField(Rec, Rec.FieldNo("Water Intensity Factor"));
+
+                CheckIfChangeAllowedAndRecalculateJournalLines(FieldCaption("Water Intensity Factor"));
+            end;
+        }
+        field(11; "Discharged Into Water Factor"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Discharged Into Water Factor';
+
+            trigger OnValidate()
+            begin
+                if Rec."Discharged Into Water Factor" <> 0 then
+                    CheckSustAccountSubCategoryByField(Rec, Rec.FieldNo("Discharged Into Water Factor"));
+
+                CheckIfChangeAllowedAndRecalculateJournalLines(FieldCaption("Discharged Into Water Factor"));
+            end;
+        }
+        field(12; "Waste Intensity Factor"; Decimal)
+        {
+            AutoFormatType = 11;
+            AutoFormatExpression = SustainabilitySetup.GetFormat(SustainabilitySetup.FieldNo("Emission Decimal Places"));
+            Caption = 'Waste Intensity Factor';
+
+            trigger OnValidate()
+            begin
+                if Rec."Waste Intensity Factor" <> 0 then
+                    CheckSustAccountSubCategoryByField(Rec, Rec.FieldNo("Waste Intensity Factor"));
+
+                CheckIfChangeAllowedAndRecalculateJournalLines(FieldCaption("Waste Intensity Factor"));
+            end;
         }
     }
 
@@ -113,5 +173,38 @@ table 6212 "Sustain. Account Subcategory"
     begin
         SustainabilityAccountMgt.CheckIfChangeAllowedForSubcategory(Code, FieldCaption);
         SustainabilityAccountMgt.ReCalculateJournalLinesForSubcategory(Rec);
+    end;
+
+    local procedure CheckSustAccountSubCategoryByField(SustAccountSubCategory: Record "Sustain. Account Subcategory"; CurrentFieldNo: Integer)
+    var
+        SustAccountCategory: Record "Sustain. Account Category";
+    begin
+        case CurrentFieldNo of
+            SustAccountSubCategory.FieldNo("Water Intensity Factor"),
+            SustAccountSubCategory.FieldNo("Waste Intensity Factor"),
+            SustAccountSubCategory.FieldNo("Discharged Into Water Factor"):
+                begin
+                    SustAccountCategory.Get(SustAccountSubCategory."Category Code");
+                    SustAccountSubCategory.TestField("Renewable Energy", false);
+
+                    if SustAccountSubCategory."Water Intensity Factor" <> 0 then
+                        SustAccountCategory.TestField("Water Intensity", true);
+
+                    if SustAccountSubCategory."Discharged Into Water Factor" <> 0 then
+                        SustAccountCategory.TestField("Discharged Into Water", true);
+
+                    if SustAccountSubCategory."Waste Intensity Factor" <> 0 then
+                        SustAccountCategory.TestField("Waste Intensity", true);
+                end;
+            SustAccountSubCategory.FieldNo("Emission Factor CO2"),
+            SustAccountSubCategory.FieldNo("Emission Factor CH4"),
+            SustAccountSubCategory.FieldNo("Emission Factor N2O"):
+                begin
+                    SustAccountCategory.Get(SustAccountSubCategory."Category Code");
+                    SustAccountCategory.TestField("Water Intensity", false);
+                    SustAccountCategory.TestField("Waste Intensity", false);
+                    SustAccountCategory.TestField("Discharged Into Water", false);
+                end;
+        end;
     end;
 }

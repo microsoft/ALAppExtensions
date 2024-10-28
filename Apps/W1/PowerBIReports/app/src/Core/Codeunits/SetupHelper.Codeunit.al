@@ -105,7 +105,7 @@ codeunit 36961 "Setup Helper"
     begin
         PowerBiServiceMgt.InitializeAddinToken(PowerBIManagement);
         PowerBIManagement.SetLocale(TypeHelper.GetCultureName());
-        PowerBIManagement.SetSettings(false, true, false, false, false, false, true);
+        PowerBIManagement.SetSettings(false, true, ReportPageTok = '', false, false, false, true);
         PowerBIManagement.EmbedPowerBIReport(
             StrSubstNo(PowerBIEmbedReportUrlTemplateTxt, ReportId),
             ReportId,

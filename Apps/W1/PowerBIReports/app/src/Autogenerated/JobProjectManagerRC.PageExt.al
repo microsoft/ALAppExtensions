@@ -13,6 +13,14 @@ pageextension 36957 "Job Project Manager RC" extends "Job Project Manager RC"
                 Caption = 'Power BI Reports';
                 Image = PowerBI;
                 ToolTip = 'Power BI reports for projects';
+                action("Projects Report")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Projects Report';
+                    Image = "PowerBI";
+                    RunObject = page "Projects Report";
+                    Tooltip = 'Open a Power BI Report that offers a consolidated view of all project report pages, conveniently embedded into a single page for easy access.';
+                }
                 action("Projects Overview")
                 {
                     ApplicationArea = Basic, Suite;

@@ -30,6 +30,7 @@ table 6211 "Sustain. Account Category"
 
             trigger OnValidate()
             begin
+                CheckSustAccountCategoryByField(Rec, Rec.FieldNo("Emission Scope"));
                 CheckIfChangeIsAllowedForCategory(FieldCaption("Emission Scope"));
             end;
         }
@@ -39,6 +40,11 @@ table 6211 "Sustain. Account Category"
 
             trigger OnValidate()
             begin
+                if Rec.CO2 then
+                    CheckSustAccountCategoryByField(Rec, Rec.FieldNo(CO2))
+                else
+                    CheckSustAccountSubcategoryFactorByField(Rec, Rec.FieldNo(CO2));
+
                 CheckIfChangeIsAllowedForCategory(FieldCaption(CO2));
             end;
         }
@@ -48,6 +54,11 @@ table 6211 "Sustain. Account Category"
 
             trigger OnValidate()
             begin
+                if Rec.CH4 then
+                    CheckSustAccountCategoryByField(Rec, Rec.FieldNo(CH4))
+                else
+                    CheckSustAccountSubcategoryFactorByField(Rec, Rec.FieldNo(CH4));
+
                 CheckIfChangeIsAllowedForCategory(FieldCaption(CH4));
             end;
         }
@@ -57,6 +68,11 @@ table 6211 "Sustain. Account Category"
 
             trigger OnValidate()
             begin
+                if Rec.N2O then
+                    CheckSustAccountCategoryByField(Rec, Rec.FieldNo(N2O))
+                else
+                    CheckSustAccountSubcategoryFactorByField(Rec, Rec.FieldNo(N2O));
+
                 CheckIfChangeIsAllowedForCategory(FieldCaption(N2O));
             end;
         }
@@ -163,6 +179,48 @@ table 6211 "Sustain. Account Category"
                     Validate("Global Dimension 2 Filter", CopyStr(DimensionValueList.GetSelectionFilter(), 1, MaxStrLen("Global Dimension 2 Filter")));
             end;
         }
+        field(13; "Water Intensity"; Boolean)
+        {
+            Caption = 'Water Intensity';
+
+            trigger OnValidate()
+            begin
+                if Rec."Water Intensity" then
+                    CheckSustAccountCategoryByField(Rec, Rec.FieldNo("Water Intensity"))
+                else
+                    CheckSustAccountSubcategoryFactorByField(Rec, Rec.FieldNo("Water Intensity"));
+
+                CheckIfChangeIsAllowedForCategory(FieldCaption("Water Intensity"));
+            end;
+        }
+        field(14; "Discharged Into Water"; Boolean)
+        {
+            Caption = 'Discharged Into Water';
+
+            trigger OnValidate()
+            begin
+                if Rec."Discharged Into Water" then
+                    CheckSustAccountCategoryByField(Rec, Rec.FieldNo("Discharged Into Water"))
+                else
+                    CheckSustAccountSubcategoryFactorByField(Rec, Rec.FieldNo("Discharged Into Water"));
+
+                CheckIfChangeIsAllowedForCategory(FieldCaption("Discharged Into Water"));
+            end;
+        }
+        field(15; "Waste Intensity"; Boolean)
+        {
+            Caption = 'Waste Intensity';
+
+            trigger OnValidate()
+            begin
+                if Rec."Waste Intensity" then
+                    CheckSustAccountCategoryByField(Rec, Rec.FieldNo("Waste Intensity"))
+                else
+                    CheckSustAccountSubcategoryFactorByField(Rec, Rec.FieldNo("Waste Intensity"));
+
+                CheckIfChangeIsAllowedForCategory(FieldCaption("Waste Intensity"));
+            end;
+        }
     }
 
     keys
@@ -193,6 +251,8 @@ table 6211 "Sustain. Account Category"
 
     var
         DeleteSubcategoriesQst: Label 'One or more subcategories belong to category ''''%1''''.\\Do you want to delete category with all the related subcategories? ', Comment = '%1 - category code';
+        EmissionScopeNotSupportedErr: Label 'Emission Scope %1 is not supported With CO2,N2O,CH4.', Comment = '%1 = Emission Scope';
+        ValueMustBeEqualErr: Label '%1 must be equal to %2 in the %3 Category Code %4, Code %5.', Comment = '%1 = Field Caption , %2 = Expected Value, %3 = Table Caption, %4 = Category Code, %5 = Code';
 
     local procedure DeleteSubcategories(): Boolean
     var
@@ -230,5 +290,96 @@ table 6211 "Sustain. Account Category"
     begin
         SustainabilityAccountMgt.CheckIfChangeAllowedForCategory(Code, FieldCaption);
         SustainabilityAccountMgt.ReCalculateJournalLinesForCategory(Rec);
+    end;
+
+    local procedure CheckSustAccountCategoryByField(SustAccountCategory: Record "Sustain. Account Category"; CurrentFieldNo: Integer)
+    begin
+        case CurrentFieldNo of
+            SustAccountCategory.FieldNo("Water Intensity"),
+            SustAccountCategory.FieldNo("Discharged Into Water"):
+                begin
+                    SustAccountCategory.TestField("Emission Scope", "Emission Scope"::"Water/Waste");
+                    SustAccountCategory.TestField(CO2, false);
+                    SustAccountCategory.TestField(CH4, false);
+                    SustAccountCategory.TestField(N2O, false);
+                    SustAccountCategory.TestField("Waste Intensity", false);
+                end;
+            SustAccountCategory.FieldNo("Waste Intensity"):
+                begin
+                    SustAccountCategory.TestField("Emission Scope", "Emission Scope"::"Water/Waste");
+                    SustAccountCategory.TestField(CO2, false);
+                    SustAccountCategory.TestField(CH4, false);
+                    SustAccountCategory.TestField(N2O, false);
+                    SustAccountCategory.TestField("Water Intensity", false);
+                    SustAccountCategory.TestField("Discharged Into Water", false);
+                end;
+            SustAccountCategory.FieldNo(CO2),
+            SustAccountCategory.FieldNo(CH4),
+            SustAccountCategory.FieldNo(N2O):
+                begin
+                    if SustAccountCategory."Emission Scope" = SustAccountCategory."Emission Scope"::"Water/Waste" then
+                        Error(EmissionScopeNotSupportedErr, SustAccountCategory."Emission Scope");
+
+                    SustAccountCategory.TestField("Water Intensity", false);
+                    SustAccountCategory.TestField("Discharged Into Water", false);
+                    SustAccountCategory.TestField("Waste Intensity", false);
+                end;
+            SustAccountCategory.FieldNo("Emission Scope"):
+                if SustAccountCategory."Emission Scope" = SustAccountCategory."Emission Scope"::"Water/Waste" then begin
+                    SustAccountCategory.TestField(CO2, false);
+                    SustAccountCategory.TestField(CH4, false);
+                    SustAccountCategory.TestField(N2O, false);
+                end else begin
+                    SustAccountCategory.TestField("Water Intensity", false);
+                    SustAccountCategory.TestField("Discharged Into Water", false);
+                    SustAccountCategory.TestField("Waste Intensity", false);
+                end;
+        end;
+    end;
+
+    local procedure CheckSustAccountSubcategoryFactorByField(SustAccountCategory: Record "Sustain. Account Category"; CurrentFieldNo: Integer)
+    var
+        SustainAccountSubcategory: Record "Sustain. Account Subcategory";
+    begin
+        SustainAccountSubcategory.SetRange("Category Code", SustAccountCategory.Code);
+
+        case CurrentFieldNo of
+            SustAccountCategory.FieldNo(CO2):
+                begin
+                    SustainAccountSubcategory.SetFilter("Emission Factor CO2", '<>%1', 0);
+                    if SustainAccountSubcategory.FindFirst() then
+                        Error(ValueMustBeEqualErr, SustainAccountSubcategory.FieldCaption("Emission Factor CO2"), 0, SustainAccountSubcategory.TableCaption(), SustainAccountSubcategory."Category Code", SustainAccountSubcategory.Code);
+                end;
+            SustAccountCategory.FieldNo(CH4):
+                begin
+                    SustainAccountSubcategory.SetFilter("Emission Factor CH4", '<>%1', 0);
+                    if SustainAccountSubcategory.FindFirst() then
+                        Error(ValueMustBeEqualErr, SustainAccountSubcategory.FieldCaption("Emission Factor CH4"), 0, SustainAccountSubcategory.TableCaption(), SustainAccountSubcategory."Category Code", SustainAccountSubcategory.Code);
+                end;
+            SustAccountCategory.FieldNo(N2O):
+                begin
+                    SustainAccountSubcategory.SetFilter("Emission Factor N2O", '<>%1', 0);
+                    if SustainAccountSubcategory.FindFirst() then
+                        Error(ValueMustBeEqualErr, SustainAccountSubcategory.FieldCaption("Emission Factor N2O"), 0, SustainAccountSubcategory.TableCaption(), SustainAccountSubcategory."Category Code", SustainAccountSubcategory.Code);
+                end;
+            SustAccountCategory.FieldNo("Water Intensity"):
+                begin
+                    SustainAccountSubcategory.SetFilter("Water Intensity Factor", '<>%1', 0);
+                    if SustainAccountSubcategory.FindFirst() then
+                        Error(ValueMustBeEqualErr, SustainAccountSubcategory.FieldCaption("Water Intensity Factor"), 0, SustainAccountSubcategory.TableCaption(), SustainAccountSubcategory."Category Code", SustainAccountSubcategory.Code);
+                end;
+            SustAccountCategory.FieldNo("Waste Intensity"):
+                begin
+                    SustainAccountSubcategory.SetFilter("Waste Intensity Factor", '<>%1', 0);
+                    if SustainAccountSubcategory.FindFirst() then
+                        Error(ValueMustBeEqualErr, SustainAccountSubcategory.FieldCaption("Waste Intensity Factor"), 0, SustainAccountSubcategory.TableCaption(), SustainAccountSubcategory."Category Code", SustainAccountSubcategory.Code);
+                end;
+            SustAccountCategory.FieldNo("Discharged Into Water"):
+                begin
+                    SustainAccountSubcategory.SetFilter("Discharged Into Water Factor", '<>%1', 0);
+                    if SustainAccountSubcategory.FindFirst() then
+                        Error(ValueMustBeEqualErr, SustainAccountSubcategory.FieldCaption("Discharged Into Water Factor"), 0, SustainAccountSubcategory.TableCaption(), SustainAccountSubcategory."Category Code", SustainAccountSubcategory.Code);
+                end;
+        end;
     end;
 }

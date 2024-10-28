@@ -750,55 +750,6 @@ codeunit 139777 "Bank Rec. With AI Tests"
         TempLedgerEntryMatchingBuffer.Insert(true);
     end;
 
-
-    /*
-        local procedure CreateBankAccountWithNo(var BankAccount: Record "Bank Account"; BankAccountNo: Code[20])
-        var
-            BankAccountPostingGroup: Record "Bank Account Posting Group";
-            BankContUpdate: Codeunit "BankCont-Update";
-            LibraryERM: Codeunit "Library - ERM";
-        begin
-            LibraryERM.FindBankAccountPostingGroup(BankAccountPostingGroup);
-            BankAccount.Init();
-            BankAccount.Validate("No.", BankAccountNo);
-            BankAccount.Validate(Name, BankAccount."No.");  // Validating No. as Name because value is not important.
-            BankAccount.Insert(true);
-            BankAccount.Validate("Bank Acc. Posting Group", BankAccountPostingGroup.Code);
-            BankAccount.Modify(true);
-            BankContUpdate.OnModify(BankAccount);
-        end;
-
-        local procedure AddBankRecLinesToTemp(var TempBankAccReconciliationLine: Record "Bank Acc. Reconciliation Line" temporary; BankAccReconciliation: Record "Bank Acc. Reconciliation")
-        var
-            BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line";
-        begin
-            TempBankAccReconciliationLine.Reset();
-            TempBankAccReconciliationLine.DeleteAll();
-            BankAccReconciliationLine.SetRange("Statement Type", BankAccReconciliation."Statement Type");
-            BankAccReconciliationLine.SetRange("Bank Account No.", BankAccReconciliation."Bank Account No.");
-            BankAccReconciliationLine.SetRange("Statement No.", BankAccReconciliation."Statement No.");
-            if BankAccReconciliationLine.FindSet() then
-                repeat
-                    TempBankAccReconciliationLine := BankAccReconciliationLine;
-                    TempBankAccReconciliationLine.Insert();
-                until BankAccReconciliationLine.Next() = 0;
-        end;
-
-        local procedure AddBankEntriesToTemp(var TempBankAccLedgerEntry: Record "Bank Account Ledger Entry" temporary; BankAccountNo: Code[20])
-        var
-            BankAccLedgerEntry: Record "Bank Account Ledger Entry";
-        begin
-            TempBankAccLedgerEntry.Reset();
-            TempBankAccLedgerEntry.DeleteAll();
-            BankAccLedgerEntry.SetRange("Bank Account No.", BankAccountNo);
-            if BankAccLedgerEntry.FindSet() then
-                repeat
-                    TempBankAccLedgerEntry := BankAccLedgerEntry;
-                    TempBankAccLedgerEntry.Insert();
-                until BankAccLedgerEntry.Next() = 0;
-        end;
-    */
-
     local procedure CreateInputData(var PostingDate: Date; var BankAccountNo: Code[20]; var StatementNo: Code[20]; var DocumentNo: Code[20]; var Description: Text[50]; var Amount: Decimal)
     var
         BankAccReconciliationLine: Record "Bank Acc. Reconciliation Line";

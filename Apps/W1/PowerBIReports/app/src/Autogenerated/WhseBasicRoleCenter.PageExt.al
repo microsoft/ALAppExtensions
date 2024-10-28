@@ -13,6 +13,14 @@ pageextension 36956 "Whse. Basic Role Center" extends "Whse. Basic Role Center"
                 Caption = 'Power BI Reports';
                 Image = PowerBI;
                 ToolTip = 'Power BI reports for inventory';
+                action("Inventory Report")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Inventory Report';
+                    Image = "PowerBI";
+                    RunObject = page "Inventory Report";
+                    Tooltip = 'Open a Power BI Report that offers a consolidated view of all inventory report pages, conveniently embedded into a single page for easy access.';
+                }
                 action("Inventory Overview")
                 {
                     ApplicationArea = Basic, Suite;

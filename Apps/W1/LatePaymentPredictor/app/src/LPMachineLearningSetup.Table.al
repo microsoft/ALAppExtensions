@@ -101,7 +101,7 @@ table 1950 "LP Machine Learning Setup"
                 AzureMLConnector.ValidateApiUrl("Custom API Key");
             end;
         }
-
+#if not CLEANSCHEMA18
         field(11; "Exact Invoice No OnLastML"; Integer)
         {
             Editable = false;
@@ -109,7 +109,7 @@ table 1950 "LP Machine Learning Setup"
             ObsoleteReason = 'Discontinued because of performance refactoring. Use the field Posting Date OnLastML instead.';
             ObsoleteTag = '18.0';
         }
-
+#endif
         field(12; "OverestimatedInvNo OnLastReset"; Integer)
         {
             Editable = false;

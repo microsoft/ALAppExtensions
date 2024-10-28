@@ -1375,14 +1375,14 @@ codeunit 8074 "Document Change Management"
             Database::"Purchase Line":
                 begin
                     RRef.SetTable(PurchaseLine);
-                    PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.");
-                    RecurringBilling := PurchaseHeader."Recurring Billing";
+                    if PurchaseHeader.Get(PurchaseLine."Document Type", PurchaseLine."Document No.") then
+                        RecurringBilling := PurchaseHeader."Recurring Billing";
                 end;
             Database::"Sales Line":
                 begin
                     RRef.SetTable(SalesLine);
-                    SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.");
-                    RecurringBilling := SalesHeader."Recurring Billing";
+                    if SalesHeader.Get(SalesLine."Document Type", SalesLine."Document No.") then
+                        RecurringBilling := SalesHeader."Recurring Billing";
                 end;
         end;
     end;

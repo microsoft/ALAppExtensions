@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37012 "Purchases Moving Averages"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Purchases Moving Averages';
     AboutTitle = 'About Purchases Moving Averages';
     AboutText = 'The Purchases Moving Average report visualizes the 30-day moving average of purchase amounts over time. This helps identify trends by smoothing out fluctuations and highlighting overall patterns.';

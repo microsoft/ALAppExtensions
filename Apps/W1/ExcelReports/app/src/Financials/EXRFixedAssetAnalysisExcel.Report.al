@@ -4,6 +4,7 @@ using Microsoft.FixedAssets.FixedAsset;
 using Microsoft.FixedAssets.Depreciation;
 using Microsoft.FixedAssets.Setup;
 using Microsoft.FixedAssets.Posting;
+using Microsoft.ExcelReports;
 
 report 4412 "EXR Fixed Asset Analysis Excel"
 {
@@ -47,8 +48,6 @@ report 4412 "EXR Fixed Asset Analysis Excel"
                     BudgetDepreciation: Codeunit "Budget Depreciation";
                     BeforeAmount, EndingAmount : Decimal;
                 begin
-                    if ShouldSkipRecord() then
-                        CurrReport.Skip();
                     FADepreciationBook.Get(FixedAssetData."No.", DepreciationBookCode);
                     AcquisitionDate := FADepreciationBook."Acquisition Date";
                     DisposalDate := FADepreciationBook."Disposal Date";
@@ -63,7 +62,18 @@ report 4412 "EXR Fixed Asset Analysis Excel"
                     Period := Period::"Net Change";
                     NetChange := FAGeneralReport.CalcFAPostedAmount(FixedAssetData."No.", FAPostingType."FA Posting Type No.", Period, StartingDate, EndingDate, DepreciationBookCode, BeforeAmount, EndingAmount, false, false);
                 end;
+
+                trigger OnPreDataItem()
+                begin
+                    AcquisitionDate := 0D;
+                    DisposalDate := 0D;
+                end;
             }
+            trigger OnAfterGetRecord()
+            begin
+                if ShouldSkipRecord() then
+                    CurrReport.Skip();
+            end;
         }
     }
     requestpage
@@ -182,9 +192,11 @@ report 4412 "EXR Fixed Asset Analysis Excel"
             Error(SpecifyStartingAndEndingDatesErr);
         if StartingDate > EndingDate then
             Error(SpecifyStartingAndEndingDatesErr);
+        ExcelReportsTelemetry.LogReportUsage(Report::"EXR Fixed Asset Analysis Excel");
     end;
 
     var
+        ExcelReportsTelemetry: Codeunit "Excel Reports Telemetry";
         DepreciationBookCode: Code[10];
         StartingDate, EndingDate, AcquisitionDate, DisposalDate : Date;
         BeforeStartingDate, AtEndingDate, NetChange : Decimal;

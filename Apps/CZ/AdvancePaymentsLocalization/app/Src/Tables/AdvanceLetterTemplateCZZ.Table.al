@@ -101,6 +101,7 @@ table 31003 "Advance Letter Template CZZ"
             DataClassification = CustomerContent;
             TableRelation = "VAT Business Posting Group";
         }
+#if not CLEANSCHEMA23
         field(15; "Document Report ID"; Integer)
         {
             Caption = 'Document Report ID (Obsolete)';
@@ -141,6 +142,7 @@ table 31003 "Advance Letter Template CZZ"
             ObsoleteState = Removed;
             ObsoleteTag = '23.0';
         }
+#endif
         field(25; "Automatic Post VAT Document"; Boolean)
         {
             Caption = 'Automatic Post VAT Document';

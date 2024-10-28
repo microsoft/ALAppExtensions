@@ -118,6 +118,20 @@ pageextension 11717 "General Ledger Setup CZL" extends "General Ledger Setup"
                 }
             }
         }
+        addafter("Additional Reporting Currency")
+        {
+            field("Functional Currency CZL"; Rec."Functional Currency CZL")
+            {
+                ApplicationArea = Basic, Suite;
+                ToolTip = 'Specifies enables of the functional currency.';
+
+                trigger OnValidate()
+                begin
+                    if Rec."Functional Currency CZL" then
+                        Rec.TestField("Additional Reporting Currency");
+                end;
+            }
+        }
         addlast(Reporting)
         {
             field("Shared Account Schedule CZL"; Rec."Shared Account Schedule CZL")

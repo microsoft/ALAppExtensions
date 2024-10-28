@@ -13,6 +13,14 @@ pageextension 36954 "Order Processor Role Center" extends "Order Processor Role 
                 Caption = 'Power BI Reports';
                 Image = PowerBI;
                 ToolTip = 'Power BI reports for sales';
+                action("Sales Report")
+                {
+                    ApplicationArea = Basic, Suite;
+                    Caption = 'Sales Report';
+                    Image = "PowerBI";
+                    RunObject = page "Sales Report";
+                    Tooltip = 'Open a Power BI Report that offers a consolidated view of all sales report pages, conveniently embedded into a single page for easy access.';
+                }
                 action("Sales Overview")
                 {
                     ApplicationArea = Basic, Suite;

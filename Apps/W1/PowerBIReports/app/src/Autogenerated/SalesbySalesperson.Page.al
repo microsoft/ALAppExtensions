@@ -5,6 +5,8 @@ using System.Integration.PowerBI;
 page 37006 "Sales by Salesperson"
 {
     UsageCategory = ReportsAndAnalysis;
+    ApplicationArea = All;
+    PageType = Card;
     Caption = 'Sales by Salesperson';
     AboutTitle = 'About Sales by Salesperson';
     AboutText = 'The Sales by Salesperson report breaks down salesperson performance by customer and item. Highlighting metrics such as Sales Amount, Sales Quantity, Gross Profit and Gross Profit Margin.';

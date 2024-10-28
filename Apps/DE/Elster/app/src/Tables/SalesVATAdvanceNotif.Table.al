@@ -68,6 +68,7 @@ table 11021 "Sales VAT Advance Notif."
             Editable = false;
             TableRelation = "No. Series";
         }
+#if not CLEANSCHEMA23
         field(9; "XSL-Filename"; Text[250])
         {
             DataClassification = CustomerContent;
@@ -82,7 +83,7 @@ table 11021 "Sales VAT Advance Notif."
             ObsoleteState = Removed;
             ObsoleteReason = 'This functionality is not in use and not supported';
         }
-
+#endif
         field(11; "Statement Template Name"; Code[10])
         {
             DataClassification = CustomerContent;
