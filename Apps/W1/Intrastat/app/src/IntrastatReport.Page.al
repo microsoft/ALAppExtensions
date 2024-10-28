@@ -138,11 +138,9 @@ page 4812 "Intrastat Report"
                     then begin
                         Commit();
                         Codeunit.Run(VATReportsConfiguration."Validate Codeunit ID", Rec);
-                        CurrPage.Update();
-                        exit;
-                    end;
+                    end else
+                        IntrastatReportMgt.ValidateReportWithAdvancedChecklist(Rec, false);
 
-                    IntrastatReportMgt.ValidateReportWithAdvancedChecklist(Rec, false);
                     UpdateErrors();
                     CurrPage.Update();
                 end;
@@ -186,8 +184,15 @@ page 4812 "Intrastat Report"
                     trigger OnAction()
                     var
                         ErrorMessage: Record "Error Message";
+                        VATReportsConfiguration: Record "VAT Reports Configuration";
                     begin
-                        IntrastatReportMgt.ValidateReportWithAdvancedChecklist(Rec, false);
+                        if FindVATReportsConfiguration(VATReportsConfiguration) and
+                            (VATReportsConfiguration."Validate Codeunit ID" <> 0)
+                        then begin
+                            Commit();
+                            Codeunit.Run(VATReportsConfiguration."Validate Codeunit ID", Rec);
+                        end else
+                            IntrastatReportMgt.ValidateReportWithAdvancedChecklist(Rec, false);
                         UpdateErrors();
                         Commit();
 
@@ -231,18 +236,13 @@ page 4812 "Intrastat Report"
                     Commit();
 
                     if FindVATReportsConfiguration(VATReportsConfiguration) and
-                        (VATReportsConfiguration."Validate Codeunit ID" <> 0) and
-                        (VATReportsConfiguration."Content Codeunit ID" <> 0)
+                        (VATReportsConfiguration."Validate Codeunit ID" <> 0)
                     then begin
                         Commit();
                         Codeunit.Run(VATReportsConfiguration."Validate Codeunit ID", Rec);
+                    end else
+                        IntrastatReportMgt.ValidateReportWithAdvancedChecklist(Rec, false);
 
-                        Commit();
-                        Codeunit.Run(VATReportsConfiguration."Content Codeunit ID", Rec);
-                        exit;
-                    end;
-
-                    IntrastatReportMgt.ValidateReportWithAdvancedChecklist(Rec, false);
                     UpdateErrors();
                     Commit();
 
@@ -250,8 +250,14 @@ page 4812 "Intrastat Report"
                     if not ErrorMessage.IsEmpty() then
                         Error(HasErrorsMsg);
 
-                    IntrastatReportMgt.ReleaseIntrastatReport(Rec);
-                    IntrastatReportMgt.ExportWithDataExch(Rec, 0);
+                    if FindVATReportsConfiguration(VATReportsConfiguration) and
+                        (VATReportsConfiguration."Content Codeunit ID" <> 0)
+                    then
+                        Codeunit.Run(VATReportsConfiguration."Content Codeunit ID", Rec)
+                    else begin
+                        IntrastatReportMgt.ReleaseIntrastatReport(Rec);
+                        IntrastatReportMgt.ExportWithDataExch(Rec, 0);
+                    end;
 
                     FeatureTelemetry.LogUsage('0000I90', IntrastatReportTok, 'File created');
                 end;
