@@ -2,10 +2,6 @@ codeunit 139625 "Shpfy Catalog API Subscribers"
 {
     EventSubscriberInstance = Manual;
 
-    var
-        ShopifyCatalogId: BigInteger;
-        GQLQueryTxt: Text;
-
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Shpfy Communication Events", 'OnClientSend', '', true, false)]
     local procedure OnClientSend(HttpRequestMessage: HttpRequestMessage; var HttpResponseMessage: HttpResponseMessage)
     begin
@@ -64,10 +60,5 @@ codeunit 139625 "Shpfy Catalog API Subscribers"
         Body := '{}';
         HttpResponseMessage.Content.WriteFrom(Body);
         exit(HttpResponseMessage);
-    end;
-
-    internal procedure SetShopifyCatalogId(Id: BigInteger)
-    begin
-        ShopifyCatalogId := Id;
     end;
 }
