@@ -14,7 +14,6 @@ codeunit 42019 "SL Populate Accounts"
         SLAccountStaging: Record "SL Account Staging";
         SLCompanyID: Text;
     begin
-
         if not SLAccount.FindSet() then
             exit;
 

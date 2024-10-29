@@ -16,7 +16,6 @@ page 42020 "SL Migration Error Overview"
     InsertAllowed = false;
     PageType = List;
     SourceTable = "SL Migration Error Overview";
-    UsageCategory = Administration;
 
     layout
     {
@@ -78,9 +77,6 @@ page 42020 "SL Migration Error Overview"
                 ApplicationArea = All;
                 Caption = 'Open in Company';
                 Image = Open;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 ToolTip = 'Open the company in which the error occurred.';
                 Visible = false;
 
@@ -94,9 +90,6 @@ page 42020 "SL Migration Error Overview"
                 ApplicationArea = All;
                 Caption = 'Show log of processed records';
                 Image = ShowList;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 ToolTip = 'Shows the log of last processed records before error occured.';
 
                 trigger OnAction()
@@ -109,9 +102,6 @@ page 42020 "SL Migration Error Overview"
                 ApplicationArea = All;
                 Caption = 'Dismiss Error';
                 Image = CompleteLine;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 ToolTip = 'Dismiss the error.';
 
                 trigger OnAction()
@@ -125,9 +115,6 @@ page 42020 "SL Migration Error Overview"
                 ApplicationArea = All;
                 Caption = 'Show/Hide All Errors';
                 Image = ShowList;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedOnly = true;
                 ToolTip = 'Shows or hides dismissed errors.';
 
                 trigger OnAction()
@@ -140,6 +127,24 @@ page 42020 "SL Migration Error Overview"
                     else
                         Rec.SetRange("Error Dismissed");
                 end;
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Process)
+            {
+                actionref(OpenInCompany_Promoted; OpenInCompany)
+                {
+                }
+                actionref(ShowProcessedRecordsLog_Promoted; ShowProcessedRecordsLog)
+                {
+                }
+                actionref(DismissError_Promoted; DismissError)
+                {
+                }
+                actionref(ShowHideAllErrors_Promoted; ShowHideAllErrors)
+                {
+                }
             }
         }
     }

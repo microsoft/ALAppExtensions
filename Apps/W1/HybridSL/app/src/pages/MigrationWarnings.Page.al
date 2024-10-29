@@ -14,7 +14,6 @@ page 42021 "SL Migration Warnings"
     InsertAllowed = false;
     PageType = List;
     SourceTable = "SL Migration Warnings";
-    UsageCategory = Administration;
 
     layout
     {

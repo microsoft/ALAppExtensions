@@ -26,15 +26,15 @@ codeunit 42001 "SL Cloud Migration"
         SLMigrationErrorHandler: Codeunit "SL Migration Error Handler";
         HybridHandleSLUpgradeError: Codeunit "SL Hybrid Handle Upgrade Error";
         SLPopulateAccounts: Codeunit "SL Populate Accounts";
-        slPopulateFiscalPeriods: Codeunit "SL Populate Fiscal Periods";
-        slDimensions: Codeunit "SL Dimensions";
+        SLPopulateFiscalPeriods: Codeunit "SL Populate Fiscal Periods";
+        SLDimensions: Codeunit "SL Dimensions";
         Success: Boolean;
     begin
         SLMigrationErrorHandler.ClearErrorOccurred();
         ClearLastError();
-        slPopulateFiscalPeriods.CreateFiscalPeriodsFromGLSetup();
-        slDimensions.InsertSLSegmentsForDimensionSets();
-        slDimensions.CreateSLCodes();
+        SLPopulateFiscalPeriods.CreateFiscalPeriodsFromGLSetup();
+        SLDimensions.InsertSLSegmentsForDimensionSets();
+        SLDimensions.CreateSLCodes();
         SLPopulateAccounts.PopulateSLAccounts();
         Commit();
 
@@ -244,12 +244,13 @@ codeunit 42001 "SL Cloud Migration"
         if ProductID <> HybridSLWizard.ProductIdTxt() then
             exit;
 
+        // Accounts
         UpdateOrInsertRecord(Database::"SL Account", 'Account');
         UpdateOrInsertRecord(Database::"SL AcctHist", 'AcctHist');
         UpdateOrInsertRecord(Database::"SL Batch", 'Batch');
         UpdateOrInsertRecord(Database::"SL GLSetup", 'GLSetup');
         UpdateOrInsertRecord(Database::"SL GLTran", 'GLTran');
-
+        // Payables
         UpdateOrInsertRecord(Database::"SL AP_Balances", 'AP_Balances');
         UpdateOrInsertRecord(Database::"SL APAdjust", 'APAdjust');
         UpdateOrInsertRecord(Database::"SL APDoc", 'APDoc');
@@ -262,7 +263,7 @@ codeunit 42001 "SL Cloud Migration"
         UpdateOrInsertRecord(Database::"SL PurchOrd", 'PurchOrd');
         UpdateOrInsertRecord(Database::"SL PurOrdDet", 'PurOrdDet');
         UpdateOrInsertRecord(Database::"SL Vendor", 'Vendor');
-
+        // Receivables
         UpdateOrInsertRecord(Database::"SL AR_Balances", 'AR_Balances');
         UpdateOrInsertRecord(Database::"SL ARAdjust", 'ARAdjust');
         UpdateOrInsertRecord(Database::"SL ARDoc", 'ARDoc');
@@ -277,7 +278,7 @@ codeunit 42001 "SL Cloud Migration"
         UpdateOrInsertRecord(Database::"SL SOShipLine", 'SOShipLine');
         UpdateOrInsertRecord(Database::"SL SOShipLot", 'SOShipLot');
         UpdateOrInsertRecord(Database::"SL SOType", 'SOType');
-
+        // Items
         UpdateOrInsertRecord(Database::"SL INSetup", 'INSetup');
         UpdateOrInsertRecord(Database::"SL INTran", 'INTran');
         UpdateOrInsertRecord(Database::"SL Inventory", 'Inventory');
@@ -287,7 +288,7 @@ codeunit 42001 "SL Cloud Migration"
         UpdateOrInsertRecord(Database::"SL LotSerMst", 'LotSerMst');
         UpdateOrInsertRecord(Database::"SL LotSerT", 'LotSerT');
         UpdateOrInsertRecord(Database::"SL Site", 'Site');
-
+        // Misc
         UpdateOrInsertRecord(Database::"SL FlexDef", 'FlexDef');
         UpdateOrInsertRecord(Database::"SL SegDef", 'SegDef');
         UpdateOrInsertRecord(Database::"SL Terms", 'Terms');
@@ -312,11 +313,6 @@ codeunit 42001 "SL Cloud Migration"
         MigrationTableMapping."Data Per Company" := PerCompanyTable;
         MigrationTableMapping."Source Table Name" := SourceTableName;
         MigrationTableMapping.Insert();
-    end;
-
-    [InternalEvent(false)]
-    internal procedure OnCreateSessionForUpgrade(var CreateSession: Boolean)
-    begin
     end;
 
     [IntegrationEvent(false, false, true)]

@@ -16,7 +16,6 @@ page 42010 "SL Company Migration Settings"
     RefreshOnActivate = true;
     SourceTable = "SL Company Migration Settings";
     SourceTableView = where(Replicate = const(true));
-    UsageCategory = Administration;
 
     layout
     {

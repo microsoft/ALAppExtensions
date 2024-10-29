@@ -17,7 +17,6 @@ page 42018 "SL Migration Configuration"
     PageType = Card;
     SourceTable = "SL Company Additional Settings";
     SourceTableView = where(Name = filter(= ''));
-    UsageCategory = Administration;
 
     layout
     {

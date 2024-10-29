@@ -12,7 +12,6 @@ page 42019 "SL Set All Dimensions Dialog"
     ApplicationArea = All;
     Caption = 'Set All Company Dimensions';
     PageType = NavigatePage;
-    UsageCategory = Administration;
 
     layout
     {

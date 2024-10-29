@@ -17,6 +17,7 @@ codeunit 42018 "SL Customer Migrator"
         PostingGroupCodeTxt: Label 'SL', Locked = true;
         CustomerBatchNameTxt: Label 'SLCUST', Locked = true;
         SourceCodeTxt: Label 'GENJNL', Locked = true;
+        StatusInactiveTxt: Label 'I', Locked = true;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Customer Data Migration Facade", OnMigrateCustomer, '', true, true)]
     local procedure OnMigrateCustomer(var Sender: Codeunit "Customer Data Migration Facade"; RecordIdToMigrate: RecordId)
@@ -243,7 +244,7 @@ codeunit 42018 "SL Customer Migrator"
         if not CustomerDataMigrationFacade.CreateCustomerIfNeeded(SLCustomer.CustId, CopyStr(SLHelperFunctions.NameFlip(SLCustomer.Name), 1, 50)) then
             exit;
 
-        if SLCustomer.Status = 'I' then
+        if SLCustomer.Status = StatusInactiveTxt then
             if SLCompanyAdditionalSettings.Get(CompanyName()) then
                 if not SLCompanyAdditionalSettings."Migrate Inactive Customers" then begin
                     DecrementMigratedCount();

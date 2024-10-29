@@ -17,7 +17,6 @@ page 42024 "SL Hybrid Failed Companies"
     ModifyAllowed = false;
     PageType = List;
     SourceTable = "Hybrid Company Status";
-    UsageCategory = Administration;
 
     layout
     {

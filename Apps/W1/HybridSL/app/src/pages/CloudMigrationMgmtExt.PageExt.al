@@ -87,10 +87,6 @@ pageextension 42001 "SL Cloud Migration Mgmt. Ext." extends "Cloud Migration Man
                 Caption = 'Configure SL Migration';
                 Enabled = HasCompletedSetupWizard;
                 Image = Setup;
-                Promoted = true;
-                PromotedCategory = Process;
-                PromotedIsBig = true;
-                PromotedOnly = true;
                 ToolTip = 'Configure migration settings for SL';
 
                 trigger OnAction()
@@ -126,6 +122,12 @@ pageextension 42001 "SL Cloud Migration Mgmt. Ext." extends "Cloud Migration Man
                     if Confirm(ConfirmRerunQst) then
                         SLWizardIntegration.ScheduleSLHistoricalSnapshotMigration();
                 end;
+            }
+        }
+        addfirst(Category_Process)
+        {
+            actionref(SLConfigureMigration_Promoted; SLConfigureMigration)
+            {
             }
         }
     }
