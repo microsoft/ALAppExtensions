@@ -178,14 +178,14 @@ codeunit 139627 "Shpfy Company Mapping Test"
     end;
 
     [Test]
-    procedure UnitTestDoMappingByTaxId()
+    procedure UnitTestFindMappingByTaxId()
     var
         Customer: Record Customer;
         ShopifyCompany: Record "Shpfy Company";
         TempShopifyCustomer: Record "Shpfy Customer" temporary;
         FindMappingResult: Boolean;
     begin
-        // [SCENARIO] DoMapping using By Tax Id
+        // [SCENARIO] FindMapping using By Tax Id
         Initialize();
 
         // [GIVEN] Shop with Company Mapping Type as By Tax Id
@@ -203,7 +203,7 @@ codeunit 139627 "Shpfy Company Mapping Test"
     end;
 
     [Test]
-    procedure UnitTestDoMappingByTaxIdWithRegistrationNo()
+    procedure UnitTestFindMappingByTaxIdWithRegistrationNo()
     var
         Customer: Record Customer;
         ShopifyCompany: Record "Shpfy Company";
@@ -212,7 +212,7 @@ codeunit 139627 "Shpfy Company Mapping Test"
         FindMappingResult: Boolean;
         EmptyGuid: Guid;
     begin
-        // [SCENARIO] DoMapping using By Tax Id with Registration No.
+        // [SCENARIO] FindMapping using By Tax Id with Registration No.
         Initialize();
 
         // [GIVEN] Shop with Company Mapping Type as By Tax Id
@@ -245,7 +245,7 @@ codeunit 139627 "Shpfy Company Mapping Test"
     end;
 
     [Test]
-    procedure UnitTestDoMappingByTaxIdWithRegistrationNoAndRandomCustomerSysId()
+    procedure UnitTestFindMappingByTaxIdWithRegistrationNoAndRandomCustomerSysId()
     var
         Customer: Record Customer;
         ShopifyCompany: Record "Shpfy Company";
@@ -253,7 +253,7 @@ codeunit 139627 "Shpfy Company Mapping Test"
         ShopifyCustomer: Record "Shpfy Customer";
         FindMappingResult: Boolean;
     begin
-        // [SCENARIO] DoMapping using By Tax Id with Registration No. and random customer system id
+        // [SCENARIO] FindMapping using By Tax Id with Registration No. and random customer system id
         Initialize();
 
         // [GIVEN] Shop with Company Mapping Type as By Tax Id
@@ -286,7 +286,7 @@ codeunit 139627 "Shpfy Company Mapping Test"
     end;
 
     [Test]
-    procedure UnitTestDoMappingByTaxIdWithRegistrationNoAndExistingShopifyCustomer()
+    procedure UnitTestFindMappingByTaxIdWithRegistrationNoAndExistingShopifyCustomer()
     var
         Customer: Record Customer;
         ShopifyCompany: Record "Shpfy Company";
@@ -295,7 +295,7 @@ codeunit 139627 "Shpfy Company Mapping Test"
         FindMappingResult: Boolean;
         EmptyGuid: Guid;
     begin
-        // [SCENARIO] DoMapping using By Tax Id with Registration No. and existing Shopify Customer
+        // [SCENARIO] FindMapping using By Tax Id with Registration No. and existing Shopify Customer
         Initialize();
 
         // [GIVEN] Shop with Company Mapping Type as By Tax Id
@@ -326,7 +326,7 @@ codeunit 139627 "Shpfy Company Mapping Test"
     end;
 
     [Test]
-    procedure UnitTestDoMappingByTaxIdWithVATRegistrationNo()
+    procedure UnitTestFindMappingByTaxIdWithVATRegistrationNo()
     var
         Customer: Record Customer;
         ShopifyCompany: Record "Shpfy Company";
@@ -335,7 +335,7 @@ codeunit 139627 "Shpfy Company Mapping Test"
         FindMappingResult: Boolean;
         EmptyGuid: Guid;
     begin
-        // [SCENARIO] DoMapping using By Tax Id with VAT Registration No.
+        // [SCENARIO] FindMapping using By Tax Id with VAT Registration No.
         Initialize();
 
         // [GIVEN] Shop with Company Mapping Type as By Tax Id
@@ -343,7 +343,7 @@ codeunit 139627 "Shpfy Company Mapping Test"
         // [GIVEN] Shop with Tax Registration Id Mapping as VAT Registration No.
         SetCompTaxIdMapping(Enum::"Shpfy Comp. Tax Id Mapping"::"VAT Registration No.");
         // [GIVEN] Customer with VAT Registration No.
-        CreateCustomerWithRegistrationNo(Customer);
+        CreateCustomerWithVATRegistrationNo(Customer);
         // [GIVEN] Shopify Company
         CreateShopifyCompanyWithCustomerSysId(ShopifyCompany, EmptyGuid);
         // [GIVEN] Company Location with Tax Registration Id
@@ -363,6 +363,58 @@ codeunit 139627 "Shpfy Company Mapping Test"
         LibraryAssert.AreEqual(ShopifyCustomer.Id, ShopifyCompany."Main Contact Customer Id", 'Main contact customer Id different than customer id.');
         // [THEN] Shopify company customer system id is the same as the customer record
         LibraryAssert.AreEqual(Customer.SystemId, ShopifyCompany."Customer SystemId", 'Customer system Id not transferred to shopify company.');
+    end;
+
+    [Test]
+    procedure UnitTestDoMappingByTaxId()
+    var
+        Customer: Record Customer;
+        ShopifyCompany: Record "Shpfy Company";
+        DoMappingResult: Code[20];
+    begin
+        // [SCENARIO] DoMapping using By Tax Id mapping
+        Initialize();
+
+        // [GIVEN] Shop with Company Mapping Type as By Tax Id
+        SetMappingByTaxId();
+        // [GIVEN] Customer
+        CreateCustomer(Customer);
+        // [GIVEN] Shopify Company with customer system id
+        CreateShopifyCompanyWithCustomerSysId(ShopifyCompany, Customer.SystemId);
+
+        // [WHEN] DoMapping is called
+        InvokeDoMapping(ShopifyCompany.Id, DoMappingResult);
+
+        // [THEN] The result is the same as the Customer No. field of the Customer record
+        LibraryAssert.AreEqual(Customer."No.", DoMappingResult, 'Mapping result is different than default company no.');
+    end;
+
+    [Test]
+    procedure UnitTestDoMappingByTaxIdWithEmptyGuid()
+    var
+        Customer: Record Customer;
+        ShopifyCompany: Record "Shpfy Company";
+        CompanyMappingSubs: Codeunit "Shpfy Company Mapping Subs.";
+        DoMappingResult: Code[20];
+        EmptyGuid: Guid;
+    begin
+        // [SCENARIO] DoMapping using By Tax Id mapping with empty guid for Shopify Company Customer System Id
+        Initialize();
+
+        // [GIVEN] Shop with Company Mapping Type as By Tax Id
+        SetMappingByTaxId();
+        // [GIVEN] Customer
+        CreateCustomer(Customer);
+        // [GIVEN] Shopify Company with empty guid for customer system id
+        CreateShopifyCompanyWithCustomerSysId(ShopifyCompany, EmptyGuid);
+
+        // [WHEN] DoMapping is called
+        BindSubscription(CompanyMappingSubs);
+        InvokeDoMapping(ShopifyCompany.Id, DoMappingResult);
+        UnbindSubscription(CompanyMappingSubs);
+
+        // [THEN] Company Import codeunit is executed
+        LibraryAssert.IsTrue(CompanyMappingSubs.GetCompanyImportExecuted(), 'Company Import codeunit was not executed.');
     end;
 
 
