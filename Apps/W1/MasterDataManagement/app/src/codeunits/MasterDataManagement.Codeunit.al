@@ -2495,5 +2495,10 @@ codeunit 7233 "Master Data Management"
     local procedure OnBeforeRescheduleJobQueueEntries(TableNo: Integer; var RescheduleOffSetInMs: Integer)
     begin
     end;
+
+    [IntegrationEvent(false, false)]
+    internal procedure OnRenameDestination(var RenamedDestinationRecordRef: RecordRef; var SourcePrimaryKeyRef: KeyRef; var Handled: Boolean)
+    begin
+    end;
 }
 

@@ -11,19 +11,19 @@ page 1951 "LP Prediction FactBox"
     {
         area(Content)
         {
-            field(Prediction; "Payment Prediction")
+            field(Prediction; Rec."Payment Prediction")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Prediction';
                 ToolTip = 'Specifies that the payment for this invoice is predicted to be late.';
             }
-            field(Confidence; "Prediction Confidence")
+            field(Confidence; Rec."Prediction Confidence")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Confidence';
                 ToolTip = 'Specifies the reliability of the late payment prediction. High is above 90%, Medium is between 80% and 90%, and Low is less than 80%.';
             }
-            field(PredictionConfidencePercentage; "Prediction Confidence %")
+            field(PredictionConfidencePercentage; Rec."Prediction Confidence %")
             {
                 ApplicationArea = Basic, Suite;
                 Caption = 'Confidence %';
