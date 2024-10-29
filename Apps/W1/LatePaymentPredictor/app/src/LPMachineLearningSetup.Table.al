@@ -6,6 +6,7 @@ using System.Utilities;
 using System.Privacy;
 table 1950 "LP Machine Learning Setup"
 {
+    DataClassification = CustomerContent;
     ReplicateData = false;
     Permissions = TableData "LP Machine Learning Setup" = I;
     fields

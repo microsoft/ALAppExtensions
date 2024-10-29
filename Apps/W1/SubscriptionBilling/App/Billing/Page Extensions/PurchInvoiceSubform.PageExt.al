@@ -7,7 +7,7 @@ pageextension 8071 "Purch Invoice Subform" extends "Purch. Invoice Subform"
     actions
     {
 
-        addlast(processing)
+        addlast("Related Information")
         {
             action(ShowBillingLines)
             {

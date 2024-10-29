@@ -6,7 +6,7 @@ pageextension 8064 "Posted Sales Invoice Subform" extends "Posted Sales Invoice 
 {
     actions
     {
-        addlast(Processing)
+        addlast("&Line")
         {
             action(ShowArchivedBillingLines)
             {

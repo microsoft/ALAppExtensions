@@ -33,6 +33,11 @@
   ],
   "internalsVisibleTo": [
     {
+      "id": "018ff6a2-4cf8-4945-b60f-2b40878ef5c4",
+      "name": "Subscription & Recurring Billing Plus Test",
+      "publisher": "Singhammer IT Consulting AG"
+    },
+    {
       "id": "41bf6cc7-7891-4a8c-827c-fe23266c5a98",
       "name": "DYCE Essentials Test",
       "publisher": "Singhammer IT Consulting AG"

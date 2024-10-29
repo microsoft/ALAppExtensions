@@ -6,7 +6,7 @@ pageextension 8057 "Vendor List" extends "Vendor List"
 {
     actions
     {
-        addafter(NewPurchaseCrMemo)
+        addlast(creation)
         {
             action(NewContract)
             {
