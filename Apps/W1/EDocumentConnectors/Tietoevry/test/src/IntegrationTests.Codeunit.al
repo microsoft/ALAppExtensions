@@ -40,11 +40,11 @@ codeunit 148193 "Integration Tests"
         EDocument.FindLast();
         LibraryEDocument.RunEDocumentJobQueue(EDocument);
 
-        // [When] EDocument is fetched after running Avalara SubmitDocument 
+        // [When] EDocument is fetched after running Tietoevry SubmitDocument 
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response.
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Avalara integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Tietoevry integration failed to set Document Id on E-Document');
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
         // [THEN] Open E-Document page
@@ -69,11 +69,11 @@ codeunit 148193 "Integration Tests"
         EDocumentPage.Close();
 
         // [WHEN] Executing Get Response succesfully
-        SetAvalaraConnectionBaseUrl('/avalara/response-complete');
+        SetTietoevryConnectionBaseUrl('/Tietoevry/response-complete');
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
-        // [When] EDocument is fetched after running Avalara GetResponse 
+        // [When] EDocument is fetched after running Tietoevry GetResponse 
         EDocument.FindLast();
 
         // [Then] E-Document is considered processed
@@ -126,13 +126,13 @@ codeunit 148193 "Integration Tests"
         EDocument.FindLast();
         LibraryEDocument.RunEDocumentJobQueue(EDocument);
 
-        // [When] EDocument is fetched after running Avalara SubmitDocument 
+        // [When] EDocument is fetched after running Tietoevry SubmitDocument 
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Avalara integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Tietoevry integration failed to set Document Id on E-Document');
 
-        // [Then] E-Document is pending response as Avalara is async
+        // [Then] E-Document is pending response as Tietoevry is async
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
         // [THEN] Open E-Document page
@@ -156,14 +156,14 @@ codeunit 148193 "Integration Tests"
         EDocumentPage.Close();
 
         // [WHEN] Executing Get Response succesfully
-        SetAvalaraConnectionBaseUrl('/avalara/response-pending');
+        SetTietoevryConnectionBaseUrl('/Tietoevry/response-pending');
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
-        // [When] EDocument is fetched after running Avalara GetResponse 
+        // [When] EDocument is fetched after running Tietoevry GetResponse 
         EDocument.FindLast();
 
-        // [Then] E-Document is pending response as Avalara is async
+        // [Then] E-Document is pending response as Tietoevry is async
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
         // [THEN] Open E-Document page
@@ -189,14 +189,14 @@ codeunit 148193 "Integration Tests"
         EDocumentPage.Close();
 
         // [WHEN] Executing Get Response succesfully
-        SetAvalaraConnectionBaseUrl('/avalara/response-complete');
+        SetTietoevryConnectionBaseUrl('/Tietoevry/response-complete');
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
-        // [When] EDocument is fetched after running Avalara GetResponse 
+        // [When] EDocument is fetched after running Tietoevry GetResponse 
         EDocument.FindLast();
 
-        // [Then] E-Document is pending response as Avalara is async
+        // [Then] E-Document is pending response as Tietoevry is async
         Assert.AreEqual(Enum::"E-Document Status"::Processed, EDocument.Status, 'E-Document should be set to processed');
 
         // [THEN] Open E-Document page
@@ -248,13 +248,13 @@ codeunit 148193 "Integration Tests"
         EDocument.FindLast();
         LibraryEDocument.RunEDocumentJobQueue(EDocument);
 
-        // [When] EDocument is fetched after running Avalara SubmitDocument 
+        // [When] EDocument is fetched after running Tietoevry SubmitDocument 
         EDocument.FindLast();
 
         // [Then] Document Id has been correctly set on E-Document, parsed from Integration response
-        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Avalara integration failed to set Document Id on E-Document');
+        Assert.AreEqual(MockServiceDocumentId(), EDocument."Document Id", 'Tietoevry integration failed to set Document Id on E-Document');
 
-        // [Then] E-Document is pending response as Avalara is async
+        // [Then] E-Document is pending response as Tietoevry is async
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
         // [THEN] Open E-Document page
@@ -279,11 +279,11 @@ codeunit 148193 "Integration Tests"
         EDocumentPage.Close();
 
         // [WHEN] Executing Get Response succesfully
-        SetAvalaraConnectionBaseUrl('/avalara/response-error');
+        SetTietoevryConnectionBaseUrl('/Tietoevry/response-error');
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
-        // [When] EDocument is fetched after running Avalara GetResponse 
+        // [When] EDocument is fetched after running Tietoevry GetResponse 
         EDocument.FindLast();
 
         // [Then] E-Document is in error state
@@ -325,7 +325,7 @@ codeunit 148193 "Integration Tests"
 
         // Then user manually send 
 
-        SetAvalaraConnectionBaseUrl('/avalara/avalara/200');
+        SetTietoevryConnectionBaseUrl('/Tietoevry/Tietoevry/200');
         EDocument.FindLast();
 
         // [THEN] Open E-Document page and resend
@@ -338,7 +338,7 @@ codeunit 148193 "Integration Tests"
         EDocumentPage.OpenView();
         EDocumentPage.GoToRecord(EDocument);
 
-        // [Then] E-Document is pending response as Avalara is async
+        // [Then] E-Document is pending response as Tietoevry is async
         Assert.AreEqual(Enum::"E-Document Status"::"In Progress", EDocument.Status, 'E-Document should be set to in progress');
 
         Assert.AreEqual(Format(EDocument.Direction::Outgoing), EDocumentPage.Direction.Value(), IncorrectValueErr);
@@ -361,16 +361,16 @@ codeunit 148193 "Integration Tests"
         Assert.AreEqual('', EDocumentPage.ErrorMessagesPart.Description.Value(), IncorrectValueErr);
         EDocumentPage.Close();
 
-        SetAvalaraConnectionBaseUrl('/avalara/response-complete');
+        SetTietoevryConnectionBaseUrl('/Tietoevry/response-complete');
 
         JobQueueEntry.FindJobQueueEntry(JobQueueEntry."Object Type to Run"::Codeunit, Codeunit::"E-Document Get Response");
         LibraryJobQueue.RunJobQueueDispatcher(JobQueueEntry);
 
-        // [When] EDocument is fetched after running Avalara GetResponse 
+        // [When] EDocument is fetched after running Tietoevry GetResponse 
 
         EDocument.FindLast();
 
-        // [Then] E-Document is pending response as Avalara is async
+        // [Then] E-Document is pending response as Tietoevry is async
         Assert.AreEqual(Enum::"E-Document Status"::Processed, EDocument.Status, 'E-Document should be set to processed');
 
         // [THEN] Open E-Document page
@@ -402,7 +402,7 @@ codeunit 148193 "Integration Tests"
     /// Test needs MockService running to work. 
     /// </summary>
     [Test]
-    procedure SubmitDocumentAvalaraServiceDown()
+    procedure SubmitDocumentTietoevryServiceDown()
     var
         EDocument: Record "E-Document";
         EDocumentPage: TestPage "E-Document";
@@ -419,7 +419,7 @@ codeunit 148193 "Integration Tests"
         EDocument.FindLast();
         LibraryEDocument.RunEDocumentJobQueue(EDocument);
 
-        // [When] EDocument is fetched after running Avalara SubmitDocument 
+        // [When] EDocument is fetched after running Tietoevry SubmitDocument 
         EDocument.FindLast();
 
         Assert.AreEqual(Enum::"E-Document Status"::Error, EDocument.Status, 'E-Document should be set to error state when service is down.');
@@ -514,7 +514,7 @@ codeunit 148193 "Integration Tests"
     var
         ConnectionSetup: Record "Connection Setup";
         CompanyInformation: Record "Company Information";
-        AvalaraAuth: Codeunit Authenticator;
+        TietoevryAuth: Codeunit Authenticator;
         KeyGuid: Guid;
     begin
         LibraryPermission.SetOutsideO365Scope();
@@ -523,13 +523,13 @@ codeunit 148193 "Integration Tests"
             if IsolatedStorage.Delete(ConnectionSetup."Token - Key", DataScope::Company) then;
 
         ConnectionSetup.DeleteAll();
-        AvalaraAuth.CreateConnectionSetupRecord();
+        TietoevryAuth.CreateConnectionSetupRecord();
         SetAPIWith200Code();
 
         ConnectionSetup.Get();
-        AvalaraAuth.SetClientId(KeyGuid, MockServiceGuid());
+        TietoevryAuth.SetClientId(KeyGuid, MockServiceGuid());
         ConnectionSetup."Client Id - Key" := KeyGuid;
-        AvalaraAuth.SetClientSecret(KeyGuid, MockServiceGuid());
+        TietoevryAuth.SetClientSecret(KeyGuid, MockServiceGuid());
         ConnectionSetup."Client Secret - Key" := KeyGuid;
         ConnectionSetup.Modify(true);
 
@@ -537,10 +537,10 @@ codeunit 148193 "Integration Tests"
             exit;
 
         LibraryEDocument.SetupStandardVAT();
-        LibraryEDocument.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"E-Document Integration"::Avalara);
-        EDocumentService."Avalara Mandate" := 'GB-Test-Mandate';
+        LibraryEDocument.SetupStandardSalesScenario(Customer, EDocumentService, Enum::"E-Document Format"::"TE PEPPOL BIS 3.0", Enum::"E-Document Integration"::Tietoevry);
+        EDocumentService."Tietoevry Mandate" := 'GB-Test-Mandate';
 
-        LibraryEDocument.SetupStandardPurchaseScenario(Vendor, EDocumentService, Enum::"E-Document Format"::"PEPPOL BIS 3.0", Enum::"E-Document Integration"::Avalara);
+        LibraryEDocument.SetupStandardPurchaseScenario(Vendor, EDocumentService, Enum::"E-Document Format"::"TE PEPPOL BIS 3.0", Enum::"E-Document Integration"::Tietoevry);
         EDocumentService."Auto Import" := true;
         EDocumentService."Import Minutes between runs" := 10;
         EDocumentService."Import Start Time" := Time();
@@ -557,7 +557,7 @@ codeunit 148193 "Integration Tests"
         IsInitialized := true;
     end;
 
-    local procedure SetAvalaraConnectionBaseUrl(Base: Text)
+    local procedure SetTietoevryConnectionBaseUrl(Base: Text)
     var
         ConnectionSetup: Record "Connection Setup";
     begin
@@ -579,17 +579,17 @@ codeunit 148193 "Integration Tests"
 
     local procedure SetAPIWithReceiveCode()
     begin
-        SetAPICode('/avalara/200/receive');
+        SetAPICode('/Tietoevry/200/receive');
     end;
 
     local procedure SetAPIWith200Code()
     begin
-        SetAPICode('/avalara/200');
+        SetAPICode('/Tietoevry/200');
     end;
 
     local procedure SetAPIWith500Code()
     begin
-        SetAPICode('/avalara/500');
+        SetAPICode('/Tietoevry/500');
     end;
 
     local procedure SetAPICode(Path: Text)
